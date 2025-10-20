@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, type ButtonProps, copyToClipboard } from '@clarity-chat/primitives'
+import { Button, type ButtonProps } from '@clarity-chat/primitives'
+import { useClipboard } from '../hooks/use-clipboard'
 
 export interface CopyButtonProps extends Omit<ButtonProps, 'onClick'> {
   text: string
@@ -13,17 +14,13 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
   children,
   ...props
 }) => {
-  const [copied, setCopied] = React.useState(false)
+  const { copy, copied } = useClipboard({
+    timeout: 2000,
+    onSuccess: onCopy,
+  })
 
-  const handleCopy = async () => {
-    const success = await copyToClipboard(text)
-    if (success) {
-      setCopied(true)
-      onCopy?.()
-      
-      // Hooked principle: Immediate feedback
-      setTimeout(() => setCopied(false), 2000)
-    }
+  const handleCopy = () => {
+    copy(text)
   }
 
   return (

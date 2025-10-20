@@ -1,7 +1,8 @@
 import * as React from 'react'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
-import { ScrollArea } from '@clarity-chat/primitives'
+import { ScrollArea, Button } from '@clarity-chat/primitives'
+import { useAutoScroll } from '../hooks/use-auto-scroll'
 
 export interface MessageListProps {
   messages: MessageType[]
@@ -18,28 +19,42 @@ export const MessageList: React.FC<MessageListProps> = ({
   onMessageRetry,
   className,
 }) => {
-  const scrollRef = React.useRef<HTMLDivElement>(null)
-
-  // Auto-scroll to bottom on new messages
-  React.useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-    }
-  }, [messages])
+  // Use auto-scroll hook with smooth scrolling
+  const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
+    dependencies: [messages],
+    behavior: 'smooth',
+    threshold: 100,
+  })
 
   return (
-    <ScrollArea ref={scrollRef} className={className}>
-      <div className="space-y-4 p-4">
-        {messages.map((message) => (
-          <Message
-            key={message.id}
-            message={message}
-            onCopy={(content) => onMessageCopy?.(message.id, content)}
-            onFeedback={(type) => onMessageFeedback?.(message.id, type)}
-            onRetry={() => onMessageRetry?.(message.id)}
-          />
-        ))}
-      </div>
-    </ScrollArea>
+    <div className="relative">
+      <ScrollArea ref={scrollRef as React.RefObject<HTMLDivElement>} className={className}>
+        <div className="space-y-4 p-4">
+          {messages.map((message) => (
+            <Message
+              key={message.id}
+              message={message}
+              onCopy={(content) => onMessageCopy?.(message.id, content)}
+              onFeedback={(type) => onMessageFeedback?.(message.id, type)}
+              onRetry={() => onMessageRetry?.(message.id)}
+            />
+          ))}
+        </div>
+      </ScrollArea>
+      
+      {/* Show scroll-to-bottom button when not at bottom */}
+      {!isNearBottom && messages.length > 0 && (
+        <div className="absolute bottom-4 right-4">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={scrollToBottom}
+            className="shadow-lg"
+          >
+            ↓ Scroll to bottom
+          </Button>
+        </div>
+      )}
+    </div>
   )
 }
