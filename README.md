@@ -135,25 +135,28 @@ clarity-chat/
 - [x] Basic chat window
 - [x] Storybook setup
 
-### Phase 2: Core Features (In Progress)
-- [ ] Advanced input with autocomplete
-- [ ] File upload handling
-- [ ] Context management
-- [ ] Project organization
-- [ ] Knowledge base generation
+### Phase 2: Core Features ✅
+- [x] Advanced input with autocomplete (@mentions, /commands)
+- [x] File upload handling with drag & drop
+- [x] Context management for documents and files
+- [x] Project organization with sidebar
+- [x] Prompt library with templates
 
-### Phase 3: Advanced Features
-- [ ] Prompt library
-- [ ] Settings and preferences
-- [ ] Usage tracking
-- [ ] Export functionality
-- [ ] Authentication components
+### Phase 3: Polish & Integration ✅
+- [x] Settings panel (AI personality, appearance, privacy, notifications)
+- [x] Usage dashboard with credit tracking
+- [x] Link preview component
+- [x] Knowledge base viewer with search and edit
+- [x] Export dialog (PDF, DOCX, Markdown, JSON, HTML)
 
-### Phase 4: Documentation & Polish
-- [ ] Complete documentation site
-- [ ] Video tutorials
-- [ ] Example applications
+### Phase 4: Final Polish (Next)
+- [ ] Keyboard shortcuts panel
+- [ ] Theme customizer with live preview
+- [ ] Complete demo application
 - [ ] Performance optimization
+- [ ] Accessibility audit
+- [ ] Authentication components
+- [ ] Video tutorials
 
 ## 🤝 Contributing
 
