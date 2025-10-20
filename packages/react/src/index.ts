@@ -16,10 +16,21 @@ export * from './components/usage-dashboard'
 export * from './components/link-preview'
 export * from './components/knowledge-base-viewer'
 export * from './components/export-dialog'
+export * from './components/stream-cancellation'
+
+// Phase 3 Enhancement - Error Handling & Recovery
+export * from './components/error-boundary'
+export * from './components/retry-button'
+export * from './components/network-status'
+
+// Phase 3 Enhancement - Token Management
+export * from './components/token-counter'
 
 // Export hooks
 export * from './hooks/use-chat'
 export * from './hooks/use-streaming'
+export * from './hooks/use-streaming-sse'
+export * from './hooks/use-streaming-websocket'
 export * from './hooks/use-auto-scroll'
 export * from './hooks/use-clipboard'
 export * from './hooks/use-debounce'
@@ -33,3 +44,7 @@ export * from './hooks/use-mounted'
 export * from './hooks/use-previous'
 export * from './hooks/use-toggle'
 export * from './hooks/use-window-size'
+
+// Phase 3 Enhancement - Error Recovery & Token Tracking
+export * from './hooks/use-error-recovery'
+export * from './hooks/use-token-tracker'

@@ -1,9 +1,14 @@
 # 🎣 Custom Hooks Guide
 
-Clarity Chat provides a comprehensive set of **13 production-ready custom hooks** that handle common React patterns. These hooks follow modern best practices and are fully typed with TypeScript.
+Clarity Chat provides a comprehensive set of **15 production-ready custom hooks** that handle common React patterns. These hooks follow modern best practices and are fully typed with TypeScript.
 
 ## 📚 Table of Contents
 
+### 🌊 Streaming Hooks (New!)
+- [useStreamingSSE](#usestreamingsse) - ⭐ Server-Sent Events streaming with reconnection
+- [useStreamingWebSocket](#usestreamingwebsocket) - ⭐ WebSocket streaming with lifecycle management
+
+### 🔧 Utility Hooks
 - [useAutoScroll](#useautoscroll) - Auto-scroll to bottom with user control
 - [useClipboard](#useclipboard) - Copy to clipboard with success tracking
 - [useDebounce](#usedebounce) - Debounce values and callbacks
@@ -17,6 +22,321 @@ Clarity Chat provides a comprehensive set of **13 production-ready custom hooks*
 - [usePrevious](#useprevious) - Get previous value of state/prop
 - [useToggle](#usetoggle) - Enhanced boolean state management
 - [useWindowSize](#usewindowsize) - Track window dimensions
+
+---
+
+## 🌊 Streaming Hooks
+
+### useStreamingSSE
+
+Production-ready SSE (Server-Sent Events) streaming hook with automatic reconnection, authentication handling, token assembly, and network status detection. **Perfect for OpenAI/Anthropic-style streaming responses.**
+
+#### Features
+
+- ✅ Automatic reconnection with exponential backoff
+- ✅ Token authentication (header + cookie fallback)
+- ✅ Resume from last event ID
+- ✅ Partial message assembly and parsing
+- ✅ Network status detection
+- ✅ Heartbeat monitoring
+- ✅ Memory-efficient event buffering
+- ✅ Custom headers support
+- ✅ POST request support with body
+
+#### Basic Usage
+
+```tsx
+import { useStreamingSSE } from '@clarity-chat/react'
+
+function AIChat() {
+  const {
+    status,
+    data,
+    error,
+    connect,
+    disconnect,
+  } = useStreamingSSE({
+    url: '/api/chat/stream',
+    method: 'POST',
+    body: { message: 'Hello', conversationId: '123' },
+    authToken: user.token,
+    onMessage: (event) => {
+      if (event.type === 'done') {
+        disconnect()
+      }
+    },
+  })
+
+  return (
+    <div>
+      <button onClick={connect} disabled={status !== 'idle'}>
+        Send Message
+      </button>
+      {status === 'streaming' && <div>{data}</div>}
+      {error && <div>Error: {error.message}</div>}
+    </div>
+  )
+}
+```
+
+#### API Reference
+
+```typescript
+interface UseStreamingSSEOptions {
+  url: string                       // SSE endpoint URL
+  method?: 'GET' | 'POST'          // HTTP method (default: 'GET')
+  body?: any                        // Request body for POST
+  headers?: Record<string, string>  // Custom headers
+  authToken?: string                // Auth token (adds Bearer header)
+  useCookieFallback?: boolean       // Use cookies if headers fail (default: true)
+  autoReconnect?: boolean           // Enable auto-reconnect (default: true)
+  maxReconnectAttempts?: number     // Max reconnect attempts (default: 5)
+  reconnectDelay?: number           // Initial delay in ms (default: 1000)
+  maxReconnectDelay?: number        // Max delay in ms (default: 30000)
+  heartbeatInterval?: number        // Heartbeat interval (default: 30000)
+  resumeFromLastEventId?: boolean   // Resume from last event (default: true)
+  autoParseJson?: boolean           // Auto-parse JSON (default: true)
+  onOpen?: () => void
+  onMessage?: (event: SSEEvent) => void
+  onError?: (error: Error) => void
+  onClose?: () => void
+  onReconnecting?: (attempt: number, delay: number) => void
+  onMaxReconnectAttemptsReached?: () => void
+}
+
+interface UseStreamingSSEReturn {
+  status: SSEStatus                 // Connection status
+  events: SSEEvent[]                // All received events
+  lastEvent: SSEEvent | null        // Latest event
+  data: string                      // Accumulated data
+  error: Error | null               // Current error
+  connect: () => void               // Connect to SSE
+  disconnect: () => void            // Disconnect from SSE
+  reconnect: () => void             // Reconnect
+  reset: () => void                 // Reset state
+  reconnectAttempt: number          // Current attempt
+  isReconnecting: boolean           // Reconnecting state
+}
+```
+
+#### Advanced Usage
+
+```tsx
+// With authentication and retry logic
+const { status, data, reconnectAttempt } = useStreamingSSE({
+  url: '/api/ai/generate',
+  method: 'POST',
+  body: {
+    prompt: userPrompt,
+    model: 'gpt-4',
+    temperature: 0.7,
+  },
+  authToken: authToken,
+  autoReconnect: true,
+  maxReconnectAttempts: 3,
+  onMessage: (event) => {
+    // Handle different event types
+    switch (event.type) {
+      case 'token':
+        // Handle streaming token
+        console.log('Token:', event.data)
+        break
+      case 'done':
+        // Generation complete
+        console.log('Complete!')
+        disconnect()
+        break
+      case 'error':
+        // Server error
+        console.error('Server error:', event.data)
+        break
+    }
+  },
+  onReconnecting: (attempt, delay) => {
+    console.log(`Reconnecting... Attempt ${attempt}, delay ${delay}ms`)
+  },
+})
+```
+
+---
+
+### useStreamingWebSocket
+
+Production-ready WebSocket streaming hook with automatic reconnection, heartbeat/ping-pong, and lifecycle management. **Perfect for real-time bidirectional chat.**
+
+#### Features
+
+- ✅ Automatic reconnection with exponential backoff
+- ✅ Heartbeat/ping-pong for keepalive
+- ✅ Support for text and binary messages
+- ✅ Automatic JSON parsing
+- ✅ Connection lifecycle management
+- ✅ Custom protocols support
+- ✅ Connect on mount option
+- ✅ Memory-efficient message buffering
+
+#### Basic Usage
+
+```tsx
+import { useStreamingWebSocket } from '@clarity-chat/react'
+
+function RealtimeChat() {
+  const [input, setInput] = React.useState('')
+  
+  const {
+    status,
+    messages,
+    send,
+    connect,
+    disconnect,
+  } = useStreamingWebSocket({
+    url: 'wss://api.example.com/chat',
+    autoReconnect: true,
+    enableHeartbeat: true,
+    onMessage: (message) => {
+      console.log('Received:', message.data)
+    },
+  })
+
+  const handleSend = () => {
+    send({ type: 'chat', message: input })
+    setInput('')
+  }
+
+  return (
+    <div>
+      <button onClick={connect} disabled={status !== 'idle'}>
+        Connect
+      </button>
+      <button onClick={disconnect}>Disconnect</button>
+      
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        disabled={status !== 'connected'}
+      />
+      <button onClick={handleSend} disabled={status !== 'connected'}>
+        Send
+      </button>
+      
+      <div>
+        {messages.map((msg, i) => (
+          <div key={i}>{JSON.stringify(msg.data)}</div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+#### API Reference
+
+```typescript
+interface UseStreamingWebSocketOptions {
+  url: string                       // WebSocket URL (ws:// or wss://)
+  protocols?: string | string[]     // WS protocols
+  autoReconnect?: boolean           // Auto-reconnect (default: true)
+  maxReconnectAttempts?: number     // Max attempts (default: 5)
+  reconnectDelay?: number           // Initial delay (default: 1000)
+  maxReconnectDelay?: number        // Max delay (default: 30000)
+  enableHeartbeat?: boolean         // Enable heartbeat (default: true)
+  heartbeatInterval?: number        // Interval in ms (default: 30000)
+  heartbeatTimeout?: number         // Timeout in ms (default: 5000)
+  heartbeatMessage?: string         // Ping message (default: 'ping')
+  autoParseJson?: boolean           // Auto-parse JSON (default: true)
+  connectOnMount?: boolean          // Connect on mount (default: false)
+  onOpen?: (event: Event) => void
+  onMessage?: (message: WebSocketMessage) => void
+  onError?: (event: Event) => void
+  onClose?: (event: CloseEvent) => void
+  onReconnecting?: (attempt: number, delay: number) => void
+  onMaxReconnectAttemptsReached?: () => void
+  onHeartbeatFailed?: () => void
+}
+
+interface UseStreamingWebSocketReturn {
+  status: WebSocketStatus           // Connection status
+  messages: WebSocketMessage[]      // All messages
+  lastMessage: WebSocketMessage | null // Latest message
+  error: Event | null               // Current error
+  readyState: number                // WebSocket ready state
+  connect: () => void               // Connect to WS
+  disconnect: (code?: number, reason?: string) => void
+  send: (data: string | object | ArrayBuffer | Blob) => boolean
+  sendJson: (data: any) => boolean  // Convenience method
+  reconnect: () => void             // Reconnect
+  reset: () => void                 // Reset state
+  reconnectAttempt: number          // Current attempt
+  isReconnecting: boolean           // Reconnecting state
+}
+```
+
+#### Advanced Usage
+
+```tsx
+// With custom protocols and heartbeat
+const { status, send, messages } = useStreamingWebSocket({
+  url: 'wss://game.example.com/multiplayer',
+  protocols: ['game-protocol-v1'],
+  enableHeartbeat: true,
+  heartbeatInterval: 15000,
+  heartbeatMessage: JSON.stringify({ type: 'ping' }),
+  onMessage: (message) => {
+    // Handle different message types
+    const data = message.data
+    switch (data.type) {
+      case 'player_join':
+        console.log('Player joined:', data.playerId)
+        break
+      case 'game_state':
+        updateGameState(data.state)
+        break
+      case 'pong':
+        // Heartbeat response
+        break
+    }
+  },
+  onHeartbeatFailed: () => {
+    console.warn('Connection may be stale')
+  },
+})
+
+// Send game actions
+const movePlayer = (x: number, y: number) => {
+  send({
+    type: 'player_move',
+    position: { x, y },
+    timestamp: Date.now(),
+  })
+}
+```
+
+---
+
+### When to Use SSE vs WebSocket
+
+| Feature | SSE (Server-Sent Events) | WebSocket |
+|---------|-------------------------|-----------|
+| **Direction** | Unidirectional (server → client) | Bidirectional (client ↔ server) |
+| **Use Cases** | - AI streaming (OpenAI, Anthropic)<br>- Live notifications<br>- Server updates | - Real-time chat<br>- Live collaboration<br>- Gaming<br>- Interactive apps |
+| **Protocol** | HTTP (easier through firewalls) | WebSocket protocol |
+| **Reconnection** | Built-in automatic reconnection | Manual reconnection needed |
+| **Event IDs** | ✅ Supports resumption | ❌ No built-in resumption |
+| **Latency** | Slightly higher | Lower latency |
+| **Browser Support** | All modern browsers | All modern browsers |
+| **Complexity** | Simpler (HTTP-based) | More complex (persistent connection) |
+
+**Choose SSE when:**
+- You only need server-to-client streaming
+- You're building OpenAI/Anthropic-style chat
+- You want automatic reconnection and resumption
+- You need to pass through corporate firewalls easily
+
+**Choose WebSocket when:**
+- You need bidirectional communication
+- You're building real-time collaboration
+- You need the lowest possible latency
+- You need to send data from client to server frequently
 
 ---
 
