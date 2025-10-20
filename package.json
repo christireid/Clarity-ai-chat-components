@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Premium AI Chat Component Library by Code & Clarity",
+  "packageManager": "npm@10.2.4",
   "workspaces": [
     "packages/*",
     "apps/*",

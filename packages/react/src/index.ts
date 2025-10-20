@@ -11,6 +11,11 @@ export * from './components/context-card'
 export * from './components/context-manager'
 export * from './components/project-sidebar'
 export * from './components/prompt-library'
+export * from './components/settings-panel'
+export * from './components/usage-dashboard'
+export * from './components/link-preview'
+export * from './components/knowledge-base-viewer'
+export * from './components/export-dialog'
 
 // Export hooks
 export * from './hooks/use-chat'
