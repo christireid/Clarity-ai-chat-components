@@ -1,0 +1,29 @@
+{
+  "name": "clarity-chat",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Premium AI Chat Component Library by Code & Clarity",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "storybook": "npm run dev --workspace=@clarity-chat/storybook",
+    "docs": "npm run dev --workspace=@clarity-chat/docs",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
