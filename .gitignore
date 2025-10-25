@@ -58,3 +58,7 @@ ecosystem.config.cjs
 *.bak
 *.tar.gz
 *.zip
+
+# Core dump files
+core
+**/core

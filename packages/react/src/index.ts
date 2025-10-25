@@ -26,6 +26,10 @@ export * from './components/network-status'
 // Phase 3 Enhancement - Token Management
 export * from './components/token-counter'
 
+// Phase 3 Enhancement - Context & Conversation Management
+export * from './components/context-visualizer'
+export * from './components/conversation-list'
+
 // Export hooks
 export * from './hooks/use-chat'
 export * from './hooks/use-streaming'
@@ -48,3 +52,7 @@ export * from './hooks/use-window-size'
 // Phase 3 Enhancement - Error Recovery & Token Tracking
 export * from './hooks/use-error-recovery'
 export * from './hooks/use-token-tracker'
+
+// Phase 3 Enhancement - Message Operations & Typing
+export * from './hooks/use-message-operations'
+export * from './hooks/use-realistic-typing'
