@@ -38,11 +38,23 @@ A comprehensive, production-ready React component library for building AI-powere
 
 ## 📦 Packages
 
-This monorepo contains:
+This monorepo contains **TWO COMPLETE LIBRARIES**:
 
+### 🎨 Chat Component Library
+- **@clarity-chat/react** - Full-featured chat UI components (34 components, 20+ hooks)
+- **@clarity-chat/primitives** - Core UI primitives (Button, Avatar, Input, Card, etc.)
 - **@clarity-chat/types** - TypeScript type definitions
-- **@clarity-chat/primitives** - Core UI primitives (Button, Avatar, Input, etc.)
-- **@clarity-chat/react** - React components for chat interfaces
+
+### 🛡️ Error Handling Library (NEW!)
+- **@clarity-chat/error-handling** - Specialized error handling system
+  - 10 custom error classes with helpful context
+  - 24+ factory functions for consistent error creation
+  - 5 error recovery hooks with automatic retry
+  - ErrorBoundary with modern functional API
+  - 85%+ test coverage
+  - 1,300+ lines of documentation
+
+### 📚 Documentation & Tools
 - **@clarity-chat/storybook** - Interactive component documentation
 - **@clarity-chat/docs** - Documentation website
 
@@ -54,7 +66,7 @@ This monorepo contains:
 npm install @clarity-chat/react @clarity-chat/primitives
 ```
 
-### Basic Usage
+### Basic Usage (Chat Only)
 
 ```tsx
 import { ChatWindow } from '@clarity-chat/react'
@@ -72,6 +84,56 @@ function App() {
       messages={messages}
       onSendMessage={handleSendMessage}
     />
+  )
+}
+```
+
+### Advanced Usage (Chat + Error Handling)
+
+```tsx
+import { ChatWindow, useChat, useStreaming } from '@clarity-chat/react'
+import { 
+  ErrorBoundary, 
+  useAsyncError, 
+  createApiError 
+} from '@clarity-chat/error-handling'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  const { messages, sendMessage } = useChat()
+  const { stream } = useStreaming()
+  const { executeAsync, isLoading, retryCount } = useAsyncError()
+
+  const handleSend = async (content: string) => {
+    await executeAsync(
+      async () => {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          body: JSON.stringify({ message: content })
+        })
+        
+        if (!response.ok) {
+          throw createApiError.serverError(response.status)
+        }
+        
+        return await stream(response)
+      },
+      {
+        maxRetries: 3,
+        retryDelay: 1000
+      }
+    )
+  }
+
+  return (
+    <ErrorBoundary>
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSend}
+        isLoading={isLoading}
+      />
+      {retryCount > 0 && <p>Retrying... (Attempt {retryCount})</p>}
+    </ErrorBoundary>
   )
 }
 ```
