@@ -56,3 +56,6 @@ export * from './hooks/use-token-tracker'
 // Phase 3 Enhancement - Message Operations & Typing
 export * from './hooks/use-message-operations'
 export * from './hooks/use-realistic-typing'
+
+// Theme System
+export * from './theme'
