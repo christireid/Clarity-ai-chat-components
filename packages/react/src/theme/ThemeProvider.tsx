@@ -1,13 +1,23 @@
 import * as React from 'react'
 import { designTokens } from './design-tokens'
+import { themes, type ThemePresetName } from './presets'
+import { applyThemeToDocument, createTheme } from './theme-builder'
+import type { CompleteThemeConfig, PartialThemeConfig } from './theme-config'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
 export interface ThemeConfig {
   mode: ThemeMode
+  preset?: ThemePresetName
+  customTheme?: CompleteThemeConfig
+  customizations?: PartialThemeConfig
+  // Legacy support
   primaryColor?: string
   radius?: number
   fontFamily?: string
+  // Transition settings
+  enableTransitions?: boolean
+  transitionDuration?: number
 }
 
 interface ThemeContextValue {
@@ -15,6 +25,9 @@ interface ThemeContextValue {
   setTheme: (theme: Partial<ThemeConfig>) => void
   mode: 'light' | 'dark'
   toggleMode: () => void
+  resolvedTheme: CompleteThemeConfig | null
+  setPreset: (preset: ThemePresetName) => void
+  availablePresets: ThemePresetName[]
 }
 
 const ThemeContext = React.createContext<ThemeContextValue | undefined>(undefined)
@@ -64,6 +77,9 @@ export function ThemeProvider({
 
   // Resolve actual mode (light/dark) from system preference if needed
   const [resolvedMode, setResolvedMode] = React.useState<'light' | 'dark'>('light')
+  
+  // Resolved theme configuration
+  const [resolvedTheme, setResolvedTheme] = React.useState<CompleteThemeConfig | null>(null)
 
   // Listen to system preference changes
   React.useEffect(() => {
@@ -84,29 +100,65 @@ export function ThemeProvider({
     return () => mediaQuery.removeEventListener('change', updateMode)
   }, [theme.mode])
 
+  // Build complete theme configuration
+  React.useEffect(() => {
+    let complete: CompleteThemeConfig
+    
+    // If custom theme provided, use it
+    if (theme.customTheme) {
+      complete = theme.customTheme
+    }
+    // If preset specified, load it
+    else if (theme.preset) {
+      const baseTheme = themes[theme.preset]
+      complete = theme.customizations 
+        ? createTheme(baseTheme, theme.customizations)
+        : baseTheme
+    }
+    // Otherwise, use default based on resolved mode
+    else {
+      const defaultPreset = resolvedMode === 'dark' ? 'default-dark' : 'default-light'
+      complete = themes[defaultPreset]
+      
+      // Apply legacy customizations
+      if (theme.primaryColor || theme.radius || theme.fontFamily) {
+        const customizations: PartialThemeConfig = {}
+        if (theme.primaryColor) {
+          customizations.colors = { primary: theme.primaryColor }
+        }
+        complete = createTheme(complete, customizations)
+      }
+    }
+    
+    setResolvedTheme(complete)
+  }, [theme, resolvedMode])
+  
   // Apply theme to document
   React.useEffect(() => {
+    if (!resolvedTheme) return
+    
     const root = document.documentElement
+    const enableTransitions = theme.enableTransitions !== false
+    const transitionDuration = theme.transitionDuration || 200
     
-    // Remove old class
-    root.classList.remove('light', 'dark')
-    
-    // Add new class
-    root.classList.add(resolvedMode)
-
-    // Apply CSS variables
-    if (theme.primaryColor) {
-      root.style.setProperty('--primary', theme.primaryColor)
+    // Add transition class for smooth color changes
+    if (enableTransitions) {
+      root.style.setProperty('--theme-transition-duration', `${transitionDuration}ms`)
+      root.classList.add('theme-transitioning')
     }
     
-    if (theme.radius !== undefined) {
-      root.style.setProperty('--radius', `${theme.radius}px`)
-    }
+    // Apply theme
+    applyThemeToDocument(resolvedTheme)
     
-    if (theme.fontFamily) {
-      root.style.setProperty('--font-sans', theme.fontFamily)
+    // Remove transition class after animation completes
+    if (enableTransitions) {
+      const timeout = setTimeout(() => {
+        root.classList.remove('theme-transitioning')
+      }, transitionDuration)
+      
+      return () => clearTimeout(timeout)
     }
-  }, [resolvedMode, theme])
+  }, [resolvedTheme, theme.enableTransitions, theme.transitionDuration])
 
   // Save to localStorage
   React.useEffect(() => {
@@ -130,14 +182,26 @@ export function ThemeProvider({
     }))
   }, [])
 
+  const setPreset = React.useCallback((preset: ThemePresetName) => {
+    setThemeState((prev) => ({ ...prev, preset }))
+  }, [])
+  
+  const availablePresets = React.useMemo(
+    () => Object.keys(themes) as ThemePresetName[],
+    []
+  )
+  
   const value = React.useMemo<ThemeContextValue>(
     () => ({
       theme,
       setTheme,
       mode: resolvedMode,
       toggleMode,
+      resolvedTheme,
+      setPreset,
+      availablePresets,
     }),
-    [theme, setTheme, resolvedMode, toggleMode]
+    [theme, setTheme, resolvedMode, toggleMode, resolvedTheme, setPreset, availablePresets]
   )
 
   return (

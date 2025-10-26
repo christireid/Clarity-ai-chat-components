@@ -51,6 +51,28 @@
     /* Fonts */
     --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    
+    /* Theme transition duration */
+    --theme-transition-duration: 200ms;
+  }
+  
+  /* Smooth theme transitions */
+  .theme-transitioning,
+  .theme-transitioning * {
+    transition: 
+      background-color var(--theme-transition-duration) ease-in-out,
+      border-color var(--theme-transition-duration) ease-in-out,
+      color var(--theme-transition-duration) ease-in-out,
+      fill var(--theme-transition-duration) ease-in-out,
+      stroke var(--theme-transition-duration) ease-in-out !important;
+  }
+  
+  /* Prevent transition on elements that should change immediately */
+  .theme-transitioning img,
+  .theme-transitioning video,
+  .theme-transitioning iframe,
+  .theme-transitioning [data-no-theme-transition] {
+    transition: none !important;
   }
 
   .dark {

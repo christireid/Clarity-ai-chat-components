@@ -102,3 +102,6 @@ export * from './components/empty-state'
 
 // Icons
 export * from './components/icons'
+
+// Theme Selector
+export * from './components/theme-selector'
