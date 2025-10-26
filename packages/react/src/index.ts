@@ -108,3 +108,6 @@ export * from './components/theme-selector'
 
 // Analytics System
 export * from './analytics'
+
+// AI Features
+export * from './ai'
