@@ -1,0 +1,434 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Getting Started" />
+
+# Getting Started with Clarity Chat
+
+This guide will help you integrate Clarity Chat components into your application in minutes.
+
+## Installation
+
+Choose your package manager:
+
+```bash
+# npm
+npm install @clarity-chat/react
+
+# yarn
+yarn add @clarity-chat/react
+
+# pnpm
+pnpm add @clarity-chat/react
+```
+
+## Basic Usage
+
+### 1. Simple Chat Window
+
+The quickest way to get started:
+
+```tsx
+import { ChatWindow } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function App() {
+  const [messages, setMessages] = useState([
+    {
+      id: '1',
+      chatId: 'chat-1',
+      role: 'assistant',
+      content: 'Hello! How can I help you?',
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+  ])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSendMessage = async (content: string) => {
+    const userMessage = {
+      id: Date.now().toString(),
+      chatId: 'chat-1',
+      role: 'user',
+      content,
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    
+    setMessages(prev => [...prev, userMessage])
+    setIsLoading(true)
+
+    try {
+      // Call your AI API here
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...messages, userMessage] })
+      })
+      
+      const data = await response.json()
+      
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        chatId: 'chat-1',
+        role: 'assistant',
+        content: data.message,
+        timestamp: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }])
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div style={{ width: '800px', height: '600px' }}>
+      <ChatWindow
+        messages={messages}
+        isLoading={isLoading}
+        onSendMessage={handleSendMessage}
+      />
+    </div>
+  )
+}
+```
+
+### 2. With Model Adapters
+
+Use the model-agnostic adapter system:
+
+```tsx
+import { 
+  ChatWindow, 
+  openAIAdapter, 
+  ModelSelector,
+  allModels 
+} from '@clarity-chat/react'
+import { useState } from 'react'
+
+function App() {
+  const [messages, setMessages] = useState([])
+  const [model, setModel] = useState('gpt-4-turbo')
+  const [config, setConfig] = useState({ 
+    provider: 'openai', 
+    model: 'gpt-4-turbo' 
+  })
+
+  const handleSendMessage = async (content: string) => {
+    const userMessage = {
+      id: Date.now().toString(),
+      chatId: 'chat-1',
+      role: 'user',
+      content,
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    
+    setMessages(prev => [...prev, userMessage])
+
+    // Use adapter for AI completion
+    const response = await openAIAdapter.chat(
+      [...messages, userMessage], 
+      config
+    )
+    
+    setMessages(prev => [...prev, {
+      id: Date.now().toString(),
+      chatId: 'chat-1',
+      role: 'assistant',
+      content: response.content,
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }])
+  }
+
+  return (
+    <div>
+      <ModelSelector
+        models={allModels}
+        value={model}
+        onChange={(modelId, modelConfig) => {
+          setModel(modelId)
+          setConfig(modelConfig)
+        }}
+        showMetrics
+      />
+      
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSendMessage}
+      />
+    </div>
+  )
+}
+```
+
+### 3. With Streaming
+
+Real-time token-by-token rendering:
+
+```tsx
+import { 
+  StreamingMessage, 
+  openAIAdapter 
+} from '@clarity-chat/react'
+import { useState } from 'react'
+
+function StreamingChat() {
+  const [content, setContent] = useState('')
+  const [isStreaming, setIsStreaming] = useState(false)
+
+  const handleStream = async () => {
+    setContent('')
+    setIsStreaming(true)
+
+    const config = {
+      provider: 'openai',
+      model: 'gpt-4-turbo',
+      apiKey: process.env.OPENAI_API_KEY
+    }
+
+    try {
+      for await (const chunk of openAIAdapter.stream(messages, config)) {
+        if (chunk.type === 'token') {
+          setContent(prev => prev + chunk.content)
+        }
+      }
+    } finally {
+      setIsStreaming(false)
+    }
+  }
+
+  return (
+    <div>
+      <StreamingMessage 
+        content={content} 
+        isStreaming={isStreaming} 
+      />
+      <button onClick={handleStream}>Start Streaming</button>
+    </div>
+  )
+}
+```
+
+## Component Props
+
+### ChatWindow
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| messages | Message[] | required | Array of messages |
+| isLoading | boolean | false | Loading state |
+| onSendMessage | (content: string) => void | required | Send handler |
+| enableEdit | boolean | true | Enable editing |
+| enableRegenerate | boolean | true | Enable regeneration |
+| enableBranching | boolean | false | Enable branching |
+| showTimestamp | boolean | true | Show timestamps |
+| className | string | - | Custom CSS class |
+
+### StreamingMessage
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| content | string | required | Message content |
+| isStreaming | boolean | false | Streaming state |
+| toolCalls | ToolCall[] | [] | Function calls |
+| citations | Citation[] | [] | RAG sources |
+| thinkingSteps | string[] | [] | Thinking steps |
+| showThinking | boolean | true | Show thinking |
+| showTools | boolean | true | Show tools |
+| showCitations | boolean | true | Show citations |
+| error | Error \| string | - | Error message |
+| onRetry | () => void | - | Retry handler |
+
+### ModelSelector
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| models | ModelMetadata[] | required | Available models |
+| value | string | required | Selected model |
+| onChange | (id, config) => void | required | Change handler |
+| showMetrics | boolean | true | Show metrics |
+| disabled | boolean | false | Disabled state |
+
+## Styling
+
+### Import Default Styles
+
+```tsx
+import '@clarity-chat/react/styles.css'
+```
+
+### Custom Styling
+
+All components accept `className` prop:
+
+```tsx
+<ChatWindow
+  messages={messages}
+  onSendMessage={handleSend}
+  className="my-custom-chat"
+/>
+```
+
+### Tailwind CSS
+
+Components use Tailwind classes. Configure your `tailwind.config.js`:
+
+```js
+module.exports = {
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    './node_modules/@clarity-chat/react/**/*.{js,jsx,ts,tsx}'
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+## TypeScript
+
+Full TypeScript support included:
+
+```tsx
+import type { 
+  Message, 
+  ModelConfig, 
+  ToolCall, 
+  Citation 
+} from '@clarity-chat/react'
+
+const message: Message = {
+  id: '1',
+  chatId: 'chat-1',
+  role: 'assistant',
+  content: 'Hello!',
+  timestamp: new Date(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
+}
+
+const config: ModelConfig = {
+  provider: 'openai',
+  model: 'gpt-4-turbo',
+  temperature: 0.7,
+  maxTokens: 1000
+}
+```
+
+## Environment Variables
+
+Set API keys as environment variables:
+
+```bash
+# .env.local
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_API_KEY=AIza...
+```
+
+Access in code:
+
+```tsx
+const config = {
+  provider: 'openai',
+  model: 'gpt-4-turbo',
+  apiKey: process.env.OPENAI_API_KEY
+}
+```
+
+## Common Patterns
+
+### Error Handling
+
+```tsx
+const handleSendMessage = async (content: string) => {
+  try {
+    const response = await openAIAdapter.chat(messages, config)
+    setMessages(prev => [...prev, response])
+  } catch (error) {
+    if (error.message.includes('rate limit')) {
+      // Handle rate limiting
+      showToast('Rate limit exceeded. Please wait.')
+    } else if (error.message.includes('401')) {
+      // Handle auth error
+      showToast('Invalid API key.')
+    } else {
+      // Generic error
+      showToast('Failed to send message.')
+    }
+  }
+}
+```
+
+### Cost Tracking
+
+```tsx
+import { openAIAdapter } from '@clarity-chat/react'
+
+const handleStream = async () => {
+  for await (const chunk of openAIAdapter.stream(messages, config)) {
+    if (chunk.type === 'token') {
+      setContent(prev => prev + chunk.content)
+    } else if (chunk.type === 'done') {
+      const cost = openAIAdapter.estimateCost(chunk.usage, config.model)
+      console.log(`Cost: $${cost.toFixed(4)}`)
+    }
+  }
+}
+```
+
+### Tool Invocations
+
+```tsx
+import { ToolInvocationCard } from '@clarity-chat/react'
+
+const [toolCalls, setToolCalls] = useState([])
+const [toolStatuses, setToolStatuses] = useState({})
+
+const handleApprove = async (tool) => {
+  setToolStatuses(prev => ({ ...prev, [tool.id]: 'executing' }))
+  try {
+    const result = await executeTool(tool.function.name, tool.function.arguments)
+    setToolStatuses(prev => ({ ...prev, [tool.id]: 'success' }))
+  } catch (error) {
+    setToolStatuses(prev => ({ ...prev, [tool.id]: 'error' }))
+  }
+}
+
+return (
+  <div>
+    {toolCalls.map(tool => (
+      <ToolInvocationCard
+        key={tool.id}
+        toolCall={tool}
+        status={toolStatuses[tool.id]}
+        requiresApproval
+        onApprove={handleApprove}
+      />
+    ))}
+  </div>
+)
+```
+
+## Next Steps
+
+- **Explore Stories** - See all components in action
+- **Read API Docs** - Learn about all available props
+- **Check Examples** - View complete demo applications
+- **Join Community** - Get help and share feedback
+
+## Resources
+
+- [Model Adapters Guide](/guide/model-adapters)
+- [Streaming Guide](/guide/streaming)
+- [API Reference](/api/components)
+- [GitHub Repository](https://github.com/yourusername/clarity-chat)

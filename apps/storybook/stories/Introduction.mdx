@@ -1,0 +1,205 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Introduction" />
+
+# Welcome to Clarity Chat Storybook
+
+Clarity Chat is an enterprise-grade React component library for building AI chat interfaces. This Storybook contains **77 interactive stories** showcasing all components with live examples.
+
+## 🚀 Quick Navigation
+
+### Core Components
+
+- **ChatWindow** - Complete chat interface with all features
+- **MessageList** - Display and manage message history
+- **ChatInput** - Advanced input with attachments and commands
+- **Message** - Individual message rendering
+
+### Streaming Components (New!)
+
+- **StreamingMessage** - Real-time token-by-token rendering
+- **ToolInvocationCard** - Function call approval workflow
+- **CitationCard** - RAG source display with confidence scores
+- **ModelSelector** - Visual model picker with metrics
+
+### Context Management
+
+- **ContextManager** - Document and context handling
+- **ContextCard** - Individual context item display
+- **FileUpload** - Drag-and-drop file uploads
+- **LinkPreview** - URL preview cards
+
+### Utilities
+
+- **TokenCounter** - Real-time token tracking
+- **NetworkStatus** - Connection status indicator
+- **ThinkingIndicator** - Loading states
+- **CopyButton** - Copy to clipboard
+- **RetryButton** - Error recovery
+
+## 🎨 Features
+
+### Dark Mode Toggle
+
+Use the dark mode toggle in the toolbar to test components in both light and dark themes.
+
+### Viewport Testing
+
+Select different viewport sizes from the viewport dropdown to test responsive behavior:
+- Mobile (375px)
+- Tablet (768px)
+- Desktop (1280px)
+- Desktop Large (1920px)
+
+### Accessibility Testing
+
+Click the **Accessibility** tab to run automated accessibility checks:
+- Color contrast validation
+- ARIA attributes checking
+- Keyboard navigation testing
+- Screen reader compatibility
+
+### Interactive Controls
+
+Use the **Controls** panel to:
+- Modify component props in real-time
+- Test different configurations
+- Explore component APIs
+- Generate code snippets
+
+### Actions Panel
+
+Monitor component events in the **Actions** panel:
+- Click events
+- Form submissions
+- Custom callbacks
+- State changes
+
+## 📚 Component Categories
+
+### Chat Components (8 components)
+Complete chat interfaces with message handling, input, and context.
+
+### Message Components (5 components)
+Display messages, handle editing, regeneration, and branching.
+
+### Input Components (3 components)
+Advanced input with attachments, mentions, and commands.
+
+### Context Components (6 components)
+Manage documents, files, links, and knowledge base items.
+
+### Streaming Components (4 components)
+Real-time AI response rendering with tools and citations.
+
+### Settings Components (4 components)
+Configuration panels, model selection, and preferences.
+
+### Utility Components (8 components)
+Buttons, indicators, counters, and helpers.
+
+## 🔧 Model Adapter System
+
+Clarity Chat supports **model-agnostic** AI integration:
+
+### Supported Providers
+- **OpenAI** - GPT-4 Turbo, GPT-4, GPT-3.5 Turbo
+- **Anthropic** - Claude 3 Opus, Sonnet, Haiku
+- **Google AI** - Gemini Pro, Gemini Vision
+
+### Features
+- Unified streaming interface
+- Cost estimation for all models
+- Token usage tracking
+- Easy provider switching (3 lines of code)
+
+### Example
+```typescript
+import { openAIAdapter, ModelSelector } from '@clarity-chat/react'
+
+// Use ModelSelector component
+<ModelSelector
+  models={allModels}
+  value="gpt-4-turbo"
+  onChange={(model, config) => setConfig(config)}
+  showMetrics
+/>
+```
+
+## 📖 Documentation
+
+For complete documentation, visit:
+
+- **[Getting Started Guide](/guide/getting-started)** - Learn the basics
+- **[Model Adapters Guide](/guide/model-adapters)** - Provider integration
+- **[Streaming Guide](/guide/streaming)** - Real-time responses
+- **[API Reference](/api/components)** - Complete API docs
+
+## 🧪 Testing Features
+
+### Accessibility (A11y)
+Every component is tested for:
+- ✅ WCAG 2.1 AA compliance
+- ✅ Keyboard navigation
+- ✅ Screen reader support
+- ✅ Color contrast requirements
+
+### Interactions
+Test complex user flows:
+- Multi-step workflows
+- Form validation
+- Error handling
+- Loading states
+
+### Responsive Design
+All components are:
+- ✅ Mobile-first
+- ✅ Touch-friendly
+- ✅ Responsive layouts
+- ✅ Fluid typography
+
+## 🎯 Usage Tips
+
+### 1. Start with Complete Examples
+Check the **ChatWindow** stories for fully-featured examples.
+
+### 2. Explore Individual Components
+Dive into specific components to understand their props and behavior.
+
+### 3. Test Interactions
+Use the Controls panel to test different configurations and edge cases.
+
+### 4. Check Accessibility
+Run a11y checks on every component to ensure inclusive design.
+
+### 5. Copy Code
+Use the code snippets from stories in your own projects.
+
+## 📊 Statistics
+
+| Metric | Count |
+|--------|-------|
+| **Total Stories** | 77 |
+| **Components** | 43 |
+| **Model Adapters** | 3 |
+| **Supported Models** | 9 |
+| **Hooks** | 21 |
+| **Test Coverage** | ~60% (target: 80%) |
+
+## 🔗 Quick Links
+
+- [GitHub Repository](https://github.com/yourusername/clarity-chat)
+- [Documentation Site](https://clarity-chat.dev)
+- [NPM Package](https://www.npmjs.com/package/@clarity-chat/react)
+- [Report Issues](https://github.com/yourusername/clarity-chat/issues)
+
+## 🚀 Next Steps
+
+1. **Explore Stories** - Browse all 77 stories to see components in action
+2. **Read Documentation** - Learn about model adapters and streaming
+3. **Try Examples** - Check out the demo applications
+4. **Build Your App** - Start building your AI chat interface!
+
+---
+
+**Happy exploring! 🎉**
