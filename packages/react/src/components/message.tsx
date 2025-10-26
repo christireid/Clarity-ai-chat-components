@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Avatar, Button, Badge, cn, formatRelativeTime } from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'
+import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon } from './icons'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
@@ -173,22 +174,36 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFeedback('up')}
-                  className={cn(feedbackGiven === 'up' && 'text-green-600')}
+                  className={cn(
+                    'transition-colors',
+                    feedbackGiven === 'up' && 'text-success bg-success/10'
+                  )}
+                  aria-label="Good response"
                 >
-                  👍
+                  <ThumbsUpIcon size={16} />
                 </Button>
                 
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFeedback('down')}
-                  className={cn(feedbackGiven === 'down' && 'text-red-600')}
+                  className={cn(
+                    'transition-colors',
+                    feedbackGiven === 'down' && 'text-destructive bg-destructive/10'
+                  )}
+                  aria-label="Poor response"
                 >
-                  👎
+                  <ThumbsDownIcon size={16} />
                 </Button>
 
                 {message.status === 'error' && onRetry && (
-                  <Button variant="ghost" size="sm" onClick={onRetry}>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={onRetry}
+                    className="gap-1.5"
+                  >
+                    <RefreshIcon size={16} />
                     Retry
                   </Button>
                 )}
