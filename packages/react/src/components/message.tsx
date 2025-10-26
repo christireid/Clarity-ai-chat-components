@@ -4,6 +4,7 @@ import type { Message as MessageType } from '@clarity-chat/types'
 import { Avatar, Button, Badge, cn, formatRelativeTime } from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'
 import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon } from './icons'
+import { ANIMATION_DURATION, ANIMATION_EASING, INTERACTION_VARIANTS } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
@@ -57,7 +58,10 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
+        transition={{ 
+          duration: ANIMATION_DURATION.normal / 1000, 
+          ease: ANIMATION_EASING.out,
+        }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
@@ -166,46 +170,68 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
+                transition={{ 
+                  duration: ANIMATION_DURATION.fast / 1000,
+                  ease: ANIMATION_EASING.out,
+                }}
                 className="flex items-center gap-2"
               >
                 <CopyButton text={message.content} size="sm" />
                 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleFeedback('up')}
-                  className={cn(
-                    'transition-colors',
-                    feedbackGiven === 'up' && 'text-success bg-success/10'
-                  )}
-                  aria-label="Good response"
+                <motion.div
+                  whileHover={INTERACTION_VARIANTS.iconButton.hover}
+                  whileTap={INTERACTION_VARIANTS.iconButton.tap}
+                  transition={INTERACTION_VARIANTS.iconButton.transition}
                 >
-                  <ThumbsUpIcon size={16} />
-                </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleFeedback('up')}
+                    className={cn(
+                      'transition-colors',
+                      feedbackGiven === 'up' && 'text-success bg-success/10'
+                    )}
+                    aria-label="Good response"
+                  >
+                    <ThumbsUpIcon size={16} />
+                  </Button>
+                </motion.div>
                 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleFeedback('down')}
-                  className={cn(
-                    'transition-colors',
-                    feedbackGiven === 'down' && 'text-destructive bg-destructive/10'
-                  )}
-                  aria-label="Poor response"
+                <motion.div
+                  whileHover={INTERACTION_VARIANTS.iconButton.hover}
+                  whileTap={INTERACTION_VARIANTS.iconButton.tap}
+                  transition={INTERACTION_VARIANTS.iconButton.transition}
                 >
-                  <ThumbsDownIcon size={16} />
-                </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleFeedback('down')}
+                    className={cn(
+                      'transition-colors',
+                      feedbackGiven === 'down' && 'text-destructive bg-destructive/10'
+                    )}
+                    aria-label="Poor response"
+                  >
+                    <ThumbsDownIcon size={16} />
+                  </Button>
+                </motion.div>
 
                 {message.status === 'error' && onRetry && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={onRetry}
-                    className="gap-1.5"
+                  <motion.div
+                    whileHover={INTERACTION_VARIANTS.button.hover}
+                    whileTap={INTERACTION_VARIANTS.button.tap}
+                    transition={INTERACTION_VARIANTS.button.transition}
                   >
-                    <RefreshIcon size={16} />
-                    Retry
-                  </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={onRetry}
+                      className="gap-1.5"
+                    >
+                      <RefreshIcon size={16} />
+                      Retry
+                    </Button>
+                  </motion.div>
                 )}
               </motion.div>
             )}

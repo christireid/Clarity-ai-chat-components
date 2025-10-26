@@ -1,5 +1,8 @@
 import * as React from 'react'
+import { motion } from 'framer-motion'
 import { Textarea, Button, cn } from '@clarity-chat/primitives'
+import { SendIcon } from './icons'
+import { INTERACTION_VARIANTS } from '../animations/constants'
 
 export interface ChatInputProps {
   value: string
@@ -48,13 +51,20 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         maxRows={6}
         className="flex-1"
       />
-      <Button
-        onClick={handleSubmit}
-        disabled={disabled || !value.trim()}
-        size="icon"
+      <motion.div
+        whileHover={INTERACTION_VARIANTS.button.hover}
+        whileTap={INTERACTION_VARIANTS.button.tap}
+        transition={INTERACTION_VARIANTS.button.transition}
       >
-        ↑
-      </Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={disabled || !value.trim()}
+          size="icon"
+          className="gap-1.5"
+        >
+          <SendIcon size={18} />
+        </Button>
+      </motion.div>
     </div>
   )
 }

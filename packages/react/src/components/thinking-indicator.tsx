@@ -2,6 +2,14 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import type { AIStatus } from '@clarity-chat/types'
 import { cn } from '@clarity-chat/primitives'
+import { 
+  BotIcon, 
+  SearchIcon, 
+  FileIcon, 
+  SparklesIcon, 
+  CheckCircleIcon 
+} from './icons'
+import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
 
 export interface ThinkingIndicatorProps {
   status?: AIStatus
@@ -13,19 +21,20 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
   className,
 }) => {
   const getStageIcon = (stage: AIStatus['stage']) => {
+    const iconProps = { size: 20 }
     switch (stage) {
       case 'thinking':
-        return '🤔'
+        return <BotIcon {...iconProps} />
       case 'researching':
-        return '🔍'
+        return <SearchIcon {...iconProps} />
       case 'compiling':
-        return '📝'
+        return <FileIcon {...iconProps} />
       case 'generating':
-        return '✨'
+        return <SparklesIcon {...iconProps} />
       case 'finalizing':
-        return '🎯'
+        return <CheckCircleIcon {...iconProps} />
       default:
-        return '💭'
+        return <BotIcon {...iconProps} />
     }
   }
 
@@ -51,22 +60,26 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
+      transition={{ 
+        duration: ANIMATION_DURATION.normal / 1000,
+        ease: ANIMATION_EASING.out,
+      }}
       className={cn('flex items-center gap-3 p-4 rounded-lg bg-muted', className)}
     >
       {/* Animated Icon */}
       <motion.div
         animate={{
-          scale: [1, 1.2, 1],
-          rotate: [0, 5, -5, 0],
+          scale: [1, 1.15, 1],
+          rotate: [0, 3, -3, 0],
         }}
         transition={{
           duration: 2,
           repeat: Infinity,
-          ease: 'easeInOut',
+          ease: ANIMATION_EASING.inOut,
         }}
-        className="text-2xl"
+        className="text-primary"
       >
-        {status ? getStageIcon(status.stage) : '💭'}
+        {status ? getStageIcon(status.stage) : <BotIcon size={20} />}
       </motion.div>
 
       {/* Status Text */}
@@ -89,6 +102,7 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
                   duration: 1.5,
                   repeat: Infinity,
                   delay: i * 0.2,
+                  ease: ANIMATION_EASING.inOut,
                 }}
                 className="w-1.5 h-1.5 rounded-full bg-current"
               />
@@ -99,8 +113,12 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
         {/* Topic/Detail */}
         {status?.topic && (
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: ANIMATION_DURATION.fast / 1000,
+              ease: ANIMATION_EASING.out,
+            }}
             className="text-xs text-muted-foreground mt-1"
           >
             {status.topic}
@@ -113,7 +131,10 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${status.progress}%` }}
-              transition={{ duration: 0.5 }}
+              transition={{ 
+                duration: ANIMATION_DURATION.slow / 1000,
+                ease: ANIMATION_EASING.out,
+              }}
               className="h-full bg-primary rounded-full"
             />
           </div>
@@ -122,9 +143,13 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
 
       {/* Estimated Time */}
       {status?.estimatedCompletion && (
-        <span className="text-xs text-muted-foreground">
+        <motion.span
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-xs text-muted-foreground"
+        >
           ~{Math.ceil((status.estimatedCompletion.getTime() - Date.now()) / 1000)}s
-        </span>
+        </motion.span>
       )}
     </motion.div>
   )
