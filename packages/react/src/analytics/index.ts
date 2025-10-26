@@ -48,8 +48,23 @@
  * ```
  */
 
-// Core
-export * from './types'
-export * from './AnalyticsProvider'
+// Core - Export types
+export type {
+  AnalyticsEvent,
+  AnalyticsUser,
+  PageView,
+  AnalyticsConfig,
+  AnalyticsProvider as AnalyticsProviderInterface,
+} from './types'
+
+// Export constants
+export { AnalyticsEvents } from './types'
+
+// Export provider component and hook
+export { AnalyticsProvider, useAnalytics } from './AnalyticsProvider'
+
+// Export provider implementations
 export * from './providers'
+
+// Export tracking hooks
 export * from './hooks'

@@ -4,7 +4,7 @@
  * Pre-configured providers for popular analytics services
  */
 
-import type { AnalyticsProvider, AnalyticsEvent, AnalyticsUser, PageView } from './types'
+import type { AnalyticsProvider, AnalyticsEvent } from './types'
 
 /**
  * Console Logger Provider (for debugging)

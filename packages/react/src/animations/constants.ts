@@ -4,8 +4,6 @@
  * Centralized animation timing and easing values for consistent motion design.
  */
 
-import { designTokens } from '../theme/design-tokens'
-
 /**
  * Animation durations in milliseconds
  */

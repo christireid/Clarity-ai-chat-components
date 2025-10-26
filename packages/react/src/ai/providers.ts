@@ -8,9 +8,7 @@ import type {
   SuggestionProvider,
   Suggestion,
   ModerationProvider,
-  ModerationResult,
   SentimentAnalyzer,
-  SentimentResult,
 } from './types'
 
 /**
@@ -207,7 +205,7 @@ export function createContextAwareProvider(): SuggestionProvider {
 export function createProfanityFilter(
   bannedWords: string[] = []
 ): ModerationProvider {
-  const defaultBannedWords = [
+  const defaultBannedWords: string[] = [
     // Add common profanity here
     // This is a placeholder - in production, use a comprehensive list
   ]

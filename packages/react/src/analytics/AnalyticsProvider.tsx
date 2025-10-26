@@ -10,7 +10,7 @@ import type {
   AnalyticsEvent, 
   AnalyticsUser, 
   PageView,
-  AnalyticsProvider as AnalyticsProviderType
+  AnalyticsProvider as AnalyticsProviderInterface
 } from './types'
 
 interface AnalyticsContextValue {
