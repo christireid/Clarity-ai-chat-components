@@ -57,6 +57,9 @@ export * from './hooks/use-token-tracker'
 export * from './hooks/use-message-operations'
 export * from './hooks/use-realistic-typing'
 
+// Optimistic Updates
+export * from './hooks/use-optimistic-message'
+
 // Theme System
 export * from './theme'
 
@@ -77,6 +80,9 @@ export * from './components/progress'
 
 // Feedback Animations
 export * from './components/feedback-animation'
+
+// Interactive Components
+export * from './components/interactive-card'
 
 // Icons
 export * from './components/icons'
