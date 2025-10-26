@@ -83,8 +83,8 @@ describe('Message Component', () => {
       const messageWithAttachments: MessageType = {
         ...mockMessage,
         attachments: [
-          { id: '1', name: 'document.pdf', url: '/document.pdf', type: 'application/pdf', size: 1024 },
-          { id: '2', name: 'image.png', url: '/image.png', type: 'image/png', size: 2048 },
+          { id: '1', name: 'document.pdf', url: '/document.pdf', type: 'document', mimeType: 'application/pdf', size: 1024 },
+          { id: '2', name: 'image.png', url: '/image.png', type: 'image', mimeType: 'image/png', size: 2048 },
         ],
       }
       render(<Message message={messageWithAttachments} />)

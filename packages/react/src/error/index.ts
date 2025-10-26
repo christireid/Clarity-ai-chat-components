@@ -40,7 +40,7 @@ export type {
   ErrorReport,
   ErrorProvider,
   ErrorReporterConfig,
-  ErrorFeedback,
+  ErrorFeedback as ErrorFeedbackType,
   ErrorBoundaryState,
   ErrorStats,
 } from './types'

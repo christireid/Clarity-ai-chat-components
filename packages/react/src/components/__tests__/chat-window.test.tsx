@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ChatWindow } from '../chat-window'
 import type { Message } from '@clarity-chat/types'
@@ -8,16 +8,20 @@ describe('ChatWindow Component', () => {
   const mockMessages: Message[] = [
     {
       id: '1',
+      chatId: 'test-chat',
       role: 'user',
       content: 'Hello',
-      createdAt: Date.now() - 2000,
+      createdAt: new Date(Date.now() - 2000),
+      updatedAt: new Date(Date.now() - 2000),
       status: 'sent',
     },
     {
       id: '2',
+      chatId: 'test-chat',
       role: 'assistant',
       content: 'Hi there! How can I help you?',
-      createdAt: Date.now() - 1000,
+      createdAt: new Date(Date.now() - 1000),
+      updatedAt: new Date(Date.now() - 1000),
       status: 'sent',
     },
   ]
@@ -135,9 +139,11 @@ describe('ChatWindow Component', () => {
         ...mockMessages,
         {
           id: '3',
+          chatId: 'test-chat',
           role: 'user' as const,
           content: 'Another message',
-          createdAt: Date.now(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
           status: 'sent' as const,
         },
       ]
@@ -293,7 +299,7 @@ describe('ChatWindow Component', () => {
       const user = userEvent.setup()
       render(<ChatWindow messages={mockMessages} onSendMessage={mockOnSendMessage} />)
 
-      const textarea = screen.getByRole('textbox')
+      const textarea = screen.getByRole('textbox') as HTMLTextAreaElement
       await user.type(textarea, 'Line 1{Shift>}{Enter}{/Shift}Line 2')
 
       expect(textarea.value).toContain('\n')
@@ -316,9 +322,11 @@ describe('ChatWindow Component', () => {
     it('should handle large message lists', () => {
       const manyMessages: Message[] = Array.from({ length: 100 }, (_, i) => ({
         id: `msg-${i}`,
+        chatId: 'test-chat',
         role: i % 2 === 0 ? ('user' as const) : ('assistant' as const),
         content: `Message ${i}`,
-        createdAt: Date.now() - (100 - i) * 1000,
+        createdAt: new Date(Date.now() - (100 - i) * 1000),
+        updatedAt: new Date(Date.now() - (100 - i) * 1000),
         status: 'sent' as const,
       }))
 

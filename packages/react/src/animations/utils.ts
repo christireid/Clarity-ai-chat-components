@@ -56,7 +56,7 @@ export function createSlideVariant(
     initial: { 
       opacity: 0, 
       [axis]: value,
-    },
+    } as any,
     animate: { 
       opacity: 1, 
       [axis]: 0,
@@ -64,7 +64,7 @@ export function createSlideVariant(
         duration: ANIMATION_DURATION[duration] / 1000,
         ease: ANIMATION_EASING[easing],
       },
-    },
+    } as any,
     exit: { 
       opacity: 0, 
       [axis]: -value,
@@ -72,7 +72,7 @@ export function createSlideVariant(
         duration: ANIMATION_DURATION[duration] / 1000,
         ease: ANIMATION_EASING[easing],
       },
-    },
+    } as any,
   }
 }
 

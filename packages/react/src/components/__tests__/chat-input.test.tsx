@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ChatInput } from '../chat-input'
 
@@ -204,7 +204,6 @@ describe('ChatInput Component', () => {
 
   describe('Max Length', () => {
     it('should respect maxLength prop', async () => {
-      const user = userEvent.setup()
       render(
         <ChatInput value="" onChange={mockOnChange} onSubmit={mockOnSubmit} maxLength={10} />
       )
@@ -216,7 +215,7 @@ describe('ChatInput Component', () => {
 
   describe('Auto-resize', () => {
     it('should have autoResize enabled by default', () => {
-      const { container } = render(
+      render(
         <ChatInput value="" onChange={mockOnChange} onSubmit={mockOnSubmit} />
       )
 
@@ -226,7 +225,7 @@ describe('ChatInput Component', () => {
     })
 
     it('should respect maxRows of 6 by default', () => {
-      const { container } = render(
+      render(
         <ChatInput value="" onChange={mockOnChange} onSubmit={mockOnSubmit} />
       )
 
@@ -306,7 +305,7 @@ describe('ChatInput Component', () => {
       const textarea = screen.getByRole('textbox')
 
       // Type rapidly
-      await user.type(textarea, 'abcdefghijklmnopqrstuvwxyz', { delay: 1 })
+      await user.type(textarea, 'abcdefghijklmnopqrstuvwxyz')
 
       expect(mockOnChange).toHaveBeenCalled()
     })

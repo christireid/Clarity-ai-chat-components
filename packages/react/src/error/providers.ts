@@ -135,7 +135,6 @@ export function createRollbarProvider(config: RollbarConfig): ErrorProvider {
       
       // Mock Rollbar object
       Rollbar = {
-        configure: () => {},
         error: (error: Error | string, custom?: any) => {
           console.log('[Rollbar] Error:', error, custom)
         },
