@@ -30,6 +30,7 @@ export default defineConfig({
             { text: 'Components Overview', link: '/guide/components' },
             { text: 'Hooks', link: '/guide/hooks' },
             { text: 'Message Handling', link: '/guide/messages' },
+            { text: 'Model Adapters', link: '/guide/model-adapters' },
             { text: 'Streaming', link: '/guide/streaming' },
             { text: 'Error Handling', link: '/guide/error-handling' },
           ],
@@ -49,6 +50,8 @@ export default defineConfig({
           text: 'API Reference',
           items: [
             { text: 'Components', link: '/api/components' },
+            { text: 'Model Adapters', link: '/api/model-adapters' },
+            { text: 'Streaming Components', link: '/api/streaming-components' },
             { text: 'Hooks', link: '/api/hooks' },
             { text: 'Types', link: '/api/types' },
             { text: 'Utilities', link: '/api/utilities' },

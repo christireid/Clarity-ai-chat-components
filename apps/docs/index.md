@@ -19,11 +19,11 @@ hero:
 features:
   - icon: 🎨
     title: Beautiful UI Components
-    details: 24 professionally designed chat components with modern aesthetics and smooth animations
+    details: 43 professionally designed chat components with modern aesthetics and smooth animations
   
   - icon: ⚡
-    title: Real-time Streaming
-    details: Built-in support for SSE and WebSocket streaming with cancellation and error handling
+    title: Model-Agnostic Adapters
+    details: Switch between OpenAI, Anthropic, and Google AI in 3 lines of code with unified streaming interface
   
   - icon: 🔧
     title: Fully Customizable
@@ -122,10 +122,11 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 
 ## What's Included
 
-- **24 Chat Components**: ChatWindow, MessageList, ChatInput, and more
+- **43 Chat Components**: ChatWindow, StreamingMessage, ModelSelector, ToolInvocationCard, CitationCard, and more
+- **Model Adapters**: OpenAI, Anthropic, Google AI with cost estimation
 - **21 React Hooks**: useChat, useStreamingChat, useMessageOperations, etc.
 - **Type Definitions**: Complete TypeScript types and interfaces
-- **Storybook Stories**: Interactive component documentation
+- **77 Storybook Stories**: Interactive component documentation
 - **Demo Applications**: 5 working examples
 - **Cookbook**: 25+ recipes for common use cases
 
