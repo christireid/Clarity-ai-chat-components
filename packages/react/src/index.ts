@@ -111,3 +111,15 @@ export * from './analytics'
 
 // AI Features
 export * from './ai'
+
+// Error Tracking System
+export * from './error'
+
+// Accessibility System
+export * from './accessibility'
+
+// Theme Preview
+export * from './components/theme-preview'
+
+// Performance Dashboard
+export * from './components/performance-dashboard'

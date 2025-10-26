@@ -1,328 +1,282 @@
 /**
- * Enhanced Error Boundary System
- * 
- * Comprehensive error boundary with:
- * - Error recovery and retry mechanisms
- * - Error logging and reporting
- * - Fallback UI with context
- * - Reset functionality
- * - Development vs production modes
+ * Enhanced Error Boundary with Error Tracking Integration
+ *
+ * This is an enhanced version of ErrorBoundary that integrates with the error tracking system.
+ * It automatically reports errors to configured providers and allows user feedback collection.
  */
 
-import * as React from 'react'
-import { motion } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
-import { AlertCircleIcon, RefreshIcon, XCircleIcon } from './icons'
-import { InteractiveButton } from './interactive-card'
+import React from 'react'
+import { ErrorBoundary, ErrorBoundaryProps } from './error-boundary'
+import { ErrorFeedback, ErrorFeedbackButton } from '../error/ErrorFeedback'
+import { useErrorReporter } from '../error/ErrorReporter'
+import type { ErrorFeedback as ErrorFeedbackData } from '../error/types'
 
-export interface ErrorInfo {
-  componentStack: string
-}
+/**
+ * Enhanced Error Boundary Props
+ */
+export interface ErrorBoundaryEnhancedProps extends Omit<ErrorBoundaryProps, 'onError' | 'fallback'> {
+  /** Whether to show user feedback option */
+  enableFeedback?: boolean
 
-export interface ErrorBoundaryProps {
-  /** Custom fallback UI */
-  fallback?: (error: Error, errorInfo: ErrorInfo, reset: () => void) => React.ReactNode
-  /** Callback when error is caught */
-  onError?: (error: Error, errorInfo: ErrorInfo) => void
-  /** Callback before reset */
-  onReset?: () => void
-  /** Show detailed error in development */
-  showDetails?: boolean
-  /** Children to wrap */
-  children: React.ReactNode
-  /** Custom className */
-  className?: string
-}
+  /** Custom fallback component (receives error, reset, and showFeedback props) */
+  fallback?: (
+    error: Error,
+    resetError: () => void,
+    showFeedback: () => void
+  ) => React.ReactNode
 
-interface ErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
-  errorInfo: ErrorInfo | null
-  errorCount: number
+  /** Additional context to include in error reports */
+  errorContext?: Record<string, any>
+
+  /** Error severity level */
+  severity?: 'fatal' | 'error' | 'warning'
+
+  /** Callback when error is caught (in addition to automatic reporting) */
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
 }
 
 /**
- * Enhanced Error Boundary Class Component
+ * Default Enhanced Fallback component with feedback option
  */
-export class ErrorBoundaryEnhanced extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props)
-    this.state = {
-      hasError: false,
-      error: null,
-      errorInfo: null,
-      errorCount: 0,
-    }
-  }
-
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return {
-      hasError: true,
-      error,
-    }
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    const { onError } = this.props
-
-    // Update state with error info
-    this.setState((prev) => ({
-      errorInfo: errorInfo as ErrorInfo,
-      errorCount: prev.errorCount + 1,
-    }))
-
-    // Log error
-    console.error('Error caught by boundary:', error, errorInfo)
-
-    // Call error callback
-    onError?.(error, errorInfo as ErrorInfo)
-
-    // Report to error tracking service (e.g., Sentry)
-    if (typeof window !== 'undefined' && (window as any).Sentry) {
-      ;(window as any).Sentry.captureException(error, {
-        contexts: {
-          react: {
-            componentStack: errorInfo.componentStack,
-          },
-        },
-      })
-    }
-  }
-
-  handleReset = () => {
-    const { onReset } = this.props
-
-    // Call reset callback
-    onReset?.()
-
-    // Reset state
-    this.setState({
-      hasError: false,
-      error: null,
-      errorInfo: null,
-    })
-  }
-
-  render() {
-    const { hasError, error, errorInfo, errorCount } = this.state
-    const { children, fallback, showDetails = process.env.NODE_ENV === 'development', className } = this.props
-
-    if (hasError && error && errorInfo) {
-      // Use custom fallback if provided
-      if (fallback) {
-        return fallback(error, errorInfo, this.handleReset)
-      }
-
-      // Default fallback UI
-      return (
-        <DefaultErrorFallback
-          error={error}
-          errorInfo={errorInfo}
-          errorCount={errorCount}
-          showDetails={showDetails}
-          onReset={this.handleReset}
-          className={className}
-        />
-      )
-    }
-
-    return children
-  }
-}
-
-/**
- * Default Error Fallback UI
- */
-interface DefaultErrorFallbackProps {
+const DefaultEnhancedFallback: React.FC<{
   error: Error
-  errorInfo: ErrorInfo
-  errorCount: number
-  showDetails: boolean
-  onReset: () => void
-  className?: string
-}
-
-const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({
-  error,
-  errorInfo,
-  errorCount,
-  showDetails,
-  onReset,
-  className,
-}) => {
-  const [showStack, setShowStack] = React.useState(false)
-
-  // Too many errors, show warning
-  const tooManyErrors = errorCount > 3
+  resetError: () => void
+  onFeedbackSubmit: (feedback: ErrorFeedbackData) => void
+  enableFeedback: boolean
+}> = ({ error, resetError, onFeedbackSubmit, enableFeedback }) => {
+  const [showFeedbackModal, setShowFeedbackModal] = React.useState(false)
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        'flex items-center justify-center min-h-[400px] p-8',
-        className
-      )}
+    <div
+      role="alert"
+      className="flex min-h-[200px] flex-col items-center justify-center rounded-lg border-2 border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-900/10"
     >
-      <div className="max-w-md w-full space-y-6">
-        {/* Error Icon */}
-        <div className="flex justify-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1, rotate: [0, -10, 10, -10, 0] }}
-            transition={{ duration: 0.5, times: [0, 0.2, 0.4, 0.6, 1] }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10"
+      <div className="mb-4 flex items-center gap-3">
+        <svg
+          className="h-8 w-8 text-red-600 dark:text-red-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+        <h2 className="text-xl font-semibold text-red-900 dark:text-red-100">
+          Something went wrong
+        </h2>
+      </div>
+
+      <p className="mb-4 max-w-md text-center text-sm text-red-800 dark:text-red-200">
+        {error.message || 'An unexpected error occurred. Please try again.'}
+      </p>
+
+      <div className="flex gap-3">
+        <button
+          onClick={resetError}
+          className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+        >
+          Try Again
+        </button>
+
+        {enableFeedback && (
+          <button
+            onClick={() => setShowFeedbackModal(true)}
+            className="rounded-lg border border-red-600 bg-white px-4 py-2 text-red-600 transition-colors hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-900/10 dark:text-red-400 dark:hover:bg-red-900/20"
           >
-            {tooManyErrors ? (
-              <XCircleIcon size={32} className="text-destructive" />
-            ) : (
-              <AlertCircleIcon size={32} className="text-destructive" />
-            )}
-          </motion.div>
-        </div>
-
-        {/* Error Message */}
-        <div className="text-center space-y-2">
-          <h2 className="text-xl font-semibold">
-            {tooManyErrors ? 'Multiple Errors Detected' : 'Something went wrong'}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {tooManyErrors
-              ? 'The component has crashed multiple times. Please refresh the page or contact support.'
-              : 'An unexpected error occurred. You can try again or refresh the page.'}
-          </p>
-        </div>
-
-        {/* Error Details (Development) */}
-        {showDetails && (
-          <div className="space-y-2">
-            <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-              <div className="font-mono text-sm space-y-1">
-                <div className="font-semibold text-destructive">
-                  {error.name}: {error.message}
-                </div>
-                {error.stack && (
-                  <details className="mt-2">
-                    <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
-                      Show stack trace
-                    </summary>
-                    <pre className="mt-2 text-xs overflow-x-auto whitespace-pre-wrap">
-                      {error.stack}
-                    </pre>
-                  </details>
-                )}
-              </div>
-            </div>
-
-            {/* Component Stack */}
-            {errorInfo.componentStack && (
-              <div className="p-4 rounded-lg bg-muted border">
-                <button
-                  onClick={() => setShowStack(!showStack)}
-                  className="text-sm font-medium hover:underline"
-                >
-                  {showStack ? 'Hide' : 'Show'} component stack
-                </button>
-                {showStack && (
-                  <pre className="mt-2 text-xs overflow-x-auto whitespace-pre-wrap text-muted-foreground">
-                    {errorInfo.componentStack}
-                  </pre>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex gap-3 justify-center">
-          {!tooManyErrors && (
-            <InteractiveButton
-              variant="primary"
-              icon={<RefreshIcon size={18} />}
-              onClick={onReset}
-            >
-              Try Again
-            </InteractiveButton>
-          )}
-          <InteractiveButton
-            variant="ghost"
-            onClick={() => window.location.reload()}
-          >
-            Reload Page
-          </InteractiveButton>
-        </div>
-
-        {/* Error Count */}
-        {errorCount > 1 && (
-          <div className="text-center text-xs text-muted-foreground">
-            Error occurred {errorCount} time{errorCount > 1 ? 's' : ''}
-          </div>
+            Report Issue
+          </button>
         )}
       </div>
-    </motion.div>
+
+      {process.env.NODE_ENV === 'development' && (
+        <details className="mt-4 w-full max-w-2xl text-left">
+          <summary className="cursor-pointer text-sm text-red-700 hover:underline dark:text-red-300">
+            Error Details (Development Only)
+          </summary>
+          <pre className="mt-2 overflow-auto rounded bg-red-100 p-3 text-xs text-red-900 dark:bg-red-900/20 dark:text-red-100">
+            {error.stack}
+          </pre>
+        </details>
+      )}
+
+      <ErrorFeedback
+        show={showFeedbackModal}
+        error={error}
+        onSubmit={(feedback) => {
+          onFeedbackSubmit(feedback)
+          setShowFeedbackModal(false)
+        }}
+        onCancel={() => setShowFeedbackModal(false)}
+      />
+    </div>
   )
 }
 
 /**
- * Functional Error Boundary Hook (Experimental)
- * 
- * Note: This is a simplified version. Class components are still
- * recommended for error boundaries until React adds official hook support.
+ * Enhanced Error Boundary Component with Error Tracking
+ *
+ * This component extends the standard ErrorBoundary with automatic error reporting
+ * and optional user feedback collection. It requires ErrorReporterProvider to be
+ * present in the component tree.
+ *
+ * @example
+ * ```tsx
+ * import { ErrorBoundaryEnhanced, ErrorReporterProvider, createSentryProvider } from '@chat-ui/react'
+ *
+ * function App() {
+ *   return (
+ *     <ErrorReporterProvider
+ *       config={{
+ *         providers: [createSentryProvider({ dsn: 'YOUR_DSN' })],
+ *         enabled: true
+ *       }}
+ *     >
+ *       <ErrorBoundaryEnhanced enableFeedback>
+ *         <YourApp />
+ *       </ErrorBoundaryEnhanced>
+ *     </ErrorReporterProvider>
+ *   )
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With custom fallback
+ * <ErrorBoundaryEnhanced
+ *   enableFeedback
+ *   severity="error"
+ *   errorContext={{ page: 'chat', feature: 'streaming' }}
+ *   fallback={(error, reset, showFeedback) => (
+ *     <div>
+ *       <h1>Chat Error</h1>
+ *       <p>{error.message}</p>
+ *       <button onClick={reset}>Retry</button>
+ *       <button onClick={showFeedback}>Report</button>
+ *     </div>
+ *   )}
+ * >
+ *   <ChatWindow />
+ * </ErrorBoundaryEnhanced>
+ * ```
  */
-export function useErrorHandler(): (error: Error) => void {
-  const [, setError] = React.useState<Error>()
+export function ErrorBoundaryEnhanced({
+  children,
+  enableFeedback = true,
+  fallback,
+  errorContext,
+  severity = 'error',
+  onError,
+  ...props
+}: ErrorBoundaryEnhancedProps) {
+  const errorReporter = useErrorReporter()
+  const [currentError, setCurrentError] = React.useState<Error | null>(null)
+  const [currentErrorInfo, setCurrentErrorInfo] = React.useState<React.ErrorInfo | null>(null)
+
+  const handleError = React.useCallback(
+    (error: Error, errorInfo: React.ErrorInfo) => {
+      setCurrentError(error)
+      setCurrentErrorInfo(errorInfo)
+
+      // Report to error tracking
+      if (errorReporter.isEnabled) {
+        errorReporter.reportErrorDetailed({
+          message: error.message,
+          stack: error.stack,
+          severity: severity,
+          componentStack: errorInfo.componentStack,
+          context: errorContext,
+          handled: false, // Error boundaries catch unhandled errors
+          originalError: error,
+        })
+      }
+
+      // Call custom onError callback
+      onError?.(error, errorInfo)
+    },
+    [errorReporter, errorContext, severity, onError]
+  )
+
+  const handleFeedbackSubmit = React.useCallback(
+    (feedback: ErrorFeedbackData) => {
+      if (!currentError || !errorReporter.isEnabled) return
+
+      // Report again with user feedback
+      errorReporter.reportErrorDetailed({
+        message: currentError.message,
+        stack: currentError.stack,
+        severity: severity,
+        componentStack: currentErrorInfo?.componentStack,
+        context: errorContext,
+        userFeedback: JSON.stringify(feedback),
+        handled: false,
+        originalError: currentError,
+      })
+
+      console.log('[ErrorBoundaryEnhanced] User feedback submitted:', feedback)
+    },
+    [currentError, currentErrorInfo, errorReporter, errorContext, severity]
+  )
+
+  const handleShowFeedback = React.useCallback(() => {
+    // Trigger feedback modal (handled by fallback component)
+  }, [])
+
+  const enhancedFallback = React.useCallback(
+    (error: Error, resetError: () => void) => {
+      if (fallback) {
+        return fallback(error, resetError, handleShowFeedback)
+      }
+
+      return (
+        <DefaultEnhancedFallback
+          error={error}
+          resetError={resetError}
+          onFeedbackSubmit={handleFeedbackSubmit}
+          enableFeedback={enableFeedback}
+        />
+      )
+    },
+    [fallback, handleFeedbackSubmit, enableFeedback, handleShowFeedback]
+  )
+
+  return (
+    <ErrorBoundary {...props} fallback={enhancedFallback} onError={handleError}>
+      {children}
+    </ErrorBoundary>
+  )
+}
+
+/**
+ * Hook to programmatically trigger error boundary
+ * Useful for handling async errors that occur outside of render
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   const throwError = useErrorBoundaryTrigger()
+ *
+ *   const handleAsyncAction = async () => {
+ *     try {
+ *       await somethingAsync()
+ *     } catch (error) {
+ *       throwError(error) // This will trigger the error boundary
+ *     }
+ *   }
+ *
+ *   return <button onClick={handleAsyncAction}>Do something</button>
+ * }
+ * ```
+ */
+export function useErrorBoundaryTrigger() {
+  const [, setError] = React.useState<Error | null>(null)
 
   return React.useCallback((error: Error) => {
     setError(() => {
       throw error
     })
   }, [])
-}
-
-/**
- * Error Boundary for async operations
- */
-export function withErrorBoundary<P extends object>(
-  Component: React.ComponentType<P>,
-  errorBoundaryProps?: Omit<ErrorBoundaryProps, 'children'>
-): React.FC<P> {
-  const WrappedComponent: React.FC<P> = (props) => {
-    return (
-      <ErrorBoundaryEnhanced {...errorBoundaryProps}>
-        <Component {...props} />
-      </ErrorBoundaryEnhanced>
-    )
-  }
-
-  WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name || 'Component'})`
-
-  return WrappedComponent
-}
-
-/**
- * Mini error boundary for inline errors
- */
-export const InlineErrorBoundary: React.FC<{
-  children: React.ReactNode
-  fallback?: React.ReactNode
-}> = ({ children, fallback }) => {
-  return (
-    <ErrorBoundaryEnhanced
-      fallback={(error) => (
-        fallback || (
-          <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-sm">
-            <div className="flex items-center gap-2 text-destructive">
-              <AlertCircleIcon size={16} />
-              <span className="font-medium">Error: {error.message}</span>
-            </div>
-          </div>
-        )
-      )}
-    >
-      {children}
-    </ErrorBoundaryEnhanced>
-  )
 }
