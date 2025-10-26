@@ -60,6 +60,12 @@ export * from './hooks/use-realistic-typing'
 // Optimistic Updates
 export * from './hooks/use-optimistic-message'
 
+// Performance Monitoring
+export * from './hooks/use-performance'
+
+// Mobile Utilities
+export * from './utils/mobile'
+
 // Theme System
 export * from './theme'
 
@@ -83,6 +89,16 @@ export * from './components/feedback-animation'
 
 // Interactive Components
 export * from './components/interactive-card'
+
+// Performance Optimized Components
+export * from './components/virtualized-message-list'
+export * from './components/message-optimized'
+
+// Error Handling
+export * from './components/error-boundary-enhanced'
+
+// Empty States
+export * from './components/empty-state'
 
 // Icons
 export * from './components/icons'
