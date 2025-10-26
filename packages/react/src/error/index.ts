@@ -54,8 +54,8 @@ export {
   createRollbarProvider,
   createBugsnagProvider,
   createCustomAPIProvider,
-  createConsoleProvider,
-  createLocalStorageProvider,
+  createConsoleErrorProvider,
+  createLocalStorageErrorProvider,
   getStoredErrors,
   clearStoredErrors,
 } from './providers'

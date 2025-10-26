@@ -5,7 +5,16 @@
  */
 
 import * as React from 'react'
-import { useRenderPerformance, useMemoryUsage } from '../hooks/use-performance'
+import { useRenderPerformance } from '../hooks/use-performance'
+
+// Stub hook for memory usage (not available in all browsers)
+function useMemoryUsage() {
+  return {
+    usedJSHeapSize: 0,
+    totalJSHeapSize: 0,
+    jsHeapSizeLimit: 0,
+  }
+}
 
 export interface PerformanceDashboardProps {
   /**

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
 
-export interface Suggestion {
+export interface InputSuggestion {
   id: string
   type: 'prompt' | 'command' | 'mention'
   label: string
@@ -18,8 +18,8 @@ export interface AdvancedChatInputProps {
   onSubmit: (value: string, attachments?: MessageAttachment[]) => void
   
   // Autocomplete features
-  suggestions?: Suggestion[]
-  onSuggestionRequest?: (query: string, trigger: '@' | '/') => Promise<Suggestion[]>
+  suggestions?: InputSuggestion[]
+  onSuggestionRequest?: (query: string, trigger: '@' | '/') => Promise<InputSuggestion[]>
   
   // File upload
   onFileUpload?: (files: File[]) => Promise<MessageAttachment[]>
@@ -59,7 +59,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
     ref
   ) => {
     const [attachments, setAttachments] = React.useState<MessageAttachment[]>([])
-    const [suggestions, setSuggestions] = React.useState<Suggestion[]>([])
+    const [suggestions, setSuggestions] = React.useState<InputSuggestion[]>([])
     const [selectedIndex, setSelectedIndex] = React.useState(0)
     const [showSuggestions, setShowSuggestions] = React.useState(false)
     const [isUploading, setIsUploading] = React.useState(false)
@@ -130,7 +130,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
             }))
           setSuggestions(filtered)
         } else if (trigger === '/') {
-          const commands: Suggestion[] = [
+          const commands: InputSuggestion[] = [
             { id: '1', type: 'command', label: 'help', description: 'Show available commands', value: '/help' },
             { id: '2', type: 'command', label: 'clear', description: 'Clear conversation', value: '/clear' },
             { id: '3', type: 'command', label: 'export', description: 'Export chat', value: '/export' },
@@ -172,7 +172,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
       }
     }
 
-    const selectSuggestion = (suggestion: Suggestion) => {
+    const selectSuggestion = (suggestion: InputSuggestion) => {
       const beforeCursor = value.slice(0, cursorPosition)
       const afterCursor = value.slice(cursorPosition)
       

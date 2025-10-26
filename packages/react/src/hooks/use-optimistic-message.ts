@@ -62,14 +62,13 @@ export function useOptimisticMessage(
       const optimisticId = `optimistic-${Date.now()}-${Math.random()}`
       const optimisticMessage: OptimisticMessage = {
         id: optimisticId,
+        chatId: 'optimistic-chat',
         role: 'user',
         content,
         createdAt: new Date(),
+        updatedAt: new Date(),
         status: 'sending',
         isOptimistic: true,
-        userId: defaultUser?.id,
-        userName: defaultUser?.name,
-        userAvatar: defaultUser?.avatar,
       }
 
       // Add optimistic message immediately

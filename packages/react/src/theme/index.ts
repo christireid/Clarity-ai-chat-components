@@ -18,4 +18,4 @@ export * from './ThemeProvider'
 export * from './theme-config'
 export * from './presets'
 export * from './theme-builder'
-export { default as themeCSS } from './theme.css?inline'
+// export { default as themeCSS } from './theme.css?inline' // Vite-specific import, commented for build

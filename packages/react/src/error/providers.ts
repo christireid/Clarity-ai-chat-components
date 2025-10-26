@@ -344,7 +344,7 @@ export function createCustomAPIProvider(config: CustomAPIConfig): ErrorProvider 
  * Console provider for development
  * Logs errors to the browser console
  */
-export function createConsoleProvider(): ErrorProvider {
+export function createConsoleErrorProvider(): ErrorProvider {
   return {
     name: 'console',
 
@@ -414,7 +414,7 @@ export function createConsoleProvider(): ErrorProvider {
  * LocalStorage provider for offline error tracking
  * Stores errors in localStorage for later retrieval
  */
-export function createLocalStorageProvider(maxErrors: number = 50): ErrorProvider {
+export function createLocalStorageErrorProvider(maxErrors: number = 50): ErrorProvider {
   const STORAGE_KEY = 'error_reports'
 
   return {
