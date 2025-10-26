@@ -1,0 +1,93 @@
+/**
+ * Focus Ring System
+ * 
+ * Accessible focus indicators that are visible and consistent.
+ * Uses :focus-visible to only show focus rings for keyboard navigation.
+ */
+
+/* Base focus ring styles */
+.focus-ring {
+  @apply outline-none;
+}
+
+.focus-ring:focus-visible {
+  @apply ring-2 ring-ring ring-offset-2 ring-offset-background;
+}
+
+/* Focus ring variants */
+.focus-ring-primary:focus-visible {
+  @apply ring-2 ring-primary ring-offset-2;
+}
+
+.focus-ring-success:focus-visible {
+  @apply ring-2 ring-success ring-offset-2;
+}
+
+.focus-ring-destructive:focus-visible {
+  @apply ring-2 ring-destructive ring-offset-2;
+}
+
+.focus-ring-warning:focus-visible {
+  @apply ring-2 ring-warning ring-offset-2;
+}
+
+/* Focus ring sizes */
+.focus-ring-sm:focus-visible {
+  @apply ring-1 ring-offset-1;
+}
+
+.focus-ring-lg:focus-visible {
+  @apply ring-4 ring-offset-4;
+}
+
+/* Inset focus ring (for dark backgrounds) */
+.focus-ring-inset:focus-visible {
+  @apply ring-2 ring-ring ring-inset;
+}
+
+/* Focus within - for container focus */
+.focus-within-ring:focus-within {
+  @apply ring-2 ring-ring ring-offset-2;
+}
+
+/* Animated focus ring */
+.focus-ring-animated:focus-visible {
+  @apply ring-2 ring-ring ring-offset-2;
+  animation: focus-ring-pulse 2s ease-in-out infinite;
+}
+
+@keyframes focus-ring-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+  }
+  50% {
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 6px hsl(var(--ring));
+  }
+}
+
+/* Skip to content link */
+.skip-to-content {
+  @apply absolute -top-10 left-4 z-50;
+  @apply bg-background text-foreground px-4 py-2 rounded-md;
+  @apply focus:top-4 transition-all;
+  @apply ring-2 ring-ring ring-offset-2;
+}
+
+/* Focus trap indicator */
+.focus-trap-active {
+  @apply outline-dashed outline-2 outline-ring outline-offset-4;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .focus-ring:focus-visible {
+    @apply ring-4 ring-offset-4;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .focus-ring-animated:focus-visible {
+    animation: none;
+  }
+}

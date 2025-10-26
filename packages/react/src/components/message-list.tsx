@@ -5,6 +5,7 @@ import { Message } from './message'
 import { ScrollArea, Button } from '@clarity-chat/primitives'
 import { useAutoScroll } from '../hooks/use-auto-scroll'
 import { ArrowDownIcon } from './icons'
+import { SkeletonMessage } from './skeleton'
 import { 
   createStaggerContainerVariant, 
   createStaggerChildVariant 
@@ -16,6 +17,12 @@ export interface MessageListProps {
   onMessageCopy?: (messageId: string, content: string) => void
   onMessageFeedback?: (messageId: string, type: 'up' | 'down') => void
   onMessageRetry?: (messageId: string) => void
+  /** Show loading skeleton while messages are being fetched */
+  isLoading?: boolean
+  /** Number of skeleton messages to show while loading */
+  loadingCount?: number
+  /** Empty state content */
+  emptyState?: React.ReactNode
   className?: string
 }
 
@@ -24,6 +31,9 @@ export const MessageList: React.FC<MessageListProps> = ({
   onMessageCopy,
   onMessageFeedback,
   onMessageRetry,
+  isLoading = false,
+  loadingCount = 3,
+  emptyState,
   className,
 }) => {
   // Use auto-scroll hook with smooth scrolling
@@ -37,32 +47,73 @@ export const MessageList: React.FC<MessageListProps> = ({
   const containerVariants = createStaggerContainerVariant('normal', 0)
   const itemVariants = createStaggerChildVariant('slide', 'fast')
 
+  // Show empty state if no messages and not loading
+  const showEmptyState = messages.length === 0 && !isLoading && emptyState
+
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <ScrollArea ref={scrollRef as React.RefObject<HTMLDivElement>} className={className}>
-        <motion.div 
-          className="space-y-4 p-4"
-          variants={containerVariants}
-          initial="initial"
-          animate="animate"
-        >
-          <AnimatePresence mode="popLayout">
-            {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                variants={itemVariants}
-                layout
-              >
-                <Message
-                  message={message}
-                  onCopy={(content) => onMessageCopy?.(message.id, content)}
-                  onFeedback={(type) => onMessageFeedback?.(message.id, type)}
-                  onRetry={() => onMessageRetry?.(message.id)}
-                />
-              </motion.div>
+        {/* Loading skeletons */}
+        {isLoading && messages.length === 0 && (
+          <div className="space-y-4 p-4">
+            {Array.from({ length: loadingCount }).map((_, index) => (
+              <SkeletonMessage
+                key={`skeleton-${index}`}
+                role={index % 2 === 0 ? 'user' : 'assistant'}
+                lines={index % 2 === 0 ? 2 : 4}
+                variant="shimmer"
+              />
             ))}
-          </AnimatePresence>
-        </motion.div>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {showEmptyState && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-center h-full p-8"
+          >
+            {emptyState}
+          </motion.div>
+        )}
+
+        {/* Messages */}
+        {messages.length > 0 && (
+          <motion.div 
+            className="space-y-4 p-4"
+            variants={containerVariants}
+            initial="initial"
+            animate="animate"
+          >
+            <AnimatePresence mode="popLayout">
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  variants={itemVariants}
+                  layout
+                >
+                  <Message
+                    message={message}
+                    onCopy={(content) => onMessageCopy?.(message.id, content)}
+                    onFeedback={(type) => onMessageFeedback?.(message.id, type)}
+                    onRetry={() => onMessageRetry?.(message.id)}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {/* Show loading skeleton for new messages while fetching */}
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <SkeletonMessage role="assistant" lines={3} variant="shimmer" />
+              </motion.div>
+            )}
+          </motion.div>
+        )}
       </ScrollArea>
       
       {/* Show scroll-to-bottom button when not at bottom */}
