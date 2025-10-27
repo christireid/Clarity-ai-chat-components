@@ -6,7 +6,7 @@
 export const runtime = 'edge'
 
 import { searchChunks, buildContext, createRAGPrompt, estimateCost, extractSources, approximateTokenCount } from '@/lib/rag'
-import { getDocuments } from '../documents/route'
+import { getDocuments } from '@/lib/storage'
 import type { RAGQuery } from '@/types/document'
 
 export async function POST(request: Request) {

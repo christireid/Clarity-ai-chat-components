@@ -1,0 +1,63 @@
+Clarity Chat Component Library
+
+Overview
+Clarity Chat is a premium React component library designed for building AI-powered chat interfaces. It provides a unified API across multiple AI providers including OpenAI, Anthropic, and Google AI.
+
+Key Features
+The library offers several powerful features for developers:
+
+1. Model-Agnostic Architecture: Switch between AI providers with minimal code changes. The unified interface means you write your code once and can easily swap between GPT-4, Claude, or Gemini models.
+
+2. Real-Time Streaming: Components support token-by-token streaming for responsive user experiences. Messages appear as they're generated, creating a natural conversation flow.
+
+3. Cost Tracking: Built-in analytics track token usage and estimated costs per request. This helps developers optimize their AI spending and understand usage patterns.
+
+4. TypeScript Support: Full type safety with comprehensive TypeScript definitions. IntelliSense works perfectly in VS Code and other IDEs.
+
+5. Production Ready: Includes error handling, retry logic, and edge runtime compatibility for deployment on Vercel, Cloudflare, and other platforms.
+
+Technical Architecture
+The library is built as a monorepo using npm workspaces. Core packages include:
+
+- @clarity-chat/react: Main UI components
+- @clarity-chat/primitives: Core streaming logic
+- @clarity-chat/types: TypeScript definitions
+
+The adapter pattern allows adding new AI providers without modifying existing code. Each adapter implements the same StreamChunk interface, ensuring consistent behavior across all models.
+
+Demo Applications
+Three comprehensive demos showcase the library's capabilities:
+
+Model Comparison Demo: Compare responses from different AI models side-by-side. See how GPT-4, Claude 3, and Gemini Pro handle the same prompt with different characteristics.
+
+RAG Workbench: Document Q&A using Retrieval Augmented Generation. Upload documents, ask questions, and get AI answers with source citations.
+
+Analytics Console: Track token usage, costs, and performance metrics across all your AI interactions. Visualize spending trends and optimize model selection.
+
+Getting Started
+Installation is simple with npm:
+
+npm install @clarity-chat/react
+
+Then import components and start building:
+
+import { ChatInterface, ModelSelector } from '@clarity-chat/react'
+
+The library handles all the complexity of streaming, error handling, and provider-specific differences.
+
+Developer Experience
+Clarity Chat prioritizes developer experience with:
+
+- Beautiful CLI tool for project setup
+- VS Code extension with IntelliSense
+- Comprehensive documentation
+- Real-world examples
+- Active community support
+
+The CLI tool makes initialization instant with interactive wizards for framework detection, component selection, and API key management.
+
+Pricing and Licensing
+Clarity Chat uses a freemium model. The core library is MIT licensed and free for all use cases. Premium features include priority support, advanced analytics, and custom adapters for enterprise AI providers.
+
+Conclusion
+Clarity Chat simplifies building AI chat interfaces by providing production-ready components, unified APIs, and excellent developer experience. Whether you're building a customer support chatbot, a document Q&A system, or an AI assistant, Clarity Chat has the tools you need.

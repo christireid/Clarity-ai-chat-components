@@ -7,10 +7,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { chunkDocument, approximateTokenCount } from '@/lib/rag'
+import { getDocuments, addDocument, removeDocument } from '@/lib/storage'
 import type { Document } from '@/types/document'
-
-// In-memory storage (production should use database)
-const documents: Document[] = []
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,7 +59,7 @@ export async function POST(request: NextRequest) {
       chunks
     }
     
-    documents.push(document)
+    addDocument(document)
     
     return NextResponse.json({
       success: true,
@@ -83,6 +81,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
+    const documents = getDocuments()
     // Return document list without full content
     const documentList = documents.map(doc => ({
       id: doc.id,
@@ -119,16 +118,14 @@ export async function DELETE(request: NextRequest) {
       )
     }
     
-    const index = documents.findIndex(doc => doc.id === documentId)
+    const success = removeDocument(documentId)
     
-    if (index === -1) {
+    if (!success) {
       return NextResponse.json(
         { error: 'Document not found' },
         { status: 404 }
       )
     }
-    
-    documents.splice(index, 1)
     
     return NextResponse.json({
       success: true,
@@ -142,9 +139,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// Export documents for other routes
-export function getDocuments(): Document[] {
-  return documents
 }

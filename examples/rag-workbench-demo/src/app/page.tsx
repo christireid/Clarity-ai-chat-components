@@ -5,7 +5,10 @@
 
 'use client'
 
-import { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+
+// Disable static optimization
+export const dynamic = 'force-dynamic'
 
 interface Document {
   id: string
@@ -43,10 +46,10 @@ export default function RAGWorkbenchPage() {
   const [topK, setTopK] = useState(3)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Load documents on mount
-  useState(() => {
+  // Load documents on mount - use useEffect not useState
+  React.useEffect(() => {
     loadDocuments()
-  })
+  }, [])
 
   async function loadDocuments() {
     try {

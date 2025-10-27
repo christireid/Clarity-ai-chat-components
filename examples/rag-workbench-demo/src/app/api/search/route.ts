@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { searchChunks, extractSources } from '@/lib/rag'
-import { getDocuments } from '../documents/route'
+import { getDocuments } from '@/lib/storage'
 
 export async function POST(request: NextRequest) {
   try {
