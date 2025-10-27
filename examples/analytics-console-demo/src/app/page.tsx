@@ -11,9 +11,11 @@ export default function AnalyticsConsolePage() {
   const [dailyData, setDailyData] = useState<DailySummary[]>([])
   const [recentEntries, setRecentEntries] = useState<AnalyticsEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
   const [timeRange, setTimeRange] = useState(30)
 
   useEffect(() => {
+    setIsMounted(true)
     loadData()
   }, [timeRange])
 
@@ -41,7 +43,7 @@ export default function AnalyticsConsolePage() {
     }
   }
 
-  if (isLoading) {
+  if (!isMounted || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -226,7 +228,7 @@ export default function AnalyticsConsolePage() {
                   </div>
                   <div className="text-right">
                     <div className="font-mono text-sm">${entry.cost.toFixed(6)}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500" suppressHydrationWarning>
                       {new Date(entry.timestamp).toLocaleTimeString()}
                     </div>
                   </div>
