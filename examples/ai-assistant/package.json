@@ -10,9 +10,9 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@clarity-chat/react": "workspace:*",
-    "@clarity-chat/primitives": "workspace:*",
-    "@clarity-chat/types": "workspace:*",
+    "@clarity-chat/react": "*",
+    "@clarity-chat/primitives": "*",
+    "@clarity-chat/types": "*",
     "@tanstack/react-query": "^5.62.14",
     "@tanstack/react-query-devtools": "^5.62.14",
     "react": "^19.0.0",

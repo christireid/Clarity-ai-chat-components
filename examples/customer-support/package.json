@@ -11,9 +11,9 @@
     "supabase": "supabase"
   },
   "dependencies": {
-    "@clarity-chat/react": "workspace:*",
-    "@clarity-chat/primitives": "workspace:*",
-    "@clarity-chat/types": "workspace:*",
+    "@clarity-chat/react": "*",
+    "@clarity-chat/primitives": "*",
+    "@clarity-chat/types": "*",
     "@supabase/supabase-js": "^2.39.0",
     "next": "^15.1.6",
     "react": "^19.0.0",

@@ -9,9 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@clarity-chat/react": "workspace:*",
-    "@clarity-chat/primitives": "workspace:*",
-    "@clarity-chat/types": "workspace:*",
+    "@clarity-chat/react": "*",
+    "@clarity-chat/primitives": "*",
+    "@clarity-chat/types": "*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
