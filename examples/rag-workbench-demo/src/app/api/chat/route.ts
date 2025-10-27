@@ -3,7 +3,9 @@
  * Searches documents, builds context, and streams AI response
  */
 
-export const runtime = 'edge'
+// Note: Edge runtime disabled to share in-memory storage with documents API
+// For production, use a real database (PostgreSQL, MongoDB, etc.)
+// export const runtime = 'edge'
 
 import { searchChunks, buildContext, createRAGPrompt, estimateCost, extractSources, approximateTokenCount } from '@/lib/rag'
 import { getDocuments } from '@/lib/storage'
