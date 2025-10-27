@@ -5,8 +5,10 @@ import {
   ModelSelector, 
   StreamingMessage,
   allModels,
-  type ModelMetadata 
+  type ModelMetadata,
+  type ChatMessage 
 } from '@clarity-chat/react'
+import { useStreamingChat } from '@/hooks/useStreamingChat'
 
 export default function Home() {
   const [leftModel, setLeftModel] = useState('gpt-4-turbo')
@@ -20,10 +22,43 @@ export default function Home() {
   const [rightCost, setRightCost] = useState(0)
   const [leftTime, setLeftTime] = useState(0)
   const [rightTime, setRightTime] = useState(0)
+  const [leftError, setLeftError] = useState<string | null>(null)
+  const [rightError, setRightError] = useState<string | null>(null)
 
   const getModelMetadata = (modelId: string): ModelMetadata | undefined => {
     return allModels.find(m => m.id === modelId)
   }
+
+  // Create streaming hooks for both models
+  const leftStream = useStreamingChat({
+    onToken: (token) => setLeftResponse(prev => prev + token),
+    onComplete: (data) => {
+      setLeftCost(data.cost)
+      setLeftTime(data.duration)
+      setIsLeftStreaming(false)
+      setLeftError(null)
+    },
+    onError: (error) => {
+      console.error('Left model error:', error)
+      setLeftError(error)
+      setIsLeftStreaming(false)
+    }
+  })
+
+  const rightStream = useStreamingChat({
+    onToken: (token) => setRightResponse(prev => prev + token),
+    onComplete: (data) => {
+      setRightCost(data.cost)
+      setRightTime(data.duration)
+      setIsRightStreaming(false)
+      setRightError(null)
+    },
+    onError: (error) => {
+      console.error('Right model error:', error)
+      setRightError(error)
+      setIsRightStreaming(false)
+    }
+  })
 
   const handleCompare = async () => {
     if (!prompt.trim()) return
@@ -34,37 +69,51 @@ export default function Home() {
     setRightCost(0)
     setLeftTime(0)
     setRightTime(0)
+    setLeftError(null)
+    setRightError(null)
     setIsLeftStreaming(true)
     setIsRightStreaming(true)
 
-    // Simulate streaming for both models
-    // In a real app, you would call the actual adapters here
-    const leftStart = Date.now()
-    const rightStart = Date.now()
+    // Create messages array
+    const messages: ChatMessage[] = [
+      {
+        role: 'user',
+        content: prompt
+      }
+    ]
 
-    // Simulate left model streaming
-    const leftWords = `Response from ${getModelMetadata(leftModel)?.name}: This is a simulated response that demonstrates how different AI models handle the same prompt. Each model has different characteristics in terms of speed, cost, and quality. This response is being streamed token by token to show real-time updates.`.split(' ')
-    
-    for (const word of leftWords) {
-      await new Promise(resolve => setTimeout(resolve, 50))
-      setLeftResponse(prev => prev + (prev ? ' ' : '') + word)
-    }
-    
-    setIsLeftStreaming(false)
-    setLeftTime(Date.now() - leftStart)
-    setLeftCost(0.025) // Simulated cost
+    // Get model metadata
+    const leftModelData = getModelMetadata(leftModel)
+    const rightModelData = getModelMetadata(rightModel)
 
-    // Simulate right model streaming (slightly different timing)
-    const rightWords = `Response from ${getModelMetadata(rightModel)?.name}: This demonstration shows how Clarity Chat enables easy comparison between different AI providers. Notice how the streaming happens independently for each model, allowing you to evaluate their performance side by side. The model adapter system makes this comparison trivial to implement.`.split(' ')
-    
-    for (const word of rightWords) {
-      await new Promise(resolve => setTimeout(resolve, 60))
-      setRightResponse(prev => prev + (prev ? ' ' : '') + word)
+    if (!leftModelData || !rightModelData) {
+      console.error('Model metadata not found')
+      setIsLeftStreaming(false)
+      setIsRightStreaming(false)
+      return
     }
-    
-    setIsRightStreaming(false)
-    setRightTime(Date.now() - rightStart)
-    setRightCost(0.012) // Simulated cost
+
+    // Stream from both models simultaneously
+    try {
+      await Promise.all([
+        leftStream.stream(messages, {
+          provider: leftModelData.provider as any,
+          model: leftModel,
+          temperature: 0.7,
+          maxTokens: 1000
+        }),
+        rightStream.stream(messages, {
+          provider: rightModelData.provider as any,
+          model: rightModel,
+          temperature: 0.7,
+          maxTokens: 1000
+        })
+      ])
+    } catch (error) {
+      console.error('Comparison error:', error)
+      setIsLeftStreaming(false)
+      setIsRightStreaming(false)
+    }
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -183,7 +232,21 @@ export default function Home() {
               </div>
             )}
 
-            {!leftResponse && !isLeftStreaming && (
+            {leftError && (
+              <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Error</h4>
+                    <p className="text-sm text-red-700 dark:text-red-400">{leftError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!leftResponse && !isLeftStreaming && !leftError && (
               <div className="text-center text-gray-500 dark:text-gray-400 py-12">
                 Enter a prompt and click "Compare Models" to see results
               </div>
@@ -233,7 +296,21 @@ export default function Home() {
               </div>
             )}
 
-            {!rightResponse && !isRightStreaming && (
+            {rightError && (
+              <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Error</h4>
+                    <p className="text-sm text-red-700 dark:text-red-400">{rightError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!rightResponse && !isRightStreaming && !rightError && (
               <div className="text-center text-gray-500 dark:text-gray-400 py-12">
                 Enter a prompt and click "Compare Models" to see results
               </div>
@@ -331,6 +408,13 @@ export default function Home() {
                 GitHub
               </a>
             </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
+           </div>
           </div>
         </div>
       </footer>
