@@ -1,23 +1,227 @@
 import { NextRequest } from 'next/server'
-import { 
-  openAIAdapter, 
-  anthropicAdapter, 
-  googleAdapter,
-  type ChatMessage,
-  type ModelConfig 
-} from '@clarity-chat/react'
 
 export const runtime = 'edge'
+
+// Type definitions
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
+interface ModelConfig {
+  provider: string
+  model: string
+  temperature?: number
+  maxTokens?: number
+  apiKey?: string
+}
+
+interface TokenUsage {
+  promptTokens: number
+  completionTokens: number
+  totalTokens: number
+}
+
+type StreamChunk = 
+  | { type: 'token'; content: string }
+  | { type: 'done'; usage: TokenUsage }
+  | { type: 'error'; error: string }
+
+// OpenAI Adapter
+async function* streamOpenAI(messages: ChatMessage[], config: ModelConfig): AsyncGenerator<StreamChunk> {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${config.apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: config.model,
+      messages,
+      temperature: config.temperature || 0.7,
+      max_tokens: config.maxTokens || 1000,
+      stream: true,
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error?.message || 'OpenAI API error')
+  }
+
+  const reader = response.body!.getReader()
+  const decoder = new TextDecoder()
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+
+    const chunk = decoder.decode(value, { stream: true })
+    const lines = chunk.split('\n').filter(line => line.trim() !== '')
+
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const data = line.slice(6)
+        if (data === '[DONE]') {
+          yield { type: 'done', usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 } }
+          return
+        }
+
+        try {
+          const json = JSON.parse(data)
+          const content = json.choices[0]?.delta?.content
+          if (content) {
+            yield { type: 'token', content }
+          }
+        } catch (e) {
+          // Ignore parse errors for incomplete chunks
+        }
+      }
+    }
+  }
+}
+
+// Anthropic Adapter
+async function* streamAnthropic(messages: ChatMessage[], config: ModelConfig): AsyncGenerator<StreamChunk> {
+  const systemMessage = messages.find(m => m.role === 'system')
+  const userMessages = messages.filter(m => m.role !== 'system')
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': config.apiKey!,
+      'anthropic-version': '2023-06-01',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: config.model,
+      messages: userMessages,
+      system: systemMessage?.content,
+      max_tokens: config.maxTokens || 1000,
+      temperature: config.temperature || 0.7,
+      stream: true,
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error?.message || 'Anthropic API error')
+  }
+
+  const reader = response.body!.getReader()
+  const decoder = new TextDecoder()
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+
+    const chunk = decoder.decode(value, { stream: true })
+    const lines = chunk.split('\n').filter(line => line.trim() !== '')
+
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const data = line.slice(6)
+        
+        try {
+          const json = JSON.parse(data)
+          
+          if (json.type === 'content_block_delta' && json.delta?.text) {
+            yield { type: 'token', content: json.delta.text }
+          } else if (json.type === 'message_stop') {
+            yield { type: 'done', usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 } }
+            return
+          }
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+    }
+  }
+}
+
+// Google AI Adapter  
+async function* streamGoogle(messages: ChatMessage[], config: ModelConfig): AsyncGenerator<StreamChunk> {
+  const contents = messages.map(m => ({
+    role: m.role === 'user' ? 'user' : 'model',
+    parts: [{ text: m.content }]
+  }))
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:streamGenerateContent?key=${config.apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents,
+        generationConfig: {
+          temperature: config.temperature || 0.7,
+          maxOutputTokens: config.maxTokens || 1000,
+        },
+      }),
+    }
+  )
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error?.message || 'Google AI API error')
+  }
+
+  const reader = response.body!.getReader()
+  const decoder = new TextDecoder()
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+
+    const chunk = decoder.decode(value, { stream: true })
+    const lines = chunk.split('\n').filter(line => line.trim() !== '')
+
+    for (const line of lines) {
+      try {
+        const json = JSON.parse(line)
+        const text = json.candidates?.[0]?.content?.parts?.[0]?.text
+        if (text) {
+          yield { type: 'token', content: text }
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+  }
+
+  yield { type: 'done', usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 } }
+}
+
+// Cost estimation
+function estimateCost(usage: TokenUsage, model: string): number {
+  const costs: Record<string, { input: number; output: number }> = {
+    'gpt-4-turbo': { input: 0.01, output: 0.03 },
+    'gpt-4-turbo-preview': { input: 0.01, output: 0.03 },
+    'gpt-4': { input: 0.03, output: 0.06 },
+    'gpt-3.5-turbo': { input: 0.0015, output: 0.002 },
+    'claude-3-opus': { input: 0.015, output: 0.075 },
+    'claude-3-opus-20240229': { input: 0.015, output: 0.075 },
+    'claude-3-sonnet': { input: 0.003, output: 0.015 },
+    'claude-3-sonnet-20240229': { input: 0.003, output: 0.015 },
+    'claude-3-haiku': { input: 0.00025, output: 0.00125 },
+    'claude-3-haiku-20240307': { input: 0.00025, output: 0.00125 },
+    'gemini-pro': { input: 0.00025, output: 0.0005 },
+    'gemini-pro-vision': { input: 0.00025, output: 0.0005 },
+  }
+
+  const pricing = costs[model] || { input: 0, output: 0 }
+  return (usage.promptTokens * pricing.input / 1000) + (usage.completionTokens * pricing.output / 1000)
+}
 
 // Helper to get the correct adapter based on provider
 function getAdapter(provider: string) {
   switch (provider) {
     case 'openai':
-      return openAIAdapter
+      return streamOpenAI
     case 'anthropic':
-      return anthropicAdapter
+      return streamAnthropic
     case 'google':
-      return googleAdapter
+      return streamGoogle
     default:
       throw new Error(`Unknown provider: ${provider}`)
   }
@@ -93,11 +297,9 @@ export async function POST(request: NextRequest) {
             apiKey,
           }
 
-          let totalTokens = 0
-          let promptTokens = 0
           let completionTokens = 0
 
-          for await (const chunk of adapter.stream(messages, streamConfig)) {
+          for await (const chunk of adapter(messages, streamConfig)) {
             // Send each chunk as SSE
             if (chunk.type === 'token') {
               controller.enqueue(
@@ -107,39 +309,18 @@ export async function POST(request: NextRequest) {
                 }))
               )
               completionTokens++
-            } else if (chunk.type === 'tool_call') {
-              controller.enqueue(
-                encoder.encode(createSSEMessage({
-                  type: 'tool_call',
-                  toolCall: chunk.toolCall
-                }))
-              )
-            } else if (chunk.type === 'thinking') {
-              controller.enqueue(
-                encoder.encode(createSSEMessage({
-                  type: 'thinking',
-                  content: chunk.content
-                }))
-              )
-            } else if (chunk.type === 'citation') {
-              controller.enqueue(
-                encoder.encode(createSSEMessage({
-                  type: 'citation',
-                  citation: chunk.citation
-                }))
-              )
             } else if (chunk.type === 'done') {
               const endTime = Date.now()
               const duration = endTime - startTime
 
-              // Calculate cost
-              const usage = chunk.usage || {
-                promptTokens,
+              // Estimate token count and cost
+              const usage = {
+                promptTokens: 50, // Rough estimate
                 completionTokens,
-                totalTokens: totalTokens || (promptTokens + completionTokens)
+                totalTokens: 50 + completionTokens
               }
 
-              const cost = adapter.estimateCost(usage, config.model)
+              const cost = estimateCost(usage, config.model)
 
               // Send completion message
               controller.enqueue(
@@ -154,7 +335,7 @@ export async function POST(request: NextRequest) {
               controller.enqueue(
                 encoder.encode(createSSEMessage({
                   type: 'error',
-                  error: chunk.error?.message || 'Unknown error'
+                  error: chunk.error
                 }))
               )
             }
