@@ -70,21 +70,23 @@ A comprehensive, production-ready React component library for building AI-powere
 
 ### 🛠️ Developer Experience
 - **100% TypeScript** with strict mode
-- **35+ Custom Hooks** for everything
+- **41 Custom Hooks** for everything
 - **25+ Providers** (analytics, AI, error tracking)
-- **Comprehensive Documentation** (25,000+ words)
+- **2 Pre-built Templates** (SupportBot, CodeAssistant)
+- **Comprehensive Documentation** (30,000+ words)
 - **100+ Usage Examples** in code
 - **Production-ready** with error handling
 
 ## 📦 What's Inside
 
 ### 📊 Project Statistics
-- **111 TypeScript Files** (26,520 lines of code)
-- **50+ React Components** (fully typed)
-- **35+ Custom Hooks** (performance, analytics, AI, accessibility)
+- **229 TypeScript Files** (32,650 lines of code)
+- **53 React Components** (fully typed)
+- **41 Custom Hooks** (performance, analytics, AI, accessibility, voice, mobile)
 - **25+ Providers** (7 analytics, 6 error tracking, 8 AI, 4 system)
-- **8 Built-in Themes** with live editor
-- **25,000+ Words** of documentation
+- **11 Built-in Themes** with live editor
+- **2 Pre-built Templates** (SupportBot, CodeAssistant) **NEW!**
+- **30,000+ Words** of documentation
 - **100+ Usage Examples**
 
 ### 🎯 Complete Feature Set
