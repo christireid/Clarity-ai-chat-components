@@ -1,0 +1,134 @@
+{
+  "Import OpenAI": {
+    "prefix": "cc-import-openai",
+    "body": [
+      "const { OpenAI } = require('openai')"
+    ],
+    "description": "Import OpenAI SDK"
+  },
+
+  "Import Anthropic": {
+    "prefix": "cc-import-anthropic",
+    "body": [
+      "const Anthropic = require('@anthropic-ai/sdk')"
+    ],
+    "description": "Import Anthropic SDK"
+  },
+
+  "Import Google AI": {
+    "prefix": "cc-import-google",
+    "body": [
+      "const { GoogleGenerativeAI } = require('@google/generative-ai')"
+    ],
+    "description": "Import Google AI SDK"
+  },
+
+  "OpenAI Chat Basic": {
+    "prefix": "cc-openai-basic",
+    "body": [
+      "const openai = new OpenAI({",
+      "  apiKey: process.env.OPENAI_API_KEY",
+      "})",
+      "",
+      "async function chat(message) {",
+      "  const response = await openai.chat.completions.create({",
+      "    model: '${1:gpt-4-turbo}',",
+      "    messages: [{ role: 'user', content: message }]",
+      "  })",
+      "  return response.choices[0].message.content",
+      "}"
+    ],
+    "description": "Basic OpenAI chat function"
+  },
+
+  "Anthropic Chat Basic": {
+    "prefix": "cc-anthropic-basic",
+    "body": [
+      "const anthropic = new Anthropic({",
+      "  apiKey: process.env.ANTHROPIC_API_KEY",
+      "})",
+      "",
+      "async function chat(message) {",
+      "  const response = await anthropic.messages.create({",
+      "    model: '${1:claude-3-opus-20240229}',",
+      "    max_tokens: 1024,",
+      "    messages: [{ role: 'user', content: message }]",
+      "  })",
+      "  return response.content[0].text",
+      "}"
+    ],
+    "description": "Basic Anthropic chat function"
+  },
+
+  "Express API Route": {
+    "prefix": "cc-express-api",
+    "body": [
+      "const express = require('express')",
+      "const { OpenAI } = require('openai')",
+      "",
+      "const app = express()",
+      "const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })",
+      "",
+      "app.use(express.json())",
+      "",
+      "app.post('/api/chat', async (req, res) => {",
+      "  try {",
+      "    const { message } = req.body",
+      "    ",
+      "    const response = await openai.chat.completions.create({",
+      "      model: '${1:gpt-4-turbo}',",
+      "      messages: [{ role: 'user', content: message }]",
+      "    })",
+      "    ",
+      "    res.json({",
+      "      content: response.choices[0].message.content,",
+      "      usage: response.usage",
+      "    })",
+      "  } catch (error) {",
+      "    res.status(500).json({ error: error.message })",
+      "  }",
+      "})",
+      "",
+      "app.listen(3000, () => console.log('Server running on port 3000'))"
+    ],
+    "description": "Express API route with OpenAI"
+  },
+
+  "Streaming Response Handler": {
+    "prefix": "cc-stream-handler",
+    "body": [
+      "async function handleStream(stream) {",
+      "  let fullResponse = ''",
+      "  ",
+      "  for await (const chunk of stream) {",
+      "    const content = chunk.choices[0]?.delta?.content || ''",
+      "    fullResponse += content",
+      "    process.stdout.write(content)",
+      "  }",
+      "  ",
+      "  return fullResponse",
+      "}"
+    ],
+    "description": "Stream response handler"
+  },
+
+  "Cost Calculator": {
+    "prefix": "cc-cost-calc",
+    "body": [
+      "const PRICING = {",
+      "  'gpt-4-turbo': { input: 0.01, output: 0.03 },",
+      "  'gpt-3.5-turbo': { input: 0.0005, output: 0.0015 },",
+      "  'claude-3-opus': { input: 0.015, output: 0.075 },",
+      "  'gemini-pro': { input: 0.00025, output: 0.0005 }",
+      "}",
+      "",
+      "function calculateCost(usage, model) {",
+      "  const pricing = PRICING[model] || { input: 0.001, output: 0.002 }",
+      "  const inputCost = (usage.prompt_tokens * pricing.input) / 1000",
+      "  const outputCost = (usage.completion_tokens * pricing.output) / 1000",
+      "  return inputCost + outputCost",
+      "}"
+    ],
+    "description": "Cost calculation function"
+  }
+}

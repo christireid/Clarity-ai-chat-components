@@ -1,0 +1,380 @@
+{
+  "Import Clarity Chat": {
+    "prefix": "cc-import",
+    "body": [
+      "import { ${1|OpenAI,Anthropic,GoogleGenerativeAI|} } from '${2|openai,@anthropic-ai/sdk,@google/generative-ai|}'"
+    ],
+    "description": "Import AI provider SDK"
+  },
+
+  "OpenAI Chat Completion": {
+    "prefix": "cc-openai-chat",
+    "body": [
+      "const openai = new OpenAI({",
+      "  apiKey: process.env.OPENAI_API_KEY",
+      "})",
+      "",
+      "const response = await openai.chat.completions.create({",
+      "  model: '${1|gpt-4-turbo,gpt-4,gpt-3.5-turbo|}',",
+      "  messages: [",
+      "    { role: 'system', content: '${2:You are a helpful assistant}' },",
+      "    { role: 'user', content: '${3:Hello!}' }",
+      "  ],",
+      "  temperature: ${4:0.7},",
+      "  max_tokens: ${5:1000}",
+      "})",
+      "",
+      "console.log(response.choices[0].message.content)"
+    ],
+    "description": "OpenAI chat completion"
+  },
+
+  "OpenAI Streaming": {
+    "prefix": "cc-openai-stream",
+    "body": [
+      "const openai = new OpenAI({",
+      "  apiKey: process.env.OPENAI_API_KEY",
+      "})",
+      "",
+      "const stream = await openai.chat.completions.create({",
+      "  model: '${1|gpt-4-turbo,gpt-4,gpt-3.5-turbo|}',",
+      "  messages: [",
+      "    { role: 'user', content: '${2:Tell me a story}' }",
+      "  ],",
+      "  stream: true",
+      "})",
+      "",
+      "for await (const chunk of stream) {",
+      "  const content = chunk.choices[0]?.delta?.content || ''",
+      "  process.stdout.write(content)",
+      "}"
+    ],
+    "description": "OpenAI streaming chat"
+  },
+
+  "Anthropic Chat Completion": {
+    "prefix": "cc-anthropic-chat",
+    "body": [
+      "const anthropic = new Anthropic({",
+      "  apiKey: process.env.ANTHROPIC_API_KEY",
+      "})",
+      "",
+      "const response = await anthropic.messages.create({",
+      "  model: '${1|claude-3-opus-20240229,claude-3-sonnet-20240229,claude-3-haiku-20240307|}',",
+      "  max_tokens: ${2:1024},",
+      "  messages: [",
+      "    { role: 'user', content: '${3:Hello, Claude!}' }",
+      "  ]",
+      "})",
+      "",
+      "console.log(response.content[0].text)"
+    ],
+    "description": "Anthropic chat completion"
+  },
+
+  "Anthropic Streaming": {
+    "prefix": "cc-anthropic-stream",
+    "body": [
+      "const anthropic = new Anthropic({",
+      "  apiKey: process.env.ANTHROPIC_API_KEY",
+      "})",
+      "",
+      "const stream = await anthropic.messages.create({",
+      "  model: '${1|claude-3-opus-20240229,claude-3-sonnet-20240229|}',",
+      "  max_tokens: ${2:1024},",
+      "  messages: [",
+      "    { role: 'user', content: '${3:Tell me a story}' }",
+      "  ],",
+      "  stream: true",
+      "})",
+      "",
+      "for await (const event of stream) {",
+      "  if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {",
+      "    process.stdout.write(event.delta.text)",
+      "  }",
+      "}"
+    ],
+    "description": "Anthropic streaming chat"
+  },
+
+  "Google AI Chat": {
+    "prefix": "cc-google-chat",
+    "body": [
+      "const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '')",
+      "const model = genAI.getGenerativeModel({ model: '${1|gemini-pro,gemini-pro-vision|}' })",
+      "",
+      "const result = await model.generateContent('${2:Write a story about a magic backpack}')",
+      "const response = await result.response",
+      "console.log(response.text())"
+    ],
+    "description": "Google AI chat completion"
+  },
+
+  "Google AI Streaming": {
+    "prefix": "cc-google-stream",
+    "body": [
+      "const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '')",
+      "const model = genAI.getGenerativeModel({ model: '${1:gemini-pro}' })",
+      "",
+      "const result = await model.generateContentStream('${2:Tell me a story}')",
+      "",
+      "for await (const chunk of result.stream) {",
+      "  const chunkText = chunk.text()",
+      "  process.stdout.write(chunkText)",
+      "}"
+    ],
+    "description": "Google AI streaming chat"
+  },
+
+  "API Route with OpenAI": {
+    "prefix": "cc-api-openai",
+    "body": [
+      "import { NextRequest, NextResponse } from 'next/server'",
+      "import { OpenAI } from 'openai'",
+      "",
+      "const openai = new OpenAI({",
+      "  apiKey: process.env.OPENAI_API_KEY",
+      "})",
+      "",
+      "export async function POST(req: NextRequest) {",
+      "  try {",
+      "    const { message } = await req.json()",
+      "",
+      "    const response = await openai.chat.completions.create({",
+      "      model: '${1:gpt-4-turbo}',",
+      "      messages: [{ role: 'user', content: message }],",
+      "      stream: false",
+      "    })",
+      "",
+      "    return NextResponse.json({",
+      "      content: response.choices[0].message.content,",
+      "      usage: response.usage",
+      "    })",
+      "  } catch (error) {",
+      "    return NextResponse.json(",
+      "      { error: 'Failed to generate response' },",
+      "      { status: 500 }",
+      "    )",
+      "  }",
+      "}"
+    ],
+    "description": "Next.js API route with OpenAI"
+  },
+
+  "Streaming API Route": {
+    "prefix": "cc-api-stream",
+    "body": [
+      "import { NextRequest } from 'next/server'",
+      "import { OpenAI } from 'openai'",
+      "",
+      "const openai = new OpenAI({",
+      "  apiKey: process.env.OPENAI_API_KEY",
+      "})",
+      "",
+      "export async function POST(req: NextRequest) {",
+      "  const { message } = await req.json()",
+      "",
+      "  const stream = await openai.chat.completions.create({",
+      "    model: '${1:gpt-4-turbo}',",
+      "    messages: [{ role: 'user', content: message }],",
+      "    stream: true",
+      "  })",
+      "",
+      "  const encoder = new TextEncoder()",
+      "",
+      "  const customStream = new ReadableStream({",
+      "    async start(controller) {",
+      "      for await (const chunk of stream) {",
+      "        const content = chunk.choices[0]?.delta?.content || ''",
+      "        if (content) {",
+      "          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\\n\\n`))",
+      "        }",
+      "      }",
+      "      controller.close()",
+      "    }",
+      "  })",
+      "",
+      "  return new Response(customStream, {",
+      "    headers: {",
+      "      'Content-Type': 'text/event-stream',",
+      "      'Cache-Control': 'no-cache',",
+      "      'Connection': 'keep-alive'",
+      "    }",
+      "  })",
+      "}"
+    ],
+    "description": "Streaming API route with Server-Sent Events"
+  },
+
+  "Error Handling Wrapper": {
+    "prefix": "cc-error-handler",
+    "body": [
+      "async function ${1:handleChatRequest}(${2:message: string}) {",
+      "  try {",
+      "    const response = await openai.chat.completions.create({",
+      "      model: '${3:gpt-4-turbo}',",
+      "      messages: [{ role: 'user', content: ${2} }]",
+      "    })",
+      "    return { success: true, data: response }",
+      "  } catch (error) {",
+      "    if (error instanceof Error) {",
+      "      // Handle specific error types",
+      "      if ((error as any).status === 429) {",
+      "        return { success: false, error: 'Rate limit exceeded' }",
+      "      }",
+      "      if ((error as any).status === 401) {",
+      "        return { success: false, error: 'Invalid API key' }",
+      "      }",
+      "      return { success: false, error: error.message }",
+      "    }",
+      "    return { success: false, error: 'Unknown error' }",
+      "  }",
+      "}"
+    ],
+    "description": "Error handling wrapper for AI requests"
+  },
+
+  "Token Counter": {
+    "prefix": "cc-token-counter",
+    "body": [
+      "function estimateTokens(text: string): number {",
+      "  // Rough estimation: ~4 characters per token",
+      "  return Math.ceil(text.length / 4)",
+      "}",
+      "",
+      "function calculateCost(promptTokens: number, completionTokens: number, model: string): number {",
+      "  const pricing: Record<string, { input: number; output: number }> = {",
+      "    'gpt-4-turbo': { input: 0.01, output: 0.03 },",
+      "    'gpt-4': { input: 0.03, output: 0.06 },",
+      "    'gpt-3.5-turbo': { input: 0.0005, output: 0.0015 },",
+      "    'claude-3-opus': { input: 0.015, output: 0.075 },",
+      "    'claude-3-sonnet': { input: 0.003, output: 0.015 },",
+      "    'gemini-pro': { input: 0.00025, output: 0.0005 }",
+      "  }",
+      "  ",
+      "  const price = pricing[model] || { input: 0.001, output: 0.002 }",
+      "  return (promptTokens * price.input / 1000) + (completionTokens * price.output / 1000)",
+      "}"
+    ],
+    "description": "Token estimation and cost calculation utilities"
+  },
+
+  "RAG Document Processor": {
+    "prefix": "cc-rag-processor",
+    "body": [
+      "interface Document {",
+      "  id: string",
+      "  content: string",
+      "  metadata: Record<string, any>",
+      "}",
+      "",
+      "interface Chunk {",
+      "  id: string",
+      "  content: string",
+      "  documentId: string",
+      "  index: number",
+      "}",
+      "",
+      "function chunkDocument(doc: Document, chunkSize: number = 500, overlap: number = 50): Chunk[] {",
+      "  const chunks: Chunk[] = []",
+      "  const words = doc.content.split(/\\s+/)",
+      "  ",
+      "  for (let i = 0; i < words.length; i += chunkSize - overlap) {",
+      "    const chunk = words.slice(i, i + chunkSize).join(' ')",
+      "    chunks.push({",
+      "      id: `${doc.id}-chunk-${chunks.length}`,",
+      "      content: chunk,",
+      "      documentId: doc.id,",
+      "      index: chunks.length",
+      "    })",
+      "  }",
+      "  ",
+      "  return chunks",
+      "}"
+    ],
+    "description": "RAG document chunking utility"
+  },
+
+  "Chat Message Interface": {
+    "prefix": "cc-message-interface",
+    "body": [
+      "interface ChatMessage {",
+      "  role: 'system' | 'user' | 'assistant'",
+      "  content: string",
+      "  timestamp?: Date",
+      "  tokens?: number",
+      "}",
+      "",
+      "interface ChatHistory {",
+      "  messages: ChatMessage[]",
+      "  totalTokens: number",
+      "  cost: number",
+      "}",
+      "",
+      "function addMessage(history: ChatHistory, message: ChatMessage): ChatHistory {",
+      "  return {",
+      "    ...history,",
+      "    messages: [...history.messages, message],",
+      "    totalTokens: history.totalTokens + (message.tokens || 0)",
+      "  }",
+      "}"
+    ],
+    "description": "Chat message interfaces and helpers"
+  },
+
+  "Environment Variables Check": {
+    "prefix": "cc-env-check",
+    "body": [
+      "function validateEnv() {",
+      "  const required = [",
+      "    'OPENAI_API_KEY',",
+      "    'ANTHROPIC_API_KEY',",
+      "    'GOOGLE_API_KEY'",
+      "  ]",
+      "  ",
+      "  const missing = required.filter(key => !process.env[key])",
+      "  ",
+      "  if (missing.length > 0 && missing.length === required.length) {",
+      "    throw new Error('At least one AI provider API key must be configured')",
+      "  }",
+      "  ",
+      "  const configured = required.filter(key => process.env[key])",
+      "  console.log(`Configured providers: ${configured.map(k => k.replace('_API_KEY', '')).join(', ')}`)",
+      "}"
+    ],
+    "description": "Environment variables validation"
+  },
+
+  "Retry Logic": {
+    "prefix": "cc-retry",
+    "body": [
+      "async function withRetry<T>(",
+      "  fn: () => Promise<T>,",
+      "  maxRetries: number = 3,",
+      "  delayMs: number = 1000",
+      "): Promise<T> {",
+      "  let lastError: Error",
+      "  ",
+      "  for (let i = 0; i < maxRetries; i++) {",
+      "    try {",
+      "      return await fn()",
+      "    } catch (error) {",
+      "      lastError = error as Error",
+      "      ",
+      "      // Don't retry on auth errors",
+      "      if ((error as any).status === 401 || (error as any).status === 403) {",
+      "        throw error",
+      "      }",
+      "      ",
+      "      if (i < maxRetries - 1) {",
+      "        await new Promise(resolve => setTimeout(resolve, delayMs * (i + 1)))",
+      "      }",
+      "    }",
+      "  }",
+      "  ",
+      "  throw lastError!",
+      "}"
+    ],
+    "description": "Retry logic with exponential backoff"
+  }
+}

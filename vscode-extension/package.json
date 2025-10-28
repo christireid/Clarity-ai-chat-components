@@ -1,0 +1,116 @@
+{
+  "name": "clarity-chat",
+  "displayName": "Clarity Chat",
+  "description": "IntelliSense, code snippets, and productivity tools for Clarity Chat AI framework",
+  "version": "0.1.0",
+  "publisher": "clarity-chat",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "clarity-chat",
+    "ai",
+    "openai",
+    "anthropic",
+    "google-ai",
+    "chat",
+    "completion"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/package.json"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "clarity-chat.initProject",
+        "title": "Clarity Chat: Initialize Project",
+        "category": "Clarity Chat"
+      },
+      {
+        "command": "clarity-chat.addProvider",
+        "title": "Clarity Chat: Add Provider",
+        "category": "Clarity Chat"
+      },
+      {
+        "command": "clarity-chat.validateConfig",
+        "title": "Clarity Chat: Validate Configuration",
+        "category": "Clarity Chat"
+      },
+      {
+        "command": "clarity-chat.showExamples",
+        "title": "Clarity Chat: Show Examples",
+        "category": "Clarity Chat"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "typescript",
+        "path": "./snippets/typescript.json"
+      },
+      {
+        "language": "javascript",
+        "path": "./snippets/javascript.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "./snippets/react.json"
+      },
+      {
+        "language": "javascriptreact",
+        "path": "./snippets/react.json"
+      }
+    ],
+    "configuration": {
+      "title": "Clarity Chat",
+      "properties": {
+        "clarity-chat.enableIntelliSense": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable IntelliSense for Clarity Chat APIs"
+        },
+        "clarity-chat.enableCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show CodeLens hints for API usage"
+        },
+        "clarity-chat.defaultProvider": {
+          "type": "string",
+          "enum": ["openai", "anthropic", "google"],
+          "default": "openai",
+          "description": "Default AI provider for snippets"
+        },
+        "clarity-chat.showInlineHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline parameter hints"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clarity-chat/clarity-chat"
+  },
+  "license": "MIT"
+}
