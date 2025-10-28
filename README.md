@@ -1,15 +1,16 @@
 # Clarity Chat 🚀
 
-> Premium AI Chat Component Library - **PHASE 3 COMPLETE!** ✅
+> Premium AI Chat Component Library - **PHASE 4 COMPLETE!** ✅
 
 A comprehensive, production-ready React component library for building AI-powered chat applications. Built with TypeScript, Tailwind CSS, and modern web technologies.
 
-**🎉 Now with Analytics, Accessibility (WCAG 2.1 AAA), Error Tracking, AI Features & Performance Monitoring!**
+**🎉 Now with Voice Input, Mobile Keyboard Handling, Glassmorphism Theme, Pre-built Templates & Everything You Need!**
 
 ## ✨ Features
 
 ### 🎨 Beautiful Design System
-- **8 Built-in Themes** (Default, Dark, Ocean, Sunset, Forest, Lavender, Rose, Nord)
+- **11 Built-in Themes** (Default, Dark, Ocean, Sunset, Forest, Corporate, Glassmorphism, and more)
+- **Glassmorphism Theme** with modern blur effects and transparency
 - **Live Theme Editor** with color pickers and preview
 - **Dark mode** with smooth transitions
 - **Responsive** design for all screen sizes
@@ -116,6 +117,14 @@ A comprehensive, production-ready React component library for building AI-powere
 - **Performance Monitoring** (dashboard, render metrics, memory tracking)
 - **Error Tracking** (6 providers, user feedback, breadcrumbs)
 - **AI Features** (suggestions, moderation, sentiment analysis)
+
+#### Phase 4: Extended Features ✅ (6/6 tasks) **NEW!**
+- **Voice Input** with Web Speech API (speech-to-text, real-time transcription)
+- **Mobile Keyboard Handling** (auto-scroll, height detection, iOS/Android support)
+- **Glassmorphism Theme** (modern glass effects with blur and transparency)
+- **Pre-built Templates** (Support Bot with FAQ matching, Code Assistant)
+- **Context Visualizer** (show what AI "sees" in context window)
+- **Conversation List** (search, filter, pin, favorites)
 
 ## 🏁 Quick Start
 
@@ -329,14 +338,23 @@ clarity-chat/
 - [x] **Content Moderation** - Profanity filter and PII detection
 - [x] **Sentiment Analysis** - Real-time sentiment detection
 
-### Phase 4: Extended Features (Next)
-- [ ] ContextVisualizer component (show what AI "sees")
-- [ ] ConversationList with search and filtering
-- [ ] Mobile keyboard handling (useMobileKeyboard)
-- [ ] Voice input with speech-to-text
-- [ ] Design system overhaul (glassmorphism)
-- [ ] Pre-built templates (support bot, code assistant)
-- [ ] Video tutorials and landing page
+### ✅ Phase 4: Extended Features (COMPLETE!)
+- [x] **ContextVisualizer** component (show what AI "sees")
+- [x] **ConversationList** with search and filtering
+- [x] **Mobile keyboard handling** (useMobileKeyboard hook)
+- [x] **Voice input** with speech-to-text (VoiceInput component)
+- [x] **Glassmorphism theme** - Modern design with blur effects
+- [x] **Pre-built templates** (SupportBot, CodeAssistant)
+- [ ] Video tutorials and landing page (Phase 5)
+
+**🎉 What's New in Phase 4:**
+- Voice-to-text input with Web Speech API support
+- Mobile keyboard detection and auto-scroll (iOS & Android)
+- Glassmorphism design theme with modern glass effects
+- Ready-to-use Support Bot template with FAQ matching
+- Code Assistant template with syntax highlighting and quick actions
+- Context visualization to show AI's "view" of the conversation
+- Advanced conversation management with search, filters, and pinning
 
 ## 📚 Documentation
 

@@ -131,3 +131,17 @@ export * from './components/theme-preview'
 
 // Performance Dashboard
 export * from './components/performance-dashboard'
+
+// ============================================================================
+// PHASE 4 FEATURES
+// ============================================================================
+
+// Phase 4 - Voice Input
+export * from './components/voice-input'
+export * from './hooks/use-voice-input'
+
+// Phase 4 - Mobile Keyboard Handling
+export * from './hooks/use-mobile-keyboard'
+
+// Phase 4 - Pre-built Templates
+export * from './templates'

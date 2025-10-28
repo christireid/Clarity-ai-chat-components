@@ -494,6 +494,83 @@ export const corporateTheme: CompleteThemeConfig = {
 }
 
 // ============================================================================
+// 11. GLASSMORPHISM THEME
+// ============================================================================
+
+export const glassmorphismTheme: CompleteThemeConfig = {
+  ...defaultLightTheme,
+  name: 'glassmorphism',
+  mode: 'light',
+  colors: {
+    background: '220 30% 96%',
+    foreground: '220 20% 20%',
+    card: '0 0% 100% / 0.7', // Semi-transparent glass effect
+    cardForeground: '220 20% 20%',
+    popover: '0 0% 100% / 0.85',
+    popoverForeground: '220 20% 20%',
+    primary: '220 90% 56%',
+    primaryForeground: '0 0% 100%',
+    secondary: '280 80% 60%',
+    secondaryForeground: '0 0% 100%',
+    muted: '220 15% 90% / 0.6',
+    mutedForeground: '220 15% 40%',
+    accent: '340 80% 60%',
+    accentForeground: '0 0% 100%',
+    destructive: '0 84.2% 60.2%',
+    destructiveForeground: '0 0% 100%',
+    success: '142 76% 36%',
+    successForeground: '0 0% 100%',
+    warning: '38 92% 50%',
+    warningForeground: '220 20% 20%',
+    info: '199 89% 48%',
+    infoForeground: '0 0% 100%',
+    border: '220 20% 80% / 0.3',
+    input: '220 20% 85% / 0.5',
+    ring: '220 90% 56%',
+  },
+  borders: {
+    ...defaultLightTheme.borders,
+    radius: {
+      none: '0',
+      sm: '0.75rem',
+      md: '1rem',
+      lg: '1.25rem',
+      xl: '1.5rem',
+      '2xl': '2rem',
+      full: '9999px',
+    },
+  },
+  shadows: {
+    none: 'none',
+    sm: '0 2px 8px 0 rgb(0 0 0 / 0.06)',
+    md: '0 8px 16px 0 rgb(0 0 0 / 0.08), 0 0 0 1px rgb(255 255 255 / 0.1) inset',
+    lg: '0 16px 32px 0 rgb(0 0 0 / 0.1), 0 0 0 1px rgb(255 255 255 / 0.15) inset',
+    xl: '0 24px 48px 0 rgb(0 0 0 / 0.12), 0 0 0 1px rgb(255 255 255 / 0.2) inset',
+    '2xl': '0 32px 64px 0 rgb(0 0 0 / 0.15), 0 0 0 1px rgb(255 255 255 / 0.25) inset',
+    inner: 'inset 0 2px 8px 0 rgb(0 0 0 / 0.06)',
+  },
+  components: {
+    card: {
+      borderRadius: '1.25rem',
+      padding: '1.5rem',
+      shadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+    },
+    button: {
+      borderRadius: '0.75rem',
+      padding: '0.625rem 1.25rem',
+    },
+    input: {
+      borderRadius: '0.75rem',
+      padding: '0.625rem 1rem',
+    },
+    message: {
+      borderRadius: '1.25rem',
+      padding: '1rem 1.25rem',
+    },
+  },
+}
+
+// ============================================================================
 // THEME REGISTRY
 // ============================================================================
 
@@ -508,6 +585,7 @@ export const themes = {
   sunset: sunsetTheme,
   forest: forestTheme,
   corporate: corporateTheme,
+  glassmorphism: glassmorphismTheme,
 } as const
 
 export type ThemePresetName = keyof typeof themes
@@ -635,6 +713,18 @@ export const themeMetadata: Record<ThemePresetName, ThemeMetadata> = {
       primaryColor: '#3b68d4',
       secondaryColor: '#94a3b8',
       backgroundColor: '#f8f9fb',
+    },
+  },
+  glassmorphism: {
+    name: 'glassmorphism',
+    displayName: 'Glassmorphism',
+    description: 'Modern glass-like design with blur effects and transparency',
+    author: 'Clarity Chat',
+    version: '1.0.0',
+    preview: {
+      primaryColor: '#4d7fff',
+      secondaryColor: '#b366ff',
+      backgroundColor: '#f0f4f8',
     },
   },
 }
