@@ -1,0 +1,48 @@
+[
+  {
+    "name": "Full Bundle (ESM)",
+    "path": "dist/index.mjs",
+    "limit": "350 KB",
+    "gzip": true,
+    "running": false
+  },
+  {
+    "name": "Full Bundle (CJS)",
+    "path": "dist/index.js",
+    "limit": "370 KB",
+    "gzip": true,
+    "running": false
+  },
+  {
+    "name": "Single Component (ChatWindow)",
+    "path": "dist/index.mjs",
+    "import": "{ ChatWindow }",
+    "limit": "50 KB",
+    "gzip": true,
+    "running": false
+  },
+  {
+    "name": "Single Component (Message)",
+    "path": "dist/index.mjs",
+    "import": "{ Message }",
+    "limit": "30 KB",
+    "gzip": true,
+    "running": false
+  },
+  {
+    "name": "Hooks Only (useChat)",
+    "path": "dist/index.mjs",
+    "import": "{ useChat }",
+    "limit": "10 KB",
+    "gzip": true,
+    "running": false
+  },
+  {
+    "name": "Theme System",
+    "path": "dist/index.mjs",
+    "import": "{ ThemeProvider, useTheme }",
+    "limit": "15 KB",
+    "gzip": true,
+    "running": false
+  }
+]

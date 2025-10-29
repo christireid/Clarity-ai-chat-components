@@ -27,7 +27,9 @@
     "lint": "eslint src --ext ts,tsx",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "size": "size-limit",
+    "size:why": "size-limit --why"
   },
   "peerDependencies": {
     "react": "^18.0.0",
@@ -54,8 +56,31 @@
     "@vitest/ui": "^3.2.4",
     "happy-dom": "^20.0.7",
     "jsdom": "^27.0.1",
+    "@size-limit/preset-small-lib": "^11.0.0",
+    "size-limit": "^11.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.3.3",
     "vitest": "^3.2.4"
-  }
+  },
+  "size-limit": [
+    {
+      "name": "Full Bundle (ESM)",
+      "path": "dist/index.mjs",
+      "limit": "350 KB",
+      "gzip": true
+    },
+    {
+      "name": "Full Bundle (CJS)",
+      "path": "dist/index.js",
+      "limit": "370 KB",
+      "gzip": true
+    },
+    {
+      "name": "Single Component Import (Tree-shaken)",
+      "path": "dist/index.mjs",
+      "import": "{ ChatWindow }",
+      "limit": "50 KB",
+      "gzip": true
+    }
+  ]
 }
