@@ -1,0 +1,313 @@
+{
+  "snapshot": {
+    "commit": "2ee8f1790f3ff2659ef39b967838cd67728542d6",
+    "branch": "updates",
+    "date": "2024-10-28",
+    "tooling": {
+      "node": "v20.19.5",
+      "npm": "10.8.2",
+      "typescript": "5.3.3",
+      "react": "18.3.1",
+      "vitest": "3.2.4",
+      "storybook": "8.x"
+    }
+  },
+  "scorecards": {
+    "code": 72,
+    "tests": 45,
+    "a11y": 78,
+    "perf": 65,
+    "dx": 70,
+    "docs": 85,
+    "stories": 68,
+    "packaging": 55
+  },
+  "roadmap": [
+    {
+      "priority": "P0",
+      "title": "Enable Type Definitions Generation",
+      "why": "TypeScript consumers cannot get type safety. Deal-breaker for 95% of modern React developers. No autocomplete, no type checking, poor DX, increased errors.",
+      "how": [
+        "Create framer-motion.d.ts to isolate conflicting types",
+        "Update tsup.config.ts: set dts.resolve = true, skipLibCheck = true",
+        "Update tsconfig.json with proper moduleResolution",
+        "Verify dist/index.d.ts generates correctly",
+        "Test in consuming project"
+      ],
+      "acceptance": [
+        "dist/index.d.ts exists and complete",
+        "All exports have types",
+        "No type errors in build",
+        "Framer Motion types resolved",
+        "IDE autocomplete works"
+      ],
+      "files": [
+        "packages/react/tsup.config.ts",
+        "packages/react/src/types/framer-motion.d.ts",
+        "packages/react/tsconfig.json"
+      ],
+      "links": [
+        "https://tsup.egoist.dev/#generate-declaration-file",
+        "https://github.com/egoist/tsup/issues/571"
+      ],
+      "risk": "medium",
+      "effort": "2 days",
+      "impact": "critical"
+    },
+    {
+      "priority": "P0",
+      "title": "Add sideEffects Field for Tree-Shaking",
+      "why": "Without sideEffects, bundlers cannot tree-shake. Importing single component pulls 3.4MB. Users experience slow loads (3-5s on 3G), poor Core Web Vitals, high bounce rate.",
+      "how": [
+        "Audit codebase for side effects (global state, CSS, polyfills)",
+        "Add 'sideEffects' field to package.json (false or explicit array)",
+        "Test tree-shaking in consuming app",
+        "Verify bundle size reduction"
+      ],
+      "acceptance": [
+        "sideEffects field added to package.json",
+        "Single component import <50KB",
+        "Full library still functional",
+        "Tree-shaking verified"
+      ],
+      "files": [
+        "packages/react/package.json"
+      ],
+      "links": [
+        "https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free"
+      ],
+      "risk": "low",
+      "effort": "1 day",
+      "impact": "critical"
+    },
+    {
+      "priority": "P0",
+      "title": "Implement Comprehensive Testing Strategy",
+      "why": "17% test coverage (8/47 components) unacceptable. Critical features untested: voice input, mobile keyboard, templates, analytics, error tracking. Enterprise won't adopt without tests.",
+      "how": [
+        "Phase 1: Unit test all hooks (100% target)",
+        "Phase 2: Test all components (90% target)",
+        "Phase 3: Integration tests for key flows",
+        "Phase 4: Add Playwright for E2E",
+        "Phase 5: Storybook test runner for visual regression",
+        "Configure coverage thresholds in vitest.config"
+      ],
+      "acceptance": [
+        "90%+ overall coverage",
+        "100% hook coverage",
+        "All components tested",
+        "10+ E2E tests",
+        "Visual regression for stories",
+        "CI runs all tests"
+      ],
+      "files": [
+        "packages/react/src/**/__tests__/*.test.tsx",
+        "e2e/**/*.spec.ts",
+        "vitest.config.ts",
+        "playwright.config.ts"
+      ],
+      "links": [
+        "https://vitest.dev/guide/coverage.html",
+        "https://playwright.dev/docs/intro"
+      ],
+      "risk": "low",
+      "effort": "3-4 weeks",
+      "impact": "critical"
+    },
+    {
+      "priority": "P0",
+      "title": "Fix ESLint Configuration (v9 Migration)",
+      "why": "Code quality gates completely broken. No linting = no consistency, bugs slip through, ineffective PR reviews.",
+      "how": [
+        "Create eslint.config.js with flat config format",
+        "Add TypeScript, React, React Hooks, JSX-A11y plugins",
+        "Configure rules (strict TypeScript, no any, a11y errors)",
+        "Add lint script to package.json",
+        "Add to CI pipeline",
+        "Fix existing violations"
+      ],
+      "acceptance": [
+        "npm run lint works",
+        "TypeScript rules active",
+        "React rules active",
+        "A11y rules active",
+        "No @typescript-eslint/no-explicit-any violations",
+        "CI enforces linting"
+      ],
+      "files": [
+        "eslint.config.js",
+        "package.json",
+        ".github/workflows/ci.yml"
+      ],
+      "links": [
+        "https://eslint.org/docs/latest/use/configure/migration-guide"
+      ],
+      "risk": "medium",
+      "effort": "1 day",
+      "impact": "high"
+    },
+    {
+      "priority": "P1",
+      "title": "Implement Code Splitting & Lazy Loading",
+      "why": "3.4MB bundle is 30-40x too large. Slow initial loads (3-5s on 3G), poor Core Web Vitals, SEO penalties, high bounce rate.",
+      "how": [
+        "Split exports: core vs optional features",
+        "Use React.lazy for heavy components",
+        "Add Suspense boundaries",
+        "Configure dynamic imports in tsup",
+        "Update package.json exports for subpaths",
+        "Test lazy loading works",
+        "Verify bundle sizes"
+      ],
+      "acceptance": [
+        "Core bundle <100KB",
+        "Each feature chunk <50KB",
+        "Lazy loading works",
+        "Suspense boundaries added",
+        "No runtime errors",
+        "Tree-shaking verified"
+      ],
+      "files": [
+        "packages/react/src/index.ts",
+        "packages/react/tsup.config.ts",
+        "packages/react/package.json",
+        "All lazy-loaded components"
+      ],
+      "links": [
+        "https://react.dev/reference/react/lazy",
+        "https://tsup.egoist.dev/#code-splitting"
+      ],
+      "risk": "medium",
+      "effort": "1 week",
+      "impact": "high"
+    },
+    {
+      "priority": "P1",
+      "title": "Adopt React 18/19 Concurrent Features",
+      "why": "Missing modern React features = suboptimal UX. Streaming chat is janky, input lags, no visual feedback for background work.",
+      "how": [
+        "Use useTransition for streaming (non-blocking UI updates)",
+        "Use useDeferredValue for search/filter",
+        "Add Suspense boundaries for code splitting",
+        "Enable concurrent rendering in examples",
+        "Test UI responsiveness"
+      ],
+      "acceptance": [
+        "useTransition for streaming",
+        "useDeferredValue for search/filter",
+        "Suspense boundaries added",
+        "Concurrent rendering enabled",
+        "UI stays responsive during heavy ops",
+        "No visual regressions"
+      ],
+      "files": [
+        "packages/react/src/hooks/use-streaming.tsx",
+        "packages/react/src/components/conversation-list.tsx",
+        "packages/react/src/components/chat-window.tsx",
+        "All example apps"
+      ],
+      "links": [
+        "https://react.dev/reference/react/useTransition",
+        "https://react.dev/reference/react/useDeferredValue"
+      ],
+      "risk": "low",
+      "effort": "1 week",
+      "impact": "high"
+    },
+    {
+      "priority": "P1",
+      "title": "Add Bundle Size Limits & Monitoring",
+      "why": "No size limits = unchecked growth. Already 3.4MB. Need visibility and prevention.",
+      "how": [
+        "Install size-limit package",
+        "Configure size budgets (core <50KB, full <500KB)",
+        "Add size script to package.json",
+        "Add to CI pipeline",
+        "Add bundle analyzer",
+        "Generate visual reports"
+      ],
+      "acceptance": [
+        "size-limit configured",
+        "Budgets enforced in CI",
+        "PRs show size changes",
+        "Bundle analyzer runs on build",
+        "Core bundle <50KB",
+        "Full library <500KB"
+      ],
+      "files": [
+        "package.json",
+        ".github/workflows/ci.yml",
+        "tsup.config.ts"
+      ],
+      "links": [
+        "https://github.com/ai/size-limit"
+      ],
+      "risk": "low",
+      "effort": "2 days",
+      "impact": "high"
+    }
+  ],
+  "dead_code": [
+    {
+      "path": "packages/react/src/components/prompt-library.tsx",
+      "symbol": "// TODO comments",
+      "evidence": "Found TODO/FIXME markers indicating incomplete features",
+      "action": "Complete implementation or remove"
+    }
+  ],
+  "copy_edits": [
+    {
+      "page": "README.md",
+      "section": "Hero",
+      "current": "Premium AI Chat Component Library - **PHASE 4 COMPLETE!** ✅",
+      "proposed": "Production-ready React components for AI chat interfaces. TypeScript, accessible, themeable.",
+      "rationale": "Remove hype, add value. Start with what it does, not what phase it's in."
+    },
+    {
+      "page": "README.md",
+      "section": "Features intro",
+      "current": "**🎉 Now with Voice Input, Mobile Keyboard Handling, Glassmorphism Theme, Pre-built Templates & Everything You Need!**",
+      "proposed": "```tsx\nimport { ChatWindow } from '@clarity-chat/react'\n\n<ChatWindow messages={messages} onSendMessage={handleSend} />\n```\n\nThen add: Voice input, mobile-optimized, 11 themes, full accessibility.",
+      "rationale": "Examples first. Show, don't tell. Code speaks louder than feature lists."
+    },
+    {
+      "page": "README.md",
+      "section": "Stats",
+      "current": "**229 TypeScript Files** (32,650 lines of code)",
+      "proposed": "Remove or move to bottom. Lead with user value, not implementation details.",
+      "rationale": "LoC doesn't matter to developers choosing a library. Features and DX do."
+    }
+  ],
+  "ai_chat_enhancements": [
+    {
+      "pain_point": "Streaming token display performance",
+      "proposal": "Implement throttled rendering using useTransition. Update UI in chunks (e.g., every 50ms) instead of per-token.",
+      "why": "Current per-token rendering can cause jank. Smooth rendering improves perceived performance.",
+      "impact": "high"
+    },
+    {
+      "pain_point": "Retry/edit message UX",
+      "proposal": "Add inline edit button, diff highlight on regenerate, undo/redo stack visualization.",
+      "why": "Users frequently want to refine prompts. Should be one-click, not copy-paste-delete.",
+      "impact": "high"
+    },
+    {
+      "pain_point": "Cost tracking visibility",
+      "proposal": "Add per-message cost indicator, session total, budget warnings, model comparison costs.",
+      "why": "Developers need to understand AI costs. Should be visible and actionable.",
+      "impact": "high"
+    },
+    {
+      "pain_point": "Attachment preview limitations",
+      "proposal": "Support PDF preview, image thumbnails, code file syntax highlighting in preview.",
+      "why": "Current file upload shows names only. Users want to verify correct files attached.",
+      "impact": "medium"
+    },
+    {
+      "pain_point": "Message virtualization gaps",
+      "proposal": "Optimize virtual scrolling for images, code blocks. Add smooth scroll to message.",
+      "why": "Long conversations with rich content can stutter. Needs better virtualization.",
+      "impact": "medium"
+    }
+  ]
+}

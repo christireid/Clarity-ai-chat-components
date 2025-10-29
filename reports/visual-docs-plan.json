@@ -1,0 +1,536 @@
+{
+  "metadata": {
+    "project": "Clarity Chat Component Library",
+    "date": "2025-01-29",
+    "branch": "updates",
+    "commit": "2ee8f1790f3ff2659ef39b967838cd67728542d6",
+    "total_diagrams": 21,
+    "estimated_hours": 48
+  },
+  "diagrams": [
+    {
+      "id": 1,
+      "title": "System Architecture Overview",
+      "category": "architecture",
+      "section_anchor": "README.md - What's Inside section",
+      "placement": "After project statistics, before feature list",
+      "type": "system_architecture",
+      "priority": "P0",
+      "impact": "critical",
+      "effort_hours": 2,
+      "rationale": "Developers need to understand the monorepo structure and how packages relate before diving into features.",
+      "output_file": "docs/assets/architecture-overview.svg",
+      "format": "svg",
+      "tools": ["Excalidraw", "Mermaid"],
+      "prompt": "Create a modern system architecture diagram for a TypeScript monorepo:\n\nTOP SECTION - \"Packages\":\n- @clarity-chat/types (TypeScript interfaces, shared types)\n- @clarity-chat/primitives (Button, Input, Avatar, Card, ScrollArea)\n- @clarity-chat/react (50+ components, 41 hooks, providers)\n- @clarity-chat/errors (Error handling utilities)\n- @clarity-chat/cli (Code generation tools)\n- @clarity-chat/dev-tools (Development utilities)\n\nMIDDLE SECTION - \"Apps\":\n- Storybook (Component documentation, CSF 3 stories)\n- Docs Site (Nextra, usage guides)\n\nBOTTOM SECTION - \"Build System\":\n- Turborepo (Monorepo orchestration)\n- tsup (TypeScript bundler)\n- Vitest + React Testing Library\n- ESLint + TypeScript\n\nARROWS showing dependencies:\n- react → primitives → types\n- Apps → all packages\n- dev-tools → all packages\n\nStyle: Clean, modern, use blue/purple gradient, minimize text, icons for each package",
+      "accessibility": {
+        "alt_text": "System architecture diagram showing monorepo structure with packages, apps, and build system layers",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 2,
+      "title": "Component Composition Architecture",
+      "category": "architecture",
+      "section_anchor": "New section: Component Architecture in README",
+      "placement": "After Quick Start, before Development",
+      "type": "hierarchical_composition",
+      "priority": "P1",
+      "impact": "high",
+      "effort_hours": 2,
+      "rationale": "Shows how primitive components combine to create complex chat interfaces.",
+      "output_file": "docs/assets/component-composition.svg",
+      "format": "svg",
+      "tools": ["Excalidraw", "draw.io"],
+      "prompt": "Create a component composition diagram showing how Clarity Chat components are built:\n\nLAYER 1 (Foundation) - @clarity-chat/primitives:\n- Button, Input, Avatar, Card, ScrollArea, Badge, Tooltip\n\nLAYER 2 (Core) - Chat Components:\n- Message (uses: Avatar, Card, Button, Tooltip)\n- ChatInput (uses: Input, Button, FileUpload)\n- MessageList (uses: ScrollArea, Message[], SkeletonMessage)\n- ThinkingIndicator (uses: Badge, animations)\n\nLAYER 3 (Composite) - Full Features:\n- ChatWindow (uses: MessageList, ChatInput, ThinkingIndicator)\n- AdvancedChatInput (uses: ChatInput, Autocomplete, VoiceInput)\n- VirtualizedMessageList (uses: MessageList, IntersectionObserver)\n\nLAYER 4 (Templates) - Ready-to-Use:\n- SupportBot (uses: ChatWindow, PromptLibrary, ContextManager)\n- CodeAssistant (uses: ChatWindow, CodeHighlighter, ToolInvocationCard)\n\nShow clear visual hierarchy with connecting lines from bottom to top.\n\nStyle: Use layer cake visualization, different colors per layer, component icons",
+      "accessibility": {
+        "alt_text": "Layer cake diagram showing component composition from primitives to templates",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 3,
+      "title": "Hook Ecosystem Map",
+      "category": "architecture",
+      "section_anchor": "New section: Hook Architecture in README",
+      "placement": "In comprehensive hooks documentation section",
+      "type": "mind_map",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 3,
+      "rationale": "41 hooks is overwhelming; categorization helps developers find the right hook fast.",
+      "output_file": "docs/assets/hook-ecosystem-map.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "Excalidraw"],
+      "prompt": "Create a mind map of 41 React hooks organized by category:\n\nCENTER: \"Clarity Chat Hooks (41)\"\n\nCATEGORY 1 - Chat & Messaging (5 hooks):\n- useChat, useStreaming, useStreamingSSE, useStreamingWebSocket, useRealisticTyping\n\nCATEGORY 2 - Message Operations (3 hooks):\n- useMessageOperations, useOptimisticMessage, useTokenTracker\n\nCATEGORY 3 - UI & Interaction (8 hooks):\n- useAutoScroll, useClipboard, useToggle, useDebounce, useThrottle, useMediaQuery, useWindowSize, useIntersectionObserver\n\nCATEGORY 4 - Mobile & Voice (2 hooks):\n- useMobileKeyboard, useVoiceInput\n\nCATEGORY 5 - Error & Recovery (2 hooks):\n- useErrorRecovery, useAsyncError\n\nCATEGORY 6 - Performance (2 hooks):\n- usePerformance, useVirtualList\n\nCATEGORY 7 - Accessibility (2 hooks):\n- useKeyboardShortcuts, useFocusManagement\n\nCATEGORY 8 - Storage & State (3 hooks):\n- useLocalStorage, usePrevious, useMounted\n\nCATEGORY 9 - Analytics & Tracking (3 hooks):\n- useAnalytics, useEventTracking, usePageView\n\nCATEGORY 10 - Theming (2 hooks):\n- useTheme, useColorMode\n\nStyle: Radial mind map, each category is a branch with different color, icons for each hook",
+      "accessibility": {
+        "alt_text": "Radial mind map categorizing 41 React hooks into 10 functional categories",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 4,
+      "title": "Provider Architecture & Context Hierarchy",
+      "category": "architecture",
+      "section_anchor": "New section: Provider Setup in Quick Start",
+      "placement": "In Production Setup example code block",
+      "type": "nested_context",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 2,
+      "rationale": "Shows correct provider nesting order and which features each provider enables.",
+      "output_file": "docs/assets/provider-hierarchy.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "draw.io"],
+      "prompt": "Create a nested provider hierarchy diagram:\n\nOUTERMOST LAYER:\nThemeProvider (enables: dark mode, 11 themes, color system)\n  ↓\nErrorReporterProvider (enables: Sentry, Rollbar, error tracking)\n  ↓\nAnalyticsProvider (enables: GA4, Mixpanel, event tracking)\n  ↓\nAIProvider (enables: suggestions, moderation, sentiment)\n  ↓\nNetworkStatusProvider (enables: offline detection, retry logic)\n  ↓\nINNERMOST LAYER:\nYour App Components\n\nRIGHT SIDE - Feature Availability Table:\nShow which features are available at each nesting level\n\nANNOTATIONS:\n- \"Required for error boundaries\" (ErrorReporterProvider)\n- \"Required for analytics hooks\" (AnalyticsProvider)\n- \"Optional but recommended\" (AIProvider)\n\nStyle: Concentric circles or Russian doll visualization, gradient from outer (dark) to inner (light)",
+      "accessibility": {
+        "alt_text": "Concentric circles showing provider nesting hierarchy from ThemeProvider to app components",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 5,
+      "title": "Build & Bundle Configuration Flow",
+      "category": "architecture",
+      "section_anchor": "Modernization report: Bundle Architecture section",
+      "placement": "In packaging scorecard section",
+      "type": "build_pipeline",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 2,
+      "rationale": "Shows how source files become distributable packages (ESM/CJS/types).",
+      "output_file": "docs/assets/build-pipeline.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "PlantUML"],
+      "prompt": "Create a build pipeline flowchart:\n\nINPUT (left):\n- src/index.ts (entry point)\n- src/components/*.tsx (50+ components)\n- src/hooks/*.tsx (41 hooks)\n- src/theme/*.ts (theme system)\n\nPROCESSING (center):\nStep 1: TypeScript Compilation\n  - tsconfig.json (strict mode)\n  - Type checking\n  \nStep 2: tsup Bundling\n  - format: ['esm', 'cjs']\n  - splitting: true (code splitting)\n  - treeshake: true\n  - minify: true\n  - dts: true (type generation)\n\nStep 3: CSS Processing\n  - Tailwind compilation\n  - PostCSS processing\n  - styles.css output\n\nOUTPUT (right):\n- dist/index.mjs (ESM, tree-shakeable)\n- dist/index.js (CJS, Node.js compatible)\n- dist/index.d.ts (TypeScript types)\n- dist/styles.css (compiled styles)\n\nPACKAGE.JSON EXPORTS:\nShow how exports field maps to outputs\n\nStyle: Left-to-right flowchart, use code block styling for file names, arrows showing transformations",
+      "accessibility": {
+        "alt_text": "Horizontal flowchart showing build pipeline from source files to distributable outputs",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 6,
+      "title": "SSE Streaming Data Flow",
+      "category": "data_flow",
+      "section_anchor": "use-streaming-sse.tsx JSDoc",
+      "placement": "Above hook code example",
+      "type": "data_flow_swimlane",
+      "priority": "P0",
+      "impact": "critical",
+      "effort_hours": 3,
+      "rationale": "SSE streaming is complex (auth, reconnection, token assembly); visual clarifies the flow.",
+      "output_file": "docs/assets/sse-streaming-flow.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "PlantUML"],
+      "prompt": "Create a data flow diagram for SSE streaming:\n\nSTATE MACHINE (top section):\nidle → connecting → connected → streaming → closed\n                ↓ (error) ↓\n              error → (auto-reconnect) → connecting\n\nDATA FLOW (main section):\n1. CLIENT: \n   - User sends message\n   - connect() called\n   - Build request with auth token\n\n2. NETWORK:\n   - POST /api/chat/stream\n   - Headers: Authorization: Bearer <token>\n   - Body: { message, conversationId }\n\n3. SERVER:\n   - Validate auth\n   - Start LLM streaming\n   - Send SSE events:\n     event: message\n     data: {\"chunk\": \"Hello\"}\n     \n     event: message\n     data: {\"chunk\": \" world\"}\n     \n     event: done\n     data: {\"complete\": true}\n\n4. CLIENT:\n   - ReadableStream reader\n   - Decode chunks (UTF-8)\n   - Parse SSE format (event:/data: fields)\n   - Accumulate text: \"\" → \"Hello\" → \"Hello world\"\n   - Update UI in real-time\n\nRECONNECTION FLOW (bottom section):\n- Error detected → exponential backoff (1s, 2s, 4s, 8s, 16s, 30s max)\n- Resume from Last-Event-ID header\n- Max 5 reconnection attempts\n\nStyle: Swimlane diagram with Client, Network, Server columns, state machine at top, clear error handling path",
+      "accessibility": {
+        "alt_text": "Swimlane diagram showing SSE streaming flow from client through network to server with state machine and reconnection logic",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 7,
+      "title": "Voice Input Processing Flow",
+      "category": "data_flow",
+      "section_anchor": "use-voice-input.tsx JSDoc",
+      "placement": "In voice input hook documentation",
+      "type": "data_flow_branching",
+      "priority": "P1",
+      "impact": "high",
+      "effort_hours": 2,
+      "rationale": "Web Speech API has browser/platform differences; diagram clarifies platform-specific behavior.",
+      "output_file": "docs/assets/voice-input-flow.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "draw.io"],
+      "prompt": "Create a voice input processing flow diagram with browser detection, configuration, user interaction, speech recognition, interim/final results processing, auto-stop, and error handling. Show parallel tracks for interim vs final results. Include browser support indicators (Chrome/Edge ✅, Safari ✅, Firefox ❌). Style: Flowchart with decision diamonds, parallel tracks, red error paths, browser icons.",
+      "accessibility": {
+        "alt_text": "Flowchart showing voice input processing from browser detection through speech recognition to final transcript with error handling",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 8,
+      "title": "Mobile Keyboard Detection Flow",
+      "category": "data_flow",
+      "section_anchor": "use-mobile-keyboard.tsx JSDoc",
+      "placement": "In mobile keyboard hook documentation",
+      "type": "platform_specific_flow",
+      "priority": "P1",
+      "impact": "high",
+      "effort_hours": 2,
+      "rationale": "iOS and Android have different keyboard detection mechanisms; diagram clarifies both paths.",
+      "output_file": "docs/assets/mobile-keyboard-flow.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "Excalidraw"],
+      "prompt": "Create a mobile keyboard detection flow diagram with platform branching for iOS (visualViewport.resize) and Android (window.resize). Show detection trigger, height comparison logic, auto-scroll behavior, hide detection, and debouncing. Style: Parallel swimlanes for iOS/Android, merge at auto-scroll, timing annotations.",
+      "accessibility": {
+        "alt_text": "Parallel swimlane diagram showing iOS and Android keyboard detection mechanisms with auto-scroll behavior",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 9,
+      "title": "Message Lifecycle & State Management",
+      "category": "data_flow",
+      "section_anchor": "New section: Message State Management",
+      "placement": "In message operations documentation",
+      "type": "state_machine",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 2,
+      "rationale": "Messages have complex states (sending, optimistic, streaming, error, retry); diagram clarifies transitions.",
+      "output_file": "docs/assets/message-lifecycle.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "PlantUML"],
+      "prompt": "Create a message lifecycle state machine with states: DRAFT, SENDING, STREAMING, SENT, ERROR, RETRYING, EDITING, DELETED. Show transitions with labels (user actions, server responses, errors). Include optimistic update pattern inset and exponential backoff annotations. Style: State machine circles, green happy path, red error path, optimistic UI pattern highlighted.",
+      "accessibility": {
+        "alt_text": "State machine diagram showing message lifecycle from draft to sent with error handling and retry logic",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 10,
+      "title": "Message Send → AI Response (Full Flow)",
+      "category": "sequence",
+      "section_anchor": "New section: End-to-End Message Flow",
+      "placement": "In getting started guide, after basic usage",
+      "type": "sequence_diagram",
+      "priority": "P0",
+      "impact": "critical",
+      "effort_hours": 2,
+      "rationale": "Shows complete interaction from user input to AI response with all components involved.",
+      "output_file": "docs/assets/message-send-sequence.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "PlantUML"],
+      "prompt": "Create a sequence diagram with actors: User, ChatInput, ChatWindow, useChat, useStreamingSSE, Backend API, LLM, MessageList. Show 26-step sequence from user typing through streaming to final message. Include timing annotations (50ms optimistic, 200ms network, 2-5s streaming). Style: UML sequence diagram, vertical lifelines, activation bars, timing on right margin.",
+      "accessibility": {
+        "alt_text": "Sequence diagram showing complete message flow from user input through backend to AI response with timing",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 11,
+      "title": "Error Recovery & Retry Flow",
+      "category": "sequence",
+      "section_anchor": "use-error-recovery.tsx JSDoc",
+      "placement": "In error handling documentation",
+      "type": "sequence_with_errors",
+      "priority": "P1",
+      "impact": "high",
+      "effort_hours": 2,
+      "rationale": "Error recovery involves multiple components; sequence shows coordination.",
+      "output_file": "docs/assets/error-recovery-sequence.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "PlantUML"],
+      "prompt": "Create a sequence diagram with actors: User, ChatWindow, useErrorRecovery, ErrorBoundary, Backend API, RetryButton. Show three paths: happy path (200 OK), error path with retry (500 → retry → 200), and max retries path (fallback UI). Include exponential backoff annotations (1s, 2s, 4s). Style: Sequence diagram with branching paths, error in red, success in green.",
+      "accessibility": {
+        "alt_text": "Sequence diagram showing error recovery with retry logic and exponential backoff",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 12,
+      "title": "File Upload Flow",
+      "category": "sequence",
+      "section_anchor": "file-upload.tsx component documentation",
+      "placement": "In file upload component docs",
+      "type": "sequence_parallel_paths",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 2,
+      "rationale": "File upload involves drag-drop, validation, preview, and upload; sequence clarifies steps.",
+      "output_file": "docs/assets/file-upload-sequence.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "PlantUML"],
+      "prompt": "Create a sequence diagram with actors: User, FileUpload, Drag & Drop API, Validation, Preview Generator, Upload Handler, Backend API. Show two parallel paths (drag-drop vs file input) that merge at validation. Include upload path with FormData and error handling. Style: Sequence diagram, parallel paths merging, error annotations in red.",
+      "accessibility": {
+        "alt_text": "Sequence diagram showing file upload flow with drag-drop and file input paths merging at validation",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 13,
+      "title": "Theme System Initialization",
+      "category": "sequence",
+      "section_anchor": "Theme system documentation",
+      "placement": "In theme documentation section",
+      "type": "sequence_initialization",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 2,
+      "rationale": "Theme system involves provider, storage, CSS variables, and transitions; sequence shows setup.",
+      "output_file": "docs/assets/theme-initialization-sequence.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "PlantUML"],
+      "prompt": "Create a sequence diagram with actors: App, ThemeProvider, useTheme, localStorage, CSS Variables, Document Root. Show initialization (read storage → apply CSS vars), theme change (animate transition), and dark mode toggle. Include timing for transition animation (300ms). Style: Sequence diagram, timing annotations, localStorage/CSS icons.",
+      "accessibility": {
+        "alt_text": "Sequence diagram showing theme system initialization from storage read to CSS variable application",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 14,
+      "title": "Analytics Event Tracking Flow",
+      "category": "sequence",
+      "section_anchor": "Analytics documentation",
+      "placement": "In analytics integration guide",
+      "type": "sequence_multi_provider",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 2,
+      "rationale": "Analytics involves providers, batching, and multiple destinations; sequence clarifies flow.",
+      "output_file": "docs/assets/analytics-tracking-sequence.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "PlantUML"],
+      "prompt": "Create a sequence diagram with actors: User, ChatWindow, useAnalytics, AnalyticsProvider, Event Queue, Google Analytics, Mixpanel, Custom API. Show event trigger, batching logic (5s or 10 events), parallel dispatch to providers, and error handling (retry, offline storage). Include privacy annotations (consent, PII sanitization). Style: Sequence diagram, parallel dispatch, batching inset.",
+      "accessibility": {
+        "alt_text": "Sequence diagram showing analytics event flow from trigger through batching to multiple providers",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 15,
+      "title": "User Journey: First Message to Response",
+      "category": "ui_flow",
+      "section_anchor": "New section: User Experience Flows",
+      "placement": "In getting started guide or UX documentation",
+      "type": "user_journey",
+      "priority": "P0",
+      "impact": "critical",
+      "effort_hours": 3,
+      "rationale": "Shows user perspective through entire flow with UI states.",
+      "output_file": "docs/assets/user-journey-first-message.png",
+      "format": "png",
+      "tools": ["Figma", "Excalidraw"],
+      "prompt": "Create a user journey with 6 screens: (1) Empty state, (2) User message sent (optimistic), (3) Message confirmed, (4) AI streaming, (5) AI complete with actions, (6) Feedback given. Show timing between screens (instant, 200ms, 500ms, 3-5s). Include annotations for optimistic updates, real-time streaming, and progressive enhancement. Style: Horizontal flow, screenshot-style mockups, timing below.",
+      "accessibility": {
+        "alt_text": "User journey showing six UI states from empty chat to completed AI response with feedback",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 16,
+      "title": "Voice Input User Flow",
+      "category": "ui_flow",
+      "section_anchor": "Voice input component documentation",
+      "placement": "In voice input guide",
+      "type": "ui_state_machine",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 3,
+      "rationale": "Voice input has multiple states (permission, listening, transcribing); diagram shows user experience.",
+      "output_file": "docs/assets/voice-input-flow.png",
+      "format": "png",
+      "tools": ["Figma", "Excalidraw"],
+      "prompt": "Create a voice input flow with 6 states: (1) Idle, (2) Permission request, (3A) Denied error, (3B) Listening with animation, (4) Transcribing real-time, (5) Final transcript, (6) Auto-stop. Include error states and browser support indicator. Style: State machine with UI mockups, error branches in red, browser support legend.",
+      "accessibility": {
+        "alt_text": "Voice input state machine showing UI states from idle through listening to final transcript",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 17,
+      "title": "Mobile Keyboard Adaptation Flow",
+      "category": "ui_flow",
+      "section_anchor": "Mobile keyboard documentation",
+      "placement": "In mobile optimization guide",
+      "type": "ui_adaptation",
+      "priority": "P1",
+      "impact": "high",
+      "effort_hours": 3,
+      "rationale": "Mobile keyboard changes viewport; diagram shows how UI adapts.",
+      "output_file": "docs/assets/mobile-keyboard-adaptation.png",
+      "format": "png",
+      "tools": ["Figma"],
+      "prompt": "Create a mobile keyboard adaptation flow with 6 states using iPhone mockup: (1) Chat open (812px), (2) User taps input, (3) Keyboard appears (496px visible), (4) Auto-scroll triggered, (5) Message sent, (6) Keyboard dismissed (812px). Include adaptation strategies sidebar (DO/DON'T). Style: iPhone mockup, before/after comparison, adaptation checklist.",
+      "accessibility": {
+        "alt_text": "iPhone mockup showing mobile keyboard adaptation with before and after viewport states",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 18,
+      "title": "Error State & Recovery UI Flow",
+      "category": "ui_flow",
+      "section_anchor": "Error handling documentation",
+      "placement": "In error handling guide",
+      "type": "ui_error_flow",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 3,
+      "rationale": "Error UI should guide users to recovery; diagram shows complete error UX.",
+      "output_file": "docs/assets/error-recovery-ui-flow.png",
+      "format": "png",
+      "tools": ["Figma", "Excalidraw"],
+      "prompt": "Create an error recovery UI flow with 6 states: (1) Sending, (2) Error with retry/cancel, (3A) Cancel discards message, (3B) Retry with attempt counter, (4) Retry success, (5) Max retries with error boundary, (6) User reports issue. Include notification patterns and error type mappings. Style: State machine with UI mockups, color-coded (error=red, retry=yellow, success=green).",
+      "accessibility": {
+        "alt_text": "Error recovery UI flow showing states from error to recovery with user actions",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 19,
+      "title": "ChatWindow Component Tree",
+      "category": "component_hierarchy",
+      "section_anchor": "ChatWindow component documentation",
+      "placement": "In ChatWindow API reference",
+      "type": "component_tree",
+      "priority": "P0",
+      "impact": "critical",
+      "effort_hours": 1,
+      "rationale": "Shows component composition and prop drilling paths.",
+      "output_file": "docs/assets/chatwindow-component-tree.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "draw.io"],
+      "prompt": "Create a component tree starting with ChatWindow (root) containing Card → MessageList (ScrollArea → AnimatePresence → Message[Avatar, Card, MarkdownRenderer, Tooltip → CopyButton/FeedbackButtons/RetryButton], SkeletonMessage, Button), ThinkingIndicator (Badge, AnimatedDots), ChatInput (Input, Button, FileUpload). Show prop flow with arrows. Include state management annotations. Style: Tree with indentation, props on edges, conditional components marked (?).",
+      "accessibility": {
+        "alt_text": "Component tree diagram showing ChatWindow composition with nested components and prop flow",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 20,
+      "title": "Advanced Chat Input Component Tree",
+      "category": "component_hierarchy",
+      "section_anchor": "AdvancedChatInput component documentation",
+      "placement": "In AdvancedChatInput API reference",
+      "type": "component_tree_complex",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 2,
+      "rationale": "Complex component with autocomplete, mentions, commands; tree clarifies structure.",
+      "output_file": "docs/assets/advanced-chat-input-tree.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "draw.io"],
+      "prompt": "Create a component tree for AdvancedChatInput with InputWrapper (ContentEditableInput, AutocompletePopover, CharacterCounter), FileUploadZone (FilePreviewList → FilePreview[Thumbnail, FileName, FileSize, RemoveButton], DropIndicator), VoiceInputButton (MicrophoneIcon, Tooltip), ActionBar (FormatButtons, EmojiPicker, FileUploadButton, SendButton). Include trigger detection (@/#//) and keyboard shortcuts. Style: Tree with indentation, conditional elements noted, shortcuts sidebar.",
+      "accessibility": {
+        "alt_text": "Component tree showing AdvancedChatInput with autocomplete, file upload, and voice input features",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    },
+    {
+      "id": 21,
+      "title": "Provider Wrapper Component Tree",
+      "category": "component_hierarchy",
+      "section_anchor": "Production setup documentation",
+      "placement": "In provider setup guide",
+      "type": "nested_providers",
+      "priority": "P2",
+      "impact": "medium",
+      "effort_hours": 1,
+      "rationale": "Shows correct provider nesting and what context each provides.",
+      "output_file": "docs/assets/provider-wrapper-tree.svg",
+      "format": "svg",
+      "tools": ["Mermaid", "draw.io"],
+      "prompt": "Create a provider nesting tree: ThemeProvider → ErrorReporterProvider → AnalyticsProvider → AIProvider → NetworkStatusProvider → ErrorBoundaryEnhanced → ToastProvider → KeyboardShortcutProvider → YOUR APP. Show context values provided at each level (useTheme → theme/setTheme, useErrorReporter → report/sendFeedback, etc.). Include optional providers in dashed lines. Style: Nested tree with indentation, context values on right, optional providers dashed.",
+      "accessibility": {
+        "alt_text": "Nested provider tree showing context hierarchy from ThemeProvider to app components",
+        "contrast": "WCAG AA",
+        "description_required": true
+      }
+    }
+  ],
+  "priority_breakdown": {
+    "P0": {
+      "count": 5,
+      "diagrams": [1, 6, 10, 15, 19],
+      "effort_hours": 11,
+      "impact": "Reduces onboarding time by 50%, clarifies 80% of common questions"
+    },
+    "P1": {
+      "count": 5,
+      "diagrams": [2, 7, 8, 11, 17],
+      "effort_hours": 11,
+      "impact": "Covers mobile and error handling, advanced feature clarity"
+    },
+    "P2": {
+      "count": 11,
+      "diagrams": [3, 4, 5, 9, 12, 13, 14, 16, 18, 20, 21],
+      "effort_hours": 26,
+      "impact": "Completes documentation, covers edge cases"
+    }
+  },
+  "implementation": {
+    "tools": {
+      "mermaid": "For sequence/flow diagrams, embeddable in Markdown",
+      "excalidraw": "For architecture/system diagrams, export as SVG",
+      "figma": "For UI mockups and user flows, export as PNG",
+      "plantuml": "For complex sequence diagrams, export as SVG",
+      "draw_io": "For general diagrams, export as SVG"
+    },
+    "formats": {
+      "svg": "For diagrams (scalable, small file size, good for docs)",
+      "png": "For UI mockups (better rendering of screenshots)",
+      "mermaid": "For embeddable diagrams in Markdown files"
+    },
+    "file_naming": "kebab-case with descriptive names (e.g., sse-streaming-flow.svg)",
+    "directory": "docs/assets/",
+    "integration_steps": [
+      "Create docs/assets/ directory",
+      "Generate diagrams using prompts with AI tools or manual creation",
+      "Embed in documentation with proper alt text and captions",
+      "Add to Storybook for interactive viewing",
+      "Update README with visual guide section"
+    ]
+  },
+  "success_metrics": {
+    "before": {
+      "onboarding_time": "4-6 hours",
+      "github_issues": "~15/month asking for architecture clarification"
+    },
+    "after": {
+      "onboarding_time": "2-3 hours (50% reduction)",
+      "github_issues": "<5/month (67% reduction)"
+    },
+    "tracking": [
+      "Monitor GitHub issue tags: documentation, question",
+      "Survey new users: How helpful were the diagrams? (1-5 scale)",
+      "Analytics: Time spent on documentation pages"
+    ]
+  },
+  "timeline": {
+    "phase_1": {
+      "name": "P0 Diagrams",
+      "diagrams": 5,
+      "effort_hours": 11,
+      "description": "High-priority diagrams addressing most common questions"
+    },
+    "phase_2": {
+      "name": "P1 Diagrams",
+      "diagrams": 5,
+      "effort_hours": 11,
+      "description": "Medium-priority diagrams for advanced features and mobile"
+    },
+    "phase_3": {
+      "name": "P2 Diagrams",
+      "diagrams": 11,
+      "effort_hours": 26,
+      "description": "Lower-priority diagrams for completeness"
+    },
+    "total": {
+      "diagrams": 21,
+      "effort_hours": 48,
+      "duration": "2-3 weeks"
+    }
+  }
+}
