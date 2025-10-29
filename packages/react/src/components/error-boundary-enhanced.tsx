@@ -7,7 +7,7 @@
 
 import React from 'react'
 import { ErrorBoundary, ErrorBoundaryProps } from './error-boundary'
-import { ErrorFeedback, ErrorFeedbackButton } from '../error/ErrorFeedback'
+import { ErrorFeedback } from '../error/ErrorFeedback'
 import { useErrorReporter } from '../error/ErrorReporter'
 import type { ErrorFeedback as ErrorFeedbackData } from '../error/types'
 
@@ -187,7 +187,7 @@ export function ErrorBoundaryEnhanced({
           message: error.message,
           stack: error.stack,
           severity: severity,
-          componentStack: errorInfo.componentStack,
+          componentStack: errorInfo.componentStack ?? undefined,
           context: errorContext,
           handled: false, // Error boundaries catch unhandled errors
           originalError: error,
@@ -209,7 +209,7 @@ export function ErrorBoundaryEnhanced({
         message: currentError.message,
         stack: currentError.stack,
         severity: severity,
-        componentStack: currentErrorInfo?.componentStack,
+        componentStack: currentErrorInfo?.componentStack ?? undefined,
         context: errorContext,
         userFeedback: JSON.stringify(feedback),
         handled: false,

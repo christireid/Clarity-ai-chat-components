@@ -36,9 +36,9 @@ export interface AnimatedListProps {
  */
 export const AnimatedList: React.FC<AnimatedListProps> = ({
   children,
-  variant = 'slide',
+  variant: _variant = 'slide', // Reserved for future use
   stagger = 'normal',
-  duration = 'fast',
+  duration: _duration = 'fast', // Reserved for future use
   className,
   delay = 0,
 }) => {

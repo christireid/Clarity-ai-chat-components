@@ -131,21 +131,24 @@ function extractCodeBlocks(content: string): Array<{ language: string; code: str
  */
 export function CodeAssistant({
   assistantName = 'Code Assistant',
-  assistantAvatar,
+  assistantAvatar: _assistantAvatar, // Reserved for future use
   supportedLanguages = defaultLanguages,
   codeContext,
-  enableExecution = false,
+  enableExecution: _enableExecution = false, // Reserved for future use
   enableSuggestions = true,
-  onExecuteCode,
-  onCopyCode,
+  onExecuteCode: _onExecuteCode, // Reserved for future use
+  onCopyCode: _onCopyCode, // Reserved for future use
   className = '',
 }: CodeAssistantConfig) {
   const [messages, setMessages] = React.useState<Message[]>(() => {
     const welcomeMessage: Message = {
       id: '1',
+      chatId: 'code-assistant',
       role: 'assistant',
       content: `Hi! I'm ${assistantName}, your AI coding assistant. I can help you with:\n\n- 📝 Writing code\n- 🐛 Debugging\n- 📖 Explaining code\n- ⚡ Optimizing performance\n- 🧪 Writing tests\n\nWhat would you like help with today?`,
-      timestamp: Date.now(),
+      status: 'sent' as const,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
     
     // If there's initial code context, add it as a message
@@ -154,9 +157,12 @@ export function CodeAssistant({
         welcomeMessage,
         {
           id: '2',
+          chatId: 'code-assistant',
           role: 'user',
           content: `Here's my code:\n\n\`\`\`\n${codeContext}\n\`\`\``,
-          timestamp: Date.now() + 1,
+          status: 'sent' as const,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ]
     }
@@ -165,27 +171,39 @@ export function CodeAssistant({
   })
   
   const [showActions, setShowActions] = React.useState(true)
-  const [currentCodeContext, setCurrentCodeContext] = React.useState(codeContext || '')
+  // const _currentCodeContext = codeContext || '' // Reserved for future use
 
   /**
    * Handle user message
    */
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = (content: string) => {
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
+      chatId: 'code-assistant',
       role: 'user',
       content,
-      timestamp: Date.now(),
+      status: 'sent' as const,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
     
     setMessages((prev) => [...prev, userMessage])
     setShowActions(false)
 
+    // Process message asynchronously
+    void processMessage(content)
+  }
+
+  /**
+   * Process message and generate response
+   */
+  const processMessage = async (content: string) => {
     // Extract any code blocks from user message to update context
     const codeBlocks = extractCodeBlocks(content)
     if (codeBlocks.length > 0) {
-      setCurrentCodeContext(codeBlocks[0].code)
+      // Update context if needed in the future
+      void codeBlocks
     }
 
     // Simulate AI response delay
@@ -210,9 +228,12 @@ export function CodeAssistant({
     // Add bot response
     const botMessage: Message = {
       id: (Date.now() + 1).toString(),
+      chatId: 'code-assistant',
       role: 'assistant',
       content: botResponse,
-      timestamp: Date.now(),
+      status: 'sent' as const,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
     
     setMessages((prev) => [...prev, botMessage])
@@ -228,8 +249,10 @@ export function CodeAssistant({
 
   /**
    * Handle code execution
+   * Reserved for future use
    */
-  const handleExecute = async (code: string, language: string) => {
+  /*
+  const _handleExecute = async (code: string, language: string) => {
     if (!enableExecution || !onExecuteCode) return
 
     try {
@@ -237,23 +260,30 @@ export function CodeAssistant({
       
       const executionMessage: Message = {
         id: Date.now().toString(),
+        chatId: 'code-assistant',
         role: 'assistant',
         content: `**Execution Result:**\n\n\`\`\`\n${output}\n\`\`\``,
-        timestamp: Date.now(),
+        status: 'sent' as const,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
       
       setMessages((prev) => [...prev, executionMessage])
     } catch (error) {
       const errorMessage: Message = {
         id: Date.now().toString(),
+        chatId: 'code-assistant',
         role: 'assistant',
         content: `**Execution Error:**\n\n\`\`\`\n${error instanceof Error ? error.message : 'Unknown error'}\n\`\`\``,
-        timestamp: Date.now(),
+        status: 'sent' as const,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
       
       setMessages((prev) => [...prev, errorMessage])
     }
   }
+  */
 
   return (
     <div className={`code-assistant-container ${className}`}>
@@ -261,9 +291,6 @@ export function CodeAssistant({
       <ChatWindow
         messages={messages}
         onSendMessage={handleSendMessage}
-        placeholder="Ask me about your code..."
-        showAvatar={true}
-        enableMarkdown={true}
       />
       
       {/* Quick action buttons */}

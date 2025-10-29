@@ -6,7 +6,12 @@
  */
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
-import type { ErrorProvider, ErrorReport, ErrorReporterConfig, ErrorStats } from './types'
+import type { 
+  // ErrorProvider, // Reserved for future use
+  ErrorReport, 
+  ErrorReporterConfig, 
+  ErrorStats 
+} from './types'
 
 /**
  * Error Reporter Context

@@ -8,6 +8,14 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Citation } from '../adapters/types'
 
+// Helper to safely render metadata values
+const renderMetadataValue = (value: unknown): React.ReactNode => {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return String(value)
+  }
+  return null
+}
+
 export interface CitationCardProps {
   /** Citation data */
   citation: Citation
@@ -92,11 +100,17 @@ export function CitationCard({
                 <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">
                   {citation.source}
                 </h4>
-                {citation.metadata?.author && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    {citation.metadata.author}
-                  </p>
-                )}
+                {(() => {
+                  const author = citation.metadata?.author
+                  if (!author) return null
+                  const authorText = renderMetadataValue(author)
+                  if (!authorText) return null
+                  return (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      {authorText}
+                    </p>
+                  )
+                })()}
               </div>
               
               <div className="flex items-center gap-2 flex-shrink-0">
@@ -186,21 +200,39 @@ export function CitationCard({
             {citation.metadata && Object.keys(citation.metadata).length > 0 && (
               <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
                 <div className="flex flex-wrap gap-2">
-                  {citation.metadata.date && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                      📅 {citation.metadata.date}
-                    </span>
-                  )}
-                  {citation.metadata.page && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                      📄 Page {citation.metadata.page}
-                    </span>
-                  )}
-                  {citation.metadata.section && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                      § {citation.metadata.section}
-                    </span>
-                  )}
+                  {(() => {
+                    const date = citation.metadata?.date
+                    if (!date) return null
+                    const dateText = renderMetadataValue(date)
+                    if (!dateText) return null
+                    return (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        📅 {dateText}
+                      </span>
+                    )
+                  })()}
+                  {(() => {
+                    const page = citation.metadata?.page
+                    if (!page) return null
+                    const pageText = renderMetadataValue(page)
+                    if (!pageText) return null
+                    return (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        📄 Page {pageText}
+                      </span>
+                    )
+                  })()}
+                  {(() => {
+                    const section = citation.metadata?.section
+                    if (!section) return null
+                    const sectionText = renderMetadataValue(section)
+                    if (!sectionText) return null
+                    return (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        § {sectionText}
+                      </span>
+                    )
+                  })()}
                 </div>
               </div>
             )}

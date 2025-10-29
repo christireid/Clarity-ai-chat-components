@@ -74,7 +74,7 @@ export function ThemeSelector({
       role="radiogroup"
       aria-label="Theme selection"
     >
-      {allThemes.map(({ name, metadata, config }) => {
+      {allThemes.map(({ name, metadata, config: _config }) => {
         const isActive = theme.preset === name
         
         return (

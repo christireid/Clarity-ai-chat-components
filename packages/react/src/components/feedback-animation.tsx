@@ -17,8 +17,8 @@ import {
 import { 
   ANIMATION_DURATION, 
   ANIMATION_EASING,
-  createSuccessAnimation,
-  createErrorAnimation,
+  // createSuccessAnimation, // Reserved for future use
+  // createErrorAnimation, // Reserved for future use
 } from '../animations'
 
 export type FeedbackType = 'success' | 'error' | 'warning' | 'info'

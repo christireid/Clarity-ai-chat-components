@@ -47,7 +47,7 @@ export interface UseVoiceInputOptions {
 /**
  * Get browser speech recognition API
  */
-function getSpeechRecognition(): typeof SpeechRecognition | null {
+function getSpeechRecognition(): any | null {
   if (typeof window === 'undefined') return null
   
   return (

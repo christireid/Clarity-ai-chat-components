@@ -154,8 +154,8 @@ function findAnswer(query: string, knowledgeBase: typeof defaultKnowledgeBase): 
  * ```
  */
 export function SupportBot({
-  botName = 'Support Bot',
-  botAvatar,
+  botName: _botName = 'Support Bot', // Reserved for future use
+  botAvatar: _botAvatar, // Reserved for future use
   welcomeMessage = "Hi! I'm here to help. What can I assist you with today?",
   quickReplies = defaultQuickReplies,
   knowledgeBase = defaultKnowledgeBase,
@@ -166,9 +166,12 @@ export function SupportBot({
   const [messages, setMessages] = React.useState<Message[]>([
     {
       id: '1',
+      chatId: 'support-bot',
       role: 'assistant',
       content: welcomeMessage,
-      timestamp: Date.now(),
+      status: 'sent' as const,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
   ])
   
@@ -178,19 +181,30 @@ export function SupportBot({
   /**
    * Handle user message
    */
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = (content: string) => {
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
+      chatId: 'support-bot',
       role: 'user',
       content,
-      timestamp: Date.now(),
+      status: 'sent' as const,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
     
     setMessages((prev) => [...prev, userMessage])
     setMessageCount((prev) => prev + 1)
     setShowQuickReplies(false)
 
+    // Handle async response in separate function
+    void processMessage(content)
+  }
+
+  /**
+   * Process message and generate response
+   */
+  const processMessage = async (content: string) => {
     // Simulate thinking delay
     await new Promise((resolve) => setTimeout(resolve, 800))
 
@@ -202,9 +216,12 @@ export function SupportBot({
     ) {
       const escalateMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId: 'support-bot',
         role: 'assistant',
         content: "I understand you'd like to speak with a human agent. Let me connect you now...",
-        timestamp: Date.now(),
+        status: 'sent' as const,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
       
       setMessages((prev) => [...prev, escalateMessage])
@@ -231,9 +248,12 @@ export function SupportBot({
     // Add bot response
     const botMessage: Message = {
       id: (Date.now() + 1).toString(),
+      chatId: 'support-bot',
       role: 'assistant',
       content: botResponse,
-      timestamp: Date.now(),
+      status: 'sent' as const,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
     
     setMessages((prev) => [...prev, botMessage])
@@ -244,9 +264,12 @@ export function SupportBot({
       
       const escalationOffer: Message = {
         id: (Date.now() + 2).toString(),
+        chatId: 'support-bot',
         role: 'assistant',
         content: "It seems like you might benefit from speaking with one of our specialists. Would you like me to connect you with a human agent?",
-        timestamp: Date.now(),
+        status: 'sent' as const,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
       
       setMessages((prev) => [...prev, escalationOffer])
@@ -276,9 +299,6 @@ export function SupportBot({
       <ChatWindow
         messages={messages}
         onSendMessage={handleSendMessage}
-        placeholder="Type your question..."
-        showAvatar={true}
-        enableMarkdown={true}
       />
       
       {/* Quick reply buttons */}

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { designTokens } from './design-tokens'
+// import { designTokens } from './design-tokens' // Reserved for future use
 import { themes, type ThemePresetName } from './presets'
 import { applyThemeToDocument, createTheme } from './theme-builder'
 import type { CompleteThemeConfig, PartialThemeConfig } from './theme-config'

@@ -5,11 +5,11 @@
  */
 
 import type { 
-  ModelAdapter, 
-  ChatMessage, 
-  ModelConfig, 
-  StreamChunk, 
-  TokenUsage 
+  ModelAdapter
+  // ChatMessage, // Reserved for future use
+  // ModelConfig, // Reserved for future use
+  // StreamChunk, // Reserved for future use
+  // TokenUsage // Reserved for future use
 } from './types'
 
 export const anthropicAdapter: ModelAdapter = {

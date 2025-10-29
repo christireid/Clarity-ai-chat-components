@@ -10,10 +10,10 @@ import {
   getAllThemes, 
   hexToHsl, 
   hslToHex,
-  createTheme,
+  // createTheme, // Reserved for future use
   validateTheme 
 } from '../theme/theme-builder'
-import type { CompleteThemeConfig, PartialThemeConfig } from '../theme/theme-config'
+import type { CompleteThemeConfig } from '../theme/theme-config'
 import type { ThemePresetName } from '../theme/presets'
 
 export interface ThemePreviewProps {
@@ -51,7 +51,7 @@ export function ThemePreview({
   onThemeChange,
   className,
 }: ThemePreviewProps) {
-  const { resolvedTheme, setPreset, theme } = useTheme()
+  const { resolvedTheme } = useTheme()
   const [localTheme, setLocalTheme] = React.useState<CompleteThemeConfig | null>(resolvedTheme)
   const [editMode, setEditMode] = React.useState(false)
   

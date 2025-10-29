@@ -18,7 +18,7 @@ import {
 import { 
   ANIMATION_DURATION, 
   ANIMATION_EASING,
-  createSlideVariant,
+  // createSlideVariant, // Reserved for future use
 } from '../animations'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
@@ -302,16 +302,17 @@ export function useToast(): ToastContextValue {
  * Standalone toast function (without provider)
  * Useful for one-off toasts without setting up provider
  */
-let toastContainerRoot: HTMLDivElement | null = null
+// Reserved for future implementation
+// let toastContainerRoot: HTMLDivElement | null = null
 
-function getToastContainer(): HTMLDivElement {
-  if (!toastContainerRoot) {
-    toastContainerRoot = document.createElement('div')
-    toastContainerRoot.id = 'toast-root'
-    document.body.appendChild(toastContainerRoot)
-  }
-  return toastContainerRoot
-}
+// function _getToastContainer(): HTMLDivElement {
+//   if (!toastContainerRoot) {
+//     toastContainerRoot = document.createElement('div')
+//     toastContainerRoot.id = 'toast-root'
+//     document.body.appendChild(toastContainerRoot)
+//   }
+//   return toastContainerRoot
+// }
 
 export const toast = {
   success: (description: string, title?: string) => {

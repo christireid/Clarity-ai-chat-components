@@ -5,11 +5,11 @@
  */
 
 import type { 
-  ModelAdapter, 
-  ChatMessage, 
-  ModelConfig, 
-  StreamChunk, 
-  TokenUsage 
+  ModelAdapter
+  // ChatMessage, // Used implicitly via ModelAdapter
+  // ModelConfig, // Used implicitly via ModelAdapter
+  // StreamChunk, // Used implicitly via ModelAdapter
+  // TokenUsage // Used implicitly via ModelAdapter
 } from './types'
 
 export const openAIAdapter: ModelAdapter = {
