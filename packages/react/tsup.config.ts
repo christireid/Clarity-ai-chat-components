@@ -13,7 +13,7 @@ export default defineConfig({
   external: ['react', 'react-dom', 'framer-motion'],
   clean: true,
   sourcemap: true,
-  minify: false,
-  splitting: false,
+  minify: true,
+  splitting: true,
   treeshake: true,
 })
