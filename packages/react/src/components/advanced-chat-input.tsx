@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
 
+const { useTransition } = React
+
 export interface InputSuggestion {
   id: string
   type: 'prompt' | 'command' | 'mention'
@@ -67,6 +69,11 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
     const [cursorPosition, setCursorPosition] = React.useState(0)
     const textareaRef = React.useRef<HTMLTextAreaElement>(null)
     const fileInputRef = React.useRef<HTMLInputElement>(null)
+    
+    // React Concurrent Features - useTransition for non-blocking suggestion updates
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [isPending, startTransition] = useTransition()
+    // useDeferredValue can be used for expensive computations (reserved for future enhancement)
 
     // Merge refs
     React.useImperativeHandle(ref, () => textareaRef.current!)
@@ -112,35 +119,42 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
     }, [value, cursorPosition])
 
     const loadSuggestions = async (query: string, trigger: '@' | '/') => {
-      if (onSuggestionRequest) {
-        const results = await onSuggestionRequest(query, trigger)
-        setSuggestions(results)
-        setSelectedIndex(0)
-      } else {
-        // Default suggestions
-        if (trigger === '@') {
-          const filtered = savedPrompts
-            .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
-            .map((p) => ({
-              id: p.id,
-              type: 'prompt' as const,
-              label: p.name,
-              description: p.description,
-              value: p.content,
-            }))
-          setSuggestions(filtered)
-        } else if (trigger === '/') {
-          const commands: InputSuggestion[] = [
-            { id: '1', type: 'command', label: 'help', description: 'Show available commands', value: '/help' },
-            { id: '2', type: 'command', label: 'clear', description: 'Clear conversation', value: '/clear' },
-            { id: '3', type: 'command', label: 'export', description: 'Export chat', value: '/export' },
-            { id: '4', type: 'command', label: 'model', description: 'Switch AI model', value: '/model' },
-          ]
-          const filtered = commands.filter((c) => c.label.includes(query.toLowerCase()))
-          setSuggestions(filtered)
+      // Use startTransition to make suggestion updates non-blocking
+      startTransition(() => {
+        if (onSuggestionRequest) {
+          // For async requests, handle outside of transition
+          onSuggestionRequest(query, trigger).then((results) => {
+            startTransition(() => {
+              setSuggestions(results)
+              setSelectedIndex(0)
+            })
+          })
+        } else {
+          // Default suggestions
+          if (trigger === '@') {
+            const filtered = savedPrompts
+              .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
+              .map((p) => ({
+                id: p.id,
+                type: 'prompt' as const,
+                label: p.name,
+                description: p.description,
+                value: p.content,
+              }))
+            setSuggestions(filtered)
+          } else if (trigger === '/') {
+            const commands: InputSuggestion[] = [
+              { id: '1', type: 'command', label: 'help', description: 'Show available commands', value: '/help' },
+              { id: '2', type: 'command', label: 'clear', description: 'Clear conversation', value: '/clear' },
+              { id: '3', type: 'command', label: 'export', description: 'Export chat', value: '/export' },
+              { id: '4', type: 'command', label: 'model', description: 'Switch AI model', value: '/model' },
+            ]
+            const filtered = commands.filter((c) => c.label.includes(query.toLowerCase()))
+            setSuggestions(filtered)
+          }
+          setSelectedIndex(0)
         }
-        setSelectedIndex(0)
-      }
+      })
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -345,10 +359,18 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
                   </div>
                 </button>
               ))}
-              <div className="px-4 py-2 text-xs text-muted-foreground border-t bg-muted/50">
-                <kbd className="px-1.5 py-0.5 text-xs border rounded">Tab</kbd> or{' '}
-                <kbd className="px-1.5 py-0.5 text-xs border rounded">Enter</kbd> to select •{' '}
-                <kbd className="px-1.5 py-0.5 text-xs border rounded">↑↓</kbd> to navigate
+              <div className="px-4 py-2 text-xs text-muted-foreground border-t bg-muted/50 flex items-center justify-between">
+                <div>
+                  <kbd className="px-1.5 py-0.5 text-xs border rounded">Tab</kbd> or{' '}
+                  <kbd className="px-1.5 py-0.5 text-xs border rounded">Enter</kbd> to select •{' '}
+                  <kbd className="px-1.5 py-0.5 text-xs border rounded">↑↓</kbd> to navigate
+                </div>
+                {isPending && (
+                  <div className="flex items-center gap-1 text-xs">
+                    <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <span>Loading...</span>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}

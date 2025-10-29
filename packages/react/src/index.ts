@@ -24,6 +24,7 @@ export * from './components/link-preview'
 export * from './components/knowledge-base-viewer'
 export * from './components/export-dialog'
 export * from './components/stream-cancellation'
+export * from './components/message-search'
 
 // Phase 3 Enhancement - Error Handling & Recovery
 export * from './components/error-boundary'
@@ -70,6 +71,9 @@ export * from './hooks/use-optimistic-message'
 
 // Performance Monitoring
 export * from './hooks/use-performance'
+
+// React Concurrent Features
+export * from './hooks/use-deferred-search'
 
 // Mobile Utilities
 export * from './utils/mobile'
