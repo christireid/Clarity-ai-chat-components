@@ -1,0 +1,100 @@
+
+> clarity-chat@0.1.0 build
+> turbo run build
+
+turbo 2.5.8
+
+ WARNING  Unable to calculate transitive closures: Workspace 'packages/dev-tools' not found in lockfile.
+• Packages in scope: @clarity-chat/cli, @clarity-chat/dev-tools, @clarity-chat/docs, @clarity-chat/error-handling, @clarity-chat/errors, @clarity-chat/primitives, @clarity-chat/react, @clarity-chat/storybook, @clarity-chat/types, ai-assistant-demo, analytics-console-demo, basic-chat-demo, clarity-chat-examples-showcase, customer-support-demo, model-comparison-demo, multi-user-chat-demo, rag-workbench-demo, streaming-chat-demo
+• Running build in 18 packages
+• Remote caching disabled
+@clarity-chat/storybook:build: cache miss, executing 9ca13dc7726e53d1
+@clarity-chat/react:build: cache miss, executing b6c68fa3ee4805ea
+@clarity-chat/errors:build: cache miss, executing db7933e3d2556b77
+analytics-console-demo:build: cache miss, executing e472ab79a55ab9b3
+@clarity-chat/error-handling:build: cache miss, executing 73f7ae3a091ece3f
+@clarity-chat/primitives:build: cache miss, executing 17285e0c49585d4c
+@clarity-chat/types:build: cache miss, executing d17d163fbc4bf755
+@clarity-chat/cli:build: cache miss, executing 07436e730f0f92b4
+@clarity-chat/react:build: 
+@clarity-chat/react:build: > @clarity-chat/react@0.1.0 build
+@clarity-chat/react:build: > tsup
+@clarity-chat/react:build: 
+@clarity-chat/storybook:build: 
+@clarity-chat/storybook:build: > @clarity-chat/storybook@0.1.0 build
+@clarity-chat/storybook:build: > storybook build
+@clarity-chat/storybook:build: 
+@clarity-chat/cli:build: 
+@clarity-chat/cli:build: > @clarity-chat/cli@0.1.0 build
+@clarity-chat/cli:build: > tsup src/index.ts --format esm --dts --clean
+@clarity-chat/cli:build: 
+@clarity-chat/error-handling:build: 
+@clarity-chat/error-handling:build: > @clarity-chat/error-handling@2.0.0 build
+@clarity-chat/error-handling:build: > vite build && tsc --emitDeclarationOnly
+@clarity-chat/error-handling:build: 
+@clarity-chat/primitives:build: 
+@clarity-chat/primitives:build: > @clarity-chat/primitives@0.1.0 build
+@clarity-chat/primitives:build: > tsup src/index.ts --format cjs,esm --dts --external react
+@clarity-chat/primitives:build: 
+analytics-console-demo:build: 
+analytics-console-demo:build: > analytics-console-demo@0.1.0 build
+analytics-console-demo:build: > next build
+analytics-console-demo:build: 
+@clarity-chat/errors:build: 
+@clarity-chat/errors:build: > @clarity-chat/errors@1.0.0 build
+@clarity-chat/errors:build: > tsc
+@clarity-chat/errors:build: 
+@clarity-chat/types:build: 
+@clarity-chat/types:build: > @clarity-chat/types@0.1.0 build
+@clarity-chat/types:build: > tsup src/index.ts --format cjs,esm --dts
+@clarity-chat/types:build: 
+@clarity-chat/cli:build: CLI Building entry: src/index.ts
+@clarity-chat/primitives:build: CLI Building entry: src/index.ts
+@clarity-chat/primitives:build: CLI Using tsconfig: tsconfig.json
+@clarity-chat/primitives:build: CLI tsup v8.5.0
+@clarity-chat/cli:build: CLI Using tsconfig: tsconfig.json
+@clarity-chat/cli:build: CLI tsup v8.5.0
+@clarity-chat/cli:build: CLI Target: es2022
+@clarity-chat/primitives:build: CLI Target: es2020
+@clarity-chat/primitives:build: CJS Build start
+@clarity-chat/primitives:build: ESM Build start
+@clarity-chat/types:build: CLI Building entry: src/index.ts
+@clarity-chat/types:build: CLI Using tsconfig: tsconfig.json
+@clarity-chat/types:build: CLI tsup v8.5.0
+@clarity-chat/error-handling:build: ▲ [WARNING] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+@clarity-chat/error-handling:build: 
+@clarity-chat/error-handling:build:     package.json:13:6:
+@clarity-chat/error-handling:build:       13 │       "types": "./dist/index.d.ts"
+@clarity-chat/error-handling:build:          ╵       ~~~~~~~
+@clarity-chat/error-handling:build: 
+@clarity-chat/error-handling:build:   The "import" condition comes earlier and will be used for all "import" statements:
+@clarity-chat/error-handling:build: 
+@clarity-chat/error-handling:build:     package.json:11:6:
+@clarity-chat/error-handling:build:       11 │       "import": "./dist/index.mjs",
+@clarity-chat/error-handling:build:          ╵       ~~~~~~~~
+@clarity-chat/error-handling:build: 
+@clarity-chat/error-handling:build:   The "require" condition comes earlier and will be used for all "require" calls:
+@clarity-chat/error-handling:build: 
+@clarity-chat/error-handling:build:     package.json:12:6:
+@clarity-chat/error-handling:build:       12 │       "require": "./dist/index.cjs",
+@clarity-chat/error-handling:build:          ╵       ~~~~~~~~~
+@clarity-chat/error-handling:build: 
+@clarity-chat/types:build: CLI Target: es2020
+@clarity-chat/cli:build: CLI Cleaning output folder
+@clarity-chat/cli:build: ESM Build start
+@clarity-chat/types:build: CJS Build start
+@clarity-chat/types:build: ESM Build start
+@clarity-chat/react:build: CLI Building entry: src/index.ts
+@clarity-chat/react:build: CLI Using tsconfig: tsconfig.json
+@clarity-chat/react:build: CLI tsup v8.5.0
+@clarity-chat/react:build: CLI Using tsup config: /home/user/webapp/packages/react/tsup.config.ts
+@clarity-chat/react:build: CLI Target: es2020
+@clarity-chat/react:build: CLI Cleaning output folder
+@clarity-chat/react:build: CJS Build start
+@clarity-chat/react:build: ESM Build start
+@clarity-chat/types:build: ESM dist/index.mjs 0 B
+@clarity-chat/types:build: ESM ⚡️ Build success in 276ms
+@clarity-chat/types:build: CJS dist/index.js 758.00 B
+@clarity-chat/types:build: CJS ⚡️ Build success in 281ms
+@clarity-chat/primitives:build: CJS dist/index.js 19.44 KB
+@clarity-chat/primitives:build: CJS ⚡️ Build success in 395ms

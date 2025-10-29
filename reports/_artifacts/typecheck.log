@@ -1,0 +1,90 @@
+
+> clarity-chat@0.1.0 typecheck
+> turbo run typecheck
+
+turbo 2.5.8
+
+ WARNING  Unable to calculate transitive closures: Workspace 'packages/dev-tools' not found in lockfile.
+• Packages in scope: @clarity-chat/cli, @clarity-chat/dev-tools, @clarity-chat/docs, @clarity-chat/error-handling, @clarity-chat/errors, @clarity-chat/primitives, @clarity-chat/react, @clarity-chat/storybook, @clarity-chat/types, ai-assistant-demo, analytics-console-demo, basic-chat-demo, clarity-chat-examples-showcase, customer-support-demo, model-comparison-demo, multi-user-chat-demo, rag-workbench-demo, streaming-chat-demo
+• Running typecheck in 18 packages
+• Remote caching disabled
+@clarity-chat/types:build: cache miss, executing d17d163fbc4bf755
+@clarity-chat/errors:build: cache miss, executing db7933e3d2556b77
+@clarity-chat/primitives:typecheck: cache miss, executing ae4e7217fe4de251
+@clarity-chat/primitives:build: cache miss, executing 17285e0c49585d4c
+@clarity-chat/types:typecheck: cache miss, executing c6ee8b2dbad2077a
+@clarity-chat/react:typecheck: cache miss, executing 10ccca35eeaca086
+@clarity-chat/react:build: cache miss, executing b6c68fa3ee4805ea
+@clarity-chat/primitives:build: 
+@clarity-chat/primitives:build: > @clarity-chat/primitives@0.1.0 build
+@clarity-chat/primitives:build: > tsup src/index.ts --format cjs,esm --dts --external react
+@clarity-chat/primitives:build: 
+@clarity-chat/types:build: 
+@clarity-chat/types:build: > @clarity-chat/types@0.1.0 build
+@clarity-chat/types:build: > tsup src/index.ts --format cjs,esm --dts
+@clarity-chat/types:build: 
+@clarity-chat/errors:build: 
+@clarity-chat/errors:build: > @clarity-chat/errors@1.0.0 build
+@clarity-chat/errors:build: > tsc
+@clarity-chat/errors:build: 
+@clarity-chat/react:typecheck: 
+@clarity-chat/react:typecheck: > @clarity-chat/react@0.1.0 typecheck
+@clarity-chat/react:typecheck: > tsc --noEmit
+@clarity-chat/react:typecheck: 
+@clarity-chat/react:build: 
+@clarity-chat/react:build: > @clarity-chat/react@0.1.0 build
+@clarity-chat/react:build: > tsup
+@clarity-chat/react:build: 
+@clarity-chat/types:typecheck: 
+@clarity-chat/types:typecheck: > @clarity-chat/types@0.1.0 typecheck
+@clarity-chat/types:typecheck: > tsc --noEmit
+@clarity-chat/types:typecheck: 
+@clarity-chat/primitives:typecheck: 
+@clarity-chat/primitives:typecheck: > @clarity-chat/primitives@0.1.0 typecheck
+@clarity-chat/primitives:typecheck: > tsc --noEmit
+@clarity-chat/primitives:typecheck: 
+@clarity-chat/types:build: CLI Building entry: src/index.ts
+@clarity-chat/types:build: CLI Using tsconfig: tsconfig.json
+@clarity-chat/primitives:build: CLI Building entry: src/index.ts
+@clarity-chat/types:build: CLI tsup v8.5.0
+@clarity-chat/primitives:build: CLI Using tsconfig: tsconfig.json
+@clarity-chat/primitives:build: CLI tsup v8.5.0
+@clarity-chat/types:build: CLI Target: es2020
+@clarity-chat/types:build: CJS Build start
+@clarity-chat/primitives:build: CLI Target: es2020
+@clarity-chat/types:build: ESM Build start
+@clarity-chat/primitives:build: CJS Build start
+@clarity-chat/primitives:build: ESM Build start
+@clarity-chat/types:build: ESM dist/index.mjs 0 B
+@clarity-chat/types:build: ESM ⚡️ Build success in 315ms
+@clarity-chat/types:build: CJS dist/index.js 758.00 B
+@clarity-chat/types:build: CJS ⚡️ Build success in 321ms
+@clarity-chat/react:build: CLI Building entry: src/index.ts
+@clarity-chat/react:build: CLI Using tsconfig: tsconfig.json
+@clarity-chat/react:build: CLI tsup v8.5.0
+@clarity-chat/react:build: CLI Using tsup config: /home/user/webapp/packages/react/tsup.config.ts
+@clarity-chat/react:build: CLI Target: es2020
+@clarity-chat/primitives:build: CJS dist/index.js 19.44 KB
+@clarity-chat/primitives:build: CJS ⚡️ Build success in 464ms
+@clarity-chat/primitives:build: ESM dist/index.mjs 15.58 KB
+@clarity-chat/primitives:build: ESM ⚡️ Build success in 471ms
+@clarity-chat/react:build: CLI Cleaning output folder
+@clarity-chat/react:build: CJS Build start
+@clarity-chat/react:build: ESM Build start
+@clarity-chat/types:build: Killed
+@clarity-chat/types:build: npm error Lifecycle script `build` failed with error:
+@clarity-chat/types:build: npm error code 137
+@clarity-chat/types:build: npm error path /home/user/webapp/packages/types
+@clarity-chat/types:build: npm error workspace @clarity-chat/types@0.1.0
+@clarity-chat/types:build: npm error location /home/user/webapp/packages/types
+@clarity-chat/types:build: npm error command failed
+@clarity-chat/types:build: npm error command sh -c tsup src/index.ts --format cjs,esm --dts
+@clarity-chat/types:build: ERROR: command finished with error: command (/home/user/webapp/packages/types) /usr/bin/npm run build exited (137)
+@clarity-chat/types#build: command (/home/user/webapp/packages/types) /usr/bin/npm run build exited (137)
+
+ Tasks:    0 successful, 7 total
+Cached:    0 cached, 7 total
+  Time:    3m18.341s 
+Failed:    @clarity-chat/types#build
+
+ ERROR  run failed: command  exited (137)

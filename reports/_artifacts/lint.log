@@ -1,0 +1,105 @@
+
+> clarity-chat@0.1.0 lint
+> turbo run lint
+
+turbo 2.5.8
+
+ WARNING  Unable to calculate transitive closures: Workspace 'packages/errors' not found in lockfile.
+• Packages in scope: @clarity-chat/cli, @clarity-chat/dev-tools, @clarity-chat/docs, @clarity-chat/error-handling, @clarity-chat/errors, @clarity-chat/primitives, @clarity-chat/react, @clarity-chat/storybook, @clarity-chat/types, ai-assistant-demo, analytics-console-demo, basic-chat-demo, clarity-chat-examples-showcase, customer-support-demo, model-comparison-demo, multi-user-chat-demo, rag-workbench-demo, streaming-chat-demo
+• Running lint in 18 packages
+• Remote caching disabled
+analytics-console-demo:lint: cache miss, executing 470b3575737a4f5e
+@clarity-chat/primitives:build: cache miss, executing 17285e0c49585d4c
+@clarity-chat/types:build: cache miss, executing d17d163fbc4bf755
+@clarity-chat/errors:build: cache miss, executing db7933e3d2556b77
+@clarity-chat/error-handling:lint: cache miss, executing 1c5822e05feb0cc9
+@clarity-chat/react:build: cache miss, executing b6c68fa3ee4805ea
+@clarity-chat/primitives:lint: cache miss, executing 8748329f6026481b
+@clarity-chat/react:lint: cache miss, executing b9a0f7f0e3e579be
+@clarity-chat/react:build: 
+@clarity-chat/react:build: > @clarity-chat/react@0.1.0 build
+@clarity-chat/react:build: > tsup
+@clarity-chat/react:build: 
+@clarity-chat/react:lint: 
+@clarity-chat/react:lint: > @clarity-chat/react@0.1.0 lint
+@clarity-chat/react:lint: > eslint src --ext ts,tsx
+@clarity-chat/react:lint: 
+@clarity-chat/errors:build: 
+@clarity-chat/errors:build: > @clarity-chat/errors@1.0.0 build
+@clarity-chat/errors:build: > tsc
+@clarity-chat/errors:build: 
+@clarity-chat/primitives:build: 
+@clarity-chat/primitives:build: > @clarity-chat/primitives@0.1.0 build
+@clarity-chat/primitives:build: > tsup src/index.ts --format cjs,esm --dts --external react
+@clarity-chat/primitives:build: 
+@clarity-chat/primitives:lint: 
+@clarity-chat/primitives:lint: > @clarity-chat/primitives@0.1.0 lint
+@clarity-chat/primitives:lint: > eslint src --ext ts,tsx
+@clarity-chat/primitives:lint: 
+@clarity-chat/error-handling:lint: 
+@clarity-chat/error-handling:lint: > @clarity-chat/error-handling@2.0.0 lint
+@clarity-chat/error-handling:lint: > eslint .
+@clarity-chat/error-handling:lint: 
+@clarity-chat/types:build: 
+@clarity-chat/types:build: > @clarity-chat/types@0.1.0 build
+@clarity-chat/types:build: > tsup src/index.ts --format cjs,esm --dts
+@clarity-chat/types:build: 
+analytics-console-demo:lint: 
+analytics-console-demo:lint: > analytics-console-demo@0.1.0 lint
+analytics-console-demo:lint: > next lint
+analytics-console-demo:lint: 
+@clarity-chat/primitives:lint: 
+@clarity-chat/primitives:lint: Oops! Something went wrong! :(
+@clarity-chat/primitives:lint: 
+@clarity-chat/primitives:lint: ESLint: 9.38.0
+@clarity-chat/primitives:lint: 
+@clarity-chat/primitives:lint: ESLint couldn't find an eslint.config.(js|mjs|cjs) file.
+@clarity-chat/primitives:lint: 
+@clarity-chat/primitives:lint: From ESLint v9.0.0, the default configuration file is now eslint.config.js.
+@clarity-chat/primitives:lint: If you are using a .eslintrc.* file, please follow the migration guide
+@clarity-chat/primitives:lint: to update your configuration file to the new format:
+@clarity-chat/primitives:lint: 
+@clarity-chat/primitives:lint: https://eslint.org/docs/latest/use/configure/migration-guide
+@clarity-chat/primitives:lint: 
+@clarity-chat/primitives:lint: If you still have problems after following the migration guide, please stop by
+@clarity-chat/primitives:lint: https://eslint.org/chat/help to chat with the team.
+@clarity-chat/primitives:lint: 
+@clarity-chat/react:lint: 
+@clarity-chat/react:lint: Oops! Something went wrong! :(
+@clarity-chat/react:lint: 
+@clarity-chat/react:lint: ESLint: 9.38.0
+@clarity-chat/react:lint: 
+@clarity-chat/react:lint: ESLint couldn't find an eslint.config.(js|mjs|cjs) file.
+@clarity-chat/react:lint: 
+@clarity-chat/react:lint: From ESLint v9.0.0, the default configuration file is now eslint.config.js.
+@clarity-chat/react:lint: If you are using a .eslintrc.* file, please follow the migration guide
+@clarity-chat/react:lint: to update your configuration file to the new format:
+@clarity-chat/react:lint: 
+@clarity-chat/react:lint: https://eslint.org/docs/latest/use/configure/migration-guide
+@clarity-chat/react:lint: 
+@clarity-chat/react:lint: If you still have problems after following the migration guide, please stop by
+@clarity-chat/react:lint: https://eslint.org/chat/help to chat with the team.
+@clarity-chat/react:lint: 
+@clarity-chat/primitives:lint: npm error Lifecycle script `lint` failed with error:
+@clarity-chat/primitives:lint: npm error code 2
+@clarity-chat/primitives:lint: npm error path /home/user/webapp/packages/primitives
+@clarity-chat/primitives:lint: npm error workspace @clarity-chat/primitives@0.1.0
+@clarity-chat/primitives:lint: npm error location /home/user/webapp/packages/primitives
+@clarity-chat/primitives:lint: npm error command failed
+@clarity-chat/primitives:lint: npm error command sh -c eslint src --ext ts,tsx
+@clarity-chat/react:lint: npm error Lifecycle script `lint` failed with error:
+@clarity-chat/react:lint: npm error code 2
+@clarity-chat/react:lint: npm error path /home/user/webapp/packages/react
+@clarity-chat/react:lint: npm error workspace @clarity-chat/react@0.1.0
+@clarity-chat/react:lint: npm error location /home/user/webapp/packages/react
+@clarity-chat/react:lint: npm error command failed
+@clarity-chat/react:lint: npm error command sh -c eslint src --ext ts,tsx
+@clarity-chat/primitives:lint: ERROR: command finished with error: command (/home/user/webapp/packages/primitives) /usr/bin/npm run lint exited (2)
+@clarity-chat/primitives#lint: command (/home/user/webapp/packages/primitives) /usr/bin/npm run lint exited (2)
+
+ Tasks:    0 successful, 8 total
+Cached:    0 cached, 8 total
+  Time:    3.514s 
+Failed:    @clarity-chat/primitives#lint
+
+ ERROR  run failed: command  exited (2)

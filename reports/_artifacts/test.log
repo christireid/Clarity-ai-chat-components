@@ -1,0 +1,63 @@
+
+> clarity-chat@0.1.0 test
+> turbo run test
+
+turbo 2.5.8
+
+ WARNING  Unable to calculate transitive closures: Workspace 'packages/errors' not found in lockfile.
+• Packages in scope: @clarity-chat/cli, @clarity-chat/dev-tools, @clarity-chat/docs, @clarity-chat/error-handling, @clarity-chat/errors, @clarity-chat/primitives, @clarity-chat/react, @clarity-chat/storybook, @clarity-chat/types, ai-assistant-demo, analytics-console-demo, basic-chat-demo, clarity-chat-examples-showcase, customer-support-demo, model-comparison-demo, multi-user-chat-demo, rag-workbench-demo, streaming-chat-demo
+• Running test in 18 packages
+• Remote caching disabled
+@clarity-chat/cli:test: cache miss, executing 1156297b4034b87c
+@clarity-chat/react:test: cache miss, executing f78832e37993e41b
+@clarity-chat/error-handling:test: cache miss, executing 4b28c3f194a7479b
+@clarity-chat/errors:test: cache miss, executing dc5ad9ad3789fefd
+@clarity-chat/primitives:build: cache miss, executing 17285e0c49585d4c
+@clarity-chat/errors:build: cache miss, executing db7933e3d2556b77
+@clarity-chat/types:build: cache miss, executing d17d163fbc4bf755
+@clarity-chat/react:build: cache miss, executing b6c68fa3ee4805ea
+@clarity-chat/errors:test: 
+@clarity-chat/errors:test: > @clarity-chat/errors@1.0.0 test
+@clarity-chat/errors:test: > jest
+@clarity-chat/errors:test: 
+@clarity-chat/types:build: 
+@clarity-chat/types:build: > @clarity-chat/types@0.1.0 build
+@clarity-chat/types:build: > tsup src/index.ts --format cjs,esm --dts
+@clarity-chat/types:build: 
+@clarity-chat/cli:test: 
+@clarity-chat/cli:test: > @clarity-chat/cli@0.1.0 test
+@clarity-chat/cli:test: > vitest
+@clarity-chat/cli:test: 
+@clarity-chat/react:test: 
+@clarity-chat/react:test: > @clarity-chat/react@0.1.0 test
+@clarity-chat/react:test: > vitest
+@clarity-chat/react:test: 
+@clarity-chat/react:build: 
+@clarity-chat/react:build: > @clarity-chat/react@0.1.0 build
+@clarity-chat/react:build: > tsup
+@clarity-chat/react:build: 
+@clarity-chat/errors:build: 
+@clarity-chat/errors:build: > @clarity-chat/errors@1.0.0 build
+@clarity-chat/errors:build: > tsc
+@clarity-chat/errors:build: 
+@clarity-chat/errors:test: sh: 1: jest: not found
+@clarity-chat/error-handling:test: 
+@clarity-chat/error-handling:test: > @clarity-chat/error-handling@2.0.0 test
+@clarity-chat/error-handling:test: > vitest run
+@clarity-chat/error-handling:test: 
+@clarity-chat/errors:test: npm error Lifecycle script `test` failed with error:
+@clarity-chat/errors:test: npm error code 127
+@clarity-chat/errors:test: npm error path /home/user/webapp/packages/errors
+@clarity-chat/errors:test: npm error workspace @clarity-chat/errors@1.0.0
+@clarity-chat/errors:test: npm error location /home/user/webapp/packages/errors
+@clarity-chat/errors:test: npm error command failed
+@clarity-chat/errors:test: npm error command sh -c jest
+@clarity-chat/errors:test: ERROR: command finished with error: command (/home/user/webapp/packages/errors) /usr/bin/npm run test exited (127)
+@clarity-chat/errors#test: command (/home/user/webapp/packages/errors) /usr/bin/npm run test exited (127)
+
+ Tasks:    0 successful, 8 total
+Cached:    0 cached, 8 total
+  Time:    1.189s 
+Failed:    @clarity-chat/errors#test
+
+ ERROR  run failed: command  exited (127)
