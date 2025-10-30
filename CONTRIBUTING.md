@@ -6,175 +6,448 @@ This document provides guidelines and instructions for contributing to the proje
 
 ---
 
-## 📋 **Table of Contents**
+## 📋 Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
+- [Development Setup](#development-setup)
+- [Project Structure](#project-structure)
 - [Development Workflow](#development-workflow)
-- [Pull Request Process](#pull-request-process)
 - [Coding Standards](#coding-standards)
 - [Testing Guidelines](#testing-guidelines)
-- [Documentation](#documentation)
-- [Commit Message Format](#commit-message-format)
+- [Commit Conventions](#commit-conventions)
+- [Pull Request Process](#pull-request-process)
+- [Release Process](#release-process)
 
 ---
 
-## 🤝 **Code of Conduct**
+## Code of Conduct
 
-This project adheres to a Code of Conduct that all contributors are expected to follow. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
+We are committed to providing a welcoming and inspiring community for all. Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
-**In summary:**
+**In short:**
 - Be respectful and inclusive
 - Welcome newcomers
-- Focus on what is best for the community
-- Show empathy towards other community members
+- Be patient and helpful
+- Focus on constructive feedback
+- Report unacceptable behavior
 
 ---
 
-## 🚀 **Getting Started**
+## Getting Started
 
-### **Prerequisites**
+### Prerequisites
+
+Before you begin, ensure you have:
 
 - **Node.js** >= 18.0.0
 - **npm** >= 9.0.0
-- **Git** for version control
-- Code editor (VS Code recommended)
+- **Git** >= 2.0.0
+- **A GitHub account**
 
-### **Fork and Clone**
+### Types of Contributions
 
-1. Fork the repository on GitHub
-2. Clone your fork locally:
+We welcome:
+
+- 🐛 **Bug fixes**
+- ✨ **New features**
+- 📝 **Documentation improvements**
+- 🎨 **UI/UX enhancements**
+- ♿ **Accessibility improvements**
+- 🧪 **Tests**
+- 🌍 **Translations**
+- 💡 **Examples**
+
+---
+
+## Development Setup
+
+### 1. Fork and Clone
 
 ```bash
+# Fork the repository on GitHub, then:
 git clone https://github.com/YOUR_USERNAME/Clarity-ai-chat-components.git
 cd Clarity-ai-chat-components
 ```
 
-3. Add upstream remote:
-
-```bash
-git remote add upstream https://github.com/christireid/Clarity-ai-chat-components.git
-```
-
-### **Install Dependencies**
+### 2. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### **Verify Setup**
+This installs dependencies for all packages in the monorepo.
+
+### 3. Build Packages
 
 ```bash
-# Run tests
-npm run test
+npm run build
+```
 
-# Start Storybook
+### 4. Start Development Environment
+
+```bash
+# Start Storybook (component development)
 npm run storybook
 
-# Build packages
-npm run build
+# Or start the docs site
+npm run docs
+
+# Or work on a specific package
+npm run dev --workspace=packages/react
+```
+
+### 5. Run Tests
+
+```bash
+# Run all tests
+npm test
+
+# Watch mode
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
 ```
 
 ---
 
-## 💻 **Development Workflow**
+## Project Structure
 
-### **1. Create a Branch**
+```
+clarity-chat/
+├── .github/              # GitHub Actions workflows
+├── .husky/               # Git hooks
+├── packages/
+│   ├── react/            # Main React library
+│   ├── types/            # TypeScript definitions
+│   ├── primitives/       # Base UI components
+│   ├── error-handling/   # Error recovery system
+│   ├── dev-tools/        # Developer utilities
+│   └── cli/              # CLI tools
+├── apps/
+│   ├── storybook/        # Component documentation
+│   └── docs/             # Documentation site
+├── examples/             # Example applications
+├── docs/                 # Markdown documentation
+└── .archive/             # Archived files
+```
 
-Always create a new branch for your work:
+### Key Files
+
+- `package.json` - Root package configuration
+- `turbo.json` - Monorepo build configuration
+- `tsconfig.json` - TypeScript configuration
+- `.eslintrc.js` - Linting rules
+- `.prettierrc` - Code formatting rules
+
+---
+
+## Development Workflow
+
+### 1. Create a Branch
 
 ```bash
+# Create a feature branch
 git checkout -b feature/your-feature-name
-# or
-git checkout -b fix/your-bug-fix
+
+# Or a bugfix branch
+git checkout -b fix/bug-description
 ```
 
 **Branch naming conventions:**
 - `feature/` - New features
 - `fix/` - Bug fixes
-- `docs/` - Documentation changes
+- `docs/` - Documentation updates
 - `refactor/` - Code refactoring
 - `test/` - Test additions/fixes
 - `chore/` - Maintenance tasks
 
-### **2. Make Changes**
+### 2. Make Changes
 
 - Write clean, readable code
-- Follow the existing code style
-- Add tests for new features
+- Follow existing code style
+- Add tests for new functionality
 - Update documentation as needed
+- Ensure all tests pass
 
-### **3. Test Your Changes**
+### 3. Test Your Changes
 
 ```bash
-# Run all tests
-npm run test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
-
-# Type check
+# Type checking
 npm run typecheck
 
-# Lint
+# Linting
 npm run lint
+
+# Tests
+npm test
+
+# Build
+npm run build
 ```
 
-### **4. Preview Changes**
-
-```bash
-# Start Storybook
-npm run storybook
-
-# Start docs site
-npm run docs
-```
-
-### **5. Commit Changes**
-
-We use [Conventional Commits](https://www.conventionalcommits.org/):
+### 4. Commit Your Changes
 
 ```bash
 git add .
-git commit -m "feat: add voice input component"
+git commit -m "feat: add new feature"
 ```
 
-See [Commit Message Format](#commit-message-format) for details.
+See [Commit Conventions](#commit-conventions) for commit message format.
 
-### **6. Push to Your Fork**
+### 5. Push and Create PR
 
 ```bash
-git push origin feature/your-feature-name
+git push origin your-branch-name
 ```
 
-### **7. Create Pull Request**
-
-1. Go to the repository on GitHub
-2. Click "New Pull Request"
-3. Select your branch
-4. Fill out the PR template
-5. Submit for review
+Then create a Pull Request on GitHub.
 
 ---
 
-## 🔄 **Pull Request Process**
+## Coding Standards
 
-### **Before Submitting**
+### TypeScript
 
-- ✅ Tests pass (`npm run test`)
-- ✅ Code is formatted (`npm run format`)
-- ✅ Types are correct (`npm run typecheck`)
-- ✅ Linting passes (`npm run lint`)
-- ✅ Documentation is updated
-- ✅ Storybook stories added (for UI changes)
-- ✅ CHANGELOG.md updated (for significant changes)
+- **Always use TypeScript**
+- **Strict mode enabled** - No `any` types
+- **Explicit return types** for functions
+- **Interface over type** for object shapes
+- **Descriptive names** for types
 
-### **PR Template**
+**Good:**
+```typescript
+interface MessageProps {
+  message: Message
+  onCopy?: () => void
+}
 
-Your PR should include:
+function MessageComponent({ message, onCopy }: MessageProps): JSX.Element {
+  // ...
+}
+```
+
+**Bad:**
+```typescript
+function MessageComponent(props: any) {
+  // ...
+}
+```
+
+### React
+
+- **Functional components only**
+- **Hooks for state management**
+- **Props destructuring**
+- **Explicit prop types**
+- **Memoization when appropriate**
+
+**Good:**
+```typescript
+import { memo } from 'react'
+
+interface ButtonProps {
+  label: string
+  onClick: () => void
+  disabled?: boolean
+}
+
+export const Button = memo(function Button({
+  label,
+  onClick,
+  disabled = false,
+}: ButtonProps) {
+  return (
+    <button onClick={onClick} disabled={disabled}>
+      {label}
+    </button>
+  )
+})
+```
+
+### CSS/Styling
+
+- **Use Tailwind CSS utilities** first
+- **CSS modules** for component-specific styles
+- **Consistent naming** (BEM-like)
+- **Responsive design** (mobile-first)
+- **Accessibility** (color contrast, focus states)
+
+**Example:**
+```tsx
+<div className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:ring-2">
+  Click me
+</div>
+```
+
+### File Organization
+
+```
+component-name/
+├── component-name.tsx       # Component implementation
+├── component-name.test.tsx  # Tests
+├── component-name.stories.tsx # Storybook story
+├── index.ts                 # Exports
+└── README.md                # Component documentation
+```
+
+---
+
+## Testing Guidelines
+
+### Unit Tests
+
+- **Test all public APIs**
+- **Test edge cases**
+- **Mock external dependencies**
+- **Use descriptive test names**
+
+**Example:**
+```typescript
+import { render, screen, fireEvent } from '@testing-library/react'
+import { Button } from './button'
+
+describe('Button', () => {
+  it('renders with label', () => {
+    render(<Button label="Click me" onClick={() => {}} />)
+    expect(screen.getByText('Click me')).toBeInTheDocument()
+  })
+
+  it('calls onClick when clicked', () => {
+    const onClick = vi.fn()
+    render(<Button label="Click" onClick={onClick} />)
+    
+    fireEvent.click(screen.getByText('Click'))
+    
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('is disabled when disabled prop is true', () => {
+    render(<Button label="Click" onClick={() => {}} disabled />)
+    expect(screen.getByText('Click')).toBeDisabled()
+  })
+})
+```
+
+### Integration Tests
+
+- **Test component interactions**
+- **Test user workflows**
+- **Test error scenarios**
+
+### Accessibility Tests
+
+```typescript
+import { axe, toHaveNoViolations } from 'jest-axe'
+
+expect.extend(toHaveNoViolations)
+
+it('has no accessibility violations', async () => {
+  const { container } = render(<Button label="Click" onClick={() => {}} />)
+  const results = await axe(container)
+  expect(results).toHaveNoViolations()
+})
+```
+
+### Coverage Requirements
+
+- **Minimum 80% overall coverage**
+- **90%+ for critical paths**
+- **100% for utility functions**
+
+---
+
+## Commit Conventions
+
+We use [Conventional Commits](https://www.conventionalcommits.org/) for clear commit history.
+
+### Format
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### Types
+
+- `feat` - New feature
+- `fix` - Bug fix
+- `docs` - Documentation changes
+- `style` - Code style changes (formatting, etc.)
+- `refactor` - Code refactoring
+- `perf` - Performance improvements
+- `test` - Adding or updating tests
+- `chore` - Maintenance tasks
+- `ci` - CI/CD changes
+- `build` - Build system changes
+
+### Scope (Optional)
+
+- `react` - React package
+- `types` - Types package
+- `docs` - Documentation
+- `storybook` - Storybook
+- `ci` - CI/CD
+
+### Examples
+
+```bash
+# Feature
+feat(react): add voice input component
+
+# Bug fix
+fix(react): resolve streaming connection leak
+
+# Documentation
+docs(guides): add theming guide
+
+# Breaking change
+feat(react)!: redesign chat input API
+
+BREAKING CHANGE: ChatInput now requires onSendMessage prop
+```
+
+### Commit Message Tips
+
+- Use present tense ("add feature" not "added feature")
+- Use imperative mood ("move cursor to" not "moves cursor to")
+- Keep subject line under 50 characters
+- Capitalize subject line
+- No period at the end
+- Separate subject from body with blank line
+- Wrap body at 72 characters
+- Use body to explain *what* and *why*, not *how*
+
+---
+
+## Pull Request Process
+
+### Before Submitting
+
+1. ✅ **Tests pass** - `npm test`
+2. ✅ **Linting passes** - `npm run lint`
+3. ✅ **Type checking passes** - `npm run typecheck`
+4. ✅ **Build succeeds** - `npm run build`
+5. ✅ **Documentation updated**
+6. ✅ **Examples updated** (if applicable)
+7. ✅ **Changeset created** (for package changes)
+
+### Creating a Changeset
+
+```bash
+npm run changeset
+```
+
+Follow the prompts to describe your changes. This will:
+- Update CHANGELOG.md
+- Determine version bump (major/minor/patch)
+- Group changes for release
+
+### PR Template
 
 ```markdown
 ## Description
@@ -186,403 +459,157 @@ Brief description of changes
 - [ ] Breaking change
 - [ ] Documentation update
 
-## Testing
-How to test these changes
-
-## Screenshots (if applicable)
-
 ## Checklist
 - [ ] Tests added/updated
 - [ ] Documentation updated
-- [ ] Storybook stories added
-- [ ] No breaking changes (or documented)
+- [ ] Changeset created
+- [ ] Examples updated
+- [ ] Accessibility tested
+- [ ] Browser tested
+
+## Screenshots (if applicable)
+Attach screenshots or GIFs
+
+## Related Issues
+Closes #123
 ```
 
-### **Review Process**
+### PR Review Process
 
-1. Maintainers will review your PR
-2. Address any requested changes
-3. Once approved, maintainers will merge
+1. **Automated checks** must pass
+2. **Code review** by maintainer
+3. **Changes requested** (if needed)
+4. **Approval** from maintainer
+5. **Merge** to main branch
 
-**Review criteria:**
-- Code quality and readability
-- Test coverage
-- Documentation completeness
-- Performance impact
-- Breaking changes justified
+### Review Expectations
+
+- **Response time:** Within 48 hours
+- **Iteration:** Be prepared for feedback
+- **Communication:** Ask questions if unclear
 
 ---
 
-## 📏 **Coding Standards**
+## Release Process
 
-### **TypeScript**
+### Versioning
 
-- Use strict mode (`strict: true`)
-- Prefer `interface` over `type` for object shapes
-- Use explicit return types for functions
-- Avoid `any` - use `unknown` if necessary
+We follow [Semantic Versioning](https://semver.org/):
 
-**Example:**
+- **Major** (X.0.0) - Breaking changes
+- **Minor** (0.X.0) - New features
+- **Patch** (0.0.X) - Bug fixes
 
-```typescript
-// ✅ Good
-interface User {
-  id: string
-  name: string
-  email: string
-}
+### Release Workflow
 
-function getUser(id: string): User | null {
-  // ...
-}
+1. **Changesets accumulate** on main branch
+2. **Release PR created** automatically by Changesets
+3. **Review and merge** release PR
+4. **Packages published** to npm automatically
+5. **GitHub release** created with changelog
 
-// ❌ Bad
-type User = {
-  id: any
-  name: any
-}
-
-function getUser(id) {
-  // ...
-}
-```
-
-### **React**
-
-- Use functional components with hooks
-- Prefer named exports
-- Use TypeScript for prop types
-- Memoize expensive computations
-
-**Example:**
-
-```typescript
-// ✅ Good
-export interface ButtonProps {
-  label: string
-  onClick: () => void
-  disabled?: boolean
-}
-
-export function Button({ label, onClick, disabled = false }: ButtonProps) {
-  return (
-    <button onClick={onClick} disabled={disabled}>
-      {label}
-    </button>
-  )
-}
-
-// ❌ Bad
-export default function Button(props: any) {
-  return <button {...props} />
-}
-```
-
-### **CSS/Styling**
-
-- Use Tailwind CSS utilities
-- Use `clsx` for conditional classes
-- Follow BEM naming for custom CSS
-- Mobile-first responsive design
-
-**Example:**
-
-```typescript
-import { clsx } from 'clsx'
-
-export function Alert({ variant, children }: AlertProps) {
-  return (
-    <div
-      className={clsx(
-        'rounded-lg p-4',
-        {
-          'bg-blue-100 text-blue-900': variant === 'info',
-          'bg-red-100 text-red-900': variant === 'error',
-        }
-      )}
-    >
-      {children}
-    </div>
-  )
-}
-```
-
-### **File Organization**
-
-```
-src/
-├── components/
-│   ├── button.tsx          # Component file
-│   ├── button.stories.tsx  # Storybook story
-│   └── __tests__/
-│       └── button.test.tsx # Tests
-├── hooks/
-│   ├── use-chat.ts
-│   └── __tests__/
-│       └── use-chat.test.ts
-└── utils/
-    ├── format.ts
-    └── __tests__/
-        └── format.test.ts
-```
-
----
-
-## 🧪 **Testing Guidelines**
-
-### **Unit Tests**
-
-Write unit tests for:
-- All utility functions
-- Complex hooks
-- Business logic
-
-**Example:**
-
-```typescript
-import { describe, it, expect } from 'vitest'
-import { formatDate } from './format'
-
-describe('formatDate', () => {
-  it('formats date correctly', () => {
-    const date = new Date('2024-01-01')
-    expect(formatDate(date)).toBe('January 1, 2024')
-  })
-
-  it('handles invalid dates', () => {
-    expect(formatDate(null)).toBe('')
-  })
-})
-```
-
-### **Component Tests**
-
-Write component tests for:
-- User interactions
-- Rendering different states
-- Accessibility
-
-**Example:**
-
-```typescript
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { describe, it, expect, vi } from 'vitest'
-import { Button } from './button'
-
-describe('Button', () => {
-  it('calls onClick when clicked', async () => {
-    const onClick = vi.fn()
-    const user = userEvent.setup()
-
-    render(<Button label="Click me" onClick={onClick} />)
-
-    await user.click(screen.getByRole('button'))
-
-    expect(onClick).toHaveBeenCalledOnce()
-  })
-
-  it('is disabled when disabled prop is true', () => {
-    render(<Button label="Click me" onClick={() => {}} disabled />)
-
-    expect(screen.getByRole('button')).toBeDisabled()
-  })
-})
-```
-
-### **Test Coverage**
-
-Aim for:
-- **80%+** overall coverage
-- **90%+** for critical paths
-- **100%** for utilities
-
-Check coverage:
+### Manual Release (Maintainers)
 
 ```bash
-npm run test:coverage
+# Update versions
+npm run version-packages
+
+# Build and publish
+npm run release
 ```
 
 ---
 
-## 📚 **Documentation**
+## Development Tips
 
-### **Code Comments**
-
-Use JSDoc for public APIs:
-
-```typescript
-/**
- * Formats a date into a human-readable string.
- *
- * @param date - The date to format
- * @param format - The format string (optional)
- * @returns Formatted date string
- *
- * @example
- * ```typescript
- * formatDate(new Date()) // "January 1, 2024"
- * formatDate(new Date(), 'short') // "1/1/24"
- * ```
- */
-export function formatDate(date: Date, format?: string): string {
-  // ...
-}
-```
-
-### **Component Documentation**
-
-Add Storybook stories for all components:
-
-```typescript
-import type { Meta, StoryObj } from '@storybook/react'
-import { Button } from './button'
-
-const meta: Meta<typeof Button> = {
-  title: 'Components/Button',
-  component: Button,
-  tags: ['autodocs'],
-}
-
-export default meta
-type Story = StoryObj<typeof Button>
-
-export const Primary: Story = {
-  args: {
-    label: 'Click me',
-    variant: 'primary',
-  },
-}
-
-export const Disabled: Story = {
-  args: {
-    label: 'Disabled',
-    disabled: true,
-  },
-}
-```
-
-### **Markdown Documentation**
-
-Update relevant docs in `/docs`:
-- Getting Started guides
-- API documentation
-- Examples
-
----
-
-## 📝 **Commit Message Format**
-
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-### **Types**
-
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation changes
-- `style:` - Code style changes (formatting, etc.)
-- `refactor:` - Code refactoring
-- `perf:` - Performance improvements
-- `test:` - Test additions/fixes
-- `chore:` - Maintenance tasks
-- `ci:` - CI/CD changes
-
-### **Scope** (optional)
-
-- `components` - Component changes
-- `hooks` - Hook changes
-- `theme` - Theme system
-- `docs` - Documentation
-- `deps` - Dependencies
-
-### **Examples**
+### Hot Reload
 
 ```bash
-# Feature
-feat(components): add voice input component
+# Watch mode for package development
+npm run dev --workspace=packages/react
 
-# Bug fix
-fix(hooks): resolve memory leak in useChat
+# Storybook hot reload
+npm run storybook
+```
 
-# Breaking change
-feat(theme)!: redesign theme system
+### Debugging
 
-BREAKING CHANGE: Theme structure has changed. See migration guide.
+```typescript
+// Use React DevTools
+// Add debugger statements
+debugger
 
-# Documentation
-docs(getting-started): update installation guide
+// Console logging (remove before commit)
+console.log('Debug:', value)
+```
 
-# Chore
-chore(deps): update react to v19.0.0
+### Common Issues
+
+**Problem:** Module not found after adding dependency
+
+**Solution:**
+```bash
+npm install
+npm run build
+```
+
+**Problem:** Type errors after changes
+
+**Solution:**
+```bash
+npm run typecheck
+# Review errors and fix
+```
+
+**Problem:** Tests failing
+
+**Solution:**
+```bash
+npm run test -- --verbose
+# Check error messages
 ```
 
 ---
 
-## 🏗️ **Architecture Decisions**
+## Getting Help
 
-When proposing significant changes:
+### Resources
 
-1. Open an issue for discussion
-2. Provide use cases and examples
-3. Consider backwards compatibility
-4. Document breaking changes
-5. Update migration guides
+- **[Documentation](./docs/README.md)** - Full docs
+- **[Discord](https://discord.gg/clarity-chat)** - Community chat
+- **[GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)** - Q&A
+- **[GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** - Bug reports
 
----
+### Asking Questions
 
-## 🐛 **Reporting Bugs**
-
-Found a bug? Please [open an issue](https://github.com/christireid/Clarity-ai-chat-components/issues/new) with:
-
-- Clear title and description
-- Steps to reproduce
-- Expected vs actual behavior
-- Screenshots (if applicable)
-- Environment info (OS, Node version, etc.)
+When asking for help:
+1. Search existing issues/discussions first
+2. Provide context and examples
+3. Include error messages
+4. Share relevant code snippets
+5. Mention what you've tried
 
 ---
 
-## 💡 **Suggesting Features**
+## Recognition
 
-Have an idea? [Open a discussion](https://github.com/christireid/Clarity-ai-chat-components/discussions) with:
-
-- Clear use case
-- Example implementation
-- Potential API design
-- Alternatives considered
+Contributors are recognized in:
+- **CHANGELOG.md** - Listed in release notes
+- **README.md** - Contributors section
+- **All Contributors** - Visual recognition
 
 ---
 
-## 🎓 **Resources**
+## License
 
-- [React Documentation](https://react.dev/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
-- [Storybook Documentation](https://storybook.js.org/docs)
-- [Conventional Commits](https://www.conventionalcommits.org/)
+By contributing, you agree that your contributions will be licensed under the MIT License.
 
 ---
 
-## 📞 **Getting Help**
+## Thank You! 🙏
 
-- 💬 [Discord Community](https://discord.gg/clarity-chat)
-- 🐛 [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
-- 📖 [Documentation](./docs/README.md)
+Every contribution, no matter how small, makes a difference. We appreciate your time and effort in helping make Clarity Chat better!
 
 ---
 
-## 🙏 **Thank You!**
-
-Your contributions make Clarity Chat better for everyone. We appreciate your time and effort!
-
----
-
-**Happy Coding! 🚀**
+**Questions?** Join us on [Discord](https://discord.gg/clarity-chat) or start a [Discussion](https://github.com/christireid/Clarity-ai-chat-components/discussions)!
