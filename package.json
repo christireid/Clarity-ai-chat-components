@@ -14,13 +14,32 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:coverage": "turbo run test:coverage",
+    "test:ui": "turbo run test:ui",
     "clean": "turbo run clean && rm -rf node_modules",
     "storybook": "npm run dev --workspace=@clarity-chat/storybook",
+    "storybook:build": "npm run build --workspace=@clarity-chat/storybook",
     "docs": "npm run dev --workspace=@clarity-chat/docs",
-    "typecheck": "turbo run typecheck"
+    "docs:build": "npm run build --workspace=@clarity-chat/docs",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "size": "size-limit",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "npm run build && changeset publish",
+    "prepare": "husky install || true"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "@size-limit/preset-big-lib": "^11.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.2.0",
+    "size-limit": "^11.0.0",
     "turbo": "^2.0.0",
+    "typedoc": "^0.25.0",
     "typescript": "^5.3.3"
   },
   "engines": {

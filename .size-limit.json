@@ -1,0 +1,37 @@
+[
+  {
+    "name": "@clarity-chat/react",
+    "path": "packages/react/dist/index.mjs",
+    "limit": "100 KB",
+    "webpack": false,
+    "gzip": true
+  },
+  {
+    "name": "@clarity-chat/react (CJS)",
+    "path": "packages/react/dist/index.js",
+    "limit": "105 KB",
+    "webpack": false,
+    "gzip": true
+  },
+  {
+    "name": "@clarity-chat/error-handling",
+    "path": "packages/error-handling/dist/index.mjs",
+    "limit": "50 KB",
+    "webpack": false,
+    "gzip": true
+  },
+  {
+    "name": "@clarity-chat/primitives",
+    "path": "packages/primitives/dist/index.mjs",
+    "limit": "30 KB",
+    "webpack": false,
+    "gzip": true
+  },
+  {
+    "name": "@clarity-chat/types",
+    "path": "packages/types/dist/index.mjs",
+    "limit": "10 KB",
+    "webpack": false,
+    "gzip": true
+  }
+]
