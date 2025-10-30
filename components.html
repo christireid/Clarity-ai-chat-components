@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Browser - Clarity Chat</title>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-tsx.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .back-link {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .search-bar {
+            margin-bottom: 2rem;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .component-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .component-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .component-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .component-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .component-info h3 {
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        
+        .component-category {
+            font-size: 0.875rem;
+            color: #667eea;
+        }
+        
+        .component-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .component-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-header h2 {
+            color: #2c3e50;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-body pre {
+            background: #2d2d2d;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← Back to Home</a>
+            <h1>🧩 Component Browser</h1>
+            <p>Explore all 25+ Storybook components with live examples and source code</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="🔍 Search components...">
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">25</div>
+                <div class="stat-label">Storybook Components</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">49</div>
+                <div class="stat-label">Total Components</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">26</div>
+                <div class="stat-label">Custom Hooks</div>
+            </div>
+        </div>
+        
+        <div class="component-grid" id="componentGrid"></div>
+        
+        <div class="no-results" id="noResults" style="display: none;">
+            <h3>No components found</h3>
+            <p>Try a different search term</p>
+        </div>
+    </div>
+    
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+    
+    <script>
+        const components = [
+            {
+                name: 'ChatWindow',
+                icon: '💬',
+                category: 'Core',
+                description: 'Complete chat window component orchestrating MessageList and ChatInput with full functionality.',
+                storyFile: 'apps/storybook/stories/ChatWindow.stories.tsx',
+                features: ['Messages', 'Input', 'Scrolling', 'Auto-focus']
+            },
+            {
+                name: 'MessageList',
+                icon: '📜',
+                category: 'Core',
+                description: 'Scrollable message container with auto-scroll, virtualization support, and optimized rendering.',
+                storyFile: 'apps/storybook/stories/MessageList.stories.tsx',
+                features: ['Virtualization', 'Auto-scroll', 'Grouping']
+            },
+            {
+                name: 'Message',
+                icon: '💭',
+                category: 'Core',
+                description: 'Individual message rendering with markdown support, code highlighting, and actions.',
+                storyFile: 'apps/storybook/stories/Message.stories.tsx',
+                features: ['Markdown', 'Syntax highlighting', 'Actions']
+            },
+            {
+                name: 'ChatInput',
+                icon: '✍️',
+                category: 'Core',
+                description: 'Basic text input with send button, auto-resize, and keyboard shortcuts.',
+                storyFile: 'apps/storybook/stories/ChatInput.stories.tsx',
+                features: ['Auto-resize', 'Shortcuts', 'Validation']
+            },
+            {
+                name: 'AdvancedChatInput',
+                icon: '🎨',
+                category: 'Core',
+                description: 'Enhanced input with file upload, formatting toolbar, emoji picker, and voice input.',
+                storyFile: 'apps/storybook/stories/AdvancedChatInput.stories.tsx',
+                features: ['File upload', 'Formatting', 'Emoji', 'Voice']
+            },
+            {
+                name: 'VoiceInput',
+                icon: '🎤',
+                category: 'Input',
+                description: 'Voice input component with speech-to-text, real-time transcription, and multi-language support.',
+                storyFile: 'apps/storybook/stories/VoiceInput.stories.tsx',
+                features: ['Speech-to-text', 'Multi-language', 'Real-time']
+            },
+            {
+                name: 'FileUpload',
+                icon: '📎',
+                category: 'Input',
+                description: 'Drag & drop file upload with preview, validation, and progress tracking.',
+                storyFile: 'apps/storybook/stories/FileUpload.stories.tsx',
+                features: ['Drag & drop', 'Preview', 'Validation']
+            },
+            {
+                name: 'ContextManager',
+                icon: '📚',
+                category: 'Context',
+                description: 'Manage documents, images, and links for AI context with upload and organization.',
+                storyFile: 'apps/storybook/stories/ContextManager.stories.tsx',
+                features: ['Documents', 'Images', 'Organization']
+            },
+            {
+                name: 'ContextCard',
+                icon: '🃏',
+                category: 'Context',
+                description: 'Display individual context items with preview and actions.',
+                storyFile: 'apps/storybook/stories/ContextCard.stories.tsx',
+                features: ['Preview', 'Actions', 'Metadata']
+            },
+            {
+                name: 'ContextVisualizer',
+                icon: '👁️',
+                category: 'Context',
+                description: 'Visualize what AI can "see" in the conversation context.',
+                storyFile: 'apps/storybook/stories/ContextVisualizer.stories.tsx',
+                features: ['Visualization', 'Token count', 'Filtering']
+            },
+            {
+                name: 'KnowledgeBaseViewer',
+                icon: '📖',
+                category: 'Context',
+                description: 'Auto-generated knowledge base from conversation with search and filtering.',
+                storyFile: 'apps/storybook/stories/KnowledgeBaseViewer.stories.tsx',
+                features: ['Search', 'Auto-generation', 'Export']
+            },
+            {
+                name: 'LinkPreview',
+                icon: '🔗',
+                category: 'Content',
+                description: 'URL preview cards with metadata, thumbnails, and actions.',
+                storyFile: 'apps/storybook/stories/LinkPreview.stories.tsx',
+                features: ['Metadata', 'Thumbnails', 'Actions']
+            },
+            {
+                name: 'ProjectSidebar',
+                icon: '🗂️',
+                category: 'Navigation',
+                description: 'Organize conversations into projects with folders and search.',
+                storyFile: 'apps/storybook/stories/ProjectSidebar.stories.tsx',
+                features: ['Folders', 'Search', 'Organization']
+            },
+            {
+                name: 'ConversationList',
+                icon: '📋',
+                category: 'Navigation',
+                description: 'List and search conversations with filtering and sorting.',
+                storyFile: 'apps/storybook/stories/ConversationList.stories.tsx',
+                features: ['Search', 'Filter', 'Sort']
+            },
+            {
+                name: 'PromptLibrary',
+                icon: '📝',
+                category: 'Tools',
+                description: 'Manage and organize prompt templates with categories.',
+                storyFile: 'apps/storybook/stories/PromptLibrary.stories.tsx',
+                features: ['Templates', 'Categories', 'Search']
+            },
+            {
+                name: 'SettingsPanel',
+                icon: '⚙️',
+                category: 'Tools',
+                description: 'User preferences and configuration panel.',
+                storyFile: 'apps/storybook/stories/SettingsPanel.stories.tsx',
+                features: ['Preferences', 'Configuration', 'Validation']
+            },
+            {
+                name: 'UsageDashboard',
+                icon: '📊',
+                category: 'Tools',
+                description: 'Track credit usage, tokens, and costs with visualizations.',
+                storyFile: 'apps/storybook/stories/UsageDashboard.stories.tsx',
+                features: ['Tracking', 'Visualization', 'Reports']
+            },
+            {
+                name: 'StreamCancellation',
+                icon: '⏹️',
+                category: 'Advanced',
+                description: 'Cancel streaming responses with visual feedback.',
+                storyFile: 'apps/storybook/stories/StreamCancellation.stories.tsx',
+                features: ['Cancel', 'Feedback', 'State management']
+            },
+            {
+                name: 'RetryButton',
+                icon: '🔄',
+                category: 'Advanced',
+                description: 'Smart retry with exponential backoff and error handling.',
+                storyFile: 'apps/storybook/stories/RetryButton.stories.tsx',
+                features: ['Exponential backoff', 'Error handling', 'State']
+            },
+            {
+                name: 'NetworkStatus',
+                icon: '📡',
+                category: 'Advanced',
+                description: 'Monitor connection status with visual indicators.',
+                storyFile: 'apps/storybook/stories/NetworkStatus.stories.tsx',
+                features: ['Monitoring', 'Indicators', 'Reconnection']
+            },
+            {
+                name: 'TokenCounter',
+                icon: '🔢',
+                category: 'Advanced',
+                description: 'Real-time token counting and cost estimation.',
+                storyFile: 'apps/storybook/stories/TokenCounter.stories.tsx',
+                features: ['Counting', 'Cost estimation', 'Real-time']
+            },
+            {
+                name: 'ExportDialog',
+                icon: '💾',
+                category: 'Tools',
+                description: 'Export conversations to PDF, DOCX, or Markdown.',
+                storyFile: 'apps/storybook/stories/ExportDialog.stories.tsx',
+                features: ['PDF', 'DOCX', 'Markdown']
+            },
+            {
+                name: 'CopyButton',
+                icon: '📋',
+                category: 'UI',
+                description: 'Copy message content to clipboard with feedback.',
+                storyFile: 'apps/storybook/stories/CopyButton.stories.tsx',
+                features: ['Clipboard', 'Feedback', 'Animation']
+            },
+            {
+                name: 'ThinkingIndicator',
+                icon: '💭',
+                category: 'UI',
+                description: 'AI processing animation with customizable styles.',
+                storyFile: 'apps/storybook/stories/ThinkingIndicator.stories.tsx',
+                features: ['Animation', 'Customizable', 'Styles']
+            },
+            {
+                name: 'Templates',
+                icon: '🎯',
+                category: 'Templates',
+                description: 'Pre-built chat templates for common use cases.',
+                storyFile: 'apps/storybook/stories/Templates.stories.tsx',
+                features: ['Customer support', 'AI assistant', 'Code helper']
+            }
+        ];
+        
+        const grid = document.getElementById('componentGrid');
+        const search = document.getElementById('search');
+        const modal = document.getElementById('modal');
+        const noResults = document.getElementById('noResults');
+        
+        function renderComponents(filteredComponents) {
+            grid.innerHTML = '';
+            
+            if (filteredComponents.length === 0) {
+                grid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'grid';
+            noResults.style.display = 'none';
+            
+            filteredComponents.forEach(component => {
+                const card = document.createElement('div');
+                card.className = 'component-card';
+                card.innerHTML = `
+                    <div class="component-header">
+                        <div class="component-icon">${component.icon}</div>
+                        <div class="component-info">
+                            <h3>${component.name}</h3>
+                            <div class="component-category">${component.category}</div>
+                        </div>
+                    </div>
+                    <div class="component-description">${component.description}</div>
+                    <div class="component-actions">
+                        <button class="btn btn-primary" onclick="viewComponent('${component.name}')">
+                            View Story
+                        </button>
+                        <button class="btn btn-secondary" onclick="viewSource('${component.storyFile}')">
+                            Source Code
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        search.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = components.filter(c => 
+                c.name.toLowerCase().includes(query) ||
+                c.description.toLowerCase().includes(query) ||
+                c.category.toLowerCase().includes(query)
+            );
+            renderComponents(filtered);
+        });
+        
+        async function viewComponent(name) {
+            const component = components.find(c => c.name === name);
+            document.getElementById('modalTitle').textContent = `${component.icon} ${component.name}`;
+            document.getElementById('modalBody').innerHTML = `
+                <p><strong>Category:</strong> ${component.category}</p>
+                <p>${component.description}</p>
+                <h3>Features</h3>
+                <ul>
+                    ${component.features.map(f => `<li>${f}</li>`).join('')}
+                </ul>
+                <h3>Storybook Location</h3>
+                <p><code>${component.storyFile}</code></p>
+                <div style="margin-top: 1.5rem; padding: 1rem; background: #fff3cd; border-radius: 8px;">
+                    <strong>ℹ️ Note:</strong> To view the live Storybook, run:
+                    <pre style="margin-top: 0.5rem; background: #2d2d2d; color: white; padding: 0.75rem; border-radius: 4px;">npm install --legacy-peer-deps
+npm run storybook</pre>
+                    <p style="margin-top: 0.5rem;">Then visit <strong>http://localhost:6006</strong></p>
+                </div>
+            `;
+            modal.classList.add('active');
+        }
+        
+        async function viewSource(file) {
+            try {
+                const response = await fetch(file);
+                const code = await response.text();
+                document.getElementById('modalTitle').textContent = file.split('/').pop();
+                document.getElementById('modalBody').innerHTML = `
+                    <pre><code class="language-typescript">${escapeHtml(code)}</code></pre>
+                `;
+                Prism.highlightAll();
+                modal.classList.add('active');
+            } catch (error) {
+                document.getElementById('modalTitle').textContent = 'Error';
+                document.getElementById('modalBody').innerHTML = `
+                    <p style="color: #c00;">Failed to load source file: ${error.message}</p>
+                `;
+                modal.classList.add('active');
+            }
+        }
+        
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+        
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        
+        // Close modal on background click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+        
+        // Initial render
+        renderComponents(components);
+    </script>
+</body>
+</html>
