@@ -19,7 +19,7 @@
   "author": "Clarity Chat",
   "license": "MIT",
   "dependencies": {
-    "@clarity-chat/errors": "workspace:*",
+    "@clarity-chat/errors": "*",
     "chalk": "^5.3.0"
   },
   "devDependencies": {

@@ -1,13 +1,21 @@
 import { expect, afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
-import * as matchers from '@testing-library/jest-dom/matchers'
-import { toHaveNoViolations } from 'jest-axe'
+import matchers from '@testing-library/jest-dom/matchers'
+
+// Note: jest-axe is optional - only import if installed
+let axeMatchers: any
+try {
+  axeMatchers = require('jest-axe')
+  if (axeMatchers && axeMatchers.toHaveNoViolations) {
+    expect.extend({ toHaveNoViolations: axeMatchers.toHaveNoViolations })
+  }
+} catch (e) {
+  // jest-axe not installed, skip accessibility matchers
+  console.log('jest-axe not found - accessibility testing disabled')
+}
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers)
-
-// Extend with jest-axe matchers
-expect.extend(toHaveNoViolations)
 
 // Cleanup after each test
 afterEach(() => {
@@ -17,7 +25,7 @@ afterEach(() => {
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation((query) => ({
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -48,24 +56,26 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 } as any
 
-// Mock Web Speech API
-global.SpeechRecognition = class SpeechRecognition {
-  continuous = false
-  interimResults = false
-  lang = 'en-US'
+// Mock Web Speech API (for voice input tests)
+if (typeof window !== 'undefined') {
+  (window as any).SpeechRecognition = class SpeechRecognition {
+    continuous = false
+    interimResults = false
+    lang = 'en-US'
+    
+    start() {}
+    stop() {}
+    abort() {}
+    
+    addEventListener() {}
+    removeEventListener() {}
+  }
   
-  start() {}
-  stop() {}
-  abort() {}
-  
-  addEventListener() {}
-  removeEventListener() {}
-} as any
+  (window as any).webkitSpeechRecognition = (window as any).SpeechRecognition
+}
 
-global.webkitSpeechRecognition = global.SpeechRecognition
-
-// Mock localStorage
-const localStorageMock = {
+// Mock localStorage and sessionStorage
+const storageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
   removeItem: vi.fn(),
@@ -74,14 +84,5 @@ const localStorageMock = {
   key: vi.fn(),
 }
 
-global.localStorage = localStorageMock as any
-
-// Mock sessionStorage
-global.sessionStorage = localStorageMock as any
-
-// Suppress console errors in tests (optional)
-global.console = {
-  ...console,
-  error: vi.fn(),
-  warn: vi.fn(),
-}
+global.localStorage = storageMock as any
+global.sessionStorage = storageMock as any
