@@ -1,27 +1,23 @@
 module.exports = {
-  // TypeScript/JavaScript files
-  '*.{ts,tsx,js,jsx}': [
+  // TypeScript and TSX files
+  '*.{ts,tsx}': [
     'eslint --fix',
     'prettier --write',
+    () => 'tsc --noEmit', // Type check all files
   ],
 
-  // Markdown files
-  '*.md': [
-    'prettier --write',
-  ],
+  // JavaScript and JSX files
+  '*.{js,jsx}': ['eslint --fix', 'prettier --write'],
 
   // JSON files
-  '*.json': [
-    'prettier --write',
-  ],
+  '*.json': ['prettier --write'],
 
-  // CSS files
-  '*.{css,scss}': [
-    'prettier --write',
-  ],
+  // Markdown files
+  '*.md': ['prettier --write'],
 
-  // YAML files
-  '*.{yml,yaml}': [
-    'prettier --write',
-  ],
+  // CSS and SCSS files
+  '*.{css,scss}': ['prettier --write'],
+
+  // Package.json files
+  'package.json': ['prettier --write', 'sort-package-json'],
 }

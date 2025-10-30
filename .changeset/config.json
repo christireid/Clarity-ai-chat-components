@@ -1,14 +1,19 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.3.1/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "christireid/Clarity-ai-chat-components"
+    }
+  ],
   "commit": false,
   "fixed": [],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@clarity-chat/examples-*", "@clarity-chat/docs", "@clarity-chat/storybook"],
-  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
-    "onlyUpdatePeerDependentsWhenOutOfRange": true
-  }
+  "ignore": [
+    "@clarity-chat/storybook",
+    "@clarity-chat/docs"
+  ]
 }
