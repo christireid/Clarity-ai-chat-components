@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation Viewer</title>
+    <title>Documentation Viewer - Clarity Chat</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-tsx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
     <style>
         * {
             margin: 0;
@@ -16,6 +23,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: #333;
+            background: #f5f7fa;
         }
         
         .container {
@@ -24,16 +32,52 @@
         }
         
         .sidebar {
-            width: 300px;
+            width: 320px;
             background: #2c3e50;
             color: white;
             overflow-y: auto;
-            padding: 1rem;
+            padding: 1.5rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #34495e;
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .back-link {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            transition: background 0.3s;
+        }
+        
+        .back-link:hover {
+            background: #764ba2;
         }
         
         .sidebar h2 {
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
         }
         
         .sidebar ul {
@@ -41,104 +85,165 @@
         }
         
         .sidebar li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
         
         .sidebar a {
             color: #ecf0f1;
             text-decoration: none;
             display: block;
-            padding: 0.5rem;
-            border-radius: 4px;
-            transition: background 0.3s;
+            padding: 0.6rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-size: 0.95rem;
         }
         
         .sidebar a:hover {
             background: #34495e;
+            padding-left: 1rem;
+        }
+        
+        .sidebar a.active {
+            background: #667eea;
+            font-weight: 500;
         }
         
         .content {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem 3rem;
-            background: #f8f9fa;
+            padding: 3rem;
         }
         
         .markdown-body {
             max-width: 900px;
+            margin: 0 auto;
             background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
         }
         
         .markdown-body h1 {
             color: #2c3e50;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
         }
         
         .markdown-body h2 {
             color: #34495e;
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 1.8rem;
         }
         
         .markdown-body h3 {
             color: #667eea;
-            margin-top: 1.5rem;
+            margin-top: 2rem;
             margin-bottom: 0.75rem;
+            font-size: 1.4rem;
+        }
+        
+        .markdown-body h4 {
+            color: #555;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .markdown-body p {
+            margin-bottom: 1.25rem;
+            line-height: 1.8;
         }
         
         .markdown-body code {
-            background: #f0f0f0;
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
+            background: #f4f4f4;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 0.9em;
+            color: #e83e8c;
         }
         
         .markdown-body pre {
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 1rem;
-            border-radius: 6px;
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 8px;
             overflow-x: auto;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .markdown-body pre code {
             background: none;
             color: inherit;
             padding: 0;
+            font-size: 0.9rem;
         }
         
         .markdown-body table {
             border-collapse: collapse;
             width: 100%;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
         .markdown-body th,
         .markdown-body td {
-            border: 1px solid #ddd;
-            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+            padding: 0.75rem 1rem;
             text-align: left;
         }
         
         .markdown-body th {
             background: #667eea;
             color: white;
+            font-weight: 600;
+        }
+        
+        .markdown-body tr:nth-child(even) {
+            background: #f9f9f9;
         }
         
         .markdown-body a {
             color: #667eea;
             text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s;
         }
         
         .markdown-body a:hover {
-            text-decoration: underline;
+            border-bottom-color: #667eea;
+        }
+        
+        .markdown-body ul,
+        .markdown-body ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+        
+        .markdown-body li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-body blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: #666;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .markdown-body hr {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 2rem 0;
         }
         
         .loading {
@@ -146,67 +251,178 @@
             padding: 3rem;
             color: #666;
         }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(3, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid #c00;
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="sidebar">
-            <h2>📚 Documentation</h2>
-            <ul id="nav"></ul>
+            <a href="index.html" class="back-link">← Back to Home</a>
+            
+            <div class="sidebar-header">
+                <h1>📚 Documentation</h1>
+                <p>Clarity Chat Components</p>
+            </div>
+            
+            <h2>Getting Started</h2>
+            <ul>
+                <li><a href="?doc=README.md" data-doc="README.md">📖 README</a></li>
+                <li><a href="?doc=docs/getting-started/installation.md" data-doc="docs/getting-started/installation.md">📦 Installation</a></li>
+                <li><a href="?doc=docs/getting-started/quick-start.md" data-doc="docs/getting-started/quick-start.md">⚡ Quick Start</a></li>
+                <li><a href="?doc=docs/getting-started/first-component.md" data-doc="docs/getting-started/first-component.md">🎯 First Component ✨</a></li>
+            </ul>
+            
+            <h2>Feature Guides</h2>
+            <ul>
+                <li><a href="?doc=docs/guides/voice-input.md" data-doc="docs/guides/voice-input.md">🎤 Voice Input ✨</a></li>
+                <li><a href="?doc=docs/guides/error-handling.md" data-doc="docs/guides/error-handling.md">🛡️ Error Handling ✨</a></li>
+                <li><a href="?doc=docs/guides/analytics.md" data-doc="docs/guides/analytics.md">📊 Analytics ✨</a></li>
+                <li><a href="?doc=docs/guides/accessibility.md" data-doc="docs/guides/accessibility.md">♿ Accessibility ✨</a></li>
+                <li><a href="?doc=docs/guides/mobile.md" data-doc="docs/guides/mobile.md">📱 Mobile ✨</a></li>
+                <li><a href="?doc=docs/guides/theming.md" data-doc="docs/guides/theming.md">🎨 Theming</a></li>
+                <li><a href="?doc=docs/guides/streaming.md" data-doc="docs/guides/streaming.md">🔄 Streaming</a></li>
+            </ul>
+            
+            <h2>API Reference</h2>
+            <ul>
+                <li><a href="?doc=docs/api/components.md" data-doc="docs/api/components.md">🧩 Components</a></li>
+                <li><a href="?doc=docs/api/hooks.md" data-doc="docs/api/hooks.md">🪝 Hooks</a></li>
+                <li><a href="?doc=docs/api/utilities.md" data-doc="docs/api/utilities.md">🛠️ Utilities ✨</a></li>
+                <li><a href="?doc=docs/api/types.md" data-doc="docs/api/types.md">📘 Types ✨</a></li>
+            </ul>
+            
+            <h2>Project</h2>
+            <ul>
+                <li><a href="?doc=docs/architecture/roadmap.md" data-doc="docs/architecture/roadmap.md">🗺️ Roadmap ✨</a></li>
+                <li><a href="?doc=docs/architecture/overview.md" data-doc="docs/architecture/overview.md">🏗️ Architecture</a></li>
+                <li><a href="?doc=docs/architecture/contributing.md" data-doc="docs/architecture/contributing.md">🤝 Contributing</a></li>
+            </ul>
+            
+            <h2>Reports</h2>
+            <ul>
+                <li><a href="?doc=SESSION_SUMMARY.md" data-doc="SESSION_SUMMARY.md">📝 Session Summary ✨</a></li>
+                <li><a href="?doc=PHASE_1_COMPLETION_REPORT.md" data-doc="PHASE_1_COMPLETION_REPORT.md">📋 Phase 1 Report ✨</a></li>
+                <li><a href="?doc=COMPLETE_INVENTORY.md" data-doc="COMPLETE_INVENTORY.md">📦 Complete Inventory</a></li>
+                <li><a href="?doc=DEVELOPER_QUICK_REFERENCE.md" data-doc="DEVELOPER_QUICK_REFERENCE.md">⚡ Quick Reference</a></li>
+            </ul>
         </div>
+        
         <div class="content">
             <div class="markdown-body" id="content">
-                <div class="loading">Loading documentation...</div>
+                <div class="loading">Loading documentation</div>
             </div>
         </div>
     </div>
     
     <script>
-        const docs = [
-            { title: '🏠 Home', path: 'README.md' },
-            { title: '📖 Getting Started', path: 'docs/getting-started/first-component.md' },
-            { title: '🎤 Voice Input Guide', path: 'docs/guides/voice-input.md' },
-            { title: '🛡️ Error Handling', path: 'docs/guides/error-handling.md' },
-            { title: '📊 Analytics', path: 'docs/guides/analytics.md' },
-            { title: '♿ Accessibility', path: 'docs/guides/accessibility.md' },
-            { title: '📱 Mobile', path: 'docs/guides/mobile.md' },
-            { title: '🛠️ Utilities API', path: 'docs/api/utilities.md' },
-            { title: '📘 Types Reference', path: 'docs/api/types.md' },
-            { title: '🗺️ Roadmap', path: 'docs/architecture/roadmap.md' },
-            { title: '📝 Session Summary', path: 'SESSION_SUMMARY.md' },
-            { title: '📋 Phase 1 Report', path: 'PHASE_1_COMPLETION_REPORT.md' },
-        ];
-        
-        const nav = document.getElementById('nav');
-        const content = document.getElementById('content');
-        
-        // Build navigation
-        docs.forEach(doc => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = '#';
-            a.textContent = doc.title;
-            a.onclick = (e) => {
-                e.preventDefault();
-                loadDoc(doc.path);
-            };
-            li.appendChild(a);
-            nav.appendChild(li);
+        // Configure marked
+        marked.setOptions({
+            highlight: function(code, lang) {
+                if (lang && Prism.languages[lang]) {
+                    return Prism.highlight(code, Prism.languages[lang], lang);
+                }
+                return code;
+            },
+            breaks: true,
+            gfm: true
         });
         
+        const content = document.getElementById('content');
+        
+        // Get document path from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const docPath = urlParams.get('doc') || 'README.md';
+        
+        // Update active link
+        document.querySelectorAll('.sidebar a[data-doc]').forEach(link => {
+            if (link.dataset.doc === docPath) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Load and render document
         async function loadDoc(path) {
             try {
-                content.innerHTML = '<div class="loading">Loading...</div>';
+                content.innerHTML = '<div class="loading">Loading documentation</div>';
+                
                 const response = await fetch(path);
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${path}: ${response.status} ${response.statusText}`);
+                }
+                
                 const text = await response.text();
-                content.innerHTML = marked.parse(text);
+                const html = marked.parse(text);
+                content.innerHTML = html;
+                
+                // Re-highlight code blocks
+                content.querySelectorAll('pre code').forEach((block) => {
+                    Prism.highlightElement(block);
+                });
+                
+                // Make internal markdown links work with viewer
+                content.querySelectorAll('a[href$=".md"]').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && !href.startsWith('http')) {
+                        // Convert relative path to absolute
+                        const currentDir = path.substring(0, path.lastIndexOf('/') + 1);
+                        const newPath = href.startsWith('/') ? href.substring(1) : currentDir + href;
+                        link.setAttribute('href', `?doc=${newPath}`);
+                    }
+                });
+                
+                // Scroll to top
+                document.querySelector('.content').scrollTop = 0;
+                
             } catch (error) {
-                content.innerHTML = `<div class="loading">Error loading ${path}: ${error.message}</div>`;
+                content.innerHTML = `
+                    <div class="error">
+                        <h2>Error Loading Document</h2>
+                        <p><strong>Path:</strong> ${path}</p>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p>Please check that the file exists and try again.</p>
+                    </div>
+                `;
             }
         }
         
-        // Load first doc
-        loadDoc(docs[0].path);
+        // Load initial document
+        loadDoc(docPath);
     </script>
 </body>
 </html>
