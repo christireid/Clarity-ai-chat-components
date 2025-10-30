@@ -1,359 +1,429 @@
 # Quick Start Guide
 
-Build your first AI chat application in **5 minutes**! ⚡
+Build your first AI chat interface in 5 minutes with Clarity Chat Components.
 
----
-
-## 🎯 **What We'll Build**
-
-A functional chat interface with:
-- ✅ Message sending and receiving
-- ✅ AI response simulation
-- ✅ Beautiful ocean theme
-- ✅ Typing indicators
-- ✅ Markdown support
-
----
-
-## 📝 **Step 1: Create a New React App**
-
-If you don't have a React app yet:
-
-```bash
-# Using Vite (recommended)
-npm create vite@latest my-chat-app -- --template react-ts
-cd my-chat-app
-npm install
-
-# Or using Create React App
-npx create-react-app my-chat-app --template typescript
-cd my-chat-app
-```
-
----
-
-## 📦 **Step 2: Install Clarity Chat**
+## Installation
 
 ```bash
 npm install @clarity-chat/react
 ```
 
----
+## Basic Chat Interface
 
-## 🎨 **Step 3: Create Your First Chat Component**
-
-Replace your `src/App.tsx` with:
+Here's the minimal code to get a working chat interface:
 
 ```tsx
-import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react'
+import React, { useState } from 'react'
+import { 
+  ChatWindow, 
+  ThemeProvider, 
+  defaultLightTheme 
+} from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
-import { useState } from 'react'
-
-interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  timestamp: Date
-}
 
 function App() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: '👋 Hello! I\'m your AI assistant. How can I help you today?',
-      timestamp: new Date(),
-    },
-  ])
-  const [isLoading, setIsLoading] = useState(false)
+  const [messages, setMessages] = useState([])
 
   const handleSendMessage = async (content: string) => {
     // Add user message
-    const userMessage: Message = {
+    const userMessage = {
       id: Date.now().toString(),
-      role: 'user',
       content,
+      role: 'user' as const,
       timestamp: new Date(),
     }
-    setMessages((prev) => [...prev, userMessage])
-    setIsLoading(true)
+    
+    setMessages(prev => [...prev, userMessage])
 
     // Simulate AI response (replace with your API call)
     setTimeout(() => {
-      const aiMessage: Message = {
+      const aiMessage = {
         id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: `I received your message: "${content}". This is a simulated response!`,
+        content: `You said: "${content}". How can I help you further?`,
+        role: 'assistant' as const,
         timestamp: new Date(),
       }
-      setMessages((prev) => [...prev, aiMessage])
-      setIsLoading(false)
-    }, 1500)
+      setMessages(prev => [...prev, aiMessage])
+    }, 1000)
   }
 
   return (
-    <div className="h-screen bg-gray-50">
-      <ThemeProvider theme={themes.ocean}>
+    <ThemeProvider theme={defaultLightTheme}>
+      <div style={{ height: '100vh' }}>
         <ChatWindow
           messages={messages}
           onSendMessage={handleSendMessage}
-          isLoading={isLoading}
-          placeholder="Type your message..."
         />
-      </ThemeProvider>
-    </div>
+      </div>
+    </ThemeProvider>
   )
 }
 
 export default App
 ```
 
----
+## Adding AI Integration
 
-## 🚀 **Step 4: Run Your App**
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173) (or the URL shown in your terminal).
-
-**🎉 Congratulations!** You now have a working chat interface!
-
----
-
-## 🎨 **Step 5: Try Different Themes**
-
-Clarity Chat comes with 11 built-in themes. Try changing the theme:
+### OpenAI Integration
 
 ```tsx
-// Replace 'themes.ocean' with any of these:
-themes.default    // Clean, professional
-themes.dark       // Dark mode
-themes.ocean      // Blue ocean vibes
-themes.sunset     // Warm sunset colors
-themes.forest     // Green nature theme
-themes.corporate  // Professional business
-themes.glassmorphism // Modern glass effect
-themes.neon       // Cyberpunk neon
-themes.minimal    // Ultra minimal
-themes.warm       // Cozy warm tones
-themes.cool       // Cool blue/gray
-```
+import { OpenAIAdapter } from '@clarity-chat/react'
 
-Example:
-```tsx
-<ThemeProvider theme={themes.glassmorphism}>
-  <ChatWindow {...props} />
-</ThemeProvider>
-```
-
----
-
-## 🤖 **Step 6: Connect to a Real AI API**
-
-### **OpenAI Example**
-
-```bash
-npm install openai
-```
-
-```tsx
-import OpenAI from 'openai'
-
-const openai = new OpenAI({
-  apiKey: process.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true, // Only for demo! Use a backend in production
+const openai = new OpenAIAdapter({
+  apiKey: process.env.REACT_APP_OPENAI_API_KEY!,
+  model: 'gpt-4-turbo-preview',
 })
 
-const handleSendMessage = async (content: string) => {
-  const userMessage: Message = {
-    id: Date.now().toString(),
-    role: 'user',
-    content,
-    timestamp: new Date(),
-  }
-  setMessages((prev) => [...prev, userMessage])
-  setIsLoading(true)
+function App() {
+  const [messages, setMessages] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
-  try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant.' },
-        ...messages.map((m) => ({ role: m.role, content: m.content })),
-        { role: 'user', content },
-      ],
-    })
-
-    const aiMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: response.choices[0].message.content || 'No response',
+  const handleSendMessage = async (content: string) => {
+    // Add user message
+    const userMessage = {
+      id: Date.now().toString(),
+      content,
+      role: 'user' as const,
       timestamp: new Date(),
     }
-    setMessages((prev) => [...prev, aiMessage])
-  } catch (error) {
-    console.error('Error calling OpenAI:', error)
-    // Handle error appropriately
-  } finally {
-    setIsLoading(false)
+    
+    setMessages(prev => [...prev, userMessage])
+    setIsLoading(true)
+
+    try {
+      // Get AI response
+      const response = await openai.chat({
+        messages: [...messages, userMessage],
+      })
+
+      const aiMessage = {
+        id: (Date.now() + 1).toString(),
+        content: response.content,
+        role: 'assistant' as const,
+        timestamp: new Date(),
+      }
+      
+      setMessages(prev => [...prev, aiMessage])
+    } catch (error) {
+      console.error('Failed to get AI response:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
+
+  return (
+    <ThemeProvider theme={defaultLightTheme}>
+      <ChatWindow
+        messages={messages}
+        isLoading={isLoading}
+        onSendMessage={handleSendMessage}
+      />
+    </ThemeProvider>
+  )
 }
 ```
 
-⚠️ **Security Note:** Never expose API keys in frontend code. Use a backend API route in production.
-
-### **Next.js API Route Example**
-
-```tsx
-// app/api/chat/route.ts
-import { OpenAI } from 'openai'
-import { NextResponse } from 'next/server'
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
-export async function POST(req: Request) {
-  const { messages } = await req.json()
-
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages,
-  })
-
-  return NextResponse.json(response.choices[0].message)
-}
-```
-
-```tsx
-// Frontend code
-const handleSendMessage = async (content: string) => {
-  // ... add user message ...
-
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      messages: [...messages, { role: 'user', content }],
-    }),
-  })
-
-  const data = await response.json()
-  // ... add AI message ...
-}
-```
-
----
-
-## ✨ **Step 7: Add More Features**
-
-### **Enable Streaming Responses**
+### Streaming Responses
 
 ```tsx
 import { useStreaming } from '@clarity-chat/react'
 
 function App() {
+  const [messages, setMessages] = useState([])
   const { streamMessage, isStreaming } = useStreaming()
 
   const handleSendMessage = async (content: string) => {
-    await streamMessage('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({ message: content }),
+    // Add user message
+    const userMessage = {
+      id: Date.now().toString(),
+      content,
+      role: 'user' as const,
+      timestamp: new Date(),
+    }
+    
+    setMessages(prev => [...prev, userMessage])
+
+    // Stream AI response
+    const aiMessage = {
+      id: (Date.now() + 1).toString(),
+      content: '',
+      role: 'assistant' as const,
+      timestamp: new Date(),
+      isStreaming: true,
+    }
+    
+    setMessages(prev => [...prev, aiMessage])
+
+    await streamMessage({
+      url: '/api/chat',
+      body: { message: content },
+      onChunk: (chunk) => {
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === aiMessage.id 
+              ? { ...msg, content: msg.content + chunk }
+              : msg
+          )
+        )
+      },
+      onComplete: () => {
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === aiMessage.id 
+              ? { ...msg, isStreaming: false }
+              : msg
+          )
+        )
+      },
     })
   }
 
   return (
-    <ChatWindow
-      messages={messages}
-      onSendMessage={handleSendMessage}
-      isLoading={isStreaming}
-    />
+    <ThemeProvider theme={defaultLightTheme}>
+      <ChatWindow
+        messages={messages}
+        isLoading={isStreaming}
+        onSendMessage={handleSendMessage}
+      />
+    </ThemeProvider>
   )
 }
 ```
 
-### **Add Voice Input**
+## Customizing the Theme
+
+### Using Pre-built Themes
+
+```tsx
+import { 
+  ThemeProvider, 
+  oceanTheme,
+  sunsetTheme,
+  forestTheme,
+  corporateTheme 
+} from '@clarity-chat/react'
+
+// Choose any theme
+<ThemeProvider theme={oceanTheme}>
+  <ChatWindow {...props} />
+</ThemeProvider>
+```
+
+### Dark Mode
+
+```tsx
+import { defaultDarkTheme } from '@clarity-chat/react'
+
+<ThemeProvider theme={defaultDarkTheme}>
+  <ChatWindow {...props} />
+</ThemeProvider>
+```
+
+### Custom Theme
+
+```tsx
+import { createTheme } from '@clarity-chat/react'
+
+const myCustomTheme = createTheme({
+  colors: {
+    primary: '220 90% 56%', // HSL values
+    background: '0 0% 98%',
+    foreground: '222 84% 5%',
+  },
+  typography: {
+    fontFamily: {
+      sans: 'Inter, system-ui, sans-serif',
+    },
+  },
+})
+
+<ThemeProvider theme={myCustomTheme}>
+  <ChatWindow {...props} />
+</ThemeProvider>
+```
+
+## Adding Features
+
+### File Upload
+
+```tsx
+<ChatWindow
+  messages={messages}
+  onSendMessage={handleSendMessage}
+  onFileUpload={(files) => {
+    console.log('Files uploaded:', files)
+    // Handle file upload
+  }}
+  enableFileUpload
+/>
+```
+
+### Voice Input
 
 ```tsx
 import { VoiceInput } from '@clarity-chat/react'
 
-<ChatWindow
-  messages={messages}
-  onSendMessage={handleSendMessage}
-  renderInput={(props) => (
-    <div className="flex gap-2">
-      <input {...props} />
-      <VoiceInput onTranscript={(text) => handleSendMessage(text)} />
-    </div>
-  )}
-/>
+function ChatWithVoice() {
+  const [input, setInput] = useState('')
+
+  return (
+    <>
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSendMessage}
+      />
+      <VoiceInput
+        onTranscript={(text) => setInput(text)}
+        onSubmit={(text) => handleSendMessage(text)}
+      />
+    </>
+  )
+}
 ```
 
-### **Add File Upload**
+### Context Management
 
 ```tsx
-import { FileUpload } from '@clarity-chat/react'
+import { ContextManager } from '@clarity-chat/react'
 
-const [files, setFiles] = useState<File[]>([])
+function ChatWithContext() {
+  const [context, setContext] = useState([])
 
-<ChatWindow
-  messages={messages}
-  onSendMessage={handleSendMessage}
-  attachments={files}
-  onAttachmentsChange={setFiles}
-/>
+  return (
+    <div style={{ display: 'flex', height: '100vh' }}>
+      <ContextManager
+        items={context}
+        onAddItem={(item) => setContext([...context, item])}
+        onRemoveItem={(id) => 
+          setContext(context.filter(c => c.id !== id))
+        }
+      />
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSendMessage}
+        context={context}
+      />
+    </div>
+  )
+}
 ```
 
----
+### Analytics
 
-## 🎓 **What's Next?**
+```tsx
+import { 
+  AnalyticsProvider, 
+  createGoogleAnalyticsProvider 
+} from '@clarity-chat/react'
 
-You've built your first chat app! Now explore:
+const analyticsProvider = createGoogleAnalyticsProvider('G-XXXXXXXXXX')
 
-### **Core Concepts**
-- [Understanding Components](./first-component.md) - Deep dive into ChatWindow
-- [Theming Guide](../guides/theming.md) - Customize your chat's appearance
-- [Message Streaming](../guides/streaming.md) - Real-time responses
+function App() {
+  return (
+    <AnalyticsProvider config={{ providers: [analyticsProvider] }}>
+      <ThemeProvider theme={defaultLightTheme}>
+        <ChatWindow {...props} />
+      </ThemeProvider>
+    </AnalyticsProvider>
+  )
+}
+```
 
-### **Production Features**
-- [Error Handling](../guides/error-handling.md) - Robust error recovery
-- [Analytics](../guides/analytics.md) - Track user interactions
-- [Accessibility](../guides/accessibility.md) - WCAG compliance
+## API Endpoint Example
 
-### **Advanced Topics**
-- [Custom AI Providers](../examples/integrations.md) - OpenAI, Anthropic, Azure
-- [Custom Themes](../guides/theming.md#custom-themes) - Build your own
-- [Performance Optimization](../guides/performance.md) - Scale to 1000+ messages
+Here's a simple Next.js API route for chat:
 
----
+```ts
+// app/api/chat/route.ts
+import { OpenAI } from 'openai'
+import { NextResponse } from 'next/server'
 
-## 📚 **Additional Resources**
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
-- **[Examples Gallery](../examples/README.md)** - 9 working examples
-- **[API Reference](../api/components.md)** - Complete API docs
-- **[Storybook](https://storybook.clarity-chat.dev)** - Interactive component explorer
+export async function POST(req: Request) {
+  const { message } = await req.json()
 
----
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4-turbo-preview',
+    messages: [{ role: 'user', content: message }],
+  })
 
-## 🤝 **Need Help?**
+  return NextResponse.json({
+    content: completion.choices[0].message.content,
+  })
+}
+```
 
-- 💬 [Join Discord](https://discord.gg/clarity-chat)
-- 🐛 [Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
-- 📖 [Full Documentation](../README.md)
+## Complete Example
 
----
+Here's a full-featured chat implementation:
 
-## 🎯 **Common Next Steps**
+```tsx
+import React, { useState } from 'react'
+import {
+  ChatWindow,
+  ThemeProvider,
+  AnalyticsProvider,
+  ContextManager,
+  UsageDashboard,
+  oceanTheme,
+  createGoogleAnalyticsProvider,
+  useLocalStorage,
+} from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
-Most developers do one of these next:
+function CompleteChatApp() {
+  const [messages, setMessages] = useLocalStorage('chat-messages', [])
+  const [context, setContext] = useState([])
+  const [usage, setUsage] = useState({ tokens: 0, cost: 0 })
 
-1. **[Add OpenAI Integration](../examples/integrations.md#openai)** (30 min)
-2. **[Customize Theme](../guides/theming.md#custom-themes)** (20 min)
-3. **[Deploy to Vercel](../guides/deployment.md)** (15 min)
-4. **[Add Analytics](../guides/analytics.md)** (25 min)
+  const handleSendMessage = async (content: string) => {
+    // Your implementation
+  }
 
----
+  return (
+    <AnalyticsProvider 
+      config={{ 
+        providers: [createGoogleAnalyticsProvider('G-XXX')] 
+      }}
+    >
+      <ThemeProvider theme={oceanTheme}>
+        <div style={{ display: 'flex', height: '100vh' }}>
+          <ContextManager
+            items={context}
+            onAddItem={(item) => setContext([...context, item])}
+            style={{ width: '300px' }}
+          />
+          
+          <div style={{ flex: 1 }}>
+            <ChatWindow
+              messages={messages}
+              onSendMessage={handleSendMessage}
+              enableFileUpload
+              enableVoiceInput
+              context={context}
+            />
+          </div>
+          
+          <UsageDashboard
+            usage={usage}
+            style={{ width: '250px' }}
+          />
+        </div>
+      </ThemeProvider>
+    </AnalyticsProvider>
+  )
+}
 
-**Congratulations on building your first AI chat app!** 🎉
+export default CompleteChatApp
+```
 
-**Next:** [Understanding Your First Component →](./first-component.md)
+## Next Steps
+
+- [Component API Reference](../api/components.md)
+- [Hooks Documentation](../api/hooks.md)
+- [Theming Guide](../guides/theming.md)
+- [Streaming Guide](../guides/streaming.md)
+- [Examples](../../examples)

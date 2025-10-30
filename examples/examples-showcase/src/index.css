@@ -1,0 +1,233 @@
+/* Showcase Application Styles */
+
+.showcase-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.showcase-header {
+  padding: 2rem;
+  text-align: center;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+}
+
+.showcase-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.showcase-header p {
+  color: hsl(var(--muted-foreground));
+}
+
+.showcase-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--muted));
+}
+
+.showcase-nav button {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: hsl(var(--foreground));
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.2s;
+}
+
+.showcase-nav button:hover {
+  background: hsl(var(--accent));
+}
+
+.showcase-nav button.active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.showcase-controls {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.showcase-controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.showcase-controls select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.showcase-main {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.showcase-footer {
+  padding: 1rem;
+  text-align: center;
+  border-top: 1px solid hsl(var(--border));
+  background: hsl(var(--muted));
+}
+
+.showcase-footer a {
+  color: hsl(var(--primary));
+  text-decoration: none;
+}
+
+.showcase-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Playground View */
+.playground {
+  max-width: 1200px;
+  height: 600px;
+  margin: 0 auto;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Templates View */
+.templates-view h2 {
+  margin-bottom: 2rem;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+.template-card {
+  padding: 1.5rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--card));
+}
+
+.template-card h3 {
+  margin-bottom: 0.5rem;
+}
+
+.template-card p {
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 1rem;
+}
+
+/* Themes View */
+.themes-view h2 {
+  margin-bottom: 2rem;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.theme-preview-card {
+  padding: 1rem;
+  border: 2px solid hsl(var(--border));
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-preview-card:hover {
+  border-color: hsl(var(--primary));
+  transform: translateY(-2px);
+}
+
+.theme-preview-card h3 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.mini-chat-preview {
+  height: 150px;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  background: hsl(var(--background));
+}
+
+.mini-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mini-message {
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+}
+
+.mini-message.user {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  align-self: flex-end;
+}
+
+.mini-message.assistant {
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  align-self: flex-start;
+}
+
+/* Components View */
+.components-view h2 {
+  margin-bottom: 2rem;
+}
+
+.component-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.component-sections section {
+  padding: 1.5rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--card));
+}
+
+.component-sections h3 {
+  margin-bottom: 1rem;
+  color: hsl(var(--primary));
+}
+
+.component-sections ul {
+  list-style: none;
+  padding: 0;
+}
+
+.component-sections li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.component-sections li:last-child {
+  border-bottom: none;
+}

@@ -1,108 +1,125 @@
-# Installation Guide
+# Installation
 
-This guide will walk you through installing Clarity Chat in your React application.
+Get started with Clarity Chat Components in your React application.
 
----
+## Prerequisites
 
-## 📋 **Prerequisites**
+- Node.js 18+ and npm 9+
+- React 18+ or React 19
+- TypeScript 5.3+ (recommended)
 
-Before installing, make sure you have:
+## Package Installation
 
-- **Node.js** >= 18.0.0
-- **npm** >= 9.0.0 (or yarn/pnpm)
-- **React** >= 18.0.0
-- **TypeScript** >= 5.0.0 (optional but recommended)
-
----
-
-## 📦 **Installation Methods**
-
-### **Option 1: npm (Recommended)**
-
+### npm
 ```bash
 npm install @clarity-chat/react
 ```
 
-### **Option 2: yarn**
-
+### yarn
 ```bash
 yarn add @clarity-chat/react
 ```
 
-### **Option 3: pnpm**
-
+### pnpm
 ```bash
 pnpm add @clarity-chat/react
 ```
 
----
+## Peer Dependencies
 
-## 🎨 **Install Additional Packages (Optional)**
+The following peer dependencies are required:
 
-Depending on your needs, you may want to install additional packages:
-
-### **Error Handling System**
-```bash
-npm install @clarity-chat/error-handling
-```
-
-### **TypeScript Types Only**
-```bash
-npm install @clarity-chat/types
-```
-
-### **Primitive Components**
-```bash
-npm install @clarity-chat/primitives
-```
-
----
-
-## ⚙️ **Setup CSS**
-
-Clarity Chat requires importing the base styles. Choose one method:
-
-### **Method 1: Import in your main entry file**
-
-```tsx
-// src/main.tsx or src/index.tsx
-import '@clarity-chat/react/styles.css'
-```
-
-### **Method 2: Import in your root component**
-
-```tsx
-// src/App.tsx
-import '@clarity-chat/react/styles.css'
-import { ChatWindow } from '@clarity-chat/react'
-
-export default function App() {
-  return <ChatWindow {...props} />
+```json
+{
+  "react": "^18.0.0 || ^19.0.0",
+  "react-dom": "^18.0.0 || ^19.0.0"
 }
 ```
 
-### **Method 3: Import in CSS file**
+## Basic Setup
 
-```css
-/* src/index.css */
-@import '@clarity-chat/react/styles.css';
+### 1. Import Styles
+
+Add the CSS import at the top of your application:
+
+```tsx
+// In your main App.tsx or index.tsx
+import '@clarity-chat/react/styles.css'
 ```
 
----
+### 2. Set Up Theme Provider
 
-## 🔧 **Framework-Specific Setup**
+Wrap your application with the ThemeProvider:
 
-### **Next.js (App Router)**
+```tsx
+import { ThemeProvider, defaultLightTheme } from '@clarity-chat/react'
+
+function App() {
+  return (
+    <ThemeProvider theme={defaultLightTheme}>
+      {/* Your app content */}
+    </ThemeProvider>
+  )
+}
+```
+
+### 3. Use Components
+
+Now you can import and use any Clarity Chat component:
+
+```tsx
+import { ChatWindow, Message } from '@clarity-chat/react'
+
+function MyChat() {
+  const [messages, setMessages] = useState<Message[]>([])
+
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={(content) => {
+        // Handle message sending
+      }}
+    />
+  )
+}
+```
+
+## TypeScript Setup
+
+Clarity Chat is written in TypeScript and provides full type definitions.
+
+### tsconfig.json
+
+Ensure your TypeScript configuration includes:
+
+```json
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+### Type Imports
+
+Import types directly from the package:
+
+```tsx
+import type { Message, User, ChatConfig } from '@clarity-chat/react'
+```
+
+## Framework Integration
+
+### Next.js 14+ (App Router)
 
 ```tsx
 // app/layout.tsx
 import '@clarity-chat/react/styles.css'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'My AI Chat App',
-  description: 'Built with Clarity Chat',
-}
 
 export default function RootLayout({
   children,
@@ -118,44 +135,24 @@ export default function RootLayout({
 ```
 
 ```tsx
-// app/page.tsx
+// app/chat/page.tsx
 'use client'
 
-import { ChatWindow } from '@clarity-chat/react'
-import { useState } from 'react'
+import { ChatWindow, ThemeProvider, defaultLightTheme } from '@clarity-chat/react'
 
-export default function Home() {
-  const [messages, setMessages] = useState([])
-
+export default function ChatPage() {
   return (
-    <main className="h-screen">
-      <ChatWindow
-        messages={messages}
-        onSendMessage={async (content) => {
-          // Your implementation
-        }}
-      />
-    </main>
+    <ThemeProvider theme={defaultLightTheme}>
+      <ChatWindow {...props} />
+    </ThemeProvider>
   )
 }
 ```
 
-### **Next.js (Pages Router)**
+### Vite
 
 ```tsx
-// pages/_app.tsx
-import '@clarity-chat/react/styles.css'
-import type { AppProps } from 'next/app'
-
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
-}
-```
-
-### **Vite + React**
-
-```tsx
-// src/main.tsx
+// main.tsx
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
@@ -164,17 +161,16 @@ import '@clarity-chat/react/styles.css'
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
+  </React.StrictMode>
 )
 ```
 
-### **Create React App**
+### Create React App
 
 ```tsx
-// src/index.tsx
+// index.tsx
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'
 import '@clarity-chat/react/styles.css'
 import App from './App'
 
@@ -188,155 +184,92 @@ root.render(
 )
 ```
 
----
+## Tailwind CSS Integration
 
-## 🎯 **Tailwind CSS Integration (Optional)**
-
-If you're using Tailwind CSS, add Clarity Chat to your content paths:
+If you're using Tailwind CSS, add our package to your content paths:
 
 ```js
 // tailwind.config.js
 module.exports = {
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@clarity-chat/**/*.{js,ts,jsx,tsx}', // Add this line
+    './node_modules/@clarity-chat/react/**/*.{js,ts,jsx,tsx}',
   ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
+  // ...
 }
 ```
 
----
+## Environment Variables
 
-## ✅ **Verify Installation**
+For AI provider integration, set up your environment variables:
 
-Create a simple test component to verify everything works:
+```bash
+# .env.local (Next.js) or .env (Vite)
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_AI_API_KEY=...
+```
+
+## Bundle Size
+
+Clarity Chat supports tree-shaking. Import only what you need:
 
 ```tsx
-// src/TestChat.tsx
-import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react'
-import { useState } from 'react'
+// ✅ Good - only imports what's needed
+import { ChatWindow } from '@clarity-chat/react'
 
-export default function TestChat() {
-  const [messages, setMessages] = useState([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Hello! Clarity Chat is working perfectly! 🎉',
-      timestamp: new Date(),
-    },
-  ])
+// ❌ Avoid - imports entire library
+import * as ClarityChat from '@clarity-chat/react'
+```
 
-  const handleSend = async (content: string) => {
-    const newMessage = {
-      id: Date.now().toString(),
-      role: 'user' as const,
-      content,
-      timestamp: new Date(),
-    }
-    setMessages((prev) => [...prev, newMessage])
+Expected bundle sizes (gzipped):
+- Full bundle: ~95KB
+- Minimal chat UI: ~30KB
+- Single component: ~5-15KB
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant' as const,
-        content: `You said: "${content}"`,
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, aiMessage])
-    }, 1000)
+## Browser Support
+
+Clarity Chat supports all modern browsers:
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+## Troubleshooting
+
+### Module Resolution Issues
+
+If you encounter module resolution issues:
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler", // or "node"
+    "allowSyntheticDefaultImports": true
   }
-
-  return (
-    <div className="h-screen">
-      <ThemeProvider theme={themes.ocean}>
-        <ChatWindow messages={messages} onSendMessage={handleSend} />
-      </ThemeProvider>
-    </div>
-  )
 }
 ```
 
-If you see a working chat interface, you're all set! 🎉
+### Style Loading Issues
 
----
+If styles aren't loading:
 
-## 🚨 **Troubleshooting**
+1. Ensure you're importing the CSS file
+2. Check your bundler's CSS handling configuration
+3. Try importing in your root component
 
-### **Problem: Styles not loading**
+### TypeScript Errors
 
-**Solution:** Make sure you've imported the CSS file:
-```tsx
-import '@clarity-chat/react/styles.css'
-```
+If you see TypeScript errors:
 
-### **Problem: TypeScript errors**
+1. Update to TypeScript 5.3+
+2. Add `"skipLibCheck": true` to tsconfig.json
+3. Ensure React types are installed: `npm install -D @types/react @types/react-dom`
 
-**Solution:** Ensure you have the correct TypeScript version:
-```bash
-npm install -D typescript@^5.0.0
-```
+## Next Steps
 
-### **Problem: Module not found errors**
-
-**Solution:** Clear your package manager cache:
-```bash
-# npm
-npm cache clean --force
-rm -rf node_modules package-lock.json
-npm install
-
-# yarn
-yarn cache clean
-rm -rf node_modules yarn.lock
-yarn install
-
-# pnpm
-pnpm store prune
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
-```
-
-### **Problem: React version mismatch**
-
-**Solution:** Update to React 18+:
-```bash
-npm install react@^18.0.0 react-dom@^18.0.0
-```
-
----
-
-## 🔄 **Updating**
-
-To update to the latest version:
-
-```bash
-npm update @clarity-chat/react
-```
-
-Check the [CHANGELOG.md](../../CHANGELOG.md) for breaking changes.
-
----
-
-## 📚 **Next Steps**
-
-Now that you've installed Clarity Chat:
-
-1. **[Quick Start Guide](./quick-start.md)** - Build your first chat app
-2. **[First Component Tutorial](./first-component.md)** - Understand core concepts
-3. **[API Reference](../api/components.md)** - Explore all components
-
----
-
-## 🤝 **Need Help?**
-
-- 📖 [Documentation](../README.md)
-- 💬 [Discord Community](https://discord.gg/clarity-chat)
-- 🐛 [Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
-
----
-
-**Next:** [Quick Start Guide →](./quick-start.md)
+- [Quick Start Guide](./quick-start.md) - Build your first chat interface
+- [Components API](../api/components.md) - Explore all available components
+- [Theming Guide](../guides/theming.md) - Customize the appearance
+- [Examples](../../examples/README.md) - See working implementations

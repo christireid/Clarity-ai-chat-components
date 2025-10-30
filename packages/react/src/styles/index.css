@@ -1,0 +1,346 @@
+/**
+ * Clarity Chat Components - Main Stylesheet
+ * 
+ * This file combines all component styles and theme variables
+ */
+
+/* ============================================================================
+   CSS Variables & Theme System
+   ============================================================================ */
+
+:root {
+  /* Colors */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --success: 142 76% 36%;
+  --success-foreground: 210 40% 98%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 222.2 47.4% 11.2%;
+  --info: 199 89% 48%;
+  --info-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+
+  /* Spacing */
+  --radius: 0.5rem;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 224.3 76.3% 48%;
+}
+
+/* ============================================================================
+   Base Styles
+   ============================================================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+}
+
+/* ============================================================================
+   Component Styles
+   ============================================================================ */
+
+/* Chat Window */
+.clarity-chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Message List */
+.clarity-message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Message */
+.clarity-message {
+  display: flex;
+  gap: var(--spacing-sm);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.clarity-message.user {
+  flex-direction: row-reverse;
+}
+
+.clarity-message-content {
+  max-width: 70%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+}
+
+.clarity-message.user .clarity-message-content {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+/* Chat Input */
+.clarity-chat-input {
+  padding: var(--spacing-md);
+  border-top: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+}
+
+.clarity-chat-input-field {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid hsl(var(--input));
+  border-radius: var(--radius);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.clarity-chat-input-field:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.1);
+}
+
+/* Buttons */
+.clarity-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clarity-button:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.clarity-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.3);
+}
+
+.clarity-button.primary {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+
+.clarity-button.primary:hover {
+  opacity: 0.9;
+}
+
+/* Loading States */
+.clarity-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.clarity-loading-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: hsl(var(--muted-foreground));
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.clarity-loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.clarity-loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Scrollbar Styling */
+.clarity-message-list::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+.clarity-message-list::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+.clarity-message-list::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground));
+  border-radius: var(--radius);
+}
+
+.clarity-message-list::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground));
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .clarity-message-content {
+    max-width: 85%;
+  }
+  
+  .clarity-chat-input {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Accessibility */
+.clarity-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus Visible */
+.clarity-focus-visible:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Markdown Content */
+.clarity-markdown {
+  line-height: 1.6;
+}
+
+.clarity-markdown h1,
+.clarity-markdown h2,
+.clarity-markdown h3,
+.clarity-markdown h4,
+.clarity-markdown h5,
+.clarity-markdown h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.clarity-markdown p {
+  margin-bottom: 1em;
+}
+
+.clarity-markdown code {
+  padding: 0.2em 0.4em;
+  background: hsl(var(--muted));
+  border-radius: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+.clarity-markdown pre {
+  padding: 1em;
+  background: hsl(var(--muted));
+  border-radius: var(--radius);
+  overflow-x: auto;
+  margin-bottom: 1em;
+}
+
+.clarity-markdown pre code {
+  padding: 0;
+  background: transparent;
+}
+
+.clarity-markdown ul,
+.clarity-markdown ol {
+  margin-bottom: 1em;
+  padding-left: 2em;
+}
+
+.clarity-markdown blockquote {
+  margin: 1em 0;
+  padding-left: 1em;
+  border-left: 3px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+}

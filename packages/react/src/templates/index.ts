@@ -1,16 +1,14 @@
 /**
  * Pre-built Chat Templates
  * 
- * Ready-to-use chat interfaces optimized for specific use cases.
- * Each template includes:
- * - Pre-configured UI and interactions
- * - Built-in knowledge/logic
- * - Quick action buttons
- * - Best practices for the use case
+ * Ready-to-use chat interface configurations for common use cases
  */
 
-export { SupportBot } from './support-bot'
-export type { SupportBotConfig } from './support-bot'
-
-export { CodeAssistant } from './code-assistant'
-export type { CodeAssistantConfig } from './code-assistant'
+export * from './customer-support'
+export * from './ai-assistant'
+export * from './code-helper'
+export * from './documentation-bot'
+export * from './sales-assistant'
+export * from './education-tutor'
+export * from './creative-writing'
+export * from './data-analyst'
