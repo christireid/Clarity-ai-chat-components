@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Playground - Clarity Chat Components</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-jsx.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .back-link {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .playground-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .playground-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .section-header h2 {
+            color: #667eea;
+            font-size: 1.3rem;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .tab-button {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .tab-button:hover {
+            background: #f0f0f0;
+        }
+        
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .code-editor {
+            position: relative;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .preview-area {
+            min-height: 400px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 2rem;
+            background: #f9f9f9;
+            overflow: auto;
+        }
+        
+        .error-message {
+            background: #fee;
+            border: 2px solid #faa;
+            border-radius: 8px;
+            padding: 1rem;
+            color: #c00;
+            margin-bottom: 1rem;
+        }
+        
+        .run-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .run-button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .run-button:active {
+            transform: translateY(0);
+        }
+        
+        .templates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .template-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .template-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .template-card h3 {
+            color: #667eea;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .template-card p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-box h3 {
+            color: #1976d2;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-box ul {
+            margin-left: 1.5rem;
+            color: #555;
+        }
+        
+        .info-box li {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← Back to Home</a>
+            <h1>🎮 Interactive Component Playground</h1>
+            <p class="subtitle">Live React component editor with instant preview</p>
+        </header>
+        
+        <div class="info-box">
+            <h3>💡 How to Use</h3>
+            <ul>
+                <li>Edit the JSX code in the left panel</li>
+                <li>Click "Run Code" to see your component rendered</li>
+                <li>Choose from preset templates below to get started</li>
+                <li>All React hooks (useState, useEffect, etc.) are available</li>
+            </ul>
+        </div>
+        
+        <div class="playground-grid">
+            <div class="playground-section">
+                <div class="section-header">
+                    <h2>📝 Code Editor</h2>
+                    <div class="tab-buttons">
+                        <button class="tab-button active">JSX</button>
+                    </div>
+                </div>
+                <div class="code-editor">
+                    <textarea id="code-editor" spellcheck="false">function Demo() {
+  const [count, setCount] = React.useState(0);
+  const [message, setMessage] = React.useState('Hello!');
+  
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h2 style={{ color: '#667eea', marginBottom: '1rem' }}>
+        Interactive Counter Demo
+      </h2>
+      
+      <div style={{ 
+        background: '#f0f0f0', 
+        padding: '1.5rem', 
+        borderRadius: '8px',
+        marginBottom: '1rem'
+      }}>
+        <p style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
+          Count: <strong style={{ color: '#667eea' }}>{count}</strong>
+        </p>
+        <p style={{ fontSize: '1rem', color: '#666' }}>
+          Message: {message}
+        </p>
+      </div>
+      
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <button 
+          onClick={() => setCount(count + 1)}
+          style={{
+            background: '#667eea',
+            color: 'white',
+            border: 'none',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '1rem'
+          }}
+        >
+          Increment
+        </button>
+        
+        <button 
+          onClick={() => setCount(count - 1)}
+          style={{
+            background: '#764ba2',
+            color: 'white',
+            border: 'none',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '1rem'
+          }}
+        >
+          Decrement
+        </button>
+        
+        <button 
+          onClick={() => setCount(0)}
+          style={{
+            background: '#e0e0e0',
+            color: '#333',
+            border: 'none',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '1rem'
+          }}
+        >
+          Reset
+        </button>
+      </div>
+      
+      <div style={{ marginTop: '1rem' }}>
+        <input 
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Enter a message"
+          style={{
+            padding: '0.75rem',
+            border: '2px solid #e0e0e0',
+            borderRadius: '6px',
+            fontSize: '1rem',
+            width: '100%'
+          }}
+        />
+      </div>
+    </div>
+  );
+}</textarea>
+                </div>
+                <button class="run-button" onclick="runCode()">▶️ Run Code</button>
+            </div>
+            
+            <div class="playground-section">
+                <div class="section-header">
+                    <h2>👁️ Live Preview</h2>
+                </div>
+                <div id="error-container"></div>
+                <div id="preview" class="preview-area">
+                    <p style="text-align: center; color: #999; padding: 2rem;">
+                        Click "Run Code" to see your component here
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="playground-section">
+            <div class="section-header">
+                <h2>📚 Example Templates</h2>
+            </div>
+            <div class="templates">
+                <div class="template-card" onclick="loadTemplate('counter')">
+                    <h3>🔢 Counter</h3>
+                    <p>Simple counter with increment/decrement</p>
+                </div>
+                <div class="template-card" onclick="loadTemplate('form')">
+                    <h3>📝 Form</h3>
+                    <p>Input form with validation</p>
+                </div>
+                <div class="template-card" onclick="loadTemplate('list')">
+                    <h3>📋 Todo List</h3>
+                    <p>Add and remove items</p>
+                </div>
+                <div class="template-card" onclick="loadTemplate('tabs')">
+                    <h3>📑 Tabs</h3>
+                    <p>Tab navigation component</p>
+                </div>
+                <div class="template-card" onclick="loadTemplate('modal')">
+                    <h3>🪟 Modal</h3>
+                    <p>Modal dialog with overlay</p>
+                </div>
+                <div class="template-card" onclick="loadTemplate('accordion')">
+                    <h3>📂 Accordion</h3>
+                    <p>Expandable content sections</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const templates = {
+            counter: `function Demo() {
+  const [count, setCount] = React.useState(0);
+  
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h2 style={{ color: '#667eea' }}>Counter: {count}</h2>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <button onClick={() => setCount(count - 1)}>Decrement</button>
+      <button onClick={() => setCount(0)}>Reset</button>
+    </div>
+  );
+}`,
+            form: `function Demo() {
+  const [formData, setFormData] = React.useState({ name: '', email: '' });
+  const [submitted, setSubmitted] = React.useState(false);
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+  
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h2 style={{ color: '#667eea' }}>Contact Form</h2>
+      {!submitted ? (
+        <form onSubmit={handleSubmit}>
+          <input 
+            type="text"
+            placeholder="Name"
+            value={formData.name}
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            style={{ display: 'block', margin: '1rem 0', padding: '0.5rem', width: '100%' }}
+          />
+          <input 
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            style={{ display: 'block', margin: '1rem 0', padding: '0.5rem', width: '100%' }}
+          />
+          <button type="submit" style={{ padding: '0.75rem 2rem', background: '#667eea', color: 'white', border: 'none', borderRadius: '6px' }}>
+            Submit
+          </button>
+        </form>
+      ) : (
+        <div style={{ background: '#d4edda', padding: '1rem', borderRadius: '6px' }}>
+          <p>✅ Thanks {formData.name}! We'll contact you at {formData.email}</p>
+          <button onClick={() => setSubmitted(false)}>Submit Another</button>
+        </div>
+      )}
+    </div>
+  );
+}`,
+            list: `function Demo() {
+  const [todos, setTodos] = React.useState(['Learn React', 'Build a project']);
+  const [input, setInput] = React.useState('');
+  
+  const addTodo = () => {
+    if (input.trim()) {
+      setTodos([...todos, input]);
+      setInput('');
+    }
+  };
+  
+  const removeTodo = (index) => {
+    setTodos(todos.filter((_, i) => i !== index));
+  };
+  
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h2 style={{ color: '#667eea' }}>Todo List</h2>
+      <div style={{ marginBottom: '1rem' }}>
+        <input 
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+          placeholder="Add a todo..."
+          style={{ padding: '0.5rem', marginRight: '0.5rem' }}
+        />
+        <button onClick={addTodo} style={{ padding: '0.5rem 1rem' }}>Add</button>
+      </div>
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {todos.map((todo, i) => (
+          <li key={i} style={{ 
+            background: '#f0f0f0', 
+            padding: '0.75rem', 
+            marginBottom: '0.5rem',
+            borderRadius: '6px',
+            display: 'flex',
+            justifyContent: 'space-between'
+          }}>
+            {todo}
+            <button onClick={() => removeTodo(i)} style={{ background: '#ff4444', color: 'white', border: 'none', padding: '0.25rem 0.75rem', borderRadius: '4px' }}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}`,
+            tabs: `function Demo() {
+  const [activeTab, setActiveTab] = React.useState('home');
+  
+  const tabs = {
+    home: { title: 'Home', content: 'Welcome to the home tab! 🏠' },
+    profile: { title: 'Profile', content: 'Your profile information goes here. 👤' },
+    settings: { title: 'Settings', content: 'Adjust your settings here. ⚙️' }
+  };
+  
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', borderBottom: '2px solid #e0e0e0' }}>
+        {Object.keys(tabs).map(key => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: activeTab === key ? '#667eea' : 'transparent',
+              color: activeTab === key ? 'white' : '#333',
+              border: 'none',
+              borderBottom: activeTab === key ? '3px solid #667eea' : 'none',
+              cursor: 'pointer'
+            }}
+          >
+            {tabs[key].title}
+          </button>
+        ))}
+      </div>
+      <div style={{ padding: '2rem', background: '#f9f9f9', borderRadius: '8px' }}>
+        <h3>{tabs[activeTab].title}</h3>
+        <p>{tabs[activeTab].content}</p>
+      </div>
+    </div>
+  );
+}`,
+            modal: `function Demo() {
+  const [isOpen, setIsOpen] = React.useState(false);
+  
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <button 
+        onClick={() => setIsOpen(true)}
+        style={{ padding: '0.75rem 2rem', background: '#667eea', color: 'white', border: 'none', borderRadius: '6px', fontSize: '1rem' }}
+      >
+        Open Modal
+      </button>
+      
+      {isOpen && (
+        <div 
+          onClick={() => setIsOpen(false)}
+          style={{ 
+            position: 'fixed', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0, 
+            background: 'rgba(0,0,0,0.5)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              background: 'white', 
+              padding: '2rem', 
+              borderRadius: '12px', 
+              maxWidth: '500px',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+            }}
+          >
+            <h2 style={{ marginBottom: '1rem', color: '#667eea' }}>Modal Dialog</h2>
+            <p style={{ marginBottom: '1.5rem' }}>This is a modal dialog! Click outside or press the button to close.</p>
+            <button 
+              onClick={() => setIsOpen(false)}
+              style={{ padding: '0.5rem 1.5rem', background: '#667eea', color: 'white', border: 'none', borderRadius: '6px' }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}`,
+            accordion: `function Demo() {
+  const [openIndex, setOpenIndex] = React.useState(null);
+  
+  const items = [
+    { title: 'What is React?', content: 'React is a JavaScript library for building user interfaces.' },
+    { title: 'What are Hooks?', content: 'Hooks let you use state and other React features without writing a class.' },
+    { title: 'What is JSX?', content: 'JSX is a syntax extension to JavaScript that looks similar to HTML.' }
+  ];
+  
+  return (
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <h2 style={{ color: '#667eea', marginBottom: '1rem' }}>FAQ Accordion</h2>
+      {items.map((item, index) => (
+        <div key={index} style={{ marginBottom: '0.5rem', border: '2px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden' }}>
+          <button
+            onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            style={{
+              width: '100%',
+              padding: '1rem',
+              background: openIndex === index ? '#667eea' : '#f9f9f9',
+              color: openIndex === index ? 'white' : '#333',
+              border: 'none',
+              textAlign: 'left',
+              cursor: 'pointer',
+              fontSize: '1rem',
+              fontWeight: '600'
+            }}
+          >
+            {item.title} {openIndex === index ? '▲' : '▼'}
+          </button>
+          {openIndex === index && (
+            <div style={{ padding: '1rem', background: 'white' }}>
+              {item.content}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}`
+        };
+        
+        function loadTemplate(name) {
+            document.getElementById('code-editor').value = templates[name];
+        }
+        
+        function runCode() {
+            const code = document.getElementById('code-editor').value;
+            const errorContainer = document.getElementById('error-container');
+            const preview = document.getElementById('preview');
+            
+            // Clear previous errors
+            errorContainer.innerHTML = '';
+            
+            try {
+                // Transform JSX to JavaScript
+                const transformedCode = Babel.transform(code, { 
+                    presets: ['react'],
+                    filename: 'demo.jsx'
+                }).code;
+                
+                // Create a new function with the transformed code
+                const renderFunction = new Function('React', 'ReactDOM', `
+                    ${transformedCode}
+                    return Demo;
+                `);
+                
+                // Get the component
+                const Component = renderFunction(React, ReactDOM);
+                
+                // Clear preview and render
+                preview.innerHTML = '';
+                const root = ReactDOM.createRoot(preview);
+                root.render(React.createElement(Component));
+                
+            } catch (error) {
+                errorContainer.innerHTML = `
+                    <div class="error-message">
+                        <strong>❌ Error:</strong> ${error.message}
+                    </div>
+                `;
+                console.error(error);
+            }
+        }
+        
+        // Run code on page load
+        window.addEventListener('load', () => {
+            runCode();
+        });
+    </script>
+</body>
+</html>
