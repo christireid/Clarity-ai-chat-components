@@ -262,7 +262,7 @@ export function RetryButton({
   }
 
   const buttonClasses = `
-    inline-flex items-center gap-2 rounded-lg font-medium
+    group inline-flex items-center gap-2 rounded-lg font-medium
     transition-all duration-200
     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
     disabled:opacity-50 disabled:cursor-not-allowed
@@ -279,10 +279,10 @@ export function RetryButton({
         className={buttonClasses}
         aria-label={`Retry (${attemptsRemaining} attempts remaining)`}
       >
-        {/* Icon */}
+        {/* Icon with rotation animation */}
         {isRetrying ? (
           <svg
-            className="animate-spin w-5 h-5"
+            className="w-5 h-5 animate-spin"
             fill="none"
             viewBox="0 0 24 24"
           >
@@ -302,7 +302,7 @@ export function RetryButton({
           </svg>
         ) : (
           <svg
-            className="w-5 h-5"
+            className="w-5 h-5 transition-transform duration-200 group-hover:rotate-180"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -337,7 +337,7 @@ export function RetryButton({
 
       {/* Max attempts reached */}
       {attemptsRemaining === 0 && (
-        <p className="text-sm text-red-600 dark:text-red-400">
+        <p className="text-sm text-red-600 dark:text-red-400 animate-[shake_0.4s_ease-in-out]">
           Maximum retry attempts reached. Please refresh the page or contact support.
         </p>
       )}

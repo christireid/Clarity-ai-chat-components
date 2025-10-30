@@ -1,17 +1,25 @@
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Button, type ButtonProps } from '@clarity-chat/primitives'
 import { useClipboard } from '../hooks/use-clipboard'
 import { CopyIcon, CheckIcon } from './icons'
 
-export interface CopyButtonProps extends Omit<ButtonProps, 'onClick'> {
+export interface CopyButtonProps extends Omit<ButtonProps, 'onClick' | 'state'> {
   text: string
   onCopy?: () => void
+  /** Show icon only (no text) */
+  iconOnly?: boolean
+  /** Custom copy text */
+  copyText?: string
+  /** Custom copied text */
+  copiedText?: string
 }
 
 export const CopyButton: React.FC<CopyButtonProps> = ({
   text,
   onCopy,
+  iconOnly = false,
+  copyText = 'Copy',
+  copiedText = 'Copied!',
   children,
   ...props
 }) => {
@@ -20,44 +28,30 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
     onSuccess: onCopy,
   })
 
-  const handleCopy = () => {
-    copy(text)
+  const handleCopy = async () => {
+    await copy(text)
   }
 
   return (
     <Button
       variant="ghost"
       size="sm"
+      state={copied ? 'success' : 'idle'}
       onClick={handleCopy}
+      aria-label={copied ? copiedText : copyText}
       {...props}
     >
-      <AnimatePresence mode="wait">
-        {copied ? (
-          <motion.span
-            key="check"
-            initial={{ scale: 0, rotate: -90 }}
-            animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0, rotate: 90 }}
-            transition={{ duration: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
-            className="flex items-center gap-1.5 text-success"
-          >
-            <CheckIcon size={16} />
-            {children || 'Copied!'}
-          </motion.span>
-        ) : (
-          <motion.span
-            key="copy"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex items-center gap-1.5"
-          >
-            <CopyIcon size={16} />
-            {children || 'Copy'}
-          </motion.span>
-        )}
-      </AnimatePresence>
+      {copied ? (
+        <>
+          <CheckIcon size={16} />
+          {!iconOnly && (children || copiedText)}
+        </>
+      ) : (
+        <>
+          <CopyIcon size={16} />
+          {!iconOnly && (children || copyText)}
+        </>
+      )}
     </Button>
   )
 }
