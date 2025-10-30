@@ -1,154 +1,335 @@
 # Clarity Chat 🚀
 
-> **Premium AI Chat Components for React** - Production-ready, accessible, and beautiful.
+<div align="center">
 
-[![NPM Version](https://img.shields.io/npm/v/@clarity-chat/react?style=flat-square)](https://www.npmjs.com/package/@clarity-chat/react)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Test Coverage](https://img.shields.io/codecov/c/github/christireid/Clarity-ai-chat-components?style=flat-square)](https://codecov.io/gh/christireid/Clarity-ai-chat-components)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@clarity-chat/react?style=flat-square)](https://bundlephobia.com/package/@clarity-chat/react)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+![Clarity Chat Logo](https://via.placeholder.com/800x200/4A90E2/ffffff?text=Clarity+Chat)
 
-**A comprehensive, enterprise-grade React component library for building AI-powered chat applications.**
+**Premium AI Chat Component Library for React**
 
-[📚 Documentation](./docs/README.md) • [🎨 Storybook](https://storybook.clarity-chat.dev) • [💬 Discord](https://discord.gg/clarity-chat) • [🎯 Examples](./examples)
+[![npm version](https://img.shields.io/npm/v/@clarity-chat/react)](https://www.npmjs.com/package/@clarity-chat/react)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Test Coverage](https://img.shields.io/codecov/c/github/christireid/Clarity-ai-chat-components)](https://codecov.io/gh/christireid/Clarity-ai-chat-components)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@clarity-chat/react)](https://bundlephobia.com/package/@clarity-chat/react)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/christireid/Clarity-ai-chat-components/blob/main/CONTRIBUTING.md)
 
----
+[Documentation](./docs/README.md) • [Examples](./examples) • [Storybook](https://storybook.clarity-chat.dev) • [Discord](https://discord.gg/clarity-chat)
 
-## ✨ **Highlights**
-
-- **🎨 47+ Production Components** - Message UI, chat windows, voice input, file uploads
-- **🪝 25+ Custom Hooks** - Streaming, error recovery, analytics, accessibility
-- **🎭 11 Built-in Themes** - Including glassmorphism with live editor
-- **♿ WCAG 2.1 AAA** - Complete accessibility with keyboard navigation
-- **📊 Analytics & Error Tracking** - 13 provider integrations (Sentry, GA4, Mixpanel)
-- **🤖 AI Features** - Smart suggestions, moderation, sentiment analysis
-- **📱 Mobile-First** - iOS/Android keyboard handling, touch gestures
-- **⚡ Performance** - Virtualized lists for 1000+ messages
-- **🔒 TypeScript-First** - 100% typed with strict mode
-- **📦 32,650 LOC** - Battle-tested production code
+</div>
 
 ---
 
-## 🚀 **Quick Start**
+## ✨ Features at a Glance
 
-### **Installation**
+```tsx
+import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react'
+
+// 🎯 5 minutes to production
+<ThemeProvider theme={themes.glassmorphism}>
+  <ChatWindow messages={messages} onSendMessage={handleSend} />
+</ThemeProvider>
+```
+
+### 🎨 **Design System**
+- 🎭 **11 Built-in Themes** - Default, Dark, Ocean, Sunset, Glassmorphism, and more
+- 🎨 **Live Theme Editor** - Customize colors in real-time
+- 🌓 **Dark Mode** - Smooth transitions with system detection
+- 📱 **Fully Responsive** - Mobile-first design
+- ♿ **WCAG 2.1 AAA** - Complete accessibility compliance
+
+### 🧩 **47+ Production Components**
+- 💬 **Rich Message Display** - Markdown, code highlighting, LaTeX support
+- 🎤 **Voice Input** - Speech-to-text (20+ languages)
+- 📎 **File Upload** - Drag & drop with previews
+- 🔄 **Streaming Support** - SSE and WebSocket
+- 🎯 **Smart Suggestions** - Context-aware auto-complete
+- 📊 **Analytics Dashboard** - Built-in performance metrics
+
+### 🪝 **25+ Custom Hooks**
+- `useChat` - Complete chat state management
+- `useStreaming` - Real-time AI responses
+- `useErrorRecovery` - Auto-retry with exponential backoff
+- `useVoiceInput` - Voice-to-text integration
+- `useMobileKeyboard` - iOS/Android keyboard handling
+- `useTokenTracker` - Cost estimation and tracking
+
+### 🔌 **Integrations**
+- **7 Analytics Providers** - GA4, Mixpanel, PostHog, Amplitude, Segment
+- **6 Error Tracking** - Sentry, Rollbar, Bugsnag, Custom API
+- **8 AI Providers** - OpenAI, Anthropic, Azure, Cohere, Hugging Face
+- **Built-in Adapters** - Drop-in compatibility
+
+---
+
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
 npm install @clarity-chat/react
 ```
 
-### **Basic Usage** (2 minutes)
+### Basic Usage (30 seconds)
 
 ```tsx
-import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react'
+import { ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
+import { useState } from 'react'
 
 function App() {
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([
+    {
+      id: '1',
+      role: 'assistant',
+      content: 'Hello! How can I help you today?',
+      timestamp: new Date(),
+    },
+  ])
 
+  const handleSend = async (content: string) => {
+    // Add user message
+    const userMsg = {
+      id: Date.now().toString(),
+      role: 'user',
+      content,
+      timestamp: new Date(),
+    }
+    setMessages((prev) => [...prev, userMsg])
+
+    // Call your AI API
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message: content }),
+    })
+    const data = await response.json()
+
+    // Add AI response
+    setMessages((prev) => [...prev, {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: data.message,
+      timestamp: new Date(),
+    }])
+  }
+
+  return <ChatWindow messages={messages} onSendMessage={handleSend} />
+}
+```
+
+### Production Setup (5 minutes)
+
+```tsx
+import {
+  ChatWindow,
+  ThemeProvider,
+  ErrorBoundaryEnhanced,
+  AnalyticsProvider,
+  themes,
+  createGoogleAnalyticsProvider,
+} from '@clarity-chat/react'
+
+function App() {
   return (
     <ThemeProvider theme={themes.ocean}>
-      <ChatWindow
-        messages={messages}
-        onSendMessage={async (content) => {
-          // Your AI integration here
+      <AnalyticsProvider
+        config={{
+          providers: [createGoogleAnalyticsProvider('GA-XXXXX')],
+          autoTrack: { pageViews: true, errors: true },
         }}
-      />
+      >
+        <ErrorBoundaryEnhanced enableFeedback>
+          <ChatWindow
+            messages={messages}
+            onSendMessage={handleSend}
+            enableVoiceInput
+            enableFileUpload
+          />
+        </ErrorBoundaryEnhanced>
+      </AnalyticsProvider>
     </ThemeProvider>
   )
 }
 ```
 
-**[➡️ Full Quick Start Guide](./docs/getting-started/quick-start.md)**
+**[→ View Full Quick Start Guide](./docs/getting-started/quick-start.md)**
 
 ---
 
-## 🎯 **Key Features**
+## 📦 What's Inside?
 
-### **🎨 Beautiful Design System**
-- 11 built-in themes (default, dark, ocean, sunset, glassmorphism, etc.)
-- Live theme editor with color pickers
-- Dark mode with smooth transitions
-- Responsive design for all screen sizes
-- 50+ Framer Motion animations
+### Monorepo Structure
 
-### **🧩 Comprehensive Components**
-- Message components with markdown & code highlighting
-- Advanced input with autocomplete & file upload
-- Voice input with speech-to-text
-- Project management & conversation organization
-- Knowledge base auto-generation
-- Performance dashboard with metrics
-- Error feedback forms
+```
+clarity-chat/
+├── 📦 packages/
+│   ├── react/              # Main library (32,650 LOC)
+│   ├── types/              # TypeScript definitions
+│   ├── primitives/         # Base UI components
+│   ├── error-handling/     # Error recovery system
+│   ├── dev-tools/          # Developer utilities
+│   └── cli/                # CLI tools
+│
+├── 📱 apps/
+│   ├── storybook/          # Interactive docs
+│   └── docs/               # Documentation site
+│
+└── 💡 examples/
+    ├── basic-chat/         # Simple integration
+    ├── ai-assistant/       # Advanced features
+    ├── customer-support/   # Pre-built template
+    └── 6 more examples...
+```
 
-### **♿ Accessibility Excellence**
-- WCAG 2.1 AAA compliance
-- Screen reader optimization
-- Keyboard shortcuts system (Shift+?)
-- Focus management & contrast checking
-- Full ARIA support
+### Project Statistics
 
-### **📊 Analytics & Monitoring**
-- 7 analytics providers (GA4, Mixpanel, PostHog, Amplitude, Segment)
-- 35+ predefined events
-- Auto-tracking for interactions
-- A/B testing support
-- Performance monitoring dashboard
-
-### **🐛 Error Handling**
-- 6 error tracking providers (Sentry, Rollbar, Bugsnag)
-- 10 specialized error classes
-- Automatic retry with exponential backoff
-- User feedback collection
-- Offline error storage
-
-### **🤖 AI Features**
-- Smart suggestions & quick replies
-- Content moderation (profanity filter, PII detection)
-- Sentiment analysis with confidence scoring
-- Auto-complete with context awareness
-- 8 built-in AI providers
-
-### **⚡ Performance**
-- Virtualized lists for 1000+ messages
-- Code splitting & tree-shaking
-- Bundle size monitoring (<100KB)
-- Memory leak detection
-- Render performance metrics
+| Metric | Value |
+|--------|-------|
+| **Lines of Code** | 32,650+ |
+| **Components** | 47 |
+| **Custom Hooks** | 25+ |
+| **Built-in Themes** | 11 |
+| **Test Coverage** | 80%+ |
+| **Bundle Size** | ~95KB (gzipped) |
+| **TypeScript** | 100% |
 
 ---
 
-## 📦 **What's Inside**
+## 🎯 Key Features Deep Dive
 
-### **Packages**
+### 1. Theming System
 
-| Package | Description | Size |
-|---------|-------------|------|
-| `@clarity-chat/react` | Main component library | ~95KB |
-| `@clarity-chat/types` | TypeScript definitions | ~8KB |
-| `@clarity-chat/primitives` | Base UI components | ~25KB |
-| `@clarity-chat/error-handling` | Error recovery system | ~45KB |
+```tsx
+import { ThemeProvider, themes, createTheme } from '@clarity-chat/react'
 
-### **Project Statistics**
+// Use built-in theme
+<ThemeProvider theme={themes.glassmorphism}>
+  <ChatWindow {...props} />
+</ThemeProvider>
 
-- **32,650** lines of production code
-- **47** React components
-- **25+** custom hooks
-- **11** built-in themes
-- **9** working examples
-- **80%+** test coverage
-- **100%** TypeScript
+// Or create custom theme
+const myTheme = createTheme({
+  name: 'Custom',
+  colors: {
+    primary: '#6366f1',
+    secondary: '#8b5cf6',
+    background: '#ffffff',
+    // ... more colors
+  },
+})
+```
+
+**[→ Complete Theming Guide](./docs/guides/theming.md)**
 
 ---
 
-## 📚 **Documentation**
+### 2. Voice Input
 
-### **Getting Started**
-- [Installation](./docs/getting-started/installation.md)
-- [Quick Start Guide](./docs/getting-started/quick-start.md) (5 minutes)
-- [First Component](./docs/getting-started/first-component.md)
+```tsx
+import { VoiceInput } from '@clarity-chat/react'
 
-### **Guides**
+<VoiceInput
+  onTranscript={(text) => sendMessage(text)}
+  lang="en-US"
+  autoSubmit
+/>
+```
+
+**Supported:** 20+ languages, Chrome/Safari, iOS 14.5+
+
+**[→ Voice Input Guide](./docs/guides/voice-input.md)**
+
+---
+
+### 3. Streaming Responses
+
+```tsx
+import { useStreaming } from '@clarity-chat/react'
+
+const { streamMessage, isStreaming, streamedContent } = useStreaming({
+  onComplete: (fullText) => console.log('Done:', fullText),
+})
+
+await streamMessage('/api/chat-stream', {
+  method: 'POST',
+  body: JSON.stringify({ message: 'Hello' }),
+})
+```
+
+**[→ Streaming Guide](./docs/guides/streaming.md)**
+
+---
+
+### 4. Error Recovery
+
+```tsx
+import { useErrorRecovery } from '@clarity-chat/react'
+
+const { executeWithRetry, isRetrying } = useErrorRecovery({
+  maxRetries: 3,
+  retryDelay: 1000,
+  backoffMultiplier: 2, // 1s, 2s, 4s
+})
+
+await executeWithRetry(async () => {
+  const response = await fetch('/api/chat')
+  if (!response.ok) throw new Error('API Error')
+  return response.json()
+})
+```
+
+**[→ Error Handling Guide](./docs/guides/error-handling.md)**
+
+---
+
+### 5. Analytics Integration
+
+```tsx
+import {
+  AnalyticsProvider,
+  useAnalytics,
+  createGoogleAnalyticsProvider,
+  createMixpanelProvider,
+} from '@clarity-chat/react'
+
+<AnalyticsProvider
+  config={{
+    providers: [
+      createGoogleAnalyticsProvider('GA-ID'),
+      createMixpanelProvider('MX-TOKEN'),
+    ],
+    autoTrack: {
+      pageViews: true,
+      errors: true,
+      messagesSent: true,
+    },
+  }}
+>
+  <App />
+</AnalyticsProvider>
+
+// In components
+const { trackEvent } = useAnalytics()
+trackEvent('custom_event', { category: 'engagement' })
+```
+
+**Supported:** GA4, Mixpanel, PostHog, Amplitude, Segment, Custom API
+
+**[→ Analytics Guide](./docs/guides/analytics.md)**
+
+---
+
+## 📚 Documentation
+
+### 🎓 **Learning Path**
+
+1. **[Installation](./docs/getting-started/installation.md)** - Set up in your project
+2. **[Quick Start](./docs/getting-started/quick-start.md)** - First chat app in 5 minutes
+3. **[Core Concepts](./docs/getting-started/first-component.md)** - Understand the basics
+4. **[API Reference](./docs/api/components.md)** - Complete component docs
+5. **[Examples](./examples/README.md)** - Real-world integrations
+
+### 📖 **Guides**
+
 - [Theming System](./docs/guides/theming.md)
 - [Accessibility](./docs/guides/accessibility.md)
 - [Analytics Integration](./docs/guides/analytics.md)
@@ -158,145 +339,195 @@ function App() {
 - [Streaming Messages](./docs/guides/streaming.md)
 - [Performance](./docs/guides/performance.md)
 
-### **API Reference**
-- [Components API](./docs/api/components.md)
-- [Hooks API](./docs/api/hooks.md)
-- [Utilities API](./docs/api/utilities.md)
+### 🔧 **API Reference**
 
-### **Examples**
-- [Basic Chat](./examples/basic-chat) - Simple integration
-- [AI Assistant](./examples/ai-assistant) - Advanced features
-- [Customer Support](./examples/customer-support) - Pre-built template
-- [Streaming Chat](./examples/streaming-chat) - Real-time responses
-- [+ 5 more examples](./examples)
+- [Components API](./docs/api/components.md) - All 47 components
+- [Hooks API](./docs/api/hooks.md) - All 25+ hooks
+- [Utilities API](./docs/api/utilities.md) - Helper functions
+- [TypeScript Types](./docs/api/types.md) - Complete types
 
----
+### 🏗️ **Architecture**
 
-## 🎨 **Live Demos**
-
-Try our interactive examples:
-
-1. **[Basic Chat Demo](https://clarity-chat-basic.vercel.app)** - Simple chat interface
-2. **[Theme Showcase](https://clarity-chat-themes.vercel.app)** - All 11 themes
-3. **[Voice Input Demo](https://clarity-chat-voice.vercel.app)** - Speech-to-text
-4. **[Full Features](https://clarity-chat-demo.vercel.app)** - All features enabled
+- [System Overview](./docs/architecture/overview.md)
+- [Design Decisions](./docs/architecture/design-decisions.md)
+- [Monorepo Structure](./docs/architecture/monorepo.md)
+- [Contributing Guide](./docs/architecture/contributing.md)
 
 ---
 
-## 🏗️ **Architecture**
+## 💡 Examples
 
+### 9 Working Examples
+
+1. **[Basic Chat](./examples/basic-chat)** - Simple integration
+2. **[AI Assistant](./examples/ai-assistant)** - Advanced AI features
+3. **[Customer Support](./examples/customer-support)** - Pre-built template
+4. **[Streaming Chat](./examples/streaming-chat)** - Real-time responses
+5. **[Multi-User Chat](./examples/multi-user-chat)** - Collaborative chat
+6. **[RAG Workbench](./examples/rag-workbench-demo)** - Document Q&A
+7. **[Model Comparison](./examples/model-comparison-demo)** - Compare AI models
+8. **[Analytics Console](./examples/analytics-console-demo)** - Analytics demo
+9. **[Examples Showcase](./examples/examples-showcase)** - All features
+
+**[→ Browse All Examples](./examples/README.md)**
+
+---
+
+## 🔌 Integrations
+
+### AI Providers
+
+```tsx
+import {
+  createOpenAIAdapter,
+  createAnthropicAdapter,
+  createAzureOpenAIAdapter,
+} from '@clarity-chat/react/adapters'
+
+// OpenAI
+const openai = createOpenAIAdapter({
+  apiKey: process.env.OPENAI_API_KEY,
+  model: 'gpt-4',
+})
+
+// Anthropic Claude
+const claude = createAnthropicAdapter({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+  model: 'claude-3-opus',
+})
+
+// Azure OpenAI
+const azure = createAzureOpenAIAdapter({
+  apiKey: process.env.AZURE_OPENAI_KEY,
+  endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+})
 ```
-Clarity-ai-chat-components/
-├── packages/
-│   ├── react/           # Main library (32,650 LOC)
-│   ├── types/           # TypeScript definitions
-│   ├── primitives/      # Base UI components
-│   └── error-handling/  # Error recovery system
-├── apps/
-│   ├── storybook/       # Interactive docs
-│   └── docs/            # VitePress docs site
-├── examples/            # 9 working examples
-└── docs/                # Markdown documentation
-```
 
-**[➡️ Full Architecture Overview](./docs/architecture/overview.md)**
+**Supported:** OpenAI, Anthropic, Azure OpenAI, Cohere, Hugging Face, Custom
+
+**[→ Integration Guide](./docs/examples/integrations.md)**
 
 ---
 
-## 🤝 **Contributing**
-
-We welcome contributions! Please see our [Contributing Guide](./docs/architecture/contributing.md).
-
-### **Development Setup**
+## 🧪 Testing
 
 ```bash
-# Clone repository
-git clone https://github.com/christireid/Clarity-ai-chat-components.git
-cd Clarity-ai-chat-components
-
-# Install dependencies
-npm install
-
-# Start Storybook
-npm run storybook
-
 # Run tests
-npm run test
+npm test
 
-# Build packages
-npm run build
+# Watch mode
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
 ```
 
+**Test Coverage:** 80%+ across all packages
+
 ---
 
-## 🗺️ **Roadmap**
+## 🚢 Deployment
 
-### ✅ **Phase 1-4: Complete**
-- Core components & hooks
-- Theming system
-- Analytics & error tracking
-- Voice input & mobile support
+### Next.js
+
+```tsx
+// app/page.tsx
+'use client'
+import { ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+export default function Home() {
+  return <ChatWindow {...props} />
+}
+```
+
+### Vite
+
+```tsx
+// src/main.tsx
+import '@clarity-chat/react/styles.css'
+import App from './App'
+// ...
+```
+
+**[→ Deployment Guide](./docs/guides/deployment.md)**
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see:
+
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Development Setup](./docs/architecture/contributing.md)
+
+---
+
+## 📄 License
+
+MIT © 2024 [Code & Clarity](https://codeclarity.ai)
+
+See [LICENSE](./LICENSE) for details.
+
+---
+
+## 🌟 Roadmap
+
+### ✅ Completed (Phases 1-4)
+- Core chat components and hooks
+- 11 built-in themes with live editor
+- Voice input and mobile optimization
+- Analytics and error tracking
+- Accessibility (WCAG 2.1 AAA)
 - Pre-built templates
+- Comprehensive documentation
 
-### 🚧 **Phase 5: In Progress**
-- [ ] Plugin system
+### 🚧 Phase 5 (In Progress)
+- [ ] Plugin system architecture
+- [ ] Advanced AI features (RAG, agents)
 - [ ] Real-time collaboration
-- [ ] Advanced AI features (RAG, multi-modal)
 - [ ] Video tutorials
-- [ ] Landing page
+- [ ] Figma design system
+
+### 🔮 Future
+- [ ] Offline support with service workers
+- [ ] Multi-modal (image, audio, video)
+- [ ] Mobile SDK (React Native)
+- [ ] Desktop app (Electron)
+
+**[→ Full Roadmap](./ROADMAP.md)**
 
 ---
 
-## 📊 **Browser Support**
+## 💬 Community & Support
 
-| Browser | Version |
-|---------|---------|
-| Chrome | ✅ Last 2 versions |
-| Firefox | ✅ Last 2 versions |
-| Safari | ✅ Last 2 versions |
-| Edge | ✅ Last 2 versions |
-| iOS Safari | ✅ 14.5+ |
-| Chrome Android | ✅ Last 2 versions |
+- **📖 Documentation:** [docs/](./docs)
+- **🎨 Storybook:** [storybook.clarity-chat.dev](https://storybook.clarity-chat.dev)
+- **💬 Discord:** [Join our community](https://discord.gg/clarity-chat)
+- **🐛 Issues:** [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
+- **💡 Discussions:** [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
+- **🐦 Twitter:** [@clarity_chat](https://twitter.com/clarity_chat)
 
 ---
 
-## 📄 **License**
+## 🙏 Acknowledgments
 
-MIT License - © 2024 Code & Clarity
+Built with these amazing technologies:
 
-See [LICENSE](LICENSE) for details.
-
----
-
-## 🙏 **Acknowledgments**
-
-Built with these amazing open-source projects:
-- [React](https://react.dev/) - UI framework
+- [React](https://react.dev/) - UI library
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
 - [Framer Motion](https://www.framer.com/motion/) - Animations
-- [Radix UI](https://www.radix-ui.com/) - Accessible primitives
-- [React Markdown](https://github.com/remarkjs/react-markdown) - Markdown rendering
-- [Vitest](https://vitest.dev/) - Testing framework
+- [Radix UI](https://www.radix-ui.com/) - Primitives
+- [Vitest](https://vitest.dev/) - Testing
+- [Turborepo](https://turbo.build/) - Monorepo management
 
 ---
 
-## 🌟 **Support**
+## ⭐ Star History
 
-If you find Clarity Chat useful, please:
-- ⭐ Star this repository
-- 🐦 Follow us on [Twitter](https://twitter.com/codeclarity)
-- 💬 Join our [Discord community](https://discord.gg/clarity-chat)
-- 📝 Share your projects built with Clarity Chat
-
----
-
-## 📞 **Contact**
-
-- **Website**: [codeclarity.ai](https://codeclarity.ai)
-- **Email**: team@codeclarity.ai
-- **Discord**: [Join community](https://discord.gg/clarity-chat)
-- **Twitter**: [@codeclarity](https://twitter.com/codeclarity)
+[![Star History Chart](https://api.star-history.com/svg?repos=christireid/Clarity-ai-chat-components&type=Date)](https://star-history.com/#christireid/Clarity-ai-chat-components&Date)
 
 ---
 
@@ -304,6 +535,6 @@ If you find Clarity Chat useful, please:
 
 **Built with ❤️ by [Code & Clarity](https://codeclarity.ai)**
 
-[📚 Docs](./docs/README.md) • [🎨 Storybook](https://storybook.clarity-chat.dev) • [💬 Discord](https://discord.gg/clarity-chat) • [🐛 Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
+[Documentation](./docs/README.md) • [Examples](./examples) • [Contributing](./CONTRIBUTING.md)
 
 </div>

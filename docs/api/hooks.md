@@ -1,187 +1,253 @@
 # Hooks API Reference
 
-Complete reference for all custom hooks in Clarity Chat.
+Complete reference for all 25+ custom hooks in Clarity Chat.
 
 ---
 
-## 📚 **Table of Contents**
+## 📑 Table of Contents
 
-### Chat Hooks
+### Core Hooks
 - [useChat](#usechat)
 - [useStreaming](#usestreaming)
 - [useStreamingSSE](#usestreamingsse)
 - [useStreamingWebSocket](#usestreamingwebsocket)
-- [useMessageOperations](#usemessageoperations)
 
-### UI Hooks
-- [useAutoScroll](#useautoscroll)
-- [useClipboard](#useclipboard)
-- [useToggle](#usetoggle)
+### Message Operations
+- [useMessageOperations](#usemessageoperations)
+- [useOptimisticMessage](#useoptimisticmessage)
 - [useRealisticTyping](#userealistictyping)
 
-### Performance Hooks
-- [useDebounce](#usedebounce)
-- [useThrottle](#usethrottle)
-- [usePerformance](#useperformance)
-- [useOptimisticMessage](#useoptimisticmessage)
-
-### Error Handling Hooks
+### Error Handling
 - [useErrorRecovery](#useerrorrecovery)
 - [useAsyncError](#useasyncerror)
 
-### Analytics Hooks
+### Analytics
 - [useAnalytics](#useanalytics)
+- [useTrackEvent](#usetrackevent)
+- [usePageView](#usepageview)
+
+### Voice & Mobile
+- [useVoiceInput](#usevoiceinput)
+- [useMobileKeyboard](#usemobilekeyboard)
+
+### Performance
+- [usePerformance](#useperformance)
 - [useTokenTracker](#usetokentracker)
 
-### Accessibility Hooks
+### UI Utilities
+- [useAutoScroll](#useautoscroll)
+- [useClipboard](#useclipboard)
 - [useKeyboardShortcuts](#usekeyboardshortcuts)
-- [useFocusTrap](#usefocustrap)
 
-### Mobile Hooks
-- [useMobileKeyboard](#usemobilekeyboard)
-- [useVoiceInput](#usevoiceinput)
-
-### Utility Hooks
+### General Utilities
+- [useDebounce](#usedebounce)
+- [useThrottle](#usethrottle)
 - [useLocalStorage](#uselocalstorage)
 - [useMediaQuery](#usemediaquery)
 - [useMounted](#usemounted)
+- [useToggle](#usetoggle)
 - [usePrevious](#useprevious)
-- [useWindowSize](#usewindowsize)
-- [useEventListener](#useeventlistener)
-- [useIntersectionObserver](#useintersectionobserver)
 
 ---
 
-## 💬 **Chat Hooks**
+## Core Hooks
 
-### **useChat**
+### useChat
 
 Main hook for managing chat state and operations.
 
-#### **Import**
-
-```typescript
+**Import:**
+```tsx
 import { useChat } from '@clarity-chat/react'
 ```
 
-#### **Signature**
-
+**Signature:**
 ```typescript
-function useChat(options?: UseChatOptions): UseChatReturn
+function useChat(config?: UseChatConfig): UseChatReturn
 
-interface UseChatOptions {
+interface UseChatConfig {
   initialMessages?: Message[]
-  maxMessages?: number
-  persistKey?: string
   onError?: (error: Error) => void
+  persistMessages?: boolean
+  storageKey?: string
 }
 
 interface UseChatReturn {
   messages: Message[]
-  sendMessage: (content: string, options?: SendOptions) => Promise<void>
-  editMessage: (id: string, content: string) => void
-  deleteMessage: (id: string) => void
-  clearMessages: () => void
   isLoading: boolean
   error: Error | null
+  sendMessage: (content: string) => Promise<void>
+  addMessage: (message: Message) => void
+  updateMessage: (id: string, updates: Partial<Message>) => void
+  deleteMessage: (id: string) => void
+  clearMessages: () => void
+  retryLastMessage: () => Promise<void>
 }
 ```
 
-#### **Usage**
+**Usage Example:**
 
-```typescript
+```tsx
 function ChatApp() {
   const {
     messages,
-    sendMessage,
-    editMessage,
-    deleteMessage,
-    clearMessages,
     isLoading,
     error,
+    sendMessage,
+    addMessage,
+    updateMessage,
+    deleteMessage,
+    clearMessages,
+    retryLastMessage,
   } = useChat({
     initialMessages: [],
-    maxMessages: 1000,
-    persistKey: 'my-chat',
-    onError: (error) => console.error('Chat error:', error),
+    persistMessages: true,
+    storageKey: 'my-chat-history',
+    onError: (error) => {
+      console.error('Chat error:', error)
+    },
   })
+
+  const handleSend = async (content: string) => {
+    await sendMessage(content)
+  }
 
   return (
     <div>
-      <MessageList messages={messages} />
-      <ChatInput
-        onSubmit={sendMessage}
-        disabled={isLoading}
+      <MessageList
+        messages={messages}
+        onDelete={deleteMessage}
+        onRetry={retryLastMessage}
       />
-      {error && <ErrorMessage error={error} />}
+      <ChatInput onSend={handleSend} isLoading={isLoading} />
+      {error && <ErrorDisplay error={error} />}
     </div>
   )
 }
 ```
 
+**Advanced Usage with Custom API:**
+
+```tsx
+function AdvancedChat() {
+  const { messages, sendMessage } = useChat({
+    onError: async (error) => {
+      await fetch('/api/log-error', {
+        method: 'POST',
+        body: JSON.stringify({ error: error.message }),
+      })
+    },
+  })
+
+  // Custom send with streaming
+  const handleSendWithStreaming = async (content: string) => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: content }),
+      })
+
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+      let assistantMessage = ''
+
+      while (true) {
+        const { done, value } = await reader!.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        assistantMessage += chunk
+        
+        // Update message in real-time
+        updateMessage('temp-id', { content: assistantMessage })
+      }
+    } catch (error) {
+      console.error('Streaming error:', error)
+    }
+  }
+
+  return <ChatWindow messages={messages} onSendMessage={handleSendWithStreaming} />
+}
+```
+
 ---
 
-### **useStreaming**
+### useStreaming
 
-Hook for handling streaming AI responses.
+Hook for handling streaming AI responses (SSE and WebSocket).
 
-#### **Import**
-
-```typescript
+**Import:**
+```tsx
 import { useStreaming } from '@clarity-chat/react'
 ```
 
-#### **Signature**
-
+**Signature:**
 ```typescript
-function useStreaming(options?: UseStreamingOptions): UseStreamingReturn
+function useStreaming(config?: UseStreamingConfig): UseStreamingReturn
 
-interface UseStreamingOptions {
+interface UseStreamingConfig {
   onChunk?: (chunk: string) => void
-  onComplete?: (fullText: string) => void
+  onComplete?: (fullMessage: string) => void
   onError?: (error: Error) => void
+  protocol?: 'sse' | 'websocket'
 }
 
 interface UseStreamingReturn {
-  stream: (url: string, options?: RequestInit) => Promise<void>
-  streamMessage: (message: string) => Promise<void>
-  cancel: () => void
   isStreaming: boolean
-  currentText: string
+  streamedContent: string
   error: Error | null
+  startStream: (url: string, options?: RequestInit) => Promise<void>
+  stopStream: () => void
+  resetStream: () => void
 }
 ```
 
-#### **Usage**
+**Usage Example:**
 
-```typescript
+```tsx
 function StreamingChat() {
-  const { messages, sendMessage } = useChat()
-  const { stream, isStreaming, currentText, cancel } = useStreaming({
-    onChunk: (chunk) => console.log('Chunk:', chunk),
-    onComplete: (text) => console.log('Complete:', text),
+  const {
+    isStreaming,
+    streamedContent,
+    error,
+    startStream,
+    stopStream,
+  } = useStreaming({
+    onChunk: (chunk) => {
+      console.log('Received chunk:', chunk)
+    },
+    onComplete: (fullMessage) => {
+      console.log('Stream complete:', fullMessage)
+    },
+    onError: (error) => {
+      console.error('Stream error:', error)
+    },
+    protocol: 'sse', // or 'websocket'
   })
 
   const handleSend = async (content: string) => {
-    await sendMessage(content)
-    
-    await stream('/api/chat', {
+    await startStream('/api/chat-stream', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: content }),
     })
   }
 
   return (
     <div>
-      <MessageList messages={messages} />
+      <MessageList
+        messages={[...messages, {
+          id: 'streaming',
+          role: 'assistant',
+          content: streamedContent,
+          timestamp: new Date(),
+        }]}
+      />
+      <ChatInput onSend={handleSend} disabled={isStreaming} />
       {isStreaming && (
-        <div>
-          <ThinkingIndicator />
-          <button onClick={cancel}>Cancel</button>
-          <p>{currentText}</p>
-        </div>
+        <button onClick={stopStream}>Stop Generation</button>
       )}
-      <ChatInput onSubmit={handleSend} disabled={isStreaming} />
     </div>
   )
 }
@@ -189,27 +255,27 @@ function StreamingChat() {
 
 ---
 
-### **useMessageOperations**
+### useMessageOperations
 
 Hook for advanced message operations (edit, regenerate, branch, undo/redo).
 
-#### **Import**
-
-```typescript
+**Import:**
+```tsx
 import { useMessageOperations } from '@clarity-chat/react'
 ```
 
-#### **Signature**
-
+**Signature:**
 ```typescript
 function useMessageOperations(
-  messages: Message[]
+  messages: Message[],
+  setMessages: (messages: Message[]) => void
 ): UseMessageOperationsReturn
 
 interface UseMessageOperationsReturn {
-  editMessage: (id: string, content: string) => void
+  editMessage: (id: string, newContent: string) => void
   regenerateMessage: (id: string) => Promise<void>
   branchConversation: (fromMessageId: string) => void
+  deleteMessage: (id: string) => void
   undo: () => void
   redo: () => void
   canUndo: boolean
@@ -218,32 +284,40 @@ interface UseMessageOperationsReturn {
 }
 ```
 
-#### **Usage**
+**Usage Example:**
 
-```typescript
-function AdvancedChat() {
-  const { messages } = useChat()
+```tsx
+function EditableChat() {
+  const [messages, setMessages] = useState<Message[]>([])
+  
   const {
     editMessage,
     regenerateMessage,
     branchConversation,
+    deleteMessage,
     undo,
     redo,
     canUndo,
     canRedo,
-  } = useMessageOperations(messages)
+  } = useMessageOperations(messages, setMessages)
 
   return (
     <div>
-      <button onClick={undo} disabled={!canUndo}>Undo</button>
-      <button onClick={redo} disabled={!canRedo}>Redo</button>
-      
       <MessageList
         messages={messages}
-        onEdit={editMessage}
-        onRegenerate={regenerateMessage}
-        onBranch={branchConversation}
+        onEdit={(id, content) => editMessage(id, content)}
+        onRegenerate={(id) => regenerateMessage(id)}
+        onDelete={(id) => deleteMessage(id)}
+        onBranch={(id) => branchConversation(id)}
       />
+      <div className="toolbar">
+        <button onClick={undo} disabled={!canUndo}>
+          Undo
+        </button>
+        <button onClick={redo} disabled={!canRedo}>
+          Redo
+        </button>
+      </div>
     </div>
   )
 }
@@ -251,359 +325,89 @@ function AdvancedChat() {
 
 ---
 
-## 🎨 **UI Hooks**
+### useErrorRecovery
 
-### **useAutoScroll**
+Hook for automatic error recovery with exponential backoff.
 
-Automatically scrolls to bottom when new messages arrive.
-
-#### **Import**
-
-```typescript
-import { useAutoScroll } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useAutoScroll<T extends HTMLElement>(
-  dependencies: any[],
-  options?: UseAutoScrollOptions
-): React.RefObject<T>
-
-interface UseAutoScrollOptions {
-  enabled?: boolean
-  smooth?: boolean
-  threshold?: number // px from bottom
-  onScroll?: () => void
-}
-```
-
-#### **Usage**
-
-```typescript
-function Chat() {
-  const { messages } = useChat()
-  const scrollRef = useAutoScroll<HTMLDivElement>([messages], {
-    enabled: true,
-    smooth: true,
-    threshold: 100,
-  })
-
-  return (
-    <div ref={scrollRef} className="overflow-y-auto">
-      <MessageList messages={messages} />
-    </div>
-  )
-}
-```
-
----
-
-### **useClipboard**
-
-Copy text to clipboard with success/error handling.
-
-#### **Import**
-
-```typescript
-import { useClipboard } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useClipboard(options?: UseClipboardOptions): UseClipboardReturn
-
-interface UseClipboardOptions {
-  timeout?: number // ms
-  onSuccess?: () => void
-  onError?: (error: Error) => void
-}
-
-interface UseClipboardReturn {
-  copy: (text: string) => Promise<void>
-  copied: boolean
-  error: Error | null
-}
-```
-
-#### **Usage**
-
-```typescript
-function CopyButton({ text }: { text: string }) {
-  const { copy, copied, error } = useClipboard({
-    timeout: 2000,
-    onSuccess: () => console.log('Copied!'),
-  })
-
-  return (
-    <button onClick={() => copy(text)}>
-      {copied ? '✓ Copied' : 'Copy'}
-      {error && <span>Error: {error.message}</span>}
-    </button>
-  )
-}
-```
-
----
-
-### **useToggle**
-
-Toggle boolean state with helper functions.
-
-#### **Import**
-
-```typescript
-import { useToggle } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useToggle(initialValue = false): UseToggleReturn
-
-type UseToggleReturn = [
-  value: boolean,
-  toggle: () => void,
-  setTrue: () => void,
-  setFalse: () => void
-]
-```
-
-#### **Usage**
-
-```typescript
-function Sidebar() {
-  const [isOpen, toggle, open, close] = useToggle(false)
-
-  return (
-    <div>
-      <button onClick={toggle}>Toggle</button>
-      <button onClick={open}>Open</button>
-      <button onClick={close}>Close</button>
-      
-      {isOpen && <SidebarContent />}
-    </div>
-  )
-}
-```
-
----
-
-## ⚡ **Performance Hooks**
-
-### **useDebounce**
-
-Debounce a value to prevent excessive updates.
-
-#### **Import**
-
-```typescript
-import { useDebounce } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useDebounce<T>(value: T, delay: number): T
-```
-
-#### **Usage**
-
-```typescript
-function SearchableChat() {
-  const [search, setSearch] = useState('')
-  const debouncedSearch = useDebounce(search, 300)
-
-  useEffect(() => {
-    // Only searches after 300ms of no typing
-    if (debouncedSearch) {
-      performSearch(debouncedSearch)
-    }
-  }, [debouncedSearch])
-
-  return (
-    <input
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      placeholder="Search messages..."
-    />
-  )
-}
-```
-
----
-
-### **useThrottle**
-
-Throttle a function to limit execution rate.
-
-#### **Import**
-
-```typescript
-import { useThrottle } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useThrottle<T extends (...args: any[]) => any>(
-  callback: T,
-  delay: number
-): T
-```
-
-#### **Usage**
-
-```typescript
-function ScrollTracker() {
-  const handleScroll = useThrottle((e: Event) => {
-    console.log('Scroll position:', window.scrollY)
-  }, 100)
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [handleScroll])
-
-  return <div>Scroll tracker active</div>
-}
-```
-
----
-
-### **useOptimisticMessage**
-
-Optimistically update UI before server confirmation.
-
-#### **Import**
-
-```typescript
-import { useOptimisticMessage } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useOptimisticMessage(): UseOptimisticMessageReturn
-
-interface UseOptimisticMessageReturn {
-  addOptimistic: (message: Message) => string // Returns temp ID
-  confirmOptimistic: (tempId: string, realId: string) => void
-  rejectOptimistic: (tempId: string) => void
-  optimisticMessages: Message[]
-}
-```
-
-#### **Usage**
-
-```typescript
-function OptimisticChat() {
-  const { messages } = useChat()
-  const {
-    addOptimistic,
-    confirmOptimistic,
-    rejectOptimistic,
-    optimisticMessages,
-  } = useOptimisticMessage()
-
-  const handleSend = async (content: string) => {
-    const tempId = addOptimistic({
-      role: 'user',
-      content,
-      timestamp: new Date(),
-    })
-
-    try {
-      const response = await api.sendMessage(content)
-      confirmOptimistic(tempId, response.id)
-    } catch (error) {
-      rejectOptimistic(tempId)
-    }
-  }
-
-  return (
-    <MessageList messages={[...messages, ...optimisticMessages]} />
-  )
-}
-```
-
----
-
-## 🛡️ **Error Handling Hooks**
-
-### **useErrorRecovery**
-
-Automatic error recovery with retry logic.
-
-#### **Import**
-
-```typescript
+**Import:**
+```tsx
 import { useErrorRecovery } from '@clarity-chat/react'
 ```
 
-#### **Signature**
-
+**Signature:**
 ```typescript
-function useErrorRecovery(
-  options?: UseErrorRecoveryOptions
-): UseErrorRecoveryReturn
+function useErrorRecovery(config?: UseErrorRecoveryConfig): UseErrorRecoveryReturn
 
-interface UseErrorRecoveryOptions {
+interface UseErrorRecoveryConfig {
   maxRetries?: number
   retryDelay?: number
-  exponentialBackoff?: boolean
-  onError?: (error: Error, attempt: number) => void
+  backoffMultiplier?: number
+  onError?: (error: Error) => void
+  onRetry?: (attempt: number) => void
   onSuccess?: () => void
-  shouldRetry?: (error: Error) => boolean
 }
 
 interface UseErrorRecoveryReturn {
-  handleError: (error: Error) => void
-  retry: () => Promise<void>
-  reset: () => void
+  executeWithRetry: <T>(
+    fn: () => Promise<T>,
+    options?: RetryOptions
+  ) => Promise<T>
   isRetrying: boolean
   retryCount: number
   lastError: Error | null
+  reset: () => void
 }
 ```
 
-#### **Usage**
+**Usage Example:**
 
-```typescript
+```tsx
 function ResilientChat() {
   const {
-    handleError,
-    retry,
+    executeWithRetry,
     isRetrying,
     retryCount,
     lastError,
   } = useErrorRecovery({
     maxRetries: 3,
     retryDelay: 1000,
-    exponentialBackoff: true,
-    shouldRetry: (error) => error.message !== 'Unauthorized',
+    backoffMultiplier: 2, // 1s, 2s, 4s
+    onError: (error) => {
+      console.error('Error occurred:', error)
+    },
+    onRetry: (attempt) => {
+      console.log(`Retrying... Attempt ${attempt}`)
+    },
   })
 
   const handleSend = async (content: string) => {
     try {
-      await api.sendMessage(content)
+      await executeWithRetry(async () => {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          body: JSON.stringify({ message: content }),
+        })
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
+        }
+        
+        return await response.json()
+      })
     } catch (error) {
-      handleError(error as Error)
+      console.error('Failed after retries:', error)
     }
   }
 
   return (
     <div>
-      {lastError && (
-        <div>
-          Error: {lastError.message}
-          {isRetrying && <span> (Retrying... {retryCount}/3)</span>}
-          <button onClick={retry}>Retry Now</button>
+      <ChatInput onSend={handleSend} disabled={isRetrying} />
+      {isRetrying && (
+        <div className="retry-indicator">
+          Retrying... (Attempt {retryCount + 1}/3)
         </div>
       )}
-      <ChatInput onSubmit={handleSend} />
+      {lastError && <ErrorDisplay error={lastError} />}
     </div>
   )
 }
@@ -611,265 +415,20 @@ function ResilientChat() {
 
 ---
 
-## 📊 **Analytics Hooks**
+### useVoiceInput
 
-### **useAnalytics**
+Hook for voice-to-text functionality using Web Speech API.
 
-Track events and user interactions.
-
-#### **Import**
-
-```typescript
-import { useAnalytics } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useAnalytics(): UseAnalyticsReturn
-
-interface UseAnalyticsReturn {
-  track: (event: string, properties?: Record<string, any>) => void
-  identify: (userId: string, traits?: Record<string, any>) => void
-  page: (name: string, properties?: Record<string, any>) => void
-}
-```
-
-#### **Usage**
-
-```typescript
-function AnalyticsChat() {
-  const { track, identify } = useAnalytics()
-
-  useEffect(() => {
-    identify('user-123', {
-      name: 'John Doe',
-      plan: 'premium',
-    })
-  }, [])
-
-  const handleSend = (content: string) => {
-    track('message_sent', {
-      length: content.length,
-      has_attachments: false,
-    })
-    // ... send message
-  }
-
-  return <ChatInput onSubmit={handleSend} />
-}
-```
-
----
-
-### **useTokenTracker**
-
-Track token usage and cost estimation.
-
-#### **Import**
-
-```typescript
-import { useTokenTracker } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useTokenTracker(
-  options?: UseTokenTrackerOptions
-): UseTokenTrackerReturn
-
-interface UseTokenTrackerOptions {
-  model?: string
-  costPerToken?: number
-  onLimitReached?: (usage: TokenUsage) => void
-}
-
-interface UseTokenTrackerReturn {
-  tokens: number
-  cost: number
-  addTokens: (count: number) => void
-  reset: () => void
-  usage: TokenUsage
-}
-```
-
-#### **Usage**
-
-```typescript
-function TokenAwareChat() {
-  const {
-    tokens,
-    cost,
-    addTokens,
-    usage,
-  } = useTokenTracker({
-    model: 'gpt-4',
-    costPerToken: 0.00003,
-    onLimitReached: (usage) => {
-      alert(`Token limit reached: ${usage.tokens}`)
-    },
-  })
-
-  return (
-    <div>
-      <TokenCounter tokens={tokens} cost={cost} />
-      <ChatWindow
-        onSendMessage={(content) => {
-          // Estimate tokens
-          addTokens(content.length / 4)
-          // ... send message
-        }}
-      />
-    </div>
-  )
-}
-```
-
----
-
-## ♿ **Accessibility Hooks**
-
-### **useKeyboardShortcuts**
-
-Register global keyboard shortcuts.
-
-#### **Import**
-
-```typescript
-import { useKeyboardShortcuts } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useKeyboardShortcuts(
-  shortcuts: Shortcut[],
-  options?: UseKeyboardShortcutsOptions
-): void
-
-interface Shortcut {
-  key: string
-  ctrl?: boolean
-  shift?: boolean
-  alt?: boolean
-  meta?: boolean
-  handler: () => void
-  description?: string
-}
-
-interface UseKeyboardShortcutsOptions {
-  enabled?: boolean
-  preventDefault?: boolean
-}
-```
-
-#### **Usage**
-
-```typescript
-function ChatWithShortcuts() {
-  const [showHelp, setShowHelp] = useState(false)
-
-  useKeyboardShortcuts([
-    {
-      key: '/',
-      handler: () => focusInput(),
-      description: 'Focus input',
-    },
-    {
-      key: '?',
-      shift: true,
-      handler: () => setShowHelp(true),
-      description: 'Show help',
-    },
-    {
-      key: 'k',
-      ctrl: true,
-      handler: () => clearChat(),
-      description: 'Clear chat',
-    },
-  ])
-
-  return <ChatWindow />
-}
-```
-
----
-
-## 📱 **Mobile Hooks**
-
-### **useMobileKeyboard**
-
-Detect and handle mobile keyboard visibility.
-
-#### **Import**
-
-```typescript
-import { useMobileKeyboard } from '@clarity-chat/react'
-```
-
-#### **Signature**
-
-```typescript
-function useMobileKeyboard(
-  options?: UseMobileKeyboardOptions
-): UseMobileKeyboardReturn
-
-interface UseMobileKeyboardOptions {
-  onShow?: () => void
-  onHide?: () => void
-  autoScroll?: boolean
-}
-
-interface UseMobileKeyboardReturn {
-  isKeyboardVisible: boolean
-  keyboardHeight: number
-  viewportHeight: number
-}
-```
-
-#### **Usage**
-
-```typescript
-function MobileChat() {
-  const { isKeyboardVisible, keyboardHeight } = useMobileKeyboard({
-    onShow: () => console.log('Keyboard shown'),
-    onHide: () => console.log('Keyboard hidden'),
-    autoScroll: true,
-  })
-
-  return (
-    <div
-      style={{
-        paddingBottom: isKeyboardVisible ? keyboardHeight : 0,
-      }}
-    >
-      <ChatWindow />
-    </div>
-  )
-}
-```
-
----
-
-### **useVoiceInput**
-
-Web Speech API integration for voice input.
-
-#### **Import**
-
-```typescript
+**Import:**
+```tsx
 import { useVoiceInput } from '@clarity-chat/react'
 ```
 
-#### **Signature**
-
+**Signature:**
 ```typescript
-function useVoiceInput(
-  options?: UseVoiceInputOptions
-): UseVoiceInputReturn
+function useVoiceInput(config?: UseVoiceInputConfig): UseVoiceInputReturn
 
-interface UseVoiceInputOptions {
+interface UseVoiceInputConfig {
   lang?: string
   continuous?: boolean
   interimResults?: boolean
@@ -881,32 +440,41 @@ interface UseVoiceInputReturn {
   isListening: boolean
   transcript: string
   interimTranscript: string
-  start: () => void
-  stop: () => void
-  isSupported: boolean
   error: Error | null
+  startListening: () => void
+  stopListening: () => void
+  resetTranscript: () => void
+  isSupported: boolean
 }
 ```
 
-#### **Usage**
+**Usage Example:**
 
-```typescript
+```tsx
 function VoiceEnabledChat() {
+  const [inputValue, setInputValue] = useState('')
+  
   const {
     isListening,
     transcript,
     interimTranscript,
-    start,
-    stop,
+    error,
+    startListening,
+    stopListening,
+    resetTranscript,
     isSupported,
   } = useVoiceInput({
     lang: 'en-US',
-    continuous: true,
+    continuous: false,
     interimResults: true,
     onTranscript: (text, isFinal) => {
       if (isFinal) {
+        setInputValue(text)
         sendMessage(text)
       }
+    },
+    onError: (error) => {
+      console.error('Voice error:', error)
     },
   })
 
@@ -916,16 +484,18 @@ function VoiceEnabledChat() {
 
   return (
     <div>
-      <button onClick={isListening ? stop : start}>
-        {isListening ? 'Stop' : 'Start'} Recording
+      <input
+        value={inputValue || interimTranscript}
+        onChange={(e) => setInputValue(e.target.value)}
+        placeholder="Type or speak..."
+      />
+      <button
+        onClick={isListening ? stopListening : startListening}
+        className={isListening ? 'recording' : ''}
+      >
+        {isListening ? '🔴 Stop' : '🎤 Speak'}
       </button>
-      
-      {isListening && (
-        <div>
-          <p>You said: {transcript}</p>
-          <p className="text-gray-400">{interimTranscript}</p>
-        </div>
-      )}
+      {error && <div className="error">{error.message}</div>}
     </div>
   )
 }
@@ -933,40 +503,147 @@ function VoiceEnabledChat() {
 
 ---
 
-## 🔧 **Utility Hooks**
+### useMobileKeyboard
 
-### **useLocalStorage**
+Hook for detecting and handling mobile keyboard visibility.
 
-Persist state to localStorage with SSR support.
-
-#### **Import**
-
-```typescript
-import { useLocalStorage } from '@clarity-chat/react'
+**Import:**
+```tsx
+import { useMobileKeyboard } from '@clarity-chat/react'
 ```
 
-#### **Signature**
-
+**Signature:**
 ```typescript
-function useLocalStorage<T>(
-  key: string,
-  initialValue: T
-): [T, (value: T | ((prev: T) => T)) => void, () => void]
+function useMobileKeyboard(config?: UseMobileKeyboardConfig): UseMobileKeyboardReturn
+
+interface UseMobileKeyboardConfig {
+  onShow?: (height: number) => void
+  onHide?: () => void
+  autoScroll?: boolean
+  scrollTarget?: HTMLElement | null
+}
+
+interface UseMobileKeyboardReturn {
+  isKeyboardVisible: boolean
+  keyboardHeight: number
+  visualViewportHeight: number
+}
 ```
 
-#### **Usage**
+**Usage Example:**
 
-```typescript
-function PersistentChat() {
-  const [messages, setMessages, clearMessages] = useLocalStorage<Message[]>(
-    'chat-messages',
-    []
+```tsx
+function MobileOptimizedChat() {
+  const chatContainerRef = useRef<HTMLDivElement>(null)
+  
+  const {
+    isKeyboardVisible,
+    keyboardHeight,
+    visualViewportHeight,
+  } = useMobileKeyboard({
+    autoScroll: true,
+    scrollTarget: chatContainerRef.current,
+    onShow: (height) => {
+      console.log('Keyboard shown, height:', height)
+    },
+    onHide: () => {
+      console.log('Keyboard hidden')
+    },
+  })
+
+  return (
+    <div
+      ref={chatContainerRef}
+      className="chat-container"
+      style={{
+        height: isKeyboardVisible
+          ? `${visualViewportHeight}px`
+          : '100vh',
+        paddingBottom: isKeyboardVisible ? `${keyboardHeight}px` : '0',
+      }}
+    >
+      <MessageList messages={messages} />
+      <ChatInput />
+    </div>
   )
+}
+```
+
+---
+
+### useTokenTracker
+
+Hook for tracking token usage and cost estimation.
+
+**Import:**
+```tsx
+import { useTokenTracker } from '@clarity-chat/react'
+```
+
+**Signature:**
+```typescript
+function useTokenTracker(config?: UseTokenTrackerConfig): UseTokenTrackerReturn
+
+interface UseTokenTrackerConfig {
+  model?: string
+  pricing?: {
+    inputTokenCost: number
+    outputTokenCost: number
+  }
+}
+
+interface UseTokenTrackerReturn {
+  totalTokens: number
+  inputTokens: number
+  outputTokens: number
+  estimatedCost: number
+  trackMessage: (message: Message) => void
+  reset: () => void
+}
+```
+
+**Usage Example:**
+
+```tsx
+function CostAwareChat() {
+  const {
+    totalTokens,
+    inputTokens,
+    outputTokens,
+    estimatedCost,
+    trackMessage,
+    reset,
+  } = useTokenTracker({
+    model: 'gpt-4',
+    pricing: {
+      inputTokenCost: 0.03 / 1000,  // $0.03 per 1K tokens
+      outputTokenCost: 0.06 / 1000, // $0.06 per 1K tokens
+    },
+  })
+
+  const handleSend = async (content: string) => {
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: 'user',
+      content,
+      timestamp: new Date(),
+      metadata: { tokens: estimateTokens(content) },
+    }
+    trackMessage(userMessage)
+
+    // Send to API...
+    const aiMessage: Message = { /* ... */ }
+    trackMessage(aiMessage)
+  }
 
   return (
     <div>
-      <button onClick={clearMessages}>Clear History</button>
-      <MessageList messages={messages} />
+      <ChatWindow messages={messages} onSendMessage={handleSend} />
+      <div className="token-stats">
+        <div>Total Tokens: {totalTokens.toLocaleString()}</div>
+        <div>Estimated Cost: ${estimatedCost.toFixed(4)}</div>
+        <button onClick={reset}>Reset Counter</button>
+      </div>
     </div>
   )
 }
@@ -974,33 +651,129 @@ function PersistentChat() {
 
 ---
 
-### **useMediaQuery**
+## UI Utility Hooks
 
-Responsive design with media queries.
+### useAutoScroll
 
-#### **Import**
+Automatically scrolls to bottom on new messages.
 
-```typescript
-import { useMediaQuery } from '@clarity-chat/react'
+**Import:**
+```tsx
+import { useAutoScroll } from '@clarity-chat/react'
 ```
 
-#### **Signature**
-
+**Signature:**
 ```typescript
-function useMediaQuery(query: string): boolean
+function useAutoScroll<T extends HTMLElement>(
+  dependencies: any[],
+  config?: UseAutoScrollConfig
+): RefObject<T>
+
+interface UseAutoScrollConfig {
+  behavior?: ScrollBehavior
+  enabled?: boolean
+  threshold?: number
+}
 ```
 
-#### **Usage**
+**Usage Example:**
 
-```typescript
-function ResponsiveChat() {
-  const isMobile = useMediaQuery('(max-width: 768px)')
-  const prefersDark = useMediaQuery('(prefers-color-scheme: dark)')
+```tsx
+function AutoScrollChat() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const scrollRef = useAutoScroll<HTMLDivElement>([messages], {
+    behavior: 'smooth',
+    enabled: true,
+    threshold: 100, // Don't auto-scroll if user scrolled up >100px
+  })
 
   return (
-    <ChatWindow
-      showSidebar={!isMobile}
-      theme={prefersDark ? themes.dark : themes.default}
+    <div ref={scrollRef} className="message-container">
+      {messages.map((msg) => (
+        <Message key={msg.id} message={msg} />
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+### useClipboard
+
+Copy text to clipboard with status feedback.
+
+**Import:**
+```tsx
+import { useClipboard } from '@clarity-chat/react'
+```
+
+**Signature:**
+```typescript
+function useClipboard(timeout?: number): UseClipboardReturn
+
+interface UseClipboardReturn {
+  copy: (text: string) => Promise<boolean>
+  copied: boolean
+  error: Error | null
+}
+```
+
+**Usage Example:**
+
+```tsx
+function CopyableMessage({ content }: { content: string }) {
+  const { copy, copied, error } = useClipboard(2000)
+
+  return (
+    <div className="message">
+      <p>{content}</p>
+      <button onClick={() => copy(content)}>
+        {copied ? '✓ Copied!' : '📋 Copy'}
+      </button>
+      {error && <span className="error">{error.message}</span>}
+    </div>
+  )
+}
+```
+
+---
+
+## General Utility Hooks
+
+### useDebounce
+
+Debounce a value with configurable delay.
+
+**Import:**
+```tsx
+import { useDebounce } from '@clarity-chat/react'
+```
+
+**Signature:**
+```typescript
+function useDebounce<T>(value: T, delay: number): T
+```
+
+**Usage Example:**
+
+```tsx
+function SearchableChat() {
+  const [searchTerm, setSearchTerm] = useState('')
+  const debouncedSearch = useDebounce(searchTerm, 300)
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      // Perform search
+      searchMessages(debouncedSearch)
+    }
+  }, [debouncedSearch])
+
+  return (
+    <input
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      placeholder="Search messages..."
     />
   )
 }
@@ -1008,12 +781,61 @@ function ResponsiveChat() {
 
 ---
 
-## 🔗 **Related Documentation**
+### useLocalStorage
 
-- [Components API](./components.md) - All components
-- [Utilities API](./utilities.md) - Helper functions
-- [Examples](../examples/README.md) - Code examples
+Persist state in localStorage with automatic serialization.
+
+**Import:**
+```tsx
+import { useLocalStorage } from '@clarity-chat/react'
+```
+
+**Signature:**
+```typescript
+function useLocalStorage<T>(
+  key: string,
+  initialValue: T
+): [T, (value: T | ((prev: T) => T)) => void, () => void]
+```
+
+**Usage Example:**
+
+```tsx
+function PersistentChat() {
+  const [messages, setMessages, clearMessages] = useLocalStorage<Message[]>(
+    'chat-history',
+    []
+  )
+
+  const handleSend = (content: string) => {
+    const newMessage: Message = {
+      id: crypto.randomUUID(),
+      role: 'user',
+      content,
+      timestamp: new Date(),
+    }
+    setMessages((prev) => [...prev, newMessage])
+  }
+
+  return (
+    <div>
+      <MessageList messages={messages} />
+      <ChatInput onSend={handleSend} />
+      <button onClick={clearMessages}>Clear History</button>
+    </div>
+  )
+}
+```
 
 ---
 
-**Need help?** [Join our Discord](https://discord.gg/clarity-chat)
+## 📚 Additional Resources
+
+- **[Components API](./components.md)** - All components
+- **[Utilities API](./utilities.md)** - Helper functions
+- **[TypeScript Types](./types.md)** - Type definitions
+- **[Examples](../examples/README.md)** - Real-world usage
+
+---
+
+**Next:** [Utilities API Reference →](./utilities.md)

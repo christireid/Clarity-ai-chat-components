@@ -13,37 +13,60 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
     "test": "turbo run test",
-    "test:watch": "turbo run test:watch",
-    "test:coverage": "turbo run test:coverage",
-    "test:ui": "turbo run test:ui",
+    "test:watch": "turbo run test -- --watch",
+    "test:coverage": "turbo run test -- --coverage",
     "clean": "turbo run clean && rm -rf node_modules",
     "storybook": "npm run dev --workspace=@clarity-chat/storybook",
     "storybook:build": "npm run build --workspace=@clarity-chat/storybook",
     "docs": "npm run dev --workspace=@clarity-chat/docs",
     "docs:build": "npm run build --workspace=@clarity-chat/docs",
     "typecheck": "turbo run typecheck",
-    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
-    "size": "size-limit",
     "changeset": "changeset",
-    "version": "changeset version",
-    "release": "npm run build && changeset publish",
-    "prepare": "husky install || true"
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish",
+    "size": "size-limit",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.0",
-    "@size-limit/preset-big-lib": "^11.0.0",
-    "husky": "^9.0.0",
-    "lint-staged": "^15.0.0",
-    "prettier": "^3.2.0",
-    "size-limit": "^11.0.0",
+    "@changesets/cli": "^2.27.1",
+    "@changesets/changelog-github": "^0.5.0",
+    "@size-limit/preset-big-lib": "^11.0.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.4.0",
+    "size-limit": "^11.0.1",
     "turbo": "^2.0.0",
-    "typedoc": "^0.25.0",
     "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/christireid/Clarity-ai-chat-components.git"
+  },
+  "keywords": [
+    "react",
+    "chat",
+    "ai",
+    "chatbot",
+    "ui",
+    "components",
+    "typescript",
+    "openai",
+    "gpt",
+    "claude",
+    "streaming",
+    "accessibility",
+    "wcag"
+  ],
+  "author": "Christi Reid <christi@codeclarity.ai>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme"
 }

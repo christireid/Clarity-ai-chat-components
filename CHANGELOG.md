@@ -8,199 +8,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Comprehensive documentation restructure with new `/docs` folder
-- CI/CD pipeline with GitHub Actions (test, build, accessibility, security)
-- Automated release workflow with Changesets
+- Complete documentation restructure with organized hierarchy
+- Comprehensive CI/CD pipeline with GitHub Actions
+- Automated testing with coverage reporting
+- Release automation with Changesets
 - Bundle size monitoring with size-limit
 - Pre-commit hooks with Husky and lint-staged
-- Coverage reporting with Codecov
-- Architecture diagrams with Mermaid
-- Getting started guides (installation, quick start, first component)
+- Prettier configuration for consistent formatting
+- New API reference documentation for all components and hooks
+- Architecture overview with Mermaid diagrams
+- Quick start guide and installation instructions
+- Contributing guidelines and development setup docs
 
 ### Changed
-- Moved phase documentation to `.archive/phases/` for cleaner root
-- Updated main README with improved structure and badges
-- Enhanced project organization and discoverability
+- Reorganized root directory structure
+- Moved phase documentation to `.archive/phases`
+- Updated main README with modern design and clear navigation
+- Improved package.json with new scripts and metadata
+- Enhanced GitHub Actions workflows for better CI/CD
 
 ### Fixed
-- Documentation organization and navigation
+- Documentation discoverability issues
+- Inconsistent code formatting
+- Missing developer tooling configuration
 
 ## [0.1.0] - 2024-10-30
 
-### Added
+### Added - Phase 4 Complete
+- Voice input component with Web Speech API support
+- Mobile keyboard handling for iOS and Android
+- Glassmorphism theme with modern glass effects
+- Pre-built templates (Support Bot, Code Assistant)
+- Context visualizer component
+- Conversation list with search and filtering
 
-#### Phase 4: Extended Features
-- **Voice Input System**
-  - `VoiceInput` component with speech-to-text
-  - `useVoiceInput` hook with multi-language support
-  - Real-time transcription with interim results
-  - Auto-submit on speech end
-  - Browser compatibility detection
+### Added - Phase 3 Complete
+- Advanced theme system with 11 built-in themes
+- Live theme editor and preview components
+- WCAG 2.1 AAA accessibility compliance
+- Keyboard shortcuts system with help modal
+- Analytics integration (7 providers)
+- Performance monitoring dashboard
+- Error tracking system (6 providers)
+- User feedback collection
+- AI features (suggestions, moderation, sentiment)
+- Content moderation and PII detection
 
-- **Mobile Keyboard Handling**
-  - `useMobileKeyboard` hook for keyboard detection
-  - `useMobileViewportHeight` for stable viewport
-  - Auto-scroll to focused inputs
-  - iOS and Android support
+### Added - Phase 2 Complete
+- Performance optimization with virtualization
+- Error boundaries and recovery strategies
+- Network status monitoring
+- Token tracking and cost estimation
+- Optimistic updates
+- Empty states and skeleton loaders
+- Icon system with 20+ icons
+- Advanced input features
 
-- **Glassmorphism Theme**
-  - Modern glass effect design
-  - Blur and transparency effects
-  - Added to theme selector
+### Added - Phase 1 Complete
+- Core chat components (Message, MessageList, ChatInput, ChatWindow)
+- Streaming support (SSE, WebSocket)
+- File upload and preview
+- Message operations (edit, delete, retry)
+- Context management
+- Toast notifications
+- Progress indicators
+- Advanced animations with Framer Motion
 
-- **Pre-built Templates**
-  - SupportBot template with FAQ matching
-  - CodeAssistant template with syntax highlighting
-  - Ready-to-use starting points
+### Technical
+- Monorepo structure with Turborepo
+- TypeScript 5.3+ with strict mode
+- React 18+ support
+- Comprehensive test suite with Vitest
+- Storybook for component documentation
+- VitePress documentation site
+- 9 working example applications
 
-- **Context Visualizer**
-  - Show what AI "sees" in context window
-  - Token usage display
-  - Context management UI
-
-- **Conversation List**
-  - Search and filter conversations
-  - Pin and favorite features
-  - Archive and delete functionality
-
-#### Phase 3: Advanced Features
-- **Advanced Theme System**
-  - 8 built-in themes (default, dark, ocean, sunset, forest, corporate, neon, minimal)
-  - Live theme editor with color pickers
-  - Theme preview component
-  - Theme selector with visual previews
-
-- **WCAG 2.1 AAA Accessibility**
-  - Screen reader optimization
-  - Keyboard shortcuts system (Shift+?)
-  - Focus management (trap, roving tabindex, restoration)
-  - Contrast checking utilities
-  - ARIA validation
-
-- **Analytics Integration**
-  - 7 analytics providers (GA4, Mixpanel, PostHog, Amplitude, Segment, Custom, Console)
-  - 35+ predefined events
-  - Auto-tracking for page views and errors
-  - 10 tracking hooks
-  - A/B testing support
-  - Funnel tracking utilities
-
-- **Performance Monitoring**
-  - Real-time performance dashboard
-  - Render performance metrics
-  - Memory tracking and leak detection
-  - Component render timing
-
-- **Error Tracking & Monitoring**
-  - 6 error providers (Sentry, Rollbar, Bugsnag, LogRocket, Custom, Console)
-  - Enhanced error boundaries with automatic reporting
-  - User feedback collection
-  - Breadcrumb system for debugging
-  - Error statistics
-  - Offline error storage
-
-- **AI Features**
-  - Smart suggestions (quick replies, commands, completions)
-  - Content moderation (profanity filter, PII detection)
-  - Sentiment analysis with confidence scoring
-  - Auto-complete with context awareness
-  - 8 built-in AI providers
-
-#### Phase 2: Core Features & Enhancement
-- **Message Operations**
-  - Message editing with history
-  - Message regeneration
-  - Conversation branching
-  - Undo/redo functionality
-
-- **Performance Optimization**
-  - Virtualized message lists for 1000+ messages
-  - Code splitting support
-  - Tree-shaking enabled
-  - Bundle size optimization
-
-- **Error Handling**
-  - ErrorBoundary with automatic retry
-  - Exponential backoff strategy
-  - RetryButton component
-  - Network status monitoring
-  - useErrorRecovery hook
-
-- **Token Management**
-  - Real-time token counter
-  - Cost estimation
-  - Token tracking hook
-  - Usage dashboard
-
-- **Advanced Components**
-  - AdvancedChatInput with autocomplete
-  - FileUpload with drag & drop
-  - ContextManager for documents
-  - ProjectSidebar for organization
-  - PromptLibrary with templates
-  - KnowledgeBaseViewer
-  - ExportDialog (PDF, DOCX, Markdown)
-
-#### Phase 1: Foundation
-- **Core Components**
-  - ChatWindow - Full-featured chat interface
-  - MessageList - Scrollable message container
-  - Message - Rich message display with markdown
-  - ChatInput - Basic message input
-  - ThinkingIndicator - AI processing states
-  - CopyButton - Copy message content
-
-- **Streaming Support**
-  - Server-Sent Events (SSE)
-  - WebSocket streaming
-  - Stream cancellation
-  - Reconnection handling
-
-- **Hooks**
-  - useChat - Main chat state management
-  - useStreaming - Real-time streaming
-  - useAutoScroll - Smart scrolling
-  - useClipboard - Copy to clipboard
-  - useDebounce/useThrottle - Rate limiting
-  - useLocalStorage - Persistent state
-
-- **Type System**
-  - Complete TypeScript definitions
-  - Strict mode enabled
-  - Message, User, Chat types
-  - Context and Attachment types
-
-- **Testing**
-  - Vitest setup
-  - React Testing Library
-  - jest-axe for accessibility
-  - 28 initial tests
-
-- **Documentation**
-  - Storybook setup
-  - Component stories
-  - README and examples
-  - Architecture documentation
-
-### Changed
-- Upgraded to React 19.0.0
-- Upgraded to TypeScript 5.7.2
-- Upgraded to Vite 6.0.5
-- Improved monorepo structure with Turborepo
-
-### Fixed
-- Message rendering performance
-- Streaming connection stability
-- Error boundary reset issues
-- Theme switching transitions
-
-## [0.0.1] - 2024-10-01
+## [0.0.1] - 2024-09-01
 
 ### Added
 - Initial project setup
-- Monorepo structure with npm workspaces
-- Basic TypeScript configuration
-- Package scaffolding
+- Basic component structure
+- Type definitions
+- Development tooling
 
 ---
 
@@ -208,18 +97,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This project uses [Changesets](https://github.com/changesets/changesets) for version management.
 
-### Creating a changeset
+### Creating a Changeset
 
 ```bash
-npx changeset
+npm run changeset
 ```
 
-### Publishing
+### Publishing a Release
 
-Releases are automated through GitHub Actions when changes are merged to `main`.
+```bash
+npm run version-packages  # Updates versions and CHANGELOG
+npm run release          # Builds and publishes to npm
+```
 
 ---
 
-[Unreleased]: https://github.com/christireid/Clarity-ai-chat-components/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/christireid/Clarity-ai-chat-components/releases/tag/v0.1.0
-[0.0.1]: https://github.com/christireid/Clarity-ai-chat-components/releases/tag/v0.0.1
+## Version History
+
+- **v0.1.0** - Phase 4 completion with voice input, mobile optimization, and templates
+- **v0.0.1** - Initial release with core functionality
+
+---
+
+**For detailed information about each release, see the [Releases page](https://github.com/christireid/Clarity-ai-chat-components/releases).**

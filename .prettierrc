@@ -2,13 +2,21 @@
   "semi": false,
   "singleQuote": true,
   "tabWidth": 2,
-  "useTabs": false,
   "trailingComma": "es5",
   "printWidth": 80,
   "arrowParens": "always",
   "endOfLine": "lf",
   "bracketSpacing": true,
   "jsxSingleQuote": false,
-  "jsxBracketSameLine": false,
-  "plugins": []
+  "bracketSameLine": false,
+  "plugins": [],
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "printWidth": 100,
+        "proseWrap": "always"
+      }
+    }
+  ]
 }
