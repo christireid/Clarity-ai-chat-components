@@ -2,18 +2,6 @@ import { expect, afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import matchers from '@testing-library/jest-dom/matchers'
 
-// Note: jest-axe is optional - only import if installed
-let axeMatchers: any
-try {
-  axeMatchers = require('jest-axe')
-  if (axeMatchers && axeMatchers.toHaveNoViolations) {
-    expect.extend({ toHaveNoViolations: axeMatchers.toHaveNoViolations })
-  }
-} catch (e) {
-  // jest-axe not installed, skip accessibility matchers
-  console.log('jest-axe not found - accessibility testing disabled')
-}
-
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers)
 
@@ -58,20 +46,20 @@ global.ResizeObserver = class ResizeObserver {
 
 // Mock Web Speech API (for voice input tests)
 if (typeof window !== 'undefined') {
-  (window as any).SpeechRecognition = class SpeechRecognition {
+  ;(window as any).SpeechRecognition = class SpeechRecognition {
     continuous = false
     interimResults = false
     lang = 'en-US'
-    
+
     start() {}
     stop() {}
     abort() {}
-    
+
     addEventListener() {}
     removeEventListener() {}
   }
-  
-  (window as any).webkitSpeechRecognition = (window as any).SpeechRecognition
+
+  ;(window as any).webkitSpeechRecognition = (window as any).SpeechRecognition
 }
 
 // Mock localStorage and sessionStorage
