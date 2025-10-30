@@ -1,4 +1,4 @@
-# Contributing to Clarity Chat
+# Contributing to Clarity Chat - Enhanced
 
 Thank you for your interest in contributing to Clarity Chat! This guide will help you get started.
 
@@ -18,6 +18,50 @@ Thank you for your interest in contributing to Clarity Chat! This guide will hel
 
 ---
 
+## 🗺️ Contribution Journey Overview
+
+```mermaid
+graph TB
+    START[Want to Contribute] --> FORK{First Time?}
+    
+    FORK -->|Yes| SETUP[Fork & Setup]
+    FORK -->|No| SYNC[Sync with Upstream]
+    
+    SETUP --> BRANCH[Create Branch]
+    SYNC --> BRANCH
+    
+    BRANCH --> CODE{What to Work On?}
+    
+    CODE -->|Bug Fix| FIX[Write Fix]
+    CODE -->|New Feature| FEAT[Implement Feature]
+    CODE -->|Documentation| DOCS[Update Docs]
+    CODE -->|Tests| TEST[Add Tests]
+    
+    FIX --> LOCAL[Run Local Checks]
+    FEAT --> LOCAL
+    DOCS --> LOCAL
+    TEST --> LOCAL
+    
+    LOCAL --> COMMIT[Commit Changes]
+    COMMIT --> PUSH[Push to Fork]
+    PUSH --> PR[Create Pull Request]
+    
+    PR --> REVIEW[Code Review]
+    REVIEW --> CHANGES{Changes Requested?}
+    
+    CHANGES -->|Yes| ITERATE[Make Changes]
+    ITERATE --> COMMIT
+    
+    CHANGES -->|No| MERGE[Merge to Main]
+    MERGE --> CELEBRATE[🎉 Celebrate!]
+    
+    style START fill:#4A90E2,color:#fff
+    style MERGE fill:#7ED321,color:#fff
+    style CELEBRATE fill:#50E3C2,color:#fff
+```
+
+---
+
 ## 🤝 Code of Conduct
 
 We are committed to providing a welcoming and inspiring community for all. Please:
@@ -31,6 +75,35 @@ We are committed to providing a welcoming and inspiring community for all. Pleas
 ---
 
 ## 🚀 Getting Started
+
+### Complete Setup Process
+
+```mermaid
+sequenceDiagram
+    participant You
+    participant GitHub
+    participant Local
+    participant Upstream
+    
+    You->>GitHub: Fork repository
+    GitHub-->>You: Fork created
+    
+    You->>Local: git clone your-fork
+    Local-->>You: Repository cloned
+    
+    You->>Local: npm install
+    Local->>Local: Install dependencies
+    Local-->>You: Dependencies installed
+    
+    You->>Local: git remote add upstream
+    Local-->>You: Upstream added
+    
+    You->>Local: npm run storybook
+    Local->>Local: Start dev environment
+    Local-->>You: Ready to code!
+    
+    Note over You,Local: You're all set!
+```
 
 ### 1. Fork and Clone
 
@@ -74,6 +147,28 @@ npm run typecheck
 ---
 
 ## 🔄 Development Workflow
+
+### Daily Workflow Diagram
+
+```mermaid
+graph LR
+    MORNING[Start Day] --> SYNC[Sync with Upstream]
+    SYNC --> CODE[Write Code]
+    CODE --> TEST[Run Tests]
+    TEST --> COMMIT[Commit]
+    
+    COMMIT --> MORE{More Work?}
+    MORE -->|Yes| CODE
+    MORE -->|No| PUSH[Push to Fork]
+    
+    PUSH --> PR[Create/Update PR]
+    PR --> REVIEW[Wait for Review]
+    REVIEW --> DONE[Done for Day]
+    
+    style MORNING fill:#4A90E2,color:#fff
+    style CODE fill:#F5A623,color:#fff
+    style DONE fill:#7ED321,color:#fff
+```
 
 ### Daily Workflow
 
@@ -127,6 +222,33 @@ packages/
 ---
 
 ## 📝 Coding Standards
+
+### Code Quality Pipeline
+
+```mermaid
+graph TB
+    CODE[Your Code] --> LINT[ESLint]
+    LINT --> TYPE[TypeScript Check]
+    TYPE --> TEST[Unit Tests]
+    TEST --> FORMAT[Prettier]
+    
+    FORMAT --> PASS{All Pass?}
+    PASS -->|Yes| COMMIT[Commit Allowed]
+    PASS -->|No| FIX[Fix Issues]
+    FIX --> CODE
+    
+    COMMIT --> CI[CI Pipeline]
+    CI --> BUILD[Build Check]
+    BUILD --> E2E[E2E Tests]
+    E2E --> DEPLOY{Deploy?}
+    
+    DEPLOY -->|Yes| PROD[Production]
+    DEPLOY -->|No| STAGE[Staging]
+    
+    style PASS fill:#F5A623,color:#fff
+    style COMMIT fill:#7ED321,color:#fff
+    style PROD fill:#50E3C2,color:#fff
+```
 
 ### TypeScript
 
@@ -186,6 +308,23 @@ export function Message(props: any) {
 
 ### Naming Conventions
 
+```mermaid
+graph TB
+    subgraph "Naming Standards"
+        COMP[Components<br/>PascalCase<br/>ChatWindow, MessageList]
+        HOOK[Hooks<br/>camelCase + use prefix<br/>useChat, useStreaming]
+        UTIL[Utilities<br/>camelCase<br/>formatDate, calculateTokens]
+        CONST[Constants<br/>UPPER_SNAKE_CASE<br/>DEFAULT_THEME, MAX_RETRIES]
+        TYPE[Types/Interfaces<br/>PascalCase<br/>Message, ThemeConfig]
+    end
+    
+    style COMP fill:#4A90E2,color:#fff
+    style HOOK fill:#50E3C2,color:#fff
+    style UTIL fill:#F5A623,color:#fff
+    style CONST fill:#ec4899,color:#fff
+    style TYPE fill:#7ED321,color:#fff
+```
+
 - **Components**: PascalCase (`ChatWindow`, `MessageList`)
 - **Hooks**: camelCase with `use` prefix (`useChat`, `useStreaming`)
 - **Utilities**: camelCase (`formatDate`, `calculateTokens`)
@@ -199,85 +338,97 @@ component-name/
 ├── component-name.tsx          # Component implementation
 ├── component-name.test.tsx     # Tests
 ├── component-name.stories.tsx  # Storybook stories
-└── index.ts                    # Re-exports
+├── component-name.types.ts     # TypeScript types
+└── index.ts                    # Public exports
 ```
 
 ---
 
 ## 🧪 Testing Guidelines
 
-### Test Requirements
+### Testing Strategy
 
-Every component and hook **must have tests** covering:
+```mermaid
+graph TB
+    subgraph "Test Levels"
+        UNIT[Unit Tests<br/>70% coverage<br/>Fast, isolated]
+        INT[Integration Tests<br/>25% coverage<br/>Component interactions]
+        E2E[E2E Tests<br/>5% coverage<br/>Critical user flows]
+    end
+    
+    subgraph "Test Tools"
+        VITEST[Vitest<br/>Test runner]
+        RTL[React Testing Library<br/>Component testing]
+        AXE[jest-axe<br/>Accessibility]
+        PLAY[Playwright<br/>E2E automation]
+    end
+    
+    subgraph "Coverage Goals"
+        C80[Components: 80%]
+        H90[Hooks: 90%]
+        U95[Utils: 95%]
+    end
+    
+    UNIT --> VITEST
+    UNIT --> RTL
+    INT --> RTL
+    INT --> AXE
+    E2E --> PLAY
+    
+    VITEST --> C80
+    RTL --> C80
+    RTL --> H90
+    VITEST --> U95
+    
+    style UNIT fill:#7ED321,color:#fff
+    style INT fill:#F5A623,color:#fff
+    style E2E fill:#ef4444,color:#fff
+```
 
-1. ✅ Basic rendering
-2. ✅ User interactions
-3. ✅ Edge cases
-4. ✅ Error states
-5. ✅ Accessibility
+### Writing Tests
 
-### Test Structure
-
+**Unit Test Example:**
 ```typescript
-import { render, screen, userEvent } from '../test-utils'
-import { ChatInput } from './chat-input'
+import { render, screen } from '@testing-library/react'
+import { Message } from './message'
 
-describe('ChatInput', () => {
-  it('renders correctly', () => {
-    render(<ChatInput onSendMessage={vi.fn()} />)
-    expect(screen.getByRole('textbox')).toBeInTheDocument()
+describe('Message', () => {
+  it('renders user message', () => {
+    render(<Message role="user" content="Hello" />)
+    expect(screen.getByText('Hello')).toBeInTheDocument()
   })
-
-  it('sends message on submit', async () => {
-    const onSendMessage = vi.fn()
-    render(<ChatInput onSendMessage={onSendMessage} />)
-    
-    const input = screen.getByRole('textbox')
-    await userEvent.type(input, 'Hello')
-    await userEvent.keyboard('{Enter}')
-    
-    expect(onSendMessage).toHaveBeenCalledWith('Hello')
-  })
-
-  it('disables input when loading', () => {
-    render(<ChatInput onSendMessage={vi.fn()} isLoading />)
-    expect(screen.getByRole('textbox')).toBeDisabled()
+  
+  it('renders with correct role class', () => {
+    const { container } = render(<Message role="user" content="Test" />)
+    expect(container.firstChild).toHaveClass('message-user')
   })
 })
 ```
 
-### Coverage Goals
+**Integration Test Example:**
+```typescript
+import { render, screen, userEvent } from '@testing-library/react'
+import { ChatWindow } from './chat-window'
 
-| Category | Minimum Coverage |
-|----------|-----------------|
-| Components | 80% |
-| Hooks | 90% |
-| Utilities | 95% |
-| Overall | 80% |
-
-### Running Tests
-
-```bash
-# Run all tests
-npm run test
-
-# Watch mode
-npm run test:watch
-
-# Coverage report
-npm run test:coverage
-
-# UI mode (recommended)
-npm run test:ui
+describe('ChatWindow Integration', () => {
+  it('sends message and displays response', async () => {
+    const onSend = vi.fn()
+    render(<ChatWindow messages={[]} onSendMessage={onSend} />)
+    
+    const input = screen.getByPlaceholderText('Type a message...')
+    await userEvent.type(input, 'Hello')
+    await userEvent.click(screen.getByRole('button', { name: /send/i }))
+    
+    expect(onSend).toHaveBeenCalledWith('Hello')
+  })
+})
 ```
 
 ---
 
-## 📝 Commit Convention
+## 📦 Commit Convention
 
-We use [Conventional Commits](https://www.conventionalcommits.org/) for clear, automated changelogs.
-
-### Format
+### Commit Message Format
 
 ```
 <type>(<scope>): <subject>
@@ -287,70 +438,124 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) for clear, a
 <footer>
 ```
 
+### Commit Flow
+
+```mermaid
+graph LR
+    CHANGE[Code Changes] --> STAGE[git add]
+    STAGE --> MESSAGE[Write Message]
+    MESSAGE --> VALIDATE{Conventional?}
+    
+    VALIDATE -->|Yes| COMMIT[git commit]
+    VALIDATE -->|No| FIX[Fix Message]
+    FIX --> MESSAGE
+    
+    COMMIT --> HOOK[Pre-commit Hook]
+    HOOK --> LINT[Run Linters]
+    LINT --> TEST[Run Tests]
+    TEST --> SUCCESS{All Pass?}
+    
+    SUCCESS -->|Yes| DONE[Commit Created]
+    SUCCESS -->|No| ABORT[Commit Aborted]
+    ABORT --> CHANGE
+    
+    style VALIDATE fill:#F5A623,color:#fff
+    style DONE fill:#7ED321,color:#fff
+    style ABORT fill:#ef4444,color:#fff
+```
+
 ### Types
 
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, no logic change)
-- `refactor`: Code refactoring
-- `perf`: Performance improvements
-- `test`: Adding or updating tests
-- `chore`: Build process or tooling changes
-- `ci`: CI/CD changes
-- `revert`: Revert a previous commit
+- **feat**: New feature
+- **fix**: Bug fix
+- **docs**: Documentation changes
+- **style**: Code style changes (formatting)
+- **refactor**: Code refactoring
+- **perf**: Performance improvements
+- **test**: Adding or updating tests
+- **chore**: Maintenance tasks
+- **ci**: CI/CD changes
 
 ### Examples
 
 ```bash
 # Feature
-git commit -m "feat(chat): add voice input component"
+feat(chat): add voice input support
 
 # Bug fix
-git commit -m "fix(streaming): handle connection errors correctly"
-
-# Breaking change
-git commit -m "feat(theme)!: redesign theme system
-
-BREAKING CHANGE: ThemeProvider now requires explicit theme prop"
+fix(message): correct timestamp formatting
 
 # Documentation
-git commit -m "docs(readme): update installation instructions"
+docs(api): update useChat hook examples
 
-# Refactor
-git commit -m "refactor(hooks): simplify useChat implementation"
+# Refactoring
+refactor(theme): simplify color system
+
+# Performance
+perf(list): implement virtual scrolling
 ```
-
-### Scope Guidelines
-
-Use package or feature name:
-- `chat`, `message`, `input`, `theme`
-- `hooks`, `utils`, `types`
-- `docs`, `storybook`, `examples`
-- `ci`, `build`, `deps`
 
 ---
 
-## 🔀 Pull Request Process
+## 🔍 Pull Request Process
 
-### Before Submitting
+### PR Lifecycle
 
-1. ✅ Tests pass (`npm run test`)
-2. ✅ Linting passes (`npm run lint`)
-3. ✅ Type checking passes (`npm run typecheck`)
-4. ✅ Code is formatted (`npm run format`)
-5. ✅ Documentation updated
-6. ✅ Storybook stories added (for components)
-7. ✅ Changeset created (`npm run changeset`)
+```mermaid
+sequenceDiagram
+    participant You
+    participant Fork
+    participant GitHub
+    participant CI
+    participant Reviewer
+    participant Main
+    
+    You->>Fork: Push changes
+    Fork->>GitHub: Create PR
+    GitHub->>CI: Trigger CI pipeline
+    
+    CI->>CI: Run tests
+    CI->>CI: Run linters
+    CI->>CI: Build check
+    
+    alt CI Passes
+        CI-->>GitHub: ✅ All checks passed
+        GitHub->>Reviewer: Request review
+        
+        Reviewer->>Reviewer: Code review
+        
+        alt Changes Requested
+            Reviewer-->>You: Request changes
+            You->>Fork: Push updates
+            Fork->>CI: Re-run CI
+        else Approved
+            Reviewer-->>GitHub: Approve PR
+            GitHub->>Main: Merge PR
+            Main-->>You: 🎉 Merged!
+        end
+    else CI Fails
+        CI-->>You: ❌ Checks failed
+        You->>Fork: Fix issues
+        Fork->>CI: Re-run CI
+    end
+```
 
-### PR Title Format
+### PR Checklist
 
-Use conventional commit format:
-- `feat: add new feature`
-- `fix: resolve bug`
-- `docs: update guide`
+Before submitting:
 
-### PR Description Template
+- [ ] Code follows style guidelines
+- [ ] Self-review completed
+- [ ] Comments added for complex logic
+- [ ] Documentation updated
+- [ ] Tests added/updated
+- [ ] All tests passing
+- [ ] No console errors/warnings
+- [ ] Storybook stories added/updated
+- [ ] Screenshots added (if UI change)
+- [ ] Breaking changes documented
+
+### PR Template
 
 ```markdown
 ## Description
@@ -362,239 +567,240 @@ Brief description of changes
 - [ ] Breaking change
 - [ ] Documentation update
 
-## Testing
-- [ ] Added tests
-- [ ] All tests pass
-- [ ] Manual testing done
+## How Has This Been Tested?
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] Manual testing
+
+## Screenshots (if applicable)
+Add screenshots here
 
 ## Checklist
 - [ ] Code follows style guidelines
-- [ ] Self-reviewed code
-- [ ] Commented complex code
-- [ ] Updated documentation
-- [ ] No new warnings
-- [ ] Added tests with >80% coverage
+- [ ] Tests added/updated
+- [ ] Documentation updated
 - [ ] Storybook stories added
-- [ ] Changeset created
-
-## Screenshots (if applicable)
 ```
-
-### Review Process
-
-1. **Automated checks** run on PR
-2. **Maintainer review** (1-2 days)
-3. **Address feedback**
-4. **Approval** and merge
 
 ---
 
 ## 🎨 Component Guidelines
 
-### Component Template
+### Component Development Flow
+
+```mermaid
+graph TB
+    PLAN[Plan Component] --> TYPES[Define Types]
+    TYPES --> IMPL[Implement Component]
+    IMPL --> STYLE[Add Styling]
+    STYLE --> TEST[Write Tests]
+    TEST --> STORY[Create Storybook Story]
+    STORY --> DOCS[Update Documentation]
+    DOCS --> REVIEW[Code Review]
+    REVIEW --> DONE[Done!]
+    
+    style PLAN fill:#4A90E2,color:#fff
+    style IMPL fill:#F5A623,color:#fff
+    style STORY fill:#50E3C2,color:#fff
+    style DONE fill:#7ED321,color:#fff
+```
+
+### Component Structure
 
 ```typescript
-import { memo, useMemo } from 'react'
-import { cn } from '../utils/classnames'
+// 1. Imports
+import { memo, useCallback, useMemo } from 'react'
+import { ComponentProps } from './types'
+import { useTheme } from '../hooks/use-theme'
 
-export interface MyComponentProps {
-  /**
-   * The main content
-   */
+// 2. Types
+interface MessageProps {
   content: string
-  
-  /**
-   * Optional className for styling
-   */
-  className?: string
-  
-  /**
-   * Callback when action occurs
-   */
-  onAction?: () => void
+  role: 'user' | 'assistant'
+  timestamp: Date
+  onCopy?: () => void
 }
 
-/**
- * MyComponent - Brief description of what it does
- * 
- * @example
- * ```tsx
- * <MyComponent content="Hello" onAction={() => console.log('action')} />
- * ```
- */
-export const MyComponent = memo<MyComponentProps>(function MyComponent({
+// 3. Component
+export const Message = memo(function Message({
   content,
-  className,
-  onAction,
-}) {
-  const processedContent = useMemo(() => {
-    // Expensive computation here
-    return content.toUpperCase()
-  }, [content])
-
+  role,
+  timestamp,
+  onCopy,
+}: MessageProps) {
+  // 4. Hooks
+  const { theme } = useTheme()
+  
+  // 5. Memoized values
+  const formattedTime = useMemo(
+    () => formatTimestamp(timestamp),
+    [timestamp]
+  )
+  
+  // 6. Callbacks
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(content)
+    onCopy?.()
+  }, [content, onCopy])
+  
+  // 7. Render
   return (
-    <div className={cn('my-component', className)}>
-      <p>{processedContent}</p>
-      {onAction && <button onClick={onAction}>Action</button>}
+    <div className={`message message-${role}`}>
+      <div className="message-content">{content}</div>
+      <div className="message-meta">
+        <span>{formattedTime}</span>
+        <button onClick={handleCopy}>Copy</button>
+      </div>
     </div>
   )
 })
 
-MyComponent.displayName = 'MyComponent'
+// 8. Display name for debugging
+Message.displayName = 'Message'
 ```
 
-### Props Best Practices
+### Component Best Practices
 
-1. ✅ **Required props first**, optional props last
-2. ✅ **Destructure props** in function signature
-3. ✅ **Use TypeScript interfaces** for props
-4. ✅ **Document all props** with JSDoc
-5. ✅ **Provide sensible defaults**
-6. ✅ **Use `className` prop** for custom styling
-
-### Accessibility Requirements
-
-Every component must:
-
-1. ✅ Use semantic HTML elements
-2. ✅ Include proper ARIA attributes
-3. ✅ Support keyboard navigation
-4. ✅ Have sufficient color contrast (7:1 for AAA)
-5. ✅ Work with screen readers
-6. ✅ Pass axe accessibility tests
-
-```typescript
-// ✅ Good
-<button 
-  onClick={handleClick}
-  aria-label="Send message"
-  disabled={isLoading}
->
-  Send
-</button>
-
-// ❌ Bad
-<div onClick={handleClick}>Send</div>
-```
+1. **Use TypeScript interfaces** for props
+2. **Memoize components** that render frequently
+3. **Extract logic** into custom hooks
+4. **Use semantic HTML** for accessibility
+5. **Add prop-types** or TypeScript for validation
+6. **Keep components focused** (single responsibility)
+7. **Write comprehensive tests**
+8. **Create Storybook stories**
 
 ---
 
-## 📚 Documentation
+## 📚 Documentation Guidelines
 
-### What Needs Documentation
+### Documentation Types
 
-1. **Components** - Props, usage examples, edge cases
-2. **Hooks** - Parameters, return values, examples
-3. **Utilities** - Function signature, examples
-4. **Guides** - Step-by-step tutorials
-5. **API Reference** - Complete API documentation
-
-### Documentation Standards
-
-```typescript
-/**
- * useChat - Main hook for chat state management
- * 
- * Manages messages, sending, streaming, and error handling.
- * 
- * @param config - Configuration options
- * @returns Chat state and actions
- * 
- * @example
- * ```tsx
- * const { messages, sendMessage, isLoading } = useChat({
- *   apiEndpoint: '/api/chat',
- *   onError: handleError,
- * })
- * ```
- * 
- * @see {@link ChatConfig} for configuration options
- */
-export function useChat(config: ChatConfig): ChatState {
-  // Implementation
-}
+```mermaid
+graph TB
+    subgraph "Documentation Hierarchy"
+        API[API Reference<br/>Props, types, examples]
+        GUIDE[Guides<br/>How-to articles]
+        ARCH[Architecture<br/>System design]
+        EXAMPLE[Examples<br/>Working code]
+    end
+    
+    subgraph "Formats"
+        MD[Markdown Files]
+        STORY[Storybook Stories]
+        CODE[Code Comments]
+        TS[TypeScript Docs]
+    end
+    
+    API --> MD
+    API --> STORY
+    GUIDE --> MD
+    ARCH --> MD
+    EXAMPLE --> CODE
+    
+    MD --> TS
+    
+    style API fill:#4A90E2,color:#fff
+    style GUIDE fill:#50E3C2,color:#fff
+    style EXAMPLE fill:#F5A623,color:#fff
 ```
 
-### Storybook Stories
+### Writing Documentation
 
-Every component needs a Storybook story:
+**Good Documentation:**
+- Clear and concise
+- Includes code examples
+- Shows common use cases
+- Explains the "why" not just "how"
+- Has visual diagrams (when helpful)
+- Is up-to-date
 
-```typescript
-import type { Meta, StoryObj } from '@storybook/react'
-import { MyComponent } from './my-component'
+**Documentation Checklist:**
+- [ ] Component description
+- [ ] Props table
+- [ ] Usage examples
+- [ ] Type definitions
+- [ ] Common patterns
+- [ ] Troubleshooting tips
+- [ ] Related components
+- [ ] Storybook story
 
-const meta: Meta<typeof MyComponent> = {
-  title: 'Components/MyComponent',
-  component: MyComponent,
-  tags: ['autodocs'],
-  argTypes: {
-    content: { control: 'text' },
-    onAction: { action: 'clicked' },
-  },
-}
+---
 
-export default meta
-type Story = StoryObj<typeof MyComponent>
+## 🚀 Release Process
 
-export const Default: Story = {
-  args: {
-    content: 'Hello, World!',
-  },
-}
+### Release Pipeline
 
-export const WithAction: Story = {
-  args: {
-    content: 'Click me',
-    onAction: () => alert('Action!'),
-  },
-}
+```mermaid
+graph LR
+    DEV[Development] --> STAGE[Staging]
+    STAGE --> TEST[Testing]
+    TEST --> VERSION[Version Bump]
+    VERSION --> TAG[Git Tag]
+    TAG --> BUILD[Build]
+    BUILD --> NPM[Publish to npm]
+    NPM --> DOCS[Deploy Docs]
+    DOCS --> ANNOUNCE[Announce Release]
+    
+    style DEV fill:#4A90E2,color:#fff
+    style NPM fill:#7ED321,color:#fff
+    style ANNOUNCE fill:#50E3C2,color:#fff
 ```
 
 ---
 
-## 🎁 Contribution Ideas
+## 🤝 Getting Help
 
-Not sure what to work on? Here are some ideas:
+### Support Channels
 
-### 🐛 Bug Fixes
-Check [Issues](https://github.com/christireid/Clarity-ai-chat-components/issues) labeled `bug`
+```mermaid
+graph TB
+    ISSUE[Need Help?] --> TYPE{Issue Type?}
+    
+    TYPE -->|Bug| BUG[Report Bug<br/>GitHub Issues]
+    TYPE -->|Question| Q[Ask Question<br/>Discord/Discussions]
+    TYPE -->|Feature| FEAT[Feature Request<br/>GitHub Discussions]
+    TYPE -->|Urgent| URGENT[Security Issue<br/>Email Maintainers]
+    
+    BUG --> TEMPLATE[Use Bug Template]
+    Q --> SEARCH[Search First]
+    FEAT --> PROPOSAL[Write Proposal]
+    
+    style ISSUE fill:#4A90E2,color:#fff
+    style BUG fill:#ef4444,color:#fff
+    style Q fill:#F5A623,color:#fff
+    style FEAT fill:#50E3C2,color:#fff
+```
 
-### ✨ Features
-Check [Issues](https://github.com/christireid/Clarity-ai-chat-components/issues) labeled `enhancement`
-
-### 📖 Documentation
-- Improve existing docs
-- Add more examples
-- Create tutorials
-- Fix typos
-
-### 🎨 Themes
-- Create new themes
-- Improve existing themes
-- Add theme presets
-
-### 🧪 Tests
-- Increase test coverage
-- Add integration tests
-- Add E2E tests
-
-### 🌍 Internationalization
-- Add translations
-- Support RTL languages
+- 💬 **Discord**: For questions and discussions
+- 🐛 **GitHub Issues**: For bug reports
+- 💡 **GitHub Discussions**: For feature requests
+- 📧 **Email**: For security issues
 
 ---
 
-## ❓ Questions?
+## 🎉 Recognition
 
-- 💬 [Discord](https://discord.gg/clarity-chat)
-- 🐛 [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
-- 💡 [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
+Contributors will be:
+- Added to `CONTRIBUTORS.md`
+- Mentioned in release notes
+- Featured on project website
+- Given contributor badge
 
 ---
 
-## 🙏 Thank You!
+## 📖 Additional Resources
 
-Your contributions make Clarity Chat better for everyone. We appreciate your time and effort!
+- [Quick Start Guide](../getting-started/quick-start.md)
+- [Architecture Overview](./overview.md)
+- [API Reference](../api/components.md)
+- [Examples Gallery](../examples/README.md)
+
+---
+
+**Thank you for contributing to Clarity Chat! 🙏**
+
+Every contribution, no matter how small, makes this project better for everyone.
 
 ---
 

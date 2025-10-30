@@ -4,6 +4,76 @@ Complete reference for all 47+ components in Clarity Chat.
 
 ---
 
+## 📊 Component Architecture Overview
+
+```mermaid
+graph TB
+    subgraph "Core Components"
+        A[ChatWindow]
+        B[MessageList]
+        C[Message]
+        D[ChatInput]
+        E[AdvancedChatInput]
+    end
+    
+    subgraph "Display Components"
+        F[ThinkingIndicator]
+        G[TypingIndicator]
+        H[Avatar]
+        I[CopyButton]
+        J[Skeleton]
+    end
+    
+    subgraph "Input Components"
+        K[FileUpload]
+        L[VoiceInput]
+        M[Autocomplete]
+    end
+    
+    subgraph "Context Components"
+        N[ContextManager]
+        O[ContextCard]
+        P[ContextVisualizer]
+    end
+    
+    subgraph "Organization"
+        Q[ProjectSidebar]
+        R[ConversationList]
+        S[PromptLibrary]
+    end
+    
+    subgraph "Error & Status"
+        T[ErrorBoundary]
+        U[NetworkStatus]
+        V[RetryButton]
+    end
+    
+    subgraph "Analytics"
+        W[PerformanceDashboard]
+        X[TokenCounter]
+        Y[UsageDashboard]
+    end
+    
+    subgraph "Theme"
+        Z1[ThemeProvider]
+        Z2[ThemeSelector]
+        Z3[ThemePreview]
+    end
+    
+    A --> B
+    B --> C
+    A --> D
+    D --> L
+    D --> K
+    
+    style A fill:#4A90E2,color:#fff
+    style B fill:#50E3C2,color:#fff
+    style C fill:#F5A623,color:#fff
+    style Z1 fill:#ec4899,color:#fff
+```
+
+---
+
 ## 📑 Table of Contents
 
 ### Core Components
@@ -59,6 +129,65 @@ Complete reference for all 47+ components in Clarity Chat.
 
 The main container component that orchestrates the entire chat interface.
 
+#### Component Anatomy
+
+```mermaid
+graph TB
+    subgraph "ChatWindow Structure"
+        A[ChatWindow Container]
+        A --> B[ProjectSidebar]
+        A --> C[Main Content Area]
+        A --> D[Theme Context]
+        
+        C --> E[Header/Title]
+        C --> F[MessageList]
+        C --> G[ChatInput]
+        
+        F --> H[Message Components]
+        F --> I[TypingIndicator]
+        
+        G --> J[Text Input]
+        G --> K[FileUpload Button]
+        G --> L[VoiceInput Button]
+        G --> M[Send Button]
+        
+        B --> N[Conversation List]
+        B --> O[Settings]
+    end
+    
+    style A fill:#4A90E2,color:#fff
+    style C fill:#50E3C2,color:#fff
+    style F fill:#F5A623,color:#fff
+    style G fill:#ec4899,color:#fff
+```
+
+#### Component Tree
+
+```mermaid
+graph LR
+    A[ChatWindow] --> B[ThemeProvider]
+    B --> C[ErrorBoundary]
+    C --> D[Layout Container]
+    
+    D --> E[Sidebar?]
+    D --> F[Main]
+    
+    E --> G[ConversationList]
+    E --> H[Settings]
+    
+    F --> I[MessageList]
+    F --> J[ChatInput]
+    
+    I --> K[Message×N]
+    J --> L[FileUpload]
+    J --> M[VoiceInput]
+    
+    style A fill:#4A90E2,color:#fff
+    style D fill:#50E3C2,color:#fff
+    style I fill:#F5A623,color:#fff
+    style J fill:#ec4899,color:#fff
+```
+
 **Import:**
 ```tsx
 import { ChatWindow } from '@clarity-chat/react'
@@ -106,6 +235,34 @@ interface Attachment {
   size: number
   url: string
 }
+```
+
+#### Data Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant ChatWindow
+    participant MessageList
+    participant ChatInput
+    participant API
+    
+    User->>ChatInput: Types message
+    User->>ChatInput: Clicks send
+    ChatInput->>ChatWindow: onSendMessage(content)
+    ChatWindow->>ChatWindow: Add user message to state
+    ChatWindow->>MessageList: Render with new message
+    MessageList-->>User: Display user message
+    
+    ChatWindow->>API: POST /api/chat
+    ChatWindow->>ChatWindow: Set isLoading = true
+    ChatWindow->>MessageList: Show typing indicator
+    
+    API-->>ChatWindow: Response
+    ChatWindow->>ChatWindow: Add assistant message
+    ChatWindow->>ChatWindow: Set isLoading = false
+    ChatWindow->>MessageList: Render with response
+    MessageList-->>User: Display assistant message
 ```
 
 **Usage Example:**
@@ -205,6 +362,59 @@ function AdvancedApp() {
 
 Displays a list of messages with virtualization for performance.
 
+#### Component Anatomy
+
+```mermaid
+graph TB
+    subgraph "MessageList"
+        A[Virtual Scroll Container]
+        A --> B[Viewport]
+        B --> C[Visible Messages Only]
+        
+        C --> D[Message 1]
+        C --> E[Message 2]
+        C --> F[Message N]
+        
+        A --> G[Scroll Handler]
+        G --> H[Calculate Visible Range]
+        H --> I[Render Window]
+        
+        A --> J[Loading Indicator?]
+        J --> K[TypingIndicator]
+    end
+    
+    style A fill:#4A90E2,color:#fff
+    style B fill:#50E3C2,color:#fff
+    style C fill:#F5A623,color:#fff
+```
+
+#### Virtualization Performance
+
+```mermaid
+graph LR
+    subgraph "Without Virtualization"
+        A1[1000 messages]
+        A2[1000 DOM nodes]
+        A3[Slow scrolling]
+        A4[High memory usage]
+    end
+    
+    subgraph "With Virtualization"
+        B1[1000 messages]
+        B2[~20 DOM nodes]
+        B3[Smooth scrolling]
+        B4[Low memory usage]
+    end
+    
+    A1 --> A2 --> A3 --> A4
+    B1 --> B2 --> B3 --> B4
+    
+    style A3 fill:#ef4444,color:#fff
+    style A4 fill:#f59e0b,color:#fff
+    style B3 fill:#7ED321,color:#fff
+    style B4 fill:#10b981,color:#fff
+```
+
 **Import:**
 ```tsx
 import { MessageList } from '@clarity-chat/react'
@@ -267,6 +477,74 @@ function ChatInterface() {
 
 Individual message component with rich content rendering.
 
+#### Message Anatomy
+
+```mermaid
+graph TB
+    subgraph "Message Component"
+        A[Message Container]
+        A --> B[Header]
+        A --> C[Content Area]
+        A --> D[Actions]
+        A --> E[Footer]
+        
+        B --> F[Avatar]
+        B --> G[Username/Role]
+        B --> H[Timestamp]
+        
+        C --> I[Markdown Renderer]
+        I --> J[Text Content]
+        I --> K[Code Blocks]
+        I --> L[LaTeX Math]
+        I --> M[Links]
+        
+        C --> N[Attachments?]
+        N --> O[Images]
+        N --> P[Files]
+        
+        C --> Q[Citations?]
+        
+        D --> R[Copy Button]
+        D --> S[Edit Button]
+        D --> T[Retry Button]
+        D --> U[Delete Button]
+        
+        E --> V[Metadata]
+        E --> W[Token Count]
+    end
+    
+    style A fill:#4A90E2,color:#fff
+    style C fill:#50E3C2,color:#fff
+    style I fill:#F5A623,color:#fff
+```
+
+#### Content Rendering Pipeline
+
+```mermaid
+graph LR
+    A[Raw Content] --> B{Content Type?}
+    B -->|Plain Text| C[Text Renderer]
+    B -->|Markdown| D[Markdown Parser]
+    B -->|Code| E[Syntax Highlighter]
+    B -->|Math| F[KaTeX Renderer]
+    
+    D --> G[HTML Output]
+    E --> H[Highlighted Code]
+    F --> I[Rendered Equation]
+    C --> J[Formatted Text]
+    
+    G --> K[Final Display]
+    H --> K
+    I --> K
+    J --> K
+    
+    style A fill:#4A90E2,color:#fff
+    style D fill:#F5A623,color:#fff
+    style E fill:#50E3C2,color:#fff
+    style F fill:#ec4899,color:#fff
+    style K fill:#7ED321,color:#fff
+```
+
 **Import:**
 ```tsx
 import { Message } from '@clarity-chat/react'
@@ -324,6 +602,63 @@ function MessageComponent() {
 ### VoiceInput
 
 Voice-to-text input component using Web Speech API.
+
+#### Voice Input Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant VoiceInput
+    participant WebSpeech as Web Speech API
+    participant App
+    
+    User->>VoiceInput: Click microphone
+    VoiceInput->>WebSpeech: Start recognition
+    WebSpeech-->>VoiceInput: Recognition started
+    VoiceInput-->>User: Show recording indicator
+    
+    loop User speaks
+        User->>WebSpeech: Speech audio
+        WebSpeech->>WebSpeech: Process audio
+        WebSpeech-->>VoiceInput: Interim results
+        VoiceInput-->>User: Display partial text
+    end
+    
+    User->>VoiceInput: Stop speaking
+    WebSpeech->>WebSpeech: Finalize transcription
+    WebSpeech-->>VoiceInput: Final transcript
+    VoiceInput->>App: onTranscript(text)
+    VoiceInput-->>User: Auto-submit or edit
+```
+
+#### Browser Support Matrix
+
+```mermaid
+graph TB
+    subgraph "Full Support ✅"
+        A1[Chrome/Edge<br/>Desktop & Mobile]
+        A2[Safari iOS 14.5+]
+        A3[Safari macOS 14.3+]
+    end
+    
+    subgraph "Partial Support ⚠️"
+        B1[Opera<br/>Desktop only]
+        B2[Samsung Internet<br/>Android only]
+    end
+    
+    subgraph "No Support ❌"
+        C1[Firefox<br/>All platforms]
+        C2[Safari <14.3<br/>All platforms]
+    end
+    
+    style A1 fill:#7ED321,color:#fff
+    style A2 fill:#7ED321,color:#fff
+    style A3 fill:#7ED321,color:#fff
+    style B1 fill:#F5A623,color:#fff
+    style B2 fill:#F5A623,color:#fff
+    style C1 fill:#ef4444,color:#fff
+    style C2 fill:#ef4444,color:#fff
+```
 
 **Import:**
 ```tsx
@@ -395,6 +730,30 @@ function VoiceChat() {
 
 Context provider for theming system.
 
+#### Theme Context Flow
+
+```mermaid
+graph TB
+    A[ThemeProvider] --> B[Theme Object]
+    B --> C[CSS Variables Injection]
+    C --> D[document.documentElement]
+    
+    A --> E[React Context]
+    E --> F[useTheme Hook]
+    
+    D --> G[--clarity-primary]
+    D --> H[--clarity-secondary]
+    D --> I[--clarity-background]
+    D --> J[... all theme vars]
+    
+    F --> K[Child Components]
+    K --> L[Read Theme Values]
+    
+    style A fill:#4A90E2,color:#fff
+    style E fill:#50E3C2,color:#fff
+    style K fill:#F5A623,color:#fff
+```
+
 **Import:**
 ```tsx
 import { ThemeProvider, themes } from '@clarity-chat/react'
@@ -424,6 +783,39 @@ themes.neon          // Cyberpunk neon
 themes.minimal       // Ultra minimal
 themes.warm          // Cozy warm tones
 themes.cool          // Cool blue/gray
+```
+
+#### Theme Comparison
+
+```mermaid
+graph LR
+    subgraph "Light Themes"
+        L1[default]
+        L2[minimal]
+        L3[warm]
+    end
+    
+    subgraph "Dark Themes"
+        D1[dark]
+        D2[neon]
+    end
+    
+    subgraph "Colorful Themes"
+        C1[ocean]
+        C2[sunset]
+        C3[forest]
+    end
+    
+    subgraph "Professional Themes"
+        P1[corporate]
+        P2[cool]
+        P3[glassmorphism]
+    end
+    
+    style L1 fill:#F9FAFB,color:#000
+    style D1 fill:#1F2937,color:#fff
+    style C1 fill:#0EA5E9,color:#fff
+    style P1 fill:#1E40AF,color:#fff
 ```
 
 **Custom Theme Example:**
@@ -480,6 +872,29 @@ function App() {
 
 Enhanced error boundary with user feedback collection.
 
+#### Error Handling Flow
+
+```mermaid
+stateDiagram-v2
+    [*] --> Normal: Component renders
+    Normal --> Error: Exception thrown
+    Error --> ErrorBoundary: componentDidCatch()
+    ErrorBoundary --> LogError: Log to console
+    LogError --> CallOnError: Call onError prop
+    CallOnError --> DisplayFallback: Show fallback UI
+    
+    DisplayFallback --> FeedbackForm: enableFeedback=true
+    DisplayFallback --> SimpleError: enableFeedback=false
+    
+    FeedbackForm --> CollectInput: User provides context
+    CollectInput --> SubmitFeedback: Submit to backend
+    
+    SubmitFeedback --> Reset: User clicks retry
+    SimpleError --> Reset: User clicks retry
+    
+    Reset --> [*]: componentDidMount()
+```
+
 **Import:**
 ```tsx
 import { ErrorBoundaryEnhanced } from '@clarity-chat/react'
@@ -520,6 +935,64 @@ function App() {
     </ErrorBoundaryEnhanced>
   )
 }
+```
+
+---
+
+## 🎯 Component Composition Patterns
+
+### Pattern 1: Full-Featured Chat
+
+```mermaid
+graph TB
+    A[App] --> B[ThemeProvider]
+    B --> C[ErrorBoundaryEnhanced]
+    C --> D[AnalyticsProvider]
+    D --> E[ChatWindow]
+    
+    E --> F[ProjectSidebar]
+    E --> G[MessageList]
+    E --> H[ChatInput]
+    
+    G --> I[Message×N]
+    H --> J[FileUpload]
+    H --> K[VoiceInput]
+    
+    style A fill:#4A90E2,color:#fff
+    style E fill:#50E3C2,color:#fff
+    style G fill:#F5A623,color:#fff
+```
+
+### Pattern 2: Minimal Chat
+
+```mermaid
+graph TB
+    A[App] --> B[ChatWindow]
+    B --> C[MessageList]
+    B --> D[ChatInput]
+    
+    C --> E[Message×N]
+    
+    style A fill:#4A90E2,color:#fff
+    style B fill:#50E3C2,color:#fff
+```
+
+### Pattern 3: Custom Layout
+
+```mermaid
+graph TB
+    A[Custom Layout] --> B[Header]
+    A --> C[ThemeProvider]
+    A --> D[Footer]
+    
+    C --> E[MessageList]
+    C --> F[ChatInput]
+    C --> G[TokenCounter]
+    
+    E --> H[Message×N]
+    
+    style A fill:#4A90E2,color:#fff
+    style C fill:#50E3C2,color:#fff
 ```
 
 ---
