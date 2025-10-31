@@ -149,3 +149,28 @@ export * from './hooks/use-mobile-keyboard'
 
 // Phase 4 - Pre-built Templates
 export * from './templates'
+
+// ============================================================================
+// PHASE 8 FEATURES - ADVANCED INTERACTIONS
+// ============================================================================
+
+// Phase 8 - Command Palette
+export * from './components/command-palette'
+
+// Phase 8 - Keyboard Hints
+export * from './components/keyboard-hint'
+
+// Phase 8 - Drag & Drop
+export * from './components/draggable'
+
+// Phase 8 - Context Menu
+export * from './components/context-menu'
+
+// Phase 8 - Theme Switcher
+export * from './components/theme-switcher'
+
+// Phase 8 - Undo/Redo Hook
+export * from './hooks/use-undo-redo'
+
+// Phase 8 - Haptic Feedback
+export * from './hooks/use-haptic'
