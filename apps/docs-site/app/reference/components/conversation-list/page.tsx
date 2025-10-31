@@ -2,57 +2,57 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Conversation List - Clarity Chat',
-  description: 'A full-featured sidebar component for managing and navigating between multiple AI conversations with search, filters, and bulk operations.',
+  description: 'Organize and navigate multiple AI conversations with search, filters, sorting, pinning, and multi-select capabilities.',
 }
 
 # Conversation List
 
-A complete conversation management sidebar with search, filtering, sorting, pinning, favorites, and multi-select capabilities for organizing multiple AI chat conversations.
+A comprehensive sidebar component for managing multiple AI conversations with search, filtering, sorting, pinning, favorites, and bulk operations.
 
 ## Overview
 
-The Conversation List provides comprehensive conversation management:
+The Conversation List provides complete conversation management:
 
-- **Search** - Find conversations by title or content preview
-- **Filtering** - Filter by pinned, favorites, or tags
-- **Sorting** - Sort by date, title, or message count
+- **Search conversations** - Find conversations by title or content
+- **Filter options** - Filter by pinned, favorites, and tags
+- **Sort options** - Sort by date, title, or message count
 - **Pin conversations** - Keep important conversations at the top
-- **Favorite conversations** - Mark conversations for quick access
-- **Multi-select** - Bulk operations on multiple conversations
-- **Unread badges** - Track unread message counts
-- **Empty states** - Helpful states when no conversations exist
+- **Favorite marking** - Star conversations for quick access
+- **Unread badges** - Display unread message counts
+- **Multi-select mode** - Bulk operations on multiple conversations
 - **Smooth animations** - Framer Motion transitions and hover effects
 
 ## Installation
 
-The Conversation List component is included in the Clarity Chat React package:
+The Conversation List is included in the Clarity Chat React package:
 
-```bash
+\`\`\`bash
 npm install @clarity-chat/react
-```
+\`\`\`
 
 ## Basic Usage
 
-```tsx
-import { ConversationList, Conversation } from '@clarity-chat/react'
+\`\`\`tsx
+import { ConversationList } from '@clarity-chat/react'
+import type { Conversation } from '@clarity-chat/types'
 
 function ChatSidebar() {
   const [conversations, setConversations] = useState<Conversation[]>([
     {
       id: '1',
-      title: 'Project Planning',
-      preview: 'Let\'s discuss the Q4 roadmap...',
+      title: 'Product Strategy Discussion',
+      preview: 'Can you help me outline...',
       timestamp: Date.now() - 3600000,
-      messageCount: 24,
-      unreadCount: 3,
+      messageCount: 15,
+      unreadCount: 2,
       isPinned: true,
     },
     {
       id: '2',
-      title: 'Code Review',
-      preview: 'Can you help review this PR?',
+      title: 'Code Review Questions',
+      preview: 'I need help understanding...',
       timestamp: Date.now() - 86400000,
-      messageCount: 12,
+      messageCount: 8,
     },
   ])
 
@@ -63,130 +63,105 @@ function ChatSidebar() {
       conversations={conversations}
       activeId={activeId}
       onSelect={setActiveId}
-      onCreate={() => createNewConversation()}
+      onCreate={() => {
+        // Create new conversation
+      }}
     />
   )
 }
-```
+\`\`\`
 
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `conversations` | `Conversation[]` | **Required** | Array of conversation objects |
-| `activeId` | `string` | `undefined` | Currently active conversation ID |
-| `onSelect` | `(id: string) => void` | **Required** | Callback when conversation is selected |
-| `onDelete` | `(id: string) => void` | `undefined` | Callback when conversation is deleted |
-| `onTogglePin` | `(id: string) => void` | `undefined` | Callback when pin status changes |
-| `onToggleFavorite` | `(id: string) => void` | `undefined` | Callback when favorite status changes |
-| `onCreate` | `() => void` | `undefined` | Callback to create new conversation |
-| `showSearch` | `boolean` | `true` | Show search bar |
-| `showFilters` | `boolean` | `false` | Show filter buttons |
-| `showSort` | `boolean` | `false` | Show sort dropdown |
-| `multiSelect` | `boolean` | `false` | Enable multi-select mode |
-| `selectedIds` | `string[]` | `[]` | Selected conversation IDs (multi-select) |
-| `onSelectionChange` | `(ids: string[]) => void` | `undefined` | Callback when selection changes |
-| `className` | `string` | `undefined` | Additional CSS classes |
-
-## Type Definitions
-
-### Conversation Interface
-
-```typescript
-interface Conversation {
-  id: string
-  title: string
-  preview: string                // Last message preview
-  timestamp: number              // Unix timestamp in milliseconds
-  messageCount: number
-  unreadCount?: number           // Number of unread messages
-  tags?: string[]                // Conversation tags
-  isPinned?: boolean             // Pinned to top
-  isFavorite?: boolean           // Marked as favorite
-}
-```
-
-### Sort Options
-
-```typescript
-type SortOption = 'recent' | 'oldest' | 'title' | 'messages'
-```
+| \`conversations\` | \`Conversation[]\` | **Required** | Array of conversation objects |
+| \`activeId\` | \`string\` | \`undefined\` | Currently active conversation ID |
+| \`onSelect\` | \`(conversationId: string) => void\` | **Required** | Callback when conversation is selected |
+| \`onDelete\` | \`(conversationId: string) => void\` | \`undefined\` | Callback when conversation is deleted |
+| \`onTogglePin\` | \`(conversationId: string) => void\` | \`undefined\` | Callback when conversation is pinned/unpinned |
+| \`onToggleFavorite\` | \`(conversationId: string) => void\` | \`undefined\` | Callback when conversation is favorited/unfavorited |
+| \`onCreate\` | \`() => void\` | \`undefined\` | Callback when new conversation button clicked |
+| \`showSearch\` | \`boolean\` | \`true\` | Show search bar |
+| \`showFilters\` | \`boolean\` | \`false\` | Show filter buttons (pinned, favorites) |
+| \`showSort\` | \`boolean\` | \`false\` | Show sort dropdown |
+| \`multiSelect\` | \`boolean\` | \`false\` | Enable multi-select mode with checkboxes |
+| \`selectedIds\` | \`string[]\` | \`[]\` | Selected conversation IDs (for multi-select) |
+| \`onSelectionChange\` | \`(selectedIds: string[]) => void\` | \`undefined\` | Callback when selection changes |
+| \`className\` | \`string\` | \`undefined\` | Additional CSS classes |
 
 ## Features
 
 ### Search Conversations
 
-Built-in search filters by title and preview text:
+Real-time search through conversation titles and previews:
 
-```tsx
+\`\`\`tsx
 <ConversationList
   conversations={conversations}
   activeId={activeId}
   onSelect={setActiveId}
   showSearch={true} // Default: true
 />
-```
+\`\`\`
 
-**Search behavior:**
-- Case-insensitive matching
+**Search features:**
+- Case-insensitive search
 - Searches both title and preview text
 - Real-time filtering as you type
 - Clear visual feedback for no results
+- Automatically clears on empty input
 
-### Filtering
+### Filter and Sort
 
-Filter conversations by pinned status, favorites, or tags:
+Organize conversations with multiple filter and sort options:
 
-```tsx
+\`\`\`tsx
 <ConversationList
   conversations={conversations}
   activeId={activeId}
   onSelect={setActiveId}
-  showFilters={true}
   showSearch={true}
-/>
-```
-
-**Available filters:**
-- **Pinned**: Show only pinned conversations
-- **Favorites**: Show only favorite conversations
-- **Tags**: Filter by conversation tags (UI shows all unique tags)
-
-### Sorting
-
-Sort conversations by different criteria:
-
-```tsx
-<ConversationList
-  conversations={conversations}
-  activeId={activeId}
-  onSelect={setActiveId}
+  showFilters={true}
   showSort={true}
 />
-```
+\`\`\`
 
 **Sort options:**
-- **Most Recent** (default): Newest conversations first
-- **Oldest**: Oldest conversations first
-- **Title A-Z**: Alphabetical by title
-- **Message Count**: Most messages first
+- **Most Recent**: Sort by timestamp (newest first) - default
+- **Oldest**: Sort by timestamp (oldest first)
+- **Title A-Z**: Alphabetical sorting
+- **Message Count**: Sort by number of messages
 
-**Note**: Pinned conversations always appear first, regardless of sort order.
+**Filter options:**
+- **Pinned**: Show only pinned conversations
+- **Favorites**: Show only favorited conversations
+- **Tags**: Filter by conversation tags (future feature)
 
-### Pin Conversations
+**Priority**: Pinned conversations always appear first, regardless of sort order
 
-Pin important conversations to keep them at the top:
+### Pin and Favorite
 
-```tsx
+Mark important conversations for quick access:
+
+\`\`\`tsx
+import { ConversationList } from '@clarity-chat/react'
+
 function ManagedConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([])
 
   const handleTogglePin = (id: string) => {
     setConversations(prev =>
-      prev.map(conv =>
-        conv.id === id
-          ? { ...conv, isPinned: !conv.isPinned }
-          : conv
+      prev.map(c =>
+        c.id === id ? { ...c, isPinned: !c.isPinned } : c
+      )
+    )
+  }
+
+  const handleToggleFavorite = (id: string) => {
+    setConversations(prev =>
+      prev.map(c =>
+        c.id === id ? { ...c, isFavorite: !c.isFavorite } : c
       )
     )
   }
@@ -197,75 +172,52 @@ function ManagedConversations() {
       activeId={activeId}
       onSelect={setActiveId}
       onTogglePin={handleTogglePin}
+      onToggleFavorite={handleToggleFavorite}
     />
   )
 }
-```
+\`\`\`
 
 **Pin features:**
-- Pinned conversations always appear first
-- Visual indicator (📌 icon)
-- Toggle animation on pin/unpin
-- Persistent across sessions (when saved to backend)
-
-### Favorite Conversations
-
-Mark conversations as favorites for quick access:
-
-```tsx
-function FavoriteConversations() {
-  const handleToggleFavorite = (id: string) => {
-    setConversations(prev =>
-      prev.map(conv =>
-        conv.id === id
-          ? { ...conv, isFavorite: !conv.isFavorite }
-          : conv
-      )
-    )
-  }
-
-  return (
-    <ConversationList
-      conversations={conversations}
-      activeId={activeId}
-      onSelect={setActiveId}
-      onToggleFavorite={handleToggleFavorite}
-      showFilters={true} // Show favorite filter button
-    />
-  )
-}
-```
+- 📌 Visual indicator for pinned conversations
+- Always displayed at the top
+- Animated pin/unpin transitions
+- Separate count in statistics
 
 **Favorite features:**
-- Visual indicator (⭐ icon)
+- ⭐ Visual indicator for favorited conversations
 - Filter to show only favorites
-- Scale animation on toggle
+- Animated favorite/unfavorite transitions
 - Can be combined with pinning
 
 ### Multi-Select Mode
 
 Enable bulk operations on multiple conversations:
 
-```tsx
+\`\`\`tsx
+import { ConversationList } from '@clarity-chat/react'
+import { useState } from 'react'
+
 function BulkOperations() {
+  const [conversations, setConversations] = useState<Conversation[]>([])
   const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   const handleBulkDelete = () => {
-    // Delete all selected conversations
     setConversations(prev =>
-      prev.filter(conv => !selectedIds.includes(conv.id))
+      prev.filter(c => !selectedIds.includes(c.id))
     )
     setSelectedIds([])
   }
 
   const handleBulkExport = () => {
-    // Export selected conversations
-    const selected = conversations.filter(c => selectedIds.includes(c.id))
-    exportConversations(selected)
+    const selectedConvos = conversations.filter(c =>
+      selectedIds.includes(c.id)
+    )
+    // Export logic
   }
 
   return (
-    <>
+    <div>
       <ConversationList
         conversations={conversations}
         activeId={activeId}
@@ -274,9 +226,9 @@ function BulkOperations() {
         selectedIds={selectedIds}
         onSelectionChange={setSelectedIds}
       />
-      
+
       {selectedIds.length > 0 && (
-        <div className="flex gap-2 p-4 border-t">
+        <div className="p-4 border-t flex gap-2">
           <button onClick={handleBulkDelete}>
             Delete {selectedIds.length}
           </button>
@@ -285,31 +237,24 @@ function BulkOperations() {
           </button>
         </div>
       )}
-    </>
+    </div>
   )
 }
-```
-
-**Multi-select features:**
-- Checkboxes for each conversation
-- Visual selection state
-- Selection counter in footer
-- Click toggles selection
-- Prevent navigation when in multi-select mode
+\`\`\`
 
 ### Unread Badges
 
-Display unread message counts:
+Display unread message counts for each conversation:
 
-```tsx
+\`\`\`tsx
 const conversations: Conversation[] = [
   {
     id: '1',
-    title: 'Active Discussion',
-    preview: 'New message arrived...',
+    title: 'Customer Support',
+    preview: 'How can I help...',
     timestamp: Date.now(),
-    messageCount: 45,
-    unreadCount: 5, // Shows badge with "5"
+    messageCount: 25,
+    unreadCount: 3, // Shows blue badge with "3"
   },
 ]
 
@@ -318,82 +263,118 @@ const conversations: Conversation[] = [
   activeId={activeId}
   onSelect={setActiveId}
 />
-```
+\`\`\`
 
-**Badge features:**
-- Blue badge with white text
-- Shows count number
-- Only displays when > 0
-- Updates automatically
-- Typically cleared on conversation select
+### Create New Conversation
 
-### Tags
+Add a button to create new conversations:
 
-Organize conversations with tags:
-
-```tsx
-const conversations: Conversation[] = [
-  {
-    id: '1',
-    title: 'Q4 Planning',
-    preview: 'Discussion about roadmap...',
-    timestamp: Date.now(),
-    messageCount: 15,
-    tags: ['work', 'planning', 'important'],
-  },
-]
-
+\`\`\`tsx
 <ConversationList
   conversations={conversations}
   activeId={activeId}
   onSelect={setActiveId}
-  showFilters={true} // Enable tag filtering
-/>
-```
-
-**Tag features:**
-- Multiple tags per conversation
-- Gray badge styling
-- Tag filtering (when showFilters=true)
-- Truncation for long tag lists
-
-## Advanced Examples
-
-### Complete Conversation Manager
-
-Full-featured example with all capabilities:
-
-```tsx
-import { useState, useCallback } from 'react'
-import { ConversationList, Conversation } from '@clarity-chat/react'
-
-function ConversationManager() {
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [activeId, setActiveId] = useState<string>()
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [multiSelectMode, setMultiSelectMode] = useState(false)
-
-  const handleCreate = useCallback(async () => {
-    const newConv: Conversation = {
+  onCreate={() => {
+    const newConversation: Conversation = {
       id: crypto.randomUUID(),
       title: 'New Conversation',
-      preview: 'No messages yet',
+      preview: '',
       timestamp: Date.now(),
       messageCount: 0,
     }
     
-    setConversations(prev => [newConv, ...prev])
-    setActiveId(newConv.id)
+    setConversations(prev => [newConversation, ...prev])
+    setActiveId(newConversation.id)
+  }}
+/>
+\`\`\`
+
+## Complete Example: Full Conversation Management
+
+\`\`\`tsx
+import { useState, useCallback } from 'react'
+import { ConversationList } from '@clarity-chat/react'
+import type { Conversation } from '@clarity-chat/types'
+
+function CompleteConversationManager() {
+  const [conversations, setConversations] = useState<Conversation[]>([
+    {
+      id: '1',
+      title: 'Product Strategy 2024',
+      preview: 'Let\\'s discuss our Q1 roadmap...',
+      timestamp: Date.now() - 3600000,
+      messageCount: 42,
+      unreadCount: 5,
+      isPinned: true,
+      isFavorite: true,
+      tags: ['strategy', 'planning'],
+    },
+    {
+      id: '2',
+      title: 'Code Architecture Review',
+      preview: 'We need to refactor the auth module...',
+      timestamp: Date.now() - 7200000,
+      messageCount: 28,
+      unreadCount: 0,
+      isPinned: false,
+      isFavorite: false,
+      tags: ['engineering', 'architecture'],
+    },
+    {
+      id: '3',
+      title: 'Marketing Campaign Ideas',
+      preview: 'Brainstorming for the summer launch...',
+      timestamp: Date.now() - 86400000,
+      messageCount: 15,
+      unreadCount: 2,
+      isPinned: false,
+      isFavorite: true,
+      tags: ['marketing', 'creative'],
+    },
+  ])
+
+  const [activeId, setActiveId] = useState('1')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  const handleSelect = useCallback((id: string) => {
+    setActiveId(id)
+    
+    // Mark as read
+    setConversations(prev =>
+      prev.map(c =>
+        c.id === id ? { ...c, unreadCount: 0 } : c
+      )
+    )
   }, [])
 
-  const handleDelete = useCallback(async (id: string) => {
-    if (confirm('Delete this conversation?')) {
+  const handleCreate = useCallback(() => {
+    const newConversation: Conversation = {
+      id: crypto.randomUUID(),
+      title: 'New Conversation',
+      preview: 'Start typing to begin...',
+      timestamp: Date.now(),
+      messageCount: 0,
+      unreadCount: 0,
+      isPinned: false,
+      isFavorite: false,
+      tags: [],
+    }
+
+    setConversations(prev => [newConversation, ...prev])
+    setActiveId(newConversation.id)
+  }, [])
+
+  const handleDelete = useCallback((id: string) => {
+    if (confirm('Are you sure you want to delete this conversation?')) {
       setConversations(prev => prev.filter(c => c.id !== id))
+      
+      // If deleting active conversation, select another
       if (activeId === id) {
-        setActiveId(undefined)
+        const remaining = conversations.filter(c => c.id !== id)
+        setActiveId(remaining[0]?.id || '')
       }
     }
-  }, [activeId])
+  }, [activeId, conversations])
 
   const handleTogglePin = useCallback((id: string) => {
     setConversations(prev =>
@@ -412,338 +393,277 @@ function ConversationManager() {
   }, [])
 
   const handleBulkDelete = useCallback(() => {
-    if (confirm(`Delete ${selectedIds.length} conversations?`)) {
+    if (confirm(\`Delete \${selectedIds.length} conversations?\`)) {
       setConversations(prev =>
         prev.filter(c => !selectedIds.includes(c.id))
       )
       setSelectedIds([])
-      setMultiSelectMode(false)
     }
   }, [selectedIds])
 
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-80 border-r">
-        {/* Toolbar */}
-        <div className="p-2 border-b flex gap-2">
-          <button
-            onClick={() => setMultiSelectMode(!multiSelectMode)}
-            className={`px-3 py-1 text-sm rounded ${
-              multiSelectMode
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700'
-            }`}
-          >
-            {multiSelectMode ? 'Done' : 'Select'}
-          </button>
-          
-          {multiSelectMode && selectedIds.length > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              className="px-3 py-1 text-sm bg-red-600 text-white rounded"
-            >
-              Delete {selectedIds.length}
-            </button>
-          )}
-        </div>
-
-        {/* Conversation List */}
+      <div className="w-80 flex-shrink-0">
         <ConversationList
           conversations={conversations}
           activeId={activeId}
-          onSelect={setActiveId}
+          onSelect={handleSelect}
+          onCreate={handleCreate}
           onDelete={handleDelete}
           onTogglePin={handleTogglePin}
           onToggleFavorite={handleToggleFavorite}
-          onCreate={handleCreate}
           showSearch={true}
           showFilters={true}
           showSort={true}
-          multiSelect={multiSelectMode}
+          multiSelect={false}
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
         />
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1">
+      {/* Main chat area */}
+      <div className="flex-1 p-4">
         {activeId ? (
-          <div>Active conversation: {activeId}</div>
+          <div>
+            <h2 className="text-2xl font-bold mb-4">
+              {conversations.find(c => c.id === activeId)?.title}
+            </h2>
+            {/* Chat interface here */}
+          </div>
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">Select a conversation</p>
+            <p className="text-muted-foreground">
+              Select a conversation to start
+            </p>
           </div>
         )}
       </div>
+
+      {/* Bulk operations toolbar */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 flex gap-3">
+          <span className="text-sm font-medium">
+            {selectedIds.length} selected
+          </span>
+          <button
+            onClick={handleBulkDelete}
+            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => setSelectedIds([])}
+            className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
     </div>
   )
 }
-```
+\`\`\`
 
-### With Backend Persistence
+## Animation Details
 
-Example with API integration:
+The Conversation List uses Framer Motion for smooth transitions:
 
-```tsx
-function PersistedConversations() {
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+### List Item Animation
+\`\`\`tsx
+// Stagger animation for conversation items
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, x: -100, height: 0 }}
+  transition={{
+    duration: 0.2,
+    delay: index * 0.05, // 50ms stagger
+    ease: [0.4, 0, 0.2, 1],
+  }}
+/>
+\`\`\`
 
-  // Load conversations
-  useEffect(() => {
-    loadConversations()
-  }, [])
-
-  const loadConversations = async () => {
-    setIsLoading(true)
-    try {
-      const response = await fetch('/api/conversations')
-      const data = await response.json()
-      setConversations(data.conversations)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleTogglePin = async (id: string) => {
-    // Optimistic update
-    setConversations(prev =>
-      prev.map(c =>
-        c.id === id ? { ...c, isPinned: !c.isPinned } : c
-      )
-    )
-
-    // Persist to backend
-    try {
-      await fetch(`/api/conversations/${id}/pin`, {
-        method: 'PATCH',
-      })
-    } catch (error) {
-      // Revert on error
-      loadConversations()
-    }
-  }
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  return (
-    <ConversationList
-      conversations={conversations}
-      activeId={activeId}
-      onSelect={setActiveId}
-      onTogglePin={handleTogglePin}
-    />
-  )
-}
-```
-
-### With Real-time Updates
-
-Example with WebSocket updates:
-
-```tsx
-function RealtimeConversations() {
-  const [conversations, setConversations] = useState<Conversation[]>([])
-
-  useEffect(() => {
-    const ws = new WebSocket('ws://localhost:3000/conversations')
-
-    ws.onmessage = (event) => {
-      const update = JSON.parse(event.data)
-
-      switch (update.type) {
-        case 'new_message':
-          setConversations(prev =>
-            prev.map(c =>
-              c.id === update.conversationId
-                ? {
-                    ...c,
-                    preview: update.message.content,
-                    timestamp: update.message.timestamp,
-                    messageCount: c.messageCount + 1,
-                    unreadCount: (c.unreadCount || 0) + 1,
-                  }
-                : c
-            )
-          )
-          break
-
-        case 'conversation_created':
-          setConversations(prev => [update.conversation, ...prev])
-          break
-
-        case 'conversation_deleted':
-          setConversations(prev =>
-            prev.filter(c => c.id !== update.conversationId)
-          )
-          break
-      }
-    }
-
-    return () => ws.close()
-  }, [])
-
-  return (
-    <ConversationList
-      conversations={conversations}
-      activeId={activeId}
-      onSelect={setActiveId}
-    />
-  )
-}
-```
-
-## Animations
-
-The Conversation List uses Framer Motion for smooth animations:
-
-### Entry Animation
-```tsx
-// Each conversation item
-initial={{ opacity: 0, y: 20 }}
-animate={{ opacity: 1, y: 0 }}
-transition={{
-  duration: 0.2,
-  delay: index * 0.05, // 50ms stagger
-  ease: [0.4, 0, 0.2, 1],
-}}
-```
-
-### Hover Effect
-```tsx
+### Hover Effects
+\`\`\`tsx
+// Subtle lift on hover
 whileHover={{
-  y: -2, // Lift up slightly
+  y: -2,
   transition: { duration: 0.15 },
 }}
-```
+\`\`\`
 
-### Exit Animation
-```tsx
-exit={{ opacity: 0, x: -100, height: 0 }}
-```
+### Pin/Favorite Buttons
+\`\`\`tsx
+// Interactive button animations
+<motion.button
+  whileHover={{ scale: 1.2, rotate: 15 }}
+  whileTap={{ scale: 0.9 }}
+/>
+\`\`\`
 
-### Action Button Animations
-```tsx
-// Pin button
-whileHover={{ scale: 1.2, rotate: isPinned ? 0 : 15 }}
-whileTap={{ scale: 0.9 }}
+### Pin Animation
+\`\`\`tsx
+// Wiggle effect when pinned
+<motion.span
+  animate={isPinned ? { rotate: [0, -10, 10, -10, 0] } : {}}
+  transition={{ duration: 0.5 }}
+/>
+\`\`\`
 
-// Favorite button
-whileHover={{ scale: 1.2 }}
-animate={isFavorite ? { scale: [1, 1.3, 1] } : {}}
-```
+## TypeScript Interfaces
+
+### Conversation Interface
+\`\`\`typescript
+interface Conversation {
+  id: string
+  title: string
+  preview: string
+  timestamp: number          // Unix timestamp in milliseconds
+  messageCount: number
+  unreadCount?: number
+  tags?: string[]
+  isPinned?: boolean
+  isFavorite?: boolean
+}
+\`\`\`
+
+### ConversationListProps Interface
+\`\`\`typescript
+interface ConversationListProps {
+  conversations: Conversation[]
+  activeId?: string
+  onSelect: (conversationId: string) => void
+  onDelete?: (conversationId: string) => void
+  onTogglePin?: (conversationId: string) => void
+  onToggleFavorite?: (conversationId: string) => void
+  onCreate?: () => void
+  showSearch?: boolean
+  showFilters?: boolean
+  showSort?: boolean
+  multiSelect?: boolean
+  selectedIds?: string[]
+  onSelectionChange?: (selectedIds: string[]) => void
+  className?: string
+}
+\`\`\`
+
+### SortOption Type
+\`\`\`typescript
+type SortOption = 'recent' | 'oldest' | 'title' | 'messages'
+\`\`\`
+
+### FilterOptions Interface
+\`\`\`typescript
+interface FilterOptions {
+  search?: string
+  tags?: string[]
+  showPinned?: boolean
+  showFavorites?: boolean
+}
+\`\`\`
 
 ## Accessibility
 
 The Conversation List follows accessibility best practices:
 
-- **Keyboard navigation**: Full keyboard support with Tab/Enter
+- **Semantic HTML**: Proper button and list structure
 - **ARIA labels**: Descriptive labels for all interactive elements
-- **Role attributes**: Proper button roles
-- **Focus management**: Visible focus indicators
-- **Screen reader support**: Announced updates and state changes
-- **Semantic HTML**: Proper heading hierarchy
-- **Color contrast**: WCAG AA compliant colors
+- **Keyboard navigation**: Full keyboard support with Tab/Enter/Space
+- **Focus indicators**: Clear visual focus states
+- **Screen reader support**: Proper announcements for state changes
+- **Role attributes**: Correct ARIA roles for custom elements
+- **Tab order**: Logical tab order through interface
+- **Action feedback**: Clear feedback for user actions
 
-## Styling
+### Keyboard Shortcuts
+- **Tab**: Navigate between conversations
+- **Enter/Space**: Select conversation
+- **Delete**: Delete selected conversation (when focused)
+- **Ctrl+F**: Focus search input
 
-The component uses Tailwind CSS and supports dark mode:
+## Time Formatting
 
-```tsx
-// Light mode
-<ConversationList
-  conversations={conversations}
-  className="bg-white border-gray-200"
-/>
+The component includes intelligent relative time formatting:
 
-// Dark mode (automatic with dark: variants)
-<ConversationList
-  conversations={conversations}
-  className="dark:bg-gray-800 dark:border-gray-700"
-/>
-```
+\`\`\`typescript
+formatRelativeTime(timestamp: number): string
 
-**Visual states:**
-- **Active**: Blue background with left border
-- **Selected**: Light blue background (multi-select)
-- **Hover**: Slight background change + lift animation
-- **Pinned**: 📌 icon indicator
-- **Favorite**: ⭐ icon indicator
-- **Unread**: Blue badge with count
-
-## Best Practices
-
-1. **Load conversations efficiently**: Paginate or limit initial load
-2. **Update timestamps**: Keep relative times current with interval updates
-3. **Persist state**: Save pinned/favorite status to backend
-4. **Clear unread counts**: Mark as read when conversation is opened
-5. **Optimistic updates**: Update UI immediately, sync with backend
-6. **Error handling**: Revert changes on API failures
-7. **Search performance**: Debounce search input for large lists
-8. **Keyboard shortcuts**: Add shortcuts for common actions (Cmd+N for new)
+// Examples:
+// < 1 minute: "Just now"
+// < 1 hour: "5m ago", "45m ago"
+// < 1 day: "2h ago", "12h ago"
+// < 1 week: "3d ago"
+// >= 1 week: "12/15/2023"
+\`\`\`
 
 ## Related Components
 
-- [Message List](/reference/components/message-list) - Display messages within a conversation
+- [Message List](/reference/components/message-list) - Display messages in active conversation
+- [Message](/reference/components/message) - Individual message component
 - [Advanced Chat Input](/reference/components/advanced-chat-input) - Input for sending messages
-- [Empty State](/reference/components/empty-state) - No content placeholder
-- [Project Sidebar](/reference/components/project-sidebar) - Project organization sidebar
+- [Project Sidebar](/reference/components/project-sidebar) - Alternative sidebar layout
 
-## Common Patterns
+## Best Practices
 
-### Clear Unread on Select
+1. **Unique IDs**: Ensure all conversation IDs are unique and stable
+2. **Timestamp format**: Use Unix timestamps in milliseconds
+3. **Unread counts**: Update unread counts when conversation is selected
+4. **Optimistic updates**: Update UI immediately, sync with server
+5. **Pagination**: Load conversations in batches for large datasets
+6. **Local storage**: Persist conversation state locally
+7. **Confirmation**: Always confirm destructive actions (delete)
+8. **Search debouncing**: Debounce search input for performance
+9. **Empty states**: Provide helpful empty state messaging
+10. **Loading states**: Show loading indicators during data fetch
 
-```tsx
-const handleSelect = (id: string) => {
-  // Clear unread count
-  setConversations(prev =>
-    prev.map(c =>
-      c.id === id ? { ...c, unreadCount: 0 } : c
-    )
-  )
-  setActiveId(id)
-}
-```
+## Performance Optimization
 
-### Update Last Message
+### Memoization
+\`\`\`tsx
+import { useMemo, useCallback } from 'react'
 
-```tsx
-const handleNewMessage = (conversationId: string, message: Message) => {
-  setConversations(prev =>
-    prev.map(c =>
-      c.id === conversationId
-        ? {
-            ...c,
-            preview: message.content,
-            timestamp: message.timestamp,
-            messageCount: c.messageCount + 1,
-            unreadCount: activeId === c.id ? 0 : (c.unreadCount || 0) + 1,
-          }
-        : c
-    )
-  )
-}
-```
+// Memoize filtered conversations
+const filteredConversations = useMemo(() => {
+  // Filter and sort logic
+}, [conversations, searchQuery, sortBy, filters])
 
-### Debounced Search
+// Memoize callbacks
+const handleSelect = useCallback((id: string) => {
+  // Selection logic
+}, [dependencies])
+\`\`\`
 
-```tsx
-import { useDeferredValue } from 'react'
+### Virtual Scrolling
+For very large conversation lists (100+):
+\`\`\`tsx
+import { VirtualizedList } from '@clarity-chat/react'
 
-function DebouncedSearch() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const deferredQuery = useDeferredValue(searchQuery)
+// Use virtualized rendering for 100+ conversations
+{conversations.length > 100 ? (
+  <VirtualizedList items={conversations} />
+) : (
+  <ConversationList conversations={conversations} />
+)}
+\`\`\`
 
-  return (
-    <ConversationList
-      conversations={conversations}
-      // Use deferred value for filtering
-      // Component handles search internally, but you can also
-      // pre-filter conversations before passing to component
-    />
-  )
-}
-```
+## Troubleshooting
+
+### Conversations not filtering
+- Verify search query is being set correctly
+- Check that conversation titles and previews contain searchable text
+- Ensure filter state is properly managed
+
+### Pinned conversations not staying at top
+- The component automatically sorts pinned items first
+- Verify \`isPinned\` property is set correctly on conversation objects
+
+### Animations not smooth
+- Check for expensive re-renders in parent component
+- Memoize callbacks with \`useCallback\`
+- Use \`React.memo\` for conversation items if needed
+
+### Multi-select not working
+- Ensure \`multiSelect={true}\` is set
+- Provide \`selectedIds\` and \`onSelectionChange\` props
+- Check that \`onSelectionChange\` updates state correctly
