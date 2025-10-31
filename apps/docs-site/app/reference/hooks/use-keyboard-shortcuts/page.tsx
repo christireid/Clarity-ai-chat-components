@@ -1,1675 +1,995 @@
 import React from 'react'
 import { Metadata } from 'next'
-import DocsLayout from '@/components/Layout/DocsLayout'
-import ApiTable from '@/components/Demo/ApiTable'
-import LiveDemo from '@/components/Demo/LiveDemo'
-import ComponentPreview from '@/components/Demo/ComponentPreview'
-import Callout from '@/components/MDX/Callout'
+import { ApiTable } from '@/components/Demo/ApiTable'
+import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'useKeyboardShortcuts - Clarity Chat Components',
-  description: 'React hook for managing keyboard shortcuts and hotkeys in chat applications with conflict detection, modifier keys, and custom actions.',
+  description: 'Hook for managing keyboard shortcuts in your chat application with support for combinations, sequences, and scopes.',
 }
 
 export default function UseKeyboardShortcutsPage() {
   return (
-    <DocsLayout
-      title="useKeyboardShortcuts"
-      description="Manage keyboard shortcuts and hotkeys with conflict detection, modifier keys, and custom actions"
-    >
-      <div className="prose prose-slate dark:prose-invert max-w-none">
-        {/* Overview */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Overview</h2>
-          <p className="text-lg text-slate-600 dark:text-slate-400 mb-6">
-            The <code>useKeyboardShortcuts</code> hook provides a robust way to manage keyboard shortcuts in your chat application. 
-            It handles modifier keys (Ctrl, Alt, Shift, Meta), prevents conflicts, supports sequences, and works seamlessly across 
-            different operating systems.
-          </p>
-
-          <Callout type="tip" className="mb-6">
-            This hook automatically handles OS differences (Cmd on Mac, Ctrl on Windows/Linux) and prevents shortcuts from 
-            firing when user is typing in input fields.
-          </Callout>
-        </section>
-
-        {/* Import */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Import</h2>
-          <pre className="bg-slate-900 dark:bg-slate-950 text-slate-50 p-4 rounded-lg overflow-x-auto">
-            <code>{`import { useKeyboardShortcuts } from '@clarity-chat/react'`}</code>
-          </pre>
-        </section>
-
-        {/* Basic Usage */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Basic Usage</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Define keyboard shortcuts with simple configuration objects:
-          </p>
-
-          <LiveDemo
-            title="Basic Keyboard Shortcuts"
-            code={`import React, { useState } from 'react'
-import { useKeyboardShortcuts, ChatWindow } from '@clarity-chat/react'
-
-export default function BasicShortcutsExample() {
-  const [action, setAction] = useState('')
-  const [messages, setMessages] = useState([])
-
-  // Register keyboard shortcuts
-  useKeyboardShortcuts({
-    shortcuts: [
-      {
-        key: 'n',
-        modifiers: ['ctrl'],
-        description: 'New message',
-        action: () => {
-          setAction('New message triggered')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      {
-        key: 's',
-        modifiers: ['ctrl'],
-        description: 'Save draft',
-        action: () => {
-          setAction('Draft saved')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      {
-        key: 'k',
-        modifiers: ['ctrl'],
-        description: 'Open search',
-        action: () => {
-          setAction('Search opened')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      {
-        key: '/',
-        description: 'Focus search',
-        action: () => {
-          setAction('Search focused')
-          setTimeout(() => setAction(''), 2000)
-        }
-      }
-    ],
-    enabled: true
-  })
-
-  return (
-    <div className="space-y-4">
-      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <h3 className="font-semibold mb-2">Try these shortcuts:</h3>
-        <ul className="space-y-1 text-sm">
-          <li><kbd>Ctrl</kbd> + <kbd>N</kbd> - New message</li>
-          <li><kbd>Ctrl</kbd> + <kbd>S</kbd> - Save draft</li>
-          <li><kbd>Ctrl</kbd> + <kbd>K</kbd> - Open search</li>
-          <li><kbd>/</kbd> - Focus search</li>
-        </ul>
-      </div>
-
-      {action && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 rounded-lg font-semibold">
-          ✓ {action}
-        </div>
-      )}
-
-      <ChatWindow
-        messages={messages}
-        onSendMessage={(text) => {
-          const newMessage = {
-            id: Date.now().toString(),
-            text,
-            sender: { id: 'user', name: 'You' },
-            timestamp: new Date()
-          }
-          setMessages([...messages, newMessage])
-        }}
-        currentUser={{ id: 'user', name: 'You' }}
-      />
-    </div>
-  )
-}`}
-            dependencies={{
-              '@clarity-chat/react': 'latest'
-            }}
-            height="600px"
-          />
-        </section>
-
-        {/* Hook Signature */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Hook Signature</h2>
-          <pre className="bg-slate-900 dark:bg-slate-950 text-slate-50 p-4 rounded-lg overflow-x-auto mb-6">
-            <code>{`const {
-  shortcuts,
-  addShortcut,
-  removeShortcut,
-  updateShortcut,
-  clearShortcuts,
-  enabledShortcuts,
-  disableShortcut,
-  enableShortcut,
-  getConflicts
-} = useKeyboardShortcuts(options)`}</code>
-          </pre>
-        </section>
-
-        {/* Configuration */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Configuration</h2>
-          <ApiTable
-            title="Options"
-            data={[
-              {
-                name: 'shortcuts',
-                type: 'ShortcutConfig[]',
-                required: true,
-                default: '[]',
-                description: 'Array of keyboard shortcut configurations'
-              },
-              {
-                name: 'enabled',
-                type: 'boolean',
-                default: 'true',
-                description: 'Enable or disable all shortcuts globally'
-              },
-              {
-                name: 'preventDefault',
-                type: 'boolean',
-                default: 'true',
-                description: 'Call preventDefault() when shortcuts are triggered'
-              },
-              {
-                name: 'stopPropagation',
-                type: 'boolean',
-                default: 'false',
-                description: 'Call stopPropagation() when shortcuts are triggered'
-              },
-              {
-                name: 'ignoreInputFields',
-                type: 'boolean',
-                default: 'true',
-                description: 'Ignore shortcuts when user is typing in input/textarea'
-              },
-              {
-                name: 'caseSensitive',
-                type: 'boolean',
-                default: 'false',
-                description: 'Make key matching case-sensitive'
-              },
-              {
-                name: 'enableSequences',
-                type: 'boolean',
-                default: 'false',
-                description: 'Enable key sequences (e.g., "g i" for GitHub Issues)'
-              },
-              {
-                name: 'sequenceTimeout',
-                type: 'number',
-                default: '1000',
-                description: 'Timeout in ms between sequence keys'
-              },
-              {
-                name: 'onConflict',
-                type: '(conflicts: Conflict[]) => void',
-                description: 'Callback when shortcut conflicts are detected'
-              }
-            ]}
-          />
-        </section>
-
-        {/* ShortcutConfig Type */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">ShortcutConfig Type</h2>
-          <ApiTable
-            title="ShortcutConfig Properties"
-            data={[
-              {
-                name: 'key',
-                type: 'string | string[]',
-                required: true,
-                description: 'Key or array of keys for the shortcut (e.g., "n", "Enter", ["g", "i"])'
-              },
-              {
-                name: 'modifiers',
-                type: 'Modifier[]',
-                default: '[]',
-                description: 'Modifier keys: "ctrl", "alt", "shift", "meta"'
-              },
-              {
-                name: 'action',
-                type: '(event: KeyboardEvent) => void',
-                required: true,
-                description: 'Function to execute when shortcut is triggered'
-              },
-              {
-                name: 'description',
-                type: 'string',
-                description: 'Human-readable description of the shortcut'
-              },
-              {
-                name: 'id',
-                type: 'string',
-                description: 'Unique identifier for the shortcut (auto-generated if not provided)'
-              },
-              {
-                name: 'enabled',
-                type: 'boolean',
-                default: 'true',
-                description: 'Enable or disable this specific shortcut'
-              },
-              {
-                name: 'group',
-                type: 'string',
-                description: 'Group name for organizing shortcuts'
-              },
-              {
-                name: 'priority',
-                type: 'number',
-                default: '0',
-                description: 'Priority when multiple shortcuts match (higher = first)'
-              },
-              {
-                name: 'allowInInput',
-                type: 'boolean',
-                default: 'false',
-                description: 'Allow shortcut to work in input fields'
-              }
-            ]}
-          />
-        </section>
-
-        {/* Return Values */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Return Values</h2>
-          <ApiTable
-            title="Hook Return Values"
-            data={[
-              {
-                name: 'shortcuts',
-                type: 'ShortcutConfig[]',
-                description: 'Current array of registered shortcuts'
-              },
-              {
-                name: 'addShortcut',
-                type: '(shortcut: ShortcutConfig) => void',
-                description: 'Add a new shortcut dynamically'
-              },
-              {
-                name: 'removeShortcut',
-                type: '(id: string) => void',
-                description: 'Remove a shortcut by ID'
-              },
-              {
-                name: 'updateShortcut',
-                type: '(id: string, updates: Partial<ShortcutConfig>) => void',
-                description: 'Update an existing shortcut'
-              },
-              {
-                name: 'clearShortcuts',
-                type: '() => void',
-                description: 'Remove all shortcuts'
-              },
-              {
-                name: 'enabledShortcuts',
-                type: 'ShortcutConfig[]',
-                description: 'Array of currently enabled shortcuts'
-              },
-              {
-                name: 'disableShortcut',
-                type: '(id: string) => void',
-                description: 'Disable a specific shortcut'
-              },
-              {
-                name: 'enableShortcut',
-                type: '(id: string) => void',
-                description: 'Enable a specific shortcut'
-              },
-              {
-                name: 'getConflicts',
-                type: '() => Conflict[]',
-                description: 'Get array of conflicting shortcuts'
-              }
-            ]}
-          />
-        </section>
-
-        {/* Modifier Keys */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Modifier Keys</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            The hook automatically handles OS differences for modifier keys:
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <h3 className="font-semibold mb-3">macOS</h3>
-              <ul className="space-y-2 text-sm">
-                <li><code>ctrl</code> → <kbd>⌃ Control</kbd></li>
-                <li><code>alt</code> → <kbd>⌥ Option</kbd></li>
-                <li><code>shift</code> → <kbd>⇧ Shift</kbd></li>
-                <li><code>meta</code> → <kbd>⌘ Command</kbd></li>
-              </ul>
-            </div>
-
-            <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <h3 className="font-semibold mb-3">Windows/Linux</h3>
-              <ul className="space-y-2 text-sm">
-                <li><code>ctrl</code> → <kbd>Ctrl</kbd></li>
-                <li><code>alt</code> → <kbd>Alt</kbd></li>
-                <li><code>shift</code> → <kbd>Shift</kbd></li>
-                <li><code>meta</code> → <kbd>⊞ Win</kbd> / <kbd>Super</kbd></li>
-              </ul>
-            </div>
-          </div>
-
-          <LiveDemo
-            title="Cross-Platform Modifier Keys"
-            code={`import React, { useState } from 'react'
-import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-export default function ModifierKeysExample() {
-  const [triggered, setTriggered] = useState('')
-
-  useKeyboardShortcuts({
-    shortcuts: [
-      {
-        key: 'b',
-        modifiers: ['ctrl'],
-        description: 'Bold text',
-        action: () => {
-          setTriggered('Bold (Ctrl+B / ⌘B)')
-          setTimeout(() => setTriggered(''), 2000)
-        }
-      },
-      {
-        key: 'i',
-        modifiers: ['ctrl'],
-        description: 'Italic text',
-        action: () => {
-          setTriggered('Italic (Ctrl+I / ⌘I)')
-          setTimeout(() => setTriggered(''), 2000)
-        }
-      },
-      {
-        key: 'k',
-        modifiers: ['ctrl', 'shift'],
-        description: 'Insert link',
-        action: () => {
-          setTriggered('Link (Ctrl+Shift+K / ⌘⇧K)')
-          setTimeout(() => setTriggered(''), 2000)
-        }
-      },
-      {
-        key: 'z',
-        modifiers: ['ctrl', 'shift'],
-        description: 'Redo',
-        action: () => {
-          setTriggered('Redo (Ctrl+Shift+Z / ⌘⇧Z)')
-          setTimeout(() => setTriggered(''), 2000)
-        }
-      }
-    ]
-  })
-
-  return (
-    <div className="space-y-4">
-      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <h3 className="font-semibold mb-2">Text Formatting Shortcuts:</h3>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-          These work the same on Mac (⌘) and Windows/Linux (Ctrl)
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Hook</span>
+        <h1>useKeyboardShortcuts</h1>
+        <p className="docs-lead">
+          Manage keyboard shortcuts with support for key combinations, sequences, and scoped contexts.
         </p>
-        <ul className="space-y-1 text-sm">
-          <li><kbd>Ctrl/⌘</kbd> + <kbd>B</kbd> - Bold</li>
-          <li><kbd>Ctrl/⌘</kbd> + <kbd>I</kbd> - Italic</li>
-          <li><kbd>Ctrl/⌘</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd> - Insert Link</li>
-          <li><kbd>Ctrl/⌘</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd> - Redo</li>
-        </ul>
       </div>
 
-      {triggered && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 rounded-lg font-semibold animate-fadeIn">
-          ✓ {triggered}
-        </div>
-      )}
+      <section className="docs-section">
+        <h2>Overview</h2>
+        <p>
+          The <code>useKeyboardShortcuts</code> hook provides a declarative way to handle keyboard shortcuts
+          in your chat application. It supports single keys, key combinations (like Cmd+K), key sequences
+          (like g then i), and scoped contexts to prevent conflicts.
+        </p>
+      </section>
 
-      <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
-        <textarea
-          className="w-full h-32 p-3 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Type here and try the shortcuts above..."
-        />
-      </div>
-    </div>
-  )
-}`}
-            dependencies={{
-              '@clarity-chat/react': 'latest'
-            }}
-            height="550px"
-          />
-        </section>
+      <section className="docs-section">
+        <h2>Basic Usage</h2>
+        <LiveDemo
+          title="Basic Keyboard Shortcuts"
+          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
 
-        {/* Key Sequences */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Key Sequences</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Enable multi-key sequences like GitHub's "g i" (go to issues) or "g p" (go to pull requests):
-          </p>
-
-          <Callout type="info" className="mb-6">
-            Set <code>enableSequences: true</code> to activate sequence support. Sequences must be completed 
-            within the <code>sequenceTimeout</code> (default 1000ms).
-          </Callout>
-
-          <LiveDemo
-            title="Key Sequences (GitHub-style)"
-            code={`import React, { useState } from 'react'
-import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-export default function KeySequencesExample() {
-  const [currentPage, setCurrentPage] = useState('Dashboard')
-  const [sequence, setSequence] = useState('')
+function ChatWithShortcuts() {
+  const [messages, setMessages] = React.useState([])
+  const [status, setStatus] = React.useState('Ready')
 
   useKeyboardShortcuts({
-    shortcuts: [
-      {
-        key: ['g', 'h'],
-        description: 'Go to home',
-        action: () => {
-          setCurrentPage('Home')
-          setSequence('g h')
-          setTimeout(() => setSequence(''), 2000)
-        }
-      },
-      {
-        key: ['g', 'c'],
-        description: 'Go to conversations',
-        action: () => {
-          setCurrentPage('Conversations')
-          setSequence('g c')
-          setTimeout(() => setSequence(''), 2000)
-        }
-      },
-      {
-        key: ['g', 's'],
-        description: 'Go to settings',
-        action: () => {
-          setCurrentPage('Settings')
-          setSequence('g s')
-          setTimeout(() => setSequence(''), 2000)
-        }
-      },
-      {
-        key: ['g', 'n'],
-        description: 'Go to notifications',
-        action: () => {
-          setCurrentPage('Notifications')
-          setSequence('g n')
-          setTimeout(() => setSequence(''), 2000)
-        }
-      },
-      {
-        key: ['c'],
-        description: 'Create new conversation',
-        action: () => {
-          setCurrentPage('New Conversation')
-          setSequence('c')
-          setTimeout(() => setSequence(''), 2000)
-        }
-      }
-    ],
-    enableSequences: true,
-    sequenceTimeout: 1000
+    'cmd+k': () => {
+      setStatus('Search triggered')
+    },
+    'cmd+n': () => {
+      setStatus('New message created')
+    },
+    'esc': () => {
+      setStatus('Escaped')
+    },
+    'ctrl+shift+d': () => {
+      setStatus('Debug panel opened')
+    }
   })
 
   return (
-    <div className="space-y-4">
-      <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg">
-        <h2 className="text-2xl font-bold mb-2">{currentPage}</h2>
-        {sequence && (
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            Triggered by: <kbd className="px-2 py-1 bg-white dark:bg-slate-800 border rounded">{sequence}</kbd>
-          </p>
+    <div className="space-y-4 p-4 border rounded-lg">
+      <h3 className="font-semibold">Keyboard Shortcuts Demo</h3>
+      <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
+        <p className="text-sm font-mono">Status: {status}</p>
+      </div>
+      <div className="space-y-2 text-sm">
+        <div><kbd>Cmd+K</kbd> - Open search</div>
+        <div><kbd>Cmd+N</kbd> - New message</div>
+        <div><kbd>Esc</kbd> - Escape</div>
+        <div><kbd>Ctrl+Shift+D</kbd> - Debug panel</div>
+      </div>
+    </div>
+  )
+}
+
+export default ChatWithShortcuts`}
+          height="400px"
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Parameters</h2>
+        <ApiTable
+          title="useKeyboardShortcuts(config)"
+          data={shortcutConfig}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Return Value</h2>
+        <ApiTable
+          title="Return Value"
+          data={returnValue}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Key Sequences</h2>
+        <p>
+          Support for multi-key sequences like Vim or Gmail shortcuts. Define sequences with the <code>then</code> keyword.
+        </p>
+        <LiveDemo
+          title="Key Sequences"
+          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
+
+function ChatWithSequences() {
+  const [action, setAction] = React.useState('None')
+
+  useKeyboardShortcuts({
+    'g then i': () => {
+      setAction('Go to inbox')
+    },
+    'g then s': () => {
+      setAction('Go to sent')
+    },
+    'g then d': () => {
+      setAction('Go to drafts')
+    },
+    '? then ?': () => {
+      setAction('Show help')
+    }
+  }, {
+    sequenceTimeout: 1000 // 1 second timeout between keys
+  })
+
+  return (
+    <div className="space-y-4 p-4 border rounded-lg">
+      <h3 className="font-semibold">Vim-style Sequences</h3>
+      <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded">
+        <p className="text-sm font-mono">Last Action: {action}</p>
+      </div>
+      <div className="space-y-2 text-sm">
+        <div><kbd>g</kbd> then <kbd>i</kbd> - Go to inbox</div>
+        <div><kbd>g</kbd> then <kbd>s</kbd> - Go to sent</div>
+        <div><kbd>g</kbd> then <kbd>d</kbd> - Go to drafts</div>
+        <div><kbd>?</kbd> then <kbd>?</kbd> - Show help</div>
+      </div>
+    </div>
+  )
+}
+
+export default ChatWithSequences`}
+          height="400px"
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Scoped Shortcuts</h2>
+        <p>
+          Use scopes to enable/disable shortcuts based on context. This prevents conflicts when the same
+          key has different meanings in different parts of your app.
+        </p>
+        <LiveDemo
+          title="Scoped Shortcuts"
+          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
+
+function ChatWithScopes() {
+  const [mode, setMode] = React.useState('normal')
+  const [status, setStatus] = React.useState('Normal mode')
+
+  // Global shortcuts (always active)
+  useKeyboardShortcuts({
+    'cmd+k': () => setStatus('Search (global)'),
+    'esc': () => {
+      setMode('normal')
+      setStatus('Exited to normal mode')
+    }
+  })
+
+  // Normal mode shortcuts
+  useKeyboardShortcuts({
+    'i': () => {
+      setMode('insert')
+      setStatus('Entered insert mode')
+    },
+    'v': () => {
+      setMode('visual')
+      setStatus('Entered visual mode')
+    }
+  }, {
+    enabled: mode === 'normal',
+    scoped: true
+  })
+
+  // Insert mode shortcuts
+  useKeyboardShortcuts({
+    'cmd+s': () => setStatus('Saved (insert mode)')
+  }, {
+    enabled: mode === 'insert',
+    scoped: true
+  })
+
+  // Visual mode shortcuts
+  useKeyboardShortcuts({
+    'd': () => setStatus('Deleted selection (visual mode)'),
+    'y': () => setStatus('Yanked selection (visual mode)')
+  }, {
+    enabled: mode === 'visual',
+    scoped: true
+  })
+
+  return (
+    <div className="space-y-4 p-4 border rounded-lg">
+      <h3 className="font-semibold">Modal Editing (Vim-style)</h3>
+      <div className="flex items-center gap-3 mb-3">
+        <span className="text-sm font-medium">Current Mode:</span>
+        <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 rounded font-mono text-sm">
+          {mode}
+        </span>
+      </div>
+      <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded">
+        <p className="text-sm font-mono">{status}</p>
+      </div>
+      <div className="space-y-3">
+        <div>
+          <p className="font-semibold text-sm mb-1">Global (always active):</p>
+          <div className="text-sm space-y-1 ml-4">
+            <div><kbd>Cmd+K</kbd> - Search</div>
+            <div><kbd>Esc</kbd> - Exit to normal mode</div>
+          </div>
+        </div>
+        <div>
+          <p className="font-semibold text-sm mb-1">Normal mode:</p>
+          <div className="text-sm space-y-1 ml-4">
+            <div><kbd>i</kbd> - Enter insert mode</div>
+            <div><kbd>v</kbd> - Enter visual mode</div>
+          </div>
+        </div>
+        <div>
+          <p className="font-semibold text-sm mb-1">Insert mode:</p>
+          <div className="text-sm space-y-1 ml-4">
+            <div><kbd>Cmd+S</kbd> - Save</div>
+          </div>
+        </div>
+        <div>
+          <p className="font-semibold text-sm mb-1">Visual mode:</p>
+          <div className="text-sm space-y-1 ml-4">
+            <div><kbd>d</kbd> - Delete selection</div>
+            <div><kbd>y</kbd> - Yank selection</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ChatWithScopes`}
+          height="600px"
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Preventing Default Behavior</h2>
+        <p>
+          Control whether the browser's default behavior should be prevented for each shortcut.
+        </p>
+        <LiveDemo
+          title="Prevent Default"
+          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
+
+function ChatWithPreventDefault() {
+  const [log, setLog] = React.useState([])
+
+  const addLog = (msg) => {
+    setLog(prev => [...prev, \`[\${new Date().toLocaleTimeString()}] \${msg}\`].slice(-5))
+  }
+
+  useKeyboardShortcuts({
+    // Prevent browser's print dialog
+    'cmd+p': (e) => {
+      addLog('Print prevented, showing custom print dialog')
+      return false // preventDefault
+    },
+    // Prevent browser's save dialog
+    'cmd+s': (e) => {
+      addLog('Save prevented, saving to cloud instead')
+      return false
+    },
+    // Allow default behavior (browser bookmark)
+    'cmd+d': (e) => {
+      addLog('Bookmark shortcut (default allowed)')
+      return true // allow default
+    },
+    // Custom action without preventing default
+    'cmd+f': (e) => {
+      addLog('Find action (default allowed)')
+      // undefined = don't prevent default
+    }
+  })
+
+  return (
+    <div className="space-y-4 p-4 border rounded-lg">
+      <h3 className="font-semibold">Prevent Default Control</h3>
+      <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded">
+        <p className="text-xs font-semibold mb-2">Event Log:</p>
+        {log.length === 0 ? (
+          <p className="text-xs text-gray-500">Try the shortcuts below...</p>
+        ) : (
+          <div className="space-y-1">
+            {log.map((entry, i) => (
+              <div key={i} className="text-xs font-mono">{entry}</div>
+            ))}
+          </div>
         )}
       </div>
+      <div className="space-y-2 text-sm">
+        <div><kbd>Cmd+P</kbd> - Custom print (prevents default)</div>
+        <div><kbd>Cmd+S</kbd> - Cloud save (prevents default)</div>
+        <div><kbd>Cmd+D</kbd> - Bookmark (allows default)</div>
+        <div><kbd>Cmd+F</kbd> - Find (allows default)</div>
+      </div>
+    </div>
+  )
+}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-          <h3 className="font-semibold mb-2">Navigation Shortcuts:</h3>
-          <ul className="space-y-1 text-sm">
-            <li><kbd>g</kbd> then <kbd>h</kbd> - Go to Home</li>
-            <li><kbd>g</kbd> then <kbd>c</kbd> - Go to Conversations</li>
-            <li><kbd>g</kbd> then <kbd>s</kbd> - Go to Settings</li>
-            <li><kbd>g</kbd> then <kbd>n</kbd> - Go to Notifications</li>
-          </ul>
+export default ChatWithPreventDefault`}
+          height="450px"
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Dynamic Shortcuts</h2>
+        <p>
+          Enable or disable shortcuts dynamically based on application state.
+        </p>
+        <LiveDemo
+          title="Dynamic Shortcuts"
+          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
+
+function ChatWithDynamicShortcuts() {
+  const [isEditing, setIsEditing] = React.useState(false)
+  const [isFocused, setIsFocused] = React.useState(false)
+  const [message, setMessage] = React.useState('')
+
+  // Only active when NOT editing
+  useKeyboardShortcuts({
+    'e': () => setIsEditing(true),
+    'n': () => setMessage('New message'),
+    'd': () => setMessage('Deleted')
+  }, {
+    enabled: !isEditing,
+    preventDefault: true
+  })
+
+  // Only active when editing
+  useKeyboardShortcuts({
+    'cmd+enter': () => {
+      setIsEditing(false)
+      setMessage(\`Sent: \${message}\`)
+    },
+    'esc': () => {
+      setIsEditing(false)
+      setMessage('Cancelled')
+    }
+  }, {
+    enabled: isEditing
+  })
+
+  return (
+    <div className="space-y-4 p-4 border rounded-lg">
+      <h3 className="font-semibold">Dynamic Shortcuts</h3>
+      
+      <div className="flex items-center gap-3">
+        <span className="text-sm">Status:</span>
+        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">
+          {isEditing ? '✏️ Editing' : '👀 Viewing'}
+        </span>
+      </div>
+
+      {isEditing ? (
+        <div className="space-y-3">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            placeholder="Type your message..."
+            className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+          />
+          <div className="text-sm space-y-1">
+            <div><kbd>Cmd+Enter</kbd> - Send message</div>
+            <div><kbd>Esc</kbd> - Cancel editing</div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded">
+            <p className="text-sm">{message || 'No message'}</p>
+          </div>
+          <div className="text-sm space-y-1">
+            <div><kbd>e</kbd> - Start editing</div>
+            <div><kbd>n</kbd> - New message</div>
+            <div><kbd>d</kbd> - Delete</div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default ChatWithDynamicShortcuts`}
+          height="500px"
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Input Field Handling</h2>
+        <p>
+          By default, shortcuts are disabled when typing in input fields. You can customize this behavior.
+        </p>
+        <LiveDemo
+          title="Input Field Handling"
+          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
+
+function ChatWithInputHandling() {
+  const [message, setMessage] = React.useState('')
+  const [log, setLog] = React.useState([])
+
+  const addLog = (msg) => {
+    setLog(prev => [...prev, msg].slice(-3))
+  }
+
+  // Disabled in input fields (default)
+  useKeyboardShortcuts({
+    's': () => addLog('S pressed (outside input)'),
+  }, {
+    enableInInput: false // default
+  })
+
+  // Enabled even in input fields
+  useKeyboardShortcuts({
+    'cmd+k': () => addLog('Search triggered (works in input)'),
+    'esc': () => {
+      addLog('Escaped')
+      setMessage('')
+    }
+  }, {
+    enableInInput: true
+  })
+
+  // Only modifiers work in input
+  useKeyboardShortcuts({
+    'cmd+b': () => addLog('Bold (modifier in input)'),
+    'cmd+i': () => addLog('Italic (modifier in input)')
+  }, {
+    enableInInput: 'modifiers-only' // custom option
+  })
+
+  return (
+    <div className="space-y-4 p-4 border rounded-lg">
+      <h3 className="font-semibold">Input Field Handling</h3>
+      
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            Message Input:
+          </label>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type here and try shortcuts..."
+            className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
-        <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-          <h3 className="font-semibold mb-2">Action Shortcuts:</h3>
-          <ul className="space-y-1 text-sm">
-            <li><kbd>c</kbd> - Create new conversation</li>
-          </ul>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
-            Type sequences quickly (within 1 second)
-          </p>
+        <div className="bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded">
+          <p className="text-xs font-semibold mb-2">Shortcut Log:</p>
+          {log.length === 0 ? (
+            <p className="text-xs text-gray-500">Try shortcuts...</p>
+          ) : (
+            <div className="space-y-1">
+              {log.map((entry, i) => (
+                <div key={i} className="text-xs font-mono">{entry}</div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="text-sm space-y-1">
+          <div><kbd>s</kbd> - Only works outside input</div>
+          <div><kbd>Cmd+K</kbd> - Works everywhere</div>
+          <div><kbd>Esc</kbd> - Clear input (works everywhere)</div>
+          <div><kbd>Cmd+B</kbd> / <kbd>Cmd+I</kbd> - Works in input (modifiers)</div>
         </div>
       </div>
     </div>
   )
-}`}
-            dependencies={{
-              '@clarity-chat/react': 'latest'
-            }}
-            height="550px"
-          />
-        </section>
+}
 
-        {/* Dynamic Shortcuts */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Dynamic Shortcuts</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Add, remove, and update shortcuts dynamically at runtime:
-          </p>
+export default ChatWithInputHandling`}
+          height="550px"
+        />
+      </section>
 
-          <LiveDemo
-            title="Dynamic Shortcut Management"
-            code={`import React, { useState } from 'react'
-import { useKeyboardShortcuts } from '@clarity-chat/react'
+      <section className="docs-section">
+        <h2>Shortcut Help Panel</h2>
+        <p>
+          Build an interactive help panel that displays all available shortcuts.
+        </p>
+        <LiveDemo
+          title="Shortcut Help Panel"
+          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
 
-export default function DynamicShortcutsExample() {
-  const [logs, setLogs] = useState([])
-  const [customKey, setCustomKey] = useState('m')
+function ChatWithHelpPanel() {
+  const [showHelp, setShowHelp] = React.useState(false)
+  const [action, setAction] = React.useState('None')
 
-  const addLog = (message) => {
-    setLogs(prev => [...prev, \`[\${new Date().toLocaleTimeString()}] \${message}\`])
-  }
+  const shortcuts = [
+    { key: '?', description: 'Show/hide this help', category: 'General' },
+    { key: 'cmd+k', description: 'Search messages', category: 'Navigation' },
+    { key: 'cmd+n', description: 'New message', category: 'Actions' },
+    { key: 'cmd+/', description: 'Toggle command palette', category: 'Actions' },
+    { key: 'j', description: 'Next message', category: 'Navigation' },
+    { key: 'k', description: 'Previous message', category: 'Navigation' },
+    { key: 'r', description: 'Reply', category: 'Actions' },
+    { key: 'e', description: 'Edit', category: 'Actions' },
+    { key: 'd', description: 'Delete', category: 'Actions' },
+    { key: 'esc', description: 'Close dialog', category: 'General' }
+  ]
 
-  const {
-    shortcuts,
-    addShortcut,
-    removeShortcut,
-    enableShortcut,
-    disableShortcut
-  } = useKeyboardShortcuts({
-    shortcuts: [
-      {
-        id: 'help',
-        key: '?',
-        description: 'Show help',
-        action: () => addLog('Help shortcut triggered')
-      },
-      {
-        id: 'save',
-        key: 's',
-        modifiers: ['ctrl'],
-        description: 'Save',
-        action: () => addLog('Save shortcut triggered')
-      }
-    ]
+  useKeyboardShortcuts({
+    '?': () => setShowHelp(!showHelp),
+    'cmd+k': () => setAction('Search'),
+    'cmd+n': () => setAction('New message'),
+    'cmd+/': () => setAction('Command palette'),
+    'j': () => setAction('Next message'),
+    'k': () => setAction('Previous message'),
+    'r': () => setAction('Reply'),
+    'e': () => setAction('Edit'),
+    'd': () => setAction('Delete'),
+    'esc': () => {
+      setShowHelp(false)
+      setAction('Closed')
+    }
   })
 
-  const handleAddCustom = () => {
-    if (!customKey) return
-    
-    addShortcut({
-      id: \`custom-\${customKey}\`,
-      key: customKey,
-      description: \`Custom shortcut: \${customKey}\`,
-      action: () => addLog(\`Custom shortcut '\${customKey}' triggered\`)
-    })
-    addLog(\`Added shortcut: \${customKey}\`)
-  }
-
-  const handleRemove = (id) => {
-    removeShortcut(id)
-    addLog(\`Removed shortcut: \${id}\`)
-  }
-
-  const handleToggle = (id, enabled) => {
-    if (enabled) {
-      disableShortcut(id)
-      addLog(\`Disabled shortcut: \${id}\`)
-    } else {
-      enableShortcut(id)
-      addLog(\`Enabled shortcut: \${id}\`)
-    }
-  }
+  const groupedShortcuts = shortcuts.reduce((acc, shortcut) => {
+    if (!acc[shortcut.category]) acc[shortcut.category] = []
+    acc[shortcut.category].push(shortcut)
+    return acc
+  }, {})
 
   return (
-    <div className="space-y-4">
-      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <h3 className="font-semibold mb-3">Add Custom Shortcut:</h3>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={customKey}
-            onChange={(e) => setCustomKey(e.target.value.toLowerCase())}
-            placeholder="Enter key (a-z)"
-            maxLength={1}
-            className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 flex-1"
-          />
-          <button
-            onClick={handleAddCustom}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
-          >
-            Add Shortcut
-          </button>
-        </div>
+    <div className="space-y-4 p-4 border rounded-lg">
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold">Keyboard Shortcuts</h3>
+        <button
+          onClick={() => setShowHelp(!showHelp)}
+          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+        >
+          {showHelp ? 'Hide' : 'Show'} Help
+        </button>
       </div>
 
-      <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-        <h3 className="font-semibold mb-3">Registered Shortcuts:</h3>
-        <div className="space-y-2">
-          {shortcuts.map(shortcut => (
-            <div
-              key={shortcut.id}
-              className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700"
+      <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded">
+        <p className="text-sm">Last Action: <span className="font-mono">{action}</span></p>
+      </div>
+
+      {showHelp && (
+        <div className="border rounded-lg p-4 bg-white dark:bg-gray-800 shadow-lg">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-semibold">Keyboard Shortcuts</h4>
+            <button
+              onClick={() => setShowHelp(false)}
+              className="text-gray-500 hover:text-gray-700"
             >
-              <div className="flex-1">
-                <div className="font-mono text-sm">
-                  {shortcut.modifiers?.map(m => (
-                    <kbd key={m} className="px-2 py-1 bg-slate-100 dark:bg-slate-800 border rounded mr-1">
-                      {m}
+              ✕
+            </button>
+          </div>
+          
+          {Object.entries(groupedShortcuts).map(([category, items]) => (
+            <div key={category} className="mb-4 last:mb-0">
+              <h5 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                {category}
+              </h5>
+              <div className="space-y-2">
+                {items.map((shortcut) => (
+                  <div key={shortcut.key} className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {shortcut.description}
+                    </span>
+                    <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono">
+                      {shortcut.key}
                     </kbd>
-                  ))}
-                  <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-800 border rounded">
-                    {shortcut.key}
-                  </kbd>
-                </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  {shortcut.description}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleToggle(shortcut.id, shortcut.enabled !== false)}
-                  className={\`px-3 py-1 text-xs rounded \${
-                    shortcut.enabled !== false
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300'
-                      : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-                  }\`}
-                >
-                  {shortcut.enabled !== false ? 'Enabled' : 'Disabled'}
-                </button>
-                <button
-                  onClick={() => handleRemove(shortcut.id)}
-                  className="px-3 py-1 text-xs bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-900/30"
-                >
-                  Remove
-                </button>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
         </div>
-      </div>
+      )}
 
-      <div className="p-4 bg-slate-900 dark:bg-slate-950 rounded-lg">
-        <h3 className="font-semibold text-slate-50 mb-2">Activity Log:</h3>
-        <div className="space-y-1 max-h-40 overflow-y-auto">
-          {logs.length === 0 ? (
-            <p className="text-sm text-slate-400">No activity yet. Try pressing some shortcuts!</p>
-          ) : (
-            logs.map((log, i) => (
-              <div key={i} className="text-xs text-slate-300 font-mono">
-                {log}
-              </div>
-            ))
-          )}
-        </div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        Press <kbd>?</kbd> to toggle help panel
       </div>
     </div>
   )
-}`}
-            dependencies={{
-              '@clarity-chat/react': 'latest'
-            }}
-            height="700px"
-          />
-        </section>
+}
 
-        {/* Conflict Detection */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Conflict Detection</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            The hook automatically detects when multiple shortcuts use the same key combination:
-          </p>
-
-          <Callout type="warning" className="mb-6">
-            When conflicts are detected, the shortcut with the highest <code>priority</code> will be executed. 
-            Use the <code>onConflict</code> callback to handle conflicts programmatically.
-          </Callout>
-
-          <LiveDemo
-            title="Conflict Detection & Priority"
-            code={`import React, { useState } from 'react'
-import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-export default function ConflictDetectionExample() {
-  const [conflicts, setConflicts] = useState([])
-  const [triggered, setTriggered] = useState('')
-
-  const { getConflicts } = useKeyboardShortcuts({
-    shortcuts: [
-      {
-        id: 'save-low',
-        key: 's',
-        modifiers: ['ctrl'],
-        description: 'Save (Low Priority)',
-        priority: 0,
-        action: () => {
-          setTriggered('Save Low Priority')
-          setTimeout(() => setTriggered(''), 2000)
-        }
-      },
-      {
-        id: 'save-high',
-        key: 's',
-        modifiers: ['ctrl'],
-        description: 'Save (High Priority)',
-        priority: 10,
-        action: () => {
-          setTriggered('Save High Priority')
-          setTimeout(() => setTriggered(''), 2000)
-        }
-      },
-      {
-        id: 'submit',
-        key: 'Enter',
-        modifiers: ['ctrl'],
-        description: 'Submit form',
-        action: () => {
-          setTriggered('Form submitted')
-          setTimeout(() => setTriggered(''), 2000)
-        }
-      }
-    ],
-    onConflict: (detectedConflicts) => {
-      setConflicts(detectedConflicts)
-    }
-  })
-
-  const checkConflicts = () => {
-    const detected = getConflicts()
-    setConflicts(detected)
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <h3 className="font-semibold mb-2">Test Shortcuts:</h3>
-        <ul className="space-y-1 text-sm">
-          <li><kbd>Ctrl</kbd> + <kbd>S</kbd> - Save (conflicts detected!)</li>
-          <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> - Submit (no conflict)</li>
-        </ul>
-        <button
-          onClick={checkConflicts}
-          className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-semibold"
-        >
-          Check for Conflicts
-        </button>
-      </div>
-
-      {triggered && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 rounded-lg font-semibold">
-          ✓ {triggered}
-          <p className="text-sm font-normal mt-1">
-            The high-priority shortcut was executed because of the conflict.
-          </p>
-        </div>
-      )}
-
-      {conflicts.length > 0 && (
-        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-          <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-3">
-            ⚠️ Conflicts Detected ({conflicts.length})
-          </h3>
-          <div className="space-y-3">
-            {conflicts.map((conflict, i) => (
-              <div key={i} className="p-3 bg-white dark:bg-slate-900 rounded border border-yellow-200 dark:border-yellow-800">
-                <div className="font-mono text-sm mb-2">
-                  {conflict.modifiers?.map(m => (
-                    <kbd key={m} className="px-2 py-1 bg-slate-100 dark:bg-slate-800 border rounded mr-1">
-                      {m}
-                    </kbd>
-                  ))}
-                  <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-800 border rounded">
-                    {conflict.key}
-                  </kbd>
-                </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                  Conflicting shortcuts:
-                </p>
-                <ul className="space-y-1 text-xs">
-                  {conflict.shortcuts.map(s => (
-                    <li key={s.id} className="flex items-center justify-between">
-                      <span>{s.description}</span>
-                      <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded">
-                        Priority: {s.priority || 0}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {conflicts.length === 0 && (
-        <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg text-center text-slate-600 dark:text-slate-400">
-          Click "Check for Conflicts" to detect conflicting shortcuts
-        </div>
-      )}
-    </div>
-  )
-}`}
-            dependencies={{
-              '@clarity-chat/react': 'latest'
-            }}
-            height="650px"
-          />
-        </section>
-
-        {/* Grouped Shortcuts */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Grouped Shortcuts</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Organize shortcuts into logical groups for better organization and documentation:
-          </p>
-
-          <LiveDemo
-            title="Grouped Shortcuts (Help Dialog)"
-            code={`import React, { useState } from 'react'
-import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-export default function GroupedShortcutsExample() {
-  const [showHelp, setShowHelp] = useState(false)
-  const [action, setAction] = useState('')
-
-  const { shortcuts } = useKeyboardShortcuts({
-    shortcuts: [
-      // Navigation group
-      {
-        key: 'h',
-        modifiers: ['ctrl'],
-        description: 'Go to home',
-        group: 'Navigation',
-        action: () => {
-          setAction('Navigated to Home')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      {
-        key: 'ArrowLeft',
-        modifiers: ['ctrl'],
-        description: 'Go back',
-        group: 'Navigation',
-        action: () => {
-          setAction('Navigated back')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      // Editing group
-      {
-        key: 'b',
-        modifiers: ['ctrl'],
-        description: 'Bold text',
-        group: 'Editing',
-        action: () => {
-          setAction('Text bolded')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      {
-        key: 'i',
-        modifiers: ['ctrl'],
-        description: 'Italic text',
-        group: 'Editing',
-        action: () => {
-          setAction('Text italicized')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      // Actions group
-      {
-        key: 'Enter',
-        modifiers: ['ctrl'],
-        description: 'Send message',
-        group: 'Actions',
-        action: () => {
-          setAction('Message sent')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      {
-        key: 'n',
-        modifiers: ['ctrl'],
-        description: 'New conversation',
-        group: 'Actions',
-        action: () => {
-          setAction('New conversation created')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      // General group
-      {
-        key: '?',
-        description: 'Show keyboard shortcuts',
-        group: 'General',
-        action: () => setShowHelp(!showHelp)
-      },
-      {
-        key: 'Escape',
-        description: 'Close dialog',
-        group: 'General',
-        action: () => setShowHelp(false)
-      }
-    ]
-  })
-
-  // Group shortcuts
-  const groupedShortcuts = shortcuts.reduce((acc, shortcut) => {
-    const group = shortcut.group || 'Other'
-    if (!acc[group]) acc[group] = []
-    acc[group].push(shortcut)
-    return acc
-  }, {})
-
-  return (
-    <div className="space-y-4">
-      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <p className="text-sm mb-2">
-          Press <kbd className="px-2 py-1 bg-white dark:bg-slate-800 border rounded">?</kbd> to show keyboard shortcuts
-        </p>
-      </div>
-
-      {action && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 rounded-lg font-semibold">
-          ✓ {action}
-        </div>
-      )}
-
-      {showHelp && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-slate-900 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Keyboard Shortcuts</h2>
-              <button
-                onClick={() => setShowHelp(false)}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {Object.entries(groupedShortcuts).map(([group, groupShortcuts]) => (
-                <div key={group}>
-                  <h3 className="text-lg font-semibold mb-3 text-blue-600 dark:text-blue-400">
-                    {group}
-                  </h3>
-                  <div className="space-y-2">
-                    {groupShortcuts.map(shortcut => (
-                      <div
-                        key={shortcut.id || shortcut.key}
-                        className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded"
-                      >
-                        <span className="text-sm">{shortcut.description}</span>
-                        <div className="font-mono text-sm">
-                          {shortcut.modifiers?.map(m => (
-                            <kbd key={m} className="px-2 py-1 bg-white dark:bg-slate-900 border rounded mr-1">
-                              {m}
-                            </kbd>
-                          ))}
-                          <kbd className="px-2 py-1 bg-white dark:bg-slate-900 border rounded">
-                            {shortcut.key}
-                          </kbd>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="p-4 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
-              <p className="text-sm text-center text-slate-600 dark:text-slate-400">
-                Press <kbd className="px-2 py-1 bg-white dark:bg-slate-900 border rounded">Esc</kbd> or <kbd className="px-2 py-1 bg-white dark:bg-slate-900 border rounded">?</kbd> to close
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
-        <textarea
-          className="w-full h-32 p-3 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Try the keyboard shortcuts..."
+export default ChatWithHelpPanel`}
+          height="700px"
         />
-      </div>
-    </div>
-  )
-}`}
-            dependencies={{
-              '@clarity-chat/react': 'latest'
-            }}
-            height="700px"
-          />
-        </section>
+      </section>
 
-        {/* Input Field Handling */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Input Field Handling</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            By default, shortcuts are disabled when the user is typing in input fields. You can override this behavior:
-          </p>
+      <section className="docs-section">
+        <h2>Advanced Patterns</h2>
+        
+        <h3>Chord Progressions</h3>
+        <p>
+          Chain multiple shortcuts together to create complex interactions.
+        </p>
+        <pre><code>{`// Emacs-style chord progressions
+useKeyboardShortcuts({
+  'ctrl+x then ctrl+c': () => quit(),
+  'ctrl+x then ctrl+s': () => save(),
+  'ctrl+x then ctrl+f': () => openFile(),
+  'ctrl+x then ctrl+b': () => switchBuffer(),
+})
 
-          <LiveDemo
-            title="Allow Shortcuts in Input Fields"
-            code={`import React, { useState } from 'react'
-import { useKeyboardShortcuts } from '@clarity-chat/react'
+// Gmail-style navigation
+useKeyboardShortcuts({
+  'g then i': () => goToInbox(),
+  'g then s': () => goToSent(),
+  'g then t': () => goToStarred(),
+  'g then d': () => goToDrafts(),
+})`}</code></pre>
 
-export default function InputHandlingExample() {
-  const [action, setAction] = useState('')
-  const [text, setText] = useState('')
+        <h3>Conditional Shortcuts</h3>
+        <p>
+          Enable shortcuts only when specific conditions are met.
+        </p>
+        <pre><code>{`function ChatWithConditionalShortcuts() {
+  const [hasSelection, setHasSelection] = useState(false)
+  const [isOnline, setIsOnline] = useState(true)
+
+  // Only when text is selected
+  useKeyboardShortcuts({
+    'cmd+c': () => copy(),
+    'cmd+x': () => cut(),
+    'delete': () => deleteSelection()
+  }, {
+    enabled: hasSelection
+  })
+
+  // Only when online
+  useKeyboardShortcuts({
+    'cmd+s': () => saveToCloud(),
+    'cmd+shift+s': () => syncNow()
+  }, {
+    enabled: isOnline
+  })
+
+  return <Chat />
+}`}</code></pre>
+
+        <h3>Priority and Conflicts</h3>
+        <p>
+          Handle conflicts when multiple components register the same shortcut.
+        </p>
+        <pre><code>{`// Lower priority (runs first)
+useKeyboardShortcuts({
+  'cmd+k': () => globalSearch()
+}, {
+  priority: 1
+})
+
+// Higher priority (can override)
+useKeyboardShortcuts({
+  'cmd+k': (e) => {
+    if (shouldUseLocalSearch) {
+      localSearch()
+      return false // stop propagation
+    }
+    return true // allow lower priority
+  }
+}, {
+  priority: 10
+})`}</code></pre>
+
+        <h3>Platform-Specific Shortcuts</h3>
+        <p>
+          Automatically adapt shortcuts for different operating systems.
+        </p>
+        <pre><code>{`useKeyboardShortcuts({
+  'mod+k': () => search(), // Cmd on Mac, Ctrl on Windows/Linux
+  'mod+shift+p': () => commandPalette(),
+  'alt+left': () => goBack(),
+  'alt+right': () => goForward()
+}, {
+  autoConvertMod: true // converts 'mod' based on platform
+})`}</code></pre>
+      </section>
+
+      <section className="docs-section">
+        <h2>Integration Examples</h2>
+
+        <h3>With Command Palette</h3>
+        <pre><code>{`import { useKeyboardShortcuts } from '@clarity-chat/react'
+import { CommandPalette } from '@clarity-chat/react'
+
+function ChatWithCommandPalette() {
+  const [isOpen, setIsOpen] = useState(false)
 
   useKeyboardShortcuts({
-    shortcuts: [
-      {
-        key: 'Enter',
-        modifiers: ['ctrl'],
-        description: 'Send message (works in input)',
-        allowInInput: true, // Allow in input fields
-        action: () => {
-          setAction(\`Message sent: "\${text}"\`)
-          setText('')
-          setTimeout(() => setAction(''), 3000)
-        }
-      },
-      {
-        key: 's',
-        modifiers: ['ctrl'],
-        description: 'Save draft (works in input)',
-        allowInInput: true,
-        action: () => {
-          setAction(\`Draft saved: "\${text}"\`)
-          setTimeout(() => setAction(''), 3000)
-        }
-      },
-      {
-        key: 'Escape',
-        description: 'Clear input (works in input)',
-        allowInInput: true,
-        action: () => {
-          setText('')
-          setAction('Input cleared')
-          setTimeout(() => setAction(''), 2000)
-        }
-      },
-      {
-        key: 'k',
-        modifiers: ['ctrl'],
-        description: 'Open search (disabled in input)',
-        allowInInput: false, // Default behavior
-        action: () => {
-          setAction('Search opened (only works outside input)')
-          setTimeout(() => setAction(''), 2000)
-        }
-      }
-    ]
+    'cmd+k': () => setIsOpen(true),
+    'cmd+p': () => setIsOpen(true)
   })
 
   return (
-    <div className="space-y-4">
-      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <h3 className="font-semibold mb-2">Try these shortcuts:</h3>
-        <div className="space-y-2 text-sm">
-          <div>
-            <strong>In input field:</strong>
-            <ul className="ml-4 mt-1 space-y-1">
-              <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> - Send message</li>
-              <li><kbd>Ctrl</kbd> + <kbd>S</kbd> - Save draft</li>
-              <li><kbd>Esc</kbd> - Clear input</li>
-            </ul>
-          </div>
-          <div>
-            <strong>Outside input field:</strong>
-            <ul className="ml-4 mt-1 space-y-1">
-              <li><kbd>Ctrl</kbd> + <kbd>K</kbd> - Open search (disabled in input)</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {action && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 rounded-lg font-semibold">
-          ✓ {action}
-        </div>
-      )}
-
-      <div className="p-6 border-2 border-slate-300 dark:border-slate-600 rounded-lg">
-        <label className="block text-sm font-semibold mb-2">
-          Message Input:
-        </label>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="w-full h-32 p-3 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Type here and use Ctrl+Enter to send, Ctrl+S to save, or Esc to clear..."
-        />
-        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-          Shortcuts with <code>allowInInput: true</code> work while typing here
-        </div>
-      </div>
-    </div>
+    <>
+      <ChatWindow />
+      <CommandPalette
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        commands={commands}
+      />
+    </>
   )
-}`}
-            dependencies={{
-              '@clarity-chat/react': 'latest'
-            }}
-            height="650px"
-          />
-        </section>
+}`}</code></pre>
 
-        {/* Complete Chat Example */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Complete Chat Example</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            A comprehensive example showing keyboard shortcuts in a real chat application:
-          </p>
+        <h3>With Modal Dialogs</h3>
+        <pre><code>{`function ChatWithModals() {
+  const [modalStack, setModalStack] = useState([])
 
-          <LiveDemo
-            title="Chat App with Keyboard Shortcuts"
-            code={`import React, { useState, useRef } from 'react'
-import { useKeyboardShortcuts, ChatWindow } from '@clarity-chat/react'
-
-export default function ChatWithShortcutsExample() {
-  const [messages, setMessages] = useState([
-    {
-      id: '1',
-      text: 'Welcome! Try these shortcuts:\\n• Ctrl+K - Search\\n• Ctrl+N - New chat\\n• Ctrl+/ - Toggle sidebar\\n• ? - Show help',
-      sender: { id: 'bot', name: 'Bot' },
-      timestamp: new Date(Date.now() - 60000)
-    }
-  ])
-  const [showHelp, setShowHelp] = useState(false)
-  const [showSearch, setShowSearch] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const inputRef = useRef(null)
-
-  const { shortcuts } = useKeyboardShortcuts({
-    shortcuts: [
-      {
-        key: 'k',
-        modifiers: ['ctrl'],
-        description: 'Open search',
-        group: 'Navigation',
-        action: () => setShowSearch(true)
-      },
-      {
-        key: 'n',
-        modifiers: ['ctrl'],
-        description: 'New conversation',
-        group: 'Actions',
-        action: () => {
-          setMessages([{
-            id: Date.now().toString(),
-            text: 'Started new conversation',
-            sender: { id: 'bot', name: 'Bot' },
-            timestamp: new Date()
-          }])
-        }
-      },
-      {
-        key: '/',
-        modifiers: ['ctrl'],
-        description: 'Toggle sidebar',
-        group: 'View',
-        action: () => setSidebarOpen(!sidebarOpen)
-      },
-      {
-        key: 'f',
-        modifiers: ['ctrl'],
-        description: 'Focus message input',
-        group: 'Navigation',
-        action: () => inputRef.current?.focus()
-      },
-      {
-        key: '?',
-        description: 'Show keyboard shortcuts',
-        group: 'Help',
-        action: () => setShowHelp(!showHelp)
-      },
-      {
-        key: 'Escape',
-        description: 'Close dialogs',
-        group: 'General',
-        action: () => {
-          setShowHelp(false)
-          setShowSearch(false)
-        }
-      }
-    ]
+  // Global shortcuts (always active)
+  useKeyboardShortcuts({
+    'cmd+n': () => openModal('new-message'),
+    'cmd+o': () => openModal('settings')
   })
 
-  const handleSendMessage = (text) => {
-    const newMessage = {
-      id: Date.now().toString(),
-      text,
-      sender: { id: 'user', name: 'You' },
-      timestamp: new Date()
-    }
-    setMessages([...messages, newMessage])
+  // Modal shortcuts (only when modal is open)
+  useKeyboardShortcuts({
+    'esc': () => closeTopModal(),
+    'cmd+enter': () => submitTopModal()
+  }, {
+    enabled: modalStack.length > 0
+  })
 
-    // Bot response
-    setTimeout(() => {
-      const botMessage = {
-        id: (Date.now() + 1).toString(),
-        text: 'Message received! Try more keyboard shortcuts.',
-        sender: { id: 'bot', name: 'Bot' },
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, botMessage])
-    }, 1000)
-  }
+  return <Chat />
+}`}</code></pre>
 
-  const groupedShortcuts = shortcuts.reduce((acc, s) => {
-    const group = s.group || 'Other'
-    if (!acc[group]) acc[group] = []
-    acc[group].push(s)
-    return acc
-  }, {})
+        <h3>With Undo/Redo</h3>
+        <pre><code>{`import { useKeyboardShortcuts } from '@clarity-chat/react'
+import { useUndoRedo } from '@clarity-chat/react'
 
-  return (
-    <div className="flex h-[600px] gap-4">
-      {sidebarOpen && (
-        <div className="w-64 border-r border-slate-200 dark:border-slate-700 p-4">
-          <h3 className="font-semibold mb-3">Conversations</h3>
-          <div className="space-y-2">
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded cursor-pointer">
-              Current Chat
-            </div>
-            <div className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded cursor-pointer text-slate-600 dark:text-slate-400">
-              Previous Chat 1
-            </div>
-            <div className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded cursor-pointer text-slate-600 dark:text-slate-400">
-              Previous Chat 2
-            </div>
-          </div>
+function ChatWithUndoRedo() {
+  const { undo, redo, canUndo, canRedo } = useUndoRedo()
+
+  useKeyboardShortcuts({
+    'cmd+z': () => undo(),
+    'cmd+shift+z': () => redo(),
+    'cmd+y': () => redo() // Alternative redo
+  }, {
+    enabled: canUndo || canRedo
+  })
+
+  return <Chat />
+}`}</code></pre>
+      </section>
+
+      <section className="docs-section">
+        <h2>Best Practices</h2>
+        
+        <Callout type="tip" title="Discoverability">
+          Always provide a way for users to discover available shortcuts. Consider adding:
+          <ul>
+            <li>A help panel (press <kbd>?</kbd> to show)</li>
+            <li>Tooltips with keyboard hints</li>
+            <li>Visual keyboard shortcut indicators next to actions</li>
+          </ul>
+        </Callout>
+
+        <Callout type="warning" title="Avoid Conflicts">
+          Be careful not to override browser or system shortcuts. Common conflicts:
+          <ul>
+            <li><kbd>Cmd+W</kbd> - Close tab (don't override)</li>
+            <li><kbd>Cmd+T</kbd> - New tab (don't override)</li>
+            <li><kbd>Cmd+R</kbd> - Refresh (use with caution)</li>
+            <li><kbd>Cmd+Q</kbd> - Quit app (don't override)</li>
+          </ul>
+        </Callout>
+
+        <Callout type="info" title="Platform Consistency">
+          Follow platform conventions:
+          <ul>
+            <li><strong>macOS:</strong> Use Cmd for primary actions</li>
+            <li><strong>Windows/Linux:</strong> Use Ctrl for primary actions</li>
+            <li><strong>Cross-platform:</strong> Use <code>mod</code> to automatically adapt</li>
+          </ul>
+        </Callout>
+
+        <h3>Naming Conventions</h3>
+        <ul>
+          <li><strong>Lowercase modifiers:</strong> <code>cmd</code>, <code>ctrl</code>, <code>shift</code>, <code>alt</code></li>
+          <li><strong>Use + for combinations:</strong> <code>cmd+k</code>, <code>ctrl+shift+d</code></li>
+          <li><strong>Use "then" for sequences:</strong> <code>g then i</code>, <code>ctrl+x then ctrl+c</code></li>
+          <li><strong>Special keys:</strong> <code>esc</code>, <code>enter</code>, <code>space</code>, <code>tab</code></li>
+        </ul>
+
+        <h3>Performance Tips</h3>
+        <ul>
+          <li>Shortcuts are automatically cleaned up when components unmount</li>
+          <li>Use scoped shortcuts to reduce the number of active listeners</li>
+          <li>Enable/disable shortcuts based on context to improve performance</li>
+          <li>Avoid registering hundreds of shortcuts simultaneously</li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <h2>Accessibility</h2>
+        
+        <h3>Screen Reader Support</h3>
+        <p>
+          Ensure keyboard shortcuts are announced to screen reader users:
+        </p>
+        <pre><code>{`<button aria-keyshortcuts="Control+K">
+  Search
+  <span className="kbd">Ctrl+K</span>
+</button>`}</code></pre>
+
+        <h3>Focus Management</h3>
+        <p>
+          Shortcuts should respect focus states and not interfere with screen reader navigation:
+        </p>
+        <pre><code>{`useKeyboardShortcuts({
+  'cmd+k': () => search()
+}, {
+  enableInInput: false, // Don't interfere with form inputs
+  respectFocusTraps: true // Don't work in modal focus traps
+})`}</code></pre>
+
+        <h3>Alternative Actions</h3>
+        <p>
+          Always provide mouse/touch alternatives to keyboard shortcuts:
+        </p>
+        <ul>
+          <li>Buttons for critical actions</li>
+          <li>Menu items with shortcuts shown</li>
+          <li>Context menus for advanced actions</li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <h2>TypeScript</h2>
+        <pre><code>{`import { useKeyboardShortcuts, KeyboardShortcutConfig } from '@clarity-chat/react'
+
+interface ShortcutMap {
+  [key: string]: (event: KeyboardEvent) => boolean | void
+}
+
+interface ShortcutOptions {
+  enabled?: boolean
+  scoped?: boolean
+  enableInInput?: boolean | 'modifiers-only'
+  preventDefault?: boolean
+  sequenceTimeout?: number
+  priority?: number
+  autoConvertMod?: boolean
+  respectFocusTraps?: boolean
+}
+
+function useKeyboardShortcuts(
+  shortcuts: ShortcutMap,
+  options?: ShortcutOptions
+): {
+  register: (key: string, handler: (e: KeyboardEvent) => boolean | void) => void
+  unregister: (key: string) => void
+  disable: () => void
+  enable: () => void
+  isEnabled: boolean
+}`}</code></pre>
+      </section>
+
+      <section className="docs-section">
+        <h2>Related</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="/reference/components/command-palette" className="docs-card">
+            <h3>CommandPalette</h3>
+            <p>Keyboard-driven command interface</p>
+          </a>
+          <a href="/reference/components/keyboard-hint" className="docs-card">
+            <h3>KeyboardHint</h3>
+            <p>Visual keyboard shortcut indicators</p>
+          </a>
+          <a href="/reference/hooks/use-undo-redo" className="docs-card">
+            <h3>useUndoRedo</h3>
+            <p>Undo/redo with keyboard shortcuts</p>
+          </a>
+          <a href="/learn/accessibility" className="docs-card">
+            <h3>Accessibility Guide</h3>
+            <p>Making shortcuts accessible</p>
+          </a>
         </div>
-      )}
-
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1">
-          <ChatWindow
-            messages={messages}
-            onSendMessage={handleSendMessage}
-            currentUser={{ id: 'user', name: 'You' }}
-            inputRef={inputRef}
-          />
-        </div>
-
-        <div className="p-2 bg-slate-50 dark:bg-slate-800 text-xs text-center text-slate-600 dark:text-slate-400">
-          Press <kbd className="px-1 py-0.5 bg-white dark:bg-slate-900 border rounded">?</kbd> for keyboard shortcuts
-        </div>
-      </div>
-
-      {/* Help Dialog */}
-      {showHelp && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-slate-900 rounded-lg max-w-lg w-full">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between">
-              <h3 className="font-bold">Keyboard Shortcuts</h3>
-              <button onClick={() => setShowHelp(false)}>✕</button>
-            </div>
-            <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
-              {Object.entries(groupedShortcuts).map(([group, groupShortcuts]) => (
-                <div key={group}>
-                  <h4 className="font-semibold text-sm text-blue-600 dark:text-blue-400 mb-2">
-                    {group}
-                  </h4>
-                  <div className="space-y-1">
-                    {groupShortcuts.map(s => (
-                      <div key={s.key} className="flex justify-between text-sm p-2 bg-slate-50 dark:bg-slate-800 rounded">
-                        <span>{s.description}</span>
-                        <kbd className="px-2 py-0.5 bg-white dark:bg-slate-900 border rounded text-xs">
-                          {s.modifiers?.join('+')} {s.modifiers?.length ? '+' : ''} {s.key}
-                        </kbd>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Search Dialog */}
-      {showSearch && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-slate-900 rounded-lg max-w-lg w-full">
-            <div className="p-4">
-              <input
-                type="text"
-                placeholder="Search messages..."
-                className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                autoFocus
-              />
-            </div>
-            <div className="p-4 text-center text-sm text-slate-500">
-              Press <kbd className="px-2 py-1 bg-slate-100 dark:bg-slate-800 border rounded">Esc</kbd> to close
-            </div>
-          </div>
-        </div>
-      )}
+      </section>
     </div>
   )
-}`}
-            dependencies={{
-              '@clarity-chat/react': 'latest'
-            }}
-            height="700px"
-          />
-        </section>
+}
 
-        {/* Best Practices */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Best Practices</h2>
-          
-          <div className="space-y-6">
-            <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <h3 className="font-semibold text-green-800 dark:text-green-200 mb-3 flex items-center gap-2">
-                <span>✓</span> Do
-              </h3>
-              <ul className="space-y-2 text-sm text-green-800 dark:text-green-200">
-                <li>• Use standard keyboard shortcuts when possible (Ctrl+S for save, Ctrl+C for copy, etc.)</li>
-                <li>• Provide a way to view all available shortcuts (? key or help menu)</li>
-                <li>• Group related shortcuts together</li>
-                <li>• Use modifier keys for important actions to prevent accidental triggers</li>
-                <li>• Disable shortcuts in input fields by default (unless explicitly needed)</li>
-                <li>• Test shortcuts across different operating systems</li>
-                <li>• Provide visual feedback when shortcuts are triggered</li>
-                <li>• Document shortcuts in your UI (tooltips, help dialogs)</li>
-                <li>• Use priority to resolve conflicts explicitly</li>
-              </ul>
-            </div>
-
-            <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-lg">
-              <h3 className="font-semibold text-red-800 dark:text-red-200 mb-3 flex items-center gap-2">
-                <span>✗</span> Don't
-              </h3>
-              <ul className="space-y-2 text-sm text-red-800 dark:text-red-200">
-                <li>• Override browser shortcuts (Ctrl+W, Ctrl+T, etc.)</li>
-                <li>• Create too many shortcuts (keep it simple and memorable)</li>
-                <li>• Use single letters without modifiers for important actions</li>
-                <li>• Forget to handle conflicts</li>
-                <li>• Make shortcuts work in all contexts (respect input field focus)</li>
-                <li>• Use obscure key combinations that are hard to remember</li>
-                <li>• Forget to provide a way to discover shortcuts</li>
-                <li>• Ignore accessibility considerations</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* Accessibility */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Accessibility</h2>
-          
-          <Callout type="info" className="mb-6">
-            Keyboard shortcuts are essential for accessibility. Many users rely on keyboard navigation exclusively.
-          </Callout>
-
-          <div className="space-y-4">
-            <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
-              <h3 className="font-semibold mb-2">WCAG Guidelines</h3>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li>• <strong>2.1.1 Keyboard</strong> - All functionality must be available via keyboard</li>
-                <li>• <strong>2.1.2 No Keyboard Trap</strong> - User can navigate away using keyboard</li>
-                <li>• <strong>2.1.4 Character Key Shortcuts</strong> - Single-key shortcuts can be turned off or remapped</li>
-              </ul>
-            </div>
-
-            <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
-              <h3 className="font-semibold mb-2">Screen Reader Considerations</h3>
-              <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li>• Announce when shortcuts are available</li>
-                <li>• Provide text descriptions for all shortcuts</li>
-                <li>• Make shortcut help dialog accessible</li>
-                <li>• Use ARIA attributes appropriately</li>
-              </ul>
-            </div>
-
-            <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
-              <h3 className="font-semibold mb-2">Customization</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                Consider allowing users to customize shortcuts for their needs:
-              </p>
-              <pre className="bg-slate-900 dark:bg-slate-950 text-slate-50 p-3 rounded text-xs overflow-x-auto">
-{`const [userShortcuts, setUserShortcuts] = useLocalStorage('shortcuts', defaultShortcuts)
-
-useKeyboardShortcuts({
-  shortcuts: userShortcuts,
-  // ... other options
-})`}
-              </pre>
-            </div>
-          </div>
-        </section>
-
-        {/* TypeScript Support */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">TypeScript Support</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            The hook includes comprehensive TypeScript types:
-          </p>
-
-          <pre className="bg-slate-900 dark:bg-slate-950 text-slate-50 p-4 rounded-lg overflow-x-auto">
-            <code>{`import { useKeyboardShortcuts } from '@clarity-chat/react'
-import type { ShortcutConfig, Modifier, KeyboardShortcutsOptions } from '@clarity-chat/react'
-
-// Type-safe shortcut configuration
-const shortcuts: ShortcutConfig[] = [
+const shortcutConfig = [
   {
-    key: 's',
-    modifiers: ['ctrl'], // Type-checked
-    description: 'Save',
-    action: (event: KeyboardEvent) => {
-      // Fully typed event
-      console.log('Saved!', event.key)
-    }
+    name: 'shortcuts',
+    type: 'ShortcutMap',
+    required: true,
+    description: 'Object mapping keyboard shortcuts to handler functions. Keys are shortcut strings (e.g., "cmd+k"), values are handler functions that receive the keyboard event.'
+  },
+  {
+    name: 'options',
+    type: 'ShortcutOptions',
+    required: false,
+    description: 'Configuration options for shortcut behavior'
+  },
+  {
+    name: 'options.enabled',
+    type: 'boolean',
+    required: false,
+    default: 'true',
+    description: 'Whether shortcuts are enabled. Use for conditional shortcuts.'
+  },
+  {
+    name: 'options.scoped',
+    type: 'boolean',
+    required: false,
+    default: 'false',
+    description: 'If true, shortcuts only work when this specific component tree is active.'
+  },
+  {
+    name: 'options.enableInInput',
+    type: 'boolean | "modifiers-only"',
+    required: false,
+    default: 'false',
+    description: 'Whether shortcuts work when typing in input fields. "modifiers-only" allows shortcuts with Cmd/Ctrl but not single keys.'
+  },
+  {
+    name: 'options.preventDefault',
+    type: 'boolean',
+    required: false,
+    default: 'true',
+    description: 'Whether to prevent default browser behavior for shortcuts.'
+  },
+  {
+    name: 'options.sequenceTimeout',
+    type: 'number',
+    required: false,
+    default: '800',
+    description: 'Milliseconds to wait between keys in a sequence (e.g., "g then i").'
+  },
+  {
+    name: 'options.priority',
+    type: 'number',
+    required: false,
+    default: '0',
+    description: 'Priority level for handling conflicts. Higher priority shortcuts run first.'
+  },
+  {
+    name: 'options.autoConvertMod',
+    type: 'boolean',
+    required: false,
+    default: 'true',
+    description: 'If true, "mod" automatically converts to Cmd on Mac, Ctrl on Windows/Linux.'
+  },
+  {
+    name: 'options.respectFocusTraps',
+    type: 'boolean',
+    required: false,
+    default: 'true',
+    description: 'If true, shortcuts are disabled inside modal focus traps.'
   }
 ]
 
-// Type-safe options
-const options: KeyboardShortcutsOptions = {
-  shortcuts,
-  enabled: true,
-  preventDefault: true,
-  ignoreInputFields: true
-}
-
-// Fully typed return values
-const {
-  shortcuts: registeredShortcuts,
-  addShortcut,
-  removeShortcut,
-  getConflicts
-} = useKeyboardShortcuts(options)`}</code>
-          </pre>
-        </section>
-
-        {/* Related Hooks */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Related Hooks</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a
-              href="/reference/hooks/use-hotkeys"
-              className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
-            >
-              <h3 className="font-semibold mb-1">useHotkeys</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Simplified hotkey management (alternative API)
-              </p>
-            </a>
-            <a
-              href="/reference/hooks/use-command-palette"
-              className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
-            >
-              <h3 className="font-semibold mb-1">useCommandPalette</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Manage command palette with keyboard shortcuts
-              </p>
-            </a>
-            <a
-              href="/reference/hooks/use-focus-trap"
-              className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
-            >
-              <h3 className="font-semibold mb-1">useFocusTrap</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Trap focus within a modal or dialog
-              </p>
-            </a>
-            <a
-              href="/reference/hooks/use-keyboard-nav"
-              className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
-            >
-              <h3 className="font-semibold mb-1">useKeyboardNav</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                Arrow key navigation for lists and menus
-              </p>
-            </a>
-          </div>
-        </section>
-
-        {/* Troubleshooting */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Troubleshooting</h2>
-          
-          <div className="space-y-4">
-            <details className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
-              <summary className="font-semibold cursor-pointer">
-                Shortcuts not working in my app
-              </summary>
-              <div className="mt-3 text-sm text-slate-600 dark:text-slate-400 space-y-2">
-                <p>Check these common issues:</p>
-                <ul className="list-disc ml-6 space-y-1">
-                  <li>Ensure the component using the hook is mounted</li>
-                  <li>Check if shortcuts are globally enabled (<code>enabled: true</code>)</li>
-                  <li>Verify individual shortcuts aren't disabled</li>
-                  <li>Check browser console for conflict warnings</li>
-                  <li>Ensure you're not in an input field (unless <code>allowInInput: true</code>)</li>
-                </ul>
-              </div>
-            </details>
-
-            <details className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
-              <summary className="font-semibold cursor-pointer">
-                Shortcuts conflicting with browser shortcuts
-              </summary>
-              <div className="mt-3 text-sm text-slate-600 dark:text-slate-400 space-y-2">
-                <p>Avoid these browser shortcuts:</p>
-                <ul className="list-disc ml-6 space-y-1">
-                  <li><kbd>Ctrl+W</kbd> - Close tab</li>
-                  <li><kbd>Ctrl+T</kbd> - New tab</li>
-                  <li><kbd>Ctrl+N</kbd> - New window</li>
-                  <li><kbd>Ctrl+Q</kbd> - Quit browser</li>
-                  <li><kbd>F5</kbd> / <kbd>Ctrl+R</kbd> - Refresh</li>
-                </ul>
-                <p className="mt-2">
-                  Use <code>preventDefault: false</code> if you need browser shortcuts to work alongside yours.
-                </p>
-              </div>
-            </details>
-
-            <details className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
-              <summary className="font-semibold cursor-pointer">
-                Sequences not working
-              </summary>
-              <div className="mt-3 text-sm text-slate-600 dark:text-slate-400 space-y-2">
-                <p>Ensure you've enabled sequences:</p>
-                <pre className="bg-slate-900 dark:bg-slate-950 text-slate-50 p-3 rounded overflow-x-auto">
-{`useKeyboardShortcuts({
-  shortcuts: [
-    { key: ['g', 'h'], action: () => {} }
-  ],
-  enableSequences: true, // Required!
-  sequenceTimeout: 1000
-})`}
-                </pre>
-                <p className="mt-2">
-                  Keys must be pressed within the timeout period (default 1000ms).
-                </p>
-              </div>
-            </details>
-
-            <details className="p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
-              <summary className="font-semibold cursor-pointer">
-                How to handle conflicts?
-              </summary>
-              <div className="mt-3 text-sm text-slate-600 dark:text-slate-400 space-y-2">
-                <p>Use the priority system and conflict detection:</p>
-                <pre className="bg-slate-900 dark:bg-slate-950 text-slate-50 p-3 rounded overflow-x-auto">
-{`const { getConflicts } = useKeyboardShortcuts({
-  shortcuts: [
-    { key: 's', modifiers: ['ctrl'], priority: 10, action: () => {} },
-    { key: 's', modifiers: ['ctrl'], priority: 0, action: () => {} }
-  ],
-  onConflict: (conflicts) => {
-    console.warn('Shortcut conflicts detected:', conflicts)
+const returnValue = [
+  {
+    name: 'register',
+    type: '(key: string, handler: Function) => void',
+    description: 'Dynamically register a new shortcut'
+  },
+  {
+    name: 'unregister',
+    type: '(key: string) => void',
+    description: 'Remove a registered shortcut'
+  },
+  {
+    name: 'disable',
+    type: '() => void',
+    description: 'Temporarily disable all shortcuts'
+  },
+  {
+    name: 'enable',
+    type: '() => void',
+    description: 'Re-enable previously disabled shortcuts'
+  },
+  {
+    name: 'isEnabled',
+    type: 'boolean',
+    description: 'Current enabled state of shortcuts'
   }
-})`}
-                </pre>
-                <p className="mt-2">
-                  The shortcut with the highest priority will execute when there's a conflict.
-                </p>
-              </div>
-            </details>
-          </div>
-        </section>
-
-        {/* API Summary */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">API Summary</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <h3 className="font-semibold mb-2">Core Features</h3>
-              <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                <li>✓ Modifier key support (Ctrl, Alt, Shift, Meta)</li>
-                <li>✓ Key sequences (e.g., "g i")</li>
-                <li>✓ Conflict detection</li>
-                <li>✓ Priority-based execution</li>
-                <li>✓ Dynamic shortcut management</li>
-                <li>✓ Input field handling</li>
-                <li>✓ Cross-platform (Mac/Windows/Linux)</li>
-                <li>✓ TypeScript support</li>
-                <li>✓ Accessibility compliant</li>
-              </ul>
-            </div>
-
-            <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <h3 className="font-semibold mb-2">Customization Options</h3>
-              <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                <li>✓ Enable/disable globally</li>
-                <li>✓ Enable/disable per shortcut</li>
-                <li>✓ Custom groups</li>
-                <li>✓ Custom priorities</li>
-                <li>✓ Custom timeout for sequences</li>
-                <li>✓ Case sensitivity</li>
-                <li>✓ preventDefault control</li>
-                <li>✓ Input field behavior</li>
-                <li>✓ Conflict callbacks</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-      </div>
-    </DocsLayout>
-  )
-}
+]
