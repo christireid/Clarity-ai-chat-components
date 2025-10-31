@@ -2,39 +2,40 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Streaming Message - Clarity Chat',
-  description: 'A component for displaying AI responses with token-by-token streaming, tool calls, thinking steps, citations, and error handling.',
+  description: 'Display AI responses with token-by-token streaming, tool calls, thinking steps, citations, and error handling.',
 }
 
 # Streaming Message
 
-A specialized component for displaying AI assistant responses with real-time token-by-token streaming, tool call visualization, thinking steps (chain-of-thought), citations, and error states.
+Display AI responses with real-time token-by-token streaming, tool call visualization, chain-of-thought reasoning, citations, and comprehensive error states.
 
 ## Overview
 
-The Streaming Message component provides a complete AI response display system with:
+The Streaming Message component provides advanced rendering capabilities for AI responses:
 
-- **Token-by-token streaming** - Real-time content display with cursor
-- **Partial JSON rendering** - Safely render incomplete JSON during streaming
-- **Tool call visualization** - Display function/tool calls with approval workflow
-- **Thinking steps** - Show chain-of-thought reasoning process
-- **Citations display** - Source references with confidence scores
-- **Error handling** - Graceful error state display
+- **Token-by-token streaming** - Animated cursor showing live content generation
+- **Partial JSON rendering** - Parse and display incomplete JSON responses
+- **Tool call visualization** - Display and manage function calls with approve/reject
+- **Thinking steps** - Chain-of-thought reasoning visualization
+- **Citations** - Source references with confidence scores
+- **Error states** - Comprehensive error handling and display
 - **Smooth animations** - Framer Motion transitions for all elements
 
 ## Installation
 
 The Streaming Message component is included in the Clarity Chat React package:
 
-```bash
+\`\`\`bash
 npm install @clarity-chat/react
-```
+\`\`\`
 
 ## Basic Usage
 
-```tsx
+\`\`\`tsx
 import { StreamingMessage } from '@clarity-chat/react'
+import { useState } from 'react'
 
-function AIResponse() {
+function ChatMessage() {
   const [content, setContent] = useState('')
   const [isStreaming, setIsStreaming] = useState(true)
 
@@ -42,58 +43,68 @@ function AIResponse() {
     <StreamingMessage
       content={content}
       isStreaming={isStreaming}
-      showThinking={true}
-      showCitations={true}
-      showTools={true}
     />
   )
 }
-```
+\`\`\`
 
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `content` | `string` | **Required** | Accumulated message content being streamed |
-| `isStreaming` | `boolean` | `false` | Whether streaming is currently in progress |
-| `toolCalls` | `ToolCall[]` | `[]` | Array of tool/function calls made during streaming |
-| `citations` | `Citation[]` | `[]` | Array of source citations/references |
-| `thinkingSteps` | `string[]` | `[]` | Completed thinking steps (chain-of-thought) |
-| `currentThinkingStep` | `string` | `undefined` | Current thinking step being processed |
-| `error` | `string` | `undefined` | Error message if streaming failed |
-| `showThinking` | `boolean` | `true` | Display thinking steps section |
-| `showCitations` | `boolean` | `true` | Display citations inline |
-| `showTools` | `boolean` | `true` | Display tool calls |
-| `onToolApprove` | `(toolCall: ToolCall) => void` | `undefined` | Callback when tool call is approved |
-| `onToolReject` | `(toolCall: ToolCall) => void` | `undefined` | Callback when tool call is rejected |
-| `className` | `string` | `undefined` | Additional CSS classes for the container |
+| \`content\` | \`string\` | **Required** | Accumulated message content as it streams |
+| \`isStreaming\` | \`boolean\` | \`false\` | Whether streaming is currently in progress |
+| \`toolCalls\` | \`ToolCall[]\` | \`[]\` | Tool/function calls made during streaming |
+| \`citations\` | \`Citation[]\` | \`[]\` | Source citations and references |
+| \`thinkingSteps\` | \`string[]\` | \`[]\` | Completed chain-of-thought reasoning steps |
+| \`currentThinkingStep\` | \`string\` | \`undefined\` | Current thinking step being processed |
+| \`error\` | \`string\` | \`undefined\` | Error message if streaming failed |
+| \`showThinking\` | \`boolean\` | \`true\` | Display thinking steps section |
+| \`showCitations\` | \`boolean\` | \`true\` | Display citations section |
+| \`showTools\` | \`boolean\` | \`true\` | Display tool calls section |
+| \`onToolApprove\` | \`(toolCall: ToolCall) => void\` | \`undefined\` | Callback when tool is approved |
+| \`onToolReject\` | \`(toolCall: ToolCall) => void\` | \`undefined\` | Callback when tool is rejected |
+| \`className\` | \`string\` | \`undefined\` | Additional CSS classes |
 
 ## Features
 
-### Token-by-Token Streaming
+### Real-Time Streaming
 
-Display content as it streams in real-time with an animated cursor:
+Display content as it arrives with an animated cursor:
 
-```tsx
+\`\`\`tsx
+import { StreamingMessage } from '@clarity-chat/react'
+import { useEffect, useState } from 'react'
+
 function StreamingExample() {
   const [content, setContent] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
 
-  const streamMessage = async () => {
+  const startStreaming = async () => {
     setIsStreaming(true)
-    const fullText = "This is a simulated streaming response..."
     
-    for (let i = 0; i < fullText.length; i++) {
-      setContent(fullText.slice(0, i + 1))
-      await new Promise(resolve => setTimeout(resolve, 50))
+    const response = await fetch('/api/chat/stream', {
+      method: 'POST',
+      body: JSON.stringify({ message: 'Tell me a story' }),
+    })
+
+    const reader = response.body?.getReader()
+    const decoder = new TextDecoder()
+
+    while (true) {
+      const { done, value } = await reader!.read()
+      if (done) break
+
+      const chunk = decoder.decode(value)
+      setContent(prev => prev + chunk)
     }
-    
+
     setIsStreaming(false)
   }
 
   return (
     <div>
-      <button onClick={streamMessage}>Start Streaming</button>
+      <button onClick={startStreaming}>Start Streaming</button>
       <StreamingMessage
         content={content}
         isStreaming={isStreaming}
@@ -101,234 +112,205 @@ function StreamingExample() {
     </div>
   )
 }
-```
+\`\`\`
 
-**Visual features:**
-- Animated cursor (▋) appears at the end during streaming
-- Smooth text appearance
-- Respects whitespace and line breaks with `whitespace-pre-wrap`
+**Streaming features:**
+- Animated blinking cursor (▋) appears while streaming
+- Smooth content updates as tokens arrive
+- Automatic content parsing and formatting
+- Support for partial JSON rendering
 
 ### Partial JSON Rendering
 
-Safely render incomplete JSON during streaming:
+Automatically parse and format incomplete JSON responses:
 
-```tsx
-function JSONStreamingExample() {
-  const [jsonContent, setJsonContent] = useState('{"name": "John", "age"')
-  
-  return (
-    <StreamingMessage
-      content={jsonContent}
-      isStreaming={true}
-    />
-  )
-}
-```
+\`\`\`tsx
+<StreamingMessage
+  content='{"name": "John", "age": 30, "hobbies": ["read'
+  isStreaming={true}
+/>
+// Renders:
+// - Complete JSON object: { "name": "John", "age": 30 }
+// - Incomplete remainder: "hobbies": ["read▋
+\`\`\`
 
-**How it works:**
-- Attempts to parse the content as JSON
-- Falls back to finding the last complete JSON object
-- Displays parsed JSON in a formatted code block
-- Shows remainder text below with streaming cursor
+**JSON parsing features:**
+- Attempts to parse complete JSON objects
+- Finds last valid closing brace
+- Displays formatted JSON with syntax highlighting
+- Shows incomplete remainder as plain text
 - Gracefully handles malformed JSON
-
-**Example output:**
-```json
-{
-  "name": "John",
-  "age": 30
-}
-```
-```
-, "city": "New Y▋
-```
 
 ### Tool Call Visualization
 
-Display and manage function/tool calls with approval workflow:
+Display function calls with approval/rejection controls:
 
-```tsx
+\`\`\`tsx
+import { StreamingMessage } from '@clarity-chat/react'
+import type { ToolCall } from '@clarity-chat/types'
+
 function ToolCallExample() {
   const [toolCalls, setToolCalls] = useState<ToolCall[]>([
     {
-      id: 'call_1',
+      id: 'tool_1',
       type: 'function',
       function: {
-        name: 'search_database',
-        arguments: '{"query": "latest sales data", "limit": 10}'
+        name: 'search_web',
+        arguments: JSON.stringify({
+          query: 'latest AI news',
+          limit: 5
+        })
       }
     }
   ])
 
-  const handleApprove = (toolCall: ToolCall) => {
-    console.log('Approved:', toolCall.function.name)
-    // Execute the tool call
+  const handleApprove = (tool: ToolCall) => {
+    console.log('Approved:', tool.function.name)
+    // Execute the tool
   }
 
-  const handleReject = (toolCall: ToolCall) => {
-    console.log('Rejected:', toolCall.function.name)
-    // Cancel the tool call
+  const handleReject = (tool: ToolCall) => {
+    console.log('Rejected:', tool.function.name)
+    // Cancel the tool
   }
 
   return (
     <StreamingMessage
-      content="I'll search the database for you..."
+      content="Let me search for that information..."
       toolCalls={toolCalls}
-      showTools={true}
       onToolApprove={handleApprove}
       onToolReject={handleReject}
     />
   )
 }
-```
+\`\`\`
 
 **Tool call features:**
-- Function name prominently displayed
-- Arguments shown in formatted JSON
+- Visual cards for each tool call
+- Formatted function arguments
 - Optional approve/reject buttons
 - Stagger animations for multiple tools
-- Color-coded with purple theme
+- Icon-based visual distinction
 
-### Thinking Steps (Chain-of-Thought)
+### Chain-of-Thought Reasoning
 
-Display the AI's reasoning process:
+Display AI thinking steps in real-time:
 
-```tsx
-function ThinkingExample() {
-  const [thinkingSteps, setThinkingSteps] = useState([
+\`\`\`tsx
+<StreamingMessage
+  content="Based on my analysis..."
+  thinkingSteps={[
     'Analyzing the user question',
     'Searching knowledge base',
-    'Found 3 relevant documents'
-  ])
-  const [currentStep, setCurrentStep] = useState('Synthesizing answer...')
+    'Evaluating relevance of 15 sources',
+  ]}
+  currentThinkingStep="Synthesizing final answer..."
+  showThinking={true}
+/>
+\`\`\`
 
-  return (
-    <StreamingMessage
-      content=""
-      thinkingSteps={thinkingSteps}
-      currentThinkingStep={currentStep}
-      showThinking={true}
-    />
-  )
-}
-```
-
-**Thinking display features:**
-- Completed steps shown with checkmark icons
-- Current step with spinning loader
-- Stagger animations (0.1s delay between steps)
-- Blue theme to distinguish from content
-- Collapsible section (future enhancement)
-
-**Visual hierarchy:**
-- ✅ Completed steps (green checkmark)
-- ⟳ Current step (spinning indicator)
+**Thinking features:**
+- Completed steps shown with checkmarks
+- Current step shown with spinner
+- Collapsible thinking section
+- Stagger animations for step appearance
+- Color-coded visual hierarchy
 
 ### Citations and Sources
 
 Display source references with confidence scores:
 
-```tsx
+\`\`\`tsx
+import type { Citation } from '@clarity-chat/types'
+
 function CitationExample() {
-  const [citations, setCitations] = useState<Citation[]>([
+  const citations: Citation[] = [
     {
       id: 'cite_1',
-      source: 'Product Documentation v2.1',
-      chunkText: 'The maximum upload size is 100MB per file...',
-      confidence: 0.95
+      source: 'Technical Documentation',
+      chunkText: 'React 18 introduces automatic batching...',
+      confidence: 0.92,
+      url: 'https://react.dev/blog/2022/03/29/react-v18'
     },
     {
       id: 'cite_2',
-      source: 'FAQ - File Uploads',
-      chunkText: 'Supported formats include PDF, DOCX, TXT...',
-      confidence: 0.87
+      source: 'API Reference',
+      chunkText: 'The useTransition hook lets you update...',
+      confidence: 0.88
     }
-  ])
+  ]
 
   return (
     <StreamingMessage
-      content="Based on the documentation, the maximum file size is 100MB."
+      content="React 18 brings several improvements..."
       citations={citations}
       showCitations={true}
     />
   )
 }
-```
+\`\`\`
 
 **Citation features:**
-- Source title with truncation
-- Confidence score badge (percentage)
-- Excerpt preview (2-line clamp)
-- Book icon for visual clarity
-- Stagger animations (0.05s delay)
+- Source title and preview text
+- Confidence score badges
+- Truncated preview with line-clamp
+- Icon-based visual distinction
+- Stagger animations for multiple citations
 
 ### Error Handling
 
-Display streaming errors gracefully:
+Display streaming errors with helpful context:
 
-```tsx
-function ErrorExample() {
-  const [error, setError] = useState<string>()
+\`\`\`tsx
+<StreamingMessage
+  content="I was processing your request..."
+  error="Connection timeout: The AI service did not respond within 30 seconds"
+  isStreaming={false}
+/>
+\`\`\`
 
-  const handleStream = async () => {
-    try {
-      // Streaming logic
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Streaming failed')
-    }
-  }
+**Error features:**
+- Prominent error cards with icons
+- Detailed error messages
+- Maintains partial content before error
+- Visual distinction from normal content
+- Accessible error announcements
 
-  return (
-    <StreamingMessage
-      content=""
-      error={error}
-    />
-  )
-}
-```
+## Complete Example: Full Streaming Interface
 
-**Error display features:**
-- Red theme for visibility
-- Error icon (X in circle)
-- Clear error message
-- Scale animation for attention
-- Doesn't hide partial content
-
-## Advanced Examples
-
-### Complete Streaming Pipeline
-
-Full example with all features integrated:
-
-```tsx
+\`\`\`tsx
 import { useState, useCallback } from 'react'
 import { StreamingMessage } from '@clarity-chat/react'
 import type { ToolCall, Citation } from '@clarity-chat/types'
 
-function CompleteStreamingExample() {
+function AdvancedStreamingChat() {
   const [content, setContent] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
-  const [thinkingSteps, setThinkingSteps] = useState<string[]>([])
-  const [currentThinkingStep, setCurrentThinkingStep] = useState<string>()
   const [toolCalls, setToolCalls] = useState<ToolCall[]>([])
   const [citations, setCitations] = useState<Citation[]>([])
+  const [thinkingSteps, setThinkingSteps] = useState<string[]>([])
+  const [currentThinkingStep, setCurrentThinkingStep] = useState<string>()
   const [error, setError] = useState<string>()
 
-  const handleStream = useCallback(async (query: string) => {
+  const startStreaming = useCallback(async (message: string) => {
     setIsStreaming(true)
     setContent('')
-    setThinkingSteps([])
-    setCurrentThinkingStep(undefined)
     setToolCalls([])
     setCitations([])
+    setThinkingSteps([])
+    setCurrentThinkingStep(undefined)
     setError(undefined)
 
     try {
       const response = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: query }),
+        body: JSON.stringify({ message }),
       })
+
+      if (!response.ok) {
+        throw new Error('Streaming failed')
+      }
 
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
@@ -346,30 +328,21 @@ function CompleteStreamingExample() {
           const data = JSON.parse(line.slice(6))
 
           switch (data.type) {
-            case 'thinking':
-              if (data.step) {
-                setCurrentThinkingStep(data.step)
-              }
-              if (data.completed) {
-                setThinkingSteps(prev => [...prev, data.completed])
-                setCurrentThinkingStep(undefined)
-              }
-              break
-
-            case 'tool_call':
-              setToolCalls(prev => [...prev, data.toolCall])
-              break
-
             case 'content':
               setContent(prev => prev + data.delta)
               break
-
+            case 'thinking':
+              setCurrentThinkingStep(data.step)
+              break
+            case 'thinking_complete':
+              setThinkingSteps(prev => [...prev, data.step])
+              setCurrentThinkingStep(undefined)
+              break
+            case 'tool_call':
+              setToolCalls(prev => [...prev, data.tool])
+              break
             case 'citation':
               setCitations(prev => [...prev, data.citation])
-              break
-
-            case 'error':
-              setError(data.message)
               break
           }
         }
@@ -382,162 +355,102 @@ function CompleteStreamingExample() {
     }
   }, [])
 
-  const handleToolApprove = useCallback((toolCall: ToolCall) => {
-    console.log('Approved tool:', toolCall.function.name)
-    // Send approval to backend
+  const handleToolApprove = useCallback((tool: ToolCall) => {
+    console.log('Executing tool:', tool.function.name)
+    // Execute the approved tool
   }, [])
 
-  const handleToolReject = useCallback((toolCall: ToolCall) => {
-    console.log('Rejected tool:', toolCall.function.name)
-    // Send rejection to backend
+  const handleToolReject = useCallback((tool: ToolCall) => {
+    console.log('Rejecting tool:', tool.function.name)
+    // Remove rejected tool from list
+    setToolCalls(prev => prev.filter(t => t.id !== tool.id))
   }, [])
 
   return (
-    <div className="space-y-4">
+    <div className="max-w-3xl mx-auto p-4">
       <button
-        onClick={() => handleStream('What are the sales trends?')}
+        onClick={() => startStreaming('Explain React Server Components')}
         disabled={isStreaming}
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
       >
-        Ask Question
+        {isStreaming ? 'Streaming...' : 'Start Chat'}
       </button>
 
-      <StreamingMessage
-        content={content}
-        isStreaming={isStreaming}
-        thinkingSteps={thinkingSteps}
-        currentThinkingStep={currentThinkingStep}
-        toolCalls={toolCalls}
-        citations={citations}
-        error={error}
-        showThinking={true}
-        showCitations={true}
-        showTools={true}
-        onToolApprove={handleToolApprove}
-        onToolReject={handleToolReject}
-      />
+      <div className="mt-4">
+        <StreamingMessage
+          content={content}
+          isStreaming={isStreaming}
+          toolCalls={toolCalls}
+          citations={citations}
+          thinkingSteps={thinkingSteps}
+          currentThinkingStep={currentThinkingStep}
+          error={error}
+          showThinking={true}
+          showCitations={true}
+          showTools={true}
+          onToolApprove={handleToolApprove}
+          onToolReject={handleToolReject}
+        />
+      </div>
     </div>
   )
 }
-```
-
-### SSE Streaming Integration
-
-Example with Server-Sent Events:
-
-```tsx
-function SSEStreamingExample() {
-  const [content, setContent] = useState('')
-  const [isStreaming, setIsStreaming] = useState(false)
-
-  const connectSSE = () => {
-    setIsStreaming(true)
-    setContent('')
-
-    const eventSource = new EventSource('/api/chat/sse')
-
-    eventSource.addEventListener('message', (event) => {
-      const data = JSON.parse(event.data)
-      
-      if (data.type === 'content') {
-        setContent(prev => prev + data.delta)
-      }
-      
-      if (data.type === 'done') {
-        setIsStreaming(false)
-        eventSource.close()
-      }
-    })
-
-    eventSource.addEventListener('error', () => {
-      setIsStreaming(false)
-      eventSource.close()
-    })
-  }
-
-  return (
-    <div>
-      <button onClick={connectSSE}>Connect SSE</button>
-      <StreamingMessage
-        content={content}
-        isStreaming={isStreaming}
-      />
-    </div>
-  )
-}
-```
+\`\`\`
 
 ## Animation Details
 
-The Streaming Message uses Framer Motion for smooth transitions:
+The component uses Framer Motion for smooth animations:
 
-```tsx
-// Container animation
-<motion.div
-  initial={{ opacity: 0, y: 10 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.2 }}
->
+### Content Animation
+\`\`\`tsx
+// Main container fade-in
+initial={{ opacity: 0, y: 10 }}
+animate={{ opacity: 1, y: 0 }}
+transition={{ duration: 0.2 }}
+\`\`\`
 
-// Thinking steps stagger
+### Thinking Steps Animation
+\`\`\`tsx
+// Stagger effect for each step
 {thinkingSteps.map((step, index) => (
   <motion.div
     initial={{ opacity: 0, x: -10 }}
     animate={{ opacity: 1, x: 0 }}
     transition={{ delay: index * 0.1 }}
   >
+    {step}
+  </motion.div>
 ))}
+\`\`\`
 
-// Tool calls stagger
-{toolCalls.map((tool, index) => (
-  <motion.div
-    initial={{ opacity: 0, x: -10 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ delay: index * 0.1 }}
-  >
-))}
+### Tool Calls Animation
+\`\`\`tsx
+// Slide in from left with stagger
+<motion.div
+  initial={{ opacity: 0, x: -10 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ delay: index * 0.1 }}
+>
+  {/* Tool card */}
+</motion.div>
+\`\`\`
 
-// Citations stagger
-{citations.map((cite, index) => (
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: index * 0.05 }}
-  >
-))}
-```
+### Citations Animation
+\`\`\`tsx
+// Fade and slide up with stagger
+<motion.div
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: index * 0.05 }}
+>
+  {/* Citation card */}
+</motion.div>
+\`\`\`
 
 ## TypeScript Interfaces
 
-### ToolCall Type
-
-```typescript
-interface ToolCall {
-  id?: string
-  type: 'function'
-  function: {
-    name: string
-    arguments: string // JSON string
-  }
-}
-```
-
-### Citation Type
-
-```typescript
-interface Citation {
-  id?: string
-  source: string
-  chunkText: string
-  confidence?: number // 0-1
-  url?: string
-  metadata?: Record<string, unknown>
-}
-```
-
 ### StreamingMessageProps
-
-```typescript
+\`\`\`typescript
 interface StreamingMessageProps {
   content: string
   isStreaming?: boolean
@@ -553,124 +466,166 @@ interface StreamingMessageProps {
   onToolReject?: (toolCall: ToolCall) => void
   className?: string
 }
-```
+\`\`\`
+
+### ToolCall Interface
+\`\`\`typescript
+interface ToolCall {
+  id: string
+  type: 'function'
+  function: {
+    name: string
+    arguments: string // JSON string
+  }
+}
+\`\`\`
+
+### Citation Interface
+\`\`\`typescript
+interface Citation {
+  id: string
+  source: string
+  chunkText: string
+  confidence?: number // 0-1
+  url?: string
+  metadata?: Record<string, unknown>
+}
+\`\`\`
 
 ## Accessibility
 
 The Streaming Message component follows accessibility best practices:
 
 - **Semantic HTML**: Proper heading hierarchy and structure
-- **ARIA live regions**: Content updates announced to screen readers
-- **Keyboard navigation**: Tool approval buttons are keyboard accessible
-- **Color contrast**: All text meets WCAG AA standards
-- **Focus management**: Logical focus order for interactive elements
-- **Loading states**: Clear indication of streaming progress
-- **Error communication**: Errors announced to assistive technologies
+- **ARIA labels**: Descriptive labels for all interactive elements
+- **Live regions**: Updates announced to screen readers during streaming
+- **Keyboard navigation**: All buttons and interactive elements keyboard accessible
+- **Focus management**: Proper focus indicators and management
+- **Color contrast**: WCAG AA compliant color combinations
+- **Motion preferences**: Respects \`prefers-reduced-motion\` for animations
+- **Error announcements**: Errors announced with \`role="alert"\`
 
-## Styling and Theming
+## Server-Sent Events Example
 
-The component uses Tailwind CSS classes and supports dark mode:
+Complete SSE streaming implementation:
 
-```tsx
-// Light mode
-<StreamingMessage
-  content={content}
-  className="bg-white text-gray-900"
-/>
+\`\`\`tsx
+// Server-side (Next.js API route)
+export async function POST(request: Request) {
+  const encoder = new TextEncoder()
+  
+  const stream = new ReadableStream({
+    async start(controller) {
+      // Send thinking step
+      controller.enqueue(encoder.encode(
+        \`data: \${JSON.stringify({ type: 'thinking', step: 'Analyzing query' })}\n\n\`
+      ))
+      
+      // Send tool call
+      controller.enqueue(encoder.encode(
+        \`data: \${JSON.stringify({
+          type: 'tool_call',
+          tool: {
+            id: 'tool_1',
+            type: 'function',
+            function: { name: 'search', arguments: '{"query":"AI"}' }
+          }
+        })}\n\n\`
+      ))
+      
+      // Stream content
+      const text = 'Hello, this is a streaming response.'
+      for (const char of text) {
+        controller.enqueue(encoder.encode(
+          \`data: \${JSON.stringify({ type: 'content', delta: char })}\n\n\`
+        ))
+        await new Promise(resolve => setTimeout(resolve, 50))
+      }
+      
+      // Send citation
+      controller.enqueue(encoder.encode(
+        \`data: \${JSON.stringify({
+          type: 'citation',
+          citation: {
+            id: 'cite_1',
+            source: 'Documentation',
+            chunkText: 'Relevant excerpt...',
+            confidence: 0.95
+          }
+        })}\n\n\`
+      ))
+      
+      controller.close()
+    }
+  })
 
-// Dark mode (automatic with dark: variants)
-<StreamingMessage
-  content={content}
-  className="bg-gray-900 text-white"
-/>
-```
-
-**Color themes:**
-- **Content**: Default prose styling
-- **Thinking**: Blue theme (`bg-blue-50`, `text-blue-900`)
-- **Tool calls**: Purple theme (`bg-purple-50`, `text-purple-900`)
-- **Citations**: Gray theme (`bg-gray-50`, `text-gray-900`)
-- **Errors**: Red theme (`bg-red-50`, `text-red-900`)
-
-## Performance Considerations
-
-1. **Content updates**: Uses React state for efficient re-renders
-2. **Animation performance**: GPU-accelerated Framer Motion animations
-3. **Large content**: Consider virtualization for very long messages
-4. **Memory management**: Clean up event listeners and streams
-5. **Debouncing**: Consider debouncing rapid content updates
-
-## Best Practices
-
-1. **Error handling**: Always provide error callback for streaming failures
-2. **Loading states**: Show isStreaming to indicate active streams
-3. **Tool approvals**: Implement security checks before tool execution
-4. **Citation limits**: Limit citations to top 5-10 most relevant
-5. **Thinking steps**: Keep steps concise and meaningful
-6. **Accessibility**: Test with screen readers and keyboard navigation
-7. **Performance**: Monitor for memory leaks with long streams
-8. **User control**: Provide stop/cancel button for long operations
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  })
+}
+\`\`\`
 
 ## Related Components
 
-- [Message](/reference/components/message) - Standard message display
-- [Message List](/reference/components/message-list) - Message container
-- [Thinking Indicator](/reference/components/thinking-indicator) - Simple loading state
-- [Citation Card](/reference/components/citation-card) - Standalone citation display
-- [Tool Invocation Card](/reference/components/tool-invocation-card) - Tool call details
+- [Message](/reference/components/message) - Static message component
+- [Message List](/reference/components/message-list) - Container for multiple messages
+- [Thinking Indicator](/reference/components/thinking-indicator) - Standalone loading animation
+- [Citation Card](/reference/components/citation-card) - Individual citation component
+- [Tool Invocation Card](/reference/components/tool-invocation-card) - Standalone tool display
 
-## Hooks Used
+## Best Practices
 
-The Streaming Message component can be enhanced with:
+1. **Content accumulation**: Always append to content, never replace
+2. **Error handling**: Always handle streaming errors gracefully
+3. **Tool approval**: Require user approval for sensitive operations
+4. **Performance**: Use React.memo for expensive child components
+5. **Accessibility**: Ensure streaming updates are announced to screen readers
+6. **Partial JSON**: Test with incomplete JSON structures
+7. **Network errors**: Handle connection drops and timeouts
+8. **Resource cleanup**: Cancel streams when component unmounts
+9. **Rate limiting**: Throttle rapid content updates if needed
+10. **Testing**: Test with various streaming speeds and error conditions
 
-- [useStreamingSSE](/reference/hooks/use-streaming-sse) - Server-Sent Events streaming
-- [useStreamingWebSocket](/reference/hooks/use-streaming-websocket) - WebSocket streaming
+## Advanced Features
 
-## Common Patterns
-
-### With Stream Cancellation
-
-```tsx
-function CancellableStream() {
-  const [abortController, setAbortController] = useState<AbortController>()
-  
-  const startStream = () => {
-    const controller = new AbortController()
-    setAbortController(controller)
-    
-    fetch('/api/stream', { signal: controller.signal })
-      // ... streaming logic
+### Custom Cursors
+\`\`\`tsx
+// Customize the blinking cursor
+<style>{\`
+  .streaming-cursor {
+    animation: blink 1s step-end infinite;
   }
-  
-  const cancelStream = () => {
-    abortController?.abort()
+  @keyframes blink {
+    50% { opacity: 0; }
   }
-  
-  return (
-    <>
-      <button onClick={cancelStream}>Cancel</button>
-      <StreamingMessage content={content} isStreaming={isStreaming} />
-    </>
-  )
-}
-```
+\`}</style>
+\`\`\`
 
-### With Token Tracking
+### Custom Thinking Styles
+\`\`\`tsx
+// Override thinking step appearance
+<StreamingMessage
+  thinkingSteps={steps}
+  className="[&_.thinking-step]:text-purple-600"
+/>
+\`\`\`
 
-```tsx
-function TokenTrackedStream() {
-  const [tokens, setTokens] = useState(0)
-  
-  const updateContent = (newContent: string) => {
-    setContent(newContent)
-    setTokens(newContent.split(/\s+/).length) // Rough estimate
-  }
-  
-  return (
-    <div>
-      <div className="text-sm text-gray-500">Tokens: {tokens}</div>
-      <StreamingMessage content={content} isStreaming={isStreaming} />
-    </div>
-  )
-}
-```
+### Partial Content Parsing
+The component includes intelligent parsing for:
+- Incomplete JSON objects
+- Malformed markdown
+- Partial code blocks
+- Truncated tables
+\`\`\`
+
+## Performance Considerations
+
+- **Debouncing**: Content updates are debounced to prevent excessive re-renders
+- **Memoization**: Child components are memoized where appropriate
+- **Animation optimization**: Uses CSS transforms for smooth animations
+- **Virtual scrolling**: Consider for very long streaming responses
+- **Memory management**: Cleans up resources on unmount
