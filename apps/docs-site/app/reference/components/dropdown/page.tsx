@@ -1,1109 +1,1021 @@
-import React from 'react'
-import { ComponentLayout } from '@/components/layouts/component-layout'
-import { LiveDemo } from '@/components/live-demo'
-import { ApiTable } from '@/components/api-table'
-import { Callout } from '@/components/callout'
-import { CodeBlock } from '@/components/code-block'
+import React from 'react';
+import { Metadata } from 'next';
+import LiveDemo from '@/components/LiveDemo';
+import ApiTable from '@/components/ApiTable';
+import Callout from '@/components/Callout';
+
+export const metadata: Metadata = {
+  title: 'Dropdown Component - Clarity Chat Components',
+  description: 'A versatile dropdown menu component for displaying lists of actions, links, and other interactive elements.',
+};
 
 export default function DropdownPage() {
   return (
-    <ComponentLayout
-      title="Dropdown"
-      description="A versatile dropdown menu component for displaying a list of actions, options, or navigation items with support for keyboard navigation, icons, dividers, and nested submenus."
-    >
-      <section>
-        <h2 id="overview">Overview</h2>
+    <div className="docs-content">
+      <header className="docs-header">
+        <div>
+          <h1>Dropdown</h1>
+          <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
+            A versatile dropdown menu component for displaying lists of actions, links, and other interactive elements.
+          </p>
+        </div>
+      </header>
+
+      <section className="docs-section">
+        <h2>Overview</h2>
         <p>
-          The Dropdown component provides a popover menu for displaying lists of actions or options.
-          It supports keyboard navigation, icons, dividers, disabled items, nested submenus, selection
-          states, and custom trigger elements. Perfect for action menus, navigation, filters, and
-          user account menus.
+          The Dropdown component provides a toggleable menu that can contain actions, links, checkboxes,
+          radio buttons, dividers, and nested submenus. Perfect for user menus, action menus, filters,
+          and navigation.
         </p>
+
+        <Callout type="info" title="Keyboard Navigation">
+          Full keyboard support with Arrow keys, Enter/Space, Esc, Tab, and type-ahead search.
+        </Callout>
       </section>
 
-      <section>
-        <h2 id="basic-usage">Basic Usage</h2>
+      <section className="docs-section">
+        <h2>Basic Usage</h2>
         <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
+          code={`import { Dropdown, Button } from '@clarity/chat-components';
 
-export default function BasicDropdownDemo() {
+export default function BasicDropdown() {
   const items = [
-    { id: 'new', label: 'New File', icon: '📄' },
-    { id: 'open', label: 'Open...', icon: '📂' },
-    { id: 'save', label: 'Save', icon: '💾', shortcut: 'Cmd+S' },
+    { id: 'profile', label: 'Profile', icon: '👤' },
+    { id: 'settings', label: 'Settings', icon: '⚙️' },
     { type: 'separator' },
-    { id: 'exit', label: 'Exit', icon: '🚪' }
-  ]
-  
-  const handleSelect = (itemId: string) => {
-    console.log('Selected:', itemId)
-  }
-  
+    { id: 'logout', label: 'Logout', icon: '🚪', variant: 'danger' }
+  ];
+
+  const handleSelect = (id) => {
+    alert(\`Selected: \${id}\`);
+  };
+
   return (
     <Dropdown
       items={items}
       onSelect={handleSelect}
-      trigger={
-        <Button variant="outline">
-          File Menu
-        </Button>
-      }
+      trigger={<Button>My Account</Button>}
     />
-  )
+  );
 }`}
         />
       </section>
 
-      <section>
-        <h2 id="props">Props</h2>
+      <section className="docs-section">
+        <h2>Props</h2>
+        
         <ApiTable
-          type="props"
+          title="Dropdown Props"
           data={[
             {
-              property: 'items',
+              prop: 'trigger',
+              type: 'ReactNode',
+              default: 'undefined',
+              description: 'Element that opens the dropdown when clicked'
+            },
+            {
+              prop: 'items',
               type: 'DropdownItem[]',
-              required: true,
-              description: 'Array of dropdown items to display'
+              default: '[]',
+              description: 'Array of menu items (see DropdownItem interface below)'
             },
             {
-              property: 'trigger',
-              type: 'React.ReactNode',
-              required: true,
-              description: 'Element that triggers the dropdown'
+              prop: 'onSelect',
+              type: '(id: string) => void',
+              default: 'undefined',
+              description: 'Callback when an item is selected'
             },
             {
-              property: 'onSelect',
-              type: '(itemId: string) => void',
-              description: 'Callback fired when an item is selected'
-            },
-            {
-              property: 'placement',
-              type: "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'right'",
+              prop: 'placement',
+              type: "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'",
               default: "'bottom-start'",
-              description: 'Placement of the dropdown relative to trigger'
+              description: 'Dropdown menu position relative to trigger'
             },
             {
-              property: 'width',
-              type: "'auto' | 'trigger' | number",
-              default: "'auto'",
-              description: "Width of the dropdown menu ('trigger' matches trigger width)"
+              prop: 'align',
+              type: "'start' | 'center' | 'end'",
+              default: "'start'",
+              description: 'Alignment of dropdown menu'
             },
             {
-              property: 'offset',
+              prop: 'offset',
               type: 'number',
               default: '8',
-              description: 'Distance in pixels between trigger and dropdown'
+              description: 'Distance in pixels between trigger and menu'
             },
             {
-              property: 'closeOnSelect',
+              prop: 'closeOnSelect',
               type: 'boolean',
               default: 'true',
               description: 'Whether to close dropdown after selecting an item'
             },
             {
-              property: 'disabled',
+              prop: 'closeOnClickOutside',
+              type: 'boolean',
+              default: 'true',
+              description: 'Whether to close when clicking outside'
+            },
+            {
+              prop: 'disabled',
               type: 'boolean',
               default: 'false',
               description: 'Whether the dropdown is disabled'
             },
             {
-              property: 'maxHeight',
+              prop: 'isOpen',
+              type: 'boolean',
+              default: 'undefined',
+              description: 'Controlled open state (makes it a controlled component)'
+            },
+            {
+              prop: 'onOpenChange',
+              type: '(isOpen: boolean) => void',
+              default: 'undefined',
+              description: 'Callback when open state changes'
+            },
+            {
+              prop: 'width',
+              type: "'auto' | 'trigger' | number",
+              default: "'auto'",
+              description: "Menu width: 'auto' fits content, 'trigger' matches trigger width, or specific pixel width"
+            },
+            {
+              prop: 'maxHeight',
               type: 'number',
-              description: 'Maximum height of the dropdown menu in pixels'
+              default: '400',
+              description: 'Maximum height of scrollable menu in pixels'
             },
             {
-              property: 'virtualized',
+              prop: 'flip',
+              type: 'boolean',
+              default: 'true',
+              description: 'Whether to flip placement when there is insufficient space'
+            },
+            {
+              prop: 'arrow',
               type: 'boolean',
               default: 'false',
-              description: 'Enable virtual scrolling for large lists'
+              description: 'Whether to show an arrow pointing to the trigger'
             },
             {
-              property: 'searchable',
-              type: 'boolean',
-              default: 'false',
-              description: 'Enable search/filter functionality'
-            },
-            {
-              property: 'searchPlaceholder',
+              prop: 'className',
               type: 'string',
-              default: "'Search...'",
-              description: 'Placeholder text for search input'
-            },
-            {
-              property: 'selectionMode',
-              type: "'none' | 'single' | 'multiple'",
-              default: "'none'",
-              description: 'Item selection behavior'
-            },
-            {
-              property: 'selectedKeys',
-              type: 'Set<string>',
-              description: 'Currently selected item keys (controlled)'
-            },
-            {
-              property: 'onSelectionChange',
-              type: '(keys: Set<string>) => void',
-              description: 'Callback when selection changes'
-            },
-            {
-              property: 'className',
-              type: 'string',
-              description: 'Additional CSS classes for the dropdown container'
+              default: 'undefined',
+              description: 'Additional CSS classes for menu container'
             }
           ]}
         />
 
-        <h3 className="mt-6">DropdownItem Type</h3>
         <ApiTable
-          type="props"
+          title="DropdownItem Interface"
           data={[
             {
-              property: 'id',
+              prop: 'id',
               type: 'string',
+              default: 'undefined',
               description: 'Unique identifier for the item'
             },
             {
-              property: 'label',
-              type: 'string',
-              description: 'Display text for the item'
-            },
-            {
-              property: 'type',
-              type: "'item' | 'separator' | 'header' | 'submenu'",
+              prop: 'type',
+              type: "'item' | 'separator' | 'header' | 'checkbox' | 'radio'",
               default: "'item'",
-              description: 'Type of dropdown item'
+              description: 'Type of menu item'
             },
             {
-              property: 'icon',
-              type: 'string | React.ReactNode',
-              description: 'Icon to display before the label'
+              prop: 'label',
+              type: 'string | ReactNode',
+              default: 'undefined',
+              description: 'Item display text or component'
             },
             {
-              property: 'shortcut',
+              prop: 'icon',
+              type: 'string | ReactNode',
+              default: 'undefined',
+              description: 'Icon to display before label'
+            },
+            {
+              prop: 'shortcut',
               type: 'string',
-              description: 'Keyboard shortcut hint to display'
+              default: 'undefined',
+              description: 'Keyboard shortcut hint (display only)'
             },
             {
-              property: 'disabled',
+              prop: 'variant',
+              type: "'default' | 'danger'",
+              default: "'default'",
+              description: 'Visual style variant'
+            },
+            {
+              prop: 'disabled',
               type: 'boolean',
+              default: 'false',
               description: 'Whether the item is disabled'
             },
             {
-              property: 'variant',
-              type: "'default' | 'danger' | 'success'",
-              default: "'default'",
-              description: 'Visual style of the item'
+              prop: 'checked',
+              type: 'boolean',
+              default: 'undefined',
+              description: 'Checked state for checkbox/radio items'
             },
             {
-              property: 'items',
+              prop: 'items',
               type: 'DropdownItem[]',
-              description: 'Nested items for submenu type'
+              default: 'undefined',
+              description: 'Nested submenu items'
             },
             {
-              property: 'description',
+              prop: 'href',
               type: 'string',
-              description: 'Additional description text'
+              default: 'undefined',
+              description: 'Link URL (renders as anchor tag)'
             }
           ]}
         />
       </section>
 
-      <section>
-        <h2 id="placement">Placement</h2>
+      <section className="docs-section">
+        <h2>Placement Options</h2>
         <p>
-          Control where the dropdown appears relative to its trigger element with precise placement options.
+          Position the dropdown menu in 12 different locations around the trigger element.
         </p>
-
         <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
+          code={`import { Dropdown, Button } from '@clarity/chat-components';
 
-export default function DropdownPlacementDemo() {
+export default function DropdownPlacement() {
   const items = [
-    { id: '1', label: 'Option 1' },
-    { id: '2', label: 'Option 2' },
-    { id: '3', label: 'Option 3' }
-  ]
-  
+    { id: '1', label: 'First item' },
+    { id: '2', label: 'Second item' },
+    { id: '3', label: 'Third item' }
+  ];
+
   const placements = [
-    'top-start',
-    'top',
-    'top-end',
-    'bottom-start',
-    'bottom',
-    'bottom-end',
-    'left',
-    'right'
-  ]
-  
+    'top-start', 'top', 'top-end',
+    'bottom-start', 'bottom', 'bottom-end',
+    'left-start', 'left', 'left-end',
+    'right-start', 'right', 'right-end'
+  ];
+
   return (
-    <div className="grid grid-cols-3 gap-4 p-8">
-      {placements.map((placement) => (
-        <div key={placement} className="flex justify-center">
-          <Dropdown
-            items={items}
-            placement={placement as any}
-            trigger={
-              <Button variant="outline" size="sm">
-                {placement}
-              </Button>
-            }
-          />
-        </div>
+    <div className="flex flex-wrap gap-3">
+      {placements.map(placement => (
+        <Dropdown
+          key={placement}
+          items={items}
+          placement={placement}
+          trigger={
+            <Button size="sm" variant="secondary">
+              {placement}
+            </Button>
+          }
+        />
       ))}
     </div>
-  )
+  );
 }`}
         />
       </section>
 
-      <section>
-        <h2 id="icons-shortcuts">Icons and Shortcuts</h2>
+      <section className="docs-section">
+        <h2>With Icons and Shortcuts</h2>
         <p>
-          Add visual icons and keyboard shortcut hints to dropdown items for better usability.
+          Add visual icons and keyboard shortcut hints to menu items.
         </p>
-
         <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
+          code={`import { Dropdown, Button } from '@clarity/chat-components';
 
-export default function IconsShortcutsDemo() {
+export default function DropdownWithIcons() {
   const items = [
-    { id: 'new', label: 'New', icon: '✨', shortcut: 'Cmd+N' },
+    { id: 'new', label: 'New File', icon: '📄', shortcut: 'Cmd+N' },
     { id: 'open', label: 'Open', icon: '📂', shortcut: 'Cmd+O' },
     { id: 'save', label: 'Save', icon: '💾', shortcut: 'Cmd+S' },
-    { id: 'saveas', label: 'Save As...', icon: '📝', shortcut: 'Cmd+Shift+S' },
     { type: 'separator' },
     { id: 'print', label: 'Print', icon: '🖨️', shortcut: 'Cmd+P' },
-    { id: 'share', label: 'Share', icon: '🔗', shortcut: 'Cmd+Shift+C' },
     { type: 'separator' },
-    { id: 'settings', label: 'Settings', icon: '⚙️', shortcut: 'Cmd+,' },
-    { id: 'quit', label: 'Quit', icon: '🚪', shortcut: 'Cmd+Q', variant: 'danger' }
-  ]
-  
+    { id: 'close', label: 'Close Window', icon: '❌', shortcut: 'Cmd+W' }
+  ];
+
   return (
     <Dropdown
       items={items}
-      onSelect={(id) => alert(\`Selected: \${id}\`)}
-      trigger={
-        <Button variant="outline">
-          File Menu
-        </Button>
-      }
+      onSelect={(id) => alert(\`Action: \${id}\`)}
+      trigger={<Button>File Menu</Button>}
     />
-  )
+  );
 }`}
         />
       </section>
 
-      <section>
-        <h2 id="variants">Item Variants</h2>
+      <section className="docs-section">
+        <h2>Nested Submenus</h2>
         <p>
-          Use different visual styles to indicate the nature of actions, especially for destructive operations.
+          Create hierarchical menu structures with nested submenus.
         </p>
-
         <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
+          code={`import { Dropdown, Button } from '@clarity/chat-components';
 
-export default function VariantsDemo() {
+export default function NestedDropdown() {
   const items = [
-    { id: 'view', label: 'View Profile', icon: '👤' },
-    { id: 'edit', label: 'Edit Profile', icon: '✏️' },
-    { type: 'separator' },
-    { id: 'upgrade', label: 'Upgrade Plan', icon: '⭐', variant: 'success' },
-    { type: 'separator' },
-    { id: 'logout', label: 'Log Out', icon: '🚪' },
-    { id: 'delete', label: 'Delete Account', icon: '🗑️', variant: 'danger' }
-  ]
-  
-  return (
-    <Dropdown
-      items={items}
-      onSelect={(id) => alert(\`Selected: \${id}\`)}
-      trigger={
-        <Button variant="outline">
-          Account
-        </Button>
-      }
-    />
-  )
-}`}
-        />
-      </section>
-
-      <section>
-        <h2 id="nested-submenus">Nested Submenus</h2>
-        <p>
-          Create hierarchical menus with nested submenus for organizing complex actions.
-        </p>
-
-        <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
-
-export default function SubmenusDemo() {
-  const items = [
-    { id: 'new', label: 'New', icon: '✨', shortcut: 'Cmd+N' },
+    { id: 'new', label: 'New', icon: '📄' },
     {
       id: 'open-recent',
       label: 'Open Recent',
-      icon: '📂',
-      type: 'submenu',
+      icon: '🕐',
       items: [
-        { id: 'recent-1', label: 'Project Alpha' },
-        { id: 'recent-2', label: 'Project Beta' },
-        { id: 'recent-3', label: 'Project Gamma' },
+        { id: 'file1', label: 'Document.pdf' },
+        { id: 'file2', label: 'Presentation.pptx' },
+        { id: 'file3', label: 'Spreadsheet.xlsx' },
         { type: 'separator' },
-        { id: 'clear-recent', label: 'Clear Recent' }
+        { id: 'clear', label: 'Clear Recent', variant: 'danger' }
       ]
     },
-    { id: 'save', label: 'Save', icon: '💾', shortcut: 'Cmd+S' },
-    { type: 'separator' },
     {
       id: 'export',
-      label: 'Export',
+      label: 'Export As',
       icon: '📤',
-      type: 'submenu',
       items: [
-        { id: 'pdf', label: 'Export as PDF', icon: '📄' },
-        { id: 'png', label: 'Export as PNG', icon: '🖼️' },
-        { id: 'svg', label: 'Export as SVG', icon: '🎨' },
-        {
-          id: 'advanced',
-          label: 'Advanced',
-          type: 'submenu',
-          items: [
-            { id: 'high-res', label: 'High Resolution' },
-            { id: 'compressed', label: 'Compressed' },
-            { id: 'batch', label: 'Batch Export' }
-          ]
-        }
+        { id: 'pdf', label: 'PDF', icon: '📕' },
+        { id: 'word', label: 'Word', icon: '📘' },
+        { id: 'excel', label: 'Excel', icon: '📗' },
+        { id: 'powerpoint', label: 'PowerPoint', icon: '📙' }
       ]
     },
     { type: 'separator' },
-    { id: 'print', label: 'Print', icon: '🖨️', shortcut: 'Cmd+P' }
-  ]
-  
+    { id: 'save', label: 'Save', icon: '💾' }
+  ];
+
   return (
     <Dropdown
       items={items}
       onSelect={(id) => alert(\`Selected: \${id}\`)}
-      trigger={
-        <Button variant="outline">
-          File
-        </Button>
-      }
+      trigger={<Button>File Menu</Button>}
     />
-  )
+  );
 }`}
         />
       </section>
 
-      <section>
-        <h2 id="headers-descriptions">Headers and Descriptions</h2>
+      <section className="docs-section">
+        <h2>Checkbox Items</h2>
         <p>
-          Add section headers and item descriptions for better organization and clarity.
+          Use checkbox items for toggling multiple options independently.
         </p>
-
         <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
+          code={`import { useState } from 'react';
+import { Dropdown, Button } from '@clarity/chat-components';
 
-export default function HeadersDescriptionsDemo() {
+export default function DropdownCheckboxes() {
+  const [checked, setChecked] = useState({
+    bold: false,
+    italic: false,
+    underline: false,
+    strikethrough: false
+  });
+
   const items = [
-    { type: 'header', label: 'Profile' },
+    { type: 'header', label: 'Text Formatting' },
     {
-      id: 'account',
-      label: 'Account Settings',
-      icon: '⚙️',
-      description: 'Manage your account preferences'
+      id: 'bold',
+      type: 'checkbox',
+      label: 'Bold',
+      icon: 'B',
+      shortcut: 'Cmd+B',
+      checked: checked.bold
     },
     {
-      id: 'billing',
-      label: 'Billing',
-      icon: '💳',
-      description: 'View and update payment methods'
-    },
-    { type: 'separator' },
-    { type: 'header', label: 'Workspace' },
-    {
-      id: 'members',
-      label: 'Team Members',
-      icon: '👥',
-      description: 'Invite and manage team members'
+      id: 'italic',
+      type: 'checkbox',
+      label: 'Italic',
+      icon: 'I',
+      shortcut: 'Cmd+I',
+      checked: checked.italic
     },
     {
-      id: 'integrations',
-      label: 'Integrations',
-      icon: '🔌',
-      description: 'Connect external services'
-    },
-    { type: 'separator' },
-    { type: 'header', label: 'Support' },
-    {
-      id: 'help',
-      label: 'Help Center',
-      icon: '❓',
-      description: 'Browse documentation and guides'
+      id: 'underline',
+      type: 'checkbox',
+      label: 'Underline',
+      icon: 'U',
+      shortcut: 'Cmd+U',
+      checked: checked.underline
     },
     {
-      id: 'contact',
-      label: 'Contact Support',
-      icon: '💬',
-      description: 'Get help from our team'
+      id: 'strikethrough',
+      type: 'checkbox',
+      label: 'Strikethrough',
+      icon: 'S',
+      checked: checked.strikethrough
     }
-  ]
-  
+  ];
+
+  const handleSelect = (id) => {
+    setChecked(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
   return (
-    <Dropdown
-      items={items}
-      onSelect={(id) => alert(\`Selected: \${id}\`)}
-      width={280}
-      trigger={
-        <Button variant="outline">
-          Settings
-        </Button>
-      }
-    />
-  )
-}`}
-        />
-      </section>
-
-      <section>
-        <h2 id="searchable">Searchable Dropdown</h2>
-        <p>
-          Enable search functionality for dropdowns with many items to help users find options quickly.
-        </p>
-
-        <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
-
-export default function SearchableDemo() {
-  const countries = [
-    { id: 'us', label: 'United States', icon: '🇺🇸' },
-    { id: 'uk', label: 'United Kingdom', icon: '🇬🇧' },
-    { id: 'ca', label: 'Canada', icon: '🇨🇦' },
-    { id: 'au', label: 'Australia', icon: '🇦🇺' },
-    { id: 'de', label: 'Germany', icon: '🇩🇪' },
-    { id: 'fr', label: 'France', icon: '🇫🇷' },
-    { id: 'it', label: 'Italy', icon: '🇮🇹' },
-    { id: 'es', label: 'Spain', icon: '🇪🇸' },
-    { id: 'jp', label: 'Japan', icon: '🇯🇵' },
-    { id: 'cn', label: 'China', icon: '🇨🇳' },
-    { id: 'br', label: 'Brazil', icon: '🇧🇷' },
-    { id: 'in', label: 'India', icon: '🇮🇳' },
-    { id: 'mx', label: 'Mexico', icon: '🇲🇽' },
-    { id: 'kr', label: 'South Korea', icon: '🇰🇷' },
-    { id: 'ru', label: 'Russia', icon: '🇷🇺' }
-  ]
-  
-  return (
-    <Dropdown
-      items={countries}
-      onSelect={(id) => alert(\`Selected country: \${id}\`)}
-      searchable
-      searchPlaceholder="Search countries..."
-      maxHeight={300}
-      trigger={
-        <Button variant="outline">
-          Select Country
-        </Button>
-      }
-    />
-  )
-}`}
-        />
-      </section>
-
-      <section>
-        <h2 id="selection-modes">Selection Modes</h2>
-        <p>
-          Support single or multiple selection with checkboxes for building filters and multi-select menus.
-        </p>
-
-        <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
-import { useState } from 'react'
-
-export default function SelectionDemo() {
-  const [singleSelection, setSingleSelection] = useState(new Set(['medium']))
-  const [multiSelection, setMultiSelection] = useState(new Set(['email', 'push']))
-  
-  const sizeItems = [
-    { id: 'small', label: 'Small', description: 'For compact layouts' },
-    { id: 'medium', label: 'Medium', description: 'Standard size' },
-    { id: 'large', label: 'Large', description: 'For emphasis' }
-  ]
-  
-  const notificationItems = [
-    { id: 'email', label: 'Email notifications', icon: '📧' },
-    { id: 'push', label: 'Push notifications', icon: '🔔' },
-    { id: 'sms', label: 'SMS notifications', icon: '💬' },
-    { id: 'desktop', label: 'Desktop notifications', icon: '🖥️' }
-  ]
-  
-  return (
-    <div className="flex gap-4">
-      <div>
-        <p className="text-sm mb-2">Single Selection:</p>
-        <Dropdown
-          items={sizeItems}
-          selectionMode="single"
-          selectedKeys={singleSelection}
-          onSelectionChange={setSingleSelection}
-          trigger={
-            <Button variant="outline">
-              Size: {Array.from(singleSelection)[0]}
-            </Button>
-          }
-        />
-      </div>
-      
-      <div>
-        <p className="text-sm mb-2">Multiple Selection:</p>
-        <Dropdown
-          items={notificationItems}
-          selectionMode="multiple"
-          selectedKeys={multiSelection}
-          onSelectionChange={setMultiSelection}
-          closeOnSelect={false}
-          trigger={
-            <Button variant="outline">
-              Notifications ({multiSelection.size})
-            </Button>
-          }
-        />
+    <div>
+      <Dropdown
+        items={items}
+        onSelect={handleSelect}
+        closeOnSelect={false}
+        trigger={<Button>Format Text</Button>}
+      />
+      <div className="mt-4 p-3 bg-gray-50 rounded text-sm">
+        Active formats: {Object.entries(checked)
+          .filter(([_, v]) => v)
+          .map(([k]) => k)
+          .join(', ') || 'None'}
       </div>
     </div>
-  )
+  );
 }`}
+          scope={{ useState: React.useState }}
         />
-
-        <Callout type="tip">
-          When using <code>selectionMode="multiple"</code>, set <code>closeOnSelect={'{false}'}</code> to
-          allow users to select multiple items without the dropdown closing after each selection.
-        </Callout>
       </section>
 
-      <section>
-        <h2 id="disabled-items">Disabled Items</h2>
+      <section className="docs-section">
+        <h2>Radio Items</h2>
         <p>
-          Disable specific items to indicate unavailable actions while keeping them visible.
+          Use radio items for selecting a single option from a group.
         </p>
-
         <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
+          code={`import { useState } from 'react';
+import { Dropdown, Button } from '@clarity/chat-components';
 
-export default function DisabledItemsDemo() {
+export default function DropdownRadio() {
+  const [selected, setSelected] = useState('medium');
+
   const items = [
-    { id: 'undo', label: 'Undo', icon: '↶', shortcut: 'Cmd+Z', disabled: true },
-    { id: 'redo', label: 'Redo', icon: '↷', shortcut: 'Cmd+Shift+Z', disabled: true },
-    { type: 'separator' },
-    { id: 'cut', label: 'Cut', icon: '✂️', shortcut: 'Cmd+X' },
+    { type: 'header', label: 'Text Size' },
+    {
+      id: 'small',
+      type: 'radio',
+      label: 'Small',
+      checked: selected === 'small'
+    },
+    {
+      id: 'medium',
+      type: 'radio',
+      label: 'Medium',
+      checked: selected === 'medium'
+    },
+    {
+      id: 'large',
+      type: 'radio',
+      label: 'Large',
+      checked: selected === 'large'
+    },
+    {
+      id: 'xlarge',
+      type: 'radio',
+      label: 'Extra Large',
+      checked: selected === 'xlarge'
+    }
+  ];
+
+  return (
+    <div>
+      <Dropdown
+        items={items}
+        onSelect={setSelected}
+        closeOnSelect={false}
+        trigger={<Button>Text Size: {selected}</Button>}
+      />
+    </div>
+  );
+}`}
+          scope={{ useState: React.useState }}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Disabled Items</h2>
+        <p>
+          Mark items as disabled to prevent interaction while keeping them visible.
+        </p>
+        <LiveDemo
+          code={`import { Dropdown, Button } from '@clarity/chat-components';
+
+export default function DropdownDisabled() {
+  const items = [
     { id: 'copy', label: 'Copy', icon: '📋', shortcut: 'Cmd+C' },
+    { id: 'cut', label: 'Cut', icon: '✂️', shortcut: 'Cmd+X', disabled: true },
     { id: 'paste', label: 'Paste', icon: '📄', shortcut: 'Cmd+V', disabled: true },
     { type: 'separator' },
     { id: 'select-all', label: 'Select All', icon: '☑️', shortcut: 'Cmd+A' }
-  ]
-  
+  ];
+
+  return (
+    <div>
+      <Dropdown
+        items={items}
+        onSelect={(id) => alert(\`Action: \${id}\`)}
+        trigger={<Button>Edit</Button>}
+      />
+      <p className="mt-3 text-sm text-gray-600">
+        Cut and Paste are disabled (no selection)
+      </p>
+    </div>
+  );
+}`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Menu Width</h2>
+        <p>
+          Control the width of the dropdown menu to match content, trigger, or a specific size.
+        </p>
+        <LiveDemo
+          code={`import { Dropdown, Button } from '@clarity/chat-components';
+
+export default function DropdownWidth() {
+  const items = [
+    { id: '1', label: 'Short' },
+    { id: '2', label: 'Medium length item' },
+    { id: '3', label: 'Very long menu item with lots of text' }
+  ];
+
+  return (
+    <div className="flex gap-3 flex-wrap">
+      <Dropdown
+        items={items}
+        width="auto"
+        trigger={<Button size="sm">Auto Width</Button>}
+      />
+      <Dropdown
+        items={items}
+        width="trigger"
+        trigger={<Button size="sm">Match Trigger</Button>}
+      />
+      <Dropdown
+        items={items}
+        width={300}
+        trigger={<Button size="sm">300px Fixed</Button>}
+      />
+    </div>
+  );
+}`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>With Arrow</h2>
+        <p>
+          Add a visual arrow pointing from the menu to the trigger element.
+        </p>
+        <LiveDemo
+          code={`import { Dropdown, Button } from '@clarity/chat-components';
+
+export default function DropdownWithArrow() {
+  const items = [
+    { id: 'profile', label: 'Profile', icon: '👤' },
+    { id: 'billing', label: 'Billing', icon: '💳' },
+    { id: 'settings', label: 'Settings', icon: '⚙️' },
+    { type: 'separator' },
+    { id: 'logout', label: 'Logout', icon: '🚪' }
+  ];
+
   return (
     <Dropdown
       items={items}
-      onSelect={(id) => alert(\`Selected: \${id}\`)}
-      trigger={
-        <Button variant="outline">
-          Edit
-        </Button>
-      }
+      arrow
+      trigger={<Button>Account Menu</Button>}
     />
-  )
+  );
 }`}
         />
       </section>
 
-      <section>
-        <h2 id="custom-triggers">Custom Triggers</h2>
+      <section className="docs-section">
+        <h2>Controlled Dropdown</h2>
         <p>
-          Use any element as a dropdown trigger, including avatars, icons, or custom components.
+          Control the open state externally for custom behavior.
         </p>
-
         <LiveDemo
-          code={`import { Dropdown, Avatar } from '@clarity/chat'
+          code={`import { useState } from 'react';
+import { Dropdown, Button } from '@clarity/chat-components';
 
-export default function CustomTriggersDemo() {
-  const userMenuItems = [
-    { id: 'profile', label: 'Profile', icon: '👤' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
-    { type: 'separator' },
-    { id: 'logout', label: 'Log out', icon: '🚪' }
-  ]
-  
-  const moreMenuItems = [
-    { id: 'refresh', label: 'Refresh' },
-    { id: 'share', label: 'Share' },
-    { id: 'report', label: 'Report' }
-  ]
-  
-  return (
-    <div className="flex gap-8">
-      {/* Avatar Trigger */}
-      <Dropdown
-        items={userMenuItems}
-        onSelect={(id) => alert(\`User menu: \${id}\`)}
-        trigger={
-          <button className="hover:opacity-80 transition-opacity">
-            <Avatar
-              src="/avatar.jpg"
-              name="John Doe"
-              size="md"
-              status="online"
-            />
-          </button>
-        }
-      />
-      
-      {/* Icon Trigger */}
-      <Dropdown
-        items={moreMenuItems}
-        onSelect={(id) => alert(\`More menu: \${id}\`)}
-        trigger={
-          <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <span className="text-xl">⋮</span>
-          </button>
-        }
-      />
-      
-      {/* Custom Badge Trigger */}
-      <Dropdown
-        items={userMenuItems}
-        onSelect={(id) => alert(\`Badge menu: \${id}\`)}
-        trigger={
-          <button className="relative px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-            Account
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-              3
-            </span>
-          </button>
-        }
-      />
-    </div>
-  )
-}`}
-        />
-      </section>
+export default function ControlledDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
 
-      <section>
-        <h2 id="width-control">Width Control</h2>
-        <p>
-          Control the dropdown width to match the trigger or set a custom width.
-        </p>
-
-        <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
-
-export default function WidthControlDemo() {
   const items = [
-    { id: '1', label: 'Option 1', description: 'Short description' },
-    { id: '2', label: 'Option 2', description: 'Short description' },
-    { id: '3', label: 'Option 3', description: 'Short description' }
-  ]
-  
+    { id: '1', label: 'Item 1' },
+    { id: '2', label: 'Item 2' },
+    { id: '3', label: 'Item 3' }
+  ];
+
   return (
-    <div className="space-y-4">
-      <div>
-        <p className="text-sm mb-2">Auto Width (default):</p>
-        <Dropdown
-          items={items}
-          width="auto"
-          trigger={<Button variant="outline">Small Trigger</Button>}
-        />
+    <div>
+      <div className="flex gap-3 mb-3">
+        <Button size="sm" onClick={() => setIsOpen(true)}>
+          Open Menu
+        </Button>
+        <Button size="sm" variant="secondary" onClick={() => setIsOpen(false)}>
+          Close Menu
+        </Button>
       </div>
-      
-      <div>
-        <p className="text-sm mb-2">Match Trigger Width:</p>
-        <Dropdown
-          items={items}
-          width="trigger"
-          trigger={
-            <Button variant="outline" className="w-64">
-              Wide Trigger Button
-            </Button>
-          }
-        />
-      </div>
-      
-      <div>
-        <p className="text-sm mb-2">Custom Width (320px):</p>
-        <Dropdown
-          items={items}
-          width={320}
-          trigger={<Button variant="outline">Small Trigger</Button>}
-        />
-      </div>
+
+      <Dropdown
+        items={items}
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        onSelect={(id) => alert(\`Selected: \${id}\`)}
+        trigger={<Button>Controlled Menu</Button>}
+      />
+
+      <p className="mt-3 text-sm text-gray-600">
+        Menu is {isOpen ? 'open' : 'closed'}
+      </p>
     </div>
-  )
+  );
 }`}
+          scope={{ useState: React.useState }}
         />
       </section>
 
-      <section>
-        <h2 id="advanced-patterns">Advanced Patterns</h2>
-
-        <h3 id="command-palette">Command Palette Pattern</h3>
+      <section className="docs-section">
+        <h2>Links in Dropdown</h2>
         <p>
-          Create a searchable command palette with keyboard shortcuts and categories.
+          Use the <code>href</code> property to render items as links.
         </p>
-
         <LiveDemo
-          code={`import { Dropdown, Button } from '@clarity/chat'
-import { useState } from 'react'
+          code={`import { Dropdown, Button } from '@clarity/chat-components';
 
-export default function CommandPaletteDemo() {
-  const [isOpen, setIsOpen] = useState(false)
-  
-  const commands = [
-    { type: 'header', label: 'Navigation' },
-    { id: 'home', label: 'Go to Home', icon: '🏠', shortcut: 'G then H' },
-    { id: 'inbox', label: 'Go to Inbox', icon: '📥', shortcut: 'G then I' },
-    { id: 'projects', label: 'Go to Projects', icon: '📁', shortcut: 'G then P' },
+export default function DropdownLinks() {
+  const items = [
+    { id: 'docs', label: 'Documentation', icon: '📚', href: '/docs' },
+    { id: 'api', label: 'API Reference', icon: '🔌', href: '/api' },
+    { id: 'github', label: 'GitHub', icon: '💻', href: 'https://github.com' },
     { type: 'separator' },
-    { type: 'header', label: 'Actions' },
-    { id: 'new', label: 'Create New', icon: '✨', shortcut: 'Cmd+N' },
-    { id: 'search', label: 'Search', icon: '🔍', shortcut: 'Cmd+K' },
-    { id: 'settings', label: 'Open Settings', icon: '⚙️', shortcut: 'Cmd+,' },
-    { type: 'separator' },
-    { type: 'header', label: 'Theme' },
-    { id: 'light', label: 'Light Mode', icon: '☀️' },
-    { id: 'dark', label: 'Dark Mode', icon: '🌙' },
-    { id: 'system', label: 'System Theme', icon: '💻' }
-  ]
-  
+    { id: 'support', label: 'Support', icon: '💬', href: '/support' }
+  ];
+
   return (
     <Dropdown
-      items={commands}
-      searchable
-      searchPlaceholder="Type a command or search..."
-      onSelect={(id) => {
-        alert(\`Command: \${id}\`)
-        setIsOpen(false)
-      }}
-      width={400}
-      maxHeight={500}
+      items={items}
+      trigger={<Button>Resources</Button>}
+    />
+  );
+}`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Advanced Patterns</h2>
+
+        <h3>User Profile Menu</h3>
+        <p>
+          A complete user profile dropdown with avatar, account info, and actions.
+        </p>
+        <LiveDemo
+          code={`import { Dropdown } from '@clarity/chat-components';
+
+export default function UserProfileMenu() {
+  const items = [
+    {
+      id: 'user-info',
+      type: 'custom',
+      label: (
+        <div className="px-2 py-3 border-b">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+              JD
+            </div>
+            <div>
+              <div className="font-medium">John Doe</div>
+              <div className="text-sm text-gray-600">john@example.com</div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    { id: 'profile', label: 'View Profile', icon: '👤' },
+    { id: 'settings', label: 'Settings', icon: '⚙️' },
+    { id: 'billing', label: 'Billing', icon: '💳' },
+    { type: 'separator' },
+    { id: 'help', label: 'Help & Support', icon: '❓' },
+    { id: 'feedback', label: 'Send Feedback', icon: '💬' },
+    { type: 'separator' },
+    { id: 'logout', label: 'Logout', icon: '🚪', variant: 'danger' }
+  ];
+
+  return (
+    <Dropdown
+      items={items}
+      placement="bottom-end"
+      width={280}
+      onSelect={(id) => alert(\`Action: \${id}\`)}
       trigger={
-        <Button variant="outline">
-          🔍 Command Palette <kbd className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-700 rounded">Cmd+K</kbd>
-        </Button>
+        <button className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium hover:bg-blue-600 transition-colors">
+          JD
+        </button>
       }
     />
-  )
+  );
 }`}
         />
 
-        <h3 id="filter-dropdown">Filter Dropdown Pattern</h3>
+        <h3>Context Menu Trigger</h3>
         <p>
-          Build advanced filter interfaces with multi-select and visual feedback.
+          Use dropdown as a context menu with right-click or long-press triggers.
         </p>
-
         <LiveDemo
-          code={`import { Dropdown, Button, Badge } from '@clarity/chat'
-import { useState } from 'react'
+          code={`import { useState } from 'react';
+import { Dropdown } from '@clarity/chat-components';
 
-export default function FilterDropdownDemo() {
-  const [statusFilters, setStatusFilters] = useState(new Set())
-  const [priorityFilters, setPriorityFilters] = useState(new Set())
-  
-  const statusItems = [
-    { id: 'open', label: 'Open', icon: '🟢' },
-    { id: 'in-progress', label: 'In Progress', icon: '🟡' },
-    { id: 'review', label: 'In Review', icon: '🔵' },
-    { id: 'closed', label: 'Closed', icon: '⚫' }
-  ]
-  
-  const priorityItems = [
-    { id: 'low', label: 'Low', icon: '⬇️' },
-    { id: 'medium', label: 'Medium', icon: '➡️' },
-    { id: 'high', label: 'High', icon: '⬆️' },
-    { id: 'urgent', label: 'Urgent', icon: '🔴' }
-  ]
-  
-  const totalFilters = statusFilters.size + priorityFilters.size
-  
+export default function ContextMenuDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const items = [
+    { id: 'copy', label: 'Copy', icon: '📋', shortcut: 'Cmd+C' },
+    { id: 'cut', label: 'Cut', icon: '✂️', shortcut: 'Cmd+X' },
+    { id: 'paste', label: 'Paste', icon: '📄', shortcut: 'Cmd+V' },
+    { type: 'separator' },
+    { id: 'delete', label: 'Delete', icon: '🗑️', variant: 'danger' }
+  ];
+
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    setPosition({ x: e.clientX, y: e.clientY });
+    setIsOpen(true);
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        <Dropdown
-          items={statusItems}
-          selectionMode="multiple"
-          selectedKeys={statusFilters}
-          onSelectionChange={setStatusFilters}
-          closeOnSelect={false}
-          trigger={
-            <Button variant="outline">
-              Status
-              {statusFilters.size > 0 && (
-                <Badge variant="primary" className="ml-2">
-                  {statusFilters.size}
-                </Badge>
-              )}
-            </Button>
-          }
-        />
-        
-        <Dropdown
-          items={priorityItems}
-          selectionMode="multiple"
-          selectedKeys={priorityFilters}
-          onSelectionChange={setPriorityFilters}
-          closeOnSelect={false}
-          trigger={
-            <Button variant="outline">
-              Priority
-              {priorityFilters.size > 0 && (
-                <Badge variant="primary" className="ml-2">
-                  {priorityFilters.size}
-                </Badge>
-              )}
-            </Button>
-          }
-        />
-        
-        {totalFilters > 0 && (
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setStatusFilters(new Set())
-              setPriorityFilters(new Set())
-            }}
-          >
-            Clear All
-          </Button>
-        )}
+    <div>
+      <div
+        onContextMenu={handleContextMenu}
+        className="p-8 bg-gray-100 rounded-lg text-center cursor-context-menu"
+      >
+        Right-click me to open context menu
       </div>
-      
-      {totalFilters > 0 && (
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <p className="text-sm font-medium mb-2">Active Filters:</p>
-          <div className="flex flex-wrap gap-2">
-            {Array.from(statusFilters).map((filter) => (
-              <Badge key={filter} variant="primary">
-                {filter}
-              </Badge>
-            ))}
-            {Array.from(priorityFilters).map((filter) => (
-              <Badge key={filter} variant="warning">
-                {filter}
-              </Badge>
-            ))}
-          </div>
+
+      {isOpen && (
+        <div
+          style={{ position: 'fixed', left: position.x, top: position.y }}
+        >
+          <Dropdown
+            items={items}
+            isOpen={isOpen}
+            onOpenChange={setIsOpen}
+            onSelect={(id) => alert(\`Action: \${id}\`)}
+            trigger={<div style={{ width: 0, height: 0 }} />}
+          />
         </div>
       )}
     </div>
-  )
+  );
 }`}
+          scope={{ useState: React.useState }}
+        />
+
+        <h3>Multi-Select with Search</h3>
+        <p>
+          Combine checkboxes with search for filtering large lists.
+        </p>
+        <LiveDemo
+          code={`import { useState } from 'react';
+import { Dropdown, Button } from '@clarity/chat-components';
+
+export default function SearchableDropdown() {
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState(new Set(['react', 'typescript']));
+
+  const allTags = [
+    'React', 'TypeScript', 'JavaScript', 'Node.js', 'Next.js',
+    'Vue', 'Angular', 'Svelte', 'Python', 'Django'
+  ];
+
+  const filteredTags = allTags.filter(tag =>
+    tag.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const items = [
+    {
+      id: 'search',
+      type: 'custom',
+      label: (
+        <input
+          type="text"
+          placeholder="Search tags..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-3 py-2 border-b"
+          onClick={(e) => e.stopPropagation()}
+        />
+      )
+    },
+    ...filteredTags.map(tag => ({
+      id: tag.toLowerCase(),
+      type: 'checkbox',
+      label: tag,
+      checked: selected.has(tag.toLowerCase())
+    }))
+  ];
+
+  const handleSelect = (id) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  return (
+    <div>
+      <Dropdown
+        items={items}
+        onSelect={handleSelect}
+        closeOnSelect={false}
+        width={250}
+        trigger={
+          <Button>
+            Select Tags ({selected.size})
+          </Button>
+        }
+      />
+      <div className="mt-3 flex gap-2 flex-wrap">
+        {Array.from(selected).map(tag => (
+          <span key={tag} className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}`}
+          scope={{ useState: React.useState }}
         />
       </section>
 
-      <section>
-        <h2 id="accessibility">Accessibility</h2>
+      <section className="docs-section">
+        <h2>Accessibility</h2>
         <p>
-          The Dropdown component follows WAI-ARIA best practices for menu accessibility:
+          The Dropdown component includes comprehensive accessibility features:
         </p>
 
-        <ul className="space-y-2">
-          <li>
-            <strong>Keyboard Navigation:</strong>
-            <ul className="ml-6 mt-2 space-y-1">
-              <li><kbd>Space</kbd> / <kbd>Enter</kbd> - Opens/closes the dropdown (when trigger is focused)</li>
-              <li><kbd>↓</kbd> - Moves focus to the next item</li>
-              <li><kbd>↑</kbd> - Moves focus to the previous item</li>
-              <li><kbd>Home</kbd> - Moves focus to the first item</li>
-              <li><kbd>End</kbd> - Moves focus to the last item</li>
-              <li><kbd>→</kbd> - Opens submenu (if focused item has submenu)</li>
-              <li><kbd>←</kbd> - Closes submenu and returns to parent</li>
-              <li><kbd>Esc</kbd> - Closes the dropdown</li>
-              <li><kbd>Space</kbd> / <kbd>Enter</kbd> - Selects the focused item</li>
-            </ul>
-          </li>
-          <li>
-            <strong>ARIA Attributes:</strong> Uses <code>role="menu"</code>, <code>aria-haspopup</code>,
-            <code>aria-expanded</code>, and proper item roles
-          </li>
-          <li>
-            <strong>Focus Management:</strong> Maintains focus within the menu and returns focus to
-            trigger on close
-          </li>
-          <li>
-            <strong>Screen Reader Support:</strong> Announces menu state, selected items, and keyboard
-            shortcuts
-          </li>
-          <li>
-            <strong>Disabled State:</strong> Disabled items are marked with <code>aria-disabled</code>
-            and are not keyboard navigable
-          </li>
+        <h3>ARIA Attributes</h3>
+        <ul>
+          <li><code>role="menu"</code> - Identifies the dropdown as a menu</li>
+          <li><code>role="menuitem"</code> - Each selectable item</li>
+          <li><code>role="menuitemcheckbox"</code> - For checkbox items</li>
+          <li><code>role="menuitemradio"</code> - For radio items</li>
+          <li><code>role="separator"</code> - For dividers</li>
+          <li><code>aria-haspopup="menu"</code> - On the trigger element</li>
+          <li><code>aria-expanded</code> - Indicates open/closed state</li>
+          <li><code>aria-disabled</code> - For disabled items</li>
+          <li><code>aria-checked</code> - For checkbox/radio items</li>
         </ul>
 
-        <Callout type="tip">
-          Always provide meaningful labels for dropdown items. Use icons as supplementary visuals,
-          not as the sole means of conveying information.
+        <h3>Keyboard Navigation</h3>
+        <ul>
+          <li><kbd>Enter</kbd> / <kbd>Space</kbd> - Open dropdown or select item</li>
+          <li><kbd>↓</kbd> - Move to next item</li>
+          <li><kbd>↑</kbd> - Move to previous item</li>
+          <li><kbd>Home</kbd> - Jump to first item</li>
+          <li><kbd>End</kbd> - Jump to last item</li>
+          <li><kbd>Esc</kbd> - Close dropdown</li>
+          <li><kbd>Tab</kbd> - Close dropdown and move focus forward</li>
+          <li><kbd>Shift+Tab</kbd> - Close dropdown and move focus backward</li>
+          <li><kbd>→</kbd> - Open submenu (when on item with submenu)</li>
+          <li><kbd>←</kbd> - Close submenu and return to parent</li>
+          <li>Type-ahead search - Type to jump to matching items</li>
+        </ul>
+
+        <h3>Focus Management</h3>
+        <ul>
+          <li>Focus is automatically moved to the first item when dropdown opens</li>
+          <li>Focus is restored to trigger element when closed</li>
+          <li>Focus is trapped within open submenus</li>
+          <li>Disabled items are skipped during keyboard navigation</li>
+        </ul>
+
+        <Callout type="warning" title="Accessibility Note">
+          Avoid deeply nested submenus (3+ levels) as they can be difficult to navigate
+          with keyboard and screen readers. Consider alternative UI patterns for complex hierarchies.
         </Callout>
       </section>
 
-      <section>
-        <h2 id="best-practices">Best Practices</h2>
+      <section className="docs-section">
+        <h2>Best Practices</h2>
 
-        <h3>When to Use Dropdowns</h3>
-        <ul className="space-y-2">
-          <li>✅ Displaying a list of actions or commands</li>
-          <li>✅ Building navigation menus</li>
-          <li>✅ Creating context menus for items</li>
-          <li>✅ Providing user account options</li>
-          <li>✅ Offering filtering and sorting options</li>
-          <li>✅ Displaying a list of choices (3-15 items)</li>
+        <h3>When to Use</h3>
+        <ul>
+          <li>✅ User account menus with profile, settings, and logout</li>
+          <li>✅ Action menus with multiple operations on an item</li>
+          <li>✅ Filter menus with checkboxes or radio options</li>
+          <li>✅ Navigation menus with categorized links</li>
+          <li>✅ Context menus for right-click actions</li>
         </ul>
 
-        <h3 className="mt-4">When NOT to Use Dropdowns</h3>
-        <ul className="space-y-2">
-          <li>❌ For 2-3 simple options (use radio buttons or tabs instead)</li>
-          <li>❌ For very long lists (consider autocomplete or virtual scrolling)</li>
-          <li>❌ When all options should be visible (use checkboxes or radio buttons)</li>
-          <li>❌ For critical actions that need more prominence (use dedicated buttons)</li>
+        <h3>When Not to Use</h3>
+        <ul>
+          <li>❌ Form input selection - use Select component instead</li>
+          <li>❌ Primary navigation - use dedicated nav components</li>
+          <li>❌ Very long lists (100+ items) - use searchable Select or data table</li>
+          <li>❌ Tooltips or help text - use Tooltip component</li>
         </ul>
 
-        <h3 className="mt-4">Design Guidelines</h3>
-        <Callout type="tip">
-          <ul className="space-y-2">
-            <li>Keep item labels short and descriptive</li>
-            <li>Use consistent icon styles throughout the dropdown</li>
-            <li>Group related items with separators</li>
-            <li>Place destructive actions at the bottom with visual distinction</li>
-            <li>Limit nesting to 2-3 levels maximum</li>
-            <li>Use headers to organize long lists</li>
-            <li>Show keyboard shortcuts for power users</li>
-            <li>Provide search for dropdowns with many items</li>
-            <li>Use appropriate placement to avoid viewport overflow</li>
-          </ul>
+        <h3>Design Guidelines</h3>
+        <ul>
+          <li>Group related items and use separators to create visual hierarchy</li>
+          <li>Place destructive actions (delete, remove) at the bottom with danger variant</li>
+          <li>Use icons sparingly - only when they add clear value</li>
+          <li>Keep menu item labels concise (1-3 words ideally)</li>
+          <li>Use headers to label groups of related items</li>
+          <li>Limit submenu depth to 2 levels maximum</li>
+          <li>Show keyboard shortcuts for power users</li>
+          <li>Disable items that aren't currently available rather than hiding them</li>
+        </ul>
+
+        <h3>Performance Tips</h3>
+        <ul>
+          <li>Dropdown content is lazy-rendered - not in DOM until opened</li>
+          <li>For very large lists, consider virtualizing or adding search</li>
+          <li>Use <code>closeOnSelect=false</code> for multi-select to prevent re-rendering</li>
+          <li>Memoize complex item label components to prevent unnecessary re-renders</li>
+        </ul>
+
+        <Callout type="info" title="Mobile Considerations">
+          On mobile devices, dropdowns automatically adjust to prevent overflow and position
+          themselves optimally. For very large menus on mobile, consider using a Modal or
+          Drawer instead for better UX.
         </Callout>
-
-        <h3 className="mt-4">Performance Tips</h3>
-        <ul className="space-y-2">
-          <li>Enable <code>virtualized</code> for lists with 100+ items</li>
-          <li>Use <code>maxHeight</code> to prevent extremely tall dropdowns</li>
-          <li>Lazy load submenu items when possible</li>
-          <li>Debounce search input for better performance</li>
-        </ul>
       </section>
 
-      <section>
-        <h2 id="typescript">TypeScript</h2>
-        <CodeBlock
-          language="typescript"
-          code={`import { ReactNode } from 'react'
+      <section className="docs-section">
+        <h2>TypeScript</h2>
+        <p>
+          The Dropdown component is fully typed with TypeScript:
+        </p>
+        <pre><code>{`import { ReactNode } from 'react';
 
-type DropdownItemType = 'item' | 'separator' | 'header' | 'submenu'
-type DropdownVariant = 'default' | 'danger' | 'success'
+type DropdownItemType = 'item' | 'separator' | 'header' | 'checkbox' | 'radio' | 'custom';
+type DropdownVariant = 'default' | 'danger';
 type DropdownPlacement = 
   | 'top' | 'top-start' | 'top-end'
   | 'bottom' | 'bottom-start' | 'bottom-end'
-  | 'left' | 'right'
+  | 'left' | 'left-start' | 'left-end'
+  | 'right' | 'right-start' | 'right-end';
 
 interface DropdownItem {
-  id?: string
-  label?: string
-  type?: DropdownItemType
-  icon?: string | ReactNode
-  shortcut?: string
-  disabled?: boolean
-  variant?: DropdownVariant
-  items?: DropdownItem[]
-  description?: string
+  id?: string;
+  type?: DropdownItemType;
+  label?: string | ReactNode;
+  icon?: string | ReactNode;
+  shortcut?: string;
+  variant?: DropdownVariant;
+  disabled?: boolean;
+  checked?: boolean;
+  items?: DropdownItem[];
+  href?: string;
 }
 
 interface DropdownProps {
-  // Required
-  items: DropdownItem[]
-  trigger: ReactNode
+  // Trigger
+  trigger: ReactNode;
   
-  // Callbacks
-  onSelect?: (itemId: string) => void
-  onSelectionChange?: (keys: Set<string>) => void
+  // Items
+  items: DropdownItem[];
+  onSelect?: (id: string) => void;
   
   // Positioning
-  placement?: DropdownPlacement
-  width?: 'auto' | 'trigger' | number
-  offset?: number
+  placement?: DropdownPlacement;
+  align?: 'start' | 'center' | 'end';
+  offset?: number;
+  flip?: boolean;
+  arrow?: boolean;
   
   // Behavior
-  closeOnSelect?: boolean
-  disabled?: boolean
-  maxHeight?: number
-  virtualized?: boolean
+  closeOnSelect?: boolean;
+  closeOnClickOutside?: boolean;
+  disabled?: boolean;
   
-  // Search
-  searchable?: boolean
-  searchPlaceholder?: string
+  // Controlled
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
   
-  // Selection
-  selectionMode?: 'none' | 'single' | 'multiple'
-  selectedKeys?: Set<string>
+  // Sizing
+  width?: 'auto' | 'trigger' | number;
+  maxHeight?: number;
   
   // Styling
-  className?: string
+  className?: string;
 }
 
-// Example usage with TypeScript
-const FileMenu: React.FC = () => {
-  const [recentFiles, setRecentFiles] = useState<string[]>([])
-  
-  const menuItems: DropdownItem[] = [
-    {
-      id: 'new',
-      label: 'New File',
-      icon: '📄',
-      shortcut: 'Cmd+N'
-    },
-    {
-      id: 'open-recent',
-      label: 'Open Recent',
-      type: 'submenu',
-      items: recentFiles.map((file) => ({
-        id: file,
-        label: file
-      }))
-    },
-    {
-      type: 'separator'
-    },
-    {
-      id: 'quit',
-      label: 'Quit',
-      variant: 'danger',
-      shortcut: 'Cmd+Q'
-    }
-  ]
-  
-  const handleSelect = (itemId: string) => {
-    console.log('Selected:', itemId)
-  }
-  
-  return (
-    <Dropdown
-      items={menuItems}
-      onSelect={handleSelect}
-      trigger={<Button>File</Button>}
-    />
-  )
-}`}
-        />
+export default function Dropdown(props: DropdownProps): JSX.Element;`}</code></pre>
       </section>
 
-      <section>
-        <h2 id="related">Related</h2>
+      <section className="docs-section">
+        <h2>Related Components</h2>
         <ul>
-          <li><a href="/reference/components/menu">Menu</a> - Alternative menu component</li>
-          <li><a href="/reference/components/select">Select</a> - Form select input</li>
-          <li><a href="/reference/components/popover">Popover</a> - Generic popover container</li>
-          <li><a href="/reference/components/context-menu">Context Menu</a> - Right-click menu</li>
-          <li><a href="/reference/components/button">Button</a> - Common trigger element</li>
-          <li><a href="/reference/hooks/use-disclosure">useDisclosure</a> - Hook for managing open state</li>
+          <li><a href="/reference/components/select">Select</a> - Form input for choosing from options</li>
+          <li><a href="/reference/components/context-menu">ContextMenu</a> - Right-click contextual actions</li>
+          <li><a href="/reference/components/popover">Popover</a> - More flexible floating content</li>
+          <li><a href="/reference/components/menu">Menu</a> - Permanent navigation menus</li>
         </ul>
       </section>
-    </ComponentLayout>
-  )
+    </div>
+  );
 }
