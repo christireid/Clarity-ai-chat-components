@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 /**
  * Conversation item
@@ -353,7 +354,8 @@ export function ConversationList({
 
       {/* Conversation list */}
       <div className="flex-1 overflow-y-auto">
-        {filteredConversations.length === 0 ? (
+        <AnimatePresence initial={false}>
+          {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-6 text-center">
             <svg
               className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-3"
@@ -382,13 +384,26 @@ export function ConversationList({
           </div>
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {filteredConversations.map((conversation) => {
+            {filteredConversations.map((conversation, index) => {
               const isActive = activeId === conversation.id
               const isSelected = selectedIds.includes(conversation.id)
 
               return (
-                <div
+                <motion.div
                   key={conversation.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -100, height: 0 }}
+                  transition={{
+                    duration: 0.2,
+                    delay: index * 0.05, // Stagger: 50ms between items
+                    ease: [0.4, 0, 0.2, 1],
+                  }}
+                  whileHover={{
+                    y: -2,
+                    transition: { duration: 0.15 },
+                  }}
+                  layout
                   onClick={() => handleSelect(conversation.id)}
                   className={`p-4 cursor-pointer transition-colors ${
                     isActive
@@ -469,28 +484,46 @@ export function ConversationList({
                     {/* Actions */}
                     <div className="flex flex-col gap-1" onClick={(e) => e.stopPropagation()}>
                       {onTogglePin && (
-                        <button
+                        <motion.button
                           onClick={() => onTogglePin(conversation.id)}
+                          whileHover={{ scale: 1.2, rotate: conversation.isPinned ? 0 : 15 }}
+                          whileTap={{ scale: 0.9 }}
                           className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
                           aria-label={conversation.isPinned ? 'Unpin' : 'Pin'}
                         >
-                          <span className="text-sm">{conversation.isPinned ? '📌' : '📍'}</span>
-                        </button>
+                          <motion.span
+                            className="text-sm"
+                            animate={conversation.isPinned ? { rotate: [0, -10, 10, -10, 0] } : {}}
+                            transition={{ duration: 0.5 }}
+                          >
+                            {conversation.isPinned ? '📌' : '📍'}
+                          </motion.span>
+                        </motion.button>
                       )}
 
                       {onToggleFavorite && (
-                        <button
+                        <motion.button
                           onClick={() => onToggleFavorite(conversation.id)}
+                          whileHover={{ scale: 1.2 }}
+                          whileTap={{ scale: 0.9 }}
                           className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
                           aria-label={conversation.isFavorite ? 'Unfavorite' : 'Favorite'}
                         >
-                          <span className="text-sm">{conversation.isFavorite ? '⭐' : '☆'}</span>
-                        </button>
+                          <motion.span
+                            className="text-sm"
+                            animate={conversation.isFavorite ? { scale: [1, 1.3, 1] } : {}}
+                            transition={{ duration: 0.3 }}
+                          >
+                            {conversation.isFavorite ? '⭐' : '☆'}
+                          </motion.span>
+                        </motion.button>
                       )}
 
                       {onDelete && (
-                        <button
+                        <motion.button
                           onClick={() => onDelete(conversation.id)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
                           className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
                           aria-label="Delete conversation"
                         >
@@ -507,15 +540,16 @@ export function ConversationList({
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                             />
                           </svg>
-                        </button>
+                        </motion.button>
                       )}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )
             })}
           </div>
         )}
+        </AnimatePresence>
       </div>
 
       {/* Footer with stats */}

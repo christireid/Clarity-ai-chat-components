@@ -71,9 +71,21 @@ export const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardP
 
     const hoverVariants = {
       none: {},
-      subtle: { y: -2, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' },
-      medium: { y: -4, boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' },
-      strong: { y: -8, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' },
+      subtle: { 
+        y: -2, 
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
+      },
+      medium: { 
+        y: -4, 
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
+      },
+      strong: { 
+        y: -8, 
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
+      },
     }
 
     const Component = interactive || onCardClick ? motion.div : motion.div
@@ -104,13 +116,17 @@ export const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardP
         }}
         animate={
           isHovered && !disabled && interactive
-            ? hoverVariants[hoverIntensity]
+            ? { 
+                ...hoverVariants[hoverIntensity],
+                scale: hoverIntensity !== 'none' ? 1.02 : 1,
+              }
+            : { scale: 1 }
+        }
+        whileTap={
+          !disabled && interactive
+            ? { scale: 0.98, transition: { duration: 0.1 } }
             : {}
         }
-        transition={{
-          duration: ANIMATION_DURATION.fast / 1000,
-          ease: ANIMATION_EASING.out,
-        }}
         {...props}
       >
         {/* Ripple effects */}
