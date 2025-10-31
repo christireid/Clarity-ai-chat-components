@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-geist-sans: 'Geist Sans', system-ui, sans-serif;
+  --font-geist-mono: 'Geist Mono', monospace;
+  
+  /* Light mode colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #9ca3af;
+  --color-border: #e5e7eb;
+  --color-brand: #3b82f6;
+  --color-brand-hover: #2563eb;
+  
+  /* Code block colors */
+  --tw-prose-body: #374151;
+  --tw-prose-headings: #111827;
+  --tw-prose-links: #2563eb;
+  --tw-prose-links-hover: #1d4ed8;
+  --tw-prose-code: #111827;
+  --tw-prose-code-bg: #f3f4f6;
+}
+
+.dark {
+  /* Dark mode colors */
+  --color-bg-primary: #030712;
+  --color-bg-secondary: #111827;
+  --color-bg-tertiary: #1f2937;
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-text-tertiary: #6b7280;
+  --color-border: #374151;
+  --color-brand: #60a5fa;
+  --color-brand-hover: #3b82f6;
+  
+  /* Code block colors */
+  --tw-prose-body: #d1d5db;
+  --tw-prose-headings: #f9fafb;
+  --tw-prose-links: #60a5fa;
+  --tw-prose-links-hover: #93c5fd;
+  --tw-prose-code: #f9fafb;
+  --tw-prose-code-bg: #1f2937;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-geist-sans);
+}
+
+body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-brand);
+  color: white;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-tertiary);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Code block styling */
+pre {
+  @apply rounded-lg overflow-x-auto p-4 my-6;
+  background-color: var(--color-bg-tertiary) !important;
+}
+
+code {
+  @apply font-mono text-sm;
+}
+
+/* Inline code */
+:not(pre) > code {
+  @apply px-1.5 py-0.5 rounded;
+  background-color: var(--tw-prose-code-bg);
+  color: var(--tw-prose-code);
+}
+
+/* Headings with anchor links */
+.heading-anchor {
+  @apply opacity-0 transition-opacity duration-200;
+  margin-left: -1.5rem;
+  padding-right: 0.5rem;
+}
+
+h1:hover .heading-anchor,
+h2:hover .heading-anchor,
+h3:hover .heading-anchor,
+h4:hover .heading-anchor,
+h5:hover .heading-anchor,
+h6:hover .heading-anchor {
+  @apply opacity-100;
+}
+
+/* Focus visible styles */
+a:focus-visible,
+button:focus-visible {
+  @apply outline-2 outline-offset-2 outline-brand-500 rounded;
+}
+
+/* Animation utilities */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
+
+/* Typography utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Container utilities */
+.container-docs {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Skip to content link */
+.skip-to-content {
+  @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50;
+  @apply px-4 py-2 bg-brand-500 text-white rounded-lg;
+}
