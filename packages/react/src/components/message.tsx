@@ -41,22 +41,29 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
     const isAssistant = message.role === 'assistant'
     const isStreaming = message.status === 'streaming'
 
+    const [showConfetti, setShowConfetti] = React.useState(false)
+
     const handleFeedback = (type: 'up' | 'down') => {
       setFeedbackGiven(type)
       onFeedback?.(type)
       
       // Hooked principle: Variable reward
       if (type === 'up') {
-        // Could trigger confetti or positive animation
-        console.log('🎉 Positive feedback received!')
+        // Trigger confetti animation
+        setShowConfetti(true)
+        setTimeout(() => setShowConfetti(false), 1000)
       }
     }
 
     return (
       <motion.div
         ref={ref}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ 
+          opacity: 0, 
+          x: isUser ? 20 : -20,  // Slide from appropriate side
+          y: 10,
+        }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ 
           duration: ANIMATION_DURATION.normal / 1000, 
@@ -73,12 +80,23 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
       >
         {/* Avatar */}
         {showAvatar && (
-          <Avatar
-            src={isUser ? undefined : '/ai-avatar.png'}
-            alt={isUser ? 'User' : 'AI Assistant'}
-            fallback={isUser ? 'U' : 'AI'}
-            className="flex-shrink-0"
-          />
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ 
+              type: 'spring', 
+              stiffness: 500, 
+              damping: 25,
+              delay: 0.1,
+            }}
+          >
+            <Avatar
+              src={isUser ? undefined : '/ai-avatar.png'}
+              alt={isUser ? 'User' : 'AI Assistant'}
+              fallback={isUser ? 'U' : 'AI'}
+              className="flex-shrink-0"
+            />
+          </motion.div>
         )}
 
         {/* Message Content */}
@@ -89,9 +107,14 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
               {isUser ? 'You' : 'AI Assistant'}
             </span>
             {showTimestamp && (
-              <span className="text-xs text-muted-foreground">
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isHovered ? 1 : 0.6 }}
+                transition={{ duration: 0.2 }}
+                className="text-xs text-muted-foreground"
+              >
                 {formatRelativeTime(message.createdAt)}
-              </span>
+              </motion.span>
             )}
             {message.status === 'sending' && (
               <Badge variant="secondary" dot>
@@ -144,10 +167,16 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
             
             {isStreaming && (
               <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ repeat: Infinity, duration: 0.8 }}
-                className="inline-block w-2 h-4 bg-current ml-1"
+                animate={{ 
+                  opacity: [1, 0.3, 1],
+                  scale: [1, 0.95, 1],
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 1,
+                  ease: "easeInOut",
+                }}
+                className="inline-block w-2 h-4 bg-current ml-1 rounded-sm"
               />
             )}
           </div>
@@ -167,40 +196,83 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
           <AnimatePresence>
             {isAssistant && (isHovered || feedbackGiven) && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: 10, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, y: 10, height: 0 }}
                 transition={{ 
                   duration: ANIMATION_DURATION.fast / 1000,
                   ease: ANIMATION_EASING.out,
                 }}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 overflow-hidden"
               >
                 <CopyButton text={message.content} size="sm" />
                 
-                <motion.div
-                  whileHover={INTERACTION_VARIANTS.iconButton.hover}
-                  whileTap={INTERACTION_VARIANTS.iconButton.tap}
-                  transition={INTERACTION_VARIANTS.iconButton.transition}
-                >
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleFeedback('up')}
-                    className={cn(
-                      'transition-colors',
-                      feedbackGiven === 'up' && 'text-success bg-success/10'
-                    )}
-                    aria-label="Good response"
+                {/* Thumbs Up with Confetti */}
+                <div className="relative">
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: feedbackGiven === 'up' ? 0 : -15 }}
+                    whileTap={{ scale: 0.9 }}
+                    animate={feedbackGiven === 'up' ? { 
+                      scale: [1, 1.2, 1],
+                      rotate: [0, -15, 15, -15, 0],
+                    } : {}}
+                    transition={{ duration: 0.5 }}
                   >
-                    <ThumbsUpIcon size={16} />
-                  </Button>
-                </motion.div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleFeedback('up')}
+                      className={cn(
+                        'transition-colors',
+                        feedbackGiven === 'up' && 'text-success bg-success/10'
+                      )}
+                      aria-label="Good response"
+                    >
+                      <ThumbsUpIcon size={16} />
+                    </Button>
+                  </motion.div>
+                  
+                  {/* Confetti Effect */}
+                  <AnimatePresence>
+                    {showConfetti && (
+                      <>
+                        {[...Array(8)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{
+                              opacity: 1,
+                              scale: 0,
+                              x: 0,
+                              y: 0,
+                            }}
+                            animate={{
+                              opacity: 0,
+                              scale: 1,
+                              x: Math.cos((i * Math.PI * 2) / 8) * 30,
+                              y: Math.sin((i * Math.PI * 2) / 8) * 30,
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.6, ease: 'easeOut' }}
+                            className="absolute top-1/2 left-1/2 w-2 h-2 bg-success rounded-full pointer-events-none"
+                            style={{
+                              backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'][i % 4],
+                            }}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
                 
+                {/* Thumbs Down */}
                 <motion.div
-                  whileHover={INTERACTION_VARIANTS.iconButton.hover}
-                  whileTap={INTERACTION_VARIANTS.iconButton.tap}
-                  transition={INTERACTION_VARIANTS.iconButton.transition}
+                  whileHover={{ scale: 1.1, rotate: feedbackGiven === 'down' ? 0 : 15 }}
+                  whileTap={{ scale: 0.9 }}
+                  animate={feedbackGiven === 'down' ? { 
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 15, -15, 15, 0],
+                  } : {}}
+                  transition={{ duration: 0.5 }}
                 >
                   <Button
                     variant="ghost"
