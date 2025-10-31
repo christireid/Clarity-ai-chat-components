@@ -6,73 +6,46 @@ import { cn } from '../utils/cn'
 // Types
 // ============================================================================
 
-export interface DialogProps {
+export interface DrawerProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   children: React.ReactNode
-  modal?: boolean // Default: true
   defaultOpen?: boolean
 }
 
-export interface DialogTriggerProps {
+export interface DrawerTriggerProps {
   asChild?: boolean
   children: React.ReactNode
   onClick?: () => void
 }
 
-export interface DialogContentProps {
+export interface DrawerContentProps {
   children: React.ReactNode
   className?: string
+  side?: 'left' | 'right' | 'top' | 'bottom'
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
-  closeOnClickOutside?: boolean // Default: true
-  closeOnEscape?: boolean // Default: true
-  showCloseButton?: boolean // Default: true
-  animation?: 'scale' | 'slide-up' | 'slide-down' | 'fade' | 'zoom'
-  blurBackdrop?: boolean // Default: true
+  closeOnClickOutside?: boolean
+  closeOnEscape?: boolean
+  showCloseButton?: boolean
+  blurBackdrop?: boolean
   overlayClassName?: string
-}
-
-export interface DialogHeaderProps {
-  children: React.ReactNode
-  className?: string
-}
-
-export interface DialogTitleProps {
-  children: React.ReactNode
-  className?: string
-}
-
-export interface DialogDescriptionProps {
-  children: React.ReactNode
-  className?: string
-}
-
-export interface DialogFooterProps {
-  children: React.ReactNode
-  className?: string
-}
-
-export interface DialogCloseProps {
-  children?: React.ReactNode
-  className?: string
-  asChild?: boolean
 }
 
 // ============================================================================
 // Context
 // ============================================================================
 
-interface DialogContextValue {
+interface DrawerContextValue {
   open: boolean
   setOpen: (open: boolean) => void
 }
 
-const DialogContext = React.createContext<DialogContextValue | null>(null)
+const DrawerContext = React.createContext<DrawerContextValue | null>(null)
 
-const useDialog = () => {
-  const context = React.useContext(DialogContext)
+const useDrawer = () => {
+  const context = React.useContext(DrawerContext)
   if (!context) {
-    throw new Error('Dialog components must be used within a Dialog')
+    throw new Error('Drawer components must be used within a Drawer')
   }
   return context
 }
@@ -88,7 +61,6 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
     const element = ref.current
     const previouslyFocusedElement = document.activeElement as HTMLElement
 
-    // Get all focusable elements
     const getFocusableElements = () => {
       return Array.from(
         element.querySelectorAll<HTMLElement>(
@@ -97,13 +69,11 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
       )
     }
 
-    // Focus first element
     const focusableElements = getFocusableElements()
     if (focusableElements.length > 0) {
       focusableElements[0].focus()
     }
 
-    // Handle tab key
     const handleTab = (e: KeyboardEvent) => {
       const focusableElements = getFocusableElements()
       if (focusableElements.length === 0) return
@@ -113,13 +83,11 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
 
       if (e.key === 'Tab') {
         if (e.shiftKey) {
-          // Shift + Tab
           if (document.activeElement === firstElement) {
             e.preventDefault()
             lastElement.focus()
           }
         } else {
-          // Tab
           if (document.activeElement === lastElement) {
             e.preventDefault()
             firstElement.focus()
@@ -132,7 +100,6 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
 
     return () => {
       element.removeEventListener('keydown', handleTab)
-      // Return focus to previously focused element
       if (previouslyFocusedElement) {
         previouslyFocusedElement.focus()
       }
@@ -141,10 +108,10 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
 }
 
 // ============================================================================
-// Dialog Root Component
+// Drawer Root Component
 // ============================================================================
 
-export const Dialog: React.FC<DialogProps> = ({
+export const Drawer: React.FC<DrawerProps> = ({
   open: controlledOpen,
   onOpenChange,
   children,
@@ -164,22 +131,22 @@ export const Dialog: React.FC<DialogProps> = ({
   )
 
   return (
-    <DialogContext.Provider value={{ open, setOpen }}>
+    <DrawerContext.Provider value={{ open, setOpen }}>
       {children}
-    </DialogContext.Provider>
+    </DrawerContext.Provider>
   )
 }
 
 // ============================================================================
-// Dialog Trigger
+// Drawer Trigger
 // ============================================================================
 
-export const DialogTrigger: React.FC<DialogTriggerProps> = ({
+export const DrawerTrigger: React.FC<DrawerTriggerProps> = ({
   children,
   onClick,
   asChild,
 }) => {
-  const { setOpen } = useDialog()
+  const { setOpen } = useDrawer()
 
   const handleClick = () => {
     setOpen(true)
@@ -200,57 +167,82 @@ export const DialogTrigger: React.FC<DialogTriggerProps> = ({
 }
 
 // ============================================================================
-// Dialog Content (with Portal, Backdrop, and Animations)
+// Drawer Content
 // ============================================================================
 
 const sizeClasses = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-xl',
-  full: 'max-w-full mx-4',
-}
-
-const contentAnimations = {
-  scale: {
-    initial: { scale: 0.95, opacity: 0 },
-    animate: { scale: 1, opacity: 1 },
-    exit: { scale: 0.95, opacity: 0 },
+  left: {
+    sm: 'w-64',
+    md: 'w-80',
+    lg: 'w-96',
+    xl: 'w-[480px]',
+    full: 'w-full',
   },
-  'slide-up': {
-    initial: { y: 20, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: 20, opacity: 0 },
+  right: {
+    sm: 'w-64',
+    md: 'w-80',
+    lg: 'w-96',
+    xl: 'w-[480px]',
+    full: 'w-full',
   },
-  'slide-down': {
-    initial: { y: -20, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: -20, opacity: 0 },
+  top: {
+    sm: 'h-64',
+    md: 'h-80',
+    lg: 'h-96',
+    xl: 'h-[480px]',
+    full: 'h-full',
   },
-  fade: {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
-  },
-  zoom: {
-    initial: { scale: 0.8, opacity: 0 },
-    animate: { scale: 1, opacity: 1 },
-    exit: { scale: 0.8, opacity: 0 },
+  bottom: {
+    sm: 'h-64',
+    md: 'h-80',
+    lg: 'h-96',
+    xl: 'h-[480px]',
+    full: 'h-full',
   },
 }
 
-export const DialogContent: React.FC<DialogContentProps> = ({
+const positionClasses = {
+  left: 'inset-y-0 left-0',
+  right: 'inset-y-0 right-0',
+  top: 'inset-x-0 top-0',
+  bottom: 'inset-x-0 bottom-0',
+}
+
+const slideAnimations = {
+  left: {
+    initial: { x: '-100%' },
+    animate: { x: 0 },
+    exit: { x: '-100%' },
+  },
+  right: {
+    initial: { x: '100%' },
+    animate: { x: 0 },
+    exit: { x: '100%' },
+  },
+  top: {
+    initial: { y: '-100%' },
+    animate: { y: 0 },
+    exit: { y: '-100%' },
+  },
+  bottom: {
+    initial: { y: '100%' },
+    animate: { y: 0 },
+    exit: { y: '100%' },
+  },
+}
+
+export const DrawerContent: React.FC<DrawerContentProps> = ({
   children,
   className,
+  side = 'right',
   size = 'md',
   closeOnClickOutside = true,
   closeOnEscape = true,
   showCloseButton = true,
-  animation = 'scale',
   blurBackdrop = true,
   overlayClassName,
 }) => {
-  const { open, setOpen } = useDialog()
+  const { open, setOpen } = useDrawer()
   const contentRef = React.useRef<HTMLDivElement>(null)
 
   // Focus trap
@@ -301,55 +293,58 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             aria-hidden="true"
           />
 
-          {/* Content */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-            <motion.div
-              ref={contentRef}
-              {...contentAnimations[animation]}
-              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-              onClick={(e) => e.stopPropagation()}
-              className={cn(
-                'relative w-full bg-background border border-border rounded-lg shadow-xl pointer-events-auto',
-                sizeClasses[size],
-                className
-              )}
-              role="dialog"
-              aria-modal="true"
-            >
-              {/* Close button */}
-              {showCloseButton && (
-                <button
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    'absolute top-4 right-4 w-8 h-8 rounded-md',
-                    'flex items-center justify-center',
-                    'text-muted-foreground hover:text-foreground',
-                    'hover:bg-muted/50',
-                    'transition-colors duration-200',
-                    'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
-                  )}
-                  aria-label="Close dialog"
+          {/* Drawer Content */}
+          <motion.div
+            ref={contentRef}
+            {...slideAnimations[side]}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            className={cn(
+              'fixed z-50 bg-background border shadow-xl',
+              positionClasses[side],
+              sizeClasses[side][size],
+              side === 'left' && 'border-r',
+              side === 'right' && 'border-l',
+              side === 'top' && 'border-b',
+              side === 'bottom' && 'border-t',
+              className
+            )}
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Close button */}
+            {showCloseButton && (
+              <button
+                onClick={() => setOpen(false)}
+                className={cn(
+                  'absolute top-4 right-4 w-8 h-8 rounded-md',
+                  'flex items-center justify-center',
+                  'text-muted-foreground hover:text-foreground',
+                  'hover:bg-muted/50',
+                  'transition-colors duration-200',
+                  'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                  'z-10'
+                )}
+                aria-label="Close drawer"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 15 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              )}
+                  <path
+                    d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
+                    fill="currentColor"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            )}
 
-              {children}
-            </motion.div>
-          </div>
+            {children}
+          </motion.div>
         </>
       )}
     </AnimatePresence>
@@ -357,13 +352,13 @@ export const DialogContent: React.FC<DialogContentProps> = ({
 }
 
 // ============================================================================
-// Dialog Sub-components
+// Drawer Sub-components
 // ============================================================================
 
-export const DialogHeader: React.FC<DialogHeaderProps> = ({
-  children,
-  className,
-}) => {
+export const DrawerHeader: React.FC<{
+  children: React.ReactNode
+  className?: string
+}> = ({ children, className }) => {
   return (
     <div className={cn('flex flex-col space-y-1.5 px-6 py-5 border-b', className)}>
       {children}
@@ -371,10 +366,10 @@ export const DialogHeader: React.FC<DialogHeaderProps> = ({
   )
 }
 
-export const DialogTitle: React.FC<DialogTitleProps> = ({
-  children,
-  className,
-}) => {
+export const DrawerTitle: React.FC<{
+  children: React.ReactNode
+  className?: string
+}> = ({ children, className }) => {
   return (
     <h2
       className={cn(
@@ -387,10 +382,10 @@ export const DialogTitle: React.FC<DialogTitleProps> = ({
   )
 }
 
-export const DialogDescription: React.FC<DialogDescriptionProps> = ({
-  children,
-  className,
-}) => {
+export const DrawerDescription: React.FC<{
+  children: React.ReactNode
+  className?: string
+}> = ({ children, className }) => {
   return (
     <p className={cn('text-sm text-muted-foreground', className)}>
       {children}
@@ -398,17 +393,17 @@ export const DialogDescription: React.FC<DialogDescriptionProps> = ({
   )
 }
 
-export const DialogBody: React.FC<{ children: React.ReactNode; className?: string }> = ({
-  children,
-  className,
-}) => {
-  return <div className={cn('px-6 py-4', className)}>{children}</div>
+export const DrawerBody: React.FC<{
+  children: React.ReactNode
+  className?: string
+}> = ({ children, className }) => {
+  return <div className={cn('px-6 py-4 overflow-y-auto flex-1', className)}>{children}</div>
 }
 
-export const DialogFooter: React.FC<DialogFooterProps> = ({
-  children,
-  className,
-}) => {
+export const DrawerFooter: React.FC<{
+  children: React.ReactNode
+  className?: string
+}> = ({ children, className }) => {
   return (
     <div
       className={cn(
@@ -421,12 +416,12 @@ export const DialogFooter: React.FC<DialogFooterProps> = ({
   )
 }
 
-export const DialogClose: React.FC<DialogCloseProps> = ({
-  children,
-  className,
-  asChild,
-}) => {
-  const { setOpen } = useDialog()
+export const DrawerClose: React.FC<{
+  children?: React.ReactNode
+  className?: string
+  asChild?: boolean
+}> = ({ children, className, asChild }) => {
+  const { setOpen } = useDrawer()
 
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
