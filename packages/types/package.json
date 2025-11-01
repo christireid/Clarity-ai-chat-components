@@ -17,7 +17,13 @@
   ],
   "sideEffects": false,
   "publishConfig": {
-    "access": "restricted"
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christireid/Clarity-ai-chat-components.git",
+    "directory": "packages/types"
   },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",

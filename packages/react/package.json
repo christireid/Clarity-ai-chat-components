@@ -20,7 +20,13 @@
     "*.css"
   ],
   "publishConfig": {
-    "access": "restricted"
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christireid/Clarity-ai-chat-components.git",
+    "directory": "packages/react"
   },
   "scripts": {
     "build": "tsup",

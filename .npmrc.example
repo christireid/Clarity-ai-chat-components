@@ -1,15 +1,17 @@
-# NPM Private Publishing Configuration
-# Copy this file to .npmrc and fill in your authentication token
+# GitHub Packages Configuration (PRIVATE PACKAGES)
+# This configuration is required to publish and install @clarity-chat packages
 
-# For npm registry (private packages require npm Pro, Teams, or Enterprise)
-# Generate token at: https://www.npmjs.com/settings/YOUR_USERNAME/tokens
-# Use "Automation" or "Publish" token type
-//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+# Point @clarity-chat scoped packages to GitHub Packages
+@clarity-chat:registry=https://npm.pkg.github.com
 
-# OR use GitHub Packages (alternative for private npm packages)
-# Generate token at: https://github.com/settings/tokens with 'write:packages' scope
-# @clarity-chat:registry=https://npm.pkg.github.com
+# Authentication token for GitHub Packages
+# Replace YOUR_GITHUB_TOKEN with your actual Personal Access Token
+# Generate at: https://github.com/settings/tokens
+# Required scopes: read:packages, write:packages (for publishing)
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+
+# Alternative: Use environment variable (recommended for CI/CD)
 # //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 
-# Optional: Set default access for scoped packages
-access=restricted
+# IMPORTANT: Never commit this file with your actual token!
+# This file should be in .gitignore

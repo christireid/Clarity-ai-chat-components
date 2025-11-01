@@ -62,11 +62,31 @@
 
 ## 🚀 Quick Start
 
-### Installation
+### Installation via GitHub Packages (Private)
 
+These packages are hosted as **private packages** on GitHub Packages.
+
+**First time setup:**
+```bash
+# 1. Generate GitHub token at: https://github.com/settings/tokens
+#    Required scopes: read:packages, repo
+
+# 2. Configure authentication
+cat > .npmrc << 'EOF'
+@clarity-chat:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+EOF
+
+# 3. Add to .gitignore
+echo ".npmrc" >> .gitignore
+```
+
+**Install packages:**
 ```bash
 npm install @clarity-chat/react
 ```
+
+**[→ Complete GitHub Packages Setup Guide](./GITHUB_PACKAGES_QUICKSTART.md)**
 
 ### Basic Usage (5 Minutes)
 
