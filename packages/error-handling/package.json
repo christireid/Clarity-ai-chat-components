@@ -18,6 +18,9 @@
     "docs",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "restricted"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly",

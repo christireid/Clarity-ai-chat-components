@@ -6,6 +6,9 @@
   "bin": {
     "clarity-chat": "./dist/index.js"
   },
+  "publishConfig": {
+    "access": "restricted"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsup src/index.ts --format esm --dts --clean",

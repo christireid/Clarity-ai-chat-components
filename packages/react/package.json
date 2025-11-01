@@ -19,6 +19,9 @@
   "sideEffects": [
     "*.css"
   ],
+  "publishConfig": {
+    "access": "restricted"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

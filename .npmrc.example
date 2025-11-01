@@ -1,0 +1,15 @@
+# NPM Private Publishing Configuration
+# Copy this file to .npmrc and fill in your authentication token
+
+# For npm registry (private packages require npm Pro, Teams, or Enterprise)
+# Generate token at: https://www.npmjs.com/settings/YOUR_USERNAME/tokens
+# Use "Automation" or "Publish" token type
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+
+# OR use GitHub Packages (alternative for private npm packages)
+# Generate token at: https://github.com/settings/tokens with 'write:packages' scope
+# @clarity-chat:registry=https://npm.pkg.github.com
+# //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+
+# Optional: Set default access for scoped packages
+access=restricted
