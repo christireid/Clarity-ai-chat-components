@@ -1,564 +1,782 @@
-import React from 'react';
-import { Metadata } from 'next';
-import LiveDemo from '@/components/LiveDemo';
-import ApiTable from '@/components/ApiTable';
-import Callout from '@/components/Callout';
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Skeleton Component - Clarity Chat Components',
-  description: 'A placeholder component that displays a loading skeleton while content is being fetched.',
-};
+  title: 'Skeleton Loaders',
+  description: 'Loading placeholder components with shimmer and pulse animations for displaying content structure while data loads.',
+}
 
-export default function SkeletonPage() {
+# Skeleton Loaders
+
+Loading placeholder components with shimmer and pulse animations. Used to show content structure while data is loading, providing better perceived performance.
+
+## Overview
+
+The Skeleton family provides 10 loading placeholder components:
+- **Skeleton** - Base skeleton with customizable dimensions
+- **SkeletonText** - Multi-line text placeholder
+- **SkeletonAvatar** - Circular avatar placeholder
+- **SkeletonMessage** - Chat message placeholder
+- **SkeletonCard** - Card with image, header, body, footer
+- **SkeletonList** - List of items with avatars
+- **SkeletonButton** - Button placeholder
+- **SkeletonInput** - Input field with optional label
+- **SkeletonChatWindow** - Complete chat interface skeleton
+
+### Key Features
+
+- **3 Animation Variants** - Shimmer, pulse, or none
+- **Customizable Dimensions** - Width, height, rounded corners
+- **Pre-built Components** - Common UI patterns ready to use
+- **Consistent Styling** - Matches theme automatically
+- **Responsive** - Adapts to container size
+- **Accessible** - Semantic HTML with ARIA attributes
+- **Performance** - GPU-accelerated animations
+- **Composable** - Build custom skeletons easily
+
+## Installation
+
+```bash
+npm install @clarity-chat/react @clarity-chat/primitives framer-motion
+```
+
+## Skeleton (Base Component)
+
+The foundational skeleton component with customizable properties.
+
+### Basic Usage
+
+```tsx
+import { Skeleton } from '@clarity-chat/react'
+
+<Skeleton width={200} height={20} />
+```
+
+### Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `variant` | `'pulse' \| 'shimmer' \| 'none'` | `'shimmer'` | Animation type |
+| `width` | `string \| number` | `undefined` | Width (CSS value or px) |
+| `height` | `string \| number` | `undefined` | Height (CSS value or px) |
+| `rounded` | `'none' \| 'sm' \| 'md' \| 'lg' \| 'full'` | `'md'` | Border radius |
+| `className` | `string` | `undefined` | Additional CSS classes |
+
+### Animation Variants
+
+```tsx
+// Shimmer effect (default) - horizontal light sweep
+<Skeleton variant="shimmer" width={200} height={20} />
+
+// Pulse effect - opacity fade in/out
+<Skeleton variant="pulse" width={200} height={20} />
+
+// No animation - static placeholder
+<Skeleton variant="none" width={200} height={20} />
+```
+
+### Rounded Corners
+
+```tsx
+<Skeleton rounded="none" width={200} height={20} />    // Square corners
+<Skeleton rounded="sm" width={200} height={20} />      // Small radius
+<Skeleton rounded="md" width={200} height={20} />      // Medium radius (default)
+<Skeleton rounded="lg" width={200} height={20} />      // Large radius
+<Skeleton rounded="full" width={40} height={40} />     // Circle/pill
+```
+
+## SkeletonText
+
+Multi-line text placeholder with customizable line count and width.
+
+### Basic Usage
+
+```tsx
+import { SkeletonText } from '@clarity-chat/react'
+
+<SkeletonText lines={3} />
+```
+
+### Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `lines` | `number` | `3` | Number of lines |
+| `lineHeight` | `number` | `16` | Height of each line (px) |
+| `gap` | `number` | `8` | Gap between lines (px) |
+| `lastLineWidth` | `number` | `70` | Last line width (%) |
+| `variant` | `'pulse' \| 'shimmer' \| 'none'` | `'shimmer'` | Animation type |
+| `className` | `string` | `undefined` | Additional CSS classes |
+
+### Examples
+
+```tsx
+// Short paragraph
+<SkeletonText lines={2} lastLineWidth={80} />
+
+// Long article
+<SkeletonText lines={8} lastLineWidth={60} />
+
+// Custom line height
+<SkeletonText lines={4} lineHeight={20} gap={12} />
+```
+
+## SkeletonAvatar
+
+Circular avatar/profile picture placeholder.
+
+### Basic Usage
+
+```tsx
+import { SkeletonAvatar } from '@clarity-chat/react'
+
+<SkeletonAvatar size={40} />
+```
+
+### Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `size` | `number` | `40` | Avatar size in pixels |
+| `variant` | `'pulse' \| 'shimmer' \| 'none'` | `'shimmer'` | Animation type |
+| `className` | `string` | `undefined` | Additional CSS classes |
+
+### Examples
+
+```tsx
+<SkeletonAvatar size={24} />   // Small
+<SkeletonAvatar size={40} />   // Medium (default)
+<SkeletonAvatar size={64} />   // Large
+<SkeletonAvatar size={96} />   // Extra large
+```
+
+## SkeletonMessage
+
+Chat message bubble placeholder with avatar and text.
+
+### Basic Usage
+
+```tsx
+import { SkeletonMessage } from '@clarity-chat/react'
+
+<SkeletonMessage role="assistant" lines={3} />
+```
+
+### Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `role` | `'user' \| 'assistant'` | `'assistant'` | Message alignment |
+| `showAvatar` | `boolean` | `true` | Show avatar |
+| `lines` | `number` | `3` | Number of text lines |
+| `variant` | `'pulse' \| 'shimmer' \| 'none'` | `'shimmer'` | Animation type |
+| `className` | `string` | `undefined` | Additional CSS classes |
+
+### Examples
+
+```tsx
+// Assistant message (left-aligned)
+<SkeletonMessage role="assistant" lines={4} />
+
+// User message (right-aligned)
+<SkeletonMessage role="user" lines={2} />
+
+// Without avatar
+<SkeletonMessage role="assistant" showAvatar={false} />
+```
+
+## SkeletonCard
+
+Card component skeleton with image, header, body, and footer.
+
+### Basic Usage
+
+```tsx
+import { SkeletonCard } from '@clarity-chat/react'
+
+<SkeletonCard />
+```
+
+### Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `showImage` | `boolean` | `true` | Show image placeholder |
+| `imageHeight` | `number` | `200` | Image height (px) |
+| `showHeader` | `boolean` | `true` | Show header (title/subtitle) |
+| `bodyLines` | `number` | `3` | Number of body text lines |
+| `showFooter` | `boolean` | `true` | Show footer actions |
+| `variant` | `'pulse' \| 'shimmer' \| 'none'` | `'shimmer'` | Animation type |
+| `className` | `string` | `undefined` | Additional CSS classes |
+
+### Examples
+
+```tsx
+// Full card
+<SkeletonCard />
+
+// Article card (no footer)
+<SkeletonCard showFooter={false} bodyLines={5} />
+
+// Profile card (no image)
+<SkeletonCard showImage={false} />
+
+// Compact card
+<SkeletonCard imageHeight={120} bodyLines={2} />
+```
+
+## SkeletonList
+
+List of items with avatars and text.
+
+### Basic Usage
+
+```tsx
+import { SkeletonList } from '@clarity-chat/react'
+
+<SkeletonList count={5} />
+```
+
+### Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `count` | `number` | `3` | Number of items |
+| `showAvatar` | `boolean` | `true` | Show avatar in each item |
+| `lines` | `number` | `2` | Text lines per item |
+| `variant` | `'pulse' \| 'shimmer' \| 'none'` | `'shimmer'` | Animation type |
+| `className` | `string` | `undefined` | Additional CSS classes |
+
+### Examples
+
+```tsx
+// Contact list
+<SkeletonList count={10} lines={2} />
+
+// Message list
+<SkeletonList count={5} lines={3} />
+
+// Simple list (no avatars)
+<SkeletonList count={8} showAvatar={false} lines={1} />
+```
+
+## SkeletonButton
+
+Button placeholder.
+
+### Basic Usage
+
+```tsx
+import { SkeletonButton } from '@clarity-chat/react'
+
+<SkeletonButton />
+```
+
+### Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `width` | `number \| string` | `100` | Button width |
+| `height` | `number` | `40` | Button height (px) |
+| `variant` | `'pulse' \| 'shimmer' \| 'none'` | `'shimmer'` | Animation type |
+| `className` | `string` | `undefined` | Additional CSS classes |
+
+### Examples
+
+```tsx
+<SkeletonButton width={120} />              // Standard button
+<SkeletonButton width={200} height={48} />  // Large button
+<SkeletonButton width="100%" />             // Full width
+```
+
+## SkeletonInput
+
+Input field placeholder with optional label.
+
+### Basic Usage
+
+```tsx
+import { SkeletonInput } from '@clarity-chat/react'
+
+<SkeletonInput />
+```
+
+### Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `width` | `number \| string` | `'100%'` | Input width |
+| `height` | `number` | `40` | Input height (px) |
+| `showLabel` | `boolean` | `true` | Show label above input |
+| `variant` | `'pulse' \| 'shimmer' \| 'none'` | `'shimmer'` | Animation type |
+| `className` | `string` | `undefined` | Additional CSS classes |
+
+### Examples
+
+```tsx
+// With label
+<SkeletonInput />
+
+// Without label
+<SkeletonInput showLabel={false} />
+
+// Custom size
+<SkeletonInput width={300} height={48} />
+```
+
+## SkeletonChatWindow
+
+Complete chat interface skeleton.
+
+### Basic Usage
+
+```tsx
+import { SkeletonChatWindow } from '@clarity-chat/react'
+
+<SkeletonChatWindow />
+```
+
+### Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `variant` | `'pulse' \| 'shimmer' \| 'none'` | `'shimmer'` | Animation type |
+
+## Complete Example: Loading States
+
+```tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { SkeletonCard, SkeletonList } from '@clarity-chat/react'
+
+export default function ProductList() {
+  const [loading, setLoading] = useState(true)
+  const [products, setProducts] = useState([])
+
+  useEffect(() => {
+    // Simulate API call
+    setTimeout(() => {
+      setProducts([/* products */])
+      setLoading(false)
+    }, 2000)
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-3 gap-4">
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </div>
+    )
+  }
+
   return (
-    <div className="docs-content">
-      <header className="docs-header">
-        <div>
-          <h1>Skeleton</h1>
-          <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
-            A placeholder component that displays a loading skeleton while content is being fetched.
-          </p>
-        </div>
-      </header>
-
-      <section className="docs-section">
-        <h2>Overview</h2>
-        <p>
-          The Skeleton component provides placeholder content that mimics the structure of the actual content
-          being loaded. This creates a better perceived performance and reduces layout shift compared to
-          showing spinners or blank states.
-        </p>
-
-        <Callout type="info" title="Perceived Performance">
-          Skeleton screens make apps feel faster by showing structure immediately,
-          even before data arrives. Users perceive the page as loading faster.
-        </Callout>
-      </section>
-
-      <section className="docs-section">
-        <h2>Basic Usage</h2>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
-
-export default function BasicSkeleton() {
-  return (
-    <div className="space-y-3">
-      <Skeleton className="h-4 w-3/4" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-5/6" />
-    </div>
-  );
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Props</h2>
-        <ApiTable
-          title="Skeleton Props"
-          data={[
-            {
-              prop: 'variant',
-              type: "'text' | 'circular' | 'rectangular'",
-              default: "'rectangular'",
-              description: 'Shape variant of the skeleton'
-            },
-            {
-              prop: 'width',
-              type: 'number | string',
-              default: "'100%'",
-              description: 'Width of the skeleton'
-            },
-            {
-              prop: 'height',
-              type: 'number | string',
-              default: 'undefined',
-              description: 'Height of the skeleton'
-            },
-            {
-              prop: 'animation',
-              type: "'pulse' | 'wave' | 'none'",
-              default: "'pulse'",
-              description: 'Animation style'
-            },
-            {
-              prop: 'className',
-              type: 'string',
-              default: 'undefined',
-              description: 'Additional CSS classes'
-            }
-          ]}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Variants</h2>
-        <p>
-          Choose from different shapes to match your content structure.
-        </p>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
-
-export default function SkeletonVariants() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <div className="text-sm text-gray-600 mb-2">Rectangular (default)</div>
-        <Skeleton className="h-32 w-full" />
-      </div>
-
-      <div>
-        <div className="text-sm text-gray-600 mb-2">Circular</div>
-        <Skeleton variant="circular" className="w-16 h-16" />
-      </div>
-
-      <div>
-        <div className="text-sm text-gray-600 mb-2">Text</div>
-        <div className="space-y-2">
-          <Skeleton variant="text" className="h-4" />
-          <Skeleton variant="text" className="h-4 w-3/4" />
-          <Skeleton variant="text" className="h-4 w-5/6" />
-        </div>
-      </div>
-    </div>
-  );
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Animations</h2>
-        <p>
-          Choose from different animation styles or disable animation entirely.
-        </p>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
-
-export default function SkeletonAnimations() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <div className="text-sm text-gray-600 mb-2">Pulse (default)</div>
-        <Skeleton animation="pulse" className="h-20 w-full" />
-      </div>
-
-      <div>
-        <div className="text-sm text-gray-600 mb-2">Wave</div>
-        <Skeleton animation="wave" className="h-20 w-full" />
-      </div>
-
-      <div>
-        <div className="text-sm text-gray-600 mb-2">No Animation</div>
-        <Skeleton animation="none" className="h-20 w-full" />
-      </div>
-    </div>
-  );
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>User Profile Skeleton</h2>
-        <p>
-          A common pattern for loading user profile information.
-        </p>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
-
-export default function UserProfileSkeleton() {
-  return (
-    <div className="border rounded-lg p-6">
-      <div className="flex items-center gap-4 mb-4">
-        <Skeleton variant="circular" className="w-16 h-16" />
-        <div className="flex-1 space-y-2">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-3 w-48" />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Skeleton className="h-3 w-full" />
-        <Skeleton className="h-3 w-5/6" />
-        <Skeleton className="h-3 w-4/6" />
-      </div>
-    </div>
-  );
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Card Skeleton</h2>
-        <p>
-          Loading state for card-based layouts.
-        </p>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
-
-export default function CardSkeleton() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {[1, 2, 3].map(i => (
-        <div key={i} className="border rounded-lg overflow-hidden">
-          <Skeleton className="h-48 w-full" />
-          <div className="p-4 space-y-3">
-            <Skeleton className="h-6 w-3/4" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
-            </div>
-            <Skeleton className="h-10 w-full" />
-          </div>
-        </div>
+    <div className="grid grid-cols-3 gap-4">
+      {products.map(product => (
+        <ProductCard key={product.id} {...product} />
       ))}
     </div>
-  );
-}`}
-        />
-      </section>
+  )
+}
+```
 
-      <section className="docs-section">
-        <h2>List Skeleton</h2>
-        <p>
-          Loading state for list items and table rows.
-        </p>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
+## Complete Example: Progressive Loading
 
-export default function ListSkeleton() {
-  return (
-    <div className="border rounded-lg divide-y">
-      {[1, 2, 3, 4].map(i => (
-        <div key={i} className="p-4 flex items-center gap-4">
-          <Skeleton variant="circular" className="w-10 h-10" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-1/3" />
-            <Skeleton className="h-3 w-1/2" />
-          </div>
-          <Skeleton className="h-8 w-20" />
-        </div>
-      ))}
-    </div>
-  );
-}`}
-        />
-      </section>
+```tsx
+'use client'
 
-      <section className="docs-section">
-        <h2>Form Skeleton</h2>
-        <p>
-          Loading state for form layouts.
-        </p>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
+import { useState, useEffect } from 'react'
+import { SkeletonText, SkeletonAvatar } from '@clarity-chat/react'
 
-export default function FormSkeleton() {
-  return (
-    <div className="border rounded-lg p-6 space-y-6">
-      <div>
-        <Skeleton className="h-4 w-24 mb-2" />
-        <Skeleton className="h-10 w-full" />
-      </div>
-      <div>
-        <Skeleton className="h-4 w-32 mb-2" />
-        <Skeleton className="h-10 w-full" />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Skeleton className="h-4 w-20 mb-2" />
-          <Skeleton className="h-10 w-full" />
-        </div>
-        <div>
-          <Skeleton className="h-4 w-28 mb-2" />
-          <Skeleton className="h-10 w-full" />
-        </div>
-      </div>
-      <div className="flex gap-3">
-        <Skeleton className="h-10 flex-1" />
-        <Skeleton className="h-10 flex-1" />
-      </div>
-    </div>
-  );
-}`}
-        />
-      </section>
+export default function UserProfile() {
+  const [avatar, setAvatar] = useState<string | null>(null)
+  const [name, setName] = useState<string | null>(null)
+  const [bio, setBio] = useState<string | null>(null)
 
-      <section className="docs-section">
-        <h2>Chat Message Skeleton</h2>
-        <p>
-          Loading state specifically for chat interfaces.
-        </p>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
-
-export default function ChatSkeleton() {
-  return (
-    <div className="space-y-4">
-      {/* Incoming message */}
-      <div className="flex gap-3">
-        <Skeleton variant="circular" className="w-8 h-8" />
-        <div className="flex-1 space-y-2 max-w-md">
-          <Skeleton className="h-16 w-full rounded-2xl" />
-          <Skeleton className="h-3 w-20" />
-        </div>
-      </div>
-
-      {/* Outgoing message */}
-      <div className="flex gap-3 flex-row-reverse">
-        <Skeleton variant="circular" className="w-8 h-8" />
-        <div className="flex-1 space-y-2 max-w-md">
-          <Skeleton className="h-12 w-full rounded-2xl bg-blue-200" />
-          <div className="flex justify-end">
-            <Skeleton className="h-3 w-16" />
-          </div>
-        </div>
-      </div>
-
-      {/* Typing indicator */}
-      <div className="flex gap-3">
-        <Skeleton variant="circular" className="w-8 h-8" />
-        <Skeleton className="h-10 w-20 rounded-2xl" animation="pulse" />
-      </div>
-    </div>
-  );
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Conditional Loading</h2>
-        <p>
-          Toggle between skeleton and actual content based on loading state.
-        </p>
-        <LiveDemo
-          code={`import { useState } from 'react';
-import { Skeleton, Button } from '@clarity/chat-components';
-
-export default function ConditionalSkeleton() {
-  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    // Load avatar first
+    setTimeout(() => setAvatar('/avatar.jpg'), 500)
+    // Then name
+    setTimeout(() => setName('John Doe'), 1000)
+    // Finally bio
+    setTimeout(() => setBio('Software developer...'), 1500)
+  }, [])
 
   return (
-    <div className="space-y-4">
-      <Button onClick={() => setLoading(!loading)}>
-        Toggle Loading
-      </Button>
+    <div className="flex items-start gap-4">
+      {avatar ? (
+        <img src={avatar} alt="Avatar" className="w-16 h-16 rounded-full" />
+      ) : (
+        <SkeletonAvatar size={64} />
+      )}
 
-      <div className="border rounded-lg p-6">
-        {loading ? (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Skeleton variant="circular" className="w-12 h-12" />
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-3 w-48" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-3 w-5/6" />
-              <Skeleton className="h-3 w-4/6" />
-            </div>
-          </div>
+      <div className="flex-1">
+        {name ? (
+          <h2 className="text-xl font-bold">{name}</h2>
         ) : (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
-                JD
-              </div>
-              <div>
-                <div className="font-semibold">John Doe</div>
-                <div className="text-sm text-gray-600">Software Engineer</div>
-              </div>
-            </div>
-            <p className="text-gray-700">
-              This is the actual content that replaced the skeleton.
-              It shows real user information and bio.
-            </p>
-          </div>
+          <Skeleton width="40%" height={28} className="mb-2" />
+        )}
+
+        {bio ? (
+          <p className="text-muted-foreground">{bio}</p>
+        ) : (
+          <SkeletonText lines={2} />
         )}
       </div>
     </div>
-  );
-}`}
-          scope={{ useState: React.useState }}
-        />
-      </section>
+  )
+}
+```
 
-      <section className="docs-section">
-        <h2>Advanced Patterns</h2>
+## Complete Example: Chat Loading
 
-        <h3>Staggered Animation</h3>
-        <p>
-          Create staggered loading animations for better visual interest.
-        </p>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
+```tsx
+'use client'
 
-export default function StaggeredSkeleton() {
+import { useState, useEffect } from 'react'
+import { SkeletonChatWindow, SkeletonMessage } from '@clarity-chat/react'
+
+export default function ChatInterface() {
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [messages, setMessages] = useState([])
+  const [loadingResponse, setLoadingResponse] = useState(false)
+
+  useEffect(() => {
+    // Initial load
+    setTimeout(() => {
+      setMessages([/* messages */])
+      setInitialLoading(false)
+    }, 2000)
+  }, [])
+
+  if (initialLoading) {
+    return <SkeletonChatWindow />
+  }
+
   return (
-    <div className="space-y-4">
-      {[0, 100, 200, 300].map((delay, i) => (
-        <div
-          key={i}
-          className="border rounded-lg p-4 flex items-center gap-4"
-          style={{ animationDelay: \`\${delay}ms\` }}
-        >
-          <Skeleton variant="circular" className="w-12 h-12" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-3 w-3/4" />
-          </div>
-          <Skeleton className="h-8 w-24" />
-        </div>
-      ))}
-    </div>
-  );
-}`}
-        />
+    <div className="flex flex-col h-screen">
+      <div className="flex-1 overflow-y-auto p-4">
+        {messages.map(msg => (
+          <Message key={msg.id} {...msg} />
+        ))}
 
-        <h3>Skeleton with Logo</h3>
-        <p>
-          Include branding elements while content loads.
-        </p>
-        <LiveDemo
-          code={`import { Skeleton } from '@clarity/chat-components';
-
-export default function BrandedSkeleton() {
-  return (
-    <div className="border rounded-lg overflow-hidden">
-      <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-        <div className="text-white text-4xl font-bold">LOGO</div>
+        {/* Loading response */}
+        {loadingResponse && (
+          <SkeletonMessage role="assistant" lines={3} />
+        )}
       </div>
-      <div className="p-6 space-y-4">
-        <div className="flex items-center gap-3 -mt-12">
-          <div className="w-20 h-20 rounded-full border-4 border-white bg-white shadow-lg">
-            <Skeleton variant="circular" className="w-full h-full" />
-          </div>
-          <div className="flex-1 space-y-2 mt-6">
-            <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Skeleton className="h-3 w-full" />
-          <Skeleton className="h-3 w-5/6" />
-          <Skeleton className="h-3 w-4/6" />
-        </div>
+
+      <div className="p-4 border-t">
+        <input
+          type="text"
+          placeholder="Type a message..."
+          className="w-full p-2 border rounded"
+        />
       </div>
     </div>
-  );
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Accessibility</h2>
-        <p>
-          The Skeleton component includes accessibility features:
-        </p>
-
-        <h3>ARIA Attributes</h3>
-        <ul>
-          <li><code>aria-busy="true"</code> - Indicates content is loading</li>
-          <li><code>aria-label="Loading..."</code> - Descriptive label for screen readers</li>
-          <li><code>role="status"</code> - Announces loading state</li>
-        </ul>
-
-        <h3>Screen Reader Support</h3>
-        <ul>
-          <li>Skeleton screens announce "Loading" to screen readers</li>
-          <li>When content loads, focus and announcements update appropriately</li>
-          <li>Avoid showing skeleton for extended periods (use timeout)</li>
-        </ul>
-
-        <Callout type="warning" title="Reduced Motion">
-          Skeleton animations respect <code>prefers-reduced-motion</code> settings
-          and disable animations for users who prefer reduced motion.
-        </Callout>
-      </section>
-
-      <section className="docs-section">
-        <h2>Best Practices</h2>
-
-        <h3>When to Use</h3>
-        <ul>
-          <li>✅ Initial page load with structured content</li>
-          <li>✅ Fetching list items or card grids</li>
-          <li>✅ Loading user profiles and dashboard data</li>
-          <li>✅ When content structure is known in advance</li>
-          <li>✅ To reduce perceived loading time</li>
-        </ul>
-
-        <h3>When Not to Use</h3>
-        <ul>
-          <li>❌ For very fast loads (under 300ms) - content may flash</li>
-          <li>❌ When content structure is completely unknown</li>
-          <li>❌ For background updates - use subtle indicators instead</li>
-          <li>❌ In form validation - use inline feedback</li>
-        </ul>
-
-        <h3>Design Guidelines</h3>
-        <ul>
-          <li>Match skeleton structure closely to actual content layout</li>
-          <li>Use similar dimensions to real content to avoid layout shift</li>
-          <li>Maintain consistent spacing and alignment</li>
-          <li>Use subtle animation - avoid distracting motion</li>
-          <li>Combine with minimum display time to prevent flashing</li>
-          <li>Consider dark mode - skeletons should work in both themes</li>
-          <li>Show skeleton for at least 300ms if it appears at all</li>
-        </ul>
-
-        <h3>Performance Guidelines</h3>
-        <ul>
-          <li>Skeleton screens are lightweight and performant</li>
-          <li>CSS-only animations avoid JavaScript overhead</li>
-          <li>Render skeleton on server for immediate display</li>
-          <li>Avoid too many skeleton elements (diminishing returns)</li>
-        </ul>
-
-        <Callout type="info" title="Progressive Enhancement">
-          Combine skeletons with progressive data loading - show partial content
-          as it arrives rather than waiting for everything to load.
-        </Callout>
-      </section>
-
-      <section className="docs-section">
-        <h2>TypeScript</h2>
-        <p>
-          The Skeleton component is fully typed with TypeScript:
-        </p>
-        <pre><code>{`type SkeletonVariant = 'text' | 'circular' | 'rectangular';
-type SkeletonAnimation = 'pulse' | 'wave' | 'none';
-
-interface SkeletonProps {
-  // Appearance
-  variant?: SkeletonVariant;
-  width?: number | string;
-  height?: number | string;
-  animation?: SkeletonAnimation;
-  
-  // Styling
-  className?: string;
+  )
 }
+```
 
-export default function Skeleton(props: SkeletonProps): JSX.Element;
+## Complete Example: Form Loading
 
-// Helper component for common patterns
-interface SkeletonTextProps {
-  lines?: number;
-  width?: string | string[];
-}
+```tsx
+'use client'
 
-export function SkeletonText(props: SkeletonTextProps): JSX.Element;`}</code></pre>
-      </section>
+import { SkeletonInput, SkeletonButton } from '@clarity-chat/react'
 
-      <section className="docs-section">
-        <h2>Related Components</h2>
-        <ul>
-          <li><a href="/reference/components/spinner">Spinner</a> - Indeterminate loading indicator</li>
-          <li><a href="/reference/components/progress">Progress</a> - Determinate progress indicator</li>
-          <li><a href="/reference/hooks/use-loading">useLoading</a> - Loading state management hook</li>
-        </ul>
-      </section>
+export default function FormSkeleton() {
+  return (
+    <div className="max-w-md space-y-6">
+      <SkeletonInput />
+      <SkeletonInput />
+      <SkeletonInput showLabel={false} height={120} />
+      
+      <div className="flex gap-2">
+        <SkeletonButton width={100} />
+        <SkeletonButton width={100} />
+      </div>
     </div>
-  );
+  )
 }
+```
+
+## Animation Details
+
+### Shimmer Animation
+
+```typescript
+// Gradient background
+backgroundImage: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)'
+backgroundSize: '200% 100%'
+
+// Animation
+animate: {
+  backgroundPosition: ['200% 0', '-200% 0']
+}
+transition: {
+  duration: 2,
+  repeat: Infinity,
+  ease: 'linear'
+}
+```
+
+### Pulse Animation
+
+```typescript
+animate: {
+  opacity: [0.5, 1, 0.5]
+}
+transition: {
+  duration: 1.5,
+  repeat: Infinity,
+  ease: 'easeInOut'
+}
+```
+
+## TypeScript Support
+
+Full TypeScript support with comprehensive types:
+
+```typescript
+import type {
+  SkeletonProps,
+  SkeletonTextProps,
+  SkeletonAvatarProps,
+  SkeletonMessageProps,
+  SkeletonCardProps,
+  SkeletonListProps,
+  SkeletonButtonProps,
+  SkeletonInputProps,
+} from '@clarity-chat/react'
+
+// All components fully typed
+```
+
+## Accessibility
+
+Skeleton components follow accessibility best practices:
+
+- **ARIA Attributes** - `aria-busy="true"` on containers
+- **Screen Reader** - Announces "Loading" state
+- **No Focus Trap** - Non-interactive during loading
+- **Visual Only** - No keyboard interactions needed
+- **Theme Aware** - Uses theme colors for contrast
+
+### Accessible Implementation
+
+```tsx
+<div aria-busy="true" aria-label="Loading content">
+  <SkeletonCard />
+</div>
+```
+
+## Styling
+
+### Custom Colors
+
+```tsx
+<Skeleton
+  width={200}
+  height={20}
+  className="bg-blue-200"  // Custom background
+/>
+```
+
+### Dark Mode
+
+Skeletons automatically adapt to dark mode:
+
+```css
+.dark .bg-muted {
+  background: hsl(var(--muted));
+}
+```
+
+## Related Components
+
+- **[Loading Indicator](../loading-indicator)** - Spinner loading states
+- **[Empty State](../empty-state)** - No data states
+- **[Message List](../message-list)** - Chat message display
+- **[Card](../card)** - Card components
+
+## Best Practices
+
+### 1. Match Content Structure
+
+Skeleton should mirror actual content:
+
+```tsx
+// ✅ Good - matches card structure
+<SkeletonCard showImage imageHeight={200} bodyLines={3} />
+
+// ❌ Bad - doesn't match
+<SkeletonText lines={10} />
+```
+
+### 2. Use Appropriate Variant
+
+Choose animation based on context:
+
+```tsx
+// ✅ Good - shimmer for content
+<SkeletonText variant="shimmer" />
+
+// ✅ Good - pulse for avatars
+<SkeletonAvatar variant="pulse" />
+
+// ❌ Bad - no animation (looks broken)
+<SkeletonCard variant="none" />
+```
+
+### 3. Progressive Loading
+
+Load critical content first:
+
+```tsx
+// ✅ Good - progressive
+{!avatar && <SkeletonAvatar />}
+{!name && <Skeleton width="40%" height={24} />}
+{!bio && <SkeletonText lines={2} />}
+
+// ❌ Bad - all or nothing
+{loading && <SkeletonCard />}
+```
+
+### 4. Reasonable Count
+
+Don't overwhelm with skeletons:
+
+```tsx
+// ✅ Good - reasonable count
+<SkeletonList count={5} />
+
+// ❌ Bad - too many
+<SkeletonList count={100} />
+```
+
+### 5. Consistent Animation
+
+Use same variant throughout:
+
+```tsx
+// ✅ Good - consistent
+<SkeletonCard variant="shimmer" />
+<SkeletonList variant="shimmer" />
+
+// ❌ Bad - mixed
+<SkeletonCard variant="shimmer" />
+<SkeletonList variant="pulse" />
+```
+
+### 6. Respect Reduced Motion
+
+```tsx
+const prefersReducedMotion = usePrefersReducedMotion()
+
+<Skeleton variant={prefersReducedMotion ? 'none' : 'shimmer'} />
+```
+
+### 7. Don't Overuse
+
+Use skeletons for slower loads (>500ms):
+
+```tsx
+// ✅ Good - slow API (2s+)
+{loading && <SkeletonCard />}
+
+// ❌ Bad - fast API (100ms)
+{loading && <SkeletonCard />}  // Just show content
+```
+
+## Use Cases
+
+### 1. Data Tables
+
+```tsx
+<SkeletonList count={10} showAvatar={false} lines={1} />
+```
+
+### 2. Product Grids
+
+```tsx
+<div className="grid grid-cols-4 gap-4">
+  {Array.from({ length: 8 }).map((_, i) => (
+    <SkeletonCard key={i} />
+  ))}
+</div>
+```
+
+### 3. Profile Pages
+
+```tsx
+<div className="flex gap-4">
+  <SkeletonAvatar size={80} />
+  <div className="flex-1">
+    <Skeleton width="50%" height={32} className="mb-2" />
+    <SkeletonText lines={3} />
+  </div>
+</div>
+```
+
+### 4. Chat Messages
+
+```tsx
+<div className="space-y-4">
+  <SkeletonMessage role="user" lines={2} />
+  <SkeletonMessage role="assistant" lines={4} />
+  <SkeletonMessage role="user" lines={1} />
+</div>
+```
+
+### 5. Forms
+
+```tsx
+<div className="space-y-4">
+  <SkeletonInput />
+  <SkeletonInput />
+  <SkeletonInput showLabel={false} height={100} />
+  <SkeletonButton width={120} />
+</div>
+```
+
+## Performance Tips
+
+### 1. Use CSS Animations
+
+Skeleton uses GPU-accelerated CSS animations for performance.
+
+### 2. Limit Count
+
+Don't render excessive skeletons:
+
+```tsx
+// ✅ Good
+<SkeletonList count={Math.min(items.length, 10)} />
+
+// ❌ Bad
+<SkeletonList count={1000} />
+```
+
+### 3. Lazy Load Skeletons
+
+Defer off-screen skeletons:
+
+```tsx
+import { useInView } from 'react-intersection-observer'
+
+const { ref, inView } = useInView()
+
+<div ref={ref}>
+  {inView && <SkeletonCard />}
+</div>
+```
+
+---
+
+**Related Documentation:**
+- [Loading Indicator](../loading-indicator)
+- [Empty State](../empty-state)
+- [Message List](../message-list)
+- [Card](../card)
