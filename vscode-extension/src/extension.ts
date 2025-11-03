@@ -9,10 +9,13 @@ import * as vscode from 'vscode'
 import { CompletionProvider } from './providers/completion'
 import { HoverProvider } from './providers/hover'
 import { CodeLensProvider } from './providers/codelens'
+import { DiagnosticsProvider, QuickFixProvider } from './providers/diagnostics'
 import { initProjectCommand } from './commands/init'
 import { addProviderCommand } from './commands/add-provider'
 import { validateConfigCommand } from './commands/validate'
 import { showExamplesCommand } from './commands/examples'
+import { PreviewPanel } from './views/preview-panel'
+import { ApiKeyManager } from './views/api-key-manager'
 
 /**
  * Extension activation

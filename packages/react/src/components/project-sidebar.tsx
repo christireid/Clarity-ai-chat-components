@@ -1,6 +1,12 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, Input, ScrollArea, cn, formatRelativeTime } from '@clarity-chat/primitives'
+import {
+  Button,
+  Input,
+  ScrollArea,
+  cn,
+  formatRelativeTime,
+} from '@clarity-chat/primitives'
 import type { Project } from '@clarity-chat/types'
 
 export interface ProjectSidebarProps {
@@ -64,7 +70,7 @@ export const ProjectSidebar = React.memo(function ProjectSidebar({
     onProjectSelect(project.id)
     // Auto-expand when selected
     setExpandedProjects((prev) => new Set(prev).add(project.id))
-    
+
     // Auto-select first chat if none selected
     if (!selectedChatId && project.chats.length > 0) {
       onChatSelect(project.chats[0].id)
@@ -77,7 +83,12 @@ export const ProjectSidebar = React.memo(function ProjectSidebar({
       <div className="p-4 border-b space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-lg">Projects</h2>
-          <Button onClick={onProjectCreate} size="icon" variant="ghost" title="New Project">
+          <Button
+            onClick={onProjectCreate}
+            size="icon"
+            variant="ghost"
+            title="New Project"
+          >
             ➕
           </Button>
         </div>
@@ -142,24 +153,39 @@ export const ProjectSidebar = React.memo(function ProjectSidebar({
                             toggleProject(project.id)
                           }}
                           className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-transform"
-                          style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                          style={{
+                            transform: isExpanded
+                              ? 'rotate(90deg)'
+                              : 'rotate(0deg)',
+                          }}
                         >
                           ▶
                         </button>
 
                         {/* Project Icon */}
-                        <div className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center text-lg" style={{ backgroundColor: project.color || '#6366f1' }}>
+                        <div
+                          className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center text-lg"
+                          style={{
+                            backgroundColor: project.color || '#6366f1',
+                          }}
+                        >
                           {project.icon || '📁'}
                         </div>
 
                         {/* Project Info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-medium text-sm truncate">{project.name}</h3>
-                            {project.isPinned && <span className="text-xs">📌</span>}
+                            <h3 className="font-medium text-sm truncate">
+                              {project.name}
+                            </h3>
+                            {project.isPinned && (
+                              <span className="text-xs">📌</span>
+                            )}
                           </div>
                           <p className="text-xs text-muted-foreground truncate">
-                            {project.chats.length} chat{project.chats.length !== 1 ? 's' : ''} • {project.context.length} context
+                            {project.chats.length} chat
+                            {project.chats.length !== 1 ? 's' : ''} •{' '}
+                            {project.context.length} context
                           </p>
                         </div>
 
@@ -184,7 +210,9 @@ export const ProjectSidebar = React.memo(function ProjectSidebar({
                               size="icon"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                if (confirm(`Delete project "${project.name}"?`)) {
+                                if (
+                                  confirm(`Delete project "${project.name}"?`)
+                                ) {
                                   onProjectDelete(project.id)
                                 }
                               }}
@@ -222,7 +250,8 @@ export const ProjectSidebar = React.memo(function ProjectSidebar({
                               </p>
                             ) : (
                               project.chats.map((chat) => {
-                                const isChatSelected = chat.id === selectedChatId
+                                const isChatSelected =
+                                  chat.id === selectedChatId
 
                                 return (
                                   <div
@@ -244,12 +273,18 @@ export const ProjectSidebar = React.memo(function ProjectSidebar({
                                         <p className="font-medium text-xs truncate">
                                           {chat.name}
                                         </p>
-                                        {chat.isPinned && <span className="text-xs">📌</span>}
-                                        {chat.isFavorite && <span className="text-xs">⭐</span>}
+                                        {chat.isPinned && (
+                                          <span className="text-xs">📌</span>
+                                        )}
+                                        {chat.isFavorite && (
+                                          <span className="text-xs">⭐</span>
+                                        )}
                                       </div>
                                       {chat.lastMessageAt && (
                                         <p className="text-xs opacity-70">
-                                          {formatRelativeTime(chat.lastMessageAt)}
+                                          {formatRelativeTime(
+                                            chat.lastMessageAt
+                                          )}
                                         </p>
                                       )}
                                     </div>
@@ -275,7 +310,11 @@ export const ProjectSidebar = React.memo(function ProjectSidebar({
                                           size="icon"
                                           onClick={(e) => {
                                             e.stopPropagation()
-                                            if (confirm(`Delete chat "${chat.name}"?`)) {
+                                            if (
+                                              confirm(
+                                                `Delete chat "${chat.name}"?`
+                                              )
+                                            ) {
                                               onChatDelete(chat.id)
                                             }
                                           }}

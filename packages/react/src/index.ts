@@ -31,6 +31,12 @@ export * from './webhooks'
 // Plugin Architecture
 export * from './plugins'
 
+// Audit Logging
+export * from './audit'
+
+// Usage Quotas
+export * from './quotas'
+
 // Export all components
 export * from './components/message'
 export * from './components/message-list'
