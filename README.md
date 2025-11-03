@@ -464,6 +464,22 @@ Projects built with Clarity Chat:
 
 ---
 
+## 💼 Commercial Documentation
+
+Looking to sell or commercialize this library? Check out the **[`commercial-docs/`](./commercial-docs)** directory for complete business documentation:
+
+- **Pricing Strategy** - 3-tier pricing model with ROI calculators
+- **Legal Documents** - Licenses, Terms of Service, Privacy Policy
+- **Sales Materials** - Deck, case studies, competitive analysis
+- **Implementation Guide** - Step-by-step customer onboarding
+- **Business Plan** - 3-year projections, GTM strategy, unit economics
+
+This directory is designed to be moved to a separate repository for business/sales teams.
+
+**[→ View Commercial Documentation](./commercial-docs/README.md)**
+
+---
+
 ## 📄 License
 
 MIT © 2024 [Code & Clarity](https://codeclarity.ai)
