@@ -41,12 +41,24 @@ export const PromptLibrary = React.memo(function PromptLibrary({
     string | 'all'
   >('all')
   const [showCreate, setShowCreate] = React.useState(false)
+  const [editingPrompt, setEditingPrompt] = React.useState<SavedPrompt | null>(
+    null
+  )
   const [sortBy, setSortBy] = React.useState<'name' | 'usage' | 'recent'>(
     'recent'
   )
 
   // Create form state
   const [newPrompt, setNewPrompt] = React.useState({
+    name: '',
+    content: '',
+    description: '',
+    category: '',
+    tags: [] as string[],
+  })
+
+  // Edit form state
+  const [editForm, setEditForm] = React.useState({
     name: '',
     content: '',
     description: '',
