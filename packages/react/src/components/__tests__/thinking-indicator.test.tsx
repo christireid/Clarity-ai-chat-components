@@ -65,6 +65,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'researching',
         topic: 'Searching for relevant information',
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -72,7 +73,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should not display topic element when topic is not provided', () => {
-      const status: AIStatus = { stage: 'thinking' }
+      const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
       const topicElements = container.querySelectorAll('.text-xs.text-muted-foreground.mt-1')
@@ -83,6 +84,7 @@ describe('ThinkingIndicator Component', () => {
       const status1: AIStatus = {
         stage: 'thinking',
         topic: 'Analyzing your question',
+        startedAt: new Date(),
       }
       const { rerender } = render(<ThinkingIndicator status={status1} />)
 
@@ -91,6 +93,7 @@ describe('ThinkingIndicator Component', () => {
       const status2: AIStatus = {
         stage: 'generating',
         topic: 'Creating response',
+        startedAt: new Date(),
       }
       rerender(<ThinkingIndicator status={status2} />)
 
@@ -104,6 +107,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         progress: 50,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -112,7 +116,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should not display progress bar when progress is undefined', () => {
-      const status: AIStatus = { stage: 'thinking' }
+      const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
       const progressBar = container.querySelector('.h-1.bg-background')
@@ -123,6 +127,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         progress: 75,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -135,6 +140,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'thinking',
         progress: 0,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -146,6 +152,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'finalizing',
         progress: 100,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
