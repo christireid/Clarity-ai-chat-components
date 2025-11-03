@@ -63,6 +63,8 @@ npm install @clarity-chat/react`}
         title="Terminal"
       />
 
+      <UseChatFlowAnimation />
+
       <h2 id="basic-chat">Step 2: Basic Chat Interface</h2>
       
       <p>Replace the contents of <code>src/App.tsx</code>:</p>

@@ -201,7 +201,7 @@ export interface AgentMemory {
 }
 
 export interface ToolApprovalCallback {
-  (tool: Tool, arguments: Record<string, any>): Promise<boolean>
+  (tool: Tool, args: Record<string, any>): Promise<boolean>
 }
 
 export interface AgentCallbacks {

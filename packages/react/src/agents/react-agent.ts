@@ -84,7 +84,7 @@ export class ReactAgent implements Agent {
             content: `I will use the ${step.tool} tool.`,
             functionCall: {
               name: step.tool,
-              arguments: JSON.stringify(step.arguments),
+              arguments: JSON.stringify(step.args),
             },
           })
           
