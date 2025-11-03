@@ -33,11 +33,8 @@ export interface InteractiveCardProps
 /**
  * Card with enhanced interactivity
  */
-export const InteractiveCard = React.forwardRef<
-  HTMLDivElement,
-  InteractiveCardProps
->(
-  (
+export const InteractiveCard = React.memo(
+  React.forwardRef<HTMLDivElement, InteractiveCardProps>(function InteractiveCard(
     {
       interactive = false,
       selected = false,
@@ -343,4 +340,7 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
       )}
     </motion.div>
   )
-}
+  })
+)
+
+InteractiveCard.displayName = 'InteractiveCard'

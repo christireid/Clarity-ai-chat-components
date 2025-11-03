@@ -46,7 +46,7 @@ const gridClasses = {
   list: 'flex flex-col gap-3',
 }
 
-export const FollowUpSuggestions: React.FC<FollowUpSuggestionsProps> = ({
+export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
   suggestions,
   onSelect,
   title = 'Suggested follow-ups',
@@ -233,6 +233,6 @@ export const FollowUpSuggestions: React.FC<FollowUpSuggestionsProps> = ({
       </Card>
     </motion.div>
   )
-}
+}: FollowUpSuggestionsProps) => JSX.Element)
 
 FollowUpSuggestions.displayName = 'FollowUpSuggestions'
