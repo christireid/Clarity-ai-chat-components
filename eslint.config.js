@@ -9,6 +9,7 @@ export default [
   js.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/__tests__/**'],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -87,6 +88,48 @@ export default [
     },
   },
   {
-    ignores: ['dist/', 'node_modules/', 'coverage/', '.storybook/', 'packages/*/dist/'],
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/__tests__/**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        // Vitest globals
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        // Browser globals for tests
+        global: 'readonly',
+        fetch: 'readonly',
+        TextDecoder: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        IntersectionObserver: 'readonly',
+        ResizeObserver: 'readonly',
+        FocusEvent: 'readonly',
+        Node: 'readonly',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      '@typescript-eslint/no-explicit-any': 'off', // Allow any in tests
+    },
+  },
+  {
+    ignores: ['dist/', 'node_modules/', 'coverage/', '.storybook/', 'packages/*/dist/', 'storybook-static/'],
   },
 ]
