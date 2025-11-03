@@ -1,23 +1,29 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Skeleton, SkeletonText, SkeletonCard, SkeletonAvatar, SkeletonButton } from '@clarity-chat/react'
+import {
+  Skeleton,
+  SkeletonText,
+  SkeletonCard,
+  SkeletonAvatar,
+  SkeletonButton,
+} from '@clarity-chat/react'
 
 /**
  * Skeleton Loaders
- * 
+ *
  * **Provide visual loading placeholders for:**
  * - Text content
  * - Cards and containers
  * - Avatars and images
  * - Buttons and actions
  * - Custom shapes
- * 
+ *
  * **Key Features:**
  * - Smooth shimmer animation
  * - Multiple preset shapes
  * - Customizable dimensions
  * - Respects dark mode
  * - Reduces perceived loading time
- * 
+ *
  * **Design Philosophy:**
  * - Progressive: Show structure before content
  * - Predictable: Match final layout
@@ -250,7 +256,10 @@ export const DashboardCards: Story = {
   render: () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl space-y-3">
+        <div
+          key={i}
+          className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl space-y-3"
+        >
           <Skeleton className="h-6 w-24" />
           <Skeleton className="h-10 w-32" />
           <Skeleton className="h-3 w-full" />
@@ -373,7 +382,8 @@ export const LoadingSimulation: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Realistic loading simulation showing skeleton to content transition.',
+        story:
+          'Realistic loading simulation showing skeleton to content transition.',
       },
     },
   },
@@ -407,8 +417,8 @@ export const ProgressiveLoading: Story = {
                 <SkeletonText lines={3} />
               ) : (
                 <p className="text-sm">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                  eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
               )}
             </div>
@@ -436,7 +446,9 @@ export const ProgressiveLoading: Story = {
               ) : (
                 <>
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-teal-600" />
-                  <span className="text-sm font-medium">John Doe • 2 hours ago</span>
+                  <span className="text-sm font-medium">
+                    John Doe • 2 hours ago
+                  </span>
                 </>
               )}
             </div>
@@ -477,4 +489,3 @@ export const Accessibility: Story = {
     </div>
   ),
 }
-

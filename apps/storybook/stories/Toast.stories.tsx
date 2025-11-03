@@ -4,13 +4,13 @@ import { useState } from 'react'
 
 /**
  * Toast Notification System
- * 
+ *
  * **Provides elegant toast notifications for:**
  * - Success messages
  * - Error alerts
  * - Information updates
  * - Warning notices
- * 
+ *
  * **Key Features:**
  * - Auto-dismiss with customizable duration
  * - Queue management for multiple toasts
@@ -18,7 +18,7 @@ import { useState } from 'react'
  * - Optional action buttons
  * - Smooth slide-in/out animations
  * - Accessible with ARIA labels
- * 
+ *
  * **Design Philosophy:**
  * - Non-intrusive: Doesn't block user workflow
  * - Contextual: Clear visual feedback for each type
@@ -260,7 +260,13 @@ export const Positions: Story = {
 
     const positions: Array<{
       label: string
-      position: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'
+      position:
+        | 'top-left'
+        | 'top-center'
+        | 'top-right'
+        | 'bottom-left'
+        | 'bottom-center'
+        | 'bottom-right'
     }> = [
       { label: 'Top Left', position: 'top-left' },
       { label: 'Top Center', position: 'top-center' },
@@ -293,7 +299,8 @@ export const Positions: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'All 6 available toast positions. Click to see toasts appear in different locations.',
+        story:
+          'All 6 available toast positions. Click to see toasts appear in different locations.',
       },
     },
   },
@@ -363,7 +370,8 @@ export const CustomDuration: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Control how long toasts remain visible. Use Infinity for persistent toasts.',
+        story:
+          'Control how long toasts remain visible. Use Infinity for persistent toasts.',
       },
     },
   },
@@ -408,7 +416,8 @@ export const MultipleToasts: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Queue management handles multiple toasts gracefully with stacking.',
+        story:
+          'Queue management handles multiple toasts gracefully with stacking.',
       },
     },
   },
@@ -425,10 +434,10 @@ export const SaveConfirmation: Story = {
 
     const handleSave = async () => {
       setIsSaving(true)
-      
+
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500))
-      
+
       setIsSaving(false)
       showToast({
         type: 'success',
@@ -463,7 +472,7 @@ export const FormValidation: Story = {
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault()
-      
+
       if (!email) {
         showToast({
           type: 'error',
@@ -472,7 +481,7 @@ export const FormValidation: Story = {
         })
         return
       }
-      
+
       if (!email.includes('@')) {
         showToast({
           type: 'error',
@@ -481,7 +490,7 @@ export const FormValidation: Story = {
         })
         return
       }
-      
+
       showToast({
         type: 'success',
         title: 'Success!',
@@ -585,12 +594,13 @@ export const NetworkStatus: Story = {
 
     const toggleConnection = () => {
       setIsOnline(!isOnline)
-      
+
       if (isOnline) {
         showToast({
           type: 'error',
           title: 'Connection Lost',
-          description: 'You are currently offline. Changes will sync when reconnected.',
+          description:
+            'You are currently offline. Changes will sync when reconnected.',
           duration: 5000,
         })
       } else {
@@ -605,7 +615,9 @@ export const NetworkStatus: Story = {
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
+          <div
+            className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}
+          />
           <span className="text-sm font-medium">
             {isOnline ? 'Online' : 'Offline'}
           </span>
@@ -628,9 +640,13 @@ export const NetworkStatus: Story = {
 export const InteractivePlayground: Story = {
   render: () => {
     const { showToast } = useToast()
-    const [type, setType] = useState<'success' | 'error' | 'info' | 'warning'>('info')
+    const [type, setType] = useState<'success' | 'error' | 'info' | 'warning'>(
+      'info'
+    )
     const [title, setTitle] = useState('Notification')
-    const [description, setDescription] = useState('This is a toast notification')
+    const [description, setDescription] = useState(
+      'This is a toast notification'
+    )
     const [duration, setDuration] = useState(4000)
     const [hasAction, setHasAction] = useState(false)
 
@@ -667,7 +683,9 @@ export const InteractivePlayground: Story = {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Title (optional)</label>
+            <label className="block text-sm font-medium">
+              Title (optional)
+            </label>
             <input
               type="text"
               value={title}
@@ -725,7 +743,8 @@ export const InteractivePlayground: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Interactive playground to test all toast configurations and options.',
+        story:
+          'Interactive playground to test all toast configurations and options.',
       },
     },
   },
@@ -771,4 +790,3 @@ export const Accessibility: Story = {
     )
   },
 }
-
