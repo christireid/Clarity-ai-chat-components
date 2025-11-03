@@ -18,7 +18,7 @@ export interface ProjectSidebarProps {
   className?: string
 }
 
-export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
+export const ProjectSidebar = React.memo(function ProjectSidebar({
   projects,
   selectedProjectId,
   selectedChatId,
@@ -31,7 +31,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   onChatEdit,
   onChatDelete,
   className,
-}) => {
+}: ProjectSidebarProps) {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [expandedProjects, setExpandedProjects] = React.useState<Set<string>>(
     new Set(selectedProjectId ? [selectedProjectId] : [])
@@ -314,4 +314,6 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
       )}
     </div>
   )
-}
+})
+
+ProjectSidebar.displayName = 'ProjectSidebar'

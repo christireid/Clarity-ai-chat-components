@@ -28,12 +28,12 @@ export interface MessageSearchProps {
  * />
  * ```
  */
-export const MessageSearch: React.FC<MessageSearchProps> = ({
+export const MessageSearch = React.memo(function MessageSearch({
   messages,
   onResultsChange,
   placeholder = 'Search messages...',
   className,
-}) => {
+}: MessageSearchProps) {
   const [searchQuery, setSearchQuery] = React.useState('')
   const { filteredMessages, isPending } = useDeferredSearch(messages, searchQuery)
   
@@ -74,7 +74,9 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
       )}
     </div>
   )
-}
+})
+
+MessageSearch.displayName = 'MessageSearch'
 
 /**
  * Message Search with Suspense Boundary
@@ -82,7 +84,7 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
  * Wraps MessageSearch in a Suspense boundary for lazy loading.
  * Shows a loading skeleton while the component is being loaded.
  */
-export const MessageSearchWithSuspense: React.FC<MessageSearchProps> = (props) => {
+export const MessageSearchWithSuspense = React.memo(function MessageSearchWithSuspense(props: MessageSearchProps) {
   return (
     <Suspense
       fallback={
@@ -95,4 +97,6 @@ export const MessageSearchWithSuspense: React.FC<MessageSearchProps> = (props) =
       <MessageSearch {...props} />
     </Suspense>
   )
-}
+})
+
+MessageSearchWithSuspense.displayName = 'MessageSearchWithSuspense'
