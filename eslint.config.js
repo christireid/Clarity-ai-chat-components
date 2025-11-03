@@ -55,6 +55,35 @@ export default [
         KeyboardEvent: 'readonly',
         MouseEvent: 'readonly',
         TouchEvent: 'readonly',
+        FocusEvent: 'readonly',
+        // Modern fetch API
+        fetch: 'readonly',
+        Response: 'readonly',
+        Request: 'readonly',
+        Headers: 'readonly',
+        FormData: 'readonly',
+        URLSearchParams: 'readonly',
+        URL: 'readonly',
+        // Modern JavaScript APIs
+        AbortController: 'readonly',
+        AbortSignal: 'readonly',
+        TextEncoder: 'readonly',
+        TextDecoder: 'readonly',
+        // DOM APIs
+        Node: 'readonly',
+        NodeList: 'readonly',
+        CustomEvent: 'readonly',
+        // Storage
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        // Observers
+        IntersectionObserver: 'readonly',
+        MutationObserver: 'readonly',
+        ResizeObserver: 'readonly',
+        // File APIs
+        Blob: 'readonly',
+        File: 'readonly',
+        FileReader: 'readonly',
         // Node globals for build
         process: 'readonly',
         NodeJS: 'readonly',
