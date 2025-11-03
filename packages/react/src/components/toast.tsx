@@ -49,14 +49,14 @@ export interface ToastProps extends Toast {
 /**
  * Individual toast component
  */
-export const ToastItem: React.FC<ToastProps> = ({
+export const ToastItem = React.memo(function ToastItem({
   id,
   type,
   title,
   description,
   action,
   onClose,
-}) => {
+}: ToastProps) {
   const Icon = {
     success: CheckCircleIcon,
     error: XCircleIcon,
@@ -131,7 +131,9 @@ export const ToastItem: React.FC<ToastProps> = ({
       </motion.button>
     </motion.div>
   )
-}
+})
+
+ToastItem.displayName = 'ToastItem'
 
 /**
  * Toast container component
@@ -142,11 +144,11 @@ export interface ToastContainerProps {
   onClose: (id: string) => void
 }
 
-export const ToastContainer: React.FC<ToastContainerProps> = ({
+export const ToastContainer = React.memo(function ToastContainer({
   toasts,
   position = 'top-right',
   onClose,
-}) => {
+}: ToastContainerProps) {
   const positionClasses = {
     'top-left': 'top-4 left-4 items-start',
     'top-center': 'top-4 left-1/2 -translate-x-1/2 items-center',
@@ -172,7 +174,9 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
       </AnimatePresence>
     </div>
   )
-}
+})
+
+ToastContainer.displayName = 'ToastContainer'
 
 /**
  * Toast Context
