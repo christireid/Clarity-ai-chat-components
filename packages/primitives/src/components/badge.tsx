@@ -7,13 +7,20 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-primary/90 text-primary-foreground hover:bg-primary shadow-sm hover:shadow',
-        secondary: 'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm',
-        destructive: 'border-transparent bg-destructive/90 text-destructive-foreground hover:bg-destructive shadow-sm',
+        default:
+          'border-transparent bg-primary/90 text-primary-foreground hover:bg-primary shadow-sm hover:shadow',
+        secondary:
+          'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm',
+        destructive:
+          'border-transparent bg-destructive/90 text-destructive-foreground hover:bg-destructive shadow-sm',
         outline: 'border-2 text-foreground hover:bg-accent',
-        success: 'border-transparent bg-green-500 text-white hover:bg-green-600 shadow-sm hover:shadow-green-500/20',
-        warning: 'border-transparent bg-yellow-500 text-white hover:bg-yellow-600 shadow-sm hover:shadow-yellow-500/20',
+        success:
+          'border-transparent bg-green-500 text-white hover:bg-green-600 shadow-sm hover:shadow-green-500/20',
+        warning:
+          'border-transparent bg-yellow-500 text-white hover:bg-yellow-600 shadow-sm hover:shadow-yellow-500/20',
         info: 'border-transparent bg-blue-500 text-white hover:bg-blue-600 shadow-sm hover:shadow-blue-500/20',
+        subtle:
+          'border-transparent bg-muted text-muted-foreground hover:bg-muted/80',
       },
     },
     defaultVariants: {
@@ -31,7 +38,11 @@ export interface BadgeProps
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
   ({ className, variant, dot = false, children, ...props }, ref) => {
     return (
-      <div ref={ref} className={cn(badgeVariants({ variant }), className)} {...props}>
+      <div
+        ref={ref}
+        className={cn(badgeVariants({ variant }), className)}
+        {...props}
+      >
         {dot && (
           <span className="mr-1 h-1.5 w-1.5 rounded-full bg-current shadow-[0_0_0_4px_rgba(255,255,255,0.2)] animate-ping" />
         )}

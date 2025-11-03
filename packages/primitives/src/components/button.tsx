@@ -8,14 +8,22 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
-        outline: 'border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20 hover:shadow-sm',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+        default:
+          'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+        destructive:
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+        outline:
+          'border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20 hover:shadow-sm',
+        secondary:
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
         ghost: 'hover:bg-accent hover:text-accent-foreground hover:shadow-sm',
         link: 'text-primary underline-offset-4 hover:underline',
-        success: 'bg-green-600 text-white hover:bg-green-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
-        error: 'bg-red-600 text-white hover:bg-red-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+        success:
+          'bg-green-600 text-white hover:bg-green-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+        error:
+          'bg-red-600 text-white hover:bg-red-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+        surface:
+          'bg-surface text-surface-foreground hover:bg-surface/80 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm border border-border',
       },
       size: {
         default: 'h-10 px-4 py-2',
@@ -59,47 +67,56 @@ interface RippleType {
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ 
-    className, 
-    variant, 
-    size, 
-    asChild = false, 
-    loading = false, 
-    state: controlledState,
-    ripple = true,
-    rippleColor,
-    successMessage,
-    errorMessage,
-    stateDuration = 2000,
-    disabled, 
-    children,
-    onClick,
-    ...props 
-  }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      loading = false,
+      state: controlledState,
+      ripple = true,
+      rippleColor,
+      successMessage,
+      errorMessage,
+      stateDuration = 2000,
+      disabled,
+      children,
+      onClick,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = (asChild ? Slot : 'button') as 'button'
-    const [internalState, setInternalState] = React.useState<ButtonState>('idle')
+    const [internalState, setInternalState] =
+      React.useState<ButtonState>('idle')
     const [ripples, setRipples] = React.useState<RippleType[]>([])
     const rippleIdRef = React.useRef(0)
     const stateTimeoutRef = React.useRef<NodeJS.Timeout>()
-    
-    const currentState = controlledState || (loading ? 'loading' : internalState)
-    const shouldShowRipple = ripple && variant !== 'link' && !disabled && currentState === 'idle'
-    
+
+    const currentState =
+      controlledState || (loading ? 'loading' : internalState)
+    const shouldShowRipple =
+      ripple && variant !== 'link' && !disabled && currentState === 'idle'
+
     // Auto-reset state after duration
     React.useEffect(() => {
-      if ((currentState === 'success' || currentState === 'error') && !controlledState) {
+      if (
+        (currentState === 'success' || currentState === 'error') &&
+        !controlledState
+      ) {
         stateTimeoutRef.current = setTimeout(() => {
           setInternalState('idle')
         }, stateDuration)
       }
-      
+
       return () => {
         if (stateTimeoutRef.current) {
           clearTimeout(stateTimeoutRef.current)
         }
       }
     }, [currentState, controlledState, stateDuration])
-    
+
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       // Add ripple effect
       if (shouldShowRipple) {
@@ -108,25 +125,25 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         const x = e.clientX - rect.left
         const y = e.clientY - rect.top
         const size = Math.max(rect.width, rect.height) * 2
-        
+
         const ripple: RippleType = {
           id: rippleIdRef.current++,
           x,
           y,
           size,
         }
-        
-        setRipples(prev => [...prev, ripple])
-        
+
+        setRipples((prev) => [...prev, ripple])
+
         // Remove ripple after animation
         setTimeout(() => {
-          setRipples(prev => prev.filter(r => r.id !== ripple.id))
+          setRipples((prev) => prev.filter((r) => r.id !== ripple.id))
         }, 600)
       }
-      
+
       onClick?.(e)
     }
-    
+
     // Get ripple color based on variant
     const getRippleColor = () => {
       if (rippleColor) return rippleColor
@@ -146,7 +163,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
       return palette[variant ?? 'default'] ?? 'rgba(22, 119, 255, 0.22)'
     }
-    
+
     // Get state content
     const getStateContent = () => {
       switch (currentState) {
@@ -173,54 +190,62 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               />
             </svg>
           )
-        
+
         case 'success':
-          return successMessage || (
-            <svg
-              className="h-4 w-4 animate-[scale-in_0.2s_ease-out]"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="3"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+          return (
+            successMessage || (
+              <svg
+                className="h-4 w-4 animate-[scale-in_0.2s_ease-out]"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="3"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )
           )
-        
+
         case 'error':
-          return errorMessage || (
-            <svg
-              className="h-4 w-4 animate-[shake_0.4s_ease-in-out]"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="3"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
+          return (
+            errorMessage || (
+              <svg
+                className="h-4 w-4 animate-[shake_0.4s_ease-in-out]"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="3"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            )
           )
-        
+
         default:
           return null
       }
     }
-    
+
     const stateContent = getStateContent()
     const isDisabled = disabled || currentState === 'loading'
-    
+
     // Apply state-specific variant
-    const effectiveVariant = currentState === 'success' ? 'success'
-      : currentState === 'error' ? 'error'
-      : variant
-    
+    const effectiveVariant =
+      currentState === 'success'
+        ? 'success'
+        : currentState === 'error'
+          ? 'error'
+          : variant
+
     return (
       <Comp
         className={cn(
           buttonVariants({ variant: effectiveVariant, size, className }),
-          currentState === 'success' && 'after:absolute after:inset-0 after:rounded-inherit after:border-2 after:border-success/40 after:animate-[pulse_0.8s_ease-out_2] after:content-[""]',
+          currentState === 'success' &&
+            'after:absolute after:inset-0 after:rounded-inherit after:border-2 after:border-success/40 after:animate-[pulse_0.8s_ease-out_2] after:content-[""]',
           currentState === 'error' && 'animate-[error-shake_0.4s_ease-in-out]'
         )}
         ref={ref}
@@ -231,20 +256,21 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {/* Ripple effect */}
-        {shouldShowRipple && ripples.map((ripple) => (
-          <span
-            key={ripple.id}
-            className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full animate-[ripple_0.6s_ease-out]"
-            style={{
-              left: ripple.x,
-              top: ripple.y,
-              width: ripple.size,
-              height: ripple.size,
-              backgroundColor: getRippleColor(),
-            }}
-          />
-        ))}
-        
+        {shouldShowRipple &&
+          ripples.map((ripple) => (
+            <span
+              key={ripple.id}
+              className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full animate-[ripple_0.6s_ease-out]"
+              style={{
+                left: ripple.x,
+                top: ripple.y,
+                width: ripple.size,
+                height: ripple.size,
+                backgroundColor: getRippleColor(),
+              }}
+            />
+          ))}
+
         {/* Button content */}
         {stateContent}
         {children}
