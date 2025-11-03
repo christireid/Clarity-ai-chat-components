@@ -233,6 +233,6 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
       </Card>
     </motion.div>
   )
-}: FollowUpSuggestionsProps) => JSX.Element)
+})
 
 FollowUpSuggestions.displayName = 'FollowUpSuggestions'

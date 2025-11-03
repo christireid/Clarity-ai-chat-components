@@ -125,7 +125,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
       </CardContent>
     </Card>
   )
-}: WorkflowSuggestionListProps) => JSX.Element)
+})
 
 WorkflowSuggestionList.displayName = 'WorkflowSuggestionList'
 

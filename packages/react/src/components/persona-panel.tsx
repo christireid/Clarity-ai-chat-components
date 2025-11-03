@@ -205,6 +205,6 @@ export const PersonaPanel = React.memo(function PersonaPanel({
       </CardContent>
     </Card>
   )
-}: PersonaPanelProps) => JSX.Element)
+})
 
 PersonaPanel.displayName = 'PersonaPanel'
