@@ -16,10 +16,10 @@ export interface ThinkingIndicatorProps {
   className?: string
 }
 
-export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
+export const ThinkingIndicator = React.memo(function ThinkingIndicator({
   status,
   className,
-}) => {
+}: ThinkingIndicatorProps) {
   const getStageIcon = (stage: AIStatus['stage']) => {
     const iconProps = { size: 20 }
     switch (stage) {
@@ -153,4 +153,6 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
       )}
     </motion.div>
   )
-}
+})
+
+ThinkingIndicator.displayName = 'ThinkingIndicator'
