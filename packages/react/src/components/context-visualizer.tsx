@@ -3,7 +3,7 @@ import * as React from 'react'
 /**
  * Message for context visualization
  */
-export interface ContextMessage {
+export interface ContextVisualizerMessage {
   id: string
   role: 'user' | 'assistant' | 'system'
   content: string
@@ -20,7 +20,7 @@ export interface ContextMessage {
  */
 export interface ContextVisualizerProps {
   /** All messages in conversation */
-  messages: ContextMessage[]
+  messages: ContextVisualizerMessage[]
   
   /** Maximum tokens for context */
   maxTokens: number
