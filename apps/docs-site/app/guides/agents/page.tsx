@@ -2,6 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
+import { AgentOrchestrationDiagram } from '@/components/Diagrams/AgentOrchestrationDiagram'
 
 export const metadata: Metadata = {
   title: 'AI Agents Guide - Clarity Chat',
@@ -72,6 +73,8 @@ export default function AgentsGuidePage() {
         <p className="mt-4">
           This loop can repeat multiple times for complex tasks.
         </p>
+
+        <AgentOrchestrationDiagram />
       </section>
 
       <section className="docs-section">

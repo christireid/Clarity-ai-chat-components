@@ -2,6 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
+import { RAGPipelineDiagram } from '@/components/Diagrams/RAGPipelineDiagram'
 
 export const metadata: Metadata = {
   title: 'RAG Guide - Clarity Chat',
@@ -35,14 +36,7 @@ export default function RAGGuidePage() {
           synthesize answers.
         </p>
 
-        <div className="my-6 p-6 bg-muted/50 rounded-xl border-2">
-          <div className="text-center space-y-2">
-            <div className="text-4xl">📚 → 🔍 → 💡 → 💬</div>
-            <div className="text-sm text-muted-foreground">
-              Documents → Search → AI Reads → Answers
-            </div>
-          </div>
-        </div>
+        <RAGPipelineDiagram />
 
         <Callout type="info" title="Real Example">
           User: "What were our Q3 sales?"
