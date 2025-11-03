@@ -169,7 +169,7 @@ export const InteractiveCard = React.memo(
         )}
       </Component>
     )
-  }
+  })
 )
 
 InteractiveCard.displayName = 'InteractiveCard'

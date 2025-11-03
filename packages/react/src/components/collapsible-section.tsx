@@ -114,7 +114,7 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
       </AnimatePresence>
     </div>
   )
-}
+})
 
 /**
  * Accordion - Multiple collapsible sections where only one can be open
