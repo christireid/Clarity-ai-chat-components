@@ -65,7 +65,7 @@ export interface StreamCancellationProps {
  * }
  * ```
  */
-export const StreamCancellation: React.FC<StreamCancellationProps> = ({
+export const StreamCancellation = React.memo(function StreamCancellation({
   isStreaming,
   onCancel,
   cancelLabel = 'Cancel',
@@ -74,7 +74,7 @@ export const StreamCancellation: React.FC<StreamCancellationProps> = ({
   className,
   showProgress = true,
   progressMessage = 'Streaming...',
-}) => {
+}: StreamCancellationProps) {
   if (!isStreaming) return null
 
   return (
@@ -116,6 +116,6 @@ export const StreamCancellation: React.FC<StreamCancellationProps> = ({
       </Button>
     </div>
   )
-}
+})
 
 StreamCancellation.displayName = 'StreamCancellation'

@@ -105,7 +105,7 @@ const defaultTitle = 'Conversation recap'
 const defaultSubtitle =
   'Share this executive summary with stakeholders or use the follow-up plan to continue the workflow.'
 
-export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
+export const SessionSummaryCard = React.memo(function SessionSummaryCard({
   summary,
   metrics,
   onAction,
@@ -113,7 +113,7 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
   className,
   title = defaultTitle,
   subtitle = defaultSubtitle,
-}) => {
+}: SessionSummaryCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -295,6 +295,6 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
       </Card>
     </motion.div>
   )
-}
+})
 
 SessionSummaryCard.displayName = 'SessionSummaryCard'

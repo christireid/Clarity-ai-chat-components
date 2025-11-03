@@ -13,11 +13,14 @@ interface ComponentLibraryProps {
 const categories = {
   'Getting Started': ['basic', 'streaming', 'conversation'],
   'Chat Components': ['chat-window', 'message-bubble', 'chat-input'],
-  'Controls': ['model-selector', 'token-counter'],
-  'Advanced': ['rag-pattern', 'function-calling'],
+  Controls: ['model-selector', 'token-counter'],
+  Advanced: ['rag-pattern', 'function-calling'],
 }
 
-export function ComponentLibrary({ selectedTemplate, onTemplateChange }: ComponentLibraryProps) {
+export function ComponentLibrary({
+  selectedTemplate,
+  onTemplateChange,
+}: ComponentLibraryProps) {
   return (
     <div className="p-4">
       <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 uppercase tracking-wider">
@@ -45,7 +48,10 @@ export function ComponentLibrary({ selectedTemplate, onTemplateChange }: Compone
                     }
                   `}
                 >
-                  {template.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  {template
+                    .split('-')
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ')}
                 </button>
               )
             })}
@@ -55,4 +61,3 @@ export function ComponentLibrary({ selectedTemplate, onTemplateChange }: Compone
     </div>
   )
 }
-

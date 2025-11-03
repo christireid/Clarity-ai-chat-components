@@ -37,6 +37,7 @@ npm run preview
 ## Features
 
 ### Code Editor
+
 - Full TypeScript support
 - Syntax highlighting
 - Auto-completion
@@ -44,18 +45,21 @@ npm run preview
 - Keyboard shortcuts
 
 ### Live Preview
+
 - Real-time rendering
 - Error boundaries
 - Console output capture
 - Responsive design testing
 
 ### Templates
+
 - **Getting Started**: Basic examples
 - **Chat Components**: UI components
 - **Controls**: Interactive elements
 - **Advanced**: Complex patterns
 
 ### Share & Export
+
 - Copy code to clipboard
 - Download as file
 - Share via URL
@@ -71,6 +75,7 @@ npm run preview
 ## Examples
 
 ### Basic Chat
+
 ```typescript
 import React, { useState } from 'react'
 
@@ -81,12 +86,13 @@ function Component() {
 ```
 
 ### Streaming Response
+
 ```typescript
 async function simulateStreaming() {
   const words = text.split(' ')
   for (const word of words) {
-    await new Promise(resolve => setTimeout(resolve, 100))
-    setStreamedText(prev => prev + word + ' ')
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    setStreamedText((prev) => prev + word + ' ')
   }
 }
 ```
@@ -102,16 +108,19 @@ async function simulateStreaming() {
 ## Troubleshooting
 
 ### Preview Not Updating
+
 - Check for syntax errors
 - Ensure auto-run is enabled
 - Try the manual Run button
 
 ### Import Errors
+
 - The playground uses UMD React builds
 - External imports may not work
 - Use inline code only
 
 ### Performance Issues
+
 - Disable auto-run for complex code
 - Use manual Run button instead
 - Clear browser cache
@@ -119,4 +128,3 @@ async function simulateStreaming() {
 ## License
 
 MIT
-

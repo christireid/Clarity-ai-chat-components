@@ -38,12 +38,17 @@ export interface ErrorBoundaryEnhancedProps extends Omit<ErrorBoundaryProps, 'on
 /**
  * Default Enhanced Fallback component with feedback option
  */
-const DefaultEnhancedFallback: React.FC<{
+const DefaultEnhancedFallback = React.memo(function DefaultEnhancedFallback({
+  error,
+  resetError,
+  onFeedbackSubmit,
+  enableFeedback,
+}: {
   error: Error
   resetError: () => void
   onFeedbackSubmit: (feedback: ErrorFeedbackData) => void
   enableFeedback: boolean
-}> = ({ error, resetError, onFeedbackSubmit, enableFeedback }) => {
+}) {
   const [showFeedbackModal, setShowFeedbackModal] = React.useState(false)
 
   return (
@@ -114,7 +119,9 @@ const DefaultEnhancedFallback: React.FC<{
       />
     </div>
   )
-}
+})
+
+DefaultEnhancedFallback.displayName = 'DefaultEnhancedFallback'
 
 /**
  * Enhanced Error Boundary Component with Error Tracking

@@ -22,7 +22,7 @@ export function LivePreview({ code, theme, autoRun }: LivePreviewProps) {
 
     try {
       setError(null)
-      
+
       // Create the HTML content for the iframe
       const html = `
 <!DOCTYPE html>
@@ -119,4 +119,3 @@ export function LivePreview({ code, theme, autoRun }: LivePreviewProps) {
     </div>
   )
 }
-
