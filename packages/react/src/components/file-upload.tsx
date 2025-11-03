@@ -11,13 +11,13 @@ export interface FileUploadProps {
   className?: string
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({
+export const FileUpload = React.memo(function FileUpload({
   onUpload,
   maxFiles = 10,
   maxFileSize = 10 * 1024 * 1024, // 10MB default
   acceptedFileTypes = ['image/*', 'application/pdf', '.txt', '.doc', '.docx', 'video/*'],
   className,
-}) => {
+}: FileUploadProps) {
   const [isDragging, setIsDragging] = React.useState(false)
   const [files, setFiles] = React.useState<File[]>([])
   const [uploading, setUploading] = React.useState(false)
@@ -243,4 +243,6 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       </AnimatePresence>
     </div>
   )
-}
+})
+
+FileUpload.displayName = 'FileUpload'

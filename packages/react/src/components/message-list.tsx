@@ -26,7 +26,7 @@ export interface MessageListProps {
   className?: string
 }
 
-export const MessageList: React.FC<MessageListProps> = ({
+export const MessageList = React.memo(function MessageList({
   messages,
   onMessageCopy,
   onMessageFeedback,
@@ -35,7 +35,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   loadingCount = 3,
   emptyState,
   className,
-}) => {
+}: MessageListProps) {
   // Use auto-scroll hook with smooth scrolling
   const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
@@ -149,4 +149,6 @@ export const MessageList: React.FC<MessageListProps> = ({
       </AnimatePresence>
     </div>
   )
-}
+})
+
+MessageList.displayName = 'MessageList'

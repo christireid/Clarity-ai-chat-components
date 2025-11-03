@@ -38,7 +38,7 @@ export interface ChatWindowProps {
   className?: string
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({
+export const ChatWindow = React.memo(function ChatWindow({
   messages,
   isLoading = false,
   aiStatus,
@@ -55,7 +55,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   onExport,
   onClear,
   className,
-}) => {
+}: ChatWindowProps) {
   const [input, setInput] = React.useState('')
 
   const handleSubmit = (content: string) => {
@@ -191,4 +191,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
     </Card>
   )
-}
+})
+
+ChatWindow.displayName = 'ChatWindow'
