@@ -28,7 +28,7 @@ export interface TruncationStrategy {
   /** Strategy name */
   name: string
   /** Truncate messages */
-  truncate(messages: Message[], options: ContextWindowOptions): Message[]
+  truncate(messages: Message[], options: ContextWindowOptions): Message[] | Promise<Message[]>
 }
 
 /**

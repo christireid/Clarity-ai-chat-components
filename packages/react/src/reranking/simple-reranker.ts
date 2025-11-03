@@ -64,7 +64,8 @@ export class SimpleReranker implements Reranker {
     const docSet = new Set(docTerms)
 
     let overlap = 0
-    for (const term of querySet) {
+    const queryTermsArray = [...querySet]
+    for (const term of queryTermsArray) {
       if (docSet.has(term)) {
         overlap++
       }
@@ -139,7 +140,8 @@ export class DiversityReranker implements Reranker {
     const tokens2 = new Set(this.tokenize(text2))
 
     let intersection = 0
-    for (const token of tokens1) {
+    const tokens1Array = [...tokens1]
+    for (const token of tokens1Array) {
       if (tokens2.has(token)) {
         intersection++
       }

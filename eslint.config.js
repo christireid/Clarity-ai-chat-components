@@ -98,6 +98,28 @@ export default [
         confirm: 'readonly',
         prompt: 'readonly',
         IntersectionObserverInit: 'readonly',
+        // WebSocket
+        WebSocket: 'readonly',
+        MessageEvent: 'readonly',
+        CloseEvent: 'readonly',
+        // Streams API
+        ReadableStream: 'readonly',
+        WritableStream: 'readonly',
+        TransformStream: 'readonly',
+        // DOM Parser
+        DOMParser: 'readonly',
+        // Scroll behavior
+        ScrollBehavior: 'readonly',
+        // Event Maps
+        WindowEventMap: 'readonly',
+        DocumentEventMap: 'readonly',
+        AddEventListenerOptions: 'readonly',
+        // Document type
+        Document: 'readonly',
+        // Crypto
+        crypto: 'readonly',
+        Crypto: 'readonly',
+        SubtleCrypto: 'readonly',
         // Node globals for build
         process: 'readonly',
         NodeJS: 'readonly',

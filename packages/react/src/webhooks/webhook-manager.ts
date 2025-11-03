@@ -61,7 +61,8 @@ export class WebhookManager implements WebhookHandler {
   async emit(event: WebhookEvent): Promise<WebhookDelivery[]> {
     const deliveries: WebhookDelivery[] = []
 
-    for (const endpoint of this.endpoints.values()) {
+    const endpoints = Array.from(this.endpoints.values())
+    for (const endpoint of endpoints) {
       if (!endpoint.enabled) continue
       if (!endpoint.events.includes(event.type) && !endpoint.events.includes('*')) {
         continue

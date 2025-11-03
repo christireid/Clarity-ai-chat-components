@@ -129,7 +129,7 @@ export class PromptTemplateEngine {
       variables.add(match[1])
     }
     
-    return Array.from(variables)
+    return [...variables]
   }
   
   /**

@@ -110,7 +110,8 @@ export class PluginManager {
   async callHook<T = any>(hookName: string, ...args: any[]): Promise<T[]> {
     const results: T[] = []
 
-    for (const config of this.plugins.values()) {
+    const configs = Array.from(this.plugins.values())
+    for (const config of configs) {
       if (!config.enabled) continue
 
       const hook = config.plugin.hooks?.[hookName]

@@ -23,8 +23,8 @@ export class PIIDetector {
     const detections: PIIDetection[] = []
 
     for (const [type, pattern] of Object.entries(this.patterns)) {
-      const matches = text.matchAll(pattern)
-
+      const matches = Array.from(text.matchAll(pattern))
+      
       for (const match of matches) {
         if (match.index !== undefined) {
           detections.push({

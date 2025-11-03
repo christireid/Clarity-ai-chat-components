@@ -95,7 +95,8 @@ export class MemoryRateLimitStorage implements RateLimitStorage {
    */
   cleanup(): void {
     const now = Date.now()
-    for (const [key, entry] of this.store.entries()) {
+    const entries = Array.from(this.store.entries())
+    for (const [key, entry] of entries) {
       if (entry.expiresAt < now) {
         this.store.delete(key)
       }
@@ -221,7 +222,8 @@ export class SlidingWindowRateLimiter {
     const now = Date.now()
     const windowStart = now - this.config.windowMs
     
-    for (const [key, times] of this.timestamps.entries()) {
+    const entries = Array.from(this.timestamps.entries())
+    for (const [key, times] of entries) {
       const filtered = times.filter(t => t > windowStart)
       if (filtered.length === 0) {
         this.timestamps.delete(key)
