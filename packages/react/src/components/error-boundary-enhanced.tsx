@@ -14,7 +14,8 @@ import type { ErrorFeedback as ErrorFeedbackData } from '../error/types'
 /**
  * Enhanced Error Boundary Props
  */
-export interface ErrorBoundaryEnhancedProps extends Omit<ErrorBoundaryProps, 'onError' | 'fallback'> {
+export interface ErrorBoundaryEnhancedProps
+  extends Omit<ErrorBoundaryProps, 'onError' | 'fallback'> {
   /** Whether to show user feedback option */
   enableFeedback?: boolean
 
@@ -181,7 +182,8 @@ export function ErrorBoundaryEnhanced({
 }: ErrorBoundaryEnhancedProps) {
   const errorReporter = useErrorReporter()
   const [currentError, setCurrentError] = React.useState<Error | null>(null)
-  const [currentErrorInfo, setCurrentErrorInfo] = React.useState<React.ErrorInfo | null>(null)
+  const [currentErrorInfo, setCurrentErrorInfo] =
+    React.useState<React.ErrorInfo | null>(null)
 
   const handleError = React.useCallback(
     (error: Error, errorInfo: React.ErrorInfo) => {

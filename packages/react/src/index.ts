@@ -1,5 +1,14 @@
-// Model Adapters (NEW)
+// Model Adapters
 export * from './adapters'
+
+// Vector Stores (Enterprise RAG)
+export * from './vector-stores'
+
+// Embeddings (Multi-Provider)
+export * from './embeddings'
+
+// Agent Orchestration (Agentic AI)
+export * from './agents'
 
 // Export all components
 export * from './components/message'

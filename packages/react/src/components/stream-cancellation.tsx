@@ -87,9 +87,11 @@ export const StreamCancellation = React.memo(function StreamCancellation({
             <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.15s]" />
             <span className="h-2 w-2 animate-bounce rounded-full bg-primary" />
           </div>
-          
+
           {!iconOnly && (
-            <span className="text-sm text-muted-foreground">{progressMessage}</span>
+            <span className="text-sm text-muted-foreground">
+              {progressMessage}
+            </span>
           )}
         </div>
       )}
@@ -111,7 +113,7 @@ export const StreamCancellation = React.memo(function StreamCancellation({
         >
           <rect x="3" y="3" width="10" height="10" rx="2" />
         </svg>
-        
+
         {!iconOnly && <span>{cancelLabel}</span>}
       </Button>
     </div>

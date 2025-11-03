@@ -24,14 +24,14 @@ export interface ExportDialogProps {
   className?: string
 }
 
-export const ExportDialog: React.FC<ExportDialogProps> = ({
+export const ExportDialog = React.memo(function ExportDialog({
   open,
   onOpenChange,
   onExport,
   resourceType,
   resourceName,
   className,
-}) => {
+}: ExportDialogProps) {
   const [format, setFormat] = React.useState<ExportFormat>('pdf')
   const [options, setOptions] = React.useState<Partial<ExportOptions>>({
     includeMetadata: true,
@@ -328,4 +328,6 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
       </DialogContent>
     </Dialog>
   )
-}
+})
+
+ExportDialog.displayName = 'ExportDialog'

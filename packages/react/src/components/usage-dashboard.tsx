@@ -26,13 +26,13 @@ export interface UsageDashboardProps {
   className?: string
 }
 
-export const UsageDashboard: React.FC<UsageDashboardProps> = ({
+export const UsageDashboard = React.memo(function UsageDashboard({
   balance,
   stats,
   limits = [],
   onPurchaseCredits,
   className,
-}) => {
+}: UsageDashboardProps) {
   const usagePercentage = (balance.used / balance.total) * 100
   const isLowBalance = usagePercentage > 80
 
@@ -304,4 +304,6 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
       </CardContent>
     </Card>
   )
-}
+})
+
+UsageDashboard.displayName = 'UsageDashboard'

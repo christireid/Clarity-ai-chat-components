@@ -3,7 +3,8 @@ import { Button, type ButtonProps } from '@clarity-chat/primitives'
 import { useClipboard } from '../hooks/use-clipboard'
 import { CopyIcon, CheckIcon } from './icons'
 
-export interface CopyButtonProps extends Omit<ButtonProps, 'onClick' | 'state'> {
+export interface CopyButtonProps
+  extends Omit<ButtonProps, 'onClick' | 'state'> {
   text: string
   onCopy?: () => void
   /** Show icon only (no text) */
