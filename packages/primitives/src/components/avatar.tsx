@@ -35,7 +35,20 @@ export interface AvatarProps
 }
 
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
-  ({ className, size, src, alt, fallback, status, hoverable = false, statusBadge, ...props }, ref) => {
+  (
+    {
+      className,
+      size,
+      src,
+      alt,
+      fallback,
+      status,
+      hoverable = false,
+      statusBadge,
+      ...props
+    },
+    ref
+  ) => {
     const [imageError, setImageError] = React.useState(false)
 
     const getFallbackText = () => {
@@ -72,7 +85,8 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         ref={ref}
         className={cn(
           avatarVariants({ size, className }),
-          hoverable && 'hover:scale-110 hover:shadow-md cursor-pointer hover:-translate-y-0.5'
+          hoverable &&
+            'hover:scale-110 hover:shadow-md cursor-pointer hover:-translate-y-0.5'
         )}
         {...props}
       >
@@ -91,11 +105,13 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 
         {/* Status Indicator */}
         {status && !statusBadge && (
-          <span className={cn(
-            'absolute bottom-0 right-0 block rounded-full border-2 border-background shadow-sm ring-2',
-            statusSizes[size || 'default'],
-            statusColors[status]
-          )}>
+          <span
+            className={cn(
+              'absolute bottom-0 right-0 block rounded-full border-2 border-background shadow-sm ring-2',
+              statusSizes[size || 'default'],
+              statusColors[status]
+            )}
+          >
             {status === 'online' && (
               <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
             )}
@@ -104,9 +120,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 
         {/* Custom Status Badge */}
         {statusBadge && (
-          <span className="absolute -bottom-1 -right-1">
-            {statusBadge}
-          </span>
+          <span className="absolute -bottom-1 -right-1">{statusBadge}</span>
         )}
       </div>
     )

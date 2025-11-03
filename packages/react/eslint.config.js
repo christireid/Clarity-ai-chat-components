@@ -145,6 +145,23 @@ export default [
     },
   },
   {
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/__tests__/**/*.ts', '**/__tests__/**/*.tsx'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
+        vitest: 'readonly',
+      },
+    },
+  },
+  {
     ignores: ['dist/', 'node_modules/', 'coverage/', '.storybook/'],
   },
 ]
