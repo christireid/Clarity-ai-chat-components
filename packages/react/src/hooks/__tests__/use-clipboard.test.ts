@@ -74,7 +74,7 @@ describe('useClipboard', () => {
     await act(async () => {
       try {
         await result.current.copy('Test')
-      } catch (e) {
+      } catch (_e) {
         // Expected to throw
       }
     })
