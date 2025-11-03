@@ -15,6 +15,10 @@ import { devCommand } from './commands/dev.js'
 import { generateCommand } from './commands/generate.js'
 import { docsCommand } from './commands/docs.js'
 import { doctorCommand } from './commands/doctor.js'
+import { upgradeCommand } from './commands/upgrade.js'
+import { analyzeCommand } from './commands/analyze.js'
+import { benchmarkCommand } from './commands/benchmark.js'
+import { browseCommand, searchComponents } from './commands/browse.js'
 
 const program = new Command()
 
@@ -86,6 +90,41 @@ program
   .description('🩺 Check project health and configuration')
   .option('--fix', 'Auto-fix common issues')
   .action(doctorCommand)
+
+program
+  .command('upgrade')
+  .description('🚀 Upgrade Clarity Chat packages')
+  .option('-i, --interactive', 'Interactive mode for selecting packages')
+  .option('-y, --yes', 'Skip confirmation prompts')
+  .option('--major', 'Only show major updates')
+  .option('--minor', 'Only show minor updates')
+  .option('--patch', 'Only show patch updates')
+  .action(upgradeCommand)
+
+program
+  .command('analyze')
+  .description('🔍 Analyze project usage and generate reports')
+  .option('-r, --report', 'Generate detailed report files')
+  .option('-v, --verbose', 'Show detailed output')
+  .action(analyzeCommand)
+
+program
+  .command('benchmark')
+  .description('⚡ Run performance benchmarks')
+  .option('-i, --iterations <number>', 'Number of iterations', '100')
+  .option('-s, --save', 'Save results to file')
+  .option('-c, --compare', 'Compare with previous run')
+  .action(benchmarkCommand)
+
+program
+  .command('browse')
+  .description('🎨 Browse available components interactively')
+  .action(browseCommand)
+
+program
+  .command('search <query>')
+  .description('🔍 Search for components')
+  .action(searchComponents)
 
 // Parse commands
 program.parse()
