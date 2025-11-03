@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { motion } from 'framer-motion'
 import {
   Badge,
   Button,
@@ -32,10 +33,42 @@ export interface SessionSummaryCardProps {
   subtitle?: string
 }
 
-const trendIcon: Record<NonNullable<SessionMetric['trend']>, string> = {
-  up: '↑',
-  down: '↓',
-  steady: '→',
+const getTrendVariant = (trend: SessionMetric['trend']) => {
+  switch (trend) {
+    case 'up':
+      return 'success'
+    case 'down':
+      return 'destructive'
+    case 'steady':
+      return 'secondary'
+    default:
+      return 'secondary'
+  }
+}
+
+const getTrendIcon = (trend: SessionMetric['trend']) => {
+  switch (trend) {
+    case 'up':
+      return (
+        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      )
+    case 'down':
+      return (
+        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+        </svg>
+      )
+    case 'steady':
+      return (
+        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" />
+        </svg>
+      )
+    default:
+      return null
+  }
 }
 
 const defaultTitle = 'Conversation recap'
@@ -52,12 +85,17 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
   subtitle = defaultSubtitle,
 }) => {
   return (
-    <Card
-      className={cn(
-        'border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_26px_56px_rgba(15,23,42,0.18)]',
-        className
-      )}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
     >
+      <Card
+        className={cn(
+          'shadow-xl hover:shadow-2xl transition-shadow duration-200',
+          className
+        )}
+      >
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
           <CardTitle className="text-lg font-semibold text-foreground">
@@ -69,11 +107,14 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
         </div>
         {onExport && (
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={onExport}
-            className="self-start"
+            className="self-start gap-1.5"
           >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
             Export transcript
           </Button>
         )}
@@ -84,46 +125,59 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
             <span className="text-base font-semibold text-foreground">
               {summary.title}
             </span>
-            <Badge variant="info" className="text-[11px]">
+            <Badge variant="info">
+              <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
               Highlights
             </Badge>
           </header>
           <ul className="space-y-2">
-            {summary.highlights.map((highlight) => (
-              <li
+            {summary.highlights.map((highlight, index) => (
+              <motion.li
                 key={highlight}
-                className="flex items-start gap-3 rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] px-4 py-3 text-sm text-muted-foreground/85"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, delay: index * 0.05 }}
+                className="flex items-start gap-3 rounded-xl border bg-muted/50 px-4 py-3 text-sm text-muted-foreground shadow-sm"
               >
-                <span className="mt-1 text-primary">•</span>
-                <span>{highlight}</span>
-              </li>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                  {index + 1}
+                </span>
+                <span className="flex-1">{highlight}</span>
+              </motion.li>
             ))}
           </ul>
         </section>
 
         <section className="grid gap-3 sm:grid-cols-2">
-          {metrics.map((metric) => (
-            <div
+          {metrics.map((metric, index) => (
+            <motion.div
               key={metric.label}
-              className="flex flex-col gap-2 rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] px-4 py-3 text-sm"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2, delay: index * 0.05 }}
+              className="flex flex-col gap-2 rounded-xl border bg-muted/50 px-4 py-3 text-sm shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
             >
-              <span className="text-muted-foreground/70">{metric.label}</span>
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {metric.label}
+              </span>
               <div className="flex items-baseline gap-2">
-                <span className="text-lg font-semibold text-foreground">
+                <span className="text-2xl font-bold text-foreground">
                   {metric.value}
                 </span>
                 {metric.trend && (
-                  <Badge variant="subtle" className="text-[11px]">
-                    {trendIcon[metric.trend]}{' '}
+                  <Badge variant={getTrendVariant(metric.trend)} className="gap-1">
+                    {getTrendIcon(metric.trend)}
                     {metric.trend === 'up'
-                      ? 'Improving'
+                      ? 'Up'
                       : metric.trend === 'down'
-                        ? 'Regression'
+                        ? 'Down'
                         : 'Stable'}
                   </Badge>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
         </section>
 
@@ -133,27 +187,40 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
               <span className="text-base font-semibold text-foreground">
                 Suggested follow-up
               </span>
-              <Badge variant="warning" className="text-[11px]">
+              <Badge variant="warning">
+                <svg className="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
                 Next steps
               </Badge>
             </header>
             <div className="flex flex-wrap gap-2">
-              {summary.nextActions.map((action) => (
-                <Button
+              {summary.nextActions.map((action, index) => (
+                <motion.div
                   key={action}
-                  variant="surface"
-                  size="sm"
-                  onClick={() => onAction?.(action)}
-                  className="rounded-full"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.15, delay: index * 0.05 }}
                 >
-                  {action}
-                </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => onAction?.(action)}
+                    className="rounded-full gap-1.5"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                    {action}
+                  </Button>
+                </motion.div>
               ))}
             </div>
           </section>
         )}
       </CardContent>
-    </Card>
+      </Card>
+    </motion.div>
   )
 }
 

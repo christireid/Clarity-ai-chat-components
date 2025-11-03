@@ -281,7 +281,7 @@ export function AIAssistantTemplate({
   }
 
   return (
-    <ThemeProvider theme={oceanTheme}>
+    <ThemeProvider defaultTheme={oceanTheme}>
       <div
         className="ai-assistant-template"
         style={{ display: 'flex', height: '100%', width: '100%' }}
@@ -291,12 +291,10 @@ export function AIAssistantTemplate({
             style={{ width: '300px', borderRight: '1px solid var(--border)' }}
           >
             <ContextManager
-              items={context}
-              onAddItem={(item) => setContext((prev) => [...prev, item])}
-              onRemoveItem={(id) =>
-                setContext((prev) => prev.filter((c) => c.id !== id))
-              }
-              onClear={() => setContext([])}
+              contexts={context}
+              onAdd={handleContextAdd}
+              onRemove={handleContextRemove}
+              onToggle={handleContextToggle}
             />
           </div>
         )}
@@ -307,8 +305,8 @@ export function AIAssistantTemplate({
           >
             <ModelSelector
               models={availableModels}
-              selectedModel={selectedModel}
-              onSelectModel={setSelectedModel}
+              value={selectedModel}
+              onChange={(modelId) => setSelectedModel(modelId)}
             />
           </div>
 
@@ -317,8 +315,6 @@ export function AIAssistantTemplate({
               messages={messages}
               isLoading={isLoading || isStreaming}
               onSendMessage={handleSendMessage}
-              onFileUpload={enableFileUpload ? handleFileUpload : undefined}
-              enableVoiceInput={enableVoiceInput}
             />
           </div>
         </div>

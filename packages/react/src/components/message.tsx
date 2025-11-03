@@ -159,7 +159,7 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
             ) : (
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeHighlight]}
+                rehypePlugins={[rehypeHighlight as any]}
                 components={{
                   code(props: any) {
                     const { node, inline, className, children, ...rest } = props
