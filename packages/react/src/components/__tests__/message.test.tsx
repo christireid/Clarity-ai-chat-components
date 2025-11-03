@@ -38,7 +38,9 @@ describe('Message Component', () => {
 
     it('should render assistant message correctly', () => {
       render(<Message message={mockAssistantMessage} />)
-      expect(screen.getByText('Hello! How can I help you today?')).toBeInTheDocument()
+      expect(
+        screen.getByText('Hello! How can I help you today?')
+      ).toBeInTheDocument()
       expect(screen.getByText('AI Assistant')).toBeInTheDocument()
     })
 
@@ -48,8 +50,12 @@ describe('Message Component', () => {
     })
 
     it('should render without timestamp when showTimestamp is false', () => {
-      const { container } = render(<Message message={mockMessage} showTimestamp={false} />)
-      const timeElements = container.querySelectorAll('.text-xs.text-muted-foreground')
+      const { container } = render(
+        <Message message={mockMessage} showTimestamp={false} />
+      )
+      const timeElements = container.querySelectorAll(
+        '.text-xs.text-muted-foreground'
+      )
       expect(timeElements).toHaveLength(0)
     })
   })
@@ -70,7 +76,10 @@ describe('Message Component', () => {
 
   describe('Streaming Animation', () => {
     it('should show streaming cursor for streaming status', () => {
-      const streamingMessage = { ...mockAssistantMessage, status: 'streaming' as const }
+      const streamingMessage = {
+        ...mockAssistantMessage,
+        status: 'streaming' as const,
+      }
       const { container } = render(<Message message={streamingMessage} />)
       // Check for the streaming cursor span
       const cursor = container.querySelector('span.inline-block.w-2.h-4')
@@ -83,8 +92,22 @@ describe('Message Component', () => {
       const messageWithAttachments: MessageType = {
         ...mockMessage,
         attachments: [
-          { id: '1', name: 'document.pdf', url: '/document.pdf', type: 'document', mimeType: 'application/pdf', size: 1024 },
-          { id: '2', name: 'image.png', url: '/image.png', type: 'image', mimeType: 'image/png', size: 2048 },
+          {
+            id: '1',
+            name: 'document.pdf',
+            url: '/document.pdf',
+            type: 'document',
+            mimeType: 'application/pdf',
+            size: 1024,
+          },
+          {
+            id: '2',
+            name: 'image.png',
+            url: '/image.png',
+            type: 'image',
+            mimeType: 'image/png',
+            size: 2048,
+          },
         ],
       }
       render(<Message message={messageWithAttachments} />)
@@ -174,7 +197,9 @@ describe('Message Component', () => {
 
     it('should not show feedback actions for user messages', () => {
       const onFeedback = vi.fn()
-      const { container } = render(<Message message={mockMessage} onFeedback={onFeedback} />)
+      const { container } = render(
+        <Message message={mockMessage} onFeedback={onFeedback} />
+      )
 
       // Hover to try to reveal actions
       const messageDiv = container.querySelector('.group')
@@ -215,7 +240,9 @@ describe('Message Component', () => {
     it('should show retry button for error messages', async () => {
       const onRetry = vi.fn()
       const errorMessage = { ...mockAssistantMessage, status: 'error' as const }
-      const { container } = render(<Message message={errorMessage} onRetry={onRetry} />)
+      const { container } = render(
+        <Message message={errorMessage} onRetry={onRetry} />
+      )
 
       // Hover to reveal actions
       const messageDiv = container.querySelector('.group')
@@ -231,7 +258,9 @@ describe('Message Component', () => {
     it('should call onRetry when retry button is clicked', async () => {
       const onRetry = vi.fn()
       const errorMessage = { ...mockAssistantMessage, status: 'error' as const }
-      const { container } = render(<Message message={errorMessage} onRetry={onRetry} />)
+      const { container } = render(
+        <Message message={errorMessage} onRetry={onRetry} />
+      )
 
       // Hover to reveal actions
       const messageDiv = container.querySelector('.group')
@@ -342,7 +371,9 @@ describe('Message Component', () => {
 
   describe('Custom className', () => {
     it('should apply custom className', () => {
-      const { container } = render(<Message message={mockMessage} className="custom-class" />)
+      const { container } = render(
+        <Message message={mockMessage} className="custom-class" />
+      )
       const message = container.querySelector('.custom-class')
       expect(message).toBeInTheDocument()
     })
@@ -377,7 +408,9 @@ describe('Message Component', () => {
         ...mockAssistantMessage,
         feedback: { type: 'up' as const, comment: undefined },
       }
-      expect(() => render(<Message message={messageWithFeedback} />)).not.toThrow()
+      expect(() =>
+        render(<Message message={messageWithFeedback} />)
+      ).not.toThrow()
     })
   })
 })

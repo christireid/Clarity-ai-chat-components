@@ -34,7 +34,9 @@ describe('VoiceInput', () => {
 
   it('should show not supported message when speech recognition unavailable', () => {
     // Mock unsupported state
-    vi.mocked(require('../../hooks/use-voice-input').useVoiceInput).mockReturnValue({
+    vi.mocked(
+      require('../../hooks/use-voice-input').useVoiceInput
+    ).mockReturnValue({
       isListening: false,
       transcript: '',
       finalTranscript: '',
@@ -114,7 +116,7 @@ describe('VoiceInput', () => {
 
   it('should call onStart callback', async () => {
     const onStart = vi.fn()
-    
+
     render(<VoiceInput onTranscript={mockOnTranscript} onStart={onStart} />)
 
     // Would need to simulate voice input starting
@@ -125,7 +127,7 @@ describe('VoiceInput', () => {
 
   it('should call onStop callback', async () => {
     const onStop = vi.fn()
-    
+
     render(<VoiceInput onTranscript={mockOnTranscript} onStop={onStop} />)
 
     await waitFor(() => {
@@ -135,7 +137,7 @@ describe('VoiceInput', () => {
 
   it('should call onError callback on error', async () => {
     const onError = vi.fn()
-    
+
     render(<VoiceInput onTranscript={mockOnTranscript} onError={onError} />)
 
     await waitFor(() => {
@@ -153,11 +155,7 @@ describe('InlineVoiceInput', () => {
 
   it('should render in inside position', () => {
     render(
-      <InlineVoiceInput
-        value=""
-        onChange={mockOnChange}
-        position="inside"
-      />
+      <InlineVoiceInput value="" onChange={mockOnChange} position="inside" />
     )
 
     const container = screen.getByRole('button').parentElement
@@ -166,11 +164,7 @@ describe('InlineVoiceInput', () => {
 
   it('should render in outside position', () => {
     render(
-      <InlineVoiceInput
-        value=""
-        onChange={mockOnChange}
-        position="outside"
-      />
+      <InlineVoiceInput value="" onChange={mockOnChange} position="outside" />
     )
 
     const button = screen.getByRole('button')
@@ -191,13 +185,7 @@ describe('InlineVoiceInput', () => {
   })
 
   it('should support custom language', () => {
-    render(
-      <InlineVoiceInput
-        value=""
-        onChange={mockOnChange}
-        lang="fr-FR"
-      />
-    )
+    render(<InlineVoiceInput value="" onChange={mockOnChange} lang="fr-FR" />)
 
     expect(screen.getByRole('button')).toBeInTheDocument()
   })
