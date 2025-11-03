@@ -254,18 +254,18 @@ export function ConversationList({
 
   return (
     <div
-      className={`flex flex-col h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 ${className}`}
+      className={`flex flex-col h-full bg-card border-r border-border ${className}`}
     >
       {/* Header with create button */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <div className="flex items-center justify-between p-4 border-b border-border">
+        <h2 className="text-lg font-semibold text-foreground">
           Conversations
         </h2>
         
         {onCreate && (
           <button
             onClick={onCreate}
-            className="p-2 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-200 hover:scale-110"
             aria-label="New conversation"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -282,10 +282,10 @@ export function ConversationList({
 
       {/* Search bar */}
       {showSearch && (
-        <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-3 border-b border-border">
           <div className="relative">
             <svg
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -302,7 +302,7 @@ export function ConversationList({
               placeholder="Search conversations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-9 pr-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-shadow duration-200"
             />
           </div>
         </div>
@@ -310,12 +310,12 @@ export function ConversationList({
 
       {/* Filters and sort */}
       {(showFilters || showSort) && (
-        <div className="p-3 border-b border-gray-200 dark:border-gray-700 space-y-2">
+        <div className="p-3 border-b border-border space-y-2">
           {showSort && (
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
+              className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-shadow duration-200"
             >
               <option value="recent">Most Recent</option>
               <option value="oldest">Oldest</option>
@@ -328,10 +328,10 @@ export function ConversationList({
             <div className="flex gap-2">
               <button
                 onClick={() => setShowPinnedOnly(!showPinnedOnly)}
-                className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
                   showPinnedOnly
-                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-900 dark:text-gray-400'
+                    ? 'bg-primary/10 text-primary scale-105'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
                 📌 Pinned
@@ -339,10 +339,10 @@ export function ConversationList({
               
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
                   showFavoritesOnly
-                    ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-900 dark:text-gray-400'
+                    ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] scale-105'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
                 ⭐ Favorites
@@ -358,7 +358,7 @@ export function ConversationList({
           {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-6 text-center">
             <svg
-              className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-3"
+              className="w-12 h-12 text-muted-foreground/50 mb-3"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -370,20 +370,20 @@ export function ConversationList({
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               {searchQuery ? 'No conversations found' : 'No conversations yet'}
             </p>
             {onCreate && !searchQuery && (
               <button
                 onClick={onCreate}
-                className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
               >
                 Start a conversation
               </button>
             )}
           </div>
         ) : (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="divide-y divide-border">
             {filteredConversations.map((conversation, index) => {
               const isActive = activeId === conversation.id
               const isSelected = selectedIds.includes(conversation.id)
@@ -405,12 +405,12 @@ export function ConversationList({
                   }}
                   layout
                   onClick={() => handleSelect(conversation.id)}
-                  className={`p-4 cursor-pointer transition-colors ${
+                  className={`p-4 cursor-pointer transition-all duration-200 ${
                     isActive
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600'
+                      ? 'bg-primary/10 border-l-4 border-primary'
                       : isSelected
-                      ? 'bg-blue-50 dark:bg-blue-900/10'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-900/50'
+                      ? 'bg-primary/5'
+                      : 'hover:bg-muted/50'
                   }`}
                   role="button"
                   tabIndex={0}
@@ -432,7 +432,7 @@ export function ConversationList({
                         )}
 
                         {/* Title */}
-                        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                        <h3 className="text-sm font-medium text-foreground truncate">
                           {conversation.title}
                         </h3>
 
@@ -448,19 +448,19 @@ export function ConversationList({
 
                         {/* Unread badge */}
                         {conversation.unreadCount && conversation.unreadCount > 0 && (
-                          <span className="px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">
+                          <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full shadow-sm">
                             {conversation.unreadCount}
                           </span>
                         )}
                       </div>
 
                       {/* Preview */}
-                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate mb-1">
+                      <p className="text-xs text-muted-foreground truncate mb-1">
                         {conversation.preview}
                       </p>
 
                       {/* Meta info */}
-                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
                         <span>{formatRelativeTime(conversation.timestamp)}</span>
                         <span>•</span>
                         <span>{conversation.messageCount} messages</span>
@@ -472,7 +472,7 @@ export function ConversationList({
                           {conversation.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="px-2 py-0.5 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 text-xs rounded"
+                              className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded"
                             >
                               {tag}
                             </span>
@@ -524,11 +524,11 @@ export function ConversationList({
                           onClick={() => onDelete(conversation.id)}
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+                          className="p-1 hover:bg-destructive/10 rounded transition-all duration-200"
                           aria-label="Delete conversation"
                         >
                           <svg
-                            className="w-4 h-4 text-red-600 dark:text-red-400"
+                            className="w-4 h-4 text-destructive"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -553,14 +553,14 @@ export function ConversationList({
       </div>
 
       {/* Footer with stats */}
-      <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
+      <div className="p-3 border-t border-border">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>
             {filteredConversations.length} of {conversations.length} conversations
           </span>
           
           {multiSelect && selectedIds.length > 0 && (
-            <span className="font-medium text-blue-600 dark:text-blue-400">
+            <span className="font-medium text-primary">
               {selectedIds.length} selected
             </span>
           )}

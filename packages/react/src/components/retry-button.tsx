@@ -5,7 +5,12 @@ import { Button, cn } from '@clarity-chat/primitives'
 /**
  * Error type for different retry strategies
  */
-export type RetryErrorType = 'network' | 'ratelimit' | 'server' | 'auth' | 'unknown'
+export type RetryErrorType =
+  | 'network'
+  | 'ratelimit'
+  | 'server'
+  | 'auth'
+  | 'unknown'
 
 /**
  * Retry button props
@@ -13,46 +18,46 @@ export type RetryErrorType = 'network' | 'ratelimit' | 'server' | 'auth' | 'unkn
 export interface RetryButtonProps {
   /** Function to call on retry */
   onRetry: () => void | Promise<void>
-  
+
   /** Maximum number of retry attempts (default: 3) */
   maxAttempts?: number
-  
+
   /** Backoff delays in milliseconds for each attempt (default: [1000, 3000, 10000]) */
   backoffMs?: number[]
-  
+
   /** Error type for appropriate messaging (default: 'unknown') */
   errorType?: RetryErrorType
-  
+
   /** Current attempt number (external control) */
   attemptNumber?: number
-  
+
   /** Whether button is disabled */
   disabled?: boolean
-  
+
   /** Custom button text */
   buttonText?: string
-  
+
   /** Show remaining attempts count (default: true) */
   showAttemptsRemaining?: boolean
-  
+
   /** Callback when max attempts reached */
   onMaxAttemptsReached?: () => void
-  
+
   /** Callback when retry starts */
   onRetryStart?: (attempt: number) => void
-  
+
   /** Callback when retry succeeds */
   onRetrySuccess?: (attempt: number) => void
-  
+
   /** Callback when retry fails */
   onRetryFail?: (attempt: number, error: Error) => void
-  
+
   /** Custom CSS class */
   className?: string
-  
+
   /** Size variant */
   size?: 'sm' | 'md' | 'lg'
-  
+
   /** Visual variant */
   variant?: 'default' | 'ghost' | 'outline'
 }
@@ -70,7 +75,7 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
 
 /**
  * Production-ready Retry Button component with exponential backoff.
- * 
+ *
  * **Features:**
  * - Exponential backoff with configurable delays
  * - Type-specific error messages (network, rate limit, server, auth)
@@ -79,13 +84,13 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
  * - Success/failure callbacks for analytics
  * - Accessible (keyboard navigation, ARIA attributes)
  * - Loading states during retry operation
- * 
+ *
  * **Use Cases:**
  * - Retry failed API requests
  * - Reconnect after network errors
  * - Handle rate limit errors gracefully
  * - Provide user-friendly error recovery
- * 
+ *
  * @example
  * ```tsx
  * // Basic network error retry
@@ -94,7 +99,7 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
  *   errorType="network"
  *   maxAttempts={3}
  * />
- * 
+ *
  * // Custom backoff delays
  * <RetryButton
  *   onRetry={async () => {
@@ -103,7 +108,7 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
  *   backoffMs={[2000, 5000, 15000]} // 2s, 5s, 15s
  *   errorType="ratelimit"
  * />
- * 
+ *
  * // With analytics tracking
  * <RetryButton
  *   onRetry={handleRetry}
@@ -121,7 +126,7 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
  *     showSupportDialog()
  *   }}
  * />
- * 
+ *
  * // Small ghost variant
  * <RetryButton
  *   onRetry={handleRetry}
@@ -216,7 +221,7 @@ export function RetryButton({
 
     // Get delay for this attempt
     const delay = getDelay(currentAttempt)
-    
+
     // Show countdown if delay > 500ms
     if (delay > 500) {
       startCountdown(delay)
@@ -226,7 +231,7 @@ export function RetryButton({
     try {
       await onRetry()
       onRetrySuccess?.(nextAttempt)
-      
+
       // Reset on success
       setCurrentAttempt(0)
     } catch (error) {
@@ -254,7 +259,7 @@ export function RetryButton({
     md: 'default' as const,
     lg: 'lg' as const,
   }
-  
+
   const variantMap = {
     default: 'destructive' as const,
     ghost: 'ghost' as const,
@@ -294,31 +299,50 @@ export function RetryButton({
         </span>
 
         {showAttemptsRemaining && attemptsRemaining > 0 && (
-          <span className="text-xs opacity-75">
-            ({attemptsRemaining} left)
-          </span>
+          <span className="text-xs opacity-75">({attemptsRemaining} left)</span>
         )}
       </Button>
 
       {/* Error message */}
       <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-        <svg className="h-3.5 w-3.5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg
+          className="h-3.5 w-3.5 text-warning"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
         {ERROR_MESSAGES[errorType]}
       </p>
 
       {/* Max attempts reached */}
       {attemptsRemaining === 0 && (
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           className="text-sm text-destructive flex items-center gap-1.5 animate-[shake-x_0.4s_ease-in-out]"
         >
-          <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="h-4 w-4 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
-          Maximum retry attempts reached. Please refresh the page or contact support.
+          Maximum retry attempts reached. Please refresh the page or contact
+          support.
         </motion.p>
       )}
     </div>

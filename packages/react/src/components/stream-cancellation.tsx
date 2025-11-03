@@ -83,9 +83,9 @@ export const StreamCancellation: React.FC<StreamCancellationProps> = ({
         <div className="flex items-center gap-2">
           {/* Animated progress indicator */}
           <div className="flex gap-1">
-            <span className="h-2 w-2 animate-bounce rounded-full bg-blue-500 [animation-delay:-0.3s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-blue-500 [animation-delay:-0.15s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-blue-500" />
+            <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]" />
+            <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.15s]" />
+            <span className="h-2 w-2 animate-bounce rounded-full bg-primary" />
           </div>
           
           {!iconOnly && (

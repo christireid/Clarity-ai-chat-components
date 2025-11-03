@@ -11,28 +11,28 @@ export type NetworkConnectionStatus = 'online' | 'offline' | 'slow' | 'unstable'
 export interface NetworkStatusProps {
   /** Current connection status (auto-detected if not provided) */
   status?: NetworkConnectionStatus
-  
+
   /** Show status indicator (default: true) */
   show?: boolean
-  
+
   /** Position of the indicator (default: 'top-right') */
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-  
+
   /** Show detailed connection info (default: false) */
   showDetails?: boolean
-  
+
   /** Callback when status changes */
   onStatusChange?: (status: NetworkConnectionStatus) => void
-  
+
   /** Custom ping endpoint for connectivity check (default: '/api/ping') */
   pingEndpoint?: string
-  
+
   /** Ping interval in ms (default: 30000) */
   pingInterval?: number
-  
+
   /** Threshold for slow connection in ms (default: 1000) */
   slowThreshold?: number
-  
+
   /** Custom CSS class */
   className?: string
 }
@@ -65,7 +65,7 @@ const STATUS_CONFIG = {
 
 /**
  * Production-ready Network Status indicator component.
- * 
+ *
  * **Features:**
  * - Auto-detection of network status using Navigator API
  * - Periodic connectivity checks via ping endpoint
@@ -74,18 +74,18 @@ const STATUS_CONFIG = {
  * - Optional detailed connection info (RTT, downlink speed)
  * - Customizable position and appearance
  * - Accessibility support (ARIA live regions)
- * 
+ *
  * **Use Cases:**
  * - Show connection status during chat streaming
  * - Warn users before sending messages on poor connection
  * - Auto-pause streaming on network loss
  * - Display reconnection status
- * 
+ *
  * @example
  * ```tsx
  * // Basic usage (auto-detection)
  * <NetworkStatus />
- * 
+ *
  * // Custom position and details
  * <NetworkStatus
  *   position="bottom-right"
@@ -96,17 +96,17 @@ const STATUS_CONFIG = {
  *     }
  *   }}
  * />
- * 
+ *
  * // With custom ping endpoint
  * <NetworkStatus
  *   pingEndpoint="/api/health"
  *   pingInterval={10000} // Check every 10s
  *   slowThreshold={500}  // >500ms = slow
  * />
- * 
+ *
  * // Controlled status
  * const [status, setStatus] = useState<NetworkConnectionStatus>('online')
- * 
+ *
  * <NetworkStatus
  *   status={status}
  *   show={status !== 'online'} // Only show when not online
@@ -124,7 +124,8 @@ export function NetworkStatus({
   slowThreshold = 1000,
   className = '',
 }: NetworkStatusProps) {
-  const [internalStatus, setInternalStatus] = React.useState<NetworkConnectionStatus>('online')
+  const [internalStatus, setInternalStatus] =
+    React.useState<NetworkConnectionStatus>('online')
   const [latency, setLatency] = React.useState<number | null>(null)
   const [downlinkSpeed, setDownlinkSpeed] = React.useState<number | null>(null)
   const pingIntervalRef = React.useRef<NodeJS.Timeout | null>(null)
@@ -193,7 +194,10 @@ export function NetworkStatus({
         setDownlinkSpeed(connection.downlink)
 
         // Check effective connection type
-        if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+        if (
+          connection.effectiveType === 'slow-2g' ||
+          connection.effectiveType === '2g'
+        ) {
           setInternalStatus('slow')
         } else if (connection.effectiveType === '3g') {
           setInternalStatus('unstable')
@@ -240,7 +244,13 @@ export function NetworkStatus({
         clearInterval(pingIntervalRef.current)
       }
     }
-  }, [checkConnection, handleOnline, handleOffline, updateConnectionInfo, pingInterval])
+  }, [
+    checkConnection,
+    handleOnline,
+    handleOffline,
+    updateConnectionInfo,
+    pingInterval,
+  ])
 
   /**
    * Notify status changes
@@ -274,7 +284,9 @@ export function NetworkStatus({
       <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg shadow-xl border">
         {/* Status indicator dot */}
         <div className="relative flex h-3 w-3">
-          <div className={`absolute h-3 w-3 ${config.color} rounded-full ${status === 'online' ? 'animate-ping opacity-75' : ''}`} />
+          <div
+            className={`absolute h-3 w-3 ${config.color} rounded-full ${status === 'online' ? 'animate-ping opacity-75' : ''}`}
+          />
           <div className={`relative h-3 w-3 ${config.color} rounded-full`} />
         </div>
 
