@@ -135,6 +135,50 @@ export const PromptLibrary = React.memo(function PromptLibrary({
     setShowCreate(false)
   }
 
+  const handleEditPrompt = (prompt: SavedPrompt) => {
+    setEditingPrompt(prompt)
+    setEditForm({
+      name: prompt.name,
+      content: prompt.content,
+      description: prompt.description || '',
+      category: prompt.category || '',
+      tags: prompt.tags || [],
+    })
+    setShowCreate(false) // Close create form if open
+  }
+
+  const handleSaveEdit = () => {
+    if (!editingPrompt || !editForm.name || !editForm.content) return
+
+    onEdit?.(editingPrompt.id, {
+      name: editForm.name,
+      content: editForm.content,
+      description: editForm.description,
+      category: editForm.category,
+      tags: editForm.tags,
+    })
+
+    setEditingPrompt(null)
+    setEditForm({
+      name: '',
+      content: '',
+      description: '',
+      category: '',
+      tags: [],
+    })
+  }
+
+  const handleCancelEdit = () => {
+    setEditingPrompt(null)
+    setEditForm({
+      name: '',
+      content: '',
+      description: '',
+      category: '',
+      tags: [],
+    })
+  }
+
   const favorites = prompts.filter((p) => p.isFavorite)
 
   return (
@@ -254,6 +298,55 @@ export const PromptLibrary = React.memo(function PromptLibrary({
           )}
         </AnimatePresence>
 
+        {/* Edit Prompt Form */}
+        <AnimatePresence>
+          {editingPrompt && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-4 p-4 border-2 border-primary rounded-lg space-y-3 bg-primary/5"
+            >
+              <h3 className="font-semibold text-sm flex items-center gap-2">
+                ✏️ Edit Prompt: {editingPrompt.name}
+              </h3>
+              <Input
+                placeholder="Prompt name"
+                value={editForm.name}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, name: e.target.value })
+                }
+              />
+              <Textarea
+                placeholder="Prompt content... Use {{variable}} for variables"
+                value={editForm.content}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, content: e.target.value })
+                }
+                rows={4}
+              />
+              <Input
+                placeholder="Description (optional)"
+                value={editForm.description}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, description: e.target.value })
+                }
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSaveEdit}
+                  disabled={!editForm.name || !editForm.content}
+                >
+                  Save Changes
+                </Button>
+                <Button variant="outline" onClick={handleCancelEdit}>
+                  Cancel
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Prompts List */}
         <ScrollArea className="h-full">
           {filteredPrompts.length === 0 ? (
@@ -356,10 +449,7 @@ export const PromptLibrary = React.memo(function PromptLibrary({
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => {
-                                  // TODO: Implement edit modal
-                                  console.log('Edit prompt:', prompt.id)
-                                }}
+                                onClick={() => handleEditPrompt(prompt)}
                               >
                                 ✏️ Edit
                               </Button>
