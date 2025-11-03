@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, DollarSign, TrendingUp, PieChart, Shield } from 'lucide-react'
+import { BudgetPieChart } from '@/components/Diagrams/BudgetPieChart'
 
 export const metadata: Metadata = {
   title: 'Financial Advisor Example',
@@ -119,6 +120,8 @@ npm run dev`}</code>
               </p>
             </div>
           </div>
+
+          <BudgetPieChart monthlyIncome={5000} />
 
           <h2>🎯 Use Cases</h2>
           <div className="grid md:grid-cols-2 gap-4 not-prose my-6">

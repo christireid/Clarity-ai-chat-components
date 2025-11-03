@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, Heart, Shield, Calendar, FileText } from 'lucide-react'
+import { HealthcareWorkflow } from '@/components/Diagrams/HealthcareWorkflow'
 
 export const metadata: Metadata = {
   title: 'Healthcare Assistant Example',
@@ -96,6 +97,8 @@ cp .env.example .env.local
 npm run dev`}</code>
           </pre>
 
+          <HealthcareWorkflow />
+
           <h2>🏗️ Architecture</h2>
           <p>
             The healthcare assistant uses specialized AI functions for medical tasks:
@@ -155,6 +158,8 @@ npm run dev`}</code>
               </ul>
             </div>
           </div>
+
+          <HealthcareWorkflow />
 
           <h2>💡 Use Cases</h2>
 

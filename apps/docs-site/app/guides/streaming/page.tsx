@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { StreamingAnimation } from '@/components/Diagrams/StreamingAnimation'
 
 export const metadata: Metadata = {
   title: 'Streaming Guide - Clarity Chat',
@@ -47,6 +48,8 @@ export default function StreamingGuidePage() {
             </ul>
           </div>
         </div>
+
+        <StreamingAnimation />
 
         <Callout type="info" title="The Numbers">
           Streaming can reduce perceived latency by 70-80%. Users think your app is

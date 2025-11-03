@@ -3,6 +3,7 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
+import { InstallationFlow } from '@/components/Diagrams/InstallationFlow'
 
 export const metadata: Metadata = {
   title: 'Installation',
@@ -29,6 +30,8 @@ export default function InstallationPage() {
         <li><strong>Node.js 18.0.0</strong> or higher</li>
         <li><strong>TypeScript 5.0.0</strong> or higher (recommended)</li>
       </ul>
+
+      <InstallationFlow />
 
       <h2 id="package-managers">Package Managers</h2>
       

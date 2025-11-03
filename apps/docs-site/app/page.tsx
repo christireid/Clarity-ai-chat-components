@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { HeroSection } from '@/components/Layout/HeroSection'
 import { FeaturesGrid } from '@/components/Layout/FeaturesGrid'
 import { CodeExample } from '@/components/Demo/CodeExample'
+import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
+import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
 import { 
   Sparkles, 
   Zap, 
@@ -121,6 +123,28 @@ function App() {
               },
             ]}
           />
+        </div>
+
+        {/* Performance Comparison */}
+        <div className="mt-24">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">Optimized for Performance</h2>
+            <p className="text-xl text-text-secondary">
+              After comprehensive React.memo optimization
+            </p>
+          </div>
+          <PerformanceComparison />
+        </div>
+
+        {/* Feature Comparison */}
+        <div className="mt-24">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">Most Feature-Complete</h2>
+            <p className="text-xl text-text-secondary">
+              Compare Clarity to alternatives
+            </p>
+          </div>
+          <FeatureMatrix />
         </div>
       </section>
 
