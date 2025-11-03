@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/blocks';
+import { Meta } from '@storybook/blocks'
 
 <Meta title="Getting Started" />
 
@@ -6,8 +6,9 @@ import { Meta } from '@storybook/blocks';
   <div className="gs-hero-badge">🚀 Quick Start</div>
   <h1>Getting Started with Clarity Chat</h1>
   <p className="gs-hero-subtitle">
-    Build production-ready AI chat interfaces in minutes. This guide will walk you through installation, 
-    basic setup, and your first interactive chat component.
+    Build production-ready AI chat interfaces in minutes. This guide will walk
+    you through installation, basic setup, and your first interactive chat
+    component.
   </p>
 </div>
 
@@ -17,32 +18,39 @@ import { Meta } from '@storybook/blocks';
 
 <div className="gs-install-section">
   <p className="gs-section-description">
-    Install Clarity Chat using your preferred package manager. We support npm, yarn, and pnpm.
+    Install Clarity Chat using your preferred package manager. We support npm,
+    yarn, and pnpm.
   </p>
-  
+
   <div className="gs-install-tabs">
     <div className="gs-install-tab">
       <div className="gs-tab-header">
         <span className="gs-tab-icon">📦</span>
         <strong>npm</strong>
       </div>
-      <pre className="gs-code-block"><code>npm install @clarity-chat/react</code></pre>
+      <pre className="gs-code-block">
+        <code>npm install @clarity-chat/react</code>
+      </pre>
     </div>
-    
+
     <div className="gs-install-tab">
       <div className="gs-tab-header">
         <span className="gs-tab-icon">🧶</span>
         <strong>yarn</strong>
       </div>
-      <pre className="gs-code-block"><code>yarn add @clarity-chat/react</code></pre>
+      <pre className="gs-code-block">
+        <code>yarn add @clarity-chat/react</code>
+      </pre>
     </div>
-    
+
     <div className="gs-install-tab">
       <div className="gs-tab-header">
         <span className="gs-tab-icon">⚡</span>
         <strong>pnpm</strong>
       </div>
-      <pre className="gs-code-block"><code>pnpm add @clarity-chat/react</code></pre>
+      <pre className="gs-code-block">
+        <code>pnpm add @clarity-chat/react</code>
+      </pre>
     </div>
   </div>
 </div>
@@ -53,7 +61,8 @@ import { Meta } from '@storybook/blocks';
 
 <div className="gs-examples-intro">
   <p className="gs-section-description">
-    Choose your starting point based on your use case. Each example is production-ready and fully documented.
+    Choose your starting point based on your use case. Each example is
+    production-ready and fully documented.
   </p>
 </div>
 
@@ -80,7 +89,7 @@ function App() {
       timestamp: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
-    }
+    },
   ])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -94,8 +103,8 @@ function App() {
       createdAt: new Date(),
       updatedAt: new Date(),
     }
-    
-    setMessages(prev => [...prev, userMessage])
+
+    setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
     try {
@@ -103,20 +112,23 @@ function App() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messages, userMessage] })
+        body: JSON.stringify({ messages: [...messages, userMessage] }),
       })
-      
+
       const data = await response.json()
-      
-      setMessages(prev => [...prev, {
-        id: Date.now().toString(),
-        chatId: 'chat-1',
-        role: 'assistant',
-        content: data.message,
-        timestamp: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }])
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          chatId: 'chat-1',
+          role: 'assistant',
+          content: data.message,
+          timestamp: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ])
     } catch (error) {
       console.error('Failed to send message:', error)
     } finally {
@@ -155,20 +167,20 @@ function App() {
   </div>
 
 ```tsx
-import { 
-  ChatWindow, 
-  openAIAdapter, 
+import {
+  ChatWindow,
+  openAIAdapter,
   ModelSelector,
-  allModels 
+  allModels,
 } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function App() {
   const [messages, setMessages] = useState([])
   const [model, setModel] = useState('gpt-4-turbo')
-  const [config, setConfig] = useState({ 
-    provider: 'openai', 
-    model: 'gpt-4-turbo' 
+  const [config, setConfig] = useState({
+    provider: 'openai',
+    model: 'gpt-4-turbo',
   })
 
   const handleSendMessage = async (content: string) => {
@@ -181,24 +193,27 @@ function App() {
       createdAt: new Date(),
       updatedAt: new Date(),
     }
-    
-    setMessages(prev => [...prev, userMessage])
+
+    setMessages((prev) => [...prev, userMessage])
 
     // Use adapter for AI completion
     const response = await openAIAdapter.chat(
-      [...messages, userMessage], 
+      [...messages, userMessage],
       config
     )
-    
-    setMessages(prev => [...prev, {
-      id: Date.now().toString(),
-      chatId: 'chat-1',
-      role: 'assistant',
-      content: response.content,
-      timestamp: new Date(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }])
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        chatId: 'chat-1',
+        role: 'assistant',
+        content: response.content,
+        timestamp: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ])
   }
 
   return (
@@ -212,11 +227,8 @@ function App() {
         }}
         showMetrics
       />
-      
-      <ChatWindow
-        messages={messages}
-        onSendMessage={handleSendMessage}
-      />
+
+      <ChatWindow messages={messages} onSendMessage={handleSendMessage} />
     </div>
   )
 }
@@ -241,10 +253,7 @@ function App() {
   </div>
 
 ```tsx
-import { 
-  StreamingMessage, 
-  openAIAdapter 
-} from '@clarity-chat/react'
+import { StreamingMessage, openAIAdapter } from '@clarity-chat/react'
 import { useState } from 'react'
 
 function StreamingChat() {
@@ -258,13 +267,13 @@ function StreamingChat() {
     const config = {
       provider: 'openai',
       model: 'gpt-4-turbo',
-      apiKey: process.env.OPENAI_API_KEY
+      apiKey: process.env.OPENAI_API_KEY,
     }
 
     try {
       for await (const chunk of openAIAdapter.stream(messages, config)) {
         if (chunk.type === 'token') {
-          setContent(prev => prev + chunk.content)
+          setContent((prev) => prev + chunk.content)
         }
       }
     } finally {
@@ -274,10 +283,7 @@ function StreamingChat() {
 
   return (
     <div>
-      <StreamingMessage 
-        content={content} 
-        isStreaming={isStreaming} 
-      />
+      <StreamingMessage content={content} isStreaming={isStreaming} />
       <button onClick={handleStream}>Start Streaming</button>
     </div>
   )
@@ -295,41 +301,41 @@ function StreamingChat() {
 
 ### ChatWindow
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| messages | Message[] | required | Array of messages |
-| isLoading | boolean | false | Loading state |
-| onSendMessage | (content: string) => void | required | Send handler |
-| enableEdit | boolean | true | Enable editing |
-| enableRegenerate | boolean | true | Enable regeneration |
-| enableBranching | boolean | false | Enable branching |
-| showTimestamp | boolean | true | Show timestamps |
-| className | string | - | Custom CSS class |
+| Prop             | Type                      | Default  | Description         |
+| ---------------- | ------------------------- | -------- | ------------------- |
+| messages         | Message[]                 | required | Array of messages   |
+| isLoading        | boolean                   | false    | Loading state       |
+| onSendMessage    | (content: string) => void | required | Send handler        |
+| enableEdit       | boolean                   | true     | Enable editing      |
+| enableRegenerate | boolean                   | true     | Enable regeneration |
+| enableBranching  | boolean                   | false    | Enable branching    |
+| showTimestamp    | boolean                   | true     | Show timestamps     |
+| className        | string                    | -        | Custom CSS class    |
 
 ### StreamingMessage
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| content | string | required | Message content |
-| isStreaming | boolean | false | Streaming state |
-| toolCalls | ToolCall[] | [] | Function calls |
-| citations | Citation[] | [] | RAG sources |
-| thinkingSteps | string[] | [] | Thinking steps |
-| showThinking | boolean | true | Show thinking |
-| showTools | boolean | true | Show tools |
-| showCitations | boolean | true | Show citations |
-| error | Error \| string | - | Error message |
-| onRetry | () => void | - | Retry handler |
+| Prop          | Type            | Default  | Description     |
+| ------------- | --------------- | -------- | --------------- |
+| content       | string          | required | Message content |
+| isStreaming   | boolean         | false    | Streaming state |
+| toolCalls     | ToolCall[]      | []       | Function calls  |
+| citations     | Citation[]      | []       | RAG sources     |
+| thinkingSteps | string[]        | []       | Thinking steps  |
+| showThinking  | boolean         | true     | Show thinking   |
+| showTools     | boolean         | true     | Show tools      |
+| showCitations | boolean         | true     | Show citations  |
+| error         | Error \| string | -        | Error message   |
+| onRetry       | () => void      | -        | Retry handler   |
 
 ### ModelSelector
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| models | ModelMetadata[] | required | Available models |
-| value | string | required | Selected model |
-| onChange | (id, config) => void | required | Change handler |
-| showMetrics | boolean | true | Show metrics |
-| disabled | boolean | false | Disabled state |
+| Prop        | Type                 | Default  | Description      |
+| ----------- | -------------------- | -------- | ---------------- |
+| models      | ModelMetadata[]      | required | Available models |
+| value       | string               | required | Selected model   |
+| onChange    | (id, config) => void | required | Change handler   |
+| showMetrics | boolean              | true     | Show metrics     |
+| disabled    | boolean              | false    | Disabled state   |
 
 ## Styling
 
@@ -359,7 +365,7 @@ Components use Tailwind classes. Configure your `tailwind.config.js`:
 module.exports = {
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
-    './node_modules/@clarity-chat/react/**/*.{js,jsx,ts,tsx}'
+    './node_modules/@clarity-chat/react/**/*.{js,jsx,ts,tsx}',
   ],
   theme: {
     extend: {},
@@ -373,11 +379,11 @@ module.exports = {
 Full TypeScript support included:
 
 ```tsx
-import type { 
-  Message, 
-  ModelConfig, 
-  ToolCall, 
-  Citation 
+import type {
+  Message,
+  ModelConfig,
+  ToolCall,
+  Citation,
 } from '@clarity-chat/react'
 
 const message: Message = {
@@ -394,7 +400,7 @@ const config: ModelConfig = {
   provider: 'openai',
   model: 'gpt-4-turbo',
   temperature: 0.7,
-  maxTokens: 1000
+  maxTokens: 1000,
 }
 ```
 
@@ -415,7 +421,7 @@ Access in code:
 const config = {
   provider: 'openai',
   model: 'gpt-4-turbo',
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
 }
 ```
 
@@ -427,7 +433,7 @@ const config = {
 const handleSendMessage = async (content: string) => {
   try {
     const response = await openAIAdapter.chat(messages, config)
-    setMessages(prev => [...prev, response])
+    setMessages((prev) => [...prev, response])
   } catch (error) {
     if (error.message.includes('rate limit')) {
       // Handle rate limiting
@@ -451,7 +457,7 @@ import { openAIAdapter } from '@clarity-chat/react'
 const handleStream = async () => {
   for await (const chunk of openAIAdapter.stream(messages, config)) {
     if (chunk.type === 'token') {
-      setContent(prev => prev + chunk.content)
+      setContent((prev) => prev + chunk.content)
     } else if (chunk.type === 'done') {
       const cost = openAIAdapter.estimateCost(chunk.usage, config.model)
       console.log(`Cost: $${cost.toFixed(4)}`)
@@ -469,18 +475,21 @@ const [toolCalls, setToolCalls] = useState([])
 const [toolStatuses, setToolStatuses] = useState({})
 
 const handleApprove = async (tool) => {
-  setToolStatuses(prev => ({ ...prev, [tool.id]: 'executing' }))
+  setToolStatuses((prev) => ({ ...prev, [tool.id]: 'executing' }))
   try {
-    const result = await executeTool(tool.function.name, tool.function.arguments)
-    setToolStatuses(prev => ({ ...prev, [tool.id]: 'success' }))
+    const result = await executeTool(
+      tool.function.name,
+      tool.function.arguments
+    )
+    setToolStatuses((prev) => ({ ...prev, [tool.id]: 'success' }))
   } catch (error) {
-    setToolStatuses(prev => ({ ...prev, [tool.id]: 'error' }))
+    setToolStatuses((prev) => ({ ...prev, [tool.id]: 'error' }))
   }
 }
 
 return (
   <div>
-    {toolCalls.map(tool => (
+    {toolCalls.map((tool) => (
       <ToolInvocationCard
         key={tool.id}
         toolCall={tool}
@@ -502,28 +511,54 @@ return (
     <div className="gs-next-icon">📚</div>
     <h4>Explore Stories</h4>
     <p>Browse 100+ interactive component examples in this Storybook</p>
-    <a href="/?path=/story/components-chatwindow--default" className="gs-next-link">View Components →</a>
+    <a
+      href="/?path=/story/components-chatwindow--default"
+      className="gs-next-link"
+    >
+      View Components →
+    </a>
   </div>
-  
+
   <div className="gs-next-step-card">
     <div className="gs-next-icon">📖</div>
     <h4>Read Documentation</h4>
     <p>Deep dive into guides, cookbook recipes, and API reference</p>
-    <a href="https://clarity-chat.dev" className="gs-next-link" target="_blank" rel="noopener">Open Docs →</a>
+    <a
+      href="https://clarity-chat.dev"
+      className="gs-next-link"
+      target="_blank"
+      rel="noopener"
+    >
+      Open Docs →
+    </a>
   </div>
-  
+
   <div className="gs-next-step-card">
     <div className="gs-next-icon">💻</div>
     <h4>Clone Examples</h4>
     <p>Start from complete demo applications with best practices</p>
-    <a href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples" className="gs-next-link" target="_blank" rel="noopener">View Examples →</a>
+    <a
+      href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples"
+      className="gs-next-link"
+      target="_blank"
+      rel="noopener"
+    >
+      View Examples →
+    </a>
   </div>
-  
+
   <div className="gs-next-step-card">
     <div className="gs-next-icon">💬</div>
     <h4>Get Support</h4>
     <p>Join our community for help, feedback, and feature requests</p>
-    <a href="https://github.com/christireid/Clarity-ai-chat-components/discussions" className="gs-next-link" target="_blank" rel="noopener">Join Community →</a>
+    <a
+      href="https://github.com/christireid/Clarity-ai-chat-components/discussions"
+      className="gs-next-link"
+      target="_blank"
+      rel="noopener"
+    >
+      Join Community →
+    </a>
   </div>
 </div>
 
@@ -531,12 +566,23 @@ return (
 
 <div className="gs-footer-cta">
   <h2>Ready to Build Amazing Chat Interfaces?</h2>
-  <p>You now have everything you need to create production-ready AI chat applications.</p>
+  <p>
+    You now have everything you need to create production-ready AI chat
+    applications.
+  </p>
   <div className="gs-cta-buttons">
-    <a href="/?path=/story/components-chatwindow--default" className="gs-button-primary">
+    <a
+      href="/?path=/story/components-chatwindow--default"
+      className="gs-button-primary"
+    >
       Explore Components
     </a>
-    <a href="https://clarity-chat.dev/cookbook" className="gs-button-secondary" target="_blank" rel="noopener">
+    <a
+      href="https://clarity-chat.dev/cookbook"
+      className="gs-button-secondary"
+      target="_blank"
+      rel="noopener"
+    >
       View Cookbook
     </a>
   </div>
