@@ -102,8 +102,8 @@ export * from './hooks/use-performance'
 // React Concurrent Features
 export * from './hooks/use-deferred-search'
 
-// Mobile Utilities
-export * from './utils/mobile'
+// Utility Functions (Model Fallback, Context Window, Rate Limiting, Hybrid Search, etc.)
+export * from './utils'
 
 // Theme System
 export * from './theme'
