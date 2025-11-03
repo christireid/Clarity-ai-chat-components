@@ -7,7 +7,6 @@
 
 import { render, RenderOptions } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
-import { vi } from 'vitest'
 import { ThemeProvider, themes } from '../theme'
 import { AnalyticsProvider } from '../analytics'
 import { ErrorReporterProvider } from '../error'
