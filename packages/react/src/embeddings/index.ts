@@ -169,7 +169,7 @@ export function createCachedEmbeddingProvider(
   providerOrConfig: EmbeddingProvider | EmbeddingConfig,
   options?: { cache?: EmbeddingCache }
 ): CachedEmbeddingProvider {
-  const provider = 'provider' in providerOrConfig
+  const provider = 'name' in providerOrConfig && 'embed' in providerOrConfig
     ? providerOrConfig as EmbeddingProvider
     : createEmbeddingProvider(providerOrConfig as EmbeddingConfig)
   

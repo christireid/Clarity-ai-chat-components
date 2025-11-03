@@ -214,7 +214,7 @@ export class LocalStorageEmbeddingCache implements EmbeddingCache {
  */
 export class SemanticEmbeddingCache implements EmbeddingCache {
   private cache = new Map<string, EmbeddingCacheEntry>()
-  private stats = {
+  private statsData = {
     hits: 0,
     misses: 0,
   }
@@ -248,7 +248,7 @@ export class SemanticEmbeddingCache implements EmbeddingCache {
     const exactEntry = this.cache.get(exactKey)
     
     if (exactEntry && (!exactEntry.expiresAt || exactEntry.expiresAt > Date.now())) {
-      this.stats.hits++
+      this.statsData.hits++
       return exactEntry.embedding
     }
     
@@ -256,7 +256,7 @@ export class SemanticEmbeddingCache implements EmbeddingCache {
     // In practice, you'd want to use a vector store for this
     // This is a simplified implementation
     
-    this.stats.misses++
+    this.statsData.misses++
     return null
   }
   
@@ -282,7 +282,7 @@ export class SemanticEmbeddingCache implements EmbeddingCache {
   
   async clear(): Promise<void> {
     this.cache.clear()
-    this.stats = { hits: 0, misses: 0 }
+    this.statsData = { hits: 0, misses: 0 }
   }
   
   async stats(): Promise<{
@@ -291,12 +291,12 @@ export class SemanticEmbeddingCache implements EmbeddingCache {
     misses: number
     hitRate: number
   }> {
-    const total = this.stats.hits + this.stats.misses
+    const total = this.statsData.hits + this.statsData.misses
     return {
       size: this.cache.size,
-      hits: this.stats.hits,
-      misses: this.stats.misses,
-      hitRate: total > 0 ? this.stats.hits / total : 0,
+      hits: this.statsData.hits,
+      misses: this.statsData.misses,
+      hitRate: total > 0 ? this.statsData.hits / total : 0,
     }
   }
 }
