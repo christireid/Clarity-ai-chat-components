@@ -24,14 +24,14 @@ export interface KnowledgeBaseViewerProps {
   className?: string
 }
 
-export const KnowledgeBaseViewer: React.FC<KnowledgeBaseViewerProps> = ({
+export const KnowledgeBaseViewer = React.memo(function KnowledgeBaseViewer({
   knowledgeBase,
   onUpdate,
   onDelete,
   onExport,
   editable = false,
   className,
-}) => {
+}: KnowledgeBaseViewerProps) {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [editingId, setEditingId] = React.useState<string | null>(null)
   const [editContent, setEditContent] = React.useState({ title: '', content: '' })
@@ -313,4 +313,6 @@ export const KnowledgeBaseViewer: React.FC<KnowledgeBaseViewerProps> = ({
       </CardContent>
     </Card>
   )
-}
+})
+
+KnowledgeBaseViewer.displayName = 'KnowledgeBaseViewer'

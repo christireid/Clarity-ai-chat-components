@@ -32,14 +32,14 @@ export interface WorkflowSuggestionListProps {
 const defaultTitle = 'Workflow accelerators'
 const defaultSubtitle = 'Present curated workflows that help users accomplish routine tasks with minimal prompting.'
 
-export const WorkflowSuggestionList: React.FC<WorkflowSuggestionListProps> = ({
+export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList({
   workflows,
   onSelect,
   onPreview,
   className,
   title = defaultTitle,
   subtitle = defaultSubtitle,
-}) => {
+}: WorkflowSuggestionListProps) {
   return (
     <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
       <CardHeader className="space-y-3">
@@ -125,7 +125,7 @@ export const WorkflowSuggestionList: React.FC<WorkflowSuggestionListProps> = ({
       </CardContent>
     </Card>
   )
-}
+}: WorkflowSuggestionListProps) => JSX.Element)
 
 WorkflowSuggestionList.displayName = 'WorkflowSuggestionList'
 

@@ -27,12 +27,12 @@ export interface SettingsPanelProps {
   className?: string
 }
 
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({
+export const SettingsPanel = React.memo(function SettingsPanel({
   settings,
   onUpdate,
   onReset,
   className,
-}) => {
+}: SettingsPanelProps) {
   const [activeTab, setActiveTab] = React.useState<
     'ai' | 'ui' | 'privacy' | 'notifications'
   >('ai')
@@ -510,4 +510,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       </div>
     </Card>
   )
-}
+})
+
+SettingsPanel.displayName = 'SettingsPanel'
