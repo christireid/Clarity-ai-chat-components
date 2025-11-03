@@ -76,7 +76,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     onClick,
     ...props 
   }, ref) => {
-    const Comp = asChild ? Slot : 'button'
+    const Comp = (asChild ? Slot : 'button') as 'button'
     const [internalState, setInternalState] = React.useState<ButtonState>('idle')
     const [ripples, setRipples] = React.useState<RippleType[]>([])
     const rippleIdRef = React.useRef(0)

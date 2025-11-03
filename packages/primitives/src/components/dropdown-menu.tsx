@@ -125,6 +125,7 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
     const child = children as React.ReactElement<any>
     return React.cloneElement(child, {
       ref: (node: HTMLElement) => {
+        // @ts-ignore - need to assign to ref for proper DOM reference
         triggerRef.current = node
         const { ref } = child as any
         if (typeof ref === 'function') {

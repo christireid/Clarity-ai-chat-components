@@ -38,7 +38,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   onOpenChange,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(false)
-  const [position, setPosition] = React.useState({ x: 0, y: 0 })
+  const [_position, _setPosition] = React.useState({ x: 0, y: 0 })
   const triggerRef = React.useRef<HTMLDivElement>(null)
   const tooltipRef = React.useRef<HTMLDivElement>(null)
   const timeoutRef = React.useRef<NodeJS.Timeout>()
@@ -60,7 +60,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     if (!triggerRef.current || !tooltipRef.current) return
 
     const triggerRect = triggerRef.current.getBoundingClientRect()
-    const tooltipRect = tooltipRef.current.getBoundingClientRect()
+    // const tooltipRect = tooltipRef.current.getBoundingClientRect()
 
     let x = 0
     let y = 0
@@ -108,7 +108,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       }
     }
 
-    setPosition({ x, y })
+    _setPosition({ x, y })
   }, [side, align])
 
   // Handle mouse enter with delay
