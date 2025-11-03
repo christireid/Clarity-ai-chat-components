@@ -5,7 +5,7 @@
  * Works with any tokenizer or estimation function.
  */
 
-export interface Message {
+export interface ContextMessage {
   role: 'system' | 'user' | 'assistant' | 'function'
   content: string
   name?: string
@@ -28,7 +28,7 @@ export interface TruncationStrategy {
   /** Strategy name */
   name: string
   /** Truncate messages */
-  truncate(messages: Message[], options: ContextWindowOptions): Message[] | Promise<Message[]>
+  truncate(messages: ContextMessage[], options: ContextWindowOptions): ContextMessage[] | Promise<ContextMessage[]>
 }
 
 /**
