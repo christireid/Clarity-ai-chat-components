@@ -13,7 +13,7 @@ import { AlertTriangleIcon, ShieldCheckIcon, ShieldCloseIcon } from './icons'
 
 export type SafetyStatus = 'pass' | 'warn' | 'fail'
 
-export interface SafetyCheck {
+export interface SafetyCheckItem {
   id: string
   label: string
   status: SafetyStatus
@@ -22,10 +22,10 @@ export interface SafetyCheck {
 }
 
 export interface SafetyStatusCardProps {
-  checks: SafetyCheck[]
+  checks: SafetyCheckItem[]
   lastReviewedAt?: Date
   onReviewPolicy?: () => void
-  onAcknowledge?: (check: SafetyCheck) => void
+  onAcknowledge?: (check: SafetyCheckItem) => void
   className?: string
   title?: string
   subtitle?: string

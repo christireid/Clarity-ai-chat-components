@@ -378,7 +378,7 @@ describe('useStreaming', () => {
       const { result } = renderHook(() => useStreaming({ onError }))
 
       const errorStream = new ReadableStream({
-        async pull(controller) {
+        async pull() {
           throw new Error('Stream failure')
         },
       })

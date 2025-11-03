@@ -14,7 +14,7 @@ import { SkeletonText } from '../skeleton'
 
 export type PromptTestStatus = 'pending' | 'running' | 'pass' | 'fail'
 
-export interface PromptVariant {
+export interface PromptVariantItem {
   id: string
   label: string
 }
@@ -32,7 +32,7 @@ export interface PromptTestCase {
 export interface PromptTestHarnessProps {
   datasetName?: string
   datasets?: Array<{ id: string; name: string }>
-  variants: PromptVariant[]
+  variants: PromptVariantItem[]
   tests: PromptTestCase[]
   onRunAll?: () => void
   onRunVariant?: (variantId: string) => void

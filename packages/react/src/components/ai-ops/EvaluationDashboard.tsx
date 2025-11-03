@@ -10,7 +10,7 @@ import {
 } from '@clarity-chat/primitives'
 import { ResponseQualityMeter } from '../response-quality-meter'
 
-export interface EvaluationMetric {
+export interface EvaluationMetricItem {
   id: string
   label: string
   value: string
@@ -26,7 +26,7 @@ export interface EvaluationSparkline {
 }
 
 export interface EvaluationDashboardProps {
-  metrics: EvaluationMetric[]
+  metrics: EvaluationMetricItem[]
   sparklines?: EvaluationSparkline[]
   quality?: React.ComponentProps<typeof ResponseQualityMeter>
   className?: string

@@ -3,7 +3,6 @@ import { withModelFallback, ModelFallbackManager } from '../model-fallback'
 import {
   ContextWindowManager,
   FIFOTruncation,
-  SmartTruncation,
   estimateTokens,
 } from '../context-window'
 import {
@@ -154,7 +153,7 @@ describe('Context Window Management', () => {
         countTokens,
       })
 
-      const messages = Array.from({ length: 10 }, (_, i) => ({
+      const messages = Array.from({ length: 10 }, () => ({
         role: 'user' as const,
         content: 'A'.repeat(200),
       }))
@@ -305,7 +304,7 @@ describe('Hybrid Search', () => {
 
       const keywordSearcher = new SimpleBM25Searcher(docs)
       const vectorSearcher = {
-        async search(query: string, topK: number) {
+        async search() {
           return [
             { id: '2', score: 0.9, content: 'deep learning' },
             { id: '1', score: 0.7, content: 'machine learning' },
