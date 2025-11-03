@@ -145,9 +145,20 @@ function App() {
 - [TypeScript Types](./docs/api/types.md)
 
 ### **Examples**
-- [Example Gallery](./examples/README.md) - 9 working examples
-- [OpenAI Integration](./examples/ai-assistant/)
-- [Customer Support Bot](./examples/customer-support/)
+- [Example Gallery](./examples/README.md) - **16 production-ready examples**
+- **NEW**: [E-Commerce Assistant](./examples/ecommerce-assistant/) - Shopping chatbot
+- **NEW**: [Code Assistant](./examples/code-assistant/) - AI coding companion
+- **NEW**: [AI Agents Workflow](./examples/ai-agents-workflow/) - Multi-agent system
+- **NEW**: [Document Summarizer](./examples/document-summarizer/) - Intelligent summarization
+- **NEW**: [Email Assistant](./examples/email-assistant/) - Email composition
+- **NEW**: [Healthcare Assistant](./examples/healthcare-assistant/) - Appointment booking
+- **NEW**: [Financial Advisor](./examples/financial-advisor/) - Budget planning
+- **NEW**: [AI Tutor](./examples/ai-tutor/) - Adaptive learning
+- [Model Comparison](./examples/model-comparison-demo/) - Compare AI providers
+- [RAG Workbench](./examples/rag-workbench-demo/) - Document Q&A
+- [Analytics Console](./examples/analytics-console-demo/) - Usage tracking
+- [AI Assistant](./examples/ai-assistant/) - TanStack Query patterns
+- [Customer Support](./examples/customer-support/) - Supabase integration
 - [Streaming Chat](./examples/streaming-chat/)
 
 ---
@@ -196,6 +207,57 @@ await executeWithRetry(async () => {
   <ChatWindow {...props} />
 </AnalyticsProvider>
 ```
+
+---
+
+## 🛠️ Developer Tooling
+
+### **Beautiful CLI** (Inspired by [charmbracelet](https://github.com/charmbracelet))
+```bash
+# Interactive component browser
+clarity-chat browse
+
+# Search components
+clarity-chat search "chat"
+
+# Smart package updates
+clarity-chat upgrade
+
+# Performance benchmarking
+clarity-chat benchmark
+
+# Project analysis
+clarity-chat analyze
+```
+
+**12 Commands** | **9+ TUI Components** | **Gorgeous Terminal UI**
+
+### **Interactive Playground**
+Monaco-based REPL for testing components in real-time with live preview and templates.
+
+### **Advanced Debugging**
+- **Time-Travel Debugger** - Record and replay conversation states
+- **Model Comparator** - Compare AI responses side-by-side
+- **Performance Profiler** - Track latency and token usage
+
+### **Automated Testing**
+- Playwright E2E (6 browsers + 2 mobile devices)
+- Visual regression with Chromatic
+- Accessibility testing with Lighthouse + Axe
+- 100% CI automation
+
+### **Migration Tools**
+- **Codemods** - Automated AST-based code transformations
+- Dry-run support
+- Version migration CLI
+
+### **VSCode Extension**
+- 60+ code snippets
+- IntelliSense and hover docs
+- Real-time diagnostics
+- Component preview panel
+
+**[→ Complete Developer Tools Guide](./.github/README_TOOLING.md)**
 
 ---
 
