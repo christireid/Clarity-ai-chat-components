@@ -38,32 +38,28 @@ export interface NetworkStatusProps {
 }
 
 /**
- * Status colors and labels
+ * Status colors and labels using design tokens
  */
 const STATUS_CONFIG = {
   online: {
-    color: 'bg-green-500',
-    textColor: 'text-green-700 dark:text-green-300',
+    color: 'bg-[hsl(var(--success))]',
+    textColor: 'text-[hsl(var(--success))]',
     label: 'Online',
-    icon: '✓',
   },
   offline: {
-    color: 'bg-red-500',
-    textColor: 'text-red-700 dark:text-red-300',
+    color: 'bg-destructive',
+    textColor: 'text-destructive',
     label: 'Offline',
-    icon: '✕',
   },
   slow: {
-    color: 'bg-yellow-500',
-    textColor: 'text-yellow-700 dark:text-yellow-300',
+    color: 'bg-[hsl(var(--warning))]',
+    textColor: 'text-[hsl(var(--warning))]',
     label: 'Slow Connection',
-    icon: '⚠',
   },
   unstable: {
-    color: 'bg-orange-500',
-    textColor: 'text-orange-700 dark:text-orange-300',
+    color: 'bg-amber-500',
+    textColor: 'text-amber-600 dark:text-amber-400',
     label: 'Unstable',
-    icon: '~',
   },
 }
 
@@ -270,37 +266,31 @@ export function NetworkStatus({
 
   return (
     <div
-      className={`fixed ${positionClasses[position]} z-50 ${className}`}
+      className={`fixed ${positionClasses[position]} z-[var(--z-toast)] ${className}`}
       role="status"
       aria-live="polite"
       aria-label={`Network status: ${config.label}`}
     >
-      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg shadow-xl border">
         {/* Status indicator dot */}
-        <div className="relative">
-          <div className={`w-3 h-3 ${config.color} rounded-full`} />
-          {status === 'online' && (
-            <div className={`absolute inset-0 w-3 h-3 ${config.color} rounded-full animate-ping opacity-75`} />
-          )}
+        <div className="relative flex h-3 w-3">
+          <div className={`absolute h-3 w-3 ${config.color} rounded-full ${status === 'online' ? 'animate-ping opacity-75' : ''}`} />
+          <div className={`relative h-3 w-3 ${config.color} rounded-full`} />
         </div>
 
         {/* Status label */}
-        <span className={`text-sm font-medium ${config.textColor}`}>
+        <span className={`text-sm font-semibold ${config.textColor}`}>
           {config.label}
         </span>
 
         {/* Details (optional) */}
-        {showDetails && (
-          <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 border-l border-gray-300 dark:border-gray-600 pl-2">
+        {showDetails && (latency !== null || downlinkSpeed !== null) && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground border-l pl-2">
             {latency !== null && (
-              <span>
-                {latency.toFixed(0)}ms
-              </span>
+              <span className="font-mono">{latency.toFixed(0)}ms</span>
             )}
             {downlinkSpeed !== null && (
-              <span>
-                {downlinkSpeed.toFixed(1)} Mbps
-              </span>
+              <span className="font-mono">{downlinkSpeed.toFixed(1)} Mbps</span>
             )}
           </div>
         )}
