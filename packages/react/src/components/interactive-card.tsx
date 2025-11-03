@@ -46,9 +46,9 @@ export const InteractiveCard = React.memo(
       className,
       children,
       ...props
-    },
+    }: InteractiveCardProps,
     ref
-  ) => {
+  ) {
     const [isHovered, setIsHovered] = React.useState(false)
     const [ripples, setRipples] = React.useState<
       { x: number; y: number; id: number }[]
@@ -340,7 +340,6 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
       )}
     </motion.div>
   )
-  })
-)
+}
 
-InteractiveCard.displayName = 'InteractiveCard'
+InteractiveListItem.displayName = 'InteractiveListItem'

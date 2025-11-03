@@ -148,7 +148,7 @@ export const Accordion = React.memo(function Accordion({
   allowMultiple = false,
   className,
   duration = 0.3,
-}) => {
+}: AccordionProps) {
   const [internalOpenId, setInternalOpenId] = React.useState<string | null>(
     defaultOpenId || null
   )

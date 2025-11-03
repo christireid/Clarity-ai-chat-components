@@ -56,7 +56,7 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
   loadingCount = 4,
   emptyState,
   className,
-}) => {
+}: FollowUpSuggestionsProps) {
   const containerRef = React.useRef<HTMLDivElement | null>(null)
 
   const renderSuggestion = (suggestion: FollowUpSuggestion, index: number) => (

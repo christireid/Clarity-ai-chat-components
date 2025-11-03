@@ -72,7 +72,7 @@ export const PersonaPanel = React.memo(function PersonaPanel({
   toneSubtitle = 'Switch between tailored assistants optimised for different AI chat workflows.',
   showTemperature = true,
   className,
-}) => {
+}: PersonaPanelProps) {
   return (
     <Card
       className={cn(

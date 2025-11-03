@@ -209,7 +209,7 @@ export const InlineLink = React.memo(function InlineLink({
   onPreview,
   children,
   className,
-}) => {
+}: InlineLinkProps) {
   const [showPreview, setShowPreview] = React.useState(false)
   const { metadata, loading, fetchMetadata } = useLinkPreview()
 
