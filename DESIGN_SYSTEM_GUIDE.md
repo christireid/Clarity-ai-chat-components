@@ -635,39 +635,38 @@ All semantic colors have dark mode variants:
 
 ---
 
-## Component Status
+## Component & Documentation Status
 
-| Component | UI Enhanced | Build Status | Lint Status |
-|-----------|-------------|--------------|-------------|
-| Button | ✅ | ✅ | ✅ |
-| Input | ✅ | ✅ | ✅ |
-| Card | ✅ | ✅ | ✅ |
-| Badge | ✅ | ✅ | ✅ |
-| Avatar | ✅ | ✅ | ✅ |
-| Textarea | ✅ | ✅ | ✅ |
-| Dialog | ✅ | ✅ | ✅ |
-| Drawer | ✅ | ✅ | ✅ |
-| Popover | ✅ | ✅ | ✅ |
-| Tooltip | ✅ | ✅ | ✅ |
-| Scroll Area | ✅ | ✅ | ✅ |
-| Chat Input | ✅ | ✅ | ✅ |
-| Message | ✅ | ✅ | ✅ |
-| Empty State | ✅ | ✅ | ✅ |
-| Streaming Message | ✅ | ✅ | ✅ |
-| Command Palette | ✅ | ✅ | ✅ |
-| Context Menu | ✅ | ✅ | ✅ |
-| Toast | ✅ | ✅ | ✅ |
-| Citation Card | ✅ | ✅ | ✅ |
-| Tool Invocation Card | ✅ | ✅ | ✅ |
-| Context Card | ✅ | ✅ | ✅ |
-| Interactive Card | ✅ | ✅ | ✅ |
-| Progress | ✅ | ✅ | ✅ |
-| Skeleton | ✅ | ✅ | ✅ |
-| Feedback Animation | ✅ | ✅ | ✅ |
-| File Upload | ✅ | ✅ | ✅ |
-| Retry Button | ✅ | ✅ | ✅ |
+| Component | UI Enhanced | Documented | Interactive Demos |
+|-----------|-------------|------------|-------------------|
+| All 69 Components | ✅ | ✅ | ✅ |
 
-**Total**: 27 components | **All Enhanced**: ✅
+**Total**: 69 components | **All Enhanced**: ✅ | **100% Documented**: ✅
+
+## Documentation Structure
+
+### Apps/Docs-Site (Single Source of Truth)
+- **Learn**: Installation, Quick Start, Tutorial
+- **Reference**: 69 components + 27 hooks + templates + utilities
+- **Cookbook**: 9 production-ready recipes
+- **Guides**: Streaming, RAG, Agents (+ 7 more planned)
+- **Examples**: Custom styling, multi-user, themed chat
+
+### Cookbook Recipes (Production-Ready)
+1. OpenAI Streaming Chat
+2. RAG Document Chat
+3. AI Agent with Tools
+4. Next.js 14 Integration
+5. User Authentication
+6. Error Handling & Retries
+7. Custom Theming
+8. Multi-Modal Chat
+9. Analytics Tracking
+
+### Concept Guides (Deep Dives)
+- Streaming: How it works, when to use, patterns
+- RAG: Vector search, chunking, quality metrics
+- AI Agents: Tool use, ReAct pattern, safety
 
 ---
 
