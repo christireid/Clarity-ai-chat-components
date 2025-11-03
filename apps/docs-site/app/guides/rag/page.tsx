@@ -5,7 +5,8 @@ import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'RAG Guide - Clarity Chat',
-  description: 'Complete guide to Retrieval-Augmented Generation (RAG) for answering questions about your documents.',
+  description:
+    'Complete guide to Retrieval-Augmented Generation (RAG) for answering questions about your documents.',
 }
 
 export default function RAGGuidePage() {
@@ -15,18 +16,23 @@ export default function RAGGuidePage() {
         <span className="docs-badge">Guide</span>
         <h1>RAG: Retrieval-Augmented Generation</h1>
         <p className="docs-lead">
-          Make AI answer questions using YOUR documents, not just its training data. Like giving the AI a textbook before the test.
+          Make AI answer questions using YOUR documents, not just its training
+          data. Like giving the AI a textbook before the test.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>The Problem RAG Solves</h2>
         <p>
-          Normal AI (like ChatGPT) only knows what it was trained on. Ask it about your company's Q3 sales report? It can't help - it never saw that document.
+          Normal AI (like ChatGPT) only knows what it was trained on. Ask it
+          about your company's Q3 sales report? It can't help - it never saw
+          that document.
         </p>
 
         <p className="mt-4">
-          RAG solves this: Upload your documents → AI can answer questions about them. It's like ctrl+F but the AI understands context and can synthesize answers.
+          RAG solves this: Upload your documents → AI can answer questions about
+          them. It's like ctrl+F but the AI understands context and can
+          synthesize answers.
         </p>
 
         <div className="my-6 p-6 bg-muted/50 rounded-xl border-2">
@@ -39,15 +45,16 @@ export default function RAGGuidePage() {
         </div>
 
         <Callout type="info" title="Real Example">
-          User: "What were our Q3 sales?"<br/>
-          Normal AI: "I don't know." ❌<br/>
+          User: "What were our Q3 sales?"
+          <br />
+          Normal AI: "I don't know." ❌<br />
           RAG AI: *searches your docs* "Q3 sales were $2.5M, up 15% from Q2." ✅
         </Callout>
       </section>
 
       <section className="docs-section">
         <h2>How RAG Works (Simple Version)</h2>
-        
+
         <h3>Step 1: Index (One-time setup)</h3>
         <CodeBlock
           language="text"
@@ -70,8 +77,9 @@ export default function RAGGuidePage() {
         <div className="mt-6 p-4 bg-primary/5 border-2 border-primary/20 rounded-xl">
           <div className="font-semibold mb-2">🎯 Key Insight</div>
           <p className="text-sm">
-            RAG doesn't retrain the AI. It gives the AI relevant documents to read
-            RIGHT BEFORE answering. Like giving someone a cheat sheet during a test.
+            RAG doesn't retrain the AI. It gives the AI relevant documents to
+            read RIGHT BEFORE answering. Like giving someone a cheat sheet
+            during a test.
           </p>
         </div>
       </section>
@@ -267,8 +275,10 @@ const results = await pinecone.query({
         <h2>Common Pitfalls</h2>
 
         <Callout type="warning" title="Chunk Size Matters">
-          Too small (100 chars): Loses context, poor results<br/>
-          Too large (5000 chars): Wastes tokens, slow<br/>
+          Too small (100 chars): Loses context, poor results
+          <br />
+          Too large (5000 chars): Wastes tokens, slow
+          <br />
           Sweet spot: 500-1500 characters
         </Callout>
 
@@ -278,7 +288,8 @@ const results = await pinecone.query({
         </Callout>
 
         <Callout type="warning" title="Embeddings Can Be Stale">
-          If you update a document, re-embed it! Old embeddings point to old content.
+          If you update a document, re-embed it! Old embeddings point to old
+          content.
         </Callout>
       </section>
 
@@ -333,4 +344,3 @@ const metrics = await evaluateRAGResponse(answer, question, sources)
     </div>
   )
 }
-

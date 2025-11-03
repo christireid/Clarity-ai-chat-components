@@ -3,7 +3,8 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Guides - Clarity Chat Components',
-  description: 'In-depth guides on key concepts for building AI chat applications.',
+  description:
+    'In-depth guides on key concepts for building AI chat applications.',
 }
 
 export default function GuidesPage() {
@@ -12,7 +13,8 @@ export default function GuidesPage() {
       <div className="docs-header">
         <h1>Guides</h1>
         <p className="docs-lead">
-          Deep dives into important concepts. Go beyond copy-paste and truly understand how things work.
+          Deep dives into important concepts. Go beyond copy-paste and truly
+          understand how things work.
         </p>
       </div>
 
@@ -25,7 +27,8 @@ export default function GuidesPage() {
               <div>
                 <h3>Streaming Responses</h3>
                 <p className="text-sm text-muted-foreground">
-                  How streaming works, when to use it, and how to implement it properly
+                  How streaming works, when to use it, and how to implement it
+                  properly
                 </p>
               </div>
             </div>
@@ -143,4 +146,3 @@ export default function GuidesPage() {
     </div>
   )
 }
-

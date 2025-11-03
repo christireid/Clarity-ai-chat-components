@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { useVoiceInput } from '../hooks/use-voice-input'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Button, Badge, cn } from '@clarity-chat/primitives'
+import { useVoiceInput } from '../hooks/use-voice-input'
 
 /**
  * Voice input component props
@@ -53,21 +54,21 @@ export interface VoiceInputProps {
 }
 
 /**
- * Size styles
+ * Size to button size mapping
  */
-const sizeStyles = {
-  sm: 'w-8 h-8 text-sm',
-  md: 'w-10 h-10 text-base',
-  lg: 'w-12 h-12 text-lg',
+const sizeMap = {
+  sm: 'sm' as const,
+  md: 'default' as const,
+  lg: 'lg' as const,
 }
 
 /**
- * Variant styles
+ * Variant to button variant mapping
  */
-const variantStyles = {
-  primary: 'bg-blue-600 hover:bg-blue-700 text-white',
-  secondary: 'bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100',
-  ghost: 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400',
+const variantMap = {
+  primary: 'default' as const,
+  secondary: 'secondary' as const,
+  ghost: 'ghost' as const,
 }
 
 /**
@@ -222,53 +223,50 @@ export function VoiceInput({
   return (
     <div className="relative">
       {/* Voice button */}
-      <button
-        onClick={handleToggle}
-        disabled={disabled}
-        className={`
-          relative rounded-full flex items-center justify-center
-          transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-          ${sizeStyles[size]}
-          ${voice.isListening ? 'bg-red-500 hover:bg-red-600 text-white' : variantStyles[variant]}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-          ${className}
-        `}
-        aria-label={voice.isListening ? 'Stop recording' : 'Start recording'}
-        title={voice.isListening ? 'Stop recording' : tooltipText}
-      >
-        {/* Pulse animation when listening */}
-        {voice.isListening && (
-          <motion.div
-            className="absolute inset-0 rounded-full bg-red-500"
-            initial={{ scale: 1, opacity: 1 }}
-            animate={{ scale: 1.5, opacity: 0 }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: 'easeOut',
-            }}
-          />
-        )}
-
-        {/* Icon */}
-        <span className="relative z-10">
-          {voice.isListening ? (
-            listeningIcon || (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <rect x="7" y="6" width="2" height="8" rx="1" />
-                <rect x="11" y="6" width="2" height="8" rx="1" />
-              </svg>
-            )
-          ) : (
-            icon || (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
-                <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-1.5v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z" />
-              </svg>
-            )
+      <div className="relative">
+        <Button
+          size={size === 'sm' ? 'icon' : size === 'lg' ? 'lg' : 'icon'}
+          variant={voice.isListening ? 'destructive' : variantMap[variant]}
+          onClick={handleToggle}
+          disabled={disabled}
+          className={cn('rounded-full', className)}
+          aria-label={voice.isListening ? 'Stop recording' : 'Start recording'}
+          title={voice.isListening ? 'Stop recording' : tooltipText}
+        >
+          {/* Pulse animation when listening */}
+          {voice.isListening && (
+            <motion.div
+              className="absolute inset-0 rounded-full bg-destructive"
+              initial={{ scale: 1, opacity: 0.6 }}
+              animate={{ scale: 1.5, opacity: 0 }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: 'easeOut',
+              }}
+            />
           )}
-        </span>
-      </button>
+
+          {/* Icon */}
+          <span className="relative z-10">
+            {voice.isListening ? (
+              listeningIcon || (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <rect x="7" y="6" width="2" height="8" rx="1" />
+                  <rect x="11" y="6" width="2" height="8" rx="1" />
+                </svg>
+              )
+            ) : (
+              icon || (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
+                  <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-1.5v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z" />
+                </svg>
+              )
+            )}
+          </span>
+        </Button>
+      </div>
 
       {/* Transcript popup */}
       <AnimatePresence>
@@ -278,49 +276,54 @@ export function VoiceInput({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50"
+            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card border shadow-xl rounded-xl z-[var(--z-popover)]"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 {voice.isListening && (
-                  <motion.div
-                    className="w-2 h-2 bg-red-500 rounded-full"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  />
+                  <Badge variant="destructive" pulse>
+                    Recording
+                  </Badge>
                 )}
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {voice.isListening ? 'Listening...' : 'Voice Input'}
-                </span>
+                {!voice.isListening && (
+                  <span className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
+                    </svg>
+                    Voice Input
+                  </span>
+                )}
               </div>
               
-              <button
+              <Button
+                size="sm"
+                variant="ghost"
                 onClick={handleCancel}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                className="h-6 w-6 p-0"
                 aria-label="Cancel"
               >
-                <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
 
             {/* Transcript text */}
-            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto">
+            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto p-3 bg-muted/50 border rounded-lg">
               {voice.transcript ? (
-                <p className="text-sm text-gray-900 dark:text-gray-100">
+                <p className="text-sm text-foreground">
                   {voice.finalTranscript && (
                     <span className="font-medium">{voice.finalTranscript}</span>
                   )}
                   {voice.interimTranscript && (
-                    <span className="text-gray-500 dark:text-gray-500 italic">
-                      {voice.interimTranscript}
+                    <span className="text-muted-foreground italic">
+                      {' '}{voice.interimTranscript}
                     </span>
                   )}
                 </p>
               ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-500 italic">
+                <p className="text-sm text-muted-foreground italic">
                   Start speaking...
                 </p>
               )}
@@ -328,40 +331,53 @@ export function VoiceInput({
 
             {/* Error message */}
             {voice.error && (
-              <div className="mb-3 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-400">
-                {voice.error}
+              <div className="mb-3 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <svg className="h-4 w-4 text-destructive shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-sm text-destructive">{voice.error}</p>
+                </div>
               </div>
             )}
 
             {/* Actions */}
             {!autoSubmit && voice.transcript && (
               <div className="flex gap-2">
-                <button
+                <Button
+                  size="sm"
                   onClick={handleSubmit}
-                  className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
+                  className="flex-1"
                 >
                   Send
-                </button>
-                <button
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
                   onClick={handleCancel}
-                  className="px-3 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 text-sm rounded transition-colors"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             )}
 
             {/* Confidence indicator */}
             {voice.confidence > 0 && (
-              <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
-                  <span>Confidence</span>
-                  <span>{Math.round(voice.confidence * 100)}%</span>
+              <div className="mt-3 pt-3 border-t space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">Confidence</span>
+                  <Badge 
+                    variant={voice.confidence >= 0.8 ? 'success' : voice.confidence >= 0.5 ? 'warning' : 'secondary'}
+                  >
+                    {Math.round(voice.confidence * 100)}%
+                  </Badge>
                 </div>
-                <div className="mt-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-green-500 transition-all duration-300"
-                    style={{ width: `${voice.confidence * 100}%` }}
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-[hsl(var(--success))]"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${voice.confidence * 100}%` }}
+                    transition={{ duration: 0.3 }}
                   />
                 </div>
               </div>
@@ -372,7 +388,7 @@ export function VoiceInput({
 
       {/* Tooltip */}
       {showTooltip && !voice.isListening && !showTranscript && (
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-foreground text-background text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
           {tooltipText}
         </div>
       )}

@@ -5,7 +5,8 @@ import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
   title: 'AI Agents Guide - Clarity Chat',
-  description: 'Build AI agents that can use tools, make decisions, and complete multi-step tasks.',
+  description:
+    'Build AI agents that can use tools, make decisions, and complete multi-step tasks.',
 }
 
 export default function AgentsGuidePage() {
@@ -15,13 +16,14 @@ export default function AgentsGuidePage() {
         <span className="docs-badge">Guide</span>
         <h1>AI Agents & Tool Use</h1>
         <p className="docs-lead">
-          Give AI the ability to DO things, not just talk. Agents can call APIs, search databases, send emails - anything you can code.
+          Give AI the ability to DO things, not just talk. Agents can call APIs,
+          search databases, send emails - anything you can code.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Chatbot vs Agent</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
           <div className="p-4 border-2 rounded-xl">
             <div className="font-semibold mb-3">💬 Chatbot (Simple)</div>
@@ -57,7 +59,7 @@ export default function AgentsGuidePage() {
       <section className="docs-section">
         <h2>How Agents Work</h2>
         <p>The agent loop (ReAct pattern):</p>
-        
+
         <CodeBlock
           language="text"
           code={`1. THINK: "I need current weather data"
@@ -67,13 +69,15 @@ export default function AgentsGuidePage() {
 5. RESPOND: "It's 72°F and sunny"`}
         />
 
-        <p className="mt-4">This loop can repeat multiple times for complex tasks.</p>
+        <p className="mt-4">
+          This loop can repeat multiple times for complex tasks.
+        </p>
       </section>
 
       <section className="docs-section">
         <h2>Defining Tools</h2>
         <p>Tell the AI what functions it can call:</p>
-        
+
         <CodeBlock
           language="typescript"
           code={`const tools = [
@@ -100,8 +104,8 @@ export default function AgentsGuidePage() {
         />
 
         <Callout type="tip" title="Description is Critical">
-          The AI uses your description to decide WHEN to call the function.
-          Be specific: "Get current weather" (good) vs "Weather" (bad).
+          The AI uses your description to decide WHEN to call the function. Be
+          specific: "Get current weather" (good) vs "Weather" (bad).
         </Callout>
       </section>
 
@@ -314,7 +318,10 @@ if (iterations >= MAX_ITERATIONS) {
             <h3>Agent Run Feed</h3>
             <p>Show agent steps</p>
           </a>
-          <a href="/reference/components/tool-invocation-card" className="docs-card">
+          <a
+            href="/reference/components/tool-invocation-card"
+            className="docs-card"
+          >
             <h3>Tool Invocation Card</h3>
             <p>Tool approval UI</p>
           </a>
@@ -323,4 +330,3 @@ if (iterations >= MAX_ITERATIONS) {
     </div>
   )
 }
-
