@@ -167,7 +167,7 @@ export function CustomerSupportTemplate({
   }
 
   return (
-    <ThemeProvider theme={corporateTheme}>
+    <ThemeProvider defaultTheme={corporateTheme}>
       <div className="customer-support-template" style={{ height: '100%', width: '100%' }}>
         <ChatWindow
           messages={messages}

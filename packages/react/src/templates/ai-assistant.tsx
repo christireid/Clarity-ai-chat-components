@@ -4,7 +4,7 @@
  * General-purpose AI assistant with rich features
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ChatWindow } from '../components/chat-window'
 import { ContextManager } from '../components/context-manager'
 import { ModelSelector } from '../components/model-selector'
@@ -14,7 +14,6 @@ import { openAIAdapter } from '../adapters/openai'
 import { anthropicAdapter } from '../adapters/anthropic'
 import { googleAdapter } from '../adapters/google'
 import { useLocalStorage } from '../hooks/use-local-storage'
-import { useStreaming } from '../hooks/use-streaming'
 import type { Message, Context } from '@clarity-chat/types'
 
 export interface AIAssistantTemplateProps {
@@ -58,8 +57,6 @@ export interface AIAssistantTemplateProps {
 export function AIAssistantTemplate({
   apiKeys = {},
   defaultModel = 'gpt-4-turbo-preview',
-  enableFileUpload = true,
-  enableVoiceInput = true,
   enableContextManagement = true,
   systemPrompt = 'You are a helpful AI assistant. Be concise, accurate, and friendly.',
   maxTokens = 4096,
@@ -74,7 +71,6 @@ export function AIAssistantTemplate({
   )
   const [selectedModel, setSelectedModel] = useState(defaultModel)
   const [isLoading, setIsLoading] = useState(false)
-  const { streamMessage, isStreaming } = useStreaming()
 
   // Initialize adapters
   const adapters = {
@@ -174,7 +170,7 @@ export function AIAssistantTemplate({
       ? adapters[model.provider as keyof typeof adapters]
       : null
 
-    if (!adapter) {
+    if (!adapter || !model) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         chatId,
@@ -206,7 +202,7 @@ export function AIAssistantTemplate({
 
       // Note: streamChat is not part of ModelAdapter interface
       // This template demonstrates concept but needs proper adapter implementation
-      // For now, simulate streaming with the chat method
+      // For now, use the chat method for non-streaming responses
       const response = await adapter.chat(
         [
           { role: 'system', content: systemPrompt },
@@ -225,6 +221,7 @@ export function AIAssistantTemplate({
           { role: 'user' as const, content },
         ],
         {
+          provider: model.provider,
           model: selectedModel,
           maxTokens,
           temperature: 0.7,
@@ -232,16 +229,19 @@ export function AIAssistantTemplate({
       )
 
       // Update message with response
+      const responseContent = typeof response.content === 'string' 
+        ? response.content 
+        : response.content.map(p => p.type === 'text' ? p.text : '').join('')
+
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === assistantMessage.id
             ? { 
                 ...msg, 
-                content: response.content, 
-                status: 'sent',
+                content: responseContent, 
+                status: 'sent' as const,
                 updatedAt: new Date(),
                 metadata: { 
-                  tokens: response.usage?.totalTokens,
                   model: selectedModel,
                 },
               }
@@ -313,7 +313,7 @@ export function AIAssistantTemplate({
           <div style={{ flex: 1 }}>
             <ChatWindow
               messages={messages}
-              isLoading={isLoading || isStreaming}
+              isLoading={isLoading}
               onSendMessage={handleSendMessage}
             />
           </div>
