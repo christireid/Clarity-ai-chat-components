@@ -94,10 +94,10 @@ export const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardP
       <Component
         ref={ref}
         className={cn(
-          'relative overflow-hidden rounded-lg border bg-card transition-colors',
-          interactive && 'cursor-pointer',
+          'relative overflow-hidden rounded-xl border-2 bg-card transition-all duration-200 shadow-sm',
+          interactive && 'cursor-pointer hover:shadow-md',
           disabled && 'opacity-50 cursor-not-allowed',
-          selected && 'ring-2 ring-primary ring-offset-2',
+          selected && 'ring-2 ring-primary ring-offset-2 shadow-md',
           showFocusRing && 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           className
         )}
@@ -218,9 +218,10 @@ export const InteractiveButton = React.forwardRef<HTMLButtonElement, Interactive
         transition={INTERACTION_VARIANTS.button.transition}
         disabled={disabled || loading}
         className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors',
+          'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 shadow-sm',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           'disabled:opacity-50 disabled:pointer-events-none',
+          'hover:shadow-md hover:-translate-y-0.5',
           variantClasses[variant],
           sizeClasses[size],
           className
@@ -282,9 +283,10 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
       whileTap={!disabled ? { scale: 0.98 } : {}}
       onClick={!disabled ? onClick : undefined}
       className={cn(
-        'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors',
+        'flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        selected && 'bg-accent',
+        'hover:bg-accent/50 hover:shadow-sm',
+        selected && 'bg-accent shadow-sm',
         disabled && 'opacity-50 cursor-not-allowed',
         className
       )}

@@ -75,7 +75,7 @@ export function CitationCard({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:border-gray-300 dark:hover:border-gray-600 transition-colors ${
+      className={`bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md transition-all duration-200 ${
         onClick ? 'cursor-pointer' : ''
       } ${className}`}
       onClick={() => {
@@ -207,7 +207,7 @@ export function CitationCard({
                     if (!dateText) return null
                     return (
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        📅 {dateText}
+                        ?? {dateText}
                       </span>
                     )
                   })()}
@@ -218,7 +218,7 @@ export function CitationCard({
                     if (!pageText) return null
                     return (
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        📄 Page {pageText}
+                        ?? Page {pageText}
                       </span>
                     )
                   })()}
@@ -229,7 +229,7 @@ export function CitationCard({
                     if (!sectionText) return null
                     return (
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        § {sectionText}
+                        ? {sectionText}
                       </span>
                     )
                   })()}

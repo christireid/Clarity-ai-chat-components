@@ -3,18 +3,17 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const inputVariants = cva(
-  'flex w-full rounded-lg border border-border/60 bg-[hsl(var(--surface-elevated))] px-4 py-2.5 text-sm shadow-[0_1px_0_rgba(15,23,42,0.04)] transition-all duration-200 placeholder:text-muted-foreground/70 focus-visible:outline-none focus-visible:border-transparent focus-visible:ring-4 focus-visible:ring-ring/25 focus-visible:shadow-[0_0_0_4px_rgba(22,119,255,0.12)] disabled:cursor-not-allowed disabled:bg-[hsl(var(--surface-muted))] disabled:text-muted-foreground/60 file:border-0 file:bg-transparent file:text-sm file:font-medium',
+  'flex w-full rounded-lg border-2 border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:shadow-sm hover:border-input/80 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200',
   {
     variants: {
       variant: {
         default: '',
-        surface: 'bg-[hsl(var(--surface-muted))] border-transparent shadow-none focus-visible:border-primary/60',
-        error: 'border-destructive focus-visible:ring-destructive/25 focus-visible:shadow-[0_0_0_4px_rgba(255,77,79,0.16)] text-destructive placeholder:text-destructive/60',
-        success: 'border-success/70 focus-visible:ring-success/25 focus-visible:shadow-[0_0_0_4px_rgba(34,197,94,0.16)] text-success placeholder:text-success/60',
+        error: 'border-destructive focus-visible:border-destructive focus-visible:shadow-destructive/10',
+        success: 'border-green-500 focus-visible:border-green-600 focus-visible:shadow-green-500/10',
       },
       inputSize: {
-        default: 'h-11 text-sm',
-        sm: 'h-9 rounded-md px-3 py-2 text-xs',
+        default: 'h-10',
+        sm: 'h-8 text-xs px-2',
         lg: 'h-12 text-base',
       },
     },
@@ -41,7 +40,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       return (
         <div className="relative">
           {iconPosition === 'left' && (
-            <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/70">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               {icon}
             </div>
           )}
@@ -49,20 +48,20 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             className={cn(
               inputVariants({ variant: hasError ? 'error' : variant, inputSize }),
-              iconPosition === 'left' && 'pl-11',
-              iconPosition === 'right' && 'pr-11',
+              iconPosition === 'left' && 'pl-10',
+              iconPosition === 'right' && 'pr-10',
               className
             )}
             ref={ref}
             {...props}
           />
           {iconPosition === 'right' && (
-            <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/70">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               {icon}
             </div>
           )}
           {error && (
-            <p className="mt-1 text-xs font-medium text-destructive">{error}</p>
+            <p className="mt-1 text-xs text-destructive">{error}</p>
           )}
         </div>
       )
@@ -80,7 +79,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <p className="mt-1 text-xs font-medium text-destructive">{error}</p>
+          <p className="mt-1 text-xs text-destructive">{error}</p>
         )}
       </div>
     )

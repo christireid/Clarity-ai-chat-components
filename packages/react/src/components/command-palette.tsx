@@ -132,13 +132,13 @@ export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPalettePro
               }}
               className={cn(
                 'fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl',
-                'bg-background border rounded-lg shadow-2xl z-50',
-                'flex flex-col max-h-[60vh]',
+                'bg-background border-2 rounded-2xl shadow-2xl z-50',
+                'flex flex-col max-h-[60vh] backdrop-blur-sm',
                 className
               )}
             >
               {/* Search Input */}
-              <div className="p-4 border-b">
+              <div className="p-4 border-b-2">
                 <motion.input
                   ref={inputRef}
                   type="text"
@@ -194,11 +194,11 @@ export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPalettePro
                                 whileHover={{ x: 4 }}
                                 whileTap={{ scale: 0.98 }}
                                 className={cn(
-                                  'w-full flex items-center gap-3 px-3 py-3 rounded-md',
-                                  'transition-colors text-left',
+                                  'w-full flex items-center gap-3 px-3 py-3 rounded-lg',
+                                  'transition-all duration-200 text-left',
                                   isSelected
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'hover:bg-muted'
+                                    ? 'bg-primary text-primary-foreground shadow-sm'
+                                    : 'hover:bg-muted/80'
                                 )}
                               >
                                 {/* Icon */}
@@ -260,14 +260,14 @@ export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPalettePro
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="px-4 py-3 border-t text-xs text-muted-foreground flex items-center justify-between"
+                className="px-4 py-3 border-t-2 text-xs text-muted-foreground flex items-center justify-between bg-muted/30"
               >
                 <div className="flex gap-4">
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">↑↓</kbd> Navigate
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">??</kbd> Navigate
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">↵</kbd> Select
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">?</kbd> Select
                   </span>
                   <span className="flex items-center gap-1">
                     <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Esc</kbd> Close

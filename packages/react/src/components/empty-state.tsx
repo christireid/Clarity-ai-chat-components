@@ -74,17 +74,17 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
-          className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted"
+          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm border border-primary/10"
         >
           {icon}
         </motion.div>
       )}
 
       {/* Content */}
-      <div className="space-y-2 max-w-sm">
-        <h3 className="text-lg font-semibold">{title}</h3>
+      <div className="space-y-3 max-w-md">
+        <h3 className="text-xl font-semibold">{title}</h3>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="text-base text-muted-foreground leading-relaxed">{description}</p>
         )}
       </div>
 

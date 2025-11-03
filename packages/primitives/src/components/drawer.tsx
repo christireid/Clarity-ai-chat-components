@@ -285,7 +285,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed inset-0 z-50 bg-[rgba(15,23,42,0.45)]',
+              'fixed inset-0 z-50 bg-black/60',
               blurBackdrop && 'backdrop-blur-md',
               overlayClassName
             )}
@@ -299,13 +299,13 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             {...slideAnimations[side]}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
-              'fixed z-50 bg-[hsl(var(--surface-elevated))] border border-border/60 shadow-[0_26px_64px_rgba(15,23,42,0.36)] ring-1 ring-black/5',
+              'fixed z-50 bg-background border-2 shadow-2xl',
               positionClasses[side],
               sizeClasses[side][size],
-              side === 'left' && 'rounded-r-3xl border-r',
-              side === 'right' && 'rounded-l-3xl border-l',
-              side === 'top' && 'rounded-b-3xl border-b',
-              side === 'bottom' && 'rounded-t-3xl border-t',
+              side === 'left' && 'border-r rounded-r-2xl',
+              side === 'right' && 'border-l rounded-l-2xl',
+              side === 'top' && 'border-b rounded-b-2xl',
+              side === 'bottom' && 'border-t rounded-t-2xl',
               className
             )}
             role="dialog"
@@ -316,7 +316,13 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
               <button
                 onClick={() => setOpen(false)}
                 className={cn(
-                  'absolute top-5 right-5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))] text-muted-foreground shadow-[0_4px_12px_rgba(15,23,42,0.16)] transition-colors duration-200 hover:text-foreground hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2'
+                  'absolute top-4 right-4 w-8 h-8 rounded-md',
+                  'flex items-center justify-center',
+                  'text-muted-foreground hover:text-foreground',
+                  'hover:bg-muted/50',
+                  'transition-colors duration-200',
+                  'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                  'z-10'
                 )}
                 aria-label="Close drawer"
               >
@@ -354,7 +360,7 @@ export const DrawerHeader: React.FC<{
   className?: string
 }> = ({ children, className }) => {
   return (
-    <div className={cn('flex flex-col gap-1.5 px-8 py-6 border-b border-border/60 bg-[hsl(var(--surface-muted))]', className)}>
+    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b', className)}>
       {children}
     </div>
   )
@@ -367,7 +373,7 @@ export const DrawerTitle: React.FC<{
   return (
     <h2
       className={cn(
-        'text-lg font-semibold leading-none tracking-tight',
+        'text-xl font-semibold leading-none tracking-tight',
         className
       )}
     >
@@ -391,7 +397,7 @@ export const DrawerBody: React.FC<{
   children: React.ReactNode
   className?: string
 }> = ({ children, className }) => {
-  return <div className={cn('flex-1 overflow-y-auto px-8 py-6', className)}>{children}</div>
+  return <div className={cn('px-6 py-4 overflow-y-auto flex-1', className)}>{children}</div>
 }
 
 export const DrawerFooter: React.FC<{
@@ -401,7 +407,7 @@ export const DrawerFooter: React.FC<{
   return (
     <div
       className={cn(
-        'flex items-center justify-end gap-3 px-8 py-6 border-t border-border/60 bg-[hsl(var(--surface-muted))]',
+        'flex items-center justify-end gap-2 px-6 py-4 border-t',
         className
       )}
     >

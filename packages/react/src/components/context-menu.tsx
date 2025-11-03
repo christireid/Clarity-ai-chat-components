@@ -135,10 +135,10 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
               whileTap={!item.disabled ? { scale: 0.98 } : {}}
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2 text-sm text-left',
-                'transition-colors rounded-md',
+                'transition-all duration-200 rounded-lg',
                 item.disabled && 'opacity-50 cursor-not-allowed',
-                !item.disabled && 'hover:bg-muted',
-                item.danger && !item.disabled && 'hover:bg-destructive hover:text-destructive-foreground'
+                !item.disabled && 'hover:bg-muted/80 hover:shadow-sm',
+                item.danger && !item.disabled && 'hover:bg-destructive hover:text-destructive-foreground hover:shadow-sm'
               )}
             >
               {/* Icon */}
@@ -194,9 +194,9 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                     ease: ANIMATION_EASING.out,
                   }}
                   className={cn(
-                    'absolute left-full top-0 ml-1',
-                    'min-w-[180px] bg-background border rounded-lg shadow-lg',
-                    'p-1 z-10'
+                    'absolute left-full top-0 ml-2',
+                    'min-w-[180px] bg-background border-2 rounded-xl shadow-xl',
+                    'p-2 z-10 backdrop-blur-sm'
                   )}
                 >
                   {renderMenuItems(item.submenu!, level + 1)}
@@ -234,7 +234,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                   top: position.y,
                   zIndex: 50,
                 }}
-                className="min-w-[200px] bg-background border rounded-lg shadow-xl p-1"
+                className="min-w-[200px] bg-background border-2 rounded-xl shadow-2xl p-2 backdrop-blur-sm"
               >
                 {renderMenuItems(items)}
               </motion.div>

@@ -118,7 +118,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <motion.div
+<<<<<<< Current (Your changes)
       className={cn('relative flex flex-col gap-3 border-t border-border/60 bg-[hsl(var(--surface-elevated))] px-5 py-4 shadow-[0_-8px_24px_rgba(15,23,42,0.06)]', className)}
+=======
+      className={cn('relative flex flex-col gap-2 p-4 border-t-2 bg-background/95 backdrop-blur-sm', className)}
+>>>>>>> Incoming (Background Agent changes)
       initial="idle"
       animate={isFocused ? 'focused' : 'idle'}
       variants={containerVariants}
@@ -144,8 +148,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             maxRows={6}
             variant={isOverLimit ? 'error' : 'default'}
             className={cn(
-              'transition-all duration-200',
-              isFocused && glowOnFocus && 'ring-2 ring-blue-500/20',
+              'transition-all duration-200 shadow-sm',
+              isFocused && glowOnFocus && 'ring-2 ring-primary/30 shadow-md',
               isOverLimit && 'animate-[shake_0.4s_ease-in-out]'
             )}
           />
@@ -190,9 +194,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           state={buttonState}
           size="icon"
           className={cn(
-            'transition-all duration-200 shrink-0',
+            'transition-all duration-200 shrink-0 shadow-sm',
             hasContent && !isOverLimit
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:-translate-y-0.5'
               : 'bg-muted text-muted-foreground'
           )}
           aria-label={

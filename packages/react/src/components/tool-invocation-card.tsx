@@ -143,7 +143,7 @@ export function ToolInvocationCard({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`border rounded-lg overflow-hidden ${getStatusColor()} ${className}`}
+      className={`border-2 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ${getStatusColor()} ${className}`}
     >
       {/* Header */}
       <div className="p-4">

@@ -67,7 +67,7 @@ export const ContextCard: React.FC<ContextCardProps> = ({
     >
       <Card
         className={cn(
-          'group relative transition-all hover:shadow-md cursor-pointer',
+          'group relative transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer',
           !context.isActive && 'opacity-50',
           className
         )}
@@ -76,7 +76,7 @@ export const ContextCard: React.FC<ContextCardProps> = ({
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             {/* Icon/Thumbnail */}
-            <div className={cn('flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center text-2xl', getTypeColor())}>
+            <div className={cn('flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-sm', getTypeColor())}>
               {context.metadata.thumbnail ? (
                 <img
                   src={context.metadata.thumbnail}

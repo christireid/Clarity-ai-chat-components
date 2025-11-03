@@ -123,10 +123,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={cn(
-          'relative border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer',
+          'relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer shadow-sm',
           isDragging
-            ? 'border-primary bg-primary/5'
-            : 'border-border hover:border-primary/50'
+            ? 'border-primary bg-primary/10 shadow-md scale-[1.02]'
+            : 'border-border hover:border-primary/50 hover:shadow-md'
         )}
         onClick={() => fileInputRef.current?.click()}
       >
@@ -171,7 +171,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-2 rounded-lg text-sm"
+            className="bg-destructive/10 border-2 border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm shadow-sm"
           >
             {error}
           </motion.div>
@@ -208,7 +208,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="flex items-center gap-3 p-3 bg-muted rounded-lg"
+                  className="flex items-center gap-3 p-3 bg-muted rounded-xl shadow-sm hover:shadow-md transition-shadow"
                 >
                   <span className="text-2xl">{getFileIcon(file)}</span>
                   <div className="flex-1 min-w-0">

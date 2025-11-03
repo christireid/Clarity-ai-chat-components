@@ -89,8 +89,8 @@ export const ToastItem: React.FC<ToastProps> = ({
         ease: ANIMATION_EASING.spring,
       }}
       className={cn(
-        'relative flex gap-3 p-4 rounded-lg border shadow-lg backdrop-blur-sm',
-        'min-w-[300px] max-w-[420px]',
+        'relative flex gap-3 p-4 rounded-xl border-2 shadow-xl backdrop-blur-md',
+        'min-w-[320px] max-w-[420px]',
         colorClasses[type]
       )}
     >

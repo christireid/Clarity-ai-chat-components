@@ -72,10 +72,9 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group relative flex gap-4 rounded-2xl border border-transparent bg-[hsl(var(--surface-muted))] p-5 transition-all duration-200 hover:border-border/60 hover:shadow-[0_16px_36px_rgba(15,23,42,0.12)]',
-          isUser && 'flex-row-reverse bg-gradient-to-l from-primary/12 via-primary/8 to-transparent border-primary/35 shadow-[0_14px_36px_rgba(22,119,255,0.18)] hover:shadow-[0_20px_44px_rgba(22,119,255,0.25)]',
-          isAssistant && 'hover:border-primary/20',
-          isHovered && !isUser && 'border-primary/25 shadow-[0_18px_42px_rgba(15,23,42,0.16)]',
+          'group flex gap-3 p-4 rounded-xl transition-all duration-200',
+          isUser && 'flex-row-reverse',
+          isHovered && 'bg-muted/50 shadow-sm',
           className
         )}
       >
@@ -101,10 +100,10 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
         )}
 
         {/* Message Content */}
-        <div className={cn('flex-1 space-y-3', isUser && 'flex flex-col items-end text-right')}>
+        <div className={cn('flex-1 space-y-2', isUser && 'flex flex-col items-end')}>
           {/* Header */}
-          <div className={cn('flex items-center gap-2 text-sm text-muted-foreground', isUser && 'flex-row-reverse justify-end text-right')}>
-            <span className="font-semibold text-foreground">
+          <div className={cn('flex items-center gap-2', isUser && 'flex-row-reverse')}>
+            <span className="font-semibold text-sm">
               {isUser ? 'You' : 'AI Assistant'}
             </span>
             {showTimestamp && (
@@ -112,13 +111,13 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isHovered ? 1 : 0.6 }}
                 transition={{ duration: 0.2 }}
-                className="text-xs text-muted-foreground/80"
+                className="text-xs text-muted-foreground"
               >
                 {formatRelativeTime(message.createdAt)}
               </motion.span>
             )}
             {message.status === 'sending' && (
-              <Badge variant="info" dot>
+              <Badge variant="secondary" dot>
                 Sending
               </Badge>
             )}
@@ -130,43 +129,40 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
           {/* Content */}
           <div
             className={cn(
-              'prose prose-sm dark:prose-invert max-w-none text-left',
-              isAssistant && 'w-full'
+              'prose prose-sm dark:prose-invert max-w-none',
+              isUser &&
+                'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm'
             )}
           >
             {isUser ? (
-              <div className="inline-block max-w-full rounded-2xl bg-gradient-to-r from-primary to-[hsl(var(--primary))] px-5 py-3 text-left text-sm font-medium leading-relaxed text-primary-foreground shadow-[0_16px_32px_rgba(22,119,255,0.25)]">
-                <p className="m-0 whitespace-pre-wrap">{message.content}</p>
-              </div>
+              <p className="m-0 whitespace-pre-wrap">{message.content}</p>
             ) : (
-              <div className="w-full rounded-2xl border border-border/60 bg-[hsl(var(--surface-elevated))] px-5 py-4 shadow-[0_8px_24px_rgba(15,23,42,0.12)]">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeHighlight]}
-                  components={{
-                    code(props: any) {
-                      const { node, inline, className, children, ...rest } = props
-                      return inline ? (
-                        <code className="rounded bg-primary/10 px-1.5 py-0.5 text-[0.85em] text-primary" {...rest}>
-                          {children}
-                        </code>
-                      ) : (
-                        <div className="relative group/code">
-                          <pre className={cn('relative overflow-auto rounded-xl border border-border/60 bg-[hsl(var(--surface-muted))] p-4 shadow-inner', className)}>
-                            <code {...rest}>{children}</code>
-                          </pre>
-                          <CopyButton
-                            text={String(children).replace(/\n$/, '')}
-                            className="absolute top-3 right-3 opacity-0 transition-opacity group-hover/code:opacity-100"
-                          />
-                        </div>
-                      )
-                    },
-                  }}
-                >
-                  {message.content}
-                </ReactMarkdown>
-              </div>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+                components={{
+                  code(props: any) {
+                    const { node, inline, className, children, ...rest } = props
+                    return inline ? (
+                      <code className="bg-muted px-1 py-0.5 rounded text-sm" {...rest}>
+                        {children}
+                      </code>
+                    ) : (
+                      <div className="relative group/code">
+                        <pre className={cn('relative', className)}>
+                          <code {...rest}>{children}</code>
+                        </pre>
+                        <CopyButton
+                          text={String(children).replace(/\n$/, '')}
+                          className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
+                        />
+                      </div>
+                    )
+                  },
+                }}
+              >
+                {message.content}
+              </ReactMarkdown>
             )}
             
             {isStreaming && (
@@ -189,7 +185,7 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
           {message.attachments && message.attachments.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {message.attachments.map((attachment) => (
-                <Badge key={attachment.id} variant="subtle">
+                <Badge key={attachment.id} variant="outline">
                   {attachment.name}
                 </Badge>
               ))}
@@ -227,8 +223,8 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                       size="sm"
                       onClick={() => handleFeedback('up')}
                       className={cn(
-                        'rounded-full transition-colors',
-                        feedbackGiven === 'up' && 'bg-success/15 text-success shadow-[0_10px_24px_rgba(34,197,94,0.22)]'
+                        'transition-colors',
+                        feedbackGiven === 'up' && 'text-success bg-success/10'
                       )}
                       aria-label="Good response"
                     >
@@ -283,8 +279,8 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                     size="sm"
                     onClick={() => handleFeedback('down')}
                     className={cn(
-                      'rounded-full transition-colors',
-                      feedbackGiven === 'down' && 'bg-destructive/15 text-destructive shadow-[0_10px_24px_rgba(255,77,79,0.22)]'
+                      'transition-colors',
+                      feedbackGiven === 'down' && 'text-destructive bg-destructive/10'
                     )}
                     aria-label="Poor response"
                   >
@@ -299,7 +295,7 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                     transition={INTERACTION_VARIANTS.button.transition}
                   >
                     <Button 
-                      variant="surface" 
+                      variant="ghost" 
                       size="sm" 
                       onClick={onRetry}
                       className="gap-1.5"
