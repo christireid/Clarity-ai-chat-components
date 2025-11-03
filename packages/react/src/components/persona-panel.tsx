@@ -12,7 +12,13 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 
-export type PersonaRole = 'strategist' | 'researcher' | 'assistant' | 'critic' | 'coach' | 'custom'
+export type PersonaRole =
+  | 'strategist'
+  | 'researcher'
+  | 'assistant'
+  | 'critic'
+  | 'coach'
+  | 'custom'
 
 export interface Persona {
   id: string
@@ -47,10 +53,14 @@ const roleLabels: Record<PersonaRole, string> = {
 
 const roleAccent: Record<PersonaRole, string> = {
   strategist: 'from-primary/20 via-primary/10 to-transparent text-primary',
-  researcher: 'from-[hsl(var(--success))]/20 via-[hsl(var(--success))]/10 to-transparent text-[hsl(var(--success))]',
-  assistant: 'from-[hsl(var(--info))]/20 via-[hsl(var(--info))]/10 to-transparent text-[hsl(var(--info))]',
-  critic: 'from-destructive/20 via-destructive/10 to-transparent text-destructive',
-  coach: 'from-[hsl(var(--warning))]/20 via-[hsl(var(--warning))]/10 to-transparent text-[hsl(var(--warning))]',
+  researcher:
+    'from-[hsl(var(--success))]/20 via-[hsl(var(--success))]/10 to-transparent text-[hsl(var(--success))]',
+  assistant:
+    'from-[hsl(var(--info))]/20 via-[hsl(var(--info))]/10 to-transparent text-[hsl(var(--info))]',
+  critic:
+    'from-destructive/20 via-destructive/10 to-transparent text-destructive',
+  coach:
+    'from-[hsl(var(--warning))]/20 via-[hsl(var(--warning))]/10 to-transparent text-[hsl(var(--warning))]',
   custom: 'from-primary/20 via-primary/10 to-transparent text-primary',
 }
 
@@ -64,10 +74,17 @@ export const PersonaPanel: React.FC<PersonaPanelProps> = ({
   className,
 }) => {
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_22px_48px_rgba(15,23,42,0.16)]', className)}>
+    <Card
+      className={cn(
+        'border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_22px_48px_rgba(15,23,42,0.16)]',
+        className
+      )}
+    >
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
-          <CardTitle className="text-lg font-semibold text-foreground">Persona switchboard</CardTitle>
+          <CardTitle className="text-lg font-semibold text-foreground">
+            Persona switchboard
+          </CardTitle>
           <CardDescription className="text-sm text-muted-foreground/80">
             {toneSubtitle}
           </CardDescription>
@@ -90,7 +107,8 @@ export const PersonaPanel: React.FC<PersonaPanelProps> = ({
                     variant={isActive ? 'surface' : 'outline'}
                     className={cn(
                       'group flex w-full items-start gap-4 rounded-2xl border border-border/50 p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_16px_36px_rgba(15,23,42,0.12)]',
-                      isActive && 'border-primary/50 shadow-[0_22px_48px_rgba(15,23,42,0.14)]'
+                      isActive &&
+                        'border-primary/50 shadow-[0_22px_48px_rgba(15,23,42,0.14)]'
                     )}
                     onClick={() => onSelect?.(persona)}
                     data-state={isActive ? 'active' : 'inactive'}
@@ -124,15 +142,19 @@ export const PersonaPanel: React.FC<PersonaPanelProps> = ({
                           </span>
                         </div>
                         {isActive && (
-                          <Badge variant="success" className="uppercase tracking-wide">
+                          <Badge
+                            variant="success"
+                            className="uppercase tracking-wide"
+                          >
                             Active
                           </Badge>
                         )}
-                        {showTemperature && persona.temperature !== undefined && (
-                          <span className="text-xs font-medium text-muted-foreground">
-                            Temperature {persona.temperature.toFixed(2)}
-                          </span>
-                        )}
+                        {showTemperature &&
+                          persona.temperature !== undefined && (
+                            <span className="text-xs font-medium text-muted-foreground">
+                              Temperature {persona.temperature.toFixed(2)}
+                            </span>
+                          )}
                       </div>
 
                       <p className="text-sm text-muted-foreground/80">
@@ -141,12 +163,20 @@ export const PersonaPanel: React.FC<PersonaPanelProps> = ({
 
                       <div className="flex flex-wrap gap-2">
                         {persona.expertise.map((area) => (
-                          <Badge key={area} variant="subtle" className="text-xs">
+                          <Badge
+                            key={area}
+                            variant="subtle"
+                            className="text-xs"
+                          >
                             {area}
                           </Badge>
                         ))}
                         {persona.tags?.map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
+                          <Badge
+                            key={tag}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {tag}
                           </Badge>
                         ))}
@@ -178,4 +208,3 @@ export const PersonaPanel: React.FC<PersonaPanelProps> = ({
 }
 
 PersonaPanel.displayName = 'PersonaPanel'
-

@@ -69,14 +69,18 @@ describe('ThinkingIndicator Component', () => {
       }
       render(<ThinkingIndicator status={status} />)
 
-      expect(screen.getByText('Searching for relevant information')).toBeInTheDocument()
+      expect(
+        screen.getByText('Searching for relevant information')
+      ).toBeInTheDocument()
     })
 
     it('should not display topic element when topic is not provided', () => {
       const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
-      const topicElements = container.querySelectorAll('.text-xs.text-muted-foreground.mt-1')
+      const topicElements = container.querySelectorAll(
+        '.text-xs.text-muted-foreground.mt-1'
+      )
       expect(topicElements).toHaveLength(0)
     })
 
@@ -98,7 +102,9 @@ describe('ThinkingIndicator Component', () => {
       rerender(<ThinkingIndicator status={status2} />)
 
       expect(screen.getByText('Creating response')).toBeInTheDocument()
-      expect(screen.queryByText('Analyzing your question')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Analyzing your question')
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -178,7 +184,9 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
-      const timeElements = container.querySelectorAll('span.text-xs.text-muted-foreground')
+      const timeElements = container.querySelectorAll(
+        'span.text-xs.text-muted-foreground'
+      )
       expect(timeElements).toHaveLength(0)
     })
 
@@ -264,14 +272,18 @@ describe('ThinkingIndicator Component', () => {
 
   describe('Custom className', () => {
     it('should apply custom className', () => {
-      const { container } = render(<ThinkingIndicator className="custom-thinking" />)
+      const { container } = render(
+        <ThinkingIndicator className="custom-thinking" />
+      )
 
       const indicator = container.querySelector('.custom-thinking')
       expect(indicator).toBeInTheDocument()
     })
 
     it('should combine custom className with default classes', () => {
-      const { container } = render(<ThinkingIndicator className="custom-class" />)
+      const { container } = render(
+        <ThinkingIndicator className="custom-class" />
+      )
 
       const indicator = container.querySelector('.custom-class')
       expect(indicator).toHaveClass('custom-class')
@@ -291,7 +303,9 @@ describe('ThinkingIndicator Component', () => {
 
   describe('Edge Cases', () => {
     it('should handle undefined status gracefully', () => {
-      expect(() => render(<ThinkingIndicator status={undefined} />)).not.toThrow()
+      expect(() =>
+        render(<ThinkingIndicator status={undefined} />)
+      ).not.toThrow()
     })
 
     it('should handle empty status object', () => {

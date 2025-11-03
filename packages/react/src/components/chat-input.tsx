@@ -1,6 +1,11 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Textarea, Button, cn, type ButtonState } from '@clarity-chat/primitives'
+import {
+  Textarea,
+  Button,
+  cn,
+  type ButtonState,
+} from '@clarity-chat/primitives'
 import { SendIcon } from './icons'
 import { FeedbackAnimations } from '../animations/microanimations'
 
@@ -42,7 +47,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const charCount = value.length
   const isOverLimit = maxLength ? charCount > maxLength : false
-  const isNearLimit = maxLength ? charCount >= maxLength * warningThreshold : false
+  const isNearLimit = maxLength
+    ? charCount >= maxLength * warningThreshold
+    : false
   const hasContent = value.trim().length > 0
 
   // Calculate character counter color
@@ -83,7 +90,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   }
 
   const handleSubmit = async () => {
-    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading') return
+    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading')
+      return
 
     setButtonState('loading')
     try {
@@ -118,7 +126,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <motion.div
-      className={cn('relative flex flex-col gap-2 p-4 border-t-2 bg-background/95 backdrop-blur-sm', className)}
+      className={cn(
+        'relative flex flex-col gap-2 p-4 border-t-2 bg-background/95 backdrop-blur-sm',
+        className
+      )}
       initial="idle"
       animate={isFocused ? 'focused' : 'idle'}
       variants={containerVariants}
@@ -165,7 +176,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                     <motion.div
                       className={cn('h-full', getProgressColor())}
                       initial={{ width: 0 }}
-                      animate={{ width: `${Math.min((charCount / maxLength) * 100, 100)}%` }}
+                      animate={{
+                        width: `${Math.min((charCount / maxLength) * 100, 100)}%`,
+                      }}
                       transition={{ duration: 0.2 }}
                     />
                   </div>
@@ -199,10 +212,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             buttonState === 'loading'
               ? 'Sending message...'
               : buttonState === 'success'
-              ? 'Message sent!'
-              : buttonState === 'error'
-              ? 'Failed to send'
-              : 'Send message'
+                ? 'Message sent!'
+                : buttonState === 'error'
+                  ? 'Failed to send'
+                  : 'Send message'
           }
         >
           <AnimatePresence mode="wait">
@@ -230,7 +243,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             exit={{ opacity: 0, height: 0 }}
             className="text-xs text-destructive px-1"
           >
-            Message exceeds maximum length by {charCount - (maxLength || 0)} characters
+            Message exceeds maximum length by {charCount - (maxLength || 0)}{' '}
+            characters
           </motion.p>
         )}
       </AnimatePresence>
@@ -244,8 +258,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             exit={{ opacity: 0, y: -5 }}
             className="text-xs text-muted-foreground px-1"
           >
-            Press <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">Enter</kbd> to send ?{' '}
-            <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">Shift + Enter</kbd> for new line
+            Press{' '}
+            <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
+              Enter
+            </kbd>{' '}
+            to send ?{' '}
+            <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
+              Shift + Enter
+            </kbd>{' '}
+            for new line
           </motion.p>
         )}
       </AnimatePresence>
