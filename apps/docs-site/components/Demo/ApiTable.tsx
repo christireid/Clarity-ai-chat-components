@@ -18,7 +18,7 @@ export function ApiTable({ title = 'Props', data, className }: ApiTableProps) {
   return (
     <div className={clsx('my-8 not-prose', className)}>
       {title && <h3 className="text-xl font-semibold mb-4">{title}</h3>}
-      
+
       <div className="border-2 border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200">
         <div className="overflow-x-auto">
           <table className="w-full">

@@ -36,7 +36,12 @@ export function CodeBlock({
   const highlightTheme = isDark ? themes.nightOwl : themes.nightOwlLight
 
   return (
-    <div className={clsx('group relative not-prose my-6 shadow-sm hover:shadow-md transition-all duration-200', className)}>
+    <div
+      className={clsx(
+        'group relative not-prose my-6 shadow-sm hover:shadow-md transition-all duration-200',
+        className
+      )}
+    >
       {/* Header */}
       {(title || language) && (
         <div className="flex items-center justify-between px-4 py-3 bg-bg-tertiary border-b-2 border-border rounded-t-xl">
@@ -49,10 +54,12 @@ export function CodeBlock({
                 <span className="font-semibold text-text-primary">{title}</span>
               </>
             ) : (
-              <span className="font-mono text-xs font-medium text-text-secondary px-2 py-1 bg-muted/50 rounded-lg">{language}</span>
+              <span className="font-mono text-xs font-medium text-text-secondary px-2 py-1 bg-muted/50 rounded-lg">
+                {language}
+              </span>
             )}
           </div>
-          
+
           <button
             onClick={copyToClipboard}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-bg-secondary transition-all duration-200 text-xs font-medium text-text-secondary hover:text-text-primary hover:shadow-sm"
@@ -61,7 +68,9 @@ export function CodeBlock({
             {copied ? (
               <>
                 <Check className="w-4 h-4 text-green-500" />
-                <span className="text-green-600 dark:text-green-400 font-semibold">Copied!</span>
+                <span className="text-green-600 dark:text-green-400 font-semibold">
+                  Copied!
+                </span>
               </>
             ) : (
               <>
@@ -75,7 +84,13 @@ export function CodeBlock({
 
       {/* Code */}
       <Highlight theme={highlightTheme} code={code.trim()} language={language}>
-        {({ className: highlightClassName, style, tokens, getLineProps, getTokenProps }) => (
+        {({
+          className: highlightClassName,
+          style,
+          tokens,
+          getLineProps,
+          getTokenProps,
+        }) => (
           <pre
             className={clsx(
               highlightClassName,
@@ -115,7 +130,8 @@ export function CodeBlock({
                     {...lineProps}
                     className={clsx(
                       lineProps.className,
-                      isHighlighted && 'bg-brand-500/10 border-l-2 border-brand-500 -ml-4 pl-3',
+                      isHighlighted &&
+                        'bg-brand-500/10 border-l-2 border-brand-500 -ml-4 pl-3',
                       'px-1'
                     )}
                   >
