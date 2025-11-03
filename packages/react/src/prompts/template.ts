@@ -54,11 +54,12 @@ export class PromptTemplateEngine {
       foundVariablesSet.add(match[1])
     }
     
+    const foundVariables = Array.from(foundVariablesSet)
+    
     // Validate required variables if template object provided
     if (options.validate && templateObj?.variables) {
       const errors: string[] = []
       const missing: string[] = []
-      const foundVariables = [...foundVariablesSet]
       
       for (const variable of templateObj.variables) {
         if (variable.required && !(variable.name in options.variables)) {
@@ -88,7 +89,6 @@ export class PromptTemplateEngine {
     
     // Replace variables
     let rendered = templateStr
-    const foundVariables = [...foundVariablesSet]
     
     for (const varName of foundVariables) {
       const value = this.resolveVariable(varName, options.variables)
@@ -124,14 +124,14 @@ export class PromptTemplateEngine {
       'g'
     )
     
-    const variables = new Set<string>()
+    const variablesSet = new Set<string>()
     let match: RegExpExecArray | null
     
     while ((match = pattern.exec(template)) !== null) {
-      variables.add(match[1])
+      variablesSet.add(match[1])
     }
     
-    return [...variables]
+    return Array.from(variablesSet)
   }
   
   /**
