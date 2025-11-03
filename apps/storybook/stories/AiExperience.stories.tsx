@@ -14,6 +14,10 @@ import {
   PromptTestHarness,
   EvaluationDashboard,
   SafetyReviewConsole,
+  AuthTenantDashboard,
+  ApiTokenManager,
+  SSOConfigWizard,
+  SeatInviteDialog,
 } from '@clarity-chat/react'
 import { SparklesIcon } from '@clarity-chat/react/components/icons'
 
@@ -435,6 +439,85 @@ export const SafetyConsole: StoryObj = {
             suggestion: 'Confirm recipient is cleared before sharing embargo date.',
           },
         ]}
+      />
+    </div>
+  ),
+}
+
+export const AuthDashboard: StoryObj = {
+  render: () => (
+    <div className="w-full max-w-4xl">
+      <AuthTenantDashboard
+        organizationName="Phoenix Labs"
+        planName="Enterprise Annual"
+        planBadge="Paid"
+        renewalDate="Renews Dec 12, 2025"
+        seatUsage={{ label: 'Seats', used: 42, total: 60 }}
+        apiUsage={{ label: 'Usage this month', value: '1.2M tokens' }}
+        actions={[
+          { id: 'upgrade', label: 'Upgrade plan', onClick: () => alert('Upgrade flow') },
+          { id: 'manage', label: 'Manage invoices', onClick: () => alert('Billing portal') },
+        ]}
+      />
+    </div>
+  ),
+}
+
+export const ApiTokens: StoryObj = {
+  render: () => (
+    <div className="w-full max-w-5xl">
+      <ApiTokenManager
+        tokens={[
+          {
+            id: 'token-1',
+            label: 'Production backend',
+            createdAt: 'Apr 2, 2024',
+            lastUsed: '5 minutes ago',
+            scopes: ['chat:write', 'chat:read'],
+            status: 'active',
+          },
+          {
+            id: 'token-2',
+            label: 'QA environment',
+            createdAt: 'Mar 14, 2024',
+            lastUsed: '2 days ago',
+            scopes: ['chat:read'],
+            status: 'expired',
+          },
+        ]}
+        onCreate={() => alert('Generate token')}
+        onRegenerate={(token) => alert(`Regenerate ${token.label}`)}
+        onRevoke={(token) => alert(`Revoke ${token.label}`)}
+      />
+    </div>
+  ),
+}
+
+export const SsoWizard: StoryObj = {
+  render: () => (
+    <div className="w-full max-w-4xl">
+      <SSOConfigWizard
+        providerName="Okta"
+        steps={[
+          { id: 'step1', title: 'Download service provider metadata', description: 'Copy the ACS URL and Entity ID into your IdP.', status: 'complete' },
+          { id: 'step2', title: 'Upload IdP metadata', description: 'Attach the XML or paste the IdP certificate.', status: 'in-progress' },
+          { id: 'step3', title: 'Test connection', description: 'Verify at least one admin can sign in via SSO.', status: 'pending' },
+        ]}
+        metadata={{ acsUrl: 'https://phoenix.ai/sso/acs', entityId: 'urn:phoenix:enterprise' }}
+        notes="Okta group `phoenix-admins` mapped to Administrator role."
+        onDownloadMetadata={() => alert('Download metadata')}
+        onSubmit={() => alert('Save configuration')}
+      />
+    </div>
+  ),
+}
+
+export const InviteDialog: StoryObj = {
+  render: () => (
+    <div className="flex w-full max-w-md justify-center">
+      <SeatInviteDialog
+        roles={['Administrator', 'Editor', 'Support']}
+        onInvite={(invite) => alert(`Invited ${invite.email} as ${invite.role}`)}
       />
     </div>
   ),

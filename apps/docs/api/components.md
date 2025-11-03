@@ -833,6 +833,94 @@ interface SafetyReviewConsoleProps {
 
 ---
 
+## AuthTenantDashboard
+
+Overview card summarising organization plan, seat usage, and quick actions.
+
+```typescript
+interface AuthTenantDashboardProps {
+  organizationName: string
+  planName: string
+  planBadge?: string
+  renewalDate?: string
+  seatUsage: { label: string; used: number; total: number }
+  apiUsage?: { label: string; value: string }
+  actions?: Array<{ id: string; label: string; onClick: () => void }>
+  className?: string
+}
+```
+
+---
+
+## ApiTokenManager
+
+Manage API tokens with regeneration and revocation controls.
+
+```typescript
+type TokenStatus = 'active' | 'expired' | 'revoked'
+
+interface ApiTokenRecord {
+  id: string
+  label: string
+  createdAt: string
+  lastUsed?: string
+  scopes: string[]
+  status: TokenStatus
+}
+
+interface ApiTokenManagerProps {
+  tokens: ApiTokenRecord[]
+  onCreate?: () => void
+  onRegenerate?: (token: ApiTokenRecord) => void
+  onRevoke?: (token: ApiTokenRecord) => void
+  className?: string
+}
+```
+
+---
+
+## SSOConfigWizard
+
+Guided wizard to integrate identity providers such as Okta or Azure AD.
+
+```typescript
+interface SSOConfigStep {
+  id: string
+  title: string
+  description: string
+  status?: 'pending' | 'in-progress' | 'complete'
+}
+
+interface SSOConfigWizardProps {
+  providerName?: string
+  steps: SSOConfigStep[]
+  metadata?: { acsUrl: string; entityId: string }
+  notes?: string
+  onNotesChange?: (value: string) => void
+  onDownloadMetadata?: () => void
+  onSubmit?: () => void
+  className?: string
+}
+```
+
+---
+
+## SeatInviteDialog
+
+Modal to invite teammates, assign roles, and control welcome emails.
+
+```typescript
+interface SeatInviteDialogProps {
+  triggerLabel?: string
+  roles?: string[]
+  defaultRole?: string
+  onInvite?: (invite: { email: string; role: string; sendWelcome: boolean }) => void
+  className?: string
+}
+```
+
+---
+
 ## Common Props
 
 ### Message Type

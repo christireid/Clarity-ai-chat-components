@@ -16,6 +16,10 @@ import {
   PromptTestHarness,
   EvaluationDashboard,
   SafetyReviewConsole,
+  AuthTenantDashboard,
+  ApiTokenManager,
+  SSOConfigWizard,
+  SeatInviteDialog,
 } from '@clarity-chat/react'
 
 describe('AI experience components', () => {
@@ -212,6 +216,57 @@ describe('AI experience components', () => {
 
     fireEvent.click(screen.getByText('123'))
     expect(handleRedact).toHaveBeenCalled()
+  })
+
+  it('renders auth tenant dashboard with usage', () => {
+    render(
+      <AuthTenantDashboard
+        organizationName="Phoenix Labs"
+        planName="Enterprise"
+        seatUsage={{ label: 'Seats', used: 5, total: 10 }}
+      />
+    )
+
+    expect(screen.getByText(/Phoenix Labs/)).toBeInTheDocument()
+    expect(screen.getByText(/5\/10/)).toBeInTheDocument()
+  })
+
+  it('renders API token manager and revokes token', () => {
+    const handleRevoke = vi.fn()
+    render(
+      <ApiTokenManager
+        tokens={[{
+          id: 'token',
+          label: 'Backend',
+          createdAt: 'Apr 1',
+          lastUsed: 'today',
+          scopes: ['chat:read'],
+          status: 'active',
+        }]}
+        onRevoke={handleRevoke}
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: /revoke/i }))
+    expect(handleRevoke).toHaveBeenCalled()
+  })
+
+  it('submits SSO configuration wizard', () => {
+    const handleSubmit = vi.fn()
+    render(
+      <SSOConfigWizard
+        steps={[{ id: '1', title: 'Download metadata', description: 'Copy ACS URL', status: 'complete' }]}
+        onSubmit={handleSubmit}
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: /save configuration/i }))
+    expect(handleSubmit).toHaveBeenCalled()
+  })
+
+  it('renders seat invite dialog trigger button', () => {
+    render(<SeatInviteDialog />)
+    expect(screen.getByRole('button', { name: /invite teammate/i })).toBeInTheDocument()
   })
 })
 
