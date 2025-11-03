@@ -5,7 +5,7 @@
  * Bring your own retry logic or use these helpers.
  */
 
-export interface ModelConfig {
+export interface FallbackModelConfig {
   provider: string
   model: string
   priority: number
@@ -13,7 +13,7 @@ export interface ModelConfig {
 }
 
 export interface FallbackOptions {
-  models: ModelConfig[]
+  models: FallbackModelConfig[]
   maxTotalRetries?: number
   retryDelay?: number
   exponentialBackoff?: boolean
@@ -23,9 +23,9 @@ export interface FallbackOptions {
 
 export interface FallbackResult<T> {
   data?: T
-  model: ModelConfig
+  model: FallbackModelConfig
   attempts: number
-  errors: Array<{ model: ModelConfig; error: Error }>
+  errors: Array<{ model: FallbackModelConfig; error: Error }>
   success: boolean
 }
 
@@ -52,7 +52,7 @@ export interface FallbackResult<T> {
  * ```
  */
 export async function withModelFallback<T>(
-  fn: (model: ModelConfig) => Promise<T>,
+  fn: (model: FallbackModelConfig) => Promise<T>,
   options: FallbackOptions
 ): Promise<FallbackResult<T>> {
   const models = [...options.models].sort((a, b) => a.priority - b.priority)
@@ -181,25 +181,25 @@ function sleep(ms: number): Promise<void> {
  * Stateful manager for handling fallback logic.
  */
 export class ModelFallbackManager {
-  private models: ModelConfig[]
+  private models: FallbackModelConfig[]
   private currentIndex = 0
   private attempts = new Map<string, number>()
   
-  constructor(models: ModelConfig[]) {
+  constructor(models: FallbackModelConfig[]) {
     this.models = [...models].sort((a, b) => a.priority - b.priority)
   }
   
   /**
    * Get current model
    */
-  getCurrentModel(): ModelConfig {
+  getCurrentModel(): FallbackModelConfig {
     return this.models[this.currentIndex]
   }
   
   /**
    * Get next model (fallback)
    */
-  getNextModel(): ModelConfig | null {
+  getNextModel(): FallbackModelConfig | null {
     if (this.currentIndex < this.models.length - 1) {
       this.currentIndex++
       return this.models[this.currentIndex]
@@ -235,7 +235,7 @@ export class ModelFallbackManager {
   /**
    * Get attempt count for model
    */
-  getAttemptCount(model: ModelConfig): number {
+  getAttemptCount(model: FallbackModelConfig): number {
     const key = `${model.provider}:${model.model}`
     return this.attempts.get(key) || 0
   }

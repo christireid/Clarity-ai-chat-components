@@ -7,7 +7,7 @@
 
 import type { PromptTemplate, PromptVersion } from './types'
 
-export class PromptLibrary {
+export class PromptTemplateLibrary {
   private templates = new Map<string, PromptTemplate>()
   private versions = new Map<string, PromptVersion[]>()
   
