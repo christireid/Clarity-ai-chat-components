@@ -38,6 +38,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   onOpenChange,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_position, _setPosition] = React.useState({ x: 0, y: 0 })
   const triggerRef = React.useRef<HTMLDivElement>(null)
   const tooltipRef = React.useRef<HTMLDivElement>(null)

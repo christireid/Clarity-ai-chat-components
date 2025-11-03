@@ -125,7 +125,7 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
     const child = children as React.ReactElement<any>
     return React.cloneElement(child, {
       ref: (node: HTMLElement) => {
-        // @ts-ignore - need to assign to ref for proper DOM reference
+        // @ts-expect-error - need to assign to ref for proper DOM reference
         triggerRef.current = node
         const { ref } = child as any
         if (typeof ref === 'function') {
@@ -318,8 +318,8 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
       if (
         contentRef.current &&
         triggerRef.current &&
-        !contentRef.current.contains(event.target as Node) &&
-        !triggerRef.current.contains(event.target as Node)
+        !contentRef.current.contains(event.target as Element | null) &&
+        !triggerRef.current.contains(event.target as Element | null)
       ) {
         close({ focusTrigger: false })
       }

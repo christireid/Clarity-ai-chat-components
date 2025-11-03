@@ -246,7 +246,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
 
     setActualSide(finalSide)
     setPosition({ x, y })
-  }, [side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding])
+  }, [side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding, triggerRef])
 
   // Update position when open changes
   React.useEffect(() => {
@@ -280,8 +280,8 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
       if (
         contentRef.current &&
         triggerRef.current &&
-        !contentRef.current.contains(e.target as Node) &&
-        !triggerRef.current.contains(e.target as Node)
+        !contentRef.current.contains(e.target as Element | null) &&
+        !triggerRef.current.contains(e.target as Element | null)
       ) {
         setOpen(false)
       }
@@ -289,7 +289,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [open, closeOnClickOutside, setOpen])
+  }, [open, closeOnClickOutside, setOpen, triggerRef])
 
   // Escape key handler
   React.useEffect(() => {
