@@ -17,8 +17,8 @@ export interface FallbackOptions {
   maxTotalRetries?: number
   retryDelay?: number
   exponentialBackoff?: boolean
-  onFallback?: (from: ModelConfig, to: ModelConfig, error: Error) => void
-  onRetry?: (attempt: number, model: ModelConfig, error: Error) => void
+  onFallback?: (from: FallbackModelConfig, to: FallbackModelConfig, error: Error) => void
+  onRetry?: (attempt: number, model: FallbackModelConfig, error: Error) => void
 }
 
 export interface FallbackResult<T> {
