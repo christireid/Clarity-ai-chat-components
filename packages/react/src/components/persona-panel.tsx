@@ -1,0 +1,181 @@
+import * as React from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  cn,
+} from '@clarity-chat/primitives'
+
+export type PersonaRole = 'strategist' | 'researcher' | 'assistant' | 'critic' | 'coach' | 'custom'
+
+export interface Persona {
+  id: string
+  name: string
+  role: PersonaRole
+  summary: string
+  expertise: string[]
+  avatarUrl?: string
+  color?: string
+  temperature?: number
+  tags?: string[]
+}
+
+export interface PersonaPanelProps {
+  personas: Persona[]
+  activePersonaId?: string
+  onSelect?: (persona: Persona) => void
+  onConfigure?: (persona: Persona) => void
+  toneSubtitle?: string
+  showTemperature?: boolean
+  className?: string
+}
+
+const roleLabels: Record<PersonaRole, string> = {
+  strategist: 'Strategy',
+  researcher: 'Research',
+  assistant: 'Assistant',
+  critic: 'Critique',
+  coach: 'Coaching',
+  custom: 'Custom',
+}
+
+const roleAccent: Record<PersonaRole, string> = {
+  strategist: 'from-blue-500/20 via-blue-500/10 to-transparent text-blue-600',
+  researcher: 'from-emerald-500/20 via-emerald-500/10 to-transparent text-emerald-600',
+  assistant: 'from-indigo-500/20 via-indigo-500/10 to-transparent text-indigo-600',
+  critic: 'from-rose-500/20 via-rose-500/10 to-transparent text-rose-600',
+  coach: 'from-orange-500/20 via-orange-500/10 to-transparent text-orange-600',
+  custom: 'from-primary/20 via-primary/10 to-transparent text-primary',
+}
+
+export const PersonaPanel: React.FC<PersonaPanelProps> = ({
+  personas,
+  activePersonaId,
+  onSelect,
+  onConfigure,
+  toneSubtitle = 'Switch between tailored assistants optimised for different AI chat workflows.',
+  showTemperature = true,
+  className,
+}) => {
+  return (
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_22px_48px_rgba(15,23,42,0.16)]', className)}>
+      <CardHeader className="space-y-3">
+        <div className="flex flex-col gap-1">
+          <CardTitle className="text-lg font-semibold text-foreground">Persona switchboard</CardTitle>
+          <CardDescription className="text-sm text-muted-foreground/80">
+            {toneSubtitle}
+          </CardDescription>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <ul className="flex flex-col gap-3" role="list">
+          <AnimatePresence initial={false}>
+            {personas.map((persona) => {
+              const isActive = persona.id === activePersonaId
+              return (
+                <motion.li
+                  key={persona.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                >
+                  <Button
+                    variant={isActive ? 'surface' : 'outline'}
+                    className={cn(
+                      'group flex w-full items-start gap-4 rounded-2xl border border-border/50 p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_16px_36px_rgba(15,23,42,0.12)]',
+                      isActive && 'border-primary/50 shadow-[0_22px_48px_rgba(15,23,42,0.14)]'
+                    )}
+                    onClick={() => onSelect?.(persona)}
+                    data-state={isActive ? 'active' : 'inactive'}
+                  >
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary shadow-inner">
+                      {persona.avatarUrl ? (
+                        <Avatar
+                          size="lg"
+                          src={persona.avatarUrl}
+                          alt={`${persona.name} avatar`}
+                          className="h-12 w-12 border-none shadow-none"
+                        />
+                      ) : (
+                        persona.name.slice(0, 2).toUpperCase()
+                      )}
+                    </div>
+
+                    <div className="flex flex-1 flex-col gap-2">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base font-semibold text-foreground">
+                            {persona.name}
+                          </span>
+                          <span
+                            className={cn(
+                              'rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide',
+                              roleAccent[persona.role]
+                            )}
+                          >
+                            {roleLabels[persona.role]}
+                          </span>
+                        </div>
+                        {isActive && (
+                          <Badge variant="success" className="uppercase tracking-wide">
+                            Active
+                          </Badge>
+                        )}
+                        {showTemperature && persona.temperature !== undefined && (
+                          <span className="text-xs font-medium text-muted-foreground">
+                            Temperature {persona.temperature.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-sm text-muted-foreground/80">
+                        {persona.summary}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2">
+                        {persona.expertise.map((area) => (
+                          <Badge key={area} variant="subtle" className="text-xs">
+                            {area}
+                          </Badge>
+                        ))}
+                        {persona.tags?.map((tag) => (
+                          <Badge key={tag} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {onConfigure && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex-shrink-0 text-muted-foreground hover:text-primary"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          onConfigure?.(persona)
+                        }}
+                      >
+                        Configure
+                      </Button>
+                    )}
+                  </Button>
+                </motion.li>
+              )
+            })}
+          </AnimatePresence>
+        </ul>
+      </CardContent>
+    </Card>
+  )
+}
+
+PersonaPanel.displayName = 'PersonaPanel'
+

@@ -442,6 +442,304 @@ interface PromptLibraryProps {
 
 ---
 
+## FollowUpSuggestions
+
+Display contextual follow-up prompts the assistant can suggest to the user.
+
+```typescript
+interface FollowUpSuggestion {
+  id: string
+  title: string
+  description?: string
+  keywords?: string[]
+  icon?: React.ReactNode
+  confidence?: number
+}
+
+interface FollowUpSuggestionsProps {
+  suggestions: FollowUpSuggestion[]
+  onSelect: (suggestion: FollowUpSuggestion) => void
+  title?: string
+  subtitle?: string
+  layout?: 'grid' | 'list'
+  isLoading?: boolean
+  loadingCount?: number
+  emptyState?: React.ReactNode
+  className?: string
+}
+```
+
+---
+
+## PersonaPanel
+
+Switch between curated personas or assistants optimised for different workflows.
+
+```typescript
+type PersonaRole = 'strategist' | 'researcher' | 'assistant' | 'critic' | 'coach' | 'custom'
+
+interface Persona {
+  id: string
+  name: string
+  role: PersonaRole
+  summary: string
+  expertise: string[]
+  avatarUrl?: string
+  color?: string
+  temperature?: number
+  tags?: string[]
+}
+
+interface PersonaPanelProps {
+  personas: Persona[]
+  activePersonaId?: string
+  onSelect?: (persona: Persona) => void
+  onConfigure?: (persona: Persona) => void
+  toneSubtitle?: string
+  showTemperature?: boolean
+  className?: string
+}
+```
+
+---
+
+## ConversationTimeline
+
+Audit every turn in the dialogue?including tool invocations?with a chronological timeline.
+
+```typescript
+type TimelineEventType = 'user' | 'assistant' | 'tool' | 'system' | 'note'
+
+interface ConversationTimelineEvent {
+  id: string
+  type: TimelineEventType
+  title: string
+  timestamp: Date
+  summary?: string
+  metadata?: Array<{ label: string; value: string }>
+  durationMs?: number
+  status?: 'pending' | 'complete' | 'error'
+  icon?: React.ReactNode
+}
+
+interface ConversationTimelineProps {
+  events: ConversationTimelineEvent[]
+  onJumpToEvent?: (event: ConversationTimelineEvent) => void
+  showStatusIndicators?: boolean
+  className?: string
+  title?: string
+  subtitle?: string
+}
+```
+
+---
+
+## MemoryInspector
+
+Inspect session, thread, and global memories captured during the conversation.
+
+```typescript
+type MemoryScope = 'session' | 'thread' | 'global'
+
+interface MemoryItem {
+  id: string
+  label: string
+  value: string
+  scope: MemoryScope
+  confidence?: number
+  source?: string
+  lastUpdated: Date
+  tokens?: number
+}
+
+interface MemoryInspectorProps {
+  memories: MemoryItem[]
+  isLoading?: boolean
+  onRemove?: (memory: MemoryItem) => void
+  onPromote?: (memory: MemoryItem) => void
+  onRefresh?: () => void
+  className?: string
+  title?: string
+  subtitle?: string
+  showHeaderActions?: boolean
+}
+```
+
+---
+
+## SafetyStatusCard
+
+Summarise safety, moderation, and policy checks for the latest reply.
+
+```typescript
+type SafetyStatus = 'pass' | 'warn' | 'fail'
+
+interface SafetyCheck {
+  id: string
+  label: string
+  status: SafetyStatus
+  detail?: string
+  remediation?: string
+}
+
+interface SafetyStatusCardProps {
+  checks: SafetyCheck[]
+  lastReviewedAt?: Date
+  onReviewPolicy?: () => void
+  onAcknowledge?: (check: SafetyCheck) => void
+  className?: string
+  title?: string
+  subtitle?: string
+}
+```
+
+---
+
+## ResponseQualityMeter
+
+Visualise AI evaluation metrics such as groundedness or coverage.
+
+```typescript
+interface ResponseQualityMetric {
+  id: string
+  label: string
+  score: number
+  target?: number
+  description?: string
+}
+
+interface ResponseQualityMeterProps {
+  metrics: ResponseQualityMetric[]
+  overallLabel?: string
+  overallScore?: number
+  className?: string
+  title?: string
+  subtitle?: string
+  scaleLabel?: string
+}
+```
+
+---
+
+## MultiModalPreview
+
+Render the attachments (images, audio clips, docs) referenced by the assistant.
+
+```typescript
+type AttachmentType = 'image' | 'audio' | 'video' | 'file' | 'link'
+
+interface AttachmentPreview {
+  id: string
+  type: AttachmentType
+  title: string
+  description?: string
+  thumbnailUrl?: string
+  status?: 'processing' | 'ready' | 'failed'
+  durationMs?: number
+  sizeLabel?: string
+  metadata?: Array<{ label: string; value: string }>
+}
+
+interface MultiModalPreviewProps {
+  attachments: AttachmentPreview[]
+  onOpen?: (attachment: AttachmentPreview) => void
+  onRetry?: (attachment: AttachmentPreview) => void
+  onRemove?: (attachment: AttachmentPreview) => void
+  className?: string
+  title?: string
+  subtitle?: string
+}
+```
+
+---
+
+## AgentRunFeed
+
+Timeline for orchestrated agent tool calls, including output previews and retry actions.
+
+```typescript
+type AgentRunStatus = 'pending' | 'running' | 'succeeded' | 'failed'
+
+interface AgentRunStep {
+  id: string
+  title: string
+  detail?: string
+  status: AgentRunStatus
+  tool?: string
+  startedAt: Date
+  completedAt?: Date
+  outputPreview?: string
+}
+
+interface AgentRunFeedProps {
+  steps: AgentRunStep[]
+  onRetry?: (step: AgentRunStep) => void
+  onOpenLogs?: (step: AgentRunStep) => void
+  className?: string
+  title?: string
+  subtitle?: string
+}
+```
+
+---
+
+## SessionSummaryCard
+
+Produce an executive summary with highlights, structured metrics, and next actions.
+
+```typescript
+interface SessionSummaryHighlights {
+  title: string
+  highlights: string[]
+  nextActions?: string[]
+}
+
+interface SessionMetric {
+  label: string
+  value: string
+  trend?: 'up' | 'down' | 'steady'
+}
+
+interface SessionSummaryCardProps {
+  summary: SessionSummaryHighlights
+  metrics: SessionMetric[]
+  onAction?: (action: string) => void
+  onExport?: () => void
+  className?: string
+  title?: string
+  subtitle?: string
+}
+```
+
+---
+
+## WorkflowSuggestionList
+
+Offer templated multi-step workflows the user can trigger from within the chat.
+
+```typescript
+interface WorkflowSuggestion {
+  id: string
+  name: string
+  description: string
+  steps: string[]
+  estimatedTime?: string
+  audience?: string
+  tags?: string[]
+}
+
+interface WorkflowSuggestionListProps {
+  workflows: WorkflowSuggestion[]
+  onSelect?: (workflow: WorkflowSuggestion) => void
+  onPreview?: (workflow: WorkflowSuggestion) => void
+  className?: string
+  title?: string
+  subtitle?: string
+}
+```
+
+---
+
 ## Common Props
 
 ### Message Type

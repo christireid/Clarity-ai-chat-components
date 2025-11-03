@@ -328,6 +328,23 @@ export default ActionsDemo
 `"
 />
 
+## Advanced AI Operations Toolkit
+
+Beyond core chat primitives, Clarity ships a library of AI-operations components that elevate review, safety, and hand-off flows:
+
+- **FollowUpSuggestions** surfaces contextual quick prompts so users can keep the conversation flowing.
+- **PersonaPanel** lets operators swap between curated assistant personas with distinct tone and temperatures.
+- **ConversationTimeline** visualises user turns, assistant responses, and tool calls in sequence.
+- **MemoryInspector** exposes what context is pinned across session, thread, or global scopes.
+- **SafetyStatusCard** aggregates moderation outcomes so risk teams can approve or redact a reply.
+- **ResponseQualityMeter** charts evaluation metrics like groundedness versus target thresholds.
+- **MultiModalPreview** previews images, audio, video, and docs referenced by the assistant.
+- **AgentRunFeed** tracks autonomous agent/tool runs with retry and log access.
+- **SessionSummaryCard** produces a shareable recap with metrics and recommended next actions.
+- **WorkflowSuggestionList** recommends templated flows (e.g., support hand-off, marketing brief) users can trigger.
+
+Combine these modules inside custom dashboards to ship production-ready agent experiences that are auditable, safe, and actionable.
+
 ## Tips for Customization
 
 ### Styling
