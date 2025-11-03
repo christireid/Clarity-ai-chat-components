@@ -3,14 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
 
-export interface KeyboardShortcut {
+export interface KeyboardHintShortcut {
   keys: string[]
   description: string
   category?: string
 }
 
 export interface KeyboardHintProps {
-  shortcuts: KeyboardShortcut[]
+  shortcuts: KeyboardHintShortcut[]
   visible: boolean
   onClose?: () => void
   position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'center'
