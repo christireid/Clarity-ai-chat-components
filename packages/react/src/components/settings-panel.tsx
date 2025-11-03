@@ -125,13 +125,15 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                         Tone
                       </label>
                       <div className="grid grid-cols-2 gap-2">
-                        {[
-                          'professional',
-                          'casual',
-                          'technical',
-                          'friendly',
-                          'creative',
-                        ].map((tone) => (
+                        {(
+                          [
+                            'professional',
+                            'casual',
+                            'technical',
+                            'friendly',
+                            'creative',
+                          ] as const
+                        ).map((tone) => (
                           <Button
                             key={tone}
                             variant={
@@ -140,9 +142,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                                 : 'outline'
                             }
                             size="sm"
-                            onClick={() =>
-                              handleUpdateAI({ tone: tone as any })
-                            }
+                            onClick={() => handleUpdateAI({ tone })}
                             className="justify-start"
                           >
                             {tone.charAt(0).toUpperCase() + tone.slice(1)}
@@ -156,12 +156,14 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                         Verbosity
                       </label>
                       <div className="grid grid-cols-2 gap-2">
-                        {[
-                          'concise',
-                          'balanced',
-                          'detailed',
-                          'comprehensive',
-                        ].map((level) => (
+                        {(
+                          [
+                            'concise',
+                            'balanced',
+                            'detailed',
+                            'comprehensive',
+                          ] as const
+                        ).map((level) => (
                           <Button
                             key={level}
                             variant={
@@ -170,9 +172,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                                 : 'outline'
                             }
                             size="sm"
-                            onClick={() =>
-                              handleUpdateAI({ verbosity: level as any })
-                            }
+                            onClick={() => handleUpdateAI({ verbosity: level })}
                             className="justify-start"
                           >
                             {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -250,7 +250,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                         }
                         size="sm"
                         onClick={() => {
-                          handleUpdateUI({ theme: theme as any })
+                          handleUpdateUI({ theme })
                           // Apply theme
                           if (theme === 'dark') {
                             document.documentElement.classList.add('dark')
@@ -283,9 +283,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                             : 'outline'
                         }
                         size="sm"
-                        onClick={() =>
-                          handleUpdateUI({ fontSize: size as any })
-                        }
+                        onClick={() => handleUpdateUI({ fontSize: size })}
                       >
                         {size === 'small' && 'S'}
                         {size === 'medium' && 'M'}

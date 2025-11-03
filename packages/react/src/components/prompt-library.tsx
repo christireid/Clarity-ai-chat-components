@@ -148,7 +148,7 @@ export const PromptLibrary = React.memo(function PromptLibrary({
           <div className="flex items-center gap-2">
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as 'name' | 'usage' | 'recent')}
               className="text-sm border rounded px-2 py-1 bg-background"
             >
               <option value="recent">Recently Used</option>
