@@ -65,40 +65,48 @@ export const ChatWindow = React.memo(function ChatWindow({
 
   // Default empty state with animation
   const defaultEmptyState = (
-    <motion.div 
+    <motion.div
       className="text-center space-y-6"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <motion.div 
+      <motion.div
         className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm ring-1 ring-primary/20"
-        animate={{ 
+        animate={{
           scale: [1, 1.05, 1],
-          rotate: [0, 2, -2, 0]
+          rotate: [0, 2, -2, 0],
         }}
-        transition={{ 
+        transition={{
           duration: 3,
           repeat: Infinity,
-          ease: "easeInOut"
+          ease: 'easeInOut',
         }}
       >
         <BotIcon size={36} className="text-primary" />
       </motion.div>
       <div className="space-y-2">
-        <h3 className="text-xl font-semibold text-foreground">Start a conversation</h3>
+        <h3 className="text-xl font-semibold text-foreground">
+          Start a conversation
+        </h3>
         <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-          Send a message to begin chatting with the AI assistant. I'm here to help with your questions and tasks.
+          Send a message to begin chatting with the AI assistant. I'm here to
+          help with your questions and tasks.
         </p>
       </div>
     </motion.div>
   )
 
   return (
-    <Card className={cn('flex h-full flex-col overflow-hidden shadow-lg', className)}>
+    <Card
+      className={cn(
+        'flex h-full flex-col overflow-hidden shadow-lg',
+        className
+      )}
+    >
       {/* Optional Header */}
       {showHeader && (
-        <motion.div 
+        <motion.div
           className="flex items-center justify-between gap-4 border-b bg-card px-4 py-3 sm:px-6"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -120,15 +128,16 @@ export const ChatWindow = React.memo(function ChatWindow({
             </div>
             {showMessageCount && messages.length > 0 && (
               <Badge variant="secondary" className="shrink-0">
-                {messages.length} {messages.length === 1 ? 'message' : 'messages'}
+                {messages.length}{' '}
+                {messages.length === 1 ? 'message' : 'messages'}
               </Badge>
             )}
           </div>
-          
+
           {/* Header Actions */}
           <div className="flex items-center gap-2 shrink-0">
             {headerActions}
-            
+
             {onExport && messages.length > 0 && (
               <Button
                 size="sm"
@@ -137,13 +146,23 @@ export const ChatWindow = React.memo(function ChatWindow({
                 className="gap-1.5"
                 title="Export conversation"
               >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
                 </svg>
                 <span className="hidden sm:inline">Export</span>
               </Button>
             )}
-            
+
             {onClear && messages.length > 0 && (
               <Button
                 size="sm"
@@ -152,8 +171,18 @@ export const ChatWindow = React.memo(function ChatWindow({
                 className="gap-1.5 text-muted-foreground hover:text-destructive"
                 title="Clear conversation"
               >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
                 <span className="hidden sm:inline">Clear</span>
               </Button>
@@ -161,18 +190,18 @@ export const ChatWindow = React.memo(function ChatWindow({
           </div>
         </motion.div>
       )}
-      
+
       <div className="flex flex-col h-full">
-        <MessageList 
-          messages={messages} 
+        <MessageList
+          messages={messages}
           isLoading={isLoading}
           onMessageCopy={onMessageCopy}
           onMessageFeedback={onMessageFeedback}
           onMessageRetry={onMessageRetry}
           emptyState={emptyState || defaultEmptyState}
-          className="flex-1" 
+          className="flex-1"
         />
-        
+
         {/* Thinking Indicator - positioned above input */}
         <AnimatePresence>
           {isLoading && aiStatus && (
@@ -181,7 +210,7 @@ export const ChatWindow = React.memo(function ChatWindow({
             </div>
           )}
         </AnimatePresence>
-        
+
         <ChatInput
           value={input}
           onChange={setInput}

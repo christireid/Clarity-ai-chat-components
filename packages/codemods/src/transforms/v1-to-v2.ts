@@ -64,7 +64,7 @@ const transform: Transform = (file, api) => {
   // Transform 4: Update config object structure
   root.find(j.ObjectExpression).forEach((path) => {
     const properties = path.node.properties
-    
+
     properties.forEach((prop, index) => {
       if (
         prop.type === 'ObjectProperty' &&
@@ -90,4 +90,3 @@ const transform: Transform = (file, api) => {
 transform.parser = 'tsx'
 
 export default transform
-

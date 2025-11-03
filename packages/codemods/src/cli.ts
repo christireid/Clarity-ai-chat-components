@@ -23,7 +23,7 @@ program
   .description('List available codemods')
   .action(() => {
     console.log(chalk.bold.cyan('\n📝 Available Codemods\n'))
-    
+
     availableTransforms.forEach((transform) => {
       console.log(chalk.yellow(`  ${transform.name}`))
       console.log(chalk.gray(`  ${transform.description}`))
@@ -41,16 +41,22 @@ program
   .option('--parser <parser>', 'Parser to use (babel, tsx, ts)', 'tsx')
   .action(async (transformName, path, options) => {
     console.log(chalk.bold.cyan('\n🔧 Running Codemod\n'))
-    
-    const transform = availableTransforms.find(t => t.name === transformName)
+
+    const transform = availableTransforms.find((t) => t.name === transformName)
     if (!transform) {
       console.error(chalk.red(`❌ Transform "${transformName}" not found`))
-      console.log(chalk.gray('\nRun') + chalk.cyan(' clarity-codemod list ') + chalk.gray('to see available transforms'))
+      console.log(
+        chalk.gray('\nRun') +
+          chalk.cyan(' clarity-codemod list ') +
+          chalk.gray('to see available transforms')
+      )
       process.exit(1)
     }
 
     console.log(chalk.white(`Transform: ${chalk.cyan(transform.name)}`))
-    console.log(chalk.white(`Description: ${chalk.gray(transform.description)}`))
+    console.log(
+      chalk.white(`Description: ${chalk.gray(transform.description)}`)
+    )
     console.log(chalk.white(`Path: ${chalk.gray(path)}`))
     if (options.dry) {
       console.log(chalk.yellow('⚠️  Dry run mode - no files will be modified'))
@@ -88,7 +94,11 @@ program
       console.log()
     } catch (error) {
       spinner.fail('Transformation failed')
-      console.error(chalk.red(`\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`))
+      console.error(
+        chalk.red(
+          `\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        )
+      )
       process.exit(1)
     }
   })
@@ -106,12 +116,12 @@ program
     console.log()
 
     // Find transforms needed for this migration
-    const transforms = availableTransforms.filter(t => {
+    const transforms = availableTransforms.filter((t) => {
       const from = parseFloat(t.from.replace('v', ''))
       const to = parseFloat(t.to.replace('v', ''))
       const fromVer = parseFloat(fromVersion)
       const toVer = parseFloat(toVersion)
-      
+
       return from >= fromVer && to <= toVer
     })
 
@@ -120,15 +130,20 @@ program
       return
     }
 
-    console.log(chalk.white(`Found ${transforms.length} transform(s) to apply:\n`))
+    console.log(
+      chalk.white(`Found ${transforms.length} transform(s) to apply:\n`)
+    )
     transforms.forEach((t, i) => {
-      console.log(chalk.cyan(`  ${i + 1}. ${t.name}`) + chalk.gray(` (${t.from} → ${t.to})`))
+      console.log(
+        chalk.cyan(`  ${i + 1}. ${t.name}`) +
+          chalk.gray(` (${t.from} → ${t.to})`)
+      )
     })
     console.log()
 
     for (const transform of transforms) {
       console.log(chalk.bold(`Running: ${transform.name}`))
-      
+
       try {
         const result = await runTransform(transform.name, path, {
           dry: options.dry,
@@ -137,7 +152,11 @@ program
 
         console.log(chalk.green(`  ✓ ${result.ok} files transformed`))
       } catch (error) {
-        console.error(chalk.red(`  ✗ Failed: ${error instanceof Error ? error.message : 'Unknown error'}`))
+        console.error(
+          chalk.red(
+            `  ✗ Failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          )
+        )
       }
       console.log()
     }
@@ -151,4 +170,3 @@ program
   })
 
 program.parse()
-

@@ -20,4 +20,3 @@ export interface TransformResult {
   error: number
   timeElapsed: string
 }
-

@@ -15,7 +15,11 @@ export async function runTransform(
   targetPath: string,
   options: TransformOptions = {}
 ): Promise<TransformResult> {
-  const transformPath = path.join(__dirname, 'transforms', `${transformName}.js`)
+  const transformPath = path.join(
+    __dirname,
+    'transforms',
+    `${transformName}.js`
+  )
 
   const result = await jscodeshift(transformPath, [targetPath], {
     dry: options.dry || false,
@@ -28,4 +32,3 @@ export async function runTransform(
 
   return result as TransformResult
 }
-

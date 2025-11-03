@@ -6,9 +6,9 @@ import { ScrollArea, Button, cn } from '@clarity-chat/primitives'
 import { useAutoScroll } from '../hooks/use-auto-scroll'
 import { ArrowDownIcon } from './icons'
 import { SkeletonMessage } from './skeleton'
-import { 
-  createStaggerContainerVariant, 
-  createStaggerChildVariant 
+import {
+  createStaggerContainerVariant,
+  createStaggerChildVariant,
 } from '../animations/utils'
 import { INTERACTION_VARIANTS } from '../animations/constants'
 
@@ -83,7 +83,7 @@ export const MessageList = React.memo(function MessageList({
 
         {/* Messages */}
         {messages.length > 0 && (
-          <motion.div 
+          <motion.div
             className="space-y-3 px-2 pb-6 sm:px-4"
             variants={containerVariants}
             initial="initial"
@@ -91,11 +91,7 @@ export const MessageList = React.memo(function MessageList({
           >
             <AnimatePresence mode="popLayout">
               {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  variants={itemVariants}
-                  layout
-                >
+                <motion.div key={message.id} variants={itemVariants} layout>
                   <Message
                     message={message}
                     onCopy={(content) => onMessageCopy?.(message.id, content)}
@@ -118,7 +114,7 @@ export const MessageList = React.memo(function MessageList({
           </motion.div>
         )}
       </ScrollArea>
-      
+
       {/* Show scroll-to-bottom button when not at bottom */}
       <AnimatePresence>
         {!isNearBottom && messages.length > 0 && (

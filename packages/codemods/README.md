@@ -62,6 +62,7 @@ Migrates from Clarity Chat v1 to v2:
 - Modernizes API key management
 
 **Before:**
+
 ```typescript
 import { ChatWindow } from '@clarity-chat/react'
 
@@ -72,6 +73,7 @@ import { ChatWindow } from '@clarity-chat/react'
 ```
 
 **After:**
+
 ```typescript
 import { ChatInterface } from '@clarity-chat/react'
 
@@ -84,15 +86,19 @@ import { ChatInterface } from '@clarity-chat/react'
 ## Options
 
 ### `--dry` / `-d`
+
 Preview changes without modifying files.
 
 ### `--print` / `-p`
+
 Print transformed files to stdout.
 
 ### `--verbose` / `-v`
+
 Show detailed transformation information.
 
 ### `--parser <parser>`
+
 Specify parser to use: `babel`, `tsx`, `ts` (default: `tsx`)
 
 ## Examples
@@ -128,7 +134,9 @@ clarity-codemod migrate 1 3 ./src
 
 ## How It Works
 
-Codemods use [jscodeshift](https://github.com/facebook/jscodeshift) to parse your code into an Abstract Syntax Tree (AST), transform it, and generate updated code. This ensures precise, safe transformations that preserve:
+Codemods use [jscodeshift](https://github.com/facebook/jscodeshift) to parse your code into an
+Abstract Syntax Tree (AST), transform it, and generate updated code. This ensures precise, safe
+transformations that preserve:
 
 - Code formatting
 - Comments
@@ -145,9 +153,9 @@ import type { Transform } from 'jscodeshift'
 const transform: Transform = (file, api) => {
   const j = api.jscodeshift
   const root = j(file.source)
-  
+
   // Your transformation logic here
-  
+
   return root.toSource()
 }
 
@@ -198,4 +206,3 @@ To add a new codemod:
 ## License
 
 MIT
-

@@ -9,6 +9,7 @@ Comprehensive audit of React patterns, TypeScript usage, and modern best practic
 ## 📊 Initial Findings
 
 ### React Patterns
+
 - ✅ **Class Components**: 1 (error-boundary.tsx - required for error boundaries)
 - ⚠️ **React.FC Usage**: 123 instances (modern pattern is to avoid)
 - ⚠️ **React.memo Usage**: 1 instance (many components need memoization)
@@ -17,9 +18,11 @@ Comprehensive audit of React patterns, TypeScript usage, and modern best practic
 ### Key Modernization Opportunities
 
 #### 1. **Remove React.FC** ⭐⭐⭐⭐⭐
+
 **Issue**: Using `React.FC<Props>` is outdated (deprecated pattern since 2020)
 
 **Why Change**:
+
 - Better TypeScript inference
 - Explicit children handling
 - No implicit children type
@@ -27,6 +30,7 @@ Comprehensive audit of React patterns, TypeScript usage, and modern best practic
 - Better IDE autocomplete
 
 **Before**:
+
 ```typescript
 export const MyComponent: React.FC<MyProps> = ({ prop1, prop2 }) => {
   return <div>{prop1}</div>
@@ -34,21 +38,23 @@ export const MyComponent: React.FC<MyProps> = ({ prop1, prop2 }) => {
 ```
 
 **After**:
+
 ```typescript
 export function MyComponent({ prop1, prop2 }: MyProps) {
   return <div>{prop1}</div>
 }
 ```
 
-**Impact**: 123 files need updating
-**Priority**: High (modern standard)
+**Impact**: 123 files need updating **Priority**: High (modern standard)
 
 ---
 
 #### 2. **Add React.memo for Performance** ⭐⭐⭐⭐
+
 **Issue**: Only 1 component uses React.memo
 
 **Components That Should Use React.memo**:
+
 - Message (renders frequently in lists)
 - ChatInput (re-renders on every keystroke parent update)
 - ToolInvocationCard (complex rendering)
@@ -58,6 +64,7 @@ export function MyComponent({ prop1, prop2 }: MyProps) {
 - Badge (pure presentation)
 
 **Before**:
+
 ```typescript
 export function Message({ message, onAction }: MessageProps) {
   // Complex rendering logic
@@ -65,30 +72,30 @@ export function Message({ message, onAction }: MessageProps) {
 ```
 
 **After**:
+
 ```typescript
-export const Message = React.memo(function Message({ 
-  message, 
-  onAction 
-}: MessageProps) {
+export const Message = React.memo(function Message({ message, onAction }: MessageProps) {
   // Complex rendering logic
 })
 ```
 
-**Impact**: ~15 components
-**Priority**: High (performance critical)
+**Impact**: ~15 components **Priority**: High (performance critical)
 
 ---
 
 #### 3. **useEffect Cleanup Review** ⭐⭐⭐⭐
+
 **Issue**: 99 useEffect calls need cleanup verification
 
 **Common Issues**:
+
 - Missing cleanup functions for intervals/timeouts
 - Event listeners not removed
 - Subscriptions not unsubscribed
 - AbortController not used for fetch
 
 **Example Issues to Find**:
+
 ```typescript
 // ❌ Bad - Memory leak
 useEffect(() => {
@@ -103,13 +110,14 @@ useEffect(() => {
 }, [])
 ```
 
-**Impact**: All hooks and components
-**Priority**: Critical (memory leaks)
+**Impact**: All hooks and components **Priority**: Critical (memory leaks)
 
 ---
 
 #### 4. **TypeScript Improvements** ⭐⭐⭐⭐
+
 **Opportunities**:
+
 - Use `as const` for literal types
 - Replace `any` with proper types
 - Use discriminated unions for state
@@ -117,12 +125,14 @@ useEffect(() => {
 - Use utility types (Pick, Omit, Partial, etc.)
 
 **Before**:
+
 ```typescript
 type Status = 'idle' | 'loading' | 'success' | 'error'
-const status: Status = 'idle'  // Redundant type
+const status: Status = 'idle' // Redundant type
 ```
 
 **After**:
+
 ```typescript
 const STATUS = {
   IDLE: 'idle',
@@ -131,73 +141,79 @@ const STATUS = {
   ERROR: 'error',
 } as const
 
-type Status = typeof STATUS[keyof typeof STATUS]
-const status = STATUS.IDLE  // Inferred correctly
+type Status = (typeof STATUS)[keyof typeof STATUS]
+const status = STATUS.IDLE // Inferred correctly
 ```
 
-**Impact**: Entire codebase
-**Priority**: Medium (better DX)
+**Impact**: Entire codebase **Priority**: Medium (better DX)
 
 ---
 
 #### 5. **Modern Hook Patterns** ⭐⭐⭐
+
 **Improvements**:
+
 - Use `useId()` instead of custom ID generation
 - Use `useSyncExternalStore` for external subscriptions
 - Use `useTransition` for expensive updates
 - Use `useDeferredValue` for search/filtering
 - Replace useReducer with useState + derived state where simpler
 
-**Impact**: All custom hooks
-**Priority**: Medium (React 18+ features)
+**Impact**: All custom hooks **Priority**: Medium (React 18+ features)
 
 ---
 
 #### 6. **Component Composition** ⭐⭐⭐
+
 **Issue**: Some components do too much (low composability)
 
 **Opportunities**:
+
 - Extract compound components (Card.Header, Card.Body pattern)
 - Use children render props for flexibility
 - Extract smaller, focused components
 - Use slot patterns for flexibility
 
-**Impact**: Large components
-**Priority**: Medium (maintainability)
+**Impact**: Large components **Priority**: Medium (maintainability)
 
 ---
 
 #### 7. **Accessibility Improvements** ⭐⭐⭐⭐
+
 **Opportunities**:
+
 - Add missing ARIA labels
 - Improve keyboard navigation
 - Add focus management
 - Use semantic HTML
 - Add screen reader announcements
 
-**Impact**: All interactive components
-**Priority**: High (WCAG compliance)
+**Impact**: All interactive components **Priority**: High (WCAG compliance)
 
 ---
 
 ## 🎯 Modernization Priority
 
 ### Phase 1: Critical (Immediate Impact)
+
 1. ✅ Remove React.FC (123 instances)
 2. ✅ Add React.memo (15 components)
 3. ✅ Review useEffect cleanup (99 instances)
 
 ### Phase 2: Performance
+
 4. ✅ Optimize expensive computations
 5. ✅ Add proper memoization
 6. ✅ Review re-render triggers
 
 ### Phase 3: Modern APIs
+
 7. ✅ Use React 18+ hooks
 8. ✅ TypeScript improvements
 9. ✅ Better type inference
 
 ### Phase 4: Best Practices
+
 10. ✅ Accessibility enhancements
 11. ✅ Component composition
 12. ✅ Error handling
@@ -219,6 +235,4 @@ const status = STATUS.IDLE  // Inferred correctly
 
 ---
 
-*Audit started: November 2024*
-*Target: World-class modern React codebase*
-
+_Audit started: November 2024_ _Target: World-class modern React codebase_

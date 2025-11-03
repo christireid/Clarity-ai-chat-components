@@ -15,7 +15,14 @@ export const FileUpload = React.memo(function FileUpload({
   onUpload,
   maxFiles = 10,
   maxFileSize = 10 * 1024 * 1024, // 10MB default
-  acceptedFileTypes = ['image/*', 'application/pdf', '.txt', '.doc', '.docx', 'video/*'],
+  acceptedFileTypes = [
+    'image/*',
+    'application/pdf',
+    '.txt',
+    '.doc',
+    '.docx',
+    'video/*',
+  ],
   className,
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = React.useState(false)
@@ -109,7 +116,12 @@ export const FileUpload = React.memo(function FileUpload({
     if (file.type.startsWith('video/')) return '🎥'
     if (file.type.startsWith('audio/')) return '🎵'
     if (file.type.includes('pdf')) return '📄'
-    if (file.type.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx')) return '📝'
+    if (
+      file.type.includes('word') ||
+      file.name.endsWith('.doc') ||
+      file.name.endsWith('.docx')
+    )
+      return '📝'
     if (file.type.includes('sheet') || file.name.endsWith('.xlsx')) return '📊'
     return '📎'
   }
@@ -143,7 +155,9 @@ export const FileUpload = React.memo(function FileUpload({
           <div className="text-4xl">📁</div>
           <div>
             <p className="text-sm font-medium">
-              {isDragging ? 'Drop files here' : 'Click to upload or drag and drop'}
+              {isDragging
+                ? 'Drop files here'
+                : 'Click to upload or drag and drop'}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               Max {maxFiles} files, up to {formatFileSize(maxFileSize)} each
@@ -214,7 +228,8 @@ export const FileUpload = React.memo(function FileUpload({
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{file.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {formatFileSize(file.size)} • {file.type || 'Unknown type'}
+                      {formatFileSize(file.size)} •{' '}
+                      {file.type || 'Unknown type'}
                     </p>
                   </div>
                   <Button
@@ -236,7 +251,9 @@ export const FileUpload = React.memo(function FileUpload({
               loading={uploading}
               className="w-full"
             >
-              {uploading ? 'Uploading...' : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
+              {uploading
+                ? 'Uploading...'
+                : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
             </Button>
           </motion.div>
         )}

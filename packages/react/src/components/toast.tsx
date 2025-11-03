@@ -1,6 +1,6 @@
 /**
  * Toast Notification System
- * 
+ *
  * Provides toast notifications for success, error, info, and warning messages.
  * Supports auto-dismiss, queue management, and custom durations.
  */
@@ -8,26 +8,26 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { 
-  CheckCircleIcon, 
-  XCircleIcon, 
-  InfoIcon, 
-  AlertCircleIcon, 
-  CloseIcon 
+import {
+  CheckCircleIcon,
+  XCircleIcon,
+  InfoIcon,
+  AlertCircleIcon,
+  CloseIcon,
 } from './icons'
-import { 
-  ANIMATION_DURATION, 
+import {
+  ANIMATION_DURATION,
   ANIMATION_EASING,
   // createSlideVariant, // Reserved for future use
 } from '../animations'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
-export type ToastPosition = 
-  | 'top-left' 
-  | 'top-center' 
-  | 'top-right' 
-  | 'bottom-left' 
-  | 'bottom-center' 
+export type ToastPosition =
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
   | 'bottom-right'
 
 export interface Toast {
@@ -66,7 +66,8 @@ export const ToastItem = React.memo(function ToastItem({
 
   const colorClasses = {
     success: 'bg-success/10 border-success/20 text-success-foreground',
-    error: 'bg-destructive/10 border-destructive/20 text-destructive-foreground',
+    error:
+      'bg-destructive/10 border-destructive/20 text-destructive-foreground',
     info: 'bg-info/10 border-info/20 text-info-foreground',
     warning: 'bg-warning/10 border-warning/20 text-warning-foreground',
   }
@@ -102,13 +103,9 @@ export const ToastItem = React.memo(function ToastItem({
       {/* Content */}
       <div className="flex-1 space-y-1">
         {title && (
-          <div className="font-semibold text-sm leading-none">
-            {title}
-          </div>
+          <div className="font-semibold text-sm leading-none">{title}</div>
         )}
-        <div className="text-sm opacity-90">
-          {description}
-        </div>
+        <div className="text-sm opacity-90">{description}</div>
         {action && (
           <button
             onClick={action.onClick}
@@ -191,7 +188,9 @@ interface ToastContextValue {
   warning: (description: string, title?: string, duration?: number) => string
 }
 
-const ToastContext = React.createContext<ToastContextValue | undefined>(undefined)
+const ToastContext = React.createContext<ToastContextValue | undefined>(
+  undefined
+)
 
 /**
  * Toast Provider
@@ -286,7 +285,11 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <ToastContainer toasts={toasts} position={position} onClose={removeToast} />
+      <ToastContainer
+        toasts={toasts}
+        position={position}
+        onClose={removeToast}
+      />
     </ToastContext.Provider>
   )
 }

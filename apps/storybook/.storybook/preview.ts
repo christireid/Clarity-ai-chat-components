@@ -88,7 +88,7 @@ const preview: Preview = {
       },
     },
   },
-  
+
   decorators: [
     withThemeByClassName({
       themes: {
@@ -98,7 +98,7 @@ const preview: Preview = {
       defaultTheme: 'light',
     }),
   ],
-  
+
   globalTypes: {
     locale: {
       name: 'Locale',
@@ -117,7 +117,7 @@ const preview: Preview = {
       },
     },
   },
-  
+
   tags: ['autodocs'],
 }
 
