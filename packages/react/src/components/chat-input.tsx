@@ -172,7 +172,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                   className="absolute bottom-2 right-2 flex flex-col items-end gap-1"
                 >
                   {/* Progress bar */}
-                  <div className="w-16 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
                     <motion.div
                       className={cn('h-full', getProgressColor())}
                       initial={{ width: 0 }}

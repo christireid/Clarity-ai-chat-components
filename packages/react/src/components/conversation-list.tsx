@@ -509,7 +509,7 @@ export function ConversationList({
                               rotate: conversation.isPinned ? 0 : 15,
                             }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                            className="p-1 hover:bg-muted rounded transition-colors duration-200"
                             aria-label={conversation.isPinned ? 'Unpin' : 'Pin'}
                           >
                             <motion.span
@@ -531,7 +531,7 @@ export function ConversationList({
                             onClick={() => onToggleFavorite(conversation.id)}
                             whileHover={{ scale: 1.2 }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                            className="p-1 hover:bg-muted rounded transition-colors duration-200"
                             aria-label={
                               conversation.isFavorite
                                 ? 'Unfavorite'

@@ -305,7 +305,7 @@ export const InteractiveStreaming: Story = {
       <div className="space-y-4">
         <button
           onClick={startStreaming}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all duration-200 shadow-sm hover:shadow-md"
         >
           Start Streaming Demo
         </button>

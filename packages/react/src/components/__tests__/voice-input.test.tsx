@@ -69,11 +69,11 @@ describe('VoiceInput', () => {
       <VoiceInput onTranscript={mockOnTranscript} variant="primary" />
     )
     let button = screen.getByRole('button')
-    expect(button).toHaveClass('bg-blue-600')
+    expect(button).toHaveClass('bg-primary')
 
     rerender(<VoiceInput onTranscript={mockOnTranscript} variant="secondary" />)
     button = screen.getByRole('button')
-    expect(button).toHaveClass('bg-gray-200')
+    expect(button).toHaveClass('bg-secondary')
   })
 
   it('should be disabled when disabled prop is true', () => {

@@ -207,7 +207,7 @@ describe('Message Component', () => {
       fireEvent.click(thumbsUp)
 
       // Should remain visible and styled even without hover
-      expect(thumbsUp).toHaveClass('text-green-600')
+      expect(thumbsUp).toHaveClass('text-[hsl(var(--success))]')
     })
   })
 
