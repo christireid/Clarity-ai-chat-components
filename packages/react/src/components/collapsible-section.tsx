@@ -196,10 +196,10 @@ export const Accordion = React.memo(function Accordion({
             {item.content}
           </CollapsibleSection>
         )
-      }      )}
+      })}
     </div>
   )
-}: AccordionProps) => JSX.Element)
+})
 
 Accordion.displayName = 'Accordion'
 

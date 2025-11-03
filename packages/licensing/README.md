@@ -395,3 +395,4 @@ MIT © 2024 Code & Clarity
 - **Support:** support@codeclarity.ai
 - **Enterprise:** enterprise@codeclarity.ai
 
+

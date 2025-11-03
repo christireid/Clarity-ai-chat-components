@@ -131,3 +131,4 @@ function parseTypePrefix(prefix: string): LicenseType | null {
   }
 }
 
+
