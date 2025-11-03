@@ -85,10 +85,14 @@ export function CitationCard({
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }} 
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+    >
       <Card
         className={cn(
-          'group relative overflow-hidden rounded-2xl border border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_18px_38px_rgba(15,23,42,0.16)] transition-shadow hover:shadow-[0_22px_48px_rgba(15,23,42,0.2)]',
+          'group relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5',
           onClick && 'cursor-pointer',
           className
         )}
@@ -98,7 +102,7 @@ export function CitationCard({
         }}
       >
         <CardHeader className="flex flex-row items-start gap-3 pb-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(var(--primary)/0.08)] text-primary shadow-[0_4px_12px_rgba(79,70,229,0.18)]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
             <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
             </svg>
@@ -123,7 +127,6 @@ export function CitationCard({
             {showConfidence && citation.confidence !== undefined && (
               <Badge
                 variant={getConfidenceVariant(citation.confidence)}
-                className="shadow-[0_4px_12px_rgba(15,23,42,0.12)]"
                 title={`${(citation.confidence * 100).toFixed(0)}% confidence`}
               >
                 {getConfidenceLabel(citation.confidence)}
@@ -137,7 +140,7 @@ export function CitationCard({
                   event.stopPropagation()
                   handleSourceClick(event)
                 }}
-                className="h-8 w-8 rounded-full bg-[hsl(var(--surface-muted))] text-muted-foreground hover:bg-[hsl(var(--surface-overlay))] hover:text-foreground"
+                className="h-8 w-8 rounded-full"
                 title="Open source"
               >
                 <svg
@@ -198,8 +201,8 @@ export function CitationCard({
           )}
 
           {citation.metadata && Object.keys(citation.metadata).length > 0 && (
-            <div className="space-y-2 rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-3">
-              <span className="text-xs font-semibold uppercase text-muted-foreground">
+            <div className="space-y-2 rounded-xl border bg-muted/50 p-3">
+              <span className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
                 Metadata
               </span>
               <div className="flex flex-wrap gap-2">
@@ -208,21 +211,21 @@ export function CitationCard({
                   if (!date) return null
                   const dateText = renderMetadataValue(date)
                   if (!dateText) return null
-                  return <Badge variant="subtle">?? {dateText}</Badge>
+                  return <Badge variant="outline">{dateText}</Badge>
                 })()}
                 {(() => {
                   const page = citation.metadata?.page
                   if (!page) return null
                   const pageText = renderMetadataValue(page)
                   if (!pageText) return null
-                  return <Badge variant="subtle">?? Page {pageText}</Badge>
+                  return <Badge variant="outline">Page {pageText}</Badge>
                 })()}
                 {(() => {
                   const section = citation.metadata?.section
                   if (!section) return null
                   const sectionText = renderMetadataValue(section)
                   if (!sectionText) return null
-                  return <Badge variant="subtle">? {sectionText}</Badge>
+                  return <Badge variant="outline">{sectionText}</Badge>
                 })()}
               </div>
             </div>

@@ -89,34 +89,80 @@ export function AIAssistantTemplate({
           {
             id: 'gpt-4-turbo-preview',
             name: 'GPT-4 Turbo',
-            provider: 'openai',
+            provider: 'openai' as const,
+            speed: 'medium' as const,
+            cost: 'high' as const,
+            quality: 'best' as const,
+            contextWindow: 128000,
           },
-          { id: 'gpt-4', name: 'GPT-4', provider: 'openai' },
-          { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'openai' },
+          { 
+            id: 'gpt-4', 
+            name: 'GPT-4', 
+            provider: 'openai' as const,
+            speed: 'medium' as const,
+            cost: 'high' as const,
+            quality: 'excellent' as const,
+            contextWindow: 8192,
+          },
+          { 
+            id: 'gpt-3.5-turbo', 
+            name: 'GPT-3.5 Turbo', 
+            provider: 'openai' as const,
+            speed: 'fast' as const,
+            cost: 'low' as const,
+            quality: 'good' as const,
+            contextWindow: 16384,
+          },
         ]
       : []),
     ...(adapters.anthropic
       ? [
-          { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'anthropic' },
+          { 
+            id: 'claude-3-opus', 
+            name: 'Claude 3 Opus', 
+            provider: 'anthropic' as const,
+            speed: 'medium' as const,
+            cost: 'high' as const,
+            quality: 'best' as const,
+            contextWindow: 200000,
+          },
           {
             id: 'claude-3-sonnet',
             name: 'Claude 3 Sonnet',
-            provider: 'anthropic',
+            provider: 'anthropic' as const,
+            speed: 'fast' as const,
+            cost: 'medium' as const,
+            quality: 'excellent' as const,
+            contextWindow: 200000,
           },
         ]
       : []),
     ...(adapters.google
-      ? [{ id: 'gemini-pro', name: 'Gemini Pro', provider: 'google' }]
+      ? [{ 
+          id: 'gemini-pro', 
+          name: 'Gemini Pro', 
+          provider: 'google' as const,
+          speed: 'fast' as const,
+          cost: 'low' as const,
+          quality: 'excellent' as const,
+          contextWindow: 32768,
+        }]
       : []),
   ]
 
   const handleSendMessage = async (content: string) => {
+    const now = new Date()
+    const chatId = 'ai-assistant-chat'
+
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
+      chatId,
       role: 'user',
       content,
-      timestamp: new Date(),
+      status: 'sent',
+      createdAt: now,
+      updatedAt: now,
     }
 
     setMessages((prev) => [...prev, userMessage])
@@ -131,9 +177,12 @@ export function AIAssistantTemplate({
     if (!adapter) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: 'No AI model available. Please configure API keys.',
-        timestamp: new Date(),
+        status: 'error',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         metadata: { error: true },
       }
       setMessages((prev) => [...prev, errorMessage])
@@ -145,61 +194,70 @@ export function AIAssistantTemplate({
       // Create assistant message for streaming
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: '',
-        timestamp: new Date(),
-        isStreaming: true,
+        status: 'streaming',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
 
       setMessages((prev) => [...prev, assistantMessage])
 
-      // Prepare messages with system prompt and context
-      const chatMessages = [
-        { role: 'system' as const, content: systemPrompt },
-        ...(context.length > 0
-          ? [
-              {
-                role: 'system' as const,
-                content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
-              },
-            ]
-          : []),
-        ...messages.map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
-        { role: 'user' as const, content },
-      ]
+      // Note: streamChat is not part of ModelAdapter interface
+      // This template demonstrates concept but needs proper adapter implementation
+      // For now, simulate streaming with the chat method
+      const response = await adapter.chat(
+        [
+          { role: 'system', content: systemPrompt },
+          ...(context.length > 0
+            ? [
+                {
+                  role: 'system' as const,
+                  content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
+                },
+              ]
+            : []),
+          ...messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          { role: 'user' as const, content },
+        ],
+        {
+          model: selectedModel,
+          maxTokens,
+          temperature: 0.7,
+        }
+      )
 
-      // Stream the response
-      await adapter.streamChat({
-        messages: chatMessages,
-        model: selectedModel,
-        maxTokens,
-        onChunk: (chunk) => {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === assistantMessage.id
-                ? { ...msg, content: msg.content + chunk }
-                : msg
-            )
-          )
-        },
-      })
-
-      // Mark streaming as complete
+      // Update message with response
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === assistantMessage.id ? { ...msg, isStreaming: false } : msg
+          msg.id === assistantMessage.id
+            ? { 
+                ...msg, 
+                content: response.content, 
+                status: 'sent',
+                updatedAt: new Date(),
+                metadata: { 
+                  tokens: response.usage?.totalTokens,
+                  model: selectedModel,
+                },
+              }
+            : msg
         )
       )
     } catch (error) {
       console.error('AI Assistant error:', error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date(),
+        status: 'error',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         metadata: { error: true },
       }
       setMessages((prev) => [...prev, errorMessage])
@@ -208,18 +266,18 @@ export function AIAssistantTemplate({
     }
   }
 
-  const handleFileUpload = async (files: File[]) => {
-    // Add files to context
-    for (const file of files) {
-      const content = await file.text()
-      const contextItem: Context = {
-        id: Date.now().toString(),
-        name: file.name,
-        content: content.substring(0, 1000), // Limit context size
-        type: file.type.startsWith('image/') ? 'image' : 'document',
-      }
-      setContext((prev) => [...prev, contextItem])
-    }
+  const handleContextAdd = (newContexts: Context[]) => {
+    setContext((prev) => [...prev, ...newContexts])
+  }
+
+  const handleContextRemove = (id: string) => {
+    setContext((prev) => prev.filter((c) => c.id !== id))
+  }
+
+  const handleContextToggle = (id: string) => {
+    setContext((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, isActive: !c.isActive } : c))
+    )
   }
 
   return (

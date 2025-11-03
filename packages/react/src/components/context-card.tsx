@@ -42,19 +42,19 @@ export const ContextCard: React.FC<ContextCardProps> = ({
   const getTypeColor = () => {
     switch (context.type) {
       case 'document':
-        return 'bg-blue-500/10 text-blue-500'
+        return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20'
       case 'image':
-        return 'bg-purple-500/10 text-purple-500'
+        return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 ring-1 ring-purple-500/20'
       case 'video':
-        return 'bg-red-500/10 text-red-500'
+        return 'bg-red-500/10 text-red-600 dark:text-red-400 ring-1 ring-red-500/20'
       case 'audio':
-        return 'bg-green-500/10 text-green-500'
+        return 'bg-green-500/10 text-green-600 dark:text-green-400 ring-1 ring-green-500/20'
       case 'link':
-        return 'bg-cyan-500/10 text-cyan-500'
+        return 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 ring-1 ring-cyan-500/20'
       case 'text':
-        return 'bg-yellow-500/10 text-yellow-500'
+        return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-1 ring-amber-500/20'
       default:
-        return 'bg-gray-500/10 text-gray-500'
+        return 'bg-muted text-muted-foreground ring-1 ring-border'
     }
   }
 
@@ -67,8 +67,8 @@ export const ContextCard: React.FC<ContextCardProps> = ({
     >
       <Card
         className={cn(
-          'group relative transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer',
-          !context.isActive && 'opacity-50',
+          'group relative transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer',
+          !context.isActive && 'opacity-60',
           className
         )}
         onClick={() => onPreview?.(context)}
@@ -102,9 +102,11 @@ export const ContextCard: React.FC<ContextCardProps> = ({
 
                 {/* Status Badge */}
                 <Badge
-                  variant={context.isActive ? 'default' : 'outline'}
-                  className="flex-shrink-0 text-xs"
+                  variant={context.isActive ? 'success' : 'secondary'}
+                  size="sm"
+                  className="flex-shrink-0"
                   dot={context.isActive}
+                  pulse={context.isActive}
                 >
                   {context.isActive ? 'Active' : 'Inactive'}
                 </Badge>
@@ -112,17 +114,32 @@ export const ContextCard: React.FC<ContextCardProps> = ({
 
               {/* Metadata */}
               <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                <Badge variant="outline" className="text-xs capitalize">
+                <Badge variant="outline" size="sm" className="capitalize">
                   {context.type}
                 </Badge>
                 {context.metadata.fileSize && (
-                  <span>{formatFileSize(context.metadata.fileSize)}</span>
+                  <span className="flex items-center gap-1">
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    {formatFileSize(context.metadata.fileSize)}
+                  </span>
                 )}
                 {context.metadata.pageCount && (
-                  <span>{context.metadata.pageCount} pages</span>
+                  <span className="flex items-center gap-1">
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    {context.metadata.pageCount} pages
+                  </span>
                 )}
                 {context.metadata.duration && (
-                  <span>{Math.round(context.metadata.duration / 60)} min</span>
+                  <span className="flex items-center gap-1">
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {Math.round(context.metadata.duration / 60)} min
+                  </span>
                 )}
               </div>
             </div>
@@ -130,7 +147,7 @@ export const ContextCard: React.FC<ContextCardProps> = ({
 
           {/* Actions */}
           {showActions && (
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               {onToggle && (
                 <Button
                   variant="ghost"
@@ -139,8 +156,16 @@ export const ContextCard: React.FC<ContextCardProps> = ({
                     e.stopPropagation()
                     onToggle(context.id)
                   }}
+                  className="gap-1.5"
                 >
-                  {context.isActive ? '⏸️ Deactivate' : '▶️ Activate'}
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {context.isActive ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    )}
+                  </svg>
+                  {context.isActive ? 'Deactivate' : 'Activate'}
                 </Button>
               )}
               {onPreview && (
@@ -151,8 +176,13 @@ export const ContextCard: React.FC<ContextCardProps> = ({
                     e.stopPropagation()
                     onPreview(context)
                   }}
+                  className="gap-1.5"
                 >
-                  👁️ Preview
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Preview
                 </Button>
               )}
               {onRemove && (
@@ -163,9 +193,12 @@ export const ContextCard: React.FC<ContextCardProps> = ({
                     e.stopPropagation()
                     onRemove(context.id)
                   }}
-                  className="ml-auto text-destructive hover:text-destructive"
+                  className="ml-auto text-destructive hover:text-destructive hover:bg-destructive/10 gap-1.5"
                 >
-                  🗑️ Remove
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Remove
                 </Button>
               )}
             </div>
