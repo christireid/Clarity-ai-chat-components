@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { MessageFlowSequence } from '@/components/Diagrams/MessageFlowSequence'
 
 export const metadata: Metadata = {
   title: 'useChat Hook | Clarity Chat',
@@ -26,6 +27,8 @@ export default function UseChatPage() {
           <li>Conversation history persistence</li>
         </ul>
       </section>
+
+      <MessageFlowSequence />
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
