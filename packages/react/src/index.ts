@@ -16,6 +16,12 @@ export * from './prompts'
 // Document Loaders & Text Splitting
 export * from './document-loaders'
 
+// AI Safety (PII Detection, Content Filtering, Guardrails)
+export * from './safety'
+
+// Observability & Evaluation
+export * from './observability'
+
 // Export all components
 export * from './components/message'
 export * from './components/message-list'
