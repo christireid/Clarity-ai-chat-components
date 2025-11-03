@@ -39,7 +39,8 @@ const trendIcon: Record<NonNullable<SessionMetric['trend']>, string> = {
 }
 
 const defaultTitle = 'Conversation recap'
-const defaultSubtitle = 'Share this executive summary with stakeholders or use the follow-up plan to continue the workflow.'
+const defaultSubtitle =
+  'Share this executive summary with stakeholders or use the follow-up plan to continue the workflow.'
 
 export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
   summary,
@@ -51,14 +52,28 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
   subtitle = defaultSubtitle,
 }) => {
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_26px_56px_rgba(15,23,42,0.18)]', className)}>
+    <Card
+      className={cn(
+        'border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_26px_56px_rgba(15,23,42,0.18)]',
+        className
+      )}
+    >
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
-          <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground/80">{subtitle}</CardDescription>
+          <CardTitle className="text-lg font-semibold text-foreground">
+            {title}
+          </CardTitle>
+          <CardDescription className="text-sm text-muted-foreground/80">
+            {subtitle}
+          </CardDescription>
         </div>
         {onExport && (
-          <Button variant="ghost" size="sm" onClick={onExport} className="self-start">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onExport}
+            className="self-start"
+          >
             Export transcript
           </Button>
         )}
@@ -74,7 +89,7 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
             </Badge>
           </header>
           <ul className="space-y-2">
-            {summary.highlights.map((highlight, index) => (
+            {summary.highlights.map((highlight) => (
               <li
                 key={highlight}
                 className="flex items-start gap-3 rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] px-4 py-3 text-sm text-muted-foreground/85"
@@ -94,10 +109,17 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
             >
               <span className="text-muted-foreground/70">{metric.label}</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-lg font-semibold text-foreground">{metric.value}</span>
+                <span className="text-lg font-semibold text-foreground">
+                  {metric.value}
+                </span>
                 {metric.trend && (
                   <Badge variant="subtle" className="text-[11px]">
-                    {trendIcon[metric.trend]} {metric.trend === 'up' ? 'Improving' : metric.trend === 'down' ? 'Regression' : 'Stable'}
+                    {trendIcon[metric.trend]}{' '}
+                    {metric.trend === 'up'
+                      ? 'Improving'
+                      : metric.trend === 'down'
+                        ? 'Regression'
+                        : 'Stable'}
                   </Badge>
                 )}
               </div>
@@ -108,7 +130,9 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
         {summary.nextActions && summary.nextActions.length > 0 && (
           <section className="space-y-3">
             <header className="flex items-center gap-2">
-              <span className="text-base font-semibold text-foreground">Suggested follow-up</span>
+              <span className="text-base font-semibold text-foreground">
+                Suggested follow-up
+              </span>
               <Badge variant="warning" className="text-[11px]">
                 Next steps
               </Badge>
@@ -134,4 +158,3 @@ export const SessionSummaryCard: React.FC<SessionSummaryCardProps> = ({
 }
 
 SessionSummaryCard.displayName = 'SessionSummaryCard'
-

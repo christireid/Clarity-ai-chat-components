@@ -1,6 +1,6 @@
 /**
  * Interactive Card Component
- * 
+ *
  * Enhanced card component with hover states, focus rings, and visual transitions.
  * Demonstrates best practices for interactive elements.
  */
@@ -8,9 +8,10 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { INTERACTION_VARIANTS, ANIMATION_DURATION, ANIMATION_EASING } from '../animations'
+import { INTERACTION_VARIANTS } from '../animations'
 
-export interface InteractiveCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface InteractiveCardProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   /** Whether card is clickable */
   interactive?: boolean
   /** Whether card is selected */
@@ -32,7 +33,10 @@ export interface InteractiveCardProps extends React.HTMLAttributes<HTMLDivElemen
 /**
  * Card with enhanced interactivity
  */
-export const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardProps>(
+export const InteractiveCard = React.forwardRef<
+  HTMLDivElement,
+  InteractiveCardProps
+>(
   (
     {
       interactive = false,
@@ -49,7 +53,9 @@ export const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardP
     ref
   ) => {
     const [isHovered, setIsHovered] = React.useState(false)
-    const [ripples, setRipples] = React.useState<{ x: number; y: number; id: number }[]>([])
+    const [ripples, setRipples] = React.useState<
+      { x: number; y: number; id: number }[]
+    >([])
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (disabled) return
@@ -71,19 +77,22 @@ export const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardP
 
     const hoverVariants = {
       none: {},
-      subtle: { 
-        y: -2, 
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      subtle: {
+        y: -2,
+        boxShadow:
+          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
       },
-      medium: { 
-        y: -4, 
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      medium: {
+        y: -4,
+        boxShadow:
+          '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
       },
-      strong: { 
-        y: -8, 
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+      strong: {
+        y: -8,
+        boxShadow:
+          '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
       },
     }
@@ -98,7 +107,8 @@ export const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardP
           interactive && 'cursor-pointer hover:shadow-md',
           disabled && 'opacity-50 cursor-not-allowed',
           selected && 'ring-2 ring-primary ring-offset-2 shadow-md',
-          showFocusRing && 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          showFocusRing &&
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           className
         )}
         tabIndex={interactive && !disabled ? 0 : undefined}
@@ -109,14 +119,18 @@ export const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardP
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleClick}
         onKeyDown={(e) => {
-          if (interactive && !disabled && (e.key === 'Enter' || e.key === ' ')) {
+          if (
+            interactive &&
+            !disabled &&
+            (e.key === 'Enter' || e.key === ' ')
+          ) {
             e.preventDefault()
             onCardClick?.()
           }
         }}
         animate={
           isHovered && !disabled && interactive
-            ? { 
+            ? {
                 ...hoverVariants[hoverIntensity],
                 scale: hoverIntensity !== 'none' ? 1.02 : 1,
               }
@@ -166,7 +180,8 @@ InteractiveCard.displayName = 'InteractiveCard'
 /**
  * Interactive button with enhanced states
  */
-export interface InteractiveButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface InteractiveButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Visual variant */
   variant?: 'default' | 'primary' | 'success' | 'destructive' | 'ghost'
   /** Size variant */
@@ -181,7 +196,10 @@ export interface InteractiveButtonProps extends React.ButtonHTMLAttributes<HTMLB
   children?: React.ReactNode
 }
 
-export const InteractiveButton = React.forwardRef<HTMLButtonElement, InteractiveButtonProps>(
+export const InteractiveButton = React.forwardRef<
+  HTMLButtonElement,
+  InteractiveButtonProps
+>(
   (
     {
       variant = 'default',
@@ -200,7 +218,8 @@ export const InteractiveButton = React.forwardRef<HTMLButtonElement, Interactive
       default: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
       primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
       success: 'bg-success text-success-foreground hover:bg-success/90',
-      destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+      destructive:
+        'bg-destructive text-destructive-foreground hover:bg-destructive/90',
       ghost: 'hover:bg-accent hover:text-accent-foreground',
     }
 
@@ -213,7 +232,9 @@ export const InteractiveButton = React.forwardRef<HTMLButtonElement, Interactive
     return (
       <motion.button
         ref={ref}
-        whileHover={!disabled && !loading ? INTERACTION_VARIANTS.button.hover : {}}
+        whileHover={
+          !disabled && !loading ? INTERACTION_VARIANTS.button.hover : {}
+        }
         whileTap={!disabled && !loading ? INTERACTION_VARIANTS.button.tap : {}}
         transition={INTERACTION_VARIANTS.button.transition}
         disabled={disabled || loading}
@@ -279,7 +300,9 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
 }) => {
   return (
     <motion.div
-      whileHover={!disabled ? { x: 4, backgroundColor: 'hsl(var(--accent) / 0.5)' } : {}}
+      whileHover={
+        !disabled ? { x: 4, backgroundColor: 'hsl(var(--accent) / 0.5)' } : {}
+      }
       whileTap={!disabled ? { scale: 0.98 } : {}}
       onClick={!disabled ? onClick : undefined}
       className={cn(
@@ -296,11 +319,9 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
       aria-disabled={disabled}
     >
       {icon && (
-        <div className="flex-shrink-0 text-muted-foreground">
-          {icon}
-        </div>
+        <div className="flex-shrink-0 text-muted-foreground">{icon}</div>
       )}
-      
+
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="font-medium truncate">{title}</span>

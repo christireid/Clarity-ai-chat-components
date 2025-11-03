@@ -21,8 +21,14 @@ export interface CommandPaletteProps {
   className?: string
 }
 
-export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPaletteProps>(
-  ({ items, open, onClose, placeholder = 'Type a command...', className }, ref) => {
+export const CommandPalette = React.forwardRef<
+  HTMLDivElement,
+  CommandPaletteProps
+>(
+  (
+    { items, open, onClose, placeholder = 'Type a command...', className },
+    ref
+  ) => {
     const [search, setSearch] = React.useState('')
     const [selectedIndex, setSelectedIndex] = React.useState(0)
     const inputRef = React.useRef<HTMLInputElement>(null)
@@ -30,10 +36,10 @@ export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPalettePro
     // Filter items based on search
     const filteredItems = React.useMemo(() => {
       if (!search) return items
-      
+
       const query = search.toLowerCase()
       return items.filter(
-        item =>
+        (item) =>
           item.label.toLowerCase().includes(query) ||
           item.description?.toLowerCase().includes(query) ||
           item.category?.toLowerCase().includes(query)
@@ -43,15 +49,15 @@ export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPalettePro
     // Group items by category
     const groupedItems = React.useMemo(() => {
       const groups: Record<string, CommandItem[]> = {}
-      
-      filteredItems.forEach(item => {
+
+      filteredItems.forEach((item) => {
         const category = item.category || 'Commands'
         if (!groups[category]) {
           groups[category] = []
         }
         groups[category].push(item)
       })
-      
+
       return groups
     }, [filteredItems])
 
@@ -81,11 +87,13 @@ export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPalettePro
             break
           case 'ArrowDown':
             e.preventDefault()
-            setSelectedIndex(prev => (prev + 1) % filteredItems.length)
+            setSelectedIndex((prev) => (prev + 1) % filteredItems.length)
             break
           case 'ArrowUp':
             e.preventDefault()
-            setSelectedIndex(prev => (prev - 1 + filteredItems.length) % filteredItems.length)
+            setSelectedIndex(
+              (prev) => (prev - 1 + filteredItems.length) % filteredItems.length
+            )
             break
           case 'Enter':
             e.preventDefault()
@@ -143,7 +151,9 @@ export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPalettePro
                   ref={inputRef}
                   type="text"
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearch(e.target.value)
+                  }
                   placeholder={placeholder}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -167,90 +177,100 @@ export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPalettePro
                   </motion.div>
                 ) : (
                   <div className="space-y-4">
-                    {Object.entries(groupedItems).map(([category, categoryItems], groupIndex) => (
-                      <motion.div
-                        key={category}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: groupIndex * 0.05 }}
-                      >
-                        <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                          {category}
-                        </div>
-                        <div className="space-y-1">
-                          {categoryItems.map((item, itemIndex) => {
-                            // Calculate global index
-                            const globalIndex = flatItems.indexOf(item)
-                            const isSelected = globalIndex === selectedIndex
+                    {Object.entries(groupedItems).map(
+                      ([category, categoryItems], groupIndex) => (
+                        <motion.div
+                          key={category}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: groupIndex * 0.05 }}
+                        >
+                          <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                            {category}
+                          </div>
+                          <div className="space-y-1">
+                            {categoryItems.map((item) => {
+                              // Calculate global index
+                              const globalIndex = flatItems.indexOf(item)
+                              const isSelected = globalIndex === selectedIndex
 
-                            return (
-                              <motion.button
-                                key={item.id}
-                                onClick={() => {
-                                  item.onSelect()
-                                  onClose()
-                                }}
-                                onMouseEnter={() => setSelectedIndex(globalIndex)}
-                                whileHover={{ x: 4 }}
-                                whileTap={{ scale: 0.98 }}
-                                className={cn(
-                                  'w-full flex items-center gap-3 px-3 py-3 rounded-lg',
-                                  'transition-all duration-200 text-left',
-                                  isSelected
-                                    ? 'bg-primary text-primary-foreground shadow-sm'
-                                    : 'hover:bg-muted/80'
-                                )}
-                              >
-                                {/* Icon */}
-                                {item.icon && (
-                                  <motion.div
-                                    animate={isSelected ? { scale: [1, 1.2, 1] } : {}}
-                                    transition={{ duration: 0.3 }}
-                                    className="flex-shrink-0"
-                                  >
-                                    {item.icon}
-                                  </motion.div>
-                                )}
-
-                                {/* Label & Description */}
-                                <div className="flex-1 min-w-0">
-                                  <div className="font-medium truncate">{item.label}</div>
-                                  {item.description && (
-                                    <div
-                                      className={cn(
-                                        'text-sm truncate',
-                                        isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground'
-                                      )}
-                                    >
-                                      {item.description}
-                                    </div>
+                              return (
+                                <motion.button
+                                  key={item.id}
+                                  onClick={() => {
+                                    item.onSelect()
+                                    onClose()
+                                  }}
+                                  onMouseEnter={() =>
+                                    setSelectedIndex(globalIndex)
+                                  }
+                                  whileHover={{ x: 4 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  className={cn(
+                                    'w-full flex items-center gap-3 px-3 py-3 rounded-lg',
+                                    'transition-all duration-200 text-left',
+                                    isSelected
+                                      ? 'bg-primary text-primary-foreground shadow-sm'
+                                      : 'hover:bg-muted/80'
                                   )}
-                                </div>
+                                >
+                                  {/* Icon */}
+                                  {item.icon && (
+                                    <motion.div
+                                      animate={
+                                        isSelected ? { scale: [1, 1.2, 1] } : {}
+                                      }
+                                      transition={{ duration: 0.3 }}
+                                      className="flex-shrink-0"
+                                    >
+                                      {item.icon}
+                                    </motion.div>
+                                  )}
 
-                                {/* Keyboard Shortcut */}
-                                {item.shortcut && (
-                                  <div className="flex gap-1 flex-shrink-0">
-                                    {item.shortcut.map((key, i) => (
-                                      <kbd
-                                        key={i}
+                                  {/* Label & Description */}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-medium truncate">
+                                      {item.label}
+                                    </div>
+                                    {item.description && (
+                                      <div
                                         className={cn(
-                                          'px-2 py-1 text-xs font-mono rounded border',
+                                          'text-sm truncate',
                                           isSelected
-                                            ? 'bg-primary-foreground/20 border-primary-foreground/30'
-                                            : 'bg-muted border-border'
+                                            ? 'text-primary-foreground/70'
+                                            : 'text-muted-foreground'
                                         )}
                                       >
-                                        {key}
-                                      </kbd>
-                                    ))}
+                                        {item.description}
+                                      </div>
+                                    )}
                                   </div>
-                                )}
-                              </motion.button>
-                            )
-                          })}
-                        </div>
-                      </motion.div>
-                    ))}
+
+                                  {/* Keyboard Shortcut */}
+                                  {item.shortcut && (
+                                    <div className="flex gap-1 flex-shrink-0">
+                                      {item.shortcut.map((key, i) => (
+                                        <kbd
+                                          key={i}
+                                          className={cn(
+                                            'px-2 py-1 text-xs font-mono rounded border',
+                                            isSelected
+                                              ? 'bg-primary-foreground/20 border-primary-foreground/30'
+                                              : 'bg-muted border-border'
+                                          )}
+                                        >
+                                          {key}
+                                        </kbd>
+                                      ))}
+                                    </div>
+                                  )}
+                                </motion.button>
+                              )
+                            })}
+                          </div>
+                        </motion.div>
+                      )
+                    )}
                   </div>
                 )}
               </div>
@@ -264,13 +284,22 @@ export const CommandPalette = React.forwardRef<HTMLDivElement, CommandPalettePro
               >
                 <div className="flex gap-4">
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">??</kbd> Navigate
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      ??
+                    </kbd>{' '}
+                    Navigate
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">?</kbd> Select
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      ?
+                    </kbd>{' '}
+                    Select
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Esc</kbd> Close
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      Esc
+                    </kbd>{' '}
+                    Close
                   </span>
                 </div>
                 <div>{filteredItems.length} commands</div>
