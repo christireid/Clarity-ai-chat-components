@@ -12,7 +12,7 @@
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, Badge, cn } from '@clarity-chat/primitives'
+import { Button, Badge } from '@clarity-chat/primitives'
 import type { ToolCall, Citation } from '../adapters/types'
 
 export interface StreamingMessageProps {

@@ -50,17 +50,17 @@ export const ContextCard: React.FC<ContextCardProps> = ({
   const getTypeColor = () => {
     switch (context.type) {
       case 'document':
-        return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20'
+        return 'bg-primary/10 text-primary ring-1 ring-primary/20'
       case 'image':
-        return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 ring-1 ring-purple-500/20'
+        return 'bg-secondary/10 text-secondary-foreground ring-1 ring-secondary/20'
       case 'video':
-        return 'bg-red-500/10 text-red-600 dark:text-red-400 ring-1 ring-red-500/20'
+        return 'bg-destructive/10 text-destructive ring-1 ring-destructive/20'
       case 'audio':
-        return 'bg-green-500/10 text-green-600 dark:text-green-400 ring-1 ring-green-500/20'
+        return 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/20'
       case 'link':
-        return 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 ring-1 ring-cyan-500/20'
+        return 'bg-[hsl(var(--info))]/10 text-[hsl(var(--info))] ring-1 ring-[hsl(var(--info))]/20'
       case 'text':
-        return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-1 ring-amber-500/20'
+        return 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] ring-1 ring-[hsl(var(--warning))]/20'
       default:
         return 'bg-muted text-muted-foreground ring-1 ring-border'
     }

@@ -47,17 +47,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   // Calculate character counter color
   const getCounterColor = () => {
-    if (isOverLimit) return 'text-red-600 dark:text-red-400 font-semibold'
-    if (isNearLimit) return 'text-yellow-600 dark:text-yellow-400 font-medium'
-    if (charCount > 0) return 'text-blue-600 dark:text-blue-400'
+    if (isOverLimit) return 'text-destructive font-semibold'
+    if (isNearLimit) return 'text-[hsl(var(--warning))] font-medium'
+    if (charCount > 0) return 'text-primary'
     return 'text-muted-foreground'
   }
 
   // Calculate progress bar color
   const getProgressColor = () => {
-    if (isOverLimit) return 'bg-red-500'
-    if (isNearLimit) return 'bg-yellow-500'
-    return 'bg-blue-500'
+    if (isOverLimit) return 'bg-destructive'
+    if (isNearLimit) return 'bg-[hsl(var(--warning))]'
+    return 'bg-primary'
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -107,9 +107,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     focused: glowOnFocus
       ? {
           boxShadow: [
-            '0 0 0 0 rgba(59, 130, 246, 0)',
-            '0 0 0 4px rgba(59, 130, 246, 0.15)',
-            '0 0 0 4px rgba(59, 130, 246, 0.15)',
+            '0 0 0 0 hsl(var(--primary) / 0)',
+            '0 0 0 4px hsl(var(--primary) / 0.15)',
+            '0 0 0 4px hsl(var(--primary) / 0.15)',
           ],
           transition: { duration: 0.3, ease: 'easeOut' },
         }

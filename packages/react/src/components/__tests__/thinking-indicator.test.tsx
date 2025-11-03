@@ -20,7 +20,7 @@ describe('ThinkingIndicator Component', () => {
 
   describe('Status Stages', () => {
     it('should render thinking stage', () => {
-      const status: AIStatus = { stage: 'thinking' }
+      const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('🤔')).toBeInTheDocument()
@@ -28,7 +28,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should render researching stage', () => {
-      const status: AIStatus = { stage: 'researching' }
+      const status: AIStatus = { stage: 'researching', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('🔍')).toBeInTheDocument()
@@ -36,7 +36,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should render compiling stage', () => {
-      const status: AIStatus = { stage: 'compiling' }
+      const status: AIStatus = { stage: 'compiling', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('📝')).toBeInTheDocument()
@@ -44,7 +44,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should render generating stage', () => {
-      const status: AIStatus = { stage: 'generating' }
+      const status: AIStatus = { stage: 'generating', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('✨')).toBeInTheDocument()
