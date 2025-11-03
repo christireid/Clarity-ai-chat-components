@@ -1,11 +1,21 @@
 /**
  * Citation Card Component
- * 
+ *
  * Displays RAG sources/citations with expandable preview
  */
 
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  cn,
+} from '@clarity-chat/primitives'
 import type { Citation } from '../adapters/types'
 
 // Helper to safely render metadata values
@@ -40,28 +50,31 @@ export function CitationCard({
   showConfidence = true,
   onClick,
   onSourceClick,
-  className = ''
+  className = '',
 }: CitationCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(defaultExpanded)
-  
-  const truncatedText = citation.chunkText.length > previewLength
-    ? citation.chunkText.slice(0, previewLength) + '...'
-    : citation.chunkText
-  
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.9) return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-    if (confidence >= 0.7) return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-    if (confidence >= 0.5) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-    return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+
+  const truncatedText =
+    citation.chunkText.length > previewLength
+      ? citation.chunkText.slice(0, previewLength) + '...'
+      : citation.chunkText
+
+  const getConfidenceVariant = (
+    confidence: number
+  ): 'success' | 'info' | 'warning' | 'destructive' => {
+    if (confidence >= 0.9) return 'success'
+    if (confidence >= 0.7) return 'info'
+    if (confidence >= 0.5) return 'warning'
+    return 'destructive'
   }
-  
+
   const getConfidenceLabel = (confidence: number) => {
     if (confidence >= 0.9) return 'High'
     if (confidence >= 0.7) return 'Medium'
     if (confidence >= 0.5) return 'Low'
     return 'Very Low'
   }
-  
+
   const handleSourceClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (citation.url && onSourceClick) {
@@ -70,175 +83,152 @@ export function CitationCard({
       window.open(citation.url, '_blank', 'noopener,noreferrer')
     }
   }
-  
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md transition-all duration-200 ${
-        onClick ? 'cursor-pointer' : ''
-      } ${className}`}
-      onClick={() => {
-        if (onClick) onClick(citation)
-        else setIsExpanded(!isExpanded)
-      }}
-    >
-      <div className="p-4">
-        {/* Header */}
-        <div className="flex items-start gap-3">
-          <svg
-            className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0 mt-0.5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-          </svg>
-          
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">
-                  {citation.source}
-                </h4>
-                {(() => {
-                  const author = citation.metadata?.author
-                  if (!author) return null
-                  const authorText = renderMetadataValue(author)
-                  if (!authorText) return null
-                  return (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                      {authorText}
-                    </p>
-                  )
-                })()}
-              </div>
-              
-              <div className="flex items-center gap-2 flex-shrink-0">
-                {showConfidence && citation.confidence !== undefined && (
-                  <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getConfidenceColor(
-                      citation.confidence
-                    )}`}
-                    title={`${(citation.confidence * 100).toFixed(0)}% confidence`}
-                  >
-                    {getConfidenceLabel(citation.confidence)}
-                  </span>
-                )}
-                {citation.url && (
-                  <button
-                    onClick={handleSourceClick}
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                    title="Open source"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                  </button>
-                )}
-              </div>
-            </div>
-            
-            {/* Preview Text */}
-            <div className="text-sm text-gray-700 dark:text-gray-300">
-              <AnimatePresence mode="wait">
-                {isExpanded ? (
-                  <motion.div
-                    key="expanded"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="whitespace-pre-wrap"
-                  >
-                    {citation.chunkText}
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="collapsed"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    {truncatedText}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            
-            {/* Expand/Collapse Button */}
-            {citation.chunkText.length > previewLength && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setIsExpanded(!isExpanded)
-                }}
-                className="mt-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-1"
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <Card
+        className={cn(
+          'group relative overflow-hidden rounded-2xl border border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_18px_38px_rgba(15,23,42,0.16)] transition-shadow hover:shadow-[0_22px_48px_rgba(15,23,42,0.2)]',
+          onClick && 'cursor-pointer',
+          className
+        )}
+        onClick={() => {
+          if (onClick) onClick(citation)
+          else setIsExpanded(!isExpanded)
+        }}
+      >
+        <CardHeader className="flex flex-row items-start gap-3 pb-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[hsl(var(--primary)/0.08)] text-primary shadow-[0_4px_12px_rgba(79,70,229,0.18)]">
+            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+            </svg>
+          </span>
+          <div className="flex-1 space-y-1">
+            <CardTitle className="truncate leading-tight">
+              {citation.source}
+            </CardTitle>
+            {(() => {
+              const author = citation.metadata?.author
+              if (!author) return null
+              const authorText = renderMetadataValue(author)
+              if (!authorText) return null
+              return (
+                <CardDescription className="text-xs text-muted-foreground">
+                  {authorText}
+                </CardDescription>
+              )
+            })()}
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {showConfidence && citation.confidence !== undefined && (
+              <Badge
+                variant={getConfidenceVariant(citation.confidence)}
+                className="shadow-[0_4px_12px_rgba(15,23,42,0.12)]"
+                title={`${(citation.confidence * 100).toFixed(0)}% confidence`}
               >
-                {isExpanded ? (
-                  <>
-                    Show less
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                    </svg>
-                  </>
-                ) : (
-                  <>
-                    Show more
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </>
-                )}
-              </button>
+                {getConfidenceLabel(citation.confidence)}
+              </Badge>
             )}
-            
-            {/* Metadata */}
-            {citation.metadata && Object.keys(citation.metadata).length > 0 && (
-              <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-                <div className="flex flex-wrap gap-2">
-                  {(() => {
-                    const date = citation.metadata?.date
-                    if (!date) return null
-                    const dateText = renderMetadataValue(date)
-                    if (!dateText) return null
-                    return (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        ?? {dateText}
-                      </span>
-                    )
-                  })()}
-                  {(() => {
-                    const page = citation.metadata?.page
-                    if (!page) return null
-                    const pageText = renderMetadataValue(page)
-                    if (!pageText) return null
-                    return (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        ?? Page {pageText}
-                      </span>
-                    )
-                  })()}
-                  {(() => {
-                    const section = citation.metadata?.section
-                    if (!section) return null
-                    const sectionText = renderMetadataValue(section)
-                    if (!sectionText) return null
-                    return (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        ? {sectionText}
-                      </span>
-                    )
-                  })()}
-                </div>
-              </div>
+            {citation.url && (
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  handleSourceClick(event)
+                }}
+                className="h-8 w-8 rounded-full bg-[hsl(var(--surface-muted))] text-muted-foreground hover:bg-[hsl(var(--surface-overlay))] hover:text-foreground"
+                title="Open source"
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </Button>
             )}
           </div>
-        </div>
-      </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-sm text-muted-foreground">
+            <AnimatePresence mode="wait">
+              {isExpanded ? (
+                <motion.div
+                  key="expanded"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="whitespace-pre-wrap text-foreground"
+                >
+                  {citation.chunkText}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="collapsed"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {truncatedText}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {citation.chunkText.length > previewLength && (
+            <Button
+              variant="link"
+              size="sm"
+              onClick={(event) => {
+                event.stopPropagation()
+                setIsExpanded((expanded) => !expanded)
+              }}
+              className="px-0 text-sm font-medium text-primary"
+            >
+              {isExpanded ? 'Show less' : 'Show more'}
+            </Button>
+          )}
+
+          {citation.metadata && Object.keys(citation.metadata).length > 0 && (
+            <div className="space-y-2 rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-3">
+              <span className="text-xs font-semibold uppercase text-muted-foreground">
+                Metadata
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {(() => {
+                  const date = citation.metadata?.date
+                  if (!date) return null
+                  const dateText = renderMetadataValue(date)
+                  if (!dateText) return null
+                  return <Badge variant="subtle">?? {dateText}</Badge>
+                })()}
+                {(() => {
+                  const page = citation.metadata?.page
+                  if (!page) return null
+                  const pageText = renderMetadataValue(page)
+                  if (!pageText) return null
+                  return <Badge variant="subtle">?? Page {pageText}</Badge>
+                })()}
+                {(() => {
+                  const section = citation.metadata?.section
+                  if (!section) return null
+                  const sectionText = renderMetadataValue(section)
+                  if (!sectionText) return null
+                  return <Badge variant="subtle">? {sectionText}</Badge>
+                })()}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </motion.div>
   )
 }
