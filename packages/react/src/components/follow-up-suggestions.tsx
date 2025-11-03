@@ -46,13 +46,6 @@ const gridClasses = {
   list: 'flex flex-col gap-3',
 }
 
-const confidenceColor = (value?: number) => {
-  if (value === undefined) return 'text-primary'
-  if (value >= 0.75) return 'text-success'
-  if (value >= 0.5) return 'text-warning-foreground'
-  return 'text-destructive'
-}
-
 export const FollowUpSuggestions: React.FC<FollowUpSuggestionsProps> = ({
   suggestions,
   onSelect,
@@ -66,20 +59,20 @@ export const FollowUpSuggestions: React.FC<FollowUpSuggestionsProps> = ({
 }) => {
   const containerRef = React.useRef<HTMLDivElement | null>(null)
 
-  const renderSuggestion = (suggestion: FollowUpSuggestion) => (
+  const renderSuggestion = (suggestion: FollowUpSuggestion, index: number) => (
     <motion.li
       key={suggestion.id}
       layout
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+      transition={{ duration: 0.2, delay: index * 0.05 }}
     >
       <Button
-        variant="surface"
+        variant="outline"
         className={cn(
-          'group flex w-full flex-col items-start gap-2 rounded-2xl border border-border/60 p-4 text-left shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_16px_40px_rgba(15,23,42,0.14)]',
-          layout === 'list' && 'rounded-xl'
+          'group flex w-full flex-col items-start gap-2 rounded-xl p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary/40 hover:bg-accent/5',
+          layout === 'list' && 'rounded-lg'
         )}
         onClick={() => onSelect(suggestion)}
         aria-label={`Follow up with ${suggestion.title}`}
@@ -87,18 +80,19 @@ export const FollowUpSuggestions: React.FC<FollowUpSuggestionsProps> = ({
         <div className="flex w-full items-center justify-between gap-3">
           <div className="flex items-center gap-3 text-sm font-semibold text-foreground">
             {suggestion.icon && (
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary shadow-inner">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20 group-hover:bg-primary/15 transition-colors">
                 {suggestion.icon}
               </span>
             )}
-            <span>{suggestion.title}</span>
+            <span className="group-hover:text-primary transition-colors">{suggestion.title}</span>
           </div>
           {suggestion.confidence !== undefined && (
-            <span
-              className={cn('text-xs font-medium', confidenceColor(suggestion.confidence))}
+            <Badge 
+              variant={suggestion.confidence >= 0.75 ? 'success' : suggestion.confidence >= 0.5 ? 'warning' : 'secondary'}
+              className="shrink-0"
             >
-              {Math.round(suggestion.confidence * 100)}% match
-            </span>
+              {Math.round(suggestion.confidence * 100)}%
+            </Badge>
           )}
         </div>
 
@@ -124,17 +118,23 @@ export const FollowUpSuggestions: React.FC<FollowUpSuggestionsProps> = ({
   const renderLoading = () => (
     <ul className={cn(gridClasses[layout])}>
       {Array.from({ length: loadingCount }).map((_, index) => (
-        <li key={`skeleton-${index}`} className="rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] p-4 shadow-inner">
+        <motion.li 
+          key={`skeleton-${index}`}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.2, delay: index * 0.05 }}
+          className="rounded-xl border bg-muted/50 p-4 shadow-sm"
+        >
           <div className="flex items-center gap-3">
-            <Skeleton width={36} height={36} rounded="full" />
-            <Skeleton width="70%" height={16} />
+            <Skeleton width={32} height={32} rounded="lg" variant="shimmer" />
+            <Skeleton width="70%" height={16} variant="shimmer" />
           </div>
-          <SkeletonText lines={2} className="mt-3" />
+          <SkeletonText lines={2} className="mt-3" variant="shimmer" />
           <div className="mt-3 flex gap-2">
-            <Skeleton width={72} height={20} rounded="lg" />
-            <Skeleton width={64} height={20} rounded="lg" />
+            <Skeleton width={72} height={20} rounded="full" variant="shimmer" />
+            <Skeleton width={64} height={20} rounded="full" variant="shimmer" />
           </div>
-        </li>
+        </motion.li>
       ))}
     </ul>
   )
@@ -142,29 +142,59 @@ export const FollowUpSuggestions: React.FC<FollowUpSuggestionsProps> = ({
   const hasSuggestions = suggestions.length > 0
 
   return (
-    <Card ref={containerRef} className={cn('border-border/50 bg-[hsl(var(--surface-elevated))] shadow-[0_22px_48px_rgba(15,23,42,0.14)]', className)}>
-      <CardHeader className="space-y-3">
-        <div className="flex flex-col gap-1">
-          <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground/80">{subtitle}</CardDescription>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {isLoading && renderLoading()}
-
-        {!isLoading && hasSuggestions && (
-          <AnimatePresence initial={false}>
-            <ul className={cn(gridClasses[layout], 'list-none p-0')}>{suggestions.map(renderSuggestion)}</ul>
-          </AnimatePresence>
-        )}
-
-        {!isLoading && !hasSuggestions && (
-          <div className="rounded-2xl border border-dashed border-border/60 bg-[hsl(var(--surface-muted))] p-6 text-center text-sm text-muted-foreground">
-            {emptyState || 'No follow-up suggestions available yet. Continue the conversation to generate more ideas.'}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card ref={containerRef} className={cn('shadow-lg', className)}>
+        <CardHeader className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <CardTitle className="text-base font-semibold text-foreground">{title}</CardTitle>
+              <CardDescription className="text-xs text-muted-foreground">{subtitle}</CardDescription>
+            </div>
+            {hasSuggestions && !isLoading && (
+              <Badge variant="secondary">
+                {suggestions.length}
+              </Badge>
+            )}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardHeader>
+        <CardContent>
+          {isLoading && renderLoading()}
+
+          {!isLoading && hasSuggestions && (
+            <AnimatePresence initial={false}>
+              <ul className={cn(gridClasses[layout], 'list-none p-0')}>
+                {suggestions.map((suggestion, index) => renderSuggestion(suggestion, index))}
+              </ul>
+            </AnimatePresence>
+          )}
+
+          {!isLoading && !hasSuggestions && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2 }}
+              className="rounded-xl border border-dashed bg-muted/50 p-8 text-center"
+            >
+              <svg className="mx-auto h-12 w-12 text-muted-foreground/40 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-muted-foreground">
+                {emptyState || 'No follow-up suggestions available yet. Continue the conversation to generate more ideas.'}
+              </p>
+            </motion.div>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 

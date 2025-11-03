@@ -125,7 +125,7 @@ export const CommandPalette = React.forwardRef<
               exit={{ opacity: 0 }}
               transition={{ duration: ANIMATION_DURATION.normal / 1000 }}
               onClick={onClose}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[var(--z-modal-backdrop)]"
             />
 
             {/* Command Palette */}
@@ -139,41 +139,64 @@ export const CommandPalette = React.forwardRef<
                 ease: ANIMATION_EASING.out,
               }}
               className={cn(
-                'fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl',
-                'bg-background border-2 rounded-2xl shadow-2xl z-50',
-                'flex flex-col max-h-[60vh] backdrop-blur-sm',
+                'fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4',
+                'bg-card border shadow-2xl rounded-2xl z-[var(--z-modal)]',
+                'flex flex-col max-h-[60vh] overflow-hidden',
                 className
               )}
             >
               {/* Search Input */}
-              <div className="p-4 border-b-2">
-                <motion.input
-                  ref={inputRef}
-                  type="text"
-                  value={search}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setSearch(e.target.value)
-                  }
-                  placeholder={placeholder}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className={cn(
-                    'w-full px-4 py-3 text-lg bg-transparent',
-                    'border-none outline-none placeholder:text-muted-foreground'
+              <div className="relative p-4 border-b">
+                <div className="flex items-center gap-3">
+                  <svg className="h-5 w-5 text-muted-foreground shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <motion.input
+                    ref={inputRef}
+                    type="text"
+                    value={search}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSearch(e.target.value)
+                    }
+                    placeholder={placeholder}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className={cn(
+                      'flex-1 px-0 py-2 text-base bg-transparent',
+                      'border-none outline-none placeholder:text-muted-foreground',
+                      'focus:ring-0'
+                    )}
+                  />
+                  {search && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      onClick={() => setSearch('')}
+                      className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-muted transition-colors"
+                      aria-label="Clear search"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </motion.button>
                   )}
-                />
+                </div>
               </div>
 
               {/* Results */}
               <div className="overflow-y-auto flex-1 p-2">
                 {filteredItems.length === 0 ? (
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="py-12 text-center text-muted-foreground"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="py-12 text-center"
                   >
-                    No commands found
+                    <svg className="mx-auto h-12 w-12 text-muted-foreground/40 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <p className="text-sm text-muted-foreground">No commands found</p>
+                    <p className="text-xs text-muted-foreground/60 mt-1">Try a different search term</p>
                   </motion.div>
                 ) : (
                   <div className="space-y-4">
@@ -185,7 +208,7 @@ export const CommandPalette = React.forwardRef<
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: groupIndex * 0.05 }}
                         >
-                          <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                          <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                             {category}
                           </div>
                           <div className="space-y-1">
@@ -207,11 +230,11 @@ export const CommandPalette = React.forwardRef<
                                   whileHover={{ x: 4 }}
                                   whileTap={{ scale: 0.98 }}
                                   className={cn(
-                                    'w-full flex items-center gap-3 px-3 py-3 rounded-lg',
-                                    'transition-all duration-200 text-left',
+                                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg',
+                                    'transition-all duration-150 text-left',
                                     isSelected
-                                      ? 'bg-primary text-primary-foreground shadow-sm'
-                                      : 'hover:bg-muted/80'
+                                      ? 'bg-primary text-primary-foreground shadow-md'
+                                      : 'hover:bg-accent'
                                   )}
                                 >
                                   {/* Icon */}
@@ -280,29 +303,31 @@ export const CommandPalette = React.forwardRef<
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="px-4 py-3 border-t-2 text-xs text-muted-foreground flex items-center justify-between bg-muted/30"
+                className="px-4 py-3 border-t text-xs text-muted-foreground flex items-center justify-between bg-muted/50"
               >
-                <div className="flex gap-4">
-                  <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
-                      ??
-                    </kbd>{' '}
-                    Navigate
+                <div className="flex gap-3 sm:gap-4">
+                  <span className="flex items-center gap-1.5">
+                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
+                      ↑↓
+                    </kbd>
+                    <span className="hidden sm:inline">Navigate</span>
                   </span>
-                  <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
-                      ?
-                    </kbd>{' '}
-                    Select
+                  <span className="flex items-center gap-1.5">
+                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
+                      ↵
+                    </kbd>
+                    <span className="hidden sm:inline">Select</span>
                   </span>
-                  <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                  <span className="flex items-center gap-1.5">
+                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
                       Esc
-                    </kbd>{' '}
-                    Close
+                    </kbd>
+                    <span className="hidden sm:inline">Close</span>
                   </span>
                 </div>
-                <div>{filteredItems.length} commands</div>
+                <div className="font-medium">
+                  {filteredItems.length} {filteredItems.length === 1 ? 'command' : 'commands'}
+                </div>
               </motion.div>
             </motion.div>
           </>
