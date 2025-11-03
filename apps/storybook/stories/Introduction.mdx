@@ -2,178 +2,335 @@ import { Meta } from '@storybook/blocks';
 
 <Meta title="Introduction" />
 
-# Welcome to Clarity Chat Storybook
+<div className="sb-container">
+  <div className="sb-section-title">
+    # 🚀 Welcome to Clarity Chat Storybook
+    
+    <p className="sb-lead">
+      An enterprise-grade React component library for building beautiful, accessible, and performant AI chat interfaces. 
+      Explore **69 production-ready components** with live interactive demos, comprehensive documentation, and real-world examples.
+    </p>
+  </div>
+</div>
 
-Clarity Chat is an enterprise-grade React component library for building AI chat interfaces. This Storybook contains **77 interactive stories** showcasing all components with live examples.
+<div className="sb-grid">
+  <div className="sb-card">
+    <h3>🎨 Beautiful by Default</h3>
+    <p>Modern, Ant Design-inspired aesthetics with thoughtful animations and microinteractions that delight users.</p>
+  </div>
+  
+  <div className="sb-card">
+    <h3>♿ Accessible First</h3>
+    <p>WCAG 2.1 AAA compliant with keyboard navigation, screen reader support, and proper ARIA attributes.</p>
+  </div>
+  
+  <div className="sb-card">
+    <h3>⚡ Lightning Fast</h3>
+    <p>Optimized for performance with code splitting, lazy loading, and minimal bundle size.</p>
+  </div>
+  
+  <div className="sb-card">
+    <h3>🎯 Type Safe</h3>
+    <p>Built with TypeScript 5.3+ for excellent IDE support and compile-time safety.</p>
+  </div>
+</div>
 
-## 🚀 Quick Navigation
-
-### Core Components
-
-- **ChatWindow** - Complete chat interface with all features
-- **MessageList** - Display and manage message history
-- **ChatInput** - Advanced input with attachments and commands
-- **Message** - Individual message rendering
-
-### Streaming Components (New!)
-
-- **StreamingMessage** - Real-time token-by-token rendering
-- **ToolInvocationCard** - Function call approval workflow
-- **CitationCard** - RAG source display with confidence scores
-- **ModelSelector** - Visual model picker with metrics
-
-### Context Management
-
-- **ContextManager** - Document and context handling
-- **ContextCard** - Individual context item display
-- **FileUpload** - Drag-and-drop file uploads
-- **LinkPreview** - URL preview cards
-
-### Utilities
-
-- **TokenCounter** - Real-time token tracking
-- **NetworkStatus** - Connection status indicator
-- **ThinkingIndicator** - Loading states
-- **CopyButton** - Copy to clipboard
-- **RetryButton** - Error recovery
-
-## 🎨 Features
-
-### Dark Mode Toggle
-
-Use the dark mode toggle in the toolbar to test components in both light and dark themes.
-
-### Viewport Testing
-
-Select different viewport sizes from the viewport dropdown to test responsive behavior:
-- Mobile (375px)
-- Tablet (768px)
-- Desktop (1280px)
-- Desktop Large (1920px)
-
-### Accessibility Testing
-
-Click the **Accessibility** tab to run automated accessibility checks:
-- Color contrast validation
-- ARIA attributes checking
-- Keyboard navigation testing
-- Screen reader compatibility
-
-### Interactive Controls
-
-Use the **Controls** panel to:
-- Modify component props in real-time
-- Test different configurations
-- Explore component APIs
-- Generate code snippets
-
-### Actions Panel
-
-Monitor component events in the **Actions** panel:
-- Click events
-- Form submissions
-- Custom callbacks
-- State changes
+---
 
 ## 📚 Component Categories
 
-### Chat Components (8 components)
-Complete chat interfaces with message handling, input, and context.
+<div className="sb-grid-3">
+  <div className="sb-category-card">
+    <div className="sb-category-icon">💬</div>
+    <h3>Chat Components</h3>
+    <p>Complete chat interfaces with message handling, input, and real-time updates</p>
+    <ul>
+      <li>ChatWindow</li>
+      <li>MessageList</li>
+      <li>ChatInput</li>
+      <li>Message</li>
+    </ul>
+  </div>
+  
+  <div className="sb-category-card">
+    <div className="sb-category-icon">⚡</div>
+    <h3>Streaming Components</h3>
+    <p>Real-time AI response rendering with tools and citations</p>
+    <ul>
+      <li>StreamingMessage</li>
+      <li>ToolInvocationCard</li>
+      <li>CitationCard</li>
+      <li>ThinkingIndicator</li>
+    </ul>
+  </div>
+  
+  <div className="sb-category-card">
+    <div className="sb-category-icon">📁</div>
+    <h3>Context Management</h3>
+    <p>Document handling, file uploads, and knowledge base integration</p>
+    <ul>
+      <li>ContextManager</li>
+      <li>ContextCard</li>
+      <li>FileUpload</li>
+      <li>LinkPreview</li>
+    </ul>
+  </div>
+  
+  <div className="sb-category-card">
+    <div className="sb-category-icon">🛠️</div>
+    <h3>Input Components</h3>
+    <p>Advanced input with attachments, mentions, and commands</p>
+    <ul>
+      <li>ChatInput</li>
+      <li>VoiceInput</li>
+      <li>FileUpload</li>
+    </ul>
+  </div>
+  
+  <div className="sb-category-card">
+    <div className="sb-category-icon">⚙️</div>
+    <h3>Settings & Config</h3>
+    <p>Configuration panels, model selection, and preferences</p>
+    <ul>
+      <li>ModelSelector</li>
+      <li>SettingsPanel</li>
+      <li>ProjectSidebar</li>
+    </ul>
+  </div>
+  
+  <div className="sb-category-card">
+    <div className="sb-category-icon">🔧</div>
+    <h3>Utility Components</h3>
+    <p>Buttons, indicators, counters, and helpers</p>
+    <ul>
+      <li>TokenCounter</li>
+      <li>NetworkStatus</li>
+      <li>CopyButton</li>
+      <li>RetryButton</li>
+    </ul>
+  </div>
+</div>
 
-### Message Components (5 components)
-Display messages, handle editing, regeneration, and branching.
+---
 
-### Input Components (3 components)
-Advanced input with attachments, mentions, and commands.
+## 🎨 Storybook Features
 
-### Context Components (6 components)
-Manage documents, files, links, and knowledge base items.
+<div className="sb-features-grid">
+  <div className="sb-feature-card">
+    <div className="sb-feature-icon">🌓</div>
+    <h4>Dark Mode Toggle</h4>
+    <p>Test components in both light and dark themes using the toolbar toggle. All components are fully optimized for dark mode.</p>
+  </div>
+  
+  <div className="sb-feature-card">
+    <div className="sb-feature-icon">📱</div>
+    <h4>Responsive Testing</h4>
+    <p>Preview components across 6 viewport sizes from mobile (375px) to desktop large (1920px). All components are mobile-first and fully responsive.</p>
+  </div>
+  
+  <div className="sb-feature-card">
+    <div className="sb-feature-icon">♿</div>
+    <h4>Accessibility Panel</h4>
+    <p>Run automated WCAG 2.1 compliance checks including color contrast, ARIA attributes, and keyboard navigation.</p>
+  </div>
+  
+  <div className="sb-feature-card">
+    <div className="sb-feature-icon">🎛️</div>
+    <h4>Interactive Controls</h4>
+    <p>Modify component props in real-time, test edge cases, and explore the full API surface with live previews.</p>
+  </div>
+  
+  <div className="sb-feature-card">
+    <div className="sb-feature-icon">📊</div>
+    <h4>Actions Monitor</h4>
+    <p>Watch component events and callbacks in real-time to understand behavior and debug interactions.</p>
+  </div>
+  
+  <div className="sb-feature-card">
+    <div className="sb-feature-icon">📐</div>
+    <h4>Measure & Outline</h4>
+    <p>Visualize spacing, padding, and component boundaries to ensure consistent layouts.</p>
+  </div>
+</div>
 
-### Streaming Components (4 components)
-Real-time AI response rendering with tools and citations.
 
-### Settings Components (4 components)
-Configuration panels, model selection, and preferences.
+---
 
-### Utility Components (8 components)
-Buttons, indicators, counters, and helpers.
+## 🤖 AI Integration
 
-## 🔧 Model Adapter System
+<div className="sb-integration-section">
+  <h3>Model-Agnostic Architecture</h3>
+  <p className="sb-subtitle">
+    Clarity Chat works with any AI provider through unified adapters. Switch providers in seconds without rewriting your code.
+  </p>
+  
+  <div className="sb-providers-grid">
+    <div className="sb-provider-card">
+      <div className="sb-provider-logo">🟢</div>
+      <h4>OpenAI</h4>
+      <p>GPT-4 Turbo, GPT-4, GPT-3.5</p>
+    </div>
+    
+    <div className="sb-provider-card">
+      <div className="sb-provider-logo">🟣</div>
+      <h4>Anthropic</h4>
+      <p>Claude 3 Opus, Sonnet, Haiku</p>
+    </div>
+    
+    <div className="sb-provider-card">
+      <div className="sb-provider-logo">🔵</div>
+      <h4>Google AI</h4>
+      <p>Gemini Pro, Gemini Vision</p>
+    </div>
+    
+    <div className="sb-provider-card">
+      <div className="sb-provider-logo">🔴</div>
+      <h4>Custom</h4>
+      <p>Build your own adapter</p>
+    </div>
+  </div>
+  
+  <div className="sb-integration-features">
+    <div className="sb-integration-feature">
+      ✓ Unified streaming interface across all providers
+    </div>
+    <div className="sb-integration-feature">
+      ✓ Automatic cost estimation and token tracking
+    </div>
+    <div className="sb-integration-feature">
+      ✓ Provider switching in 3 lines of code
+    </div>
+    <div className="sb-integration-feature">
+      ✓ TypeScript-first with full type safety
+    </div>
+  </div>
+</div>
 
-Clarity Chat supports **model-agnostic** AI integration:
+---
 
-### Supported Providers
-- **OpenAI** - GPT-4 Turbo, GPT-4, GPT-3.5 Turbo
-- **Anthropic** - Claude 3 Opus, Sonnet, Haiku
-- **Google AI** - Gemini Pro, Gemini Vision
+## 📖 Learning Resources
 
-### Features
-- Unified streaming interface
-- Cost estimation for all models
-- Token usage tracking
-- Easy provider switching (3 lines of code)
+<div className="sb-resources-grid">
+  <a href="/?path=/docs/getting-started--docs" className="sb-resource-link">
+    <div className="sb-resource-icon">🚀</div>
+    <h4>Getting Started</h4>
+    <p>Quick setup and basic usage patterns</p>
+  </a>
+  
+  <a href="https://clarity-chat.dev/guides" className="sb-resource-link">
+    <div className="sb-resource-icon">📚</div>
+    <h4>Guides</h4>
+    <p>Deep dives into streaming, RAG, and agents</p>
+  </a>
+  
+  <a href="https://clarity-chat.dev/cookbook" className="sb-resource-link">
+    <div className="sb-resource-icon">👨‍🍳</div>
+    <h4>Cookbook</h4>
+    <p>9 production-ready recipes and examples</p>
+  </a>
+  
+  <a href="https://clarity-chat.dev/reference" className="sb-resource-link">
+    <div className="sb-resource-icon">📘</div>
+    <h4>API Reference</h4>
+    <p>Complete component and hook documentation</p>
+  </a>
+</div>
 
-### Example
-```typescript
-import { openAIAdapter, ModelSelector } from '@clarity-chat/react'
+---
 
-// Use ModelSelector component
-<ModelSelector
-  models={allModels}
-  value="gpt-4-turbo"
-  onChange={(model, config) => setConfig(config)}
-  showMetrics
-/>
-```
+## ✅ Quality Standards
 
-## 📖 Documentation
+<div className="sb-quality-grid">
+  <div className="sb-quality-card">
+    <div className="sb-quality-badge sb-badge-green">♿ WCAG AAA</div>
+    <h4>Accessibility First</h4>
+    <ul className="sb-check-list">
+      <li>✓ Keyboard navigation</li>
+      <li>✓ Screen reader support</li>
+      <li>✓ AAA color contrast</li>
+      <li>✓ ARIA attributes</li>
+    </ul>
+  </div>
+  
+  <div className="sb-quality-card">
+    <div className="sb-quality-badge sb-badge-blue">⚡ Performance</div>
+    <h4>Lightning Fast</h4>
+    <ul className="sb-check-list">
+      <li>✓ Code splitting</li>
+      <li>✓ Lazy loading</li>
+      <li>✓ Optimized bundles</li>
+      <li>✓ 60fps animations</li>
+    </ul>
+  </div>
+  
+  <div className="sb-quality-card">
+    <div className="sb-quality-badge sb-badge-purple">📱 Responsive</div>
+    <h4>Mobile First</h4>
+    <ul className="sb-check-list">
+      <li>✓ Touch-friendly</li>
+      <li>✓ Fluid layouts</li>
+      <li>✓ Adaptive typography</li>
+      <li>✓ 6 breakpoints</li>
+    </ul>
+  </div>
+  
+  <div className="sb-quality-card">
+    <div className="sb-quality-badge sb-badge-orange">🔒 Type Safe</div>
+    <h4>TypeScript</h4>
+    <ul className="sb-check-list">
+      <li>✓ Full type coverage</li>
+      <li>✓ IntelliSense support</li>
+      <li>✓ Compile-time safety</li>
+      <li>✓ Auto-completion</li>
+    </ul>
+  </div>
+</div>
 
-For complete documentation, visit:
+---
 
-- **[Getting Started Guide](/guide/getting-started)** - Learn the basics
-- **[Model Adapters Guide](/guide/model-adapters)** - Provider integration
-- **[Streaming Guide](/guide/streaming)** - Real-time responses
-- **[API Reference](/api/components)** - Complete API docs
+## 🎯 How to Use This Storybook
 
-## 🧪 Testing Features
-
-### Accessibility (A11y)
-Every component is tested for:
-- ✅ WCAG 2.1 AA compliance
-- ✅ Keyboard navigation
-- ✅ Screen reader support
-- ✅ Color contrast requirements
-
-### Interactions
-Test complex user flows:
-- Multi-step workflows
-- Form validation
-- Error handling
-- Loading states
-
-### Responsive Design
-All components are:
-- ✅ Mobile-first
-- ✅ Touch-friendly
-- ✅ Responsive layouts
-- ✅ Fluid typography
-
-## 🎯 Usage Tips
-
-### 1. Start with Complete Examples
-Check the **ChatWindow** stories for fully-featured examples.
-
-### 2. Explore Individual Components
-Dive into specific components to understand their props and behavior.
-
-### 3. Test Interactions
-Use the Controls panel to test different configurations and edge cases.
-
-### 4. Check Accessibility
-Run a11y checks on every component to ensure inclusive design.
-
-### 5. Copy Code
-Use the code snippets from stories in your own projects.
+<div className="sb-steps">
+  <div className="sb-step">
+    <div className="sb-step-number">1</div>
+    <div className="sb-step-content">
+      <h4>Browse Components</h4>
+      <p>Explore the sidebar to find the component you need. Start with complete examples like <strong>ChatWindow</strong> for full-featured demos.</p>
+    </div>
+  </div>
+  
+  <div className="sb-step">
+    <div className="sb-step-number">2</div>
+    <div className="sb-step-content">
+      <h4>Interact with Controls</h4>
+      <p>Use the <strong>Controls</strong> panel below each story to modify props in real-time and explore different configurations.</p>
+    </div>
+  </div>
+  
+  <div className="sb-step">
+    <div className="sb-step-number">3</div>
+    <div className="sb-step-content">
+      <h4>Test Accessibility</h4>
+      <p>Click the <strong>Accessibility</strong> tab to run automated WCAG checks and ensure your implementation is inclusive.</p>
+    </div>
+  </div>
+  
+  <div className="sb-step">
+    <div className="sb-step-number">4</div>
+    <div className="sb-step-content">
+      <h4>Copy Code</h4>
+      <p>View the code snippets in the <strong>Docs</strong> tab and copy them directly into your project. All examples are production-ready.</p>
+    </div>
+  </div>
+  
+  <div className="sb-step">
+    <div className="sb-step-number">5</div>
+    <div className="sb-step-content">
+      <h4>Test Responsively</h4>
+      <p>Use the <strong>viewport</strong> dropdown in the toolbar to test how components look on mobile, tablet, and desktop.</p>
+    </div>
+  </div>
+</div>
 
 ## 📊 Statistics
 

@@ -301,7 +301,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   ))}
                 </div>
 
-                <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-sm">
                   <h4 className="text-sm font-medium mb-2">⚠️ Privacy Notice</h4>
                   <p className="text-xs text-muted-foreground">
                     We take your privacy seriously. Your data is encrypted and never shared with third parties

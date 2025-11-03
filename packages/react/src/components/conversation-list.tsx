@@ -426,7 +426,7 @@ export function ConversationList({
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => {}}
-                            className="w-4 h-4 text-blue-600 rounded"
+                            className="w-4 h-4 text-primary rounded"
                             onClick={(e) => e.stopPropagation()}
                           />
                         )}

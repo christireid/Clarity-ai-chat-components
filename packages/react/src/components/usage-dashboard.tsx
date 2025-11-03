@@ -145,7 +145,7 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
                       animate={{ opacity: 1, scale: 1 }}
                       className={cn(
                         'p-4 rounded-lg border',
-                        isNearLimit && 'border-yellow-500/50 bg-yellow-500/5'
+                        isNearLimit && 'border-[hsl(var(--warning))]/50 bg-[hsl(var(--warning))]/5'
                       )}
                     >
                       <div className="flex items-center gap-2 mb-2">
@@ -162,8 +162,8 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
                           <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                             <div
                               className={cn(
-                                'h-full rounded-full transition-all',
-                                isNearLimit ? 'bg-yellow-500' : 'bg-primary'
+                                'h-full rounded-full transition-all duration-200',
+                                isNearLimit ? 'bg-[hsl(var(--warning))]' : 'bg-primary'
                               )}
                               style={{ width: `${Math.min(percentage, 100)}%` }}
                             />
@@ -211,7 +211,7 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
 
             {/* Usage Limits Warnings */}
             {limits.some((l) => (l.current / l.limit) * 100 > 80) && (
-              <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+              <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-sm">
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
                   ⚠️ Approaching Limits
                 </h4>

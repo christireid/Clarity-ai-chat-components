@@ -46,11 +46,11 @@ const roleLabels: Record<PersonaRole, string> = {
 }
 
 const roleAccent: Record<PersonaRole, string> = {
-  strategist: 'from-blue-500/20 via-blue-500/10 to-transparent text-blue-600',
-  researcher: 'from-emerald-500/20 via-emerald-500/10 to-transparent text-emerald-600',
-  assistant: 'from-indigo-500/20 via-indigo-500/10 to-transparent text-indigo-600',
-  critic: 'from-rose-500/20 via-rose-500/10 to-transparent text-rose-600',
-  coach: 'from-orange-500/20 via-orange-500/10 to-transparent text-orange-600',
+  strategist: 'from-primary/20 via-primary/10 to-transparent text-primary',
+  researcher: 'from-[hsl(var(--success))]/20 via-[hsl(var(--success))]/10 to-transparent text-[hsl(var(--success))]',
+  assistant: 'from-[hsl(var(--info))]/20 via-[hsl(var(--info))]/10 to-transparent text-[hsl(var(--info))]',
+  critic: 'from-destructive/20 via-destructive/10 to-transparent text-destructive',
+  coach: 'from-[hsl(var(--warning))]/20 via-[hsl(var(--warning))]/10 to-transparent text-[hsl(var(--warning))]',
   custom: 'from-primary/20 via-primary/10 to-transparent text-primary',
 }
 

@@ -253,7 +253,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: 0.7 }}
-            className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg"
+            className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-sm"
           >
             <p className="text-xs text-muted-foreground">
               💡 <strong>Tip:</strong> PDF and DOCX formats preserve formatting best.

@@ -52,7 +52,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should render finalizing stage', () => {
-      const status: AIStatus = { stage: 'finalizing' }
+      const status: AIStatus = { stage: 'finalizing', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('🎯')).toBeInTheDocument()
@@ -167,6 +167,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         estimatedCompletion: futureTime,
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -174,7 +175,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should not display estimated time when not provided', () => {
-      const status: AIStatus = { stage: 'thinking' }
+      const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
       const timeElements = container.querySelectorAll('span.text-xs.text-muted-foreground')
@@ -186,6 +187,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         estimatedCompletion: futureTime,
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -198,6 +200,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         estimatedCompletion: futureTime,
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -222,6 +225,7 @@ describe('ThinkingIndicator Component', () => {
         topic: 'Creating detailed response',
         progress: 65,
         estimatedCompletion: new Date(Date.now() + 8000),
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -249,6 +253,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'thinking',
         topic: 'Processing your request',
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -299,6 +304,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'thinking',
         estimatedCompletion: pastTime,
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -311,6 +317,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         progress: 150,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -321,6 +328,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'thinking',
         progress: -10,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -330,12 +338,12 @@ describe('ThinkingIndicator Component', () => {
 
   describe('Stage Transitions', () => {
     it('should smoothly transition between stages', () => {
-      const status1: AIStatus = { stage: 'thinking' }
+      const status1: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { rerender } = render(<ThinkingIndicator status={status1} />)
 
       expect(screen.getByText('Thinking')).toBeInTheDocument()
 
-      const status2: AIStatus = { stage: 'generating' }
+      const status2: AIStatus = { stage: 'generating', startedAt: new Date() }
       rerender(<ThinkingIndicator status={status2} />)
 
       expect(screen.getByText('Generating')).toBeInTheDocument()

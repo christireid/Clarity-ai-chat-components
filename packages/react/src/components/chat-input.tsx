@@ -228,7 +228,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="text-xs text-red-600 dark:text-red-400 px-1"
+            className="text-xs text-destructive px-1"
           >
             Message exceeds maximum length by {charCount - (maxLength || 0)} characters
           </motion.p>
