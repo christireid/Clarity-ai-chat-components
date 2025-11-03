@@ -88,7 +88,8 @@ export class PromptTemplateEngine {
     // Replace variables
     let rendered = templateStr
     
-    for (const varName of foundVariables) {
+    const foundVarsArray = [...foundVariables]
+    for (const varName of foundVarsArray) {
       const value = this.resolveVariable(varName, options.variables)
       
       if (value !== undefined) {
