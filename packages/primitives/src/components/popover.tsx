@@ -355,16 +355,10 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
               zIndex: 9999,
             }}
             className={cn(
-<<<<<<< Current (Your changes)
-              'bg-[hsl(var(--surface-elevated))] text-popover-foreground',
-              'border border-border/60 rounded-xl shadow-[0_18px_40px_rgba(15,23,42,0.26)] ring-1 ring-black/5',
-              'outline-none p-4 min-w-[14rem] max-w-[22rem]',
-=======
               'bg-popover text-popover-foreground',
               'border-2 rounded-xl shadow-xl',
               'outline-none backdrop-blur-sm',
               'animate-in fade-in-0 zoom-in-95',
->>>>>>> Incoming (Background Agent changes)
               className
             )}
             role="dialog"

@@ -178,7 +178,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                     fillRule="evenodd"
                     clipRule="evenodd"
                   />
-                </svg>
+                </motion.svg>
               )}
             </motion.button>
 

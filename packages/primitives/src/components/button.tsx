@@ -4,39 +4,6 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const buttonVariants = cva(
-<<<<<<< Current (Your changes)
-  'group relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border text-sm font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/30 focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-60 select-none overflow-hidden will-change-transform',
-  {
-    variants: {
-      variant: {
-        default:
-          'border-transparent bg-gradient-to-r from-primary to-[hsl(var(--primary))] text-primary-foreground shadow-[0_14px_34px_rgba(22,119,255,0.32)] hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(22,119,255,0.28)] active:translate-y-0 active:shadow-[0_10px_26px_rgba(22,119,255,0.25)]',
-        surface:
-          'bg-card text-foreground border border-border/70 shadow-[0_6px_18px_rgba(15,23,42,0.12)] hover:border-primary/45 hover:-translate-y-0.5 hover:text-primary hover:shadow-[0_16px_32px_rgba(15,23,42,0.16)] active:translate-y-0 active:shadow-[0_8px_20px_rgba(15,23,42,0.14)]',
-        secondary:
-          'bg-secondary text-secondary-foreground border border-secondary/70 shadow-none hover:border-primary/40 hover:bg-secondary/80 hover:text-primary',
-        outline:
-          'border border-border/70 bg-transparent text-foreground hover:border-primary/50 hover:text-primary hover:bg-primary/5',
-        ghost:
-          'border-transparent bg-transparent text-foreground hover:bg-primary/10 hover:text-primary',
-        link:
-          'border-transparent bg-transparent text-primary underline-offset-4 hover:underline focus-visible:ring-0 focus-visible:ring-offset-0',
-        dashed:
-          'border border-dashed border-border/60 bg-transparent text-foreground hover:border-primary/60 hover:text-primary hover:bg-primary/5',
-        destructive:
-          'border-transparent bg-destructive text-destructive-foreground shadow-[0_16px_38px_rgba(255,77,79,0.32)] hover:bg-destructive/90',
-        success:
-          'border-transparent bg-success text-success-foreground shadow-[0_16px_36px_rgba(34,197,94,0.28)] hover:bg-success/90',
-        error:
-          'border-transparent bg-destructive text-destructive-foreground shadow-[0_16px_38px_rgba(255,77,79,0.32)] hover:bg-destructive/90',
-      },
-      size: {
-        default: 'h-11 px-5 text-sm',
-        sm: 'h-9 rounded-md px-3 text-xs',
-        lg: 'h-12 rounded-lg px-6 text-base',
-        xl: 'h-14 rounded-xl px-7 text-base',
-        icon: 'h-11 w-11',
-=======
   'relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
   {
     variants: {
@@ -55,7 +22,6 @@ const buttonVariants = cva(
         sm: 'h-8 rounded-lg px-3 text-xs',
         lg: 'h-12 rounded-lg px-8 text-base',
         icon: 'h-10 w-10',
->>>>>>> Incoming (Background Agent changes)
       },
     },
     defaultVariants: {
