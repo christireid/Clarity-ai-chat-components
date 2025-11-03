@@ -280,16 +280,29 @@ export function AIAssistantTemplate({
     )
   }
 
+  const handleExport = () => {
+    const text = messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n\n')
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `conversation-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleClear = () => {
+    if (confirm('Clear all messages? This cannot be undone.')) {
+      setMessages([])
+    }
+  }
+
   return (
     <ThemeProvider defaultTheme={oceanTheme}>
-      <div
-        className="ai-assistant-template"
-        style={{ display: 'flex', height: '100%', width: '100%' }}
-      >
+      <div className="ai-assistant-template flex h-full w-full bg-background">
+        {/* Context Sidebar */}
         {enableContextManagement && (
-          <div
-            style={{ width: '300px', borderRight: '1px solid var(--border)' }}
-          >
+          <div className="w-80 border-r bg-card/50 backdrop-blur-sm">
             <ContextManager
               contexts={context}
               onAdd={handleContextAdd}
@@ -299,22 +312,36 @@ export function AIAssistantTemplate({
           </div>
         )}
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div
-            style={{ padding: '1rem', borderBottom: '1px solid var(--border)' }}
-          >
-            <ModelSelector
-              models={availableModels}
-              value={selectedModel}
-              onChange={(modelId) => setSelectedModel(modelId)}
-            />
+        {/* Main Chat Area */}
+        <div className="flex flex-1 flex-col">
+          {/* Model Selector Header */}
+          <div className="flex items-center justify-between gap-4 border-b bg-card/80 backdrop-blur-sm px-4 py-3 sm:px-6">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <ModelSelector
+                models={availableModels}
+                value={selectedModel}
+                onChange={(modelId) => setSelectedModel(modelId)}
+              />
+            </div>
           </div>
 
-          <div style={{ flex: 1 }}>
+          {/* Chat Window */}
+          <div className="flex-1 overflow-hidden">
             <ChatWindow
               messages={messages}
               isLoading={isLoading}
               onSendMessage={handleSendMessage}
+              showHeader
+              sessionTitle="AI Assistant"
+              sessionSubtitle={`Using ${availableModels.find(m => m.id === selectedModel)?.name || 'AI Model'}`}
+              showMessageCount
+              onExport={handleExport}
+              onClear={handleClear}
             />
           </div>
         </div>
