@@ -1,6 +1,6 @@
 /**
  * Empty State Components
- * 
+ *
  * Comprehensive empty state components for various scenarios:
  * - No data
  * - No search results
@@ -84,7 +84,9 @@ export const EmptyState = React.memo(function EmptyState({
       <div className="space-y-3 max-w-md">
         <h3 className="text-xl font-semibold">{title}</h3>
         {description && (
-          <p className="text-base text-muted-foreground leading-relaxed">{description}</p>
+          <p className="text-base text-muted-foreground leading-relaxed">
+            {description}
+          </p>
         )}
       </div>
 

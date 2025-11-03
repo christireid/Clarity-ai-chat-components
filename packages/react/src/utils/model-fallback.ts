@@ -56,7 +56,7 @@ export async function withModelFallback<T>(
   options: FallbackOptions
 ): Promise<FallbackResult<T>> {
   const models = [...options.models].sort((a, b) => a.priority - b.priority)
-  const errors: Array<{ model: ModelConfig; error: Error }> = []
+  const errors: Array<{ model: FallbackModelConfig; error: Error }> = []
   
   let totalAttempts = 0
   const maxTotalRetries = options.maxTotalRetries ?? Infinity
