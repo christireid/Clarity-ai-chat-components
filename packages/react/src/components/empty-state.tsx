@@ -422,4 +422,6 @@ export const OfflineState = React.memo(function OfflineState({
       className={className}
     />
   )
-}
+})
+
+OfflineState.displayName = 'OfflineState'
