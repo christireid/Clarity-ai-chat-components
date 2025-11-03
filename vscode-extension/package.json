@@ -92,7 +92,11 @@
         },
         "clarity-chat.defaultProvider": {
           "type": "string",
-          "enum": ["openai", "anthropic", "google"],
+          "enum": [
+            "openai",
+            "anthropic",
+            "google"
+          ],
           "default": "openai",
           "description": "Default AI provider for snippets"
         },

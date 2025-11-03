@@ -9,7 +9,8 @@ export class DiagnosticsProvider {
   private diagnosticCollection: vscode.DiagnosticCollection
 
   constructor() {
-    this.diagnosticCollection = vscode.languages.createDiagnosticCollection('clarity-chat')
+    this.diagnosticCollection =
+      vscode.languages.createDiagnosticCollection('clarity-chat')
   }
 
   /**
@@ -42,8 +43,16 @@ export class DiagnosticsProvider {
 
     // Check 2: Deprecated API usage
     const deprecatedPatterns = [
-      { pattern: /ChatWindow/g, replacement: 'ChatInterface', message: 'ChatWindow is deprecated, use ChatInterface instead' },
-      { pattern: /onMessage=/g, replacement: 'onSend=', message: 'onMessage prop is deprecated, use onSend instead' },
+      {
+        pattern: /ChatWindow/g,
+        replacement: 'ChatInterface',
+        message: 'ChatWindow is deprecated, use ChatInterface instead',
+      },
+      {
+        pattern: /onMessage=/g,
+        replacement: 'onSend=',
+        message: 'onMessage prop is deprecated, use onSend instead',
+      },
     ]
 
     deprecatedPatterns.forEach(({ pattern, replacement, message }) => {
@@ -51,9 +60,16 @@ export class DiagnosticsProvider {
       for (const match of matches) {
         if (match.index !== undefined) {
           const position = document.positionAt(match.index)
-          const range = new vscode.Range(position, position.translate(0, match[0].length))
-          
-          const diagnostic = new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Warning)
+          const range = new vscode.Range(
+            position,
+            position.translate(0, match[0].length)
+          )
+
+          const diagnostic = new vscode.Diagnostic(
+            range,
+            message,
+            vscode.DiagnosticSeverity.Warning
+          )
           diagnostic.code = 'deprecated-api'
           diagnostic.source = 'clarity-chat'
           diagnostic.relatedInformation = [
@@ -93,12 +109,17 @@ export class DiagnosticsProvider {
 
     // Check 5: Hardcoded API keys
     if (this.hasHardcodedApiKey(text)) {
-      const matches = text.matchAll(/(sk-[a-zA-Z0-9]{20,}|sk-ant-[a-zA-Z0-9]{20,})/g)
+      const matches = text.matchAll(
+        /(sk-[a-zA-Z0-9]{20,}|sk-ant-[a-zA-Z0-9]{20,})/g
+      )
       for (const match of matches) {
         if (match.index !== undefined) {
           const position = document.positionAt(match.index)
-          const range = new vscode.Range(position, position.translate(0, match[0].length))
-          
+          const range = new vscode.Range(
+            position,
+            position.translate(0, match[0].length)
+          )
+
           const diagnostic = new vscode.Diagnostic(
             range,
             '⚠️ Hardcoded API key detected! Use environment variables instead.',
@@ -131,7 +152,9 @@ export class DiagnosticsProvider {
 
   // Helper methods
   private hasProviderImport(text: string): boolean {
-    return /from\s+['"]openai['"]|from\s+['"]@anthropic-ai\/sdk['"]|from\s+['"]@google\/generative-ai['"]/.test(text)
+    return /from\s+['"]openai['"]|from\s+['"]@anthropic-ai\/sdk['"]|from\s+['"]@google\/generative-ai['"]/.test(
+      text
+    )
   }
 
   private hasApiKeyConfig(text: string): boolean {
@@ -139,7 +162,9 @@ export class DiagnosticsProvider {
   }
 
   private hasAsyncChatCall(text: string): boolean {
-    return /await\s+\w+\.chat\.completions\.create|await\s+\w+\.messages\.create|await\s+\w+\.generateContent/.test(text)
+    return /await\s+\w+\.chat\.completions\.create|await\s+\w+\.messages\.create|await\s+\w+\.generateContent/.test(
+      text
+    )
   }
 
   private hasTryCatch(text: string): boolean {
@@ -147,7 +172,9 @@ export class DiagnosticsProvider {
   }
 
   private hasMultipleSequentialCalls(text: string): boolean {
-    const asyncCalls = text.match(/await\s+\w+\.(chat|messages|generateContent)/g)
+    const asyncCalls = text.match(
+      /await\s+\w+\.(chat|messages|generateContent)/g
+    )
     return asyncCalls ? asyncCalls.length > 1 : false
   }
 
@@ -247,7 +274,11 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
     fix.diagnostics = [diagnostic]
     fix.edit = new vscode.WorkspaceEdit()
 
-    fix.edit.replace(document.uri, diagnostic.range, 'process.env.OPENAI_API_KEY')
+    fix.edit.replace(
+      document.uri,
+      diagnostic.range,
+      'process.env.OPENAI_API_KEY'
+    )
     fix.isPreferred = true
 
     return fix
@@ -270,4 +301,3 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
     return fix
   }
 }
-

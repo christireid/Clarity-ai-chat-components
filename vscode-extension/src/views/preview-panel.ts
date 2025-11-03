@@ -335,4 +335,3 @@ export class PreviewPanel {
 </html>`
   }
 }
-

@@ -1,6 +1,7 @@
 # 🛠️ Developer Tooling Guide
 
-Welcome to the Clarity Chat developer tooling documentation! This guide covers all the incredible tools available to enhance your development experience.
+Welcome to the Clarity Chat developer tooling documentation! This guide covers all the incredible
+tools available to enhance your development experience.
 
 ## 🎯 Quick Start
 
@@ -27,7 +28,8 @@ npm run test:coverage    # Coverage report
 
 ### 1. **Beautiful CLI** 🎨
 
-The Clarity Chat CLI provides a gorgeous terminal experience inspired by [charmbracelet](https://github.com/charmbracelet).
+The Clarity Chat CLI provides a gorgeous terminal experience inspired by
+[charmbracelet](https://github.com/charmbracelet).
 
 ```bash
 # Component discovery
@@ -47,6 +49,7 @@ clarity-chat doctor      # Health check
 ```
 
 **Features**:
+
 - 9+ beautiful TUI components
 - Interactive component browser with 15+ components
 - Real-time feedback with spinners and progress bars
@@ -62,6 +65,7 @@ npm run dev
 ```
 
 **Features**:
+
 - Live code editor with TypeScript support
 - Real-time preview
 - 5 component templates
@@ -92,6 +96,7 @@ const result = comparator.compare('prompt-1', prompt)
 ```
 
 **Features**:
+
 - Time-travel state replay
 - AI model response comparison
 - Performance profiling
@@ -116,6 +121,7 @@ clarity-codemod migrate 1 2 ./src
 ```
 
 **Features**:
+
 - AST-based transformations
 - Dry-run support
 - Safe, reversible changes
@@ -128,6 +134,7 @@ Rich IDE integration for Visual Studio Code.
 **Install**: Search for "Clarity Chat" in VSCode Extensions
 
 **Features**:
+
 - 60+ code snippets
 - IntelliSense auto-completion
 - Hover documentation
@@ -144,6 +151,7 @@ npm start
 ```
 
 **Capabilities**:
+
 - 7 tools for AI agents
 - 6 documentation resources
 - 5 AI prompt templates
@@ -158,6 +166,7 @@ npm run storybook:build  # Build static site
 ```
 
 **Addons**:
+
 - Accessibility (a11y) testing
 - Interactions testing
 - Coverage tracking
@@ -169,6 +178,7 @@ npm run storybook:build  # Build static site
 ### GitHub Actions Workflows
 
 **1. Main CI** (`.github/workflows/ci.yml`)
+
 - Linting with ESLint + Prettier
 - Type checking with TypeScript
 - Unit tests with coverage
@@ -176,27 +186,32 @@ npm run storybook:build  # Build static site
 - Bundle size checks
 
 **2. Release** (`.github/workflows/release.yml`)
+
 - Automated versioning with Changesets
 - Package publishing to GitHub Packages
 - Release notes generation
 
 **3. Visual Regression** (`.github/workflows/visual-regression.yml`)
+
 - Playwright tests (6 browsers + 2 mobile)
 - Screenshot comparison
 - Chromatic integration
 
 **4. Accessibility** (`.github/workflows/accessibility.yml`)
+
 - Storybook a11y tests with Axe
 - Lighthouse CI (3 runs per page)
 - WCAG compliance validation
 
 **5. Dependency Review** (`.github/workflows/dependency-review.yml`)
+
 - Security vulnerability scanning
 - License compliance checking
 
 ### Renovate
 
 Automated dependency updates with smart scheduling:
+
 - Grouped by ecosystem
 - Auto-merge for patches
 - Age requirements for stability
@@ -211,6 +226,7 @@ npm run analyze
 ```
 
 **Output**:
+
 - Package-by-package size tracking
 - ESM, CJS, and UMD bundles
 - Historical comparison
@@ -223,6 +239,7 @@ npm run benchmark
 ```
 
 **Metrics**:
+
 - Mean, median, min, max
 - 95th and 99th percentiles
 - Standard deviation
@@ -256,8 +273,8 @@ npm run test:e2e          # Run tests
 npm run test:e2e:ui       # UI mode
 ```
 
-**Framework**: Playwright
-**Browsers**: Chromium, Firefox, WebKit, Edge, Mobile Chrome, Mobile Safari
+**Framework**: Playwright **Browsers**: Chromium, Firefox, WebKit, Edge, Mobile Chrome, Mobile
+Safari
 
 ### Visual Regression
 
@@ -302,6 +319,7 @@ npm run typecheck         # Type checking
 ### Pre-commit Hooks
 
 Husky + lint-staged automatically:
+
 - Lints changed files
 - Formats with Prettier
 - Type checks
@@ -309,6 +327,7 @@ Husky + lint-staged automatically:
 ### Commit Conventions
 
 Follow Conventional Commits:
+
 - `feat:` - New features
 - `fix:` - Bug fixes
 - `docs:` - Documentation
@@ -382,7 +401,7 @@ module.exports = {
   defaults: {
     temperature: 0.7,
     maxTokens: 1000,
-  }
+  },
 }
 ```
 
@@ -431,11 +450,13 @@ Add to `.vscode/settings.json`:
 ## 📚 Additional Resources
 
 ### Official Documentation
+
 - [Main Docs](https://clarity-chat-docs.vercel.app)
 - [API Reference](https://clarity-chat-docs.vercel.app/api)
 - [Examples](https://clarity-chat-docs.vercel.app/examples)
 
 ### Tools Documentation
+
 - [Playwright](https://playwright.dev/)
 - [Vitest](https://vitest.dev/)
 - [Changesets](https://github.com/changesets/changesets)
@@ -443,6 +464,7 @@ Add to `.vscode/settings.json`:
 - [TypeDoc](https://typedoc.org/)
 
 ### Inspiration
+
 - [Charm](https://charm.sh/) - CLI inspiration
 - [Bubble Tea](https://github.com/charmbracelet/bubbletea) - TUI framework
 - [Lipgloss](https://github.com/charmbracelet/lipgloss) - Terminal styling
@@ -466,6 +488,7 @@ Add to `.vscode/settings.json`:
 ## 🏆 What Makes This Special
 
 ### Unique Features
+
 - ✨ Time-travel debugging
 - 🤖 AI model comparison
 - 🎨 Beautiful Charm-inspired CLI
@@ -474,6 +497,7 @@ Add to `.vscode/settings.json`:
 - 🤝 MCP server integration
 
 ### Best-in-Class
+
 - 🚀 100% CI automation
 - 🧪 Comprehensive testing
 - 📊 Bundle analysis
@@ -487,9 +511,10 @@ Add to `.vscode/settings.json`:
 **Quality**: ⭐⭐⭐⭐⭐ World-Class  
 **Completion**: 83% (20/24 tasks)
 
-All critical and high-priority features complete. Remaining tasks are optional VSCode extension enhancements that can be prioritized based on user feedback.
+All critical and high-priority features complete. Remaining tasks are optional VSCode extension
+enhancements that can be prioritized based on user feedback.
 
 ---
 
-**Built with ❤️ using modern best practices and inspired by the amazing [charmbracelet](https://github.com/charmbracelet) ecosystem.**
-
+**Built with ❤️ using modern best practices and inspired by the amazing
+[charmbracelet](https://github.com/charmbracelet) ecosystem.**

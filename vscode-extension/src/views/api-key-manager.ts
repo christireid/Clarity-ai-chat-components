@@ -10,7 +10,10 @@ export class ApiKeyManager {
   private readonly panel: vscode.WebviewPanel
   private disposables: vscode.Disposable[] = []
 
-  private constructor(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
+  private constructor(
+    panel: vscode.WebviewPanel,
+    context: vscode.ExtensionContext
+  ) {
     this.panel = panel
 
     this.update(context)
@@ -22,13 +25,17 @@ export class ApiKeyManager {
         switch (message.command) {
           case 'saveKey':
             await this.saveApiKey(context, message.provider, message.key)
-            vscode.window.showInformationMessage(`API key for ${message.provider} saved securely`)
+            vscode.window.showInformationMessage(
+              `API key for ${message.provider} saved securely`
+            )
             this.update(context)
             break
 
           case 'deleteKey':
             await this.deleteApiKey(context, message.provider)
-            vscode.window.showInformationMessage(`API key for ${message.provider} removed`)
+            vscode.window.showInformationMessage(
+              `API key for ${message.provider} removed`
+            )
             this.update(context)
             break
 
@@ -79,11 +86,18 @@ export class ApiKeyManager {
     this.panel.webview.html = await this.getHtmlForWebview(webview, context)
   }
 
-  private async saveApiKey(context: vscode.ExtensionContext, provider: string, key: string) {
+  private async saveApiKey(
+    context: vscode.ExtensionContext,
+    provider: string,
+    key: string
+  ) {
     await context.secrets.store(`clarity-chat.${provider}-key`, key)
   }
 
-  private async deleteApiKey(context: vscode.ExtensionContext, provider: string) {
+  private async deleteApiKey(
+    context: vscode.ExtensionContext,
+    provider: string
+  ) {
     await context.secrets.delete(`clarity-chat.${provider}-key`)
   }
 
@@ -92,7 +106,9 @@ export class ApiKeyManager {
     const isValid = key && key.length > 10
 
     if (isValid) {
-      vscode.window.showInformationMessage(`✓ ${provider} API key appears valid`)
+      vscode.window.showInformationMessage(
+        `✓ ${provider} API key appears valid`
+      )
     } else {
       vscode.window.showErrorMessage(`✗ ${provider} API key appears invalid`)
     }
@@ -320,4 +336,3 @@ export class ApiKeyManager {
 </html>`
   }
 }
-
