@@ -20,14 +20,14 @@ export interface ContextCardProps {
   className?: string
 }
 
-export const ContextCard: React.FC<ContextCardProps> = ({
+export const ContextCard = React.memo(function ContextCard({
   context,
   onRemove,
   onToggle,
   onPreview,
   showActions = true,
   className,
-}) => {
+}: ContextCardProps) {
   const getIcon = () => {
     switch (context.type) {
       case 'document':
@@ -292,4 +292,6 @@ export const ContextCard: React.FC<ContextCardProps> = ({
       </Card>
     </motion.div>
   )
-}
+})
+
+ContextCard.displayName = 'ContextCard'

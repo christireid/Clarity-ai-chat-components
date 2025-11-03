@@ -28,7 +28,7 @@ export interface ChatInputProps {
   className?: string
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({
+export const ChatInput = React.memo(function ChatInput({
   value,
   onChange,
   onSubmit,
@@ -40,7 +40,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   animateHeight = true,
   glowOnFocus = true,
   className,
-}) => {
+}: ChatInputProps) {
   const [isFocused, setIsFocused] = React.useState(false)
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
@@ -272,4 +272,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       </AnimatePresence>
     </motion.div>
   )
-}
+})
+
+ChatInput.displayName = 'ChatInput'

@@ -30,8 +30,8 @@ export interface MessageProps {
   className?: string
 }
 
-export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
-  (
+export const Message = React.memo(
+  React.forwardRef<HTMLDivElement, MessageProps>(function Message(
     {
       message,
       onFeedback,
@@ -41,7 +41,7 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
       className,
     },
     ref
-  ) => {
+  ) {
     const [isHovered, setIsHovered] = React.useState(false)
     const [feedbackGiven, setFeedbackGiven] = React.useState<
       'up' | 'down' | null
@@ -159,10 +159,13 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
             ) : (
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeHighlight as any]}
+                rehypePlugins={[
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  rehypeHighlight as any, // Type incompatibility between vfile versions in react-markdown
+                ]}
                 components={{
-                  code(props: any) {
-                    const { node, inline, className, children, ...rest } = props
+                  code(props) {
+                    const { inline, className, children, ...rest } = props
                     return inline ? (
                       <code
                         className="bg-muted px-1 py-0.5 rounded text-sm"
@@ -369,6 +372,7 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
         </div>
       </motion.div>
     )
-  }
+  })
 )
+
 Message.displayName = 'Message'

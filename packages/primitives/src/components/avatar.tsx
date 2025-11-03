@@ -34,8 +34,8 @@ export interface AvatarProps
   statusBadge?: React.ReactNode
 }
 
-const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
-  (
+const Avatar = React.memo(
+  React.forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
     {
       className,
       size,
@@ -48,7 +48,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       ...props
     },
     ref
-  ) => {
+  ) {
     const [imageError, setImageError] = React.useState(false)
 
     const getFallbackText = () => {
@@ -124,8 +124,9 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         )}
       </div>
     )
-  }
+  })
 )
+
 Avatar.displayName = 'Avatar'
 
 export { Avatar, avatarVariants }

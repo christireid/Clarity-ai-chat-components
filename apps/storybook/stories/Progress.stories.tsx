@@ -4,21 +4,21 @@ import { useState, useEffect } from 'react'
 
 /**
  * Progress Indicators
- * 
+ *
  * **Visual feedback for:**
  * - Task completion
  * - File uploads
  * - Data processing
  * - Multi-step workflows
  * - Loading states
- * 
+ *
  * **Key Features:**
  * - Smooth animations
  * - Customizable colors
  * - Multiple sizes
  * - Indeterminate state
  * - Label support
- * 
+ *
  * **Design Philosophy:**
  * - Clear: Users always know progress status
  * - Smooth: Animated transitions feel natural
@@ -155,7 +155,10 @@ export const ColorVariants: Story = {
 
       <div className="space-y-2">
         <p className="text-sm font-medium">Gradient</p>
-        <Progress value={75} className="[&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-purple-600" />
+        <Progress
+          value={75}
+          className="[&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-purple-600"
+        />
       </div>
     </div>
   ),
@@ -268,7 +271,9 @@ export const FileUpload: Story = {
     return (
       <div className="space-y-4 max-w-md">
         <div className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl text-center">
-          <p className="text-sm text-muted-foreground mb-3">Drop files here or click to upload</p>
+          <p className="text-sm text-muted-foreground mb-3">
+            Drop files here or click to upload
+          </p>
           <button
             onClick={startUpload}
             disabled={uploading}
@@ -282,7 +287,9 @@ export const FileUpload: Story = {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">document.pdf</span>
-              <span className="text-sm font-medium">{Math.round(progress)}%</span>
+              <span className="text-sm font-medium">
+                {Math.round(progress)}%
+              </span>
             </div>
             <Progress value={progress} />
           </div>
@@ -323,7 +330,8 @@ export const DataProcessing: Story = {
 
           const interval = setInterval(() => {
             step++
-            const progress = startProgress + ((endProgress - startProgress) * step) / steps
+            const progress =
+              startProgress + ((endProgress - startProgress) * step) / steps
             setProgress(progress)
 
             if (step >= steps) {
@@ -352,9 +360,14 @@ export const DataProcessing: Story = {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">{currentTask}</span>
-              <span className="text-sm font-medium">{Math.round(progress)}%</span>
+              <span className="text-sm font-medium">
+                {Math.round(progress)}%
+              </span>
             </div>
-            <Progress value={progress} className={progress === 100 ? '[&>div]:bg-green-500' : ''} />
+            <Progress
+              value={progress}
+              className={progress === 100 ? '[&>div]:bg-green-500' : ''}
+            />
           </div>
         )}
       </div>
@@ -390,7 +403,9 @@ export const MultipleProgress: Story = {
           <div key={file.name} className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">{file.name}</span>
-              <span className="text-sm font-medium">{Math.round(file.progress)}%</span>
+              <span className="text-sm font-medium">
+                {Math.round(file.progress)}%
+              </span>
             </div>
             <Progress
               value={file.progress}
@@ -429,7 +444,8 @@ export const InstallationProgress: Story = {
           const duration = steps[i].duration
           const interval = setInterval(() => {
             setProgress((prev) => {
-              const next = prev + ((endProgress - startProgress) / duration) * 100
+              const next =
+                prev + ((endProgress - startProgress) / duration) * 100
               if (next >= endProgress) {
                 clearInterval(interval)
                 resolve(null)
@@ -450,7 +466,9 @@ export const InstallationProgress: Story = {
         <div className="flex items-center justify-between">
           <h3 className="font-semibold">Install Application</h3>
           {progress === 100 && (
-            <span className="text-green-600 dark:text-green-400 text-sm font-semibold">Complete</span>
+            <span className="text-green-600 dark:text-green-400 text-sm font-semibold">
+              Complete
+            </span>
           )}
         </div>
 
@@ -474,7 +492,11 @@ export const InstallationProgress: Story = {
           disabled={installing}
           className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
         >
-          {installing ? 'Installing...' : progress === 100 ? 'Reinstall' : 'Install'}
+          {installing
+            ? 'Installing...'
+            : progress === 100
+              ? 'Reinstall'
+              : 'Install'}
         </button>
       </div>
     )
@@ -569,4 +591,3 @@ export const Accessibility: Story = {
     </div>
   ),
 }
-
