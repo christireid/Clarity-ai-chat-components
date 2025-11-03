@@ -238,7 +238,8 @@ export class SimpleBM25Searcher implements KeywordSearcher {
     
     // Calculate IDF
     const N = this.documents.length
-    for (const [term, df] of docFreq.entries()) {
+    const docFreqEntries = Array.from(docFreq.entries())
+    for (const [term, df] of docFreqEntries) {
       this.idf.set(term, Math.log((N - df + 0.5) / (df + 0.5) + 1))
     }
   }

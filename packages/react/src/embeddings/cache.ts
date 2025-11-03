@@ -74,7 +74,8 @@ export class MemoryEmbeddingCache implements EmbeddingCache {
   
   async clear(): Promise<void> {
     this.cache.clear()
-    this.stats = { hits: 0, misses: 0 }
+    this.statsData.hits = 0
+    this.statsData.misses = 0
   }
   
   async stats(): Promise<{
@@ -282,7 +283,8 @@ export class SemanticEmbeddingCache implements EmbeddingCache {
   
   async clear(): Promise<void> {
     this.cache.clear()
-    this.statsData = { hits: 0, misses: 0 }
+    this.statsData.hits = 0
+    this.statsData.misses = 0
   }
   
   async stats(): Promise<{

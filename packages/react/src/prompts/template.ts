@@ -47,17 +47,18 @@ export class PromptTemplateEngine {
       'g'
     )
     
-    const foundVariables = new Set<string>()
+    const foundVariablesSet = new Set<string>()
     let match: RegExpExecArray | null
     
     while ((match = variablePattern.exec(templateStr)) !== null) {
-      foundVariables.add(match[1])
+      foundVariablesSet.add(match[1])
     }
     
     // Validate required variables if template object provided
     if (options.validate && templateObj?.variables) {
       const errors: string[] = []
       const missing: string[] = []
+      const foundVariables = [...foundVariablesSet]
       
       for (const variable of templateObj.variables) {
         if (variable.required && !(variable.name in options.variables)) {
@@ -87,9 +88,9 @@ export class PromptTemplateEngine {
     
     // Replace variables
     let rendered = templateStr
+    const foundVariables = [...foundVariablesSet]
     
-    const foundVarsArray = [...foundVariables]
-    for (const varName of foundVarsArray) {
+    for (const varName of foundVariables) {
       const value = this.resolveVariable(varName, options.variables)
       
       if (value !== undefined) {

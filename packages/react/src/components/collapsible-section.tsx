@@ -228,7 +228,7 @@ export const ExpandableListItem = React.memo(function ExpandableListItem({
   children,
   defaultOpen = false,
   className,
-}) => {
+}: ExpandableListItemProps) {
   return (
     <CollapsibleSection
       defaultOpen={defaultOpen}
@@ -244,6 +244,6 @@ export const ExpandableListItem = React.memo(function ExpandableListItem({
       {children}
     </CollapsibleSection>
   )
-}: ExpandableListItemProps) => JSX.Element)
+})
 
 ExpandableListItem.displayName = 'ExpandableListItem'
