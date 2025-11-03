@@ -1,13 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { RecursiveTextSplitter, CharacterTextSplitter, TokenTextSplitter } from '../text-splitter'
+import {
+  RecursiveTextSplitter,
+  CharacterTextSplitter,
+  TokenTextSplitter,
+} from '../text-splitter'
 
 describe('RecursiveTextSplitter', () => {
   let splitter: RecursiveTextSplitter
-  
+
   beforeEach(() => {
     splitter = new RecursiveTextSplitter()
   })
-  
+
   describe('split', () => {
     it('should split text into chunks', () => {
       const text = 'A'.repeat(2000)
@@ -15,25 +19,25 @@ describe('RecursiveTextSplitter', () => {
         chunkSize: 500,
         chunkOverlap: 0,
       })
-      
+
       expect(chunks.length).toBeGreaterThan(1)
       expect(chunks[0].content.length).toBeLessThanOrEqual(500)
     })
-    
+
     it('should respect chunk overlap', () => {
       const text = 'ABCDEFGHIJ'
       const chunks = splitter.split(text, {
         chunkSize: 5,
         chunkOverlap: 2,
       })
-      
+
       expect(chunks.length).toBeGreaterThan(1)
       // Check overlap
       const firstEnd = chunks[0].content.slice(-2)
       const secondStart = chunks[1].content.slice(0, 2)
       expect(firstEnd).toBe(secondStart)
     })
-    
+
     it('should preserve sentence boundaries', () => {
       const text = 'First sentence. Second sentence. Third sentence.'
       const chunks = splitter.split(text, {
@@ -41,21 +45,21 @@ describe('RecursiveTextSplitter', () => {
         chunkOverlap: 0,
         splitBySentence: true,
       })
-      
+
       expect(chunks.length).toBeGreaterThan(0)
     })
-    
+
     it('should return correct metadata', () => {
       const text = 'Hello world'
       const chunks = splitter.split(text)
-      
+
       expect(chunks[0].id).toBeDefined()
       expect(chunks[0].index).toBe(0)
       expect(chunks[0].start).toBeDefined()
       expect(chunks[0].end).toBeDefined()
     })
   })
-  
+
   describe('splitDocuments', () => {
     it('should split multiple documents', () => {
       const docs = [
@@ -68,12 +72,12 @@ describe('RecursiveTextSplitter', () => {
           metadata: { source: 'doc2' },
         },
       ]
-      
+
       const chunks = splitter.splitDocuments(docs, {
         chunkSize: 500,
         chunkOverlap: 0,
       })
-      
+
       expect(chunks.length).toBeGreaterThan(2)
       expect(chunks[0].metadata.source).toBe('doc1')
     })
@@ -82,36 +86,36 @@ describe('RecursiveTextSplitter', () => {
 
 describe('CharacterTextSplitter', () => {
   let splitter: CharacterTextSplitter
-  
+
   beforeEach(() => {
     splitter = new CharacterTextSplitter()
   })
-  
+
   it('should split by character count', () => {
     const text = 'A'.repeat(1000)
     const chunks = splitter.split(text, {
       chunkSize: 100,
       chunkOverlap: 0,
     })
-    
+
     expect(chunks).toHaveLength(10)
     expect(chunks[0].content.length).toBe(100)
   })
-  
+
   it('should handle overlap', () => {
     const text = 'ABCDEFGHIJ'
     const chunks = splitter.split(text, {
       chunkSize: 5,
       chunkOverlap: 2,
     })
-    
+
     expect(chunks[1].content.slice(0, 2)).toBe(chunks[0].content.slice(-2))
   })
 })
 
 describe('TokenTextSplitter', () => {
   const simpleTokenizer = (text: string) => text.split('')
-  
+
   it('should split by token count', () => {
     const splitter = new TokenTextSplitter(simpleTokenizer)
     const text = 'ABCDEFGHIJ'
@@ -119,10 +123,10 @@ describe('TokenTextSplitter', () => {
       chunkSize: 3,
       chunkOverlap: 0,
     })
-    
+
     expect(chunks.length).toBeGreaterThan(1)
   })
-  
+
   it('should track token count in metadata', () => {
     const splitter = new TokenTextSplitter(simpleTokenizer)
     const text = 'ABCDE'
@@ -130,8 +134,7 @@ describe('TokenTextSplitter', () => {
       chunkSize: 3,
       chunkOverlap: 0,
     })
-    
+
     expect(chunks[0].metadata.tokens).toBe(3)
   })
 })
-
