@@ -45,6 +45,7 @@ export default [
         HTMLUListElement: 'readonly',
         HTMLLIElement: 'readonly',
         HTMLImageElement: 'readonly',
+        HTMLTextAreaElement: 'readonly',
         Element: 'readonly',
         // SVG Elements
         SVGSVGElement: 'readonly',
@@ -84,9 +85,26 @@ export default [
         Blob: 'readonly',
         File: 'readonly',
         FileReader: 'readonly',
+        DataTransfer: 'readonly',
+        // Performance API
+        performance: 'readonly',
+        PerformanceEntry: 'readonly',
+        PerformanceObserver: 'readonly',
+        // Error types
+        ErrorEvent: 'readonly',
+        PromiseRejectionEvent: 'readonly',
+        // Other browser APIs
+        alert: 'readonly',
+        confirm: 'readonly',
+        prompt: 'readonly',
+        IntersectionObserverInit: 'readonly',
         // Node globals for build
         process: 'readonly',
         NodeJS: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
       },
     },
     plugins: {
@@ -148,6 +166,16 @@ export default [
         ResizeObserver: 'readonly',
         FocusEvent: 'readonly',
         Node: 'readonly',
+        document: 'readonly',
+        window: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        HTMLInputElement: 'readonly',
+        navigator: 'readonly',
+        File: 'readonly',
+        HTMLTextAreaElement: 'readonly',
+        alert: 'readonly',
+        DataTransfer: 'readonly',
       },
     },
     plugins: {
