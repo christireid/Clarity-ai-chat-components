@@ -40,7 +40,7 @@ export class FIFOTruncation implements TruncationStrategy {
   truncate(messages: Message[], options: ContextWindowOptions): Message[] {
     const maxTokens = options.maxTokens - (options.reservedTokens ?? 0)
     const minMessages = options.minMessages ?? 2
-    const result: Message[] = []
+    const result: ContextMessage[] = []
     
     // Always keep system message if present and requested
     const systemMessage = messages.find(m => m.role === 'system')
@@ -112,7 +112,7 @@ export class SmartTruncation implements TruncationStrategy {
   
   truncate(messages: Message[], options: ContextWindowOptions): Message[] {
     const maxTokens = options.maxTokens - (options.reservedTokens ?? 0)
-    const result: Message[] = []
+    const result: ContextMessage[] = []
     
     const systemMessage = messages.find(m => m.role === 'system')
     let currentTokens = systemMessage
@@ -124,8 +124,8 @@ export class SmartTruncation implements TruncationStrategy {
     }
     
     // Group messages into turns (user + assistant pairs)
-    const turns: Message[][] = []
-    let currentTurn: Message[] = []
+    const turns: ContextMessage[][] = []
+    let currentTurn: ContextMessage[] = []
     
     for (const message of messages) {
       if (message.role === 'system') continue
@@ -176,7 +176,7 @@ export class SummarizationTruncation implements TruncationStrategy {
   name = 'summarization'
   
   constructor(
-    private summarize: (messages: Message[]) => Promise<string>,
+    private summarize: (messages: ContextMessage[]) => Promise<string>,
     private summarizeAfter: number = 10
   ) {}
   
@@ -195,7 +195,7 @@ export class SummarizationTruncation implements TruncationStrategy {
     const oldMessages = otherMessages.slice(0, -this.summarizeAfter)
     const summary = await this.summarize(oldMessages)
     
-    const summaryMessage: Message = {
+    const summaryMessage: ContextMessage = {
       role: 'system',
       content: `Previous conversation summary: ${summary}`,
     }
@@ -250,7 +250,7 @@ export class ContextWindowManager {
   /**
    * Check if messages fit within context window
    */
-  fitsInWindow(messages: Message[]): boolean {
+  fitsInWindow(messages: ContextMessage[]): boolean {
     const totalTokens = messages.reduce(
       (sum, msg) => sum + this.options.countTokens(msg.content),
       0
@@ -262,7 +262,7 @@ export class ContextWindowManager {
   /**
    * Get total token count for messages
    */
-  countTokens(messages: Message[]): number {
+  countTokens(messages: ContextMessage[]): number {
     return messages.reduce(
       (sum, msg) => sum + this.options.countTokens(msg.content),
       0
@@ -272,7 +272,7 @@ export class ContextWindowManager {
   /**
    * Get remaining tokens in window
    */
-  getRemainingTokens(messages: Message[]): number {
+  getRemainingTokens(messages: ContextMessage[]): number {
     const used = this.countTokens(messages)
     const maxTokens = this.options.maxTokens - (this.options.reservedTokens ?? 0)
     return Math.max(0, maxTokens - used)

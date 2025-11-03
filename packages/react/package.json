@@ -34,9 +34,9 @@
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
+    "test": "NODE_OPTIONS='--max-old-space-size=8192' vitest",
+    "test:ui": "NODE_OPTIONS='--max-old-space-size=8192' vitest --ui",
+    "test:coverage": "NODE_OPTIONS='--max-old-space-size=8192' vitest --coverage",
     "size": "size-limit",
     "size:why": "size-limit --why"
   },

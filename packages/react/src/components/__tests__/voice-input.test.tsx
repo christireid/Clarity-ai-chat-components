@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { VoiceInput, InlineVoiceInput } from '../voice-input'
+import * as useVoiceInputModule from '../../hooks/use-voice-input'
 
 // Mock the useVoiceInput hook
 vi.mock('../../hooks/use-voice-input', () => ({
@@ -34,9 +35,7 @@ describe('VoiceInput', () => {
 
   it('should show not supported message when speech recognition unavailable', () => {
     // Mock unsupported state
-    vi.mocked(
-      require('../../hooks/use-voice-input').useVoiceInput
-    ).mockReturnValue({
+    vi.mocked(useVoiceInputModule.useVoiceInput).mockReturnValue({
       isListening: false,
       transcript: '',
       finalTranscript: '',
