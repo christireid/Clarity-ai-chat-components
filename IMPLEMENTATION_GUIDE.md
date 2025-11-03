@@ -20,18 +20,21 @@
 ## Prerequisites
 
 ### Required Knowledge
+
 - ✅ React 18+ experience
 - ✅ TypeScript basics (optional but recommended)
 - ✅ npm/yarn package management
 - ✅ Basic understanding of AI APIs
 
 ### Required Tools
+
 - Node.js 18+
 - npm 9+ or yarn 1.22+
 - Code editor (VS Code recommended)
 - Git
 
 ### Optional but Helpful
+
 - Next.js 13+ familiarity
 - Tailwind CSS knowledge
 - Framer Motion experience
@@ -161,10 +164,7 @@ export async function POST(request: Request) {
     const content = await getChatCompletion(messages)
     return NextResponse.json({ content })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'AI request failed' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'AI request failed' }, { status: 500 })
   }
 }
 ```
@@ -219,7 +219,7 @@ export async function POST(request: Request) {
   })
 
   const encoder = new TextEncoder()
-  
+
   return new Response(
     new ReadableStream({
       async start(controller) {
@@ -234,7 +234,7 @@ export async function POST(request: Request) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
       },
     }
   )
@@ -270,9 +270,7 @@ const handleSendMessage = async (content: string) => {
     body: JSON.stringify({ messages: [...messages, userMessage] }),
     onChunk: (text) => {
       setMessages((prev) =>
-        prev.map((m) =>
-          m.id === aiMessage.id ? { ...m, content: m.content + text } : m
-        )
+        prev.map((m) => (m.id === aiMessage.id ? { ...m, content: m.content + text } : m))
       )
     },
   })
@@ -465,10 +463,7 @@ export async function POST(request: Request) {
   try {
     await limiter.check(request, 10) // 10 requests per minute
   } catch {
-    return NextResponse.json(
-      { error: 'Rate limit exceeded' },
-      { status: 429 }
-    )
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
 
   // ... rest of your code
@@ -496,7 +491,7 @@ NEXTAUTH_URL=http://localhost:3000
 ```tsx
 import { VoiceInput } from '@clarity-chat/react'
 
-<VoiceInput
+;<VoiceInput
   onTranscript={(text) => handleSendMessage(text)}
   lang="en-US"
   autoSubmit
@@ -610,7 +605,7 @@ const { tokens, cost, trackTokens } = useTokenTracker({
 import { SSOConfigWizard } from '@clarity-chat/react'
 
 // For administrators
-<SSOConfigWizard
+;<SSOConfigWizard
   provider="okta" // or "auth0", "azure", etc.
   onComplete={(config) => {
     // Save SSO configuration
@@ -623,7 +618,7 @@ import { SSOConfigWizard } from '@clarity-chat/react'
 ```tsx
 import { AuthTenantDashboard } from '@clarity-chat/react'
 
-<AuthTenantDashboard
+;<AuthTenantDashboard
   tenants={tenants}
   onTenantCreate={handleCreateTenant}
   onTenantUpdate={handleUpdateTenant}
@@ -691,6 +686,7 @@ const whiteLabel = createTheme({
 **Problem:** Can't import from `@clarity-chat/react`
 
 **Solution:**
+
 ```bash
 # Verify installation
 npm list @clarity-chat/react
@@ -705,6 +701,7 @@ npm install
 **Problem:** Components have no styling
 
 **Solution:**
+
 ```tsx
 // Make sure you import styles
 import '@clarity-chat/react/styles.css'
@@ -719,6 +716,7 @@ import '@clarity-chat/react/styles.css'
 **Problem:** Type errors with components
 
 **Solution:**
+
 ```json
 // tsconfig.json
 {
@@ -735,9 +733,11 @@ import '@clarity-chat/react/styles.css'
 **Problem:** Messages not streaming
 
 **Solution:**
+
 1. Check API route returns proper SSE format
 2. Verify headers are set correctly
 3. Test with curl first:
+
 ```bash
 curl -N http://localhost:3000/api/chat \
   -H "Content-Type: application/json" \
@@ -749,6 +749,7 @@ curl -N http://localhost:3000/api/chat \
 **Problem:** Too many requests
 
 **Solution:**
+
 ```tsx
 import { useErrorRecovery } from '@clarity-chat/react'
 
@@ -768,27 +769,21 @@ const { executeWithRetry } = useErrorRecovery({
 ### Performance
 
 1. **Virtualize long message lists**
+
 ```tsx
 import { VirtualizedMessageList } from '@clarity-chat/react'
 
-<VirtualizedMessageList
-  messages={messages}
-  height={600}
-  itemSize={100}
-/>
+;<VirtualizedMessageList messages={messages} height={600} itemSize={100} />
 ```
 
 2. **Optimize images**
+
 ```tsx
-<MultiModalPreview
-  images={images}
-  lazy
-  quality={80}
-  sizes="(max-width: 768px) 100vw, 50vw"
-/>
+<MultiModalPreview images={images} lazy quality={80} sizes="(max-width: 768px) 100vw, 50vw" />
 ```
 
 3. **Code split components**
+
 ```tsx
 import dynamic from 'next/dynamic'
 
@@ -801,6 +796,7 @@ const CommandPalette = dynamic(
 ### Security
 
 1. **Sanitize user input**
+
 ```tsx
 import { sanitizeMessage } from '@clarity-chat/react'
 
@@ -838,21 +834,25 @@ test('renders chat window', () => {
 ## Next Steps
 
 ### Week 1
+
 - ✅ Basic integration
 - ✅ AI provider setup
 - ✅ Styling customization
 
 ### Week 2
+
 - Production error handling
 - Analytics integration
 - Authentication
 
 ### Week 3
+
 - Advanced features (voice, files)
 - Performance optimization
 - Testing
 
 ### Week 4
+
 - Enterprise features (if needed)
 - Production deployment
 - Monitoring setup
@@ -863,7 +863,8 @@ test('renders chat window', () => {
 
 - **Documentation:** [clarity-chat.dev/docs](https://clarity-chat.dev/docs)
 - **API Reference:** [clarity-chat.dev/api](https://clarity-chat.dev/api)
-- **Examples:** [github.com/christireid/Clarity-ai-chat-components/examples](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples)
+- **Examples:**
+  [github.com/christireid/Clarity-ai-chat-components/examples](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples)
 - **Support:** support@codeclarity.ai
 - **Discord:** [discord.gg/clarity-chat](https://discord.gg/clarity-chat)
 
@@ -882,4 +883,3 @@ test('renders chat window', () => {
 
 **Last Updated:** November 3, 2024  
 **Version:** 1.0
-
