@@ -36,30 +36,32 @@ export function CodeBlock({
   const highlightTheme = isDark ? themes.nightOwl : themes.nightOwlLight
 
   return (
-    <div className={clsx('group relative not-prose', className)}>
+    <div className={clsx('group relative not-prose my-6 shadow-sm hover:shadow-md transition-all duration-200', className)}>
       {/* Header */}
       {(title || language) && (
-        <div className="flex items-center justify-between px-4 py-2 bg-bg-tertiary border-b border-border rounded-t-lg">
+        <div className="flex items-center justify-between px-4 py-3 bg-bg-tertiary border-b-2 border-border rounded-t-xl">
           <div className="flex items-center gap-2 text-sm">
             {title ? (
               <>
-                <Terminal className="w-4 h-4 text-text-tertiary" />
-                <span className="font-medium text-text-primary">{title}</span>
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Terminal className="w-4 h-4 text-primary" />
+                </div>
+                <span className="font-semibold text-text-primary">{title}</span>
               </>
             ) : (
-              <span className="font-mono text-text-secondary">{language}</span>
+              <span className="font-mono text-xs font-medium text-text-secondary px-2 py-1 bg-muted/50 rounded-lg">{language}</span>
             )}
           </div>
           
           <button
             onClick={copyToClipboard}
-            className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-bg-secondary transition-colors text-xs font-medium text-text-secondary hover:text-text-primary"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-bg-secondary transition-all duration-200 text-xs font-medium text-text-secondary hover:text-text-primary hover:shadow-sm"
             aria-label="Copy code"
           >
             {copied ? (
               <>
                 <Check className="w-4 h-4 text-green-500" />
-                <span>Copied!</span>
+                <span className="text-green-600 dark:text-green-400 font-semibold">Copied!</span>
               </>
             ) : (
               <>

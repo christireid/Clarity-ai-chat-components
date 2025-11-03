@@ -101,21 +101,28 @@ html {
   background: var(--color-text-secondary);
 }
 
-/* Code block styling */
+/* Code block styling - Ant Design inspired */
 pre {
-  @apply rounded-lg overflow-x-auto p-4 my-6;
+  @apply rounded-xl overflow-x-auto p-4 my-6 border-2 shadow-sm;
   background-color: var(--color-bg-tertiary) !important;
+  transition: all 0.2s ease;
+}
+
+pre:hover {
+  @apply shadow-md;
 }
 
 code {
   @apply font-mono text-sm;
 }
 
-/* Inline code */
+/* Inline code - Ant Design inspired */
 :not(pre) > code {
-  @apply px-1.5 py-0.5 rounded;
+  @apply px-2 py-1 rounded-lg border;
   background-color: var(--tw-prose-code-bg);
   color: var(--tw-prose-code);
+  font-size: 0.875em;
+  font-weight: 500;
 }
 
 /* Headings with anchor links */
@@ -175,4 +182,111 @@ button:focus-visible {
 .skip-to-content {
   @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50;
   @apply px-4 py-2 bg-brand-500 text-white rounded-lg;
+}
+
+/* Documentation Components - Ant Design Aesthetic */
+.docs-content {
+  @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12;
+}
+
+.docs-header {
+  @apply mb-12 space-y-4;
+}
+
+.docs-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  @apply bg-primary/10 text-primary border-2 border-primary/20 shadow-sm;
+}
+
+.docs-lead {
+  @apply text-xl text-muted-foreground leading-relaxed;
+}
+
+.docs-section {
+  @apply mb-12 space-y-4;
+}
+
+.docs-section h2 {
+  @apply text-2xl font-semibold mb-4 text-foreground;
+  @apply border-b-2 pb-3;
+}
+
+.docs-section h3 {
+  @apply text-xl font-semibold mb-3 mt-8 text-foreground;
+}
+
+.docs-card {
+  @apply block p-6 rounded-xl border-2 hover:border-primary/40;
+  @apply bg-card hover:shadow-lg hover:-translate-y-0.5;
+  @apply transition-all duration-200;
+}
+
+.docs-card h3 {
+  @apply text-lg font-semibold mb-2 text-foreground border-0 pb-0 mt-0;
+}
+
+.docs-card p {
+  @apply text-sm text-muted-foreground;
+}
+
+/* Table styling */
+table {
+  @apply w-full border-2 border-border rounded-xl overflow-hidden my-6 shadow-sm;
+}
+
+thead {
+  @apply bg-muted/50;
+}
+
+th {
+  @apply px-4 py-3 text-left text-sm font-semibold border-b-2;
+}
+
+td {
+  @apply px-4 py-3 text-sm border-b;
+}
+
+tbody tr:hover {
+  @apply bg-muted/30;
+}
+
+/* Callout styling */
+.callout {
+  @apply p-4 rounded-xl border-2 my-6 shadow-sm;
+}
+
+.callout-info {
+  @apply bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800;
+}
+
+.callout-warning {
+  @apply bg-yellow-50 border-yellow-200 dark:bg-yellow-950/30 dark:border-yellow-800;
+}
+
+.callout-tip {
+  @apply bg-green-50 border-green-200 dark:bg-green-950/30 dark:border-green-800;
+}
+
+.callout-danger {
+  @apply bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800;
+}
+
+/* List styling */
+.docs-section ul, .docs-section ol {
+  @apply space-y-2 ml-6;
+}
+
+.docs-section li {
+  @apply text-base leading-relaxed;
+}
+
+/* Links */
+.docs-content a:not(.docs-card) {
+  @apply text-primary hover:underline underline-offset-4;
+  @apply transition-colors duration-200;
+}
+
+/* Responsive images */
+.docs-content img {
+  @apply rounded-xl shadow-md my-6;
 }
