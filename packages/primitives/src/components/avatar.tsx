@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const avatarVariants = cva(
-  'relative flex shrink-0 overflow-hidden rounded-full',
+  'relative flex shrink-0 overflow-hidden rounded-full ring-1 ring-border/70 shadow-[0_6px_16px_rgba(15,23,42,0.12)] bg-[hsl(var(--surface-muted))] transition-shadow duration-200',
   {
     variants: {
       size: {
@@ -11,6 +11,7 @@ const avatarVariants = cva(
         default: 'h-10 w-10',
         lg: 'h-12 w-12',
         xl: 'h-16 w-16',
+        '2xl': 'h-20 w-20',
       },
     },
     defaultVariants: {
@@ -46,10 +47,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     }
 
     const statusColors = {
-      online: 'bg-green-500',
-      offline: 'bg-gray-400',
-      away: 'bg-yellow-500',
-      busy: 'bg-red-500',
+      online: 'bg-success shadow-[0_2px_6px_rgba(34,197,94,0.4)]',
+      offline: 'bg-muted-foreground/40 shadow-[0_2px_6px_rgba(148,163,184,0.35)]',
+      away: 'bg-warning shadow-[0_2px_6px_rgba(247,170,0,0.4)]',
+      busy: 'bg-destructive shadow-[0_2px_6px_rgba(255,77,79,0.45)]',
     }
 
     return (
@@ -66,7 +67,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground font-semibold">
+          <div className="flex h-full w-full items-center justify-center bg-primary/10 text-primary font-semibold">
             {getFallbackText()}
           </div>
         )}
@@ -74,7 +75,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {status && (
           <span
             className={cn(
-              'absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-background',
+              'absolute bottom-1 right-1 block h-3.5 w-3.5 rounded-full border-[3px] border-[hsl(var(--surface-elevated))] shadow-[0_0_0_2px_rgba(15,23,42,0.1)]',
               statusColors[status]
             )}
           />

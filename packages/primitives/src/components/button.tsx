@@ -4,24 +4,37 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const buttonVariants = cva(
-  'relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
+  'group relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border text-sm font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/30 focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-60 select-none overflow-hidden will-change-transform',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:scale-95',
-        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 active:scale-95',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
-        success: 'bg-green-600 text-white hover:bg-green-700 active:scale-95',
-        error: 'bg-red-600 text-white hover:bg-red-700 active:scale-95',
+        default:
+          'border-transparent bg-gradient-to-r from-primary to-[hsl(var(--primary))] text-primary-foreground shadow-[0_14px_34px_rgba(22,119,255,0.32)] hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(22,119,255,0.28)] active:translate-y-0 active:shadow-[0_10px_26px_rgba(22,119,255,0.25)]',
+        surface:
+          'bg-card text-foreground border border-border/70 shadow-[0_6px_18px_rgba(15,23,42,0.12)] hover:border-primary/45 hover:-translate-y-0.5 hover:text-primary hover:shadow-[0_16px_32px_rgba(15,23,42,0.16)] active:translate-y-0 active:shadow-[0_8px_20px_rgba(15,23,42,0.14)]',
+        secondary:
+          'bg-secondary text-secondary-foreground border border-secondary/70 shadow-none hover:border-primary/40 hover:bg-secondary/80 hover:text-primary',
+        outline:
+          'border border-border/70 bg-transparent text-foreground hover:border-primary/50 hover:text-primary hover:bg-primary/5',
+        ghost:
+          'border-transparent bg-transparent text-foreground hover:bg-primary/10 hover:text-primary',
+        link:
+          'border-transparent bg-transparent text-primary underline-offset-4 hover:underline focus-visible:ring-0 focus-visible:ring-offset-0',
+        dashed:
+          'border border-dashed border-border/60 bg-transparent text-foreground hover:border-primary/60 hover:text-primary hover:bg-primary/5',
+        destructive:
+          'border-transparent bg-destructive text-destructive-foreground shadow-[0_16px_38px_rgba(255,77,79,0.32)] hover:bg-destructive/90',
+        success:
+          'border-transparent bg-success text-success-foreground shadow-[0_16px_36px_rgba(34,197,94,0.28)] hover:bg-success/90',
+        error:
+          'border-transparent bg-destructive text-destructive-foreground shadow-[0_16px_38px_rgba(255,77,79,0.32)] hover:bg-destructive/90',
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-md px-3',
-        lg: 'h-11 rounded-md px-8',
-        icon: 'h-10 w-10',
+        default: 'h-11 px-5 text-sm',
+        sm: 'h-9 rounded-md px-3 text-xs',
+        lg: 'h-12 rounded-lg px-6 text-base',
+        xl: 'h-14 rounded-xl px-7 text-base',
+        icon: 'h-11 w-11',
       },
     },
     defaultVariants: {
@@ -130,22 +143,21 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // Get ripple color based on variant
     const getRippleColor = () => {
       if (rippleColor) return rippleColor
-      
-      switch (variant) {
-        case 'default':
-        case 'secondary':
-          return 'rgba(255, 255, 255, 0.3)'
-        case 'destructive':
-        case 'error':
-          return 'rgba(255, 255, 255, 0.3)'
-        case 'success':
-          return 'rgba(255, 255, 255, 0.3)'
-        case 'ghost':
-        case 'outline':
-          return 'rgba(0, 0, 0, 0.1)'
-        default:
-          return 'rgba(255, 255, 255, 0.3)'
-      }
+
+      const palette = {
+        default: 'rgba(255, 255, 255, 0.35)',
+        surface: 'rgba(22, 119, 255, 0.25)',
+        secondary: 'rgba(22, 119, 255, 0.18)',
+        dashed: 'rgba(22, 119, 255, 0.18)',
+        outline: 'rgba(22, 119, 255, 0.18)',
+        ghost: 'rgba(22, 119, 255, 0.14)',
+        link: 'rgba(22, 119, 255, 0.12)',
+        destructive: 'rgba(255, 77, 79, 0.35)',
+        success: 'rgba(34, 197, 94, 0.32)',
+        error: 'rgba(255, 77, 79, 0.35)',
+      } as const
+
+      return palette[variant ?? 'default'] ?? 'rgba(22, 119, 255, 0.22)'
     }
     
     // Get state content
@@ -213,33 +225,34 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const isDisabled = disabled || currentState === 'loading'
     
     // Apply state-specific variant
-    const effectiveVariant = currentState === 'success' ? 'success' 
-      : currentState === 'error' ? 'error' 
+    const effectiveVariant = currentState === 'success' ? 'success'
+      : currentState === 'error' ? 'error'
       : variant
     
     return (
       <Comp
         className={cn(
           buttonVariants({ variant: effectiveVariant, size, className }),
-          currentState === 'success' && 'animate-[success-glow_0.6s_ease-out]',
+          currentState === 'success' && 'after:absolute after:inset-0 after:rounded-inherit after:border-2 after:border-success/40 after:animate-[pulse_0.8s_ease-out_2] after:content-[""]',
           currentState === 'error' && 'animate-[error-shake_0.4s_ease-in-out]'
         )}
         ref={ref}
         disabled={isDisabled}
+        data-variant={effectiveVariant}
         onClick={handleClick}
+        aria-busy={currentState === 'loading'}
         {...props}
       >
         {/* Ripple effect */}
         {shouldShowRipple && ripples.map((ripple) => (
           <span
             key={ripple.id}
-            className="absolute rounded-full animate-[ripple_0.6s_ease-out] pointer-events-none"
+            className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full animate-[ripple_0.6s_ease-out]"
             style={{
               left: ripple.x,
               top: ripple.y,
               width: ripple.size,
               height: ripple.size,
-              transform: 'translate(-50%, -50%) scale(0)',
               backgroundColor: getRippleColor(),
             }}
           />

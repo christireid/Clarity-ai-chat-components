@@ -355,9 +355,9 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
               zIndex: 9999,
             }}
             className={cn(
-              'bg-popover text-popover-foreground',
-              'border rounded-lg shadow-lg',
-              'outline-none',
+              'bg-[hsl(var(--surface-elevated))] text-popover-foreground',
+              'border border-border/60 rounded-xl shadow-[0_18px_40px_rgba(15,23,42,0.26)] ring-1 ring-black/5',
+              'outline-none p-4 min-w-[14rem] max-w-[22rem]',
               className
             )}
             role="dialog"
@@ -369,7 +369,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
             {showArrow && (
               <div
                 className={cn(
-                  'absolute w-2 h-2 bg-popover border',
+                  'absolute w-3 h-3 bg-[hsl(var(--surface-elevated))] border border-border/60',
                   getArrowClasses(actualSide, align)
                 )}
                 style={{ transform: 'rotate(45deg)' }}

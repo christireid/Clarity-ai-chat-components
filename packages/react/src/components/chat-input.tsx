@@ -118,7 +118,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <motion.div
-      className={cn('relative flex flex-col gap-2 p-4 border-t bg-background', className)}
+      className={cn('relative flex flex-col gap-3 border-t border-border/60 bg-[hsl(var(--surface-elevated))] px-5 py-4 shadow-[0_-8px_24px_rgba(15,23,42,0.06)]', className)}
       initial="idle"
       animate={isFocused ? 'focused' : 'idle'}
       variants={containerVariants}
@@ -244,7 +244,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             exit={{ opacity: 0, y: -5 }}
             className="text-xs text-muted-foreground px-1"
           >
-            Press <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">Enter</kbd> to send •{' '}
+            Press <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">Enter</kbd> to send ?{' '}
             <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">Shift + Enter</kbd> for new line
           </motion.p>
         )}

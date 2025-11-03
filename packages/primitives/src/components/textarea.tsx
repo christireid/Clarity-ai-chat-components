@@ -3,12 +3,13 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const textareaVariants = cva(
-  'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all resize-none',
+  'flex min-h-[80px] w-full rounded-lg border border-border/60 bg-[hsl(var(--surface-elevated))] px-4 py-2.5 text-sm shadow-[0_1px_0_rgba(15,23,42,0.04)] placeholder:text-muted-foreground/70 transition-all duration-200 focus-visible:outline-none focus-visible:border-transparent focus-visible:ring-4 focus-visible:ring-ring/25 focus-visible:shadow-[0_0_0_4px_rgba(22,119,255,0.12)] disabled:cursor-not-allowed disabled:bg-[hsl(var(--surface-muted))] disabled:text-muted-foreground/60 resize-none',
   {
     variants: {
       variant: {
         default: '',
-        error: 'border-destructive focus-visible:ring-destructive',
+        surface: 'bg-[hsl(var(--surface-muted))] border-transparent shadow-none focus-visible:border-primary/60',
+        error: 'border-destructive focus-visible:ring-destructive/25 focus-visible:shadow-[0_0_0_4px_rgba(255,77,79,0.16)] text-destructive placeholder:text-destructive/60',
       },
     },
     defaultVariants: {
@@ -74,7 +75,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && (
-          <p className="mt-1 text-xs text-destructive">{error}</p>
+          <p className="mt-1 text-xs font-medium text-destructive">{error}</p>
         )}
       </div>
     )

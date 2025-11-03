@@ -64,7 +64,7 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
         duration: ANIMATION_DURATION.normal / 1000,
         ease: ANIMATION_EASING.out,
       }}
-      className={cn('flex items-center gap-3 p-4 rounded-lg bg-muted', className)}
+      className={cn('flex items-center gap-3 rounded-2xl border border-border/60 bg-[hsl(var(--surface-muted))] px-5 py-4 shadow-[0_12px_28px_rgba(15,23,42,0.12)]', className)}
     >
       {/* Animated Icon */}
       <motion.div
@@ -127,7 +127,7 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
 
         {/* Progress Bar */}
         {status?.progress !== undefined && (
-          <div className="mt-2 h-1 bg-background rounded-full overflow-hidden">
+          <div className="mt-2 h-1 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${status.progress}%` }}

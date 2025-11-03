@@ -2,7 +2,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
-import { ScrollArea, Button } from '@clarity-chat/primitives'
+import { ScrollArea, Button, cn } from '@clarity-chat/primitives'
 import { useAutoScroll } from '../hooks/use-auto-scroll'
 import { ArrowDownIcon } from './icons'
 import { SkeletonMessage } from './skeleton'
@@ -52,10 +52,13 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   return (
     <div className="relative h-full">
-      <ScrollArea ref={scrollRef as React.RefObject<HTMLDivElement>} className={className}>
+      <ScrollArea
+        ref={scrollRef as React.RefObject<HTMLDivElement>}
+        className={cn('h-full bg-transparent px-2 py-4 sm:px-4', className)}
+      >
         {/* Loading skeletons */}
         {isLoading && messages.length === 0 && (
-          <div className="space-y-4 p-4">
+          <div className="space-y-4 px-4 py-6">
             {Array.from({ length: loadingCount }).map((_, index) => (
               <SkeletonMessage
                 key={`skeleton-${index}`}
@@ -72,7 +75,7 @@ export const MessageList: React.FC<MessageListProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-center h-full p-8"
+            className="flex h-full items-center justify-center px-6 py-12"
           >
             {emptyState}
           </motion.div>
@@ -81,7 +84,7 @@ export const MessageList: React.FC<MessageListProps> = ({
         {/* Messages */}
         {messages.length > 0 && (
           <motion.div 
-            className="space-y-4 p-4"
+            className="space-y-3 px-2 pb-6 sm:px-4"
             variants={containerVariants}
             initial="initial"
             animate="animate"
@@ -133,7 +136,7 @@ export const MessageList: React.FC<MessageListProps> = ({
             >
               <Button
                 size="sm"
-                variant="secondary"
+                variant="surface"
                 onClick={scrollToBottom}
                 className="shadow-lg gap-1.5"
               >

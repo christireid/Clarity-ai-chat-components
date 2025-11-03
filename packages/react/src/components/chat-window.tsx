@@ -1,6 +1,6 @@
 import * as React from 'react'
 import type { Message, AIStatus } from '@clarity-chat/types'
-import { Card } from '@clarity-chat/primitives'
+import { Card, cn } from '@clarity-chat/primitives'
 import { MessageList } from './message-list'
 import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from './thinking-indicator'
@@ -57,7 +57,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   )
 
   return (
-    <Card className={className}>
+    <Card className={cn('flex h-full flex-col overflow-hidden bg-[hsl(var(--surface-overlay))] backdrop-blur-[2px]', className)}>
       <div className="flex flex-col h-full">
         <MessageList 
           messages={messages} 
