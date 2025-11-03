@@ -22,6 +22,15 @@ export * from './safety'
 // Observability & Evaluation
 export * from './observability'
 
+// Reranking (RAG Improvement)
+export * from './reranking'
+
+// Webhook System
+export * from './webhooks'
+
+// Plugin Architecture
+export * from './plugins'
+
 // Export all components
 export * from './components/message'
 export * from './components/message-list'

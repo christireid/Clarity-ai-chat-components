@@ -37,9 +37,13 @@ export const PromptLibrary = React.memo(function PromptLibrary({
   className,
 }: PromptLibraryProps) {
   const [searchQuery, setSearchQuery] = React.useState('')
-  const [selectedCategory, setSelectedCategory] = React.useState<string | 'all'>('all')
+  const [selectedCategory, setSelectedCategory] = React.useState<
+    string | 'all'
+  >('all')
   const [showCreate, setShowCreate] = React.useState(false)
-  const [sortBy, setSortBy] = React.useState<'name' | 'usage' | 'recent'>('recent')
+  const [sortBy, setSortBy] = React.useState<'name' | 'usage' | 'recent'>(
+    'recent'
+  )
 
   // Create form state
   const [newPrompt, setNewPrompt] = React.useState({
@@ -109,7 +113,13 @@ export const PromptLibrary = React.memo(function PromptLibrary({
       isFavorite: false,
     })
 
-    setNewPrompt({ name: '', content: '', description: '', category: '', tags: [] })
+    setNewPrompt({
+      name: '',
+      content: '',
+      description: '',
+      category: '',
+      tags: [],
+    })
     setShowCreate(false)
   }
 
@@ -125,7 +135,8 @@ export const PromptLibrary = React.memo(function PromptLibrary({
               <Badge variant="secondary">{prompts.length}</Badge>
             </CardTitle>
             <CardDescription>
-              {favorites.length} favorites • {prompts.reduce((sum, p) => sum + p.usageCount, 0)} total uses
+              {favorites.length} favorites •{' '}
+              {prompts.reduce((sum, p) => sum + p.usageCount, 0)} total uses
             </CardDescription>
           </div>
           {onSave && (
@@ -148,7 +159,9 @@ export const PromptLibrary = React.memo(function PromptLibrary({
           <div className="flex items-center gap-2">
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'name' | 'usage' | 'recent')}
+              onChange={(e) =>
+                setSortBy(e.target.value as 'name' | 'usage' | 'recent')
+              }
               className="text-sm border rounded px-2 py-1 bg-background"
             >
               <option value="recent">Recently Used</option>
@@ -167,7 +180,9 @@ export const PromptLibrary = React.memo(function PromptLibrary({
               {categories.map((cat) => (
                 <Button
                   key={cat.id}
-                  variant={selectedCategory === cat.name ? 'default' : 'outline'}
+                  variant={
+                    selectedCategory === cat.name ? 'default' : 'outline'
+                  }
                   size="sm"
                   onClick={() => setSelectedCategory(cat.name)}
                 >
@@ -193,21 +208,30 @@ export const PromptLibrary = React.memo(function PromptLibrary({
               <Input
                 placeholder="Prompt name"
                 value={newPrompt.name}
-                onChange={(e) => setNewPrompt({ ...newPrompt, name: e.target.value })}
+                onChange={(e) =>
+                  setNewPrompt({ ...newPrompt, name: e.target.value })
+                }
               />
               <Textarea
                 placeholder="Prompt content... Use {{variable}} for variables"
                 value={newPrompt.content}
-                onChange={(e) => setNewPrompt({ ...newPrompt, content: e.target.value })}
+                onChange={(e) =>
+                  setNewPrompt({ ...newPrompt, content: e.target.value })
+                }
                 rows={4}
               />
               <Input
                 placeholder="Description (optional)"
                 value={newPrompt.description}
-                onChange={(e) => setNewPrompt({ ...newPrompt, description: e.target.value })}
+                onChange={(e) =>
+                  setNewPrompt({ ...newPrompt, description: e.target.value })
+                }
               />
               <div className="flex gap-2">
-                <Button onClick={handleSavePrompt} disabled={!newPrompt.name || !newPrompt.content}>
+                <Button
+                  onClick={handleSavePrompt}
+                  disabled={!newPrompt.name || !newPrompt.content}
+                >
                   Save Prompt
                 </Button>
                 <Button variant="outline" onClick={() => setShowCreate(false)}>
@@ -225,10 +249,16 @@ export const PromptLibrary = React.memo(function PromptLibrary({
               <div className="text-6xl mb-4">💡</div>
               <p className="text-sm font-medium">No prompts found</p>
               <p className="text-xs text-muted-foreground mt-1">
-                {searchQuery ? 'Try a different search' : 'Create your first prompt to get started'}
+                {searchQuery
+                  ? 'Try a different search'
+                  : 'Create your first prompt to get started'}
               </p>
               {!searchQuery && onSave && (
-                <Button onClick={() => setShowCreate(true)} className="mt-4" size="sm">
+                <Button
+                  onClick={() => setShowCreate(true)}
+                  className="mt-4"
+                  size="sm"
+                >
                   Create First Prompt
                 </Button>
               )}
@@ -250,8 +280,12 @@ export const PromptLibrary = React.memo(function PromptLibrary({
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <h4 className="font-semibold text-sm">{prompt.name}</h4>
-                                {prompt.isFavorite && <span className="text-sm">⭐</span>}
+                                <h4 className="font-semibold text-sm">
+                                  {prompt.name}
+                                </h4>
+                                {prompt.isFavorite && (
+                                  <span className="text-sm">⭐</span>
+                                )}
                               </div>
                               {prompt.description && (
                                 <p className="text-xs text-muted-foreground mt-1">
@@ -259,7 +293,10 @@ export const PromptLibrary = React.memo(function PromptLibrary({
                                 </p>
                               )}
                             </div>
-                            <Badge variant="outline" className="flex-shrink-0 text-xs">
+                            <Badge
+                              variant="outline"
+                              className="flex-shrink-0 text-xs"
+                            >
                               {prompt.usageCount} uses
                             </Badge>
                           </div>
@@ -273,7 +310,11 @@ export const PromptLibrary = React.memo(function PromptLibrary({
                           {prompt.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1">
                               {prompt.tags.map((tag) => (
-                                <Badge key={tag} variant="outline" className="text-xs">
+                                <Badge
+                                  key={tag}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
                                   {tag}
                                 </Badge>
                               ))}
@@ -282,7 +323,10 @@ export const PromptLibrary = React.memo(function PromptLibrary({
 
                           {/* Actions */}
                           <div className="flex items-center gap-2 pt-2 border-t opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button size="sm" onClick={() => onUsePrompt(prompt)}>
+                            <Button
+                              size="sm"
+                              onClick={() => onUsePrompt(prompt)}
+                            >
                               Use Prompt
                             </Button>
                             {onToggleFavorite && (
@@ -291,7 +335,9 @@ export const PromptLibrary = React.memo(function PromptLibrary({
                                 size="sm"
                                 onClick={() => onToggleFavorite(prompt.id)}
                               >
-                                {prompt.isFavorite ? '⭐ Unfavorite' : '☆ Favorite'}
+                                {prompt.isFavorite
+                                  ? '⭐ Unfavorite'
+                                  : '☆ Favorite'}
                               </Button>
                             )}
                             {onEdit && (
@@ -311,7 +357,9 @@ export const PromptLibrary = React.memo(function PromptLibrary({
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
-                                  if (confirm(`Delete prompt "${prompt.name}"?`)) {
+                                  if (
+                                    confirm(`Delete prompt "${prompt.name}"?`)
+                                  ) {
                                     onDelete(prompt.id)
                                   }
                                 }}

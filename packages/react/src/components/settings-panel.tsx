@@ -306,7 +306,9 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                             : 'outline'
                         }
                         size="sm"
-                        onClick={() => handleUpdateUI({ messageLayout: layout })}
+                        onClick={() =>
+                          handleUpdateUI({ messageLayout: layout })
+                        }
                       >
                         {layout.charAt(0).toUpperCase() + layout.slice(1)}
                       </Button>
