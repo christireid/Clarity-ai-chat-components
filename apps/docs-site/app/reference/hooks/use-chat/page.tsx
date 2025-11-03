@@ -3,7 +3,8 @@ import { MessageFlowSequence } from '@/components/Diagrams/MessageFlowSequence'
 
 export const metadata: Metadata = {
   title: 'useChat Hook | Clarity Chat',
-  description: 'Main hook for chat functionality with message management, streaming, and AI interactions.'
+  description:
+    'Main hook for chat functionality with message management, streaming, and AI interactions.',
 }
 
 export default function UseChatPage() {
@@ -11,7 +12,8 @@ export default function UseChatPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-4">useChat Hook</h1>
       <p className="text-xl text-muted-foreground mb-8">
-        Core React hook for building chat interfaces with message management, streaming responses, and AI model integration.
+        Core React hook for building chat interfaces with message management,
+        streaming responses, and AI model integration.
       </p>
 
       <section className="mb-12">
@@ -33,7 +35,8 @@ export default function UseChatPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <div className="bg-muted p-6 rounded-lg">
-          <pre className="text-sm overflow-x-auto"><code>{`import { useChat } from '@clarity-chat/react'
+          <pre className="text-sm overflow-x-auto">
+            <code>{`import { useChat } from '@clarity-chat/react'
 
 function ChatComponent() {
   const {
@@ -60,7 +63,8 @@ function ChatComponent() {
       />
     </div>
   )
-}`}</code></pre>
+}`}</code>
+          </pre>
         </div>
       </section>
     </div>

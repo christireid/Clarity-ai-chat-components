@@ -15,7 +15,7 @@ import type { EmbeddingCache, EmbeddingCacheEntry } from './types'
  */
 export class MemoryEmbeddingCache implements EmbeddingCache {
   private cache = new Map<string, EmbeddingCacheEntry>()
-  private stats = {
+  private statsData = {
     hits: 0,
     misses: 0,
   }
@@ -37,18 +37,18 @@ export class MemoryEmbeddingCache implements EmbeddingCache {
     const entry = this.cache.get(key)
     
     if (!entry) {
-      this.stats.misses++
+      this.statsData.misses++
       return null
     }
     
     // Check expiry
     if (entry.expiresAt && entry.expiresAt < Date.now()) {
       this.cache.delete(key)
-      this.stats.misses++
+      this.statsData.misses++
       return null
     }
     
-    this.stats.hits++
+    this.statsData.hits++
     return entry.embedding
   }
   
@@ -83,12 +83,12 @@ export class MemoryEmbeddingCache implements EmbeddingCache {
     misses: number
     hitRate: number
   }> {
-    const total = this.stats.hits + this.stats.misses
+    const total = this.statsData.hits + this.statsData.misses
     return {
       size: this.cache.size,
-      hits: this.stats.hits,
-      misses: this.stats.misses,
-      hitRate: total > 0 ? this.stats.hits / total : 0,
+      hits: this.statsData.hits,
+      misses: this.statsData.misses,
+      hitRate: total > 0 ? this.statsData.hits / total : 0,
     }
   }
 }
@@ -101,7 +101,7 @@ export class MemoryEmbeddingCache implements EmbeddingCache {
  */
 export class LocalStorageEmbeddingCache implements EmbeddingCache {
   private storageKey = 'clarity-embeddings-cache'
-  private stats = {
+  private statsData = {
     hits: 0,
     misses: 0,
   }
@@ -145,7 +145,7 @@ export class LocalStorageEmbeddingCache implements EmbeddingCache {
     const entry = cache.get(key)
     
     if (!entry) {
-      this.stats.misses++
+      this.statsData.misses++
       return null
     }
     
@@ -153,11 +153,11 @@ export class LocalStorageEmbeddingCache implements EmbeddingCache {
     if (entry.expiresAt && entry.expiresAt < Date.now()) {
       cache.delete(key)
       this.setCache(cache)
-      this.stats.misses++
+      this.statsData.misses++
       return null
     }
     
-    this.stats.hits++
+    this.statsData.hits++
     return entry.embedding
   }
   

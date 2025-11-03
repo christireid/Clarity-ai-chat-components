@@ -180,7 +180,7 @@ export class ReactAgent implements Agent {
     // Parse thought to determine which tool to use
     // In reality, this would use LLM to determine the tool and arguments
     
-    const { tool, arguments: args } = this.parseThought(thought)
+    const { tool, args } = this.parseThought(thought)
     
     if (this.callbacks?.onAction) {
       this.callbacks.onAction(tool, args)
@@ -220,7 +220,7 @@ export class ReactAgent implements Agent {
         type: 'action',
         content: `Executed ${tool}`,
         tool,
-        arguments: args,
+        args,
         result,
         timestamp: Date.now(),
       }
@@ -230,7 +230,7 @@ export class ReactAgent implements Agent {
         type: 'action',
         content: `Tool execution failed: ${error.message}`,
         tool,
-        arguments: args,
+        args,
         error: error.message,
         timestamp: Date.now(),
       }
@@ -303,13 +303,13 @@ When you have enough information, provide a final ANSWER.`
     return `Based on the previous results, I need to continue investigating.`
   }
   
-  private parseThought(thought: string): { tool: string; arguments: Record<string, any> } {
+  private parseThought(thought: string): { tool: string; args: Record<string, any> } {
     // Simplified parser - in reality use LLM to determine tool and args
     // For now, just return first tool
     const tool = this.tools[0]
     return {
       tool: tool.name,
-      arguments: {},
+      args: {},
     }
   }
   

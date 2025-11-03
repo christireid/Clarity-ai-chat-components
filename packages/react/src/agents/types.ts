@@ -88,7 +88,7 @@ export interface AgentStep {
   /** Tool used (if action) */
   tool?: string
   /** Tool arguments (if action) */
-  arguments?: Record<string, any>
+  args?: Record<string, any>
   /** Tool result (if observation) */
   result?: any
   /** Error (if failed) */

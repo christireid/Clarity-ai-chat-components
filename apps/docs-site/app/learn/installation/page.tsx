@@ -14,56 +14,54 @@ export default function InstallationPage() {
   return (
     <>
       <Breadcrumbs />
-      
+
       <h1>Installation</h1>
-      
+
       <p className="lead">
-        Learn how to install and configure Clarity Chat UI in your React project. We support multiple frameworks and build tools.
+        Learn how to install and configure Clarity Chat UI in your React
+        project. We support multiple frameworks and build tools.
       </p>
 
       <h2 id="requirements">Requirements</h2>
-      
+
       <p>Clarity Chat UI requires the following:</p>
 
       <ul>
-        <li><strong>React 18.0.0</strong> or higher</li>
-        <li><strong>Node.js 18.0.0</strong> or higher</li>
-        <li><strong>TypeScript 5.0.0</strong> or higher (recommended)</li>
+        <li>
+          <strong>React 18.0.0</strong> or higher
+        </li>
+        <li>
+          <strong>Node.js 18.0.0</strong> or higher
+        </li>
+        <li>
+          <strong>TypeScript 5.0.0</strong> or higher (recommended)
+        </li>
       </ul>
 
       <InstallationFlow />
 
       <h2 id="package-managers">Package Managers</h2>
-      
+
       <p>Install using your preferred package manager:</p>
 
       <h3>npm</h3>
-      <CodeBlock
-        code="npm install @clarity-chat/react"
-        language="bash"
-      />
+      <CodeBlock code="npm install @clarity-chat/react" language="bash" />
 
       <h3>yarn</h3>
-      <CodeBlock
-        code="yarn add @clarity-chat/react"
-        language="bash"
-      />
+      <CodeBlock code="yarn add @clarity-chat/react" language="bash" />
 
       <h3>pnpm</h3>
-      <CodeBlock
-        code="pnpm add @clarity-chat/react"
-        language="bash"
-      />
+      <CodeBlock code="pnpm add @clarity-chat/react" language="bash" />
 
       <h3>bun</h3>
-      <CodeBlock
-        code="bun add @clarity-chat/react"
-        language="bash"
-      />
+      <CodeBlock code="bun add @clarity-chat/react" language="bash" />
 
       <h2 id="peer-dependencies">Peer Dependencies</h2>
-      
-      <p>Clarity Chat UI has the following peer dependencies that should already be in your project:</p>
+
+      <p>
+        Clarity Chat UI has the following peer dependencies that should already
+        be in your project:
+      </p>
 
       <CodeBlock
         code={`{
@@ -74,11 +72,12 @@ export default function InstallationPage() {
       />
 
       <Callout type="info">
-        These are usually already installed in React projects. If not, install them with your package manager.
+        These are usually already installed in React projects. If not, install
+        them with your package manager.
       </Callout>
 
       <h2 id="import-styles">Import Styles</h2>
-      
+
       <p>Import the CSS file in your root component or entry file:</p>
 
       <CodeBlock
@@ -90,7 +89,7 @@ import '@clarity-chat/react/styles.css'`}
       <h2 id="framework-setup">Framework-Specific Setup</h2>
 
       <h3>Next.js</h3>
-      
+
       <p>For Next.js 13+ with App Router:</p>
 
       <CodeBlock
@@ -113,11 +112,12 @@ export default function RootLayout({
       />
 
       <Callout type="warning">
-        Some components use client-side features. Make sure to use <code>'use client'</code> directive when needed.
+        Some components use client-side features. Make sure to use{' '}
+        <code>'use client'</code> directive when needed.
       </Callout>
 
       <h3>Vite</h3>
-      
+
       <p>For Vite projects, import styles in your main.tsx:</p>
 
       <CodeBlock
@@ -137,7 +137,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       />
 
       <h3>Create React App</h3>
-      
+
       <p>For CRA projects, import styles in index.tsx:</p>
 
       <CodeBlock
@@ -161,12 +161,16 @@ root.render(
       />
 
       <h2 id="typescript">TypeScript Configuration</h2>
-      
-      <p>Clarity Chat UI is written in TypeScript and includes type definitions. No additional setup needed!</p>
+
+      <p>
+        Clarity Chat UI is written in TypeScript and includes type definitions.
+        No additional setup needed!
+      </p>
 
       <Callout type="success">
         <p>
-          <strong>Full TypeScript support</strong> - Get autocomplete, type checking, and inline documentation in your IDE.
+          <strong>Full TypeScript support</strong> - Get autocomplete, type
+          checking, and inline documentation in your IDE.
         </p>
       </Callout>
 
@@ -190,8 +194,11 @@ root.render(
       />
 
       <h2 id="tailwind-css">Tailwind CSS (Optional)</h2>
-      
-      <p>Clarity Chat UI uses Tailwind CSS internally but doesn't require it in your project. However, if you want to customize styles using Tailwind:</p>
+
+      <p>
+        Clarity Chat UI uses Tailwind CSS internally but doesn't require it in
+        your project. However, if you want to customize styles using Tailwind:
+      </p>
 
       <CodeBlock
         code={`// tailwind.config.js
@@ -210,7 +217,7 @@ module.exports = {
       />
 
       <h2 id="verification">Verify Installation</h2>
-      
+
       <p>Test your installation with a simple component:</p>
 
       <CodeBlock
@@ -233,14 +240,18 @@ export default App`}
 
       <Callout type="tip">
         <p>
-          If you see the chat window, you're all set! If you encounter issues, check our{' '}
+          If you see the chat window, you're all set! If you encounter issues,
+          check our{' '}
           <a href="/learn/guides/troubleshooting">Troubleshooting Guide</a>.
         </p>
       </Callout>
 
       <h2 id="cdn">CDN (Not Recommended)</h2>
-      
-      <p>While not recommended for production, you can use Clarity Chat via CDN for quick prototyping:</p>
+
+      <p>
+        While not recommended for production, you can use Clarity Chat via CDN
+        for quick prototyping:
+      </p>
 
       <CodeBlock
         code={`<!DOCTYPE html>
@@ -259,7 +270,8 @@ export default App`}
       />
 
       <Callout type="warning">
-        CDN usage is not recommended for production. Use npm/yarn for better performance and tree-shaking.
+        CDN usage is not recommended for production. Use npm/yarn for better
+        performance and tree-shaking.
       </Callout>
 
       <Pagination

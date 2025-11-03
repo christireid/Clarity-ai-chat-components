@@ -27,7 +27,8 @@ export default function HealthcareAssistantPage() {
           <div>
             <h1 className="text-5xl font-bold mb-4">Healthcare Assistant</h1>
             <p className="text-xl text-text-secondary">
-              HIPAA-compliant AI medical assistant for patient support and healthcare information
+              HIPAA-compliant AI medical assistant for patient support and
+              healthcare information
             </p>
           </div>
         </div>
@@ -53,7 +54,9 @@ export default function HealthcareAssistantPage() {
                 Important Medical Disclaimer
               </h3>
               <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                This is a <strong>demonstration only</strong>. Not a substitute for professional medical advice, diagnosis, or treatment. Always consult qualified healthcare providers for medical decisions.
+                This is a <strong>demonstration only</strong>. Not a substitute
+                for professional medical advice, diagnosis, or treatment. Always
+                consult qualified healthcare providers for medical decisions.
               </p>
             </div>
           </div>
@@ -63,28 +66,34 @@ export default function HealthcareAssistantPage() {
           <h2>✨ Features</h2>
           <ul>
             <li>
-              <strong>Lab Results Interpretation</strong> - Explain test results in plain language
+              <strong>Lab Results Interpretation</strong> - Explain test results
+              in plain language
             </li>
             <li>
-              <strong>Medication Information</strong> - Drug interactions, side effects, dosage
+              <strong>Medication Information</strong> - Drug interactions, side
+              effects, dosage
             </li>
             <li>
               <strong>Symptom Checker</strong> - Educational symptom information
             </li>
             <li>
-              <strong>Appointment Scheduling</strong> - Find available time slots
+              <strong>Appointment Scheduling</strong> - Find available time
+              slots
             </li>
             <li>
-              <strong>Medical Records</strong> - Access patient history (demo data)
+              <strong>Medical Records</strong> - Access patient history (demo
+              data)
             </li>
             <li>
-              <strong>Prescription Reminders</strong> - Medication schedule tracking
+              <strong>Prescription Reminders</strong> - Medication schedule
+              tracking
             </li>
             <li>
               <strong>Health Tips</strong> - Preventive care recommendations
             </li>
             <li>
-              <strong>PII Protection</strong> - Automatic detection and masking of sensitive data
+              <strong>PII Protection</strong> - Automatic detection and masking
+              of sensitive data
             </li>
           </ul>
 
@@ -101,7 +110,8 @@ npm run dev`}</code>
 
           <h2>🏗️ Architecture</h2>
           <p>
-            The healthcare assistant uses specialized AI functions for medical tasks:
+            The healthcare assistant uses specialized AI functions for medical
+            tasks:
           </p>
 
           <pre className="bg-surface-muted p-4 rounded-lg">
@@ -130,9 +140,7 @@ npm run dev`}</code>
           </pre>
 
           <h2>🔒 HIPAA Compliance</h2>
-          <p>
-            For production healthcare applications, you must implement:
-          </p>
+          <p>For production healthcare applications, you must implement:</p>
 
           <div className="grid md:grid-cols-2 gap-4 not-prose my-6">
             <div className="p-4 border border-border rounded-lg">
@@ -168,15 +176,18 @@ npm run dev`}</code>
             <strong>Patient:</strong> "Can you explain my cholesterol results?"
           </p>
           <p>
-            <strong>Assistant:</strong> Retrieves results, explains each value, provides context and recommendations
+            <strong>Assistant:</strong> Retrieves results, explains each value,
+            provides context and recommendations
           </p>
 
           <h3>2. Medication Questions</h3>
           <p>
-            <strong>Patient:</strong> "Can I take ibuprofen with my blood pressure medication?"
+            <strong>Patient:</strong> "Can I take ibuprofen with my blood
+            pressure medication?"
           </p>
           <p>
-            <strong>Assistant:</strong> Checks drug interactions, provides safety information
+            <strong>Assistant:</strong> Checks drug interactions, provides
+            safety information
           </p>
 
           <h3>3. Appointment Booking</h3>
@@ -184,7 +195,8 @@ npm run dev`}</code>
             <strong>Patient:</strong> "I need to see a cardiologist next week"
           </p>
           <p>
-            <strong>Assistant:</strong> Finds available specialists, shows time slots, books appointment
+            <strong>Assistant:</strong> Finds available specialists, shows time
+            slots, books appointment
           </p>
 
           <h2>📦 Technologies</h2>
@@ -199,13 +211,19 @@ npm run dev`}</code>
           <h2>🔗 Related Examples</h2>
           <ul>
             <li>
-              <Link href="/examples/financial-advisor" className="text-brand-600 dark:text-brand-400 hover:underline">
+              <Link
+                href="/examples/financial-advisor"
+                className="text-brand-600 dark:text-brand-400 hover:underline"
+              >
                 Financial Advisor
               </Link>{' '}
               - Similar compliance requirements
             </li>
             <li>
-              <Link href="/guides/rag" className="text-brand-600 dark:text-brand-400 hover:underline">
+              <Link
+                href="/guides/rag"
+                className="text-brand-600 dark:text-brand-400 hover:underline"
+              >
                 RAG Guide
               </Link>{' '}
               - For medical knowledge base integration
@@ -229,7 +247,8 @@ EHR_API_KEY=...`}</code>
         <div className="mt-12 p-8 bg-gradient-to-r from-brand-50 to-blue-50 dark:from-brand-950 dark:to-blue-950 rounded-xl border border-brand-200 dark:border-brand-800">
           <h3 className="text-2xl font-bold mb-4">🚀 Production Deployment</h3>
           <p className="text-text-secondary mb-6">
-            Ready to deploy a HIPAA-compliant healthcare chatbot? Check our deployment guide.
+            Ready to deploy a HIPAA-compliant healthcare chatbot? Check our
+            deployment guide.
           </p>
           <Link
             href="/guides/deployment"
@@ -242,4 +261,3 @@ EHR_API_KEY=...`}</code>
     </div>
   )
 }
-

@@ -1,6 +1,12 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft, DollarSign, TrendingUp, PieChart, Shield } from 'lucide-react'
+import {
+  ArrowLeft,
+  DollarSign,
+  TrendingUp,
+  PieChart,
+  Shield,
+} from 'lucide-react'
 import { BudgetPieChart } from '@/components/Diagrams/BudgetPieChart'
 
 export const metadata: Metadata = {
@@ -27,7 +33,8 @@ export default function FinancialAdvisorPage() {
           <div>
             <h1 className="text-5xl font-bold mb-4">Financial Advisor</h1>
             <p className="text-xl text-text-secondary">
-              AI-powered financial assistant for budgeting, investment insights, and financial planning
+              AI-powered financial assistant for budgeting, investment insights,
+              and financial planning
             </p>
           </div>
         </div>
@@ -50,7 +57,10 @@ export default function FinancialAdvisorPage() {
                 Financial Disclaimer
               </h3>
               <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                This is for <strong>educational and demonstration purposes only</strong>. Not actual financial advice. Always consult licensed financial advisors for investment decisions.
+                This is for{' '}
+                <strong>educational and demonstration purposes only</strong>.
+                Not actual financial advice. Always consult licensed financial
+                advisors for investment decisions.
               </p>
             </div>
           </div>
@@ -60,22 +70,28 @@ export default function FinancialAdvisorPage() {
           <h2>✨ Features</h2>
           <ul>
             <li>
-              <strong>Budget Planning</strong> - Create and manage monthly budgets with the 50/30/20 rule
+              <strong>Budget Planning</strong> - Create and manage monthly
+              budgets with the 50/30/20 rule
             </li>
             <li>
-              <strong>Expense Tracking</strong> - Categorize and analyze spending patterns
+              <strong>Expense Tracking</strong> - Categorize and analyze
+              spending patterns
             </li>
             <li>
-              <strong>Investment Insights</strong> - Educational portfolio recommendations
+              <strong>Investment Insights</strong> - Educational portfolio
+              recommendations
             </li>
             <li>
-              <strong>Savings Goals</strong> - Track progress toward financial goals
+              <strong>Savings Goals</strong> - Track progress toward financial
+              goals
             </li>
             <li>
-              <strong>Financial Reports</strong> - Monthly/yearly summaries and trends
+              <strong>Financial Reports</strong> - Monthly/yearly summaries and
+              trends
             </li>
             <li>
-              <strong>Fraud Detection</strong> - Alerts on suspicious transactions
+              <strong>Fraud Detection</strong> - Alerts on suspicious
+              transactions
             </li>
             <li>
               <strong>Bill Reminders</strong> - Payment due date notifications
@@ -95,19 +111,31 @@ npm run dev`}</code>
 
           <h3>Budget Creation</h3>
           <div className="bg-surface-elevated p-4 rounded-lg border border-border not-prose mb-4">
-            <p className="font-medium mb-2">👤 User: "Help me create a budget. I earn $5,000/month"</p>
-            <p className="text-text-secondary text-sm mb-4">🤖 Assistant analyzes income and suggests:</p>
+            <p className="font-medium mb-2">
+              👤 User: "Help me create a budget. I earn $5,000/month"
+            </p>
+            <p className="text-text-secondary text-sm mb-4">
+              🤖 Assistant analyzes income and suggests:
+            </p>
             <ul className="text-sm space-y-1">
-              <li>• 50% Needs ($2,500): Housing, utilities, groceries, insurance</li>
+              <li>
+                • 50% Needs ($2,500): Housing, utilities, groceries, insurance
+              </li>
               <li>• 30% Wants ($1,500): Entertainment, dining, shopping</li>
-              <li>• 20% Savings ($1,000): Emergency fund, retirement, investments</li>
+              <li>
+                • 20% Savings ($1,000): Emergency fund, retirement, investments
+              </li>
             </ul>
           </div>
 
           <h3>Spending Analysis</h3>
           <div className="bg-surface-elevated p-4 rounded-lg border border-border not-prose mb-4">
-            <p className="font-medium mb-2">👤 User: "Where is my money going this month?"</p>
-            <p className="text-text-secondary text-sm mb-2">🤖 Assistant provides breakdown:</p>
+            <p className="font-medium mb-2">
+              👤 User: "Where is my money going this month?"
+            </p>
+            <p className="text-text-secondary text-sm mb-2">
+              🤖 Assistant provides breakdown:
+            </p>
             <div className="text-sm">
               <p className="font-medium mb-1">Top Spending Categories:</p>
               <ul className="space-y-1">
@@ -162,7 +190,8 @@ npm run dev`}</code>
               <strong>PCI Compliance</strong> - If handling payment card data
             </li>
             <li>
-              <strong>Encryption</strong> - Encrypt all financial data at rest and in transit
+              <strong>Encryption</strong> - Encrypt all financial data at rest
+              and in transit
             </li>
             <li>
               <strong>MFA</strong> - Require multi-factor authentication
@@ -171,7 +200,8 @@ npm run dev`}</code>
               <strong>Audit Logs</strong> - Track all financial operations
             </li>
             <li>
-              <strong>Regulatory Compliance</strong> - Follow SEC, FINRA guidelines
+              <strong>Regulatory Compliance</strong> - Follow SEC, FINRA
+              guidelines
             </li>
           </ul>
 
@@ -210,13 +240,19 @@ const marketData = await alphaVantage.globalQuote()`}</code>
           <h2>🔗 Related</h2>
           <ul>
             <li>
-              <Link href="/examples/ecommerce-assistant" className="text-brand-600 dark:text-brand-400 hover:underline">
+              <Link
+                href="/examples/ecommerce-assistant"
+                className="text-brand-600 dark:text-brand-400 hover:underline"
+              >
                 Ecommerce Assistant
               </Link>{' '}
               - Payment processing patterns
             </li>
             <li>
-              <Link href="/guides/agents" className="text-brand-600 dark:text-brand-400 hover:underline">
+              <Link
+                href="/guides/agents"
+                className="text-brand-600 dark:text-brand-400 hover:underline"
+              >
                 AI Agents Guide
               </Link>{' '}
               - Build specialized financial agents
@@ -227,7 +263,8 @@ const marketData = await alphaVantage.globalQuote()`}</code>
         <div className="mt-12 p-8 bg-gradient-to-r from-brand-50 to-green-50 dark:from-brand-950 dark:to-green-950 rounded-xl border border-brand-200 dark:border-brand-800">
           <h3 className="text-2xl font-bold mb-4">💡 Ready to Build?</h3>
           <p className="text-text-secondary mb-6">
-            Clone the example and start building your financial AI application today.
+            Clone the example and start building your financial AI application
+            today.
           </p>
           <div className="flex gap-4 flex-wrap">
             <a
@@ -250,4 +287,3 @@ const marketData = await alphaVantage.globalQuote()`}</code>
     </div>
   )
 }
-
