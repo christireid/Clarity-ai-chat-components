@@ -4,7 +4,7 @@ import { useStreamingWebSocket } from '../use-streaming-websocket'
 
 // Mock WebSocket
 class MockWebSocket {
-  readyState = WebSocket.CONNECTING
+  readyState: number = WebSocket.CONNECTING
   url: string
   protocols?: string | string[]
   

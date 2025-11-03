@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import { useWindowSize } from '../use-window-size'
 

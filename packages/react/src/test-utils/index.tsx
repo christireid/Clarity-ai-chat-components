@@ -7,6 +7,7 @@
 
 import { render, RenderOptions } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
+import { vi } from 'vitest'
 import { ThemeProvider, themes } from '../theme'
 import { AnalyticsProvider } from '../analytics'
 import { ErrorReporterProvider } from '../error'
@@ -20,10 +21,6 @@ export const MockAnalyticsProvider = ({ children }: { children: ReactNode }) => 
       config={{
         providers: [],
         enabled: false,
-        autoTrack: {
-          pageViews: false,
-          errors: false,
-        },
       }}
     >
       {children}
@@ -52,7 +49,7 @@ export const MockErrorReporterProvider = ({ children }: { children: ReactNode })
  */
 export const AllTheProviders = ({ children }: { children: ReactNode }) => {
   return (
-    <ThemeProvider theme={themes.default}>
+    <ThemeProvider>
       <MockErrorReporterProvider>
         <MockAnalyticsProvider>
           {children}
@@ -77,11 +74,11 @@ export const renderWithProviders = (
  */
 export const renderWithTheme = (
   ui: ReactElement,
-  themeName: keyof typeof themes = 'default',
+  themeName: keyof typeof themes = 'ocean',
   options?: Omit<RenderOptions, 'wrapper'>
 ) => {
   const Wrapper = ({ children }: { children: ReactNode }) => (
-    <ThemeProvider theme={themes[themeName]}>
+    <ThemeProvider defaultTheme={themes[themeName]}>
       {children}
     </ThemeProvider>
   )
@@ -92,13 +89,19 @@ export const renderWithTheme = (
 /**
  * Mock message data for testing
  */
-export const createMockMessage = (overrides = {}) => ({
-  id: Math.random().toString(36).substring(7),
-  role: 'user' as const,
-  content: 'Test message',
-  timestamp: new Date(),
-  ...overrides,
-})
+export const createMockMessage = (overrides = {}) => {
+  const now = new Date()
+  return {
+    id: Math.random().toString(36).substring(7),
+    chatId: 'test-chat',
+    role: 'user' as const,
+    content: 'Test message',
+    status: 'sent' as const,
+    createdAt: now,
+    updatedAt: now,
+    ...overrides,
+  }
+}
 
 /**
  * Mock messages array

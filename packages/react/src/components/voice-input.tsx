@@ -54,15 +54,6 @@ export interface VoiceInputProps {
 }
 
 /**
- * Size to button size mapping
- */
-const sizeMap = {
-  sm: 'sm' as const,
-  md: 'default' as const,
-  lg: 'lg' as const,
-}
-
-/**
  * Variant to button variant mapping
  */
 const variantMap = {
