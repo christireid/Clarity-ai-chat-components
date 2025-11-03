@@ -285,7 +285,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed inset-0 z-50 bg-black/60',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
               blurBackdrop && 'backdrop-blur-md',
               overlayClassName
             )}
@@ -299,7 +299,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             {...slideAnimations[side]}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
-              'fixed z-50 bg-background border-2 shadow-2xl',
+              'fixed z-[var(--z-modal)] bg-card border shadow-2xl',
               positionClasses[side],
               sizeClasses[side][size],
               side === 'left' && 'border-r rounded-r-2xl',
