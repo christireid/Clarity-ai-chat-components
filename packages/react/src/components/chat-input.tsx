@@ -118,11 +118,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <motion.div
-<<<<<<< Current (Your changes)
-      className={cn('relative flex flex-col gap-3 border-t border-border/60 bg-[hsl(var(--surface-elevated))] px-5 py-4 shadow-[0_-8px_24px_rgba(15,23,42,0.06)]', className)}
-=======
       className={cn('relative flex flex-col gap-2 p-4 border-t-2 bg-background/95 backdrop-blur-sm', className)}
->>>>>>> Incoming (Background Agent changes)
       initial="idle"
       animate={isFocused ? 'focused' : 'idle'}
       variants={containerVariants}
