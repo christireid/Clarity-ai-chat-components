@@ -161,6 +161,8 @@ export const designTokens = {
   },
 } as const
 
+} as const
+
 /**
  * Type-safe access to design tokens
  */
