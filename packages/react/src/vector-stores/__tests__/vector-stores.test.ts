@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { VectorStoreUtils } from '../index'
-import type { Vector, VectorQuery, VectorMatch } from '../types'
 
 describe('VectorStoreUtils', () => {
   describe('batchVectors', () => {
