@@ -1,16 +1,16 @@
 import Link from 'next/link'
-import { 
-  ShoppingCart, 
-  Code, 
-  Users, 
-  FileText, 
-  Mail, 
-  Heart, 
-  DollarSign, 
+import {
+  ShoppingCart,
+  Code,
+  Users,
+  FileText,
+  Mail,
+  Heart,
+  DollarSign,
   GraduationCap,
   BarChart3,
   Microscope,
-  MessageSquare
+  MessageSquare,
 } from 'lucide-react'
 
 export default function ExamplesCatalogPage() {
@@ -33,7 +33,9 @@ export default function ExamplesCatalogPage() {
           </div>
           <div>
             <div className="text-3xl font-bold text-brand-500 mb-2">10</div>
-            <div className="text-sm text-text-secondary">Industries Covered</div>
+            <div className="text-sm text-text-secondary">
+              Industries Covered
+            </div>
           </div>
           <div>
             <div className="text-3xl font-bold text-brand-500 mb-2">100%</div>
@@ -48,29 +50,45 @@ export default function ExamplesCatalogPage() {
 
       {/* Featured Examples */}
       <section>
-        <h2 className="text-3xl font-bold mb-6">🎯 Featured Production Demos</h2>
+        <h2 className="text-3xl font-bold mb-6">
+          🎯 Featured Production Demos
+        </h2>
         <div className="grid md:grid-cols-2 gap-6">
           {featuredExamples.map((example) => (
-            <div key={example.path} className="bg-bg border border-border rounded-xl p-6 hover:border-brand-500 transition-colors">
+            <div
+              key={example.path}
+              className="bg-bg border border-border rounded-xl p-6 hover:border-brand-500 transition-colors"
+            >
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-brand-500/10 rounded-lg">
                   {example.icon}
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold mb-2">{example.name}</h3>
-                  <p className="text-text-secondary mb-4">{example.description}</p>
+                  <p className="text-text-secondary mb-4">
+                    {example.description}
+                  </p>
                   <div className="space-y-2 mb-4">
                     {example.features.slice(0, 4).map((feature) => (
-                      <div key={feature} className="text-sm text-text-secondary">
+                      <div
+                        key={feature}
+                        className="text-sm text-text-secondary"
+                      >
                         ✓ {feature}
                       </div>
                     ))}
                   </div>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="px-2 py-1 bg-bg-secondary text-xs rounded">{example.technology}</span>
-                    <span className="px-2 py-1 bg-bg-secondary text-xs rounded">{example.complexity}</span>
+                    <span className="px-2 py-1 bg-bg-secondary text-xs rounded">
+                      {example.technology}
+                    </span>
+                    <span className="px-2 py-1 bg-bg-secondary text-xs rounded">
+                      {example.complexity}
+                    </span>
                     {example.isNew && (
-                      <span className="px-2 py-1 bg-green-500/10 text-green-600 text-xs rounded">NEW</span>
+                      <span className="px-2 py-1 bg-green-500/10 text-green-600 text-xs rounded">
+                        NEW
+                      </span>
                     )}
                   </div>
                   <Link
@@ -91,7 +109,10 @@ export default function ExamplesCatalogPage() {
         <h2 className="text-3xl font-bold mb-6">🏢 By Industry</h2>
         <div className="space-y-4">
           {industries.map((industry) => (
-            <div key={industry.name} className="bg-bg border border-border rounded-lg p-6">
+            <div
+              key={industry.name}
+              className="bg-bg border border-border rounded-lg p-6"
+            >
               <h3 className="text-xl font-bold mb-3">{industry.name}</h3>
               <div className="flex flex-wrap gap-3">
                 {industry.examples.map((example) => (
@@ -134,7 +155,12 @@ const featuredExamples = [
     path: 'ecommerce-assistant',
     icon: <ShoppingCart className="w-6 h-6 text-brand-500" />,
     description: 'AI-powered shopping with product recommendations',
-    features: ['Product search', 'Recommendations', 'Cart management', 'Price comparison'],
+    features: [
+      'Product search',
+      'Recommendations',
+      'Cart management',
+      'Price comparison',
+    ],
     technology: 'Next.js 15 + GPT-4',
     complexity: 'Intermediate',
     isNew: true,
@@ -154,7 +180,12 @@ const featuredExamples = [
     path: 'ai-agents-workflow',
     icon: <Users className="w-6 h-6 text-brand-500" />,
     description: 'Multi-agent system with specialized agents',
-    features: ['5 agents', 'Tool calling', 'Task decomposition', 'Parallel execution'],
+    features: [
+      '5 agents',
+      'Tool calling',
+      'Task decomposition',
+      'Parallel execution',
+    ],
     technology: 'Next.js 15 + GPT-4',
     complexity: 'Advanced',
     isNew: true,
@@ -174,7 +205,12 @@ const featuredExamples = [
     path: 'email-assistant',
     icon: <Mail className="w-6 h-6 text-brand-500" />,
     description: 'AI-powered email composition',
-    features: ['Tone adjustment', 'Multi-language', 'Templates', 'Grammar check'],
+    features: [
+      'Tone adjustment',
+      'Multi-language',
+      'Templates',
+      'Grammar check',
+    ],
     technology: 'Claude 3 + Next.js',
     complexity: 'Beginner',
     isNew: true,
@@ -184,7 +220,12 @@ const featuredExamples = [
     path: 'healthcare-assistant',
     icon: <Heart className="w-6 h-6 text-brand-500" />,
     description: 'Healthcare chatbot (demo only)',
-    features: ['Appointments', 'Symptom checker', 'Medication reminders', 'Emergency detection'],
+    features: [
+      'Appointments',
+      'Symptom checker',
+      'Medication reminders',
+      'Emergency detection',
+    ],
     technology: 'Next.js + Supabase',
     complexity: 'Intermediate',
     isNew: true,
@@ -204,7 +245,12 @@ const featuredExamples = [
     path: 'ai-tutor',
     icon: <GraduationCap className="w-6 h-6 text-brand-500" />,
     description: 'Intelligent tutoring system',
-    features: ['Adaptive learning', 'Multi-subject', 'Practice problems', 'Gamification'],
+    features: [
+      'Adaptive learning',
+      'Multi-subject',
+      'Practice problems',
+      'Gamification',
+    ],
     technology: 'Next.js + GPT-4',
     complexity: 'Intermediate',
     isNew: true,
@@ -214,7 +260,12 @@ const featuredExamples = [
     path: 'model-comparison-demo',
     icon: <Microscope className="w-6 h-6 text-brand-500" />,
     description: 'Compare AI providers side-by-side',
-    features: ['Multi-provider', 'Quality scoring', 'Cost analysis', 'Streaming'],
+    features: [
+      'Multi-provider',
+      'Quality scoring',
+      'Cost analysis',
+      'Streaming',
+    ],
     technology: 'Next.js 15',
     complexity: 'Advanced',
     isNew: false,
@@ -224,7 +275,12 @@ const featuredExamples = [
     path: 'rag-workbench-demo',
     icon: <FileText className="w-6 h-6 text-brand-500" />,
     description: 'Document Q&A with RAG',
-    features: ['Document upload', 'Semantic search', 'Context injection', 'Chunk visualization'],
+    features: [
+      'Document upload',
+      'Semantic search',
+      'Context injection',
+      'Chunk visualization',
+    ],
     technology: 'Next.js 15',
     complexity: 'Advanced',
     isNew: false,
@@ -234,7 +290,12 @@ const featuredExamples = [
     path: 'analytics-console-demo',
     icon: <BarChart3 className="w-6 h-6 text-brand-500" />,
     description: 'Real-time AI analytics dashboard',
-    features: ['Usage tracking', 'Cost monitoring', 'Charts', 'Performance metrics'],
+    features: [
+      'Usage tracking',
+      'Cost monitoring',
+      'Charts',
+      'Performance metrics',
+    ],
     technology: 'Recharts + Next.js',
     complexity: 'Advanced',
     isNew: false,
@@ -279,4 +340,3 @@ const industries = [
     examples: ['Analytics Console'],
   },
 ]
-

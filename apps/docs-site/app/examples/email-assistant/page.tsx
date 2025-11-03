@@ -43,28 +43,64 @@ export default function EmailAssistantPage() {
         <div className="prose prose-lg dark:prose-invert max-w-none">
           <h2>✨ Features</h2>
           <ul>
-            <li><strong>Smart Compose</strong> - AI-generated email drafts</li>
-            <li><strong>Quick Replies</strong> - Suggested responses based on email content</li>
-            <li><strong>Tone Adjustment</strong> - Formal, casual, friendly, or professional</li>
-            <li><strong>Grammar Check</strong> - Automatic proofreading</li>
-            <li><strong>Email Summarization</strong> - TL;DR for long emails</li>
-            <li><strong>Priority Detection</strong> - Identify urgent messages</li>
-            <li><strong>Template Library</strong> - Common email templates</li>
-            <li><strong>Follow-up Reminders</strong> - Track responses needed</li>
+            <li>
+              <strong>Smart Compose</strong> - AI-generated email drafts
+            </li>
+            <li>
+              <strong>Quick Replies</strong> - Suggested responses based on
+              email content
+            </li>
+            <li>
+              <strong>Tone Adjustment</strong> - Formal, casual, friendly, or
+              professional
+            </li>
+            <li>
+              <strong>Grammar Check</strong> - Automatic proofreading
+            </li>
+            <li>
+              <strong>Email Summarization</strong> - TL;DR for long emails
+            </li>
+            <li>
+              <strong>Priority Detection</strong> - Identify urgent messages
+            </li>
+            <li>
+              <strong>Template Library</strong> - Common email templates
+            </li>
+            <li>
+              <strong>Follow-up Reminders</strong> - Track responses needed
+            </li>
           </ul>
 
           <h2>💬 Example Workflow</h2>
           <div className="bg-surface-elevated p-4 rounded-lg border border-border not-prose mb-4">
-            <p className="font-medium mb-2">👤 User: "Write a professional follow-up email to John about the project proposal"</p>
-            <p className="text-text-secondary text-sm mb-3">🤖 Assistant generates:</p>
+            <p className="font-medium mb-2">
+              👤 User: "Write a professional follow-up email to John about the
+              project proposal"
+            </p>
+            <p className="text-text-secondary text-sm mb-3">
+              🤖 Assistant generates:
+            </p>
             <div className="bg-white dark:bg-slate-900 p-4 rounded border border-border text-sm">
-              <p className="font-medium mb-2">Subject: Following Up on Project Proposal</p>
+              <p className="font-medium mb-2">
+                Subject: Following Up on Project Proposal
+              </p>
               <div className="text-text-secondary space-y-2">
                 <p>Hi John,</p>
-                <p>I hope this message finds you well. I wanted to follow up on the project proposal we discussed last week.</p>
-                <p>I'd love to hear your thoughts and answer any questions you might have. Would you be available for a quick call this week to discuss next steps?</p>
+                <p>
+                  I hope this message finds you well. I wanted to follow up on
+                  the project proposal we discussed last week.
+                </p>
+                <p>
+                  I'd love to hear your thoughts and answer any questions you
+                  might have. Would you be available for a quick call this week
+                  to discuss next steps?
+                </p>
                 <p>Looking forward to hearing from you.</p>
-                <p>Best regards,<br />[Your Name]</p>
+                <p>
+                  Best regards,
+                  <br />
+                  [Your Name]
+                </p>
               </div>
             </div>
           </div>
@@ -111,7 +147,10 @@ npm run dev`}</code>
           <h2>🔗 Related</h2>
           <ul>
             <li>
-              <Link href="/reference/components/prompt-library" className="text-brand-600 dark:text-brand-400 hover:underline">
+              <Link
+                href="/reference/components/prompt-library"
+                className="text-brand-600 dark:text-brand-400 hover:underline"
+              >
                 Prompt Library
               </Link>{' '}
               - For email templates
@@ -122,4 +161,3 @@ npm run dev`}</code>
     </div>
   )
 }
-

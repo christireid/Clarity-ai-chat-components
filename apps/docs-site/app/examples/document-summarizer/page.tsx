@@ -43,13 +43,28 @@ export default function DocumentSummarizerPage() {
         <div className="prose prose-lg dark:prose-invert max-w-none">
           <h2>✨ Features</h2>
           <ul>
-            <li><strong>Document Upload</strong> - PDF, DOCX, TXT, MD files</li>
-            <li><strong>Smart Summaries</strong> - Key points extraction</li>
-            <li><strong>Q&A</strong> - Ask questions about document content</li>
-            <li><strong>Entity Extraction</strong> - Find names, dates, locations</li>
-            <li><strong>Key Insights</strong> - Important findings highlighted</li>
-            <li><strong>Multi-Document Analysis</strong> - Compare multiple documents</li>
-            <li><strong>Export Summaries</strong> - Save as PDF or Markdown</li>
+            <li>
+              <strong>Document Upload</strong> - PDF, DOCX, TXT, MD files
+            </li>
+            <li>
+              <strong>Smart Summaries</strong> - Key points extraction
+            </li>
+            <li>
+              <strong>Q&A</strong> - Ask questions about document content
+            </li>
+            <li>
+              <strong>Entity Extraction</strong> - Find names, dates, locations
+            </li>
+            <li>
+              <strong>Key Insights</strong> - Important findings highlighted
+            </li>
+            <li>
+              <strong>Multi-Document Analysis</strong> - Compare multiple
+              documents
+            </li>
+            <li>
+              <strong>Export Summaries</strong> - Save as PDF or Markdown
+            </li>
           </ul>
 
           <h2>💬 Example Workflow</h2>
@@ -57,16 +72,22 @@ export default function DocumentSummarizerPage() {
             <div className="space-y-3 text-sm">
               <div>
                 <p className="font-medium mb-1">📄 Step 1: Upload</p>
-                <p className="text-text-secondary">Upload "Q4_Financial_Report.pdf" (47 pages)</p>
+                <p className="text-text-secondary">
+                  Upload "Q4_Financial_Report.pdf" (47 pages)
+                </p>
               </div>
               <div>
                 <p className="font-medium mb-1">⚙️ Step 2: Processing</p>
-                <p className="text-text-secondary">AI extracts text, identifies sections, analyzes content</p>
+                <p className="text-text-secondary">
+                  AI extracts text, identifies sections, analyzes content
+                </p>
               </div>
               <div>
                 <p className="font-medium mb-1">📝 Step 3: Summary</p>
                 <div className="bg-white dark:bg-slate-900 p-3 rounded mt-2">
-                  <p className="font-medium">Executive Summary (Auto-generated)</p>
+                  <p className="font-medium">
+                    Executive Summary (Auto-generated)
+                  </p>
                   <ul className="mt-2 space-y-1 text-xs text-text-secondary">
                     <li>• Revenue: $12.5M (↑15% YoY)</li>
                     <li>• Profit Margin: 23% (target: 20%)</li>
@@ -77,7 +98,9 @@ export default function DocumentSummarizerPage() {
               </div>
               <div>
                 <p className="font-medium mb-1">💬 Step 4: Q&A</p>
-                <p className="text-text-secondary">Ask: "What were the top 3 expenses?" → Get instant answers</p>
+                <p className="text-text-secondary">
+                  Ask: "What were the top 3 expenses?" → Get instant answers
+                </p>
               </div>
             </div>
           </div>
@@ -92,7 +115,10 @@ export default function DocumentSummarizerPage() {
               { type: 'Excel', icon: '📈', ext: '.xlsx' },
               { type: 'CSV', icon: '📋', ext: '.csv' },
             ].map((doc) => (
-              <div key={doc.type} className="p-3 border border-border rounded-lg text-center">
+              <div
+                key={doc.type}
+                className="p-3 border border-border rounded-lg text-center"
+              >
                 <div className="text-3xl mb-1">{doc.icon}</div>
                 <div className="font-medium text-sm">{doc.type}</div>
                 <div className="text-xs text-text-secondary">{doc.ext}</div>
@@ -102,24 +128,43 @@ export default function DocumentSummarizerPage() {
 
           <h2>📊 Analysis Capabilities</h2>
           <ul>
-            <li><strong>Extractive Summary</strong> - Pull key sentences</li>
-            <li><strong>Abstractive Summary</strong> - Generate new summary text</li>
-            <li><strong>Entity Recognition</strong> - Names, organizations, locations, dates</li>
-            <li><strong>Sentiment Analysis</strong> - Overall tone and sentiment</li>
-            <li><strong>Topic Modeling</strong> - Main themes and topics</li>
-            <li><strong>Citation Tracking</strong> - References and sources</li>
+            <li>
+              <strong>Extractive Summary</strong> - Pull key sentences
+            </li>
+            <li>
+              <strong>Abstractive Summary</strong> - Generate new summary text
+            </li>
+            <li>
+              <strong>Entity Recognition</strong> - Names, organizations,
+              locations, dates
+            </li>
+            <li>
+              <strong>Sentiment Analysis</strong> - Overall tone and sentiment
+            </li>
+            <li>
+              <strong>Topic Modeling</strong> - Main themes and topics
+            </li>
+            <li>
+              <strong>Citation Tracking</strong> - References and sources
+            </li>
           </ul>
 
           <h2>🔗 Related Examples</h2>
           <ul>
             <li>
-              <Link href="/guides/rag" className="text-brand-600 dark:text-brand-400 hover:underline">
+              <Link
+                href="/guides/rag"
+                className="text-brand-600 dark:text-brand-400 hover:underline"
+              >
                 RAG Guide
               </Link>{' '}
               - For document Q&A
             </li>
             <li>
-              <Link href="/reference/components/file-upload" className="text-brand-600 dark:text-brand-400 hover:underline">
+              <Link
+                href="/reference/components/file-upload"
+                className="text-brand-600 dark:text-brand-400 hover:underline"
+              >
                 File Upload
               </Link>{' '}
               - Upload component
@@ -130,4 +175,3 @@ export default function DocumentSummarizerPage() {
     </div>
   )
 }
-

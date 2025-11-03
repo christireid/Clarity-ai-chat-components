@@ -11,7 +11,12 @@ export default function CLIPage() {
         </div>
         <p className="text-xl text-text-secondary">
           Gorgeous terminal experience inspired by{' '}
-          <a href="https://github.com/charmbracelet" target="_blank" rel="noopener noreferrer" className="text-brand-500 hover:underline">
+          <a
+            href="https://github.com/charmbracelet"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-500 hover:underline"
+          >
             charmbracelet
           </a>
           's amazing libraries.
@@ -25,7 +30,8 @@ export default function CLIPage() {
           <code>npm install -g @clarity-chat/cli</code>
         </pre>
         <p className="text-sm text-text-secondary mt-4">
-          Or use without installation: <code className="px-2 py-1 bg-bg rounded">npx @clarity-chat/cli</code>
+          Or use without installation:{' '}
+          <code className="px-2 py-1 bg-bg rounded">npx @clarity-chat/cli</code>
         </p>
       </section>
 
@@ -34,10 +40,15 @@ export default function CLIPage() {
         <h2 className="text-3xl font-bold mb-6">🎯 Commands</h2>
         <div className="space-y-6">
           {commands.map((cmd) => (
-            <div key={cmd.name} className="bg-bg border border-border rounded-xl p-6">
+            <div
+              key={cmd.name}
+              className="bg-bg border border-border rounded-xl p-6"
+            >
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="text-xl font-bold mb-1">{cmd.emoji} {cmd.name}</h3>
+                  <h3 className="text-xl font-bold mb-1">
+                    {cmd.emoji} {cmd.name}
+                  </h3>
                   <p className="text-text-secondary">{cmd.description}</p>
                 </div>
               </div>
@@ -47,7 +58,10 @@ export default function CLIPage() {
               {cmd.features && (
                 <div className="flex flex-wrap gap-2">
                   {cmd.features.map((feature) => (
-                    <span key={feature} className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                    <span
+                      key={feature}
+                      className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded"
+                    >
                       {feature}
                     </span>
                   ))}
@@ -70,7 +84,9 @@ export default function CLIPage() {
         <div className="grid md:grid-cols-3 gap-4">
           <div className="bg-bg rounded-lg p-4">
             <div className="font-semibold mb-2">Spinners</div>
-            <div className="text-sm text-text-secondary">dots, arrows, pulse</div>
+            <div className="text-sm text-text-secondary">
+              dots, arrows, pulse
+            </div>
           </div>
           <div className="bg-bg rounded-lg p-4">
             <div className="font-semibold mb-2">Progress Bars</div>
@@ -90,7 +106,9 @@ export default function CLIPage() {
           </div>
           <div className="bg-bg rounded-lg p-4">
             <div className="font-semibold mb-2">Lists</div>
-            <div className="text-sm text-text-secondary">bulleted, numbered</div>
+            <div className="text-sm text-text-secondary">
+              bulleted, numbered
+            </div>
           </div>
         </div>
       </section>
@@ -184,4 +202,3 @@ const commands = [
     features: ['Quick access', 'Search'],
   },
 ]
-

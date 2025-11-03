@@ -18,7 +18,8 @@ export default function ToolsPage() {
       <div>
         <h1 className="text-5xl font-bold mb-4">Developer Tools</h1>
         <p className="text-xl text-text-secondary">
-          World-class developer experience with beautiful CLI, interactive playground, and comprehensive testing.
+          World-class developer experience with beautiful CLI, interactive
+          playground, and comprehensive testing.
         </p>
       </div>
 
@@ -26,7 +27,8 @@ export default function ToolsPage() {
       <section className="bg-bg-secondary rounded-xl p-8">
         <h2 className="text-2xl font-bold mb-4">🎯 Overview</h2>
         <p className="text-lg text-text-secondary mb-6">
-          Clarity Chat includes a complete suite of developer tools inspired by the amazing{' '}
+          Clarity Chat includes a complete suite of developer tools inspired by
+          the amazing{' '}
           <a
             href="https://github.com/charmbracelet"
             target="_blank"
@@ -35,7 +37,8 @@ export default function ToolsPage() {
           >
             charmbracelet
           </a>{' '}
-          ecosystem, featuring beautiful terminal UIs, automated testing, and advanced debugging capabilities.
+          ecosystem, featuring beautiful terminal UIs, automated testing, and
+          advanced debugging capabilities.
         </p>
         <div className="grid md:grid-cols-3 gap-6">
           <div className="bg-bg rounded-lg p-6">
@@ -67,12 +70,20 @@ export default function ToolsPage() {
                 <div className="flex-1">
                   <h3 className="text-xl font-bold mb-2">Beautiful CLI</h3>
                   <p className="text-text-secondary mb-4">
-                    Gorgeous terminal UI inspired by Charm's Bubble Tea and Lipgloss. Interactive component browser, smart upgrades, and more.
+                    Gorgeous terminal UI inspired by Charm's Bubble Tea and
+                    Lipgloss. Interactive component browser, smart upgrades, and
+                    more.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">12 commands</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">9+ TUI components</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Charm-inspired</span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      12 commands
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      9+ TUI components
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Charm-inspired
+                    </span>
                   </div>
                 </div>
               </div>
@@ -87,14 +98,23 @@ export default function ToolsPage() {
                   <Code2 className="w-6 h-6 text-brand-500" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">Interactive Playground</h3>
+                  <h3 className="text-xl font-bold mb-2">
+                    Interactive Playground
+                  </h3>
                   <p className="text-text-secondary mb-4">
-                    Monaco-based REPL for testing components in real-time. Live preview, templates, and share functionality.
+                    Monaco-based REPL for testing components in real-time. Live
+                    preview, templates, and share functionality.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Monaco Editor</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Live preview</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Templates</span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Monaco Editor
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Live preview
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Templates
+                    </span>
                   </div>
                 </div>
               </div>
@@ -109,14 +129,23 @@ export default function ToolsPage() {
                   <TestTube className="w-6 h-6 text-brand-500" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">Testing Infrastructure</h3>
+                  <h3 className="text-xl font-bold mb-2">
+                    Testing Infrastructure
+                  </h3>
                   <p className="text-text-secondary mb-4">
-                    Playwright E2E testing, visual regression with Chromatic, and accessibility testing with Axe.
+                    Playwright E2E testing, visual regression with Chromatic,
+                    and accessibility testing with Axe.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">6 browsers</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Visual regression</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">A11y testing</span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      6 browsers
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Visual regression
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      A11y testing
+                    </span>
                   </div>
                 </div>
               </div>
@@ -133,12 +162,19 @@ export default function ToolsPage() {
                 <div className="flex-1">
                   <h3 className="text-xl font-bold mb-2">Advanced Dev-Tools</h3>
                   <p className="text-text-secondary mb-4">
-                    Time-travel debugging for conversation replay, AI model comparison, and performance profiling.
+                    Time-travel debugging for conversation replay, AI model
+                    comparison, and performance profiling.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Time-travel</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Model comparison</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Profiling</span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Time-travel
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Model comparison
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Profiling
+                    </span>
                   </div>
                 </div>
               </div>
@@ -155,12 +191,19 @@ export default function ToolsPage() {
                 <div className="flex-1">
                   <h3 className="text-xl font-bold mb-2">CI/CD Automation</h3>
                   <p className="text-text-secondary mb-4">
-                    5 GitHub Actions workflows for automated testing, building, and releasing with 100% CI automation.
+                    5 GitHub Actions workflows for automated testing, building,
+                    and releasing with 100% CI automation.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">5 workflows</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Renovate</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Changesets</span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      5 workflows
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Renovate
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Changesets
+                    </span>
                   </div>
                 </div>
               </div>
@@ -177,12 +220,19 @@ export default function ToolsPage() {
                 <div className="flex-1">
                   <h3 className="text-xl font-bold mb-2">Codemods</h3>
                   <p className="text-text-secondary mb-4">
-                    Automated code transformations for version migrations using AST-based transformations.
+                    Automated code transformations for version migrations using
+                    AST-based transformations.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">AST-based</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Dry-run</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Safe</span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      AST-based
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Dry-run
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Safe
+                    </span>
                   </div>
                 </div>
               </div>
@@ -199,12 +249,19 @@ export default function ToolsPage() {
                 <div className="flex-1">
                   <h3 className="text-xl font-bold mb-2">VSCode Extension</h3>
                   <p className="text-text-secondary mb-4">
-                    Rich IDE integration with 60+ snippets, IntelliSense, diagnostics, and component preview.
+                    Rich IDE integration with 60+ snippets, IntelliSense,
+                    diagnostics, and component preview.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">60+ snippets</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Diagnostics</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Preview</span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      60+ snippets
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Diagnostics
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Preview
+                    </span>
                   </div>
                 </div>
               </div>
@@ -219,14 +276,23 @@ export default function ToolsPage() {
                   <Gauge className="w-6 h-6 text-brand-500" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">Analysis & Monitoring</h3>
+                  <h3 className="text-xl font-bold mb-2">
+                    Analysis & Monitoring
+                  </h3>
                   <p className="text-text-secondary mb-4">
-                    Bundle analysis, performance benchmarking, and automated reporting with HTML visualizations.
+                    Bundle analysis, performance benchmarking, and automated
+                    reporting with HTML visualizations.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Bundle size</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Benchmarks</span>
-                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">Reports</span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Bundle size
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Benchmarks
+                    </span>
+                    <span className="px-2 py-1 bg-brand-500/10 text-brand-500 text-xs rounded">
+                      Reports
+                    </span>
                   </div>
                 </div>
               </div>
@@ -243,13 +309,20 @@ export default function ToolsPage() {
             <h3 className="text-xl font-bold mb-3">🎨 Charm-Inspired CLI</h3>
             <p className="text-text-secondary mb-4">
               Most beautiful CLI in the component library ecosystem, inspired by{' '}
-              <a href="https://github.com/charmbracelet/bubbletea" className="text-brand-500 hover:underline">
+              <a
+                href="https://github.com/charmbracelet/bubbletea"
+                className="text-brand-500 hover:underline"
+              >
                 Bubble Tea
               </a>{' '}
               and{' '}
-              <a href="https://github.com/charmbracelet/lipgloss" className="text-brand-500 hover:underline">
+              <a
+                href="https://github.com/charmbracelet/lipgloss"
+                className="text-brand-500 hover:underline"
+              >
                 Lipgloss
-              </a>.
+              </a>
+              .
             </p>
             <ul className="space-y-2 text-sm text-text-secondary">
               <li>✓ Interactive component browser</li>
@@ -262,7 +335,8 @@ export default function ToolsPage() {
           <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl p-6 border border-green-500/20">
             <h3 className="text-xl font-bold mb-3">⏱️ Time-Travel Debugger</h3>
             <p className="text-text-secondary mb-4">
-              Record and replay conversation states for advanced debugging - a feature no other component library has.
+              Record and replay conversation states for advanced debugging - a
+              feature no other component library has.
             </p>
             <ul className="space-y-2 text-sm text-text-secondary">
               <li>✓ Jump to any point in history</li>
@@ -275,7 +349,8 @@ export default function ToolsPage() {
           <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-xl p-6 border border-orange-500/20">
             <h3 className="text-xl font-bold mb-3">🤖 AI Model Comparison</h3>
             <p className="text-text-secondary mb-4">
-              Compare responses from different AI models side-by-side with cost, speed, and quality metrics.
+              Compare responses from different AI models side-by-side with cost,
+              speed, and quality metrics.
             </p>
             <ul className="space-y-2 text-sm text-text-secondary">
               <li>✓ Side-by-side response analysis</li>
@@ -286,9 +361,12 @@ export default function ToolsPage() {
           </div>
 
           <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-xl p-6 border border-cyan-500/20">
-            <h3 className="text-xl font-bold mb-3">🎮 Interactive Playground</h3>
+            <h3 className="text-xl font-bold mb-3">
+              🎮 Interactive Playground
+            </h3>
             <p className="text-text-secondary mb-4">
-              Full-featured code playground with Monaco Editor, real-time preview, and component templates.
+              Full-featured code playground with Monaco Editor, real-time
+              preview, and component templates.
             </p>
             <ul className="space-y-2 text-sm text-text-secondary">
               <li>✓ TypeScript support</li>
@@ -304,35 +382,55 @@ export default function ToolsPage() {
       <section className="bg-bg-secondary rounded-xl p-8">
         <h2 className="text-2xl font-bold mb-6">🚀 Get Started</h2>
         <div className="grid md:grid-cols-2 gap-4">
-          <Link href="/tools/cli" className="flex items-center gap-3 p-4 bg-bg rounded-lg hover:bg-bg-tertiary transition-colors">
+          <Link
+            href="/tools/cli"
+            className="flex items-center gap-3 p-4 bg-bg rounded-lg hover:bg-bg-tertiary transition-colors"
+          >
             <Terminal className="w-5 h-5 text-brand-500" />
             <div>
               <div className="font-semibold">CLI Documentation</div>
-              <div className="text-sm text-text-secondary">Learn all CLI commands</div>
+              <div className="text-sm text-text-secondary">
+                Learn all CLI commands
+              </div>
             </div>
           </Link>
 
-          <Link href="/tools/playground" className="flex items-center gap-3 p-4 bg-bg rounded-lg hover:bg-bg-tertiary transition-colors">
+          <Link
+            href="/tools/playground"
+            className="flex items-center gap-3 p-4 bg-bg rounded-lg hover:bg-bg-tertiary transition-colors"
+          >
             <Code2 className="w-5 h-5 text-brand-500" />
             <div>
               <div className="font-semibold">Try the Playground</div>
-              <div className="text-sm text-text-secondary">Interactive component testing</div>
+              <div className="text-sm text-text-secondary">
+                Interactive component testing
+              </div>
             </div>
           </Link>
 
-          <Link href="/tools/testing" className="flex items-center gap-3 p-4 bg-bg rounded-lg hover:bg-bg-tertiary transition-colors">
+          <Link
+            href="/tools/testing"
+            className="flex items-center gap-3 p-4 bg-bg rounded-lg hover:bg-bg-tertiary transition-colors"
+          >
             <TestTube className="w-5 h-5 text-brand-500" />
             <div>
               <div className="font-semibold">Testing Guide</div>
-              <div className="text-sm text-text-secondary">Set up automated testing</div>
+              <div className="text-sm text-text-secondary">
+                Set up automated testing
+              </div>
             </div>
           </Link>
 
-          <Link href="/tools/codemods" className="flex items-center gap-3 p-4 bg-bg rounded-lg hover:bg-bg-tertiary transition-colors">
+          <Link
+            href="/tools/codemods"
+            className="flex items-center gap-3 p-4 bg-bg rounded-lg hover:bg-bg-tertiary transition-colors"
+          >
             <GitBranch className="w-5 h-5 text-brand-500" />
             <div>
               <div className="font-semibold">Migration Guide</div>
-              <div className="text-sm text-text-secondary">Automated code migrations</div>
+              <div className="text-sm text-text-secondary">
+                Automated code migrations
+              </div>
             </div>
           </Link>
         </div>
@@ -363,4 +461,3 @@ export default function ToolsPage() {
     </div>
   )
 }
-
