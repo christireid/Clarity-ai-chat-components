@@ -186,7 +186,7 @@ export class LocalStorageEmbeddingCache implements EmbeddingCache {
   
   async clear(): Promise<void> {
     localStorage.removeItem(this.storageKey)
-    this.stats = { hits: 0, misses: 0 }
+    this.statsData = { hits: 0, misses: 0 }
   }
   
   async stats(): Promise<{
@@ -196,12 +196,12 @@ export class LocalStorageEmbeddingCache implements EmbeddingCache {
     hitRate: number
   }> {
     const cache = this.getCache()
-    const total = this.stats.hits + this.stats.misses
+    const total = this.statsData.hits + this.statsData.misses
     return {
       size: cache.size,
-      hits: this.stats.hits,
-      misses: this.stats.misses,
-      hitRate: total > 0 ? this.stats.hits / total : 0,
+      hits: this.statsData.hits,
+      misses: this.statsData.misses,
+      hitRate: total > 0 ? this.statsData.hits / total : 0,
     }
   }
 }
