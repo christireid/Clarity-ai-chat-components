@@ -79,9 +79,9 @@ export function CodeBlock({
           <pre
             className={clsx(
               highlightClassName,
-              'overflow-x-auto p-4 text-sm leading-relaxed',
-              !title && !language && 'rounded-lg',
-              (title || language) && 'rounded-b-lg'
+              'overflow-x-auto p-4 text-sm leading-relaxed border-2 border-border',
+              !title && !language && 'rounded-xl',
+              (title || language) && 'rounded-b-xl border-t-0'
             )}
             style={{
               ...style,
@@ -92,7 +92,7 @@ export function CodeBlock({
             {!title && !language && (
               <button
                 onClick={copyToClipboard}
-                className="absolute top-2 right-2 p-2 rounded-md hover:bg-white/10 dark:hover:bg-black/20 transition-colors opacity-0 group-hover:opacity-100"
+                className="absolute top-3 right-3 p-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:shadow-sm"
                 aria-label="Copy code"
               >
                 {copied ? (
