@@ -365,15 +365,100 @@ All examples are built with modern, production-ready technologies:
 
 ---
 
-## 🎯 Use Cases
+## 🎯 Use Cases Covered
 
-These examples demonstrate patterns for:
+These examples demonstrate the **top 10 AI chatbot use cases** based on enterprise deployment patterns:
 
-- **Multi-Model AI**: Compare and evaluate different AI providers
-- **Document Processing**: RAG pipelines for context-aware AI
-- **Analytics & Monitoring**: Track usage, costs, and performance
-- **Production Deployment**: PM2 process management, error handling
-- **TypeScript Patterns**: Strict typing, type safety best practices
+### By Industry
+
+**E-Commerce & Retail** 🛍️
+- E-Commerce Shopping Assistant
+- Product recommendations
+- Conversational commerce
+
+**Software Development** 💻
+- Code Assistant
+- AI Agents Workflow
+- Multi-agent collaboration
+
+**Healthcare** 🏥
+- Healthcare Assistant (appointment booking, symptom checking)
+- Note: Demo only, not for medical use
+
+**Financial Services** 💰
+- Financial Advisor (budgeting, investment education)
+- Note: Demo only, not financial advice
+
+**Education** 🎓
+- AI Tutor (adaptive learning, progress tracking)
+- Multi-subject support
+
+**Customer Service** 🤝
+- Customer Support (Supabase integration)
+- Multi-turn conversations
+
+**Knowledge Management** 📚
+- Document Summarizer
+- RAG Workbench
+- Multi-document processing
+
+**Communication** 📧
+- Email Drafting Assistant
+- Tone adjustment and templates
+
+**Analytics & Monitoring** 📊
+- Analytics Console
+- Cost tracking and optimization
+
+**Model Evaluation** ⚖️
+- Model Comparison Demo
+- Multi-provider analysis
+
+### By Complexity
+
+**Beginner** 🟢
+- Basic Chat
+- Email Assistant
+- Streaming Chat
+
+**Intermediate** 🟡
+- E-Commerce Assistant
+- Customer Support
+- Document Summarizer
+- Healthcare Assistant
+- Financial Advisor
+- AI Tutor
+
+**Advanced** 🔴
+- Model Comparison Demo
+- RAG Workbench
+- AI Agents Workflow
+- Code Assistant
+- Analytics Console
+
+### By AI Capability
+
+**Function Calling** 🔧
+- E-Commerce Assistant
+- Healthcare Assistant
+- Financial Advisor
+- Code Assistant
+
+**RAG (Retrieval Augmented Generation)** 🔍
+- RAG Workbench
+- Document Summarizer
+
+**Multi-Agent Systems** 🤖
+- AI Agents Workflow
+
+**Streaming** ⚡
+- Streaming Chat
+- Model Comparison
+- Code Assistant
+
+**Multi-Modal** 🎨
+- Healthcare Assistant (future: image analysis)
+- Code Assistant (code + natural language)
 
 ---
 
@@ -422,6 +507,26 @@ If you find these examples helpful, please star the repository!
 
 ---
 
-**Last Updated**: 2025-10-27  
-**Examples Count**: 7 (3 featured demos + 4 starter templates)  
+**Last Updated**: November 3, 2025  
+**Examples Count**: 16 total  
+- **11 Featured Demos** (production-ready showcases)
+- **5 Starter Templates** (learning examples)
+
 **Status**: Production Ready ✅
+
+**Coverage**: Top 10 AI chatbot use cases based on enterprise research:
+1. ✅ Customer Service & Support
+2. ✅ E-Commerce & Retail
+3. ✅ Healthcare
+4. ✅ Financial Services
+5. ✅ Education & E-Learning
+6. ✅ Software Development
+7. ✅ Knowledge Management
+8. ✅ Communication & Email
+9. ✅ Analytics & Monitoring
+10. ✅ Multi-Agent Systems
+
+**Research Sources**:
+- [IBM Conversational AI Use Cases](https://www.ibm.com/think/topics/conversational-ai-use-cases)
+- [Freshworks AI Applications](https://www.freshworks.com/conversational-ai/usecases/)
+- Enterprise deployment patterns and best practices
