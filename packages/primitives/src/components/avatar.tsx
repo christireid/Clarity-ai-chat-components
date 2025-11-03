@@ -7,10 +7,12 @@ const avatarVariants = cva(
   {
     variants: {
       size: {
-        sm: 'h-8 w-8',
-        default: 'h-10 w-10',
-        lg: 'h-12 w-12',
-        xl: 'h-16 w-16',
+        xs: 'h-6 w-6 text-[10px]',
+        sm: 'h-8 w-8 text-xs',
+        default: 'h-10 w-10 text-sm',
+        lg: 'h-12 w-12 text-base',
+        xl: 'h-16 w-16 text-lg',
+        '2xl': 'h-20 w-20 text-xl',
       },
     },
     defaultVariants: {
@@ -26,10 +28,14 @@ export interface AvatarProps
   alt?: string
   fallback?: string
   status?: 'online' | 'offline' | 'away' | 'busy'
+  /** Enable hover scale effect */
+  hoverable?: boolean
+  /** Custom status badge content */
+  statusBadge?: React.ReactNode
 }
 
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
-  ({ className, size, src, alt, fallback, status, ...props }, ref) => {
+  ({ className, size, src, alt, fallback, status, hoverable = false, statusBadge, ...props }, ref) => {
     const [imageError, setImageError] = React.useState(false)
 
     const getFallbackText = () => {
@@ -46,16 +52,28 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     }
 
     const statusColors = {
-      online: 'bg-green-500',
-      offline: 'bg-gray-400',
-      away: 'bg-yellow-500',
-      busy: 'bg-red-500',
+      online: 'bg-green-500 ring-green-400/30',
+      offline: 'bg-gray-400 ring-gray-300/30',
+      away: 'bg-yellow-500 ring-yellow-400/30',
+      busy: 'bg-red-500 ring-red-400/30',
+    }
+
+    const statusSizes = {
+      xs: 'h-1.5 w-1.5',
+      sm: 'h-2 w-2',
+      default: 'h-2.5 w-2.5',
+      lg: 'h-3 w-3',
+      xl: 'h-3.5 w-3.5',
+      '2xl': 'h-4 w-4',
     }
 
     return (
       <div
         ref={ref}
-        className={cn(avatarVariants({ size, className }))}
+        className={cn(
+          avatarVariants({ size, className }),
+          hoverable && 'hover:scale-110 hover:shadow-md cursor-pointer hover:-translate-y-0.5'
+        )}
         {...props}
       >
         {src && !imageError ? (
@@ -66,19 +84,29 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold">
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none">
             {getFallbackText()}
           </div>
         )}
 
-        {status && (
-          <span
-            className={cn(
-              'absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-background shadow-sm',
-              status === 'online' && 'animate-pulse',
-              statusColors[status]
+        {/* Status Indicator */}
+        {status && !statusBadge && (
+          <span className={cn(
+            'absolute bottom-0 right-0 block rounded-full border-2 border-background shadow-sm ring-2',
+            statusSizes[size || 'default'],
+            statusColors[status]
+          )}>
+            {status === 'online' && (
+              <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
             )}
-          />
+          </span>
+        )}
+
+        {/* Custom Status Badge */}
+        {statusBadge && (
+          <span className="absolute -bottom-1 -right-1">
+            {statusBadge}
+          </span>
         )}
       </div>
     )

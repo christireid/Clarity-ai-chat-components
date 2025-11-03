@@ -1,6 +1,6 @@
 /**
  * Documentation Bot Template
- * 
+ *
  * Interactive documentation assistant
  */
 
