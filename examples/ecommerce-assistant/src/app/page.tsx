@@ -11,7 +11,7 @@ import { ChatInterface } from './components/ChatInterface'
 import { ProductCard } from './components/ProductCard'
 import { Cart } from './components/Cart'
 import { products } from '@/lib/products'
-import { useCart} from '@/lib/store'
+import { useCart } from '@/lib/store'
 
 export default function ECommerceAssistant() {
   const [showCart, setShowCart] = useState(false)
@@ -30,7 +30,9 @@ export default function ECommerceAssistant() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">ShopBot AI</h1>
-                <p className="text-sm text-gray-600">Your personal shopping assistant</p>
+                <p className="text-sm text-gray-600">
+                  Your personal shopping assistant
+                </p>
               </div>
             </div>
 
@@ -67,8 +69,8 @@ export default function ECommerceAssistant() {
                   <h2 className="text-lg font-semibold">Recommended for You</h2>
                 </div>
                 <div className="space-y-4">
-                  {recommendedProducts.slice(0, 3).map(productId => {
-                    const product = products.find(p => p.id === productId)
+                  {recommendedProducts.slice(0, 3).map((productId) => {
+                    const product = products.find((p) => p.id === productId)
                     return product ? (
                       <ProductCard key={product.id} product={product} compact />
                     ) : null
@@ -83,7 +85,9 @@ export default function ECommerceAssistant() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Products Viewed</span>
-                  <span className="font-semibold">{recommendedProducts.length}</span>
+                  <span className="font-semibold">
+                    {recommendedProducts.length}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">In Cart</span>
@@ -102,10 +106,7 @@ export default function ECommerceAssistant() {
       </div>
 
       {/* Cart Sidebar */}
-      {showCart && (
-        <Cart onClose={() => setShowCart(false)} />
-      )}
+      {showCart && <Cart onClose={() => setShowCart(false)} />}
     </div>
   )
 }
-

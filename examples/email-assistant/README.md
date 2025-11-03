@@ -1,6 +1,7 @@
 # 📧 Email Drafting Assistant Demo
 
-AI-powered email writing assistant that helps compose professional emails, replies, and marketing copy.
+AI-powered email writing assistant that helps compose professional emails, replies, and marketing
+copy.
 
 ## ✨ Features
 
@@ -25,21 +26,25 @@ npm run dev
 ## 💡 Use Cases
 
 ### 1. Customer Support
+
 - Empathetic responses to complaints
 - Professional inquiry handling
 - Escalation emails
 
 ### 2. Sales & Marketing
+
 - Cold outreach emails
 - Follow-up sequences
 - Product announcements
 
 ### 3. Internal Communication
+
 - Team updates
 - Meeting invitations
 - Status reports
 
 ### 4. Professional Correspondence
+
 - Job applications
 - Networking emails
 - Thank you notes
@@ -47,6 +52,7 @@ npm run dev
 ## 🎯 Features
 
 ### Tone Options
+
 - Professional
 - Casual
 - Friendly
@@ -55,6 +61,7 @@ npm run dev
 - Enthusiastic
 
 ### Email Types
+
 - Reply
 - Forward
 - New message
@@ -63,6 +70,7 @@ npm run dev
 - Thank you
 
 ### Smart Suggestions
+
 - Subject lines
 - Opening lines
 - Closing statements
@@ -80,4 +88,3 @@ npm run dev
 **Status**: 🎯 Production-Ready  
 **Use Case**: Communication & Productivity  
 **Complexity**: Beginner
-

@@ -10,7 +10,8 @@ const openai = new OpenAI({
 const functions: OpenAI.Chat.ChatCompletionCreateParams.Function[] = [
   {
     name: 'search_products',
-    description: 'Search for products in the catalog based on customer query, category, or price range',
+    description:
+      'Search for products in the catalog based on customer query, category, or price range',
     parameters: {
       type: 'object',
       properties: {
@@ -104,7 +105,7 @@ Always be friendly, knowledgeable, and customer-focused. Use the available funct
             maxPrice: functionArgs.maxPrice,
           })
           functionResult = {
-            products: searchResults.map(p => ({
+            products: searchResults.map((p) => ({
               id: p.id,
               name: p.name,
               price: p.price,
@@ -125,7 +126,7 @@ Always be friendly, knowledgeable, and customer-focused. Use the available funct
             preferences: functionArgs.preferences,
           })
           functionResult = {
-            products: recommendations.map(p => ({
+            products: recommendations.map((p) => ({
               id: p.id,
               name: p.name,
               price: p.price,
@@ -171,4 +172,3 @@ Always be friendly, knowledgeable, and customer-focused. Use the available funct
     )
   }
 }
-

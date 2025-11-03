@@ -15,7 +15,8 @@ AI-powered healthcare chatbot for appointment booking, symptom checking, and pat
 
 ## ⚠️ Important Disclaimer
 
-This is a **demonstration only**. Not for actual medical use. Always consult qualified healthcare professionals for medical advice.
+This is a **demonstration only**. Not for actual medical use. Always consult qualified healthcare
+professionals for medical advice.
 
 ## 🚀 Quick Start
 
@@ -38,8 +39,8 @@ const healthcareFunctions = [
     parameters: {
       specialty: 'string',
       date: 'string',
-      location: 'optional string'
-    }
+      location: 'optional string',
+    },
   },
   {
     name: 'book_appointment',
@@ -48,24 +49,24 @@ const healthcareFunctions = [
       doctor: 'string',
       date: 'string',
       time: 'string',
-      reason: 'string'
-    }
+      reason: 'string',
+    },
   },
   {
     name: 'get_patient_records',
     description: 'Retrieve patient medical records (with authorization)',
     parameters: {
-      recordType: 'appointments | prescriptions | test_results'
-    }
+      recordType: 'appointments | prescriptions | test_results',
+    },
   },
   {
     name: 'assess_symptoms',
     description: 'Provide educational information about symptoms (not medical advice)',
     parameters: {
       symptoms: 'array of strings',
-      duration: 'string'
-    }
-  }
+      duration: 'string',
+    },
+  },
 ]
 ```
 
@@ -76,26 +77,30 @@ const healthcareFunctions = [
 **Patient**: "I need to see a dermatologist next week"  
 **Assistant**: "I can help you book a dermatologist appointment. What day works best for you?"  
 **Patient**: "Tuesday afternoon"  
-**Assistant**: *Checks availability* "Dr. Smith has openings at 2 PM and 4 PM on Tuesday. Which time?"
+**Assistant**: _Checks availability_ "Dr. Smith has openings at 2 PM and 4 PM on Tuesday. Which
+time?"
 
 ### Symptom Assessment
 
 **Patient**: "I have a headache and slight fever"  
-**Assistant**: *Asks clarifying questions*
+**Assistant**: _Asks clarifying questions_
+
 - "How long have you had these symptoms?"
 - "On a scale of 1-10, how severe is the headache?"
-- *Provides educational information*
+- _Provides educational information_
 - "Based on your symptoms, you may want to consider seeing a doctor if..."
 
 ### Medication Management
 
 **Patient**: "When should I take my blood pressure medication?"  
-**Assistant**: *Accesses medication schedule*  
-"Your prescription is for 10mg Lisinopril once daily in the morning. Would you like me to set a reminder?"
+**Assistant**: _Accesses medication schedule_  
+"Your prescription is for 10mg Lisinopril once daily in the morning. Would you like me to set a
+reminder?"
 
 ## 🎯 Key Features
 
 ### Appointment Management
+
 - Check availability
 - Book new appointments
 - Reschedule existing
@@ -103,12 +108,14 @@ const healthcareFunctions = [
 - Send reminders
 
 ### Patient Support
+
 - Symptom information (educational)
 - Medication schedules
 - Test result explanations
 - Follow-up care instructions
 
 ### Emergency Handling
+
 - Recognize urgent situations
 - Provide emergency contact info
 - Escalate to human support
@@ -143,4 +150,3 @@ For production use, implement:
 **Use Case**: Healthcare & Patient Support  
 **Complexity**: Intermediate  
 **Note**: Educational demonstration - not HIPAA compliant
-

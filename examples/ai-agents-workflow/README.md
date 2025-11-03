@@ -1,6 +1,7 @@
 # 🤖 AI Agents Workflow Demo
 
-Multi-agent system demonstrating AI agents working together to accomplish complex tasks using tool calling and coordination.
+Multi-agent system demonstrating AI agents working together to accomplish complex tasks using tool
+calling and coordination.
 
 ## ✨ Features
 
@@ -75,6 +76,7 @@ Final Result
 **User**: "Create a market analysis report for AI chatbots"
 
 **Workflow**:
+
 1. Research Agent: Gather market data and statistics
 2. Analysis Agent: Analyze trends and patterns
 3. Writing Agent: Create formatted report
@@ -85,6 +87,7 @@ Final Result
 **User**: "Build a user authentication system"
 
 **Workflow**:
+
 1. Code Agent: Generate backend API
 2. Code Agent: Create frontend components
 3. Code Agent: Write unit tests
@@ -96,6 +99,7 @@ Final Result
 **User**: "Analyze sales data and create insights"
 
 **Workflow**:
+
 1. Research Agent: Understand data schema
 2. Code Agent: Write data processing scripts
 3. Analysis Agent: Generate insights
@@ -111,23 +115,23 @@ const tools = [
   {
     name: 'web_search',
     description: 'Search the web for information',
-    agent: 'Research Agent'
+    agent: 'Research Agent',
   },
   {
     name: 'execute_code',
     description: 'Run code snippets',
-    agent: 'Code Agent'
+    agent: 'Code Agent',
   },
   {
     name: 'analyze_data',
     description: 'Perform data analysis',
-    agent: 'Analysis Agent'
+    agent: 'Analysis Agent',
   },
   {
     name: 'create_document',
     description: 'Generate formatted documents',
-    agent: 'Writing Agent'
-  }
+    agent: 'Writing Agent',
+  },
 ]
 ```
 
@@ -136,24 +140,28 @@ const tools = [
 Based on enterprise AI deployment patterns:
 
 ### Business Intelligence
+
 - Market research and analysis
 - Competitor analysis
 - Trend identification
 - Report generation
 
 ### Software Development
+
 - Feature development
 - Code review and debugging
 - Test generation
 - Documentation creation
 
 ### Content Creation
+
 - Blog posts and articles
 - Technical documentation
 - Marketing copy
 - Email campaigns
 
 ### Data Processing
+
 - ETL pipelines
 - Data analysis
 - Insight generation
@@ -184,4 +192,3 @@ MIT
 **Use Case**: AI Agents & Workflow Automation  
 **Complexity**: Advanced  
 **AI Provider**: OpenAI GPT-4
-

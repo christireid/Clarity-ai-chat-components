@@ -24,38 +24,39 @@ export const products: Product[] = [
     name: 'Dell XPS 15 (2024)',
     category: 'Electronics',
     price: 1899.99,
-    description: 'Powerful laptop for content creation with 15.6" 4K OLED display',
+    description:
+      'Powerful laptop for content creation with 15.6" 4K OLED display',
     features: [
       'Intel Core i9-13900H',
       '32GB RAM',
       '1TB NVMe SSD',
       'NVIDIA RTX 4060',
-      '4K OLED Touchscreen'
+      '4K OLED Touchscreen',
     ],
     inStock: true,
     rating: 4.8,
     reviews: 342,
     imageUrl: '/products/laptop-dell-xps.jpg',
-    tags: ['video editing', 'content creation', 'gaming', 'professional']
+    tags: ['video editing', 'content creation', 'gaming', 'professional'],
   },
   {
     id: 'laptop-002',
     name: 'MacBook Pro 14" M3 Pro',
     category: 'Electronics',
-    price: 2499.00,
+    price: 2499.0,
     description: 'Professional-grade laptop for developers and creatives',
     features: [
       'Apple M3 Pro chip',
       '18GB Unified Memory',
       '512GB SSD',
       '14.2" Liquid Retina XDR',
-      '18-hour battery life'
+      '18-hour battery life',
     ],
     inStock: true,
     rating: 4.9,
     reviews: 891,
     imageUrl: '/products/macbook-pro.jpg',
-    tags: ['development', 'design', 'professional', 'apple']
+    tags: ['development', 'design', 'professional', 'apple'],
   },
   {
     id: 'headphones-001',
@@ -68,55 +69,55 @@ export const products: Product[] = [
       '30-hour battery life',
       'Speak-to-chat technology',
       'Multipoint connection',
-      'Premium sound quality'
+      'Premium sound quality',
     ],
     inStock: true,
     rating: 4.7,
     reviews: 1523,
     imageUrl: '/products/sony-headphones.jpg',
-    tags: ['audio', 'wireless', 'noise canceling', 'travel']
+    tags: ['audio', 'wireless', 'noise canceling', 'travel'],
   },
   {
     id: 'phone-001',
     name: 'iPhone 15 Pro',
     category: 'Electronics',
-    price: 999.00,
+    price: 999.0,
     description: 'Titanium design with advanced camera system',
     features: [
       'A17 Pro chip',
       '128GB storage',
       'Pro camera system',
       'Titanium design',
-      'Action button'
+      'Action button',
     ],
     inStock: true,
     rating: 4.6,
     reviews: 2341,
     imageUrl: '/products/iphone-15-pro.jpg',
-    tags: ['smartphone', 'apple', 'camera', '5g']
+    tags: ['smartphone', 'apple', 'camera', '5g'],
   },
-  
+
   // Clothing
   {
     id: 'jacket-001',
     name: 'Patagonia Down Jacket',
     category: 'Clothing',
-    price: 299.00,
+    price: 299.0,
     description: 'Lightweight, packable down jacket for outdoor adventures',
     features: [
       '800-fill recycled down',
       'Water-resistant finish',
       'Packable into own pocket',
       'Fair Trade Certified',
-      'Multiple color options'
+      'Multiple color options',
     ],
     inStock: true,
     rating: 4.8,
     reviews: 567,
     imageUrl: '/products/patagonia-jacket.jpg',
-    tags: ['outdoor', 'winter', 'sustainable', 'travel']
+    tags: ['outdoor', 'winter', 'sustainable', 'travel'],
   },
-  
+
   // Home & Kitchen
   {
     id: 'coffee-001',
@@ -129,13 +130,13 @@ export const products: Product[] = [
       '15 bar Italian pump',
       'Precise espresso extraction',
       'Microfoam milk texturing',
-      'Stainless steel construction'
+      'Stainless steel construction',
     ],
     inStock: true,
     rating: 4.7,
     reviews: 834,
     imageUrl: '/products/breville-espresso.jpg',
-    tags: ['coffee', 'kitchen', 'appliance', 'espresso']
+    tags: ['coffee', 'kitchen', 'appliance', 'espresso'],
   },
 
   // More products...
@@ -150,32 +151,32 @@ export const products: Product[] = [
       'HDR10 support',
       'USB-C with 60W power delivery',
       '99% sRGB coverage',
-      'AMD FreeSync'
+      'AMD FreeSync',
     ],
     inStock: true,
     rating: 4.5,
     reviews: 412,
     imageUrl: '/products/lg-monitor.jpg',
-    tags: ['monitor', 'display', '4k', 'productivity']
+    tags: ['monitor', 'display', '4k', 'productivity'],
   },
   {
     id: 'keyboard-001',
     name: 'Keychron K8 Pro',
     category: 'Electronics',
-    price: 109.00,
+    price: 109.0,
     description: 'Wireless mechanical keyboard with hot-swappable switches',
     features: [
       'Hot-swappable switches',
       'RGB backlight',
       'Bluetooth 5.1',
       'Mac/Windows compatible',
-      'Aluminum frame'
+      'Aluminum frame',
     ],
     inStock: true,
     rating: 4.6,
     reviews: 789,
     imageUrl: '/products/keychron-keyboard.jpg',
-    tags: ['keyboard', 'mechanical', 'wireless', 'productivity']
+    tags: ['keyboard', 'mechanical', 'wireless', 'productivity'],
   },
 ]
 
@@ -191,14 +192,14 @@ export function searchProducts(
   }
 ): Product[] {
   const lowerQuery = query.toLowerCase()
-  
-  return products.filter(product => {
+
+  return products.filter((product) => {
     // Text search
-    const matchesQuery = 
+    const matchesQuery =
       product.name.toLowerCase().includes(lowerQuery) ||
       product.description.toLowerCase().includes(lowerQuery) ||
-      product.tags.some(tag => tag.toLowerCase().includes(lowerQuery)) ||
-      product.features.some(f => f.toLowerCase().includes(lowerQuery))
+      product.tags.some((tag) => tag.toLowerCase().includes(lowerQuery)) ||
+      product.features.some((f) => f.toLowerCase().includes(lowerQuery))
 
     if (!matchesQuery) return false
 
@@ -225,41 +226,42 @@ export function searchProducts(
  * Get product by ID
  */
 export function getProduct(id: string): Product | undefined {
-  return products.find(p => p.id === id)
+  return products.find((p) => p.id === id)
 }
 
 /**
  * Get personalized recommendations
  */
-export function getRecommendations(
-  based_on?: {
-    cartItems?: string[]
-    viewedProducts?: string[]
-    preferences?: string[]
-  }
-): Product[] {
+export function getRecommendations(based_on?: {
+  cartItems?: string[]
+  viewedProducts?: string[]
+  preferences?: string[]
+}): Product[] {
   // Simple recommendation algorithm
   // In production, use ML-based recommendations
-  
-  const { cartItems = [], viewedProducts = [], preferences = [] } = based_on || {}
-  
+
+  const {
+    cartItems = [],
+    viewedProducts = [],
+    preferences = [],
+  } = based_on || {}
+
   const viewed = new Set([...cartItems, ...viewedProducts])
-  const available = products.filter(p => !viewed.has(p.id))
-  
+  const available = products.filter((p) => !viewed.has(p.id))
+
   // If cart has items, recommend similar products
   if (cartItems.length > 0) {
-    const cartProducts = cartItems.map(id => getProduct(id)).filter(Boolean) as Product[]
-    const categories = new Set(cartProducts.map(p => p.category))
-    const categoryProducts = available.filter(p => categories.has(p.category))
-    
+    const cartProducts = cartItems
+      .map((id) => getProduct(id))
+      .filter(Boolean) as Product[]
+    const categories = new Set(cartProducts.map((p) => p.category))
+    const categoryProducts = available.filter((p) => categories.has(p.category))
+
     if (categoryProducts.length > 0) {
       return categoryProducts.slice(0, 5)
     }
   }
-  
-  // Default: Return top-rated products
-  return available
-    .sort((a, b) => b.rating - a.rating)
-    .slice(0, 5)
-}
 
+  // Default: Return top-rated products
+  return available.sort((a, b) => b.rating - a.rating).slice(0, 5)
+}

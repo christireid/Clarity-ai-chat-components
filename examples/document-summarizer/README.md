@@ -1,6 +1,7 @@
 # 📄 Document Summarizer Demo
 
-AI-powered document summarization with multi-document support, key points extraction, and custom summary lengths.
+AI-powered document summarization with multi-document support, key points extraction, and custom
+summary lengths.
 
 ## ✨ Features
 
@@ -25,18 +26,23 @@ npm run dev
 ## 💡 Use Cases
 
 ### 1. Research Papers
+
 Summarize academic papers and extract key findings
 
 ### 2. Legal Documents
+
 Extract important clauses and obligations from contracts
 
 ### 3. Meeting Notes
+
 Convert meeting transcripts into action items
 
 ### 4. News Articles
+
 Get quick summaries of current events
 
 ### 5. Technical Documentation
+
 Extract key concepts from technical docs
 
 ## 🎯 Features Demonstrated
@@ -59,4 +65,3 @@ Extract key concepts from technical docs
 **Status**: 🎯 Production-Ready  
 **Use Case**: Document Processing & Knowledge Management  
 **Complexity**: Intermediate
-

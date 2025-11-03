@@ -1,6 +1,7 @@
 # 💻 AI Code Assistant Demo
 
-Intelligent code assistant that helps with programming tasks, debugging, code generation, and code review.
+Intelligent code assistant that helps with programming tasks, debugging, code generation, and code
+review.
 
 ## ✨ Features
 
@@ -17,6 +18,7 @@ Intelligent code assistant that helps with programming tasks, debugging, code ge
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - OpenAI API key (GPT-4 recommended for best results)
 
@@ -45,18 +47,21 @@ Open [http://localhost:3000](http://localhost:3000)
 The assistant uses **GPT-4** with specialized system prompts for:
 
 1. **Code Generation**
+
    ```typescript
    "Generate a {language} {description}"
    → Produces complete, working code
    ```
 
 2. **Debugging**
+
    ```typescript
    "Fix this error: {error_message}"
    → Analyzes stack traces, suggests fixes
    ```
 
 3. **Code Review**
+
    ```typescript
    "Review this code: {code}"
    → Provides feedback on:
@@ -75,6 +80,7 @@ The assistant uses **GPT-4** with specialized system prompts for:
 ### Editor Features
 
 **Monaco Editor Integration:**
+
 - Full IntelliSense support
 - Syntax highlighting for 50+ languages
 - Auto-completion
@@ -89,13 +95,10 @@ The assistant uses **GPT-4** with specialized system prompts for:
 
 **Developer**: "Generate a TypeScript function that sorts an array of objects by a property"
 
-**Assistant**: 
+**Assistant**:
+
 ```typescript
-function sortByProperty<T>(
-  array: T[], 
-  property: keyof T, 
-  order: 'asc' | 'desc' = 'asc'
-): T[] {
+function sortByProperty<T>(array: T[], property: keyof T, order: 'asc' | 'desc' = 'asc'): T[] {
   return [...array].sort((a, b) => {
     if (a[property] < b[property]) return order === 'asc' ? -1 : 1
     if (a[property] > b[property]) return order === 'asc' ? 1 : -1
@@ -108,14 +111,16 @@ function sortByProperty<T>(
 
 **Developer**: "Why am I getting 'Cannot read property of undefined'?"
 
-**Assistant**: *Analyzes your code*  
-"The error occurs because you're accessing a property before checking if the object exists. Here's the fix..."
+**Assistant**: _Analyzes your code_  
+"The error occurs because you're accessing a property before checking if the object exists. Here's
+the fix..."
 
 ### 3. Code Review
 
 **Developer**: "Review this React component"
 
-**Assistant**: 
+**Assistant**:
+
 - ✅ Good use of hooks
 - ⚠️ Missing error boundary
 - ⚠️ useEffect dependency warning
@@ -125,7 +130,8 @@ function sortByProperty<T>(
 
 **Developer**: "Refactor this code to be more maintainable"
 
-**Assistant**: *Suggests improvements*
+**Assistant**: _Suggests improvements_
+
 - Extract repeated logic into functions
 - Use TypeScript interfaces
 - Add error handling
@@ -133,15 +139,28 @@ function sortByProperty<T>(
 ## 🎯 Key Features Demonstrated
 
 ### Multi-Language Support
+
 ```typescript
 const languages = [
-  'typescript', 'javascript', 'python', 'go',
-  'rust', 'java', 'c', 'cpp', 'csharp',
-  'ruby', 'php', 'swift', 'kotlin', 'sql'
+  'typescript',
+  'javascript',
+  'python',
+  'go',
+  'rust',
+  'java',
+  'c',
+  'cpp',
+  'csharp',
+  'ruby',
+  'php',
+  'swift',
+  'kotlin',
+  'sql',
 ]
 ```
 
 ### Code Templates
+
 - React Components
 - API Routes
 - Database Models
@@ -149,6 +168,7 @@ const languages = [
 - Utility Functions
 
 ### Context Awareness
+
 - Remembers previous code snippets in conversation
 - Maintains programming context
 - Suggests related improvements
@@ -156,6 +176,7 @@ const languages = [
 ## 🔧 Advanced Features
 
 ### 1. Multi-File Projects
+
 ```typescript
 // Assistant can work across files
 "Create a user authentication system with:
@@ -166,14 +187,16 @@ const languages = [
 ```
 
 ### 2. Framework-Specific Help
+
 ```typescript
 // Specialized for frameworks
-"Create a Next.js API route with middleware"
-"Build a React component with Tailwind CSS"
-"Write a Prisma schema for a blog"
+'Create a Next.js API route with middleware'
+'Build a React component with Tailwind CSS'
+'Write a Prisma schema for a blog'
 ```
 
 ### 3. Security Analysis
+
 ```typescript
 // Identifies security issues
 "Review this code for security vulnerabilities"
@@ -181,6 +204,7 @@ const languages = [
 ```
 
 ### 4. Performance Optimization
+
 ```typescript
 // Suggests optimizations
 "Optimize this algorithm"
@@ -190,17 +214,20 @@ const languages = [
 ## 🎨 UI Features
 
 ### Split View
+
 - Code editor on left
 - AI chat on right
 - Resizable panels
 
 ### Code Actions
+
 - Copy code to clipboard
 - Insert code into editor
 - Save snippets
 - Export conversation
 
 ### Syntax Themes
+
 - Light mode
 - Dark mode
 - High contrast
@@ -209,6 +236,7 @@ const languages = [
 ## 🚀 Production Enhancements
 
 ### 1. Version Control Integration
+
 ```typescript
 // Integrate with Git
 - Show diffs
@@ -217,6 +245,7 @@ const languages = [
 ```
 
 ### 2. Linting Integration
+
 ```typescript
 // Run ESLint/Prettier
 - Auto-fix common issues
@@ -224,6 +253,7 @@ const languages = [
 ```
 
 ### 3. Testing Integration
+
 ```typescript
 // Run tests in context
 - Execute unit tests
@@ -232,6 +262,7 @@ const languages = [
 ```
 
 ### 4. Documentation Generation
+
 ```typescript
 // Auto-generate docs
 - JSDoc comments
@@ -242,5 +273,7 @@ const languages = [
 ## 📊 Sample Interactions
 
 ### Example 1: API Route
+
 ```
 User: "Create a Next.js API route for user authentication"
+```

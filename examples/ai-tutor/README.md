@@ -35,8 +35,8 @@ const tutoringFunctions = [
       subject: 'string',
       topic: 'string',
       difficulty: 'beginner | intermediate | advanced',
-      duration: 'number (minutes)'
-    }
+      duration: 'number (minutes)',
+    },
   },
   {
     name: 'create_practice_problems',
@@ -44,8 +44,8 @@ const tutoringFunctions = [
     parameters: {
       topic: 'string',
       count: 'number',
-      difficulty: 'easy | medium | hard'
-    }
+      difficulty: 'easy | medium | hard',
+    },
   },
   {
     name: 'check_answer',
@@ -53,25 +53,25 @@ const tutoringFunctions = [
     parameters: {
       question: 'string',
       studentAnswer: 'string',
-      correctAnswer: 'string'
-    }
+      correctAnswer: 'string',
+    },
   },
   {
     name: 'provide_hint',
     description: 'Give a helpful hint without revealing the answer',
     parameters: {
       question: 'string',
-      hintLevel: '1 | 2 | 3'
-    }
+      hintLevel: '1 | 2 | 3',
+    },
   },
   {
     name: 'explain_concept',
     description: 'Explain a concept in simple terms',
     parameters: {
       concept: 'string',
-      useAnalogy: 'boolean'
-    }
-  }
+      useAnalogy: 'boolean',
+    },
+  },
 ]
 ```
 
@@ -81,13 +81,14 @@ const tutoringFunctions = [
 
 **Student**: "I don't understand quadratic equations"  
 **Tutor**: "Let's break it down! A quadratic equation is like..."  
-*Provides explanation with examples*  
+_Provides explanation with examples_  
 **Tutor**: "Ready for a practice problem?"
 
 ### 2. Programming Help
 
 **Student**: "How do I use async/await in JavaScript?"  
-**Tutor**: *Explains concept with code examples*
+**Tutor**: _Explains concept with code examples_
+
 ```javascript
 // Example with explanation
 async function fetchData() {
@@ -104,24 +105,27 @@ async function fetchData() {
 
 **Student**: "Teach me Spanish greetings"  
 **Tutor**:
+
 - Hola (Hello)
 - Buenos días (Good morning)
-- ¿Cómo estás? (How are you?)
-*Provides pronunciation guide*
+- ¿Cómo estás? (How are you?) _Provides pronunciation guide_
 
 ## 🎯 Key Features
 
 ### Adaptive Learning
+
 - Assesses current knowledge level
 - Adjusts difficulty dynamically
 - Provides appropriate challenges
 
 ### Socratic Method
+
 - Asks guiding questions
 - Encourages critical thinking
 - Doesn't give direct answers immediately
 
 ### Progress Tracking
+
 ```typescript
 {
   subject: 'Mathematics',
@@ -133,6 +137,7 @@ async function fetchData() {
 ```
 
 ### Multi-Modal Learning
+
 - Text explanations
 - Code examples
 - Visual diagrams (with descriptions)
@@ -149,17 +154,20 @@ async function fetchData() {
 ## 🎮 Gamification
 
 ### Points System
+
 - Correct answer: +10 points
 - Perfect score: +50 bonus
 - Daily streak: +5 points/day
 
 ### Badges
+
 - 🏆 Quick Learner - Complete 5 lessons
 - 🔥 Hot Streak - 7-day learning streak
 - 💯 Perfect Score - Ace 3 tests in a row
 - 📚 Bookworm - Complete 20 lessons
 
 ### Leaderboards
+
 - Class rankings (optional)
 - Personal best tracking
 - Goal completion rates
@@ -167,23 +175,26 @@ async function fetchData() {
 ## 🚀 Production Features
 
 ### 1. Learning Analytics
+
 ```typescript
 interface LearningAnalytics {
-  strengths: string[]      // Topics student excels at
-  weaknesses: string[]     // Topics needing more practice
-  learningSpeed: number    // Lessons per week
-  retentionRate: number    // % of material retained
+  strengths: string[] // Topics student excels at
+  weaknesses: string[] // Topics needing more practice
+  learningSpeed: number // Lessons per week
+  retentionRate: number // % of material retained
   recommendations: string[] // Suggested next topics
 }
 ```
 
 ### 2. Parent/Teacher Dashboard
+
 - View student progress
 - Set learning goals
 - Review completed work
 - Generate progress reports
 
 ### 3. Curriculum Integration
+
 - Align with school curricula
 - Track standards/objectives
 - Generate homework assignments
@@ -208,4 +219,3 @@ interface LearningAnalytics {
 **Use Case**: Education & E-Learning  
 **Complexity**: Intermediate  
 **AI Provider**: OpenAI GPT-4 (fine-tuned for education)
-

@@ -15,7 +15,8 @@ AI-powered financial assistant for budgeting, investment advice, and financial p
 
 ## ⚠️ Important Disclaimer
 
-This is **for demonstration and educational purposes only**. Not actual financial advice. Consult licensed financial advisors for investment decisions.
+This is **for demonstration and educational purposes only**. Not actual financial advice. Consult
+licensed financial advisors for investment decisions.
 
 ## 🚀 Quick Start
 
@@ -36,15 +37,15 @@ const financialFunctions = [
     name: 'get_account_balance',
     description: 'Get current account balance',
     parameters: {
-      accountType: 'checking | savings | investment'
-    }
+      accountType: 'checking | savings | investment',
+    },
   },
   {
     name: 'analyze_spending',
     description: 'Analyze spending patterns by category',
     parameters: {
-      timeRange: 'week | month | year'
-    }
+      timeRange: 'week | month | year',
+    },
   },
   {
     name: 'create_budget',
@@ -52,17 +53,17 @@ const financialFunctions = [
     parameters: {
       monthlyIncome: 'number',
       savingsGoal: 'number',
-      categories: 'array of expense categories'
-    }
+      categories: 'array of expense categories',
+    },
   },
   {
     name: 'get_investment_suggestions',
     description: 'Get educational investment information (not advice)',
     parameters: {
       riskTolerance: 'low | medium | high',
-      timeHorizon: 'short | medium | long'
-    }
-  }
+      timeHorizon: 'short | medium | long',
+    },
+  },
 ]
 ```
 
@@ -72,7 +73,8 @@ const financialFunctions = [
 
 **User**: "Help me create a monthly budget. I earn $5000/month"
 
-**Assistant**: 
+**Assistant**:
+
 - Analyzes income
 - Suggests allocation:
   - 50% Needs (housing, food, utilities)
@@ -84,7 +86,8 @@ const financialFunctions = [
 
 **User**: "Where is my money going?"
 
-**Assistant**: *Analyzes transactions*
+**Assistant**: _Analyzes transactions_
+
 ```
 Top Spending Categories:
 1. Dining Out: $450 (15%)
@@ -99,6 +102,7 @@ Suggestion: You're spending 15% on dining. Consider reducing to 10% to increase 
 **User**: "I want to save $10,000 for a vacation next year"
 
 **Assistant**:
+
 - Calculates monthly savings needed: $833/month
 - Analyzes current budget for savings capacity
 - Suggests areas to reduce spending
@@ -108,7 +112,8 @@ Suggestion: You're spending 15% on dining. Consider reducing to 10% to increase 
 
 **User**: "Should I invest in stocks or bonds?"
 
-**Assistant**: *Provides educational information*
+**Assistant**: _Provides educational information_
+
 - Explains risk/return profiles
 - Discusses diversification
 - **Clearly states**: "This is educational information, not financial advice"
@@ -116,17 +121,20 @@ Suggestion: You're spending 15% on dining. Consider reducing to 10% to increase 
 ## 🎯 Features Demonstrated
 
 ### Account Aggregation
+
 - Link multiple accounts
 - Real-time balance updates
 - Transaction categorization
 
 ### Spending Insights
+
 - Category breakdowns
 - Trend analysis
 - Unusual activity detection
 - Comparison to budgets
 
 ### Financial Planning
+
 - Debt payoff calculators
 - Retirement planning
 - Tax optimization tips
@@ -146,6 +154,7 @@ For production:
 ## 📊 Sample Data
 
 Includes demo data for:
+
 - 3 account types (checking, savings, investment)
 - 100+ sample transactions
 - Budget categories
@@ -154,17 +163,19 @@ Includes demo data for:
 ## 🚀 Production Enhancements
 
 ### 1. Bank API Integration
+
 ```typescript
 // Integrate with Plaid, Yodlee, or bank APIs
 import { PlaidClient } from 'plaid'
 
 const transactions = await plaid.getTransactions({
   start_date: '2024-01-01',
-  end_date: '2024-01-31'
+  end_date: '2024-01-31',
 })
 ```
 
 ### 2. Real-Time Market Data
+
 ```typescript
 // Integrate with financial data APIs
 import { AlphaVantage } from 'alpha-vantage'
@@ -173,6 +184,7 @@ const stockPrice = await alphaVantage.quote('AAPL')
 ```
 
 ### 3. Regulatory Compliance
+
 - Add disclaimers
 - Implement audit trails
 - Follow SEC guidelines
@@ -197,4 +209,3 @@ const stockPrice = await alphaVantage.quote('AAPL')
 **Use Case**: Banking & Financial Services  
 **Complexity**: Advanced  
 **Note**: Educational demonstration only
-
