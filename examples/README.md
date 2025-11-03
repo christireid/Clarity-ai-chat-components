@@ -164,24 +164,190 @@ View test results:
 
 ---
 
-## 📚 Additional Examples
+### 4. E-Commerce Shopping Assistant
+**Path**: `ecommerce-assistant/`  
+**Status**: ✅ NEW - Production Ready
 
-The examples directory also includes starter templates:
+AI-powered shopping experience with product recommendations and conversational commerce.
+
+**Key Features**:
+- 🛍️ Natural language product search
+- 🎯 Personalized recommendations
+- 💬 Conversational shopping experience
+- 🛒 Cart management through chat
+- 💰 Price comparisons
+- ⭐ Review summaries
+
+**Technology**: Next.js 15, OpenAI GPT-4, Function Calling
+
+[→ View README](./ecommerce-assistant/README.md)
+
+---
+
+### 5. Code Assistant
+**Path**: `code-assistant/`  
+**Status**: ✅ NEW - Production Ready
+
+AI coding companion with debugging, code generation, and review capabilities.
+
+**Key Features**:
+- 💻 Multi-language support (TypeScript, Python, Go, Rust, etc.)
+- 🐛 Debugging assistance
+- ⚡ Code generation
+- 📝 Code review and refactoring
+- 🧪 Test generation
+- 📚 Documentation creation
+
+**Technology**: Next.js 15, Monaco Editor, OpenAI GPT-4
+
+[→ View README](./code-assistant/README.md)
+
+---
+
+### 6. AI Agents Workflow
+**Path**: `ai-agents-workflow/`  
+**Status**: ✅ NEW - Production Ready
+
+Multi-agent system with specialized agents collaborating on complex tasks.
+
+**Key Features**:
+- 🤝 5 specialized agents (Research, Code, Analysis, Writing, Coordinator)
+- 🔧 Tool calling and delegation
+- 🎯 Task decomposition
+- 📊 Workflow visualization
+- ⚡ Parallel execution
+
+**Technology**: Next.js 15, OpenAI GPT-4, Multi-Agent Architecture
+
+[→ View README](./ai-agents-workflow/README.md)
+
+---
+
+### 7. Document Summarizer
+**Path**: `document-summarizer/`  
+**Status**: ✅ NEW - Production Ready
+
+Intelligent document summarization with key points extraction and Q&A.
+
+**Key Features**:
+- 📑 Multi-document support
+- 🎯 Key points extraction
+- 📏 Custom summary lengths
+- 🔍 Entity recognition
+- 💬 Interactive Q&A
+- 📥 PDF, DOCX, TXT, Markdown support
+
+**Technology**: Next.js 15, OpenAI GPT-4 Turbo (128k context)
+
+[→ View README](./document-summarizer/README.md)
+
+---
+
+### 8. Email Drafting Assistant
+**Path**: `email-assistant/`  
+**Status**: ✅ NEW - Production Ready
+
+AI-powered email composition with tone adjustment and smart suggestions.
+
+**Key Features**:
+- ✍️ Email generation from scratch
+- 💬 Context-aware replies
+- 🎭 Tone adjustment (professional, casual, formal)
+- 🌐 Multi-language support
+- 🔍 Grammar and style checking
+- 📋 Email templates
+
+**Technology**: Next.js 15, Anthropic Claude 3 (excellent for writing)
+
+[→ View README](./email-assistant/README.md)
+
+---
+
+### 9. Healthcare Assistant
+**Path**: `healthcare-assistant/`  
+**Status**: ✅ NEW - Demo Only
+
+Healthcare chatbot for appointments, symptom checking, and patient support.
+
+**Key Features**:
+- 📅 Appointment booking
+- 🩺 Symptom checker (educational)
+- 💊 Medication reminders
+- 📋 Health records access
+- ⚠️ Emergency detection
+- 👨‍⚕️ Doctor matching
+
+**Technology**: Next.js 15, OpenAI GPT-4, Supabase
+
+**Note**: Demo only - not for medical use. HIPAA compliance considerations included.
+
+[→ View README](./healthcare-assistant/README.md)
+
+---
+
+### 10. Financial Advisor
+**Path**: `financial-advisor/`  
+**Status**: ✅ NEW - Demo Only
+
+Financial chatbot for budgeting, investment education, and financial planning.
+
+**Key Features**:
+- 💵 Budget creation and management
+- 📈 Investment education (not advice)
+- 💳 Expense tracking
+- 📊 Financial reports
+- 🎯 Savings goals
+- ⚠️ Fraud detection
+
+**Technology**: Next.js 15, OpenAI GPT-4, Chart.js
+
+**Note**: Demo only - not financial advice. Compliance considerations included.
+
+[→ View README](./financial-advisor/README.md)
+
+---
+
+### 11. AI Tutor
+**Path**: `ai-tutor/`  
+**Status**: ✅ NEW - Production Ready
+
+Intelligent tutoring system with adaptive learning and progress tracking.
+
+**Key Features**:
+- 📚 Personalized learning paths
+- 🎯 Multi-subject support
+- ✅ Practice problem generation
+- 📊 Progress tracking
+- 💡 Hint system
+- 🏆 Gamification
+
+**Technology**: Next.js 15, OpenAI GPT-4, Chart.js
+
+[→ View README](./ai-tutor/README.md)
+
+---
+
+## 📚 Additional Starter Examples
 
 ### Basic Chat
-Simple chat interface with streaming responses.
+**Path**: `basic-chat/`  
+Simple chat interface demonstrating core functionality.
 
 ### AI Assistant
-Personal AI assistant with memory and context.
+**Path**: `ai-assistant/`  
+Advanced assistant with TanStack Query, Zustand, and persistent conversations.
 
 ### Customer Support
-Multi-turn customer support chatbot with history.
+**Path**: `customer-support/`  
+Customer support chatbot with Supabase integration.
 
 ### Multi-User Chat
-Real-time chat with multiple users and rooms.
+**Path**: `multi-user-chat/`  
+Real-time chat with WebSocket support.
 
 ### Streaming Chat
-Advanced streaming with typewriter effect.
+**Path**: `streaming-chat/`  
+Server-Sent Events (SSE) streaming implementation.
 
 ---
 

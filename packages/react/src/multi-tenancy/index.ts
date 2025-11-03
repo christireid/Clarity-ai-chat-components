@@ -2,33 +2,35 @@
  * Multi-Tenancy Utilities
  *
  * Optional utilities for building multi-tenant AI applications.
- * Handle tenant isolation, quotas, and resource management.
  *
  * @example
  * ```tsx
  * import { TenantManager, MemoryTenantStorage } from '@clarity-chat/react'
  *
- * const tenants = new TenantManager(new MemoryTenantStorage())
+ * const storage = new MemoryTenantStorage()
+ * const tenants = new TenantManager(storage)
  *
- * // Set current tenant context
+ * // Set context for request
  * tenants.setContext({
  *   tenant: {
- *     id: 'tenant-123',
+ *     id: 'acme-corp',
  *     name: 'Acme Corp',
  *     status: 'active',
+ *     quotas: { tokens: 100000 },
  *   },
- *   userId: 'user-456',
+ *   userId: 'user-123',
  * })
  *
  * // Use tenant-specific namespace
- * const namespace = tenants.getNamespace('tenant-123')
- * await vectorStore.query({ namespace, vector, topK: 10 })
+ * const namespace = tenants.getNamespace('acme-corp')
  *
- * // Get cache prefix
- * const cacheKey = tenants.getCachePrefix('tenant-123') + 'my-key'
+ * // Store data with isolation
+ * await vectorStore.upsert(vectors, { namespace })
+ *
+ * // Query only tenant's data
+ * await vectorStore.query({ namespace, vector, topK: 10 })
  * ```
  */
 
 export * from './types'
 export * from './tenant-manager'
-
