@@ -260,4 +260,6 @@ export const InlineLink = React.memo(function InlineLink({
       )}
     </span>
   )
-}
+}: InlineLinkProps) => JSX.Element)
+
+InlineLink.displayName = 'InlineLink'
