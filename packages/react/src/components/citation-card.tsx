@@ -136,7 +136,7 @@ export const CitationCard = React.memo(function CitationCard({
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={(event) => {
+                onClick={(event: React.MouseEvent) => {
                   event.stopPropagation()
                   handleSourceClick(event)
                 }}
@@ -190,7 +190,7 @@ export const CitationCard = React.memo(function CitationCard({
             <Button
               variant="link"
               size="sm"
-              onClick={(event) => {
+              onClick={(event: React.MouseEvent) => {
                 event.stopPropagation()
                 setIsExpanded((expanded) => !expanded)
               }}

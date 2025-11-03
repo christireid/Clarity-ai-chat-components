@@ -8,6 +8,8 @@ This directory contains fully functional examples demonstrating various AI chat 
 
 ## 📦 Featured Demos
 
+### 🎯 Top-Tier Production Demos
+
 ### 1. Model Comparison Demo
 **Path**: `model-comparison-demo/`  
 **Status**: ✅ Completed & Tested
