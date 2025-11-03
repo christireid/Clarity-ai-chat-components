@@ -317,6 +317,7 @@ export { default as userEvent } from '@testing-library/user-event'
  * Custom matchers
  */
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Vi {
     interface Matchers<R> {
       toBeAccessible(): R

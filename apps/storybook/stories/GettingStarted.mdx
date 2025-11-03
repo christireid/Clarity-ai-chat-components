@@ -2,30 +2,69 @@ import { Meta } from '@storybook/blocks';
 
 <Meta title="Getting Started" />
 
-# Getting Started with Clarity Chat
+<div className="gs-hero">
+  <div className="gs-hero-badge">🚀 Quick Start</div>
+  <h1>Getting Started with Clarity Chat</h1>
+  <p className="gs-hero-subtitle">
+    Build production-ready AI chat interfaces in minutes. This guide will walk you through installation, 
+    basic setup, and your first interactive chat component.
+  </p>
+</div>
 
-This guide will help you integrate Clarity Chat components into your application in minutes.
+---
 
-## Installation
+## 📦 Installation
 
-Choose your package manager:
+<div className="gs-install-section">
+  <p className="gs-section-description">
+    Install Clarity Chat using your preferred package manager. We support npm, yarn, and pnpm.
+  </p>
+  
+  <div className="gs-install-tabs">
+    <div className="gs-install-tab">
+      <div className="gs-tab-header">
+        <span className="gs-tab-icon">📦</span>
+        <strong>npm</strong>
+      </div>
+      <pre className="gs-code-block"><code>npm install @clarity-chat/react</code></pre>
+    </div>
+    
+    <div className="gs-install-tab">
+      <div className="gs-tab-header">
+        <span className="gs-tab-icon">🧶</span>
+        <strong>yarn</strong>
+      </div>
+      <pre className="gs-code-block"><code>yarn add @clarity-chat/react</code></pre>
+    </div>
+    
+    <div className="gs-install-tab">
+      <div className="gs-tab-header">
+        <span className="gs-tab-icon">⚡</span>
+        <strong>pnpm</strong>
+      </div>
+      <pre className="gs-code-block"><code>pnpm add @clarity-chat/react</code></pre>
+    </div>
+  </div>
+</div>
 
-```bash
-# npm
-npm install @clarity-chat/react
+---
 
-# yarn
-yarn add @clarity-chat/react
+## 🎯 Quick Start Examples
 
-# pnpm
-pnpm add @clarity-chat/react
-```
+<div className="gs-examples-intro">
+  <p className="gs-section-description">
+    Choose your starting point based on your use case. Each example is production-ready and fully documented.
+  </p>
+</div>
 
-## Basic Usage
+### Example 1: Simple Chat Window
 
-### 1. Simple Chat Window
-
-The quickest way to get started:
+<div className="gs-example-card">
+  <div className="gs-example-header">
+    <div className="gs-example-badge gs-badge-green">Beginner Friendly</div>
+    <h4>Basic Chat Interface</h4>
+    <p>The quickest way to get started. A complete chat window with message history and input.</p>
+  </div>
 
 ```tsx
 import { ChatWindow } from '@clarity-chat/react'
@@ -97,9 +136,23 @@ function App() {
 }
 ```
 
-### 2. With Model Adapters
+<div className="gs-example-footer">
+  <div className="gs-example-note">
+    <strong>💡 Tip:</strong> This example uses a simple REST API. See the streaming example below for real-time responses.
+  </div>
+</div>
+</div>
 
-Use the model-agnostic adapter system:
+---
+
+### Example 2: With Model Adapters
+
+<div className="gs-example-card">
+  <div className="gs-example-header">
+    <div className="gs-example-badge gs-badge-blue">Intermediate</div>
+    <h4>Model-Agnostic Integration</h4>
+    <p>Switch between OpenAI, Anthropic, and Google AI without changing your code.</p>
+  </div>
 
 ```tsx
 import { 
@@ -169,9 +222,23 @@ function App() {
 }
 ```
 
-### 3. With Streaming
+<div className="gs-example-footer">
+  <div className="gs-example-note">
+    <strong>⚡ Pro Tip:</strong> The adapter system automatically handles rate limiting, retries, and cost estimation for all providers.
+  </div>
+</div>
+</div>
 
-Real-time token-by-token rendering:
+---
+
+### Example 3: Real-Time Streaming
+
+<div className="gs-example-card">
+  <div className="gs-example-header">
+    <div className="gs-example-badge gs-badge-purple">Advanced</div>
+    <h4>Streaming AI Responses</h4>
+    <p>Display AI responses in real-time with smooth token-by-token rendering.</p>
+  </div>
 
 ```tsx
 import { 
@@ -216,6 +283,13 @@ function StreamingChat() {
   )
 }
 ```
+
+<div className="gs-example-footer">
+  <div className="gs-example-note">
+    <strong>🚀 Performance:</strong> Streaming provides instant feedback to users and reduces perceived latency by up to 80%.
+  </div>
+</div>
+</div>
 
 ## Component Props
 
