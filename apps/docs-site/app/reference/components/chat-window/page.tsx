@@ -5,6 +5,7 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { ApiTable } from '@/components/Demo/ApiTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
+import { ChatWindowAnatomy } from '@/components/Diagrams/ChatWindowAnatomy'
 
 export const metadata: Metadata = {
   title: 'ChatWindow',
