@@ -4,14 +4,14 @@ import { useState } from 'react'
 
 /**
  * Command Palette
- * 
+ *
  * **A powerful command interface for:**
  * - Quick actions and navigation
  * - Keyboard-first workflows
  * - Search and discovery
  * - Command execution
  * - Productivity shortcuts
- * 
+ *
  * **Key Features:**
  * - Fuzzy search across commands
  * - Keyboard navigation (↑↓ arrows, Enter, Esc)
@@ -19,7 +19,7 @@ import { useState } from 'react'
  * - Keyboard shortcuts display
  * - Custom icons
  * - Fast and responsive
- * 
+ *
  * **Design Philosophy:**
  * - Speed: Access any action instantly
  * - Discoverability: Find commands by searching
@@ -285,8 +285,9 @@ export const SearchDemo: Story = {
       <div className="w-full space-y-4">
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-sm">
-            <strong>Try searching:</strong> Type "new", "find", "export", or any part of a command name or description.
-            The palette uses fuzzy matching to find relevant commands.
+            <strong>Try searching:</strong> Type "new", "find", "export", or any
+            part of a command name or description. The palette uses fuzzy
+            matching to find relevant commands.
           </p>
         </div>
 
@@ -309,7 +310,8 @@ export const SearchDemo: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Fuzzy search filters commands by label, description, or category.',
+        story:
+          'Fuzzy search filters commands by label, description, or category.',
       },
     },
   },
@@ -340,32 +342,46 @@ export const KeyboardShortcuts: Story = {
       <div className="w-full space-y-4">
         <div className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
           <h3 className="font-semibold text-lg">Keyboard Shortcuts</h3>
-          
+
           <div className="space-y-2 text-sm">
             <div className="flex items-center justify-between">
               <span>Open Command Palette</span>
-              <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">⌘K</kbd>
+              <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">
+                ⌘K
+              </kbd>
             </div>
             <div className="flex items-center justify-between">
               <span>Navigate Up/Down</span>
               <div className="flex gap-2">
-                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">↑</kbd>
-                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">↓</kbd>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">
+                  ↑
+                </kbd>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">
+                  ↓
+                </kbd>
               </div>
             </div>
             <div className="flex items-center justify-between">
               <span>Select Command</span>
-              <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">Enter</kbd>
+              <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">
+                Enter
+              </kbd>
             </div>
             <div className="flex items-center justify-between">
               <span>Close Palette</span>
-              <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">Esc</kbd>
+              <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">
+                Esc
+              </kbd>
             </div>
           </div>
         </div>
 
         <p className="text-sm text-muted-foreground">
-          Press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border text-xs">⌘K</kbd> or click the button
+          Press{' '}
+          <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border text-xs">
+            ⌘K
+          </kbd>{' '}
+          or click the button
         </p>
 
         <button
@@ -386,7 +402,8 @@ export const KeyboardShortcuts: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Full keyboard navigation support. Press ⌘K to open, arrow keys to navigate, Enter to select, Esc to close.',
+        story:
+          'Full keyboard navigation support. Press ⌘K to open, arrow keys to navigate, Enter to select, Esc to close.',
       },
     },
   },
@@ -551,7 +568,10 @@ export const QuickActions: Story = {
     const [log, setLog] = useState<string[]>([])
 
     const addLog = (message: string) => {
-      setLog((prev) => [...prev, `${new Date().toLocaleTimeString()}: ${message}`])
+      setLog((prev) => [
+        ...prev,
+        `${new Date().toLocaleTimeString()}: ${message}`,
+      ])
     }
 
     const quickActions: CommandItem[] = [
@@ -603,7 +623,9 @@ export const QuickActions: Story = {
             <h4 className="font-medium text-sm mb-2">Action Log</h4>
             <div className="space-y-1 text-xs font-mono">
               {log.slice(-5).map((entry, i) => (
-                <div key={i} className="text-muted-foreground">{entry}</div>
+                <div key={i} className="text-muted-foreground">
+                  {entry}
+                </div>
               ))}
             </div>
           </div>
@@ -659,4 +681,3 @@ export const Accessibility: Story = {
     )
   },
 }
-
