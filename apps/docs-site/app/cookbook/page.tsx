@@ -3,7 +3,8 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Cookbook - Clarity Chat Components',
-  description: 'Real-world recipes for common AI chat patterns and integrations.',
+  description:
+    'Real-world recipes for common AI chat patterns and integrations.',
 }
 
 export default function CookbookPage() {
@@ -12,14 +13,16 @@ export default function CookbookPage() {
       <div className="docs-header">
         <h1>Cookbook</h1>
         <p className="docs-lead">
-          Real-world recipes you can copy and use. Each recipe solves a specific problem with production-ready code.
+          Real-world recipes you can copy and use. Each recipe solves a specific
+          problem with production-ready code.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>Available Recipes</h2>
         <p>
-          These are battle-tested patterns used in real applications. Click any recipe to see the complete implementation.
+          These are battle-tested patterns used in real applications. Click any
+          recipe to see the complete implementation.
         </p>
       </section>
 
@@ -33,8 +36,12 @@ export default function CookbookPage() {
                 Build a complete chat with OpenAI streaming responses
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">OpenAI</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">Streaming</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  OpenAI
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  Streaming
+                </span>
               </div>
             </div>
           </div>
@@ -49,8 +56,12 @@ export default function CookbookPage() {
                 Chat with your documents using vector search and RAG
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">RAG</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">Pinecone</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  RAG
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  Pinecone
+                </span>
               </div>
             </div>
           </div>
@@ -65,8 +76,12 @@ export default function CookbookPage() {
                 Upload and discuss images, PDFs, and other files
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Vision</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">Files</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Vision
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  Files
+                </span>
               </div>
             </div>
           </div>
@@ -81,8 +96,12 @@ export default function CookbookPage() {
                 Build an agent that can call functions and APIs
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Agents</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">Tools</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Agents
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  Tools
+                </span>
               </div>
             </div>
           </div>
@@ -97,8 +116,12 @@ export default function CookbookPage() {
                 Add voice input and text-to-speech to your chat
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Voice</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">STT/TTS</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Voice
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  STT/TTS
+                </span>
               </div>
             </div>
           </div>
@@ -113,8 +136,12 @@ export default function CookbookPage() {
                 Multi-user chat with presence and typing indicators
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Real-time</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">WebSocket</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Real-time
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  WebSocket
+                </span>
               </div>
             </div>
           </div>
@@ -129,8 +156,12 @@ export default function CookbookPage() {
                 Create and apply custom themes with dark mode
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Theming</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">CSS</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Theming
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  CSS
+                </span>
               </div>
             </div>
           </div>
@@ -145,8 +176,12 @@ export default function CookbookPage() {
                 Handle API errors, retries, and edge cases gracefully
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Errors</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">Retry Logic</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Errors
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  Retry Logic
+                </span>
               </div>
             </div>
           </div>
@@ -161,8 +196,12 @@ export default function CookbookPage() {
                 Complete setup with App Router and Server Components
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Next.js</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">RSC</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Next.js
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  RSC
+                </span>
               </div>
             </div>
           </div>
@@ -177,8 +216,12 @@ export default function CookbookPage() {
                 Secure chat with user authentication and sessions
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Auth</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">NextAuth</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Auth
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  NextAuth
+                </span>
               </div>
             </div>
           </div>
@@ -193,8 +236,12 @@ export default function CookbookPage() {
                 Track usage, costs, and user behavior
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Analytics</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">Metrics</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Analytics
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  Metrics
+                </span>
               </div>
             </div>
           </div>
@@ -209,8 +256,12 @@ export default function CookbookPage() {
                 Manage API limits and user quotas effectively
               </p>
               <div className="mt-2 flex gap-2">
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Limits</span>
-                <span className="text-xs bg-muted px-2 py-0.5 rounded">Redis</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                  Limits
+                </span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                  Redis
+                </span>
               </div>
             </div>
           </div>
@@ -219,4 +270,3 @@ export default function CookbookPage() {
     </div>
   )
 }
-

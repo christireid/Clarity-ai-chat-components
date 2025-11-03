@@ -136,9 +136,9 @@ export const MessageList: React.FC<MessageListProps> = ({
             >
               <Button
                 size="sm"
-                variant="surface"
+                variant="default"
                 onClick={scrollToBottom}
-                className="shadow-lg gap-1.5"
+                className="shadow-xl gap-1.5 bg-primary/95 hover:bg-primary backdrop-blur-sm"
               >
                 <ArrowDownIcon size={16} />
                 Scroll to bottom

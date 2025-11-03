@@ -6,7 +6,8 @@ import { LiveDemo } from '@/components/Demo/LiveDemo'
 
 export const metadata: Metadata = {
   title: 'OpenAI Streaming Chat - Cookbook - Clarity Chat',
-  description: 'Complete guide to building a streaming chat app with OpenAI and Clarity Chat Components.',
+  description:
+    'Complete guide to building a streaming chat app with OpenAI and Clarity Chat Components.',
 }
 
 export default function OpenAIStreamingChatPage() {
@@ -16,15 +17,14 @@ export default function OpenAIStreamingChatPage() {
         <span className="docs-badge">Cookbook</span>
         <h1>OpenAI Streaming Chat</h1>
         <p className="docs-lead">
-          Build a complete chat app with OpenAI's streaming API. Users see responses appear word-by-word in real-time, just like ChatGPT.
+          Build a complete chat app with OpenAI's streaming API. Users see
+          responses appear word-by-word in real-time, just like ChatGPT.
         </p>
       </div>
 
       <section className="docs-section">
         <h2>What You'll Build</h2>
-        <p>
-          A production-ready chat interface with:
-        </p>
+        <p>A production-ready chat interface with:</p>
         <ul>
           <li>✅ Real-time streaming responses</li>
           <li>✅ Message history</li>
@@ -34,7 +34,8 @@ export default function OpenAIStreamingChatPage() {
         </ul>
 
         <Callout type="info" title="Time: ~15 minutes">
-          This recipe is copy-paste ready. You'll have a working chat in minutes.
+          This recipe is copy-paste ready. You'll have a working chat in
+          minutes.
         </Callout>
       </section>
 
@@ -53,9 +54,7 @@ OPENAI_API_KEY=sk-...`}
 
       <section className="docs-section">
         <h2>Step 1: Create API Route (Next.js)</h2>
-        <p>
-          First, create a server endpoint that streams from OpenAI:
-        </p>
+        <p>First, create a server endpoint that streams from OpenAI:</p>
         <CodeBlock
           language="typescript"
           code={`// app/api/chat/route.ts
@@ -323,7 +322,7 @@ export default StreamingChatDemo`}
 
       <section className="docs-section">
         <h2>Improvements You Can Add</h2>
-        
+
         <h3>1. Add System Prompt</h3>
         <CodeBlock
           language="typescript"
@@ -415,9 +414,7 @@ const tokens = encoding.encode(content).length
 
       <section className="docs-section">
         <h2>Full Production Example</h2>
-        <p>
-          Complete implementation with all best practices:
-        </p>
+        <p>Complete implementation with all best practices:</p>
         <CodeBlock
           language="typescript"
           code={`// See the complete working example in:
@@ -458,4 +455,3 @@ const tokens = encoding.encode(content).length
     </div>
   )
 }
-
