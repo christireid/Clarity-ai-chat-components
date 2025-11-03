@@ -11,6 +11,9 @@ import {
   AgentRunFeed,
   SessionSummaryCard,
   WorkflowSuggestionList,
+  PromptTestHarness,
+  EvaluationDashboard,
+  SafetyReviewConsole,
 } from '@clarity-chat/react'
 import { SparklesIcon } from '@clarity-chat/react/components/icons'
 
@@ -346,6 +349,92 @@ export const WorkflowList: StoryObj = {
           },
         ]}
         onSelect={(workflow) => alert(`Start: ${workflow.name}`)}
+      />
+    </div>
+  ),
+}
+
+export const PromptHarness: StoryObj = {
+  render: () => (
+    <div className="w-full max-w-4xl">
+      <PromptTestHarness
+        datasets={[{ id: 'dataset-1', name: 'Support tickets – Tier 1' }]}
+        variants={[
+          { id: 'control', label: 'Control' },
+          { id: 'rewrite', label: 'Rewrite prompt' },
+        ]}
+        tests={[
+          {
+            id: 'case-1',
+            input: 'User cannot authenticate with SSO.',
+            expected: 'Provide SSO troubleshooting steps.',
+            status: 'pending',
+          },
+          {
+            id: 'case-2',
+            input: 'Need onboarding email copy for new feature.',
+            output: 'Draft email copy with CTA.',
+            expected: 'Email copy with CTA',
+            status: 'pass',
+            latencyMs: 1350,
+            costUsd: 0.0043,
+          },
+        ]}
+      />
+    </div>
+  ),
+}
+
+export const EvaluationBoard: StoryObj = {
+  render: () => (
+    <div className="w-full max-w-5xl">
+      <EvaluationDashboard
+        metrics={[
+          { id: 'latency', label: 'Avg latency', value: '1.8s', trend: 'up', change: '+0.3s' },
+          { id: 'tokens', label: 'Tokens/completion', value: '412', trend: 'flat', change: '±0' },
+          { id: 'passrate', label: 'Test pass rate', value: '92%', trend: 'up', change: '+4%' },
+          { id: 'hallucination', label: 'Hallucination rate', value: '1.2%', trend: 'down', change: '-0.6%' },
+        ]}
+        sparklines={[
+          { id: 'cost', label: 'Cost per 1K tokens', percentage: 68, objective: 60 },
+          { id: 'coverage', label: 'Goal coverage', percentage: 84, objective: 90 },
+        ]}
+        quality={{
+          overallScore: 0.83,
+          metrics: [
+            { id: 'grounded', label: 'Groundedness', score: 0.92 },
+            { id: 'style', label: 'Tone alignment', score: 0.74, target: 0.85 },
+            { id: 'safety', label: 'Safety compliance', score: 0.98 },
+          ],
+        }}
+      />
+    </div>
+  ),
+}
+
+export const SafetyConsole: StoryObj = {
+  render: () => (
+    <div className="w-full max-w-5xl">
+      <SafetyReviewConsole
+        content="Hi Taylor, we noticed your account 123-45-6789 might be impacted by the Phoenix launch embargo on Dec 12."
+        highlights={[
+          {
+            id: 'flag-ssn',
+            start: 41,
+            end: 52,
+            category: 'PII',
+            severity: 'high',
+            suggestion: 'Replace with masked identifier before sending externally.',
+          },
+          {
+            id: 'flag-embargo',
+            start: 77,
+            end: 90,
+            category: 'Embargo mention',
+            severity: 'medium',
+            suggestion: 'Confirm recipient is cleared before sharing embargo date.',
+          },
+        ]}
       />
     </div>
   ),

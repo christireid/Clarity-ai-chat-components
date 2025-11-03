@@ -13,6 +13,9 @@ import {
   AgentRunFeed,
   SessionSummaryCard,
   WorkflowSuggestionList,
+  PromptTestHarness,
+  EvaluationDashboard,
+  SafetyReviewConsole,
 } from '@clarity-chat/react'
 
 describe('AI experience components', () => {
@@ -162,6 +165,53 @@ describe('AI experience components', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /start workflow/i }))
     expect(handleSelect).toHaveBeenCalled()
+  })
+
+  it('renders prompt test harness and triggers run all', () => {
+    const handleRunAll = vi.fn()
+    render(
+      <PromptTestHarness
+        variants={[{ id: 'control', label: 'Control' }]}
+        tests={[{ id: 't1', input: 'Hello', status: 'pending' }]}
+        onRunAll={handleRunAll}
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: /run all variants/i }))
+    expect(handleRunAll).toHaveBeenCalled()
+  })
+
+  it('renders evaluation dashboard metrics and sparklines', () => {
+    render(
+      <EvaluationDashboard
+        metrics={[{ id: 'latency', label: 'Latency', value: '1.8s', trend: 'up', change: '+0.3s' }]}
+        sparklines={[{ id: 'cost', label: 'Cost per 1K tokens', percentage: 72 }]}
+      />
+    )
+
+    expect(screen.getByText(/latency/i)).toBeInTheDocument()
+    expect(screen.getByText('1.8s')).toBeInTheDocument()
+    expect(screen.getByText(/cost per 1k tokens/i)).toBeInTheDocument()
+  })
+
+  it('renders safety review console and handles redact click', () => {
+    const handleRedact = vi.fn()
+    render(
+      <SafetyReviewConsole
+        content="Sensitive value: 123"
+        highlights={[{
+          id: 'h1',
+          start: 18,
+          end: 21,
+          category: 'PII',
+          severity: 'high',
+        }]}
+        onRedact={handleRedact}
+      />
+    )
+
+    fireEvent.click(screen.getByText('123'))
+    expect(handleRedact).toHaveBeenCalled()
   })
 })
 

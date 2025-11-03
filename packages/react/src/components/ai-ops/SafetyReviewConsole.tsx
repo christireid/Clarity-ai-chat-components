@@ -133,7 +133,7 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
                   <div className="mt-2 flex gap-2">
                     <Button
                       variant="surface"
-                      size="xs"
+                      size="sm"
                       onClick={() => onRedact?.(highlight)}
                     >
                       Redact

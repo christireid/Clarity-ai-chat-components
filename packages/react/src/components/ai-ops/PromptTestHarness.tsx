@@ -59,8 +59,8 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
   isRunning = false,
   className,
 }) => {
-  const [selectedVariant, setSelectedVariant] = React.useState<string | undefined>(variants[0]?.id)
-  const [selectedDataset, setSelectedDataset] = React.useState<string | undefined>(datasets[0]?.id)
+  const [selectedVariant, setSelectedVariant] = React.useState<string | undefined>(() => variants[0]?.id)
+  const [selectedDataset, setSelectedDataset] = React.useState<string | undefined>(() => datasets[0]?.id)
 
   React.useEffect(() => {
     if (datasets.length > 0 && !selectedDataset) {
@@ -95,7 +95,7 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
         <div className="flex flex-col gap-3 sm:items-end">
           {datasets.length > 0 && (
             <select
-              value={selectedDataset}
+              value={selectedDataset ?? ''}
               onChange={(event) => handleDatasetChange(event.target.value)}
               className="min-w-[200px] rounded-lg border border-border/60 bg-background px-3 py-2 text-sm text-foreground shadow-[0_1px_2px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
             >
@@ -116,7 +116,7 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
               Run all variants
             </Button>
             <select
-              value={selectedVariant}
+              value={selectedVariant ?? ''}
               onChange={(event) => handleVariantChange(event.target.value)}
               className="min-w-[200px] rounded-lg border border-border/60 bg-background px-3 py-2 text-sm text-foreground shadow-[0_1px_2px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
             >

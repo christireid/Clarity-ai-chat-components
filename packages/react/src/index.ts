@@ -35,6 +35,7 @@ export * from './components/multi-modal-preview'
 export * from './components/agent-run-feed'
 export * from './components/session-summary-card'
 export * from './components/workflow-suggestion-list'
+export * from './components/ai-ops'
 
 // Phase 3 Enhancement - Error Handling & Recovery
 export * from './components/error-boundary'

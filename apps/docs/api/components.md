@@ -740,6 +740,99 @@ interface WorkflowSuggestionListProps {
 
 ---
 
+## PromptTestHarness
+
+Regression harness for comparing prompt variants across datasets.
+
+```typescript
+type PromptTestStatus = 'pending' | 'running' | 'pass' | 'fail'
+
+interface PromptVariant {
+  id: string
+  label: string
+}
+
+interface PromptTestCase {
+  id: string
+  input: string
+  status: PromptTestStatus
+  output?: string
+  expected?: string
+  latencyMs?: number
+  costUsd?: number
+}
+
+interface PromptTestHarnessProps {
+  datasetName?: string
+  datasets?: Array<{ id: string; name: string }>
+  variants: PromptVariant[]
+  tests: PromptTestCase[]
+  onRunAll?: () => void
+  onRunVariant?: (variantId: string) => void
+  onSelectDataset?: (datasetId: string) => void
+  isRunning?: boolean
+  className?: string
+}
+```
+
+---
+
+## EvaluationDashboard
+
+Aggregates evaluation metrics, quality scores, and sparklines for AI releases.
+
+```typescript
+interface EvaluationMetric {
+  id: string
+  label: string
+  value: string
+  trend?: 'up' | 'down' | 'flat'
+  change?: string
+}
+
+interface EvaluationSparkline {
+  id: string
+  label: string
+  percentage: number
+  objective?: number
+}
+
+interface EvaluationDashboardProps {
+  metrics: EvaluationMetric[]
+  sparklines?: EvaluationSparkline[]
+  quality?: ResponseQualityMeterProps
+  className?: string
+}
+```
+
+---
+
+## SafetyReviewConsole
+
+Interactive redaction tool for reviewing flagged content before approval.
+
+```typescript
+interface SafetyHighlight {
+  id: string
+  start: number
+  end: number
+  category: string
+  severity?: 'low' | 'medium' | 'high'
+  suggestion?: string
+}
+
+interface SafetyReviewConsoleProps {
+  content: string
+  highlights: SafetyHighlight[]
+  onRedact?: (highlight: SafetyHighlight) => void
+  onApprove?: () => void
+  onReject?: () => void
+  className?: string
+}
+```
+
+---
+
 ## Common Props
 
 ### Message Type
