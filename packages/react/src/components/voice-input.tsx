@@ -9,46 +9,46 @@ import { useVoiceInput } from '../hooks/use-voice-input'
 export interface VoiceInputProps {
   /** Callback when transcript is finalized */
   onTranscript: (transcript: string) => void
-  
+
   /** Language code (e.g., 'en-US', 'es-ES') */
   lang?: string
-  
+
   /** Show real-time interim results */
   showInterim?: boolean
-  
+
   /** Auto-submit on speech end */
   autoSubmit?: boolean
-  
+
   /** Button size */
   size?: 'sm' | 'md' | 'lg'
-  
+
   /** Button variant */
   variant?: 'primary' | 'secondary' | 'ghost'
-  
+
   /** Custom icon when not listening */
   icon?: React.ReactNode
-  
+
   /** Custom icon when listening */
   listeningIcon?: React.ReactNode
-  
+
   /** Show tooltip */
   showTooltip?: boolean
-  
+
   /** Tooltip text */
   tooltipText?: string
-  
+
   /** Disabled state */
   disabled?: boolean
-  
+
   /** Custom CSS class */
   className?: string
-  
+
   /** Callback when listening starts */
   onStart?: () => void
-  
+
   /** Callback when listening stops */
   onStop?: () => void
-  
+
   /** Callback on error */
   onError?: (error: string) => void
 }
@@ -64,7 +64,7 @@ const variantMap = {
 
 /**
  * Production-ready Voice Input component with Web Speech API.
- * 
+ *
  * **Features:**
  * - One-click voice recording
  * - Real-time transcription display
@@ -73,13 +73,13 @@ const variantMap = {
  * - Multi-language support
  * - Error handling with user feedback
  * - Accessibility support
- * 
+ *
  * **Use Cases:**
  * - Voice message input
  * - Hands-free chat
  * - Accessibility feature
  * - Mobile-friendly input
- * 
+ *
  * @example
  * ```tsx
  * // Basic usage
@@ -89,7 +89,7 @@ const variantMap = {
  *     sendMessage(text)
  *   }}
  * />
- * 
+ *
  * // With custom styling
  * <VoiceInput
  *   onTranscript={handleVoiceInput}
@@ -98,14 +98,14 @@ const variantMap = {
  *   showInterim={true}
  *   autoSubmit={true}
  * />
- * 
+ *
  * // Multi-language
  * <VoiceInput
  *   onTranscript={handleInput}
  *   lang="es-ES"
  *   tooltipText="Habla en español"
  * />
- * 
+ *
  * // With callbacks
  * <VoiceInput
  *   onTranscript={handleInput}
@@ -169,12 +169,12 @@ export function VoiceInput({
   const handleToggle = () => {
     if (voice.isListening) {
       voice.stopListening()
-      
+
       // Submit final transcript if not auto-submit
       if (!autoSubmit && voice.finalTranscript) {
         onTranscript(voice.finalTranscript)
       }
-      
+
       setShowTranscript(false)
     } else {
       voice.resetTranscript()
@@ -240,21 +240,27 @@ export function VoiceInput({
 
           {/* Icon */}
           <span className="relative z-10">
-            {voice.isListening ? (
-              listeningIcon || (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <rect x="7" y="6" width="2" height="8" rx="1" />
-                  <rect x="11" y="6" width="2" height="8" rx="1" />
-                </svg>
-              )
-            ) : (
-              icon || (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
-                  <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-1.5v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z" />
-                </svg>
-              )
-            )}
+            {voice.isListening
+              ? listeningIcon || (
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <rect x="7" y="6" width="2" height="8" rx="1" />
+                    <rect x="11" y="6" width="2" height="8" rx="1" />
+                  </svg>
+                )
+              : icon || (
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
+                    <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-1.5v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z" />
+                  </svg>
+                )}
           </span>
         </Button>
       </div>
@@ -279,14 +285,18 @@ export function VoiceInput({
                 )}
                 {!voice.isListening && (
                   <span className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <svg
+                      className="h-4 w-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
                       <path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" />
                     </svg>
                     Voice Input
                   </span>
                 )}
               </div>
-              
+
               <Button
                 size="sm"
                 variant="ghost"
@@ -294,8 +304,18 @@ export function VoiceInput({
                 className="h-6 w-6 p-0"
                 aria-label="Cancel"
               >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </Button>
             </div>
@@ -309,7 +329,8 @@ export function VoiceInput({
                   )}
                   {voice.interimTranscript && (
                     <span className="text-muted-foreground italic">
-                      {' '}{voice.interimTranscript}
+                      {' '}
+                      {voice.interimTranscript}
                     </span>
                   )}
                 </p>
@@ -324,8 +345,18 @@ export function VoiceInput({
             {voice.error && (
               <div className="mb-3 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <svg className="h-4 w-4 text-destructive shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="h-4 w-4 text-destructive shrink-0 mt-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <p className="text-sm text-destructive">{voice.error}</p>
                 </div>
@@ -335,18 +366,10 @@ export function VoiceInput({
             {/* Actions */}
             {!autoSubmit && voice.transcript && (
               <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  onClick={handleSubmit}
-                  className="flex-1"
-                >
+                <Button size="sm" onClick={handleSubmit} className="flex-1">
                   Send
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleCancel}
-                >
+                <Button size="sm" variant="outline" onClick={handleCancel}>
                   Cancel
                 </Button>
               </div>
@@ -356,9 +379,17 @@ export function VoiceInput({
             {voice.confidence > 0 && (
               <div className="mt-3 pt-3 border-t space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground">Confidence</span>
-                  <Badge 
-                    variant={voice.confidence >= 0.8 ? 'success' : voice.confidence >= 0.5 ? 'warning' : 'secondary'}
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Confidence
+                  </span>
+                  <Badge
+                    variant={
+                      voice.confidence >= 0.8
+                        ? 'success'
+                        : voice.confidence >= 0.5
+                          ? 'warning'
+                          : 'secondary'
+                    }
                   >
                     {Math.round(voice.confidence * 100)}%
                   </Badge>
@@ -394,16 +425,16 @@ export function VoiceInput({
 export interface InlineVoiceInputProps {
   /** Current input value */
   value: string
-  
+
   /** Callback when value changes */
   onChange: (value: string) => void
-  
+
   /** Language code */
   lang?: string
-  
+
   /** Show in input field */
   position?: 'inside' | 'outside'
-  
+
   /** Custom CSS class */
   className?: string
 }
@@ -436,7 +467,9 @@ export function InlineVoiceInput({
   }
 
   return (
-    <div className={`absolute right-2 top-1/2 transform -translate-y-1/2 ${className}`}>
+    <div
+      className={`absolute right-2 top-1/2 transform -translate-y-1/2 ${className}`}
+    >
       <VoiceInput
         onTranscript={handleTranscript}
         lang={lang}

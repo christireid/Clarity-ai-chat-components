@@ -14,7 +14,7 @@ describe('useAutoScroll', () => {
 
   it('should initialize with enabled=true by default', () => {
     const { result } = renderHook(() => useAutoScroll())
-    
+
     // Should be enabled by default
     expect(result.current).toBeDefined()
   })

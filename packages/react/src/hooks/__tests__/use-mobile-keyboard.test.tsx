@@ -21,7 +21,7 @@ describe('useMobileKeyboard', () => {
       writable: true,
       value: mockInnerHeight,
     })
-    
+
     Object.defineProperty(window, 'visualViewport', {
       writable: true,
       value: mockVisualViewport,
@@ -65,7 +65,7 @@ describe('useMobileKeyboard', () => {
 
   it('should call onKeyboardShow when keyboard appears', async () => {
     const onKeyboardShow = vi.fn()
-    
+
     renderHook(() => useMobileKeyboard({ onKeyboardShow }))
 
     // Simulate keyboard show would require mocking visualViewport.resize event
@@ -77,7 +77,7 @@ describe('useMobileKeyboard', () => {
 
   it('should call onKeyboardHide when keyboard disappears', async () => {
     const onKeyboardHide = vi.fn()
-    
+
     renderHook(() => useMobileKeyboard({ onKeyboardHide }))
 
     await waitFor(() => {
@@ -116,7 +116,7 @@ describe('useMobileViewportHeight', () => {
       writable: true,
       value: 800,
     })
-    
+
     Object.defineProperty(window, 'visualViewport', {
       writable: true,
       value: mockVisualViewport,
