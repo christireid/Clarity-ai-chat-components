@@ -47,6 +47,16 @@
         "command": "clarity-chat.showExamples",
         "title": "Clarity Chat: Show Examples",
         "category": "Clarity Chat"
+      },
+      {
+        "command": "clarity-chat.showPreview",
+        "title": "Clarity Chat: Component Preview",
+        "category": "Clarity Chat"
+      },
+      {
+        "command": "clarity-chat.manageApiKeys",
+        "title": "Clarity Chat: Manage API Keys",
+        "category": "Clarity Chat"
       }
     ],
     "snippets": [

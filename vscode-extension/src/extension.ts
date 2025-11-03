@@ -67,12 +67,57 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(codeLensDisposable)
   }
 
+  // Register diagnostics provider
+  const diagnosticsProvider = new DiagnosticsProvider()
+  context.subscriptions.push(diagnosticsProvider)
+
+  // Update diagnostics on document change
+  vscode.workspace.onDidChangeTextDocument(
+    (event) => {
+      diagnosticsProvider.updateDiagnostics(event.document)
+    },
+    null,
+    context.subscriptions
+  )
+
+  // Update diagnostics on document open
+  vscode.workspace.onDidOpenTextDocument(
+    (document) => {
+      diagnosticsProvider.updateDiagnostics(document)
+    },
+    null,
+    context.subscriptions
+  )
+
+  // Register quick fix provider
+  const quickFixProvider = new QuickFixProvider()
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      [
+        { language: 'typescript', scheme: 'file' },
+        { language: 'javascript', scheme: 'file' },
+        { language: 'typescriptreact', scheme: 'file' },
+        { language: 'javascriptreact', scheme: 'file' }
+      ],
+      quickFixProvider,
+      {
+        providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+      }
+    )
+  )
+
   // Register commands
   context.subscriptions.push(
     vscode.commands.registerCommand('clarity-chat.initProject', initProjectCommand),
     vscode.commands.registerCommand('clarity-chat.addProvider', addProviderCommand),
     vscode.commands.registerCommand('clarity-chat.validateConfig', validateConfigCommand),
-    vscode.commands.registerCommand('clarity-chat.showExamples', showExamplesCommand)
+    vscode.commands.registerCommand('clarity-chat.showExamples', showExamplesCommand),
+    vscode.commands.registerCommand('clarity-chat.showPreview', () => {
+      PreviewPanel.createOrShow(context.extensionUri)
+    }),
+    vscode.commands.registerCommand('clarity-chat.manageApiKeys', () => {
+      ApiKeyManager.createOrShow(context)
+    })
   )
 
   // Show welcome message on first install
