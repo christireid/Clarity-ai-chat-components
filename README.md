@@ -290,7 +290,7 @@ clarity-chat/
 ├── apps/
 │   ├── storybook/       # Component documentation
 │   └── docs/            # Documentation site
-├── examples/            # 9 working examples
+├── examples/            # 16 production-ready examples
 └── docs/                # Markdown documentation
 ```
 
