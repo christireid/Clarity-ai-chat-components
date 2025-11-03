@@ -16,7 +16,7 @@ export interface ContextManagerProps {
   className?: string
 }
 
-export const ContextManager: React.FC<ContextManagerProps> = ({
+export const ContextManager = React.memo(function ContextManager({
   contexts,
   onAdd,
   onRemove,
@@ -25,7 +25,7 @@ export const ContextManager: React.FC<ContextManagerProps> = ({
   maxContexts = 20,
   allowedTypes = ['document', 'image', 'video', 'link', 'text'],
   className,
-}) => {
+}: ContextManagerProps) {
   const [showUpload, setShowUpload] = React.useState(false)
   const [filter, setFilter] = React.useState<ContextType | 'all'>('all')
 
@@ -218,4 +218,6 @@ export const ContextManager: React.FC<ContextManagerProps> = ({
       </CardContent>
     </Card>
   )
-}
+})
+
+ContextManager.displayName = 'ContextManager'

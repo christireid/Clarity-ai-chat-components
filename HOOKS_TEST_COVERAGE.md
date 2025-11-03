@@ -10,24 +10,24 @@
 
 ### ✅ Hooks WITH Tests (16 of 28)
 
-| Hook | Test File | Lines | Status |
-|------|-----------|-------|--------|
-| `use-auto-scroll` | use-auto-scroll.test.ts | 1,640 | ✅ Tested |
-| `use-clipboard` | use-clipboard.test.ts | 2,572 | ✅ Tested |
-| `use-debounce` | use-debounce.test.ts | 2,625 | ✅ Tested |
-| `use-error-recovery` | use-error-recovery.test.ts | 4,919 | ✅ Tested |
-| `use-local-storage` | use-local-storage.test.ts | 2,215 | ✅ Tested |
-| `use-media-query` | use-media-query.test.ts | 1,470 | ✅ Tested |
-| `use-message-operations` | use-message-operations.test.ts | 8,188 | ✅ Tested |
-| `use-mobile-keyboard` | use-mobile-keyboard.test.tsx | 5,611 | ✅ Tested |
-| `use-mounted` | use-mounted.test.ts | 960 | ✅ Tested |
-| `use-previous` | use-previous.test.ts | 1,611 | ✅ Tested |
-| `use-streaming-sse` | use-streaming-sse.test.ts | 2,957 | ✅ Tested |
+| Hook                      | Test File                       | Lines | Status    |
+| ------------------------- | ------------------------------- | ----- | --------- |
+| `use-auto-scroll`         | use-auto-scroll.test.ts         | 1,640 | ✅ Tested |
+| `use-clipboard`           | use-clipboard.test.ts           | 2,572 | ✅ Tested |
+| `use-debounce`            | use-debounce.test.ts            | 2,625 | ✅ Tested |
+| `use-error-recovery`      | use-error-recovery.test.ts      | 4,919 | ✅ Tested |
+| `use-local-storage`       | use-local-storage.test.ts       | 2,215 | ✅ Tested |
+| `use-media-query`         | use-media-query.test.ts         | 1,470 | ✅ Tested |
+| `use-message-operations`  | use-message-operations.test.ts  | 8,188 | ✅ Tested |
+| `use-mobile-keyboard`     | use-mobile-keyboard.test.tsx    | 5,611 | ✅ Tested |
+| `use-mounted`             | use-mounted.test.ts             | 960   | ✅ Tested |
+| `use-previous`            | use-previous.test.ts            | 1,611 | ✅ Tested |
+| `use-streaming-sse`       | use-streaming-sse.test.ts       | 2,957 | ✅ Tested |
 | `use-streaming-websocket` | use-streaming-websocket.test.ts | 4,070 | ✅ Tested |
-| `use-toggle` | use-toggle.test.ts | 1,991 | ✅ Tested |
-| `use-token-tracker` | use-token-tracker.test.ts | 7,698 | ✅ Tested |
-| `use-voice-input` | use-voice-input.test.tsx | 4,665 | ✅ Tested |
-| `use-window-size` | use-window-size.test.ts | 1,052 | ✅ Tested |
+| `use-toggle`              | use-toggle.test.ts              | 1,991 | ✅ Tested |
+| `use-token-tracker`       | use-token-tracker.test.ts       | 7,698 | ✅ Tested |
+| `use-voice-input`         | use-voice-input.test.tsx        | 4,665 | ✅ Tested |
+| `use-window-size`         | use-window-size.test.ts         | 1,052 | ✅ Tested |
 
 **Total Test Lines**: 54,044 lines of test code
 
@@ -35,26 +35,27 @@
 
 ## ⚠️ Hooks WITHOUT Tests (12 of 28)
 
-| Hook | Category | Priority |
-|------|----------|----------|
-| `use-chat` | State Management | High |
-| `use-streaming` | Streaming | High |
-| `use-throttle` | Performance | Medium |
-| `use-realistic-typing` | Performance | Medium |
-| `use-deferred-search` | Performance | Medium |
-| `use-intersection-observer` | Performance | Medium |
-| `use-performance` | Performance | Low |
-| `use-keyboard-shortcuts` | UI/Interaction | Medium |
-| `use-haptic` | UI/Interaction | Low |
-| `use-event-listener` | Device/Platform | Medium |
-| `use-undo-redo` | State Management | Medium |
-| `use-optimistic-message` | State Management | Medium |
+| Hook                        | Category         | Priority |
+| --------------------------- | ---------------- | -------- |
+| `use-chat`                  | State Management | High     |
+| `use-streaming`             | Streaming        | High     |
+| `use-throttle`              | Performance      | Medium   |
+| `use-realistic-typing`      | Performance      | Medium   |
+| `use-deferred-search`       | Performance      | Medium   |
+| `use-intersection-observer` | Performance      | Medium   |
+| `use-performance`           | Performance      | Low      |
+| `use-keyboard-shortcuts`    | UI/Interaction   | Medium   |
+| `use-haptic`                | UI/Interaction   | Low      |
+| `use-event-listener`        | Device/Platform  | Medium   |
+| `use-undo-redo`             | State Management | Medium   |
+| `use-optimistic-message`    | State Management | Medium   |
 
 ---
 
 ## 📈 Coverage Statistics
 
 ### Overall Coverage
+
 - **57% of hooks have tests** (16/28)
 - **54,044 lines of test code**
 - **Average test file size**: 3,378 lines
@@ -62,21 +63,23 @@
 
 ### By Category
 
-| Category | Total Hooks | Tested | Coverage |
-|----------|-------------|--------|----------|
-| State Management | 8 | 3 | 38% |
-| Performance | 6 | 2 | 33% |
-| Streaming/Real-time | 4 | 2 | 50% |
-| UI/Interaction | 6 | 4 | 67% |
-| Device/Platform | 3 | 2 | 67% |
-| Error Handling | 1 | 1 | 100% |
+| Category            | Total Hooks | Tested | Coverage |
+| ------------------- | ----------- | ------ | -------- |
+| State Management    | 8           | 3      | 38%      |
+| Performance         | 6           | 2      | 33%      |
+| Streaming/Real-time | 4           | 2      | 50%      |
+| UI/Interaction      | 6           | 4      | 67%      |
+| Device/Platform     | 3           | 2      | 67%      |
+| Error Handling      | 1           | 1      | 100%     |
 
 ### Best Tested Categories
+
 1. ✅ **Error Handling** - 100% (1/1)
 2. ✅ **UI/Interaction** - 67% (4/6)
 3. ✅ **Device/Platform** - 67% (2/3)
 
 ### Needs More Tests
+
 1. ⚠️ **Performance** - 33% (2/6)
 2. ⚠️ **State Management** - 38% (3/8)
 3. ⚠️ **Streaming** - 50% (2/4)
@@ -86,6 +89,7 @@
 ## 🎯 Test Quality Assessment
 
 ### Well-Tested Hooks ⭐⭐⭐⭐⭐
+
 These hooks have comprehensive test coverage:
 
 1. **use-message-operations** - 8,188 lines
@@ -114,6 +118,7 @@ These hooks have comprehensive test coverage:
    - Browser compatibility tests
 
 ### Moderately Tested ⭐⭐⭐
+
 These hooks have good basic coverage:
 
 - **use-streaming-websocket** (4,070 lines)
@@ -123,6 +128,7 @@ These hooks have good basic coverage:
 - **use-local-storage** (2,215 lines)
 
 ### Lightly Tested ⭐⭐
+
 Basic functionality tested:
 
 - **use-toggle** (1,991 lines)
@@ -139,8 +145,9 @@ Basic functionality tested:
 ### High Priority (Core Functionality)
 
 #### 1. `use-chat` ⚠️ HIGH
-**Why**: Core chat functionality, heavily used
-**Suggested Tests**:
+
+**Why**: Core chat functionality, heavily used **Suggested Tests**:
+
 - Message sending
 - Error handling
 - Loading states
@@ -149,8 +156,9 @@ Basic functionality tested:
 - AbortController support (if implemented)
 
 #### 2. `use-streaming` ⚠️ HIGH
-**Why**: Critical for streaming responses
-**Suggested Tests**:
+
+**Why**: Critical for streaming responses **Suggested Tests**:
+
 - Stream reading
 - Chunk processing
 - Error handling
@@ -160,15 +168,17 @@ Basic functionality tested:
 ### Medium Priority (Common Usage)
 
 #### 3. `use-throttle`
-**Why**: Performance hook, should match debounce test quality
-**Suggested Tests**:
+
+**Why**: Performance hook, should match debounce test quality **Suggested Tests**:
+
 - Throttle delay
 - Leading/trailing edge
 - Multiple calls handling
 
 #### 4. `use-event-listener`
-**Why**: Common utility, TypeScript overloads need validation
-**Suggested Tests**:
+
+**Why**: Common utility, TypeScript overloads need validation **Suggested Tests**:
+
 - Window events
 - Element events
 - Document events
@@ -176,16 +186,18 @@ Basic functionality tested:
 - TypeScript type safety
 
 #### 5. `use-keyboard-shortcuts`
-**Why**: Accessibility feature
-**Suggested Tests**:
+
+**Why**: Accessibility feature **Suggested Tests**:
+
 - Shortcut registration
 - Key combination detection
 - Callback execution
 - Cleanup on unmount
 
 #### 6. `use-undo-redo`
-**Why**: State management pattern
-**Suggested Tests**:
+
+**Why**: State management pattern **Suggested Tests**:
+
 - Undo functionality
 - Redo functionality
 - History limits
@@ -205,37 +217,38 @@ Basic functionality tested:
 ## ✅ Testing Infrastructure
 
 ### Test Framework
+
 - **Vitest** - Modern, fast test runner
 - **React Testing Library** - Component testing
 - **JSDOM** - DOM environment
 - **Testing utilities** - Custom test helpers
 
 ### Test Patterns Found
-✅ Proper cleanup verification
-✅ Async operation testing
-✅ Timer mocking (debounce, throttle)
-✅ Event listener testing
-✅ LocalStorage mocking
-✅ WebSocket mocking
-✅ Error scenario coverage
+
+✅ Proper cleanup verification ✅ Async operation testing ✅ Timer mocking (debounce, throttle) ✅
+Event listener testing ✅ LocalStorage mocking ✅ WebSocket mocking ✅ Error scenario coverage
 
 ---
 
 ## 📋 Recommendations
 
 ### Immediate Actions
+
 1. ✅ **Add tests for `use-chat`** - High priority, core functionality
 2. ✅ **Add tests for `use-streaming`** - High priority, critical feature
 3. ⚠️ **Consider tests for `use-throttle`** - Should match debounce quality
 
 ### Long-term Goals
+
 - Target: **80%+ test coverage** (currently 57%)
 - Add 12 missing test files
 - Expand coverage for lightly tested hooks
 - Maintain test quality standards
 
 ### Test Quality Standards
+
 When adding new tests, follow patterns from:
+
 - `use-message-operations.test.ts` - Comprehensive coverage
 - `use-error-recovery.test.ts` - Error scenarios
 - `use-streaming-websocket.test.ts` - Async/WebSocket mocking
@@ -245,6 +258,7 @@ When adding new tests, follow patterns from:
 ## 🎓 Current State Assessment
 
 ### Strengths ✅
+
 1. **57% coverage is reasonable** for a hooks library
 2. **Most critical hooks ARE tested**
 3. **Test quality is high** where tests exist
@@ -252,6 +266,7 @@ When adding new tests, follow patterns from:
 5. **Complex hooks well tested** (WebSocket, Error Recovery, Token Tracker)
 
 ### Areas for Improvement ⚠️
+
 1. **Core hooks missing tests** (use-chat, use-streaming)
 2. **Performance hooks undertested** (33% coverage)
 3. **State management undertested** (38% coverage)
@@ -263,21 +278,25 @@ When adding new tests, follow patterns from:
 ## 🚀 Action Plan
 
 ### Phase 1: Critical Tests (Immediate)
+
 - [ ] Add `use-chat.test.ts` (~3,000 lines)
 - [ ] Add `use-streaming.test.ts` (~2,500 lines)
 
 ### Phase 2: Important Tests (Next Sprint)
+
 - [ ] Add `use-throttle.test.ts` (~2,000 lines)
 - [ ] Add `use-event-listener.test.ts` (~2,000 lines)
 - [ ] Add `use-keyboard-shortcuts.test.ts` (~2,500 lines)
 - [ ] Add `use-undo-redo.test.ts` (~3,000 lines)
 
 ### Phase 3: Nice to Have (Future)
+
 - [ ] Add remaining 6 test files
 - [ ] Expand coverage for lightly tested hooks
 - [ ] Add integration tests
 
 ### Time Estimate
+
 - Phase 1: 1-2 days
 - Phase 2: 2-3 days
 - Phase 3: 2-3 days
@@ -291,11 +310,12 @@ When adding new tests, follow patterns from:
 
 **Tested Hooks**: 16 of 28 hooks have comprehensive tests with 54,000+ lines of test code.
 
-**Critical Gap**: `use-chat` and `use-streaming` need tests (both enhanced with AbortController support).
+**Critical Gap**: `use-chat` and `use-streaming` need tests (both enhanced with AbortController
+support).
 
-**Recommendation**: Add tests for the 2 critical hooks (use-chat, use-streaming), then the repository will have excellent coverage of all high-priority functionality.
+**Recommendation**: Add tests for the 2 critical hooks (use-chat, use-streaming), then the
+repository will have excellent coverage of all high-priority functionality.
 
 ---
 
-*Test coverage report complete - November 3, 2025*
-
+_Test coverage report complete - November 3, 2025_

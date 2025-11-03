@@ -26,7 +26,7 @@ export interface PromptLibraryProps {
   className?: string
 }
 
-export const PromptLibrary: React.FC<PromptLibraryProps> = ({
+export const PromptLibrary = React.memo(function PromptLibrary({
   prompts,
   categories = [],
   onUsePrompt,
@@ -35,7 +35,7 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
   onDelete,
   onToggleFavorite,
   className,
-}) => {
+}: PromptLibraryProps) {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [selectedCategory, setSelectedCategory] = React.useState<string | 'all'>('all')
   const [showCreate, setShowCreate] = React.useState(false)
@@ -333,4 +333,6 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
       </CardContent>
     </Card>
   )
-}
+})
+
+PromptLibrary.displayName = 'PromptLibrary'

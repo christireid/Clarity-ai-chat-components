@@ -19,13 +19,13 @@ export interface LinkPreviewProps {
   className?: string
 }
 
-export const LinkPreview: React.FC<LinkPreviewProps> = ({
+export const LinkPreview = React.memo(function LinkPreview({
   metadata,
   onClick,
   onRemove,
   loading = false,
   className,
-}) => {
+}: LinkPreviewProps) {
   const [imageError, setImageError] = React.useState(false)
 
   const getDomain = (url: string) => {
@@ -141,7 +141,9 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
       </Card>
     </motion.div>
   )
-}
+})
+
+LinkPreview.displayName = 'LinkPreview'
 
 // Hook for fetching link metadata
 export function useLinkPreview() {
@@ -202,7 +204,7 @@ export interface InlineLinkProps {
   className?: string
 }
 
-export const InlineLink: React.FC<InlineLinkProps> = ({
+export const InlineLink = React.memo(function InlineLink({
   url,
   onPreview,
   children,
