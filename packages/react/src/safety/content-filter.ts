@@ -1,6 +1,6 @@
 /**
  * Content Filtering Utilities
- * 
+ *
  * Simple keyword-based content filtering. For production, integrate with
  * services like OpenAI Moderation API, Azure Content Safety, or Perspective API.
  */
@@ -24,16 +24,16 @@ export class ContentFilter {
     sexual: [],
     spam: [],
   }
-  
+
   private threshold: number
-  
+
   constructor(options?: ContentFilterOptions) {
     if (options?.keywords) {
       this.keywords = { ...this.keywords, ...options.keywords }
     }
     this.threshold = options?.threshold || 0.7
   }
-  
+
   /**
    * Check content against filters
    */
@@ -45,7 +45,7 @@ export class ContentFilter {
     const lowerContent = content.toLowerCase()
     const categories: string[] = []
     const scores: Record<string, number> = {}
-    
+
     for (const [category, words] of Object.entries(this.keywords)) {
       let matches = 0
       for (const word of words) {
@@ -53,22 +53,22 @@ export class ContentFilter {
           matches++
         }
       }
-      
+
       const score = words.length > 0 ? matches / words.length : 0
       scores[category] = score
-      
+
       if (score >= this.threshold) {
         categories.push(category)
       }
     }
-    
+
     return {
       flagged: categories.length > 0,
       categories,
       scores,
     }
   }
-  
+
   /**
    * Add keywords to a category
    */
@@ -78,14 +78,14 @@ export class ContentFilter {
     }
     this.keywords[category].push(...keywords)
   }
-  
+
   /**
    * Remove keywords from a category
    */
   removeKeywords(category: string, keywords: string[]): void {
     if (this.keywords[category]) {
       this.keywords[category] = this.keywords[category].filter(
-        k => !keywords.includes(k)
+        (k) => !keywords.includes(k)
       )
     }
   }
@@ -96,16 +96,16 @@ export class ContentFilter {
  */
 export class ContentFilterGuardrail implements SafetyGuardrail {
   name = 'content-filter'
-  
+
   private filter: ContentFilter
-  
+
   constructor(options?: ContentFilterOptions) {
     this.filter = new ContentFilter(options)
   }
-  
+
   check(content: string): SafetyCheck {
     const result = this.filter.check(content)
-    
+
     return {
       name: this.name,
       passed: !result.flagged,
@@ -118,7 +118,7 @@ export class ContentFilterGuardrail implements SafetyGuardrail {
       action: result.flagged ? 'block' : 'allow',
     }
   }
-  
+
   /**
    * Get the underlying filter for customization
    */
@@ -126,4 +126,3 @@ export class ContentFilterGuardrail implements SafetyGuardrail {
     return this.filter
   }
 }
-

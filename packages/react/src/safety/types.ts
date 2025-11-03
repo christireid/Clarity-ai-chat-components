@@ -1,6 +1,6 @@
 /**
  * AI Safety Types
- * 
+ *
  * Optional utilities for content moderation, PII detection, and guardrails.
  * Bring your own detection logic or use simple pattern-based helpers.
  */
@@ -58,6 +58,8 @@ export interface SafetyGuardrail {
   /** Guardrail name */
   name: string
   /** Check if content passes guardrail */
-  check(content: string, context?: Record<string, any>): Promise<SafetyCheck> | SafetyCheck
+  check(
+    content: string,
+    context?: Record<string, any>
+  ): Promise<SafetyCheck> | SafetyCheck
 }
-
