@@ -1,6 +1,6 @@
 /**
  * AI Assistant Template
- * 
+ *
  * General-purpose AI assistant with rich features
  */
 
@@ -10,9 +10,9 @@ import { ContextManager } from '../components/context-manager'
 import { ModelSelector } from '../components/model-selector'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { oceanTheme } from '../theme/presets'
-import { OpenAIAdapter } from '../adapters/openai'
-import { AnthropicAdapter } from '../adapters/anthropic'
-import { GoogleAdapter } from '../adapters/google'
+import { openAIAdapter } from '../adapters/openai'
+import { anthropicAdapter } from '../adapters/anthropic'
+import { googleAdapter } from '../adapters/google'
 import { useLocalStorage } from '../hooks/use-local-storage'
 import { useStreaming } from '../hooks/use-streaming'
 import type { Message, Context } from '@clarity-chat/types'
@@ -33,7 +33,7 @@ export interface AIAssistantTemplateProps {
 
 /**
  * AI Assistant Template
- * 
+ *
  * Features:
  * - Multiple AI model support
  * - Streaming responses
@@ -41,7 +41,7 @@ export interface AIAssistantTemplateProps {
  * - File uploads
  * - Voice input
  * - Conversation history
- * 
+ *
  * @example
  * ```tsx
  * <AIAssistantTemplate
@@ -64,32 +64,50 @@ export function AIAssistantTemplate({
   systemPrompt = 'You are a helpful AI assistant. Be concise, accurate, and friendly.',
   maxTokens = 4096,
 }: AIAssistantTemplateProps) {
-  const [messages, setMessages] = useLocalStorage<Message[]>('ai-assistant-messages', [])
-  const [context, setContext] = useLocalStorage<Context[]>('ai-assistant-context', [])
+  const [messages, setMessages] = useLocalStorage<Message[]>(
+    'ai-assistant-messages',
+    []
+  )
+  const [context, setContext] = useLocalStorage<Context[]>(
+    'ai-assistant-context',
+    []
+  )
   const [selectedModel, setSelectedModel] = useState(defaultModel)
   const [isLoading, setIsLoading] = useState(false)
   const { streamMessage, isStreaming } = useStreaming()
 
   // Initialize adapters
   const adapters = {
-    openai: apiKeys.openai ? new OpenAIAdapter({ apiKey: apiKeys.openai }) : null,
-    anthropic: apiKeys.anthropic ? new AnthropicAdapter({ apiKey: apiKeys.anthropic }) : null,
-    google: apiKeys.google ? new GoogleAdapter({ apiKey: apiKeys.google }) : null,
+    openai: apiKeys.openai ? openAIAdapter : null,
+    anthropic: apiKeys.anthropic ? anthropicAdapter : null,
+    google: apiKeys.google ? googleAdapter : null,
   }
 
   const availableModels = [
-    ...(adapters.openai ? [
-      { id: 'gpt-4-turbo-preview', name: 'GPT-4 Turbo', provider: 'openai' },
-      { id: 'gpt-4', name: 'GPT-4', provider: 'openai' },
-      { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'openai' },
-    ] : []),
-    ...(adapters.anthropic ? [
-      { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'anthropic' },
-      { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'anthropic' },
-    ] : []),
-    ...(adapters.google ? [
-      { id: 'gemini-pro', name: 'Gemini Pro', provider: 'google' },
-    ] : []),
+    ...(adapters.openai
+      ? [
+          {
+            id: 'gpt-4-turbo-preview',
+            name: 'GPT-4 Turbo',
+            provider: 'openai',
+          },
+          { id: 'gpt-4', name: 'GPT-4', provider: 'openai' },
+          { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'openai' },
+        ]
+      : []),
+    ...(adapters.anthropic
+      ? [
+          { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'anthropic' },
+          {
+            id: 'claude-3-sonnet',
+            name: 'Claude 3 Sonnet',
+            provider: 'anthropic',
+          },
+        ]
+      : []),
+    ...(adapters.google
+      ? [{ id: 'gemini-pro', name: 'Gemini Pro', provider: 'google' }]
+      : []),
   ]
 
   const handleSendMessage = async (content: string) => {
@@ -100,13 +118,15 @@ export function AIAssistantTemplate({
       content,
       timestamp: new Date(),
     }
-    
-    setMessages(prev => [...prev, userMessage])
+
+    setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
     // Determine which adapter to use
-    const model = availableModels.find(m => m.id === selectedModel)
-    const adapter = model ? adapters[model.provider as keyof typeof adapters] : null
+    const model = availableModels.find((m) => m.id === selectedModel)
+    const adapter = model
+      ? adapters[model.provider as keyof typeof adapters]
+      : null
 
     if (!adapter) {
       const errorMessage: Message = {
@@ -116,7 +136,7 @@ export function AIAssistantTemplate({
         timestamp: new Date(),
         metadata: { error: true },
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages((prev) => [...prev, errorMessage])
       setIsLoading(false)
       return
     }
@@ -130,17 +150,21 @@ export function AIAssistantTemplate({
         timestamp: new Date(),
         isStreaming: true,
       }
-      
-      setMessages(prev => [...prev, assistantMessage])
+
+      setMessages((prev) => [...prev, assistantMessage])
 
       // Prepare messages with system prompt and context
       const chatMessages = [
         { role: 'system' as const, content: systemPrompt },
-        ...(context.length > 0 ? [{
-          role: 'system' as const,
-          content: `Context:\n${context.map(c => `- ${c.name}: ${c.content}`).join('\n')}`,
-        }] : []),
-        ...messages.map(m => ({
+        ...(context.length > 0
+          ? [
+              {
+                role: 'system' as const,
+                content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
+              },
+            ]
+          : []),
+        ...messages.map((m) => ({
           role: m.role,
           content: m.content,
         })),
@@ -153,8 +177,8 @@ export function AIAssistantTemplate({
         model: selectedModel,
         maxTokens,
         onChunk: (chunk) => {
-          setMessages(prev =>
-            prev.map(msg =>
+          setMessages((prev) =>
+            prev.map((msg) =>
               msg.id === assistantMessage.id
                 ? { ...msg, content: msg.content + chunk }
                 : msg
@@ -164,11 +188,9 @@ export function AIAssistantTemplate({
       })
 
       // Mark streaming as complete
-      setMessages(prev =>
-        prev.map(msg =>
-          msg.id === assistantMessage.id
-            ? { ...msg, isStreaming: false }
-            : msg
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMessage.id ? { ...msg, isStreaming: false } : msg
         )
       )
     } catch (error) {
@@ -180,7 +202,7 @@ export function AIAssistantTemplate({
         timestamp: new Date(),
         metadata: { error: true },
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages((prev) => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
     }
@@ -196,33 +218,42 @@ export function AIAssistantTemplate({
         content: content.substring(0, 1000), // Limit context size
         type: file.type.startsWith('image/') ? 'image' : 'document',
       }
-      setContext(prev => [...prev, contextItem])
+      setContext((prev) => [...prev, contextItem])
     }
   }
 
   return (
     <ThemeProvider theme={oceanTheme}>
-      <div className="ai-assistant-template" style={{ display: 'flex', height: '100%', width: '100%' }}>
+      <div
+        className="ai-assistant-template"
+        style={{ display: 'flex', height: '100%', width: '100%' }}
+      >
         {enableContextManagement && (
-          <div style={{ width: '300px', borderRight: '1px solid var(--border)' }}>
+          <div
+            style={{ width: '300px', borderRight: '1px solid var(--border)' }}
+          >
             <ContextManager
               items={context}
-              onAddItem={(item) => setContext(prev => [...prev, item])}
-              onRemoveItem={(id) => setContext(prev => prev.filter(c => c.id !== id))}
+              onAddItem={(item) => setContext((prev) => [...prev, item])}
+              onRemoveItem={(id) =>
+                setContext((prev) => prev.filter((c) => c.id !== id))
+              }
               onClear={() => setContext([])}
             />
           </div>
         )}
-        
+
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '1rem', borderBottom: '1px solid var(--border)' }}>
+          <div
+            style={{ padding: '1rem', borderBottom: '1px solid var(--border)' }}
+          >
             <ModelSelector
               models={availableModels}
               selectedModel={selectedModel}
               onSelectModel={setSelectedModel}
             />
           </div>
-          
+
           <div style={{ flex: 1 }}>
             <ChatWindow
               messages={messages}
