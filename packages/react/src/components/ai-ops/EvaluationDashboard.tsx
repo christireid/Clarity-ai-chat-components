@@ -32,7 +32,7 @@ export interface EvaluationDashboardProps {
   className?: string
 }
 
-const trendCopy: Record<NonNullable<EvaluationMetric['trend']>, string> = {
+const trendCopy: Record<NonNullable<EvaluationMetricItem['trend']>, string> = {
   up: 'Improving',
   down: 'Regression',
   flat: 'Stable',
