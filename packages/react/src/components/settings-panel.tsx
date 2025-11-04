@@ -18,7 +18,10 @@ import type {
   UIPreferences,
   PrivacySettings,
   NotificationSettings,
+  FontSize,
+  MessageLayout,
 } from '@clarity-chat/types'
+import type { ThemeMode } from '../theme/ThemeProvider'
 
 export interface SettingsPanelProps {
   settings: UserSettings
@@ -250,7 +253,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                         }
                         size="sm"
                         onClick={() => {
-                          handleUpdateUI({ theme })
+                          handleUpdateUI({ theme: theme as ThemeMode })
                           // Apply theme
                           if (theme === 'dark') {
                             document.documentElement.classList.add('dark')
@@ -283,7 +286,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                             : 'outline'
                         }
                         size="sm"
-                        onClick={() => handleUpdateUI({ fontSize: size })}
+                        onClick={() => handleUpdateUI({ fontSize: size as FontSize })}
                       >
                         {size === 'small' && 'S'}
                         {size === 'medium' && 'M'}
@@ -307,7 +310,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                         }
                         size="sm"
                         onClick={() =>
-                          handleUpdateUI({ messageLayout: layout })
+                          handleUpdateUI({ messageLayout: layout as MessageLayout })
                         }
                       >
                         {layout.charAt(0).toUpperCase() + layout.slice(1)}

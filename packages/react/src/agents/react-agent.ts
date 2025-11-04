@@ -25,7 +25,7 @@ export class ReactAgent implements Agent {
   
   private config: AgentConfig
   private callbacks?: AgentCallbacks
-  private modelAdapter: any // Would use actual model adapter
+  private _modelAdapter: any // Would use actual model adapter
   
   constructor(config: AgentConfig, callbacks?: AgentCallbacks) {
     this.name = config.name
@@ -297,13 +297,13 @@ When you have enough information, provide a final ANSWER.`
     return `To answer "${query}", I need to gather information using the available tools.`
   }
   
-  private generateContinuedThought(query: string, steps: AgentStep[]): string {
+  private generateContinuedThought(_query: string, steps: AgentStep[]): string {
     // Simplified - in reality use LLM
-    const lastObservation = steps.filter(s => s.type === 'observation').pop()
+    const _lastObservation = steps.filter(s => s.type === 'observation').pop()
     return `Based on the previous results, I need to continue investigating.`
   }
   
-  private parseThought(thought: string): { tool: string; args: Record<string, any> } {
+  private parseThought(_thought: string): { tool: string; args: Record<string, any> } {
     // Simplified parser - in reality use LLM to determine tool and args
     // For now, just return first tool
     const tool = this.tools[0]
@@ -323,7 +323,7 @@ When you have enough information, provide a final ANSWER.`
   private generateAnswer(steps: AgentStep[]): string {
     // Generate final answer from all steps
     // Simplified - in reality use LLM
-    const observations = steps.filter(s => s.type === 'observation')
+    const _observations = steps.filter(s => s.type === 'observation')
     return `Based on my analysis, here is the answer.`
   }
   

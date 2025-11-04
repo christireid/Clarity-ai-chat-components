@@ -292,11 +292,11 @@ export const NoHistory: Story = {
     <EmptyState
       title="No history"
       description="Your conversation history will appear here once you start chatting."
-      action: {
+      action={{
         label: 'Start New Chat',
         onClick: () => alert('Start chat clicked!'),
         variant: 'primary',
-      },
+      }}
     />
   ),
 }

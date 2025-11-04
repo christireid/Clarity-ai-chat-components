@@ -25,10 +25,10 @@ export class PineconeVectorStore implements VectorStore {
   readonly provider = 'pinecone'
   
   private apiKey: string
-  private environment: string
-  private indexName: string
+  private _environment: string
+  private _indexName: string
   private baseUrl: string
-  private initialized = false
+  private _initialized = false
   
   constructor(config: PineconeConfig) {
     if (!config.apiKey) {
@@ -42,15 +42,15 @@ export class PineconeVectorStore implements VectorStore {
     }
     
     this.apiKey = config.apiKey
-    this.environment = config.environment
-    this.indexName = config.indexName
+    this._environment = config.environment
+    this._indexName = config.indexName
     this.baseUrl = `https://${config.indexName}-${config.projectId || ''}.svc.${config.environment}.pinecone.io`
   }
   
   async initialize(): Promise<void> {
     // Verify connection by fetching index stats
     await this.getStats()
-    this.initialized = true
+    this._initialized = true
   }
   
   async upsert(vectors: Vector[], options?: VectorUpsertOptions): Promise<void> {

@@ -41,7 +41,7 @@ const transform: Transform = (file, api) => {
       path.node.openingElement.name.name === 'ChatWindow'
     ) {
       path.node.openingElement.name.name = 'ChatInterface'
-      if (path.node.closingElement) {
+      if (path.node.closingElement && path.node.closingElement.name.type === 'JSXIdentifier') {
         path.node.closingElement.name.name = 'ChatInterface'
       }
       hasChanges = true
@@ -87,6 +87,8 @@ const transform: Transform = (file, api) => {
   return hasChanges ? root.toSource() : null
 }
 
-transform.parser = 'tsx'
-
+// Module augmentation for parser property
 export default transform
+
+// This allows the codemod to be used with tsx parser
+export const parser = 'tsx' as const

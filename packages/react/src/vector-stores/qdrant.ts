@@ -27,7 +27,7 @@ export class QdrantVectorStore implements VectorStore {
   private apiKey?: string
   private endpoint: string
   private collectionName: string
-  private initialized = false
+  private _initialized = false
   
   constructor(config: QdrantConfig) {
     if (!config.endpoint) {
@@ -79,10 +79,10 @@ export class QdrantVectorStore implements VectorStore {
       throw new Error(`Failed to verify Qdrant collection: ${await response.text()}`)
     }
     
-    this.initialized = true
+    this._initialized = true
   }
   
-  async upsert(vectors: Vector[], options?: VectorUpsertOptions): Promise<void> {
+  async upsert(vectors: Vector[], _options?: VectorUpsertOptions): Promise<void> {
     const response = await fetch(
       `${this.endpoint}/collections/${this.collectionName}/points`,
       {
@@ -161,7 +161,7 @@ export class QdrantVectorStore implements VectorStore {
     return must.length > 0 ? { must } : undefined
   }
   
-  async delete(ids: string[], namespace?: string): Promise<void> {
+  async delete(ids: string[], _namespace?: string): Promise<void> {
     const response = await fetch(
       `${this.endpoint}/collections/${this.collectionName}/points/delete`,
       {
@@ -229,7 +229,7 @@ export class QdrantVectorStore implements VectorStore {
     }
   }
   
-  async fetch(ids: string[], namespace?: string): Promise<Vector[]> {
+  async fetch(ids: string[], _namespace?: string): Promise<Vector[]> {
     const response = await fetch(
       `${this.endpoint}/collections/${this.collectionName}/points`,
       {
@@ -299,7 +299,7 @@ export class QdrantVectorStore implements VectorStore {
   }
   
   async close(): Promise<void> {
-    this.initialized = false
+    this._initialized = false
   }
 }
 
