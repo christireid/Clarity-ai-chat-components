@@ -232,3 +232,9 @@ Leverage Clarity’s built-in modules to cover enterprise requirements that Verc
 
 By pairing Vercel’s flexible runtime with Clarity’s opinionated UX, teams keep the provider-agnostic benefits of the AI SDK while shipping enterprise-ready chat experiences in days instead of sprints.
 
+## Further Reading
+- `docs/research/vercel-ai-sdk-feature-audit.md` — capability-by-capability coverage map.
+- `docs/research/vercel-ai-sdk-competitive-analysis.md` — strategic overview, differentiators, and roadmap.
+- `docs/research/vercel-ai-sdk-sample-repo-plan.md` — implementation plan for the public reference app.
+- `commercial-docs/VERCEL_COMPETITIVE_POSITIONING.md` — messaging guide for sales & marketing.
+

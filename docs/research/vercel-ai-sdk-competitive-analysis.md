@@ -245,3 +245,9 @@ Steps:
 - **Attachment Fidelity**: expand `MessageAttachment` schema to capture size, model-access status, and previewability per Vercel’s attachment metadata.
 - **Documentation & Samples**: maintain a public sample repo showing Vercel’s canonical chat demo reskinned with Clarity, including CI-tested templates.
 
+## 9. Related Resources
+- `docs/research/vercel-ai-sdk-feature-audit.md` — tabular parity checklist across SDK capabilities.
+- `docs/research/vercel-ai-sdk-integration-guide.md` — step-by-step wiring instructions for pairing Vercel hooks with Clarity UI.
+- `docs/research/vercel-ai-sdk-sample-repo-plan.md` — implementation plan for the public example project.
+- `commercial-docs/VERCEL_COMPETITIVE_POSITIONING.md` — GTM messaging tailored to teams already on Vercel.
+

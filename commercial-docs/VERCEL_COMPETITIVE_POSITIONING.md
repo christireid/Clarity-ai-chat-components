@@ -23,6 +23,8 @@
 - Integration playbook in `docs/research/vercel-ai-sdk-integration-guide.md` demonstrates copy/paste migration.
 - Safety modules (`packages/react/src/safety`) and analytics stack (`packages/react/src/analytics`) provide tangible differentiators.
 - Customer proof: cite pilot teams reducing build time by 4–6 weeks when replacing bespoke Tailwind scaffolding.
+- Feature audit reference: `docs/research/vercel-ai-sdk-feature-audit.md` summarizes parity and action items.
+- Sample repo plan: `docs/research/vercel-ai-sdk-sample-repo-plan.md` outlines public showcase scope.
 
 ## 5. Messaging Headlines
 - **“Keep Vercel’s engine. Add Clarity’s cockpit.”**
