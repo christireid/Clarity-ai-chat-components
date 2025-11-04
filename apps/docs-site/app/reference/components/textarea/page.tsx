@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
-import LiveDemo from '@/components/LiveDemo';
-import ApiTable from '@/components/ApiTable';
+import { LiveDemo } from '@/components/Demo/LiveDemo';
+import { ApiTable } from '@/components/Demo/ApiTable';
 
 export const metadata: Metadata = {
   title: 'Textarea Component - Clarity Chat Components',
@@ -41,13 +41,13 @@ export default function BasicTextarea() {
         <ApiTable
           title="Textarea Props"
           data={[
-            { prop: 'value', type: 'string', default: 'undefined', description: 'Controlled value' },
-            { prop: 'placeholder', type: 'string', default: 'undefined', description: 'Placeholder text' },
-            { prop: 'rows', type: 'number', default: '3', description: 'Number of visible rows' },
-            { prop: 'resize', type: "'none' | 'vertical' | 'horizontal' | 'both'", default: "'vertical'", description: 'Resize behavior' },
-            { prop: 'disabled', type: 'boolean', default: 'false', description: 'Whether textarea is disabled' },
-            { prop: 'error', type: 'string | boolean', default: 'undefined', description: 'Error state' },
-            { prop: 'onChange', type: '(e: ChangeEvent) => void', default: 'undefined', description: 'Change handler' }
+            { name: 'value', type: 'string', default: 'undefined', description: 'Controlled value' },
+            { name: 'placeholder', type: 'string', default: 'undefined', description: 'Placeholder text' },
+            { name: 'rows', type: 'number', default: '3', description: 'Number of visible rows' },
+            { name: 'resize', type: "'none' | 'vertical' | 'horizontal' | 'both'", default: "'vertical'", description: 'Resize behavior' },
+            { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether textarea is disabled' },
+            { name: 'error', type: 'string | boolean', default: 'undefined', description: 'Error state' },
+            { name: 'onChange', type: '(e: ChangeEvent) => void', default: 'undefined', description: 'Change handler' }
           ]}
         />
       </section>

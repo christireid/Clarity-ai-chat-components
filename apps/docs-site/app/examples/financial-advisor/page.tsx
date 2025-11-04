@@ -6,6 +6,8 @@ import {
   TrendingUp,
   PieChart,
   Shield,
+  Calendar,
+  FileText,
 } from 'lucide-react'
 import { BudgetPieChart } from '@/components/Diagrams/BudgetPieChart'
 

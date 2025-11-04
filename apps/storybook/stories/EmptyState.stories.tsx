@@ -279,10 +279,10 @@ export const NoFavorites: Story = {
     <EmptyState
       title="No favorites yet"
       description="Items you mark as favorite will appear here for quick access."
-      action: {
+      action={{
         label: 'Browse Items',
         onClick: () => alert('Browse clicked!'),
-      },
+      }}
     />
   ),
 }

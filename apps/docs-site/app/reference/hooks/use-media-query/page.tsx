@@ -1,8 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next';
-import LiveDemo from '@/components/LiveDemo';
-import ApiTable from '@/components/ApiTable';
-import Callout from '@/components/Callout';
+import { LiveDemo } from '@/components/Demo/LiveDemo';
+import { ApiTable } from '@/components/Demo/ApiTable';
+import { Callout } from '@/components/MDX/Callout';
 
 export const metadata: Metadata = {
   title: 'useMediaQuery Hook - Clarity Chat Components',
@@ -65,25 +65,25 @@ export default function ResponsiveComponent() {
           title="useMediaQuery Parameters"
           data={[
             {
-              prop: 'query',
+              name: 'query',
               type: 'string',
               default: 'undefined',
               description: 'CSS media query string to match (e.g., "(min-width: 768px)")'
             },
             {
-              prop: 'options',
+              name: 'options',
               type: 'object',
               default: '{}',
               description: 'Optional configuration object'
             },
             {
-              prop: 'options.defaultValue',
+              name: 'options.defaultValue',
               type: 'boolean',
               default: 'false',
               description: 'Default value returned during SSR or before mount'
             },
             {
-              prop: 'options.initializeWithValue',
+              name: 'options.initializeWithValue',
               type: 'boolean',
               default: 'true',
               description: 'Whether to immediately evaluate query on mount'
@@ -95,7 +95,7 @@ export default function ResponsiveComponent() {
           title="Return Value"
           data={[
             {
-              prop: 'matches',
+              name: 'matches',
               type: 'boolean',
               default: 'undefined',
               description: 'Whether the media query currently matches'

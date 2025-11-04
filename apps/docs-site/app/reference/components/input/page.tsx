@@ -1,8 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next';
-import LiveDemo from '@/components/LiveDemo';
-import ApiTable from '@/components/ApiTable';
-import Callout from '@/components/Callout';
+import { LiveDemo } from '@/components/Demo/LiveDemo';
+import { ApiTable } from '@/components/Demo/ApiTable';
+import { Callout } from '@/components/MDX/Callout';
 
 export const metadata: Metadata = {
   title: 'Input Component - Clarity Chat Components',
@@ -52,24 +52,24 @@ export default function BasicInput() {
         <ApiTable
           title="Input Props"
           data={[
-            { prop: 'type', type: "'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search'", default: "'text'", description: 'Input type' },
-            { prop: 'value', type: 'string', default: 'undefined', description: 'Controlled value' },
-            { prop: 'defaultValue', type: 'string', default: 'undefined', description: 'Uncontrolled default value' },
-            { prop: 'placeholder', type: 'string', default: 'undefined', description: 'Placeholder text' },
-            { prop: 'label', type: 'string', default: 'undefined', description: 'Input label' },
-            { prop: 'helperText', type: 'string', default: 'undefined', description: 'Helper text below input' },
-            { prop: 'error', type: 'string | boolean', default: 'undefined', description: 'Error message or state' },
-            { prop: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Input size' },
-            { prop: 'fullWidth', type: 'boolean', default: 'false', description: 'Whether input spans full width' },
-            { prop: 'disabled', type: 'boolean', default: 'false', description: 'Whether input is disabled' },
-            { prop: 'readOnly', type: 'boolean', default: 'false', description: 'Whether input is read-only' },
-            { prop: 'required', type: 'boolean', default: 'false', description: 'Whether input is required' },
-            { prop: 'leftIcon', type: 'ReactNode', default: 'undefined', description: 'Icon on the left side' },
-            { prop: 'rightIcon', type: 'ReactNode', default: 'undefined', description: 'Icon on the right side' },
-            { prop: 'onChange', type: '(e: ChangeEvent) => void', default: 'undefined', description: 'Change handler' },
-            { prop: 'onFocus', type: '(e: FocusEvent) => void', default: 'undefined', description: 'Focus handler' },
-            { prop: 'onBlur', type: '(e: FocusEvent) => void', default: 'undefined', description: 'Blur handler' },
-            { prop: 'className', type: 'string', default: 'undefined', description: 'Additional CSS classes' }
+            { name: 'type', type: "'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search'", default: "'text'", description: 'Input type' },
+            { name: 'value', type: 'string', default: 'undefined', description: 'Controlled value' },
+            { name: 'defaultValue', type: 'string', default: 'undefined', description: 'Uncontrolled default value' },
+            { name: 'placeholder', type: 'string', default: 'undefined', description: 'Placeholder text' },
+            { name: 'label', type: 'string', default: 'undefined', description: 'Input label' },
+            { name: 'helperText', type: 'string', default: 'undefined', description: 'Helper text below input' },
+            { name: 'error', type: 'string | boolean', default: 'undefined', description: 'Error message or state' },
+            { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Input size' },
+            { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Whether input spans full width' },
+            { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether input is disabled' },
+            { name: 'readOnly', type: 'boolean', default: 'false', description: 'Whether input is read-only' },
+            { name: 'required', type: 'boolean', default: 'false', description: 'Whether input is required' },
+            { name: 'leftIcon', type: 'ReactNode', default: 'undefined', description: 'Icon on the left side' },
+            { name: 'rightIcon', type: 'ReactNode', default: 'undefined', description: 'Icon on the right side' },
+            { name: 'onChange', type: '(e: ChangeEvent) => void', default: 'undefined', description: 'Change handler' },
+            { name: 'onFocus', type: '(e: FocusEvent) => void', default: 'undefined', description: 'Focus handler' },
+            { name: 'onBlur', type: '(e: FocusEvent) => void', default: 'undefined', description: 'Blur handler' },
+            { name: 'className', type: 'string', default: 'undefined', description: 'Additional CSS classes' }
           ]}
         />
       </section>
@@ -146,7 +146,6 @@ export default function ControlledInput() {
     </div>
   );
 }`}
-          scope={{ useState: React.useState }}
         />
       </section>
 

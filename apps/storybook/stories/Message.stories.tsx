@@ -374,8 +374,8 @@ function Welcome({ name }) {
 <Welcome name="World" />
 \`\`\`
 
-This component accepts a \`name\` prop and renders a greeting.
-      `),
+This component accepts a \\\`name\\\` prop and renders a greeting.
+      \`),
       createUserMessage('Thanks! That's helpful.'),
       createAssistantMessage(
         'You're welcome! Feel free to ask if you have more questions about React.'

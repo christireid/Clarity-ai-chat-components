@@ -197,11 +197,11 @@ button:focus-visible {
 
 .docs-badge {
   @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
-  @apply bg-primary/10 text-primary border-2 border-primary/20 shadow-sm;
+  @apply bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300 border-2 border-brand-200 dark:border-brand-800 shadow-sm;
 }
 
 .docs-lead {
-  @apply text-xl text-muted-foreground leading-relaxed;
+  @apply text-xl text-gray-600 dark:text-gray-400 leading-relaxed;
 }
 
 .docs-section {
@@ -209,35 +209,35 @@ button:focus-visible {
 }
 
 .docs-section h2 {
-  @apply text-2xl font-semibold mb-4 text-foreground;
-  @apply border-b-2 pb-3;
+  @apply text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-50;
+  @apply border-b-2 border-gray-200 dark:border-gray-700 pb-3;
 }
 
 .docs-section h3 {
-  @apply text-xl font-semibold mb-3 mt-8 text-foreground;
+  @apply text-xl font-semibold mb-3 mt-8 text-gray-900 dark:text-gray-50;
 }
 
 .docs-card {
-  @apply block p-6 rounded-xl border-2 hover:border-primary/40;
-  @apply bg-card hover:shadow-lg hover:-translate-y-0.5;
+  @apply block p-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-brand-400;
+  @apply bg-white dark:bg-gray-900 hover:shadow-lg hover:-translate-y-0.5;
   @apply transition-all duration-200;
 }
 
 .docs-card h3 {
-  @apply text-lg font-semibold mb-2 text-foreground border-0 pb-0 mt-0;
+  @apply text-lg font-semibold mb-2 text-gray-900 dark:text-gray-50 border-0 pb-0 mt-0;
 }
 
 .docs-card p {
-  @apply text-sm text-muted-foreground;
+  @apply text-sm text-gray-600 dark:text-gray-400;
 }
 
 /* Table styling */
 table {
-  @apply w-full border-2 border-border rounded-xl overflow-hidden my-6 shadow-sm;
+  @apply w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden my-6 shadow-sm;
 }
 
 thead {
-  @apply bg-muted/50;
+  @apply bg-gray-50 dark:bg-gray-800;
 }
 
 th {
@@ -249,7 +249,7 @@ td {
 }
 
 tbody tr:hover {
-  @apply bg-muted/30;
+  @apply bg-gray-50 dark:bg-gray-800/50;
 }
 
 /* Callout styling */
@@ -285,7 +285,7 @@ tbody tr:hover {
 
 /* Links */
 .docs-content a:not(.docs-card) {
-  @apply text-primary hover:underline underline-offset-4;
+  @apply text-brand-600 dark:text-brand-400 hover:underline underline-offset-4;
   @apply transition-colors duration-200;
 }
 

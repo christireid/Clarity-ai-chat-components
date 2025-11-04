@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft, GraduationCap, BookOpen, Award, CheckCircle } from 'lucide-react'
+import { ArrowLeft, GraduationCap, BookOpen, Award, CheckCircle, Star } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Education Tutor Example',

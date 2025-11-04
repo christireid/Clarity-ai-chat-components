@@ -305,7 +305,7 @@ fetch('/api/chat', {
       <section className="docs-section">
         <h2>When NOT to Use Streaming</h2>
         <ul>
-          <li>❌ Short responses (< 50 tokens) - overhead not worth it</li>
+          <li>❌ Short responses (&lt; 50 tokens) - overhead not worth it</li>
           <li>❌ Structured data (JSON) - wait for complete response</li>
           <li>❌ When you need to validate before showing</li>
           <li>❌ Batch processing many messages</li>
@@ -313,7 +313,7 @@ fetch('/api/chat', {
 
         <h2>When TO Use Streaming</h2>
         <ul>
-          <li>✅ Long responses (> 100 tokens)</li>
+          <li>✅ Long responses (&gt; 100 tokens)</li>
           <li>✅ Real-time chat interfaces</li>
           <li>✅ User-facing applications</li>
           <li>✅ When perceived speed matters</li>
