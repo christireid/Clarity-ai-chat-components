@@ -25,7 +25,7 @@ type Story = StoryObj<typeof Message>
 // ============================================================================
 
 const createUserMessage = (content: string, overrides?: Partial<MessageType>): MessageType => ({
-  id: `msg-${Date.now()}`,
+  id: 'msg-' + Date.now(),
   role: 'user',
   content,
   createdAt: Date.now(),
@@ -34,7 +34,7 @@ const createUserMessage = (content: string, overrides?: Partial<MessageType>): M
 })
 
 const createAssistantMessage = (content: string, overrides?: Partial<MessageType>): MessageType => ({
-  id: `msg-${Date.now()}`,
+  id: 'msg-' + Date.now(),
   role: 'assistant',
   content,
   createdAt: Date.now(),
@@ -234,33 +234,27 @@ export const StreamingCursor: Story = {
 export const WithMarkdown: Story = {
   render: () => (
     <Message
-      message={createAssistantMessage(`
-Here's how to use **Framer Motion**:
-
-1. Install the package: \`npm install framer-motion\`
-2. Import motion: \`import { motion } from 'framer-motion'\`
-3. Use motion components: \`<motion.div animate={{ x: 100 }} />\`
-
-## Key Concepts
-
-- **Variants**: Define animation states
-- **Transitions**: Control timing
-- **Gestures**: Handle interactions
-
-### Example Code
-
-\`\`\`jsx
-<motion.div
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ duration: 0.5 }}
->
-  Hello World
-</motion.div>
-\`\`\`
-
-Pretty cool, right?
-      `)}
+      message={createAssistantMessage(
+        "Here's how to use **Framer Motion**:\n\n" +
+        "1. Install the package: `npm install framer-motion`\n" +
+        "2. Import motion: `import { motion } from 'framer-motion'`\n" +
+        "3. Use motion components: `<motion.div animate={{ x: 100 }} />`\n\n" +
+        "## Key Concepts\n\n" +
+        "- **Variants**: Define animation states\n" +
+        "- **Transitions**: Control timing\n" +
+        "- **Gestures**: Handle interactions\n\n" +
+        "### Example Code\n\n" +
+        "```jsx\n" +
+        "<motion.div\n" +
+        "  initial={{ opacity: 0 }}\n" +
+        "  animate={{ opacity: 1 }}\n" +
+        "  transition={{ duration: 0.5 }}\n" +
+        ">\n" +
+        "  Hello World\n" +
+        "</motion.div>\n" +
+        "```\n\n" +
+        "Pretty cool, right?"
+      )}
       onFeedback={(type) => console.log('Feedback:', type)}
     />
   ),
@@ -269,28 +263,25 @@ Pretty cool, right?
 export const WithCodeBlock: Story = {
   render: () => (
     <Message
-      message={createAssistantMessage(`
-Here's a React component example:
-
-\`\`\`tsx
-import React from 'react'
-import { motion } from 'framer-motion'
-
-export const AnimatedButton = () => {
-  return (
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-4 py-2 bg-blue-500 text-white rounded"
-    >
-      Click me!
-    </motion.button>
-  )
-}
-\`\`\`
-
-Hover over the code block to see the copy button!
-      `)}
+      message={createAssistantMessage(
+        "Here's a React component example:\n\n" +
+        "```tsx\n" +
+        "import React from 'react'\n" +
+        "import { motion } from 'framer-motion'\n\n" +
+        "export const AnimatedButton = () => {\n" +
+        "  return (\n" +
+        "    <motion.button\n" +
+        "      whileHover={{ scale: 1.05 }}\n" +
+        "      whileTap={{ scale: 0.95 }}\n" +
+        "      className=\"px-4 py-2 bg-blue-500 text-white rounded\"\n" +
+        "    >\n" +
+        "      Click me!\n" +
+        "    </motion.button>\n" +
+        "  )\n" +
+        "}\n" +
+        "```\n\n" +
+        "Hover over the code block to see the copy button!"
+      )}
       onFeedback={(type) => console.log('Feedback:', type)}
     />
   ),
@@ -362,20 +353,17 @@ export const Conversation: Story = {
         'React is a JavaScript library for building user interfaces. It allows you to create reusable UI components and manage application state efficiently.'
       ),
       createUserMessage('Can you show me an example?'),
-      createAssistantMessage(`
-Sure! Here's a simple React component:
-
-\`\`\`jsx
-function Welcome({ name }) {
-  return <h1>Hello, {name}!</h1>
-}
-
-// Usage
-<Welcome name="World" />
-\`\`\`
-
-This component accepts a \\\`name\\\` prop and renders a greeting.
-      \`),
+      createAssistantMessage(
+        "Sure! Here's a simple React component:\n\n" +
+        "```jsx\n" +
+        "function Welcome({ name }) {\n" +
+        "  return <h1>Hello, {name}!</h1>\n" +
+        "}\n\n" +
+        "// Usage\n" +
+        "<Welcome name=\"World\" />\n" +
+        "```\n\n" +
+        "This component accepts a `name` prop and renders a greeting."
+      ),
       createUserMessage('Thanks! That's helpful.'),
       createAssistantMessage(
         'You're welcome! Feel free to ask if you have more questions about React.'
@@ -388,7 +376,7 @@ This component accepts a \\\`name\\\` prop and renders a greeting.
           <Message
             key={msg.id}
             message={msg}
-            onFeedback={(type) => console.log(`Feedback for ${msg.id}:`, type)}
+            onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
           />
         ))}
       </div>
@@ -436,7 +424,7 @@ export const InteractiveDemo: Story = {
             <Message
               key={msg.id}
               message={msg}
-              onFeedback={(type) => console.log(`Feedback for ${msg.id}:`, type)}
+              onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
             />
           ))}
         </div>

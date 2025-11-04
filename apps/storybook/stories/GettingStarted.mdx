@@ -460,7 +460,7 @@ const handleStream = async () => {
       setContent((prev) => prev + chunk.content)
     } else if (chunk.type === 'done') {
       const cost = openAIAdapter.estimateCost(chunk.usage, config.model)
-      console.log(`Cost: $${cost.toFixed(4)}`)
+      console.log('Cost: $' + cost.toFixed(4))
     }
   }
 }
