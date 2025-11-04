@@ -165,3 +165,83 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
 - Prioritize a lightweight streamed-UI helper and `createAI` parity during the next sprint to neutralize Vercel’s newest talking points.
 - Bundle observability/evaluation tooling (e.g., scoreboard for latency, CSAT) so teams choosing Clarity gain immediate operational insights absent from Vercel’s SDK.
 
+## 6. Integration Playbook (Vercel SDK ⇄ Clarity Components)
+
+### 6.1 Minimal Next.js API Route + Clarity UI
+- Keep Vercel’s recommended `app/api/chat/route.ts` implementation using `streamText` (or `streamObject` for structured responses).
+- Swap their Tailwind UI for Clarity’s `ChatWindow`, `AdvancedChatInput`, and streaming hooks.
+
+```tsx
+'use client'
+
+import { useChat } from 'ai/react'
+import { ChatWindow, AdvancedChatInput } from '@clarity-chat/react'
+
+export function AssistantExperience() {
+  const {
+    messages,
+    append,
+    isLoading,
+    stop,
+    input,
+    setInput,
+  } = useChat({
+    api: '/api/chat',
+    onResponse(response) {
+      // Forward SSE deltas into Clarity analytics/safety hooks if desired
+    },
+  })
+
+  return (
+    <div className="h-full flex flex-col">
+      <ChatWindow
+        messages={messages}
+        isLoading={isLoading}
+        aiStatus={isLoading ? 'thinking' : undefined}
+        onSendMessage={(content) => append({ role: 'user', content })}
+        onMessageRetry={(id) => stop(id)}
+        showHeader
+        onClear={() => window.location.reload()}
+      />
+      <AdvancedChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(value) => append({ role: 'user', content: value })}
+        onFileUpload={async (files) => uploadFiles(files)}
+      />
+    </div>
+  )
+}
+```
+
+### 6.2 Server Actions (App Router) + `createAI`
+- Vercel encourages `createAI` to store assistant state in React Server Components.
+- Wrap their server helpers with our `useStreamingSSE` to hydrate Clarity UIs while preserving optimistic updates.
+
+Steps:
+- Define `const ai = createAI({ actions, initialAIState })` per Vercel docs.
+- Use `ai.respond` inside Clarity’s `onSendMessage` handler; bridge responses via `useAIState` or `useActions`.
+- Surface tool invocation events to `ToolInvocationCard` for visibility.
+
+### 6.3 Attachments & Metadata
+- Vercel’s `experimentalAttachments` array contains `{ url?, name, contentType }`; map directly into Clarity’s `MessageAttachment` for previews.
+- Use our `FileUpload` component to collect files, then send via `FormData` to `/api/chat`; ensure the API route forwards `experimental_attachments` when echoing messages.
+
+### 6.4 Streaming UI Blocks
+- When teams adopt `createStreamableUI`, wrap updates in a forthcoming `<StreamBlock>` component that translates server-side fragments into our layout regions (hero, sidebar, timeline).
+- Until then, consume the stream with `useStreamableValue` and render inside existing Clarity cards.
+
+## 7. Positioning & Messaging Versus Vercel AI SDK
+- **“Bring Your Own Runtime”**: Vercel covers inference plumbing; Clarity supplies the enterprise chat front end, safety net, and operational toolkit missing from the SDK.
+- **“Production in days, not sprints”**: emphasize the savings from our prebuilt conversation management, feedback loops, analytics, and governance.
+- **“Interoperable, not proprietary”**: reinforce that Clarity works with Vercel’s hooks, server actions, and provider adapters rather than replacing them.
+- **Proof Points**: reference compliance (PII detection, RBAC), customization (theme system, motion), and developer ergonomics (CLI, VS Code extension).
+
+## 8. Engineering Roadmap Aligned to Gaps
+- **Streamed UI Helper**: build `useStreamableUI` + `<StreamBlock>` to mirror `createStreamableUI` semantics.
+- **Assistant Server State**: add a wrapper (`createClarityAssistant`) around Next.js server actions to simplify `createAI` adoption with our components.
+- **Tool Invocation Coverage**: extend `ToolInvocationCard` to support nested tool calls, parallel invocations, and add docs mapping Vercel event payloads.
+- **Observability Bridges**: provide adapters to route `withAITracing` output into our analytics dashboards; publish guides for Vercel AI Observability integration.
+- **Attachment Fidelity**: expand `MessageAttachment` schema to capture size, model-access status, and previewability per Vercel’s attachment metadata.
+- **Documentation & Samples**: maintain a public sample repo showing Vercel’s canonical chat demo reskinned with Clarity, including CI-tested templates.
+
