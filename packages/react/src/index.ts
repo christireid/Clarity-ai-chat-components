@@ -144,6 +144,15 @@ export * from './utils/chat-helpers'
 // Streaming parser utilities
 export * from './utils/streaming-parser'
 
+// Performance utilities
+export * from './utils/performance'
+
+// Enhanced TypeScript types
+export * from './types/chat-types'
+
+// Optimized hooks
+export * from './hooks/use-chat-optimized'
+
 // Theme System
 export * from './theme'
 

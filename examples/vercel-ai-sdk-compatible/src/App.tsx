@@ -210,8 +210,10 @@ function AssistantExample() {
   )
 }
 
+import PerformanceExample from './PerformanceExample'
+
 export default function App() {
-  const [activeTab, setActiveTab] = React.useState<'chat' | 'completion' | 'assistant' | 'advanced'>('chat')
+  const [activeTab, setActiveTab] = React.useState<'chat' | 'completion' | 'assistant' | 'advanced' | 'performance'>('chat')
 
   return (
     <ThemeProvider theme={themes.ocean}>
@@ -252,6 +254,14 @@ export default function App() {
               >
                 Advanced
               </button>
+              <button
+                onClick={() => setActiveTab('performance')}
+                className={`px-4 py-2 rounded-lg ${
+                  activeTab === 'performance' ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                }`}
+              >
+                Performance
+              </button>
             </div>
           </div>
         </div>
@@ -261,6 +271,7 @@ export default function App() {
           {activeTab === 'completion' && <CompletionExample />}
           {activeTab === 'assistant' && <AssistantExample />}
           {activeTab === 'advanced' && <AdvancedExamples />}
+          {activeTab === 'performance' && <PerformanceExample />}
         </div>
       </div>
     </ThemeProvider>
