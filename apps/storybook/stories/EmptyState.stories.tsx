@@ -110,9 +110,8 @@ export const NoData: Story = {
 export const NoSearchResults: Story = {
   render: () => (
     <NoSearchResultsState
-      query="artificial intelligence"
-      onClear={() => alert('Clear clicked!')}
-      onTryAgain={() => alert('Try again clicked!')}
+      searchQuery="artificial intelligence"
+      onClearSearch={() => alert('Clear clicked!')}
     />
   ),
   parameters: {
@@ -127,7 +126,7 @@ export const NoSearchResults: Story = {
 export const NoConversations: Story = {
   render: () => (
     <NoConversationsState
-      onStartConversation={() => alert('Start conversation clicked!')}
+      onCreateConversation={() => alert('Start conversation clicked!')}
     />
   ),
   parameters: {
