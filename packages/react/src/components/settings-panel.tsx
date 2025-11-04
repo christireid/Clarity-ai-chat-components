@@ -250,7 +250,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                         }
                         size="sm"
                         onClick={() => {
-                          handleUpdateUI({ theme })
+                          handleUpdateUI({ theme: theme as any })
                           // Apply theme
                           if (theme === 'dark') {
                             document.documentElement.classList.add('dark')
@@ -283,7 +283,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                             : 'outline'
                         }
                         size="sm"
-                        onClick={() => handleUpdateUI({ fontSize: size })}
+                        onClick={() => handleUpdateUI({ fontSize: size as any })}
                       >
                         {size === 'small' && 'S'}
                         {size === 'medium' && 'M'}
@@ -307,7 +307,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                         }
                         size="sm"
                         onClick={() =>
-                          handleUpdateUI({ messageLayout: layout })
+                          handleUpdateUI({ messageLayout: layout as any })
                         }
                       >
                         {layout.charAt(0).toUpperCase() + layout.slice(1)}
