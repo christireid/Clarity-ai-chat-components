@@ -9,6 +9,7 @@ import * as React from 'react'
 import { useChat, useCompletion, useAssistant } from '@clarity-chat/react'
 import { ChatWindow } from '@clarity-chat/react'
 import { ThemeProvider, themes } from '@clarity-chat/react'
+import AdvancedExamples from './AdvancedExample'
 
 function ChatExample() {
   const { messages, append, isLoading, handleSubmit, input, setInput, error } = useChat({
@@ -210,7 +211,7 @@ function AssistantExample() {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = React.useState<'chat' | 'completion' | 'assistant'>('chat')
+  const [activeTab, setActiveTab] = React.useState<'chat' | 'completion' | 'assistant' | 'advanced'>('chat')
 
   return (
     <ThemeProvider theme={themes.ocean}>
@@ -243,6 +244,14 @@ export default function App() {
               >
                 useAssistant
               </button>
+              <button
+                onClick={() => setActiveTab('advanced')}
+                className={`px-4 py-2 rounded-lg ${
+                  activeTab === 'advanced' ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                }`}
+              >
+                Advanced
+              </button>
             </div>
           </div>
         </div>
@@ -251,6 +260,7 @@ export default function App() {
           {activeTab === 'chat' && <ChatExample />}
           {activeTab === 'completion' && <CompletionExample />}
           {activeTab === 'assistant' && <AssistantExample />}
+          {activeTab === 'advanced' && <AdvancedExamples />}
         </div>
       </div>
     </ThemeProvider>

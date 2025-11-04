@@ -138,6 +138,12 @@ export * from './utils'
 // StreamableValue utilities (Vercel AI SDK compatible)
 export * from './utils/streamable-value'
 
+// Chat helper utilities
+export * from './utils/chat-helpers'
+
+// Streaming parser utilities
+export * from './utils/streaming-parser'
+
 // Theme System
 export * from './theme'
 
