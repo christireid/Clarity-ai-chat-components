@@ -7,9 +7,8 @@
  */
 
 import * as React from 'react'
-import type { Message, MessageRole } from '@clarity-chat/types'
+import type { MessageRole } from '@clarity-chat/types'
 import { generateId } from '@clarity-chat/primitives'
-import { useStreamingSSE } from './use-streaming-sse'
 
 /**
  * Core message content type - supports text and multi-modal content
@@ -365,25 +364,39 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                   break
                 }
 
-                try {
-                  const parsed = JSON.parse(data)
-                  
-                  // Handle different streaming formats
-                  if (parsed.choices?.[0]?.delta?.content) {
-                    // OpenAI format
-                    accumulatedContent += parsed.choices[0].delta.content
-                  } else if (parsed.content) {
-                    // Direct content
-                    accumulatedContent += parsed.content
-                  } else if (parsed.text) {
-                    // Text field
-                    accumulatedContent += parsed.text
-                  } else if (parsed.delta) {
-                    // Delta format
-                    accumulatedContent += parsed.delta
-                  }
+              try {
+                const parsed = JSON.parse(data)
+                
+                // Handle different streaming formats
+                let contentDelta = ''
+                
+                if (parsed.choices?.[0]?.delta?.content) {
+                  // OpenAI chat completions format
+                  contentDelta = parsed.choices[0].delta.content
+                } else if (parsed.choices?.[0]?.text) {
+                  // OpenAI completions format
+                  contentDelta = parsed.choices[0].text
+                } else if (parsed.content) {
+                  // Direct content field
+                  contentDelta = typeof parsed.content === 'string' ? parsed.content : ''
+                } else if (parsed.text) {
+                  // Text field
+                  contentDelta = parsed.text
+                } else if (parsed.delta) {
+                  // Delta format
+                  contentDelta = typeof parsed.delta === 'string' ? parsed.delta : ''
+                } else if (parsed.message?.content) {
+                  // Message wrapper format
+                  contentDelta = parsed.message.content
+                } else if (typeof parsed === 'string') {
+                  // String response
+                  contentDelta = parsed
+                }
 
-                  if (mountedRef.current && accumulatedContent) {
+                if (contentDelta) {
+                  accumulatedContent += contentDelta
+                  
+                  if (mountedRef.current) {
                     currentMessage = {
                       ...currentMessage,
                       content: accumulatedContent,
@@ -396,8 +409,10 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                     )
                     setData(currentMessage)
                   }
-                } catch {
-                  // Non-JSON line, treat as plain text
+                }
+              } catch {
+                // Non-JSON line, treat as plain text
+                if (data.trim() && data !== '[DONE]') {
                   accumulatedContent += data
                   if (mountedRef.current) {
                     currentMessage = {
@@ -413,22 +428,22 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                     setData(currentMessage)
                   }
                 }
-              } else if (line.trim()) {
-                // Plain text streaming
-                accumulatedContent += line
-                if (mountedRef.current) {
-                  currentMessage = {
-                    ...currentMessage,
-                    content: accumulatedContent,
-                  }
-                  currentAssistantMessageRef.current = currentMessage
-                  setMessages((prev) =>
-                    prev.map((msg) =>
-                      msg.id === assistantMessageId ? currentMessage : msg
-                    )
-                  )
-                  setData(currentMessage)
+              }
+            } else if (line.trim()) {
+              // Plain text streaming
+              accumulatedContent += line
+              if (mountedRef.current) {
+                currentMessage = {
+                  ...currentMessage,
+                  content: accumulatedContent,
                 }
+                currentAssistantMessageRef.current = currentMessage
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === assistantMessageId ? currentMessage : msg
+                  )
+                )
+                setData(currentMessage)
               }
             }
           }
