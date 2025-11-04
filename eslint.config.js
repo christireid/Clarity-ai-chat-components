@@ -32,6 +32,8 @@ export default [
         clearTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
+        setImmediate: 'readonly',
+        clearImmediate: 'readonly',
         getComputedStyle: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
@@ -84,8 +86,10 @@ export default [
         // Observers
         IntersectionObserver: 'readonly',
         IntersectionObserverEntry: 'readonly',
+        IntersectionObserverCallback: 'readonly',
         MutationObserver: 'readonly',
         ResizeObserver: 'readonly',
+        ResizeObserverCallback: 'readonly',
         // File APIs
         Blob: 'readonly',
         File: 'readonly',
@@ -173,6 +177,8 @@ export default [
       '**/*.test.{ts,tsx}',
       '**/*.spec.{ts,tsx}',
       '**/__tests__/**/*.{ts,tsx}',
+      '**/test-utils/**/*.{ts,tsx}',
+      '**/test-setup.{ts,tsx}',
     ],
     languageOptions: {
       parser: tsparser,
