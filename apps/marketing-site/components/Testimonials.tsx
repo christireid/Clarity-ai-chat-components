@@ -23,7 +23,7 @@ const testimonials = [
   },
   {
     content:
-      'Clarity Chat paid for itself in 3 days. We've seen $2.4M in additional revenue just this quarter. The ROI is insane.',
+      "Clarity Chat paid for itself in 3 days. We've seen $2.4M in additional revenue just this quarter. The ROI is insane.",
     author: 'David Park',
     role: 'VP of Product',
     company: 'ShopSmart',

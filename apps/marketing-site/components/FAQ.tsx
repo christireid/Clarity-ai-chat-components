@@ -12,7 +12,7 @@ const faqs = [
   {
     question: 'What happens when my annual license expires?',
     answer:
-      'You can continue using the version you have, but won't receive updates or support. Simply renew to continue receiving the latest features and support.',
+      "You can continue using the version you have, but won't receive updates or support. Simply renew to continue receiving the latest features and support.",
   },
   {
     question: 'Can I use this in client projects?',
