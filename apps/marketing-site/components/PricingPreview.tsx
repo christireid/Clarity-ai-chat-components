@@ -61,12 +61,15 @@ export default function PricingPreview() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="text-center mb-16">
-          <h2 className="text-base font-semibold text-brand-600 mb-2">PRICING</h2>
+          <h2 className="text-base font-semibold text-brand-600 mb-2">
+            PRICING
+          </h2>
           <p className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Choose Your Plan
           </p>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Start free, upgrade anytime. 30-day money-back guarantee on all paid plans.
+            Start free, upgrade anytime. 30-day money-back guarantee on all paid
+            plans.
           </p>
         </div>
 
@@ -103,7 +106,9 @@ export default function PricingPreview() {
                     {tier.price}
                   </span>
                   {tier.period && (
-                    <span className="text-gray-600 dark:text-gray-400">{tier.period}</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {tier.period}
+                    </span>
                   )}
                 </div>
               </div>
@@ -112,7 +117,9 @@ export default function PricingPreview() {
                 {tier.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
                     <Check className="h-5 w-5 text-brand-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300 text-sm">{feature}</span>
+                    <span className="text-gray-700 dark:text-gray-300 text-sm">
+                      {feature}
+                    </span>
                   </li>
                 ))}
               </ul>

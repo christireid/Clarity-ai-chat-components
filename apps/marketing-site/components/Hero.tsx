@@ -8,7 +8,7 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-      
+
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
         <div className="text-center">
           {/* Badge */}
@@ -28,9 +28,11 @@ export default function Hero() {
           <p className="mx-auto max-w-2xl text-xl text-gray-600 dark:text-gray-300 mb-10 animate-slide-up animation-delay-100">
             Production-ready React components for AI chat. Save{' '}
             <span className="font-bold text-brand-600">$150K+</span> and{' '}
-            <span className="font-bold text-brand-600">6 months</span> vs. building from scratch.
+            <span className="font-bold text-brand-600">6 months</span> vs.
+            building from scratch.
             <br />
-            <span className="font-semibold">WCAG AAA certified.</span> Enterprise features included.
+            <span className="font-semibold">WCAG AAA certified.</span>{' '}
+            Enterprise features included.
           </p>
 
           {/* CTAs */}
@@ -108,19 +110,27 @@ export default function Hero() {
         <div className="mt-24 grid grid-cols-2 gap-8 sm:grid-cols-4">
           <div className="text-center">
             <div className="text-4xl font-bold text-brand-600 mb-2">70+</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Components</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Components
+            </div>
           </div>
           <div className="text-center">
             <div className="text-4xl font-bold text-brand-600 mb-2">11</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Premium Themes</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Premium Themes
+            </div>
           </div>
           <div className="text-center">
             <div className="text-4xl font-bold text-brand-600 mb-2">97%</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Cost Savings</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Cost Savings
+            </div>
           </div>
           <div className="text-center">
             <div className="text-4xl font-bold text-brand-600 mb-2">2.8K%</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Avg ROI</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              Avg ROI
+            </div>
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ export default function CTA() {
     <section className="relative overflow-hidden bg-gradient-to-r from-brand-600 to-purple-600 py-24">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-grid-pattern opacity-10" />
-      
+
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
         {/* Icon */}
         <div className="inline-flex p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6">
@@ -22,8 +22,8 @@ export default function CTA() {
 
         {/* Description */}
         <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-          Join 1,000+ developers building amazing AI chat experiences. Start free, upgrade when
-          you're ready. 30-day money-back guarantee.
+          Join 1,000+ developers building amazing AI chat experiences. Start
+          free, upgrade when you're ready. 30-day money-back guarantee.
         </p>
 
         {/* CTAs */}

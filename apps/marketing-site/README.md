@@ -3,6 +3,7 @@
 **Professional marketing site for Clarity Chat commercial product**
 
 This Next.js application serves as the main marketing website for Clarity Chat, including:
+
 - Landing page with hero, features, and CTAs
 - Pricing page with tier comparison
 - Interactive demos and examples
@@ -89,6 +90,7 @@ vercel --prod
 ```
 
 Also works with:
+
 - Netlify
 - Cloudflare Pages
 - AWS Amplify
@@ -99,6 +101,7 @@ Also works with:
 ## Content Management
 
 Content is managed through:
+
 - MDX files in `/content` directory
 - Type-safe frontmatter
 - Automatic sitemap generation

@@ -84,12 +84,15 @@ export default function Features() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="text-center mb-16">
-          <h2 className="text-base font-semibold text-brand-600 mb-2">FEATURES</h2>
+          <h2 className="text-base font-semibold text-brand-600 mb-2">
+            FEATURES
+          </h2>
           <p className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Everything You Need
           </p>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            From basic chat to enterprise features, we've built everything so you don't have to.
+            From basic chat to enterprise features, we've built everything so
+            you don't have to.
           </p>
         </div>
 
@@ -102,7 +105,9 @@ export default function Features() {
                 key={feature.name}
                 className="relative rounded-2xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow bg-white dark:bg-gray-800"
               >
-                <div className={`inline-flex p-3 rounded-lg ${feature.bgColor} mb-4`}>
+                <div
+                  className={`inline-flex p-3 rounded-lg ${feature.bgColor} mb-4`}
+                >
                   <Icon className={`h-6 w-6 ${feature.color}`} />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -121,22 +126,36 @@ export default function Features() {
           <div className="inline-flex flex-col sm:flex-row gap-6 sm:gap-12 p-8 rounded-2xl bg-gradient-to-r from-brand-50 to-purple-50 dark:from-brand-900/30 dark:to-purple-900/30">
             <div>
               <div className="text-3xl font-bold text-brand-600 mb-1">97%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Cost Savings</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Cost Savings
+              </div>
             </div>
             <div className="hidden sm:block w-px bg-gray-300 dark:bg-gray-600" />
             <div>
-              <div className="text-3xl font-bold text-brand-600 mb-1">$144K</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Avg Savings</div>
+              <div className="text-3xl font-bold text-brand-600 mb-1">
+                $144K
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Avg Savings
+              </div>
             </div>
             <div className="hidden sm:block w-px bg-gray-300 dark:bg-gray-600" />
             <div>
-              <div className="text-3xl font-bold text-brand-600 mb-1">2,847%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Avg ROI</div>
+              <div className="text-3xl font-bold text-brand-600 mb-1">
+                2,847%
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Avg ROI
+              </div>
             </div>
             <div className="hidden sm:block w-px bg-gray-300 dark:bg-gray-600" />
             <div>
-              <div className="text-3xl font-bold text-brand-600 mb-1">1 Week</div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Time to Launch</div>
+              <div className="text-3xl font-bold text-brand-600 mb-1">
+                1 Week
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Time to Launch
+              </div>
             </div>
           </div>
         </div>
