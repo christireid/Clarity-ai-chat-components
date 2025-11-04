@@ -7,7 +7,7 @@
 
 import type {
   PromptTemplate,
-  PromptVariable,
+  _PromptVariable,
   RenderPromptOptions,
   PromptRenderResult,
 } from './types'
