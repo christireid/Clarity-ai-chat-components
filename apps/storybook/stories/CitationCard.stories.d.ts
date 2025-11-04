@@ -1,0 +1,25 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { CitationCard } from '@clarity-chat/react';
+declare const meta: Meta<typeof CitationCard>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const HighConfidence: Story;
+export declare const MediumConfidence: Story;
+export declare const LowConfidence: Story;
+export declare const VeryLowConfidence: Story;
+export declare const LongText: Story;
+export declare const DefaultExpanded: Story;
+export declare const ShortPreviewLength: Story;
+export declare const WithoutConfidence: Story;
+export declare const WithoutURL: Story;
+export declare const NoMetadata: Story;
+export declare const RichMetadata: Story;
+export declare const InteractiveCallbacks: Story;
+export declare const MultipleInList: Story;
+export declare const ConfidenceLevels: Story;
+export declare const VeryShortText: Story;
+export declare const NoSpacesLongWord: Story;
+export declare const SpecialCharacters: Story;
+export declare const UnicodeEmoji: Story;
+export declare const MinimalCitation: Story;
+//# sourceMappingURL=CitationCard.stories.d.ts.map

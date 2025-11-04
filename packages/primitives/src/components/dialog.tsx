@@ -293,8 +293,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed inset-0 z-50 bg-black/50',
-              blurBackdrop && 'backdrop-blur-sm',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
+              blurBackdrop && 'backdrop-blur-md',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -302,14 +302,14 @@ export const DialogContent: React.FC<DialogContentProps> = ({
           />
 
           {/* Content */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 pointer-events-none">
             <motion.div
               ref={contentRef}
               {...contentAnimations[animation]}
               transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                'relative w-full bg-background border border-border rounded-lg shadow-xl pointer-events-auto',
+                'relative w-full bg-card border shadow-2xl rounded-2xl pointer-events-auto',
                 sizeClasses[size],
                 className
               )}
@@ -365,7 +365,7 @@ export const DialogHeader: React.FC<DialogHeaderProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('flex flex-col space-y-1.5 px-6 py-5 border-b', className)}>
+    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b', className)}>
       {children}
     </div>
   )
@@ -378,7 +378,7 @@ export const DialogTitle: React.FC<DialogTitleProps> = ({
   return (
     <h2
       className={cn(
-        'text-lg font-semibold leading-none tracking-tight',
+        'text-xl font-semibold leading-none tracking-tight',
         className
       )}
     >

@@ -1,6 +1,14 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { Card, CardContent, Badge, Button, cn, formatFileSize, truncate } from '@clarity-chat/primitives'
+import {
+  Card,
+  CardContent,
+  Badge,
+  Button,
+  cn,
+  formatFileSize,
+  truncate,
+} from '@clarity-chat/primitives'
 import type { Context } from '@clarity-chat/types'
 
 export interface ContextCardProps {
@@ -12,14 +20,14 @@ export interface ContextCardProps {
   className?: string
 }
 
-export const ContextCard: React.FC<ContextCardProps> = ({
+export const ContextCard = React.memo(function ContextCard({
   context,
   onRemove,
   onToggle,
   onPreview,
   showActions = true,
   className,
-}) => {
+}: ContextCardProps) {
   const getIcon = () => {
     switch (context.type) {
       case 'document':
@@ -42,19 +50,19 @@ export const ContextCard: React.FC<ContextCardProps> = ({
   const getTypeColor = () => {
     switch (context.type) {
       case 'document':
-        return 'bg-blue-500/10 text-blue-500'
+        return 'bg-primary/10 text-primary ring-1 ring-primary/20'
       case 'image':
-        return 'bg-purple-500/10 text-purple-500'
+        return 'bg-secondary/10 text-secondary-foreground ring-1 ring-secondary/20'
       case 'video':
-        return 'bg-red-500/10 text-red-500'
+        return 'bg-destructive/10 text-destructive ring-1 ring-destructive/20'
       case 'audio':
-        return 'bg-green-500/10 text-green-500'
+        return 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/20'
       case 'link':
-        return 'bg-cyan-500/10 text-cyan-500'
+        return 'bg-[hsl(var(--info))]/10 text-[hsl(var(--info))] ring-1 ring-[hsl(var(--info))]/20'
       case 'text':
-        return 'bg-yellow-500/10 text-yellow-500'
+        return 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] ring-1 ring-[hsl(var(--warning))]/20'
       default:
-        return 'bg-gray-500/10 text-gray-500'
+        return 'bg-muted text-muted-foreground ring-1 ring-border'
     }
   }
 
@@ -67,8 +75,8 @@ export const ContextCard: React.FC<ContextCardProps> = ({
     >
       <Card
         className={cn(
-          'group relative transition-all hover:shadow-md cursor-pointer',
-          !context.isActive && 'opacity-50',
+          'group relative transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer',
+          !context.isActive && 'opacity-60',
           className
         )}
         onClick={() => onPreview?.(context)}
@@ -76,7 +84,12 @@ export const ContextCard: React.FC<ContextCardProps> = ({
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             {/* Icon/Thumbnail */}
-            <div className={cn('flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center text-2xl', getTypeColor())}>
+            <div
+              className={cn(
+                'flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-sm',
+                getTypeColor()
+              )}
+            >
               {context.metadata.thumbnail ? (
                 <img
                   src={context.metadata.thumbnail}
@@ -92,7 +105,9 @@ export const ContextCard: React.FC<ContextCardProps> = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-sm truncate">{context.name}</h4>
+                  <h4 className="font-medium text-sm truncate">
+                    {context.name}
+                  </h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     {context.metadata.extractedText
                       ? truncate(context.metadata.extractedText, 80)
@@ -102,9 +117,11 @@ export const ContextCard: React.FC<ContextCardProps> = ({
 
                 {/* Status Badge */}
                 <Badge
-                  variant={context.isActive ? 'default' : 'outline'}
-                  className="flex-shrink-0 text-xs"
+                  variant={context.isActive ? 'success' : 'secondary'}
+                  size="sm"
+                  className="flex-shrink-0"
                   dot={context.isActive}
+                  pulse={context.isActive}
                 >
                   {context.isActive ? 'Active' : 'Inactive'}
                 </Badge>
@@ -112,17 +129,62 @@ export const ContextCard: React.FC<ContextCardProps> = ({
 
               {/* Metadata */}
               <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                <Badge variant="outline" className="text-xs capitalize">
+                <Badge variant="outline" size="sm" className="capitalize">
                   {context.type}
                 </Badge>
                 {context.metadata.fileSize && (
-                  <span>{formatFileSize(context.metadata.fileSize)}</span>
+                  <span className="flex items-center gap-1">
+                    <svg
+                      className="h-3 w-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                    {formatFileSize(context.metadata.fileSize)}
+                  </span>
                 )}
                 {context.metadata.pageCount && (
-                  <span>{context.metadata.pageCount} pages</span>
+                  <span className="flex items-center gap-1">
+                    <svg
+                      className="h-3 w-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    {context.metadata.pageCount} pages
+                  </span>
                 )}
                 {context.metadata.duration && (
-                  <span>{Math.round(context.metadata.duration / 60)} min</span>
+                  <span className="flex items-center gap-1">
+                    <svg
+                      className="h-3 w-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    {Math.round(context.metadata.duration / 60)} min
+                  </span>
                 )}
               </div>
             </div>
@@ -130,7 +192,7 @@ export const ContextCard: React.FC<ContextCardProps> = ({
 
           {/* Actions */}
           {showActions && (
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               {onToggle && (
                 <Button
                   variant="ghost"
@@ -139,8 +201,31 @@ export const ContextCard: React.FC<ContextCardProps> = ({
                     e.stopPropagation()
                     onToggle(context.id)
                   }}
+                  className="gap-1.5"
                 >
-                  {context.isActive ? '⏸️ Deactivate' : '▶️ Activate'}
+                  <svg
+                    className="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    {context.isActive ? (
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    ) : (
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                    )}
+                  </svg>
+                  {context.isActive ? 'Deactivate' : 'Activate'}
                 </Button>
               )}
               {onPreview && (
@@ -151,8 +236,28 @@ export const ContextCard: React.FC<ContextCardProps> = ({
                     e.stopPropagation()
                     onPreview(context)
                   }}
+                  className="gap-1.5"
                 >
-                  👁️ Preview
+                  <svg
+                    className="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  Preview
                 </Button>
               )}
               {onRemove && (
@@ -163,9 +268,22 @@ export const ContextCard: React.FC<ContextCardProps> = ({
                     e.stopPropagation()
                     onRemove(context.id)
                   }}
-                  className="ml-auto text-destructive hover:text-destructive"
+                  className="ml-auto text-destructive hover:text-destructive hover:bg-destructive/10 gap-1.5"
                 >
-                  🗑️ Remove
+                  <svg
+                    className="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Remove
                 </Button>
               )}
             </div>
@@ -174,4 +292,6 @@ export const ContextCard: React.FC<ContextCardProps> = ({
       </Card>
     </motion.div>
   )
-}
+})
+
+ContextCard.displayName = 'ContextCard'

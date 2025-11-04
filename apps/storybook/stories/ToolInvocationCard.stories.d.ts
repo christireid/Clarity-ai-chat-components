@@ -1,0 +1,28 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { ToolInvocationCard } from '@clarity-chat/react';
+declare const meta: Meta<typeof ToolInvocationCard>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const Pending: Story;
+export declare const PendingWithApproval: Story;
+export declare const Approved: Story;
+export declare const Rejected: Story;
+export declare const Executing: Story;
+export declare const Success: Story;
+export declare const SuccessWithString: Story;
+export declare const Error: Story;
+export declare const ErrorWithStackTrace: Story;
+export declare const SearchTool: Story;
+export declare const WeatherTool: Story;
+export declare const DatabaseTool: Story;
+export declare const ComplexTool: Story;
+export declare const FormattedArguments: Story;
+export declare const UnformattedArguments: Story;
+export declare const ExpandableResult: Story;
+export declare const NonExpandableResult: Story;
+export declare const InteractiveApprovalWorkflow: Story;
+export declare const MultipleToolInvocations: Story;
+export declare const VeryLongArguments: Story;
+export declare const LargeResult: Story;
+export declare const InvalidJSON: Story;
+//# sourceMappingURL=ToolInvocationCard.stories.d.ts.map

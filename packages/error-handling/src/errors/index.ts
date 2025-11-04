@@ -30,7 +30,7 @@ export class ClarityChatError extends Error {
     }
   }
 
-  toString(): string {
+  override toString(): string {
     let message = `${this.name} [${this.code}]: ${this.message}`
     
     if (this.solution) {

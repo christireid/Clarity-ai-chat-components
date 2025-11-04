@@ -64,7 +64,12 @@ export default [
         TextDecoder: 'readonly',
         IntersectionObserver: 'readonly',
         IntersectionObserverInit: 'readonly',
+        IntersectionObserverCallback: 'readonly',
+        ResizeObserverCallback: 'readonly',
         localStorage: 'readonly',
+        setImmediate: 'readonly',
+        Response: 'readonly',
+        Request: 'readonly',
         sessionStorage: 'readonly',
         alert: 'readonly',
         confirm: 'readonly',
@@ -141,6 +146,23 @@ export default [
     settings: {
       react: {
         version: '19.0',
+      },
+    },
+  },
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/__tests__/**/*.ts', '**/__tests__/**/*.tsx'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
+        vitest: 'readonly',
       },
     },
   },

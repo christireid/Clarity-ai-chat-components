@@ -1,8 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next';
-import LiveDemo from '@/components/LiveDemo';
-import ApiTable from '@/components/ApiTable';
-import Callout from '@/components/Callout';
+import { LiveDemo } from '@/components/Demo/LiveDemo';
+import { ApiTable } from '@/components/Demo/ApiTable';
+import { Callout } from '@/components/MDX/Callout';
 
 export const metadata: Metadata = {
   title: 'Toast Component - Clarity Chat Components',
@@ -50,7 +50,6 @@ export default function BasicToast() {
     </Button>
   );
 }`}
-          scope={{ useState: React.useState }}
         />
       </section>
 
@@ -60,55 +59,55 @@ export default function BasicToast() {
           title="Toast Configuration"
           data={[
             {
-              prop: 'message',
+              name: 'message',
               type: 'string | ReactNode',
               default: 'undefined',
               description: 'Toast content message'
             },
             {
-              prop: 'variant',
+              name: 'variant',
               type: "'info' | 'success' | 'warning' | 'error'",
               default: "'info'",
               description: 'Visual style and semantic meaning'
             },
             {
-              prop: 'title',
+              name: 'title',
               type: 'string',
               default: 'undefined',
               description: 'Optional toast title'
             },
             {
-              prop: 'duration',
+              name: 'duration',
               type: 'number',
               default: '3000',
               description: 'Auto-dismiss duration in milliseconds (0 for persistent)'
             },
             {
-              prop: 'position',
+              name: 'position',
               type: "'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'",
               default: "'top-right'",
               description: 'Toast position on screen'
             },
             {
-              prop: 'dismissible',
+              name: 'dismissible',
               type: 'boolean',
               default: 'true',
               description: 'Whether toast can be manually dismissed'
             },
             {
-              prop: 'action',
+              name: 'action',
               type: '{ label: string; onClick: () => void }',
               default: 'undefined',
               description: 'Action button configuration'
             },
             {
-              prop: 'icon',
+              name: 'icon',
               type: 'ReactNode | false',
               default: 'undefined',
               description: 'Custom icon or false to hide default icon'
             },
             {
-              prop: 'onDismiss',
+              name: 'onDismiss',
               type: '() => void',
               default: 'undefined',
               description: 'Callback fired when toast is dismissed'
@@ -525,7 +524,6 @@ export default function ProgressToast() {
     </Button>
   );
 }`}
-          scope={{ useState: React.useState, useEffect: React.useEffect }}
         />
 
         <h3>Rich Content Toast</h3>

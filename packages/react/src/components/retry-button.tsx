@@ -1,9 +1,16 @@
 import * as React from 'react'
+import { motion } from 'framer-motion'
+import { Button, cn } from '@clarity-chat/primitives'
 
 /**
  * Error type for different retry strategies
  */
-export type RetryErrorType = 'network' | 'ratelimit' | 'server' | 'auth' | 'unknown'
+export type RetryErrorType =
+  | 'network'
+  | 'ratelimit'
+  | 'server'
+  | 'auth'
+  | 'unknown'
 
 /**
  * Retry button props
@@ -11,46 +18,46 @@ export type RetryErrorType = 'network' | 'ratelimit' | 'server' | 'auth' | 'unkn
 export interface RetryButtonProps {
   /** Function to call on retry */
   onRetry: () => void | Promise<void>
-  
+
   /** Maximum number of retry attempts (default: 3) */
   maxAttempts?: number
-  
+
   /** Backoff delays in milliseconds for each attempt (default: [1000, 3000, 10000]) */
   backoffMs?: number[]
-  
+
   /** Error type for appropriate messaging (default: 'unknown') */
   errorType?: RetryErrorType
-  
+
   /** Current attempt number (external control) */
   attemptNumber?: number
-  
+
   /** Whether button is disabled */
   disabled?: boolean
-  
+
   /** Custom button text */
   buttonText?: string
-  
+
   /** Show remaining attempts count (default: true) */
   showAttemptsRemaining?: boolean
-  
+
   /** Callback when max attempts reached */
   onMaxAttemptsReached?: () => void
-  
+
   /** Callback when retry starts */
   onRetryStart?: (attempt: number) => void
-  
+
   /** Callback when retry succeeds */
   onRetrySuccess?: (attempt: number) => void
-  
+
   /** Callback when retry fails */
   onRetryFail?: (attempt: number, error: Error) => void
-  
+
   /** Custom CSS class */
   className?: string
-  
+
   /** Size variant */
   size?: 'sm' | 'md' | 'lg'
-  
+
   /** Visual variant */
   variant?: 'default' | 'ghost' | 'outline'
 }
@@ -68,7 +75,7 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
 
 /**
  * Production-ready Retry Button component with exponential backoff.
- * 
+ *
  * **Features:**
  * - Exponential backoff with configurable delays
  * - Type-specific error messages (network, rate limit, server, auth)
@@ -77,13 +84,13 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
  * - Success/failure callbacks for analytics
  * - Accessible (keyboard navigation, ARIA attributes)
  * - Loading states during retry operation
- * 
+ *
  * **Use Cases:**
  * - Retry failed API requests
  * - Reconnect after network errors
  * - Handle rate limit errors gracefully
  * - Provide user-friendly error recovery
- * 
+ *
  * @example
  * ```tsx
  * // Basic network error retry
@@ -92,7 +99,7 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
  *   errorType="network"
  *   maxAttempts={3}
  * />
- * 
+ *
  * // Custom backoff delays
  * <RetryButton
  *   onRetry={async () => {
@@ -101,7 +108,7 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
  *   backoffMs={[2000, 5000, 15000]} // 2s, 5s, 15s
  *   errorType="ratelimit"
  * />
- * 
+ *
  * // With analytics tracking
  * <RetryButton
  *   onRetry={handleRetry}
@@ -119,7 +126,7 @@ const ERROR_MESSAGES: Record<RetryErrorType, string> = {
  *     showSupportDialog()
  *   }}
  * />
- * 
+ *
  * // Small ghost variant
  * <RetryButton
  *   onRetry={handleRetry}
@@ -214,7 +221,7 @@ export function RetryButton({
 
     // Get delay for this attempt
     const delay = getDelay(currentAttempt)
-    
+
     // Show countdown if delay > 500ms
     if (delay > 500) {
       startCountdown(delay)
@@ -224,7 +231,7 @@ export function RetryButton({
     try {
       await onRetry()
       onRetrySuccess?.(nextAttempt)
-      
+
       // Reset on success
       setCurrentAttempt(0)
     } catch (error) {
@@ -247,60 +254,30 @@ export function RetryButton({
     }
   }, [])
 
-  // Size classes
-  const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+  const sizeMap = {
+    sm: 'sm' as const,
+    md: 'default' as const,
+    lg: 'lg' as const,
   }
 
-  // Variant classes
-  const variantClasses = {
-    default: 'bg-blue-600 hover:bg-blue-700 text-white',
-    ghost: 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300',
-    outline: 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
+  const variantMap = {
+    default: 'destructive' as const,
+    ghost: 'ghost' as const,
+    outline: 'outline' as const,
   }
-
-  const buttonClasses = `
-    group inline-flex items-center gap-2 rounded-lg font-medium
-    transition-all duration-200
-    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-    disabled:opacity-50 disabled:cursor-not-allowed
-    ${sizeClasses[size]}
-    ${variantClasses[variant]}
-    ${className}
-  `.trim()
 
   return (
-    <div className="flex flex-col items-start gap-2">
-      <button
+    <div className="flex flex-col items-start gap-3">
+      <Button
         onClick={handleRetry}
         disabled={!canRetry}
-        className={buttonClasses}
+        variant={variantMap[variant]}
+        size={sizeMap[size]}
+        loading={isRetrying}
+        className={cn('gap-2', className)}
         aria-label={`Retry (${attemptsRemaining} attempts remaining)`}
       >
-        {/* Icon with rotation animation */}
-        {isRetrying ? (
-          <svg
-            className="w-5 h-5 animate-spin"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
-          </svg>
-        ) : (
+        {!isRetrying && (
           <svg
             className="w-5 h-5 transition-transform duration-200 group-hover:rotate-180"
             fill="none"
@@ -316,30 +293,57 @@ export function RetryButton({
           </svg>
         )}
 
-        {/* Button text */}
         <span>
           {buttonText || (isRetrying ? 'Retrying...' : 'Try Again')}
           {countdown !== null && ` (${countdown.toFixed(1)}s)`}
         </span>
 
-        {/* Attempts remaining */}
         {showAttemptsRemaining && attemptsRemaining > 0 && (
-          <span className="text-xs opacity-75">
-            ({attemptsRemaining} left)
-          </span>
+          <span className="text-xs opacity-75">({attemptsRemaining} left)</span>
         )}
-      </button>
+      </Button>
 
       {/* Error message */}
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+      <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+        <svg
+          className="h-3.5 w-3.5 text-warning"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
         {ERROR_MESSAGES[errorType]}
       </p>
 
       {/* Max attempts reached */}
       {attemptsRemaining === 0 && (
-        <p className="text-sm text-red-600 dark:text-red-400 animate-[shake_0.4s_ease-in-out]">
-          Maximum retry attempts reached. Please refresh the page or contact support.
-        </p>
+        <motion.p
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-sm text-destructive flex items-center gap-1.5 animate-[shake-x_0.4s_ease-in-out]"
+        >
+          <svg
+            className="h-4 w-4 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Maximum retry attempts reached. Please refresh the page or contact
+          support.
+        </motion.p>
       )}
     </div>
   )

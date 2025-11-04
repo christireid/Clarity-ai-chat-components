@@ -4,17 +4,24 @@
 
 ## 🌟 Overview
 
-This directory contains fully functional examples demonstrating various AI chat patterns and use cases. Each example is production-ready with comprehensive documentation, TypeScript typing, and testing.
+This directory contains fully functional examples demonstrating various AI chat patterns and use
+cases. Each example is production-ready with comprehensive documentation, TypeScript typing, and
+testing.
 
 ## 📦 Featured Demos
 
+### 🎯 Top-Tier Production Demos
+
 ### 1. Model Comparison Demo
+
 **Path**: `model-comparison-demo/`  
 **Status**: ✅ Completed & Tested
 
-Compare responses from multiple AI providers (OpenAI, Anthropic, Google) side-by-side with quality scoring and cost analysis.
+Compare responses from multiple AI providers (OpenAI, Anthropic, Google) side-by-side with quality
+scoring and cost analysis.
 
 **Key Features**:
+
 - 🤖 Multi-model comparison (GPT-4, Claude 3, Gemini Pro)
 - ⚡ Parallel API calls with response time tracking
 - 🎯 Quality scoring with highlighted differences
@@ -23,17 +30,21 @@ Compare responses from multiple AI providers (OpenAI, Anthropic, Google) side-by
 
 **Technology**: Next.js 15, TypeScript, Tailwind CSS, Server Actions
 
-[→ View README](./model-comparison-demo/README.md) | [→ View Test Results](./model-comparison-demo/TEST_RESULTS.md)
+[→ View README](./model-comparison-demo/README.md) |
+[→ View Test Results](./model-comparison-demo/TEST_RESULTS.md)
 
 ---
 
 ### 2. RAG Workbench Demo
+
 **Path**: `rag-workbench-demo/`  
 **Status**: ✅ Completed & Tested
 
-Document processing with semantic search and context-aware AI responses using Retrieval Augmented Generation (RAG).
+Document processing with semantic search and context-aware AI responses using Retrieval Augmented
+Generation (RAG).
 
 **Key Features**:
+
 - 📄 Document upload and processing (PDF, TXT, MD)
 - ✂️ Smart chunking with configurable overlap
 - 🔍 Semantic search across document chunks
@@ -43,19 +54,23 @@ Document processing with semantic search and context-aware AI responses using Re
 
 **Technology**: Next.js 15, TypeScript, Tailwind CSS, Custom RAG Pipeline
 
-**Note**: Demonstrates RAG logic with in-memory storage. For production, replace with PostgreSQL, MongoDB, or Redis.
+**Note**: Demonstrates RAG logic with in-memory storage. For production, replace with PostgreSQL,
+MongoDB, or Redis.
 
-[→ View README](./rag-workbench-demo/README.md) | [→ View Test Results](./rag-workbench-demo/TEST_RESULTS.md)
+[→ View README](./rag-workbench-demo/README.md) |
+[→ View Test Results](./rag-workbench-demo/TEST_RESULTS.md)
 
 ---
 
 ### 3. Analytics Console Demo
+
 **Path**: `analytics-console-demo/`  
 **Status**: ✅ Completed & Tested
 
 Real-time AI analytics dashboard with token tracking, cost monitoring, and performance metrics.
 
 **Key Features**:
+
 - 📊 Real-time usage tracking across all providers
 - 💰 Per-token cost calculation with pricing table
 - 📈 Charts and visualizations (Recharts)
@@ -67,17 +82,21 @@ Real-time AI analytics dashboard with token tracking, cost monitoring, and perfo
 
 **Live Demo**: https://3000-iephevmxzt294ak4sc7vf-cbeee0f9.sandbox.novita.ai
 
-[→ View README](./analytics-console-demo/README.md) | [→ View Test Results](./analytics-console-demo/TEST_RESULTS.md)
+[→ View README](./analytics-console-demo/README.md) |
+[→ View Test Results](./analytics-console-demo/TEST_RESULTS.md)
 
 ---
 
 ### 4. Examples Showcase
+
 **Path**: `examples-showcase/`  
 **Status**: ✅ Completed
 
-Beautiful marketing landing page showcasing all examples with descriptions, features, and live demo links.
+Beautiful marketing landing page showcasing all examples with descriptions, features, and live demo
+links.
 
 **Features**:
+
 - 🎨 Responsive design with Tailwind CSS
 - 🖼️ Interactive demo cards with hover effects
 - 📱 Mobile-friendly layout
@@ -95,6 +114,7 @@ Beautiful marketing landing page showcasing all examples with descriptions, feat
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - API keys for AI providers (OpenAI, Anthropic, Google)
 - Python 3 (for showcase page only)
@@ -125,9 +145,11 @@ pm2 start ecosystem.config.cjs
 
 ### Environment Variables
 
-Each example requires specific API keys. Copy the `.env.local.example` file to `.env.local` and fill in your keys:
+Each example requires specific API keys. Copy the `.env.local.example` file to `.env.local` and fill
+in your keys:
 
 **Model Comparison Demo**:
+
 ```bash
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
@@ -135,12 +157,14 @@ GOOGLE_AI_API_KEY=...
 ```
 
 **RAG Workbench Demo**:
+
 ```bash
 OPENAI_API_KEY=sk-...
 # Or any other AI provider
 ```
 
 **Analytics Console Demo**:
+
 ```bash
 # No API keys required - this is a demo analytics dashboard
 ```
@@ -156,30 +180,218 @@ All examples include comprehensive test results:
 - **Documentation**: Detailed findings and production recommendations
 
 View test results:
+
 - [Model Comparison Tests](./model-comparison-demo/TEST_RESULTS.md)
 - [RAG Workbench Tests](./rag-workbench-demo/TEST_RESULTS.md)
 - [Analytics Console Tests](./analytics-console-demo/TEST_RESULTS.md)
 
 ---
 
-## 📚 Additional Examples
+### 4. E-Commerce Shopping Assistant
 
-The examples directory also includes starter templates:
+**Path**: `ecommerce-assistant/`  
+**Status**: ✅ NEW - Production Ready
+
+AI-powered shopping experience with product recommendations and conversational commerce.
+
+**Key Features**:
+
+- 🛍️ Natural language product search
+- 🎯 Personalized recommendations
+- 💬 Conversational shopping experience
+- 🛒 Cart management through chat
+- 💰 Price comparisons
+- ⭐ Review summaries
+
+**Technology**: Next.js 15, OpenAI GPT-4, Function Calling
+
+[→ View README](./ecommerce-assistant/README.md)
+
+---
+
+### 5. Code Assistant
+
+**Path**: `code-assistant/`  
+**Status**: ✅ NEW - Production Ready
+
+AI coding companion with debugging, code generation, and review capabilities.
+
+**Key Features**:
+
+- 💻 Multi-language support (TypeScript, Python, Go, Rust, etc.)
+- 🐛 Debugging assistance
+- ⚡ Code generation
+- 📝 Code review and refactoring
+- 🧪 Test generation
+- 📚 Documentation creation
+
+**Technology**: Next.js 15, Monaco Editor, OpenAI GPT-4
+
+[→ View README](./code-assistant/README.md)
+
+---
+
+### 6. AI Agents Workflow
+
+**Path**: `ai-agents-workflow/`  
+**Status**: ✅ NEW - Production Ready
+
+Multi-agent system with specialized agents collaborating on complex tasks.
+
+**Key Features**:
+
+- 🤝 5 specialized agents (Research, Code, Analysis, Writing, Coordinator)
+- 🔧 Tool calling and delegation
+- 🎯 Task decomposition
+- 📊 Workflow visualization
+- ⚡ Parallel execution
+
+**Technology**: Next.js 15, OpenAI GPT-4, Multi-Agent Architecture
+
+[→ View README](./ai-agents-workflow/README.md)
+
+---
+
+### 7. Document Summarizer
+
+**Path**: `document-summarizer/`  
+**Status**: ✅ NEW - Production Ready
+
+Intelligent document summarization with key points extraction and Q&A.
+
+**Key Features**:
+
+- 📑 Multi-document support
+- 🎯 Key points extraction
+- 📏 Custom summary lengths
+- 🔍 Entity recognition
+- 💬 Interactive Q&A
+- 📥 PDF, DOCX, TXT, Markdown support
+
+**Technology**: Next.js 15, OpenAI GPT-4 Turbo (128k context)
+
+[→ View README](./document-summarizer/README.md)
+
+---
+
+### 8. Email Drafting Assistant
+
+**Path**: `email-assistant/`  
+**Status**: ✅ NEW - Production Ready
+
+AI-powered email composition with tone adjustment and smart suggestions.
+
+**Key Features**:
+
+- ✍️ Email generation from scratch
+- 💬 Context-aware replies
+- 🎭 Tone adjustment (professional, casual, formal)
+- 🌐 Multi-language support
+- 🔍 Grammar and style checking
+- 📋 Email templates
+
+**Technology**: Next.js 15, Anthropic Claude 3 (excellent for writing)
+
+[→ View README](./email-assistant/README.md)
+
+---
+
+### 9. Healthcare Assistant
+
+**Path**: `healthcare-assistant/`  
+**Status**: ✅ NEW - Demo Only
+
+Healthcare chatbot for appointments, symptom checking, and patient support.
+
+**Key Features**:
+
+- 📅 Appointment booking
+- 🩺 Symptom checker (educational)
+- 💊 Medication reminders
+- 📋 Health records access
+- ⚠️ Emergency detection
+- 👨‍⚕️ Doctor matching
+
+**Technology**: Next.js 15, OpenAI GPT-4, Supabase
+
+**Note**: Demo only - not for medical use. HIPAA compliance considerations included.
+
+[→ View README](./healthcare-assistant/README.md)
+
+---
+
+### 10. Financial Advisor
+
+**Path**: `financial-advisor/`  
+**Status**: ✅ NEW - Demo Only
+
+Financial chatbot for budgeting, investment education, and financial planning.
+
+**Key Features**:
+
+- 💵 Budget creation and management
+- 📈 Investment education (not advice)
+- 💳 Expense tracking
+- 📊 Financial reports
+- 🎯 Savings goals
+- ⚠️ Fraud detection
+
+**Technology**: Next.js 15, OpenAI GPT-4, Chart.js
+
+**Note**: Demo only - not financial advice. Compliance considerations included.
+
+[→ View README](./financial-advisor/README.md)
+
+---
+
+### 11. AI Tutor
+
+**Path**: `ai-tutor/`  
+**Status**: ✅ NEW - Production Ready
+
+Intelligent tutoring system with adaptive learning and progress tracking.
+
+**Key Features**:
+
+- 📚 Personalized learning paths
+- 🎯 Multi-subject support
+- ✅ Practice problem generation
+- 📊 Progress tracking
+- 💡 Hint system
+- 🏆 Gamification
+
+**Technology**: Next.js 15, OpenAI GPT-4, Chart.js
+
+[→ View README](./ai-tutor/README.md)
+
+---
+
+## 📚 Additional Starter Examples
 
 ### Basic Chat
-Simple chat interface with streaming responses.
+
+**Path**: `basic-chat/`  
+Simple chat interface demonstrating core functionality.
 
 ### AI Assistant
-Personal AI assistant with memory and context.
+
+**Path**: `ai-assistant/`  
+Advanced assistant with TanStack Query, Zustand, and persistent conversations.
 
 ### Customer Support
-Multi-turn customer support chatbot with history.
+
+**Path**: `customer-support/`  
+Customer support chatbot with Supabase integration.
 
 ### Multi-User Chat
-Real-time chat with multiple users and rooms.
+
+**Path**: `multi-user-chat/`  
+Real-time chat with WebSocket support.
 
 ### Streaming Chat
-Advanced streaming with typewriter effect.
+
+**Path**: `streaming-chat/`  
+Server-Sent Events (SSE) streaming implementation.
 
 ---
 
@@ -197,15 +409,119 @@ All examples are built with modern, production-ready technologies:
 
 ---
 
-## 🎯 Use Cases
+## 🎯 Use Cases Covered
 
-These examples demonstrate patterns for:
+These examples demonstrate the **top 10 AI chatbot use cases** based on enterprise deployment
+patterns:
 
-- **Multi-Model AI**: Compare and evaluate different AI providers
-- **Document Processing**: RAG pipelines for context-aware AI
-- **Analytics & Monitoring**: Track usage, costs, and performance
-- **Production Deployment**: PM2 process management, error handling
-- **TypeScript Patterns**: Strict typing, type safety best practices
+### By Industry
+
+**E-Commerce & Retail** 🛍️
+
+- E-Commerce Shopping Assistant
+- Product recommendations
+- Conversational commerce
+
+**Software Development** 💻
+
+- Code Assistant
+- AI Agents Workflow
+- Multi-agent collaboration
+
+**Healthcare** 🏥
+
+- Healthcare Assistant (appointment booking, symptom checking)
+- Note: Demo only, not for medical use
+
+**Financial Services** 💰
+
+- Financial Advisor (budgeting, investment education)
+- Note: Demo only, not financial advice
+
+**Education** 🎓
+
+- AI Tutor (adaptive learning, progress tracking)
+- Multi-subject support
+
+**Customer Service** 🤝
+
+- Customer Support (Supabase integration)
+- Multi-turn conversations
+
+**Knowledge Management** 📚
+
+- Document Summarizer
+- RAG Workbench
+- Multi-document processing
+
+**Communication** 📧
+
+- Email Drafting Assistant
+- Tone adjustment and templates
+
+**Analytics & Monitoring** 📊
+
+- Analytics Console
+- Cost tracking and optimization
+
+**Model Evaluation** ⚖️
+
+- Model Comparison Demo
+- Multi-provider analysis
+
+### By Complexity
+
+**Beginner** 🟢
+
+- Basic Chat
+- Email Assistant
+- Streaming Chat
+
+**Intermediate** 🟡
+
+- E-Commerce Assistant
+- Customer Support
+- Document Summarizer
+- Healthcare Assistant
+- Financial Advisor
+- AI Tutor
+
+**Advanced** 🔴
+
+- Model Comparison Demo
+- RAG Workbench
+- AI Agents Workflow
+- Code Assistant
+- Analytics Console
+
+### By AI Capability
+
+**Function Calling** 🔧
+
+- E-Commerce Assistant
+- Healthcare Assistant
+- Financial Advisor
+- Code Assistant
+
+**RAG (Retrieval Augmented Generation)** 🔍
+
+- RAG Workbench
+- Document Summarizer
+
+**Multi-Agent Systems** 🤖
+
+- AI Agents Workflow
+
+**Streaming** ⚡
+
+- Streaming Chat
+- Model Comparison
+- Code Assistant
+
+**Multi-Modal** 🎨
+
+- Healthcare Assistant (future: image analysis)
+- Code Assistant (code + natural language)
 
 ---
 
@@ -254,6 +570,29 @@ If you find these examples helpful, please star the repository!
 
 ---
 
-**Last Updated**: 2025-10-27  
-**Examples Count**: 7 (3 featured demos + 4 starter templates)  
+**Last Updated**: November 3, 2025  
+**Examples Count**: 16 total
+
+- **11 Featured Demos** (production-ready showcases)
+- **5 Starter Templates** (learning examples)
+
 **Status**: Production Ready ✅
+
+**Coverage**: Top 10 AI chatbot use cases based on enterprise research:
+
+1. ✅ Customer Service & Support
+2. ✅ E-Commerce & Retail
+3. ✅ Healthcare
+4. ✅ Financial Services
+5. ✅ Education & E-Learning
+6. ✅ Software Development
+7. ✅ Knowledge Management
+8. ✅ Communication & Email
+9. ✅ Analytics & Monitoring
+10. ✅ Multi-Agent Systems
+
+**Research Sources**:
+
+- [IBM Conversational AI Use Cases](https://www.ibm.com/think/topics/conversational-ai-use-cases)
+- [Freshworks AI Applications](https://www.freshworks.com/conversational-ai/usecases/)
+- Enterprise deployment patterns and best practices

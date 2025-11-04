@@ -285,8 +285,8 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed inset-0 z-50 bg-black/50',
-              blurBackdrop && 'backdrop-blur-sm',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
+              blurBackdrop && 'backdrop-blur-md',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -299,13 +299,13 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             {...slideAnimations[side]}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
-              'fixed z-50 bg-background border shadow-xl',
+              'fixed z-[var(--z-modal)] bg-card border shadow-2xl',
               positionClasses[side],
               sizeClasses[side][size],
-              side === 'left' && 'border-r',
-              side === 'right' && 'border-l',
-              side === 'top' && 'border-b',
-              side === 'bottom' && 'border-t',
+              side === 'left' && 'border-r rounded-r-2xl',
+              side === 'right' && 'border-l rounded-l-2xl',
+              side === 'top' && 'border-b rounded-b-2xl',
+              side === 'bottom' && 'border-t rounded-t-2xl',
               className
             )}
             role="dialog"
@@ -360,7 +360,7 @@ export const DrawerHeader: React.FC<{
   className?: string
 }> = ({ children, className }) => {
   return (
-    <div className={cn('flex flex-col space-y-1.5 px-6 py-5 border-b', className)}>
+    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b', className)}>
       {children}
     </div>
   )
@@ -373,7 +373,7 @@ export const DrawerTitle: React.FC<{
   return (
     <h2
       className={cn(
-        'text-lg font-semibold leading-none tracking-tight',
+        'text-xl font-semibold leading-none tracking-tight',
         className
       )}
     >

@@ -11,7 +11,13 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./dist/styles/index.css": "./dist/styles/index.css",
+    "./components/icons": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
   },
   "files": [
     "dist"
@@ -34,9 +40,9 @@
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
+    "test": "NODE_OPTIONS='--max-old-space-size=8192' vitest",
+    "test:ui": "NODE_OPTIONS='--max-old-space-size=8192' vitest --ui",
+    "test:coverage": "NODE_OPTIONS='--max-old-space-size=8192' vitest --coverage",
     "size": "size-limit",
     "size:why": "size-limit --why"
   },
@@ -56,6 +62,8 @@
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
+    "@csstools/css-syntax-patches-for-csstree": "^1.0.15",
+    "@size-limit/preset-small-lib": "^11.0.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -66,7 +74,6 @@
     "@vitest/ui": "^3.2.4",
     "happy-dom": "^20.0.7",
     "jsdom": "^27.0.1",
-    "@size-limit/preset-small-lib": "^11.0.0",
     "size-limit": "^11.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.3.3",

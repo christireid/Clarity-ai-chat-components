@@ -1,12 +1,18 @@
 import * as React from 'react'
-import { motion, useDragControls, PanInfo } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+
+export interface DragInfo {
+  point: { x: number; y: number }
+  offset: { x: number; y: number }
+  velocity: { x: number; y: number }
+}
 
 export interface DraggableProps {
   children: React.ReactNode
   onDragStart?: () => void
-  onDragEnd?: (info: PanInfo) => void
+  onDragEnd?: (info: DragInfo) => void
   onDrop?: (targetId: string | null) => void
   dragId?: string
   disabled?: boolean
@@ -31,7 +37,6 @@ export const Draggable = React.forwardRef<HTMLDivElement, DraggableProps>(
     ref
   ) => {
     const [isDragging, setIsDragging] = React.useState(false)
-    const dragControls = useDragControls()
 
     const handleDragStart = () => {
       if (disabled) return
@@ -39,7 +44,7 @@ export const Draggable = React.forwardRef<HTMLDivElement, DraggableProps>(
       onDragStart?.()
     }
 
-    const handleDragEnd = (event: any, info: PanInfo) => {
+    const handleDragEnd = (_: any, info: DragInfo) => {
       setIsDragging(false)
       onDragEnd?.(info)
 
@@ -60,12 +65,11 @@ export const Draggable = React.forwardRef<HTMLDivElement, DraggableProps>(
       <motion.div
         ref={ref}
         drag={!disabled}
-        dragControls={dragControls}
         dragConstraints={dragConstraints}
         dragElastic={0.1}
         dragMomentum={false}
         onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        onDragEnd={handleDragEnd as any}
         whileDrag={{
           scale: 1.05,
           opacity: showGhost ? 0.7 : 1,
@@ -108,10 +112,7 @@ export interface DropZoneProps {
 }
 
 export const DropZone = React.forwardRef<HTMLDivElement, DropZoneProps>(
-  (
-    { children, onDrop, dropId, acceptTypes, isOver, className, activeClassName },
-    ref
-  ) => {
+  ({ children, onDrop, dropId, className, activeClassName }, ref) => {
     const [isHovered, setIsHovered] = React.useState(false)
 
     const handleDragEnter = (e: React.DragEvent) => {
@@ -213,8 +214,8 @@ export const useDragDrop = <T extends { id: string }>({
 
       if (sourceId === targetId) return
 
-      const sourceIndex = items.findIndex(item => item.id === sourceId)
-      const targetIndex = items.findIndex(item => item.id === targetId)
+      const sourceIndex = items.findIndex((item) => item.id === sourceId)
+      const targetIndex = items.findIndex((item) => item.id === targetId)
 
       if (sourceIndex === -1 || targetIndex === -1) return
 

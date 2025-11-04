@@ -100,7 +100,7 @@ export default function Home() {
                   )
                 )
               }
-            } catch (e) {
+            } catch {
               // Skip invalid JSON
             }
           }
@@ -115,7 +115,7 @@ export default function Home() {
             : msg
         )
       )
-    } catch (error: any) {
+    } catch (error) {
       if (error.name === 'AbortError') {
         console.log('Request cancelled')
         // Remove incomplete message

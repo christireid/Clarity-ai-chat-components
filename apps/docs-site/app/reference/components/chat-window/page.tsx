@@ -5,6 +5,7 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { ApiTable } from '@/components/Demo/ApiTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
+import { ChatWindowAnatomy } from '@/components/Diagrams/ChatWindowAnatomy'
 
 export const metadata: Metadata = {
   title: 'ChatWindow',
@@ -103,18 +104,20 @@ export default function ChatWindowPage() {
   return (
     <>
       <Breadcrumbs />
-      
+
       <h1>ChatWindow</h1>
-      
+
       <p className="lead">
-        The ChatWindow component is the primary container for building chat interfaces. 
-        It handles message display, input, and all core chat functionality.
+        The ChatWindow component is the primary container for building chat
+        interfaces. It handles message display, input, and all core chat
+        functionality.
       </p>
 
       <Callout type="info">
         <p>
-          This component is highly customizable and works out-of-the-box with sensible defaults.
-          You can progressively enhance it with features like reactions, typing indicators, and more.
+          This component is highly customizable and works out-of-the-box with
+          sensible defaults. You can progressively enhance it with features like
+          reactions, typing indicators, and more.
         </p>
       </Callout>
 
@@ -265,7 +268,8 @@ return (
 
       <Callout type="tip">
         <p>
-          Use <code>theme="auto"</code> to automatically match the system theme preference.
+          Use <code>theme="auto"</code> to automatically match the system theme
+          preference.
         </p>
       </Callout>
 
@@ -393,8 +397,10 @@ return (
 
       <Callout type="success">
         <p>
-          <strong>Great job!</strong> You now know how to use the ChatWindow component.
-          Check out the <a href="/examples/simple-chat">Simple Chat example</a> for a complete implementation.
+          <strong>Great job!</strong> You now know how to use the ChatWindow
+          component. Check out the{' '}
+          <a href="/examples/simple-chat">Simple Chat example</a> for a complete
+          implementation.
         </p>
       </Callout>
 
@@ -413,11 +419,11 @@ return (
       <h2 id="performance">Performance Tips</h2>
 
       <Callout type="tip">
-        <p>
-          For optimal performance with large message lists:
-        </p>
+        <p>For optimal performance with large message lists:</p>
         <ul>
-          <li>Use <code>React.memo</code> for message components</li>
+          <li>
+            Use <code>React.memo</code> for message components
+          </li>
           <li>Implement virtual scrolling for 1000+ messages</li>
           <li>Debounce typing indicators</li>
           <li>Lazy load message attachments</li>

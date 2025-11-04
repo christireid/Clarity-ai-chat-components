@@ -246,7 +246,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
 
     setActualSide(finalSide)
     setPosition({ x, y })
-  }, [side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding])
+  }, [side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding, triggerRef])
 
   // Update position when open changes
   React.useEffect(() => {
@@ -280,8 +280,8 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
       if (
         contentRef.current &&
         triggerRef.current &&
-        !contentRef.current.contains(e.target as Node) &&
-        !triggerRef.current.contains(e.target as Node)
+        !contentRef.current.contains(e.target as Element | null) &&
+        !triggerRef.current.contains(e.target as Element | null)
       ) {
         setOpen(false)
       }
@@ -289,7 +289,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [open, closeOnClickOutside, setOpen])
+  }, [open, closeOnClickOutside, setOpen, triggerRef])
 
   // Escape key handler
   React.useEffect(() => {
@@ -356,8 +356,9 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
             }}
             className={cn(
               'bg-popover text-popover-foreground',
-              'border rounded-lg shadow-lg',
-              'outline-none',
+              'border-2 rounded-xl shadow-xl',
+              'outline-none backdrop-blur-sm',
+              'animate-in fade-in-0 zoom-in-95',
               className
             )}
             role="dialog"
@@ -369,7 +370,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
             {showArrow && (
               <div
                 className={cn(
-                  'absolute w-2 h-2 bg-popover border',
+                  'absolute w-3 h-3 bg-[hsl(var(--surface-elevated))] border border-border/60',
                   getArrowClasses(actualSide, align)
                 )}
                 style={{ transform: 'rotate(45deg)' }}

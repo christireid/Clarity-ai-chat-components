@@ -35,7 +35,7 @@ export interface CollapsibleSectionProps {
 /**
  * Collapsible section with smooth height animation
  */
-export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
+export const CollapsibleSection = React.memo(function CollapsibleSection({
   open: controlledOpen,
   onOpenChange,
   defaultOpen = false,
@@ -46,7 +46,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   contentClassName,
   duration = 0.3,
   disabled = false,
-}) => {
+}: CollapsibleSectionProps) {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
 
@@ -114,7 +114,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
       </AnimatePresence>
     </div>
   )
-}
+})
 
 /**
  * Accordion - Multiple collapsible sections where only one can be open
@@ -140,7 +140,7 @@ export interface AccordionProps {
   duration?: number
 }
 
-export const Accordion: React.FC<AccordionProps> = ({
+export const Accordion = React.memo(function Accordion({
   items,
   openId: controlledOpenId,
   onOpenChange,
@@ -148,7 +148,7 @@ export const Accordion: React.FC<AccordionProps> = ({
   allowMultiple = false,
   className,
   duration = 0.3,
-}) => {
+}: AccordionProps) {
   const [internalOpenId, setInternalOpenId] = React.useState<string | null>(
     defaultOpenId || null
   )
@@ -199,7 +199,9 @@ export const Accordion: React.FC<AccordionProps> = ({
       })}
     </div>
   )
-}
+})
+
+Accordion.displayName = 'Accordion'
 
 /**
  * Simple expandable list item
@@ -219,14 +221,14 @@ export interface ExpandableListItemProps {
   className?: string
 }
 
-export const ExpandableListItem: React.FC<ExpandableListItemProps> = ({
+export const ExpandableListItem = React.memo(function ExpandableListItem({
   title,
   badge,
   icon,
   children,
   defaultOpen = false,
   className,
-}) => {
+}: ExpandableListItemProps) {
   return (
     <CollapsibleSection
       defaultOpen={defaultOpen}
@@ -242,4 +244,6 @@ export const ExpandableListItem: React.FC<ExpandableListItemProps> = ({
       {children}
     </CollapsibleSection>
   )
-}
+})
+
+ExpandableListItem.displayName = 'ExpandableListItem'

@@ -2,13 +2,15 @@ import Link from 'next/link'
 import { HeroSection } from '@/components/Layout/HeroSection'
 import { FeaturesGrid } from '@/components/Layout/FeaturesGrid'
 import { CodeExample } from '@/components/Demo/CodeExample'
-import { 
-  Sparkles, 
-  Zap, 
-  Palette, 
+import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
+import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
+import {
+  Sparkles,
+  Zap,
+  Palette,
   Accessibility,
   Code,
-  Rocket
+  Rocket,
 } from 'lucide-react'
 
 export default function HomePage() {
@@ -122,6 +124,30 @@ function App() {
             ]}
           />
         </div>
+
+        {/* Performance Comparison */}
+        <div className="mt-24">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">
+              Optimized for Performance
+            </h2>
+            <p className="text-xl text-text-secondary">
+              After comprehensive React.memo optimization
+            </p>
+          </div>
+          <PerformanceComparison />
+        </div>
+
+        {/* Feature Comparison */}
+        <div className="mt-24">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">Most Feature-Complete</h2>
+            <p className="text-xl text-text-secondary">
+              Compare Clarity to alternatives
+            </p>
+          </div>
+          <FeatureMatrix />
+        </div>
       </section>
 
       {/* CTA Section */}
@@ -155,17 +181,26 @@ function App() {
             <h3 className="text-2xl font-bold mb-4">Learn</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/learn/quick-start" className="text-brand-500 hover:text-brand-600">
+                <Link
+                  href="/learn/quick-start"
+                  className="text-brand-500 hover:text-brand-600"
+                >
                   Quick Start →
                 </Link>
               </li>
               <li>
-                <Link href="/learn/tutorial" className="text-brand-500 hover:text-brand-600">
+                <Link
+                  href="/learn/tutorial"
+                  className="text-brand-500 hover:text-brand-600"
+                >
                   Tutorial →
                 </Link>
               </li>
               <li>
-                <Link href="/learn/concepts" className="text-brand-500 hover:text-brand-600">
+                <Link
+                  href="/learn/concepts"
+                  className="text-brand-500 hover:text-brand-600"
+                >
                   Core Concepts →
                 </Link>
               </li>
@@ -175,17 +210,26 @@ function App() {
             <h3 className="text-2xl font-bold mb-4">Reference</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/reference/components" className="text-brand-500 hover:text-brand-600">
+                <Link
+                  href="/reference/components"
+                  className="text-brand-500 hover:text-brand-600"
+                >
                   Components →
                 </Link>
               </li>
               <li>
-                <Link href="/reference/hooks" className="text-brand-500 hover:text-brand-600">
+                <Link
+                  href="/reference/hooks"
+                  className="text-brand-500 hover:text-brand-600"
+                >
                   Hooks →
                 </Link>
               </li>
               <li>
-                <Link href="/reference/api" className="text-brand-500 hover:text-brand-600">
+                <Link
+                  href="/reference/api"
+                  className="text-brand-500 hover:text-brand-600"
+                >
                   API Reference →
                 </Link>
               </li>
@@ -195,17 +239,26 @@ function App() {
             <h3 className="text-2xl font-bold mb-4">Community</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="https://github.com/clarity-chat/ui" className="text-brand-500 hover:text-brand-600">
+                <Link
+                  href="https://github.com/clarity-chat/ui"
+                  className="text-brand-500 hover:text-brand-600"
+                >
                   GitHub →
                 </Link>
               </li>
               <li>
-                <Link href="https://storybook.clarity-chat.dev" className="text-brand-500 hover:text-brand-600">
+                <Link
+                  href="https://storybook.clarity-chat.dev"
+                  className="text-brand-500 hover:text-brand-600"
+                >
                   Storybook →
                 </Link>
               </li>
               <li>
-                <Link href="/examples" className="text-brand-500 hover:text-brand-600">
+                <Link
+                  href="/examples"
+                  className="text-brand-500 hover:text-brand-600"
+                >
                   Examples →
                 </Link>
               </li>

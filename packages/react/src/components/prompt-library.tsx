@@ -26,7 +26,7 @@ export interface PromptLibraryProps {
   className?: string
 }
 
-export const PromptLibrary: React.FC<PromptLibraryProps> = ({
+export const PromptLibrary = React.memo(function PromptLibrary({
   prompts,
   categories = [],
   onUsePrompt,
@@ -35,14 +35,30 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
   onDelete,
   onToggleFavorite,
   className,
-}) => {
+}: PromptLibraryProps) {
   const [searchQuery, setSearchQuery] = React.useState('')
-  const [selectedCategory, setSelectedCategory] = React.useState<string | 'all'>('all')
+  const [selectedCategory, setSelectedCategory] = React.useState<
+    string | 'all'
+  >('all')
   const [showCreate, setShowCreate] = React.useState(false)
-  const [sortBy, setSortBy] = React.useState<'name' | 'usage' | 'recent'>('recent')
+  const [editingPrompt, setEditingPrompt] = React.useState<SavedPrompt | null>(
+    null
+  )
+  const [sortBy, setSortBy] = React.useState<'name' | 'usage' | 'recent'>(
+    'recent'
+  )
 
   // Create form state
   const [newPrompt, setNewPrompt] = React.useState({
+    name: '',
+    content: '',
+    description: '',
+    category: '',
+    tags: [] as string[],
+  })
+
+  // Edit form state
+  const [editForm, setEditForm] = React.useState({
     name: '',
     content: '',
     description: '',
@@ -109,8 +125,58 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
       isFavorite: false,
     })
 
-    setNewPrompt({ name: '', content: '', description: '', category: '', tags: [] })
+    setNewPrompt({
+      name: '',
+      content: '',
+      description: '',
+      category: '',
+      tags: [],
+    })
     setShowCreate(false)
+  }
+
+  const handleEditPrompt = (prompt: SavedPrompt) => {
+    setEditingPrompt(prompt)
+    setEditForm({
+      name: prompt.name,
+      content: prompt.content,
+      description: prompt.description || '',
+      category: prompt.category || '',
+      tags: prompt.tags || [],
+    })
+    setShowCreate(false) // Close create form if open
+  }
+
+  const handleSaveEdit = () => {
+    if (!editingPrompt || !editForm.name || !editForm.content) return
+
+    onEdit?.(editingPrompt.id, {
+      name: editForm.name,
+      content: editForm.content,
+      description: editForm.description,
+      category: editForm.category,
+      tags: editForm.tags,
+    })
+
+    setEditingPrompt(null)
+    setEditForm({
+      name: '',
+      content: '',
+      description: '',
+      category: '',
+      tags: [],
+    })
+  }
+
+  const handleCancelEdit = () => {
+    setEditingPrompt(null)
+    setEditForm({
+      name: '',
+      content: '',
+      description: '',
+      category: '',
+      tags: [],
+    })
   }
 
   const favorites = prompts.filter((p) => p.isFavorite)
@@ -125,7 +191,8 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
               <Badge variant="secondary">{prompts.length}</Badge>
             </CardTitle>
             <CardDescription>
-              {favorites.length} favorites • {prompts.reduce((sum, p) => sum + p.usageCount, 0)} total uses
+              {favorites.length} favorites •{' '}
+              {prompts.reduce((sum, p) => sum + p.usageCount, 0)} total uses
             </CardDescription>
           </div>
           {onSave && (
@@ -148,7 +215,9 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
           <div className="flex items-center gap-2">
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) =>
+                setSortBy(e.target.value as 'name' | 'usage' | 'recent')
+              }
               className="text-sm border rounded px-2 py-1 bg-background"
             >
               <option value="recent">Recently Used</option>
@@ -167,7 +236,9 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
               {categories.map((cat) => (
                 <Button
                   key={cat.id}
-                  variant={selectedCategory === cat.name ? 'default' : 'outline'}
+                  variant={
+                    selectedCategory === cat.name ? 'default' : 'outline'
+                  }
                   size="sm"
                   onClick={() => setSelectedCategory(cat.name)}
                 >
@@ -193,24 +264,82 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
               <Input
                 placeholder="Prompt name"
                 value={newPrompt.name}
-                onChange={(e) => setNewPrompt({ ...newPrompt, name: e.target.value })}
+                onChange={(e) =>
+                  setNewPrompt({ ...newPrompt, name: e.target.value })
+                }
               />
               <Textarea
                 placeholder="Prompt content... Use {{variable}} for variables"
                 value={newPrompt.content}
-                onChange={(e) => setNewPrompt({ ...newPrompt, content: e.target.value })}
+                onChange={(e) =>
+                  setNewPrompt({ ...newPrompt, content: e.target.value })
+                }
                 rows={4}
               />
               <Input
                 placeholder="Description (optional)"
                 value={newPrompt.description}
-                onChange={(e) => setNewPrompt({ ...newPrompt, description: e.target.value })}
+                onChange={(e) =>
+                  setNewPrompt({ ...newPrompt, description: e.target.value })
+                }
               />
               <div className="flex gap-2">
-                <Button onClick={handleSavePrompt} disabled={!newPrompt.name || !newPrompt.content}>
+                <Button
+                  onClick={handleSavePrompt}
+                  disabled={!newPrompt.name || !newPrompt.content}
+                >
                   Save Prompt
                 </Button>
                 <Button variant="outline" onClick={() => setShowCreate(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Edit Prompt Form */}
+        <AnimatePresence>
+          {editingPrompt && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-4 p-4 border-2 border-primary rounded-lg space-y-3 bg-primary/5"
+            >
+              <h3 className="font-semibold text-sm flex items-center gap-2">
+                ✏️ Edit Prompt: {editingPrompt.name}
+              </h3>
+              <Input
+                placeholder="Prompt name"
+                value={editForm.name}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, name: e.target.value })
+                }
+              />
+              <Textarea
+                placeholder="Prompt content... Use {{variable}} for variables"
+                value={editForm.content}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, content: e.target.value })
+                }
+                rows={4}
+              />
+              <Input
+                placeholder="Description (optional)"
+                value={editForm.description}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, description: e.target.value })
+                }
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSaveEdit}
+                  disabled={!editForm.name || !editForm.content}
+                >
+                  Save Changes
+                </Button>
+                <Button variant="outline" onClick={handleCancelEdit}>
                   Cancel
                 </Button>
               </div>
@@ -225,10 +354,16 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
               <div className="text-6xl mb-4">💡</div>
               <p className="text-sm font-medium">No prompts found</p>
               <p className="text-xs text-muted-foreground mt-1">
-                {searchQuery ? 'Try a different search' : 'Create your first prompt to get started'}
+                {searchQuery
+                  ? 'Try a different search'
+                  : 'Create your first prompt to get started'}
               </p>
               {!searchQuery && onSave && (
-                <Button onClick={() => setShowCreate(true)} className="mt-4" size="sm">
+                <Button
+                  onClick={() => setShowCreate(true)}
+                  className="mt-4"
+                  size="sm"
+                >
                   Create First Prompt
                 </Button>
               )}
@@ -250,8 +385,12 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <h4 className="font-semibold text-sm">{prompt.name}</h4>
-                                {prompt.isFavorite && <span className="text-sm">⭐</span>}
+                                <h4 className="font-semibold text-sm">
+                                  {prompt.name}
+                                </h4>
+                                {prompt.isFavorite && (
+                                  <span className="text-sm">⭐</span>
+                                )}
                               </div>
                               {prompt.description && (
                                 <p className="text-xs text-muted-foreground mt-1">
@@ -259,7 +398,10 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
                                 </p>
                               )}
                             </div>
-                            <Badge variant="outline" className="flex-shrink-0 text-xs">
+                            <Badge
+                              variant="outline"
+                              className="flex-shrink-0 text-xs"
+                            >
                               {prompt.usageCount} uses
                             </Badge>
                           </div>
@@ -273,7 +415,11 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
                           {prompt.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1">
                               {prompt.tags.map((tag) => (
-                                <Badge key={tag} variant="outline" className="text-xs">
+                                <Badge
+                                  key={tag}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
                                   {tag}
                                 </Badge>
                               ))}
@@ -282,7 +428,10 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
 
                           {/* Actions */}
                           <div className="flex items-center gap-2 pt-2 border-t opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button size="sm" onClick={() => onUsePrompt(prompt)}>
+                            <Button
+                              size="sm"
+                              onClick={() => onUsePrompt(prompt)}
+                            >
                               Use Prompt
                             </Button>
                             {onToggleFavorite && (
@@ -291,17 +440,16 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
                                 size="sm"
                                 onClick={() => onToggleFavorite(prompt.id)}
                               >
-                                {prompt.isFavorite ? '⭐ Unfavorite' : '☆ Favorite'}
+                                {prompt.isFavorite
+                                  ? '⭐ Unfavorite'
+                                  : '☆ Favorite'}
                               </Button>
                             )}
                             {onEdit && (
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => {
-                                  // TODO: Implement edit modal
-                                  console.log('Edit prompt:', prompt.id)
-                                }}
+                                onClick={() => handleEditPrompt(prompt)}
                               >
                                 ✏️ Edit
                               </Button>
@@ -311,7 +459,9 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
-                                  if (confirm(`Delete prompt "${prompt.name}"?`)) {
+                                  if (
+                                    confirm(`Delete prompt "${prompt.name}"?`)
+                                  ) {
                                     onDelete(prompt.id)
                                   }
                                 }}
@@ -333,4 +483,6 @@ export const PromptLibrary: React.FC<PromptLibraryProps> = ({
       </CardContent>
     </Card>
   )
-}
+})
+
+PromptLibrary.displayName = 'PromptLibrary'

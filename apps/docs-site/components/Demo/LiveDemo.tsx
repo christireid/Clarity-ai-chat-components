@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Sandpack, SandpackProps } from '@codesandbox/sandpack-react'
-import { nightOwl, nightOwlLight } from '@codesandbox/sandpack-themes'
+import { nightOwl } from '@codesandbox/sandpack-themes'
 import { useTheme } from 'next-themes'
 import { Play, RefreshCw, Maximize2, Minimize2 } from 'lucide-react'
 import clsx from 'clsx'
@@ -45,7 +45,7 @@ const root = createRoot(document.getElementById('root')!)
 root.render(<App />)`,
   }
 
-  const sandpackTheme = theme === 'dark' ? nightOwl : nightOwlLight
+  const sandpackTheme = theme === 'dark' ? nightOwl : 'light'
 
   return (
     <div
