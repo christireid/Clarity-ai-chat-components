@@ -393,7 +393,7 @@ export const InteractiveDemo: Story = {
         case 'error':
           return <ErrorState onRetry={() => console.log('Retry')} />
         case 'success':
-          return <SuccessState onContinue={() => console.log('Continue')} />
+          return <SuccessState title="Success!" description="Operation completed successfully" onContinue={() => console.log('Continue')} />
         default:
           return null
       }
