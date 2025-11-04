@@ -12,6 +12,8 @@ const config: StorybookConfig = {
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
+    '@storybook/addon-measure',
+    '@storybook/addon-outline',
   ],
   
   framework: {
