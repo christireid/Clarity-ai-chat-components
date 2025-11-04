@@ -387,9 +387,9 @@ export const InteractiveDemo: Story = {
         case 'data':
           return <NoDataEmptyState onAction={() => console.log('Create clicked')} />
         case 'search':
-          return <NoSearchResultsState query="test query" onClear={() => console.log('Clear')} />
+          return <NoSearchResultsState searchQuery="test query" onClearSearch={() => console.log('Clear')} />
         case 'conversation':
-          return <NoConversationsState onStartConversation={() => console.log('Start')} />
+          return <NoConversationsState onCreateConversation={() => console.log('Start')} />
         case 'error':
           return <ErrorState onRetry={() => console.log('Retry')} />
         case 'success':
