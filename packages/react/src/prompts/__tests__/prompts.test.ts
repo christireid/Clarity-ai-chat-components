@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { PromptTemplateEngine, renderPrompt } from '../template'
-import { PromptLibrary } from '../library'
+import { PromptTemplateLibrary } from '../library'
 import type { PromptTemplate } from '../types'
 
 describe('PromptTemplateEngine', () => {
@@ -166,10 +166,10 @@ describe('renderPrompt helper', () => {
 })
 
 describe('PromptLibrary', () => {
-  let library: PromptLibrary
+  let library: PromptTemplateLibrary
 
   beforeEach(() => {
-    library = new PromptLibrary()
+    library = new PromptTemplateLibrary()
   })
 
   describe('add and get', () => {
@@ -268,7 +268,7 @@ describe('PromptLibrary', () => {
 
       const exported = library.export()
 
-      const newLibrary = new PromptLibrary()
+      const newLibrary = new PromptTemplateLibrary()
       newLibrary.import(exported)
 
       expect(newLibrary.get('1')).toBeDefined()

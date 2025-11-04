@@ -25,6 +25,7 @@ export default [
         // Browser globals
         document: 'readonly',
         window: 'readonly',
+        Window: 'readonly',
         navigator: 'readonly',
         console: 'readonly',
         setTimeout: 'readonly',
@@ -46,6 +47,7 @@ export default [
         HTMLLIElement: 'readonly',
         HTMLImageElement: 'readonly',
         HTMLTextAreaElement: 'readonly',
+        HTMLElementEventMap: 'readonly',
         Element: 'readonly',
         // SVG Elements
         SVGSVGElement: 'readonly',
@@ -53,6 +55,7 @@ export default [
         // Events
         Event: 'readonly',
         EventTarget: 'readonly',
+        EventListener: 'readonly',
         KeyboardEvent: 'readonly',
         MouseEvent: 'readonly',
         TouchEvent: 'readonly',
@@ -77,8 +80,10 @@ export default [
         // Storage
         localStorage: 'readonly',
         sessionStorage: 'readonly',
+        StorageEvent: 'readonly',
         // Observers
         IntersectionObserver: 'readonly',
+        IntersectionObserverEntry: 'readonly',
         MutationObserver: 'readonly',
         ResizeObserver: 'readonly',
         // File APIs
@@ -93,17 +98,21 @@ export default [
         // Error types
         ErrorEvent: 'readonly',
         PromiseRejectionEvent: 'readonly',
+        DOMException: 'readonly',
         // Other browser APIs
         alert: 'readonly',
         confirm: 'readonly',
         prompt: 'readonly',
         IntersectionObserverInit: 'readonly',
+        MediaQueryList: 'readonly',
+        MediaQueryListEvent: 'readonly',
         // WebSocket
         WebSocket: 'readonly',
         MessageEvent: 'readonly',
         CloseEvent: 'readonly',
         // Streams API
         ReadableStream: 'readonly',
+        ReadableStreamDefaultReader: 'readonly',
         WritableStream: 'readonly',
         TransformStream: 'readonly',
         // DOM Parser
@@ -189,6 +198,7 @@ export default [
         global: 'readonly',
         fetch: 'readonly',
         TextDecoder: 'readonly',
+        TextEncoder: 'readonly',
         localStorage: 'readonly',
         sessionStorage: 'readonly',
         IntersectionObserver: 'readonly',
@@ -205,6 +215,14 @@ export default [
         HTMLTextAreaElement: 'readonly',
         alert: 'readonly',
         DataTransfer: 'readonly',
+        // WebSocket and Streaming APIs for tests
+        WebSocket: 'readonly',
+        MessageEvent: 'readonly',
+        CloseEvent: 'readonly',
+        Event: 'readonly',
+        ReadableStream: 'readonly',
+        AbortController: 'readonly',
+        AbortSignal: 'readonly',
       },
     },
     plugins: {

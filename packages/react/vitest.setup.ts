@@ -10,6 +10,33 @@ afterEach(() => {
   cleanup()
 })
 
+// Mock window.scrollTo
+Object.defineProperty(window, 'scrollTo', {
+  writable: true,
+  value: vi.fn(),
+})
+
+// Mock framer-motion to avoid animation issues in tests
+vi.mock('framer-motion', async () => {
+  const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion')
+  return {
+    ...actual,
+    motion: new Proxy(actual.motion, {
+      get(target, prop) {
+        // For motion.div, motion.span, etc., return a component that renders without animations
+        if (typeof prop === 'string') {
+          return ({ children, ...props }: any) => {
+            // Remove animation props
+            const { animate, initial, exit, transition, whileHover, whileTap, ...restProps } = props
+            return actual.createElement(prop, restProps, children)
+          }
+        }
+        return target[prop as keyof typeof target]
+      },
+    }),
+  }
+})
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

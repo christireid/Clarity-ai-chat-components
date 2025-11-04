@@ -24,6 +24,12 @@ export default defineConfig({
     testTimeout: 10000,
     // Isolate tests properly
     isolate: true,
+    // Exclude node_modules and dist
+    exclude: [
+      'node_modules/**',
+      'dist/**',
+      '**/node_modules/**',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
