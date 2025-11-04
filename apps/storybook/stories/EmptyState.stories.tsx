@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import React from 'react'
 import {
   EmptyState,
   EmptyChatState,
@@ -138,7 +139,7 @@ export const NoConversations: Story = {
   },
 }
 
-export const ErrorState: Story = {
+export const ErrorStateExample: Story = {
   render: () => (
     <ErrorState
       title="Failed to load data"
@@ -156,7 +157,7 @@ export const ErrorState: Story = {
   },
 }
 
-export const SuccessState: Story = {
+export const SuccessStateExample: Story = {
   render: () => (
     <SuccessState
       title="All done!"
@@ -256,11 +257,13 @@ export const SuccessActionVariant: Story = {
 
 export const EmptyInbox: Story = {
   render: () => (
-    <NoDataEmptyState
+    <EmptyState
       title="Inbox Zero! 🎉"
       description="You're all caught up. There are no new messages to review."
-      actionLabel="Compose Message"
-      onAction={() => alert('Compose clicked!')}
+      action={{
+        label: 'Compose Message',
+        onClick: () => alert('Compose clicked!'),
+      }}
     />
   ),
   parameters: {
@@ -358,8 +361,13 @@ export const AnimatedEntry: Story = {
           Replay Animation
         </button>
         {show && (
-          <NoDataEmptyState
-            onAction={() => alert('Action clicked!')}
+          <EmptyState
+            title="No data yet"
+            description="Get started by adding your first item"
+            action={{
+              label: 'Get Started',
+              onClick: () => alert('Action clicked!'),
+            }}
           />
         )}
       </div>
@@ -476,7 +484,14 @@ export const InteractiveDemo: Story = {
 export const Accessibility: Story = {
   render: () => (
     <div className="space-y-8 max-w-2xl">
-      <NoDataEmptyState onAction={() => console.log('Action')} />
+      <EmptyState
+        title="No data yet"
+        description="Get started by adding your first item"
+        action={{
+          label: 'Get Started',
+          onClick: () => console.log('Action'),
+        }}
+      />
       
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm space-y-2">
         <strong>Accessibility Features:</strong>

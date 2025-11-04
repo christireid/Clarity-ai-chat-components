@@ -1,46 +1,225 @@
-export const meta = { title: 'Introduction' }
+import { Meta } from '@storybook/blocks';
 
-# Welcome to Clarity Chat
+<Meta title="Getting Started/Introduction" />
 
-Clarity Chat is a React component system for building production-grade AI conversations. This Storybook showcases every component, hook, and pattern available in the library.
+<div className="sb-container">
+  <div className="sb-section-title">
+    # Welcome to Clarity Chat Storybook
+    
+    <p className="sb-lead">
+      A comprehensive component library for building modern AI chat experiences.
+      From simple chat interfaces to enterprise-grade conversational AI systems.
+    </p>
+  </div>
 
-## Highlights
+  <div style={{ marginTop: '3rem' }}>
+    ## 🎯 What is Clarity Chat?
 
-- **69+ components** covering full chat windows, streaming messages, tool invocation, and operational dashboards.
-- **Model-agnostic adapters** for OpenAI, Anthropic, Google AI, or your own providers.
-- **Accessibility-first design** with WCAG-compliant colors, keyboard support, and screen reader semantics.
-- **TypeScript ready** with rich IntelliSense and strict typings.
+    Clarity Chat is a production-ready React component library that provides everything you need to build sophisticated AI chat interfaces. Whether you're creating a simple chatbot or a complex multi-agent system, our components are designed to scale with your needs.
 
-## Exploring the Stories
+    ### Key Features
 
-1. Start with the `ChatWindow` stories to see an end-to-end conversation surface.
-2. Visit the `Streaming` section to review token-by-token rendering and thinking indicators.
-3. Open the `Operational` stories for dashboards, safety cards, and evaluation widgets.
-4. Use the toolbar controls to toggle light/dark themes, responsive viewports, and addon panels.
+    <div className="sb-grid">
+      <div className="sb-card">
+        <h3>🎨 Beautiful UI</h3>
+        <p>Modern, accessible components with thoughtful microanimations and dark mode support</p>
+      </div>
+      
+      <div className="sb-card">
+        <h3>⚡ High Performance</h3>
+        <p>Optimized with virtualization, lazy loading, and React 18 concurrent features</p>
+      </div>
+      
+      <div className="sb-card">
+        <h3>♿ Accessible</h3>
+        <p>WCAG 2.1 AA compliant with keyboard navigation and screen reader support</p>
+      </div>
+      
+      <div className="sb-card">
+        <h3>🔧 Customizable</h3>
+        <p>Flexible theming system with CSS variables and Tailwind CSS integration</p>
+      </div>
+      
+      <div className="sb-card">
+        <h3>📱 Responsive</h3>
+        <p>Mobile-first design that works seamlessly across all devices</p>
+      </div>
+      
+      <div className="sb-card">
+        <h3>🏢 Enterprise Ready</h3>
+        <p>Multi-tenancy, RBAC, SSO, and advanced security features</p>
+      </div>
+    </div>
+  </div>
 
-## Example Usage
+  <div style={{ marginTop: '3rem' }}>
+    ## 📦 Component Categories
 
-```tsx
-import { ChatWindow, ModelSelector } from '@clarity-chat/react'
-import { useChat } from '@clarity-chat/react'
+    ### Primitives
+    Low-level UI building blocks like buttons, inputs, and dialogs. These are the foundation of all other components.
 
-export function Demo() {
-  const { messages, sendMessage, activeModel, setActiveModel } = useChat({
-    chatId: 'storybook-demo',
-  })
+    **Examples:** Button, Input, Dialog, Drawer, Card, Badge, Avatar
 
-  return (
-    <>
-      <ModelSelector value={activeModel} onChange={setActiveModel} />
-      <ChatWindow messages={messages} onSendMessage={content => sendMessage({ role: 'user', content })} />
-    </>
-  )
-}
-```
+    ### Core Components
+    Chat-specific components for building conversational interfaces.
 
-## Additional Resources
+    **Examples:** ChatWindow, Message, ChatInput, StreamingMessage, MessageList
 
-- [Get Started Guide](./GettingStarted.mdx)
-- [Component API Reference](https://clarity-chat.dev/api/components)
-- [Cookbook Recipes](https://clarity-chat.dev/cookbook)
-- [Open an Issue](https://github.com/christireid/Clarity-ai-chat-components/issues)
+    ### Advanced Components
+    Feature-rich components for enhanced UX and functionality.
+
+    **Examples:** CommandPalette, VoiceInput, FileUpload, CodeEditor, ContextManager
+
+    ### Templates
+    Pre-built, production-ready chat implementations for common use cases.
+
+    **Examples:** Support Bot, Code Assistant, Documentation Bot, Sales Assistant
+
+    ### Enterprise Components
+    Advanced features for enterprise deployments.
+
+    **Examples:** Multi-tenant Dashboard, SSO Config, API Token Manager, Audit Logs
+
+    ### AI Ops Components
+    Tools for monitoring, testing, and improving AI performance.
+
+    **Examples:** Evaluation Dashboard, Safety Console, Prompt Test Harness
+  </div>
+
+  <div style={{ marginTop: '3rem', padding: '2rem', background: '#f9fafb', borderRadius: '12px', border: '2px solid #e5e7eb' }}>
+    ## 🚀 Quick Start
+
+    ```bash
+    # Install the package
+    npm install @clarity-chat/react
+
+    # Import components
+    import { ChatWindow, Message } from '@clarity-chat/react'
+    ```
+
+    ```jsx
+    // Basic usage
+    function App() {
+      const [messages, setMessages] = useState([])
+      
+      return (
+        <ChatWindow
+          messages={messages}
+          onSendMessage={(content) => {
+            // Handle message
+          }}
+        />
+      )
+    }
+    ```
+  </div>
+
+  <div style={{ marginTop: '3rem' }}>
+    ## 📚 Navigation Tips
+
+    - **Browse by Category** - Use the sidebar to explore components by type
+    - **Interactive Controls** - Most stories have live controls to experiment with props
+    - **Canvas Tab** - See isolated component renders
+    - **Docs Tab** - Read detailed documentation and prop tables
+    - **Accessibility Tab** - Check WCAG compliance with the a11y addon
+    - **Measure Tool** - Inspect component dimensions and spacing
+    - **Viewport Tool** - Test responsive behavior at different screen sizes
+
+    ## 🎨 Design Principles
+
+    ### 1. **Delightful by Default**
+    Every interaction should feel smooth and responsive. We use microanimations and tactile feedback to create engaging experiences.
+
+    ### 2. **Accessible Always**
+    Accessibility isn't optional. All components are keyboard navigable, screen-reader friendly, and WCAG 2.1 AA compliant.
+
+    ### 3. **Performance First**
+    Built with performance in mind using virtualization, code splitting, and React 18 concurrent features.
+
+    ### 4. **Flexible & Composable**
+    Components are designed to work together seamlessly while remaining flexible enough for custom use cases.
+
+    ### 5. **Type-Safe**
+    Full TypeScript support with comprehensive type definitions for better DX and fewer bugs.
+  </div>
+
+  <div style={{ marginTop: '3rem', padding: '2rem', background: '#eff6ff', borderRadius: '12px', border: '2px solid #3b82f6' }}>
+    ## 💡 Pro Tips
+
+    - Use the **Controls** addon to experiment with component props in real-time
+    - Toggle **Dark Mode** using the toolbar to test theme support
+    - Try different **Viewports** to see responsive behavior
+    - Check the **Accessibility** panel to ensure WCAG compliance
+    - Use **Keyboard Shortcuts**: `/` to focus search, `F` for fullscreen, `A` for accessibility
+  </div>
+
+  <div style={{ marginTop: '3rem' }}>
+    ## 🔗 Resources
+
+    - [GitHub Repository](https://github.com/your-org/clarity-chat)
+    - [Documentation](https://docs.clarity-chat.dev)
+    - [NPM Package](https://www.npmjs.com/package/@clarity-chat/react)
+    - [Contributing Guide](https://github.com/your-org/clarity-chat/blob/main/CONTRIBUTING.md)
+    - [Changelog](https://github.com/your-org/clarity-chat/blob/main/CHANGELOG.md)
+  </div>
+</div>
+
+<style>
+  {`
+    .sb-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    
+    .sb-section-title h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+    
+    .sb-lead {
+      font-size: 1.25rem;
+      line-height: 1.8;
+      color: #666;
+      margin: 0;
+    }
+    
+    .sb-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .sb-card {
+      padding: 2rem;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      background: #fff;
+      transition: all 0.2s ease;
+    }
+    
+    .sb-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .sb-card h3 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .sb-card p {
+      margin: 0;
+      color: #666;
+      line-height: 1.6;
+    }
+  `}
+</style>
