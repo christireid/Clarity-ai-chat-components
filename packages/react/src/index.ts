@@ -94,6 +94,9 @@ export * from './components/conversation-list'
 
 // Export hooks
 export * from './hooks/use-chat'
+export * from './hooks/use-chat-enhanced'
+export * from './hooks/use-completion'
+export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'
 export * from './hooks/use-streaming-sse'
 export * from './hooks/use-streaming-websocket'
@@ -131,6 +134,9 @@ export * from './hooks/use-deferred-search'
 
 // Utility Functions (Model Fallback, Context Window, Rate Limiting, Hybrid Search, etc.)
 export * from './utils'
+
+// StreamableValue utilities (Vercel AI SDK compatible)
+export * from './utils/streamable-value'
 
 // Theme System
 export * from './theme'
