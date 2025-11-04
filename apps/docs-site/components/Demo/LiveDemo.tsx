@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Sandpack, SandpackProps } from '@codesandbox/sandpack-react'
 import { nightOwl } from '@codesandbox/sandpack-themes'
 import { useTheme } from 'next-themes'
-import { Play, RefreshCw, Maximize2, Minimize2 } from 'lucide-react'
+import { Play, RefreshCw, Maximize2, Minimize2, Copy, Check, ExternalLink } from 'lucide-react'
 import clsx from 'clsx'
 
 interface LiveDemoProps extends Partial<SandpackProps> {
@@ -13,6 +13,8 @@ interface LiveDemoProps extends Partial<SandpackProps> {
   dependencies?: Record<string, string>
   showConsole?: boolean
   height?: string
+  showCopyButton?: boolean
+  showExternalLinks?: boolean
 }
 
 export function LiveDemo({
@@ -21,11 +23,28 @@ export function LiveDemo({
   dependencies = {},
   showConsole = false,
   height = '500px',
+  showCopyButton = true,
+  showExternalLinks = true,
   ...props
 }: LiveDemoProps) {
   const { theme } = useTheme()
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [key, setKey] = useState(0)
+  const [copied, setCopied] = useState(false)
+
+  const handleCopyCode = async () => {
+    await navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const openInCodeSandbox = () => {
+    const params = new URLSearchParams({
+      file: '/App.tsx',
+      template: 'react-ts',
+    })
+    window.open(`https://codesandbox.io/s/new?${params.toString()}`, '_blank')
+  }
 
   const defaultDependencies = {
     react: '^18.2.0',
@@ -54,17 +73,52 @@ root.render(<App />)`,
         isFullscreen && 'fixed inset-4 z-50 bg-bg-primary'
       )}
     >
-      {/* Header */}
+      {/* Enhanced Header */}
       {title && (
-        <div className="flex items-center justify-between px-4 py-3 bg-bg-secondary border-b border-border">
+        <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-brand-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 border-b-2 border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <Play className="w-4 h-4 text-brand-500" />
-            <span className="font-semibold text-sm">{title}</span>
+            <div className="p-1.5 bg-brand-500 rounded-lg">
+              <Play className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="font-semibold text-sm text-gray-900 dark:text-gray-50">{title}</span>
           </div>
           <div className="flex items-center gap-2">
+            {showCopyButton && (
+              <button
+                onClick={handleCopyCode}
+                className={clsx(
+                  'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all shadow-sm',
+                  copied
+                    ? 'bg-green-500 text-white'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
+                )}
+                title="Copy code"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Copy</span>
+                  </>
+                )}
+              </button>
+            )}
+            {showExternalLinks && (
+              <button
+                onClick={openInCodeSandbox}
+                className="p-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-600"
+                title="Open in CodeSandbox"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            )}
             <button
               onClick={() => setKey(key + 1)}
-              className="p-2 hover:bg-bg-tertiary rounded transition-colors"
+              className="p-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-600"
               aria-label="Reset demo"
               title="Reset demo"
             >
@@ -72,7 +126,7 @@ root.render(<App />)`,
             </button>
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-2 hover:bg-bg-tertiary rounded transition-colors"
+              className="p-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-600"
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
               title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >

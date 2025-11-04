@@ -7,6 +7,7 @@ export const learnNavigation: NavItem[] = [
       { title: 'Quick Start', href: '/learn/quick-start' },
       { title: 'Installation', href: '/learn/installation' },
       { title: 'Tutorial', href: '/learn/tutorial' },
+      { title: '🎮 Interactive Playground', href: '/playground-demo' },
     ],
   },
   {
