@@ -1,0 +1,28 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { Dialog } from '@clarity-chat/primitives';
+declare const meta: Meta<typeof Dialog>;
+export default meta;
+type Story = StoryObj<typeof Dialog>;
+export declare const Default: Story;
+export declare const WithTrigger: Story;
+export declare const SmallSize: Story;
+export declare const MediumSize: Story;
+export declare const LargeSize: Story;
+export declare const ExtraLargeSize: Story;
+export declare const FullWidth: Story;
+export declare const ScaleAnimation: Story;
+export declare const SlideUpAnimation: Story;
+export declare const SlideDownAnimation: Story;
+export declare const FadeAnimation: Story;
+export declare const ZoomAnimation: Story;
+export declare const NoBackdropBlur: Story;
+export declare const NoCloseButton: Story;
+export declare const NoClickOutsideClose: Story;
+export declare const NoEscapeClose: Story;
+export declare const ConfirmationDialog: Story;
+export declare const FormDialog: Story;
+export declare const NestedDialog: Story;
+export declare const ControlledDialog: Story;
+export declare const KeyboardNavigation: Story;
+export declare const FocusManagement: Story;
+//# sourceMappingURL=Dialog.stories.d.ts.map
