@@ -390,9 +390,9 @@ export const Conversation: Story = {
 
 export const InteractiveDemo: Story = {
   render: () => {
-    const [messages, setMessages] = React.useState<MessageType[]>([
-      createAssistantMessage('Hello! I'm your AI assistant. How can I help you today?'),
-    ])
+    const [messages, setMessages] = React.useState([
+      createAssistantMessage("Hello! I'm your AI assistant. How can I help you today?"),
+    ] as MessageType[])
     const [input, setInput] = React.useState('')
 
     const sendMessage = () => {
