@@ -385,7 +385,7 @@ export const InteractiveDemo: Story = {
     const renderState = () => {
       switch (scenario) {
         case 'data':
-          return <NoDataEmptyState onAction={() => console.log('Create clicked')} />
+          return <EmptyState icon={<Database className="text-primary" size={32} />} title="No data yet" description="Get started by adding your first item" action={{ label: 'Get Started', onClick: () => console.log('Create clicked'), variant: 'primary' }} />
         case 'search':
           return <NoSearchResultsState searchQuery="test query" onClearSearch={() => console.log('Clear')} />
         case 'conversation':
