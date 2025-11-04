@@ -12,6 +12,7 @@
       "require": "./dist/index.js"
     },
     "./styles.css": "./dist/styles.css",
+    "./dist/styles/index.css": "./dist/styles/index.css",
     "./components/icons": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
