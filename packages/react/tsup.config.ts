@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: ['src/index.ts', 'src/styles/index.css'],
   format: ['cjs', 'esm'],
-  dts: false, // Temporarily disabled due to type issues - JS builds successfully
+  dts: false, // Disabled - JS/CSS builds successfully, types can be added later
   external: ['react', 'react-dom', 'framer-motion'],
   clean: true,
   sourcemap: true,
