@@ -4,6 +4,8 @@ Building an AI chat interface seems straightforward at first. You've got your AP
 
 **Spoiler alert:** Harder than you think.
 
+> **💡 Hero Animation Placeholder:** Insert GIF showing dramatic split-screen comparison: Left side = broken, jarring chat UX with errors and poor feedback. Right side = polished Clarity Chat with smooth animations, error recovery, and professional polish. Animation should highlight the contrast.
+
 After building dozens of AI chat interfaces and watching hundreds of developers struggle with the same problems, I've identified the seven core UI/UX challenges that make or break an AI chat experience. These aren't edge cases—they're the fundamental issues that determine whether users love your product or abandon it.
 
 Today, I'm going to walk through each challenge, show you why it matters, and demonstrate how we solved them in [Clarity Chat](https://codeclarity.ai), our production-ready React component library for AI chat interfaces.
@@ -31,6 +33,8 @@ Let's fix that.
 ---
 
 ## Pain Point #1: The Streaming UX Paradox
+
+> **💡 Animation Placeholder:** Insert GIF showing side-by-side comparison of bad streaming (jarring pop-ins) vs good streaming (smooth thinking indicator → token streaming)
 
 ### The Problem
 
@@ -100,6 +104,8 @@ Studies show that **perceived performance** matters more than actual performance
 ---
 
 ## Pain Point #2: Error Handling That Doesn't Suck
+
+> **💡 Animation Placeholder:** Insert GIF showing error classification, retry button with countdown, and exponential backoff visualization
 
 ### The Problem
 
@@ -179,6 +185,8 @@ function ChatWithRetry() {
 ---
 
 ## Pain Point #3: Token Costs Are a Black Box
+
+> **💡 Animation Placeholder:** Insert GIF showing token counter with progress bar filling, color changes (green→yellow→red), and warning messages appearing
 
 ### The Problem
 
@@ -264,6 +272,8 @@ function ChatWithTokens() {
 
 ## Pain Point #4: Network Failures Break Everything
 
+> **💡 Animation Placeholder:** Insert GIF showing network status indicator changing (online→offline→reconnecting→online), messages queuing, and auto-reconnect flow
+
 ### The Problem
 
 Users don't have perfect internet. But most chat apps assume they do.
@@ -338,6 +348,8 @@ function ChatWithNetwork() {
 ---
 
 ## Pain Point #5: Loading States Are Boring
+
+> **💡 Animation Placeholder:** Insert GIF showing thinking indicator progressing through stages (Thinking → Researching → Generating → Finalizing) with animated progress bar
 
 ### The Problem
 
@@ -536,6 +548,8 @@ function ResponsiveChat() {
 
 ---
 
+> **💡 Animation Placeholder:** Insert GIF showing component showcase grid with 9 key components animating (hover effects, icons floating)
+
 ## Bringing It All Together: The Clarity Chat Library
 
 We've built these solutions into [Clarity Chat](https://codeclarity.ai), a production-ready React component library for AI chat interfaces.
@@ -601,6 +615,8 @@ function App() {
   )
 }
 ```
+
+> **💡 Animation Placeholder:** Insert GIF showing split-screen: code on left typing out, live demo on right showing chat interface appearing and working
 
 **That's it.** All the pain points above are solved out of the box.
 

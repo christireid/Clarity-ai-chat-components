@@ -6,7 +6,11 @@ This directory contains the launch blog post for Clarity Chat component library.
 
 - **ai-chat-ux-pain-points-and-solutions.md** - The main blog post (ready for Medium)
 - **animation-plan.md** - Detailed plan for animated graphics
-- **animations/** - HTML/CSS animation demos that can be screen-recorded to GIFs
+- **ANIMATION_INTEGRATION.md** - Complete guide for placing animations in the post
+- **PUBLISHING_GUIDE.md** - Step-by-step Medium publishing checklist
+- **PROJECT_SUMMARY.md** - Complete project overview
+- **FINAL_CHECKLIST.md** - Pre-publication checklist
+- **animations/** - 8 HTML/CSS animation demos ready to convert to GIFs
 
 ## Blog Post Overview
 
