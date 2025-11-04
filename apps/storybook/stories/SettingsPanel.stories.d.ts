@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
-    component: import("react").NamedExoticComponent<import("@clarity-chat/react").SettingsPanelProps>;
+    component: any;
     parameters: {
         layout: string;
     };

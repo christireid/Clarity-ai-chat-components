@@ -24,7 +24,15 @@ import type { StoryObj } from '@storybook/react';
  */
 declare const meta: {
     title: string;
-    component: import("react").FC<import("@clarity-chat/react").SkeletonProps>;
+    component: ({ variant, width, height, rounded, className, style, ...props }: {
+        [x: string]: any;
+        variant?: string | undefined;
+        width: any;
+        height: any;
+        rounded?: string | undefined;
+        className: any;
+        style: any;
+    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>;
     parameters: {
         layout: string;
         docs: {

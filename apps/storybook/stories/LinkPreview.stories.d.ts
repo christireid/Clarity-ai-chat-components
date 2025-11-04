@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react';
 declare const linkPreviewMeta: {
     title: string;
-    component: import("react").NamedExoticComponent<import("@clarity-chat/react").LinkPreviewProps>;
+    component: any;
     parameters: {
         layout: string;
     };
@@ -24,7 +24,7 @@ export declare const WithRemoveButton: PreviewStory;
 export declare const Loading: PreviewStory;
 declare const inlineLinkMeta: {
     title: string;
-    component: import("react").NamedExoticComponent<import("@clarity-chat/react").InlineLinkProps>;
+    component: any;
     parameters: {
         layout: string;
     };
@@ -32,7 +32,7 @@ declare const inlineLinkMeta: {
 };
 export declare const InlineLinkStories: {
     title: string;
-    component: import("react").NamedExoticComponent<import("@clarity-chat/react").InlineLinkProps>;
+    component: any;
     parameters: {
         layout: string;
     };

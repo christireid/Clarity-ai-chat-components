@@ -23,7 +23,7 @@ async function* simulateStreamingResponse(userMessage: string): AsyncGenerator<s
 
   for (const chunk of responses) {
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise<void>(resolve => setTimeout(resolve, 100))
     yield chunk
   }
 }
@@ -53,8 +53,8 @@ export async function POST(req: NextRequest) {
           // Send done signal
           controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
           controller.close()
-        } catch (error) {
-          controller.error(error)
+        } catch (err) {
+          controller.error(err)
         }
       },
     })
@@ -67,8 +67,8 @@ export async function POST(req: NextRequest) {
         'Connection': 'keep-alive',
       },
     })
-  } catch (error) {
-    console.error('Chat API error:', error)
+  } catch (err) {
+    console.error('Chat API error:', err)
     return new Response('Internal server error', { status: 500 })
   }
 }

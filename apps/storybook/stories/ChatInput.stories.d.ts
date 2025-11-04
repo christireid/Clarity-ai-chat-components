@@ -21,7 +21,7 @@ import type { StoryObj } from '@storybook/react';
  */
 declare const meta: {
     title: string;
-    component: import("react").NamedExoticComponent<import("@clarity-chat/react").ChatInputProps>;
+    component: any;
     parameters: {
         layout: string;
         docs: {

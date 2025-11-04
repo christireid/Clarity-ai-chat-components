@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react';
 declare const meta: {
     title: string;
-    component: import("react").ForwardRefExoticComponent<import("@clarity-chat/react").AdvancedChatInputProps & import("react").RefAttributes<HTMLTextAreaElement>>;
+    component: any;
     parameters: {
         layout: string;
     };

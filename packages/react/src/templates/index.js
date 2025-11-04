@@ -11,4 +11,6 @@ export * from './sales-assistant';
 export * from './education-tutor';
 export * from './creative-writing';
 export * from './data-analyst';
+export * from './support-bot';
+export * from './code-assistant';
 //# sourceMappingURL=index.js.map

@@ -24,7 +24,12 @@ import type { StoryObj } from '@storybook/react';
  */
 declare const meta: {
     title: string;
-    component: import("react").FC<import("@clarity-chat/react").ToastProviderProps>;
+    component: ({ children, position, defaultDuration, maxToasts }: {
+        children: any;
+        position?: string | undefined;
+        defaultDuration?: number | undefined;
+        maxToasts?: number | undefined;
+    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>;
     parameters: {
         layout: string;
         docs: {
@@ -35,8 +40,8 @@ declare const meta: {
     };
     tags: string[];
     decorators: ((Story: import("@storybook/types").PartialStoryFn<import("@storybook/react").ReactRenderer, {
-        children: import("react").ReactNode;
-        position?: import("@clarity-chat/react").ToastPosition | undefined;
+        children: any;
+        position?: string | undefined;
         defaultDuration?: number | undefined;
         maxToasts?: number | undefined;
     }>) => import("react/jsx-runtime").JSX.Element)[];

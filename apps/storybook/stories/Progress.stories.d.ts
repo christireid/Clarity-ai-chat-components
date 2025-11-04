@@ -24,7 +24,14 @@ import type { StoryObj } from '@storybook/react';
  */
 declare const meta: {
     title: string;
-    component: import("react").FC<import("@clarity-chat/react").ProgressProps>;
+    component: ({ value, size, variant, showLabel, label, className }: {
+        value: any;
+        size?: string | undefined;
+        variant?: string | undefined;
+        showLabel?: boolean | undefined;
+        label: any;
+        className: any;
+    }) => import("react").ReactElement<any, string | import("react").JSXElementConstructor<any>>;
     parameters: {
         layout: string;
         docs: {
