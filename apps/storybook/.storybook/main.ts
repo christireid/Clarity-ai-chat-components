@@ -11,9 +11,6 @@ const config: StorybookConfig = {
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
-    '@storybook/addon-coverage',
-    '@storybook/addon-themes',
-    '@chromaui/addon-visual-tests',
   ],
   
   framework: {
