@@ -238,7 +238,7 @@ Steps:
 - **Proof Points**: reference compliance (PII detection, RBAC), customization (theme system, motion), and developer ergonomics (CLI, VS Code extension).
 
 ## 8. Engineering Roadmap Aligned to Gaps
-- **Streamed UI Helper**: build `useStreamableUI` + `<StreamBlock>` to mirror `createStreamableUI` semantics.
+- **Streamed UI Helper**: prototype shipped (`useStreamableUI`, `<StreamBlock>`); harden APIs, document advanced patterns, and add Storybook coverage.
 - **Assistant Server State**: add a wrapper (`createClarityAssistant`) around Next.js server actions to simplify `createAI` adoption with our components.
 - **Tool Invocation Coverage**: extend `ToolInvocationCard` to support nested tool calls, parallel invocations, and add docs mapping Vercel event payloads.
 - **Observability Bridges**: provide adapters to route `withAITracing` output into our analytics dashboards; publish guides for Vercel AI Observability integration.

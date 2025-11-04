@@ -168,7 +168,35 @@ export function AssistantRSC() {
 
 This keeps Vercel’s optimistic updates while leveraging Clarity’s UI.
 
-## 6. Tool Invocation & Agent Runs
+## 6. Streamed UI Blocks
+
+- Use Clarity’s `StreamBlock` component (powered by `useStreamableUI`) to render progressive JSX returned from Vercel’s `createStreamableUI` helpers.
+
+```tsx
+import { createStreamableUI } from 'ai/rsc'
+import { StreamBlock } from '@clarity-chat/react'
+
+const productStream = createStreamableUI()
+
+export function ProductTableStream() {
+  return (
+    <StreamBlock
+      source={productStream}
+      fallback={<SkeletonTable />}
+      renderItem={(fragment, index) => (
+        <section key={index} className="rounded-xl border p-4">
+          {fragment}
+        </section>
+      )}
+    />
+  )
+}
+```
+
+- Pass the same `StreamableValue` returned from your server action into `StreamBlock`; it automatically subscribes, appends fragments, and exposes status for loading indicators.
+- Need lower-level control? Import `useStreamableUI` directly and decide whether to `append` or `replace` streamed nodes, transform `Uint8Array` payloads, or emit completion callbacks.
+
+## 7. Tool Invocation & Agent Runs
 
 Vercel emits `tool_call` deltas. Map them into Clarity components for visibility:
 
@@ -190,7 +218,7 @@ function ToolEvents({ toolInvocations }) {
 
 Hook this into `useChat`’s `onResponse` callback or the server action by parsing the event stream.
 
-## 7. Safety, Moderation & Compliance
+## 8. Safety, Moderation & Compliance
 
 Vercel defers moderation to the underlying model. Clarity layers additional protections:
 
@@ -200,7 +228,7 @@ Vercel defers moderation to the underlying model. Clarity layers additional prot
 
 Integrate the middleware inside your API route before calling `streamText` and surface results via custom message metadata that Clarity components display.
 
-## 8. Analytics & Observability
+## 9. Analytics & Observability
 
 Pair Vercel’s `withAITracing` and Clarity analytics to capture full-funnel insights:
 
@@ -208,7 +236,7 @@ Pair Vercel’s `withAITracing` and Clarity analytics to capture full-funnel ins
 2. In the client, render `UsageDashboard`, `ResponseQualityMeter`, and custom metrics using `@clarity-chat/analytics`.
 3. Forward Vercel’s trace IDs to Clarity’s analytics pipeline to correlate API latency with user satisfaction scores.
 
-## 9. Multi-Tenancy & RBAC
+## 10. Multi-Tenancy & RBAC
 
 Leverage Clarity’s built-in modules to cover enterprise requirements that Vercel leaves bespoke:
 
@@ -216,13 +244,13 @@ Leverage Clarity’s built-in modules to cover enterprise requirements that Verc
 - `@clarity-chat/rbac` to restrict sensitive tools to privileged roles.
 - `@clarity-chat/quotas` to enforce usage caps per tenant and surface warning banners via `SettingsPanel`.
 
-## 10. Testing & Hardening Checklist
+## 11. Testing & Hardening Checklist
 - Unit test API routes with mock `streamText` emitters to guarantee attachments and tool payloads are forwarded correctly.
 - Snapshot Clarity components using Storybook or Vitest to ensure UI integrations remain stable across provider changes.
 - Run end-to-end tests (Playwright) to verify streaming, retry, and attachment flows.
 - Add logging for SSE disconnects; Clarity’s `useStreaming*` hooks expose retry helpers.
 
-## 11. Troubleshooting Quick Reference
+## 12. Troubleshooting Quick Reference
 - **Messages duplicate**: ensure you only append once per `delta` event; Clarity’s `MessageList` will merge updates when message IDs remain stable.
 - **Attachments missing**: confirm the API route returns `experimental_attachments` per message. Map them into `MessageAttachment[]` before passing to `ChatWindow`.
 - **Tool UI not updating**: parse `tool` events in `onResponse` and update component state; Clarity does not infer tool progress automatically without those callbacks.
