@@ -27,7 +27,7 @@ export class WeaviateVectorStore implements VectorStore {
   private apiKey?: string
   private endpoint: string
   private className: string
-  private initialized = false
+  private _initialized = false
   
   constructor(config: WeaviateConfig) {
     if (!config.endpoint) {
@@ -87,10 +87,10 @@ export class WeaviateVectorStore implements VectorStore {
       throw new Error(`Failed to verify Weaviate class: ${await response.text()}`)
     }
     
-    this.initialized = true
+    this._initialized = true
   }
   
-  async upsert(vectors: Vector[], options?: VectorUpsertOptions): Promise<void> {
+  async upsert(vectors: Vector[], _options?: VectorUpsertOptions): Promise<void> {
     // Weaviate uses batch import
     const objects = vectors.map(v => ({
       class: this.className,
@@ -192,7 +192,7 @@ export class WeaviateVectorStore implements VectorStore {
       : undefined
   }
   
-  async delete(ids: string[], namespace?: string): Promise<void> {
+  async delete(ids: string[], _namespace?: string): Promise<void> {
     // Weaviate requires deleting objects one by one or using where filter
     for (const id of ids) {
       const response = await fetch(
@@ -275,7 +275,7 @@ export class WeaviateVectorStore implements VectorStore {
     }
   }
   
-  async fetch(ids: string[], namespace?: string): Promise<Vector[]> {
+  async fetch(ids: string[], _namespace?: string): Promise<Vector[]> {
     const vectors: Vector[] = []
     
     for (const id of ids) {
@@ -348,7 +348,7 @@ export class WeaviateVectorStore implements VectorStore {
   }
   
   async close(): Promise<void> {
-    this.initialized = false
+    this._initialized = false
   }
 }
 

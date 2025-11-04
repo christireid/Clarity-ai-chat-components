@@ -1,5 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { EmptyState } from '@clarity-chat/react'
+import {
+  EmptyState,
+  EmptyChatState,
+  NoSearchResultsState,
+  NoConversationsState,
+  ErrorState,
+  SuccessState,
+} from '@clarity-chat/react'
+import { Database, FileQuestion } from 'lucide-react'
 
 /**
  * Empty State Components
@@ -80,7 +88,14 @@ export const Default: Story = {
 export const NoData: Story = {
   render: () => (
     <EmptyState
-      onAction={() => alert('Get started clicked!')}
+      icon={<Database className="text-primary" size={32} />}
+      title="No data yet"
+      description="Get started by adding your first item"
+      action={{
+        label: 'Get Started',
+        onClick: () => alert('Get started clicked!'),
+        variant: 'primary'
+      }}
     />
   ),
   parameters: {
@@ -94,10 +109,9 @@ export const NoData: Story = {
 
 export const NoSearchResults: Story = {
   render: () => (
-    <EmptyState
-      query="artificial intelligence"
-      onClear={() => alert('Clear clicked!')}
-      onTryAgain={() => alert('Try again clicked!')}
+    <NoSearchResultsState
+      searchQuery="artificial intelligence"
+      onClearSearch={() => alert('Clear clicked!')}
     />
   ),
   parameters: {
@@ -111,8 +125,8 @@ export const NoSearchResults: Story = {
 
 export const NoConversations: Story = {
   render: () => (
-    <EmptyState
-      onStartConversation={() => alert('Start conversation clicked!')}
+    <NoConversationsState
+      onCreateConversation={() => alert('Start conversation clicked!')}
     />
   ),
   parameters: {
@@ -126,7 +140,7 @@ export const NoConversations: Story = {
 
 export const ErrorState: Story = {
   render: () => (
-    <EmptyState
+    <ErrorState
       title="Failed to load data"
       description="We couldn't load the requested content. Please try again."
       onRetry={() => alert('Retry clicked!')}
@@ -144,7 +158,7 @@ export const ErrorState: Story = {
 
 export const SuccessState: Story = {
   render: () => (
-    <EmptyState
+    <SuccessState
       title="All done!"
       description="You've completed all tasks. Great job!"
       onContinue={() => alert('Continue clicked!')}
@@ -242,7 +256,7 @@ export const SuccessActionVariant: Story = {
 
 export const EmptyInbox: Story = {
   render: () => (
-    <EmptyState
+    <NoDataEmptyState
       title="Inbox Zero! 🎉"
       description="You're all caught up. There are no new messages to review."
       actionLabel="Compose Message"
@@ -296,7 +310,7 @@ export const NoHistory: Story = {
 
 export const ConnectionError: Story = {
   render: () => (
-    <EmptyState
+    <ErrorState
       title="Connection lost"
       description="Unable to connect to the server. Please check your internet connection and try again."
       onRetry={() => alert('Retry connection')}
@@ -306,7 +320,7 @@ export const ConnectionError: Story = {
 
 export const PermissionDenied: Story = {
   render: () => (
-    <EmptyState
+    <ErrorState
       title="Access denied"
       description="You don't have permission to view this content. Contact your administrator if you believe this is an error."
       onGoBack={() => alert('Go back')}
@@ -316,7 +330,7 @@ export const PermissionDenied: Story = {
 
 export const NotFound: Story = {
   render: () => (
-    <EmptyState
+    <ErrorState
       title="Page not found"
       description="The page you're looking for doesn't exist or has been moved."
       onGoBack={() => alert('Go to home')}
@@ -344,7 +358,7 @@ export const AnimatedEntry: Story = {
           Replay Animation
         </button>
         {show && (
-          <EmptyState
+          <NoDataEmptyState
             onAction={() => alert('Action clicked!')}
           />
         )}
@@ -371,15 +385,15 @@ export const InteractiveDemo: Story = {
     const renderState = () => {
       switch (scenario) {
         case 'data':
-          return <EmptyState onAction={() => console.log('Create clicked')} />
+          return <EmptyState icon={<Database className="text-primary" size={32} />} title="No data yet" description="Get started by adding your first item" action={{ label: 'Get Started', onClick: () => console.log('Create clicked'), variant: 'primary' }} />
         case 'search':
-          return <EmptyState query="test query" onClear={() => console.log('Clear')} />
+          return <NoSearchResultsState searchQuery="test query" onClearSearch={() => console.log('Clear')} />
         case 'conversation':
-          return <EmptyState onStartConversation={() => console.log('Start')} />
+          return <NoConversationsState onCreateConversation={() => console.log('Start')} />
         case 'error':
-          return <EmptyState onRetry={() => console.log('Retry')} />
+          return <ErrorState onRetry={() => console.log('Retry')} />
         case 'success':
-          return <EmptyState onContinue={() => console.log('Continue')} />
+          return <SuccessState title="Success!" description="Operation completed successfully" onContinue={() => console.log('Continue')} />
         default:
           return null
       }
@@ -462,7 +476,7 @@ export const InteractiveDemo: Story = {
 export const Accessibility: Story = {
   render: () => (
     <div className="space-y-8 max-w-2xl">
-      <EmptyState onAction={() => console.log('Action')} />
+      <NoDataEmptyState onAction={() => console.log('Action')} />
       
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm space-y-2">
         <strong>Accessibility Features:</strong>

@@ -12,7 +12,7 @@ const faqs = [
   {
     question: 'What happens when my annual license expires?',
     answer:
-      'You can continue using the version you have, but won't receive updates or support. Simply renew to continue receiving the latest features and support.',
+      "You can continue using the version you have, but won't receive updates or support. Simply renew to continue receiving the latest features and support.",
   },
   {
     question: 'Can I use this in client projects?',
@@ -27,10 +27,10 @@ const faqs = [
   {
     question: 'Can I use this in a SaaS product?',
     answer:
-      'Yes, but you need an Enterprise license for SaaS products. Pro licenses are for end-user applications only.',
+      "Yes, but you need an Enterprise license for SaaS products. Pro licenses are for end-user applications only.",
   },
   {
-    question: 'What's the difference between Annual and Lifetime?',
+    question: "What's the difference between Annual and Lifetime?",
     answer:
       'Annual gives you 1 year of updates and renews automatically. Lifetime gives you perpetual updates for the current major version (e.g., v1.x) with a one-time payment.',
   },
@@ -42,7 +42,7 @@ const faqs = [
   {
     question: 'Can I upgrade from Pro to Enterprise?',
     answer:
-      'Absolutely! We'll credit your Pro license toward the first year of Enterprise. Contact sales@codeclarity.ai for upgrade pricing.',
+      "Absolutely! We'll credit your Pro license toward the first year of Enterprise. Contact sales@codeclarity.ai for upgrade pricing.",
   },
 ]
 

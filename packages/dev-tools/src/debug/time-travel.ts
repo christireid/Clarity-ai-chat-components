@@ -265,29 +265,29 @@ export class TimeTravelDebugger {
 /**
  * React Hook for time-travel debugging
  */
-export function createTimeTravelHook(debugger: TimeTravelDebugger) {
+export function createTimeTravelHook(timeTravel: TimeTravelDebugger) {
   return {
     record: (messages: any[], config: any, label?: string) => {
-      return debugger.record(messages, config, {}, label)
+      return timeTravel.record(messages, config, {}, label)
     },
     
-    goBack: () => debugger.goBack(),
-    goForward: () => debugger.goForward(),
-    jumpTo: (id: string) => debugger.jumpTo(id),
+    goBack: () => timeTravel.goBack(),
+    goForward: () => timeTravel.goForward(),
+    jumpTo: (id: string) => timeTravel.jumpTo(id),
     
-    getCurrent: () => debugger.getCurrent(),
-    getTimeline: () => debugger.getTimeline(),
+    getCurrent: () => timeTravel.getCurrent(),
+    getTimeline: () => timeTravel.getTimeline(),
     
-    export: () => debugger.export(),
-    import: (data: string) => debugger.import(data),
+    export: () => timeTravel.export(),
+    import: (data: string) => timeTravel.import(data),
   }
 }
 
 /**
  * Visual timeline renderer
  */
-export function renderTimeline(debugger: TimeTravelDebugger): string {
-  const timeline = debugger.getTimeline()
+export function renderTimeline(timeTravel: TimeTravelDebugger): string {
+  const timeline = timeTravel.getTimeline()
   const lines: string[] = []
 
   lines.push('═'.repeat(80))
@@ -317,7 +317,7 @@ export function renderTimeline(debugger: TimeTravelDebugger): string {
     lines.push('')
   })
 
-  const stats = debugger.getStats()
+  const stats = timeTravel.getStats()
   lines.push('─'.repeat(80))
   lines.push(`Total Snapshots: ${stats.totalSnapshots} | Time Span: ${Math.round(stats.timeSpan / 1000)}s`)
   lines.push(`Average Messages: ${stats.averageMessageCount.toFixed(1)}`)

@@ -1,72 +1,948 @@
-export const meta = { title: 'Getting Started' }
+import { Meta } from '@storybook/blocks'
 
-# Getting Started with Clarity Chat
+<Meta title="Getting Started" />
 
-Kick off your integration in three short steps: install the package, configure a chat hook, and render the `ChatWindow` component.
+<div className="gs-hero">
+  <div className="gs-hero-badge">🚀 Quick Start</div>
+  <h1>Getting Started with Clarity Chat</h1>
+  <p className="gs-hero-subtitle">
+    Build production-ready AI chat interfaces in minutes. This guide will walk
+    you through installation, basic setup, and your first interactive chat
+    component.
+  </p>
+</div>
 
-## 1. Install
+---
 
-```bash
-npm install @clarity-chat/react
-# or
-yarn add @clarity-chat/react
-# or
-pnpm add @clarity-chat/react
-```
+## 📦 Installation
 
-## 2. Provide Messages
+<div className="gs-install-section">
+  <p className="gs-section-description">
+    Install Clarity Chat using your preferred package manager. We support npm,
+    yarn, and pnpm.
+  </p>
+
+  <div className="gs-install-tabs">
+    <div className="gs-install-tab">
+      <div className="gs-tab-header">
+        <span className="gs-tab-icon">📦</span>
+        <strong>npm</strong>
+      </div>
+      <pre className="gs-code-block">
+        <code>npm install @clarity-chat/react</code>
+      </pre>
+    </div>
+
+    <div className="gs-install-tab">
+      <div className="gs-tab-header">
+        <span className="gs-tab-icon">🧶</span>
+        <strong>yarn</strong>
+      </div>
+      <pre className="gs-code-block">
+        <code>yarn add @clarity-chat/react</code>
+      </pre>
+    </div>
+
+    <div className="gs-install-tab">
+      <div className="gs-tab-header">
+        <span className="gs-tab-icon">⚡</span>
+        <strong>pnpm</strong>
+      </div>
+      <pre className="gs-code-block">
+        <code>pnpm add @clarity-chat/react</code>
+      </pre>
+    </div>
+  </div>
+</div>
+
+---
+
+## 🎯 Quick Start Examples
+
+<div className="gs-examples-intro">
+  <p className="gs-section-description">
+    Choose your starting point based on your use case. Each example is
+    production-ready and fully documented.
+  </p>
+</div>
+
+### Example 1: Simple Chat Window
+
+<div className="gs-example-card">
+  <div className="gs-example-header">
+    <div className="gs-example-badge gs-badge-green">Beginner Friendly</div>
+    <h4>Basic Chat Interface</h4>
+    <p>The quickest way to get started. A complete chat window with message history and input.</p>
+  </div>
 
 ```tsx
 import { ChatWindow } from '@clarity-chat/react'
 import { useState } from 'react'
 
-const initialMessages = [
-  {
-    id: '1',
-    chatId: 'demo',
-    role: 'assistant',
-    content: 'Hey there! Ready to build an AI assistant?',
-    createdAt: new Date(),
-    status: 'sent',
-  },
-]
+function App() {
+  const [messages, setMessages] = useState([
+    {
+      id: '1',
+      chatId: 'chat-1',
+      role: 'assistant',
+      content: 'Hello! How can I help you?',
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ])
+  const [isLoading, setIsLoading] = useState(false)
 
-export function QuickStartChat() {
-  const [messages, setMessages] = useState(initialMessages)
-
-  async function handleSendMessage(content) {
-    const nextMessage = {
-      id: crypto.randomUUID(),
-      chatId: 'demo',
+  const handleSendMessage = async (content: string) => {
+    const userMessage = {
+      id: Date.now().toString(),
+      chatId: 'chat-1',
       role: 'user',
       content,
+      timestamp: new Date(),
       createdAt: new Date(),
-      status: 'sent',
+      updatedAt: new Date(),
     }
 
-    setMessages(prev => [...prev, nextMessage])
-    // TODO: call your model adapter here
+    setMessages((prev) => [...prev, userMessage])
+    setIsLoading(true)
+
+    try {
+      // Call your AI API here
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...messages, userMessage] }),
+      })
+
+      const data = await response.json()
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          chatId: 'chat-1',
+          role: 'assistant',
+          content: data.message,
+          timestamp: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ])
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
-    <ChatWindow
-      messages={messages}
-      onSendMessage={handleSendMessage}
-    />
+    <div style={{ width: '800px', height: '600px' }}>
+      <ChatWindow
+        messages={messages}
+        isLoading={isLoading}
+        onSendMessage={handleSendMessage}
+      />
+    </div>
   )
 }
 ```
 
-## 3. Explore Stories
+<div className="gs-example-footer">
+  <div className="gs-example-note">
+    <strong>💡 Tip:</strong> This example uses a simple REST API. See the streaming example below for real-time responses.
+  </div>
+</div>
+</div>
 
-Use the sidebar to open individual component stories. Each story surfaces:
+---
 
-- Fully typed props and default values.
-- Interactive controls for trying state combinations.
-- Accessibility, interactions, and viewport testing tabs.
+### Example 2: With Model Adapters
 
-## Helpful Links
+<div className="gs-example-card">
+  <div className="gs-example-header">
+    <div className="gs-example-badge gs-badge-blue">Intermediate</div>
+    <h4>Model-Agnostic Integration</h4>
+    <p>Switch between OpenAI, Anthropic, and Google AI without changing your code.</p>
+  </div>
 
-- [Documentation Site](https://clarity-chat.dev)
-- [Cookbook Recipes](https://clarity-chat.dev/cookbook)
-- [GitHub Repository](https://github.com/christireid/Clarity-ai-chat-components)
+```tsx
+import {
+  ChatWindow,
+  openAIAdapter,
+  ModelSelector,
+  allModels,
+} from '@clarity-chat/react'
+import { useState } from 'react'
+
+function App() {
+  const [messages, setMessages] = useState([])
+  const [model, setModel] = useState('gpt-4-turbo')
+  const [config, setConfig] = useState({
+    provider: 'openai',
+    model: 'gpt-4-turbo',
+  })
+
+  const handleSendMessage = async (content: string) => {
+    const userMessage = {
+      id: Date.now().toString(),
+      chatId: 'chat-1',
+      role: 'user',
+      content,
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+
+    setMessages((prev) => [...prev, userMessage])
+
+    // Use adapter for AI completion
+    const response = await openAIAdapter.chat(
+      [...messages, userMessage],
+      config
+    )
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        chatId: 'chat-1',
+        role: 'assistant',
+        content: response.content,
+        timestamp: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ])
+  }
+
+  return (
+    <div>
+      <ModelSelector
+        models={allModels}
+        value={model}
+        onChange={(modelId, modelConfig) => {
+          setModel(modelId)
+          setConfig(modelConfig)
+        }}
+        showMetrics
+      />
+
+      <ChatWindow messages={messages} onSendMessage={handleSendMessage} />
+    </div>
+  )
+}
+```
+
+<div className="gs-example-footer">
+  <div className="gs-example-note">
+    <strong>⚡ Pro Tip:</strong> The adapter system automatically handles rate limiting, retries, and cost estimation for all providers.
+  </div>
+</div>
+</div>
+
+---
+
+### Example 3: Real-Time Streaming
+
+<div className="gs-example-card">
+  <div className="gs-example-header">
+    <div className="gs-example-badge gs-badge-purple">Advanced</div>
+    <h4>Streaming AI Responses</h4>
+    <p>Display AI responses in real-time with smooth token-by-token rendering.</p>
+  </div>
+
+```tsx
+import { StreamingMessage, openAIAdapter } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function StreamingChat() {
+  const [content, setContent] = useState('')
+  const [isStreaming, setIsStreaming] = useState(false)
+
+  const handleStream = async () => {
+    setContent('')
+    setIsStreaming(true)
+
+    const config = {
+      provider: 'openai',
+      model: 'gpt-4-turbo',
+      apiKey: process.env.OPENAI_API_KEY,
+    }
+
+    try {
+      for await (const chunk of openAIAdapter.stream(messages, config)) {
+        if (chunk.type === 'token') {
+          setContent((prev) => prev + chunk.content)
+        }
+      }
+    } finally {
+      setIsStreaming(false)
+    }
+  }
+
+  return (
+    <div>
+      <StreamingMessage content={content} isStreaming={isStreaming} />
+      <button onClick={handleStream}>Start Streaming</button>
+    </div>
+  )
+}
+```
+
+<div className="gs-example-footer">
+  <div className="gs-example-note">
+    <strong>🚀 Performance:</strong> Streaming provides instant feedback to users and reduces perceived latency by up to 80%.
+  </div>
+</div>
+</div>
+
+## Component Props
+
+### ChatWindow
+
+| Prop             | Type                      | Default  | Description         |
+| ---------------- | ------------------------- | -------- | ------------------- |
+| messages         | Message[]                 | required | Array of messages   |
+| isLoading        | boolean                   | false    | Loading state       |
+| onSendMessage    | (content: string) => void | required | Send handler        |
+| enableEdit       | boolean                   | true     | Enable editing      |
+| enableRegenerate | boolean                   | true     | Enable regeneration |
+| enableBranching  | boolean                   | false    | Enable branching    |
+| showTimestamp    | boolean                   | true     | Show timestamps     |
+| className        | string                    | -        | Custom CSS class    |
+
+### StreamingMessage
+
+| Prop          | Type            | Default  | Description     |
+| ------------- | --------------- | -------- | --------------- |
+| content       | string          | required | Message content |
+| isStreaming   | boolean         | false    | Streaming state |
+| toolCalls     | ToolCall[]      | []       | Function calls  |
+| citations     | Citation[]      | []       | RAG sources     |
+| thinkingSteps | string[]        | []       | Thinking steps  |
+| showThinking  | boolean         | true     | Show thinking   |
+| showTools     | boolean         | true     | Show tools      |
+| showCitations | boolean         | true     | Show citations  |
+| error         | Error \| string | -        | Error message   |
+| onRetry       | () => void      | -        | Retry handler   |
+
+### ModelSelector
+
+| Prop        | Type                 | Default  | Description      |
+| ----------- | -------------------- | -------- | ---------------- |
+| models      | ModelMetadata[]      | required | Available models |
+| value       | string               | required | Selected model   |
+| onChange    | (id, config) => void | required | Change handler   |
+| showMetrics | boolean              | true     | Show metrics     |
+| disabled    | boolean              | false    | Disabled state   |
+
+## Styling
+
+### Import Default Styles
+
+```tsx
+import '@clarity-chat/react/styles.css'
+```
+
+### Custom Styling
+
+All components accept `className` prop:
+
+```tsx
+<ChatWindow
+  messages={messages}
+  onSendMessage={handleSend}
+  className="my-custom-chat"
+/>
+```
+
+### Tailwind CSS
+
+Components use Tailwind classes. Configure your `tailwind.config.js`:
+
+```js
+module.exports = {
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    './node_modules/@clarity-chat/react/**/*.{js,jsx,ts,tsx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+## TypeScript
+
+Full TypeScript support included:
+
+```tsx
+import type {
+  Message,
+  ModelConfig,
+  ToolCall,
+  Citation,
+} from '@clarity-chat/react'
+
+const message: Message = {
+  id: '1',
+  chatId: 'chat-1',
+  role: 'assistant',
+  content: 'Hello!',
+  timestamp: new Date(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
+}
+
+const config: ModelConfig = {
+  provider: 'openai',
+  model: 'gpt-4-turbo',
+  temperature: 0.7,
+  maxTokens: 1000,
+}
+```
+
+## Environment Variables
+
+Set API keys as environment variables:
+
+```bash
+# .env.local
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_API_KEY=AIza...
+```
+
+Access in code:
+
+```tsx
+const config = {
+  provider: 'openai',
+  model: 'gpt-4-turbo',
+  apiKey: process.env.OPENAI_API_KEY,
+}
+```
+
+## Common Patterns
+
+### Error Handling
+
+```tsx
+const handleSendMessage = async (content: string) => {
+  try {
+    const response = await openAIAdapter.chat(messages, config)
+    setMessages((prev) => [...prev, response])
+  } catch (error) {
+    if (error.message.includes('rate limit')) {
+      // Handle rate limiting
+      showToast('Rate limit exceeded. Please wait.')
+    } else if (error.message.includes('401')) {
+      // Handle auth error
+      showToast('Invalid API key.')
+    } else {
+      // Generic error
+      showToast('Failed to send message.')
+    }
+  }
+}
+```
+
+### Cost Tracking
+
+```tsx
+import { openAIAdapter } from '@clarity-chat/react'
+
+const handleStream = async () => {
+  for await (const chunk of openAIAdapter.stream(messages, config)) {
+    if (chunk.type === 'token') {
+      setContent((prev) => prev + chunk.content)
+    } else if (chunk.type === 'done') {
+      const cost = openAIAdapter.estimateCost(chunk.usage, config.model)
+      console.log('Cost: $' + cost.toFixed(4))
+    }
+  }
+}
+```
+
+### Tool Invocations
+
+```tsx
+import { ToolInvocationCard } from '@clarity-chat/react'
+
+const [toolCalls, setToolCalls] = useState([])
+const [toolStatuses, setToolStatuses] = useState({})
+
+const handleApprove = async (tool) => {
+  setToolStatuses((prev) => ({ ...prev, [tool.id]: 'executing' }))
+  try {
+    const result = await executeTool(
+      tool.function.name,
+      tool.function.arguments
+    )
+    setToolStatuses((prev) => ({ ...prev, [tool.id]: 'success' }))
+  } catch (error) {
+    setToolStatuses((prev) => ({ ...prev, [tool.id]: 'error' }))
+  }
+}
+
+return (
+  <div>
+    {toolCalls.map((tool) => (
+      <ToolInvocationCard
+        key={tool.id}
+        toolCall={tool}
+        status={toolStatuses[tool.id]}
+        requiresApproval
+        onApprove={handleApprove}
+      />
+    ))}
+  </div>
+)
+```
+
+---
+
+## 🚀 Next Steps
+
+<div className="gs-next-steps">
+  <div className="gs-next-step-card">
+    <div className="gs-next-icon">📚</div>
+    <h4>Explore Stories</h4>
+    <p>Browse 100+ interactive component examples in this Storybook</p>
+    <a
+      href="/?path=/story/components-chatwindow--default"
+      className="gs-next-link"
+    >
+      View Components →
+    </a>
+  </div>
+
+  <div className="gs-next-step-card">
+    <div className="gs-next-icon">📖</div>
+    <h4>Read Documentation</h4>
+    <p>Deep dive into guides, cookbook recipes, and API reference</p>
+    <a
+      href="https://clarity-chat.dev"
+      className="gs-next-link"
+      target="_blank"
+      rel="noopener"
+    >
+      Open Docs →
+    </a>
+  </div>
+
+  <div className="gs-next-step-card">
+    <div className="gs-next-icon">💻</div>
+    <h4>Clone Examples</h4>
+    <p>Start from complete demo applications with best practices</p>
+    <a
+      href="https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples"
+      className="gs-next-link"
+      target="_blank"
+      rel="noopener"
+    >
+      View Examples →
+    </a>
+  </div>
+
+  <div className="gs-next-step-card">
+    <div className="gs-next-icon">💬</div>
+    <h4>Get Support</h4>
+    <p>Join our community for help, feedback, and feature requests</p>
+    <a
+      href="https://github.com/christireid/Clarity-ai-chat-components/discussions"
+      className="gs-next-link"
+      target="_blank"
+      rel="noopener"
+    >
+      Join Community →
+    </a>
+  </div>
+</div>
+
+---
+
+<div className="gs-footer-cta">
+  <h2>Ready to Build Amazing Chat Interfaces?</h2>
+  <p>
+    You now have everything you need to create production-ready AI chat
+    applications.
+  </p>
+  <div className="gs-cta-buttons">
+    <a
+      href="/?path=/story/components-chatwindow--default"
+      className="gs-button-primary"
+    >
+      Explore Components
+    </a>
+    <a
+      href="https://clarity-chat.dev/cookbook"
+      className="gs-button-secondary"
+      target="_blank"
+      rel="noopener"
+    >
+      View Cookbook
+    </a>
+  </div>
+</div>
+
+<style>{`
+  /* Hero Section */
+  .gs-hero {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    color: white;
+    margin-bottom: 3rem;
+  }
+  
+  .gs-hero-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(10px);
+  }
+  
+  .gs-hero h1 {
+    margin: 1rem 0;
+    font-size: 2.5rem;
+  }
+  
+  .gs-hero-subtitle {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto;
+    opacity: 0.95;
+  }
+  
+  /* Section Descriptions */
+  .gs-section-description {
+    font-size: 1.0625rem;
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+  
+  .dark .gs-section-description {
+    color: #aaa;
+  }
+  
+  /* Installation Section */
+  .gs-install-section {
+    margin: 2rem 0;
+  }
+  
+  .gs-install-tabs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .gs-install-tab {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+  
+  .gs-install-tab:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  .dark .gs-install-tab {
+    border-color: #334155;
+  }
+  
+  .dark .gs-install-tab:hover {
+    border-color: #60a5fa;
+  }
+  
+  .gs-tab-header {
+    padding: 1rem;
+    background: #f9fafb;
+    border-bottom: 2px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .dark .gs-tab-header {
+    background: #1e293b;
+    border-bottom-color: #334155;
+  }
+  
+  .gs-tab-icon {
+    font-size: 1.5rem;
+  }
+  
+  .gs-code-block {
+    margin: 0;
+    padding: 1rem;
+    background: #fff;
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+    font-size: 0.875rem;
+  }
+  
+  .dark .gs-code-block {
+    background: #0f172a;
+  }
+  
+  .gs-code-block code {
+    color: #1e293b;
+  }
+  
+  .dark .gs-code-block code {
+    color: #e2e8f0;
+  }
+  
+  /* Example Cards */
+  .gs-examples-intro {
+    margin: 2rem 0;
+  }
+  
+  .gs-example-card {
+    margin: 2rem 0;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+  }
+  
+  .dark .gs-example-card {
+    background: #1e293b;
+    border-color: #334155;
+  }
+  
+  .gs-example-header {
+    padding: 2rem;
+    background: linear-gradient(to bottom, #f9fafb, #fff);
+    border-bottom: 2px solid #e5e7eb;
+  }
+  
+  .dark .gs-example-header {
+    background: linear-gradient(to bottom, #1e293b, #0f172a);
+    border-bottom-color: #334155;
+  }
+  
+  .gs-example-badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  
+  .gs-badge-green {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  
+  .gs-badge-blue {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  
+  .gs-badge-purple {
+    background: #e9d5ff;
+    color: #6b21a8;
+  }
+  
+  .gs-example-header h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+  }
+  
+  .gs-example-header p {
+    margin: 0;
+    color: #666;
+  }
+  
+  .dark .gs-example-header p {
+    color: #aaa;
+  }
+  
+  .gs-example-footer {
+    padding: 1.5rem 2rem;
+    background: #f9fafb;
+    border-top: 2px solid #e5e7eb;
+  }
+  
+  .dark .gs-example-footer {
+    background: #0f172a;
+    border-top-color: #334155;
+  }
+  
+  .gs-example-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: #374151;
+  }
+  
+  .dark .gs-example-note {
+    color: #cbd5e1;
+  }
+  
+  .gs-example-note strong {
+    color: #1e293b;
+    white-space: nowrap;
+  }
+  
+  .dark .gs-example-note strong {
+    color: #f1f5f9;
+  }
+  
+  /* Next Steps */
+  .gs-next-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  
+  .gs-next-step-card {
+    padding: 2rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+    transition: all 0.2s ease;
+  }
+  
+  .gs-next-step-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.12);
+    transform: translateY(-4px);
+  }
+  
+  .dark .gs-next-step-card {
+    background: #1e293b;
+    border-color: #334155;
+  }
+  
+  .dark .gs-next-step-card:hover {
+    border-color: #60a5fa;
+  }
+  
+  .gs-next-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .gs-next-step-card h4 {
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .gs-next-step-card p {
+    margin: 0 0 1.5rem 0;
+    color: #666;
+    font-size: 0.9375rem;
+  }
+  
+  .dark .gs-next-step-card p {
+    color: #aaa;
+  }
+  
+  .gs-next-link {
+    display: inline-flex;
+    align-items: center;
+    color: #3b82f6;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  
+  .gs-next-link:hover {
+    color: #2563eb;
+    transform: translateX(4px);
+  }
+  
+  /* Footer CTA */
+  .gs-footer-cta {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    color: white;
+    margin: 3rem 0;
+  }
+  
+  .gs-footer-cta h2 {
+    margin: 0 0 1rem 0;
+  }
+  
+  .gs-footer-cta p {
+    font-size: 1.125rem;
+    margin: 0 0 2rem 0;
+    opacity: 0.95;
+  }
+  
+  .gs-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .gs-button-primary,
+  .gs-button-secondary {
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-block;
+  }
+  
+  .gs-button-primary {
+    background: white;
+    color: #667eea;
+  }
+  
+  .gs-button-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .gs-button-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(10px);
+  }
+  
+  .gs-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .gs-hero h1 {
+      font-size: 2rem;
+    }
+    
+    .gs-install-tabs {
+      grid-template-columns: 1fr;
+    }
+    
+    .gs-cta-buttons {
+      flex-direction: column;
+    }
+    
+    .gs-button-primary,
+    .gs-button-secondary {
+      width: 100%;
+    }
+  }
+`}</style>

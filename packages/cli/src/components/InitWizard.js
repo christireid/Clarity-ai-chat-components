@@ -1,118 +1,65 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /**
- * Init Wizard Component
+ * InitWizard - Interactive setup wizard using Ink
  */
-
-import React, { useState } from 'react'
-import { Box, Text, Newline } from 'ink'
-import TextInput from 'ink-text-input'
-import SelectInput from 'ink-select-input'
-import Spinner from 'ink-spinner'
-import { detectFramework, detectTypeScript } from '../utils/detect.js'
-import logger from '../utils/logger.js'
-
-export function InitWizard({ onComplete }) {
-  const [step, setStep] = useState('name')
-  const [config, setConfig] = useState({
-    name: '',
-    framework: detectFramework() || 'react',
-    typescript: detectTypeScript(),
-    theme: 'defaultLight',
-    features: []
-  })
-
-  const handleNameSubmit = (name) => {
-    setConfig(prev => ({ ...prev, name }))
-    setStep('framework')
-  }
-
-  const handleFrameworkSelect = (item) => {
-    setConfig(prev => ({ ...prev, framework: item.value }))
-    setStep('theme')
-  }
-
-  const handleThemeSelect = (item) => {
-    setConfig(prev => ({ ...prev, theme: item.value }))
-    setStep('features')
-  }
-
-  const handleFeaturesSelect = (item) => {
-    if (item.value === 'done') {
-      onComplete(config)
-    } else {
-      setConfig(prev => ({
-        ...prev,
-        features: prev.features.includes(item.value)
-          ? prev.features.filter(f => f !== item.value)
-          : [...prev.features, item.value]
-      }))
-    }
-  }
-
-  if (step === 'name') {
-    return (
-      <Box flexDirection="column">
-        <Text color="cyan">? Project name:</Text>
-        <TextInput
-          value={config.name}
-          onSubmit={handleNameSubmit}
-          placeholder="my-chat-app"
-        />
-      </Box>
-    )
-  }
-
-  if (step === 'framework') {
-    const frameworks = [
-      { label: 'Next.js', value: 'nextjs' },
-      { label: 'Vite', value: 'vite' },
-      { label: 'Create React App', value: 'create-react-app' },
-      { label: 'Remix', value: 'remix' },
-      { label: 'Plain React', value: 'react' },
-    ]
-
-    return (
-      <Box flexDirection="column">
-        <Text color="cyan">? Choose framework:</Text>
-        <SelectInput items={frameworks} onSelect={handleFrameworkSelect} />
-      </Box>
-    )
-  }
-
-  if (step === 'theme') {
-    const themes = [
-      { label: 'Default Light', value: 'defaultLight' },
-      { label: 'Default Dark', value: 'defaultDark' },
-      { label: 'Ocean', value: 'ocean' },
-      { label: 'Sunset', value: 'sunset' },
-      { label: 'Forest', value: 'forest' },
-    ]
-
-    return (
-      <Box flexDirection="column">
-        <Text color="cyan">? Choose default theme:</Text>
-        <SelectInput items={themes} onSelect={handleThemeSelect} />
-      </Box>
-    )
-  }
-
-  if (step === 'features') {
-    const features = [
-      { label: config.features.includes('voice') ? '✓ Voice Input' : '  Voice Input', value: 'voice' },
-      { label: config.features.includes('streaming') ? '✓ Streaming' : '  Streaming', value: 'streaming' },
-      { label: config.features.includes('analytics') ? '✓ Analytics' : '  Analytics', value: 'analytics' },
-      { label: config.features.includes('files') ? '✓ File Upload' : '  File Upload', value: 'files' },
-      { label: '→ Done', value: 'done' },
-    ]
-
-    return (
-      <Box flexDirection="column">
-        <Text color="cyan">? Select features (space to toggle, enter to continue):</Text>
-        <SelectInput items={features} onSelect={handleFeaturesSelect} />
-      </Box>
-    )
-  }
-
-  return null
+import { useState } from 'react';
+import { Box, Text } from 'ink';
+import Gradient from 'ink-gradient';
+import SelectInput from 'ink-select-input';
+const frameworks = [
+    { label: '⚡ Next.js (Recommended)', value: 'nextjs' },
+    { label: '💿 Remix', value: 'remix' },
+    { label: '⚡ Vite + React', value: 'vite' },
+    { label: '🔺 Astro', value: 'astro' },
+];
+const templates = [
+    { label: '🎯 Basic Chat - Simple chat interface', value: 'basic' },
+    { label: '🔀 Model Comparison - Compare multiple AI models', value: 'comparison' },
+    { label: '📚 RAG Workbench - Document Q&A with RAG', value: 'rag' },
+    { label: '📊 Analytics Console - Token tracking & analytics', value: 'analytics' },
+];
+const components = [
+    { label: '💬 Chat Interface', value: 'chat-interface', selected: true },
+    { label: '🤖 Model Selector', value: 'model-selector', selected: true },
+    { label: '📊 Token Counter', value: 'token-counter', selected: false },
+    { label: '📈 Cost Estimator', value: 'cost-estimator', selected: false },
+    { label: '⚡ Streaming Handler', value: 'streaming-handler', selected: true },
+    { label: '🔄 Retry Logic', value: 'retry-logic', selected: false },
+];
+export function InitWizard({ detectedFramework, packageManager, onComplete }) {
+    const [step, setStep] = useState('framework');
+    const [config, setConfig] = useState({
+        framework: detectedFramework || '',
+        template: '',
+        components: ['chat-interface', 'model-selector', 'streaming-handler'],
+        installDeps: true,
+        initGit: true,
+    });
+    const handleFrameworkSelect = (item) => {
+        setConfig({ ...config, framework: item.value });
+        setStep('template');
+    };
+    const handleTemplateSelect = (item) => {
+        setConfig({ ...config, template: item.value });
+        setStep('components');
+    };
+    const handleComponentsSelect = (item) => {
+        // Toggle component selection
+        const components = config.components.includes(item.value)
+            ? config.components.filter(c => c !== item.value)
+            : [...config.components, item.value];
+        setConfig({ ...config, components });
+    };
+    const handleConfirm = () => {
+        onComplete(config);
+    };
+    return (_jsxs(Box, { flexDirection: "column", padding: 1, children: [_jsx(Box, { marginBottom: 1, children: _jsx(Gradient, { name: "pastel", children: _jsx(Text, { bold: true, children: "\u2728 Clarity Chat Setup Wizard" }) }) }), step === 'framework' && (_jsxs(Box, { flexDirection: "column", children: [_jsx(Text, { children: detectedFramework
+                            ? `📦 Detected: ${detectedFramework} (press Enter to use or select another)`
+                            : '🎯 Select your framework:' }), _jsx(Box, { marginTop: 1, children: _jsx(SelectInput, { items: frameworks, onSelect: handleFrameworkSelect }) })] })), step === 'template' && (_jsxs(Box, { flexDirection: "column", children: [_jsxs(Text, { children: ["\u2705 Framework: ", config.framework] }), _jsx(Text, { marginTop: 1, children: "\uD83D\uDCE6 Select a template:" }), _jsx(Box, { marginTop: 1, children: _jsx(SelectInput, { items: templates, onSelect: handleTemplateSelect }) })] })), step === 'components' && (_jsxs(Box, { flexDirection: "column", children: [_jsxs(Text, { children: ["\u2705 Framework: ", config.framework] }), _jsxs(Text, { children: ["\u2705 Template: ", config.template] }), _jsx(Text, { marginTop: 1, children: "\uD83C\uDFA8 Select components (Space to toggle, Enter to continue):" }), _jsx(Box, { marginTop: 1, children: _jsx(SelectInput, { items: components.map(c => ({
+                                ...c,
+                                label: config.components.includes(c.value)
+                                    ? `✅ ${c.label}`
+                                    : `⬜ ${c.label}`
+                            })), onSelect: handleComponentsSelect }) }), _jsx(Text, { marginTop: 1, dimColor: true, children: "Press Enter when done selecting" }), _jsx(Box, { marginTop: 1, children: _jsx(Text, { color: "green", bold: true, onPress: handleConfirm, children: "\u2192 Continue" }) })] })), _jsx(Box, { marginTop: 2, children: _jsxs(Text, { dimColor: true, children: ["\uD83D\uDCE6 Package Manager: ", packageManager] }) })] }));
 }
-
-export default InitWizard
+//# sourceMappingURL=InitWizard.js.map

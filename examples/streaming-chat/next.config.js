@@ -4,4 +4,4 @@ const nextConfig = {
   transpilePackages: ['@clarity-chat/react', '@clarity-chat/primitives', '@clarity-chat/types'],
 }
 
-module.exports = nextConfig
+export default nextConfig
