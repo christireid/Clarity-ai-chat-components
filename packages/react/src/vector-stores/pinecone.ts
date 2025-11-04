@@ -246,7 +246,7 @@ export class PineconeVectorStore implements VectorStore {
   
   async close(): Promise<void> {
     // Pinecone uses HTTP, no persistent connection to close
-    this.initialized = false
+    this._initialized = false
   }
 }
 

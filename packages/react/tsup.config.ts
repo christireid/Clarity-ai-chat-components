@@ -8,6 +8,8 @@ export default defineConfig({
     resolve: false,
     compilerOptions: {
       skipLibCheck: true,
+      noUnusedLocals: false,
+      noUnusedParameters: false,
     },
   },
   external: ['react', 'react-dom', 'framer-motion'],

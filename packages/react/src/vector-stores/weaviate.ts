@@ -348,7 +348,7 @@ export class WeaviateVectorStore implements VectorStore {
   }
   
   async close(): Promise<void> {
-    this.initialized = false
+    this._initialized = false
   }
 }
 
