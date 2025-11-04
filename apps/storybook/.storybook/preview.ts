@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react'
+import React from 'react'
 
 const preview: Preview = {
   parameters: {
@@ -88,7 +89,20 @@ const preview: Preview = {
     },
   },
 
-  decorators: [],
+  decorators: [
+    (Story) =>
+      React.createElement(
+        'div',
+        {
+          style: {
+            padding: '1rem',
+            minHeight: '100vh',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+          },
+        },
+        React.createElement(Story)
+      ),
+  ],
 
   globalTypes: {
     locale: {

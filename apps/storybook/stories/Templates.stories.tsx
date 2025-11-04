@@ -1,13 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { SupportBot, CodeAssistant } from '@clarity-chat/react'
+import {
+  SupportBot,
+  CodeAssistant,
+  CustomerSupportTemplate,
+  AIAssistantTemplate,
+  DocumentationBotTemplate,
+  SalesAssistantTemplate,
+  EducationTutorTemplate,
+  DataAnalystTemplate,
+} from '@clarity-chat/react'
 
 const meta: Meta = {
-  title: 'Phase 4/Templates',
+  title: 'Templates',
   tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
-        component: 'Pre-built chat templates optimized for specific use cases.',
+        component:
+          'Pre-built chat templates optimized for specific use cases. Each template comes with pre-configured settings, themes, and workflows.',
       },
     },
     layout: 'fullscreen',
@@ -167,6 +177,81 @@ function getUserById(users: User[], id: number): User | undefined {
   ),
 }
 
+export const CustomerSupportDefault: StoryObj<typeof CustomerSupportTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <CustomerSupportTemplate
+        companyName="Acme Corp"
+        supportCategories={['Orders', 'Returns', 'Technical', 'Billing']}
+        onEscalate={(conversation) => {
+          console.log('Escalating conversation:', conversation)
+          alert('Connecting to human agent...')
+        }}
+      />
+    </div>
+  ),
+}
+
+export const AIAssistantDefault: StoryObj<typeof AIAssistantTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <AIAssistantTemplate
+        defaultModel="gpt-4-turbo-preview"
+        enableContextManagement={true}
+        systemPrompt="You are a helpful AI assistant. Be concise, accurate, and friendly."
+      />
+    </div>
+  ),
+}
+
+export const DocumentationBotDefault: StoryObj<typeof DocumentationBotTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <DocumentationBotTemplate
+        companyName="Documentation Assistant"
+        welcomeMessage="Hi! I can help you find information in our documentation."
+        supportCategories={['Getting Started', 'API Reference', 'Guides', 'Troubleshooting']}
+      />
+    </div>
+  ),
+}
+
+export const SalesAssistantDefault: StoryObj<typeof SalesAssistantTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <SalesAssistantTemplate
+        companyName="Sales Team"
+        supportCategories={['Product Info', 'Pricing', 'Demo Request', 'Partnership']}
+        onEscalate={(conversation) => alert('Connecting to sales representative...')}
+      />
+    </div>
+  ),
+}
+
+export const EducationTutorDefault: StoryObj<typeof EducationTutorTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <EducationTutorTemplate
+        defaultModel="gpt-4-turbo-preview"
+        systemPrompt="You are a patient and helpful tutor. Explain concepts clearly and provide examples."
+        enableContextManagement={true}
+      />
+    </div>
+  ),
+}
+
+export const DataAnalystDefault: StoryObj<typeof DataAnalystTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <DataAnalystTemplate
+        defaultModel="gpt-4-turbo-preview"
+        systemPrompt="You are a data analyst. Help users understand data, create visualizations, and analyze trends."
+        enableContextManagement={true}
+      />
+    </div>
+  ),
+}
+
 export const ComparisonView: StoryObj = {
   render: () => (
     <div className="grid grid-cols-2 gap-4 h-screen p-4">
@@ -181,7 +266,7 @@ export const ComparisonView: StoryObj = {
           />
         </div>
       </div>
-      
+
       <div className="border border-gray-300 rounded-lg overflow-hidden">
         <div className="bg-purple-600 text-white p-3 font-semibold">
           Code Assistant Template
