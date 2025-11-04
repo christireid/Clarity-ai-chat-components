@@ -72,7 +72,7 @@ export const Default: Story = {
   args: {
     title: 'No items found',
     description: 'Get started by creating your first item.',
-    action={{
+    action: {
       label: 'Create Item',
       onClick: () => alert('Create clicked!'),
       variant: 'default',
@@ -173,7 +173,7 @@ export const SuccessState: Story = {
 export const WithoutDescription: Story = {
   args: {
     title: 'No messages',
-    action={{
+    action: {
       label: 'Send a message',
       onClick: () => console.log('Action clicked'),
     },
@@ -191,7 +191,7 @@ export const WithSecondaryAction: Story = {
   args: {
     title: 'No files uploaded',
     description: 'Upload your first file to get started.',
-    action={{
+    action: {
       label: 'Upload File',
       onClick: () => alert('Upload clicked!'),
       variant: 'default',
@@ -207,7 +207,7 @@ export const PrimaryActionVariant: Story = {
   args: {
     title: 'Ready to begin?',
     description: 'Click below to start your first project.',
-    action={{
+    action: {
       label: 'Get Started',
       onClick: () => console.log('Get started!'),
       variant: 'primary',
@@ -219,7 +219,7 @@ export const DestructiveActionVariant: Story = {
   args: {
     title: 'Delete all data?',
     description: 'This action cannot be undone. All your data will be permanently deleted.',
-    action={{
+    action: {
       label: 'Delete Everything',
       onClick: () => alert('Delete clicked!'),
       variant: 'destructive',
@@ -235,7 +235,7 @@ export const SuccessActionVariant: Story = {
   args: {
     title: 'Setup Complete',
     description: 'Your account has been successfully configured.',
-    action={{
+    action: {
       label: 'Continue to Dashboard',
       onClick: () => console.log('Continue clicked'),
       variant: 'success',
@@ -279,7 +279,7 @@ export const NoFavorites: Story = {
     <EmptyState
       title="No favorites yet"
       description="Items you mark as favorite will appear here for quick access."
-      action={{{
+      action={{
         label: 'Browse Items',
         onClick: () => alert('Browse clicked!'),
       }}
@@ -292,7 +292,7 @@ export const NoHistory: Story = {
     <EmptyState
       title="No history"
       description="Your conversation history will appear here once you start chatting."
-      action={{{
+      action={{
         label: 'Start New Chat',
         onClick: () => alert('Start chat clicked!'),
         variant: 'primary',

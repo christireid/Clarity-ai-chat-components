@@ -362,23 +362,20 @@ export const Conversation: Story = {
         'React is a JavaScript library for building user interfaces. It allows you to create reusable UI components and manage application state efficiently.'
       ),
       createUserMessage('Can you show me an example?'),
-      createAssistantMessage(`
-Sure! Here's a simple React component:
-
-\`\`\`jsx
-function Welcome({ name }) {
-  return <h1>Hello, {name}!</h1>
-}
-
-// Usage
-<Welcome name="World" />
-\\\`\\\`\\\`
-
-This component accepts a name prop and renders a greeting.
-      \`),
-      createUserMessage('Thanks! That's helpful.'),
       createAssistantMessage(
-        'You're welcome! Feel free to ask if you have more questions about React.'
+        'Sure! Here\'s a simple React component:\n\n' +
+        '```jsx\n' +
+        'function Welcome({ name }) {\n' +
+        '  return <h1>Hello, {name}!</h1>\n' +
+        '}\n\n' +
+        '// Usage\n' +
+        '<Welcome name="World" />\n' +
+        '```\n\n' +
+        'This component accepts a name prop and renders a greeting.'
+      ),
+      createUserMessage('Thanks! That is helpful.'),
+      createAssistantMessage(
+        'You are welcome! Feel free to ask if you have more questions about React.'
       ),
     ]
 
@@ -388,7 +385,7 @@ This component accepts a name prop and renders a greeting.
           <Message
             key={msg.id}
             message={msg}
-            onFeedback={(type) => console.log(`Feedback for ${msg.id}:`, type)}
+            onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
           />
         ))}
       </div>
@@ -402,9 +399,9 @@ This component accepts a name prop and renders a greeting.
 
 export const InteractiveDemo: Story = {
   render: () => {
-    const [messages, setMessages] = React.useState<MessageType[]>([
-      createAssistantMessage('Hello! I'm your AI assistant. How can I help you today?'),
-    ])
+    const [messages, setMessages] = React.useState([
+      createAssistantMessage('Hello! I am your AI assistant. How can I help you today?'),
+    ] as MessageType[])
     const [input, setInput] = React.useState('')
 
     const sendMessage = () => {
@@ -418,9 +415,9 @@ export const InteractiveDemo: Story = {
       // Simulate AI response
       setTimeout(() => {
         const responses = [
-          'That's a great question! Let me help you with that.',
-          'I understand what you're asking. Here's what I think...',
-          'Interesting! Here's my perspective on this topic.',
+          'That is a great question! Let me help you with that.',
+          'I understand what you are asking. Here is what I think.',
+          'Interesting! Here is my perspective on this topic.',
           'Let me break that down for you step by step.',
         ]
         const randomResponse = responses[Math.floor(Math.random() * responses.length)]
@@ -436,7 +433,7 @@ export const InteractiveDemo: Story = {
             <Message
               key={msg.id}
               message={msg}
-              onFeedback={(type) => console.log(`Feedback for ${msg.id}:`, type)}
+              onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
             />
           ))}
         </div>
