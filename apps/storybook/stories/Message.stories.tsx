@@ -364,9 +364,9 @@ export const Conversation: Story = {
         "```\n\n" +
         "This component accepts a `name` prop and renders a greeting."
       ),
-      createUserMessage('Thanks! That's helpful.'),
+      createUserMessage("Thanks! That's helpful."),
       createAssistantMessage(
-        'You're welcome! Feel free to ask if you have more questions about React.'
+        "You're welcome! Feel free to ask if you have more questions about React."
       ),
     ]
 
