@@ -27,7 +27,7 @@ const faqs = [
   {
     question: 'Can I use this in a SaaS product?',
     answer:
-      'Yes, but you need an Enterprise license for SaaS products. Pro licenses are for end-user applications only.',
+      "Yes, but you need an Enterprise license for SaaS products. Pro licenses are for end-user applications only.",
   },
   {
     question: 'What's the difference between Annual and Lifetime?',

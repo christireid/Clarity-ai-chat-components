@@ -41,7 +41,7 @@ const testimonials = [
   },
   {
     content:
-      'The ROI was clear within the first month. We're handling 80% more queries with fewer agents, and customers are happier than ever.',
+      "The ROI was clear within the first month. We're handling 80% more queries with fewer agents, and customers are happier than ever.",
     author: 'James Liu',
     role: 'CEO',
     company: 'FinanceFlow',
@@ -50,7 +50,7 @@ const testimonials = [
   },
   {
     content:
-      'Our developer experience went from confusing to delightful overnight. The AI assistant answers questions we didn't even think to document.',
+      "Our developer experience went from confusing to delightful overnight. The AI assistant answers questions we didn't even think to document.",
     author: 'Alex Thompson',
     role: 'Head of Developer Relations',
     company: 'DevTools Inc',
