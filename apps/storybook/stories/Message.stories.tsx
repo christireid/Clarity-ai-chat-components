@@ -406,9 +406,9 @@ export const InteractiveDemo: Story = {
       // Simulate AI response
       setTimeout(() => {
         const responses = [
-          'That's a great question! Let me help you with that.',
-          'I understand what you're asking. Here's what I think...',
-          'Interesting! Here's my perspective on this topic.',
+          "That's a great question! Let me help you with that.",
+          "I understand what you're asking. Here's what I think...",
+          "Interesting! Here's my perspective on this topic.",
           'Let me break that down for you step by step.',
         ]
         const randomResponse = responses[Math.floor(Math.random() * responses.length)]
