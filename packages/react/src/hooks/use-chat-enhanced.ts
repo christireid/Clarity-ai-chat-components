@@ -446,7 +446,6 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                 setData(currentMessage)
               }
             }
-            }
           }
 
           // Finalize message
