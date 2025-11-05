@@ -1,8 +1,10 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { LiveDemo } from '@/components/Demo/LiveDemo';
+import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground';
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
+import { inputPresets, inputControls } from './presets';
 
 export const metadata: Metadata = {
   title: 'Input Component - Clarity Chat Components',
@@ -28,6 +30,35 @@ export default function InputPage() {
           sizes, states, and validation. Essential for forms, search bars, chat inputs, and any
           text entry interface.
         </p>
+      </section>
+
+      <section className="docs-section">
+        <h2>Interactive Playground</h2>
+        <p className="mb-6">
+          Experiment with the Input component! Try different types, placeholders,
+          and states to build the perfect input experience.
+        </p>
+        <EnhancedPlayground
+          title="Input Component Playground"
+          description="Customize and experiment with input configurations"
+          component="Input"
+          initialCode={`import { Input } from '@clarity-chat/react'
+
+export default function Example() {
+  return (
+    <div className="p-8 max-w-md mx-auto space-y-4">
+      <Input placeholder="Type something..." />
+      <Input type="email" placeholder="email@example.com" />
+      <Input type="password" placeholder="Password" />
+    </div>
+  )
+}`}
+          presets={inputPresets}
+          controls={inputControls}
+          showResponsiveControls
+          showQuickActions
+          height="550px"
+        />
       </section>
 
       <section className="docs-section">

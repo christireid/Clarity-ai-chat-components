@@ -5,7 +5,9 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { ApiTable } from '@/components/Demo/ApiTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
+import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground'
 import { ChatWindowAnatomy } from '@/components/Diagrams/ChatWindowAnatomy'
+import { chatWindowPresets, chatWindowControls } from './presets'
 
 export const metadata: Metadata = {
   title: 'ChatWindow',
@@ -120,6 +122,48 @@ export default function ChatWindowPage() {
           reactions, typing indicators, and more.
         </p>
       </Callout>
+
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Experiment with the ChatWindow component! Try different configurations including
+          avatars, timestamps, and loading states to see how they enhance the chat experience.
+        </p>
+        <EnhancedPlayground
+          title="ChatWindow Component Playground"
+          description="Build and customize your perfect chat interface"
+          component="ChatWindow"
+          initialCode={`import { ChatWindow } from '@clarity-chat/react'
+
+export default function Example() {
+  const messages = [
+    {
+      id: '1',
+      role: 'user',
+      content: 'Hello! How are you?',
+      avatar: '👤',
+    },
+    {
+      id: '2',
+      role: 'assistant',
+      content: 'I\\'m doing great! How can I help you today?',
+      avatar: '🤖',
+    },
+  ]
+
+  return (
+    <div className="h-96 border rounded-lg">
+      <ChatWindow messages={messages} showAvatars />
+    </div>
+  )
+}`}
+          presets={chatWindowPresets}
+          controls={chatWindowControls}
+          showResponsiveControls
+          showQuickActions
+          height="600px"
+        />
+      </section>
 
       <h2 id="import">Import</h2>
 
