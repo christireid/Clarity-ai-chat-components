@@ -364,72 +364,75 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                   break
                 }
 
-              try {
-                const parsed = JSON.parse(data)
-                
-                // Handle different streaming formats
-                let contentDelta = ''
-                
-                if (parsed.choices?.[0]?.delta?.content) {
-                  // OpenAI chat completions format
-                  contentDelta = parsed.choices[0].delta.content
-                } else if (parsed.choices?.[0]?.text) {
-                  // OpenAI completions format
-                  contentDelta = parsed.choices[0].text
-                } else if (parsed.content) {
-                  // Direct content field
-                  contentDelta = typeof parsed.content === 'string' ? parsed.content : ''
-                } else if (parsed.text) {
-                  // Text field
-                  contentDelta = parsed.text
-                } else if (parsed.delta) {
-                  // Delta format
-                  contentDelta = typeof parsed.delta === 'string' ? parsed.delta : ''
-                } else if (parsed.message?.content) {
-                  // Message wrapper format
-                  contentDelta = parsed.message.content
-                } else if (typeof parsed === 'string') {
-                  // String response
-                  contentDelta = parsed
-                }
-
-                if (contentDelta) {
-                  accumulatedContent += contentDelta
+                try {
+                  const parsed = JSON.parse(data)
                   
-                  if (mountedRef.current) {
-                    currentMessage = {
-                      ...currentMessage,
-                      content: accumulatedContent,
-                    }
-                    currentAssistantMessageRef.current = currentMessage
-                    setMessages((prev) =>
-                      prev.map((msg) =>
-                        msg.id === assistantMessageId ? currentMessage : msg
-                      )
-                    )
-                    setData(currentMessage)
+                  // Handle different streaming formats
+                  let contentDelta = ''
+                  
+                  if (parsed.choices?.[0]?.delta?.content) {
+                    // OpenAI chat completions format
+                    contentDelta = parsed.choices[0].delta.content
+                  } else if (parsed.choices?.[0]?.text) {
+                    // OpenAI completions format
+                    contentDelta = parsed.choices[0].text
+                  } else if (parsed.content) {
+                    // Direct content field
+                    contentDelta = typeof parsed.content === 'string' ? parsed.content : ''
+                  } else if (parsed.text) {
+                    // Text field
+                    contentDelta = parsed.text
+                  } else if (parsed.delta) {
+                    // Delta format
+                    contentDelta = typeof parsed.delta === 'string' ? parsed.delta : ''
+                  } else if (parsed.message?.content) {
+                    // Message wrapper format
+                    contentDelta = parsed.message.content
+                  } else if (typeof parsed === 'string') {
+                    // String response
+                    contentDelta = parsed
                   }
-                }
-              } catch {
-                // Non-JSON line, treat as plain text
-                if (data.trim() && data !== '[DONE]') {
-                  accumulatedContent += data
-                  if (mountedRef.current) {
-                    currentMessage = {
-                      ...currentMessage,
-                      content: accumulatedContent,
-                    }
-                    currentAssistantMessageRef.current = currentMessage
-                    setMessages((prev) =>
-                      prev.map((msg) =>
-                        msg.id === assistantMessageId ? currentMessage : msg
+
+                  if (contentDelta) {
+                    accumulatedContent += contentDelta
+                    
+                    if (mountedRef.current) {
+                      currentMessage = {
+                        ...currentMessage,
+                        content: accumulatedContent,
+                      }
+                      currentAssistantMessageRef.current = currentMessage
+                      setMessages((prev) =>
+                        prev.map((msg) =>
+                          msg.id === assistantMessageId ? currentMessage : msg
+                        )
                       )
-                    )
-                    setData(currentMessage)
+                      setData(currentMessage)
+                    }
+                  }
+                } catch {
+                  // Non-JSON line, treat as plain text
+                  if (data.trim() && data !== '[DONE]') {
+                    accumulatedContent += data
+                    if (mountedRef.current) {
+                      currentMessage = {
+                        ...currentMessage,
+                        content: accumulatedContent,
+                      }
+                      currentAssistantMessageRef.current = currentMessage
+                      setMessages((prev) =>
+                        prev.map((msg) =>
+                          msg.id === assistantMessageId ? currentMessage : msg
+                        )
+                      )
+                      setData(currentMessage)
+                    }
                   }
                 }
               }
-            } else if (line.trim()) {
+            }
+            
+            if (!line.startsWith('data: ') && line.trim()) {
               // Plain text streaming
               accumulatedContent += line
               if (mountedRef.current) {

@@ -275,6 +275,39 @@ export const LinkIcon: React.FC<IconProps> = (props) => (
   </svg>
 )
 
+export const ClockIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 6v6l4 2" />
+  </svg>
+)
+
+export const DollarSignIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <line x1="12" y1="1" x2="12" y2="23" />
+    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+  </svg>
+)
+
+export const TrendingUpIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+    <polyline points="16 7 22 7 22 13" />
+  </svg>
+)
+
+export const ShieldIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>
+)
+
+export const FilterIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+  </svg>
+)
+
 export const PlayIcon: React.FC<IconProps> = (props) => (
   <svg {...defaultProps} {...props} viewBox="0 0 24 24">
     <polygon points="5 3 19 12 5 21 5 3" />
