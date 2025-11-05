@@ -208,6 +208,9 @@ export * from './analytics'
 // AI Features
 export * from './ai'
 
+// AI Memory & Context System
+export * from './memory'
+
 // Error Tracking System
 export * from './error'
 
