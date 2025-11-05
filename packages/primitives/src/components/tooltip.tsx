@@ -38,7 +38,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
   onOpenChange,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(false)
-  const [position, setPosition] = React.useState({ x: 0, y: 0 })
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_position, _setPosition] = React.useState({ x: 0, y: 0 })
   const triggerRef = React.useRef<HTMLDivElement>(null)
   const tooltipRef = React.useRef<HTMLDivElement>(null)
   const timeoutRef = React.useRef<NodeJS.Timeout>()
@@ -60,7 +61,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     if (!triggerRef.current || !tooltipRef.current) return
 
     const triggerRect = triggerRef.current.getBoundingClientRect()
-    const tooltipRect = tooltipRef.current.getBoundingClientRect()
+    // const tooltipRect = tooltipRef.current.getBoundingClientRect()
 
     let x = 0
     let y = 0
@@ -108,7 +109,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       }
     }
 
-    setPosition({ x, y })
+    _setPosition({ x, y })
   }, [side, align])
 
   // Handle mouse enter with delay
@@ -224,9 +225,9 @@ export const Tooltip: React.FC<TooltipProps> = ({
                   zIndex: 9999,
                 }}
                 className={cn(
-                  'px-3 py-2 text-sm rounded-md',
-                  'bg-popover text-popover-foreground',
-                  'border shadow-lg',
+                  'px-3.5 py-2 text-xs rounded-lg',
+                  'bg-[hsl(var(--surface-overlay))] text-foreground/90',
+                  'border border-border/70 shadow-[0_16px_32px_rgba(15,23,42,0.32)] ring-1 ring-black/5',
                   'pointer-events-none',
                   contentClassName
                 )}
@@ -238,7 +239,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
                 {showArrow && (
                   <div
                     className={cn(
-                      'absolute w-2 h-2 bg-popover border',
+                      'absolute w-2.5 h-2.5 bg-[hsl(var(--surface-overlay))] border border-border/70',
                       getArrowClasses(side, align)
                     )}
                     style={{ transform: getArrowTransform(side) }}

@@ -1,0 +1,503 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Getting Started/Theming Guide" />
+
+<div className="sb-container">
+  # Theming Guide
+  
+  <p className="sb-lead">
+    Customize the look and feel of Clarity Chat components to match your brand.
+  </p>
+
+  ## 🎨 Theme System
+
+  Clarity Chat uses a flexible theming system built on **CSS variables** and **Tailwind CSS**, making it easy to customize colors, spacing, typography, and more.
+
+  ## 🚀 Quick Start
+
+  ### Method 1: CSS Variables
+
+  The simplest way to customize the theme is by overriding CSS variables:
+
+  ```css
+  :root {
+    /* Primary brand color */
+    --color-primary: 220 90% 56%;
+    --color-primary-foreground: 0 0% 100%;
+    
+    /* Background colors */
+    --color-background: 0 0% 100%;
+    --color-foreground: 222 47% 11%;
+    
+    /* Muted colors */
+    --color-muted: 210 40% 96%;
+    --color-muted-foreground: 215 16% 47%;
+    
+    /* Border and accents */
+    --color-border: 214 32% 91%;
+    --color-accent: 210 40% 96%;
+    --color-accent-foreground: 222 47% 11%;
+  }
+  
+  .dark {
+    /* Dark mode overrides */
+    --color-background: 224 71% 4%;
+    --color-foreground: 213 31% 91%;
+    --color-muted: 223 47% 11%;
+    --color-muted-foreground: 215 20% 65%;
+    --color-border: 216 34% 17%;
+    --color-accent: 216 34% 17%;
+    --color-accent-foreground: 210 40% 98%;
+  }
+  ```
+
+  ### Method 2: Tailwind Configuration
+
+  Extend your Tailwind config to customize the entire design system:
+
+  ```javascript
+  // tailwind.config.js
+  module.exports = {
+    theme: {
+      extend: {
+        colors: {
+          primary: {
+            50: '#eff6ff',
+            100: '#dbeafe',
+            500: '#3b82f6',
+            600: '#2563eb',
+            900: '#1e3a8a',
+          },
+          // Add your brand colors
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['Fira Code', 'monospace'],
+        },
+        borderRadius: {
+          lg: '0.75rem',
+          md: '0.5rem',
+          sm: '0.25rem',
+        },
+      },
+    },
+  }
+  ```
+
+  ## 🎯 Available CSS Variables
+
+  ### Colors
+
+  ```css
+  /* Base colors */
+  --color-background      /* Page background */
+  --color-foreground      /* Main text color */
+  --color-card           /* Card background */
+  --color-card-foreground /* Card text */
+  
+  /* Brand colors */
+  --color-primary         /* Primary actions */
+  --color-primary-foreground
+  --color-secondary       /* Secondary actions */
+  --color-secondary-foreground
+  
+  /* Semantic colors */
+  --color-destructive     /* Danger/delete actions */
+  --color-destructive-foreground
+  --color-muted          /* Low emphasis */
+  --color-muted-foreground
+  --color-accent         /* Highlights */
+  --color-accent-foreground
+  
+  /* UI elements */
+  --color-border         /* Borders and dividers */
+  --color-input          /* Form inputs */
+  --color-ring           /* Focus rings */
+  ```
+
+  ### Spacing
+
+  ```css
+  /* Component spacing */
+  --spacing-xs: 0.5rem;   /* 8px */
+  --spacing-sm: 0.75rem;  /* 12px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
+  ```
+
+  ### Border Radius
+
+  ```css
+  --radius-sm: 0.25rem;   /* 4px - Tight corners */
+  --radius-md: 0.5rem;    /* 8px - Default */
+  --radius-lg: 0.75rem;   /* 12px - Rounded */
+  --radius-xl: 1rem;      /* 16px - Very rounded */
+  --radius-full: 9999px;  /* Fully rounded */
+  ```
+
+  ### Typography
+
+  ```css
+  /* Font families */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  
+  /* Font sizes */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  ```
+
+  ## 🌈 Pre-built Themes
+
+  ### Corporate Blue
+
+  ```css
+  :root {
+    --color-primary: 217 91% 60%;
+    --color-primary-foreground: 0 0% 100%;
+    --color-accent: 210 40% 96%;
+    --color-accent-foreground: 217 91% 60%;
+  }
+  ```
+
+  ### Vibrant Purple
+
+  ```css
+  :root {
+    --color-primary: 262 83% 58%;
+    --color-primary-foreground: 0 0% 100%;
+    --color-accent: 270 100% 98%;
+    --color-accent-foreground: 262 83% 58%;
+  }
+  ```
+
+  ### Forest Green
+
+  ```css
+  :root {
+    --color-primary: 142 76% 36%;
+    --color-primary-foreground: 0 0% 100%;
+    --color-accent: 138 76% 97%;
+    --color-accent-foreground: 142 76% 36%;
+  }
+  ```
+
+  ### Sunset Orange
+
+  ```css
+  :root {
+    --color-primary: 25 95% 53%;
+    --color-primary-foreground: 0 0% 100%;
+    --color-accent: 24 100% 97%;
+    --color-accent-foreground: 25 95% 53%;
+  }
+  ```
+
+  ## 🎭 Dark Mode
+
+  ### Automatic Dark Mode
+
+  Components automatically adapt to dark mode using the `.dark` class on the root element:
+
+  ```javascript
+  // Toggle dark mode
+  document.documentElement.classList.toggle('dark')
+  ```
+
+  ### Custom Dark Mode Colors
+
+  ```css
+  .dark {
+    --color-background: 222 84% 5%;
+    --color-foreground: 210 40% 98%;
+    --color-primary: 217 91% 60%;
+    --color-border: 217 33% 17%;
+    --color-muted: 217 33% 17%;
+    --color-muted-foreground: 215 20% 65%;
+  }
+  ```
+
+  ## 📐 Component-Specific Theming
+
+  ### Chat Window
+
+  ```css
+  .chat-window {
+    --chat-bg: var(--color-background);
+    --message-user-bg: var(--color-primary);
+    --message-ai-bg: var(--color-muted);
+    --input-bg: var(--color-background);
+  }
+  ```
+
+  ### Buttons
+
+  ```css
+  .btn-primary {
+    --btn-bg: var(--color-primary);
+    --btn-text: var(--color-primary-foreground);
+    --btn-hover-bg: hsl(var(--color-primary) / 0.9);
+  }
+  ```
+
+  ### Cards
+
+  ```css
+  .card {
+    --card-bg: var(--color-card);
+    --card-border: var(--color-border);
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  ```
+
+  ## 🖼️ Typography Customization
+
+  ### Font Stack
+
+  ```css
+  :root {
+    /* Modern sans-serif */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    
+    /* Monospace for code */
+    --font-mono: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    
+    /* Display fonts */
+    --font-display: 'Lexend', var(--font-sans);
+  }
+  ```
+
+  ### Scale
+
+  ```css
+  :root {
+    /* Base size */
+    --text-base: 16px;
+    
+    /* Scale ratio: 1.25 (Major Third) */
+    --text-xs: calc(var(--text-base) * 0.75);    /* 12px */
+    --text-sm: calc(var(--text-base) * 0.875);   /* 14px */
+    --text-lg: calc(var(--text-base) * 1.125);   /* 18px */
+    --text-xl: calc(var(--text-base) * 1.25);    /* 20px */
+    --text-2xl: calc(var(--text-base) * 1.5);    /* 24px */
+    --text-3xl: calc(var(--text-base) * 1.875);  /* 30px */
+  }
+  ```
+
+  ## 🎯 Advanced Customization
+
+  ### Gradient Backgrounds
+
+  ```css
+  .gradient-primary {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--color-primary)),
+      hsl(var(--color-primary) / 0.8)
+    );
+  }
+  ```
+
+  ### Glassmorphism
+
+  ```css
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  ```
+
+  ### Animations
+
+  ```css
+  :root {
+    --duration-fast: 150ms;
+    --duration-base: 300ms;
+    --duration-slow: 500ms;
+    --easing-out: cubic-bezier(0, 0, 0.2, 1);
+    --easing-in: cubic-bezier(0.4, 0, 1, 1);
+  }
+  ```
+
+  ## 💡 Best Practices
+
+  ### Do's ✅
+
+  - Use CSS variables for easy theme switching
+  - Maintain consistent color contrast (4.5:1 minimum)
+  - Test both light and dark modes
+  - Use semantic color names
+  - Keep the color palette limited (5-7 colors)
+  - Use a consistent scale for spacing
+  - Test with different font sizes
+  - Consider color blindness
+
+  ### Don'ts ❌
+
+  - Don't hardcode colors in components
+  - Don't use too many colors
+  - Don't ignore dark mode
+  - Don't forget hover/focus states
+  - Don't use color as the only indicator
+  - Don't break accessibility standards
+
+  ## 🧪 Testing Your Theme
+
+  ### Checklist
+
+  - [ ] Colors have sufficient contrast (use a11y addon)
+  - [ ] Dark mode works correctly
+  - [ ] Hover states are visible
+  - [ ] Focus indicators are clear
+  - [ ] Text is readable at all sizes
+  - [ ] Components look good together
+  - [ ] Loading/disabled states are clear
+  - [ ] Error states stand out
+
+  ### Tools
+
+  - **Storybook a11y addon** - Check contrast ratios
+  - **Chrome DevTools** - Inspect computed colors
+  - **WebAIM Contrast Checker** - Verify accessibility
+  - **Coolors.co** - Generate color palettes
+
+  ## 📚 Examples
+
+  ### Complete Theme Example
+
+  ```css
+  /* Custom Brand Theme */
+  :root {
+    /* Brand Colors */
+    --color-primary: 262 83% 58%;
+    --color-primary-foreground: 0 0% 100%;
+    --color-secondary: 220 14% 96%;
+    --color-secondary-foreground: 220 9% 46%;
+    
+    /* Base */
+    --color-background: 0 0% 100%;
+    --color-foreground: 222 47% 11%;
+    
+    /* UI Elements */
+    --color-muted: 220 14% 96%;
+    --color-muted-foreground: 220 9% 46%;
+    --color-border: 220 13% 91%;
+    --color-accent: 262 83% 98%;
+    --color-accent-foreground: 262 83% 58%;
+    
+    /* Semantic */
+    --color-destructive: 0 84% 60%;
+    --color-destructive-foreground: 0 0% 100%;
+    
+    /* Radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    
+    /* Fonts */
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'Fira Code', monospace;
+  }
+  
+  .dark {
+    --color-background: 224 71% 4%;
+    --color-foreground: 213 31% 91%;
+    --color-muted: 223 47% 11%;
+    --color-muted-foreground: 215 20% 65%;
+    --color-border: 216 34% 17%;
+    --color-accent: 216 34% 17%;
+    --color-accent-foreground: 210 40% 98%;
+  }
+  ```
+
+  ## 🎨 Inspiration
+
+  Check out these design systems for theme inspiration:
+
+  - **Tailwind UI** - Modern, clean aesthetics
+  - **Shadcn UI** - Elegant dark mode
+  - **Radix Themes** - Comprehensive color system
+  - **GitHub Primer** - Professional developer UI
+  - **Stripe** - Polished, trustworthy brand
+
+  ## 🤝 Contributing
+
+  Have a custom theme you'd like to share? Consider contributing it to the project so others can benefit!
+
+  1. Create your theme CSS file
+  2. Document the color choices
+  3. Test accessibility
+  4. Submit a PR with examples
+
+</div>
+
+<style>
+  {`
+    .sb-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    
+    .sb-lead {
+      font-size: 1.25rem;
+      line-height: 1.8;
+      color: #666;
+      margin: 1rem 0 3rem;
+    }
+    
+    h2 {
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      font-weight: 700;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+    }
+    
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    code {
+      background: #f3f4f6;
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-size: 0.875em;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    
+    ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+    
+    li {
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+  `}
+</style>

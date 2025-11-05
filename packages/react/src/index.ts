@@ -1,5 +1,47 @@
-// Model Adapters (NEW)
+// Model Adapters
 export * from './adapters'
+
+// Vector Stores (Enterprise RAG)
+export * from './vector-stores'
+
+// Embeddings (Multi-Provider)
+export * from './embeddings'
+
+// Agent Orchestration (Agentic AI)
+export * from './agents'
+
+// Prompt Templates
+export * from './prompts'
+
+// Document Loaders & Text Splitting
+export * from './document-loaders'
+
+// AI Safety (PII Detection, Content Filtering, Guardrails)
+export * from './safety'
+
+// Observability & Evaluation
+export * from './observability'
+
+// Reranking (RAG Improvement)
+export * from './reranking'
+
+// Webhook System
+export * from './webhooks'
+
+// Plugin Architecture
+export * from './plugins'
+
+// Audit Logging
+export * from './audit'
+
+// Usage Quotas
+export * from './quotas'
+
+// Multi-Tenancy
+export * from './multi-tenancy'
+
+// RBAC (Role-Based Access Control)
+export * from './rbac'
 
 // Export all components
 export * from './components/message'
@@ -25,6 +67,18 @@ export * from './components/knowledge-base-viewer'
 export * from './components/export-dialog'
 export * from './components/stream-cancellation'
 export * from './components/message-search'
+export * from './components/follow-up-suggestions'
+export * from './components/persona-panel'
+export * from './components/conversation-timeline'
+export * from './components/memory-inspector'
+export * from './components/safety-status-card'
+export * from './components/response-quality-meter'
+export * from './components/multi-modal-preview'
+export * from './components/agent-run-feed'
+export * from './components/session-summary-card'
+export * from './components/workflow-suggestion-list'
+export * from './components/ai-ops'
+export * from './components/enterprise'
 
 // Phase 3 Enhancement - Error Handling & Recovery
 export * from './components/error-boundary'
@@ -33,6 +87,8 @@ export * from './components/network-status'
 
 // Phase 3 Enhancement - Token Management
 export * from './components/token-counter'
+export * from './components/token-optimization-panel'
+export * from './components/token-optimization-badge'
 
 // Phase 3 Enhancement - Context & Conversation Management
 export * from './components/context-visualizer'
@@ -40,6 +96,9 @@ export * from './components/conversation-list'
 
 // Export hooks
 export * from './hooks/use-chat'
+export * from './hooks/use-chat-enhanced'
+export * from './hooks/use-completion'
+export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'
 export * from './hooks/use-streaming-sse'
 export * from './hooks/use-streaming-websocket'
@@ -61,6 +120,7 @@ export * from './hooks/use-window-size'
 // Phase 3 Enhancement - Error Recovery & Token Tracking
 export * from './hooks/use-error-recovery'
 export * from './hooks/use-token-tracker'
+export * from './hooks/use-token-optimization'
 
 // Phase 3 Enhancement - Message Operations & Typing
 export * from './hooks/use-message-operations'
@@ -75,8 +135,26 @@ export * from './hooks/use-performance'
 // React Concurrent Features
 export * from './hooks/use-deferred-search'
 
-// Mobile Utilities
-export * from './utils/mobile'
+// Utility Functions (Model Fallback, Context Window, Rate Limiting, Hybrid Search, etc.)
+export * from './utils'
+
+// StreamableValue utilities (Vercel AI SDK compatible)
+export * from './utils/streamable-value'
+
+// Chat helper utilities
+export * from './utils/chat-helpers'
+
+// Streaming parser utilities
+export * from './utils/streaming-parser'
+
+// Performance utilities
+export * from './utils/performance'
+
+// Enhanced TypeScript types
+export * from './types/chat-types'
+
+// Optimized hooks
+export * from './hooks/use-chat-optimized'
 
 // Theme System
 export * from './theme'

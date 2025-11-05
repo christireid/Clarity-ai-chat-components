@@ -1,10 +1,20 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
-import { Avatar, Button, Badge, cn, formatRelativeTime } from '@clarity-chat/primitives'
+import {
+  Avatar,
+  Button,
+  Badge,
+  cn,
+  formatRelativeTime,
+} from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'
 import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon } from './icons'
-import { ANIMATION_DURATION, ANIMATION_EASING, INTERACTION_VARIANTS } from '../animations/constants'
+import {
+  ANIMATION_DURATION,
+  ANIMATION_EASING,
+  INTERACTION_VARIANTS,
+} from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
@@ -20,8 +30,8 @@ export interface MessageProps {
   className?: string
 }
 
-export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
-  (
+export const Message = React.memo(
+  React.forwardRef<HTMLDivElement, MessageProps>(function Message(
     {
       message,
       onFeedback,
@@ -31,11 +41,11 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
       className,
     },
     ref
-  ) => {
+  ) {
     const [isHovered, setIsHovered] = React.useState(false)
-    const [feedbackGiven, setFeedbackGiven] = React.useState<'up' | 'down' | null>(
-      message.feedback?.type || null
-    )
+    const [feedbackGiven, setFeedbackGiven] = React.useState<
+      'up' | 'down' | null
+    >(message.feedback?.type || null)
 
     const isUser = message.role === 'user'
     const isAssistant = message.role === 'assistant'
@@ -46,7 +56,7 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
     const handleFeedback = (type: 'up' | 'down') => {
       setFeedbackGiven(type)
       onFeedback?.(type)
-      
+
       // Hooked principle: Variable reward
       if (type === 'up') {
         // Trigger confetti animation
@@ -58,23 +68,23 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
     return (
       <motion.div
         ref={ref}
-        initial={{ 
-          opacity: 0, 
-          x: isUser ? 20 : -20,  // Slide from appropriate side
+        initial={{
+          opacity: 0,
+          x: isUser ? 20 : -20, // Slide from appropriate side
           y: 10,
         }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ 
-          duration: ANIMATION_DURATION.normal / 1000, 
+        transition={{
+          duration: ANIMATION_DURATION.normal / 1000,
           ease: ANIMATION_EASING.out,
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group flex gap-3 p-4 rounded-lg transition-colors',
+          'group flex gap-3 p-4 rounded-xl transition-all duration-200',
           isUser && 'flex-row-reverse',
-          isHovered && 'bg-muted/50',
+          isHovered && 'bg-muted/50 shadow-sm',
           className
         )}
       >
@@ -83,9 +93,9 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
           <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            transition={{ 
-              type: 'spring', 
-              stiffness: 500, 
+            transition={{
+              type: 'spring',
+              stiffness: 500,
               damping: 25,
               delay: 0.1,
             }}
@@ -100,9 +110,19 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
         )}
 
         {/* Message Content */}
-        <div className={cn('flex-1 space-y-2', isUser && 'flex flex-col items-end')}>
+        <div
+          className={cn(
+            'flex-1 space-y-2',
+            isUser && 'flex flex-col items-end'
+          )}
+        >
           {/* Header */}
-          <div className={cn('flex items-center gap-2', isUser && 'flex-row-reverse')}>
+          <div
+            className={cn(
+              'flex items-center gap-2',
+              isUser && 'flex-row-reverse'
+            )}
+          >
             <span className="font-semibold text-sm">
               {isUser ? 'You' : 'AI Assistant'}
             </span>
@@ -131,7 +151,7 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
             className={cn(
               'prose prose-sm dark:prose-invert max-w-none',
               isUser &&
-                'bg-primary text-primary-foreground px-4 py-2 rounded-lg inline-block'
+                'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm'
             )}
           >
             {isUser ? (
@@ -139,12 +159,18 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
             ) : (
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeHighlight]}
+                rehypePlugins={[
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  rehypeHighlight as any, // Type incompatibility between vfile versions in react-markdown
+                ]}
                 components={{
-                  code(props: any) {
-                    const { node, inline, className, children, ...rest } = props
+                  code(props) {
+                    const { inline, className, children, ...rest } = props
                     return inline ? (
-                      <code className="bg-muted px-1 py-0.5 rounded text-sm" {...rest}>
+                      <code
+                        className="bg-muted px-1 py-0.5 rounded text-sm"
+                        {...rest}
+                      >
                         {children}
                       </code>
                     ) : (
@@ -164,17 +190,17 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                 {message.content}
               </ReactMarkdown>
             )}
-            
+
             {isStreaming && (
               <motion.span
-                animate={{ 
+                animate={{
                   opacity: [1, 0.3, 1],
                   scale: [1, 0.95, 1],
                 }}
-                transition={{ 
-                  repeat: Infinity, 
+                transition={{
+                  repeat: Infinity,
                   duration: 1,
-                  ease: "easeInOut",
+                  ease: 'easeInOut',
                 }}
                 className="inline-block w-2 h-4 bg-current ml-1 rounded-sm"
               />
@@ -199,23 +225,30 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                 initial={{ opacity: 0, y: 10, height: 0 }}
                 animate={{ opacity: 1, y: 0, height: 'auto' }}
                 exit={{ opacity: 0, y: 10, height: 0 }}
-                transition={{ 
+                transition={{
                   duration: ANIMATION_DURATION.fast / 1000,
                   ease: ANIMATION_EASING.out,
                 }}
                 className="flex items-center gap-2 overflow-hidden"
               >
                 <CopyButton text={message.content} size="sm" />
-                
+
                 {/* Thumbs Up with Confetti */}
                 <div className="relative">
                   <motion.div
-                    whileHover={{ scale: 1.1, rotate: feedbackGiven === 'up' ? 0 : -15 }}
+                    whileHover={{
+                      scale: 1.1,
+                      rotate: feedbackGiven === 'up' ? 0 : -15,
+                    }}
                     whileTap={{ scale: 0.9 }}
-                    animate={feedbackGiven === 'up' ? { 
-                      scale: [1, 1.2, 1],
-                      rotate: [0, -15, 15, -15, 0],
-                    } : {}}
+                    animate={
+                      feedbackGiven === 'up'
+                        ? {
+                            scale: [1, 1.2, 1],
+                            rotate: [0, -15, 15, -15, 0],
+                          }
+                        : {}
+                    }
                     transition={{ duration: 0.5 }}
                   >
                     <Button
@@ -231,7 +264,7 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                       <ThumbsUpIcon size={16} />
                     </Button>
                   </motion.div>
-                  
+
                   {/* Confetti Effect */}
                   <AnimatePresence>
                     {showConfetti && (
@@ -255,7 +288,12 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                             transition={{ duration: 0.6, ease: 'easeOut' }}
                             className="absolute top-1/2 left-1/2 w-2 h-2 bg-success rounded-full pointer-events-none"
                             style={{
-                              backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'][i % 4],
+                              backgroundColor: [
+                                '#10b981',
+                                '#f59e0b',
+                                '#3b82f6',
+                                '#ef4444',
+                              ][i % 4],
                             }}
                           />
                         ))}
@@ -263,15 +301,22 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                     )}
                   </AnimatePresence>
                 </div>
-                
+
                 {/* Thumbs Down */}
                 <motion.div
-                  whileHover={{ scale: 1.1, rotate: feedbackGiven === 'down' ? 0 : 15 }}
+                  whileHover={{
+                    scale: 1.1,
+                    rotate: feedbackGiven === 'down' ? 0 : 15,
+                  }}
                   whileTap={{ scale: 0.9 }}
-                  animate={feedbackGiven === 'down' ? { 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 15, -15, 15, 0],
-                  } : {}}
+                  animate={
+                    feedbackGiven === 'down'
+                      ? {
+                          scale: [1, 1.1, 1],
+                          rotate: [0, 15, -15, 15, 0],
+                        }
+                      : {}
+                  }
                   transition={{ duration: 0.5 }}
                 >
                   <Button
@@ -280,7 +325,8 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                     onClick={() => handleFeedback('down')}
                     className={cn(
                       'transition-colors',
-                      feedbackGiven === 'down' && 'text-destructive bg-destructive/10'
+                      feedbackGiven === 'down' &&
+                        'text-destructive bg-destructive/10'
                     )}
                     aria-label="Poor response"
                   >
@@ -294,9 +340,9 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                     whileTap={INTERACTION_VARIANTS.button.tap}
                     transition={INTERACTION_VARIANTS.button.transition}
                   >
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={onRetry}
                       className="gap-1.5"
                     >
@@ -316,16 +362,17 @@ export const Message = React.forwardRef<HTMLDivElement, MessageProps>(
                 <span>{message.metadata.tokens} tokens</span>
               )}
               {message.metadata.processingTime && (
-                <span>• {message.metadata.processingTime}ms</span>
+                <span>? {message.metadata.processingTime}ms</span>
               )}
               {message.metadata.model && (
-                <span>• {message.metadata.model}</span>
+                <span>? {message.metadata.model}</span>
               )}
             </div>
           )}
         </div>
       </motion.div>
     )
-  }
+  })
 )
+
 Message.displayName = 'Message'

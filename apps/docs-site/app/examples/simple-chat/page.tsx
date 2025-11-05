@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Build a basic chat interface in minutes',
 }
 
-const simpleChat Code = `import { useState } from 'react'
+const simpleChatCode = `import { useState } from 'react'
 import { ChatWindow, Message } from '@clarity-chat/react'
 
 export default function App() {

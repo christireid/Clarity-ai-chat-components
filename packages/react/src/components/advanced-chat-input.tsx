@@ -71,7 +71,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
     const fileInputRef = React.useRef<HTMLInputElement>(null)
     
     // React Concurrent Features - useTransition for non-blocking suggestion updates
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const [isPending, startTransition] = useTransition()
     // useDeferredValue can be used for expensive computations (reserved for future enhancement)
 

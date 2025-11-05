@@ -6,8 +6,21 @@ export interface WindowSize {
 }
 
 /**
- * Track window dimensions with throttled updates
+ * Track window dimensions with throttled updates to prevent performance issues
+ * during window resize events.
  * 
+ * **Features:**
+ * - Automatic throttling (150ms default)
+ * - SSR-safe (returns 0x0 on server)
+ * - Automatic cleanup on unmount
+ * - Memory efficient
+ * 
+ * **Use Cases:**
+ * - Responsive component rendering
+ * - Conditional layout switching
+ * - Dynamic sizing calculations
+ * 
+ * @returns {WindowSize} Object containing current window width and height
  * @example
  * ```tsx
  * const { width, height } = useWindowSize()

@@ -47,6 +47,16 @@
         "command": "clarity-chat.showExamples",
         "title": "Clarity Chat: Show Examples",
         "category": "Clarity Chat"
+      },
+      {
+        "command": "clarity-chat.showPreview",
+        "title": "Clarity Chat: Component Preview",
+        "category": "Clarity Chat"
+      },
+      {
+        "command": "clarity-chat.manageApiKeys",
+        "title": "Clarity Chat: Manage API Keys",
+        "category": "Clarity Chat"
       }
     ],
     "snippets": [
@@ -82,7 +92,11 @@
         },
         "clarity-chat.defaultProvider": {
           "type": "string",
-          "enum": ["openai", "anthropic", "google"],
+          "enum": [
+            "openai",
+            "anthropic",
+            "google"
+          ],
           "default": "openai",
           "description": "Default AI provider for snippets"
         },

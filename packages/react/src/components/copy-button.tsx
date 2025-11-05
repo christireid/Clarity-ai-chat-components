@@ -3,7 +3,8 @@ import { Button, type ButtonProps } from '@clarity-chat/primitives'
 import { useClipboard } from '../hooks/use-clipboard'
 import { CopyIcon, CheckIcon } from './icons'
 
-export interface CopyButtonProps extends Omit<ButtonProps, 'onClick' | 'state'> {
+export interface CopyButtonProps
+  extends Omit<ButtonProps, 'onClick' | 'state'> {
   text: string
   onCopy?: () => void
   /** Show icon only (no text) */
@@ -14,7 +15,7 @@ export interface CopyButtonProps extends Omit<ButtonProps, 'onClick' | 'state'> 
   copiedText?: string
 }
 
-export const CopyButton: React.FC<CopyButtonProps> = ({
+export const CopyButton = React.memo(function CopyButton({
   text,
   onCopy,
   iconOnly = false,
@@ -22,7 +23,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
   copiedText = 'Copied!',
   children,
   ...props
-}) => {
+}: CopyButtonProps) {
   const { copy, copied } = useClipboard({
     timeout: 2000,
     onSuccess: onCopy,
@@ -54,4 +55,6 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
       )}
     </Button>
   )
-}
+})
+
+CopyButton.displayName = 'CopyButton'

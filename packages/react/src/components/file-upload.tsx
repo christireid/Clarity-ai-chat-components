@@ -11,13 +11,20 @@ export interface FileUploadProps {
   className?: string
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({
+export const FileUpload = React.memo(function FileUpload({
   onUpload,
   maxFiles = 10,
   maxFileSize = 10 * 1024 * 1024, // 10MB default
-  acceptedFileTypes = ['image/*', 'application/pdf', '.txt', '.doc', '.docx', 'video/*'],
+  acceptedFileTypes = [
+    'image/*',
+    'application/pdf',
+    '.txt',
+    '.doc',
+    '.docx',
+    'video/*',
+  ],
   className,
-}) => {
+}: FileUploadProps) {
   const [isDragging, setIsDragging] = React.useState(false)
   const [files, setFiles] = React.useState<File[]>([])
   const [uploading, setUploading] = React.useState(false)
@@ -109,7 +116,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     if (file.type.startsWith('video/')) return '🎥'
     if (file.type.startsWith('audio/')) return '🎵'
     if (file.type.includes('pdf')) return '📄'
-    if (file.type.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx')) return '📝'
+    if (
+      file.type.includes('word') ||
+      file.name.endsWith('.doc') ||
+      file.name.endsWith('.docx')
+    )
+      return '📝'
     if (file.type.includes('sheet') || file.name.endsWith('.xlsx')) return '📊'
     return '📎'
   }
@@ -123,10 +135,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={cn(
-          'relative border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer',
+          'relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer shadow-sm',
           isDragging
-            ? 'border-primary bg-primary/5'
-            : 'border-border hover:border-primary/50'
+            ? 'border-primary bg-primary/10 shadow-md scale-[1.02]'
+            : 'border-border hover:border-primary/50 hover:shadow-md'
         )}
         onClick={() => fileInputRef.current?.click()}
       >
@@ -143,7 +155,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           <div className="text-4xl">📁</div>
           <div>
             <p className="text-sm font-medium">
-              {isDragging ? 'Drop files here' : 'Click to upload or drag and drop'}
+              {isDragging
+                ? 'Drop files here'
+                : 'Click to upload or drag and drop'}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               Max {maxFiles} files, up to {formatFileSize(maxFileSize)} each
@@ -171,7 +185,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-2 rounded-lg text-sm"
+            className="bg-destructive/10 border-2 border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm shadow-sm"
           >
             {error}
           </motion.div>
@@ -208,13 +222,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="flex items-center gap-3 p-3 bg-muted rounded-lg"
+                  className="flex items-center gap-3 p-3 bg-muted rounded-xl shadow-sm hover:shadow-md transition-shadow"
                 >
                   <span className="text-2xl">{getFileIcon(file)}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{file.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {formatFileSize(file.size)} • {file.type || 'Unknown type'}
+                      {formatFileSize(file.size)} •{' '}
+                      {file.type || 'Unknown type'}
                     </p>
                   </div>
                   <Button
@@ -236,11 +251,15 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               loading={uploading}
               className="w-full"
             >
-              {uploading ? 'Uploading...' : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
+              {uploading
+                ? 'Uploading...'
+                : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
             </Button>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   )
-}
+})
+
+FileUpload.displayName = 'FileUpload'

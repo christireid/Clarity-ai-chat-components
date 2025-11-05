@@ -41,10 +41,13 @@ export default [
         HTMLSpanElement: 'readonly',
         HTMLAnchorElement: 'readonly',
         HTMLParagraphElement: 'readonly',
+        HTMLHeadingElement: 'readonly',
+        HTMLTextAreaElement: 'readonly',
         HTMLUListElement: 'readonly',
         HTMLLIElement: 'readonly',
         HTMLImageElement: 'readonly',
         Element: 'readonly',
+        Node: 'readonly',
         // SVG Elements
         SVGSVGElement: 'readonly',
         SVGPathElement: 'readonly',

@@ -1,19 +1,22 @@
 # Clarity Chat 🚀
 
-> **Production-ready AI chat components for React** - Beautiful, accessible, and highly customizable.
+> **Production-ready AI chat components for React** - Beautiful, accessible, and highly
+> customizable.
 
 [![NPM Version](https://img.shields.io/npm/v/@clarity-chat/react?style=flat&colorA=18181B&colorB=4A90E2)](https://www.npmjs.com/package/@clarity-chat/react)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat&colorA=18181B&colorB=4A90E2)](./LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?style=flat&colorA=18181B&colorB=4A90E2)](https://www.typescriptlang.org/)
 [![Test Coverage](https://img.shields.io/codecov/c/github/christireid/Clarity-ai-chat-components?style=flat&colorA=18181B&colorB=4A90E2)](https://codecov.io/gh/christireid/Clarity-ai-chat-components)
 
-**[Documentation](./docs/README.md)** • **[Examples](./examples/README.md)** • **[Storybook](https://storybook.clarity-chat.dev)** • **[Discord](https://discord.gg/clarity-chat)**
+**[Documentation](./docs/README.md)** • **[Examples](./examples/README.md)** •
+**[Storybook](https://storybook.clarity-chat.dev)** • **[Discord](https://discord.gg/clarity-chat)**
 
 ---
 
 ## ✨ Features
 
 ### 🎨 **Beautiful Design System**
+
 - **11 Built-in Themes** (Ocean, Glassmorphism, Dark, and more)
 - **Live Theme Editor** with real-time preview
 - **Dark Mode** with smooth transitions
@@ -22,6 +25,7 @@
 - **Advanced Interactions** - Command Palette, Keyboard Shortcuts, Drag & Drop ✨ NEW
 
 ### 🧩 **70+ Production-Ready Components**
+
 - Rich message display with Markdown & code highlighting
 - Streaming chat with SSE/WebSocket support
 - Voice input with speech-to-text
@@ -34,25 +38,32 @@
 - **Haptic Feedback** for mobile devices ✨ NEW
 
 ### ♿ **WCAG 2.1 AAA Accessibility**
+
 - Screen reader optimized
 - Keyboard shortcuts (Shift+? for help)
 - Focus management & ARIA labels
 - AAA contrast ratios
 
-### 🤖 **AI-Powered Features**
-- Smart suggestions & auto-complete
-- Content moderation & PII detection
-- Sentiment analysis
-- Token tracking & cost estimation
-- 8 AI provider adapters (OpenAI, Anthropic, Azure, etc.)
+### 🤖 **Enterprise AI Infrastructure** ⭐ NEW
+
+- **Vector Stores**: Pinecone, Qdrant, Weaviate, Chroma
+- **Embeddings**: OpenAI, Cohere with 60-80% cost savings via caching
+- **Agent Orchestration**: ReAct pattern with tool calling
+- **RAG Pipeline**: Document loaders, text splitting, hybrid search, reranking
+- **AI Safety**: PII detection, content filtering, prompt injection protection
+- **Observability**: Tracing, metrics, evaluation (LangSmith-like)
+- **Production Utils**: Model fallback, context management, rate limiting
+- **8 AI provider adapters** (OpenAI, Anthropic, Azure, etc.)
 
 ### 📊 **Analytics & Monitoring**
+
 - 7 analytics providers (GA4, Mixpanel, PostHog, Amplitude)
 - 35+ predefined events
 - A/B testing support
 - Performance monitoring dashboard
 
 ### 🐛 **Enterprise Error Handling**
+
 - 6 error tracking providers (Sentry, Rollbar, Bugsnag)
 - Automatic retry with exponential backoff
 - User feedback collection
@@ -67,6 +78,7 @@
 These packages are hosted as **private packages** on GitHub Packages.
 
 **First time setup:**
+
 ```bash
 # 1. Generate GitHub token at: https://github.com/settings/tokens
 #    Required scopes: read:packages, repo
@@ -82,6 +94,7 @@ echo ".npmrc" >> .gitignore
 ```
 
 **Install packages:**
+
 ```bash
 npm install @clarity-chat/react
 ```
@@ -122,11 +135,13 @@ function App() {
 ## 📚 Documentation
 
 ### **Getting Started**
+
 - [Installation](./docs/getting-started/installation.md)
 - [Quick Start (5 min)](./docs/getting-started/quick-start.md)
 - [First Component](./docs/getting-started/first-component.md)
 
 ### **Guides**
+
 - [Theming System](./docs/guides/theming.md)
 - [Voice Input](./docs/guides/voice-input.md)
 - [Streaming Messages](./docs/guides/streaming.md)
@@ -136,15 +151,28 @@ function App() {
 - [Mobile Optimization](./docs/guides/mobile.md)
 
 ### **API Reference**
+
 - [Components (47+)](./docs/api/components.md)
 - [Hooks (25+)](./docs/api/hooks.md)
 - [Utilities](./docs/api/utilities.md)
 - [TypeScript Types](./docs/api/types.md)
 
 ### **Examples**
-- [Example Gallery](./examples/README.md) - 9 working examples
-- [OpenAI Integration](./examples/ai-assistant/)
-- [Customer Support Bot](./examples/customer-support/)
+
+- [Example Gallery](./examples/README.md) - **16 production-ready examples**
+- **NEW**: [E-Commerce Assistant](./examples/ecommerce-assistant/) - Shopping chatbot
+- **NEW**: [Code Assistant](./examples/code-assistant/) - AI coding companion
+- **NEW**: [AI Agents Workflow](./examples/ai-agents-workflow/) - Multi-agent system
+- **NEW**: [Document Summarizer](./examples/document-summarizer/) - Intelligent summarization
+- **NEW**: [Email Assistant](./examples/email-assistant/) - Email composition
+- **NEW**: [Healthcare Assistant](./examples/healthcare-assistant/) - Appointment booking
+- **NEW**: [Financial Advisor](./examples/financial-advisor/) - Budget planning
+- **NEW**: [AI Tutor](./examples/ai-tutor/) - Adaptive learning
+- [Model Comparison](./examples/model-comparison-demo/) - Compare AI providers
+- [RAG Workbench](./examples/rag-workbench-demo/) - Document Q&A
+- [Analytics Console](./examples/analytics-console-demo/) - Usage tracking
+- [AI Assistant](./examples/ai-assistant/) - TanStack Query patterns
+- [Customer Support](./examples/customer-support/) - Supabase integration
 - [Streaming Chat](./examples/streaming-chat/)
 
 ---
@@ -152,15 +180,13 @@ function App() {
 ## 🎯 Feature Highlights
 
 ### **Voice Input**
+
 ```tsx
-<VoiceInput
-  onTranscript={(text) => sendMessage(text)}
-  lang="en-US"
-  autoSubmit
-/>
+<VoiceInput onTranscript={(text) => sendMessage(text)} lang="en-US" autoSubmit />
 ```
 
 ### **Streaming Responses**
+
 ```tsx
 const { streamMessage } = useStreaming()
 
@@ -171,6 +197,7 @@ await streamMessage('/api/chat', {
 ```
 
 ### **Error Recovery**
+
 ```tsx
 const { executeWithRetry } = useErrorRecovery({
   maxRetries: 3,
@@ -183,6 +210,7 @@ await executeWithRetry(async () => {
 ```
 
 ### **Analytics Tracking**
+
 ```tsx
 <AnalyticsProvider
   config={{
@@ -196,14 +224,78 @@ await executeWithRetry(async () => {
 
 ---
 
+## 🛠️ Developer Tooling
+
+### **Beautiful CLI** (Inspired by [charmbracelet](https://github.com/charmbracelet))
+
+```bash
+# Interactive component browser
+clarity-chat browse
+
+# Search components
+clarity-chat search "chat"
+
+# Smart package updates
+clarity-chat upgrade
+
+# Performance benchmarking
+clarity-chat benchmark
+
+# Project analysis
+clarity-chat analyze
+```
+
+**12 Commands** | **9+ TUI Components** | **Gorgeous Terminal UI**
+
+### **Interactive Playground**
+
+Monaco-based REPL for testing components in real-time with live preview and templates.
+
+### **Advanced Debugging**
+
+- **Time-Travel Debugger** - Record and replay conversation states
+- **Model Comparator** - Compare AI responses side-by-side
+- **Performance Profiler** - Track latency and token usage
+
+### **Automated Testing**
+
+- Playwright E2E (6 browsers + 2 mobile devices)
+- Visual regression with Chromatic
+- Accessibility testing with Lighthouse + Axe
+- 100% CI automation
+
+### **Migration Tools**
+
+- **Codemods** - Automated AST-based code transformations
+- Dry-run support
+- Version migration CLI
+
+### **VSCode Extension**
+
+- 60+ code snippets
+- IntelliSense and hover docs
+- Real-time diagnostics
+- Component preview panel
+
+**[→ Complete Developer Tools Guide](./.github/README_TOOLING.md)**
+
+---
+
 ## 📦 Packages
 
-| Package | Description | Size |
-|---------|-------------|------|
-| [`@clarity-chat/react`](./packages/react) | Main component library | ~95KB |
-| [`@clarity-chat/types`](./packages/types) | TypeScript definitions | ~8KB |
-| [`@clarity-chat/primitives`](./packages/primitives) | Base UI components | ~25KB |
-| [`@clarity-chat/error-handling`](./packages/error-handling) | Error recovery system | ~45KB |
+| Package                                                     | Description                         | Size   |
+| ----------------------------------------------------------- | ----------------------------------- | ------ |
+| [`@clarity-chat/react`](./packages/react)                   | Main library + AI infrastructure ⭐ | ~120KB |
+| [`@clarity-chat/types`](./packages/types)                   | TypeScript definitions              | ~8KB   |
+| [`@clarity-chat/primitives`](./packages/primitives)         | Base UI components                  | ~25KB  |
+| [`@clarity-chat/error-handling`](./packages/error-handling) | Error recovery system               | ~45KB  |
+
+**New in v2.0**:
+
+- Vector stores, embeddings, agents, RAG pipeline
+- AI safety, observability, webhooks, plugins
+- Multi-tenancy, RBAC, audit logging, quotas
+- All optional, tree-shakeable modules (+25KB)
 
 ---
 
@@ -219,7 +311,7 @@ clarity-chat/
 ├── apps/
 │   ├── storybook/       # Component documentation
 │   └── docs/            # Documentation site
-├── examples/            # 9 working examples
+├── examples/            # 16 production-ready examples
 └── docs/                # Markdown documentation
 ```
 
@@ -231,17 +323,17 @@ clarity-chat/
 import { themes } from '@clarity-chat/react'
 
 // 11 Built-in themes
-themes.default       // Clean, professional
-themes.dark          // Dark mode
-themes.ocean         // Blue ocean vibes
+themes.default // Clean, professional
+themes.dark // Dark mode
+themes.ocean // Blue ocean vibes
 themes.glassmorphism // Modern glass effect
-themes.sunset        // Warm sunset colors
-themes.forest        // Green nature theme
-themes.corporate     // Professional business
-themes.neon          // Cyberpunk neon
-themes.minimal       // Ultra minimal
-themes.warm          // Cozy warm tones
-themes.cool          // Cool blue/gray
+themes.sunset // Warm sunset colors
+themes.forest // Green nature theme
+themes.corporate // Professional business
+themes.neon // Cyberpunk neon
+themes.minimal // Ultra minimal
+themes.warm // Cozy warm tones
+themes.cool // Cool blue/gray
 ```
 
 **[→ Custom Theme Guide](./docs/guides/theming.md)**
@@ -305,6 +397,7 @@ npm run storybook
 ## 🗺️ Roadmap
 
 ### ✅ **8-Phase UX Enhancement: COMPLETE** 🎉
+
 - ✅ **Phase 1**: Buttons & Inputs with animations
 - ✅ **Phase 2**: Forms & Validation with feedback
 - ✅ **Phase 3**: Modals & Overlays with accessibility
@@ -312,19 +405,36 @@ npm run storybook
 - ✅ **Phase 5**: Loading States with skeletons & progress
 - ✅ **Phase 6**: Lists & Cards with stagger animations
 - ✅ **Phase 7**: Message Display with 11 advanced animations
-- ✅ **Phase 8**: Advanced Interactions (Command Palette, Keyboard Shortcuts, Drag & Drop, Context Menus, Undo/Redo, Haptic Feedback, Theme Switcher)
+- ✅ **Phase 8**: Advanced Interactions (Command Palette, Keyboard Shortcuts, Drag & Drop, Context
+  Menus, Undo/Redo, Haptic Feedback, Theme Switcher)
 
 **Achievement: 70/69 goals completed = 101.4% 🎉**
 
+### ✅ **v2.0 Enterprise AI Release** 🎉
+
+- ✅ Vector database integrations (4 providers)
+- ✅ Multi-provider embeddings with caching
+- ✅ Agent orchestration framework
+- ✅ Complete RAG pipeline
+- ✅ AI safety guardrails
+- ✅ Observability & tracing
+- ✅ Webhook system
+- ✅ Plugin architecture
+- ✅ Multi-tenancy & RBAC
+- ✅ Audit logging & quotas
+
+**Achievement: 21/26 goals completed = 81% 🎉**
+
 ### 🚀 **Future Enhancements**
+
 - [ ] Documentation site with live examples
 - [ ] Component playground
 - [ ] NPM package release
-- [ ] VS Code extension
+- [ ] Enhanced streaming hooks
+- [ ] Admin dashboard components
+- [ ] Backend SDK (Node.js/Python)
 - [ ] Performance benchmarks
 - [ ] Internationalization (i18n)
-- [ ] Plugin system
-- [ ] Real-time collaboration
 
 **[→ Full Roadmap & Phase Documentation](./docs/architecture/roadmap.md)**
 
@@ -333,6 +443,7 @@ npm run storybook
 ## 💡 Examples
 
 ### **OpenAI Integration**
+
 ```tsx
 import OpenAI from 'openai'
 
@@ -348,6 +459,7 @@ const handleSend = async (content: string) => {
 ```
 
 ### **Anthropic Claude**
+
 ```tsx
 import Anthropic from '@anthropic-ai/sdk'
 
@@ -379,6 +491,23 @@ Projects built with Clarity Chat:
 
 ---
 
+## 💼 Commercial Documentation
+
+Looking to sell or commercialize this library? Check out the
+**[`commercial-docs/`](./commercial-docs)** directory for complete business documentation:
+
+- **Pricing Strategy** - 3-tier pricing model with ROI calculators
+- **Legal Documents** - Licenses, Terms of Service, Privacy Policy
+- **Sales Materials** - Deck, case studies, competitive analysis
+- **Implementation Guide** - Step-by-step customer onboarding
+- **Business Plan** - 3-year projections, GTM strategy, unit economics
+
+This directory is designed to be moved to a separate repository for business/sales teams.
+
+**[→ View Commercial Documentation](./commercial-docs/README.md)**
+
+---
+
 ## 📄 License
 
 MIT © 2024 [Code & Clarity](https://codeclarity.ai)
@@ -388,6 +517,7 @@ MIT © 2024 [Code & Clarity](https://codeclarity.ai)
 ## 🙏 Acknowledgments
 
 Built with amazing open-source tools:
+
 - [React](https://react.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
@@ -420,6 +550,7 @@ Built with amazing open-source tools:
 
 **Built with ❤️ by [Code & Clarity](https://codeclarity.ai)**
 
-[⭐ Star on GitHub](https://github.com/christireid/Clarity-ai-chat-components) • [📖 Read the Docs](./docs/README.md) • [🚀 Try Examples](./examples/README.md)
+[⭐ Star on GitHub](https://github.com/christireid/Clarity-ai-chat-components) •
+[📖 Read the Docs](./docs/README.md) • [🚀 Try Examples](./examples/README.md)
 
 </div>

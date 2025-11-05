@@ -1,6 +1,6 @@
 /**
  * Empty State Components
- * 
+ *
  * Comprehensive empty state components for various scenarios:
  * - No data
  * - No search results
@@ -48,14 +48,14 @@ export interface EmptyStateProps {
 /**
  * Base Empty State Component
  */
-export const EmptyState: React.FC<EmptyStateProps> = ({
+export const EmptyState = React.memo(function EmptyState({
   icon,
   title,
   description,
   action,
   secondaryAction,
   className,
-}) => {
+}: EmptyStateProps) {
   const scaleVariant = createScaleVariant(0.95, 'normal', 'spring')
 
   return (
@@ -74,17 +74,19 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
-          className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted"
+          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm border border-primary/10"
         >
           {icon}
         </motion.div>
       )}
 
       {/* Content */}
-      <div className="space-y-2 max-w-sm">
-        <h3 className="text-lg font-semibold">{title}</h3>
+      <div className="space-y-3 max-w-md">
+        <h3 className="text-xl font-semibold">{title}</h3>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="text-base text-muted-foreground leading-relaxed">
+            {description}
+          </p>
         )}
       </div>
 
@@ -111,15 +113,20 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       )}
     </motion.div>
   )
-}
+})
+
+EmptyState.displayName = 'EmptyState'
 
 /**
  * Empty Chat State
  */
-export const EmptyChatState: React.FC<{
+export const EmptyChatState = React.memo(function EmptyChatState({
+  onStartChat,
+  className,
+}: {
   onStartChat?: () => void
   className?: string
-}> = ({ onStartChat, className }) => {
+}) {
   return (
     <EmptyState
       icon={<BotIcon size={32} className="text-primary" />}
@@ -137,16 +144,22 @@ export const EmptyChatState: React.FC<{
       className={className}
     />
   )
-}
+})
+
+EmptyChatState.displayName = 'EmptyChatState'
 
 /**
  * No Search Results State
  */
-export const NoSearchResultsState: React.FC<{
+export const NoSearchResultsState = React.memo(function NoSearchResultsState({
+  searchQuery,
+  onClearSearch,
+  className,
+}: {
   searchQuery?: string
   onClearSearch?: () => void
   className?: string
-}> = ({ searchQuery, onClearSearch, className }) => {
+}) {
   return (
     <EmptyState
       icon={<SearchIcon size={32} className="text-muted-foreground" />}
@@ -167,15 +180,20 @@ export const NoSearchResultsState: React.FC<{
       className={className}
     />
   )
-}
+})
+
+NoSearchResultsState.displayName = 'NoSearchResultsState'
 
 /**
  * No Conversations State
  */
-export const NoConversationsState: React.FC<{
+export const NoConversationsState = React.memo(function NoConversationsState({
+  onCreateConversation,
+  className,
+}: {
   onCreateConversation?: () => void
   className?: string
-}> = ({ onCreateConversation, className }) => {
+}) {
   return (
     <EmptyState
       icon={<BotIcon size={32} className="text-muted-foreground" />}
@@ -193,15 +211,20 @@ export const NoConversationsState: React.FC<{
       className={className}
     />
   )
-}
+})
+
+NoConversationsState.displayName = 'NoConversationsState'
 
 /**
  * No Files State
  */
-export const NoFilesState: React.FC<{
+export const NoFilesState = React.memo(function NoFilesState({
+  onUpload,
+  className,
+}: {
   onUpload?: () => void
   className?: string
-}> = ({ onUpload, className }) => {
+}) {
   return (
     <EmptyState
       icon={<FileIcon size={32} className="text-muted-foreground" />}
@@ -219,24 +242,26 @@ export const NoFilesState: React.FC<{
       className={className}
     />
   )
-}
+})
+
+NoFilesState.displayName = 'NoFilesState'
 
 /**
  * Error State
  */
-export const ErrorState: React.FC<{
-  title?: string
-  description?: string
-  onRetry?: () => void
-  onGoBack?: () => void
-  className?: string
-}> = ({
+export const ErrorState = React.memo(function ErrorState({
   title = 'Something went wrong',
   description = 'An error occurred. Please try again.',
   onRetry,
   onGoBack,
   className,
-}) => {
+}: {
+  title?: string
+  description?: string
+  onRetry?: () => void
+  onGoBack?: () => void
+  className?: string
+}) {
   return (
     <EmptyState
       icon={<AlertCircleIcon size={32} className="text-destructive" />}
@@ -262,17 +287,24 @@ export const ErrorState: React.FC<{
       className={className}
     />
   )
-}
+})
+
+ErrorState.displayName = 'ErrorState'
 
 /**
  * Success State
  */
-export const SuccessState: React.FC<{
+export const SuccessState = React.memo(function SuccessState({
+  title,
+  description,
+  onContinue,
+  className,
+}: {
   title: string
   description?: string
   onContinue?: () => void
   className?: string
-}> = ({ title, description, onContinue, className }) => {
+}) {
   return (
     <EmptyState
       icon={<CheckCircleIcon size={32} className="text-success" />}
@@ -290,12 +322,19 @@ export const SuccessState: React.FC<{
       className={className}
     />
   )
-}
+})
+
+SuccessState.displayName = 'SuccessState'
 
 /**
  * Info State
  */
-export const InfoState: React.FC<{
+export const InfoState = React.memo(function InfoState({
+  title,
+  description,
+  onAction,
+  className,
+}: {
   title: string
   description?: string
   onAction?: {
@@ -303,7 +342,7 @@ export const InfoState: React.FC<{
     onClick: () => void
   }
   className?: string
-}> = ({ title, description, onAction, className }) => {
+}) {
   return (
     <EmptyState
       icon={<InfoIcon size={32} className="text-info" />}
@@ -313,20 +352,22 @@ export const InfoState: React.FC<{
       className={className}
     />
   )
-}
+})
+
+InfoState.displayName = 'InfoState'
 
 /**
  * Loading State (with animated icon)
  */
-export const LoadingState: React.FC<{
-  title?: string
-  description?: string
-  className?: string
-}> = ({
+export const LoadingState = React.memo(function LoadingState({
   title = 'Loading...',
   description = 'Please wait while we load your content',
   className,
-}) => {
+}: {
+  title?: string
+  description?: string
+  className?: string
+}) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -352,15 +393,20 @@ export const LoadingState: React.FC<{
       </div>
     </motion.div>
   )
-}
+})
+
+LoadingState.displayName = 'LoadingState'
 
 /**
  * Offline State
  */
-export const OfflineState: React.FC<{
+export const OfflineState = React.memo(function OfflineState({
+  onRetry,
+  className,
+}: {
   onRetry?: () => void
   className?: string
-}> = ({ onRetry, className }) => {
+}) {
   return (
     <EmptyState
       icon={<AlertCircleIcon size={32} className="text-warning" />}
@@ -378,4 +424,6 @@ export const OfflineState: React.FC<{
       className={className}
     />
   )
-}
+})
+
+OfflineState.displayName = 'OfflineState'

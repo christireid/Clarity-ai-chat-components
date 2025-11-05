@@ -1,0 +1,322 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Getting Started/Design Principles" />
+
+<div className="sb-container">
+  # Design Principles
+  
+  <p className="sb-lead">
+    The core principles that guide our component design and development philosophy.
+  </p>
+
+  ## 🎯 Our Principles
+
+  ### 1. Delightful by Default
+  
+  Every interaction should feel smooth, responsive, and satisfying. We achieve this through:
+  
+  - **Microanimations**: Subtle animations that provide feedback and guide attention
+  - **Tactile Feedback**: Visual and haptic responses to user actions
+  - **Progressive Enhancement**: Basic functionality works everywhere, enhancements for capable browsers
+  - **Performance**: Smooth 60fps animations and instant responsiveness
+  
+  **Example**: Our Button component includes ripple effects, loading states, and success/error animations that make interactions feel tangible.
+
+  ### 2. Accessible Always
+  
+  Accessibility isn't optional—it's fundamental to good design.
+  
+  - **WCAG 2.1 AA Compliance**: All components meet or exceed standards
+  - **Keyboard Navigation**: Every interactive element is keyboard accessible
+  - **Screen Reader Support**: Proper ARIA labels and semantic HTML
+  - **Focus Management**: Clear focus indicators and logical tab order
+  - **Color Contrast**: Minimum 4.5:1 ratio for text, 3:1 for UI elements
+  - **Reduced Motion**: Respects `prefers-reduced-motion` setting
+  
+  **Tools**: We use the a11y addon in Storybook to test every component.
+
+  ### 3. Performance First
+  
+  Fast is a feature. Slow is a bug.
+  
+  - **Optimized Rendering**: React.memo, useMemo, useCallback where beneficial
+  - **Virtualization**: For long lists (MessageList uses react-window)
+  - **Code Splitting**: Lazy load components that aren't immediately needed
+  - **Bundle Size**: Tree-shakeable exports, minimal dependencies
+  - **React 18 Concurrent**: Leverage startTransition for non-urgent updates
+  - **Network Efficiency**: Debounce/throttle where appropriate
+  
+  **Metrics**: Lighthouse scores of 90+ for Performance and Accessibility.
+
+  ### 4. Flexible & Composable
+  
+  Components should work together seamlessly while remaining flexible.
+  
+  - **Compound Components**: Related components that work together (e.g., Card → CardHeader → CardContent)
+  - **Controlled & Uncontrolled**: Support both patterns for state management
+  - **Composition Over Configuration**: Build complex UIs from simple pieces
+  - **Prop Forwarding**: Accept all standard HTML attributes
+  - **Styling Flexibility**: className prop, CSS variables, Tailwind support
+  
+  **Philosophy**: Make simple things easy, complex things possible.
+
+  ### 5. Type-Safe
+  
+  TypeScript catches bugs before they reach production.
+  
+  - **Full Type Coverage**: Every component, hook, and utility
+  - **Strict Mode**: No `any` types without good reason
+  - **Generic Types**: Flexible yet type-safe APIs
+  - **Discriminated Unions**: Clear intent, better autocomplete
+  - **JSDoc Comments**: IntelliSense documentation
+  
+  **Developer Experience**: Autocomplete, type checking, inline documentation.
+
+  ## 🎨 Design Guidelines
+
+  ### Spacing System
+  
+  We use an 8px base unit for consistent spacing:
+  
+  - **0.5 = 4px** - Tight spacing
+  - **1 = 8px** - Default spacing
+  - **2 = 16px** - Comfortable spacing
+  - **3 = 24px** - Generous spacing
+  - **4 = 32px** - Section spacing
+  - **6 = 48px** - Large spacing
+  - **8 = 64px** - Extra large spacing
+
+  ### Color System
+  
+  Semantic colors with purpose:
+  
+  - **Primary**: Brand color, main actions
+  - **Secondary**: Supporting actions
+  - **Destructive**: Dangerous actions (delete, remove)
+  - **Success**: Positive feedback
+  - **Warning**: Caution, alerts
+  - **Info**: Informational messages
+  - **Muted**: Low emphasis content
+
+  ### Typography Scale
+  
+  Clear hierarchy with readable defaults:
+  
+  - **xs**: 12px - Fine print
+  - **sm**: 14px - Secondary text
+  - **base**: 16px - Body text (default)
+  - **lg**: 18px - Emphasized text
+  - **xl**: 20px - Subheadings
+  - **2xl**: 24px - Headings
+  - **3xl**: 30px - Section titles
+  - **4xl**: 36px - Page titles
+
+  ### Animation Timing
+  
+  Consistent durations for predictable motion:
+  
+  - **75ms**: Instant feedback (hover, focus)
+  - **150ms**: Quick transitions (dropdown open/close)
+  - **300ms**: Standard transitions (modal, drawer)
+  - **500ms**: Dramatic entrances (page transitions)
+  
+  **Easing**: Use ease-out for entering, ease-in for exiting, ease-in-out for moving.
+
+  ## 🛠️ Component Patterns
+
+  ### Compound Components
+  
+  ```tsx
+  // Good: Related functionality grouped
+  <Card>
+    <CardHeader>
+      <CardTitle>Title</CardTitle>
+    </CardHeader>
+    <CardContent>Content</CardContent>
+    <CardFooter>Actions</CardFooter>
+  </Card>
+  ```
+
+  ### Render Props
+  
+  ```tsx
+  // Flexible rendering
+  <MessageList
+    messages={messages}
+    renderMessage={(message) => (
+      <CustomMessage {...message} />
+    )}
+  />
+  ```
+
+  ### State Management
+  
+  ```tsx
+  // Controlled
+  <ChatInput value={value} onChange={setValue} />
+  
+  // Uncontrolled
+  <ChatInput defaultValue="Hello" />
+  ```
+
+  ## 🚫 Anti-Patterns to Avoid
+
+  ### ❌ Don't: Overly Complex Props
+  
+  ```tsx
+  // Bad: Too many options
+  <Button
+    variant="primary"
+    size="large"
+    rounded="full"
+    shadow="lg"
+    border="2px"
+    hoverScale={1.05}
+    // ... 20 more props
+  />
+  ```
+  
+  ✅ **Do**: Sensible defaults, override only when needed
+  
+  ```tsx
+  // Good: Simple API
+  <Button variant="primary" size="lg">
+    Click Me
+  </Button>
+  ```
+
+  ### ❌ Don't: Hidden Side Effects
+  
+  ```tsx
+  // Bad: Component does too much
+  <ChatInput
+    autoSave // Saves to database
+    analytics // Tracks events
+    validation // Validates input
+    formatting // Auto-formats text
+  />
+  ```
+  
+  ✅ **Do**: Explicit, controllable behavior
+  
+  ```tsx
+  // Good: Clear responsibilities
+  <ChatInput
+    value={value}
+    onChange={handleChange}
+    onSubmit={handleSubmit}
+  />
+  ```
+
+  ### ❌ Don't: Boolean Props for Variants
+  
+  ```tsx
+  // Bad: Confusing combinations
+  <Button primary secondary large small />
+  ```
+  
+  ✅ **Do**: Enums or string literals
+  
+  ```tsx
+  // Good: Clear intent
+  <Button variant="primary" size="lg" />
+  ```
+
+  ## 📚 Further Reading
+
+  - [React Patterns](https://reactpatterns.com/)
+  - [Component-Driven Development](https://www.componentdriven.org/)
+  - [Inclusive Components](https://inclusive-components.design/)
+  - [Design Systems](https://www.designsystems.com/)
+  - [Web Content Accessibility Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+
+  ## 🤝 Contributing
+
+  When adding or modifying components:
+  
+  1. ✅ Follow these design principles
+  2. ✅ Add Storybook stories showing all variants
+  3. ✅ Write comprehensive TypeScript types
+  4. ✅ Test with keyboard navigation
+  5. ✅ Verify with a11y addon
+  6. ✅ Check performance with React DevTools
+  7. ✅ Document props and usage
+  8. ✅ Add examples and best practices
+
+  **Remember**: Good design is invisible. If users notice our components (for the wrong reasons), we've failed. They should feel natural, intuitive, and delightful.
+</div>
+
+<style>
+  {`
+    .sb-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    
+    .sb-lead {
+      font-size: 1.25rem;
+      line-height: 1.8;
+      color: #666;
+      margin: 1rem 0 3rem;
+    }
+    
+    h2 {
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    h4 {
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+    
+    li {
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+    
+    code {
+      background: #f3f4f6;
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-size: 0.875em;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    
+    strong {
+      font-weight: 600;
+      color: #1f2937;
+    }
+  `}
+</style>

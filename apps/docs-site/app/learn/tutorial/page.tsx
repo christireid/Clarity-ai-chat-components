@@ -3,6 +3,7 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
+import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
 
 export const metadata: Metadata = {
   title: 'Tutorial',
@@ -61,6 +62,8 @@ npm install @clarity-chat/react`}
         language="bash"
         title="Terminal"
       />
+
+      <UseChatFlowAnimation />
 
       <h2 id="basic-chat">Step 2: Basic Chat Interface</h2>
       

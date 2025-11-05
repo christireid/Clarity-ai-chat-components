@@ -2,12 +2,12 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import type { AIStatus } from '@clarity-chat/types'
 import { cn } from '@clarity-chat/primitives'
-import { 
-  BotIcon, 
-  SearchIcon, 
-  FileIcon, 
-  SparklesIcon, 
-  CheckCircleIcon 
+import {
+  BotIcon,
+  SearchIcon,
+  FileIcon,
+  SparklesIcon,
+  CheckCircleIcon,
 } from './icons'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
 
@@ -16,10 +16,10 @@ export interface ThinkingIndicatorProps {
   className?: string
 }
 
-export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
+export const ThinkingIndicator = React.memo(function ThinkingIndicator({
   status,
   className,
-}) => {
+}: ThinkingIndicatorProps) {
   const getStageIcon = (stage: AIStatus['stage']) => {
     const iconProps = { size: 20 }
     switch (stage) {
@@ -60,11 +60,14 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      transition={{ 
+      transition={{
         duration: ANIMATION_DURATION.normal / 1000,
         ease: ANIMATION_EASING.out,
       }}
-      className={cn('flex items-center gap-3 p-4 rounded-lg bg-muted', className)}
+      className={cn(
+        'flex items-center gap-3 rounded-2xl border border-border/60 bg-[hsl(var(--surface-muted))] px-5 py-4 shadow-[0_12px_28px_rgba(15,23,42,0.12)]',
+        className
+      )}
     >
       {/* Animated Icon */}
       <motion.div
@@ -88,7 +91,7 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
           <span className="font-medium text-sm">
             {status ? getStageLabel(status.stage) : 'Processing'}
           </span>
-          
+
           {/* Animated Dots */}
           <div className="flex gap-1">
             {[0, 1, 2].map((i) => (
@@ -115,7 +118,7 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
           <motion.p
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ 
+            transition={{
               duration: ANIMATION_DURATION.fast / 1000,
               ease: ANIMATION_EASING.out,
             }}
@@ -127,11 +130,11 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
 
         {/* Progress Bar */}
         {status?.progress !== undefined && (
-          <div className="mt-2 h-1 bg-background rounded-full overflow-hidden">
+          <div className="mt-2 h-1 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${status.progress}%` }}
-              transition={{ 
+              transition={{
                 duration: ANIMATION_DURATION.slow / 1000,
                 ease: ANIMATION_EASING.out,
               }}
@@ -148,9 +151,15 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
           animate={{ opacity: 1, scale: 1 }}
           className="text-xs text-muted-foreground"
         >
-          ~{Math.ceil((status.estimatedCompletion.getTime() - Date.now()) / 1000)}s
+          ~
+          {Math.ceil(
+            (status.estimatedCompletion.getTime() - Date.now()) / 1000
+          )}
+          s
         </motion.span>
       )}
     </motion.div>
   )
-}
+})
+
+ThinkingIndicator.displayName = 'ThinkingIndicator'

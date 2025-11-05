@@ -2,13 +2,13 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
-import { ScrollArea, Button } from '@clarity-chat/primitives'
+import { ScrollArea, Button, cn } from '@clarity-chat/primitives'
 import { useAutoScroll } from '../hooks/use-auto-scroll'
 import { ArrowDownIcon } from './icons'
 import { SkeletonMessage } from './skeleton'
-import { 
-  createStaggerContainerVariant, 
-  createStaggerChildVariant 
+import {
+  createStaggerContainerVariant,
+  createStaggerChildVariant,
 } from '../animations/utils'
 import { INTERACTION_VARIANTS } from '../animations/constants'
 
@@ -26,7 +26,7 @@ export interface MessageListProps {
   className?: string
 }
 
-export const MessageList: React.FC<MessageListProps> = ({
+export const MessageList = React.memo(function MessageList({
   messages,
   onMessageCopy,
   onMessageFeedback,
@@ -35,7 +35,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   loadingCount = 3,
   emptyState,
   className,
-}) => {
+}: MessageListProps) {
   // Use auto-scroll hook with smooth scrolling
   const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
@@ -52,10 +52,13 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   return (
     <div className="relative h-full">
-      <ScrollArea ref={scrollRef as React.RefObject<HTMLDivElement>} className={className}>
+      <ScrollArea
+        ref={scrollRef as React.RefObject<HTMLDivElement>}
+        className={cn('h-full bg-transparent px-2 py-4 sm:px-4', className)}
+      >
         {/* Loading skeletons */}
         {isLoading && messages.length === 0 && (
-          <div className="space-y-4 p-4">
+          <div className="space-y-4 px-4 py-6">
             {Array.from({ length: loadingCount }).map((_, index) => (
               <SkeletonMessage
                 key={`skeleton-${index}`}
@@ -72,7 +75,7 @@ export const MessageList: React.FC<MessageListProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-center h-full p-8"
+            className="flex h-full items-center justify-center px-6 py-12"
           >
             {emptyState}
           </motion.div>
@@ -80,19 +83,15 @@ export const MessageList: React.FC<MessageListProps> = ({
 
         {/* Messages */}
         {messages.length > 0 && (
-          <motion.div 
-            className="space-y-4 p-4"
+          <motion.div
+            className="space-y-3 px-2 pb-6 sm:px-4"
             variants={containerVariants}
             initial="initial"
             animate="animate"
           >
             <AnimatePresence mode="popLayout">
               {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  variants={itemVariants}
-                  layout
-                >
+                <motion.div key={message.id} variants={itemVariants} layout>
                   <Message
                     message={message}
                     onCopy={(content) => onMessageCopy?.(message.id, content)}
@@ -115,7 +114,7 @@ export const MessageList: React.FC<MessageListProps> = ({
           </motion.div>
         )}
       </ScrollArea>
-      
+
       {/* Show scroll-to-bottom button when not at bottom */}
       <AnimatePresence>
         {!isNearBottom && messages.length > 0 && (
@@ -133,9 +132,9 @@ export const MessageList: React.FC<MessageListProps> = ({
             >
               <Button
                 size="sm"
-                variant="secondary"
+                variant="default"
                 onClick={scrollToBottom}
-                className="shadow-lg gap-1.5"
+                className="shadow-xl gap-1.5 bg-primary/95 hover:bg-primary backdrop-blur-sm"
               >
                 <ArrowDownIcon size={16} />
                 Scroll to bottom
@@ -146,4 +145,6 @@ export const MessageList: React.FC<MessageListProps> = ({
       </AnimatePresence>
     </div>
   )
-}
+})
+
+MessageList.displayName = 'MessageList'

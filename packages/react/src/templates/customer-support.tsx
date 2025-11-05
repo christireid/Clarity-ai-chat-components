@@ -4,7 +4,7 @@
  * Pre-configured chat interface for customer support scenarios
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ChatWindow } from '../components/chat-window'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { corporateTheme } from '../theme/presets'
@@ -44,23 +44,34 @@ export function CustomerSupportTemplate({
   onEscalate,
   apiEndpoint = '/api/support',
 }: CustomerSupportTemplateProps) {
+  const chatId = 'customer-support-chat'
+  const now = new Date()
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
+      chatId,
       role: 'assistant',
       content: `Welcome to ${companyName} Support! How can I help you today?\n\nYou can ask me about:\n${supportCategories.map(cat => `• ${cat}`).join('\n')}`,
-      timestamp: new Date(),
+      status: 'sent',
+      createdAt: now,
+      updatedAt: now,
     },
   ])
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSendMessage = async (content: string) => {
+    const timestamp = new Date()
+    
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
+      chatId,
       role: 'user',
       content,
-      timestamp: new Date(),
+      status: 'sent',
+      createdAt: timestamp,
+      updatedAt: timestamp,
     }
     
     setMessages(prev => [...prev, userMessage])
@@ -75,9 +86,12 @@ export function CustomerSupportTemplate({
     if (needsEscalation && onEscalate) {
       const escalationMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: 'I\'ll connect you with a human agent right away. Please wait a moment...',
-        timestamp: new Date(),
+        status: 'sent',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         metadata: { type: 'escalation' },
       }
       setMessages(prev => [...prev, escalationMessage])
@@ -94,9 +108,12 @@ export function CustomerSupportTemplate({
     if (matchedFaq) {
       const faqResponse: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: matchedFaq.answer,
-        timestamp: new Date(),
+        status: 'sent',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         metadata: { type: 'faq' },
       }
       setMessages(prev => [...prev, faqResponse])
@@ -122,9 +139,12 @@ export function CustomerSupportTemplate({
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: data.response || 'I understand your concern. Let me help you with that.',
-        timestamp: new Date(),
+        status: 'sent',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         metadata: data.metadata,
       }
       
@@ -133,9 +153,12 @@ export function CustomerSupportTemplate({
       // Fallback response
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: 'I appreciate your patience. Let me look into that for you. Meanwhile, you can always request to speak with a human agent.',
-        timestamp: new Date(),
+        status: 'sent',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
       setMessages(prev => [...prev, fallbackMessage])
     } finally {
@@ -144,7 +167,7 @@ export function CustomerSupportTemplate({
   }
 
   return (
-    <ThemeProvider theme={corporateTheme}>
+    <ThemeProvider defaultTheme={corporateTheme}>
       <div className="customer-support-template" style={{ height: '100%', width: '100%' }}>
         <ChatWindow
           messages={messages}

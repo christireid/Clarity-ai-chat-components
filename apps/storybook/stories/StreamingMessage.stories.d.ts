@@ -1,0 +1,22 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { StreamingMessage } from '@clarity-chat/react';
+declare const meta: Meta<typeof StreamingMessage>;
+export default meta;
+type Story = StoryObj<typeof meta>;
+export declare const Default: Story;
+export declare const Streaming: Story;
+export declare const WithCodeBlock: Story;
+export declare const WithThinking: Story;
+export declare const ActiveThinking: Story;
+export declare const WithToolCalls: Story;
+export declare const WithCitations: Story;
+export declare const CompleteExample: Story;
+export declare const ErrorState: Story;
+export declare const PartialJSON: Story;
+export declare const InteractiveStreaming: Story;
+export declare const InteractiveToolApproval: Story;
+export declare const LongContent: Story;
+export declare const MultipleCitations: Story;
+export declare const NoContent: Story;
+export declare const AllFeaturesDisabled: Story;
+//# sourceMappingURL=StreamingMessage.stories.d.ts.map

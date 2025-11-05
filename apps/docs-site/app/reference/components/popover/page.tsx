@@ -1,8 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next';
-import LiveDemo from '@/components/LiveDemo';
-import ApiTable from '@/components/ApiTable';
-import Callout from '@/components/Callout';
+import { LiveDemo } from '@/components/Demo/LiveDemo';
+import { ApiTable } from '@/components/Demo/ApiTable';
+import { Callout } from '@/components/MDX/Callout';
 
 export const metadata: Metadata = {
   title: 'Popover Component - Clarity Chat Components',
@@ -65,7 +65,6 @@ export default function BasicPopover() {
     />
   );
 }`}
-          scope={{ useState: React.useState }}
         />
       </section>
 
@@ -75,109 +74,109 @@ export default function BasicPopover() {
           title="Popover Props"
           data={[
             {
-              prop: 'trigger',
+              name: 'trigger',
               type: 'ReactNode',
               default: 'undefined',
               description: 'Element that triggers the popover'
             },
             {
-              prop: 'content',
+              name: 'content',
               type: 'ReactNode',
               default: 'undefined',
               description: 'Content to display in the popover'
             },
             {
-              prop: 'isOpen',
+              name: 'isOpen',
               type: 'boolean',
               default: 'undefined',
               description: 'Controlled open state'
             },
             {
-              prop: 'onOpenChange',
+              name: 'onOpenChange',
               type: '(isOpen: boolean) => void',
               default: 'undefined',
               description: 'Callback when open state changes'
             },
             {
-              prop: 'defaultOpen',
+              name: 'defaultOpen',
               type: 'boolean',
               default: 'false',
               description: 'Initial open state for uncontrolled usage'
             },
             {
-              prop: 'placement',
+              name: 'placement',
               type: "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'",
               default: "'bottom'",
               description: 'Placement of popover relative to trigger'
             },
             {
-              prop: 'offset',
+              name: 'offset',
               type: 'number',
               default: '8',
               description: 'Distance in pixels from trigger'
             },
             {
-              prop: 'flip',
+              name: 'flip',
               type: 'boolean',
               default: 'true',
               description: 'Whether to flip placement when there is insufficient space'
             },
             {
-              prop: 'arrow',
+              name: 'arrow',
               type: 'boolean',
               default: 'true',
               description: 'Whether to show arrow pointing to trigger'
             },
             {
-              prop: 'triggerOn',
+              name: 'triggerOn',
               type: "'click' | 'hover' | 'focus'",
               default: "'click'",
               description: 'How the popover is triggered'
             },
             {
-              prop: 'closeOnClickOutside',
+              name: 'closeOnClickOutside',
               type: 'boolean',
               default: 'true',
               description: 'Whether clicking outside closes the popover'
             },
             {
-              prop: 'closeOnEsc',
+              name: 'closeOnEsc',
               type: 'boolean',
               default: 'true',
               description: 'Whether pressing Escape closes the popover'
             },
             {
-              prop: 'hoverDelay',
+              name: 'hoverDelay',
               type: 'number',
               default: '200',
               description: 'Delay in ms before opening on hover'
             },
             {
-              prop: 'hoverLeaveDelay',
+              name: 'hoverLeaveDelay',
               type: 'number',
               default: '300',
               description: 'Delay in ms before closing when leaving hover'
             },
             {
-              prop: 'width',
+              name: 'width',
               type: 'number | string',
               default: "'auto'",
               description: 'Width of the popover'
             },
             {
-              prop: 'maxWidth',
+              name: 'maxWidth',
               type: 'number',
               default: '320',
               description: 'Maximum width in pixels'
             },
             {
-              prop: 'className',
+              name: 'className',
               type: 'string',
               default: 'undefined',
               description: 'Additional CSS classes for popover container'
             },
             {
-              prop: 'portal',
+              name: 'portal',
               type: 'boolean',
               default: 'true',
               description: 'Whether to render in a portal (for proper z-index stacking)'
@@ -408,7 +407,6 @@ export default function FormPopover() {
     />
   );
 }`}
-          scope={{ useState: React.useState }}
         />
       </section>
 
@@ -498,7 +496,6 @@ export default function ControlledPopover() {
     </div>
   );
 }`}
-          scope={{ useState: React.useState }}
         />
       </section>
 
@@ -690,7 +687,6 @@ export default function ColorPickerPopover() {
     </div>
   );
 }`}
-          scope={{ useState: React.useState }}
         />
       </section>
 

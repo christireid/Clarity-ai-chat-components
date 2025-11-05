@@ -197,22 +197,22 @@ export function TokenCounter({
   const getColorClasses = () => {
     if (isCritical) {
       return {
-        text: 'text-red-700 dark:text-red-300',
-        bg: 'bg-red-500',
-        border: 'border-red-300 dark:border-red-700',
+        text: 'text-destructive',
+        bg: 'bg-destructive',
+        border: 'border-destructive/20',
       }
     }
     if (isWarning) {
       return {
-        text: 'text-yellow-700 dark:text-yellow-300',
-        bg: 'bg-yellow-500',
-        border: 'border-yellow-300 dark:border-yellow-700',
+        text: 'text-[hsl(var(--warning))]',
+        bg: 'bg-[hsl(var(--warning))]',
+        border: 'border-[hsl(var(--warning))]/20',
       }
     }
     return {
-      text: 'text-green-700 dark:text-green-300',
-      bg: 'bg-green-500',
-      border: 'border-green-300 dark:border-green-700',
+      text: 'text-[hsl(var(--success))]',
+      bg: 'bg-[hsl(var(--success))]',
+      border: 'border-[hsl(var(--success))]/20',
     }
   }
 
@@ -249,7 +249,7 @@ export function TokenCounter({
 
         {/* Cost estimate */}
         {showCost && estimatedCost !== null && (
-          <div className="text-gray-600 dark:text-gray-400 font-mono">
+          <div className="text-muted-foreground font-mono">
             {formatCost(estimatedCost)}
           </div>
         )}
@@ -257,9 +257,9 @@ export function TokenCounter({
 
       {/* Progress bar */}
       {showBar && (
-        <div className="relative w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div className="relative w-full bg-muted rounded-full overflow-hidden">
           <div
-            className={`${sizes.bar} ${colors.bg} transition-all duration-300 ease-out`}
+            className={`${sizes.bar} ${colors.bg} transition-all duration-200 ease-out`}
             style={{ width: `${percentage}%` }}
             role="progressbar"
             aria-valuenow={currentTokens}
@@ -277,7 +277,7 @@ export function TokenCounter({
       {/* Warning message */}
       {showWarning && isWarning && (
         <div
-          className={`flex items-start gap-2 p-3 rounded-lg border ${colors.border} bg-opacity-10 ${colors.bg.replace('bg-', 'bg-opacity-10 ')}`}
+          className={`flex items-start gap-2 p-3 rounded-xl border ${colors.border} ${colors.bg}/10 shadow-sm`}
           role="alert"
         >
           <svg
@@ -299,7 +299,7 @@ export function TokenCounter({
                 ? 'Context Limit Nearly Reached'
                 : 'Approaching Context Limit'}
             </p>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {isCritical
                 ? 'The conversation may be truncated soon. Consider pruning older messages.'
                 : 'You\'re using a large portion of the context window. Older messages may be excluded.'}
@@ -309,7 +309,7 @@ export function TokenCounter({
             {suggestPruning && isCritical && onPruneSuggested && (
               <button
                 onClick={onPruneSuggested}
-                className={`mt-2 text-xs font-medium ${colors.text} hover:underline focus:outline-none`}
+                className={`mt-2 text-xs font-medium ${colors.text} hover:underline focus:outline-none transition-opacity hover:opacity-80`}
               >
                 → Prune old messages to free up space
               </button>

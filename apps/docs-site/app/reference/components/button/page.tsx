@@ -2,7 +2,9 @@ import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground'
 import { Callout } from '@/components/MDX/Callout'
+import { buttonPresets, buttonControls } from './presets'
 
 export const metadata: Metadata = {
   title: 'Button - Clarity Chat Components',
@@ -29,9 +31,39 @@ export default function ButtonPage() {
       </section>
 
       <section className="docs-section">
+        <h2>Interactive Playground</h2>
+        <p className="mb-6">
+          Experiment with the Button component! Try different variants, sizes, and states.
+          Use the controls panel to customize props in real-time, or switch between presets
+          to see common use cases.
+        </p>
+        <EnhancedPlayground
+          title="Button Component Playground"
+          description="Explore all button variants, sizes, and states with live controls"
+          component="Button"
+          initialCode={`import { Button } from '@clarity-chat/react'
+
+export default function Example() {
+  return (
+    <div className="flex items-center justify-center gap-3 p-8">
+      <Button variant="primary">Primary Button</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="success">Success</Button>
+    </div>
+  )
+}`}
+          presets={buttonPresets}
+          controls={buttonControls}
+          showResponsiveControls
+          showQuickActions
+          height="550px"
+        />
+      </section>
+
+      <section className="docs-section">
         <h2>Basic Usage</h2>
         <LiveDemo
-          title="Basic Buttons"
+          title="Simple Example"
           code={`import { Button } from '@clarity-chat/react'
 
 function BasicButtons() {

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/dist/styles/index.css'
 import type { Message } from '@clarity-chat/types'
 
 function App() {
@@ -8,7 +9,7 @@ function App() {
       id: '1',
       role: 'assistant',
       content: 'Hello! I\'m your AI assistant. How can I help you today?',
-      timestamp: Date.now() - 5000,
+      createdAt: new Date(Date.now() - 5000),
     },
   ])
   const [isLoading, setIsLoading] = useState(false)
@@ -19,7 +20,7 @@ function App() {
       id: Date.now().toString(),
       role: 'user',
       content,
-      timestamp: Date.now(),
+      createdAt: new Date(),
     }
     
     setMessages((prev) => [...prev, userMessage])
@@ -38,7 +39,7 @@ Here are some things you could try:
 - Get explanations for complex topics
 
 I'm here to help!`,
-        timestamp: Date.now(),
+        createdAt: new Date(),
       }
       
       setMessages((prev) => [...prev, aiMessage])

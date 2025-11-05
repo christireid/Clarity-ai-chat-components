@@ -1,55 +1,57 @@
 /**
- * Environment detection utilities
+ * Framework and environment detection utilities
  */
-
-import { existsSync } from 'fs'
-import { join } from 'path'
-
-export function detectPackageManager() {
-  if (existsSync(join(process.cwd(), 'yarn.lock'))) {
-    return 'yarn'
-  }
-  if (existsSync(join(process.cwd(), 'pnpm-lock.yaml'))) {
-    return 'pnpm'
-  }
-  if (existsSync(join(process.cwd(), 'bun.lockb'))) {
-    return 'bun'
-  }
-  return 'npm'
-}
-
-export function detectFramework() {
-  const packageJsonPath = join(process.cwd(), 'package.json')
-  
-  if (!existsSync(packageJsonPath)) {
-    return null
-  }
-  
-  try {
-    const packageJson = require(packageJsonPath)
-    const deps = {
-      ...packageJson.dependencies,
-      ...packageJson.devDependencies
+import fs from 'fs-extra';
+import path from 'path';
+export async function detectFramework(cwd) {
+    try {
+        const packageJsonPath = path.join(cwd, 'package.json');
+        if (!await fs.pathExists(packageJsonPath)) {
+            return null;
+        }
+        const packageJson = await fs.readJson(packageJsonPath);
+        const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
+        // Check for framework dependencies
+        if (deps['next'])
+            return 'nextjs';
+        if (deps['@remix-run/react'])
+            return 'remix';
+        if (deps['astro'])
+            return 'astro';
+        if (deps['vite'] && deps['react'])
+            return 'vite';
+        return null;
     }
-    
-    if (deps['next']) return 'nextjs'
-    if (deps['@remix-run/react']) return 'remix'
-    if (deps['vite']) return 'vite'
-    if (deps['react-scripts']) return 'create-react-app'
-    if (deps['gatsby']) return 'gatsby'
-    
-    return 'react'
-  } catch {
-    return null
-  }
+    catch (error) {
+        return null;
+    }
 }
-
-export function detectTypeScript() {
-  return existsSync(join(process.cwd(), 'tsconfig.json'))
+export async function detectPackageManager(cwd) {
+    if (await fs.pathExists(path.join(cwd, 'pnpm-lock.yaml')))
+        return 'pnpm';
+    if (await fs.pathExists(path.join(cwd, 'yarn.lock')))
+        return 'yarn';
+    if (await fs.pathExists(path.join(cwd, 'package-lock.json')))
+        return 'npm';
+    if (await fs.pathExists(path.join(cwd, 'bun.lockb')))
+        return 'bun';
+    return 'npm'; // default
 }
-
-export default {
-  detectPackageManager,
-  detectFramework,
-  detectTypeScript
+export async function isTypeScriptProject(cwd) {
+    return await fs.pathExists(path.join(cwd, 'tsconfig.json'));
 }
+export async function hasTailwind(cwd) {
+    const configFiles = [
+        'tailwind.config.js',
+        'tailwind.config.ts',
+        'tailwind.config.cjs',
+        'tailwind.config.mjs',
+    ];
+    for (const file of configFiles) {
+        if (await fs.pathExists(path.join(cwd, file))) {
+            return true;
+        }
+    }
+    return false;
+}
+//# sourceMappingURL=detect.js.map

@@ -1,20 +1,19 @@
 /**
  * AI Assistant Template
- * 
+ *
  * General-purpose AI assistant with rich features
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ChatWindow } from '../components/chat-window'
 import { ContextManager } from '../components/context-manager'
 import { ModelSelector } from '../components/model-selector'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { oceanTheme } from '../theme/presets'
-import { OpenAIAdapter } from '../adapters/openai'
-import { AnthropicAdapter } from '../adapters/anthropic'
-import { GoogleAdapter } from '../adapters/google'
+import { openAIAdapter } from '../adapters/openai'
+import { anthropicAdapter } from '../adapters/anthropic'
+import { googleAdapter } from '../adapters/google'
 import { useLocalStorage } from '../hooks/use-local-storage'
-import { useStreaming } from '../hooks/use-streaming'
 import type { Message, Context } from '@clarity-chat/types'
 
 export interface AIAssistantTemplateProps {
@@ -33,7 +32,7 @@ export interface AIAssistantTemplateProps {
 
 /**
  * AI Assistant Template
- * 
+ *
  * Features:
  * - Multiple AI model support
  * - Streaming responses
@@ -41,7 +40,7 @@ export interface AIAssistantTemplateProps {
  * - File uploads
  * - Voice input
  * - Conversation history
- * 
+ *
  * @example
  * ```tsx
  * <AIAssistantTemplate
@@ -58,65 +57,131 @@ export interface AIAssistantTemplateProps {
 export function AIAssistantTemplate({
   apiKeys = {},
   defaultModel = 'gpt-4-turbo-preview',
-  enableFileUpload = true,
-  enableVoiceInput = true,
   enableContextManagement = true,
   systemPrompt = 'You are a helpful AI assistant. Be concise, accurate, and friendly.',
   maxTokens = 4096,
 }: AIAssistantTemplateProps) {
-  const [messages, setMessages] = useLocalStorage<Message[]>('ai-assistant-messages', [])
-  const [context, setContext] = useLocalStorage<Context[]>('ai-assistant-context', [])
+  const [messages, setMessages] = useLocalStorage<Message[]>(
+    'ai-assistant-messages',
+    []
+  )
+  const [context, setContext] = useLocalStorage<Context[]>(
+    'ai-assistant-context',
+    []
+  )
   const [selectedModel, setSelectedModel] = useState(defaultModel)
   const [isLoading, setIsLoading] = useState(false)
-  const { streamMessage, isStreaming } = useStreaming()
 
   // Initialize adapters
   const adapters = {
-    openai: apiKeys.openai ? new OpenAIAdapter({ apiKey: apiKeys.openai }) : null,
-    anthropic: apiKeys.anthropic ? new AnthropicAdapter({ apiKey: apiKeys.anthropic }) : null,
-    google: apiKeys.google ? new GoogleAdapter({ apiKey: apiKeys.google }) : null,
+    openai: apiKeys.openai ? openAIAdapter : null,
+    anthropic: apiKeys.anthropic ? anthropicAdapter : null,
+    google: apiKeys.google ? googleAdapter : null,
   }
 
   const availableModels = [
-    ...(adapters.openai ? [
-      { id: 'gpt-4-turbo-preview', name: 'GPT-4 Turbo', provider: 'openai' },
-      { id: 'gpt-4', name: 'GPT-4', provider: 'openai' },
-      { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'openai' },
-    ] : []),
-    ...(adapters.anthropic ? [
-      { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'anthropic' },
-      { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'anthropic' },
-    ] : []),
-    ...(adapters.google ? [
-      { id: 'gemini-pro', name: 'Gemini Pro', provider: 'google' },
-    ] : []),
+    ...(adapters.openai
+      ? [
+          {
+            id: 'gpt-4-turbo-preview',
+            name: 'GPT-4 Turbo',
+            provider: 'openai' as const,
+            speed: 'medium' as const,
+            cost: 'high' as const,
+            quality: 'best' as const,
+            contextWindow: 128000,
+          },
+          { 
+            id: 'gpt-4', 
+            name: 'GPT-4', 
+            provider: 'openai' as const,
+            speed: 'medium' as const,
+            cost: 'high' as const,
+            quality: 'excellent' as const,
+            contextWindow: 8192,
+          },
+          { 
+            id: 'gpt-3.5-turbo', 
+            name: 'GPT-3.5 Turbo', 
+            provider: 'openai' as const,
+            speed: 'fast' as const,
+            cost: 'low' as const,
+            quality: 'good' as const,
+            contextWindow: 16384,
+          },
+        ]
+      : []),
+    ...(adapters.anthropic
+      ? [
+          { 
+            id: 'claude-3-opus', 
+            name: 'Claude 3 Opus', 
+            provider: 'anthropic' as const,
+            speed: 'medium' as const,
+            cost: 'high' as const,
+            quality: 'best' as const,
+            contextWindow: 200000,
+          },
+          {
+            id: 'claude-3-sonnet',
+            name: 'Claude 3 Sonnet',
+            provider: 'anthropic' as const,
+            speed: 'fast' as const,
+            cost: 'medium' as const,
+            quality: 'excellent' as const,
+            contextWindow: 200000,
+          },
+        ]
+      : []),
+    ...(adapters.google
+      ? [{ 
+          id: 'gemini-pro', 
+          name: 'Gemini Pro', 
+          provider: 'google' as const,
+          speed: 'fast' as const,
+          cost: 'low' as const,
+          quality: 'excellent' as const,
+          contextWindow: 32768,
+        }]
+      : []),
   ]
 
   const handleSendMessage = async (content: string) => {
+    const now = new Date()
+    const chatId = 'ai-assistant-chat'
+
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
+      chatId,
       role: 'user',
       content,
-      timestamp: new Date(),
+      status: 'sent',
+      createdAt: now,
+      updatedAt: now,
     }
-    
-    setMessages(prev => [...prev, userMessage])
+
+    setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
     // Determine which adapter to use
-    const model = availableModels.find(m => m.id === selectedModel)
-    const adapter = model ? adapters[model.provider as keyof typeof adapters] : null
+    const model = availableModels.find((m) => m.id === selectedModel)
+    const adapter = model
+      ? adapters[model.provider as keyof typeof adapters]
+      : null
 
-    if (!adapter) {
+    if (!adapter || !model) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: 'No AI model available. Please configure API keys.',
-        timestamp: new Date(),
+        status: 'error',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         metadata: { error: true },
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages((prev) => [...prev, errorMessage])
       setIsLoading(false)
       return
     }
@@ -125,49 +190,61 @@ export function AIAssistantTemplate({
       // Create assistant message for streaming
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: '',
-        timestamp: new Date(),
-        isStreaming: true,
+        status: 'streaming',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
-      
-      setMessages(prev => [...prev, assistantMessage])
 
-      // Prepare messages with system prompt and context
-      const chatMessages = [
-        { role: 'system' as const, content: systemPrompt },
-        ...(context.length > 0 ? [{
-          role: 'system' as const,
-          content: `Context:\n${context.map(c => `- ${c.name}: ${c.content}`).join('\n')}`,
-        }] : []),
-        ...messages.map(m => ({
-          role: m.role,
-          content: m.content,
-        })),
-        { role: 'user' as const, content },
-      ]
+      setMessages((prev) => [...prev, assistantMessage])
 
-      // Stream the response
-      await adapter.streamChat({
-        messages: chatMessages,
-        model: selectedModel,
-        maxTokens,
-        onChunk: (chunk) => {
-          setMessages(prev =>
-            prev.map(msg =>
-              msg.id === assistantMessage.id
-                ? { ...msg, content: msg.content + chunk }
-                : msg
-            )
-          )
-        },
-      })
+      // Note: streamChat is not part of ModelAdapter interface
+      // This template demonstrates concept but needs proper adapter implementation
+      // For now, use the chat method for non-streaming responses
+      const response = await adapter.chat(
+        [
+          { role: 'system', content: systemPrompt },
+          ...(context.length > 0
+            ? [
+                {
+                  role: 'system' as const,
+                  content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
+                },
+              ]
+            : []),
+          ...messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          { role: 'user' as const, content },
+        ],
+        {
+          provider: model.provider,
+          model: selectedModel,
+          maxTokens,
+          temperature: 0.7,
+        }
+      )
 
-      // Mark streaming as complete
-      setMessages(prev =>
-        prev.map(msg =>
+      // Update message with response
+      const responseContent = typeof response.content === 'string' 
+        ? response.content 
+        : response.content.map(p => p.type === 'text' ? p.text : '').join('')
+
+      setMessages((prev) =>
+        prev.map((msg) =>
           msg.id === assistantMessage.id
-            ? { ...msg, isStreaming: false }
+            ? { 
+                ...msg, 
+                content: responseContent, 
+                status: 'sent' as const,
+                updatedAt: new Date(),
+                metadata: { 
+                  model: selectedModel,
+                },
+              }
             : msg
         )
       )
@@ -175,61 +252,96 @@ export function AIAssistantTemplate({
       console.error('AI Assistant error:', error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date(),
+        status: 'error',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         metadata: { error: true },
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages((prev) => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleFileUpload = async (files: File[]) => {
-    // Add files to context
-    for (const file of files) {
-      const content = await file.text()
-      const contextItem: Context = {
-        id: Date.now().toString(),
-        name: file.name,
-        content: content.substring(0, 1000), // Limit context size
-        type: file.type.startsWith('image/') ? 'image' : 'document',
-      }
-      setContext(prev => [...prev, contextItem])
+  const handleContextAdd = (newContexts: Context[]) => {
+    setContext((prev) => [...prev, ...newContexts])
+  }
+
+  const handleContextRemove = (id: string) => {
+    setContext((prev) => prev.filter((c) => c.id !== id))
+  }
+
+  const handleContextToggle = (id: string) => {
+    setContext((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, isActive: !c.isActive } : c))
+    )
+  }
+
+  const handleExport = () => {
+    const text = messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n\n')
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `conversation-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleClear = () => {
+    if (confirm('Clear all messages? This cannot be undone.')) {
+      setMessages([])
     }
   }
 
   return (
-    <ThemeProvider theme={oceanTheme}>
-      <div className="ai-assistant-template" style={{ display: 'flex', height: '100%', width: '100%' }}>
+    <ThemeProvider defaultTheme={oceanTheme}>
+      <div className="ai-assistant-template flex h-full w-full bg-background">
+        {/* Context Sidebar */}
         {enableContextManagement && (
-          <div style={{ width: '300px', borderRight: '1px solid var(--border)' }}>
+          <div className="w-80 border-r bg-card/50 backdrop-blur-sm">
             <ContextManager
-              items={context}
-              onAddItem={(item) => setContext(prev => [...prev, item])}
-              onRemoveItem={(id) => setContext(prev => prev.filter(c => c.id !== id))}
-              onClear={() => setContext([])}
+              contexts={context}
+              onAdd={handleContextAdd}
+              onRemove={handleContextRemove}
+              onToggle={handleContextToggle}
             />
           </div>
         )}
-        
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '1rem', borderBottom: '1px solid var(--border)' }}>
-            <ModelSelector
-              models={availableModels}
-              selectedModel={selectedModel}
-              onSelectModel={setSelectedModel}
-            />
+
+        {/* Main Chat Area */}
+        <div className="flex flex-1 flex-col">
+          {/* Model Selector Header */}
+          <div className="flex items-center justify-between gap-4 border-b bg-card/80 backdrop-blur-sm px-4 py-3 sm:px-6">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <ModelSelector
+                models={availableModels}
+                value={selectedModel}
+                onChange={(modelId) => setSelectedModel(modelId)}
+              />
+            </div>
           </div>
-          
-          <div style={{ flex: 1 }}>
+
+          {/* Chat Window */}
+          <div className="flex-1 overflow-hidden">
             <ChatWindow
               messages={messages}
-              isLoading={isLoading || isStreaming}
+              isLoading={isLoading}
               onSendMessage={handleSendMessage}
-              onFileUpload={enableFileUpload ? handleFileUpload : undefined}
-              enableVoiceInput={enableVoiceInput}
+              showHeader
+              sessionTitle="AI Assistant"
+              sessionSubtitle={`Using ${availableModels.find(m => m.id === selectedModel)?.name || 'AI Model'}`}
+              showMessageCount
+              onExport={handleExport}
+              onClear={handleClear}
             />
           </div>
         </div>
