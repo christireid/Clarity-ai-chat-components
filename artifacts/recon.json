@@ -1,0 +1,57 @@
+{
+  "timestamp": "2025-11-05T00:00:00Z",
+  "repository": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components.git",
+    "branch": "cursor/repository-quality-gate-and-remediation-plan-fdcf",
+    "type": "monorepo"
+  },
+  "environment": {
+    "node_version": "v22.21.1",
+    "node_required": ">=18.0.0",
+    "package_manager": "npm@10.2.4",
+    "lockfile_present": false
+  },
+  "workspaces": {
+    "total": 41,
+    "packages": 10,
+    "apps": 4,
+    "examples": 27,
+    "package_names": [
+      "@clarity-chat/types",
+      "@clarity-chat/errors",
+      "@clarity-chat/cli",
+      "@clarity-chat/playground",
+      "@clarity-chat/primitives",
+      "@clarity-chat/licensing",
+      "@clarity-chat/codemods",
+      "@clarity-chat/dev-tools",
+      "@clarity-chat/react",
+      "@clarity-chat/error-handling"
+    ]
+  },
+  "build_system": {
+    "tool": "turborepo",
+    "version": "2.0.0",
+    "typescript_version": "5.3.3"
+  },
+  "scripts": {
+    "dev": "npx turbo run dev",
+    "build": "npx turbo run build",
+    "lint": "npx turbo run lint",
+    "typecheck": "npx turbo run typecheck",
+    "test": "npx turbo run test",
+    "test:e2e": "playwright test",
+    "storybook:build": "npm run build --workspace=@clarity-chat/storybook"
+  },
+  "testing": {
+    "frameworks": ["jest", "vitest", "playwright"],
+    "jest_packages": ["packages/errors"],
+    "vitest_packages": ["packages/react", "packages/error-handling"],
+    "e2e_tool": "playwright"
+  },
+  "configs": {
+    "tsconfig_count": 33,
+    "eslint_root": "eslint.config.js",
+    "eslint_legacy": ["apps/docs-site/.eslintrc.json", "examples/rag-workbench-demo/.eslintrc.json"]
+  }
+}

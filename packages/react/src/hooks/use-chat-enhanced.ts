@@ -364,7 +364,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                   break
                 }
 
-              try {
+                try {
                 const parsed = JSON.parse(data)
                 
                 // Handle different streaming formats
@@ -446,6 +446,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                 setData(currentMessage)
               }
             }
+          }
           }
 
           // Finalize message

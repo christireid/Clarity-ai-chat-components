@@ -1,0 +1,289 @@
+[
+  {
+    "id": "ISSUE-001",
+    "category": "configuration",
+    "severity": "blocker",
+    "scope": ["examples/ai-research-platform", "examples/conversational-analytics", "examples/token-optimization-demo", "examples/enterprise-ai-ops"],
+    "summary": "Package manager mismatch: workspace: protocol incompatible with npm",
+    "evidence": {
+      "error": "npm error code EUNSUPPORTEDPROTOCOL - Unsupported URL Type \"workspace:\": workspace:*",
+      "log_file": "/home/ubuntu/.npm/_logs/2025-11-05T20_51_01_166Z-debug-0.log",
+      "affected_files": [
+        "examples/ai-research-platform/package.json",
+        "examples/conversational-analytics/package.json",
+        "examples/token-optimization-demo/package.json",
+        "examples/enterprise-ai-ops/package.json"
+      ],
+      "occurrences": 10
+    },
+    "root_cause": "Root package.json declares packageManager as npm@10.2.4, but 4 workspace dependencies use pnpm/yarn 'workspace:*' protocol which npm does not support",
+    "fix": {
+      "strategy": "Replace 'workspace:*' with '*' in all workspace package.json files",
+      "command": "find . -name 'package.json' -exec sed -i 's/\"workspace:\\*\"/\"*\"/g' {} \\;",
+      "files": [
+        "examples/ai-research-platform/package.json",
+        "examples/conversational-analytics/package.json",
+        "examples/token-optimization-demo/package.json",
+        "examples/enterprise-ai-ops/package.json"
+      ],
+      "patch_example": "- \"@clarity-chat/react\": \"workspace:*\",\n+ \"@clarity-chat/react\": \"*\","
+    },
+    "risk": "low",
+    "effort_hours": 0.5,
+    "status": "fixed",
+    "impact": "Prevented npm install, blocking all subsequent quality gates"
+  },
+  {
+    "id": "ISSUE-002",
+    "category": "dependencies",
+    "severity": "critical",
+    "scope": ["examples/ai-research-platform", "examples/conversational-analytics", "examples/enterprise-ai-ops"],
+    "summary": "Peer dependency conflict: React 19 incompatible with lucide-react@0.344.0",
+    "evidence": {
+      "error": "peer react@\"^16.5.1 || ^17.0.0 || ^18.0.0\" from lucide-react@0.344.0",
+      "packages_using_react_19": ["ai-research-platform", "conversational-analytics", "enterprise-ai-ops"],
+      "lucide_react_requirement": "^16.5.1 || ^17.0.0 || ^18.0.0"
+    },
+    "root_cause": "Three example packages upgraded to React 19.x, but lucide-react@0.344.0 only supports React 16-18",
+    "fix": {
+      "strategy": "Option 1: Upgrade lucide-react to latest version (supports React 19), OR Option 2: Downgrade React to 18.x in affected packages",
+      "option_1": {
+        "description": "Update lucide-react to latest version in all packages",
+        "command": "npm install lucide-react@latest --workspace=examples/ai-research-platform --workspace=examples/conversational-analytics --workspace=examples/enterprise-ai-ops",
+        "risk": "low",
+        "preferred": true
+      },
+      "option_2": {
+        "description": "Downgrade React to 18.x",
+        "edits": "Change react@^19.0.0 to react@^18.2.0 in 3 package.json files",
+        "risk": "medium"
+      }
+    },
+    "risk": "low",
+    "effort_hours": 0.5,
+    "status": "workaround_applied",
+    "workaround": "Using --legacy-peer-deps flag",
+    "impact": "Required --legacy-peer-deps workaround to complete install"
+  },
+  {
+    "id": "ISSUE-003",
+    "category": "security",
+    "severity": "major",
+    "scope": ["root"],
+    "summary": "24 npm security vulnerabilities (23 moderate, 1 critical)",
+    "evidence": {
+      "audit_summary": "24 vulnerabilities (23 moderate, 1 critical)",
+      "affected_packages": ["@storybook/*", "@remix-run/dev", "esbuild", "vite"],
+      "audit_file": "/workspace/artifacts/npm-audit.json"
+    },
+    "root_cause": "Outdated dependencies with known security vulnerabilities, primarily in Storybook v8.2.x packages",
+    "fix": {
+      "strategy": "Run npm audit fix and manually upgrade Storybook to latest stable version",
+      "steps": [
+        "npm audit fix --legacy-peer-deps",
+        "Upgrade @storybook/* packages to v8.6.14+",
+        "Test Storybook builds after upgrade"
+      ],
+      "major_upgrades_required": {
+        "storybook": "8.2.0-beta.3 → 8.6.14",
+        "reason": "Security fixes and stability improvements"
+      }
+    },
+    "risk": "medium",
+    "effort_hours": 2,
+    "status": "open",
+    "impact": "Security vulnerabilities exposed, potential exploitation risk"
+  },
+  {
+    "id": "ISSUE-004",
+    "category": "code",
+    "severity": "blocker",
+    "scope": ["packages/react/src/hooks/use-chat-enhanced.ts"],
+    "summary": "Syntax error: Missing closing brace for while loop causing 'Unexpected catch'",
+    "evidence": {
+      "error": "ERROR: Unexpected \"catch\" at line 467",
+      "file": "packages/react/src/hooks/use-chat-enhanced.ts",
+      "lines": "349-467"
+    },
+    "root_cause": "While loop starting at line 349 missing closing brace before return statement at line 466, causing catch block to appear orphaned",
+    "fix": {
+      "strategy": "Add closing brace after line 449 to close while loop",
+      "file": "packages/react/src/hooks/use-chat-enhanced.ts",
+      "line": 450,
+      "patch": "Add '}' after line 449 to close while(true) loop",
+      "patch_example": "          }\n+          }\n\n          // Finalize message"
+    },
+    "risk": "low",
+    "effort_hours": 0.1,
+    "status": "fixed",
+    "impact": "Blocked build of @clarity-chat/react and all 32 dependent packages"
+  },
+  {
+    "id": "ISSUE-005",
+    "category": "code",
+    "severity": "blocker",
+    "scope": ["packages/react/src/utils/memory/token-optimized-context.ts"],
+    "summary": "Const reassignment error in token budget calculation",
+    "evidence": {
+      "error": "ERROR: Cannot assign to \"remainingBudget\" because it is a constant",
+      "file": "packages/react/src/utils/memory/token-optimized-context.ts",
+      "line": 177,
+      "declaration_line": 168
+    },
+    "root_cause": "Variable 'remainingBudget' declared as const but needs to be mutated in loop",
+    "fix": {
+      "strategy": "Change const to let",
+      "file": "packages/react/src/utils/memory/token-optimized-context.ts",
+      "line": 168,
+      "patch_example": "- const remainingBudget = budget - essentialTokens\n+ let remainingBudget = budget - essentialTokens"
+    },
+    "risk": "low",
+    "effort_hours": 0.1,
+    "status": "fixed",
+    "impact": "Blocked build of @clarity-chat/react and all dependent packages"
+  },
+  {
+    "id": "ISSUE-006",
+    "category": "code",
+    "severity": "blocker",
+    "scope": ["packages/react/src/components/icons.tsx"],
+    "summary": "Missing icon exports: 5 icons imported but not defined",
+    "evidence": {
+      "errors": [
+        "No matching export for 'ClockIcon' (used in message-metadata.tsx:5)",
+        "No matching export for 'DollarSignIcon' (used in message-metadata.tsx:5)",
+        "No matching export for 'TrendingUpIcon' (used in message-metadata.tsx:5)",
+        "No matching export for 'ShieldIcon' (used in message-metadata.tsx:5)",
+        "No matching export for 'FilterIcon' (used in advanced-message-search.tsx:13)"
+      ],
+      "importing_files": [
+        "packages/react/src/components/message-metadata.tsx",
+        "packages/react/src/components/advanced-message-search.tsx"
+      ]
+    },
+    "root_cause": "Features added using icons that were not yet implemented in icons.tsx",
+    "fix": {
+      "strategy": "Add missing icon components or use lucide-react imports",
+      "option_1": {
+        "description": "Import from lucide-react",
+        "files": ["message-metadata.tsx", "advanced-message-search.tsx"],
+        "patch_example": "import { Clock, DollarSign, TrendingUp, Shield, Filter } from 'lucide-react'"
+      },
+      "option_2": {
+        "description": "Add SVG icon definitions to icons.tsx",
+        "effort": "higher"
+      }
+    },
+    "risk": "low",
+    "effort_hours": 0.5,
+    "status": "open",
+    "impact": "Blocks build of @clarity-chat/react and all 32 dependent packages"
+  },
+  {
+    "id": "ISSUE-007",
+    "category": "testing",
+    "severity": "major",
+    "scope": ["packages/codemods"],
+    "summary": "No test files found in codemods package causing test suite to fail",
+    "evidence": {
+      "error": "No test files found, exiting with code 1",
+      "package": "@clarity-chat/codemods",
+      "test_command": "vitest"
+    },
+    "root_cause": "Package configured with vitest but no test files created yet",
+    "fix": {
+      "strategy": "Option 1: Add placeholder test file, OR Option 2: Update package.json to skip tests",
+      "option_1": {
+        "description": "Create src/__tests__/placeholder.test.ts",
+        "code": "describe('codemods', () => { it('placeholder', () => { expect(true).toBe(true) }) })"
+      },
+      "option_2": {
+        "description": "Change test script to 'echo \"No tests yet\" && exit 0'",
+        "preferred": true
+      }
+    },
+    "risk": "low",
+    "effort_hours": 0.25,
+    "status": "open",
+    "impact": "Test suite fails, blocks CI/CD pipeline"
+  },
+  {
+    "id": "ISSUE-008",
+    "category": "testing",
+    "severity": "critical",
+    "scope": ["packages/react"],
+    "summary": "Vitest configuration error: failed to load config causing test startup failure",
+    "evidence": {
+      "error": "failed to load config from /workspace/packages/react/vitest.config.mts - Error: The service was stopped: write EPIPE",
+      "package": "@clarity-chat/react"
+    },
+    "root_cause": "vitest.config.mts has syntax or import errors, or esbuild crash during config loading",
+    "fix": {
+      "strategy": "Debug and fix vitest.config.mts, check for TypeScript compilation issues",
+      "steps": [
+        "Review vitest.config.mts syntax",
+        "Check if config depends on broken build artifacts",
+        "Ensure all imports are valid"
+      ]
+    },
+    "risk": "medium",
+    "effort_hours": 1,
+    "status": "open",
+    "impact": "Cannot run tests for main React package"
+  },
+  {
+    "id": "ISSUE-009",
+    "category": "tooling",
+    "severity": "major",
+    "scope": ["root"],
+    "summary": "Playwright not installed, E2E tests cannot run",
+    "evidence": {
+      "error": "sh: 1: playwright: not found",
+      "command": "npm run test:e2e"
+    },
+    "root_cause": "Playwright package installed but browsers not installed",
+    "fix": {
+      "strategy": "Run Playwright installation command",
+      "command": "npx playwright install --with-deps",
+      "note": "May require sudo for system dependencies"
+    },
+    "risk": "low",
+    "effort_hours": 0.25,
+    "status": "open",
+    "impact": "E2E tests cannot be executed"
+  },
+  {
+    "id": "ISSUE-010",
+    "category": "dependencies",
+    "severity": "minor",
+    "scope": ["root"],
+    "summary": "Multiple deprecated dependencies in use",
+    "evidence": {
+      "deprecated_packages": [
+        "rimraf@2.6.3, rimraf@3.0.2 (multiple instances)",
+        "glob@7.2.3 (multiple instances)",
+        "eslint@8.57.1 (2 instances)",
+        "inflight@1.0.6",
+        "@humanwhocodes/object-schema@2.0.3",
+        "@humanwhocodes/config-array@0.13.0",
+        "intersection-observer@0.10.0",
+        "node-domexception@1.0.0"
+      ]
+    },
+    "root_cause": "Dependencies not updated to latest versions, using legacy packages",
+    "fix": {
+      "strategy": "Update to modern alternatives",
+      "updates": {
+        "rimraf": "Upgrade to v4+",
+        "glob": "Upgrade to v9+",
+        "eslint": "Upgrade to v9+ (requires config migration)",
+        "inflight": "Replace with lru-cache",
+        "@humanwhocodes/*": "Use @eslint/* packages"
+      }
+    },
+    "risk": "medium",
+    "effort_hours": 3,
+    "status": "open",
+    "impact": "Technical debt, potential compatibility issues"
+  }
+]

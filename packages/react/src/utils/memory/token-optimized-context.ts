@@ -165,7 +165,7 @@ export class TokenOptimizedContextManager {
     }
 
     // Add middle messages that fit
-    const remainingBudget = budget - essentialTokens
+    let remainingBudget = budget - essentialTokens
     const middle = messages.slice(2, -2)
     const selected: ContextMessage[] = []
 
