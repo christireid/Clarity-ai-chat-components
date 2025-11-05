@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { searchProducts, getProduct, getRecommendations } from '@/lib/products'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Initialize OpenAI client only when needed
+function getOpenAIClient() {
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || 'dummy-key-for-build',
+  })
+}
 
 // Define available functions for the AI
 const functions: OpenAI.Chat.ChatCompletionCreateParams.Function[] = [
@@ -65,6 +68,7 @@ const functions: OpenAI.Chat.ChatCompletionCreateParams.Function[] = [
 export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json()
+    const openai = getOpenAIClient()
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4-turbo-preview',
@@ -99,7 +103,7 @@ Always be friendly, knowledgeable, and customer-focused. Use the available funct
       let functionResult: any
 
       switch (functionName) {
-        case 'search_products':
+        case 'search_products': {
           const searchResults = searchProducts(functionArgs.query, {
             category: functionArgs.category,
             maxPrice: functionArgs.maxPrice,
@@ -115,13 +119,15 @@ Always be friendly, knowledgeable, and customer-focused. Use the available funct
             count: searchResults.length,
           }
           break
+        }
 
-        case 'get_product_details':
+        case 'get_product_details': {
           const product = getProduct(functionArgs.productId)
           functionResult = product || { error: 'Product not found' }
           break
+        }
 
-        case 'get_recommendations':
+        case 'get_recommendations': {
           const recommendations = getRecommendations({
             preferences: functionArgs.preferences,
           })
@@ -134,6 +140,7 @@ Always be friendly, knowledgeable, and customer-focused. Use the available funct
             })),
           }
           break
+        }
 
         default:
           functionResult = { error: 'Unknown function' }
