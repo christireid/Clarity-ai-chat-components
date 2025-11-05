@@ -11,6 +11,9 @@ export * from './model-fallback'
 // Context window management
 export * from './context-window'
 
+// Memory & Context Management (Advanced AI Memory System)
+export * from './memory'
+
 // Rate limiting
 export * from './rate-limiting'
 
