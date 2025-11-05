@@ -116,6 +116,7 @@ export * from './hooks/use-intersection-observer'
 // Note: use-keyboard-shortcuts not exported to avoid conflict with accessibility/keyboard-shortcuts
 // export * from './hooks/use-keyboard-shortcuts'
 export * from './hooks/use-local-storage'
+export * from './hooks/use-indexed-db'
 export * from './hooks/use-media-query'
 export * from './hooks/use-mounted'
 export * from './hooks/use-previous'
