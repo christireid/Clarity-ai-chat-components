@@ -28,3 +28,6 @@ export * from './response-limiter'
 export * from './request-batcher'
 export * from './reference-handler'
 
+// Configuration Builder
+export * from './chat-config-builder'
+
