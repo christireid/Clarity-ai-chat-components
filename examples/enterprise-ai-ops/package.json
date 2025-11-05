@@ -1,0 +1,34 @@
+{
+  "name": "@clarity-chat/enterprise-ai-ops",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enterprise AI Operations Dashboard - Full observability, safety monitoring, and evaluation",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3003",
+    "build": "next build",
+    "start": "next start -p 3003",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
+    "next": "^15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.10.3",
+    "lucide-react": "^0.344.0",
+    "date-fns": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
+  }
+}
