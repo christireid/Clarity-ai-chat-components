@@ -107,7 +107,7 @@ export const SSOConfigWizard: React.FC<SSOConfigWizardProps> = ({
           <Textarea
             id="sso-notes"
             value={notes}
-            onChange={(event) => onNotesChange?.(event.target.value)}
+            onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => onNotesChange?.(event.target.value)}
             placeholder="Record admin notes or escalation instructions..."
             className="min-h-[120px] resize-y bg-background/60"
           />

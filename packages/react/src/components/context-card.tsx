@@ -197,7 +197,7 @@ export const ContextCard = React.memo(function ContextCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation()
                     onToggle(context.id)
                   }}
@@ -232,7 +232,7 @@ export const ContextCard = React.memo(function ContextCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation()
                     onPreview(context)
                   }}
@@ -264,7 +264,7 @@ export const ContextCard = React.memo(function ContextCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation()
                     onRemove(context.id)
                   }}

@@ -140,7 +140,7 @@ export const KnowledgeBaseViewer = React.memo(function KnowledgeBaseViewer({
         <Input
           placeholder="Search knowledge base..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           icon={<span>🔍</span>}
           iconPosition="left"
         />
@@ -197,7 +197,7 @@ export const KnowledgeBaseViewer = React.memo(function KnowledgeBaseViewer({
                               {isEditing ? (
                                 <Input
                                   value={editContent.title}
-                                  onChange={(e) =>
+                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                     setEditContent({
                                       ...editContent,
                                       title: e.target.value,

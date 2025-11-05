@@ -73,9 +73,10 @@ export function useChatOptimized(
     ) => {
       if (batchUpdates) {
         // Batch updates using React's automatic batching
-        return React.startTransition(() => {
-          return chat.append(message, options)
+        React.startTransition(() => {
+          chat.append(message, options)
         })
+        return Promise.resolve(null)
       }
       return chat.append(message, options)
     },

@@ -45,7 +45,7 @@ export const SeatInviteDialog: React.FC<SeatInviteDialogProps> = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(next) => {
+    <Dialog open={open} onOpenChange={(next: boolean) => {
       setOpen(next)
       if (!next) resetState()
     }}>
@@ -69,7 +69,7 @@ export const SeatInviteDialog: React.FC<SeatInviteDialogProps> = ({
               type="email"
               placeholder="jane@company.com"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}
               autoFocus
               required
             />
