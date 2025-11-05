@@ -2,6 +2,10 @@
  * Memory Provider & Hooks
  * 
  * React integration for AI Memory & Context system
+ * 
+ * Note: This is a React wrapper around the framework-agnostic
+ * @clarity-chat/memory package. For non-React usage, import
+ * directly from @clarity-chat/memory
  */
 
 import * as React from 'react'
@@ -16,10 +20,10 @@ import type {
   MemoryStats,
   MemoryEvent,
   MemoryContext,
-} from './types'
+} from '@clarity-chat/memory'
 import type { VectorStore } from '../vector-stores/types'
 import type { EmbeddingProvider } from '../embeddings/types'
-import { MemoryService } from './memory-service'
+import { MemoryService } from '@clarity-chat/memory'
 
 /**
  * Memory Context
