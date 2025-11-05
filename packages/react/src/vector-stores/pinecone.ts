@@ -26,9 +26,9 @@ export class PineconeVectorStore implements VectorStore {
   
   private apiKey: string
   private _environment: string
-  private _indexName: string
+  private _indexName: string  // eslint-disable-line @typescript-eslint/no-unused-vars
   private baseUrl: string
-  private _initialized = false
+  private _initialized = false  // eslint-disable-line @typescript-eslint/no-unused-vars
   
   constructor(config: PineconeConfig) {
     if (!config.apiKey) {

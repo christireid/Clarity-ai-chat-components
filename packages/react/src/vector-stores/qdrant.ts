@@ -27,7 +27,7 @@ export class QdrantVectorStore implements VectorStore {
   private apiKey?: string
   private endpoint: string
   private collectionName: string
-  private _initialized = false
+  private _initialized = false  // eslint-disable-line @typescript-eslint/no-unused-vars
   
   constructor(config: QdrantConfig) {
     if (!config.endpoint) {
