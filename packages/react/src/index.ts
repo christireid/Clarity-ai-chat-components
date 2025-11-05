@@ -87,6 +87,8 @@ export * from './components/network-status'
 
 // Phase 3 Enhancement - Token Management
 export * from './components/token-counter'
+export * from './components/token-optimization-panel'
+export * from './components/token-optimization-badge'
 
 // Phase 3 Enhancement - Context & Conversation Management
 export * from './components/context-visualizer'
@@ -118,6 +120,7 @@ export * from './hooks/use-window-size'
 // Phase 3 Enhancement - Error Recovery & Token Tracking
 export * from './hooks/use-error-recovery'
 export * from './hooks/use-token-tracker'
+export * from './hooks/use-token-optimization'
 
 // Phase 3 Enhancement - Message Operations & Typing
 export * from './hooks/use-message-operations'

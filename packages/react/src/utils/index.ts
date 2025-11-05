@@ -20,3 +20,6 @@ export * from './hybrid-search'
 // Mobile utilities (existing)
 export * from './mobile'
 
+// Token optimization utilities
+export * from './token-optimization'
+
