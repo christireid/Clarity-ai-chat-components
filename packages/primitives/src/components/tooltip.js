@@ -7,7 +7,7 @@ import { cn } from '../lib/utils';
 // ============================================================================
 export const Tooltip = ({ children, content, side = 'top', align = 'center', delay = 200, showArrow = true, className, contentClassName, disabled = false, open: controlledOpen, onOpenChange, }) => {
     const [internalOpen, setInternalOpen] = React.useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     const [_position, _setPosition] = React.useState({ x: 0, y: 0 });
     const triggerRef = React.useRef(null);
     const tooltipRef = React.useRef(null);
