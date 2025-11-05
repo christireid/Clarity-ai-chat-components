@@ -1,0 +1,85 @@
+# Production Memory Infrastructure
+# Docker Compose configuration for memory and context management system
+# Based on Advanced Memory & Context Implementation Guide
+
+version: '3.8'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: clarity-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"  # gRPC port
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__HTTP_PORT: 6333
+      QDRANT__SERVICE__GRPC_PORT: 6334
+      QDRANT__LOG_LEVEL: INFO
+      QDRANT__STORAGE__OPTIMIZER__DEFAULT_SEGMENT_NUMBER: 2
+      QDRANT__STORAGE__OPTIMIZER__MAX_SEGMENT_SIZE: 20000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - memory-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: clarity-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --save 60 1000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - memory-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: clarity-postgres
+    environment:
+      POSTGRES_DB: chat_memories
+      POSTGRES_USER: chat_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-memory-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chat_user -d chat_memories"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - memory-network
+
+volumes:
+  qdrant_data:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  memory-network:
+    driver: bridge

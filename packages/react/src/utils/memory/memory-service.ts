@@ -153,13 +153,43 @@ export class MemoryService {
       return
     }
 
-    // Store in vector database
-    await this.config.vectorStore.storeMemory(memory)
+    try {
+      // Store in vector database with retry logic
+      await this.storeWithRetry(memory, 3)
+    } catch (error) {
+      console.error('Failed to store in vector database, falling back to session memory:', error)
+      // Fallback to session memory on failure
+      await this.storeSessionMemory(memory)
+    }
 
     // If promoting to global, also ensure it's marked appropriately
     if (options?.promoteToGlobal && memory.scope !== 'global') {
       memory.scope = 'global'
     }
+  }
+
+  /**
+   * Store memory with retry logic
+   */
+  private async storeWithRetry(memory: MemoryItem, maxRetries: number): Promise<void> {
+    let lastError: Error | null = null
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        await this.config.vectorStore!.storeMemory(memory)
+        return
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error))
+        
+        if (attempt < maxRetries) {
+          // Exponential backoff: 100ms, 200ms, 400ms
+          const delay = 100 * Math.pow(2, attempt - 1)
+          await new Promise((resolve) => setTimeout(resolve, delay))
+        }
+      }
+    }
+
+    throw lastError || new Error('Failed to store memory after retries')
   }
 
   /**
@@ -240,16 +270,25 @@ export class MemoryService {
     }
 
     try {
-      return await this.config.vectorStore.similaritySearch(
-        options.query,
-        options.userId,
-        {
-          k: options.maxResults ?? 5,
-          minScore: options.minConfidence ?? 0.7,
-        }
-      )
+      // Attempt retrieval with timeout
+      const result = await Promise.race([
+        this.config.vectorStore.similaritySearch(
+          options.query,
+          options.userId,
+          {
+            k: options.maxResults ?? 5,
+            minScore: options.minConfidence ?? 0.7,
+          }
+        ),
+        new Promise<MemoryItem[]>((_, reject) =>
+          setTimeout(() => reject(new Error('Retrieval timeout')), 5000)
+        ),
+      ])
+
+      return result as MemoryItem[]
     } catch (error) {
       console.error('Long-term memory retrieval failed:', error)
+      // Fallback: return empty array and continue with other layers
       return []
     }
   }
