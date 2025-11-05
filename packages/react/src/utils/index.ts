@@ -20,3 +20,11 @@ export * from './hybrid-search'
 // Mobile utilities (existing)
 export * from './mobile'
 
+// Token Optimization Utilities
+export * from './prompt-compression'
+export * from './smart-cache'
+export * from './model-router'
+export * from './response-limiter'
+export * from './request-batcher'
+export * from './reference-handler'
+

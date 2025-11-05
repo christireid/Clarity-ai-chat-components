@@ -249,3 +249,18 @@ export * from './hooks/use-undo-redo'
 
 // Phase 8 - Haptic Feedback
 export * from './hooks/use-haptic'
+
+// ============================================================================
+// TOKEN OPTIMIZATION FEATURES
+// ============================================================================
+
+// Token Optimization Components
+export * from './components/token-optimization-dashboard'
+
+// Token Optimization Hooks
+export * from './hooks/use-prompt-compression'
+export * from './hooks/use-smart-cache'
+export * from './hooks/use-model-router'
+export * from './hooks/use-response-limiter'
+export * from './hooks/use-request-batcher'
+export * from './hooks/use-smart-throttle'
