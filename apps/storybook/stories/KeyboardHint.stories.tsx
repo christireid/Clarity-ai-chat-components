@@ -1,178 +1,177 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { KeyboardHint } from '@clarity-chat/react'
+import { useState } from 'react'
+import type { KeyboardHintShortcut } from '@clarity-chat/react'
 
-/**
- * KeyboardHint displays keyboard shortcuts in a visually appealing way.
- * 
- * **Key Features:**
- * - Platform-aware (⌘ on Mac, Ctrl on Windows)
- * - Multiple key combinations
- * - Customizable styling
- * - Accessible labels
- * 
- * **Use Cases:**
- * - Shortcut tooltips
- * - Help documentation
- * - Command palettes
- * - Onboarding guides
- */
-const meta = {
+const meta: Meta<typeof KeyboardHint> = {
   title: 'Components/KeyboardHint',
   component: KeyboardHint,
+  tags: ['autodocs'],
   parameters: {
-    layout: 'centered',
     docs: {
       description: {
-        component: 'Display keyboard shortcuts with platform-aware formatting.',
+        component:
+          'Display keyboard shortcuts and hints to users. Supports multiple positions, categories, and animations. Essential for power users and accessibility.',
       },
     },
+    layout: 'fullscreen',
   },
-  tags: ['autodocs'],
-} satisfies Meta<typeof KeyboardHint>
+}
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<typeof KeyboardHint>
 
-export const Single: Story = {
-  args: {
-    keys: ['Enter'],
+const mockShortcuts: KeyboardHintShortcut[] = [
+  {
+    keys: ['Ctrl', 'K'],
+    description: 'Open command palette',
+    category: 'Navigation',
+  },
+  {
+    keys: ['Ctrl', 'Enter'],
+    description: 'Send message',
+    category: 'Actions',
+  },
+  {
+    keys: ['Esc'],
+    description: 'Close dialog',
+    category: 'Navigation',
+  },
+  {
+    keys: ['Ctrl', 'B'],
+    description: 'Toggle sidebar',
+    category: 'Navigation',
+  },
+  {
+    keys: ['Ctrl', '/'],
+    description: 'Show shortcuts',
+    category: 'Help',
+  },
+]
+
+export const Default: Story = {
+  render: () => {
+    const [visible, setVisible] = useState(true)
+    return (
+      <div className="relative h-screen">
+        <KeyboardHint
+          shortcuts={mockShortcuts}
+          visible={visible}
+          onClose={() => setVisible(false)}
+        />
+        <div className="p-8">
+          <button
+            onClick={() => setVisible(!visible)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            Toggle Keyboard Hints
+          </button>
+        </div>
+      </div>
+    )
   },
 }
 
-export const Combination: Story = {
-  args: {
-    keys: ['Cmd', 'K'],
+export const TopRight: Story = {
+  render: () => (
+    <div className="relative h-screen">
+      <KeyboardHint
+        shortcuts={mockShortcuts}
+        visible={true}
+        position="top-right"
+      />
+    </div>
+  ),
+}
+
+export const TopLeft: Story = {
+  render: () => (
+    <div className="relative h-screen">
+      <KeyboardHint
+        shortcuts={mockShortcuts}
+        visible={true}
+        position="top-left"
+      />
+    </div>
+  ),
+}
+
+export const BottomLeft: Story = {
+  render: () => (
+    <div className="relative h-screen">
+      <KeyboardHint
+        shortcuts={mockShortcuts}
+        visible={true}
+        position="bottom-left"
+      />
+    </div>
+  ),
+}
+
+export const Center: Story = {
+  render: () => {
+    const [visible, setVisible] = useState(true)
+    return (
+      <div className="relative h-screen">
+        <KeyboardHint
+          shortcuts={mockShortcuts}
+          visible={visible}
+          position="center"
+          onClose={() => setVisible(false)}
+        />
+        <div className="p-8">
+          <button
+            onClick={() => setVisible(!visible)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            Toggle Keyboard Hints
+          </button>
+        </div>
+      </div>
+    )
   },
 }
 
-export const CommonShortcuts: Story = {
-  render: () => (
-    <div className="space-y-4 w-full max-w-md">
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">Save</span>
-        <KeyboardHint keys={['Cmd', 'S']} />
+export const ManyShortcuts: Story = {
+  render: () => {
+    const manyShortcuts: KeyboardHintShortcut[] = [
+      ...mockShortcuts,
+      { keys: ['Ctrl', 'S'], description: 'Save', category: 'Actions' },
+      { keys: ['Ctrl', 'Z'], description: 'Undo', category: 'Actions' },
+      { keys: ['Ctrl', 'Y'], description: 'Redo', category: 'Actions' },
+      { keys: ['Ctrl', 'F'], description: 'Find', category: 'Navigation' },
+      { keys: ['Ctrl', 'G'], description: 'Find next', category: 'Navigation' },
+      { keys: ['F11'], description: 'Fullscreen', category: 'View' },
+      { keys: ['Ctrl', 'Shift', 'P'], description: 'Command palette', category: 'Navigation' },
+    ]
+    
+    return (
+      <div className="relative h-screen">
+        <KeyboardHint
+          shortcuts={manyShortcuts}
+          visible={true}
+          position="bottom-right"
+        />
       </div>
-      
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">Copy</span>
-        <KeyboardHint keys={['Cmd', 'C']} />
-      </div>
-      
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">Paste</span>
-        <KeyboardHint keys={['Cmd', 'V']} />
-      </div>
-      
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">Undo</span>
-        <KeyboardHint keys={['Cmd', 'Z']} />
-      </div>
-      
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">Redo</span>
-        <KeyboardHint keys={['Cmd', 'Shift', 'Z']} />
-      </div>
-    </div>
-  ),
+    )
+  },
 }
 
-export const ChatShortcuts: Story = {
-  render: () => (
-    <div className="space-y-4 w-full max-w-md">
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">Send message</span>
-        <KeyboardHint keys={['Cmd', 'Enter']} />
+export const WithoutCategories: Story = {
+  render: () => {
+    const shortcutsWithoutCategories: KeyboardHintShortcut[] = [
+      { keys: ['Ctrl', 'K'], description: 'Open command palette' },
+      { keys: ['Ctrl', 'Enter'], description: 'Send message' },
+      { keys: ['Esc'], description: 'Close dialog' },
+    ]
+    
+    return (
+      <div className="relative h-screen">
+        <KeyboardHint
+          shortcuts={shortcutsWithoutCategories}
+          visible={true}
+        />
       </div>
-      
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">New line</span>
-        <KeyboardHint keys={['Shift', 'Enter']} />
-      </div>
-      
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">Search messages</span>
-        <KeyboardHint keys={['Cmd', 'F']} />
-      </div>
-      
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">Open command palette</span>
-        <KeyboardHint keys={['Cmd', 'K']} />
-      </div>
-      
-      <div className="flex items-center justify-between p-3 border rounded-lg">
-        <span className="text-sm">Focus input</span>
-        <KeyboardHint keys={['/']} />
-      </div>
-    </div>
-  ),
-}
-
-export const InTooltip: Story = {
-  render: () => (
-    <div className="flex gap-4">
-      <button className="px-4 py-2 border rounded-lg hover:bg-gray-50 flex items-center gap-3">
-        <span>Save</span>
-        <KeyboardHint keys={['Cmd', 'S']} size="sm" />
-      </button>
-      
-      <button className="px-4 py-2 border rounded-lg hover:bg-gray-50 flex items-center gap-3">
-        <span>Cancel</span>
-        <KeyboardHint keys={['Esc']} size="sm" />
-      </button>
-    </div>
-  ),
-}
-
-export const Sizes: Story = {
-  render: () => (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <span className="text-sm">Small:</span>
-        <KeyboardHint keys={['Cmd', 'K']} size="sm" />
-      </div>
-      
-      <div className="flex items-center gap-3">
-        <span>Default:</span>
-        <KeyboardHint keys={['Cmd', 'K']} />
-      </div>
-      
-      <div className="flex items-center gap-3 text-lg">
-        <span>Large:</span>
-        <KeyboardHint keys={['Cmd', 'K']} size="lg" />
-      </div>
-    </div>
-  ),
-}
-
-export const NavigationKeys: Story = {
-  render: () => (
-    <div className="grid grid-cols-3 gap-3">
-      <div className="text-center">
-        <KeyboardHint keys={['↑']} />
-        <p className="text-xs text-gray-600 mt-2">Up</p>
-      </div>
-      
-      <div />
-      
-      <div className="text-center">
-        <KeyboardHint keys={['⇧']} />
-        <p className="text-xs text-gray-600 mt-2">Shift</p>
-      </div>
-      
-      <div className="text-center">
-        <KeyboardHint keys={['←']} />
-        <p className="text-xs text-gray-600 mt-2">Left</p>
-      </div>
-      
-      <div className="text-center">
-        <KeyboardHint keys={['↓']} />
-        <p className="text-xs text-gray-600 mt-2">Down</p>
-      </div>
-      
-      <div className="text-center">
-        <KeyboardHint keys={['→']} />
-        <p className="text-xs text-gray-600 mt-2">Right</p>
-      </div>
-    </div>
-  ),
+    )
+  },
 }
