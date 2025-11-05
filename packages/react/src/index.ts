@@ -132,6 +132,7 @@ export * from './hooks/use-token-optimization'
 
 // Phase 3 Enhancement - Message Operations & Typing
 export * from './hooks/use-message-operations'
+export * from './hooks/use-message-history'
 export * from './hooks/use-realistic-typing'
 
 // Optimistic Updates
@@ -157,6 +158,7 @@ export * from './utils/streaming-parser'
 
 // Performance utilities
 export * from './utils/performance'
+export * from './utils/performance-optimization'
 
 // Enhanced TypeScript types
 export * from './types/chat-types'
