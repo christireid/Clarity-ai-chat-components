@@ -10,19 +10,10 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { SkeletonText } from './skeleton'
+import type { MemoryItem, MemoryScope, MemoryType, MemoryLayer } from '@clarity-chat/types'
 
-export type MemoryScope = 'session' | 'thread' | 'global'
-
-export interface MemoryItem {
-  id: string
-  label: string
-  value: string
-  scope: MemoryScope
-  confidence?: number
-  source?: string
-  lastUpdated: Date
-  tokens?: number
-}
+// Re-export for backward compatibility
+export type { MemoryItem, MemoryScope }
 
 export interface MemoryInspectorProps {
   memories: MemoryItem[]
@@ -46,6 +37,21 @@ const scopeVariant: Record<MemoryScope, 'info' | 'warning' | 'success'> = {
   session: 'info',
   thread: 'warning',
   global: 'success',
+}
+
+const typeLabel: Record<MemoryType, string> = {
+  episodic: 'Event',
+  semantic: 'Knowledge',
+  preference: 'Preference',
+  fact: 'Fact',
+  behavior: 'Behavior',
+}
+
+const layerLabel: Record<MemoryLayer, string> = {
+  'real-time': 'Real-time',
+  session: 'Session',
+  semantic: 'Semantic',
+  episodic: 'Episodic',
 }
 
 const defaultTitle = 'Conversation memory'
@@ -144,6 +150,16 @@ export const MemoryInspector: React.FC<MemoryInspectorProps> = ({
                             <span className="text-sm font-semibold text-foreground">
                               {memory.label}
                             </span>
+                            {memory.type && (
+                              <Badge variant="outline" className="text-[11px]">
+                                {typeLabel[memory.type]}
+                              </Badge>
+                            )}
+                            {memory.layer && (
+                              <Badge variant="outline" className="text-[11px]">
+                                {layerLabel[memory.layer]}
+                              </Badge>
+                            )}
                             {memory.tokens !== undefined && (
                               <Badge variant="outline" className="text-[11px]">
                                 {memory.tokens} tokens
@@ -152,6 +168,11 @@ export const MemoryInspector: React.FC<MemoryInspectorProps> = ({
                             {memory.confidence !== undefined && (
                               <Badge variant={memory.confidence >= 0.7 ? 'success' : memory.confidence >= 0.4 ? 'warning' : 'destructive'}>
                                 Confidence {(memory.confidence * 100).toFixed(0)}%
+                              </Badge>
+                            )}
+                            {memory.importanceScore !== undefined && (
+                              <Badge variant="outline" className="text-[11px]">
+                                Importance: {(memory.importanceScore * 100).toFixed(0)}%
                               </Badge>
                             )}
                           </div>
