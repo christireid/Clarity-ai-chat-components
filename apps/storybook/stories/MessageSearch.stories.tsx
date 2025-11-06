@@ -1,134 +1,120 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { MessageSearch } from '@clarity-chat/react'
+import React from 'react'
+import { MessageSearch, MessageSearchWithSuspense } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
-import { useState } from 'react'
 
-const meta: Meta<typeof MessageSearch> = {
-  title: 'Components/MessageSearch',
+const dataset: Message[] = [
+  {
+    id: '1',
+    chatId: 'storybook',
+    role: 'user',
+    content: 'Outline a GTM plan for the Phoenix launch focusing on enterprise accounts.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    status: 'sent',
+  },
+  {
+    id: '2',
+    chatId: 'storybook',
+    role: 'assistant',
+    content: 'Here is a phased approach with awareness, activation, and expansion plays.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 22),
+    status: 'sent',
+  },
+  {
+    id: '3',
+    chatId: 'storybook',
+    role: 'user',
+    content: 'Summarise objections from pilot customers and suggested mitigations.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 10),
+    status: 'sent',
+  },
+  {
+    id: '4',
+    chatId: 'storybook',
+    role: 'assistant',
+    content: 'Top objections: integration effort, contract flexibility, and quota alignment.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 8),
+    status: 'sent',
+  },
+  {
+    id: '5',
+    chatId: 'storybook',
+    role: 'assistant',
+    content: 'Mitigations include pre-built Okta workflows, flexible seat pricing, and success SLAs.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 7),
+    status: 'sent',
+  },
+  {
+    id: '6',
+    chatId: 'storybook',
+    role: 'user',
+    content: 'Draft a leadership update synthesising outcomes, risks, and asks.',
+    createdAt: new Date(Date.now() - 1000 * 60 * 30),
+    status: 'sent',
+  },
+]
+
+const meta = {
+  title: 'Messaging/Tools/Message Search',
   component: MessageSearch,
-  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
         component:
-          'Message search component with React Concurrent Features. Uses useDeferredValue to keep the search input responsive even when filtering large message lists.',
+          'Concurrent-safe message filtering built on React deferred values. Inspired by high-scale search interactions in Workplace by Meta and Slack. Use for in-thread search experiences.',
       },
     },
-    layout: 'padded',
+    layout: 'centered',
   },
-}
+  argTypes: {
+    placeholder: { control: 'text' },
+  },
+  args: {
+    placeholder: 'Search conversation...',
+  },
+  tags: ['autodocs'],
+} satisfies Meta<typeof MessageSearch>
 
 export default meta
-type Story = StoryObj<typeof MessageSearch>
-
-const mockMessages: Message[] = [
-  {
-    id: '1',
-    role: 'user',
-    content: 'What is React?',
-    timestamp: Date.now() - 3600000,
-    createdAt: Date.now() - 3600000,
-    updatedAt: Date.now() - 3600000,
-  },
-  {
-    id: '2',
-    role: 'assistant',
-    content: 'React is a JavaScript library for building user interfaces.',
-    timestamp: Date.now() - 3300000,
-    createdAt: Date.now() - 3300000,
-    updatedAt: Date.now() - 3300000,
-  },
-  {
-    id: '3',
-    role: 'user',
-    content: 'How do I use hooks?',
-    timestamp: Date.now() - 3000000,
-    createdAt: Date.now() - 3000000,
-    updatedAt: Date.now() - 3000000,
-  },
-  {
-    id: '4',
-    role: 'assistant',
-    content: 'Hooks are functions that let you hook into React state and lifecycle features.',
-    timestamp: Date.now() - 2700000,
-    createdAt: Date.now() - 2700000,
-    updatedAt: Date.now() - 2700000,
-  },
-  {
-    id: '5',
-    role: 'user',
-    content: 'Show me an example of useState',
-    timestamp: Date.now() - 2400000,
-    createdAt: Date.now() - 2400000,
-    updatedAt: Date.now() - 2400000,
-  },
-  {
-    id: '6',
-    role: 'assistant',
-    content: 'Here is an example: const [count, setCount] = useState(0)',
-    timestamp: Date.now() - 2100000,
-    createdAt: Date.now() - 2100000,
-    updatedAt: Date.now() - 2100000,
-  },
-]
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  args: {
-    messages: mockMessages,
-    placeholder: 'Search messages...',
-  },
-}
-
-export const WithResultsCallback: Story = {
-  render: () => {
-    const [filteredMessages, setFilteredMessages] = useState<Message[]>(mockMessages)
+  render: (args) => {
+    const [filtered, setFiltered] = React.useState<Message[]>(dataset)
 
     return (
-      <div className="space-y-4">
+      <div className="w-full max-w-xl space-y-4">
         <MessageSearch
-          messages={mockMessages}
-          onResultsChange={setFilteredMessages}
-          placeholder="Search messages..."
+          {...args}
+          messages={dataset}
+          onResultsChange={(results) => setFiltered(results)}
         />
-        <div className="border rounded-lg p-4">
-          <h3 className="font-semibold mb-2">Filtered Results ({filteredMessages.length})</h3>
-          <div className="space-y-2">
-            {filteredMessages.map((msg) => (
-              <div key={msg.id} className="text-sm p-2 bg-muted rounded">
-                <span className="font-medium">{msg.role}:</span> {msg.content}
-              </div>
-            ))}
-          </div>
-        </div>
+
+        <ul className="space-y-2 rounded-xl border border-border bg-card p-4 text-sm">
+          {filtered.map((message) => (
+            <li key={message.id} className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="font-medium text-foreground">{message.role === 'assistant' ? 'Assistant' : 'You'}</p>
+              <p className="text-xs text-muted-foreground">{message.content}</p>
+            </li>
+          ))}
+          {filtered.length === 0 && (
+            <li className="rounded-lg border border-dashed border-border p-3 text-xs text-muted-foreground">
+              No messages match this query. Try keywords such as “risks” or “pricing”.
+            </li>
+          )}
+        </ul>
       </div>
     )
   },
 }
 
-export const LargeDataset: Story = {
-  args: {
-    messages: Array.from({ length: 100 }, (_, i) => ({
-      id: `msg-${i}`,
-      role: i % 2 === 0 ? 'user' : 'assistant',
-      content: `Message ${i}: This is a test message with some content.`,
-      timestamp: Date.now() - (100 - i) * 60000,
-      createdAt: Date.now() - (100 - i) * 60000,
-      updatedAt: Date.now() - (100 - i) * 60000,
-    })),
-    placeholder: 'Search through 100 messages...',
-  },
-}
-
-export const EmptyMessages: Story = {
-  args: {
-    messages: [],
-    placeholder: 'Search messages...',
-  },
-}
-
-export const CustomPlaceholder: Story = {
-  args: {
-    messages: mockMessages,
-    placeholder: 'Type to search conversation history...',
-  },
+export const WithSuspenseBoundary: Story = {
+  render: (args) => (
+    <div className="w-full max-w-xl space-y-4">
+      <MessageSearchWithSuspense {...args} messages={dataset} />
+      <p className="text-xs text-muted-foreground">
+        Suspense-friendly wrapper is useful when lazily loading the search component or heavy analytics providers.
+      </p>
+    </div>
+  ),
 }

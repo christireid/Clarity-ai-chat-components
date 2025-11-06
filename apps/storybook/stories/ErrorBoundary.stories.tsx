@@ -1,98 +1,189 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { ErrorBoundary } from '@clarity-chat/react'
-import { useState } from 'react'
+import React from 'react'
+import {
+  ErrorBoundary,
+  ErrorBoundaryEnhanced,
+  ErrorReporterProvider,
+  createConsoleErrorProvider,
+} from '@clarity-chat/react'
 
-const meta: Meta<typeof ErrorBoundary> = {
-  title: 'Components/ErrorBoundary',
+const SimulatedWidget: React.FC<{ explode: boolean }> = ({ explode }) => {
+  if (explode) {
+    throw new Error('Simulated failure: downstream embedding service not responding')
+  }
+
+  return (
+    <div className="space-y-2 rounded-xl border border-border bg-card p-6 text-left shadow-sm">
+      <h3 className="text-sm font-semibold text-foreground">Analytics Stream</h3>
+      <p className="text-xs text-muted-foreground">
+        This widget renders live metrics from the agent run feed. Toggle the button below to simulate a runtime error.
+      </p>
+    </div>
+  )
+}
+
+const meta = {
+  title: 'Foundations/Error Handling/ErrorBoundary',
   component: ErrorBoundary,
-  tags: ['autodocs'],
   parameters: {
+    layout: 'centered',
     docs: {
       description: {
         component:
-          'Error boundary component that catches React errors and displays a fallback UI. Essential for production applications to prevent complete crashes.',
+          'Production-ready React error boundaries with enhanced reporting. Pattern references: Atlassian Design System reliability checklist and Netflix fallback design. Stories illustrate default fallback, custom reset flows, and telemetry integration.',
       },
     },
-    layout: 'padded',
   },
-}
+  tags: ['autodocs'],
+} satisfies Meta<typeof ErrorBoundary>
 
 export default meta
-type Story = StoryObj<typeof ErrorBoundary>
+type Story = StoryObj<typeof meta>
 
-// Component that throws an error
-const BuggyComponent = ({ shouldThrow }: { shouldThrow: boolean }) => {
-  if (shouldThrow) {
-    throw new Error('Something went wrong!')
-  }
-  return <div className="p-4 bg-green-100 rounded-lg">Component working fine!</div>
-}
+export const DefaultFallback: Story = {
+  render: (args) => {
+    const [explode, setExplode] = React.useState(false)
+    const [resetKey, setResetKey] = React.useState(0)
 
-export const Default: Story = {
-  render: () => (
-    <ErrorBoundary>
-      <BuggyComponent shouldThrow={false} />
-    </ErrorBoundary>
-  ),
-}
-
-export const WithError: Story = {
-  render: () => (
-    <ErrorBoundary>
-      <BuggyComponent shouldThrow={true} />
-    </ErrorBoundary>
-  ),
-}
-
-export const Interactive: Story = {
-  render: () => {
-    const [shouldThrow, setShouldThrow] = useState(false)
-    
     return (
-      <div className="space-y-4">
-        <button
-          onClick={() => setShouldThrow(!shouldThrow)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          {shouldThrow ? 'Fix Component' : 'Break Component'}
-        </button>
-        <ErrorBoundary>
-          <BuggyComponent shouldThrow={shouldThrow} />
+      <div className="flex max-w-xl flex-col gap-4">
+        <ErrorBoundary {...args} resetKeys={[resetKey]}>
+          <SimulatedWidget explode={explode} />
+          <button
+            type="button"
+            className="w-fit rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
+            onClick={() => setExplode(true)}
+          >
+            Trigger Failure
+          </button>
         </ErrorBoundary>
+
+        <button
+          type="button"
+          className="w-fit rounded-lg border border-primary bg-primary/5 px-4 py-2 text-sm text-primary hover:bg-primary/10"
+          onClick={() => {
+            setExplode(false)
+            setResetKey((prev) => prev + 1)
+          }}
+        >
+          Reset boundary
+        </button>
       </div>
     )
+  },
+  args: {
+    fallback: undefined,
   },
 }
 
 export const CustomFallback: Story = {
   render: () => {
-    const CustomFallback = ({ error }: { error: Error }) => (
-      <div className="p-6 bg-red-50 border-2 border-red-300 rounded-lg">
-        <h3 className="text-lg font-semibold text-red-800 mb-2">Custom Error Display</h3>
-        <p className="text-red-600">{error.message}</p>
-      </div>
-    )
-    
+    const [explode, setExplode] = React.useState(false)
+
     return (
-      <ErrorBoundary fallback={CustomFallback}>
-        <BuggyComponent shouldThrow={true} />
+      <ErrorBoundary
+        fallback={(error, reset) => (
+          <div className="flex max-w-lg flex-col gap-3 rounded-xl border border-warning bg-warning/10 p-6 shadow-sm">
+            <div>
+              <h3 className="text-sm font-semibold text-warning">Graceful degradation</h3>
+              <p className="text-xs text-muted-foreground">{error.message}</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="rounded-lg border border-border bg-background px-3 py-1 text-xs hover:bg-accent"
+                onClick={() => reset()}
+              >
+                Retry render
+              </button>
+              <button
+                type="button"
+                className="rounded-lg border border-border bg-background px-3 py-1 text-xs hover:bg-accent"
+                onClick={() => alert('Opening status page...')}
+              >
+                View status page
+              </button>
+            </div>
+          </div>
+        )}
+      >
+        <div className="flex max-w-xl flex-col gap-4">
+          <SimulatedWidget explode={explode} />
+          <button
+            type="button"
+            className="w-fit rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
+            onClick={() => setExplode(true)}
+          >
+            Trigger Failure
+          </button>
+        </div>
       </ErrorBoundary>
     )
   },
 }
 
-export const MultipleBoundaries: Story = {
-  render: () => (
-    <div className="space-y-4">
-      <ErrorBoundary>
-        <div className="p-4 bg-blue-100 rounded-lg">Safe component 1</div>
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <BuggyComponent shouldThrow={true} />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <div className="p-4 bg-green-100 rounded-lg">Safe component 2</div>
-      </ErrorBoundary>
-    </div>
-  ),
+export const EnhancedWithTelemetry: Story = {
+  name: 'Enhanced Boundary with Telemetry',
+  render: () => {
+    const [explode, setExplode] = React.useState(false)
+
+    return (
+      <ErrorReporterProvider
+        config={{
+          providers: [createConsoleErrorProvider()],
+          enabled: true,
+          autoReport: true,
+          enableFeedback: true,
+        }}
+      >
+        <ErrorBoundaryEnhanced
+          enableFeedback
+          severity="error"
+          errorContext={{ surface: 'SessionSummaryCard' }}
+          onError={(error) => console.info('[Storybook] Error captured', error.message)}
+          fallback={(error, reset, showFeedback) => (
+            <div className="flex max-w-lg flex-col gap-3 rounded-xl border border-destructive bg-destructive/10 p-6 shadow-sm">
+              <div>
+                <h3 className="text-sm font-semibold text-destructive">Session summary failed</h3>
+                <p className="text-xs text-destructive/80">{error.message}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="rounded-lg bg-destructive px-3 py-1 text-xs text-destructive-foreground hover:opacity-90"
+                  onClick={() => {
+                    setExplode(false)
+                    reset()
+                  }}
+                >
+                  Retry render
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg border border-border bg-background px-3 py-1 text-xs hover:bg-accent"
+                  onClick={() => {
+                    showFeedback()
+                    alert('Feedback dialog opened via ErrorBoundaryEnhanced context')
+                  }}
+                >
+                  Share feedback
+                </button>
+              </div>
+            </div>
+          )}
+        >
+          <div className="flex max-w-xl flex-col gap-4">
+            <SimulatedWidget explode={explode} />
+            <button
+              type="button"
+              className="w-fit rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
+              onClick={() => setExplode(true)}
+            >
+              Trigger Failure
+            </button>
+          </div>
+        </ErrorBoundaryEnhanced>
+      </ErrorReporterProvider>
+    )
+  },
 }

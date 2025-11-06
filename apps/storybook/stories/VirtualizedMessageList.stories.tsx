@@ -1,155 +1,83 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import React from 'react'
 import { VirtualizedMessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
-const meta: Meta<typeof VirtualizedMessageList> = {
-  title: 'Components/VirtualizedMessageList',
+const generateMessages = (count: number): Message[] =>
+  Array.from({ length: count }, (_, index) => {
+    const isAssistant = index % 2 === 1
+    return {
+      id: `msg-${index}`,
+      chatId: 'virtualized-demo',
+      role: isAssistant ? 'assistant' : 'user',
+      content: isAssistant
+        ? `Assistant response #${index}: summarising context and providing recommendations. Bullet ${index % 5}.`
+        : `User message #${index}: follow-up question about Phoenix launch timeline and stakeholder alignment.`,
+      createdAt: new Date(Date.now() - (count - index) * 1000 * 45),
+      status: 'sent',
+    }
+  })
+
+const baseMessages = generateMessages(120)
+
+const meta = {
+  title: 'Messaging/Rendering/Virtualized Message List',
   component: VirtualizedMessageList,
-  tags: ['autodocs'],
   parameters: {
+    layout: 'fullscreen',
     docs: {
       description: {
         component:
-          'High-performance message list using virtual scrolling for large datasets. Only renders visible messages to maintain performance with 1000+ messages.',
+          'High-performance list for long-running conversations. Inspired by Slack, Linear, and Discord storybooks where virtualization keeps UX smooth even with thousands of messages.',
       },
     },
-    layout: 'padded',
   },
-}
+  argTypes: {
+    enableVirtualization: { control: 'boolean' },
+    estimatedMessageHeight: { control: { type: 'number', min: 80, step: 10 } },
+    overscan: { control: { type: 'number', min: 1, max: 10 } },
+    loadingCount: { control: { type: 'number', min: 1, max: 10 } },
+  },
+  args: {
+    enableVirtualization: true,
+    estimatedMessageHeight: 140,
+    overscan: 3,
+    loadingCount: 4,
+    className: 'h-[480px]',
+  },
+  decorators: [
+    (Story) => (
+      <div className="mx-auto w-full max-w-3xl rounded-xl border border-border bg-card p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  tags: ['autodocs'],
+} satisfies Meta<typeof VirtualizedMessageList>
 
 export default meta
-type Story = StoryObj<typeof VirtualizedMessageList>
+type Story = StoryObj<typeof meta>
 
-const mockMessages: Message[] = [
-  {
-    id: '1',
-    role: 'user',
-    content: 'Hello!',
-    timestamp: Date.now() - 600000,
-    createdAt: Date.now() - 600000,
-    updatedAt: Date.now() - 600000,
-  },
-  {
-    id: '2',
-    role: 'assistant',
-    content: 'Hi there! How can I help you?',
-    timestamp: Date.now() - 590000,
-    createdAt: Date.now() - 590000,
-    updatedAt: Date.now() - 590000,
-  },
-]
-
-export const Default: Story = {
+export const LargeConversation: Story = {
   args: {
-    messages: mockMessages,
+    messages: baseMessages,
+    emptyState: <div className="text-sm text-muted-foreground">Start a conversation to see history.</div>,
+    onMessageCopy: (id, content) => console.info('[Storybook] Copy message', id, content.slice(0, 40)),
+    onMessageFeedback: (id, type) => console.info('[Storybook] Feedback', id, type),
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: '600px', height: '500px' }}>
-        <Story />
-      </div>
-    ),
-  ],
 }
 
-export const LargeDataset: Story = {
-  args: {
-    messages: Array.from({ length: 500 }, (_, i) => ({
-      id: `msg-${i}`,
-      role: i % 2 === 0 ? 'user' : 'assistant',
-      content: `Message ${i + 1}: This is a test message with some content.`,
-      timestamp: Date.now() - (500 - i) * 60000,
-      createdAt: Date.now() - (500 - i) * 60000,
-      updatedAt: Date.now() - (500 - i) * 60000,
-    })),
-    enableVirtualization: true,
-    estimatedMessageHeight: 100,
-  },
-  decorators: [
-    (Story) => (
-      <div style={{ width: '800px', height: '600px' }}>
-        <Story />
-      </div>
-    ),
-  ],
-}
-
-export const WithCallbacks: Story = {
-  args: {
-    messages: mockMessages,
-    onMessageCopy: (messageId, content) => {
-      console.log('Copying message:', messageId)
-      navigator.clipboard.writeText(content)
-      alert('Message copied!')
-    },
-    onMessageFeedback: (messageId, type) => {
-      console.log('Feedback:', messageId, type)
-      alert(`Feedback ${type} for message ${messageId}`)
-    },
-    onMessageRetry: (messageId) => {
-      console.log('Retrying message:', messageId)
-      alert(`Retrying message ${messageId}`)
-    },
-  },
-  decorators: [
-    (Story) => (
-      <div style={{ width: '600px', height: '500px' }}>
-        <Story />
-      </div>
-    ),
-  ],
-}
-
-export const Loading: Story = {
+export const LoadingSkeleton: Story = {
   args: {
     messages: [],
     isLoading: true,
     loadingCount: 5,
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: '600px', height: '500px' }}>
-        <Story />
-      </div>
-    ),
-  ],
 }
 
-export const Empty: Story = {
+export const NonVirtualized: Story = {
   args: {
-    messages: [],
-    emptyState: (
-      <div className="text-center p-8 text-muted-foreground">
-        No messages yet. Start a conversation!
-      </div>
-    ),
-  },
-  decorators: [
-    (Story) => (
-      <div style={{ width: '600px', height: '500px' }}>
-        <Story />
-      </div>
-    ),
-  ],
-}
-
-export const WithoutVirtualization: Story = {
-  args: {
-    messages: Array.from({ length: 50 }, (_, i) => ({
-      id: `msg-${i}`,
-      role: i % 2 === 0 ? 'user' : 'assistant',
-      content: `Message ${i + 1}`,
-      timestamp: Date.now() - (50 - i) * 60000,
-      createdAt: Date.now() - (50 - i) * 60000,
-      updatedAt: Date.now() - (50 - i) * 60000,
-    })),
+    messages: baseMessages.slice(0, 40),
     enableVirtualization: false,
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: '600px', height: '500px' }}>
-        <Story />
-      </div>
-    ),
-  ],
 }

@@ -53,12 +53,16 @@ const config: StorybookConfig = {
   },
   viteFinal: async (config) => {
     config.resolve = config.resolve || {};
-    config.resolve.alias = {
-      ...(config.resolve.alias || {}),
-      '@clarity-chat/react': path.resolve(__dirname, '../../../packages/react/src'),
-      '@clarity-chat/primitives': path.resolve(__dirname, '../../../packages/primitives/src'),
-      '@clarity-chat/types': path.resolve(__dirname, '../../../packages/types/src'),
-    };
+      config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        '@clarity-chat/react': path.resolve(__dirname, '../../../packages/react/src'),
+        '@clarity-chat/react/examples': path.resolve(
+          __dirname,
+          '../../../packages/react/src/examples'
+        ),
+        '@clarity-chat/primitives': path.resolve(__dirname, '../../../packages/primitives/src'),
+        '@clarity-chat/types': path.resolve(__dirname, '../../../packages/types/src'),
+      };
     return config;
   },
 
