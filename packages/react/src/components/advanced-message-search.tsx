@@ -10,7 +10,8 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { SearchIcon, FilterIcon, XIcon } from './icons'
+import { SearchIcon, XIcon } from './icons'
+import { Filter as FilterIcon } from 'lucide-react'
 import { useDeferredSearch } from '../hooks/use-deferred-search'
 
 /**
