@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid'
+import { customAlphabet, nanoid } from 'nanoid'
 import type { LicenseKey, LicenseTier, LicenseType } from './types'
 
 /**
@@ -26,7 +26,9 @@ export function generateLicenseKey(options: {
   // Example: PRO-IND-ABC123DEF456GHI789
   const tierPrefix = getTierPrefix(tier)
   const typePrefix = type === 'annual' ? 'ANN' : 'LTD'
-  const random = nanoid(16).toUpperCase()
+  // Use custom alphabet to avoid hyphens/underscores in license keys  
+  const alphanumericId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 16)
+  const random = alphanumericId()
   const key = `${tierPrefix}-${typePrefix}-${random}`
 
   const issuedAt = new Date()
@@ -86,11 +88,32 @@ export function parseLicenseKey(key: string): {
     return { tier: null, type: null, valid: false }
   }
 
-  const tierPrefix = parts[0]
-  const typePrefix = parts[1]
+  // Handle different tier formats:
+  // - PRO-IND-ANN-RANDOM (pro-individual)
+  // - PRO-TEAM-ANN-RANDOM (pro-team)
+  // - ENT-ANN-RANDOM (enterprise)
+  // - FREE-ANN-RANDOM (free)
+  
+  let tier: LicenseTier | null = null
+  let type: LicenseType | null = null
 
-  const tier = parseTierPrefix(tierPrefix, parts[1])
-  const type = parseTypePrefix(typePrefix)
+  if (parts[0] === 'PRO' && parts[1] === 'IND') {
+    // PRO-IND-ANN-RANDOM or PRO-IND-LTD-RANDOM
+    tier = 'pro-individual'
+    type = parseTypePrefix(parts[2])
+  } else if (parts[0] === 'PRO' && parts[1] === 'TEAM') {
+    // PRO-TEAM-ANN-RANDOM or PRO-TEAM-LTD-RANDOM
+    tier = 'pro-team'
+    type = parseTypePrefix(parts[2])
+  } else if (parts[0] === 'ENT') {
+    // ENT-ANN-RANDOM or ENT-LTD-RANDOM
+    tier = 'enterprise'
+    type = parseTypePrefix(parts[1])
+  } else if (parts[0] === 'FREE') {
+    // FREE-ANN-RANDOM or FREE-LTD-RANDOM
+    tier = 'free'
+    type = parseTypePrefix(parts[1])
+  }
 
   return {
     tier,
@@ -121,8 +144,6 @@ function parseTierPrefix(prefix1: string, prefix2: string): LicenseTier | null {
 function parseTypePrefix(prefix: string): LicenseType | null {
   switch (prefix) {
     case 'ANN':
-    case 'IND': // For PRO-IND
-    case 'TEAM': // For PRO-TEAM
       return 'annual'
     case 'LTD':
       return 'lifetime'
