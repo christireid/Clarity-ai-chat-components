@@ -11,7 +11,7 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./styles.css": "./dist/styles.css",
+    "./styles.css": "./dist/styles/index.css",
     "./dist/styles/index.css": "./dist/styles/index.css",
     "./components/icons": {
       "types": "./dist/index.d.ts",
@@ -35,7 +35,7 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node -e \"require('fs').writeFileSync('dist/index.d.ts', 'export * from \\\"./index\\\";\\nexport * from \\\"@clarity-chat/types\\\";\\n')\"",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",

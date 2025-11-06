@@ -2,7 +2,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Badge, Tooltip, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { ClockIcon, DollarSignIcon, TrendingUpIcon, ShieldIcon } from './icons'
+import { Clock as ClockIcon, DollarSign as DollarSignIcon, TrendingUp as TrendingUpIcon, Shield as ShieldIcon } from 'lucide-react'
 
 /**
  * Enhanced message metadata display
