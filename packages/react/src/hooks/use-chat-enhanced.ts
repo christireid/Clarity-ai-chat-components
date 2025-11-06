@@ -428,28 +428,25 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                       setData(currentMessage)
                     }
                   }
+                } else {
+                  // Plain text streaming fallback
+                  accumulatedContent += line
+                  if (mountedRef.current) {
+                    currentMessage = {
+                      ...currentMessage,
+                      content: accumulatedContent,
+                    }
+                    currentAssistantMessageRef.current = currentMessage
+                    setMessages((prev) =>
+                      prev.map((msg) =>
+                        msg.id === assistantMessageId ? currentMessage : msg
+                      )
+                    )
+                    setData(currentMessage)
+                  }
                 }
               }
             }
-            
-            if (!line.startsWith('data: ') && line.trim()) {
-              // Plain text streaming
-              accumulatedContent += line
-              if (mountedRef.current) {
-                currentMessage = {
-                  ...currentMessage,
-                  content: accumulatedContent,
-                }
-                currentAssistantMessageRef.current = currentMessage
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === assistantMessageId ? currentMessage : msg
-                  )
-                )
-                setData(currentMessage)
-              }
-            }
-          }
 
           // Finalize message
           if (mountedRef.current) {
