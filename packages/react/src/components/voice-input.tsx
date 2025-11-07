@@ -1,7 +1,8 @@
-import * as React from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import { useVoiceInput } from '../hooks/use-voice-input'
+import type { ReactNode } from 'react'
 
 /**
  * Voice input component props
@@ -26,10 +27,10 @@ export interface VoiceInputProps {
   variant?: 'primary' | 'secondary' | 'ghost'
 
   /** Custom icon when not listening */
-  icon?: React.ReactNode
+  icon?: ReactNode
 
   /** Custom icon when listening */
-  listeningIcon?: React.ReactNode
+  listeningIcon?: ReactNode
 
   /** Show tooltip */
   showTooltip?: boolean
@@ -132,8 +133,8 @@ export function VoiceInput({
   onStop,
   onError,
 }: VoiceInputProps) {
-  const [showTranscript, setShowTranscript] = React.useState(false)
-  const lastFinalTranscriptRef = React.useRef('')
+  const [showTranscript, setShowTranscript] = useState(false)
+  const lastFinalTranscriptRef = useRef('')
 
   const voice = useVoiceInput({
     lang,
@@ -166,7 +167,7 @@ export function VoiceInput({
   /**
    * Toggle listening
    */
-  const handleToggle = () => {
+  const handleToggle = useCallback(() => {
     if (voice.isListening) {
       voice.stopListening()
 
@@ -180,28 +181,38 @@ export function VoiceInput({
       voice.resetTranscript()
       voice.startListening()
     }
-  }
+  }, [voice, autoSubmit, onTranscript])
 
   /**
    * Manual submit
    */
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (voice.transcript) {
       onTranscript(voice.transcript)
       voice.resetTranscript()
       voice.stopListening()
       setShowTranscript(false)
     }
-  }
+  }, [voice, onTranscript])
 
   /**
    * Cancel
    */
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     voice.stopListening()
     voice.resetTranscript()
     setShowTranscript(false)
-  }
+  }, [voice])
+
+  // Memoized computed values
+  const buttonVariant = useMemo(() => 
+    voice.isListening ? 'destructive' : variantMap[variant], 
+    [voice.isListening, variant]
+  )
+  const ariaLabel = useMemo(() => 
+    voice.isListening ? 'Stop recording' : 'Start recording',
+    [voice.isListening]
+  )
 
   if (!voice.isSupported) {
     return (
@@ -217,11 +228,11 @@ export function VoiceInput({
       <div className="relative">
         <Button
           size={size === 'sm' ? 'icon' : size === 'lg' ? 'lg' : 'icon'}
-          variant={voice.isListening ? 'destructive' : variantMap[variant]}
+          variant={buttonVariant}
           onClick={handleToggle}
           disabled={disabled}
           className={cn('rounded-full', className)}
-          aria-label={voice.isListening ? 'Stop recording' : 'Start recording'}
+          aria-label={ariaLabel}
           title={voice.isListening ? 'Stop recording' : tooltipText}
         >
           {/* Pulse animation when listening */}
