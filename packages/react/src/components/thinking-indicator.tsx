@@ -21,7 +21,7 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
   className,
 }: ThinkingIndicatorProps) {
   // Memoize icon and label getters to prevent recreation on every render
-  const getStageIcon = React.useCallback((stage: AIStatus['stage']) => {
+  const getStageIcon = useCallback((stage: AIStatus['stage']) => {
     const iconProps = { size: 20 }
     switch (stage) {
       case 'thinking':
@@ -39,7 +39,7 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
     }
   }, [])
 
-  const getStageLabel = React.useCallback((stage: AIStatus['stage']) => {
+  const getStageLabel = useCallback((stage: AIStatus['stage']) => {
     switch (stage) {
       case 'thinking':
         return 'Thinking'
@@ -55,6 +55,11 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
         return 'Processing'
     }
   }, [])
+
+  // Compute values from status
+  const stageIcon = useMemo(() => getStageIcon(status?.stage || 'thinking'), [status?.stage, getStageIcon])
+  const stageLabel = useMemo(() => getStageLabel(status?.stage || 'thinking'), [status?.stage, getStageLabel])
+  const estimatedSeconds = useMemo(() => status?.estimatedSeconds ?? null, [status?.estimatedSeconds])
 
   return (
     <motion.div

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { forwardRef, useState, useRef, useMemo, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
@@ -21,7 +21,7 @@ export interface CommandPaletteProps {
   className?: string
 }
 
-export const CommandPalette = React.forwardRef<
+export const CommandPalette = forwardRef<
   HTMLDivElement,
   CommandPaletteProps
 >(
@@ -29,12 +29,12 @@ export const CommandPalette = React.forwardRef<
     { items, open, onClose, placeholder = 'Type a command...', className },
     ref
   ) => {
-    const [search, setSearch] = React.useState('')
-    const [selectedIndex, setSelectedIndex] = React.useState(0)
-    const inputRef = React.useRef<HTMLInputElement>(null)
+    const [search, setSearch] = useState('')
+    const [selectedIndex, setSelectedIndex] = useState(0)
+    const inputRef = useRef<HTMLInputElement>(null)
 
     // Filter items based on search
-    const filteredItems = React.useMemo(() => {
+    const filteredItems = useMemo(() => {
       if (!search) return items
 
       const query = search.toLowerCase()
@@ -47,7 +47,7 @@ export const CommandPalette = React.forwardRef<
     }, [items, search])
 
     // Group items by category
-    const groupedItems = React.useMemo(() => {
+    const groupedItems = useMemo(() => {
       const groups: Record<string, CommandItem[]> = {}
 
       filteredItems.forEach((item) => {
@@ -62,12 +62,12 @@ export const CommandPalette = React.forwardRef<
     }, [filteredItems])
 
     // Reset selection when filtered items change
-    React.useEffect(() => {
+    useEffect(() => {
       setSelectedIndex(0)
     }, [filteredItems])
 
     // Focus input when opened
-    React.useEffect(() => {
+    useEffect(() => {
       if (open) {
         inputRef.current?.focus()
         setSearch('')
@@ -76,7 +76,7 @@ export const CommandPalette = React.forwardRef<
     }, [open])
 
     // Handle keyboard navigation
-    React.useEffect(() => {
+    useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
         if (!open) return
 
@@ -110,7 +110,7 @@ export const CommandPalette = React.forwardRef<
     }, [open, filteredItems, selectedIndex, onClose])
 
     // Calculate flat index for keyboard navigation
-    const flatItems = React.useMemo(() => {
+    const flatItems = useMemo(() => {
       return Object.values(groupedItems).flat()
     }, [groupedItems])
 
@@ -155,9 +155,7 @@ export const CommandPalette = React.forwardRef<
                     ref={inputRef}
                     type="text"
                     value={search}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setSearch(e.target.value)
-                    }
+                    onChange={(e) => setSearch(e.target.value)}
                     placeholder={placeholder}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
