@@ -157,7 +157,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
       })
     }
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       // Handle suggestions navigation
       if (showSuggestions && suggestions.length > 0) {
         if (e.key === 'ArrowDown') {
@@ -184,9 +184,9 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
         e.preventDefault()
         handleSubmit()
       }
-    }
+    }, [showSuggestions, suggestions, selectedIndex])
 
-    const selectSuggestion = (suggestion: InputSuggestion) => {
+    const selectSuggestion = React.useCallback((suggestion: InputSuggestion) => {
       const beforeCursor = value.slice(0, cursorPosition)
       const afterCursor = value.slice(cursorPosition)
       
@@ -204,14 +204,14 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
       setTimeout(() => {
         textareaRef.current?.focus()
       }, 0)
-    }
+    }, [cursorPosition, onChange, triggerChar, value])
 
-    const handleCursorChange = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const handleCursorChange = React.useCallback((e: React.FormEvent<HTMLTextAreaElement>) => {
       const target = e.target as HTMLTextAreaElement
       setCursorPosition(target.selectionStart)
-    }
+    }, [])
 
-    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileSelect = React.useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || [])
       if (files.length === 0) return
 
@@ -241,14 +241,14 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
         setIsUploading(false)
         if (fileInputRef.current) fileInputRef.current.value = ''
       }
-    }
+    }, [acceptedFileTypes, attachments.length, maxFiles, onFileUpload])
 
-    const handleDragOver = (e: React.DragEvent) => {
+    const handleDragOver = React.useCallback((e: React.DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
-    }
+    }, [])
 
-    const handleDrop = async (e: React.DragEvent) => {
+    const handleDrop = React.useCallback(async (e: React.DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -262,19 +262,19 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
         input.files = dataTransfer.files
         input.dispatchEvent(new Event('change', { bubbles: true }))
       }
-    }
+    }, [])
 
-    const removeAttachment = (id: string) => {
+    const removeAttachment = React.useCallback((id: string) => {
       setAttachments((prev) => prev.filter((a) => a.id !== id))
-    }
+    }, [])
 
-    const handleSubmit = () => {
+    const handleSubmit = React.useCallback(() => {
       if (value.trim() || attachments.length > 0) {
         onSubmit(value, attachments.length > 0 ? attachments : undefined)
         onChange('')
         setAttachments([])
       }
-    }
+    }, [attachments, onSubmit, onChange, value])
 
     const charCount = value.length
     const isOverLimit = maxLength ? charCount > maxLength : false
@@ -394,6 +394,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isUploading || attachments.length >= maxFiles}
             title="Attach files"
+            aria-label="Attach files"
           >
             {isUploading ? '⏳' : '📎'}
           </Button>
@@ -432,6 +433,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
             disabled={disabled || (!value.trim() && attachments.length === 0) || isOverLimit}
             size="icon"
             title="Send message (Enter)"
+            aria-label="Send message"
           >
             ↑
           </Button>

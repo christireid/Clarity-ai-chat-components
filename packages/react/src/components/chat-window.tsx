@@ -58,13 +58,13 @@ export const ChatWindow = React.memo(function ChatWindow({
 }: ChatWindowProps) {
   const [input, setInput] = React.useState('')
 
-  const handleSubmit = (content: string) => {
+  const handleSubmit = React.useCallback((content: string) => {
     onSendMessage(content)
     setInput('')
-  }
+  }, [onSendMessage])
 
   // Default empty state with animation
-  const defaultEmptyState = (
+  const defaultEmptyState = React.useMemo(() => (
     <motion.div
       className="text-center space-y-6"
       initial={{ opacity: 0, scale: 0.9 }}
@@ -95,7 +95,7 @@ export const ChatWindow = React.memo(function ChatWindow({
         </p>
       </div>
     </motion.div>
-  )
+  ), [])
 
   return (
     <Card
