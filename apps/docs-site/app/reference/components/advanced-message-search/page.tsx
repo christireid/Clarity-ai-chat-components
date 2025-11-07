@@ -3,33 +3,35 @@ import { Metadata } from 'next'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 
 export const metadata: Metadata = {
-  title: 'StreamCancellation - Clarity Chat Components',
-  description: 'Provide stop/cancel controls for active streams.',
+  title: 'AdvancedMessageSearch - Clarity Chat Components',
+  description: 'Full-text and semantic search UI for conversations.',
 }
 
-export default function StreamCancellationPage() {
+export default function AdvancedMessageSearchPage() {
   return (
     <div className="docs-content">
       <div className="docs-header">
         <span className="docs-badge">Component</span>
-        <h1>StreamCancellation</h1>
-        <p className="docs-lead">Allows users to cancel active generations and recover gracefully.</p>
+        <h1>AdvancedMessageSearch</h1>
+        <p className="docs-lead">
+          Search messages by keyword, filters, and semantic similarity with instant results.
+        </p>
       </div>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <LiveDemo
           title="Example"
-          code={`import { StreamCancellation } from '@clarity-chat/react'
+          code={`import { AdvancedMessageSearch } from '@clarity-chat/react'
 
 export default function Example() {
   return (
     <div className="p-4">
-      <StreamCancellation />
+      <AdvancedMessageSearch />
     </div>
   )
 }`} 
-          height="160px"
+          height="220px"
         />
       </section>
     </div>

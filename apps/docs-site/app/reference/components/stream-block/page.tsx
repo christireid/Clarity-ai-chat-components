@@ -3,29 +3,29 @@ import { Metadata } from 'next'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 
 export const metadata: Metadata = {
-  title: 'StreamCancellation - Clarity Chat Components',
-  description: 'Provide stop/cancel controls for active streams.',
+  title: 'StreamBlock - Clarity Chat Components',
+  description: 'Render a block of streaming content with partial updates.',
 }
 
-export default function StreamCancellationPage() {
+export default function StreamBlockPage() {
   return (
     <div className="docs-content">
       <div className="docs-header">
         <span className="docs-badge">Component</span>
-        <h1>StreamCancellation</h1>
-        <p className="docs-lead">Allows users to cancel active generations and recover gracefully.</p>
+        <h1>StreamBlock</h1>
+        <p className="docs-lead">Controlled unit for chunked updates in a message.</p>
       </div>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <LiveDemo
           title="Example"
-          code={`import { StreamCancellation } from '@clarity-chat/react'
+          code={`import { StreamBlock } from '@clarity-chat/react'
 
 export default function Example() {
   return (
     <div className="p-4">
-      <StreamCancellation />
+      <StreamBlock content="Streaming..." />
     </div>
   )
 }`} 

@@ -11,6 +11,13 @@ export const learnNavigation: NavItem[] = [
     ],
   },
   {
+    title: 'Tutorials',
+    items: [
+      { title: 'Building Your First Chatbot', href: '/learn/tutorials/building-first-chatbot' },
+      { title: 'Adding RAG', href: '/learn/tutorials/adding-rag' },
+    ],
+  },
+  {
     title: 'Core Concepts',
     items: [
       { title: 'Components', href: '/learn/concepts/components' },
@@ -27,6 +34,33 @@ export const learnNavigation: NavItem[] = [
       { title: 'Performance', href: '/learn/guides/performance' },
       { title: 'Testing', href: '/learn/guides/testing' },
       { title: 'TypeScript', href: '/learn/guides/typescript' },
+      { title: 'Token Optimization', href: '/guides/token-optimization' },
+    ],
+  },
+  {
+    title: 'Deployment',
+    items: [
+      { title: 'Deploy to Vercel', href: '/learn/deployment/vercel' },
+      { title: 'Deploy to AWS', href: '/learn/deployment/aws' },
+      { title: 'Docker Deployment', href: '/learn/deployment/docker' },
+    ],
+  },
+  {
+    title: 'Migration',
+    items: [
+      { title: 'From Vercel AI SDK', href: '/learn/migration/from-vercel-ai-sdk' },
+    ],
+  },
+  {
+    title: 'Advanced',
+    items: [
+      { title: 'Architecture', href: '/learn/architecture' },
+    ],
+  },
+  {
+    title: 'Help',
+    items: [
+      { title: 'Troubleshooting', href: '/learn/troubleshooting' },
     ],
   },
 ]
@@ -52,6 +86,8 @@ export const referenceNavigation: NavItem[] = [
           { title: 'ContextMenu', href: '/reference/components/context-menu' },
           { title: 'Draggable', href: '/reference/components/draggable' },
           { title: 'KeyboardHint', href: '/reference/components/keyboard-hint' },
+          { title: 'AdvancedMessageSearch', href: '/reference/components/advanced-message-search' },
+          { title: 'RetryButton', href: '/reference/components/retry-button' },
         ],
       },
       {
@@ -62,6 +98,38 @@ export const referenceNavigation: NavItem[] = [
           { title: 'Badge', href: '/reference/components/badge' },
           { title: 'Tooltip', href: '/reference/components/tooltip' },
           { title: 'Modal', href: '/reference/components/modal' },
+          { title: 'NetworkStatus', href: '/reference/components/network-status' },
+          { title: 'PromptLibrary', href: '/reference/components/prompt-library' },
+          { title: 'PromptSuggestions', href: '/reference/components/prompt-suggestions' },
+          { title: 'StreamingTextRenderer', href: '/reference/components/streaming-text-renderer' },
+          { title: 'StreamBlock', href: '/reference/components/stream-block' },
+          { title: 'StreamCancellation', href: '/reference/components/stream-cancellation' },
+          { title: 'ToolInvocationCard', href: '/reference/components/tool-invocation-card' },
+        ],
+      },
+      {
+        title: 'Optimization',
+        items: [
+          { title: 'TokenOptimizationBadge', href: '/reference/components/token-optimization-badge' },
+          { title: 'TokenOptimizationPanel', href: '/reference/components/token-optimization-panel' },
+          { title: 'TokenOptimizationDashboard', href: '/reference/components/token-optimization-dashboard' },
+        ],
+      },
+      {
+        title: 'Operations',
+        items: [
+          { title: 'UsageDashboard', href: '/reference/components/usage-dashboard' },
+          { title: 'PerformanceDashboard', href: '/reference/components/performance-dashboard' },
+          { title: 'ProjectSidebar', href: '/reference/components/project-sidebar' },
+        ],
+      },
+      {
+        title: 'Enterprise',
+        items: [
+          { title: 'AuthTenantDashboard', href: '/reference/components/auth-tenant-dashboard' },
+          { title: 'ApiTokenManager', href: '/reference/components/api-token-manager' },
+          { title: 'SeatInviteDialog', href: '/reference/components/seat-invite-dialog' },
+          { title: 'SSOConfigWizard', href: '/reference/components/sso-config-wizard' },
         ],
       },
     ],
@@ -76,14 +144,54 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useUndoRedo', href: '/reference/hooks/use-undo-redo' },
       { title: 'useHaptic', href: '/reference/hooks/use-haptic' },
       { title: 'useTheme', href: '/reference/hooks/use-theme' },
+      { title: 'useTokenOptimization', href: '/reference/hooks/use-token-optimization' },
+      { title: 'useModelRouter', href: '/reference/hooks/use-model-router' },
+      { title: 'usePerformance', href: '/reference/hooks/use-performance' },
+      { title: 'useTokenTracker', href: '/reference/hooks/use-token-tracker' },
     ],
   },
   {
     title: 'API',
     items: [
       { title: 'Types', href: '/reference/api/types' },
-      { title: 'Utilities', href: '/reference/api/utilities' },
+      { title: 'Utilities', href: '/reference/utilities' },
       { title: 'Configuration', href: '/reference/api/configuration' },
+    ],
+  },
+]
+
+export const cookbookNavigation: NavItem[] = [
+  {
+    title: 'Getting Started',
+    items: [
+      { title: 'OpenAI Streaming Chat', href: '/cookbook/openai-streaming-chat' },
+      { title: 'Next.js Integration', href: '/cookbook/nextjs-integration' },
+      { title: 'Custom Theming', href: '/cookbook/custom-theming' },
+    ],
+  },
+  {
+    title: 'Advanced Patterns',
+    items: [
+      { title: 'Streaming with Memory', href: '/cookbook/streaming-with-memory' },
+      { title: 'RAG Document Chat', href: '/cookbook/rag-document-chat' },
+      { title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' },
+      { title: 'Agent with Tools', href: '/cookbook/agent-with-tools' },
+      { title: 'Advanced Agent Workflow', href: '/cookbook/advanced-agent-workflow' },
+    ],
+  },
+  {
+    title: 'Production',
+    items: [
+      { title: 'Error Handling', href: '/cookbook/error-handling' },
+      { title: 'Authentication', href: '/cookbook/authentication' },
+      { title: 'Analytics Tracking', href: '/cookbook/analytics-tracking' },
+      { title: 'Production Monitoring', href: '/cookbook/production-monitoring' },
+    ],
+  },
+  {
+    title: 'Enterprise',
+    items: [
+      { title: 'Enterprise SSO Setup', href: '/cookbook/enterprise-sso-setup' },
     ],
   },
 ]
@@ -104,6 +212,7 @@ export const examplesNavigation: NavItem[] = [
       { title: 'File Sharing', href: '/examples/file-sharing' },
       { title: 'Real-time Updates', href: '/examples/realtime' },
       { title: 'Custom Commands', href: '/examples/custom-commands' },
+      { title: 'Token Optimization', href: '/examples/token-optimization' },
     ],
   },
   {
