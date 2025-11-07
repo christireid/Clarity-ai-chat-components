@@ -12,7 +12,9 @@ export * from './types'
 export * from './memory-buffer'
 export * from './memory-service'
 export * from './sliding-context-manager'
-export * from './prompt-compression'
+// Note: prompt-compression exports are available but not re-exported to avoid duplicates
+// (estimateTokens, CompressionOptions, CompressionResult conflict with parent utils)
+export { PromptCompressor } from './prompt-compression'
 export * from './vector-store-adapter'
 export * from './semantic-chunker'
 export * from './token-optimized-context'

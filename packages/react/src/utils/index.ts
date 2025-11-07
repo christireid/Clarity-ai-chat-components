@@ -27,7 +27,9 @@ export * from './hybrid-search'
 export * from './mobile'
 
 // Token Optimization Utilities
-export * from './prompt-compression'
+// Note: CompressionOptions/Result from prompt-compression conflict with memory types
+// Only export the compressPrompt function from here
+export { compressPrompt } from './prompt-compression'
 export * from './smart-cache'
 export * from './model-router'
 export * from './response-limiter'

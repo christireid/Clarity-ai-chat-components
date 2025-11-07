@@ -12,11 +12,12 @@ import {
 import { SkeletonText } from './skeleton'
 
 // Memory display types (UI-oriented, not core memory system types)
-export type MemoryScope = 'session' | 'thread' | 'global'
-export type MemoryType = 'episodic' | 'semantic' | 'preference' | 'fact' | 'behavior'
+// Not exported to avoid conflicts with utils/memory types
+type MemoryScope = 'session' | 'thread' | 'global'
+type MemoryType = 'episodic' | 'semantic' | 'preference' | 'fact' | 'behavior'
 type MemoryLayer = 'real-time' | 'session' | 'semantic' | 'episodic'
 
-export interface MemoryItem {
+interface MemoryItem {
   id: string
   userId: string
   label: string

@@ -14,6 +14,10 @@ import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { Message } from '@clarity-chat/types'
 
+// Type assertions for React 18/19 compatibility
+const AutoSizerComponent = AutoSizer as any
+const ListComponent = List as any
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -199,9 +203,9 @@ export function VirtualizedMessageList({
 
   return (
     <div className={className} style={{ height: '100%', width: '100%' }}>
-      <AutoSizer>
-        {({ height, width }) => (
-          <List
+      <AutoSizerComponent>
+        {({ height, width }: { height: number; width: number }) => (
+          <ListComponent
             ref={listRef}
             height={height}
             width={width}
@@ -218,9 +222,9 @@ export function VirtualizedMessageList({
             onScroll={handleScroll}
           >
             {MessageItem}
-          </List>
+          </ListComponent>
         )}
-      </AutoSizer>
+      </AutoSizerComponent>
     </div>
   )
 }

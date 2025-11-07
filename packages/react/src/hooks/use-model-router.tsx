@@ -1,9 +1,9 @@
 import * as React from 'react'
-import { ModelRouter, ModelConfig, RoutingDecision, COMMON_MODELS } from '../utils/model-router'
+import { ModelRouter, RouteModelConfig, RoutingDecision, COMMON_MODELS } from '../utils/model-router'
 
 export interface UseModelRouterOptions {
   /** Available models to route between */
-  availableModels?: ModelConfig[]
+  availableModels?: RouteModelConfig[]
   /** Preferred provider */
   preferProvider?: string
   /** Maximum cost per query */

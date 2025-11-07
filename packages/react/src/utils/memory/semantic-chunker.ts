@@ -15,7 +15,7 @@ export interface SemanticChunk {
   importanceScore?: number
 }
 
-export interface ChunkingOptions {
+export interface SemanticChunkingOptions {
   chunkSize?: number // Target tokens per chunk (default: 200)
   overlap?: number // Overlap tokens between chunks (default: 50)
   similarityThreshold?: number // Minimum similarity for grouping (default: 0.75)
@@ -28,14 +28,14 @@ export interface ChunkingOptions {
  * Splits content into semantically coherent chunks optimized for vector storage
  */
 export class SemanticChunker {
-  private config: Required<ChunkingOptions>
+  private config: Required<SemanticChunkingOptions>
   private countTokens: (text: string) => number
   private createEmbedding?: (text: string) => Promise<number[]> | number[]
 
   constructor(
     countTokens: (text: string) => number,
     createEmbedding?: (text: string) => Promise<number[]> | number[],
-    options: ChunkingOptions = {}
+    options: SemanticChunkingOptions = {}
   ) {
     this.countTokens = countTokens
     this.createEmbedding = createEmbedding
