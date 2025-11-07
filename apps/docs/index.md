@@ -150,7 +150,8 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 
 - [Model Adapters](/guide/model-adapters) - Switch between AI providers
 - [AI Agents](/guide/agents) - Build agents with tool calling
-- [RAG System](/guides/rag-guide) - Retrieval-augmented generation
+- [RAG System](/guide/rag) - Retrieval-augmented generation
+- [Reranking](/guide/reranking) - Improve search result relevance
 - [Safety & Moderation](/guide/safety) - Content filtering and PII detection
 - [Memory System](/guide/memory) - Persistent memory across conversations
 - [Observability](/guide/observability) - Monitoring and tracing
