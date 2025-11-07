@@ -166,8 +166,19 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
         ? beforeCursor.lastIndexOf('@')
         : beforeCursor.lastIndexOf('/')
 
+      const newValue = beforeCursor.slice(0, triggerIndex) + suggestion.value + ' ' + afterCursor
+      onChange(newValue)
+      setShowSuggestions(false)
+      setTriggerChar(null)
+
+      // Focus back to textarea
+      setTimeout(() => {
+        textareaRef.current?.focus()
+      }, 0)
+    }, [value, cursorPosition, triggerChar, onChange])
+
     // Memoize keyboard handler to prevent recreation on every render
-    const handleKeyDown = React.useCallback(
+    const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         // Handle suggestions navigation
         if (showSuggestions && suggestions.length > 0) {
@@ -196,35 +207,11 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
           handleSubmit()
         }
       },
-      [showSuggestions, suggestions, selectedIndex]
-    )
-
-    // Memoize suggestion selection to prevent recreation
-    const selectSuggestion = React.useCallback(
-      (suggestion: InputSuggestion) => {
-        const beforeCursor = value.slice(0, cursorPosition)
-        const afterCursor = value.slice(cursorPosition)
-        
-        // Find the trigger position
-        const triggerIndex = triggerChar === '@' 
-          ? beforeCursor.lastIndexOf('@')
-          : beforeCursor.lastIndexOf('/')
-
-        const newValue = beforeCursor.slice(0, triggerIndex) + suggestion.value + ' ' + afterCursor
-        onChange(newValue)
-        setShowSuggestions(false)
-        setTriggerChar(null)
-
-        // Focus back to textarea
-        setTimeout(() => {
-          textareaRef.current?.focus()
-        }, 0)
-      },
-      [value, cursorPosition, triggerChar, onChange]
+      [showSuggestions, suggestions, selectedIndex, selectSuggestion]
     )
 
     // Memoize cursor change handler
-    const handleCursorChange = React.useCallback((e: React.FormEvent<HTMLTextAreaElement>) => {
+    const handleCursorChange = useCallback((e: React.FormEvent<HTMLTextAreaElement>) => {
       const target = e.target as HTMLTextAreaElement
       setCursorPosition(target.selectionStart)
     }, [])
@@ -262,12 +249,12 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
     }, [attachments.length, maxFiles, onFileUpload])
 
     // Memoize drag and drop handlers
-    const handleDragOver = React.useCallback((e: React.DragEvent) => {
+    const handleDragOver = useCallback((e: React.DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
     }, [])
 
-    const handleDrop = React.useCallback(async (e: React.DragEvent) => {
+    const handleDrop = useCallback(async (e: React.DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -284,12 +271,12 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
     }, [])
 
     // Memoize attachment removal
-    const removeAttachment = React.useCallback((id: string) => {
+    const removeAttachment = useCallback((id: string) => {
       setAttachments((prev) => prev.filter((a) => a.id !== id))
     }, [])
 
     // Memoize submit handler
-    const handleSubmit = React.useCallback(() => {
+    const handleSubmit = useCallback(() => {
       if (value.trim() || attachments.length > 0) {
         onSubmit(value, attachments.length > 0 ? attachments : undefined)
         onChange('')
@@ -422,6 +409,7 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isUploading || attachments.length >= maxFiles}
             title="Attach files"
+            aria-label="Attach files"
           >
             {isUploading ? '⏳' : '📎'}
           </Button>
