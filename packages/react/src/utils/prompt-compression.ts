@@ -218,6 +218,17 @@ function trimToMaxLength(text: string, maxLength: number): string {
 }
 
 /**
+ * Reduce excessive punctuation
+ */
+function reducePunctuationHelper(text: string): string {
+  return text
+    .replace(/[!]+/g, '!') // Multiple exclamation marks to one
+    .replace(/[?]+/g, '?') // Multiple question marks to one
+    .replace(/\.{2,}/g, '...') // Multiple dots to ellipsis
+    .replace(/,\s*,+/g, ',') // Multiple commas to one
+}
+
+/**
  * Compress prompt with configurable strategies
  * 
  * @example
@@ -276,7 +287,7 @@ export function compressPrompt(
   }
 
   if (reducePunctuation) {
-    compressed = reducePunctuation(compressed)
+    compressed = reducePunctuationHelper(compressed)
   }
 
   if (maxLength > 0) {

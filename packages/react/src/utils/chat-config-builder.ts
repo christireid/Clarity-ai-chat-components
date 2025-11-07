@@ -190,12 +190,12 @@ export class ChatConfigBuilder {
     this.config = {
       ...this.config,
       ...other,
-      streaming: { ...this.config.streaming, ...other.streaming },
-      accessibility: { ...this.config.accessibility, ...other.accessibility },
-      persistence: { ...this.config.persistence, ...other.persistence },
+      streaming: { ...this.config.streaming, ...other.streaming } as StreamingConfig,
+      accessibility: { ...this.config.accessibility, ...other.accessibility } as AccessibilityConfig,
+      persistence: { ...this.config.persistence, ...other.persistence } as PersistenceConfig,
       markdown: { ...this.config.markdown, ...other.markdown },
       search: { ...this.config.search, ...other.search },
-      export: { ...this.config.export, ...other.export },
+      export: { ...this.config.export, ...other.export } as ExportConfig,
     }
     return this
   }

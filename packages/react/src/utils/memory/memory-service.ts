@@ -468,6 +468,7 @@ export class MemoryService {
       session: 0,
       thread: 0,
       global: 0,
+      user: 0,
     }
 
     const byType: Record<MemoryType, number> = {
