@@ -1,268 +1,309 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { useAutoScroll } from '@clarity-chat/react'
+import * as React from 'react'
+import { useAutoScroll } from '../../../packages/react/src/hooks/use-auto-scroll'
 import { Button } from '@clarity-chat/primitives'
-import { useState, useEffect } from 'react'
 
-/**
- * **useAutoScroll Hook**
- * 
- * Hook for automatically scrolling to the bottom of a container
- * when new content is added, while respecting user scroll position.
- * 
- * **Key Features:**
- * - Auto-scroll to bottom on new content
- * - Respects user scroll position (only scrolls if near bottom)
- * - Manual scroll to bottom function
- * - Enable/disable control
- * - Threshold configuration
- * - Smooth scroll behavior
- * 
- * **Use Cases:**
- * - Chat message lists
- * - Log viewers
- * - Activity feeds
- * - Real-time content updates
- */
 const meta = {
-  title: 'Hooks/useAutoScroll',
+  title: 'Hooks/UI/useAutoScroll',
   parameters: {
     layout: 'padded',
     docs: {
       description: {
         component: `
-The \`useAutoScroll\` hook automatically scrolls to the bottom of a container
-when new content is added, but only if the user is near the bottom to avoid
-disrupting manual scrolling.
+# useAutoScroll
+
+Automatically scroll to the bottom of a container when new content is added, with intelligent user scroll detection.
 
 ## Features
 
-- ✅ Auto-scroll to bottom on new content
-- ✅ Respects user scroll position (only scrolls if near bottom)
-- ✅ Manual scroll to bottom function
-- ✅ Enable/disable control
-- ✅ Threshold configuration
-- ✅ Smooth scroll behavior
-- ✅ Returns ref for scrollable container
+- **Smart Scrolling**: Only scrolls if user is near bottom
+- **User Control**: Respects manual scrolling
+- **Smooth Animation**: Configurable scroll behavior
+- **Threshold Detection**: Customizable "near bottom" threshold
+- **Manual Control**: Force scroll or toggle enabled state
+- **Performance**: Efficient with debounced checks
+
+## Use Cases
+
+- **Chat Messages**: Auto-scroll as messages arrive
+- **Live Feeds**: Keep up with real-time updates
+- **Logs**: Automatically show latest log entries
+- **Notifications**: Show newest notifications
+- **Comments**: Scroll to latest comments
 
 ## Basic Usage
 
 \`\`\`tsx
 const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
   dependencies: [messages],
-  threshold: 50,
+  threshold: 100,
+  behavior: 'smooth',
 })
 
 return (
-  <div ref={scrollRef} className="overflow-y-auto h-96">
-    {messages.map(msg => <Message key={msg.id} {...msg} />)}
+  <div ref={scrollRef} className="h-96 overflow-y-auto">
+    {messages.map(msg => <div key={msg.id}>{msg.content}</div>)}
     {!isNearBottom && (
-      <button onClick={scrollToBottom}>Scroll to bottom</button>
+      <button onClick={scrollToBottom}>↓ Scroll to Bottom</button>
     )}
   </div>
 )
 \`\`\`
-        `,
+
+## API Reference
+
+### Options
+
+- \`enabled\`: Enable/disable auto-scroll (default: true)
+- \`behavior\`: Scroll behavior - 'smooth' or 'auto' (default: 'smooth')
+- \`threshold\`: Distance from bottom in px to trigger (default: 100)
+- \`dependencies\`: React deps that trigger scroll check
+
+### Returns
+
+- \`scrollRef\`: Ref to attach to scrollable container
+- \`isNearBottom\`: Whether user is near bottom
+- \`scrollToBottom()\`: Manually scroll to bottom
+- \`setEnabled(boolean)\`: Toggle auto-scroll on/off
+`,
       },
     },
   },
-  tags: ['autodocs'],
 } satisfies Meta
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-function BasicAutoScrollDemo() {
-  const [messages, setMessages] = useState<string[]>(['Message 1', 'Message 2'])
-  
-  const { scrollRef, isNearBottom, scrollToBottom, setEnabled } = useAutoScroll({
-    dependencies: [messages],
-    threshold: 50,
-  })
+// ============================================================================
+// Basic Chat Example
+// ============================================================================
 
-  const addMessage = () => {
-    setMessages((prev) => [...prev, `Message ${prev.length + 1} - ${new Date().toLocaleTimeString()}`])
-  }
+export const ChatExample: Story = {
+  render: () => {
+    const [messages, setMessages] = React.useState([
+      { id: 1, content: 'Hello!', sender: 'user' },
+      { id: 2, content: 'Hi there! How can I help?', sender: 'bot' },
+    ])
 
-  return (
-    <div className="space-y-4 max-w-2xl">
-      <div className="flex gap-2">
-        <Button onClick={addMessage}>Add Message</Button>
+    const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
+      dependencies: [messages],
+      threshold: 50,
+    })
+
+    const addMessage = () => {
+      const newMessage = {
+        id: messages.length + 1,
+        content: `Message ${messages.length + 1}`,
+        sender: messages.length % 2 === 0 ? 'user' : 'bot',
+      }
+      setMessages([...messages, newMessage])
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <Button onClick={addMessage}>Add Message</Button>
+          <Button onClick={() => setMessages([])} variant="outline">
+            Clear All
+          </Button>
+        </div>
+
+        <div
+          ref={scrollRef as React.RefObject<HTMLDivElement>}
+          className="h-96 overflow-y-auto border rounded-lg p-4 space-y-2 bg-muted/20"
+        >
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`p-3 rounded-lg max-w-[80%] ${
+                msg.sender === 'user'
+                  ? 'ml-auto bg-primary text-primary-foreground'
+                  : 'bg-card'
+              }`}
+            >
+              {msg.content}
+            </div>
+          ))}
+        </div>
+
         {!isNearBottom && (
-          <Button onClick={scrollToBottom} variant="outline">
-            Scroll to Bottom
+          <Button onClick={scrollToBottom} className="w-full">
+            ↓ New Messages - Scroll to Bottom
           </Button>
         )}
-        <Button onClick={() => setEnabled(!isNearBottom)} variant="outline">
-          Toggle Auto-Scroll
-        </Button>
       </div>
-
-      <div className="p-2 bg-gray-50 dark:bg-gray-900 border rounded-lg">
-        <div className="text-sm">
-          <strong>Is Near Bottom:</strong> {isNearBottom ? 'Yes' : 'No'}
-        </div>
-      </div>
-
-      <div
-        ref={scrollRef as React.RefObject<HTMLDivElement>}
-        className="h-64 overflow-y-auto border rounded-lg p-4 bg-gray-50 dark:bg-gray-900"
-      >
-        {messages.map((msg, index) => (
-          <div key={index} className="mb-2 p-2 bg-white dark:bg-gray-800 rounded">
-            {msg}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-export const BasicUsage: Story = {
-  render: () => <BasicAutoScrollDemo />,
+    )
+  },
   parameters: {
     docs: {
       description: {
-        story: 'Basic auto-scroll functionality that scrolls to bottom when new messages are added.',
+        story: 'Chat interface with auto-scroll that respects user scrolling.',
       },
     },
   },
 }
 
-function ThresholdDemo() {
-  const [messages, setMessages] = useState<string[]>(['Message 1'])
-  const [threshold, setThreshold] = useState(100)
-  
-  const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
-    dependencies: [messages],
-    threshold,
-  })
+// ============================================================================
+// Live Feed Example
+// ============================================================================
 
-  const addMessage = () => {
-    setMessages((prev) => [...prev, `Message ${prev.length + 1}`])
-  }
+export const LiveFeedExample: Story = {
+  render: () => {
+    const [items, setItems] = React.useState<Array<{ id: number; text: string; time: string }>>([])
+    const [isLive, setIsLive] = React.useState(false)
 
-  return (
-    <div className="space-y-4 max-w-2xl">
-      <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Threshold: {threshold}px
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="300"
-          step="10"
-          value={threshold}
-          onChange={(e) => setThreshold(Number(e.target.value))}
-          className="w-full"
-        />
-        <p className="text-xs text-gray-500">
-          Distance from bottom (px) to trigger auto-scroll
-        </p>
-      </div>
+    const { scrollRef, isNearBottom, scrollToBottom, setEnabled } = useAutoScroll({
+      dependencies: [items],
+      behavior: 'smooth',
+    })
 
-      <div className="flex gap-2">
-        <Button onClick={addMessage}>Add Message</Button>
-        {!isNearBottom && (
-          <Button onClick={scrollToBottom} variant="outline">
-            Scroll to Bottom
-          </Button>
-        )}
-      </div>
+    React.useEffect(() => {
+      if (!isLive) return
 
-      <div className="p-2 bg-gray-50 dark:bg-gray-900 border rounded-lg">
-        <div className="text-sm">
-          <strong>Is Near Bottom:</strong> {isNearBottom ? 'Yes' : 'No'} (threshold: {threshold}px)
+      const interval = setInterval(() => {
+        const newItem = {
+          id: Date.now(),
+          text: `Event ${items.length + 1}: ${['Info', 'Warning', 'Error', 'Success'][Math.floor(Math.random() * 4)]}`,
+          time: new Date().toLocaleTimeString(),
+        }
+        setItems((prev) => [...prev, newItem])
+      }, 2000)
+
+      return () => clearInterval(interval)
+    }, [isLive, items.length])
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold">Live Event Feed</h3>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setIsLive(!isLive)}
+              variant={isLive ? 'destructive' : 'default'}
+              size="sm"
+            >
+              {isLive ? 'Stop' : 'Start'} Feed
+            </Button>
+            <Button
+              onClick={() => setItems([])}
+              variant="outline"
+              size="sm"
+            >
+              Clear
+            </Button>
+          </div>
+        </div>
+
+        <div
+          ref={scrollRef as React.RefObject<HTMLDivElement>}
+          className="h-80 overflow-y-auto border rounded-lg p-4 bg-muted/20 font-mono text-sm"
+        >
+          {items.length === 0 ? (
+            <div className="h-full flex items-center justify-center text-muted-foreground">
+              Click "Start Feed" to begin
+            </div>
+          ) : (
+            items.map((item) => (
+              <div key={item.id} className="py-1">
+                <span className="text-muted-foreground">[{item.time}]</span>{' '}
+                <span>{item.text}</span>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="flex items-center gap-4 text-sm">
+          <div className={`flex items-center gap-2 ${isNearBottom ? 'text-green-600' : 'text-yellow-600'}`}>
+            <div className={`w-2 h-2 rounded-full ${isNearBottom ? 'bg-green-500' : 'bg-yellow-500'}`} />
+            <span>{isNearBottom ? 'Auto-scrolling' : 'Paused (scroll manually)'}</span>
+          </div>
+          {!isNearBottom && (
+            <Button onClick={scrollToBottom} size="sm" variant="outline">
+              ↓ Jump to Latest
+            </Button>
+          )}
         </div>
       </div>
-
-      <div
-        ref={scrollRef as React.RefObject<HTMLDivElement>}
-        className="h-64 overflow-y-auto border rounded-lg p-4 bg-gray-50 dark:bg-gray-900"
-      >
-        {messages.map((msg, index) => (
-          <div key={index} className="mb-2 p-2 bg-white dark:bg-gray-800 rounded">
-            {msg}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-export const CustomThreshold: Story = {
-  render: () => <ThresholdDemo />,
+    )
+  },
   parameters: {
     docs: {
       description: {
-        story: 'Customizing the threshold distance from bottom that triggers auto-scroll.',
+        story: 'Live feed that auto-scrolls but pauses when user scrolls up.',
       },
     },
   },
 }
 
-function ManualControlDemo() {
-  const [messages, setMessages] = useState<string[]>(['Message 1'])
-  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
-  
-  const { scrollRef, isNearBottom, scrollToBottom, setEnabled } = useAutoScroll({
-    enabled: autoScrollEnabled,
-    dependencies: [messages],
-  })
+// ============================================================================
+// Manual Control
+// ============================================================================
 
-  const addMessage = () => {
-    setMessages((prev) => [...prev, `Message ${prev.length + 1}`])
-  }
+export const ManualControlExample: Story = {
+  render: () => {
+    const [items, setItems] = React.useState(Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`))
+    const [autoScrollEnabled, setAutoScrollEnabled] = React.useState(true)
 
-  const toggleAutoScroll = () => {
-    const newValue = !autoScrollEnabled
-    setAutoScrollEnabled(newValue)
-    setEnabled(newValue)
-  }
+    const { scrollRef, isNearBottom, scrollToBottom, setEnabled } = useAutoScroll({
+      dependencies: [items],
+      enabled: autoScrollEnabled,
+    })
 
-  return (
-    <div className="space-y-4 max-w-2xl">
-      <div className="flex gap-2">
-        <Button onClick={addMessage}>Add Message</Button>
-        <Button onClick={scrollToBottom} variant="outline">
-          Manual Scroll to Bottom
-        </Button>
-        <Button onClick={toggleAutoScroll} variant={autoScrollEnabled ? 'default' : 'outline'}>
-          {autoScrollEnabled ? 'Disable' : 'Enable'} Auto-Scroll
-        </Button>
-      </div>
+    React.useEffect(() => {
+      setEnabled(autoScrollEnabled)
+    }, [autoScrollEnabled, setEnabled])
 
-      <div className="p-2 bg-gray-50 dark:bg-gray-900 border rounded-lg">
-        <div className="text-sm space-y-1">
-          <div>
-            <strong>Auto-Scroll Enabled:</strong> {autoScrollEnabled ? 'Yes' : 'No'}
+    const addItems = (count: number) => {
+      const newItems = Array.from({ length: count }, (_, i) => `Item ${items.length + i + 1}`)
+      setItems([...items, ...newItems])
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={autoScrollEnabled}
+              onChange={(e) => setAutoScrollEnabled(e.target.checked)}
+            />
+            <span className="text-sm">Auto-scroll enabled</span>
+          </label>
+          <div className="flex-1" />
+          <Button onClick={() => addItems(5)} size="sm">
+            Add 5 Items
+          </Button>
+          <Button onClick={() => addItems(1)} size="sm" variant="outline">
+            Add 1 Item
+          </Button>
+        </div>
+
+        <div
+          ref={scrollRef as React.RefObject<HTMLDivElement>}
+          className="h-64 overflow-y-auto border rounded-lg p-4"
+        >
+          {items.map((item, index) => (
+            <div key={index} className="py-2 border-b last:border-0">
+              {item}
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between text-sm">
+          <div className="text-muted-foreground">
+            {isNearBottom ? '✓ At bottom' : '⚠ Scrolled up'}
           </div>
-          <div>
-            <strong>Is Near Bottom:</strong> {isNearBottom ? 'Yes' : 'No'}
-          </div>
+          <Button onClick={scrollToBottom} variant="outline" size="sm" disabled={isNearBottom}>
+            Scroll to Bottom
+          </Button>
         </div>
       </div>
-
-      <div
-        ref={scrollRef as React.RefObject<HTMLDivElement>}
-        className="h-64 overflow-y-auto border rounded-lg p-4 bg-gray-50 dark:bg-gray-900"
-      >
-        {messages.map((msg, index) => (
-          <div key={index} className="mb-2 p-2 bg-white dark:bg-gray-800 rounded">
-            {msg}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-export const ManualControl: Story = {
-  render: () => <ManualControlDemo />,
+    )
+  },
   parameters: {
     docs: {
       description: {
-        story: 'Manually controlling auto-scroll enable/disable and scrolling to bottom.',
+        story: 'Demonstrates manual control over auto-scroll behavior.',
       },
     },
   },
