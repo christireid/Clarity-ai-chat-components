@@ -3,16 +3,94 @@ import * as React from 'react'
 import { Message } from '../../../packages/react/src/components/message'
 import type { Message as MessageType } from '../../../packages/types/src/message'
 
+/**
+ * **Message Component**
+ * 
+ * Enhanced message component for displaying chat messages with animations,
+ * feedback, and interactive features.
+ * 
+ * **Key Features:**
+ * - Slide-in animations
+ * - Hover actions
+ * - Feedback buttons with confetti
+ * - Streaming cursor pulse
+ * - Avatar bounce animations
+ * - Copy functionality
+ * - Retry on error
+ * - Markdown rendering
+ * 
+ * **Use Cases:**
+ * - Chat interfaces
+ * - Messaging applications
+ * - AI assistants
+ * - Customer support
+ */
 const meta: Meta<typeof Message> = {
   title: 'Components/Message',
   component: Message,
   tags: ['autodocs'],
   parameters: {
+    layout: 'padded',
     docs: {
       description: {
-        component:
-          'Enhanced message component with slide-in animations, hover actions, feedback buttons with confetti, streaming cursor pulse, and avatar bounce.',
+        component: `
+Enhanced message component for displaying chat messages with animations,
+feedback, and interactive features.
+
+## Features
+
+- ✅ Slide-in animations
+- ✅ Hover actions
+- ✅ Feedback buttons with confetti
+- ✅ Streaming cursor pulse
+- ✅ Avatar bounce animations
+- ✅ Copy functionality
+- ✅ Retry on error
+- ✅ Markdown rendering
+- ✅ Accessible with ARIA attributes
+
+## Basic Usage
+
+\`\`\`tsx
+<Message
+  message={message}
+  onFeedback={(type) => console.log('Feedback:', type)}
+  onCopy={(id, content) => console.log('Copied:', content)}
+  onRetry={(id) => console.log('Retry:', id)}
+/>
+\`\`\`
+        `,
       },
+    },
+  },
+  argTypes: {
+    message: {
+      description: 'The message object to display',
+      control: { type: 'object' },
+    },
+    onFeedback: {
+      description: 'Callback when user gives feedback (up/down)',
+      action: 'feedback',
+    },
+    onCopy: {
+      description: 'Callback when message is copied',
+      action: 'copy',
+    },
+    onRetry: {
+      description: 'Callback when retry is requested',
+      action: 'retry',
+    },
+    showAvatar: {
+      description: 'Show avatar for the message',
+      control: 'boolean',
+    },
+    showTimestamp: {
+      description: 'Show timestamp',
+      control: 'boolean',
+    },
+    enableMarkdown: {
+      description: 'Enable markdown rendering',
+      control: 'boolean',
     },
   },
 }
