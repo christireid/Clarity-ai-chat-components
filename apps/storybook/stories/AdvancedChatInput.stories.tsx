@@ -3,13 +3,93 @@ import { AdvancedChatInput, type Suggestion } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { SavedPrompt } from '@clarity-chat/types'
 
+/**
+ * **AdvancedChatInput Component**
+ * 
+ * Advanced chat input component with prompt library integration,
+ * file attachments, suggestions, and rich text editing.
+ * 
+ * **Key Features:**
+ * - Prompt library integration (@ mentions)
+ * - Command palette (/ commands)
+ * - File attachments
+ * - Rich text editing
+ * - Auto-suggestions
+ * - Variable substitution
+ * - Keyboard shortcuts
+ * 
+ * **Use Cases:**
+ * - AI chat interfaces with prompts
+ * - Command-based interfaces
+ * - Multi-modal chat inputs
+ * - Enterprise chat applications
+ */
 const meta = {
   title: 'Components/AdvancedChatInput',
   component: AdvancedChatInput,
   parameters: {
     layout: 'padded',
+    docs: {
+      description: {
+        component: `
+Advanced chat input component with prompt library integration,
+file attachments, suggestions, and rich text editing.
+
+## Features
+
+- ✅ Prompt library integration (@ mentions)
+- ✅ Command palette (/ commands)
+- ✅ File attachments
+- ✅ Rich text editing
+- ✅ Auto-suggestions
+- ✅ Variable substitution
+- ✅ Keyboard shortcuts
+- ✅ Accessible with proper ARIA attributes
+
+## Basic Usage
+
+\`\`\`tsx
+<AdvancedChatInput
+  onSubmit={(content, attachments) => {
+    console.log('Submitted:', content, attachments)
+  }}
+  onSuggestionRequest={async (query, trigger) => {
+    // Return suggestions based on trigger (@ or /)
+    return suggestions
+  }}
+/>
+\`\`\`
+        `,
+      },
+    },
   },
   tags: ['autodocs'],
+  argTypes: {
+    onSubmit: {
+      description: 'Callback when message is submitted',
+      action: 'submitted',
+    },
+    onSuggestionRequest: {
+      description: 'Callback to fetch suggestions for @ or / triggers',
+      action: 'suggestion-requested',
+    },
+    maxLength: {
+      description: 'Maximum character length',
+      control: { type: 'number', min: 10, max: 10000 },
+    },
+    placeholder: {
+      description: 'Input placeholder text',
+      control: 'text',
+    },
+    disabled: {
+      description: 'Disable input',
+      control: 'boolean',
+    },
+    showCharCounter: {
+      description: 'Show character counter',
+      control: 'boolean',
+    },
+  },
 } satisfies Meta<typeof AdvancedChatInput>
 
 export default meta
