@@ -4,9 +4,10 @@
  * Dropdown to switch between AI models with metrics (speed, cost, quality)
  */
 
-import * as React from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Badge, Button, cn } from '@clarity-chat/primitives'
 import type { ModelConfig, ModelInfo } from '../adapters/types'
+import type { ComponentProps } from 'react'
 
 export interface ModelSelectorProps {
   /** Available models */
@@ -25,27 +26,8 @@ export interface ModelSelectorProps {
   showDescription?: boolean
 }
 
-export function ModelSelector({
-  models,
-  value,
-  onChange,
-  className = '',
-  showMetrics = true,
-  disabled = false,
-  showDescription = true
-}: ModelSelectorProps) {
-  const [isOpen, setIsOpen] = React.useState(false)
-  const selectedModel = models.find(m => m.id === value)
-  
-  const handleSelect = (model: ModelInfo) => {
-    onChange(model.id, {
-      provider: model.provider,
-      model: model.id
-    })
-    setIsOpen(false)
-  }
-  
-  const getBadgeProps = (type: 'speed' | 'cost' | 'quality', value: string): { variant: React.ComponentProps<typeof Badge>['variant']; label: string } => {
+// Badge props mapping - extracted as constant function
+const getBadgeProps = (type: 'speed' | 'cost' | 'quality', value: string): { variant: ComponentProps<typeof Badge>['variant']; label: string } => {
     switch (type) {
       case 'speed':
         if (value === 'fast') return { variant: 'success', label: 'Fast' }
@@ -62,14 +44,59 @@ export function ModelSelector({
       default:
         return { variant: 'secondary', label: value }
     }
-  }
+}
+
+export function ModelSelector({
+  models,
+  value,
+  onChange,
+  className = '',
+  showMetrics = true,
+  disabled = false,
+  showDescription = true
+}: ModelSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  
+  // Memoized selected model
+  const selectedModel = useMemo(() => models.find(m => m.id === value), [models, value])
+  
+  // Close on outside click
+  useEffect(() => {
+    if (!isOpen) return
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen])
+  
+  const handleSelect = useCallback((model: ModelInfo) => {
+    onChange(model.id, {
+      provider: model.provider,
+      model: model.id
+    })
+    setIsOpen(false)
+  }, [onChange])
+  
+  const handleToggle = useCallback(() => {
+    setIsOpen((prev) => !prev)
+  }, [])
+  
+  const handleBackdropClick = useCallback(() => {
+    setIsOpen(false)
+  }, [])
 
   return (
-    <div className={cn('relative', className)}>
+    <div ref={containerRef} className={cn('relative', className)}>
       <Button
         type="button"
         variant="surface"
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={handleToggle}
         disabled={disabled}
         className="w-full justify-between rounded-xl border border-border/60 bg-[hsl(var(--surface-elevated))] px-4 py-3 text-left text-sm shadow-[0_14px_28px_rgba(15,23,42,0.12)] hover:bg-[hsl(var(--surface-overlay))]"
         aria-haspopup="listbox"
@@ -112,7 +139,8 @@ export function ModelSelector({
         <>
           <div
             className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
+            onClick={handleBackdropClick}
+            aria-hidden="true"
           />
           <div
             role="listbox"
