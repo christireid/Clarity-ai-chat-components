@@ -9,11 +9,18 @@
  * @status NEW - Implementation based on blueprint analysis
  */
 
-import { Message, Conversation } from '@clarity-chat/types'
+import { Message as BaseMessage } from '@clarity-chat/types'
 
 // ============================================================================
 // Types
 // ============================================================================
+
+// Extended Message type with export-specific properties
+export interface Message extends BaseMessage {
+  timestamp?: Date
+  tokens?: number
+  cost?: number
+}
 
 export type ExportFormat = 'json' | 'markdown' | 'html' | 'pdf' | 'txt'
 
