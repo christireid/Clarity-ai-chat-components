@@ -140,6 +140,7 @@ export * from './hooks/use-mounted'
 export * from './hooks/use-previous'
 export * from './hooks/use-toggle'
 export * from './hooks/use-window-size'
+export * from './hooks/use-element-size'
 
 // Phase 3 Enhancement - Error Recovery & Token Tracking
 export * from './hooks/use-error-recovery'

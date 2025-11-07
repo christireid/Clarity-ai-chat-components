@@ -10,16 +10,23 @@ export interface WindowSize {
  * during window resize events.
  * 
  * **Features:**
- * - Automatic throttling (150ms default)
+ * - Automatic throttling (150ms default) using debounce for smoother UX
  * - SSR-safe (returns 0x0 on server)
  * - Automatic cleanup on unmount
- * - Memory efficient
+ * - Memory efficient with proper ref usage
+ * - Configurable throttle delay
  * 
  * **Use Cases:**
  * - Responsive component rendering
  * - Conditional layout switching
  * - Dynamic sizing calculations
+ * - Canvas/SVG responsive sizing
  * 
+ * **Implementation Notes:**
+ * Uses refs to avoid stale closures and race conditions. The timeout is
+ * properly cleaned up on unmount to prevent memory leaks.
+ * 
+ * @param {number} [throttleMs=150] - Debounce delay in milliseconds
  * @returns {WindowSize} Object containing current window width and height
  * @example
  * ```tsx
@@ -32,8 +39,17 @@ export interface WindowSize {
  *   </div>
  * )
  * ```
+ * 
+ * @example
+ * ```tsx
+ * // With custom throttle delay
+ * const { width, height } = useWindowSize(300)
+ * 
+ * // More aggressive throttling for performance-critical apps
+ * return <Chart width={width} height={height} />
+ * ```
  */
-export function useWindowSize(): WindowSize {
+export function useWindowSize(throttleMs: number = 150): WindowSize {
   const [windowSize, setWindowSize] = React.useState<WindowSize>(() => {
     if (typeof window === 'undefined') {
       return { width: 0, height: 0 }
@@ -44,48 +60,45 @@ export function useWindowSize(): WindowSize {
     }
   })
 
+  // Use ref to avoid stale closure issues
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null)
+
   React.useEffect(() => {
     if (typeof window === 'undefined') return
 
-    let timeoutId: NodeJS.Timeout | undefined
-    let lastRan = Date.now()
-    const THROTTLE_DELAY = 150
-
     const handleResize = () => {
-      const now = Date.now()
-      const timeSinceLastRun = now - lastRan
+      // Clear existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
 
-      if (timeSinceLastRun >= THROTTLE_DELAY) {
-        // Execute immediately if enough time has passed
+      // Set new timeout
+      timeoutRef.current = setTimeout(() => {
         setWindowSize({
           width: window.innerWidth,
           height: window.innerHeight,
         })
-        lastRan = now
-      } else {
-        // Schedule execution for remaining time
-        if (timeoutId) {
-          clearTimeout(timeoutId)
-        }
-        timeoutId = setTimeout(() => {
-          setWindowSize({
-            width: window.innerWidth,
-            height: window.innerHeight,
-          })
-          lastRan = Date.now()
-        }, THROTTLE_DELAY - timeSinceLastRun)
-      }
+        timeoutRef.current = null
+      }, throttleMs)
     }
 
-    window.addEventListener('resize', handleResize, { passive: true })
+    window.addEventListener('resize', handleResize)
+    
+    // Set initial size immediately
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    })
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      if (timeoutId) {
-        clearTimeout(timeoutId)
+      // Clean up timeout on unmount
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
       }
     }
-  }, [])
+  }, [throttleMs])
 
   return windowSize
 }
