@@ -37,6 +37,32 @@ export const learnNavigation: NavItem[] = [
       { title: 'Token Optimization', href: '/guides/token-optimization' },
     ],
   },
+  {
+    title: 'Deployment',
+    items: [
+      { title: 'Deploy to Vercel', href: '/learn/deployment/vercel' },
+      { title: 'Deploy to AWS', href: '/learn/deployment/aws' },
+      { title: 'Docker Deployment', href: '/learn/deployment/docker' },
+    ],
+  },
+  {
+    title: 'Migration',
+    items: [
+      { title: 'From Vercel AI SDK', href: '/learn/migration/from-vercel-ai-sdk' },
+    ],
+  },
+  {
+    title: 'Advanced',
+    items: [
+      { title: 'Architecture', href: '/learn/architecture' },
+    ],
+  },
+  {
+    title: 'Help',
+    items: [
+      { title: 'Troubleshooting', href: '/learn/troubleshooting' },
+    ],
+  },
 ]
 
 export const referenceNavigation: NavItem[] = [
