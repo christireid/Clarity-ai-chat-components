@@ -22,6 +22,26 @@ const SimulatedWidget: React.FC<{ explode: boolean }> = ({ explode }) => {
   )
 }
 
+/**
+ * **ErrorBoundary Component**
+ * 
+ * Production-ready React error boundaries with enhanced reporting
+ * and recovery mechanisms.
+ * 
+ * **Key Features:**
+ * - Default and custom fallback UIs
+ * - Error reporting integration
+ * - Reset functionality
+ * - Reset keys for automatic recovery
+ * - Enhanced error boundary with telemetry
+ * - Error context preservation
+ * 
+ * **Use Cases:**
+ * - Application-wide error handling
+ * - Component-level error boundaries
+ * - Error reporting and monitoring
+ * - Graceful degradation
+ */
 const meta = {
   title: 'Foundations/Error Handling/ErrorBoundary',
   component: ErrorBoundary,
@@ -29,12 +49,58 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component:
-          'Production-ready React error boundaries with enhanced reporting. Pattern references: Atlassian Design System reliability checklist and Netflix fallback design. Stories illustrate default fallback, custom reset flows, and telemetry integration.',
+        component: `
+Production-ready React error boundaries with enhanced reporting
+and recovery mechanisms.
+
+## Features
+
+- ✅ Default and custom fallback UIs
+- ✅ Error reporting integration
+- ✅ Reset functionality
+- ✅ Reset keys for automatic recovery
+- ✅ Enhanced error boundary with telemetry
+- ✅ Error context preservation
+- ✅ Accessible error messages
+
+## Basic Usage
+
+\`\`\`tsx
+<ErrorBoundary
+  fallback={(error, reset) => (
+    <div>
+      <p>Something went wrong: {error.message}</p>
+      <button onClick={reset}>Try again</button>
+    </div>
+  )}
+  resetKeys={[someKey]}
+>
+  <YourComponent />
+</ErrorBoundary>
+\`\`\`
+        `,
       },
     },
   },
   tags: ['autodocs'],
+  argTypes: {
+    fallback: {
+      description: 'Custom fallback component function',
+      control: { type: 'object' },
+    },
+    resetKeys: {
+      description: 'Array of values that trigger boundary reset when changed',
+      control: { type: 'object' },
+    },
+    onError: {
+      description: 'Callback when error is caught',
+      action: 'error-caught',
+    },
+    onReset: {
+      description: 'Callback when boundary is reset',
+      action: 'reset',
+    },
+  },
 } satisfies Meta<typeof ErrorBoundary>
 
 export default meta
