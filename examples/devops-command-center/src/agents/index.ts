@@ -8,6 +8,7 @@ export interface DevOpsAgent extends Agent {
   lastAction?: string
   successRate: number
   icon: string
+  tools?: any[] // Agent tools for execution
 }
 
 export const devOpsAgents: DevOpsAgent[] = [
