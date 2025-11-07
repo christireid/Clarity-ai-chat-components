@@ -37,3 +37,6 @@ export * from './reference-handler'
 // Configuration Builder
 export * from './chat-config-builder'
 
+// Streaming utilities (shared across hooks)
+export * from './streaming-helpers'
+
