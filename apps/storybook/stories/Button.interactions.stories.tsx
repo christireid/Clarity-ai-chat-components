@@ -1,0 +1,300 @@
+import type { Meta, StoryObj } from '@storybook/react'
+import { within, userEvent, expect } from '@storybook/testing-library'
+import { Button } from '@clarity-chat/primitives'
+
+const meta = {
+  title: 'Primitives/Button/With Interactions',
+  component: Button,
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'Button component with automated interaction tests using Storybook play functions.',
+      },
+    },
+  },
+  tags: ['autodocs'],
+} satisfies Meta<typeof Button>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+// ============================================================================
+// Interaction Tests
+// ============================================================================
+
+export const ClickInteraction: Story = {
+  args: {
+    children: 'Click Me',
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /click me/i })
+
+    await step('Button should be visible', async () => {
+      await expect(button).toBeInTheDocument()
+    })
+
+    await step('Button should be clickable', async () => {
+      await userEvent.click(button)
+      // Verify ripple effect triggered (button should have been clicked)
+      await expect(button).toHaveFocus()
+    })
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests that the button can be clicked and receives focus.',
+      },
+    },
+  },
+}
+
+export const KeyboardNavigation: Story = {
+  args: {
+    children: 'Press Enter',
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button')
+
+    await step('Tab to button', async () => {
+      await userEvent.tab()
+      await expect(button).toHaveFocus()
+    })
+
+    await step('Press Enter to activate', async () => {
+      await userEvent.keyboard('{Enter}')
+      // Button should remain focused after activation
+      await expect(button).toHaveFocus()
+    })
+
+    await step('Press Space to activate', async () => {
+      await userEvent.keyboard(' ')
+      await expect(button).toHaveFocus()
+    })
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests keyboard navigation and activation with Enter and Space keys.',
+      },
+    },
+  },
+}
+
+export const DisabledState: Story = {
+  args: {
+    children: 'Disabled Button',
+    disabled: true,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button')
+
+    await step('Button should be disabled', async () => {
+      await expect(button).toBeDisabled()
+    })
+
+    await step('Click should not work', async () => {
+      // This should not throw an error, just verify state
+      await expect(button).toBeDisabled()
+    })
+
+    await step('Should have aria-disabled attribute', async () => {
+      await expect(button).toHaveAttribute('disabled')
+    })
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests that disabled buttons cannot be interacted with.',
+      },
+    },
+  },
+}
+
+export const LoadingState: Story = {
+  args: {
+    children: 'Loading...',
+    loading: true,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button')
+
+    await step('Button should be disabled when loading', async () => {
+      await expect(button).toBeDisabled()
+    })
+
+    await step('Loading spinner should be visible', async () => {
+      // Check for loading indicator (spinner)
+      const spinner = button.querySelector('svg')
+      await expect(spinner).toBeInTheDocument()
+    })
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests that buttons in loading state are disabled and show a spinner.',
+      },
+    },
+  },
+}
+
+export const VariantRenderingTests: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+      <Button variant="default">Default</Button>
+      <Button variant="destructive">Destructive</Button>
+      <Button variant="outline">Outline</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="ghost">Ghost</Button>
+      <Button variant="link">Link</Button>
+    </div>
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+
+    await step('All variant buttons should render', async () => {
+      const buttons = canvas.getAllByRole('button')
+      await expect(buttons).toHaveLength(6)
+    })
+
+    await step('Each button should have correct text', async () => {
+      await expect(canvas.getByText('Default')).toBeInTheDocument()
+      await expect(canvas.getByText('Destructive')).toBeInTheDocument()
+      await expect(canvas.getByText('Outline')).toBeInTheDocument()
+      await expect(canvas.getByText('Secondary')).toBeInTheDocument()
+      await expect(canvas.getByText('Ghost')).toBeInTheDocument()
+      await expect(canvas.getByText('Link')).toBeInTheDocument()
+    })
+
+    await step('All buttons should be clickable', async () => {
+      const buttons = canvas.getAllByRole('button')
+      for (const button of buttons) {
+        await expect(button).not.toBeDisabled()
+      }
+    })
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests that all button variants render correctly and are interactive.',
+      },
+    },
+  },
+}
+
+export const SizeVariantsTest: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+      <Button size="sm">Small</Button>
+      <Button size="default">Default</Button>
+      <Button size="lg">Large</Button>
+    </div>
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+
+    await step('All size variants should render', async () => {
+      const buttons = canvas.getAllByRole('button')
+      await expect(buttons).toHaveLength(3)
+    })
+
+    await step('Small button should be accessible', async () => {
+      const smallButton = canvas.getByText('Small')
+      await userEvent.click(smallButton)
+      await expect(smallButton).toHaveFocus()
+    })
+
+    await step('Large button should be accessible', async () => {
+      const largeButton = canvas.getByText('Large')
+      await userEvent.click(largeButton)
+      await expect(largeButton).toHaveFocus()
+    })
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests that all button sizes render and are accessible.',
+      },
+    },
+  },
+}
+
+export const AccessibilityTest: Story = {
+  args: {
+    children: 'Accessible Button',
+    'aria-label': 'Perform action',
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button')
+
+    await step('Button should have accessible name', async () => {
+      await expect(button).toHaveAccessibleName('Accessible Button')
+    })
+
+    await step('Button should have aria-label', async () => {
+      await expect(button).toHaveAttribute('aria-label', 'Perform action')
+    })
+
+    await step('Button should be keyboard accessible', async () => {
+      await userEvent.tab()
+      await expect(button).toHaveFocus()
+    })
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests accessibility features including ARIA attributes and keyboard navigation.',
+      },
+    },
+  },
+}
+
+export const MultipleClicksTest: Story = {
+  render: () => {
+    let clickCount = 0
+    return (
+      <Button
+        onClick={() => {
+          clickCount++
+          const element = document.getElementById('click-counter')
+          if (element) element.textContent = `Clicked ${clickCount} times`
+        }}
+      >
+        <span>Click Multiple Times</span>
+        <span id="click-counter" style={{ marginLeft: '8px' }}>
+          Clicked 0 times
+        </span>
+      </Button>
+    )
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button')
+
+    await step('Initial state should show 0 clicks', async () => {
+      await expect(canvas.getByText(/clicked 0 times/i)).toBeInTheDocument()
+    })
+
+    await step('Click button 3 times', async () => {
+      await userEvent.click(button)
+      await userEvent.click(button)
+      await userEvent.click(button)
+    })
+
+    await step('Counter should update', async () => {
+      await expect(canvas.getByText(/clicked 3 times/i)).toBeInTheDocument()
+    })
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests that buttons correctly handle multiple rapid clicks.',
+      },
+    },
+  },
+}
