@@ -142,3 +142,22 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 - [Cookbook](/cookbook) - Recipes for common patterns
 
 </div>
+
+## Advanced Features
+
+<div class="vp-doc">
+
+- [Model Adapters](/guide/model-adapters) - Switch between AI providers
+- [AI Agents](/guide/agents) - Build agents with tool calling
+- [RAG System](/guides/rag-guide) - Retrieval-augmented generation
+- [Safety & Moderation](/guide/safety) - Content filtering and PII detection
+- [Memory System](/guide/memory) - Persistent memory across conversations
+- [Observability](/guide/observability) - Monitoring and tracing
+- [Token Optimization](/guide/token-optimization) - Reduce costs and improve performance
+- [Performance Guide](/guide/performance) - Optimize your application
+- [Migration Guide](/guide/migration) - Upgrade between versions
+- [Plugins](/guide/plugins) - Extend functionality with plugins
+- [Audit Logging](/guide/audit-logging) - Track actions for compliance
+- [Usage Quotas](/guide/usage-quotas) - Control costs and enforce limits
+
+</div>

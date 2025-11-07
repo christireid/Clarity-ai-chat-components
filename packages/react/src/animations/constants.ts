@@ -1,256 +1,119 @@
 /**
  * Animation Constants
- * 
- * Centralized animation timing and easing values for consistent motion design.
+ * Centralized timing and configuration values for consistent animations
  */
 
-/**
- * Animation durations in milliseconds
- */
 export const ANIMATION_DURATION = {
-  /** Ultra fast - 100ms - Micro-interactions, hover states */
-  instant: 100,
-  /** Fast - 150ms - Button presses, simple transitions */
+  /** 150ms - Quick interactions */
   fast: 150,
-  /** Normal - 250ms - Standard transitions, fades */
-  normal: 250,
-  /** Slow - 350ms - Complex transitions, slides */
-  slow: 350,
-  /** Slower - 500ms - Page transitions, reveals */
-  slower: 500,
-  /** Very slow - 700ms - Special effects, dramatic reveals */
-  slowest: 700,
+  /** 300ms - Standard transitions */
+  normal: 300,
+  /** 500ms - Slow, emphasized transitions */
+  slow: 500,
+  /** 1000ms - Extra slow, significant state changes */
+  'extra-slow': 1000,
 } as const
 
-/**
- * Animation easing functions
- */
 export const ANIMATION_EASING = {
-  /** Default ease - Smooth in and out */
-  default: 'cubic-bezier(0.4, 0, 0.2, 1)',
-  /** Ease in - Starts slow, ends fast */
-  in: 'cubic-bezier(0.4, 0, 1, 1)',
-  /** Ease out - Starts fast, ends slow */
-  out: 'cubic-bezier(0, 0, 0.2, 1)',
-  /** Ease in-out - Smooth start and end */
-  inOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
-  /** Spring - Bouncy, energetic feel */
-  spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-  /** Sharp - Quick, decisive movement */
-  sharp: 'cubic-bezier(0.4, 0, 0.6, 1)',
-  /** Emphasized - Attention-grabbing */
-  emphasized: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+  /** Smooth acceleration */
+  in: 'easeIn',
+  /** Smooth deceleration */
+  out: 'easeOut',
+  /** Smooth acceleration and deceleration */
+  inOut: 'easeInOut',
+  /** Spring physics */
+  spring: 'spring',
 } as const
 
-/**
- * Stagger timing for list animations
- */
-export const STAGGER_TIMING = {
-  /** Very fast stagger - 30ms between items */
-  fast: 0.03,
-  /** Normal stagger - 50ms between items */
-  normal: 0.05,
-  /** Slow stagger - 80ms between items */
-  slow: 0.08,
-  /** Very slow stagger - 120ms between items */
-  slower: 0.12,
+export const INTERACTION_VARIANTS = {
+  button: {
+    hover: { scale: 1.05, y: -2 },
+    tap: { scale: 0.95, y: 0 },
+    transition: { duration: 0.15, ease: 'easeOut' },
+  },
+  card: {
+    hover: { y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.12)' },
+    tap: { scale: 0.98 },
+    transition: { duration: 0.2, ease: 'easeOut' },
+  },
+  icon: {
+    hover: { scale: 1.1, rotate: 5 },
+    tap: { scale: 0.9, rotate: -5 },
+    transition: { duration: 0.15, type: 'spring', stiffness: 400 },
+  },
 } as const
 
-/**
- * Common animation variants for framer-motion
- */
-export const ANIMATION_VARIANTS = {
-  /** Fade in/out */
-  fade: {
+export const ANIMATION_TIMINGS = {
+  /** 200ms - Fast animations */
+  FAST: 0.2,
+  /** 300ms - Normal animations */
+  NORMAL: 0.3,
+  /** 500ms - Slow animations */
+  SLOW: 0.5,
+  /** 3000ms - Infinite cycle duration */
+  INFINITE_CYCLE: 3,
+} as const
+
+export const UI_FEEDBACK_DELAYS = {
+  /** 1000ms - Success state display duration */
+  SUCCESS: 1000,
+  /** 2000ms - Error state display duration */
+  ERROR: 2000,
+  /** 300ms - Tooltip delay */
+  TOOLTIP: 300,
+  /** 150ms - Hover delay */
+  HOVER: 150,
+} as const
+
+export const ANIMATION_PRESETS = {
+  fadeIn: {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     exit: { opacity: 0 },
-    transition: { duration: ANIMATION_DURATION.normal / 1000 },
   },
-  
-  /** Fade and slide up */
-  fadeSlideUp: {
+  slideUp: {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -20 },
-    transition: { 
-      duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.out,
-    },
   },
-  
-  /** Fade and slide down */
-  fadeSlideDown: {
+  slideDown: {
     initial: { opacity: 0, y: -20 },
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: 20 },
-    transition: { 
-      duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.out,
-    },
   },
-  
-  /** Scale and fade */
-  scaleFade: {
-    initial: { opacity: 0, scale: 0.9 },
-    animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.95 },
-    transition: { 
-      duration: ANIMATION_DURATION.fast / 1000,
-      ease: ANIMATION_EASING.spring,
-    },
-  },
-  
-  /** Pop in with spring */
-  popIn: {
-    initial: { opacity: 0, scale: 0.5 },
-    animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.8 },
-    transition: { 
-      duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.spring,
-    },
-  },
-  
-  /** Slide from left */
   slideLeft: {
-    initial: { opacity: 0, x: -20 },
-    animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: 20 },
-    transition: { 
-      duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.out,
-    },
-  },
-  
-  /** Slide from right */
-  slideRight: {
     initial: { opacity: 0, x: 20 },
     animate: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: -20 },
-    transition: { 
-      duration: ANIMATION_DURATION.normal / 1000,
-      ease: ANIMATION_EASING.out,
-    },
   },
-  
-  /** List container with stagger */
-  listContainer: {
-    initial: {},
-    animate: {
-      transition: {
-        staggerChildren: STAGGER_TIMING.normal,
-        delayChildren: 0.1,
-      },
-    },
-    exit: {
-      transition: {
-        staggerChildren: STAGGER_TIMING.fast,
-        staggerDirection: -1,
-      },
-    },
+  slideRight: {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: 20 },
   },
-  
-  /** List item */
-  listItem: {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -10 },
-    transition: { duration: ANIMATION_DURATION.fast / 1000 },
+  scale: {
+    initial: { opacity: 0, scale: 0.9 },
+    animate: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.9 },
+  },
+  scaleRotate: {
+    initial: { opacity: 0, scale: 0.8, rotate: -5 },
+    animate: { opacity: 1, scale: 1, rotate: 0 },
+    exit: { opacity: 0, scale: 0.8, rotate: 5 },
   },
 } as const
 
 /**
- * Hover and tap animations
+ * Z-index layers for consistent stacking context
  */
-export const INTERACTION_VARIANTS = {
-  /** Button hover/tap */
-  button: {
-    hover: { scale: 1.02 },
-    tap: { scale: 0.98 },
-    transition: { duration: ANIMATION_DURATION.instant / 1000 },
-  },
-  
-  /** Icon button hover/tap */
-  iconButton: {
-    hover: { scale: 1.1, rotate: 5 },
-    tap: { scale: 0.9 },
-    transition: { duration: ANIMATION_DURATION.instant / 1000 },
-  },
-  
-  /** Card hover */
-  card: {
-    hover: { y: -4, boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)' },
-    transition: { duration: ANIMATION_DURATION.fast / 1000 },
-  },
-  
-  /** Subtle lift on hover */
-  lift: {
-    hover: { y: -2 },
-    transition: { duration: ANIMATION_DURATION.instant / 1000 },
-  },
-  
-  /** Glow effect on hover */
-  glow: {
-    hover: { boxShadow: '0 0 20px rgba(var(--primary), 0.3)' },
-    transition: { duration: ANIMATION_DURATION.fast / 1000 },
-  },
+export const Z_INDEX = {
+  base: 0,
+  dropdown: 1000,
+  sticky: 1100,
+  fixed: 1200,
+  modalBackdrop: 1300,
+  modal: 1400,
+  popover: 1500,
+  tooltip: 1600,
+  toast: 1700,
 } as const
-
-/**
- * Loading and skeleton animation
- */
-export const LOADING_ANIMATION = {
-  pulse: {
-    animate: {
-      opacity: [0.5, 0.8, 0.5],
-    },
-    transition: {
-      duration: 1.5,
-      repeat: Infinity,
-      ease: ANIMATION_EASING.inOut,
-    },
-  },
-  
-  shimmer: {
-    animate: {
-      backgroundPosition: ['200% 0', '-200% 0'],
-    },
-    transition: {
-      duration: 2,
-      repeat: Infinity,
-      ease: 'linear',
-    },
-  },
-  
-  spinner: {
-    animate: {
-      rotate: [0, 360],
-    },
-    transition: {
-      duration: 1,
-      repeat: Infinity,
-      ease: 'linear',
-    },
-  },
-  
-  dots: {
-    animate: {
-      opacity: [0.3, 1, 0.3],
-      scale: [0.8, 1, 0.8],
-    },
-    transition: {
-      duration: 1.5,
-      repeat: Infinity,
-    },
-  },
-} as const
-
-/**
- * Type exports
- */
-export type AnimationDuration = keyof typeof ANIMATION_DURATION
-export type AnimationEasing = keyof typeof ANIMATION_EASING
-export type StaggerTiming = keyof typeof STAGGER_TIMING
-export type AnimationVariant = keyof typeof ANIMATION_VARIANTS
-export type InteractionVariant = keyof typeof INTERACTION_VARIANTS

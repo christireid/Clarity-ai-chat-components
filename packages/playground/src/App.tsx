@@ -19,19 +19,22 @@ export default function App() {
 
   // Auto-format code on load
   useEffect(() => {
-    try {
-      const prettier = require('prettier/standalone')
-      const parserBabel = require('prettier/parser-babel')
-      const formatted = prettier.format(code, {
-        parser: 'babel',
-        plugins: [parserBabel],
-        semi: false,
-        singleQuote: true,
-      })
-      setCode(formatted)
-    } catch (error) {
-      console.error('Failed to format code:', error)
+    const format = async () => {
+      try {
+        const prettierMod = await import('prettier/standalone')
+        const parserBabel = await import('prettier/parser-babel')
+        const formatted = prettierMod.format(code, {
+          parser: 'babel',
+          plugins: [parserBabel.default],
+          semi: false,
+          singleQuote: true,
+        })
+        setCode(formatted)
+      } catch (error) {
+        console.error('Failed to format code:', error)
+      }
     }
+    void format()
   }, [])
 
   const handleCopy = () => {

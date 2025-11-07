@@ -45,7 +45,6 @@ export const ChatInput = React.memo(function ChatInput({
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
-  // Memoize expensive calculations to avoid recomputing on every render
   const charCount = value.length
   const isOverLimit = maxLength ? charCount > maxLength : false
   const isNearLimit = maxLength
@@ -53,7 +52,7 @@ export const ChatInput = React.memo(function ChatInput({
     : false
   const hasContent = value.trim().length > 0
 
-  // Memoize character counter color calculation
+  // Memoize character counter color for performance
   const counterColor = React.useMemo(() => {
     if (isOverLimit) return 'text-destructive font-semibold'
     if (isNearLimit) return 'text-[hsl(var(--warning))] font-medium'
@@ -61,14 +60,13 @@ export const ChatInput = React.memo(function ChatInput({
     return 'text-muted-foreground'
   }, [isOverLimit, isNearLimit, charCount])
 
-  // Memoize progress bar color calculation
+  // Memoize progress bar color for performance
   const progressColor = React.useMemo(() => {
     if (isOverLimit) return 'bg-destructive'
     if (isNearLimit) return 'bg-[hsl(var(--warning))]'
     return 'bg-primary'
   }, [isOverLimit, isNearLimit])
 
-  // Memoize submit handler first
   const handleSubmit = React.useCallback(async () => {
     if (!value.trim() || isOverLimit || disabled || buttonState === 'loading')
       return
@@ -87,31 +85,27 @@ export const ChatInput = React.memo(function ChatInput({
     }
   }, [value, isOverLimit, disabled, buttonState, onSubmit])
 
-  // Memoize keyboard handler to prevent recreation on every render
-  const handleKeyDown = React.useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        if (value.trim() && !isOverLimit) {
-          handleSubmit()
-        } else if (isOverLimit) {
-          // Shake animation for error feedback
-          textareaRef.current?.animate(
-            [
-              { transform: 'translateX(0)' },
-              { transform: 'translateX(-8px)' },
-              { transform: 'translateX(8px)' },
-              { transform: 'translateX(-8px)' },
-              { transform: 'translateX(8px)' },
-              { transform: 'translateX(0)' },
-            ],
-            { duration: 400, easing: 'ease-in-out' }
-          )
-        }
+  const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      if (value.trim() && !isOverLimit) {
+        handleSubmit()
+      } else if (isOverLimit) {
+        // Shake animation for error feedback
+        textareaRef.current?.animate(
+          [
+            { transform: 'translateX(0)' },
+            { transform: 'translateX(-8px)' },
+            { transform: 'translateX(8px)' },
+            { transform: 'translateX(-8px)' },
+            { transform: 'translateX(8px)' },
+            { transform: 'translateX(0)' },
+          ],
+          { duration: 400, easing: 'ease-in-out' }
+        )
       }
-    },
-    [value, isOverLimit, handleSubmit]
-  )
+    }
+  }, [value, isOverLimit, handleSubmit])
 
   // Focus ring glow animation variants
   const containerVariants = {

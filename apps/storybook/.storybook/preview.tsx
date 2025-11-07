@@ -34,6 +34,21 @@ const withTheme: Decorator = (Story, context) => {
 
 const preview: Preview = {
   parameters: {
+    options: {
+      storySort: {
+        order: [
+          'Getting Started',
+          'Design Principles',
+          'Component Gallery',
+          ['Components', 'Primitives'],
+          'Hooks',
+          'SDKs & Adapters',
+          'Utilities',
+          'Accessibility',
+          'Examples',
+        ],
+      },
+    },
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
       matchers: {
