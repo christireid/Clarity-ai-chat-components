@@ -18,16 +18,31 @@ import * as React from 'react'
 export function useThrottle<T>(value: T, delay: number = 500): T {
   const [throttledValue, setThrottledValue] = React.useState<T>(value)
   const lastRan = React.useRef<number>(Date.now())
+  const timeoutRef = React.useRef<NodeJS.Timeout>()
 
   React.useEffect(() => {
-    const timer = setTimeout(() => {
-      if (Date.now() - lastRan.current >= delay) {
-        setThrottledValue(value)
-        lastRan.current = Date.now()
-      }
-    }, delay - (Date.now() - lastRan.current))
+    const now = Date.now()
+    const timeSinceLastRun = now - lastRan.current
+    const remainingTime = delay - timeSinceLastRun
 
-    return () => clearTimeout(timer)
+    // If enough time has passed, update immediately
+    if (remainingTime <= 0) {
+      setThrottledValue(value)
+      lastRan.current = now
+      return
+    }
+
+    // Otherwise, schedule update for remaining time
+    timeoutRef.current = setTimeout(() => {
+      setThrottledValue(value)
+      lastRan.current = Date.now()
+    }, remainingTime)
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
   }, [value, delay])
 
   return throttledValue
@@ -55,7 +70,14 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
 ): (...args: Parameters<T>) => void {
   const lastRan = React.useRef<number>(Date.now())
   const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const callbackRef = React.useRef(callback)
 
+  // Keep callback ref up to date
+  React.useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
+
+  // Cleanup timeout on unmount
   React.useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -66,19 +88,32 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
 
   return React.useCallback(
     (...args: Parameters<T>) => {
-      if (Date.now() - lastRan.current >= delay) {
-        callback(...args)
-        lastRan.current = Date.now()
+      const now = Date.now()
+      const timeSinceLastRun = now - lastRan.current
+      const remainingTime = delay - timeSinceLastRun
+
+      // If enough time has passed, execute immediately
+      if (remainingTime <= 0) {
+        callbackRef.current(...args)
+        lastRan.current = now
+        // Clear any pending timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = undefined
+        }
       } else {
+        // Clear existing timeout
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current)
         }
+        // Schedule execution for remaining time
         timeoutRef.current = setTimeout(() => {
-          callback(...args)
+          callbackRef.current(...args)
           lastRan.current = Date.now()
-        }, delay - (Date.now() - lastRan.current))
+          timeoutRef.current = undefined
+        }, remainingTime)
       }
     },
-    [callback, delay]
+    [delay]
   )
 }

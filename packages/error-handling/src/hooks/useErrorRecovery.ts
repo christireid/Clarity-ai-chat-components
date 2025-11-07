@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useRef, useEffect } from 'react'
 
 /**
  * Recovery strategy function type
@@ -33,6 +33,12 @@ export function useErrorRecovery() {
   const [lastRecoveryError, setLastRecoveryError] = useState<Error | null>(
     null
   )
+  
+  // Use ref to avoid stale closure issues with strategies Map
+  const strategiesRef = useRef(strategies)
+  useEffect(() => {
+    strategiesRef.current = strategies
+  }, [strategies])
 
   const registerStrategy = useCallback(
     (errorType: string, strategy: RecoveryStrategy) => {
@@ -55,7 +61,8 @@ export function useErrorRecovery() {
 
   const recover = useCallback(
     async (errorType: string): Promise<boolean> => {
-      const strategy = strategies.get(errorType)
+      // Use ref to get latest strategies without causing re-renders
+      const strategy = strategiesRef.current.get(errorType)
 
       if (!strategy) {
         console.warn(`No recovery strategy found for error type: ${errorType}`)
@@ -77,7 +84,7 @@ export function useErrorRecovery() {
         return false
       }
     },
-    [strategies]
+    [] // Empty deps - strategies accessed via ref
   )
 
   const reset = useCallback(() => {

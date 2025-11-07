@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 
 /**
  * Toast notification configuration
@@ -34,6 +34,17 @@ export interface ErrorToast {
 export function useErrorToast() {
   const [toasts, setToasts] = useState<ErrorToast[]>([])
 
+  // Track timeouts to cleanup on unmount
+  const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map())
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      timeoutRefs.current.forEach((timeout) => clearTimeout(timeout))
+      timeoutRefs.current.clear()
+    }
+  }, [])
+
   const showToast = useCallback(
     (
       message: string,
@@ -47,9 +58,11 @@ export function useErrorToast() {
 
       // Auto-dismiss after duration
       if (duration > 0) {
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
           setToasts((prev) => prev.filter((t) => t.id !== id))
+          timeoutRefs.current.delete(id)
         }, duration)
+        timeoutRefs.current.set(id, timeout)
       }
 
       return id
@@ -58,6 +71,12 @@ export function useErrorToast() {
   )
 
   const hideToast = useCallback((id: string) => {
+    // Clear timeout if toast is manually dismissed
+    const timeout = timeoutRefs.current.get(id)
+    if (timeout) {
+      clearTimeout(timeout)
+      timeoutRefs.current.delete(id)
+    }
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }, [])
 

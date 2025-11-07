@@ -105,14 +105,20 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     [onSendMessage]
   )
 
+  // Use ref to avoid stale closure issues with messages array
+  const messagesRef = React.useRef(messages)
+  React.useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
+
   const retry = React.useCallback(
     async (messageId: string, options?: { signal?: AbortSignal }) => {
-      const message = messages.find((msg) => msg.id === messageId)
+      const message = messagesRef.current.find((msg) => msg.id === messageId)
       if (!message) return
 
       await sendMessage(message.content, options)
     },
-    [messages, sendMessage]
+    [sendMessage] // Removed messages from deps, using ref instead
   )
 
   // Cleanup on unmount
