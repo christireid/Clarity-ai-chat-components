@@ -319,27 +319,68 @@ None required - component is well-optimized.
 **Files Created:**
 - `packages/primitives/src/components/error-message.tsx`
 
-### 🔄 Remaining Refactorings
+### ✅ Additional Completed Refactorings
 
-#### 3. Dialog Component
-**Status:** ⏳ PENDING
-- Add React Portal for proper z-index stacking
-- Extract body scroll lock to custom hook
-- Improve focus trap hook optimization
-- Consider React 19 `useId` for unique IDs
+#### 3. Dialog Component (`packages/primitives/src/components/dialog.tsx`)
+**Status:** ✅ COMPLETE
 
-#### 4. ChatInput Component
-**Status:** ⏳ PENDING
-- Extract `useCharacterCounter` hook
-- Memoize animation variants
-- Consider `useReducer` for button state
+**Changes Implemented:**
+- ✅ Added React Portal for proper z-index stacking and accessibility
+- ✅ Extracted `useBodyScrollLock` hook (`packages/primitives/src/hooks/use-body-scroll-lock.ts`)
+- ✅ Memoized animation variants with `as const`
+- ✅ Memoized escape key handler with `useCallback`
+- ✅ Improved portal container management
+- ✅ Added `aria-hidden` to decorative SVG elements
 
-#### 5. Message Component
-**Status:** ⏳ PENDING
-- Extract `MarkdownCodeBlock` component
-- Extract `MessageActions` component
-- Extract `ConfettiAnimation` component
-- Extract `MessageMetadata` component
+**Performance Improvements:**
+- Portal ensures proper DOM hierarchy and z-index management
+- Memoization prevents unnecessary object recreation
+- Better accessibility with proper ARIA attributes
+
+**Files Created:**
+- `packages/primitives/src/hooks/use-body-scroll-lock.ts`
+
+#### 4. ChatInput Component (`packages/react/src/components/chat-input.tsx`)
+**Status:** ✅ COMPLETE
+
+**Changes Implemented:**
+- ✅ Extracted `useCharacterCounter` hook (`packages/react/src/hooks/use-character-counter.ts`)
+- ✅ Extracted `useSubmitButtonState` hook (`packages/react/src/hooks/use-submit-button-state.ts`)
+- ✅ Memoized animation variants with `useMemo`
+- ✅ Memoized keyboard and focus handlers with `useCallback`
+- ✅ Improved code organization and reusability
+
+**Performance Improvements:**
+- Reduced re-renders through memoization
+- Better separation of concerns
+- Reusable hooks for other components
+
+**Files Created:**
+- `packages/react/src/hooks/use-character-counter.ts`
+- `packages/react/src/hooks/use-submit-button-state.ts`
+
+#### 5. Message Component (`packages/react/src/components/message.tsx`)
+**Status:** ✅ COMPLETE
+
+**Changes Implemented:**
+- ✅ Extracted `MarkdownCodeBlock` component (`packages/react/src/components/message/markdown-code-block.tsx`)
+- ✅ Extracted `ConfettiAnimation` component (`packages/react/src/components/message/confetti-animation.tsx`)
+- ✅ Extracted `MessageActions` component (`packages/react/src/components/message/message-actions.tsx`)
+- ✅ Extracted `MessageMetadata` component (`packages/react/src/components/message/message-metadata.tsx`)
+- ✅ Memoized markdown plugins and components
+- ✅ Memoized feedback handler with `useCallback`
+
+**Performance Improvements:**
+- Eliminated nested component definitions (prevents recreation on every render)
+- Better tree-shaking through component extraction
+- Improved maintainability and testability
+
+**Files Created:**
+- `packages/react/src/components/message/markdown-code-block.tsx`
+- `packages/react/src/components/message/confetti-animation.tsx`
+- `packages/react/src/components/message/message-actions.tsx`
+- `packages/react/src/components/message/message-metadata.tsx`
+- `packages/react/src/components/message/index.ts`
 
 ---
 
