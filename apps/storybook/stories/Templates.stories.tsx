@@ -4,20 +4,21 @@ import {
   CodeAssistant,
   CustomerSupportTemplate,
   AIAssistantTemplate,
+  CreativeWritingTemplate,
+  DataAnalystTemplate,
   DocumentationBotTemplate,
   SalesAssistantTemplate,
   EducationTutorTemplate,
-  DataAnalystTemplate,
+  CodeHelperTemplate,
 } from '@clarity-chat/react'
 
 const meta: Meta = {
-  title: 'Templates',
+  title: 'Phase 4/Templates',
   tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
-        component:
-          'Pre-built chat templates optimized for specific use cases. Each template comes with pre-configured settings, themes, and workflows.',
+        component: 'Pre-built chat templates optimized for specific use cases.',
       },
     },
     layout: 'fullscreen',
@@ -177,76 +178,101 @@ function getUserById(users: User[], id: number): User | undefined {
   ),
 }
 
-export const CustomerSupportDefault: StoryObj<typeof CustomerSupportTemplate> = {
+export const CustomerSupportTemplateDefault: StoryObj<typeof CustomerSupportTemplate> = {
   render: () => (
     <div className="h-screen">
       <CustomerSupportTemplate
-        companyName="Acme Corp"
-        supportCategories={['Orders', 'Returns', 'Technical', 'Billing']}
-        onEscalate={(conversation) => {
-          console.log('Escalating conversation:', conversation)
-          alert('Connecting to human agent...')
-        }}
+        companyName="Clarity Chat"
+        supportCategories={['Onboarding', 'Billing', 'Security']}
+        faqs={[
+          {
+            question: 'How do I add the chat widget to my product?',
+            answer: 'Install the @clarity-chat/react package and drop the <ChatWindow /> component into your page.',
+          },
+          {
+            question: 'Do you support SOC 2 compliance?',
+            answer: 'Yes, our enterprise plan includes SOC 2 Type II controls and audit documentation.',
+          },
+        ]}
       />
     </div>
   ),
 }
 
-export const AIAssistantDefault: StoryObj<typeof AIAssistantTemplate> = {
+export const AIAssistantTemplateShowcase: StoryObj<typeof AIAssistantTemplate> = {
   render: () => (
     <div className="h-screen">
       <AIAssistantTemplate
+        enableContextManagement
+        systemPrompt="You are Clarity, an expert product strategist."
         defaultModel="gpt-4-turbo-preview"
-        enableContextManagement={true}
-        systemPrompt="You are a helpful AI assistant. Be concise, accurate, and friendly."
       />
     </div>
   ),
 }
 
-export const DocumentationBotDefault: StoryObj<typeof DocumentationBotTemplate> = {
+export const CreativeWritingTemplateStory: StoryObj<typeof CreativeWritingTemplate> = {
   render: () => (
     <div className="h-screen">
-      <DocumentationBotTemplate
-        companyName="Documentation Assistant"
-        welcomeMessage="Hi! I can help you find information in our documentation."
-        supportCategories={['Getting Started', 'API Reference', 'Guides', 'Troubleshooting']}
+      <CreativeWritingTemplate
+        systemPrompt="You write vibrant launch copy with strong narrative arcs."
       />
     </div>
   ),
 }
 
-export const SalesAssistantDefault: StoryObj<typeof SalesAssistantTemplate> = {
-  render: () => (
-    <div className="h-screen">
-      <SalesAssistantTemplate
-        companyName="Sales Team"
-        supportCategories={['Product Info', 'Pricing', 'Demo Request', 'Partnership']}
-        onEscalate={(conversation) => alert('Connecting to sales representative...')}
-      />
-    </div>
-  ),
-}
-
-export const EducationTutorDefault: StoryObj<typeof EducationTutorTemplate> = {
-  render: () => (
-    <div className="h-screen">
-      <EducationTutorTemplate
-        defaultModel="gpt-4-turbo-preview"
-        systemPrompt="You are a patient and helpful tutor. Explain concepts clearly and provide examples."
-        enableContextManagement={true}
-      />
-    </div>
-  ),
-}
-
-export const DataAnalystDefault: StoryObj<typeof DataAnalystTemplate> = {
+export const DataAnalystTemplateStory: StoryObj<typeof DataAnalystTemplate> = {
   render: () => (
     <div className="h-screen">
       <DataAnalystTemplate
-        defaultModel="gpt-4-turbo-preview"
-        systemPrompt="You are a data analyst. Help users understand data, create visualizations, and analyze trends."
-        enableContextManagement={true}
+        systemPrompt="You are a data analyst focused on SaaS revenue metrics."
+        enableContextManagement={false}
+      />
+    </div>
+  ),
+}
+
+export const SalesAssistantTemplateStory: StoryObj<typeof SalesAssistantTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <SalesAssistantTemplate
+        defaultPersona="account-executive"
+        playbooks={[
+          {
+            id: 'meddpicc',
+            name: 'MEDDPICC Discovery',
+            steps: ['Metrics', 'Economic Buyer', 'Decision Criteria'],
+          },
+        ]}
+      />
+    </div>
+  ),
+}
+
+export const EducationTutorTemplateStory: StoryObj<typeof EducationTutorTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <EducationTutorTemplate
+        systemPrompt="You are a patient calculus tutor helping students understand derivatives."
+      />
+    </div>
+  ),
+}
+
+export const CodeHelperTemplateStory: StoryObj<typeof CodeHelperTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <CodeHelperTemplate languages={['typescript', 'python', 'go']} />
+    </div>
+  ),
+}
+
+export const DocumentationBotTemplateStory: StoryObj<typeof DocumentationBotTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <DocumentationBotTemplate
+        companyName="Docs.ai"
+        supportCategories={['API Reference', 'Auth', 'Billing']}
       />
     </div>
   ),
@@ -266,7 +292,7 @@ export const ComparisonView: StoryObj = {
           />
         </div>
       </div>
-
+      
       <div className="border border-gray-300 rounded-lg overflow-hidden">
         <div className="bg-purple-600 text-white p-3 font-semibold">
           Code Assistant Template

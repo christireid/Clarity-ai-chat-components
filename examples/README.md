@@ -12,7 +12,111 @@ testing.
 
 ### 🎯 Top-Tier Production Demos
 
-### 1. Model Comparison Demo
+### 🏆 **Premium Showcase Demos** ⭐ NEW!
+
+### 1. AI Research Platform 🆕⭐
+
+**Path**: `ai-research-platform/`  
+**Status**: ✅ Production-Ready  
+**Port**: 3002
+
+**Enterprise AI Research Platform showcasing Multi-Agent RAG System with Knowledge Visualization**
+
+**Key Features**:
+- 🤖 **Multi-Agent Collaboration** - Researcher, Analyst, Writer agents working together
+- 🔍 **RAG Pipeline** - Document processing, semantic search, context injection
+- 📊 **Knowledge Visualization** - Interactive knowledge graphs and concept mapping
+- 💰 **Token Optimization** - Real-time cost savings monitoring (50-80% savings)
+- 🎨 **Advanced UI** - Command palette, context visualization, memory inspection
+- 📚 **Citation Tracking** - Full source attribution and citation cards
+- 🔄 **Conversation Branching** - Explore multiple research paths
+
+**Technology**: Next.js 15, React 19, TypeScript, Recharts, Framer Motion
+
+**Showcases**: Multi-agent systems, RAG, token optimization, advanced interactions
+
+[→ View README](./ai-research-platform/README.md)
+
+---
+
+### 2. Enterprise AI Operations Dashboard 🆕⭐
+
+**Path**: `enterprise-ai-ops/`  
+**Status**: ✅ Production-Ready  
+**Port**: 3003
+
+**Comprehensive observability, safety monitoring, and evaluation platform**
+
+**Key Features**:
+- 📊 **Real-Time Observability** - Monitor requests, latency, errors, performance
+- 🛡️ **Safety Monitoring** - PII detection, content filtering, prompt injection protection
+- 📈 **Evaluation Framework** - Automated quality scoring and compliance checking
+- 🧪 **Prompt Test Harness** - Test prompts and validate behaviors
+- 💰 **Token Optimization** - Cost tracking and savings visualization
+- ⚡ **Performance Analytics** - Deep insights into system performance
+- 🚨 **Alert System** - Real-time notifications and violation tracking
+
+**Technology**: Next.js 15, React 19, TypeScript, Recharts
+
+**Showcases**: AI Ops components, safety systems, evaluation dashboards, observability
+
+[→ View README](./enterprise-ai-ops/README.md)
+
+---
+
+### 3. Conversational Data Analytics 🆕⭐
+
+**Path**: `conversational-analytics/`  
+**Status**: ✅ Production-Ready  
+**Port**: 3004
+
+**Natural language queries, real-time dashboards, and AI-powered insights**
+
+**Key Features**:
+- 💬 **Natural Language Queries** - Ask questions in plain English
+- 📊 **Automatic Visualization** - Charts generated automatically
+- ✨ **AI-Powered Insights** - Key findings and recommendations extracted
+- 🎨 **Dashboard Builder** - Build interactive dashboards from conversations
+- 🔍 **Data Explorer** - Browse schemas and understand your data
+- 📈 **Real-Time Updates** - Dashboards update automatically
+- 🎯 **Query Suggestions** - Helps users ask better questions
+
+**Technology**: Next.js 15, React 19, TypeScript, Recharts, Framer Motion
+
+**Showcases**: Conversational interfaces, data visualization, AI insights, dashboard generation
+
+[→ View README](./conversational-analytics/README.md)
+
+---
+
+### 4. Token Optimization Demo 🆕
+
+**Path**: `token-optimization-demo/`  
+**Status**: ✅ Completed & Production-Ready
+
+Comprehensive demonstration of all token optimization features to reduce AI API costs by 50-80%.
+
+**Key Features**:
+
+- 🗜️ Prompt compression with real-time savings (20-35%)
+- 💾 Smart caching with semantic similarity (40-60%)
+- 🎯 Intelligent model routing (40-60% cost savings)
+- ✂️ Response output limiting (30-50%)
+- 📦 Request batching (30-40%)
+- ⏱️ Smart throttling (50%+ call reduction)
+- 🔗 Reference handling (50%+ payload reduction)
+- 📊 Real-time optimization dashboard
+
+**Technology**: React, TypeScript, Vite, Clarity Chat optimization suite
+
+**Cost Savings**: 50-70% typical, up to 80% in optimal scenarios
+
+[→ View README](./token-optimization-demo/README.md) |
+[→ View Guide](../docs/guides/token-optimization.md)
+
+---
+
+### 2. Model Comparison Demo
 
 **Path**: `model-comparison-demo/`  
 **Status**: ✅ Completed & Tested

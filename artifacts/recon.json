@@ -1,0 +1,35 @@
+{
+  "repository": "clarity-chat",
+  "nodeVersion": "v22.21.1",
+  "nodeRequirement": ">=18.0.0",
+  "packageManager": "npm@10.9.4",
+  "workspaces": {
+    "packages": 10,
+    "apps": 4,
+    "examples": 19
+  },
+  "typescriptConfigs": 33,
+  "testRunners": {
+    "vitest": ["react", "error-handling", "licensing", "codemods", "cli"],
+    "jest": ["errors"],
+    "none": ["dev-tools", "primitives"]
+  },
+  "buildTools": {
+    "tsup": ["react", "primitives", "licensing", "types", "cli"],
+    "vite": ["error-handling", "playground"],
+    "tsc": ["codemods", "errors", "dev-tools"]
+  },
+  "qualityGates": {
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "build": "turbo run build",
+    "storybook": "storybook dev -p 6006",
+    "e2e": "playwright test"
+  },
+  "entryPoints": {
+    "main": "packages/react/dist/index.{js,mjs,d.ts}",
+    "styles": "packages/react/dist/styles.css",
+    "cli": "packages/cli/dist/index.js"
+  }
+}

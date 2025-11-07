@@ -45,6 +45,7 @@ export * from './rbac'
 
 // Export all components
 export * from './components/message'
+export * from './components/message-metadata'
 export * from './components/message-list'
 export * from './components/chat-input'
 export * from './components/advanced-chat-input'
@@ -65,9 +66,15 @@ export * from './components/usage-dashboard'
 export * from './components/link-preview'
 export * from './components/knowledge-base-viewer'
 export * from './components/export-dialog'
+export * from './components/batch-export-dialog'
 export * from './components/stream-cancellation'
 export * from './components/message-search'
+export * from './components/advanced-message-search'
 export * from './components/follow-up-suggestions'
+export * from './components/prompt-suggestions'
+export * from './components/enhanced-markdown-renderer'
+export * from './components/enhanced-code-block'
+export * from './components/streaming-text-renderer'
 export * from './components/persona-panel'
 export * from './components/conversation-timeline'
 export * from './components/memory-inspector'
@@ -87,10 +94,21 @@ export * from './components/network-status'
 
 // Phase 3 Enhancement - Token Management
 export * from './components/token-counter'
+export * from './components/token-optimization-panel'
+export * from './components/token-optimization-badge'
 
 // Phase 3 Enhancement - Context & Conversation Management
 export * from './components/context-visualizer'
 export * from './components/conversation-list'
+
+// v2.1 Blueprint Features - Conversation Branching
+export * from './components/conversation-branch-visualizer'
+
+// v2.1 Blueprint Features - Virtual Scrolling
+export * from './components/virtualized-message-list'
+
+// v2.1 Blueprint Features - Enhanced Markdown with LaTeX
+export * from './components/markdown-renderer-enhanced'
 
 // Export hooks
 export * from './hooks/use-chat'
@@ -109,6 +127,7 @@ export * from './hooks/use-intersection-observer'
 // Note: use-keyboard-shortcuts not exported to avoid conflict with accessibility/keyboard-shortcuts
 // export * from './hooks/use-keyboard-shortcuts'
 export * from './hooks/use-local-storage'
+export * from './hooks/use-indexed-db'
 export * from './hooks/use-media-query'
 export * from './hooks/use-mounted'
 export * from './hooks/use-previous'
@@ -118,9 +137,11 @@ export * from './hooks/use-window-size'
 // Phase 3 Enhancement - Error Recovery & Token Tracking
 export * from './hooks/use-error-recovery'
 export * from './hooks/use-token-tracker'
+export * from './hooks/use-token-optimization'
 
 // Phase 3 Enhancement - Message Operations & Typing
 export * from './hooks/use-message-operations'
+export * from './hooks/use-message-history'
 export * from './hooks/use-realistic-typing'
 
 // Optimistic Updates
@@ -146,6 +167,10 @@ export * from './utils/streaming-parser'
 
 // Performance utilities
 export * from './utils/performance'
+export * from './utils/performance-optimization'
+
+// v2.1 Blueprint Features - Advanced Export Utilities
+export * from './utils/export-utils'
 
 // Enhanced TypeScript types
 export * from './types/chat-types'
@@ -199,6 +224,9 @@ export * from './analytics'
 // AI Features
 export * from './ai'
 
+// AI Memory & Context System
+export * from './memory'
+
 // Error Tracking System
 export * from './error'
 
@@ -249,3 +277,18 @@ export * from './hooks/use-undo-redo'
 
 // Phase 8 - Haptic Feedback
 export * from './hooks/use-haptic'
+
+// ============================================================================
+// TOKEN OPTIMIZATION FEATURES
+// ============================================================================
+
+// Token Optimization Components
+export * from './components/token-optimization-dashboard'
+
+// Token Optimization Hooks
+export * from './hooks/use-prompt-compression'
+export * from './hooks/use-smart-cache'
+export * from './hooks/use-model-router'
+export * from './hooks/use-response-limiter'
+export * from './hooks/use-request-batcher'
+export * from './hooks/use-smart-throttle'

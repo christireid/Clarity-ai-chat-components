@@ -40,7 +40,10 @@ export interface TruncationStrategy {
 export class FIFOTruncation implements TruncationStrategy {
   name = 'fifo'
 
-  truncate(messages: ContextMessage[], options: ContextWindowOptions): ContextMessage[] {
+  truncate(
+    messages: ContextMessage[],
+    options: ContextWindowOptions
+  ): ContextMessage[] {
     const maxTokens = options.maxTokens - (options.reservedTokens ?? 0)
     const minMessages = options.minMessages ?? 2
     const result: ContextMessage[] = []
@@ -92,7 +95,10 @@ export class SlidingWindowTruncation implements TruncationStrategy {
 
   constructor(private windowSize: number = 10) {}
 
-  truncate(messages: ContextMessage[], options: ContextWindowOptions): ContextMessage[] {
+  truncate(
+    messages: ContextMessage[],
+    options: ContextWindowOptions
+  ): ContextMessage[] {
     const systemMessage = messages.find((m) => m.role === 'system')
     const otherMessages = messages.filter((m) => m.role !== 'system')
 
@@ -113,7 +119,10 @@ export class SlidingWindowTruncation implements TruncationStrategy {
 export class SmartTruncation implements TruncationStrategy {
   name = 'smart'
 
-  truncate(messages: ContextMessage[], options: ContextWindowOptions): ContextMessage[] {
+  truncate(
+    messages: ContextMessage[],
+    options: ContextWindowOptions
+  ): ContextMessage[] {
     const maxTokens = options.maxTokens - (options.reservedTokens ?? 0)
     const result: ContextMessage[] = []
 
@@ -249,7 +258,9 @@ export class ContextWindowManager {
   /**
    * Truncate messages to fit within context window
    */
-  truncate(messages: ContextMessage[]): ContextMessage[] | Promise<ContextMessage[]> {
+  truncate(
+    messages: ContextMessage[]
+  ): ContextMessage[] | Promise<ContextMessage[]> {
     return this.strategy.truncate(messages, this.options)
   }
 

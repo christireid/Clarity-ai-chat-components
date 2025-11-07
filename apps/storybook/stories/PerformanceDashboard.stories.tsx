@@ -1,44 +1,47 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import React from 'react'
 import { PerformanceDashboard } from '@clarity-chat/react'
 
-const meta: Meta<typeof PerformanceDashboard> = {
-  title: 'Components/PerformanceDashboard',
+const meta = {
+  title: 'Operations/Diagnostics/Performance Dashboard',
   component: PerformanceDashboard,
-  tags: ['autodocs'],
   parameters: {
+    layout: 'centered',
     docs: {
       description: {
         component:
-          'Real-time performance monitoring dashboard showing render metrics, memory usage, and performance indicators.',
+          'In-app observability widget mirroring dashboards in Datadog, Vercel, and the Storybook Design System. Useful for monitoring render costs, memory, and perceived latency during AI sessions.',
       },
     },
-    layout: 'padded',
   },
-}
+  argTypes: {
+    detailed: { control: 'boolean' },
+    updateInterval: {
+      control: { type: 'number', min: 500, step: 500 },
+    },
+  },
+  args: {
+    detailed: true,
+    updateInterval: 2000,
+  },
+  decorators: [
+    (Story) => (
+      <div className="w-full max-w-3xl">
+        <Story />
+      </div>
+    ),
+  ],
+  tags: ['autodocs'],
+} satisfies Meta<typeof PerformanceDashboard>
 
 export default meta
-type Story = StoryObj<typeof PerformanceDashboard>
+type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  args: {},
-}
+export const LiveMetrics: Story = {}
 
-export const Detailed: Story = {
+export const Compact: Story = {
   args: {
-    detailed: true,
-  },
-}
-
-export const FastUpdate: Story = {
-  args: {
-    detailed: true,
-    updateInterval: 500,
-  },
-}
-
-export const SlowUpdate: Story = {
-  args: {
-    detailed: true,
-    updateInterval: 5000,
+    detailed: false,
+    updateInterval: 1000,
   },
 }

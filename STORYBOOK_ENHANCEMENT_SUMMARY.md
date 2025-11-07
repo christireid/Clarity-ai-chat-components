@@ -6,9 +6,10 @@ Comprehensive enhancement of the Storybook component library with best practices
 ## Statistics
 
 ### Story Coverage
-- **Total Story Files**: 58
-- **New Stories Created**: 17
+- **Total Story Files**: 61
+- **New Stories Created**: 20
 - **Templates Covered**: 10
+- **Composite Examples**: 4
 - **Build Status**: ✅ Successful
 
 ## New Stories Added
@@ -24,7 +25,7 @@ Comprehensive enhancement of the Storybook component library with best practices
 8. **MultiModalPreview** - Multimodal attachment previews
 9. **ResponseQualityMeter** - Response quality metrics
 
-### UI & Utility Components (8 stories)
+### UI & Utility Components (10 stories)
 10. **AnimatedList** - List animations with stagger effects
 11. **ContextMenu** - Right-click context menus
 12. **PerformanceDashboard** - Performance monitoring dashboard
@@ -33,6 +34,15 @@ Comprehensive enhancement of the Storybook component library with best practices
 15. **ThemeSwitcher** - Theme switching component
 16. **Draggable** - Drag and drop functionality
 17. **ErrorBoundary** - Error boundary component
+18. **KeyboardHint** - Keyboard shortcuts display
+19. **VirtualizedMessageList** - High-performance message list
+
+### Composite Examples (1 story file, 4 examples)
+20. **CompositeExamples** - Real-world component combinations:
+    - Full Chat Experience (ChatWindow + ModelSelector + KeyboardHint)
+    - Chat with Suggestions (ChatWindow + FollowUpSuggestions)
+    - Dashboard View (UsageDashboard + Activity Feed)
+    - Responsive Layout (Multi-column responsive design)
 
 ## Configuration Enhancements
 

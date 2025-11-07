@@ -286,7 +286,9 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                             : 'outline'
                         }
                         size="sm"
-                        onClick={() => handleUpdateUI({ fontSize: size as FontSize })}
+                        onClick={() =>
+                          handleUpdateUI({ fontSize: size as FontSize })
+                        }
                       >
                         {size === 'small' && 'S'}
                         {size === 'medium' && 'M'}
@@ -310,7 +312,9 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                         }
                         size="sm"
                         onClick={() =>
-                          handleUpdateUI({ messageLayout: layout as MessageLayout })
+                          handleUpdateUI({
+                            messageLayout: layout as MessageLayout,
+                          })
                         }
                       >
                         {layout.charAt(0).toUpperCase() + layout.slice(1)}
