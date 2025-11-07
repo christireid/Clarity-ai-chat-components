@@ -41,21 +41,13 @@ export function getViewportSize() {
 }
 
 /**
- * Hook for mobile detection
+ * Hook for mobile detection.
+ * Note: User agent doesn't change on resize, so this only checks once.
+ * For responsive breakpoints, use useMediaQuery instead.
  */
 export function useIsMobile(): boolean {
-  const [mobile, setMobile] = React.useState(() => isMobile())
-
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setMobile(isMobile())
-    }
-
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
-  return mobile
+  // User agent doesn't change on window resize, so we only check once
+  return React.useMemo(() => isMobile(), [])
 }
 
 /**

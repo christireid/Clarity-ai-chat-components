@@ -339,13 +339,20 @@ export function filterMessagesByRole(
 }
 
 /**
- * Get last message of specific role
+ * Get last message of specific role.
+ * More efficient than filtering entire array - iterates from end.
  */
 export function getLastMessageByRole(
   messages: CoreMessage[],
   role: CoreMessage['role']
 ): CoreMessage | undefined {
-  return messages.filter((msg) => msg.role === role).pop()
+  // Iterate from end for better performance
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i]?.role === role) {
+      return messages[i]
+    }
+  }
+  return undefined
 }
 
 /**

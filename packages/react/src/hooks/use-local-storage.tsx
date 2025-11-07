@@ -42,7 +42,12 @@ export function useLocalStorage<T>(
     initializeWithValue = true,
   } = options
 
-  // Get initial value
+  // Get initial value - memoize deserializer to prevent unnecessary re-renders
+  const deserializerRef = React.useRef(deserializer)
+  React.useLayoutEffect(() => {
+    deserializerRef.current = deserializer
+  }, [deserializer])
+
   const readValue = React.useCallback((): T => {
     if (typeof window === 'undefined') {
       return initialValue instanceof Function ? initialValue() : initialValue
@@ -50,45 +55,56 @@ export function useLocalStorage<T>(
 
     try {
       const item = window.localStorage.getItem(key)
-      if (item) {
-        return deserializer(item)
+      if (item !== null) {
+        return deserializerRef.current(item)
       }
       return initialValue instanceof Function ? initialValue() : initialValue
     } catch (error) {
       console.warn(`Error reading localStorage key "${key}":`, error)
       return initialValue instanceof Function ? initialValue() : initialValue
     }
-  }, [key, initialValue, deserializer])
+  }, [key, initialValue])
 
   // State to store our value
   const [storedValue, setStoredValue] = React.useState<T>(
     initializeWithValue ? readValue : (initialValue instanceof Function ? initialValue() : initialValue)
   )
 
+  // Memoize serializer to prevent unnecessary re-renders
+  const serializerRef = React.useRef(serializer)
+  React.useLayoutEffect(() => {
+    serializerRef.current = serializer
+  }, [serializer])
+
   // Return a wrapped version of useState's setter function that persists the new value to localStorage
   const setValue: React.Dispatch<React.SetStateAction<T>> = React.useCallback(
     (value) => {
       if (typeof window === 'undefined') {
         console.warn(`Tried setting localStorage key "${key}" even though environment is not a client`)
+        return
       }
 
       try {
         // Allow value to be a function so we have the same API as useState
-        const newValue = value instanceof Function ? value(storedValue) : value
+        setStoredValue((prevValue) => {
+          const newValue = value instanceof Function ? value(prevValue) : value
 
-        // Save to localStorage
-        window.localStorage.setItem(key, serializer(newValue))
+          // Save to localStorage
+          try {
+            window.localStorage.setItem(key, serializerRef.current(newValue))
+            // Dispatch custom event so other useLocalStorage hooks are notified
+            window.dispatchEvent(new Event('local-storage'))
+          } catch (storageError) {
+            console.warn(`Error setting localStorage key "${key}":`, storageError)
+          }
 
-        // Save state
-        setStoredValue(newValue)
-
-        // Dispatch custom event so other useLocalStorage hooks are notified
-        window.dispatchEvent(new Event('local-storage'))
+          return newValue
+        })
       } catch (error) {
         console.warn(`Error setting localStorage key "${key}":`, error)
       }
     },
-    [key, storedValue, serializer]
+    [key]
   )
 
   // Remove value from localStorage

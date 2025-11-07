@@ -159,7 +159,13 @@ export class TokenBucketRateLimiter {
 /**
  * Sliding Window Rate Limiter
  * 
- * More accurate than token bucket for distributed systems.
+ * More accurate than token bucket for rate limiting.
+ * Uses in-memory storage - for distributed systems, consider implementing
+ * a storage-backed version using the RateLimitStorage interface.
+ * 
+ * **Note:** This implementation stores timestamps in memory and is not
+ * shared across processes. For multi-process/distributed scenarios,
+ * use TokenBucketRateLimiter with a shared storage backend (Redis, etc.).
  */
 export class SlidingWindowRateLimiter {
   private config: RateLimitConfig
@@ -199,9 +205,9 @@ export class SlidingWindowRateLimiter {
     }
     
     if (!allowed) {
-      // Calculate retry after based on oldest timestamp
-      const oldestTime = times[0]
-      result.retryAfter = oldestTime + this.config.windowMs - now
+      // Calculate retry after based on oldest timestamp in window
+      const oldestTime = times.length > 0 ? times[0] : now
+      result.retryAfter = Math.max(0, oldestTime + this.config.windowMs - now)
       
       if (this.config.onLimitExceeded) {
         this.config.onLimitExceeded(identifier, result.retryAfter)
@@ -216,7 +222,8 @@ export class SlidingWindowRateLimiter {
   }
   
   /**
-   * Clean up old timestamps
+   * Clean up old timestamps to prevent memory leaks.
+   * Call this periodically in production.
    */
   cleanup(): void {
     const now = Date.now()

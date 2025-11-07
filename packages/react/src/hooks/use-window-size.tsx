@@ -47,26 +47,43 @@ export function useWindowSize(): WindowSize {
   React.useEffect(() => {
     if (typeof window === 'undefined') return
 
-    let timeoutId: NodeJS.Timeout
+    let timeoutId: NodeJS.Timeout | undefined
+    let lastRan = Date.now()
+    const THROTTLE_DELAY = 150
 
     const handleResize = () => {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => {
+      const now = Date.now()
+      const timeSinceLastRun = now - lastRan
+
+      if (timeSinceLastRun >= THROTTLE_DELAY) {
+        // Execute immediately if enough time has passed
         setWindowSize({
           width: window.innerWidth,
           height: window.innerHeight,
         })
-      }, 150) // Throttle resize events
+        lastRan = now
+      } else {
+        // Schedule execution for remaining time
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
+        timeoutId = setTimeout(() => {
+          setWindowSize({
+            width: window.innerWidth,
+            height: window.innerHeight,
+          })
+          lastRan = Date.now()
+        }, THROTTLE_DELAY - timeSinceLastRun)
+      }
     }
 
-    window.addEventListener('resize', handleResize)
-    
-    // Set initial size
-    handleResize()
+    window.addEventListener('resize', handleResize, { passive: true })
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      clearTimeout(timeoutId)
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
     }
   }, [])
 

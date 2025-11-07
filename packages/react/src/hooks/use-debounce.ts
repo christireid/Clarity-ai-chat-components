@@ -70,6 +70,12 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   delay: number = 500
 ): (...args: Parameters<T>) => void {
   const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const savedCallback = React.useRef(callback)
+
+  // Always use the latest callback
+  React.useLayoutEffect(() => {
+    savedCallback.current = callback
+  }, [callback])
 
   React.useEffect(() => {
     return () => {
@@ -86,9 +92,9 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
       }
 
       timeoutRef.current = setTimeout(() => {
-        callback(...args)
+        savedCallback.current(...args)
       }, delay)
     },
-    [callback, delay]
+    [delay] // Only delay in deps - callback accessed via ref
   )
 }

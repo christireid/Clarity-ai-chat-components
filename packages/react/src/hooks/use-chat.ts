@@ -105,14 +105,23 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
     [onSendMessage]
   )
 
+  // Use ref to access latest messages without causing re-renders
+  const messagesRef = React.useRef(messages)
+  React.useLayoutEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
+
   const retry = React.useCallback(
     async (messageId: string, options?: { signal?: AbortSignal }) => {
-      const message = messages.find((msg) => msg.id === messageId)
-      if (!message) return
+      const message = messagesRef.current.find((msg) => msg.id === messageId)
+      if (!message) {
+        console.warn(`Message with id "${messageId}" not found`)
+        return
+      }
 
       await sendMessage(message.content, options)
     },
-    [messages, sendMessage]
+    [sendMessage]
   )
 
   // Cleanup on unmount
