@@ -335,7 +335,7 @@ export function ConversationBranchVisualizer({
     if (!maxDepth) return branchTree
 
     function filterByDepth(nodes: BranchNode[], currentDepth: number): BranchNode[] {
-      if (currentDepth >= maxDepth) return []
+      if (currentDepth >= maxDepth!) return []
       
       return nodes.map(node => ({
         ...node,

@@ -89,7 +89,7 @@ export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
 
     if (displayMode === 'chunk') {
       // Chunk-based display
-      const chunks = []
+      const chunks: string[] = []
       for (let i = 0; i < newContent.length; i += chunkSize) {
         chunks.push(newContent.slice(i, i + chunkSize))
       }
@@ -99,7 +99,7 @@ export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
         if (chunkIndex < chunks.length) {
           setDisplayedText((prev) => {
             const updated = prev + chunks[chunkIndex]
-            chunks[chunkIndex].split('').forEach((char, idx) => {
+            chunks[chunkIndex].split('').forEach((char: string, idx: number) => {
               onCharacterDisplayed?.(char, prev.length + idx)
             })
             return updated

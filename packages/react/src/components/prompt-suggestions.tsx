@@ -105,7 +105,7 @@ export const PromptSuggestions = React.memo(function PromptSuggestions({
     let filtered = suggestions
 
     // Filter by type
-    if (suggestionType !== 'all') {
+    if (suggestionType) {
       filtered = filtered.filter((s) => s.type === suggestionType)
     }
 
