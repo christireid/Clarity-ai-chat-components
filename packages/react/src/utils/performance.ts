@@ -3,7 +3,17 @@
  */
 
 /**
- * Throttle function calls
+ * Throttle function calls - ensures function is called at most once per wait period
+ * 
+ * @template T - Function type to throttle
+ * @param {T} func - Function to throttle
+ * @param {number} wait - Wait time in milliseconds
+ * @returns {(...args: Parameters<T>) => void} Throttled function
+ * @example
+ * ```ts
+ * const throttledScroll = throttle(() => console.log('scrolled'), 100)
+ * window.addEventListener('scroll', throttledScroll)
+ * ```
  */
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
@@ -20,34 +30,60 @@ export function throttle<T extends (...args: any[]) => any>(
       lastCall = now
       func(...args)
     } else {
+      // Clear existing timeout to prevent multiple pending calls
       if (timeout) {
         clearTimeout(timeout)
       }
+      const remainingTime = wait - timeSinceLastCall
+      // Ensure remainingTime is positive (should always be, but safety check)
       timeout = setTimeout(() => {
         lastCall = Date.now()
         func(...args)
-      }, wait - timeSinceLastCall)
+        timeout = null
+      }, Math.max(0, remainingTime))
     }
   }
 }
 
 /**
- * Debounce function calls
+ * Debounce function calls - delays execution until after wait time has elapsed
+ * since the last call
+ * 
+ * @template T - Function type to debounce
+ * @param {T} func - Function to debounce
+ * @param {number} wait - Wait time in milliseconds
+ * @returns {(...args: Parameters<T>) => void} Debounced function with optional cancel method
+ * @example
+ * ```ts
+ * const debouncedSearch = debounce((query) => searchAPI(query), 300)
+ * input.addEventListener('input', (e) => debouncedSearch(e.target.value))
+ * ```
  */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
-): (...args: Parameters<T>) => void {
+): ((...args: Parameters<T>) => void) & { cancel: () => void } {
   let timeout: NodeJS.Timeout | null = null
 
-  return function debounced(...args: Parameters<T>) {
+  const debounced = function debounced(...args: Parameters<T>) {
     if (timeout) {
       clearTimeout(timeout)
     }
     timeout = setTimeout(() => {
       func(...args)
+      timeout = null
     }, wait)
+  } as ((...args: Parameters<T>) => void) & { cancel: () => void }
+
+  // Add cancel method for cleanup
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout)
+      timeout = null
+    }
   }
+
+  return debounced
 }
 
 /**

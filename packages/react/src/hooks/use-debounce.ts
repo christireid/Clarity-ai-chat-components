@@ -70,7 +70,14 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   delay: number = 500
 ): (...args: Parameters<T>) => void {
   const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const callbackRef = React.useRef(callback)
 
+  // Keep callback ref up to date without causing re-renders
+  React.useLayoutEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
+
+  // Cleanup on unmount
   React.useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -86,9 +93,9 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
       }
 
       timeoutRef.current = setTimeout(() => {
-        callback(...args)
+        callbackRef.current(...args)
       }, delay)
     },
-    [callback, delay]
+    [delay]
   )
 }

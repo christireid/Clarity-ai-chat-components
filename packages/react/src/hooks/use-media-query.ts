@@ -28,7 +28,8 @@ export function useMediaQuery(query: string): boolean {
       setMatches(event.matches)
     }
 
-    // Set initial value
+    // Initial value already set in useState initializer, but ensure it's correct
+    // (in case query changed and mediaQuery.matches differs)
     setMatches(mediaQuery.matches)
 
     // Modern browsers
@@ -36,7 +37,7 @@ export function useMediaQuery(query: string): boolean {
       mediaQuery.addEventListener('change', handleChange)
       return () => mediaQuery.removeEventListener('change', handleChange)
     }
-    // Legacy browsers
+    // Legacy browsers (Safari <14, IE)
     else {
       mediaQuery.addListener(handleChange)
       return () => mediaQuery.removeListener(handleChange)

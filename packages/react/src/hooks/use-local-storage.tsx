@@ -109,11 +109,23 @@ export function useLocalStorage<T>(
 
   // Sync state across tabs
   React.useEffect(() => {
+    if (typeof window === 'undefined') return
+
     const handleStorageChange = (e: StorageEvent | Event) => {
       if ((e as StorageEvent)?.key && (e as StorageEvent).key !== key) {
         return
       }
-      setStoredValue(readValue())
+      // Use readValue directly to avoid stale closure
+      try {
+        const item = window.localStorage.getItem(key)
+        if (item) {
+          setStoredValue(deserializer(item))
+        } else {
+          setStoredValue(initialValue instanceof Function ? initialValue() : initialValue)
+        }
+      } catch (error) {
+        console.warn(`Error reading localStorage key "${key}":`, error)
+      }
     }
 
     // Listen to changes from other tabs
@@ -125,7 +137,7 @@ export function useLocalStorage<T>(
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('local-storage', handleStorageChange)
     }
-  }, [key, readValue])
+  }, [key, deserializer, initialValue])
 
   return [storedValue, setValue, removeValue]
 }

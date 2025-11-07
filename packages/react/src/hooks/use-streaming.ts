@@ -58,6 +58,17 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
   const [isStreaming, setIsStreaming] = React.useState(false)
   const readerRef = React.useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
   const abortControllerRef = React.useRef<AbortController | null>(null)
+  
+  // Store callbacks in refs to avoid recreating streaming function when callbacks change
+  const onChunkRef = React.useRef(onChunk)
+  const onCompleteRef = React.useRef(onComplete)
+  const onErrorRef = React.useRef(onError)
+  
+  React.useLayoutEffect(() => {
+    onChunkRef.current = onChunk
+    onCompleteRef.current = onComplete
+    onErrorRef.current = onError
+  }, [onChunk, onComplete, onError])
 
   const stopStreaming = React.useCallback(() => {
     if (readerRef.current) {
@@ -106,14 +117,14 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
           fullText += chunk
 
           setContent(fullText)
-          onChunk?.(chunk)
+          onChunkRef.current?.(chunk)
         }
 
-        onComplete?.(fullText)
+        onCompleteRef.current?.(fullText)
       } catch (err) {
         // Don't call onError for abort
         if (err instanceof Error && err.name !== 'AbortError') {
-          onError?.(err)
+          onErrorRef.current?.(err)
         }
       } finally {
         setIsStreaming(false)
@@ -123,7 +134,7 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
         }
       }
     },
-    [onChunk, onComplete, onError, stopStreaming]
+    [stopStreaming] // Callbacks accessed via refs, so not in deps
   )
 
   const reset = React.useCallback(() => {

@@ -321,10 +321,23 @@ export function validateMessage(message: CoreMessage): { valid: boolean; errors:
 
 /**
  * Estimate token count (rough approximation)
+ * Uses a more accurate approximation: ~0.75 tokens per word, or ~4 characters per token
+ * 
+ * @param {CoreMessage} message - Message to estimate tokens for
+ * @returns {number} Estimated token count
  */
 export function estimateTokenCount(message: CoreMessage): number {
   const text = messageToText(message)
-  // Rough approximation: ~4 characters per token
+  if (!text) return 0
+  
+  // More accurate: count words (better approximation) or fallback to char-based
+  const words = text.trim().split(/\s+/).filter(Boolean)
+  if (words.length > 0) {
+    // ~0.75 tokens per word is more accurate for English text
+    return Math.ceil(words.length * 0.75)
+  }
+  
+  // Fallback: ~4 characters per token (conservative estimate)
   return Math.ceil(text.length / 4)
 }
 

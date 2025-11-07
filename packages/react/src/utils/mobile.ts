@@ -42,20 +42,13 @@ export function getViewportSize() {
 
 /**
  * Hook for mobile detection
+ * Note: Mobile detection is based on user agent, not viewport size.
+ * Resizing the window doesn't change whether a device is mobile.
  */
 export function useIsMobile(): boolean {
-  const [mobile, setMobile] = React.useState(() => isMobile())
-
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setMobile(isMobile())
-    }
-
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
-  return mobile
+  // Mobile detection is based on user agent, which doesn't change on resize
+  // So we only need to check once on mount
+  return React.useMemo(() => isMobile(), [])
 }
 
 /**
