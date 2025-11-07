@@ -48,34 +48,40 @@ export function useWindowSize(): WindowSize {
     if (typeof window === 'undefined') return
 
     let timeoutId: NodeJS.Timeout | undefined
+    let lastRan = Date.now()
+    const THROTTLE_DELAY = 150
 
     const handleResize = () => {
-      // Clear any pending timeout
-      if (timeoutId !== undefined) {
-        clearTimeout(timeoutId)
-      }
-      
-      // Schedule update with throttling
-      timeoutId = setTimeout(() => {
+      const now = Date.now()
+      const timeSinceLastRun = now - lastRan
+
+      if (timeSinceLastRun >= THROTTLE_DELAY) {
+        // Execute immediately if enough time has passed
         setWindowSize({
           width: window.innerWidth,
           height: window.innerHeight,
         })
-        timeoutId = undefined
-      }, 150) // Throttle resize events
+        lastRan = now
+      } else {
+        // Schedule execution for remaining time
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
+        timeoutId = setTimeout(() => {
+          setWindowSize({
+            width: window.innerWidth,
+            height: window.innerHeight,
+          })
+          lastRan = Date.now()
+        }, THROTTLE_DELAY - timeSinceLastRun)
+      }
     }
 
-    window.addEventListener('resize', handleResize)
-    
-    // Set initial size immediately (no throttling needed for initial render)
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    })
+    window.addEventListener('resize', handleResize, { passive: true })
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      if (timeoutId !== undefined) {
+      if (timeoutId) {
         clearTimeout(timeoutId)
       }
     }

@@ -41,35 +41,13 @@ export function getViewportSize() {
 }
 
 /**
- * Hook for mobile detection
+ * Hook for mobile detection.
+ * Note: User agent doesn't change on resize, so this only checks once.
+ * For responsive breakpoints, use useMediaQuery instead.
  */
 export function useIsMobile(): boolean {
-  const [mobile, setMobile] = React.useState(() => isMobile())
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
-
-  React.useEffect(() => {
-    const checkMobile = () => {
-      // Throttle resize checks to avoid excessive updates
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-      
-      timeoutRef.current = setTimeout(() => {
-        setMobile(isMobile())
-        timeoutRef.current = undefined
-      }, 150)
-    }
-
-    window.addEventListener('resize', checkMobile)
-    return () => {
-      window.removeEventListener('resize', checkMobile)
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
-
-  return mobile
+  // User agent doesn't change on window resize, so we only check once
+  return React.useMemo(() => isMobile(), [])
 }
 
 /**
@@ -90,28 +68,14 @@ export function useIsTouchDevice(): boolean {
  */
 export function useViewportSize() {
   const [size, setSize] = React.useState(getViewportSize)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
 
   React.useEffect(() => {
     const handleResize = () => {
-      // Throttle resize events to avoid excessive updates
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-      
-      timeoutRef.current = setTimeout(() => {
-        setSize(getViewportSize())
-        timeoutRef.current = undefined
-      }, 150)
+      setSize(getViewportSize())
     }
 
     window.addEventListener('resize', handleResize)
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   return size

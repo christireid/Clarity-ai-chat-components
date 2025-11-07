@@ -58,6 +58,7 @@ export function useAsyncError<T = any>() {
 
       setIsLoading(true)
       setError(null)
+      setRetryCount(0)
 
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
@@ -68,14 +69,14 @@ export function useAsyncError<T = any>() {
           return result
         } catch (err) {
           const error = err instanceof Error ? err : new Error(String(err))
-          setRetryCount(attempt + 1)
+          const currentAttempt = attempt + 1
+          setRetryCount(currentAttempt)
 
           // If we haven't exhausted retries, wait and try again
           if (attempt < maxRetries) {
-            // Exponential backoff: 1s, 2s, 3s, etc.
-            await new Promise((resolve) =>
-              setTimeout(resolve, retryDelay * (attempt + 1))
-            )
+            // Exponential backoff: delay * 2^attempt (1s, 2s, 4s, etc.)
+            const backoffDelay = retryDelay * Math.pow(2, attempt)
+            await new Promise((resolve) => setTimeout(resolve, backoffDelay))
           } else {
             // Final failure after all retries
             setError(error)
@@ -90,7 +91,7 @@ export function useAsyncError<T = any>() {
       setIsLoading(false)
       return null
     },
-    []
+    [] // Intentionally empty - options are passed per call
   )
 
   return {

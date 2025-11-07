@@ -24,22 +24,27 @@ export function useMediaQuery(query: string): boolean {
     const mediaQuery = window.matchMedia(query)
     
     // Update state if query result changes
-    const handleChange = (event: MediaQueryListEvent) => {
+    const handleChange = (event: MediaQueryListEvent | MediaQueryList) => {
       setMatches(event.matches)
     }
 
-    // Set initial value
-    setMatches(mediaQuery.matches)
-
-    // Modern browsers
+    // Modern browsers - use addEventListener
     if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', handleChange)
-      return () => mediaQuery.removeEventListener('change', handleChange)
+      // Set initial value (already set in useState initializer, but ensure sync)
+      handleChange(mediaQuery)
+      
+      mediaQuery.addEventListener('change', handleChange as EventListener)
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange as EventListener)
+      }
     }
-    // Legacy browsers
+    // Legacy browsers - use addListener/removeListener
     else {
-      mediaQuery.addListener(handleChange)
-      return () => mediaQuery.removeListener(handleChange)
+      handleChange(mediaQuery)
+      mediaQuery.addListener(handleChange as (this: MediaQueryList) => void)
+      return () => {
+        mediaQuery.removeListener(handleChange as (this: MediaQueryList) => void)
+      }
     }
   }, [query])
 

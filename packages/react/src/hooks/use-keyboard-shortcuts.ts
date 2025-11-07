@@ -57,11 +57,10 @@ export type KeyboardShortcut = {
  * ```
  */
 export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]): void {
-  // Use ref to avoid re-registering listeners on every shortcuts array change
+  // Store shortcuts in ref to avoid re-registering on every array reference change
   const shortcutsRef = React.useRef(shortcuts)
   
-  // Keep ref up to date
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     shortcutsRef.current = shortcuts
   }, [shortcuts])
 
@@ -72,7 +71,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]): void {
       const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
       const isContentEditable = target.isContentEditable
 
-      // Use ref to get latest shortcuts without re-registering listener
+      // Use current shortcuts from ref
       for (const shortcut of shortcutsRef.current) {
         const {
           key,
@@ -97,7 +96,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]): void {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, []) // Empty deps - shortcuts accessed via ref
+  }, []) // Empty deps - shortcuts are accessed via ref
 }
 
 /**

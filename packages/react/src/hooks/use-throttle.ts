@@ -1,8 +1,20 @@
 import * as React from 'react'
 
 /**
- * Throttle a value - only updates at most once per delay period
+ * Throttle a value - only updates at most once per delay period.
+ * Unlike debounce, throttle ensures the value updates at regular intervals
+ * while the source value is changing.
  * 
+ * **Use Cases:**
+ * - Scroll position tracking
+ * - Mouse move events
+ * - Window resize handlers
+ * - Real-time input with rate limiting
+ * 
+ * @template T - The type of value to throttle
+ * @param {T} value - The value to throttle
+ * @param {number} [delay=500] - Delay in milliseconds (default: 500ms)
+ * @returns {T} The throttled value
  * @example
  * ```tsx
  * const [scrollY, setScrollY] = useState(0)
@@ -23,20 +35,22 @@ export function useThrottle<T>(value: T, delay: number = 500): T {
   React.useEffect(() => {
     const now = Date.now()
     const timeSinceLastRun = now - lastRan.current
-    const remainingTime = delay - timeSinceLastRun
 
     // If enough time has passed, update immediately
-    if (remainingTime <= 0) {
+    if (timeSinceLastRun >= delay) {
       setThrottledValue(value)
       lastRan.current = now
-      return
+    } else {
+      // Otherwise, schedule an update for the remaining time
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      
+      timeoutRef.current = setTimeout(() => {
+        setThrottledValue(value)
+        lastRan.current = Date.now()
+      }, delay - timeSinceLastRun)
     }
-
-    // Otherwise, schedule update for remaining time
-    timeoutRef.current = setTimeout(() => {
-      setThrottledValue(value)
-      lastRan.current = Date.now()
-    }, remainingTime)
 
     return () => {
       if (timeoutRef.current) {
@@ -49,8 +63,19 @@ export function useThrottle<T>(value: T, delay: number = 500): T {
 }
 
 /**
- * Throttle a callback function
+ * Throttle a callback function - creates a throttled version that executes
+ * at most once per delay period, ensuring the last call is executed.
  * 
+ * **Use Cases:**
+ * - Resize handlers
+ * - Scroll event handlers
+ * - API calls with rate limiting
+ * - Input handlers that need regular updates
+ * 
+ * @template T - The callback function type
+ * @param {T} callback - The function to throttle
+ * @param {number} [delay=500] - Delay in milliseconds (default: 500ms)
+ * @returns {(...args: Parameters<T>) => void} Throttled version of the callback
  * @example
  * ```tsx
  * const throttledResize = useThrottledCallback(
@@ -68,16 +93,15 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number = 500
 ): (...args: Parameters<T>) => void {
-  const lastRan = React.useRef<number>(Date.now())
+  const lastRan = React.useRef<number>(0)
   const timeoutRef = React.useRef<NodeJS.Timeout>()
-  const callbackRef = React.useRef(callback)
+  const savedCallback = React.useRef(callback)
 
-  // Keep callback ref up to date
-  React.useEffect(() => {
-    callbackRef.current = callback
+  // Always use the latest callback
+  React.useLayoutEffect(() => {
+    savedCallback.current = callback
   }, [callback])
 
-  // Cleanup timeout on unmount
   React.useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -90,28 +114,21 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
     (...args: Parameters<T>) => {
       const now = Date.now()
       const timeSinceLastRun = now - lastRan.current
-      const remainingTime = delay - timeSinceLastRun
 
-      // If enough time has passed, execute immediately
-      if (remainingTime <= 0) {
-        callbackRef.current(...args)
+      if (timeSinceLastRun >= delay) {
+        // Execute immediately if enough time has passed
+        savedCallback.current(...args)
         lastRan.current = now
-        // Clear any pending timeout
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = undefined
-        }
       } else {
-        // Clear existing timeout
+        // Schedule execution for remaining time, canceling any pending execution
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current)
         }
-        // Schedule execution for remaining time
+        
         timeoutRef.current = setTimeout(() => {
-          callbackRef.current(...args)
+          savedCallback.current(...args)
           lastRan.current = Date.now()
-          timeoutRef.current = undefined
-        }, remainingTime)
+        }, delay - timeSinceLastRun)
       }
     },
     [delay]
