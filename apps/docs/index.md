@@ -136,6 +136,7 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 
 - [Getting Started](/guide/getting-started) - Learn the basics
 - [Quick Start](/guide/quick-start) - Build your first chat app
+- [Tutorials](/guide/tutorials) - Step-by-step guides
 - [Components](/guide/components) - Explore all components
 - [API Reference](/api/components) - Complete API documentation
 - [Examples](/examples/) - See working demos
