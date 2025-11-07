@@ -136,9 +136,34 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 
 - [Getting Started](/guide/getting-started) - Learn the basics
 - [Quick Start](/guide/quick-start) - Build your first chat app
+- [Tutorials](/guide/tutorials) - Step-by-step guides
 - [Components](/guide/components) - Explore all components
 - [API Reference](/api/components) - Complete API documentation
 - [Examples](/examples/) - See working demos
 - [Cookbook](/cookbook) - Recipes for common patterns
+
+</div>
+
+## Advanced Features
+
+<div class="vp-doc">
+
+- [Model Adapters](/guide/model-adapters) - Switch between AI providers
+- [AI Agents](/guide/agents) - Build agents with tool calling
+- [RAG System](/guide/rag) - Retrieval-augmented generation
+- [Reranking](/guide/reranking) - Improve search result relevance
+- [Safety & Moderation](/guide/safety) - Content filtering and PII detection
+- [Memory System](/guide/memory) - Persistent memory across conversations
+- [Observability](/guide/observability) - Monitoring and tracing
+- [Token Optimization](/guide/token-optimization) - Reduce costs and improve performance
+- [Performance Guide](/guide/performance) - Optimize your application
+- [Migration Guide](/guide/migration) - Upgrade between versions
+- [Plugins](/guide/plugins) - Extend functionality with plugins
+- [Audit Logging](/guide/audit-logging) - Track actions for compliance
+- [Usage Quotas](/guide/usage-quotas) - Control costs and enforce limits
+- [RBAC](/guide/rbac) - Role-based access control
+- [Multi-Tenancy](/guide/multi-tenancy) - Build multi-tenant applications
+- [Webhooks](/guide/webhooks) - Event-driven notifications
+- [Prompt Templates](/guide/prompts) - Manage and render AI prompts
 
 </div>

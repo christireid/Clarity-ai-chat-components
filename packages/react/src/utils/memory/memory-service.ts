@@ -21,12 +21,12 @@ import type {
   MemoryVectorMetadata,
 } from './types'
 import { MemoryBuffer } from './memory-buffer'
-import type { VectorStore } from './sliding-context-manager'
+import type { MemoryVectorStore } from './sliding-context-manager'
 import { VectorStoreAdapterWrapper } from './sliding-context-manager'
 import type { VectorStoreAdapter } from './vector-store-adapter'
 
 export interface MemoryServiceConfig {
-  vectorStore?: VectorStore | VectorStoreAdapter
+  vectorStore?: MemoryVectorStore | VectorStoreAdapter
   maxRealTimeTokens?: number
   maxSessionTokens?: number
   enableCompression?: boolean
@@ -39,7 +39,7 @@ export interface MemoryServiceConfig {
  */
 export class MemoryService {
   private config: Required<Pick<MemoryServiceConfig, 'maxRealTimeTokens' | 'maxSessionTokens' | 'enableCompression' | 'compressionThreshold' | 'countTokens'>> & {
-    vectorStore?: VectorStore
+    vectorStore?: MemoryVectorStore
   }
   
   // Layer 1: Real-time context buffer (in-memory)
@@ -51,12 +51,12 @@ export class MemoryService {
   // Layer 3 & 4: Handled by vector store (if available)
 
   constructor(config: MemoryServiceConfig) {
-    // Convert VectorStoreAdapter to VectorStore if needed
-    let vectorStore: VectorStore | undefined
+    // Convert VectorStoreAdapter to MemoryVectorStore if needed
+    let vectorStore: MemoryVectorStore | undefined
     if (config.vectorStore) {
       if ('similaritySearch' in config.vectorStore && typeof config.vectorStore.similaritySearch === 'function') {
-        // Already a VectorStore
-        vectorStore = config.vectorStore as VectorStore
+        // Already a MemoryVectorStore
+        vectorStore = config.vectorStore as MemoryVectorStore
       } else {
         // It's a VectorStoreAdapter, wrap it
         vectorStore = new VectorStoreAdapterWrapper(config.vectorStore as VectorStoreAdapter)
@@ -468,6 +468,7 @@ export class MemoryService {
       session: 0,
       thread: 0,
       global: 0,
+      user: 0,
     }
 
     const byType: Record<MemoryType, number> = {

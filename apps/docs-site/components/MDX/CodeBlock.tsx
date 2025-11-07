@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Highlight, themes } from 'prism-react-renderer'
 import { useTheme } from 'next-themes'
 import { Check, Copy, Terminal } from 'lucide-react'
@@ -25,15 +25,38 @@ export function CodeBlock({
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false)
   const { theme } = useTheme()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const copyToClipboard = async () => {
+  // Wrapped in useCallback to prevent recreation
+  const copyToClipboard = useCallback(async () => {
     await navigator.clipboard.writeText(code)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    
+    // Clear existing timeout if any
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    
+    timeoutRef.current = setTimeout(() => setCopied(false), 2000)
+  }, [code])
 
-  const isDark = theme === 'dark'
-  const highlightTheme = isDark ? themes.nightOwl : themes.nightOwlLight
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  // Memoize theme selection to prevent recalculation
+  const highlightTheme = useMemo(() => {
+    const isDark = theme === 'dark'
+    return isDark ? themes.nightOwl : themes.nightOwlLight
+  }, [theme])
+
+  // Memoize highlight lines set for O(1) lookups
+  const highlightLinesSet = useMemo(() => new Set(highlightLines), [highlightLines])
 
   return (
     <div
@@ -101,7 +124,7 @@ export function CodeBlock({
             )}
             style={{
               ...style,
-              backgroundColor: isDark ? '#1a202c' : '#f7fafc',
+              backgroundColor: theme === 'dark' ? '#1a202c' : '#f7fafc',
             }}
           >
             {/* Copy button (no header) */}
@@ -122,7 +145,7 @@ export function CodeBlock({
             <code>
               {tokens.map((line, lineIndex) => {
                 const lineNumber = lineIndex + 1
-                const isHighlighted = highlightLines.includes(lineNumber)
+                const isHighlighted = highlightLinesSet.has(lineNumber)
                 const lineProps = getLineProps({ line })
 
                 return (

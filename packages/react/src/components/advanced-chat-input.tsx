@@ -1,9 +1,7 @@
-import * as React from 'react'
+import { useState, useRef, useEffect, useTransition, useImperativeHandle, forwardRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'
 import type { SavedPrompt, MessageAttachment } from '@clarity-chat/types'
-
-const { useTransition } = React
 
 export interface InputSuggestion {
   id: string
@@ -42,7 +40,15 @@ export interface AdvancedChatInputProps {
   className?: string
 }
 
-export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedChatInputProps>(
+// Default commands - extracted as constant
+const DEFAULT_COMMANDS: InputSuggestion[] = [
+  { id: '1', type: 'command', label: 'help', description: 'Show available commands', value: '/help' },
+  { id: '2', type: 'command', label: 'clear', description: 'Clear conversation', value: '/clear' },
+  { id: '3', type: 'command', label: 'export', description: 'Export chat', value: '/export' },
+  { id: '4', type: 'command', label: 'model', description: 'Switch AI model', value: '/model' },
+] as const
+
+export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInputProps>(
   (
     {
       value,
@@ -60,26 +66,58 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
     },
     ref
   ) => {
-    const [attachments, setAttachments] = React.useState<MessageAttachment[]>([])
-    const [suggestions, setSuggestions] = React.useState<InputSuggestion[]>([])
-    const [selectedIndex, setSelectedIndex] = React.useState(0)
-    const [showSuggestions, setShowSuggestions] = React.useState(false)
-    const [isUploading, setIsUploading] = React.useState(false)
-    const [triggerChar, setTriggerChar] = React.useState<'@' | '/' | null>(null)
-    const [cursorPosition, setCursorPosition] = React.useState(0)
-    const textareaRef = React.useRef<HTMLTextAreaElement>(null)
-    const fileInputRef = React.useRef<HTMLInputElement>(null)
+    const [attachments, setAttachments] = useState<MessageAttachment[]>([])
+    const [suggestions, setSuggestions] = useState<InputSuggestion[]>([])
+    const [selectedIndex, setSelectedIndex] = useState(0)
+    const [showSuggestions, setShowSuggestions] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
+    const [triggerChar, setTriggerChar] = useState<'@' | '/' | null>(null)
+    const [cursorPosition, setCursorPosition] = useState(0)
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
     
     // React Concurrent Features - useTransition for non-blocking suggestion updates
-     
     const [isPending, startTransition] = useTransition()
-    // useDeferredValue can be used for expensive computations (reserved for future enhancement)
 
     // Merge refs
-    React.useImperativeHandle(ref, () => textareaRef.current!)
+    useImperativeHandle(ref, () => textareaRef.current!)
+
+    // Memoized loadSuggestions function
+    const loadSuggestions = useCallback(async (query: string, trigger: '@' | '/') => {
+      // Use startTransition to make suggestion updates non-blocking
+      startTransition(() => {
+        if (onSuggestionRequest) {
+          // For async requests, handle outside of transition
+          onSuggestionRequest(query, trigger).then((results) => {
+            startTransition(() => {
+              setSuggestions(results)
+              setSelectedIndex(0)
+            })
+          })
+        } else {
+          // Default suggestions
+          if (trigger === '@') {
+            const filtered = savedPrompts
+              .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
+              .map((p) => ({
+                id: p.id,
+                type: 'prompt' as const,
+                label: p.name,
+                description: p.description,
+                value: p.content,
+              }))
+            setSuggestions(filtered)
+          } else if (trigger === '/') {
+            const filtered = DEFAULT_COMMANDS.filter((c) => c.label.includes(query.toLowerCase()))
+            setSuggestions(filtered)
+          }
+          setSelectedIndex(0)
+        }
+      })
+    }, [onSuggestionRequest, savedPrompts])
 
     // Handle @ mentions and / commands
-    React.useEffect(() => {
+    useEffect(() => {
       const checkForTrigger = () => {
         const beforeCursor = value.slice(0, cursorPosition)
         const lastAtIndex = beforeCursor.lastIndexOf('@')
@@ -116,77 +154,10 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
       }
 
       checkForTrigger()
-    }, [value, cursorPosition])
+    }, [value, cursorPosition, loadSuggestions])
 
-    const loadSuggestions = async (query: string, trigger: '@' | '/') => {
-      // Use startTransition to make suggestion updates non-blocking
-      startTransition(() => {
-        if (onSuggestionRequest) {
-          // For async requests, handle outside of transition
-          onSuggestionRequest(query, trigger).then((results) => {
-            startTransition(() => {
-              setSuggestions(results)
-              setSelectedIndex(0)
-            })
-          })
-        } else {
-          // Default suggestions
-          if (trigger === '@') {
-            const filtered = savedPrompts
-              .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
-              .map((p) => ({
-                id: p.id,
-                type: 'prompt' as const,
-                label: p.name,
-                description: p.description,
-                value: p.content,
-              }))
-            setSuggestions(filtered)
-          } else if (trigger === '/') {
-            const commands: InputSuggestion[] = [
-              { id: '1', type: 'command', label: 'help', description: 'Show available commands', value: '/help' },
-              { id: '2', type: 'command', label: 'clear', description: 'Clear conversation', value: '/clear' },
-              { id: '3', type: 'command', label: 'export', description: 'Export chat', value: '/export' },
-              { id: '4', type: 'command', label: 'model', description: 'Switch AI model', value: '/model' },
-            ]
-            const filtered = commands.filter((c) => c.label.includes(query.toLowerCase()))
-            setSuggestions(filtered)
-          }
-          setSelectedIndex(0)
-        }
-      })
-    }
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      // Handle suggestions navigation
-      if (showSuggestions && suggestions.length > 0) {
-        if (e.key === 'ArrowDown') {
-          e.preventDefault()
-          setSelectedIndex((prev) => (prev + 1) % suggestions.length)
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault()
-          setSelectedIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length)
-        } else if (e.key === 'Tab' || e.key === 'Enter') {
-          if (showSuggestions) {
-            e.preventDefault()
-            selectSuggestion(suggestions[selectedIndex])
-            return
-          }
-        } else if (e.key === 'Escape') {
-          e.preventDefault()
-          setShowSuggestions(false)
-          return
-        }
-      }
-
-      // Handle submit
-      if (e.key === 'Enter' && !e.shiftKey && !showSuggestions) {
-        e.preventDefault()
-        handleSubmit()
-      }
-    }
-
-    const selectSuggestion = (suggestion: InputSuggestion) => {
+    // Memoized selectSuggestion handler
+    const selectSuggestion = useCallback((suggestion: InputSuggestion) => {
       const beforeCursor = value.slice(0, cursorPosition)
       const afterCursor = value.slice(cursorPosition)
       
@@ -204,14 +175,48 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
       setTimeout(() => {
         textareaRef.current?.focus()
       }, 0)
-    }
+    }, [value, cursorPosition, triggerChar, onChange])
 
-    const handleCursorChange = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    // Memoize keyboard handler to prevent recreation on every render
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // Handle suggestions navigation
+        if (showSuggestions && suggestions.length > 0) {
+          if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            setSelectedIndex((prev) => (prev + 1) % suggestions.length)
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            setSelectedIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length)
+          } else if (e.key === 'Tab' || e.key === 'Enter') {
+            if (showSuggestions) {
+              e.preventDefault()
+              selectSuggestion(suggestions[selectedIndex])
+              return
+            }
+          } else if (e.key === 'Escape') {
+            e.preventDefault()
+            setShowSuggestions(false)
+            return
+          }
+        }
+
+        // Handle submit
+        if (e.key === 'Enter' && !e.shiftKey && !showSuggestions) {
+          e.preventDefault()
+          handleSubmit()
+        }
+      },
+      [showSuggestions, suggestions, selectedIndex, selectSuggestion]
+    )
+
+    // Memoize cursor change handler
+    const handleCursorChange = useCallback((e: React.FormEvent<HTMLTextAreaElement>) => {
       const target = e.target as HTMLTextAreaElement
       setCursorPosition(target.selectionStart)
-    }
+    }, [])
 
-    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || [])
       if (files.length === 0) return
 
@@ -241,14 +246,15 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
         setIsUploading(false)
         if (fileInputRef.current) fileInputRef.current.value = ''
       }
-    }
+    }, [attachments.length, maxFiles, onFileUpload])
 
-    const handleDragOver = (e: React.DragEvent) => {
+    // Memoize drag and drop handlers
+    const handleDragOver = useCallback((e: React.DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
-    }
+    }, [])
 
-    const handleDrop = async (e: React.DragEvent) => {
+    const handleDrop = useCallback(async (e: React.DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -262,22 +268,26 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
         input.files = dataTransfer.files
         input.dispatchEvent(new Event('change', { bubbles: true }))
       }
-    }
+    }, [])
 
-    const removeAttachment = (id: string) => {
+    // Memoize attachment removal
+    const removeAttachment = useCallback((id: string) => {
       setAttachments((prev) => prev.filter((a) => a.id !== id))
-    }
+    }, [])
 
-    const handleSubmit = () => {
+    // Memoize submit handler
+    const handleSubmit = useCallback(() => {
       if (value.trim() || attachments.length > 0) {
         onSubmit(value, attachments.length > 0 ? attachments : undefined)
         onChange('')
         setAttachments([])
       }
-    }
+    }, [value, attachments, onSubmit, onChange])
 
-    const charCount = value.length
-    const isOverLimit = maxLength ? charCount > maxLength : false
+    // Memoized computed values
+    const charCount = useMemo(() => value.length, [value])
+    const isOverLimit = useMemo(() => (maxLength ? charCount > maxLength : false), [maxLength, charCount])
+    const canSubmit = useMemo(() => value.trim() || attachments.length > 0, [value, attachments.length])
 
     return (
       <div className={cn('relative border-t bg-background', className)}>
@@ -316,6 +326,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
                   <button
                     onClick={() => removeAttachment(attachment.id)}
                     className="text-muted-foreground hover:text-destructive"
+                    aria-label={`Remove ${attachment.name}`}
                   >
                     ✕
                   </button>
@@ -333,6 +344,8 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               className="absolute bottom-full left-4 right-4 mb-2 bg-popover border rounded-lg shadow-lg max-h-64 overflow-y-auto z-50"
+              role="listbox"
+              aria-label="Suggestions"
             >
               {suggestions.map((suggestion, index) => (
                 <button
@@ -342,6 +355,8 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
                     'w-full text-left px-4 py-2 hover:bg-accent transition-colors',
                     index === selectedIndex && 'bg-accent'
                   )}
+                  aria-selected={index === selectedIndex}
+                  role="option"
                 >
                   <div className="flex items-center gap-2">
                     {suggestion.icon && <span>{suggestion.icon}</span>}
@@ -394,6 +409,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isUploading || attachments.length >= maxFiles}
             title="Attach files"
+            aria-label="Attach files"
           >
             {isUploading ? '⏳' : '📎'}
           </Button>
@@ -429,9 +445,10 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
           {/* Send Button */}
           <Button
             onClick={handleSubmit}
-            disabled={disabled || (!value.trim() && attachments.length === 0) || isOverLimit}
+            disabled={disabled || !canSubmit || isOverLimit}
             size="icon"
             title="Send message (Enter)"
+            aria-label="Send message"
           >
             ↑
           </Button>

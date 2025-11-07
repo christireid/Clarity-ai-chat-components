@@ -2,6 +2,26 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { ConversationTimeline } from '@clarity-chat/react'
 import type { ConversationTimelineEvent } from '@clarity-chat/react'
 
+/**
+ * **ConversationTimeline Component**
+ * 
+ * Visual timeline showing conversation events including user messages,
+ * assistant responses, tool calls, and system events.
+ * 
+ * **Key Features:**
+ * - Multiple event types (user, assistant, tool, system)
+ * - Timestamp display
+ * - Duration tracking
+ * - Status indicators
+ * - Expandable details
+ * - Accessible with keyboard navigation
+ * 
+ * **Use Cases:**
+ * - Conversation history
+ * - Debugging and monitoring
+ * - Activity feeds
+ * - Audit logs
+ */
 const meta: Meta<typeof ConversationTimeline> = {
   title: 'Components/ConversationTimeline',
   component: ConversationTimeline,
@@ -9,11 +29,56 @@ const meta: Meta<typeof ConversationTimeline> = {
   parameters: {
     docs: {
       description: {
-        component:
-          'Visual timeline showing conversation events including user messages, assistant responses, tool calls, and system events.',
+        component: `
+Visual timeline showing conversation events including user messages,
+assistant responses, tool calls, and system events.
+
+## Features
+
+- ✅ Multiple event types (user, assistant, tool, system)
+- ✅ Timestamp display
+- ✅ Duration tracking
+- ✅ Status indicators
+- ✅ Expandable details
+- ✅ Accessible with keyboard navigation
+- ✅ Visual timeline layout
+
+## Basic Usage
+
+\`\`\`tsx
+<ConversationTimeline
+  events={events}
+  onEventClick={(event) => {
+    console.log('Event clicked:', event)
+  }}
+/>
+\`\`\`
+        `,
       },
     },
     layout: 'padded',
+  },
+  argTypes: {
+    events: {
+      description: 'Array of timeline events',
+      control: { type: 'object' },
+    },
+    onEventClick: {
+      description: 'Callback when an event is clicked',
+      action: 'event-clicked',
+    },
+    showTimestamps: {
+      description: 'Show event timestamps',
+      control: 'boolean',
+    },
+    showDuration: {
+      description: 'Show event duration',
+      control: 'boolean',
+    },
+    compact: {
+      description: 'Use compact layout',
+      control: 'boolean',
+    },
   },
 }
 

@@ -10,10 +10,28 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { SkeletonText } from './skeleton'
-import type { MemoryItem, MemoryScope, MemoryType, MemoryLayer } from '@clarity-chat/types'
 
-// Re-export for backward compatibility
-export type { MemoryItem, MemoryScope }
+// Memory display types (UI-oriented, not core memory system types)
+// Not exported to avoid conflicts with utils/memory types
+type MemoryScope = 'session' | 'thread' | 'global'
+type MemoryType = 'episodic' | 'semantic' | 'preference' | 'fact' | 'behavior'
+type MemoryLayer = 'real-time' | 'session' | 'semantic' | 'episodic'
+
+interface MemoryItem {
+  id: string
+  userId: string
+  label: string
+  value: string
+  scope: MemoryScope
+  type: MemoryType
+  layer: MemoryLayer
+  confidence?: number
+  source?: string
+  lastUpdated: Date
+  tokens?: number
+  importanceScore?: number
+  metadata?: Record<string, any>
+}
 
 export interface MemoryInspectorProps {
   memories: MemoryItem[]

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { memo, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
@@ -11,6 +11,7 @@ import {
   createStaggerChildVariant,
 } from '../animations/utils'
 import { INTERACTION_VARIANTS } from '../animations/constants'
+import type { ReactNode } from 'react'
 
 export interface MessageListProps {
   messages: MessageType[]
@@ -22,11 +23,11 @@ export interface MessageListProps {
   /** Number of skeleton messages to show while loading */
   loadingCount?: number
   /** Empty state content */
-  emptyState?: React.ReactNode
+  emptyState?: ReactNode
   className?: string
 }
 
-export const MessageList = React.memo(function MessageList({
+export const MessageList = memo(function MessageList({
   messages,
   onMessageCopy,
   onMessageFeedback,
@@ -43,17 +44,26 @@ export const MessageList = React.memo(function MessageList({
     threshold: 100,
   })
 
-  // Animation variants
-  const containerVariants = createStaggerContainerVariant('normal', 0)
-  const itemVariants = createStaggerChildVariant('slide', 'fast')
+  // Memoize animation variants to prevent recreation on every render
+  const containerVariants = useMemo(
+    () => createStaggerContainerVariant('normal', 0),
+    []
+  )
+  const itemVariants = useMemo(
+    () => createStaggerChildVariant('slide', 'fast'),
+    []
+  )
 
-  // Show empty state if no messages and not loading
-  const showEmptyState = messages.length === 0 && !isLoading && emptyState
+  // Memoize empty state check
+  const showEmptyState = useMemo(
+    () => messages.length === 0 && !isLoading && emptyState,
+    [messages.length, isLoading, emptyState]
+  )
 
   return (
     <div className="relative h-full">
       <ScrollArea
-        ref={scrollRef as React.RefObject<HTMLDivElement>}
+        ref={scrollRef}
         className={cn('h-full bg-transparent px-2 py-4 sm:px-4', className)}
       >
         {/* Loading skeletons */}
@@ -135,6 +145,7 @@ export const MessageList = React.memo(function MessageList({
                 variant="default"
                 onClick={scrollToBottom}
                 className="shadow-xl gap-1.5 bg-primary/95 hover:bg-primary backdrop-blur-sm"
+                aria-label="Scroll to bottom of messages"
               >
                 <ArrowDownIcon size={16} />
                 Scroll to bottom

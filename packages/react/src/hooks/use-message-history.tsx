@@ -133,25 +133,38 @@ export function useMessageHistory(
   const hasNextPage = currentPage < totalPages
   const hasPrevPage = currentPage > 1
 
+  // Use ref to avoid excessive saves when messages array reference changes
+  const messagesRef = React.useRef(messages)
+  React.useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
+
   // Auto-save functionality
   React.useEffect(() => {
     if (!autoSave || !isAvailable) return
 
     const interval = setInterval(() => {
-      saveConversation(conversationId, messages).catch((err) => {
+      // Use ref to get latest messages without re-creating interval
+      saveConversation(conversationId, messagesRef.current).catch((err) => {
         console.error('Auto-save failed:', err)
       })
     }, saveInterval)
 
     return () => clearInterval(interval)
-  }, [autoSave, saveInterval, conversationId, messages, saveConversation, isAvailable])
+  }, [autoSave, saveInterval, conversationId, saveConversation, isAvailable])
 
   // Load from storage on mount
+  const loadRef = React.useRef(load)
+  React.useEffect(() => {
+    loadRef.current = load
+  }, [load])
+
   React.useEffect(() => {
     if (isAvailable && conversationId) {
-      load()
+      loadRef.current()
     }
-  }, [conversationId, isAvailable])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, isAvailable]) // load accessed via ref
 
   const goToPage = React.useCallback((page: number) => {
     if (page >= 1 && page <= totalPages) {

@@ -56,6 +56,13 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
   const abortControllerRef = React.useRef<AbortController | null>(null)
+  
+  // Store callback in ref to avoid recreating sendMessage when callback changes
+  const onSendMessageRef = React.useRef(onSendMessage)
+  
+  React.useLayoutEffect(() => {
+    onSendMessageRef.current = onSendMessage
+  }, [onSendMessage])
 
   const sendMessage = React.useCallback(
     async (content: string, options?: { signal?: AbortSignal }) => {
@@ -82,7 +89,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       setError(null)
 
       try {
-        await onSendMessage?.(userMessage, { signal })
+        await onSendMessageRef.current?.(userMessage, { signal })
       } catch (err) {
         // Don't set error if request was aborted
         if (err instanceof Error && err.name === 'AbortError') {
@@ -102,7 +109,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
         }
       }
     },
-    [onSendMessage]
+    [] // Callback accessed via ref, so not in deps
   )
 
   const retry = React.useCallback(

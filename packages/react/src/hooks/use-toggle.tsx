@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useCallback, type Dispatch, type SetStateAction } from 'react'
 
 export interface UseToggleReturn {
   /**
@@ -20,7 +20,7 @@ export interface UseToggleReturn {
   /**
    * Set to specific value
    */
-  setValue: React.Dispatch<React.SetStateAction<boolean>>
+  setValue: Dispatch<SetStateAction<boolean>>
 }
 
 /**
@@ -57,17 +57,17 @@ export interface UseToggleReturn {
  * ```
  */
 export function useToggle(initialValue: boolean = false): UseToggleReturn {
-  const [value, setValue] = React.useState(initialValue)
+  const [value, setValue] = useState(initialValue)
 
-  const toggle = React.useCallback(() => {
+  const toggle = useCallback(() => {
     setValue((v) => !v)
   }, [])
 
-  const setTrue = React.useCallback(() => {
+  const setTrue = useCallback(() => {
     setValue(true)
   }, [])
 
-  const setFalse = React.useCallback(() => {
+  const setFalse = useCallback(() => {
     setValue(false)
   }, [])
 

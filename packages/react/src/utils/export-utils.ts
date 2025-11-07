@@ -9,11 +9,18 @@
  * @status NEW - Implementation based on blueprint analysis
  */
 
-import { Message, Conversation } from '@clarity-chat/types'
+import { Message as BaseMessage } from '@clarity-chat/types'
 
 // ============================================================================
 // Types
 // ============================================================================
+
+// Extended Message type with export-specific properties
+export interface Message extends BaseMessage {
+  timestamp?: Date
+  tokens?: number
+  cost?: number
+}
 
 export type ExportFormat = 'json' | 'markdown' | 'html' | 'pdf' | 'txt'
 
@@ -386,9 +393,21 @@ export function exportToHTML(
 }
 
 function escapeHtml(text: string): string {
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
+  // SSR-safe HTML escaping - try DOM first, fallback to string replacement
+  if (typeof document !== 'undefined') {
+    // Client-side: use DOM API
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
+  }
+  
+  // Server-side: use string replacement
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 // ============================================================================
@@ -517,14 +536,23 @@ export async function exportMultipleConversations(
   conversations: Array<{ id: string; messages: Message[]; title?: string }>,
   options: ExportOptions
 ): Promise<Blob> {
-  const zip = require('jszip')() // Would need to add jszip dependency
+  // Dynamic import for optional dependency
+  // Note: jszip must be installed separately: npm install jszip
+  try {
+    const JSZip = (await import('jszip')).default
+    const zip = new JSZip()
 
-  for (const conv of conversations) {
-    const filename = conv.title || conv.id
-    const blob = await exportConversation(conv.messages, options)
-    const content = await blob.text()
-    zip.file(`${filename}.${options.format}`, content)
+    for (const conv of conversations) {
+      const filename = conv.title || conv.id
+      const blob = await exportConversation(conv.messages, options)
+      const content = await blob.text()
+      zip.file(`${filename}.${options.format}`, content)
+    }
+
+    return await zip.generateAsync({ type: 'blob' })
+  } catch (error) {
+    throw new Error(
+      'jszip is required for batch exports. Install it with: npm install jszip'
+    )
   }
-
-  return await zip.generateAsync({ type: 'blob' })
 }

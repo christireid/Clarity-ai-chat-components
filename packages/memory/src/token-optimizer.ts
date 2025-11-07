@@ -203,7 +203,7 @@ export class TokenBudgetManager {
   /**
    * Calculate optimal distribution across memory types
    */
-  distributeTokens(totalMemories: number, byType: Record<string, number>): Record<string, number> {
+  distributeTokens(_totalMemories: number, _byType: Record<string, number>): Record<string, number> {
     const distribution: Record<string, number> = {}
     
     // Base allocation

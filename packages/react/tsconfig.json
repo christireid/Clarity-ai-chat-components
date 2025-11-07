@@ -19,7 +19,8 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "types": ["vitest/globals", "@testing-library/jest-dom"],
+    
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/utils/memory/examples/**", "src/**/*.example.tsx", "src/**/*.example.ts"]
 }

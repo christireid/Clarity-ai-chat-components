@@ -2,13 +2,84 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { MessageMetadata } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
+/**
+ * **MessageMetadata Component**
+ * 
+ * Component for displaying message metadata including tokens,
+ * cost, response time, model, confidence, and sources.
+ * 
+ * **Key Features:**
+ * - Token usage display (input/output)
+ * - Cost calculation
+ * - Response time tracking
+ * - Model information
+ * - Confidence scores
+ * - Source citations
+ * - Expandable details
+ * - Accessible with ARIA labels
+ * 
+ * **Use Cases:**
+ * - Token usage tracking
+ * - Cost monitoring
+ * - Performance metrics
+ * - Model information display
+ * - Source attribution
+ */
 const meta: Meta<typeof MessageMetadata> = {
   title: 'Components/MessageMetadata',
   component: MessageMetadata,
   parameters: {
     layout: 'padded',
+    docs: {
+      description: {
+        component: `
+Component for displaying message metadata including tokens,
+cost, response time, model, confidence, and sources.
+
+## Features
+
+- ✅ Token usage display (input/output)
+- ✅ Cost calculation
+- ✅ Response time tracking
+- ✅ Model information
+- ✅ Confidence scores
+- ✅ Source citations
+- ✅ Expandable details
+- ✅ Accessible with ARIA labels
+- ✅ Visual indicators for metrics
+
+## Basic Usage
+
+\`\`\`tsx
+<MessageMetadata
+  message={messageWithMetadata}
+  showDetails={true}
+  showSources={true}
+/>
+\`\`\`
+        `,
+      },
+    },
   },
   tags: ['autodocs'],
+  argTypes: {
+    message: {
+      description: 'Message object with metadata',
+      control: { type: 'object' },
+    },
+    showDetails: {
+      description: 'Show detailed metadata (tokens, cost, etc.)',
+      control: 'boolean',
+    },
+    showSources: {
+      description: 'Show source citations',
+      control: 'boolean',
+    },
+    compact: {
+      description: 'Use compact layout',
+      control: 'boolean',
+    },
+  },
 }
 
 export default meta

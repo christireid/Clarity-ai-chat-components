@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { memo, forwardRef, useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import {
@@ -8,16 +8,18 @@ import {
   cn,
   formatRelativeTime,
 } from '@clarity-chat/primitives'
-import { CopyButton } from './copy-button'
-import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon } from './icons'
 import {
   ANIMATION_DURATION,
   ANIMATION_EASING,
-  INTERACTION_VARIANTS,
 } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
+import {
+  MarkdownCodeBlock,
+  MessageActions,
+  MessageMetadata,
+} from './message'
 
 export interface MessageProps {
   message: MessageType
@@ -30,8 +32,8 @@ export interface MessageProps {
   className?: string
 }
 
-export const Message = React.memo(
-  React.forwardRef<HTMLDivElement, MessageProps>(function Message(
+export const Message = memo(
+  forwardRef<HTMLDivElement, MessageProps>(function Message(
     {
       message,
       onFeedback,
@@ -42,8 +44,8 @@ export const Message = React.memo(
     },
     ref
   ) {
-    const [isHovered, setIsHovered] = React.useState(false)
-    const [feedbackGiven, setFeedbackGiven] = React.useState<
+    const [isHovered, setIsHovered] = useState(false)
+    const [feedbackGiven, setFeedbackGiven] = useState<
       'up' | 'down' | null
     >(message.feedback?.type || null)
 
@@ -51,19 +53,41 @@ export const Message = React.memo(
     const isAssistant = message.role === 'assistant'
     const isStreaming = message.status === 'streaming'
 
-    const [showConfetti, setShowConfetti] = React.useState(false)
+    const [showConfetti, setShowConfetti] = useState(false)
 
-    const handleFeedback = (type: 'up' | 'down') => {
-      setFeedbackGiven(type)
-      onFeedback?.(type)
+    // Memoized feedback handler
+    const handleFeedback = useCallback(
+      (type: 'up' | 'down') => {
+        setFeedbackGiven(type)
+        onFeedback?.(type)
 
-      // Hooked principle: Variable reward
-      if (type === 'up') {
-        // Trigger confetti animation
-        setShowConfetti(true)
-        setTimeout(() => setShowConfetti(false), 1000)
-      }
-    }
+        // Hooked principle: Variable reward
+        if (type === 'up') {
+          // Trigger confetti animation
+          setShowConfetti(true)
+          setTimeout(() => setShowConfetti(false), 1000)
+        }
+      },
+      [onFeedback]
+    )
+
+    // Memoize markdown components
+    const markdownComponents = useMemo(
+      () => ({
+        code: MarkdownCodeBlock,
+      }),
+      []
+    )
+
+    // Memoize plugins
+    const remarkPlugins = useMemo(() => [remarkGfm], [])
+    const rehypePlugins = useMemo(
+      () => [
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        rehypeHighlight as any, // Type incompatibility between vfile versions
+      ],
+      []
+    )
 
     return (
       <motion.div
@@ -158,34 +182,9 @@ export const Message = React.memo(
               <p className="m-0 whitespace-pre-wrap">{message.content}</p>
             ) : (
               <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  rehypeHighlight as any, // Type incompatibility between vfile versions in react-markdown
-                ]}
-                components={{
-                  code(props) {
-                    const { inline, className, children, ...rest } = props
-                    return inline ? (
-                      <code
-                        className="bg-muted px-1 py-0.5 rounded text-sm"
-                        {...rest}
-                      >
-                        {children}
-                      </code>
-                    ) : (
-                      <div className="relative group/code">
-                        <pre className={cn('relative', className)}>
-                          <code {...rest}>{children}</code>
-                        </pre>
-                        <CopyButton
-                          text={String(children).replace(/\n$/, '')}
-                          className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
-                        />
-                      </div>
-                    )
-                  },
-                }}
+                remarkPlugins={remarkPlugins}
+                rehypePlugins={rehypePlugins}
+                components={markdownComponents}
               >
                 {message.content}
               </ReactMarkdown>
@@ -219,156 +218,20 @@ export const Message = React.memo(
           )}
 
           {/* Actions */}
-          <AnimatePresence>
-            {isAssistant && (isHovered || feedbackGiven) && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, height: 0 }}
-                animate={{ opacity: 1, y: 0, height: 'auto' }}
-                exit={{ opacity: 0, y: 10, height: 0 }}
-                transition={{
-                  duration: ANIMATION_DURATION.fast / 1000,
-                  ease: ANIMATION_EASING.out,
-                }}
-                className="flex items-center gap-2 overflow-hidden"
-              >
-                <CopyButton text={message.content} size="sm" />
-
-                {/* Thumbs Up with Confetti */}
-                <div className="relative">
-                  <motion.div
-                    whileHover={{
-                      scale: 1.1,
-                      rotate: feedbackGiven === 'up' ? 0 : -15,
-                    }}
-                    whileTap={{ scale: 0.9 }}
-                    animate={
-                      feedbackGiven === 'up'
-                        ? {
-                            scale: [1, 1.2, 1],
-                            rotate: [0, -15, 15, -15, 0],
-                          }
-                        : {}
-                    }
-                    transition={{ duration: 0.5 }}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleFeedback('up')}
-                      className={cn(
-                        'transition-colors',
-                        feedbackGiven === 'up' && 'text-success bg-success/10'
-                      )}
-                      aria-label="Good response"
-                    >
-                      <ThumbsUpIcon size={16} />
-                    </Button>
-                  </motion.div>
-
-                  {/* Confetti Effect */}
-                  <AnimatePresence>
-                    {showConfetti && (
-                      <>
-                        {[...Array(8)].map((_, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{
-                              opacity: 1,
-                              scale: 0,
-                              x: 0,
-                              y: 0,
-                            }}
-                            animate={{
-                              opacity: 0,
-                              scale: 1,
-                              x: Math.cos((i * Math.PI * 2) / 8) * 30,
-                              y: Math.sin((i * Math.PI * 2) / 8) * 30,
-                            }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.6, ease: 'easeOut' }}
-                            className="absolute top-1/2 left-1/2 w-2 h-2 bg-success rounded-full pointer-events-none"
-                            style={{
-                              backgroundColor: [
-                                '#10b981',
-                                '#f59e0b',
-                                '#3b82f6',
-                                '#ef4444',
-                              ][i % 4],
-                            }}
-                          />
-                        ))}
-                      </>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Thumbs Down */}
-                <motion.div
-                  whileHover={{
-                    scale: 1.1,
-                    rotate: feedbackGiven === 'down' ? 0 : 15,
-                  }}
-                  whileTap={{ scale: 0.9 }}
-                  animate={
-                    feedbackGiven === 'down'
-                      ? {
-                          scale: [1, 1.1, 1],
-                          rotate: [0, 15, -15, 15, 0],
-                        }
-                      : {}
-                  }
-                  transition={{ duration: 0.5 }}
-                >
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleFeedback('down')}
-                    className={cn(
-                      'transition-colors',
-                      feedbackGiven === 'down' &&
-                        'text-destructive bg-destructive/10'
-                    )}
-                    aria-label="Poor response"
-                  >
-                    <ThumbsDownIcon size={16} />
-                  </Button>
-                </motion.div>
-
-                {message.status === 'error' && onRetry && (
-                  <motion.div
-                    whileHover={INTERACTION_VARIANTS.button.hover}
-                    whileTap={INTERACTION_VARIANTS.button.tap}
-                    transition={INTERACTION_VARIANTS.button.transition}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={onRetry}
-                      className="gap-1.5"
-                    >
-                      <RefreshIcon size={16} />
-                      Retry
-                    </Button>
-                  </motion.div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {isAssistant && (
+            <MessageActions
+              messageContent={message.content}
+              feedbackGiven={feedbackGiven}
+              showConfetti={showConfetti}
+              hasError={message.status === 'error'}
+              onFeedback={handleFeedback}
+              onRetry={onRetry}
+              show={isHovered || !!feedbackGiven}
+            />
+          )}
 
           {/* Metadata */}
-          {message.metadata && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              {message.metadata.tokens && (
-                <span>{message.metadata.tokens} tokens</span>
-              )}
-              {message.metadata.processingTime && (
-                <span>? {message.metadata.processingTime}ms</span>
-              )}
-              {message.metadata.model && (
-                <span>? {message.metadata.model}</span>
-              )}
-            </div>
-          )}
+          <MessageMetadata metadata={message.metadata} />
         </div>
       </motion.div>
     )

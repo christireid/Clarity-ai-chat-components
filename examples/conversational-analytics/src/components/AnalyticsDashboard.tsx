@@ -1,23 +1,71 @@
 'use client'
 
+import { useMemo, memo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts'
 import { TrendingUp, DollarSign, Users, ShoppingCart } from 'lucide-react'
 
+interface ChartData {
+  title: string
+  data: Array<{
+    region: string
+    sales: number
+  }>
+}
+
+interface Insight {
+  text: string
+  confidence?: number
+}
+
 interface AnalyticsDashboardProps {
-  charts: any[]
-  insights: any[]
+  charts: ChartData[]
+  insights: Insight[]
   currentQuery: string
 }
 
+interface MetricCardProps {
+  icon: React.ReactNode
+  label: string
+  value: string
+  change: string
+  trend: 'up' | 'down'
+  color: 'green' | 'blue' | 'purple' | 'orange'
+}
+
+// Extract and memoize MetricCard component
+const MetricCard = memo<MetricCardProps>(({ icon, label, value, change, trend, color }) => {
+  const colorClasses = {
+    green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+    blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+    purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
+    orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
+  }
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className={`w-12 h-12 rounded-lg ${colorClasses[color]} flex items-center justify-center mb-4`}>
+        {icon}
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{label}</p>
+      <p className="text-2xl font-bold mb-1">{value}</p>
+      <p className={`text-sm ${trend === 'up' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+        {change}
+      </p>
+    </div>
+  )
+})
+MetricCard.displayName = 'MetricCard'
+
 export function AnalyticsDashboard({ charts, insights, currentQuery }: AnalyticsDashboardProps) {
-  const mockTimeSeriesData = [
+  // Memoize static data to prevent recreation
+  const mockTimeSeriesData = useMemo(() => [
     { date: 'Jan', revenue: 45000, users: 1200 },
     { date: 'Feb', revenue: 52000, users: 1350 },
     { date: 'Mar', revenue: 48000, users: 1280 },
     { date: 'Apr', revenue: 61000, users: 1520 },
     { date: 'May', revenue: 58000, users: 1480 },
     { date: 'Jun', revenue: 67000, users: 1650 },
-  ]
+  ], [])
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
@@ -136,28 +184,6 @@ export function AnalyticsDashboard({ charts, insights, currentQuery }: Analytics
           </div>
         </div>
       )}
-    </div>
-  )
-}
-
-function MetricCard({ icon, label, value, change, trend, color }: any) {
-  const colorClasses = {
-    green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
-    blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
-    purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
-    orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
-  }
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-      <div className={`w-12 h-12 rounded-lg ${colorClasses[color]} flex items-center justify-center mb-4`}>
-        {icon}
-      </div>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{label}</p>
-      <p className="text-2xl font-bold mb-1">{value}</p>
-      <p className={`text-sm ${trend === 'up' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-        {change}
-      </p>
     </div>
   )
 }

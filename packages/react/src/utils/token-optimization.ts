@@ -214,8 +214,8 @@ export function shortenPrompt(
 ): string {
   const {
     removeDuplicates = true,
-    removeFillers = true,
-    simplifySentences = true,
+    removeFillers: shouldRemoveFillers = true,
+    simplifySentences: shouldSimplifySentences = true,
     targetReduction = 0.2,
     preserveKeywords = [],
   } = options
@@ -228,12 +228,12 @@ export function shortenPrompt(
   }
 
   // Remove fillers
-  if (removeFillers) {
+  if (shouldRemoveFillers) {
     result = removeFillers(result, preserveKeywords)
   }
 
   // Simplify sentences
-  if (simplifySentences) {
+  if (shouldSimplifySentences) {
     result = simplifySentences(result)
   }
 

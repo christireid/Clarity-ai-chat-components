@@ -47,6 +47,66 @@ export default function CookbookPage() {
           </div>
         </a>
 
+          <a href="/cookbook/conversation-branching" className="docs-card group">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">🌿</span>
+              <div>
+                <h3>Conversation Branching</h3>
+                <p className="text-sm text-muted-foreground">
+                  Speculative replies with branch visualizer and history management
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                    Blueprint v2.1
+                  </span>
+                  <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                    Branching
+                  </span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a href="/cookbook/latex-markdown" className="docs-card group">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">∑</span>
+              <div>
+                <h3>LaTeX & Markdown Renderer</h3>
+                <p className="text-sm text-muted-foreground">
+                  Render math-heavy answers with KaTeX, syntax highlighting, and copy buttons
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                    Math
+                  </span>
+                  <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                    Markdown
+                  </span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <a href="/cookbook/advanced-export" className="docs-card group">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">📤</span>
+              <div>
+                <h3>Advanced Export Workflows</h3>
+                <p className="text-sm text-muted-foreground">
+                  Export transcripts to PDF, Markdown, HTML, or JSON with analytics and privacy controls
+                </p>
+                <div className="mt-2 flex gap-2">
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                    Export
+                  </span>
+                  <span className="text-xs bg-muted px-2 py-0.5 rounded">
+                    Privacy
+                  </span>
+                </div>
+              </div>
+            </div>
+          </a>
+
         <a href="/cookbook/rag-document-chat" className="docs-card group">
           <div className="flex items-start gap-3">
             <span className="text-2xl">📚</span>

@@ -121,22 +121,29 @@ export const useHapticFeedback = ({
   enabled = true,
 }: UseHapticFeedbackOptions = {}) => {
   const { vibrate } = useHaptic({ enabled })
+  
+  // Store patterns in refs to avoid recreating callbacks
+  const patternsRef = React.useRef({ onSuccess, onError, onWarning, onSelection })
+  
+  React.useLayoutEffect(() => {
+    patternsRef.current = { onSuccess, onError, onWarning, onSelection }
+  }, [onSuccess, onError, onWarning, onSelection])
 
   const triggerSuccess = React.useCallback(() => {
-    vibrate(onSuccess)
-  }, [vibrate, onSuccess])
+    vibrate(patternsRef.current.onSuccess)
+  }, [vibrate])
 
   const triggerError = React.useCallback(() => {
-    vibrate(onError)
-  }, [vibrate, onError])
+    vibrate(patternsRef.current.onError)
+  }, [vibrate])
 
   const triggerWarning = React.useCallback(() => {
-    vibrate(onWarning)
-  }, [vibrate, onWarning])
+    vibrate(patternsRef.current.onWarning)
+  }, [vibrate])
 
   const triggerSelection = React.useCallback(() => {
-    vibrate(onSelection)
-  }, [vibrate, onSelection])
+    vibrate(patternsRef.current.onSelection)
+  }, [vibrate])
 
   return {
     triggerSuccess,

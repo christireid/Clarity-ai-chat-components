@@ -2,8 +2,9 @@ import * as React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
-import type { PluggableList } from 'react-markdown/lib/react-markdown'
 import { cn } from '@clarity-chat/primitives'
+
+type PluggableList = any[] // Simplified type for rehype/remark plugins
 
 /**
  * Configuration for enhanced markdown rendering
@@ -71,6 +72,7 @@ export const EnhancedMarkdownRenderer = React.memo(
     React.useEffect(() => {
       if (enableMermaid && !mermaidInitialized.current && typeof window !== 'undefined') {
         // Dynamically import mermaid only if needed
+        // @ts-expect-error - mermaid is an optional peer dependency
         import('mermaid').then((mermaid) => {
           mermaid.default.initialize({
             startOnLoad: false,
@@ -94,6 +96,7 @@ export const EnhancedMarkdownRenderer = React.memo(
     // Render Mermaid diagrams after content updates
     React.useEffect(() => {
       if (enableMermaid && mermaidInitialized.current && containerRef.current) {
+        // @ts-expect-error - mermaid is an optional peer dependency
         import('mermaid').then((mermaid) => {
           const mermaidElements = containerRef.current?.querySelectorAll('.language-mermaid')
           if (mermaidElements && mermaidElements.length > 0) {
