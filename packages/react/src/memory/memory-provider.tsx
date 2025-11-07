@@ -1,8 +1,8 @@
 /**
  * Memory Provider & Hooks
- * 
+ *
  * React integration for AI Memory & Context system
- * 
+ *
  * Note: This is a React wrapper around the framework-agnostic
  * @clarity-chat/memory package. For non-React usage, import
  * directly from @clarity-chat/memory
@@ -31,7 +31,7 @@ import { MemoryService } from '@clarity-chat/memory'
 interface MemoryContextValue {
   service: MemoryService | null
   isInitialized: boolean
-  
+
   // Core operations
   addMemory: (
     content: string,
@@ -43,24 +43,33 @@ interface MemoryContextValue {
       confidence?: number
     }
   ) => Promise<MemoryItem>
-  
+
   query: (query: MemoryQuery) => Promise<MemorySearchResult[]>
-  
-  updateMemory: (id: string, updates: Partial<MemoryItem>) => Promise<MemoryItem | null>
-  
+
+  updateMemory: (
+    id: string,
+    updates: Partial<MemoryItem>
+  ) => Promise<MemoryItem | null>
+
   deleteMemory: (id: string) => Promise<boolean>
-  
-  promoteMemory: (id: string, targetScope: MemoryScope) => Promise<MemoryItem | null>
-  
+
+  promoteMemory: (
+    id: string,
+    targetScope: MemoryScope
+  ) => Promise<MemoryItem | null>
+
   compressMemory: (id: string, ratio?: number) => Promise<MemoryItem | null>
-  
+
   // Stats and context
   getStats: () => MemoryStats
-  
+
   getContext: () => MemoryContext
-  
+
   // Event subscription
-  subscribe: (eventType: string, listener: (event: MemoryEvent) => void) => () => void
+  subscribe: (
+    eventType: string,
+    listener: (event: MemoryEvent) => void
+  ) => () => void
 }
 
 const MemoryContext = React.createContext<MemoryContextValue | null>(null)
@@ -197,9 +206,9 @@ export const MemoryProvider: React.FC<MemoryProviderProps> = ({
       if (!service) {
         return () => {}
       }
-      
+
       service.on(eventType, listener)
-      
+
       return () => {
         service.off(eventType, listener)
       }
@@ -221,7 +230,9 @@ export const MemoryProvider: React.FC<MemoryProviderProps> = ({
     subscribe,
   }
 
-  return <MemoryContext.Provider value={value}>{children}</MemoryContext.Provider>
+  return (
+    <MemoryContext.Provider value={value}>{children}</MemoryContext.Provider>
+  )
 }
 
 /**
@@ -229,11 +240,11 @@ export const MemoryProvider: React.FC<MemoryProviderProps> = ({
  */
 export function useMemory(): MemoryContextValue {
   const context = React.useContext(MemoryContext)
-  
+
   if (!context) {
     throw new Error('useMemory must be used within a MemoryProvider')
   }
-  
+
   return context
 }
 
@@ -260,7 +271,7 @@ export function useMemoryQuery(
   const refetch = React.useCallback(async () => {
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const results = await queryMemory(query)
       setData(results)
@@ -330,12 +341,14 @@ export function useMemoryEvents(
  * Use Conversation Memory Hook
  * High-level hook for managing conversation memory
  */
-export function useConversationMemory(options: {
-  userId?: string
-  threadId?: string
-  sessionId?: string
-  autoCapture?: boolean
-} = {}) {
+export function useConversationMemory(
+  options: {
+    userId?: string
+    threadId?: string
+    sessionId?: string
+    autoCapture?: boolean
+  } = {}
+) {
   const { addMemory, query, getContext } = useMemory()
   const [context, setContext] = React.useState<MemoryContext | null>(null)
 
@@ -371,16 +384,10 @@ export function useConversationMemory(options: {
         sessionId: options.sessionId,
       }
 
-      return addMemory(
-        content,
-        'episodic',
-        'session',
-        memoryMetadata,
-        {
-          priority: 'medium',
-          confidence: 0.8,
-        }
-      )
+      return addMemory(content, 'episodic', 'session', memoryMetadata, {
+        priority: 'medium',
+        confidence: 0.8,
+      })
     },
     [addMemory, options.userId, options.threadId, options.sessionId]
   )
@@ -389,11 +396,7 @@ export function useConversationMemory(options: {
    * Capture user preference
    */
   const capturePreference = React.useCallback(
-    async (
-      key: string,
-      value: string,
-      metadata: Record<string, any> = {}
-    ) => {
+    async (key: string, value: string, metadata: Record<string, any> = {}) => {
       return addMemory(
         `User preference: ${key} = ${value}`,
         'semantic',
@@ -450,16 +453,13 @@ export function useConversationMemory(options: {
   /**
    * Get user preferences
    */
-  const getPreferences = React.useCallback(
-    async () => {
-      return query({
-        types: ['semantic'],
-        scopes: ['global', 'user'],
-        userId: options.userId,
-      })
-    },
-    [query, options.userId]
-  )
+  const getPreferences = React.useCallback(async () => {
+    return query({
+      types: ['semantic'],
+      scopes: ['global', 'user'],
+      userId: options.userId,
+    })
+  }, [query, options.userId])
 
   return {
     context,
@@ -472,9 +472,9 @@ export function useConversationMemory(options: {
 }
 
 /**
- * Use Token Optimization Hook
+ * Memory-aware optimization helper
  */
-export function useTokenOptimization(options: {
+export function useMemoryOptimization(options: {
   systemPrompt: string
   userPreferences?: Record<string, any>
   recentMessages?: string[]
@@ -496,11 +496,11 @@ export function useTokenOptimization(options: {
 
       // Get semantic and episodic memories
       const semanticMemories = options.includeSemanticMemory
-        ? (await query({ types: ['semantic'], limit: 20 })).map(r => r.memory)
+        ? (await query({ types: ['semantic'], limit: 20 })).map((r) => r.memory)
         : []
 
       const episodicMemories = options.includeEpisodicMemory
-        ? (await query({ types: ['episodic'], limit: 20 })).map(r => r.memory)
+        ? (await query({ types: ['episodic'], limit: 20 })).map((r) => r.memory)
         : []
 
       const result = optimizer.optimizeContext({

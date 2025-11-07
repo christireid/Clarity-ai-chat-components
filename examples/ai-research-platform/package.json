@@ -19,7 +19,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.10.3",
-    "lucide-react": "^0.344.0",
+    "lucide-react": "^0.552.0",
     "framer-motion": "^11.0.0"
   },
   "devDependencies": {

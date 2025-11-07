@@ -20,7 +20,7 @@
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.0",
     "fuse.js": "^7.0.0",
-    "lucide-react": "^0.344.0",
+    "lucide-react": "^0.552.0",
     "next": "14.2.0",
     "next-mdx-remote": "^4.4.1",
     "next-themes": "^0.2.1",

@@ -20,7 +20,7 @@
     "@monaco-editor/react": "^4.6.0",
     "zod": "^3.22.4",
     "zustand": "^4.4.7",
-    "lucide-react": "^0.263.1",
+    "lucide-react": "^0.552.0",
     "prism-react-renderer": "^2.3.1"
   },
   "devDependencies": {
