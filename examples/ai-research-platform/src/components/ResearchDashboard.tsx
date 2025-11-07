@@ -1,14 +1,53 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
 import { TrendingUp, FileText, Clock, Zap } from 'lucide-react'
 
+interface Message {
+  role: string
+  citations?: Array<{ id: string; source: string }>
+}
+
+interface Metrics {
+  tokensSaved?: number
+  totalTokens?: number
+  savingsPercent?: number
+}
+
 interface ResearchDashboardProps {
-  messages: any[]
-  metrics: any
+  messages: Message[]
+  metrics: Metrics
   researchTopic: string
 }
+
+interface StatCardProps {
+  icon: React.ReactNode
+  label: string
+  value: string | number
+  color: 'blue' | 'purple' | 'green' | 'orange'
+}
+
+// Extract and memoize StatCard component
+const StatCard = memo<StatCardProps>(({ icon, label, value, color }) => {
+  const colorClasses = {
+    blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+    purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
+    green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+    orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
+  }
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+      <div className={`w-12 h-12 rounded-lg ${colorClasses[color]} flex items-center justify-center mb-4`}>
+        {icon}
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{label}</p>
+      <p className="text-2xl font-bold">{value}</p>
+    </div>
+  )
+})
+StatCard.displayName = 'StatCard'
 
 export function ResearchDashboard({ messages, metrics, researchTopic }: ResearchDashboardProps) {
   const stats = useMemo(() => {
@@ -25,19 +64,20 @@ export function ResearchDashboard({ messages, metrics, researchTopic }: Research
     }
   }, [messages])
 
-  const chartData = [
+  // Memoize chart data to prevent recreation
+  const chartData = useMemo(() => [
     { name: 'Researcher', value: 45, color: '#6366f1' },
     { name: 'Analyst', value: 30, color: '#8b5cf6' },
     { name: 'Writer', value: 25, color: '#ec4899' },
-  ]
+  ], [])
 
-  const timelineData = [
+  const timelineData = useMemo(() => [
     { time: '00:00', queries: 12 },
     { time: '01:00', queries: 19 },
     { time: '02:00', queries: 8 },
     { time: '03:00', queries: 15 },
     { time: '04:00', queries: 22 },
-  ]
+  ], [])
 
   return (
     <div className="h-full overflow-y-auto p-6 bg-gray-50 dark:bg-gray-900">
@@ -144,25 +184,6 @@ export function ResearchDashboard({ messages, metrics, researchTopic }: Research
           </div>
         )}
       </div>
-    </div>
-  )
-}
-
-function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string | number; color: string }) {
-  const colorClasses = {
-    blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
-    purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
-    green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
-    orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
-  }
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-      <div className={`w-12 h-12 rounded-lg ${colorClasses[color as keyof typeof colorClasses]} flex items-center justify-center mb-4`}>
-        {icon}
-      </div>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{label}</p>
-      <p className="text-2xl font-bold">{value}</p>
     </div>
   )
 }
