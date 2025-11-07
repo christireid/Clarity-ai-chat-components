@@ -411,10 +411,56 @@ export interface MemoryServiceConfig {
     thread: number
     /** Global memory TTL (seconds, 0 = never expires) */
     global: number
+    /** User memory TTL (seconds) */
+    user: number
   }
   
   /** Enable debug logging */
   debug?: boolean
+}
+
+/**
+ * Embedding provider interface (framework-agnostic)
+ */
+export interface EmbeddingProvider {
+  embedText(text: string): Promise<number[]>
+}
+
+/**
+ * Vector store types (framework-agnostic)
+ */
+export interface VectorMatch {
+  id: string
+  score: number
+  values: number[]
+  metadata?: Record<string, any>
+}
+
+export interface VectorQuery {
+  vector: number[]
+  topK: number
+  minScore: number
+  filter?: Record<string, any>
+  namespace?: string
+  includeMetadata?: boolean
+}
+
+export interface VectorUpsertVector {
+  id: string
+  values: number[]
+  metadata?: Record<string, any>
+}
+
+export interface VectorUpsertOptions {
+  namespace?: string
+  batchSize?: number
+}
+
+export interface VectorStore {
+  initialize(): Promise<void>
+  query(input: VectorQuery): Promise<VectorMatch[]>
+  upsert(vectors: VectorUpsertVector[], options?: VectorUpsertOptions): Promise<void>
+  delete(ids: string[], namespace?: string): Promise<void>
 }
 
 /**

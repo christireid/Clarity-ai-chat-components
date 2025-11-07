@@ -51,6 +51,9 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
+    "@clarity-chat/memory": "^0.1.0",
+    "@clarity-chat/primitives": "^0.1.0",
+    "mermaid": "^10.9.0",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

@@ -24,8 +24,7 @@ import type {
   MemoryBuffer,
   MemoryContext,
 } from './types'
-import type { VectorStore } from '../vector-stores/types'
-import type { EmbeddingProvider } from '../embeddings/types'
+import type { VectorStore, EmbeddingProvider, VectorMatch } from './types'
 import { TokenCounter, ContextOptimizer } from './token-optimizer'
 
 /**
@@ -239,7 +238,7 @@ export class MemoryService {
         includeMetadata: true,
       })
 
-      return matches.map(match => ({
+      return matches.map((match: VectorMatch) => ({
         memory: this.cache.get(match.id) || this.createMemoryFromMatch(match),
         relevance: match.score,
         distance: 1 - match.score,
@@ -714,7 +713,7 @@ export class MemoryService {
     return priorities[Math.min(index + 1, priorities.length - 1)]
   }
 
-  private createMemoryFromMatch(match: any): MemoryItem {
+  private createMemoryFromMatch(match: VectorMatch): MemoryItem {
     return {
       id: match.id,
       type: match.metadata?.type || 'episodic',

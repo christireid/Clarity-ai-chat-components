@@ -290,6 +290,7 @@ export * from './hooks/use-haptic'
 
 // Token Optimization Components
 export * from './components/token-optimization-dashboard'
+export * from './components/token-optimization-badge'
 
 // Token Optimization Hooks
 export * from './hooks/use-prompt-compression'
