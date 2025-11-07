@@ -393,21 +393,21 @@ export function exportToHTML(
 }
 
 function escapeHtml(text: string): string {
-  // SSR-safe HTML escaping
-  if (typeof document === 'undefined') {
-    // Server-side: use string replacement
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
+  // SSR-safe HTML escaping - try DOM first, fallback to string replacement
+  if (typeof document !== 'undefined') {
+    // Client-side: use DOM API
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
   }
   
-  // Client-side: use DOM API
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
+  // Server-side: use string replacement
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 // ============================================================================

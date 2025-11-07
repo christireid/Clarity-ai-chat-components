@@ -32,16 +32,9 @@ export function useMediaQuery(query: string): boolean {
     // (in case query changed and mediaQuery.matches differs)
     setMatches(mediaQuery.matches)
 
-    // Modern browsers
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', handleChange)
-      return () => mediaQuery.removeEventListener('change', handleChange)
-    }
-    // Legacy browsers (Safari <14, IE)
-    else {
-      mediaQuery.addListener(handleChange)
-      return () => mediaQuery.removeListener(handleChange)
-    }
+    // Modern browsers (addListener/removeListener are deprecated)
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
   }, [query])
 
   return matches

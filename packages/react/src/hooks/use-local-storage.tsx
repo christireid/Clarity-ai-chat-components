@@ -42,10 +42,15 @@ export function useLocalStorage<T>(
     initializeWithValue = true,
   } = options
 
-  // Get initial value
+  // Stabilize initial value for SSR and re-renders
+  const initialRef = React.useRef<T>(
+    initialValue instanceof Function ? (initialValue as () => T)() : initialValue
+  )
+
+  // Get current value from storage or fallback
   const readValue = React.useCallback((): T => {
     if (typeof window === 'undefined') {
-      return initialValue instanceof Function ? initialValue() : initialValue
+      return initialRef.current
     }
 
     try {
@@ -53,18 +58,18 @@ export function useLocalStorage<T>(
       if (item) {
         return deserializer(item)
       }
-      return initialValue instanceof Function ? initialValue() : initialValue
+      return initialRef.current
     } catch (error) {
       console.warn(`Error reading localStorage key "${key}":`, error)
-      return initialValue instanceof Function ? initialValue() : initialValue
+      return initialRef.current
     }
-  }, [key, initialValue, deserializer])
+  }, [key, deserializer])
 
   // State to store our value
   // Use lazy initialization to avoid calling readValue on every render
   const [storedValue, setStoredValue] = React.useState<T>(() => {
     if (!initializeWithValue) {
-      return initialValue instanceof Function ? initialValue() : initialValue
+      return initialRef.current
     }
     return readValue()
   })
@@ -107,21 +112,23 @@ export function useLocalStorage<T>(
 
     try {
       window.localStorage.removeItem(key)
-      const resetValue = initialValue instanceof Function ? initialValue() : initialValue
-      setStoredValue(resetValue)
+      setStoredValue(initialRef.current)
       window.dispatchEvent(new Event('local-storage'))
     } catch (error) {
       console.warn(`Error removing localStorage key "${key}":`, error)
     }
-  }, [key, initialValue])
+  }, [key])
 
   // Sync state across tabs
   React.useEffect(() => {
     if (typeof window === 'undefined') return
 
     const handleStorageChange = (e: StorageEvent | Event) => {
-      if ((e as StorageEvent)?.key && (e as StorageEvent).key !== key) {
-        return
+      // Only react to relevant keys and localStorage area
+      if (typeof window !== 'undefined' && 'key' in (e as StorageEvent)) {
+        const se = e as StorageEvent
+        if (se.storageArea && se.storageArea !== window.localStorage) return
+        if (se.key !== null && se.key !== key) return
       }
       // Use readValue directly to avoid stale closure
       try {
@@ -129,7 +136,7 @@ export function useLocalStorage<T>(
         if (item) {
           setStoredValue(deserializer(item))
         } else {
-          setStoredValue(initialValue instanceof Function ? initialValue() : initialValue)
+          setStoredValue(initialRef.current)
         }
       } catch (error) {
         console.warn(`Error reading localStorage key "${key}":`, error)
@@ -145,7 +152,7 @@ export function useLocalStorage<T>(
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('local-storage', handleStorageChange)
     }
-  }, [key, deserializer, initialValue])
+  }, [key, deserializer])
 
   return [storedValue, setValue, removeValue]
 }

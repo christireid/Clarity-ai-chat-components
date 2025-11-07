@@ -62,6 +62,7 @@ export function useEventListener<
 
   React.useEffect(() => {
     // Define the listening target
+    if (typeof window === 'undefined') return
     const targetElement: T | Window = element?.current ?? window
 
     if (!(targetElement && targetElement.addEventListener)) return

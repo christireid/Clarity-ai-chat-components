@@ -18,14 +18,14 @@ import * as React from 'react'
 export function useThrottle<T>(value: T, delay: number = 500): T {
   const [throttledValue, setThrottledValue] = React.useState<T>(value)
   const lastRan = React.useRef<number>(Date.now())
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   React.useEffect(() => {
     const now = Date.now()
     const timeSinceLastRun = now - lastRan.current
 
     // Clear any existing timeout
-    if (timeoutRef.current) {
+    if (timeoutRef.current !== undefined) {
       clearTimeout(timeoutRef.current)
     }
 
@@ -43,7 +43,7 @@ export function useThrottle<T>(value: T, delay: number = 500): T {
     }
 
     return () => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
       }
     }
@@ -73,7 +73,7 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
   delay: number = 500
 ): (...args: Parameters<T>) => void {
   const lastRan = React.useRef<number>(0)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const callbackRef = React.useRef(callback)
 
   // Keep callback ref up to date
@@ -84,7 +84,7 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
       }
     }
@@ -96,7 +96,7 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
       const timeSinceLastRun = now - lastRan.current
 
       // Clear any pending timeout
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
         timeoutRef.current = undefined
       }

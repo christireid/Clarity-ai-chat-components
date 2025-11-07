@@ -69,7 +69,8 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number = 500
 ): (...args: Parameters<T>) => void {
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  // Use ReturnType<typeof setTimeout> for cross-env typing (browser/node)
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const callbackRef = React.useRef(callback)
 
   // Keep callback ref up to date without causing re-renders
@@ -80,7 +81,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
       }
     }
@@ -88,7 +89,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
 
   return React.useCallback(
     (...args: Parameters<T>) => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
       }
 

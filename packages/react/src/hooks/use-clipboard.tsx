@@ -54,7 +54,7 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
 
   const [value, setValue] = useState<string>('')
   const [copied, setCopied] = useState<boolean>(false)
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   
   // Store callbacks in refs to avoid recreating copy function
   const onSuccessRef = useRef(onSuccess)
@@ -69,11 +69,11 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
     async (text: string) => {
       try {
         // Modern clipboard API
-        if (navigator?.clipboard?.writeText) {
+        if (typeof navigator !== 'undefined' && navigator?.clipboard?.writeText) {
           await navigator.clipboard.writeText(text)
         }
-        // Fallback for older browsers
-        else {
+        // Fallback for older browsers or non-secure contexts
+        else if (typeof document !== 'undefined') {
           const textArea = document.createElement('textarea')
           textArea.value = text
           textArea.style.position = 'fixed'
@@ -88,6 +88,8 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
           } finally {
             textArea.remove()
           }
+        } else {
+          throw new Error('Clipboard API not available')
         }
 
         setValue(text)
@@ -95,7 +97,7 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
         onSuccessRef.current?.()
 
         // Reset after timeout
-        if (timeoutRef.current) {
+        if (timeoutRef.current !== undefined) {
           clearTimeout(timeoutRef.current)
         }
         timeoutRef.current = setTimeout(() => {
@@ -113,7 +115,7 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
 
   const reset = useCallback(() => {
     setCopied(false)
-    if (timeoutRef.current) {
+    if (timeoutRef.current !== undefined) {
       clearTimeout(timeoutRef.current)
       timeoutRef.current = undefined
     }
@@ -121,7 +123,7 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
       }
     }

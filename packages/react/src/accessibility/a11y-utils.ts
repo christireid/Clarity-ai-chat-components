@@ -8,7 +8,9 @@
  * Generate unique ID for ARIA attributes
  */
 export function generateAriaId(prefix: string = 'aria'): string {
-  return `${prefix}-${Math.random().toString(36).substring(2, 11)}`
+  const rand = Math.random().toString(36).substring(2, 11)
+  const time = typeof performance !== 'undefined' && performance.now ? Math.floor(performance.now()).toString(36) : ''
+  return `${prefix}-${time}${time ? '-' : ''}${rand}`
 }
 
 /**
@@ -18,18 +20,21 @@ export function announceToScreenReader(
   message: string,
   priority: 'polite' | 'assertive' = 'polite'
 ): void {
+  if (typeof document === 'undefined') return
   const announcement = document.createElement('div')
   announcement.setAttribute('role', 'status')
   announcement.setAttribute('aria-live', priority)
   announcement.setAttribute('aria-atomic', 'true')
   announcement.className = 'sr-only'
   announcement.textContent = message
-  
+
   document.body.appendChild(announcement)
-  
+
   // Remove after announcement
   setTimeout(() => {
-    document.body.removeChild(announcement)
+    if (announcement.parentNode) {
+      announcement.parentNode.removeChild(announcement)
+    }
   }, 1000)
 }
 
@@ -37,11 +42,13 @@ export function announceToScreenReader(
  * Check if element is visible to screen readers
  */
 export function isVisibleToScreenReader(element: HTMLElement): boolean {
+  if (typeof window === 'undefined') return true
+  const style = window.getComputedStyle(element)
   return (
     !element.hidden &&
     element.getAttribute('aria-hidden') !== 'true' &&
-    window.getComputedStyle(element).visibility !== 'hidden' &&
-    window.getComputedStyle(element).display !== 'none'
+    style.visibility !== 'hidden' &&
+    style.display !== 'none'
   )
 }
 
@@ -56,12 +63,14 @@ export function getAccessibleName(element: HTMLElement): string {
   // Check aria-labelledby
   const labelledBy = element.getAttribute('aria-labelledby')
   if (labelledBy) {
+    if (typeof document === 'undefined') return ''
     const labelElement = document.getElementById(labelledBy)
     if (labelElement) return labelElement.textContent || ''
   }
   
   // Check associated label
   if (element.id) {
+    if (typeof document === 'undefined') return ''
     const label = document.querySelector(`label[for="${element.id}"]`)
     if (label) return label.textContent || ''
   }
@@ -74,6 +83,10 @@ export function getAccessibleName(element: HTMLElement): string {
  * Create live region for announcements
  */
 export function createLiveRegion(id: string = 'live-region'): HTMLElement {
+  if (typeof document === 'undefined') {
+    // @ts-expect-error SSR fallback: no element available
+    return {}
+  }
   let region = document.getElementById(id)
   
   if (!region) {
