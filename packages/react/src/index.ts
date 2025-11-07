@@ -46,7 +46,8 @@ export * from './rbac'
 // Export all components
 export * from './components/message'
 export * from './components/message-metadata'
-export * from './components/message-list'
+// Note: MessageList is exported from virtualized-message-list below (smarter auto-virtualizing version)
+// export * from './components/message-list'
 export * from './components/chat-input'
 export * from './components/advanced-chat-input'
 export * from './components/chat-window'
@@ -139,6 +140,7 @@ export * from './hooks/use-mounted'
 export * from './hooks/use-previous'
 export * from './hooks/use-toggle'
 export * from './hooks/use-window-size'
+export * from './hooks/use-element-size'
 
 // Phase 3 Enhancement - Error Recovery & Token Tracking
 export * from './hooks/use-error-recovery'
@@ -162,21 +164,13 @@ export * from './hooks/use-deferred-search'
 // Utility Functions (Model Fallback, Context Window, Rate Limiting, Hybrid Search, etc.)
 export * from './utils'
 
-// StreamableValue utilities (Vercel AI SDK compatible)
-export * from './utils/streamable-value'
-
-// Chat helper utilities
-export * from './utils/chat-helpers'
-
-// Streaming parser utilities
-export * from './utils/streaming-parser'
-
-// Performance utilities
-export * from './utils/performance'
-export * from './utils/performance-optimization'
-
-// v2.1 Blueprint Features - Advanced Export Utilities
-export * from './utils/export-utils'
+// Note: The following are already exported via './utils' above
+// Kept here as documentation of what's available:
+// - StreamableValue utilities (./utils/streamable-value)
+// - Chat helpers (./utils/chat-helpers)
+// - Streaming parser (./utils/streaming-parser)
+// - Performance utilities (./utils/performance, ./utils/performance-optimization)
+// - Export utilities (./utils/export-utils)
 
 // Enhanced TypeScript types
 export * from './types/chat-types'
@@ -230,8 +224,8 @@ export * from './analytics'
 // AI Features
 export * from './ai'
 
-// AI Memory & Context System
-export * from './memory'
+// Note: Memory system already exported via './utils' -> './utils/memory'
+// Kept here as documentation: AI Memory & Context System (./memory)
 
 // Error Tracking System
 export * from './error'

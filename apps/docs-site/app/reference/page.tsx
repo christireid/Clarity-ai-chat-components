@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Box, Anchor, Code, Palette } from 'lucide-react'
+import { Box, Anchor, Code, Palette, Server } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'API Reference',
@@ -54,6 +54,14 @@ const sections = [
     items: [
       { title: 'Theme Configuration', href: '/learn/concepts/theming', description: 'Create custom themes' },
       { title: 'CSS Variables', href: '/learn/guides/styling', description: 'Available CSS variables' },
+    ],
+  },
+  {
+    title: 'Services',
+    icon: Server,
+    description: 'Cross-framework packages and context services',
+    items: [
+      { title: 'MemoryService', href: '/reference/services/memory-service', description: 'AI memory & context orchestration' },
     ],
   },
 ]

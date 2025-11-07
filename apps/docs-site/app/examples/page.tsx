@@ -32,30 +32,42 @@ const examples = [
       },
     ],
   },
-  {
-    title: 'Advanced Features',
-    icon: Zap,
-    examples: [
-      {
-        title: 'Multi-user Chat',
-        href: '/examples/multi-user',
-        description: 'Group chat with multiple participants',
-        difficulty: 'Intermediate',
-      },
-      {
-        title: 'File Sharing',
-        href: '/examples/file-sharing',
-        description: 'Upload and share files in chat',
-        difficulty: 'Advanced',
-      },
-      {
-        title: 'Real-time Updates',
-        href: '/examples/realtime',
-        description: 'WebSocket integration for live chat',
-        difficulty: 'Advanced',
-      },
-    ],
-  },
+    {
+      title: 'Advanced Features',
+      icon: Zap,
+      examples: [
+        {
+          title: 'Multi-user Chat',
+          href: '/examples/multi-user',
+          description: 'Group chat with multiple participants',
+          difficulty: 'Intermediate',
+        },
+        {
+          title: 'File Sharing',
+          href: '/examples/file-sharing',
+          description: 'Upload and share files in chat',
+          difficulty: 'Advanced',
+        },
+        {
+          title: 'Real-time Updates',
+          href: '/examples/realtime',
+          description: 'WebSocket integration for live chat',
+          difficulty: 'Advanced',
+        },
+        {
+          title: 'Conversation Branching',
+          href: '/examples/conversation-branching',
+          description: 'Claude-style speculative replies with branching tree',
+          difficulty: 'Advanced',
+        },
+        {
+          title: 'Virtualized Transcript',
+          href: '/examples/virtualized-chat',
+          description: 'Render 5k+ messages with virtualization and jump-to-bottom',
+          difficulty: 'Intermediate',
+        },
+      ],
+    },
   {
     title: 'Interactive Patterns',
     icon: Command,

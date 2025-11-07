@@ -3,7 +3,6 @@
  * Browse and select component templates
  */
 
-import { templates } from '../templates'
 
 interface ComponentLibraryProps {
   selectedTemplate: string

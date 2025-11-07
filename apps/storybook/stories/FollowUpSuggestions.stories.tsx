@@ -2,6 +2,26 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { FollowUpSuggestions } from '@clarity-chat/react'
 import type { FollowUpSuggestion } from '@clarity-chat/react'
 
+/**
+ * **FollowUpSuggestions Component**
+ * 
+ * Display contextual follow-up suggestions to keep conversations flowing.
+ * Supports grid and list layouts with loading states.
+ * 
+ * **Key Features:**
+ * - Contextual suggestions based on conversation
+ * - Grid and list layouts
+ * - Loading states
+ * - Confidence scores
+ * - Keyword matching
+ * - Accessible with keyboard navigation
+ * 
+ * **Use Cases:**
+ * - Chat interfaces
+ * - AI assistants
+ * - Conversation flows
+ * - User guidance
+ */
 const meta: Meta<typeof FollowUpSuggestions> = {
   title: 'Components/FollowUpSuggestions',
   component: FollowUpSuggestions,
@@ -9,11 +29,58 @@ const meta: Meta<typeof FollowUpSuggestions> = {
   parameters: {
     docs: {
       description: {
-        component:
-          'Display contextual follow-up suggestions to keep conversations flowing. Supports grid and list layouts with loading states.',
+        component: `
+Display contextual follow-up suggestions to keep conversations flowing.
+Supports grid and list layouts with loading states.
+
+## Features
+
+- ✅ Contextual suggestions based on conversation
+- ✅ Grid and list layouts
+- ✅ Loading states
+- ✅ Confidence scores
+- ✅ Keyword matching
+- ✅ Accessible with keyboard navigation
+- ✅ Smooth animations
+
+## Basic Usage
+
+\`\`\`tsx
+<FollowUpSuggestions
+  suggestions={suggestions}
+  onSelect={(suggestion) => {
+    console.log('Selected:', suggestion)
+  }}
+  layout="grid"
+/>
+\`\`\`
+        `,
       },
     },
     layout: 'padded',
+  },
+  argTypes: {
+    suggestions: {
+      description: 'Array of follow-up suggestions',
+      control: { type: 'object' },
+    },
+    onSelect: {
+      description: 'Callback when a suggestion is selected',
+      action: 'suggestion-selected',
+    },
+    layout: {
+      description: 'Layout type (grid or list)',
+      control: 'select',
+      options: ['grid', 'list'],
+    },
+    isLoading: {
+      description: 'Show loading state',
+      control: 'boolean',
+    },
+    maxSuggestions: {
+      description: 'Maximum number of suggestions to display',
+      control: { type: 'number', min: 1, max: 10 },
+    },
   },
 }
 

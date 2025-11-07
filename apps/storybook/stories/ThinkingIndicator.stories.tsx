@@ -2,6 +2,26 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { ThinkingIndicator } from '@clarity-chat/react'
 import type { ThinkingStage } from '@clarity-chat/types'
 
+/**
+ * **ThinkingIndicator Component**
+ * 
+ * Animated thinking indicator showing AI processing stages
+ * with progress tracking and estimated time.
+ * 
+ * **Key Features:**
+ * - Multiple thinking stages (thinking, researching, compiling, generating, finalizing)
+ * - Progress percentage display
+ * - Estimated time remaining
+ * - Topic and detail text
+ * - Smooth animations
+ * - Accessible with ARIA labels
+ * 
+ * **Use Cases:**
+ * - AI response generation
+ * - Long-running operations
+ * - Processing indicators
+ * - Status feedback
+ */
 const meta: Meta<typeof ThinkingIndicator> = {
   title: 'Components/ThinkingIndicator',
   component: ThinkingIndicator,
@@ -9,11 +29,59 @@ const meta: Meta<typeof ThinkingIndicator> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Animated thinking indicator showing AI processing stages.',
+        component: `
+Animated thinking indicator showing AI processing stages
+with progress tracking and estimated time.
+
+## Features
+
+- ✅ Multiple thinking stages (thinking, researching, compiling, generating, finalizing)
+- ✅ Progress percentage display
+- ✅ Estimated time remaining
+- ✅ Topic and detail text
+- ✅ Smooth animations
+- ✅ Accessible with ARIA labels
+- ✅ Visual feedback for different stages
+
+## Basic Usage
+
+\`\`\`tsx
+<ThinkingIndicator
+  stage="generating"
+  progress={65}
+  estimatedTime={10}
+  topic="React Tutorial"
+  detail="Creating code examples"
+/>
+\`\`\`
+        `,
       },
     },
   },
   tags: ['autodocs'],
+  argTypes: {
+    stage: {
+      description: 'Current thinking stage',
+      control: 'select',
+      options: ['thinking', 'researching', 'compiling', 'generating', 'finalizing'],
+    },
+    progress: {
+      description: 'Progress percentage (0-100)',
+      control: { type: 'number', min: 0, max: 100 },
+    },
+    estimatedTime: {
+      description: 'Estimated time remaining in seconds',
+      control: { type: 'number', min: 0, max: 300 },
+    },
+    topic: {
+      description: 'Topic or subject being processed',
+      control: 'text',
+    },
+    detail: {
+      description: 'Additional detail about current operation',
+      control: 'text',
+    },
+  },
 }
 
 export default meta

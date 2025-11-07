@@ -10,7 +10,6 @@ import {
   DialogFooter,
   Button,
   Badge,
-  Checkbox,
   cn,
 } from '@clarity-chat/primitives'
 import { Progress } from './progress'
@@ -212,10 +211,12 @@ export const BatchExportDialog = React.memo(function BatchExportDialog({
                         isSelected && 'bg-primary/5'
                       )}
                     >
-                      <Checkbox
+                      <input
+                        type="checkbox"
                         checked={isSelected}
-                        onCheckedChange={() => handleToggleResource(resource.id)}
+                        onChange={() => handleToggleResource(resource.id)}
                         disabled={isExporting}
+                        className="h-4 w-4 rounded border"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">

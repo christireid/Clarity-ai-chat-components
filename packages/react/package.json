@@ -35,7 +35,7 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "tsup && node -e \"require('fs').writeFileSync('dist/index.d.ts', 'export * from \\\"./index\\\";\\nexport * from \\\"@clarity-chat/types\\\";\\n')\"",
+    "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",

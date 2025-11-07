@@ -4,10 +4,11 @@ import {
   Textarea,
   Button,
   cn,
-  type ButtonState,
 } from '@clarity-chat/primitives'
 import { SendIcon } from './icons'
 import { FeedbackAnimations } from '../animations/microanimations'
+import { useCharacterCounter } from '../hooks/use-character-counter'
+import { useSubmitButtonState } from '../hooks/use-submit-button-state'
 
 export interface ChatInputProps {
   value: string
@@ -28,6 +29,23 @@ export interface ChatInputProps {
   className?: string
 }
 
+// Memoized focus ring glow animation variants
+const createContainerVariants = (glowOnFocus: boolean) => ({
+  idle: {
+    boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
+  },
+  focused: glowOnFocus
+    ? {
+        boxShadow: [
+          '0 0 0 0 hsl(var(--primary) / 0)',
+          '0 0 0 4px hsl(var(--primary) / 0.15)',
+          '0 0 0 4px hsl(var(--primary) / 0.15)',
+        ],
+        transition: { duration: 0.3, ease: 'easeOut' },
+      }
+    : {},
+})
+
 export const ChatInput = React.memo(function ChatInput({
   value,
   onChange,
@@ -42,87 +60,66 @@ export const ChatInput = React.memo(function ChatInput({
   className,
 }: ChatInputProps) {
   const [isFocused, setIsFocused] = React.useState(false)
-  const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
-  const charCount = value.length
-  const isOverLimit = maxLength ? charCount > maxLength : false
-  const isNearLimit = maxLength
-    ? charCount >= maxLength * warningThreshold
-    : false
-  const hasContent = value.trim().length > 0
+  // Use character counter hook
+  const {
+    charCount,
+    isOverLimit,
+    isNearLimit,
+    hasContent,
+    counterColor,
+    progressColor,
+    progressPercentage,
+  } = useCharacterCounter({
+    value,
+    maxLength,
+    warningThreshold,
+  })
 
-  // Calculate character counter color
-  const getCounterColor = () => {
-    if (isOverLimit) return 'text-destructive font-semibold'
-    if (isNearLimit) return 'text-[hsl(var(--warning))] font-medium'
-    if (charCount > 0) return 'text-primary'
-    return 'text-muted-foreground'
-  }
+  // Use submit button state hook
+  const { buttonState, handleSubmit } = useSubmitButtonState({
+    onSubmit,
+    value,
+    disabled,
+    isOverLimit,
+  })
 
-  // Calculate progress bar color
-  const getProgressColor = () => {
-    if (isOverLimit) return 'bg-destructive'
-    if (isNearLimit) return 'bg-[hsl(var(--warning))]'
-    return 'bg-primary'
-  }
+  // Memoized container variants
+  const containerVariants = React.useMemo(
+    () => createContainerVariants(glowOnFocus),
+    [glowOnFocus]
+  )
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      if (value.trim() && !isOverLimit) {
-        handleSubmit()
-      } else if (isOverLimit) {
-        // Shake animation for error feedback
-        textareaRef.current?.animate(
-          [
-            { transform: 'translateX(0)' },
-            { transform: 'translateX(-8px)' },
-            { transform: 'translateX(8px)' },
-            { transform: 'translateX(-8px)' },
-            { transform: 'translateX(8px)' },
-            { transform: 'translateX(0)' },
-          ],
-          { duration: 400, easing: 'ease-in-out' }
-        )
-      }
-    }
-  }
-
-  const handleSubmit = async () => {
-    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading')
-      return
-
-    setButtonState('loading')
-    try {
-      await onSubmit(value)
-      setButtonState('success')
-      // Auto-reset after showing success
-      setTimeout(() => setButtonState('idle'), 1000)
-    } catch (error) {
-      setButtonState('error')
-      console.error('[ChatInput] Submit error:', error)
-      // Auto-reset after showing error
-      setTimeout(() => setButtonState('idle'), 2000)
-    }
-  }
-
-  // Focus ring glow animation variants
-  const containerVariants = {
-    idle: {
-      boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
-    },
-    focused: glowOnFocus
-      ? {
-          boxShadow: [
-            '0 0 0 0 hsl(var(--primary) / 0)',
-            '0 0 0 4px hsl(var(--primary) / 0.15)',
-            '0 0 0 4px hsl(var(--primary) / 0.15)',
-          ],
-          transition: { duration: 0.3, ease: 'easeOut' },
+  // Memoized keyboard handler
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        if (value.trim() && !isOverLimit) {
+          handleSubmit()
+        } else if (isOverLimit) {
+          // Shake animation for error feedback
+          textareaRef.current?.animate(
+            [
+              { transform: 'translateX(0)' },
+              { transform: 'translateX(-8px)' },
+              { transform: 'translateX(8px)' },
+              { transform: 'translateX(-8px)' },
+              { transform: 'translateX(8px)' },
+              { transform: 'translateX(0)' },
+            ],
+            { duration: 400, easing: 'ease-in-out' }
+          )
         }
-      : {},
-  }
+      }
+    },
+    [value, isOverLimit, handleSubmit]
+  )
+
+  // Memoized focus handlers
+  const handleFocus = React.useCallback(() => setIsFocused(true), [])
+  const handleBlur = React.useCallback(() => setIsFocused(false), [])
 
   return (
     <motion.div
@@ -144,10 +141,12 @@ export const ChatInput = React.memo(function ChatInput({
           <Textarea
             ref={textareaRef}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              onChange(e.target.value)
+            }
             onKeyDown={handleKeyDown}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             placeholder={placeholder}
             disabled={disabled}
             maxLength={maxLength}
@@ -174,10 +173,10 @@ export const ChatInput = React.memo(function ChatInput({
                   {/* Progress bar */}
                   <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
                     <motion.div
-                      className={cn('h-full', getProgressColor())}
+                      className={cn('h-full', progressColor)}
                       initial={{ width: 0 }}
                       animate={{
-                        width: `${Math.min((charCount / maxLength) * 100, 100)}%`,
+                        width: `${progressPercentage}%`,
                       }}
                       transition={{ duration: 0.2 }}
                     />
@@ -185,7 +184,7 @@ export const ChatInput = React.memo(function ChatInput({
 
                   {/* Counter text */}
                   <motion.div
-                    className={cn('text-xs tabular-nums', getCounterColor())}
+                    className={cn('text-xs tabular-nums', counterColor)}
                     animate={isOverLimit ? FeedbackAnimations.pulse : {}}
                   >
                     {charCount}/{maxLength}

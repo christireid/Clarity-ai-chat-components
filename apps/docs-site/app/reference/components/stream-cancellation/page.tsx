@@ -1,12 +1,37 @@
-import type { Metadata } from 'next'
-export const metadata: Metadata = { title: 'Stream Cancellation | Clarity Chat', description: 'Cancel button for active streaming operations.' }
-export default function StreamCancellationPage() {
-  return (<div className="max-w-5xl mx-auto px-4 py-8"><h1 className="text-4xl font-bold mb-4">Stream Cancellation</h1><p className="text-xl text-muted-foreground mb-8">Accessible cancel button for stopping active streams with optional progress indicator.</p><section className="mb-12"><h2 className="text-3xl font-semibold mb-4">Usage</h2><pre className="bg-muted p-4 rounded-lg overflow-x-auto"><code>{`import { StreamCancellation } from '@clarity-chat/react'
+import React from 'react'
+import { Metadata } from 'next'
+import { LiveDemo } from '@/components/Demo/LiveDemo'
 
-<StreamCancellation
-  isStreaming={status === 'streaming'}
-  onCancel={() => disconnect()}
-  showProgress={true}
-  progressMessage="Generating response..."
-/>`}</code></pre></section></div>)
+export const metadata: Metadata = {
+  title: 'StreamCancellation - Clarity Chat Components',
+  description: 'Provide stop/cancel controls for active streams.',
+}
+
+export default function StreamCancellationPage() {
+  return (
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Component</span>
+        <h1>StreamCancellation</h1>
+        <p className="docs-lead">Allows users to cancel active generations and recover gracefully.</p>
+      </div>
+
+      <section className="docs-section">
+        <h2>Basic Usage</h2>
+        <LiveDemo
+          title="Example"
+          code={`import { StreamCancellation } from '@clarity-chat/react'
+
+export default function Example() {
+  return (
+    <div className="p-4">
+      <StreamCancellation />
+    </div>
+  )
+}`} 
+          height="160px"
+        />
+      </section>
+    </div>
+  )
 }

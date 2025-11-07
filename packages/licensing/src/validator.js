@@ -32,8 +32,6 @@ export async function validateLicense(key, config) {
 /**
  * Validate with API endpoint
  */
-/* eslint-env node, browser */
-/* global fetch, process */
 async function validateWithAPI(key, endpoint) {
     try {
         const response = await fetch(endpoint, {

@@ -5,7 +5,7 @@
  * Can save 40-60% on costs by using cheaper models for simple queries.
  */
 
-export interface ModelConfig {
+export interface RouteModelConfig {
   /** Model identifier */
   id: string
   /** Model name */
@@ -35,7 +35,7 @@ export interface QueryComplexity {
 
 export interface RoutingDecision {
   /** Selected model */
-  model: ModelConfig
+  model: RouteModelConfig
   /** Query complexity analysis */
   complexity: QueryComplexity
   /** Estimated cost with this model */
@@ -49,7 +49,7 @@ export interface RoutingDecision {
 /**
  * Common model configurations
  */
-export const COMMON_MODELS: ModelConfig[] = [
+export const COMMON_MODELS: RouteModelConfig[] = [
   // OpenAI Models
   {
     id: 'gpt-3.5-turbo',
@@ -214,7 +214,7 @@ export function analyzeComplexity(query: string, context?: string[]): QueryCompl
 export function routeQuery(
   query: string,
   options: {
-    availableModels?: ModelConfig[]
+    availableModels?: RouteModelConfig[]
     context?: string[]
     preferProvider?: string
     maxCost?: number
@@ -324,7 +324,7 @@ export class ModelRouter {
   }[] = []
 
   constructor(
-    private availableModels: ModelConfig[] = COMMON_MODELS,
+    private availableModels: RouteModelConfig[] = COMMON_MODELS,
     private options: {
       preferProvider?: string
       maxCost?: number

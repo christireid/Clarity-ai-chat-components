@@ -9,10 +9,14 @@
  * @status NEW - Implementation based on blueprint analysis
  */
 
-import React, { useRef, useEffect, useState, useCallback } from 'react'
+import React, { useRef, useEffect, useState, useCallback, useReducer } from 'react'
 import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { Message } from '@clarity-chat/types'
+
+// Type assertions for React 18/19 compatibility
+const AutoSizerComponent = AutoSizer as any
+const ListComponent = List as any
 
 // ============================================================================
 // Types
@@ -136,7 +140,8 @@ export function VirtualizedMessageList({
 }: VirtualizedMessageListProps) {
   const listRef = useRef<List>(null)
   const heightCacheRef = useRef(new MessageHeightCache(estimatedItemSize))
-  const [, forceUpdate] = useState(0)
+  // Replace force update anti-pattern with useReducer
+  const [, forceRender] = useReducer((x: number) => x + 1, 0)
   const previousMessagesLength = useRef(messages.length)
   const isNearBottomRef = useRef(true)
 
@@ -180,7 +185,7 @@ export function VirtualizedMessageList({
   const setItemHeight = useCallback((index: number, height: number) => {
     if (listRef.current) {
       listRef.current.resetAfterIndex(index, false)
-      forceUpdate(prev => prev + 1)
+      forceRender()
     }
   }, [])
 
@@ -198,9 +203,9 @@ export function VirtualizedMessageList({
 
   return (
     <div className={className} style={{ height: '100%', width: '100%' }}>
-      <AutoSizer>
-        {({ height, width }) => (
-          <List
+      <AutoSizerComponent>
+        {({ height, width }: { height: number; width: number }) => (
+          <ListComponent
             ref={listRef}
             height={height}
             width={width}
@@ -217,9 +222,9 @@ export function VirtualizedMessageList({
             onScroll={handleScroll}
           >
             {MessageItem}
-          </List>
+          </ListComponent>
         )}
-      </AutoSizer>
+      </AutoSizerComponent>
     </div>
   )
 }

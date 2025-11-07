@@ -4,9 +4,10 @@
  * Dropdown to switch between AI models with metrics (speed, cost, quality)
  */
 
-import * as React from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Badge, Button, cn } from '@clarity-chat/primitives'
 import type { ModelConfig, ModelInfo } from '../adapters/types'
+import type { ComponentProps } from 'react'
 
 export interface ModelSelectorProps {
   /** Available models */
@@ -35,17 +36,24 @@ export function ModelSelector({
   showDescription = true
 }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = React.useState(false)
-  const selectedModel = models.find(m => m.id === value)
   
-  const handleSelect = (model: ModelInfo) => {
+  // Memoize selected model lookup
+  const selectedModel = React.useMemo(
+    () => models.find(m => m.id === value),
+    [models, value]
+  )
+  
+  // Memoize select handler
+  const handleSelect = React.useCallback((model: ModelInfo) => {
     onChange(model.id, {
       provider: model.provider,
       model: model.id
     })
     setIsOpen(false)
-  }
+  }, [onChange])
   
-  const getBadgeProps = (type: 'speed' | 'cost' | 'quality', value: string): { variant: React.ComponentProps<typeof Badge>['variant']; label: string } => {
+  // Memoize badge props getter
+  const getBadgeProps = React.useCallback((type: 'speed' | 'cost' | 'quality', value: string): { variant: React.ComponentProps<typeof Badge>['variant']; label: string } => {
     switch (type) {
       case 'speed':
         if (value === 'fast') return { variant: 'success', label: 'Fast' }
@@ -62,14 +70,14 @@ export function ModelSelector({
       default:
         return { variant: 'secondary', label: value }
     }
-  }
+  }, [])
 
   return (
-    <div className={cn('relative', className)}>
+    <div ref={containerRef} className={cn('relative', className)}>
       <Button
         type="button"
         variant="surface"
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={handleToggle}
         disabled={disabled}
         className="w-full justify-between rounded-xl border border-border/60 bg-[hsl(var(--surface-elevated))] px-4 py-3 text-left text-sm shadow-[0_14px_28px_rgba(15,23,42,0.12)] hover:bg-[hsl(var(--surface-overlay))]"
         aria-haspopup="listbox"
@@ -112,7 +120,8 @@ export function ModelSelector({
         <>
           <div
             className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
+            onClick={handleBackdropClick}
+            aria-hidden="true"
           />
           <div
             role="listbox"
