@@ -9,7 +9,7 @@ import type { MemoryItem, MemoryRetrievalOptions, OptimizedContext, MemoryLayer 
 import type { ContextMessage } from '../context-window'
 import type { VectorStoreAdapter } from './vector-store-adapter'
 
-export interface VectorStore {
+export interface MemoryVectorStore {
   similaritySearch(
     query: string,
     userId: string,
@@ -28,7 +28,7 @@ export interface VectorStore {
 /**
  * Adapter to convert VectorStoreAdapter to VectorStore interface
  */
-export class VectorStoreAdapterWrapper implements VectorStore {
+export class VectorStoreAdapterWrapper implements MemoryVectorStore {
   constructor(private adapter: VectorStoreAdapter) {}
 
   async similaritySearch(
@@ -63,7 +63,7 @@ export interface SlidingContextConfig {
   maxTokens: number
   contextRatio?: number // Ratio of maxTokens to use for context (default 0.7)
   immediateWindowSize?: number // Number of recent messages to always keep
-  vectorStore?: VectorStore
+  vectorStore?: MemoryVectorStore
   countTokens: (text: string) => number
 }
 
@@ -72,7 +72,7 @@ export interface SlidingContextConfig {
  */
 export class SlidingContextManager {
   private config: Required<Pick<SlidingContextConfig, 'maxTokens' | 'contextRatio' | 'immediateWindowSize' | 'countTokens'>> & {
-    vectorStore?: VectorStore
+    vectorStore?: MemoryVectorStore
   }
   private historyBuffer: ContextMessage[] = []
   private readonly maxBufferSize: number
@@ -219,7 +219,10 @@ export class SlidingContextManager {
     }
 
     return {
-      messages: result,
+      messages: result.filter(m => m.role !== 'function') as Array<{
+        role: 'user' | 'assistant' | 'system'
+        content: string
+      }>,
       totalTokens: currentTokens,
       compressionRatio: immediate.length > 0 
         ? result.length / immediate.length 

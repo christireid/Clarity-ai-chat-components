@@ -5,20 +5,24 @@
  * semantic integrity. Achieves 5-20x compression ratios.
  */
 
-export interface CompressionOptions {
+export interface PromptCompressionOptions {
   targetRatio?: number // Target compression ratio (default: 8)
   preserveKeywords?: boolean // Preserve important keywords
   preserveStructure?: boolean // Preserve message structure
   minLength?: number // Minimum length to compress
 }
 
-export interface CompressionResult {
+export interface PromptCompressionResult {
   compressed: string
   originalTokens: number
   compressedTokens: number
   compressionRatio: number
   semanticRetention?: number // Estimated semantic retention (0-1)
 }
+
+// Backward compatibility aliases
+export type CompressionOptions = PromptCompressionOptions
+export type CompressionResult = PromptCompressionResult
 
 /**
  * Simple prompt compressor
@@ -38,8 +42,8 @@ export class PromptCompressor {
    */
   compress(
     text: string,
-    options: CompressionOptions = {}
-  ): CompressionResult {
+    options: PromptCompressionOptions = {}
+  ): PromptCompressionResult {
     const {
       targetRatio = 8,
       preserveKeywords = true,

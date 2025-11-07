@@ -22,5 +22,5 @@
     
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/utils/memory/examples/**"]
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/utils/memory/examples/**", "src/**/*.example.tsx", "src/**/*.example.ts"]
 }

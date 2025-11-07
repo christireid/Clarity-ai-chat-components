@@ -308,9 +308,9 @@ function OptimizationItem({
 }
 
 /**
- * Compact version for minimal UI
+ * Compact version for minimal UI (internal component)
  */
-export function TokenOptimizationBadge({
+function TokenOptimizationCompactBadge({
   tokensSaved,
   savingsPercent,
   className = '',
