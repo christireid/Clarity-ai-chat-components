@@ -156,5 +156,8 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 - [Token Optimization](/guide/token-optimization) - Reduce costs and improve performance
 - [Performance Guide](/guide/performance) - Optimize your application
 - [Migration Guide](/guide/migration) - Upgrade between versions
+- [Plugins](/guide/plugins) - Extend functionality with plugins
+- [Audit Logging](/guide/audit-logging) - Track actions for compliance
+- [Usage Quotas](/guide/usage-quotas) - Control costs and enforce limits
 
 </div>
