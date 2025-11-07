@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import * as React from 'react'
-import { Message } from '../../../packages/react/src/components/message'
-import type { Message as MessageType } from '../../../packages/types/src/message'
+import { Message } from '@clarity-chat/react'
+import type { Message as MessageType } from '@clarity-chat/types'
 
 /**
  * **Message Component**
