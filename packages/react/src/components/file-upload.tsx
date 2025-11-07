@@ -31,14 +31,19 @@ export const FileUpload = React.memo(function FileUpload({
   const [error, setError] = React.useState<string | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
-  const validateFile = (file: File): string | null => {
-    if (file.size > maxFileSize) {
-      return `File ${file.name} exceeds maximum size of ${formatFileSize(maxFileSize)}`
-    }
-    return null
-  }
+  // Memoize validation function to prevent recreation
+  const validateFile = React.useCallback(
+    (file: File): string | null => {
+      if (file.size > maxFileSize) {
+        return `File ${file.name} exceeds maximum size of ${formatFileSize(maxFileSize)}`
+      }
+      return null
+    },
+    [maxFileSize]
+  )
 
-  const handleFiles = async (newFiles: File[]) => {
+  // Memoize file handling to prevent recreation
+  const handleFiles = React.useCallback(async (newFiles: File[]) => {
     setError(null)
 
     // Validate total count
@@ -57,45 +62,49 @@ export const FileUpload = React.memo(function FileUpload({
     }
 
     setFiles((prev) => [...prev, ...newFiles])
-  }
+  }, [files.length, maxFiles, validateFile])
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Memoize input handler
+  const handleFileInput = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || [])
     handleFiles(selectedFiles)
     if (fileInputRef.current) fileInputRef.current.value = ''
-  }
+  }, [handleFiles])
 
-  const handleDragEnter = (e: React.DragEvent) => {
+  // Memoize drag handlers
+  const handleDragEnter = React.useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(true)
-  }
+  }, [])
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = React.useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
-  }
+  }, [])
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = React.useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-  }
+  }, [])
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = React.useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
 
     const droppedFiles = Array.from(e.dataTransfer.files)
     handleFiles(droppedFiles)
-  }
+  }, [handleFiles])
 
-  const removeFile = (index: number) => {
+  // Memoize remove handler
+  const removeFile = React.useCallback((index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index))
-  }
+  }, [])
 
-  const handleUpload = async () => {
+  // Memoize upload handler
+  const handleUpload = React.useCallback(async () => {
     if (files.length === 0) return
 
     setUploading(true)
@@ -109,9 +118,10 @@ export const FileUpload = React.memo(function FileUpload({
     } finally {
       setUploading(false)
     }
-  }
+  }, [files, onUpload])
 
-  const getFileIcon = (file: File): string => {
+  // Memoize icon getter
+  const getFileIcon = React.useCallback((file: File): string => {
     if (file.type.startsWith('image/')) return '🖼️'
     if (file.type.startsWith('video/')) return '🎥'
     if (file.type.startsWith('audio/')) return '🎵'
@@ -124,7 +134,7 @@ export const FileUpload = React.memo(function FileUpload({
       return '📝'
     if (file.type.includes('sheet') || file.name.endsWith('.xlsx')) return '📊'
     return '📎'
-  }
+  }, [])
 
   return (
     <div className={cn('space-y-4', className)}>

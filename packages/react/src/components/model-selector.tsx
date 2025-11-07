@@ -35,17 +35,24 @@ export function ModelSelector({
   showDescription = true
 }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = React.useState(false)
-  const selectedModel = models.find(m => m.id === value)
   
-  const handleSelect = (model: ModelInfo) => {
+  // Memoize selected model lookup
+  const selectedModel = React.useMemo(
+    () => models.find(m => m.id === value),
+    [models, value]
+  )
+  
+  // Memoize select handler
+  const handleSelect = React.useCallback((model: ModelInfo) => {
     onChange(model.id, {
       provider: model.provider,
       model: model.id
     })
     setIsOpen(false)
-  }
+  }, [onChange])
   
-  const getBadgeProps = (type: 'speed' | 'cost' | 'quality', value: string): { variant: React.ComponentProps<typeof Badge>['variant']; label: string } => {
+  // Memoize badge props getter
+  const getBadgeProps = React.useCallback((type: 'speed' | 'cost' | 'quality', value: string): { variant: React.ComponentProps<typeof Badge>['variant']; label: string } => {
     switch (type) {
       case 'speed':
         if (value === 'fast') return { variant: 'success', label: 'Fast' }
@@ -62,7 +69,7 @@ export function ModelSelector({
       default:
         return { variant: 'secondary', label: value }
     }
-  }
+  }, [])
 
   return (
     <div className={cn('relative', className)}>

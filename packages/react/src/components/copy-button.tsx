@@ -29,9 +29,10 @@ export const CopyButton = React.memo(function CopyButton({
     onSuccess: onCopy,
   })
 
-  const handleCopy = async () => {
+  // Memoize copy handler to prevent recreation on every render
+  const handleCopy = React.useCallback(async () => {
     await copy(text)
-  }
+  }, [copy, text])
 
   return (
     <Button
