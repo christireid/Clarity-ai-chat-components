@@ -1,13 +1,81 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { EnhancedMarkdownRenderer } from '@clarity-chat/react'
 
+/**
+ * **EnhancedMarkdownRenderer Component**
+ * 
+ * Enhanced markdown renderer with LaTeX math support,
+ * Mermaid diagrams, syntax highlighting, and more.
+ * 
+ * **Key Features:**
+ * - Standard markdown rendering
+ * - LaTeX math support (inline and block)
+ * - Mermaid diagram rendering
+ * - Syntax highlighting for code blocks
+ * - Table support
+ * - Link handling
+ * - Customizable styling
+ * 
+ * **Use Cases:**
+ * - AI chat responses with markdown
+ * - Documentation rendering
+ * - Technical content display
+ * - Educational content
+ */
 const meta: Meta<typeof EnhancedMarkdownRenderer> = {
   title: 'Components/EnhancedMarkdownRenderer',
   component: EnhancedMarkdownRenderer,
   parameters: {
     layout: 'padded',
+    docs: {
+      description: {
+        component: `
+Enhanced markdown renderer with LaTeX math support,
+Mermaid diagrams, syntax highlighting, and more.
+
+## Features
+
+- ✅ Standard markdown rendering
+- ✅ LaTeX math support (inline and block)
+- ✅ Mermaid diagram rendering
+- ✅ Syntax highlighting for code blocks
+- ✅ Table support
+- ✅ Link handling
+- ✅ Customizable styling
+- ✅ Dark mode support
+
+## Basic Usage
+
+\`\`\`tsx
+<EnhancedMarkdownRenderer
+  content={markdownContent}
+  enableMath={true}
+  enableMermaid={true}
+/>
+\`\`\`
+        `,
+      },
+    },
   },
   tags: ['autodocs'],
+  argTypes: {
+    content: {
+      description: 'Markdown content to render',
+      control: 'text',
+    },
+    enableMath: {
+      description: 'Enable LaTeX math rendering',
+      control: 'boolean',
+    },
+    enableMermaid: {
+      description: 'Enable Mermaid diagram rendering',
+      control: 'boolean',
+    },
+    className: {
+      description: 'Additional CSS classes',
+      control: 'text',
+    },
+  },
 }
 
 export default meta
