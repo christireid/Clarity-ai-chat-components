@@ -52,6 +52,14 @@ export function useMemories(
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
+  // Memoize options to prevent unnecessary re-renders
+  const memoizedOptions = useMemo(() => options, [
+    options?.limit,
+    options?.scope,
+    options?.type,
+    options?.minImportanceScore,
+  ])
+
   const retrieve = useCallback(
     async (retrievalOptions?: Partial<MemoryRetrievalOptions>) => {
       setIsLoading(true)
@@ -60,7 +68,7 @@ export function useMemories(
       try {
         const result = await service.retrieveMemories({
           userId,
-          ...options,
+          ...memoizedOptions,
           ...retrievalOptions,
         })
         setMemories(result)
@@ -70,12 +78,13 @@ export function useMemories(
         setIsLoading(false)
       }
     },
-    [service, userId, options]
+    [service, userId, memoizedOptions]
   )
 
   useEffect(() => {
     retrieve()
-  }, [retrieve])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]) // Only re-fetch when userId changes
 
   const store = useCallback(
     async (

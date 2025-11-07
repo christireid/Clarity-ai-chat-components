@@ -61,34 +61,41 @@ export function useLocalStorage<T>(
   }, [key, initialValue, deserializer])
 
   // State to store our value
-  const [storedValue, setStoredValue] = React.useState<T>(
-    initializeWithValue ? readValue : (initialValue instanceof Function ? initialValue() : initialValue)
-  )
+  // Use lazy initialization to avoid calling readValue on every render
+  const [storedValue, setStoredValue] = React.useState<T>(() => {
+    if (!initializeWithValue) {
+      return initialValue instanceof Function ? initialValue() : initialValue
+    }
+    return readValue()
+  })
 
   // Return a wrapped version of useState's setter function that persists the new value to localStorage
   const setValue: React.Dispatch<React.SetStateAction<T>> = React.useCallback(
     (value) => {
       if (typeof window === 'undefined') {
         console.warn(`Tried setting localStorage key "${key}" even though environment is not a client`)
+        return
       }
 
       try {
-        // Allow value to be a function so we have the same API as useState
-        const newValue = value instanceof Function ? value(storedValue) : value
+        // Use functional update to avoid stale closure issues
+        setStoredValue((prevValue) => {
+          // Allow value to be a function so we have the same API as useState
+          const newValue = value instanceof Function ? value(prevValue) : value
 
-        // Save to localStorage
-        window.localStorage.setItem(key, serializer(newValue))
+          // Save to localStorage
+          window.localStorage.setItem(key, serializer(newValue))
 
-        // Save state
-        setStoredValue(newValue)
+          // Dispatch custom event so other useLocalStorage hooks are notified
+          window.dispatchEvent(new Event('local-storage'))
 
-        // Dispatch custom event so other useLocalStorage hooks are notified
-        window.dispatchEvent(new Event('local-storage'))
+          return newValue
+        })
       } catch (error) {
         console.warn(`Error setting localStorage key "${key}":`, error)
       }
     },
-    [key, storedValue, serializer]
+    [key, serializer]
   )
 
   // Remove value from localStorage
@@ -100,7 +107,8 @@ export function useLocalStorage<T>(
 
     try {
       window.localStorage.removeItem(key)
-      setStoredValue(initialValue instanceof Function ? initialValue() : initialValue)
+      const resetValue = initialValue instanceof Function ? initialValue() : initialValue
+      setStoredValue(resetValue)
       window.dispatchEvent(new Event('local-storage'))
     } catch (error) {
       console.warn(`Error removing localStorage key "${key}":`, error)
