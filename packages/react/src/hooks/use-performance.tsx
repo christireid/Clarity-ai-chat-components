@@ -23,9 +23,17 @@ export function useRenderPerformance(componentName: string): PerformanceMetrics 
   const renderCount = React.useRef(0)
   const renderTimes = React.useRef<number[]>([])
   const startTime = React.useRef<number>(0)
+  const [metrics, setMetrics] = React.useState<PerformanceMetrics>({
+    renderCount: 0,
+    renderTime: 0,
+    lastRenderTime: 0,
+    averageRenderTime: 0,
+  })
 
   // Mark render start
-  startTime.current = performance.now()
+  React.useLayoutEffect(() => {
+    startTime.current = performance.now()
+  })
 
   // Mark render end and calculate metrics
   React.useEffect(() => {
@@ -40,6 +48,21 @@ export function useRenderPerformance(componentName: string): PerformanceMetrics 
       renderTimes.current.shift()
     }
 
+    const averageRenderTime =
+      renderTimes.current.length > 0
+        ? renderTimes.current.reduce((a, b) => a + b, 0) / renderTimes.current.length
+        : 0
+
+    const lastRenderTime = renderTimes.current[renderTimes.current.length - 1] || 0
+
+    // Update metrics state
+    setMetrics({
+      renderCount: renderCount.current,
+      renderTime: startTime.current,
+      lastRenderTime,
+      averageRenderTime,
+    })
+
     // Log slow renders in development
     if (process.env.NODE_ENV === 'development' && renderTime > 16) {
       console.warn(
@@ -48,17 +71,7 @@ export function useRenderPerformance(componentName: string): PerformanceMetrics 
     }
   })
 
-  const averageRenderTime =
-    renderTimes.current.length > 0
-      ? renderTimes.current.reduce((a, b) => a + b, 0) / renderTimes.current.length
-      : 0
-
-  return {
-    renderCount: renderCount.current,
-    renderTime: startTime.current,
-    lastRenderTime: renderTimes.current[renderTimes.current.length - 1] || 0,
-    averageRenderTime,
-  }
+  return metrics
 }
 
 /**
@@ -234,17 +247,35 @@ export function useThrottlePerformance<T>(
 ): T {
   const [throttledValue, setThrottledValue] = React.useState<T>(value)
   const lastRan = React.useRef(Date.now())
+  const timeoutRef = React.useRef<NodeJS.Timeout>()
 
   React.useEffect(() => {
-    const handler = setTimeout(() => {
-      if (Date.now() - lastRan.current >= limit) {
-        setThrottledValue(value)
-        lastRan.current = Date.now()
+    const now = Date.now()
+    const timeSinceLastRun = now - lastRan.current
+    const remainingTime = limit - timeSinceLastRun
+
+    // If enough time has passed, update immediately
+    if (remainingTime <= 0) {
+      setThrottledValue(value)
+      lastRan.current = now
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = undefined
       }
-    }, limit - (Date.now() - lastRan.current))
+      return
+    }
+
+    // Otherwise, schedule update for remaining time
+    timeoutRef.current = setTimeout(() => {
+      setThrottledValue(value)
+      lastRan.current = Date.now()
+      timeoutRef.current = undefined
+    }, remainingTime)
 
     return () => {
-      clearTimeout(handler)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
     }
   }, [value, limit])
 

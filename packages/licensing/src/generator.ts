@@ -1,4 +1,4 @@
-import { customAlphabet, nanoid } from 'nanoid'
+import { customAlphabet } from 'nanoid'
 import type { LicenseKey, LicenseTier, LicenseType } from './types'
 
 /**
@@ -122,24 +122,7 @@ export function parseLicenseKey(key: string): {
   }
 }
 
-function parseTierPrefix(prefix1: string, prefix2: string): LicenseTier | null {
-  const combined = `${prefix1}-${prefix2}`
-
-  switch (combined) {
-    case 'FREE-ANN':
-    case 'FREE-LTD':
-      return 'free'
-    case 'PRO-IND':
-      return 'pro-individual'
-    case 'PRO-TEAM':
-      return 'pro-team'
-    case 'ENT-ANN':
-    case 'ENT-LTD':
-      return 'enterprise'
-    default:
-      return null
-  }
-}
+// Removed unused parseTierPrefix helper
 
 function parseTypePrefix(prefix: string): LicenseType | null {
   switch (prefix) {

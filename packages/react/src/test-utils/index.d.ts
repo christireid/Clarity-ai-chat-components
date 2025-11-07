@@ -36,7 +36,7 @@ export declare const renderWithTheme: (ui: ReactElement, themeName?: keyof typeo
 /**
  * Mock message data for testing
  */
-export declare const createMockMessage: (overrides?: {}) => {
+export declare const createMockMessage: (overrides?: Record<string, unknown>) => {
     id: string;
     chatId: string;
     role: "user";

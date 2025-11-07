@@ -4,7 +4,7 @@ import {
   CollapsibleSection,
   Accordion,
   ExpandableListItem,
-} from '../../../packages/react/src/components/collapsible-section'
+} from '@clarity-chat/react'
 
 const meta: Meta<typeof CollapsibleSection> = {
   title: 'Components/CollapsibleSection',

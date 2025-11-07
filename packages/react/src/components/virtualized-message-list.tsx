@@ -9,7 +9,7 @@
  * @status NEW - Implementation based on blueprint analysis
  */
 
-import React, { useRef, useEffect, useState, useCallback } from 'react'
+import React, { useRef, useEffect, useState, useCallback, useReducer } from 'react'
 import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { Message } from '@clarity-chat/types'
@@ -136,7 +136,8 @@ export function VirtualizedMessageList({
 }: VirtualizedMessageListProps) {
   const listRef = useRef<List>(null)
   const heightCacheRef = useRef(new MessageHeightCache(estimatedItemSize))
-  const [, forceUpdate] = useState(0)
+  // Replace force update anti-pattern with useReducer
+  const [, forceRender] = useReducer((x: number) => x + 1, 0)
   const previousMessagesLength = useRef(messages.length)
   const isNearBottomRef = useRef(true)
 
@@ -180,7 +181,7 @@ export function VirtualizedMessageList({
   const setItemHeight = useCallback((index: number, height: number) => {
     if (listRef.current) {
       listRef.current.resetAfterIndex(index, false)
-      forceUpdate(prev => prev + 1)
+      forceRender()
     }
   }, [])
 

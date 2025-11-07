@@ -30,6 +30,31 @@ export interface MessageProps {
   className?: string
 }
 
+// Memoized markdown components configuration for better performance
+const markdownComponents = {
+  code(props: any) {
+    const { inline, className, children, ...rest } = props
+    return inline ? (
+      <code
+        className="bg-muted px-1 py-0.5 rounded text-sm"
+        {...rest}
+      >
+        {children}
+      </code>
+    ) : (
+      <div className="relative group/code">
+        <pre className={cn('relative', className)}>
+          <code {...rest}>{children}</code>
+        </pre>
+        <CopyButton
+          text={String(children).replace(/\n$/, '')}
+          className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
+        />
+      </div>
+    )
+  },
+}
+
 export const Message = React.memo(
   React.forwardRef<HTMLDivElement, MessageProps>(function Message(
     {
@@ -53,7 +78,11 @@ export const Message = React.memo(
 
     const [showConfetti, setShowConfetti] = React.useState(false)
 
-    const handleFeedback = (type: 'up' | 'down') => {
+    // Memoize markdown plugins to prevent recreation on every render
+    const remarkPlugins = React.useMemo(() => [remarkGfm], [])
+    const rehypePlugins = React.useMemo(() => [rehypeHighlight], [])
+
+    const handleFeedback = React.useCallback((type: 'up' | 'down') => {
       setFeedbackGiven(type)
       onFeedback?.(type)
 
@@ -63,7 +92,7 @@ export const Message = React.memo(
         setShowConfetti(true)
         setTimeout(() => setShowConfetti(false), 1000)
       }
-    }
+    }, [onFeedback])
 
     return (
       <motion.div
@@ -158,34 +187,9 @@ export const Message = React.memo(
               <p className="m-0 whitespace-pre-wrap">{message.content}</p>
             ) : (
               <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  rehypeHighlight as any, // Type incompatibility between vfile versions in react-markdown
-                ]}
-                components={{
-                  code(props) {
-                    const { inline, className, children, ...rest } = props
-                    return inline ? (
-                      <code
-                        className="bg-muted px-1 py-0.5 rounded text-sm"
-                        {...rest}
-                      >
-                        {children}
-                      </code>
-                    ) : (
-                      <div className="relative group/code">
-                        <pre className={cn('relative', className)}>
-                          <code {...rest}>{children}</code>
-                        </pre>
-                        <CopyButton
-                          text={String(children).replace(/\n$/, '')}
-                          className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
-                        />
-                      </div>
-                    )
-                  },
-                }}
+                remarkPlugins={remarkPlugins}
+                rehypePlugins={rehypePlugins}
+                components={markdownComponents}
               >
                 {message.content}
               </ReactMarkdown>

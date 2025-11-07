@@ -45,14 +45,28 @@ export function getViewportSize() {
  */
 export function useIsMobile(): boolean {
   const [mobile, setMobile] = React.useState(() => isMobile())
+  const timeoutRef = React.useRef<NodeJS.Timeout>()
 
   React.useEffect(() => {
     const checkMobile = () => {
-      setMobile(isMobile())
+      // Throttle resize checks to avoid excessive updates
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      
+      timeoutRef.current = setTimeout(() => {
+        setMobile(isMobile())
+        timeoutRef.current = undefined
+      }, 150)
     }
 
     window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    return () => {
+      window.removeEventListener('resize', checkMobile)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
   }, [])
 
   return mobile
@@ -76,14 +90,28 @@ export function useIsTouchDevice(): boolean {
  */
 export function useViewportSize() {
   const [size, setSize] = React.useState(getViewportSize)
+  const timeoutRef = React.useRef<NodeJS.Timeout>()
 
   React.useEffect(() => {
     const handleResize = () => {
-      setSize(getViewportSize())
+      // Throttle resize events to avoid excessive updates
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      
+      timeoutRef.current = setTimeout(() => {
+        setSize(getViewportSize())
+        timeoutRef.current = undefined
+      }, 150)
     }
 
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
   }, [])
 
   return size

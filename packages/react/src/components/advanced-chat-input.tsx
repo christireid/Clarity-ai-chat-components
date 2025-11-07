@@ -157,59 +157,68 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
       })
     }
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      // Handle suggestions navigation
-      if (showSuggestions && suggestions.length > 0) {
-        if (e.key === 'ArrowDown') {
-          e.preventDefault()
-          setSelectedIndex((prev) => (prev + 1) % suggestions.length)
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault()
-          setSelectedIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length)
-        } else if (e.key === 'Tab' || e.key === 'Enter') {
-          if (showSuggestions) {
+    // Memoize keyboard handler to prevent recreation on every render
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // Handle suggestions navigation
+        if (showSuggestions && suggestions.length > 0) {
+          if (e.key === 'ArrowDown') {
             e.preventDefault()
-            selectSuggestion(suggestions[selectedIndex])
+            setSelectedIndex((prev) => (prev + 1) % suggestions.length)
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            setSelectedIndex((prev) => (prev - 1 + suggestions.length) % suggestions.length)
+          } else if (e.key === 'Tab' || e.key === 'Enter') {
+            if (showSuggestions) {
+              e.preventDefault()
+              selectSuggestion(suggestions[selectedIndex])
+              return
+            }
+          } else if (e.key === 'Escape') {
+            e.preventDefault()
+            setShowSuggestions(false)
             return
           }
-        } else if (e.key === 'Escape') {
-          e.preventDefault()
-          setShowSuggestions(false)
-          return
         }
-      }
 
-      // Handle submit
-      if (e.key === 'Enter' && !e.shiftKey && !showSuggestions) {
-        e.preventDefault()
-        handleSubmit()
-      }
-    }
+        // Handle submit
+        if (e.key === 'Enter' && !e.shiftKey && !showSuggestions) {
+          e.preventDefault()
+          handleSubmit()
+        }
+      },
+      [showSuggestions, suggestions, selectedIndex]
+    )
 
-    const selectSuggestion = (suggestion: InputSuggestion) => {
-      const beforeCursor = value.slice(0, cursorPosition)
-      const afterCursor = value.slice(cursorPosition)
-      
-      // Find the trigger position
-      const triggerIndex = triggerChar === '@' 
-        ? beforeCursor.lastIndexOf('@')
-        : beforeCursor.lastIndexOf('/')
+    // Memoize suggestion selection to prevent recreation
+    const selectSuggestion = React.useCallback(
+      (suggestion: InputSuggestion) => {
+        const beforeCursor = value.slice(0, cursorPosition)
+        const afterCursor = value.slice(cursorPosition)
+        
+        // Find the trigger position
+        const triggerIndex = triggerChar === '@' 
+          ? beforeCursor.lastIndexOf('@')
+          : beforeCursor.lastIndexOf('/')
 
-      const newValue = beforeCursor.slice(0, triggerIndex) + suggestion.value + ' ' + afterCursor
-      onChange(newValue)
-      setShowSuggestions(false)
-      setTriggerChar(null)
+        const newValue = beforeCursor.slice(0, triggerIndex) + suggestion.value + ' ' + afterCursor
+        onChange(newValue)
+        setShowSuggestions(false)
+        setTriggerChar(null)
 
-      // Focus back to textarea
-      setTimeout(() => {
-        textareaRef.current?.focus()
-      }, 0)
-    }
+        // Focus back to textarea
+        setTimeout(() => {
+          textareaRef.current?.focus()
+        }, 0)
+      },
+      [value, cursorPosition, triggerChar, onChange]
+    )
 
-    const handleCursorChange = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    // Memoize cursor change handler
+    const handleCursorChange = React.useCallback((e: React.FormEvent<HTMLTextAreaElement>) => {
       const target = e.target as HTMLTextAreaElement
       setCursorPosition(target.selectionStart)
-    }
+    }, [])
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || [])
@@ -243,12 +252,13 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
       }
     }
 
-    const handleDragOver = (e: React.DragEvent) => {
+    // Memoize drag and drop handlers
+    const handleDragOver = React.useCallback((e: React.DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
-    }
+    }, [])
 
-    const handleDrop = async (e: React.DragEvent) => {
+    const handleDrop = React.useCallback(async (e: React.DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -262,19 +272,21 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
         input.files = dataTransfer.files
         input.dispatchEvent(new Event('change', { bubbles: true }))
       }
-    }
+    }, [])
 
-    const removeAttachment = (id: string) => {
+    // Memoize attachment removal
+    const removeAttachment = React.useCallback((id: string) => {
       setAttachments((prev) => prev.filter((a) => a.id !== id))
-    }
+    }, [])
 
-    const handleSubmit = () => {
+    // Memoize submit handler
+    const handleSubmit = React.useCallback(() => {
       if (value.trim() || attachments.length > 0) {
         onSubmit(value, attachments.length > 0 ? attachments : undefined)
         onChange('')
         setAttachments([])
       }
-    }
+    }, [value, attachments, onSubmit, onChange])
 
     const charCount = value.length
     const isOverLimit = maxLength ? charCount > maxLength : false
