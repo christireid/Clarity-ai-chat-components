@@ -43,12 +43,21 @@ export const MessageList = React.memo(function MessageList({
     threshold: 100,
   })
 
-  // Animation variants
-  const containerVariants = createStaggerContainerVariant('normal', 0)
-  const itemVariants = createStaggerChildVariant('slide', 'fast')
+  // Memoize animation variants to prevent recreation on every render
+  const containerVariants = React.useMemo(
+    () => createStaggerContainerVariant('normal', 0),
+    []
+  )
+  const itemVariants = React.useMemo(
+    () => createStaggerChildVariant('slide', 'fast'),
+    []
+  )
 
-  // Show empty state if no messages and not loading
-  const showEmptyState = messages.length === 0 && !isLoading && emptyState
+  // Memoize empty state check
+  const showEmptyState = React.useMemo(
+    () => messages.length === 0 && !isLoading && emptyState,
+    [messages.length, isLoading, emptyState]
+  )
 
   return (
     <div className="relative h-full">

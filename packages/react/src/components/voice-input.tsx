@@ -135,38 +135,43 @@ export function VoiceInput({
   const [showTranscript, setShowTranscript] = React.useState(false)
   const lastFinalTranscriptRef = React.useRef('')
 
-  const voice = useVoiceInput({
-    lang,
-    continuous: false,
-    interimResults: showInterim,
-    autoStopTimeout: autoSubmit ? 2000 : 0,
-    onTranscript: (text, isFinal) => {
-      if (isFinal) {
-        lastFinalTranscriptRef.current = text
-        if (autoSubmit) {
-          onTranscript(text)
-          voice.resetTranscript()
-          setShowTranscript(false)
+  // Memoize voice input config to prevent unnecessary re-initialization
+  const voiceConfig = React.useMemo(
+    () => ({
+      lang,
+      continuous: false,
+      interimResults: showInterim,
+      autoStopTimeout: autoSubmit ? 2000 : 0,
+      onTranscript: (text: string, isFinal: boolean) => {
+        if (isFinal) {
+          lastFinalTranscriptRef.current = text
+          if (autoSubmit) {
+            onTranscript(text)
+            // Reset handled in handleToggle
+          }
         }
-      }
-    },
-    onSpeechStart: () => {
-      setShowTranscript(true)
-      onStart?.()
-    },
-    onSpeechEnd: () => {
-      onStop?.()
-    },
-    onError: (error) => {
-      setShowTranscript(false)
-      onError?.(error)
-    },
-  })
+      },
+      onSpeechStart: () => {
+        setShowTranscript(true)
+        onStart?.()
+      },
+      onSpeechEnd: () => {
+        onStop?.()
+      },
+      onError: (error: string) => {
+        setShowTranscript(false)
+        onError?.(error)
+      },
+    }),
+    [lang, showInterim, autoSubmit, onTranscript, onStart, onStop, onError]
+  )
+
+  const voice = useVoiceInput(voiceConfig)
 
   /**
-   * Toggle listening
+   * Toggle listening - memoized to prevent recreation
    */
-  const handleToggle = () => {
+  const handleToggle = React.useCallback(() => {
     if (voice.isListening) {
       voice.stopListening()
 
@@ -180,28 +185,28 @@ export function VoiceInput({
       voice.resetTranscript()
       voice.startListening()
     }
-  }
+  }, [voice, autoSubmit, onTranscript])
 
   /**
-   * Manual submit
+   * Manual submit - memoized to prevent recreation
    */
-  const handleSubmit = () => {
+  const handleSubmit = React.useCallback(() => {
     if (voice.transcript) {
       onTranscript(voice.transcript)
       voice.resetTranscript()
       voice.stopListening()
       setShowTranscript(false)
     }
-  }
+  }, [voice, onTranscript])
 
   /**
-   * Cancel
+   * Cancel - memoized to prevent recreation
    */
-  const handleCancel = () => {
+  const handleCancel = React.useCallback(() => {
     voice.stopListening()
     voice.resetTranscript()
     setShowTranscript(false)
-  }
+  }, [voice])
 
   if (!voice.isSupported) {
     return (

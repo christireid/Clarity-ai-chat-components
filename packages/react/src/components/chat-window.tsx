@@ -58,43 +58,50 @@ export const ChatWindow = React.memo(function ChatWindow({
 }: ChatWindowProps) {
   const [input, setInput] = React.useState('')
 
-  const handleSubmit = (content: string) => {
-    onSendMessage(content)
-    setInput('')
-  }
+  // Memoize handlers to prevent unnecessary re-renders of child components
+  const handleSubmit = React.useCallback(
+    (content: string) => {
+      onSendMessage(content)
+      setInput('')
+    },
+    [onSendMessage]
+  )
 
-  // Default empty state with animation
-  const defaultEmptyState = (
-    <motion.div
-      className="text-center space-y-6"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-    >
+  // Memoize default empty state to avoid recreating complex JSX on every render
+  const defaultEmptyState = React.useMemo(
+    () => (
       <motion.div
-        className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm ring-1 ring-primary/20"
-        animate={{
-          scale: [1, 1.05, 1],
-          rotate: [0, 2, -2, 0],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
+        className="text-center space-y-6"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
       >
-        <BotIcon size={36} className="text-primary" />
+        <motion.div
+          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm ring-1 ring-primary/20"
+          animate={{
+            scale: [1, 1.05, 1],
+            rotate: [0, 2, -2, 0],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        >
+          <BotIcon size={36} className="text-primary" />
+        </motion.div>
+        <div className="space-y-2">
+          <h3 className="text-xl font-semibold text-foreground">
+            Start a conversation
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+            Send a message to begin chatting with the AI assistant. I'm here to
+            help with your questions and tasks.
+          </p>
+        </div>
       </motion.div>
-      <div className="space-y-2">
-        <h3 className="text-xl font-semibold text-foreground">
-          Start a conversation
-        </h3>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-          Send a message to begin chatting with the AI assistant. I'm here to
-          help with your questions and tasks.
-        </p>
-      </div>
-    </motion.div>
+    ),
+    []
   )
 
   return (

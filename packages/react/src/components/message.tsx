@@ -47,23 +47,34 @@ export const Message = React.memo(
       'up' | 'down' | null
     >(message.feedback?.type || null)
 
-    const isUser = message.role === 'user'
-    const isAssistant = message.role === 'assistant'
-    const isStreaming = message.status === 'streaming'
+    // Memoize derived values to avoid recalculation on every render
+    const isUser = React.useMemo(() => message.role === 'user', [message.role])
+    const isAssistant = React.useMemo(
+      () => message.role === 'assistant',
+      [message.role]
+    )
+    const isStreaming = React.useMemo(
+      () => message.status === 'streaming',
+      [message.status]
+    )
 
     const [showConfetti, setShowConfetti] = React.useState(false)
 
-    const handleFeedback = (type: 'up' | 'down') => {
-      setFeedbackGiven(type)
-      onFeedback?.(type)
+    // Memoize feedback handler to prevent recreation on every render
+    const handleFeedback = React.useCallback(
+      (type: 'up' | 'down') => {
+        setFeedbackGiven(type)
+        onFeedback?.(type)
 
-      // Hooked principle: Variable reward
-      if (type === 'up') {
-        // Trigger confetti animation
-        setShowConfetti(true)
-        setTimeout(() => setShowConfetti(false), 1000)
-      }
-    }
+        // Hooked principle: Variable reward
+        if (type === 'up') {
+          // Trigger confetti animation
+          setShowConfetti(true)
+          setTimeout(() => setShowConfetti(false), 1000)
+        }
+      },
+      [onFeedback]
+    )
 
     return (
       <motion.div
