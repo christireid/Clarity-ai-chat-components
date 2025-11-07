@@ -1,6 +1,6 @@
 /**
  * Clarity Chat VS Code Extension
- * 
+ *
  * Provides IntelliSense, code snippets, and productivity features
  * for developing with the Clarity Chat AI framework.
  */
@@ -9,10 +9,13 @@ import * as vscode from 'vscode'
 import { CompletionProvider } from './providers/completion'
 import { HoverProvider } from './providers/hover'
 import { CodeLensProvider } from './providers/codelens'
+import { DiagnosticsProvider, QuickFixProvider } from './providers/diagnostics'
 import { initProjectCommand } from './commands/init'
 import { addProviderCommand } from './commands/add-provider'
 import { validateConfigCommand } from './commands/validate'
 import { showExamplesCommand } from './commands/examples'
+import { PreviewPanel } from './views/preview-panel'
+import { ApiKeyManager } from './views/api-key-manager'
 
 /**
  * Extension activation
@@ -26,18 +29,21 @@ export function activate(context: vscode.ExtensionContext) {
   // Register completion provider
   if (config.get('enableIntelliSense', true)) {
     const completionProvider = new CompletionProvider()
-    
-    const completionDisposable = vscode.languages.registerCompletionItemProvider(
-      [
-        { language: 'typescript', scheme: 'file' },
-        { language: 'javascript', scheme: 'file' },
-        { language: 'typescriptreact', scheme: 'file' },
-        { language: 'javascriptreact', scheme: 'file' }
-      ],
-      completionProvider,
-      '.', '"', "'"
-    )
-    
+
+    const completionDisposable =
+      vscode.languages.registerCompletionItemProvider(
+        [
+          { language: 'typescript', scheme: 'file' },
+          { language: 'javascript', scheme: 'file' },
+          { language: 'typescriptreact', scheme: 'file' },
+          { language: 'javascriptreact', scheme: 'file' },
+        ],
+        completionProvider,
+        '.',
+        '"',
+        "'"
+      )
+
     context.subscriptions.push(completionDisposable)
   }
 
@@ -48,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
       { language: 'typescript', scheme: 'file' },
       { language: 'javascript', scheme: 'file' },
       { language: 'typescriptreact', scheme: 'file' },
-      { language: 'javascriptreact', scheme: 'file' }
+      { language: 'javascriptreact', scheme: 'file' },
     ],
     hoverProvider
   )
@@ -60,19 +66,76 @@ export function activate(context: vscode.ExtensionContext) {
     const codeLensDisposable = vscode.languages.registerCodeLensProvider(
       [
         { language: 'typescript', scheme: 'file' },
-        { language: 'javascript', scheme: 'file' }
+        { language: 'javascript', scheme: 'file' },
       ],
       codeLensProvider
     )
     context.subscriptions.push(codeLensDisposable)
   }
 
+  // Register diagnostics provider
+  const diagnosticsProvider = new DiagnosticsProvider()
+  context.subscriptions.push(diagnosticsProvider)
+
+  // Update diagnostics on document change
+  vscode.workspace.onDidChangeTextDocument(
+    (event) => {
+      diagnosticsProvider.updateDiagnostics(event.document)
+    },
+    null,
+    context.subscriptions
+  )
+
+  // Update diagnostics on document open
+  vscode.workspace.onDidOpenTextDocument(
+    (document) => {
+      diagnosticsProvider.updateDiagnostics(document)
+    },
+    null,
+    context.subscriptions
+  )
+
+  // Register quick fix provider
+  const quickFixProvider = new QuickFixProvider()
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      [
+        { language: 'typescript', scheme: 'file' },
+        { language: 'javascript', scheme: 'file' },
+        { language: 'typescriptreact', scheme: 'file' },
+        { language: 'javascriptreact', scheme: 'file' },
+      ],
+      quickFixProvider,
+      {
+        providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+      }
+    )
+  )
+
   // Register commands
   context.subscriptions.push(
-    vscode.commands.registerCommand('clarity-chat.initProject', initProjectCommand),
-    vscode.commands.registerCommand('clarity-chat.addProvider', addProviderCommand),
-    vscode.commands.registerCommand('clarity-chat.validateConfig', validateConfigCommand),
-    vscode.commands.registerCommand('clarity-chat.showExamples', showExamplesCommand)
+    vscode.commands.registerCommand(
+      'clarity-chat.initProject',
+      initProjectCommand
+    ),
+    vscode.commands.registerCommand(
+      'clarity-chat.addProvider',
+      addProviderCommand
+    ),
+    vscode.commands.registerCommand(
+      'clarity-chat.validateConfig',
+      validateConfigCommand
+    ),
+    vscode.commands.registerCommand(
+      'clarity-chat.showExamples',
+      showExamplesCommand
+    ),
+    vscode.commands.registerCommand('clarity-chat.showPreview', () => {
+      PreviewPanel.createOrShow(context.extensionUri)
+    }),
+    vscode.commands.registerCommand('clarity-chat.manageApiKeys', () => {
+      ApiKeyManager.createOrShow(context)
+    })
   )
 
   // Show welcome message on first install
@@ -82,16 +145,18 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   // Configuration change listener
-  vscode.workspace.onDidChangeConfiguration(e => {
+  vscode.workspace.onDidChangeConfiguration((e) => {
     if (e.affectsConfiguration('clarity-chat')) {
-      vscode.window.showInformationMessage(
-        'Clarity Chat configuration changed. Reload window to apply changes.',
-        'Reload'
-      ).then(selection => {
-        if (selection === 'Reload') {
-          vscode.commands.executeCommand('workbench.action.reloadWindow')
-        }
-      })
+      vscode.window
+        .showInformationMessage(
+          'Clarity Chat configuration changed. Reload window to apply changes.',
+          'Reload'
+        )
+        .then((selection) => {
+          if (selection === 'Reload') {
+            vscode.commands.executeCommand('workbench.action.reloadWindow')
+          }
+        })
     }
   })
 }
@@ -100,22 +165,25 @@ export function activate(context: vscode.ExtensionContext) {
  * Show welcome message
  */
 function showWelcomeMessage(context: vscode.ExtensionContext) {
-  const message = 'Welcome to Clarity Chat! Get started by initializing a new project.'
-  
-  vscode.window.showInformationMessage(
-    message,
-    'Initialize Project',
-    'Show Examples',
-    'Don\'t Show Again'
-  ).then(selection => {
-    if (selection === 'Initialize Project') {
-      vscode.commands.executeCommand('clarity-chat.initProject')
-    } else if (selection === 'Show Examples') {
-      vscode.commands.executeCommand('clarity-chat.showExamples')
-    } else if (selection === 'Don\'t Show Again') {
-      context.globalState.update('hasShownWelcome', true)
-    }
-  })
+  const message =
+    'Welcome to Clarity Chat! Get started by initializing a new project.'
+
+  vscode.window
+    .showInformationMessage(
+      message,
+      'Initialize Project',
+      'Show Examples',
+      "Don't Show Again"
+    )
+    .then((selection) => {
+      if (selection === 'Initialize Project') {
+        vscode.commands.executeCommand('clarity-chat.initProject')
+      } else if (selection === 'Show Examples') {
+        vscode.commands.executeCommand('clarity-chat.showExamples')
+      } else if (selection === "Don't Show Again") {
+        context.globalState.update('hasShownWelcome', true)
+      }
+    })
 }
 
 /**

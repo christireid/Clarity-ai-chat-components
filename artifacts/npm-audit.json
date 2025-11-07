@@ -1,0 +1,871 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@joshwooding/vite-plugin-react-docgen-typescript": {
+      "name": "@joshwooding/vite-plugin-react-docgen-typescript",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "vite"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-snapshot-20231005222330 || 0.1.0 - 0.4.1",
+      "nodes": [
+        "node_modules/@joshwooding/vite-plugin-react-docgen-typescript"
+      ],
+      "fixAvailable": true
+    },
+    "@remix-run/dev": {
+      "name": "@remix-run/dev",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@vanilla-extract/integration",
+        "esbuild",
+        "remark-mdx-frontmatter"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@remix-run/dev"
+      ],
+      "fixAvailable": false
+    },
+    "@storybook/addon-controls": {
+      "name": "@storybook/addon-controls",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@storybook/blocks"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-pr-28385-sha-9aab3bd7 || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/addon-controls"
+      ],
+      "fixAvailable": true
+    },
+    "@storybook/addon-docs": {
+      "name": "@storybook/addon-docs",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@storybook/blocks"
+      ],
+      "effects": [
+        "@storybook/addon-essentials"
+      ],
+      "range": "<=0.0.0-pr-30567-sha-cd9d89ab || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/addon-docs"
+      ],
+      "fixAvailable": {
+        "name": "@storybook/addon-essentials",
+        "version": "8.6.14",
+        "isSemVerMajor": true
+      }
+    },
+    "@storybook/addon-essentials": {
+      "name": "@storybook/addon-essentials",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@storybook/addon-controls",
+        "@storybook/addon-docs",
+        "@storybook/core-common"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-pr-30567-sha-cd9d89ab || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/addon-essentials"
+      ],
+      "fixAvailable": {
+        "name": "@storybook/addon-essentials",
+        "version": "8.6.14",
+        "isSemVerMajor": true
+      }
+    },
+    "@storybook/blocks": {
+      "name": "@storybook/blocks",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@storybook/docs-tools"
+      ],
+      "effects": [
+        "@storybook/addon-controls",
+        "@storybook/addon-docs"
+      ],
+      "range": "<=8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/blocks"
+      ],
+      "fixAvailable": {
+        "name": "@storybook/blocks",
+        "version": "8.6.14",
+        "isSemVerMajor": true
+      }
+    },
+    "@storybook/builder-manager": {
+      "name": "@storybook/builder-manager",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@storybook/core-common",
+        "esbuild"
+      ],
+      "effects": [
+        "@storybook/core-server"
+      ],
+      "range": "<=8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/builder-manager"
+      ],
+      "fixAvailable": true
+    },
+    "@storybook/builder-vite": {
+      "name": "@storybook/builder-vite",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@storybook/core-common",
+        "vite"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-pr-29687-sha-d977033a || 7.0.0-alpha.25 - 8.4.5 || 8.5.0-alpha.0 - 8.5.0-beta.11",
+      "nodes": [
+        "node_modules/@storybook/builder-vite"
+      ],
+      "fixAvailable": true
+    },
+    "@storybook/cli": {
+      "name": "@storybook/cli",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@storybook/core-common",
+        "@storybook/core-server",
+        "@storybook/telemetry"
+      ],
+      "effects": [
+        "storybook"
+      ],
+      "range": "<=0.0.0-pr-28385-sha-9aab3bd7 || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/cli"
+      ],
+      "fixAvailable": {
+        "name": "storybook",
+        "version": "10.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "@storybook/core-common": {
+      "name": "@storybook/core-common",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "esbuild"
+      ],
+      "effects": [
+        "@storybook/addon-essentials",
+        "@storybook/builder-vite",
+        "@storybook/cli",
+        "@storybook/docs-tools",
+        "@storybook/telemetry"
+      ],
+      "range": "<=0.0.0-pr-28385-sha-9aab3bd7 || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/core-common"
+      ],
+      "fixAvailable": {
+        "name": "@storybook/addon-essentials",
+        "version": "8.6.14",
+        "isSemVerMajor": true
+      }
+    },
+    "@storybook/core-server": {
+      "name": "@storybook/core-server",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@storybook/builder-manager",
+        "@storybook/core-common",
+        "@storybook/telemetry"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-pr-28385-sha-9aab3bd7 || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/core-server"
+      ],
+      "fixAvailable": true
+    },
+    "@storybook/docs-tools": {
+      "name": "@storybook/docs-tools",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@storybook/core-common"
+      ],
+      "effects": [
+        "@storybook/blocks",
+        "@storybook/react"
+      ],
+      "range": "<=0.0.0-pr-28385-sha-9aab3bd7 || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/docs-tools"
+      ],
+      "fixAvailable": {
+        "name": "@storybook/blocks",
+        "version": "8.6.14",
+        "isSemVerMajor": true
+      }
+    },
+    "@storybook/react": {
+      "name": "@storybook/react",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@storybook/docs-tools"
+      ],
+      "effects": [
+        "@storybook/react-vite"
+      ],
+      "range": "<=0.0.0-pr-28385-sha-9aab3bd7 || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/react"
+      ],
+      "fixAvailable": {
+        "name": "@storybook/react",
+        "version": "10.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "@storybook/react-vite": {
+      "name": "@storybook/react-vite",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@joshwooding/vite-plugin-react-docgen-typescript",
+        "@storybook/builder-vite",
+        "@storybook/react",
+        "@vitejs/plugin-react",
+        "vite"
+      ],
+      "effects": [],
+      "range": "<=8.4.5 || 8.5.0-alpha.0 - 8.5.0-beta.11",
+      "nodes": [
+        "node_modules/@storybook/react-vite"
+      ],
+      "fixAvailable": {
+        "name": "@storybook/react-vite",
+        "version": "10.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "@storybook/telemetry": {
+      "name": "@storybook/telemetry",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@storybook/core-common"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-pr-28385-sha-9aab3bd7 || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/@storybook/telemetry"
+      ],
+      "fixAvailable": true
+    },
+    "@vanilla-extract/integration": {
+      "name": "@vanilla-extract/integration",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "esbuild",
+        "vite",
+        "vite-node"
+      ],
+      "effects": [
+        "@remix-run/dev"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@vanilla-extract/integration"
+      ],
+      "fixAvailable": false
+    },
+    "@vitejs/plugin-react": {
+      "name": "@vitejs/plugin-react",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "vite"
+      ],
+      "effects": [
+        "@storybook/react-vite"
+      ],
+      "range": "2.0.0-alpha.0 - 4.3.3",
+      "nodes": [
+        "node_modules/@storybook/react-vite/node_modules/@vitejs/plugin-react"
+      ],
+      "fixAvailable": {
+        "name": "@storybook/react-vite",
+        "version": "10.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "@vitest/coverage-v8": {
+      "name": "@vitest/coverage-v8",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "vitest"
+      ],
+      "effects": [],
+      "range": "<=2.2.0-beta.2",
+      "nodes": [
+        "node_modules/@vitest/coverage-v8"
+      ],
+      "fixAvailable": {
+        "name": "@vitest/coverage-v8",
+        "version": "4.0.7",
+        "isSemVerMajor": true
+      }
+    },
+    "@vitest/mocker": {
+      "name": "@vitest/mocker",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "vite"
+      ],
+      "effects": [
+        "vitest"
+      ],
+      "range": "<=3.0.0-beta.4",
+      "nodes": [
+        "node_modules/@vitest/mocker"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "4.0.7",
+        "isSemVerMajor": true
+      }
+    },
+    "esbuild": {
+      "name": "esbuild",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1102341,
+          "name": "esbuild",
+          "dependency": "esbuild",
+          "title": "esbuild enables any website to send any requests to the development server and read the response",
+          "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-346"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+          },
+          "range": "<=0.24.2"
+        }
+      ],
+      "effects": [
+        "@remix-run/dev",
+        "@storybook/builder-manager",
+        "@storybook/core-common",
+        "@vanilla-extract/integration",
+        "vite"
+      ],
+      "range": "<=0.24.2",
+      "nodes": [
+        "node_modules/@remix-run/dev/node_modules/esbuild",
+        "node_modules/@storybook/builder-manager/node_modules/esbuild",
+        "node_modules/@storybook/core-common/node_modules/esbuild",
+        "node_modules/@vanilla-extract/integration/node_modules/esbuild",
+        "node_modules/vite/node_modules/esbuild",
+        "packages/error-handling/node_modules/vite-node/node_modules/esbuild",
+        "packages/error-handling/node_modules/vitest/node_modules/esbuild"
+      ],
+      "fixAvailable": {
+        "name": "@storybook/addon-essentials",
+        "version": "8.6.14",
+        "isSemVerMajor": true
+      }
+    },
+    "estree-util-value-to-estree": {
+      "name": "estree-util-value-to-estree",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1103822,
+          "name": "estree-util-value-to-estree",
+          "dependency": "estree-util-value-to-estree",
+          "title": "estree-util-value-to-estree allows prototype pollution in generated ESTree",
+          "url": "https://github.com/advisories/GHSA-f7f6-9jq7-3rqj",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<3.3.3"
+        }
+      ],
+      "effects": [
+        "remark-mdx-frontmatter"
+      ],
+      "range": "<3.3.3",
+      "nodes": [
+        "node_modules/estree-util-value-to-estree"
+      ],
+      "fixAvailable": true
+    },
+    "next": {
+      "name": "next",
+      "severity": "critical",
+      "isDirect": true,
+      "via": [
+        {
+          "source": 1099638,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Cache Poisoning",
+          "url": "https://github.com/advisories/GHSA-gp8f-8m3g-qvj9",
+          "severity": "high",
+          "cwe": [
+            "CWE-349",
+            "CWE-639"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=14.0.0 <14.2.10"
+        },
+        {
+          "source": 1100421,
+          "name": "next",
+          "dependency": "next",
+          "title": "Denial of Service condition in Next.js image optimization",
+          "url": "https://github.com/advisories/GHSA-g77x-44xx-532m",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-674"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=10.0.0 <14.2.7"
+        },
+        {
+          "source": 1101438,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Allows a Denial of Service (DoS) with Server Actions",
+          "url": "https://github.com/advisories/GHSA-7m27-7ghc-44w9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=14.0.0 <14.2.21"
+        },
+        {
+          "source": 1105461,
+          "name": "next",
+          "dependency": "next",
+          "title": "Information exposure in Next.js dev server due to lack of origin verification",
+          "url": "https://github.com/advisories/GHSA-3h52-269p-cp9r",
+          "severity": "low",
+          "cwe": [
+            "CWE-1385"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=13.0 <14.2.30"
+        },
+        {
+          "source": 1105462,
+          "name": "next",
+          "dependency": "next",
+          "title": "Information exposure in Next.js dev server due to lack of origin verification",
+          "url": "https://github.com/advisories/GHSA-3h52-269p-cp9r",
+          "severity": "low",
+          "cwe": [
+            "CWE-1385"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=15.0.0 <15.2.2"
+        },
+        {
+          "source": 1105948,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.JS vulnerability can lead to DoS via cache poisoning ",
+          "url": "https://github.com/advisories/GHSA-67rr-84xm-4c7r",
+          "severity": "high",
+          "cwe": [
+            "CWE-444"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=15.0.4-canary.51 <15.1.8"
+        },
+        {
+          "source": 1107226,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Affected by Cache Key Confusion for Image Optimization API Routes",
+          "url": "https://github.com/advisories/GHSA-g5qg-72qw-gw5v",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-524"
+          ],
+          "cvss": {
+            "score": 6.2,
+            "vectorString": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=0.9.9 <14.2.31"
+        },
+        {
+          "source": 1107228,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Affected by Cache Key Confusion for Image Optimization API Routes",
+          "url": "https://github.com/advisories/GHSA-g5qg-72qw-gw5v",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-524"
+          ],
+          "cvss": {
+            "score": 6.2,
+            "vectorString": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=15.0.0 <=15.4.4"
+        },
+        {
+          "source": 1107420,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js authorization bypass vulnerability",
+          "url": "https://github.com/advisories/GHSA-7gfc-8cq8-jh5f",
+          "severity": "high",
+          "cwe": [
+            "CWE-285",
+            "CWE-863"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=9.5.5 <14.2.15"
+        },
+        {
+          "source": 1107512,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Improper Middleware Redirect Handling Leads to SSRF",
+          "url": "https://github.com/advisories/GHSA-4342-x723-ch2f",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-918"
+          ],
+          "cvss": {
+            "score": 6.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N"
+          },
+          "range": ">=0.9.9 <14.2.32"
+        },
+        {
+          "source": 1107513,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Content Injection Vulnerability for Image Optimization",
+          "url": "https://github.com/advisories/GHSA-xv57-4mr9-wg8v",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-20"
+          ],
+          "cvss": {
+            "score": 4.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N"
+          },
+          "range": ">=0.9.9 <14.2.31"
+        },
+        {
+          "source": 1107514,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Content Injection Vulnerability for Image Optimization",
+          "url": "https://github.com/advisories/GHSA-xv57-4mr9-wg8v",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-20"
+          ],
+          "cvss": {
+            "score": 4.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N"
+          },
+          "range": ">=15.0.0 <=15.4.4"
+        },
+        {
+          "source": 1107515,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Improper Middleware Redirect Handling Leads to SSRF",
+          "url": "https://github.com/advisories/GHSA-4342-x723-ch2f",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-918"
+          ],
+          "cvss": {
+            "score": 6.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N"
+          },
+          "range": ">=15.0.0-canary.0 <15.4.7"
+        },
+        {
+          "source": 1108291,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Race Condition to Cache Poisoning",
+          "url": "https://github.com/advisories/GHSA-qpjv-v59x-3qc4",
+          "severity": "low",
+          "cwe": [
+            "CWE-362"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N"
+          },
+          "range": ">=0.9.9 <14.2.24"
+        },
+        {
+          "source": 1108410,
+          "name": "next",
+          "dependency": "next",
+          "title": "Next.js Race Condition to Cache Poisoning",
+          "url": "https://github.com/advisories/GHSA-qpjv-v59x-3qc4",
+          "severity": "low",
+          "cwe": [
+            "CWE-362"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N"
+          },
+          "range": ">=15.0.0 <15.1.6"
+        },
+        {
+          "source": 1108952,
+          "name": "next",
+          "dependency": "next",
+          "title": "Authorization Bypass in Next.js Middleware",
+          "url": "https://github.com/advisories/GHSA-f82v-jwr5-mffw",
+          "severity": "critical",
+          "cwe": [
+            "CWE-285",
+            "CWE-863"
+          ],
+          "cvss": {
+            "score": 9.1,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N"
+          },
+          "range": ">=15.0.0 <15.2.3"
+        },
+        {
+          "source": 1108953,
+          "name": "next",
+          "dependency": "next",
+          "title": "Authorization Bypass in Next.js Middleware",
+          "url": "https://github.com/advisories/GHSA-f82v-jwr5-mffw",
+          "severity": "critical",
+          "cwe": [
+            "CWE-285",
+            "CWE-863"
+          ],
+          "cvss": {
+            "score": 9.1,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N"
+          },
+          "range": ">=14.0.0 <14.2.25"
+        }
+      ],
+      "effects": [],
+      "range": "0.9.9 - 14.2.31 || 15.0.0-canary.0 - 15.4.6",
+      "nodes": [
+        "apps/docs-site/node_modules/next",
+        "examples/analytics-console-demo/node_modules/next",
+        "examples/rag-workbench-demo/node_modules/next"
+      ],
+      "fixAvailable": {
+        "name": "next",
+        "version": "15.5.6",
+        "isSemVerMajor": false
+      }
+    },
+    "remark-mdx-frontmatter": {
+      "name": "remark-mdx-frontmatter",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "estree-util-value-to-estree"
+      ],
+      "effects": [],
+      "range": "<=2.1.1",
+      "nodes": [
+        "node_modules/remark-mdx-frontmatter"
+      ],
+      "fixAvailable": true
+    },
+    "storybook": {
+      "name": "storybook",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@storybook/cli"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-pr-32939-sha-8829d716 || 6.5.17-alpha.0 - 8.2.0-beta.3",
+      "nodes": [
+        "node_modules/storybook"
+      ],
+      "fixAvailable": {
+        "name": "storybook",
+        "version": "10.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "vite": {
+      "name": "vite",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "esbuild"
+      ],
+      "effects": [
+        "@joshwooding/vite-plugin-react-docgen-typescript",
+        "@storybook/builder-vite",
+        "@storybook/react-vite",
+        "@vanilla-extract/integration",
+        "@vitejs/plugin-react",
+        "@vitest/mocker",
+        "vite-node",
+        "vitepress",
+        "vitest"
+      ],
+      "range": "0.11.0 - 6.1.6",
+      "nodes": [
+        "node_modules/vite",
+        "packages/error-handling/node_modules/vite-node/node_modules/vite",
+        "packages/error-handling/node_modules/vitest/node_modules/vite"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "4.0.7",
+        "isSemVerMajor": true
+      }
+    },
+    "vite-node": {
+      "name": "vite-node",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "vite"
+      ],
+      "effects": [
+        "vitest"
+      ],
+      "range": "<=2.2.0-beta.2",
+      "nodes": [
+        "node_modules/@vanilla-extract/integration/node_modules/vite-node",
+        "node_modules/vitest/node_modules/vite-node",
+        "packages/error-handling/node_modules/vite-node"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "4.0.7",
+        "isSemVerMajor": true
+      }
+    },
+    "vitepress": {
+      "name": "vitepress",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "vite"
+      ],
+      "effects": [],
+      "range": "0.2.0 - 1.6.4",
+      "nodes": [
+        "node_modules/vitepress"
+      ],
+      "fixAvailable": {
+        "name": "vitepress",
+        "version": "0.1.1",
+        "isSemVerMajor": true
+      }
+    },
+    "vitest": {
+      "name": "vitest",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@vitest/mocker",
+        "vite",
+        "vite-node"
+      ],
+      "effects": [
+        "@vitest/coverage-v8"
+      ],
+      "range": "0.0.1 - 0.0.12 || 0.0.29 - 0.0.122 || 0.3.3 - 3.0.0-beta.4",
+      "nodes": [
+        "node_modules/vitest",
+        "packages/error-handling/node_modules/vitest"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "4.0.7",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 27,
+      "high": 0,
+      "critical": 1,
+      "total": 28
+    },
+    "dependencies": {
+      "prod": 1424,
+      "dev": 2174,
+      "optional": 299,
+      "peer": 0,
+      "peerOptional": 0,
+      "total": 3675
+    }
+  }
+}

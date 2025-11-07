@@ -24,8 +24,23 @@ export interface UseToggleReturn {
 }
 
 /**
- * Enhanced boolean state with helper functions
+ * Enhanced boolean state with convenience helper functions for common toggle operations.
+ * Eliminates repetitive setState callbacks for boolean values.
  * 
+ * **Features:**
+ * - Simple toggle function
+ * - Explicit setTrue/setFalse helpers
+ * - Standard setState for advanced usage
+ * - Memoized functions (no re-renders)
+ * 
+ * **Use Cases:**
+ * - Modal/dialog visibility
+ * - Sidebar/drawer state
+ * - Feature flags/switches
+ * - Accordion expand/collapse
+ * 
+ * @param {boolean} [initialValue=false] - Initial boolean state
+ * @returns {UseToggleReturn} Object with value and toggle functions
  * @example
  * ```tsx
  * const modal = useToggle(false)

@@ -87,7 +87,7 @@ export const MessageOptimized = React.memo(
         return (
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
+            rehypePlugins={[rehypeHighlight as any]}
             components={markdownComponents}
           >
             {message.content}

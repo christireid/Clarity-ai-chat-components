@@ -1,0 +1,4 @@
+
+> @clarity-chat/licensing@0.1.0 typecheck
+> tsc --noEmit
+

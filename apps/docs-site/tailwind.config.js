@@ -23,6 +23,21 @@ module.exports = {
           900: '#111827',
           950: '#030712',
         },
+        // Primary color (alias to brand for consistency)
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          DEFAULT: '#3b82f6',
+          foreground: '#ffffff',
+        },
         brand: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -35,6 +50,17 @@ module.exports = {
           800: '#1e40af',
           900: '#1e3a8a',
         },
+        // Semantic colors for foreground, muted, card, etc.
+        foreground: '#111827',
+        muted: {
+          DEFAULT: '#f3f4f6',
+          foreground: '#6b7280',
+        },
+        card: {
+          DEFAULT: '#ffffff',
+          foreground: '#111827',
+        },
+        border: '#e5e7eb',
         success: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -133,5 +159,34 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/typography'),
+    function({ addUtilities }) {
+      const newUtilities = {
+        // Background utilities
+        '.bg-bg-primary': {
+          backgroundColor: 'var(--color-bg-primary)',
+        },
+        '.bg-bg-secondary': {
+          backgroundColor: 'var(--color-bg-secondary)',
+        },
+        '.bg-bg-tertiary': {
+          backgroundColor: 'var(--color-bg-tertiary)',
+        },
+        // Text utilities
+        '.text-text-primary': {
+          color: 'var(--color-text-primary)',
+        },
+        '.text-text-secondary': {
+          color: 'var(--color-text-secondary)',
+        },
+        '.text-text-tertiary': {
+          color: 'var(--color-text-tertiary)',
+        },
+        // Border utilities  
+        '.border-border': {
+          borderColor: 'var(--color-border)',
+        },
+      }
+      addUtilities(newUtilities, ['hover', 'focus', 'active', 'dark'])
+    },
   ],
 }

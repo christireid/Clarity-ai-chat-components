@@ -36,30 +36,41 @@ export function CodeBlock({
   const highlightTheme = isDark ? themes.nightOwl : themes.nightOwlLight
 
   return (
-    <div className={clsx('group relative not-prose', className)}>
+    <div
+      className={clsx(
+        'group relative not-prose my-6 shadow-sm hover:shadow-md transition-all duration-200',
+        className
+      )}
+    >
       {/* Header */}
       {(title || language) && (
-        <div className="flex items-center justify-between px-4 py-2 bg-bg-tertiary border-b border-border rounded-t-lg">
+        <div className="flex items-center justify-between px-4 py-3 bg-bg-tertiary border-b-2 border-border rounded-t-xl">
           <div className="flex items-center gap-2 text-sm">
             {title ? (
               <>
-                <Terminal className="w-4 h-4 text-text-tertiary" />
-                <span className="font-medium text-text-primary">{title}</span>
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Terminal className="w-4 h-4 text-primary" />
+                </div>
+                <span className="font-semibold text-text-primary">{title}</span>
               </>
             ) : (
-              <span className="font-mono text-text-secondary">{language}</span>
+              <span className="font-mono text-xs font-medium text-text-secondary px-2 py-1 bg-muted/50 rounded-lg">
+                {language}
+              </span>
             )}
           </div>
-          
+
           <button
             onClick={copyToClipboard}
-            className="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-bg-secondary transition-colors text-xs font-medium text-text-secondary hover:text-text-primary"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-bg-secondary transition-all duration-200 text-xs font-medium text-text-secondary hover:text-text-primary hover:shadow-sm"
             aria-label="Copy code"
           >
             {copied ? (
               <>
                 <Check className="w-4 h-4 text-green-500" />
-                <span>Copied!</span>
+                <span className="text-green-600 dark:text-green-400 font-semibold">
+                  Copied!
+                </span>
               </>
             ) : (
               <>
@@ -72,14 +83,21 @@ export function CodeBlock({
       )}
 
       {/* Code */}
+      {/* @ts-expect-error - prism-react-renderer has type incompatibility with React 19 */}
       <Highlight theme={highlightTheme} code={code.trim()} language={language}>
-        {({ className: highlightClassName, style, tokens, getLineProps, getTokenProps }) => (
+        {({
+          className: highlightClassName,
+          style,
+          tokens,
+          getLineProps,
+          getTokenProps,
+        }) => (
           <pre
             className={clsx(
               highlightClassName,
-              'overflow-x-auto p-4 text-sm leading-relaxed',
-              !title && !language && 'rounded-lg',
-              (title || language) && 'rounded-b-lg'
+              'overflow-x-auto p-4 text-sm leading-relaxed border-2 border-border',
+              !title && !language && 'rounded-xl',
+              (title || language) && 'rounded-b-xl border-t-0'
             )}
             style={{
               ...style,
@@ -90,7 +108,7 @@ export function CodeBlock({
             {!title && !language && (
               <button
                 onClick={copyToClipboard}
-                className="absolute top-2 right-2 p-2 rounded-md hover:bg-white/10 dark:hover:bg-black/20 transition-colors opacity-0 group-hover:opacity-100"
+                className="absolute top-3 right-3 p-2 rounded-lg hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:shadow-sm"
                 aria-label="Copy code"
               >
                 {copied ? (
@@ -113,7 +131,8 @@ export function CodeBlock({
                     {...lineProps}
                     className={clsx(
                       lineProps.className,
-                      isHighlighted && 'bg-brand-500/10 border-l-2 border-brand-500 -ml-4 pl-3',
+                      isHighlighted &&
+                        'bg-brand-500/10 border-l-2 border-brand-500 -ml-4 pl-3',
                       'px-1'
                     )}
                   >

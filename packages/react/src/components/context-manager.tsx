@@ -1,6 +1,16 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, Button, Badge, ScrollArea, cn } from '@clarity-chat/primitives'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Button,
+  Badge,
+  ScrollArea,
+  cn,
+} from '@clarity-chat/primitives'
 import type { Context, ContextType } from '@clarity-chat/types'
 import { ContextCard } from './context-card'
 import { FileUpload } from './file-upload'
@@ -16,7 +26,7 @@ export interface ContextManagerProps {
   className?: string
 }
 
-export const ContextManager: React.FC<ContextManagerProps> = ({
+export const ContextManager = React.memo(function ContextManager({
   contexts,
   onAdd,
   onRemove,
@@ -25,7 +35,7 @@ export const ContextManager: React.FC<ContextManagerProps> = ({
   maxContexts = 20,
   allowedTypes = ['document', 'image', 'video', 'link', 'text'],
   className,
-}) => {
+}: ContextManagerProps) {
   const [showUpload, setShowUpload] = React.useState(false)
   const [filter, setFilter] = React.useState<ContextType | 'all'>('all')
 
@@ -58,10 +68,10 @@ export const ContextManager: React.FC<ContextManagerProps> = ({
       type: file.type.startsWith('image/')
         ? 'image'
         : file.type.startsWith('video/')
-        ? 'video'
-        : file.type.startsWith('audio/')
-        ? 'audio'
-        : 'document',
+          ? 'video'
+          : file.type.startsWith('audio/')
+            ? 'audio'
+            : 'document',
       name: file.name,
       content: '', // Will be extracted
       url: URL.createObjectURL(file),
@@ -193,9 +203,14 @@ export const ContextManager: React.FC<ContextManagerProps> = ({
               <div className="text-6xl mb-4">📦</div>
               <p className="text-sm font-medium">No context added yet</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Add documents, images, or links to provide context for your conversations
+                Add documents, images, or links to provide context for your
+                conversations
               </p>
-              <Button onClick={() => setShowUpload(true)} className="mt-4" size="sm">
+              <Button
+                onClick={() => setShowUpload(true)}
+                className="mt-4"
+                size="sm"
+              >
                 Add First Context
               </Button>
             </div>
@@ -218,4 +233,6 @@ export const ContextManager: React.FC<ContextManagerProps> = ({
       </CardContent>
     </Card>
   )
-}
+})
+
+ContextManager.displayName = 'ContextManager'

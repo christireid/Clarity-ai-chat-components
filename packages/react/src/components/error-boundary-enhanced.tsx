@@ -14,7 +14,8 @@ import type { ErrorFeedback as ErrorFeedbackData } from '../error/types'
 /**
  * Enhanced Error Boundary Props
  */
-export interface ErrorBoundaryEnhancedProps extends Omit<ErrorBoundaryProps, 'onError' | 'fallback'> {
+export interface ErrorBoundaryEnhancedProps
+  extends Omit<ErrorBoundaryProps, 'onError' | 'fallback'> {
   /** Whether to show user feedback option */
   enableFeedback?: boolean
 
@@ -38,22 +39,27 @@ export interface ErrorBoundaryEnhancedProps extends Omit<ErrorBoundaryProps, 'on
 /**
  * Default Enhanced Fallback component with feedback option
  */
-const DefaultEnhancedFallback: React.FC<{
+const DefaultEnhancedFallback = React.memo(function DefaultEnhancedFallback({
+  error,
+  resetError,
+  onFeedbackSubmit,
+  enableFeedback,
+}: {
   error: Error
   resetError: () => void
   onFeedbackSubmit: (feedback: ErrorFeedbackData) => void
   enableFeedback: boolean
-}> = ({ error, resetError, onFeedbackSubmit, enableFeedback }) => {
+}) {
   const [showFeedbackModal, setShowFeedbackModal] = React.useState(false)
 
   return (
     <div
       role="alert"
-      className="flex min-h-[200px] flex-col items-center justify-center rounded-lg border-2 border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-900/10"
+      className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-destructive/20 bg-destructive/10 p-6 shadow-lg"
     >
       <div className="mb-4 flex items-center gap-3">
         <svg
-          className="h-8 w-8 text-red-600 dark:text-red-400"
+          className="h-8 w-8 text-destructive"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -65,19 +71,19 @@ const DefaultEnhancedFallback: React.FC<{
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
           />
         </svg>
-        <h2 className="text-xl font-semibold text-red-900 dark:text-red-100">
+        <h2 className="text-xl font-semibold text-foreground">
           Something went wrong
         </h2>
       </div>
 
-      <p className="mb-4 max-w-md text-center text-sm text-red-800 dark:text-red-200">
+      <p className="mb-4 max-w-md text-center text-sm text-muted-foreground">
         {error.message || 'An unexpected error occurred. Please try again.'}
       </p>
 
       <div className="flex gap-3">
         <button
           onClick={resetError}
-          className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          className="rounded-lg bg-destructive px-4 py-2 text-destructive-foreground transition-all duration-200 hover:opacity-90 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           Try Again
         </button>
@@ -85,7 +91,7 @@ const DefaultEnhancedFallback: React.FC<{
         {enableFeedback && (
           <button
             onClick={() => setShowFeedbackModal(true)}
-            className="rounded-lg border border-red-600 bg-white px-4 py-2 text-red-600 transition-colors hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-900/10 dark:text-red-400 dark:hover:bg-red-900/20"
+            className="rounded-lg border-2 border-destructive bg-card px-4 py-2 text-destructive transition-all duration-200 hover:bg-destructive/10 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
             Report Issue
           </button>
@@ -94,10 +100,10 @@ const DefaultEnhancedFallback: React.FC<{
 
       {process.env.NODE_ENV === 'development' && (
         <details className="mt-4 w-full max-w-2xl text-left">
-          <summary className="cursor-pointer text-sm text-red-700 hover:underline dark:text-red-300">
+          <summary className="cursor-pointer text-sm text-muted-foreground hover:underline hover:text-foreground transition-colors">
             Error Details (Development Only)
           </summary>
-          <pre className="mt-2 overflow-auto rounded bg-red-100 p-3 text-xs text-red-900 dark:bg-red-900/20 dark:text-red-100">
+          <pre className="mt-2 overflow-auto rounded-lg bg-muted p-3 text-xs text-foreground border border-border">
             {error.stack}
           </pre>
         </details>
@@ -114,7 +120,9 @@ const DefaultEnhancedFallback: React.FC<{
       />
     </div>
   )
-}
+})
+
+DefaultEnhancedFallback.displayName = 'DefaultEnhancedFallback'
 
 /**
  * Enhanced Error Boundary Component with Error Tracking
@@ -174,7 +182,8 @@ export function ErrorBoundaryEnhanced({
 }: ErrorBoundaryEnhancedProps) {
   const errorReporter = useErrorReporter()
   const [currentError, setCurrentError] = React.useState<Error | null>(null)
-  const [currentErrorInfo, setCurrentErrorInfo] = React.useState<React.ErrorInfo | null>(null)
+  const [currentErrorInfo, setCurrentErrorInfo] =
+    React.useState<React.ErrorInfo | null>(null)
 
   const handleError = React.useCallback(
     (error: Error, errorInfo: React.ErrorInfo) => {

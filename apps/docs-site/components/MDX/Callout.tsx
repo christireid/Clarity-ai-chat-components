@@ -1,4 +1,10 @@
-import { Info, AlertTriangle, AlertCircle, CheckCircle, Lightbulb } from 'lucide-react'
+import {
+  Info,
+  AlertTriangle,
+  AlertCircle,
+  CheckCircle,
+  Lightbulb,
+} from 'lucide-react'
 import clsx from 'clsx'
 
 type CalloutType = 'info' | 'warning' | 'error' | 'success' | 'tip'
@@ -62,7 +68,7 @@ export function Callout({ type = 'info', title, children }: CalloutProps) {
   return (
     <div
       className={clsx(
-        'not-prose my-6 p-4 rounded-lg border-l-4',
+        'not-prose my-6 p-5 rounded-xl border-2 shadow-sm transition-all duration-200 hover:shadow-md',
         config.bgColor,
         config.borderColor
       )}
@@ -70,14 +76,27 @@ export function Callout({ type = 'info', title, children }: CalloutProps) {
       aria-label={`${type} callout`}
     >
       <div className="flex gap-3">
-        <Icon className={clsx('w-5 h-5 flex-shrink-0 mt-0.5', config.iconColor)} />
+        <div
+          className={clsx(
+            'flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center',
+            'bg-white/50 dark:bg-black/20 shadow-inner',
+            config.iconColor
+          )}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
         <div className="flex-1 min-w-0">
           {(title || defaultTitles[type]) && (
-            <div className={clsx('font-semibold mb-1', config.titleColor)}>
+            <div
+              className={clsx(
+                'font-semibold mb-2 text-base',
+                config.titleColor
+              )}
+            >
               {title || defaultTitles[type]}
             </div>
           )}
-          <div className="text-sm text-text-secondary [&>p]:my-2 [&>p:first-child]:mt-0 [&>p:last-child]:mb-0">
+          <div className="text-sm leading-relaxed text-text-secondary [&>p]:my-2 [&>p:first-child]:mt-0 [&>p:last-child]:mb-0">
             {children}
           </div>
         </div>

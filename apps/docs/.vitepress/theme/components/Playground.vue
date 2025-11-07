@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ChatWindow, Message } from '@clarity-chat/react'
-import { createElement } from 'react'
+import * as React from 'react'
 import { createRoot, Root } from 'react-dom/client'
 
 interface Props {
@@ -26,6 +26,64 @@ const isLoading = ref(false)
 
 let reactRoot: Root | null = null
 
+const sanitizeCode = (code: string) => {
+  const lines = code.split('\n')
+  const output: string[] = []
+  const reactImports = new Set<string>()
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+
+    const defaultReactImport = line.match(
+      /^import\s+React(?:\s*,\s*\{([^}]+)\})?\s+from\s+['"]react['"]\s*;?\s*$/
+    )
+    if (defaultReactImport) {
+      const named = defaultReactImport[1]
+      if (named) {
+        named
+          .split(',')
+          .map(part => part.trim())
+          .filter(Boolean)
+          .forEach(name => reactImports.add(name))
+      }
+      continue
+    }
+
+    const namedReactImport = line.match(
+      /^import\s*\{\s*([^}]+)\s*\}\s*from\s+['"]react['"]\s*;?\s*$/
+    )
+    if (namedReactImport) {
+      namedReactImport[1]
+        .split(',')
+        .map(part => part.trim())
+        .filter(Boolean)
+        .forEach(name => reactImports.add(name))
+      continue
+    }
+
+    if (trimmed.startsWith('import ')) {
+      // Other imports (e.g., component imports) are provided through the sandbox
+      continue
+    }
+
+    output.push(line)
+  }
+
+  const reactBinding = reactImports.size
+    ? `const { ${Array.from(reactImports).join(', ')} } = React\n`
+    : ''
+
+  const body = output.join('\n')
+
+  if (!/export\s+default\s+/.test(body)) {
+    throw new Error('Playground examples must end with "export default"')
+  }
+
+  const cleaned = body.replace(/export\s+default\s+/g, 'return ')
+
+  return `${reactBinding}${cleaned}`
+}
+
 const renderPreview = () => {
   if (!containerRef.value) return
 
@@ -39,20 +97,34 @@ const renderPreview = () => {
 
     // Create new React root and render
     reactRoot = createRoot(containerRef.value)
-    
+
     // Evaluate code in sandbox
-    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor
+    const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
     const sandbox = {
-      React: { createElement },
+      React,
       ChatWindow,
       Message,
       console,
     }
-    
-    const component = new AsyncFunction(
+
+    const preparedCode = sanitizeCode(editableCode.value)
+
+    const exported = new AsyncFunction(
       ...Object.keys(sandbox),
-      `return (${editableCode.value})`
+      preparedCode
     )(...Object.values(sandbox))
+
+    const component = React.isValidElement(exported)
+      ? exported
+      : typeof exported === 'function'
+        ? React.createElement(exported)
+        : exported && typeof exported.default === 'function'
+          ? React.createElement(exported.default)
+          : null
+
+    if (!component) {
+      throw new Error('Playground code must export a React component.')
+    }
 
     reactRoot.render(component)
   } catch (err: any) {

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useRef, useEffect, useCallback, createContext, useContext, isValidElement, cloneElement } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
 
@@ -67,10 +67,10 @@ interface DialogContextValue {
   setOpen: (open: boolean) => void
 }
 
-const DialogContext = React.createContext<DialogContextValue | null>(null)
+const DialogContext = createContext<DialogContextValue | null>(null)
 
 const useDialog = () => {
-  const context = React.useContext(DialogContext)
+  const context = useContext(DialogContext)
   if (!context) {
     throw new Error('Dialog components must be used within a Dialog')
   }
@@ -81,20 +81,22 @@ const useDialog = () => {
 // Focus Trap Hook
 // ============================================================================
 
+// Memoized focusable selector for performance
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not(:disabled), textarea:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])'
+
 function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
-  React.useEffect(() => {
+  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
     if (!enabled || !ref.current) return
 
     const element = ref.current
-    const previouslyFocusedElement = document.activeElement as HTMLElement
+    previouslyFocusedElementRef.current = document.activeElement as HTMLElement
 
-    // Get all focusable elements
+    // Get all focusable elements - function defined inside effect
     const getFocusableElements = () => {
-      return Array.from(
-        element.querySelectorAll<HTMLElement>(
-          'a[href], button:not(:disabled), textarea:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])'
-        )
-      )
+      return Array.from(element.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
     }
 
     // Focus first element
@@ -103,27 +105,28 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
       focusableElements[0].focus()
     }
 
-    // Handle tab key
+    // Handle tab key - optimized event handler
     const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+
       const focusableElements = getFocusableElements()
       if (focusableElements.length === 0) return
 
       const firstElement = focusableElements[0]
       const lastElement = focusableElements[focusableElements.length - 1]
+      const activeElement = document.activeElement
 
-      if (e.key === 'Tab') {
-        if (e.shiftKey) {
-          // Shift + Tab
-          if (document.activeElement === firstElement) {
-            e.preventDefault()
-            lastElement.focus()
-          }
-        } else {
-          // Tab
-          if (document.activeElement === lastElement) {
-            e.preventDefault()
-            firstElement.focus()
-          }
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (activeElement === firstElement) {
+          e.preventDefault()
+          lastElement.focus()
+        }
+      } else {
+        // Tab
+        if (activeElement === lastElement) {
+          e.preventDefault()
+          firstElement.focus()
         }
       }
     }
@@ -133,8 +136,8 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
     return () => {
       element.removeEventListener('keydown', handleTab)
       // Return focus to previously focused element
-      if (previouslyFocusedElement) {
-        previouslyFocusedElement.focus()
+      if (previouslyFocusedElementRef.current) {
+        previouslyFocusedElementRef.current.focus()
       }
     }
   }, [enabled, ref])
@@ -144,16 +147,16 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
 // Dialog Root Component
 // ============================================================================
 
-export const Dialog: React.FC<DialogProps> = ({
+export const Dialog = ({
   open: controlledOpen,
   onOpenChange,
   children,
   defaultOpen = false,
-}) => {
-  const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
+}: DialogProps) => {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen)
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
 
-  const setOpen = React.useCallback(
+  const setOpen = useCallback(
     (newOpen: boolean) => {
       if (controlledOpen === undefined) {
         setInternalOpen(newOpen)
@@ -174,26 +177,26 @@ export const Dialog: React.FC<DialogProps> = ({
 // Dialog Trigger
 // ============================================================================
 
-export const DialogTrigger: React.FC<DialogTriggerProps> = ({
+export const DialogTrigger = ({
   children,
   onClick,
   asChild,
-}) => {
+}: DialogTriggerProps) => {
   const { setOpen } = useDialog()
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     setOpen(true)
     onClick?.()
-  }
+  }, [setOpen, onClick])
 
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, {
+  if (asChild && isValidElement(children)) {
+    return cloneElement(children, {
       onClick: handleClick,
     } as any)
   }
 
   return (
-    <button onClick={handleClick} type="button">
+    <button onClick={handleClick} type="button" aria-haspopup="dialog">
       {children}
     </button>
   )
@@ -239,7 +242,7 @@ const contentAnimations = {
   },
 }
 
-export const DialogContent: React.FC<DialogContentProps> = ({
+export const DialogContent = ({
   children,
   className,
   size = 'md',
@@ -249,33 +252,37 @@ export const DialogContent: React.FC<DialogContentProps> = ({
   animation = 'scale',
   blurBackdrop = true,
   overlayClassName,
-}) => {
+}: DialogContentProps) => {
   const { open, setOpen } = useDialog()
-  const contentRef = React.useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
 
   // Focus trap
   useFocusTrap(contentRef, open)
 
-  // Escape key handling
-  React.useEffect(() => {
-    if (!open || !closeOnEscape) return
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+  // Escape key handling - optimized with useCallback
+  const handleEscape = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && open && closeOnEscape) {
         setOpen(false)
       }
-    }
+    },
+    [open, closeOnEscape, setOpen]
+  )
+
+  useEffect(() => {
+    if (!open || !closeOnEscape) return
 
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [open, closeOnEscape, setOpen])
+  }, [open, closeOnEscape, handleEscape])
 
   // Body scroll lock
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
+      const originalOverflow = document.body.style.overflow
       document.body.style.overflow = 'hidden'
       return () => {
-        document.body.style.overflow = ''
+        document.body.style.overflow = originalOverflow
       }
     }
   }, [open])
@@ -293,8 +300,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed inset-0 z-50 bg-black/50',
-              blurBackdrop && 'backdrop-blur-sm',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
+              blurBackdrop && 'backdrop-blur-md',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -302,14 +309,14 @@ export const DialogContent: React.FC<DialogContentProps> = ({
           />
 
           {/* Content */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 pointer-events-none">
             <motion.div
               ref={contentRef}
               {...contentAnimations[animation]}
               transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                'relative w-full bg-background border border-border rounded-lg shadow-xl pointer-events-auto',
+                'relative w-full bg-card border shadow-2xl rounded-2xl pointer-events-auto',
                 sizeClasses[size],
                 className
               )}
@@ -360,25 +367,19 @@ export const DialogContent: React.FC<DialogContentProps> = ({
 // Dialog Sub-components
 // ============================================================================
 
-export const DialogHeader: React.FC<DialogHeaderProps> = ({
-  children,
-  className,
-}) => {
+export const DialogHeader = ({ children, className }: DialogHeaderProps) => {
   return (
-    <div className={cn('flex flex-col space-y-1.5 px-6 py-5 border-b', className)}>
+    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b', className)}>
       {children}
     </div>
   )
 }
 
-export const DialogTitle: React.FC<DialogTitleProps> = ({
-  children,
-  className,
-}) => {
+export const DialogTitle = ({ children, className }: DialogTitleProps) => {
   return (
     <h2
       className={cn(
-        'text-lg font-semibold leading-none tracking-tight',
+        'text-xl font-semibold leading-none tracking-tight',
         className
       )}
     >
@@ -387,10 +388,10 @@ export const DialogTitle: React.FC<DialogTitleProps> = ({
   )
 }
 
-export const DialogDescription: React.FC<DialogDescriptionProps> = ({
+export const DialogDescription = ({
   children,
   className,
-}) => {
+}: DialogDescriptionProps) => {
   return (
     <p className={cn('text-sm text-muted-foreground', className)}>
       {children}
@@ -398,17 +399,17 @@ export const DialogDescription: React.FC<DialogDescriptionProps> = ({
   )
 }
 
-export const DialogBody: React.FC<{ children: React.ReactNode; className?: string }> = ({
+export const DialogBody = ({
   children,
   className,
+}: {
+  children: React.ReactNode
+  className?: string
 }) => {
   return <div className={cn('px-6 py-4', className)}>{children}</div>
 }
 
-export const DialogFooter: React.FC<DialogFooterProps> = ({
-  children,
-  className,
-}) => {
+export const DialogFooter = ({ children, className }: DialogFooterProps) => {
   return (
     <div
       className={cn(
@@ -421,21 +422,25 @@ export const DialogFooter: React.FC<DialogFooterProps> = ({
   )
 }
 
-export const DialogClose: React.FC<DialogCloseProps> = ({
+export const DialogClose = ({
   children,
   className,
   asChild,
-}) => {
+}: DialogCloseProps) => {
   const { setOpen } = useDialog()
 
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, {
-      onClick: () => setOpen(false),
+  const handleClose = useCallback(() => {
+    setOpen(false)
+  }, [setOpen])
+
+  if (asChild && isValidElement(children)) {
+    return cloneElement(children, {
+      onClick: handleClose,
     } as any)
   }
 
   return (
-    <button onClick={() => setOpen(false)} className={className} type="button">
+    <button onClick={handleClose} className={className} type="button" aria-label="Close dialog">
       {children}
     </button>
   )

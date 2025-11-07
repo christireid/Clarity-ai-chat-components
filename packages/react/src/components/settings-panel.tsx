@@ -12,7 +12,16 @@ import {
   ScrollArea,
   cn,
 } from '@clarity-chat/primitives'
-import type { UserSettings, AIPersonality, UIPreferences, PrivacySettings, NotificationSettings } from '@clarity-chat/types'
+import type {
+  UserSettings,
+  AIPersonality,
+  UIPreferences,
+  PrivacySettings,
+  NotificationSettings,
+  FontSize,
+  MessageLayout,
+} from '@clarity-chat/types'
+import type { ThemeMode } from '../theme/ThemeProvider'
 
 export interface SettingsPanelProps {
   settings: UserSettings
@@ -21,13 +30,15 @@ export interface SettingsPanelProps {
   className?: string
 }
 
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({
+export const SettingsPanel = React.memo(function SettingsPanel({
   settings,
   onUpdate,
   onReset,
   className,
-}) => {
-  const [activeTab, setActiveTab] = React.useState<'ai' | 'ui' | 'privacy' | 'notifications'>('ai')
+}: SettingsPanelProps) {
+  const [activeTab, setActiveTab] = React.useState<
+    'ai' | 'ui' | 'privacy' | 'notifications'
+  >('ai')
   const [hasChanges, setHasChanges] = React.useState(false)
 
   const tabs = [
@@ -52,7 +63,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     setHasChanges(true)
   }
 
-  const handleUpdateNotifications = (updates: Partial<NotificationSettings>) => {
+  const handleUpdateNotifications = (
+    updates: Partial<NotificationSettings>
+  ) => {
     onUpdate({ notifications: { ...settings.notifications, ...updates } })
     setHasChanges(true)
   }
@@ -111,14 +124,28 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <h3 className="text-sm font-semibold mb-3">Response Style</h3>
                   <div className="space-y-3">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Tone</label>
+                      <label className="text-sm font-medium mb-2 block">
+                        Tone
+                      </label>
                       <div className="grid grid-cols-2 gap-2">
-                        {['professional', 'casual', 'technical', 'friendly', 'creative'].map((tone) => (
+                        {(
+                          [
+                            'professional',
+                            'casual',
+                            'technical',
+                            'friendly',
+                            'creative',
+                          ] as const
+                        ).map((tone) => (
                           <Button
                             key={tone}
-                            variant={settings.aiPersonality.tone === tone ? 'default' : 'outline'}
+                            variant={
+                              settings.aiPersonality.tone === tone
+                                ? 'default'
+                                : 'outline'
+                            }
                             size="sm"
-                            onClick={() => handleUpdateAI({ tone: tone as any })}
+                            onClick={() => handleUpdateAI({ tone })}
                             className="justify-start"
                           >
                             {tone.charAt(0).toUpperCase() + tone.slice(1)}
@@ -128,14 +155,27 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Verbosity</label>
+                      <label className="text-sm font-medium mb-2 block">
+                        Verbosity
+                      </label>
                       <div className="grid grid-cols-2 gap-2">
-                        {['concise', 'balanced', 'detailed', 'comprehensive'].map((level) => (
+                        {(
+                          [
+                            'concise',
+                            'balanced',
+                            'detailed',
+                            'comprehensive',
+                          ] as const
+                        ).map((level) => (
                           <Button
                             key={level}
-                            variant={settings.aiPersonality.verbosity === level ? 'default' : 'outline'}
+                            variant={
+                              settings.aiPersonality.verbosity === level
+                                ? 'default'
+                                : 'outline'
+                            }
                             size="sm"
-                            onClick={() => handleUpdateAI({ verbosity: level as any })}
+                            onClick={() => handleUpdateAI({ verbosity: level })}
                             className="justify-start"
                           >
                             {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -145,10 +185,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Response Language</label>
+                      <label className="text-sm font-medium mb-2 block">
+                        Response Language
+                      </label>
                       <select
                         value={settings.aiPersonality.responseLanguage || 'en'}
-                        onChange={(e) => handleUpdateAI({ responseLanguage: e.target.value })}
+                        onChange={(e) =>
+                          handleUpdateAI({ responseLanguage: e.target.value })
+                        }
                         className="w-full text-sm border rounded px-3 py-2 bg-background"
                       >
                         <option value="en">English</option>
@@ -163,15 +207,20 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-semibold mb-3">Custom Instructions</h3>
+                  <h3 className="text-sm font-semibold mb-3">
+                    Custom Instructions
+                  </h3>
                   <Textarea
                     value={settings.aiPersonality.customInstructions || ''}
-                    onChange={(e) => handleUpdateAI({ customInstructions: e.target.value })}
+                    onChange={(e) =>
+                      handleUpdateAI({ customInstructions: e.target.value })
+                    }
                     placeholder="Add custom instructions for how the AI should respond to you..."
                     rows={6}
                   />
                   <p className="text-xs text-muted-foreground mt-2">
-                    These instructions will be included in every conversation to personalize responses.
+                    These instructions will be included in every conversation to
+                    personalize responses.
                   </p>
                 </div>
 
@@ -180,7 +229,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <ul className="text-xs space-y-1 text-muted-foreground">
                     <li>• Use "professional" tone for work-related tasks</li>
                     <li>• Set "concise" for quick answers</li>
-                    <li>• Add custom instructions like "Always explain like I'm 5"</li>
+                    <li>
+                      • Add custom instructions like "Always explain like I'm 5"
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -195,10 +246,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     {['light', 'dark', 'system'].map((theme) => (
                       <Button
                         key={theme}
-                        variant={settings.uiPreferences.theme === theme ? 'default' : 'outline'}
+                        variant={
+                          settings.uiPreferences.theme === theme
+                            ? 'default'
+                            : 'outline'
+                        }
                         size="sm"
                         onClick={() => {
-                          handleUpdateUI({ theme: theme as any })
+                          handleUpdateUI({ theme: theme as ThemeMode })
                           // Apply theme
                           if (theme === 'dark') {
                             document.documentElement.classList.add('dark')
@@ -211,7 +266,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                         {theme === 'light' && '☀️'}
                         {theme === 'dark' && '🌙'}
                         {theme === 'system' && '💻'}
-                        <span className="mt-1 text-xs">{theme.charAt(0).toUpperCase() + theme.slice(1)}</span>
+                        <span className="mt-1 text-xs">
+                          {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                        </span>
                       </Button>
                     ))}
                   </div>
@@ -223,9 +280,15 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     {['small', 'medium', 'large', 'extra-large'].map((size) => (
                       <Button
                         key={size}
-                        variant={settings.uiPreferences.fontSize === size ? 'default' : 'outline'}
+                        variant={
+                          settings.uiPreferences.fontSize === size
+                            ? 'default'
+                            : 'outline'
+                        }
                         size="sm"
-                        onClick={() => handleUpdateUI({ fontSize: size as any })}
+                        onClick={() =>
+                          handleUpdateUI({ fontSize: size as FontSize })
+                        }
                       >
                         {size === 'small' && 'S'}
                         {size === 'medium' && 'M'}
@@ -242,9 +305,17 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     {['bubbles', 'compact', 'spacious'].map((layout) => (
                       <Button
                         key={layout}
-                        variant={settings.uiPreferences.messageLayout === layout ? 'default' : 'outline'}
+                        variant={
+                          settings.uiPreferences.messageLayout === layout
+                            ? 'default'
+                            : 'outline'
+                        }
                         size="sm"
-                        onClick={() => handleUpdateUI({ messageLayout: layout as any })}
+                        onClick={() =>
+                          handleUpdateUI({
+                            messageLayout: layout as MessageLayout,
+                          })
+                        }
                       >
                         {layout.charAt(0).toUpperCase() + layout.slice(1)}
                       </Button>
@@ -258,15 +329,27 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     { key: 'showTimestamps', label: 'Show Timestamps' },
                     { key: 'showAvatars', label: 'Show Avatars' },
                     { key: 'enableAnimations', label: 'Enable Animations' },
-                    { key: 'enableSoundEffects', label: 'Enable Sound Effects' },
+                    {
+                      key: 'enableSoundEffects',
+                      label: 'Enable Sound Effects',
+                    },
                     { key: 'compactMode', label: 'Compact Mode' },
                   ].map(({ key, label }) => (
-                    <label key={key} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer">
+                    <label
+                      key={key}
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer"
+                    >
                       <span className="text-sm">{label}</span>
                       <input
                         type="checkbox"
-                        checked={settings.uiPreferences[key as keyof UIPreferences] as boolean}
-                        onChange={(e) => handleUpdateUI({ [key]: e.target.checked })}
+                        checked={
+                          settings.uiPreferences[
+                            key as keyof UIPreferences
+                          ] as boolean
+                        }
+                        onChange={(e) =>
+                          handleUpdateUI({ [key]: e.target.checked })
+                        }
                         className="w-4 h-4"
                       />
                     </label>
@@ -281,31 +364,62 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold">Data Collection</h3>
                   {[
-                    { key: 'saveHistory', label: 'Save Chat History', description: 'Store your conversations for future reference' },
-                    { key: 'enableAnalytics', label: 'Enable Analytics', description: 'Help us improve by sharing usage data' },
-                    { key: 'shareUsageData', label: 'Share Usage Data', description: 'Contribute to AI training and improvements' },
-                    { key: 'allowTelemetry', label: 'Allow Telemetry', description: 'Send crash reports and performance data' },
+                    {
+                      key: 'saveHistory',
+                      label: 'Save Chat History',
+                      description:
+                        'Store your conversations for future reference',
+                    },
+                    {
+                      key: 'enableAnalytics',
+                      label: 'Enable Analytics',
+                      description: 'Help us improve by sharing usage data',
+                    },
+                    {
+                      key: 'shareUsageData',
+                      label: 'Share Usage Data',
+                      description: 'Contribute to AI training and improvements',
+                    },
+                    {
+                      key: 'allowTelemetry',
+                      label: 'Allow Telemetry',
+                      description: 'Send crash reports and performance data',
+                    },
                   ].map(({ key, label, description }) => (
-                    <label key={key} className="flex items-start justify-between p-4 rounded-lg border hover:bg-muted/50 cursor-pointer">
+                    <label
+                      key={key}
+                      className="flex items-start justify-between p-4 rounded-lg border hover:bg-muted/50 cursor-pointer"
+                    >
                       <div className="flex-1">
                         <p className="text-sm font-medium">{label}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {description}
+                        </p>
                       </div>
                       <input
                         type="checkbox"
-                        checked={settings.privacy[key as keyof PrivacySettings] as boolean}
-                        onChange={(e) => handleUpdatePrivacy({ [key]: e.target.checked })}
+                        checked={
+                          settings.privacy[
+                            key as keyof PrivacySettings
+                          ] as boolean
+                        }
+                        onChange={(e) =>
+                          handleUpdatePrivacy({ [key]: e.target.checked })
+                        }
                         className="w-4 h-4 mt-1 ml-4"
                       />
                     </label>
                   ))}
                 </div>
 
-                <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                  <h4 className="text-sm font-medium mb-2">⚠️ Privacy Notice</h4>
+                <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-sm">
+                  <h4 className="text-sm font-medium mb-2">
+                    ⚠️ Privacy Notice
+                  </h4>
                   <p className="text-xs text-muted-foreground">
-                    We take your privacy seriously. Your data is encrypted and never shared with third parties
-                    without your explicit consent. You can export or delete your data at any time.
+                    We take your privacy seriously. Your data is encrypted and
+                    never shared with third parties without your explicit
+                    consent. You can export or delete your data at any time.
                   </p>
                 </div>
               </div>
@@ -315,19 +429,36 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             {activeTab === 'notifications' && (
               <div className="space-y-6">
                 <div className="space-y-3">
-                  <h3 className="text-sm font-semibold">Notification Channels</h3>
+                  <h3 className="text-sm font-semibold">
+                    Notification Channels
+                  </h3>
                   {[
                     { key: 'email', label: 'Email Notifications', icon: '📧' },
                     { key: 'push', label: 'Push Notifications', icon: '🔔' },
-                    { key: 'desktop', label: 'Desktop Notifications', icon: '💻' },
+                    {
+                      key: 'desktop',
+                      label: 'Desktop Notifications',
+                      icon: '💻',
+                    },
                     { key: 'sound', label: 'Sound Alerts', icon: '🔊' },
                   ].map(({ key, label, icon }) => (
-                    <label key={key} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer">
-                      <span className="text-sm">{icon} {label}</span>
+                    <label
+                      key={key}
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer"
+                    >
+                      <span className="text-sm">
+                        {icon} {label}
+                      </span>
                       <input
                         type="checkbox"
-                        checked={settings.notifications[key as keyof NotificationSettings] as boolean}
-                        onChange={(e) => handleUpdateNotifications({ [key]: e.target.checked })}
+                        checked={
+                          settings.notifications[
+                            key as keyof NotificationSettings
+                          ] as boolean
+                        }
+                        onChange={(e) =>
+                          handleUpdateNotifications({ [key]: e.target.checked })
+                        }
                         className="w-4 h-4"
                       />
                     </label>
@@ -340,12 +471,21 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     { key: 'newMessage', label: 'New Messages' },
                     { key: 'systemUpdates', label: 'System Updates' },
                   ].map(({ key, label }) => (
-                    <label key={key} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer">
+                    <label
+                      key={key}
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer"
+                    >
                       <span className="text-sm">{label}</span>
                       <input
                         type="checkbox"
-                        checked={settings.notifications[key as keyof NotificationSettings] as boolean}
-                        onChange={(e) => handleUpdateNotifications({ [key]: e.target.checked })}
+                        checked={
+                          settings.notifications[
+                            key as keyof NotificationSettings
+                          ] as boolean
+                        }
+                        onChange={(e) =>
+                          handleUpdateNotifications({ [key]: e.target.checked })
+                        }
                         className="w-4 h-4"
                       />
                     </label>
@@ -359,7 +499,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
       {/* Footer */}
       <div className="p-4 border-t flex items-center justify-between">
-        <Button variant="outline" size="sm" onClick={handleReset} disabled={!onReset}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleReset}
+          disabled={!onReset}
+        >
           Reset to Defaults
         </Button>
         {hasChanges && (
@@ -370,4 +515,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       </div>
     </Card>
   )
-}
+})
+
+SettingsPanel.displayName = 'SettingsPanel'

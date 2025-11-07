@@ -11,7 +11,12 @@ import {
   ScrollArea,
   cn,
 } from '@clarity-chat/primitives'
-import type { UsageStats, CreditBalance, UsageLimit, UsageMetrics } from '@clarity-chat/types'
+import type {
+  UsageStats,
+  CreditBalance,
+  UsageLimit,
+  UsageMetrics,
+} from '@clarity-chat/types'
 
 export interface UsageDashboardProps {
   balance: CreditBalance
@@ -21,13 +26,13 @@ export interface UsageDashboardProps {
   className?: string
 }
 
-export const UsageDashboard: React.FC<UsageDashboardProps> = ({
+export const UsageDashboard = React.memo(function UsageDashboard({
   balance,
   stats,
   limits = [],
   onPurchaseCredits,
   className,
-}) => {
+}: UsageDashboardProps) {
   const usagePercentage = (balance.used / balance.total) * 100
   const isLowBalance = usagePercentage > 80
 
@@ -95,7 +100,9 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold">Credit Balance</h3>
                 <div className="text-right">
-                  <p className="text-2xl font-bold">{formatNumber(balance.available)}</p>
+                  <p className="text-2xl font-bold">
+                    {formatNumber(balance.available)}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     of {formatNumber(balance.total)} credits
                   </p>
@@ -130,53 +137,67 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
 
             {/* Usage Metrics Grid */}
             <div>
-              <h3 className="text-sm font-semibold mb-3">Usage This {stats.period}</h3>
+              <h3 className="text-sm font-semibold mb-3">
+                Usage This {stats.period}
+              </h3>
               <div className="grid grid-cols-2 gap-3">
-                {(Object.keys(stats.metrics) as Array<keyof UsageMetrics>).map((key) => {
-                  const value = stats.metrics[key]
-                  const limit = limits.find((l) => l.metric === key)
-                  const percentage = limit ? (limit.current / limit.limit) * 100 : 0
-                  const isNearLimit = percentage > 80
+                {(Object.keys(stats.metrics) as Array<keyof UsageMetrics>).map(
+                  (key) => {
+                    const value = stats.metrics[key]
+                    const limit = limits.find((l) => l.metric === key)
+                    const percentage = limit
+                      ? (limit.current / limit.limit) * 100
+                      : 0
+                    const isNearLimit = percentage > 80
 
-                  return (
-                    <motion.div
-                      key={key}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className={cn(
-                        'p-4 rounded-lg border',
-                        isNearLimit && 'border-yellow-500/50 bg-yellow-500/5'
-                      )}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">{metricIcons[key]}</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-muted-foreground truncate">
-                            {metricLabels[key]}
-                          </p>
-                          <p className="text-xl font-bold">{formatNumber(value)}</p>
-                        </div>
-                      </div>
-                      {limit && (
-                        <div>
-                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div
-                              className={cn(
-                                'h-full rounded-full transition-all',
-                                isNearLimit ? 'bg-yellow-500' : 'bg-primary'
-                              )}
-                              style={{ width: `${Math.min(percentage, 100)}%` }}
-                            />
+                    return (
+                      <motion.div
+                        key={key}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={cn(
+                          'p-4 rounded-lg border',
+                          isNearLimit &&
+                            'border-[hsl(var(--warning))]/50 bg-[hsl(var(--warning))]/5'
+                        )}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-2xl">{metricIcons[key]}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-muted-foreground truncate">
+                              {metricLabels[key]}
+                            </p>
+                            <p className="text-xl font-bold">
+                              {formatNumber(value)}
+                            </p>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {formatNumber(limit.current)} / {formatNumber(limit.limit)}
-                            {isNearLimit && ' ⚠️'}
-                          </p>
                         </div>
-                      )}
-                    </motion.div>
-                  )
-                })}
+                        {limit && (
+                          <div>
+                            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                              <div
+                                className={cn(
+                                  'h-full rounded-full transition-all duration-200',
+                                  isNearLimit
+                                    ? 'bg-[hsl(var(--warning))]'
+                                    : 'bg-primary'
+                                )}
+                                style={{
+                                  width: `${Math.min(percentage, 100)}%`,
+                                }}
+                              />
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {formatNumber(limit.current)} /{' '}
+                              {formatNumber(limit.limit)}
+                              {isNearLimit && ' ⚠️'}
+                            </p>
+                          </div>
+                        )}
+                      </motion.div>
+                    )
+                  }
+                )}
               </div>
             </div>
 
@@ -195,23 +216,28 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
                     <div className="flex-1">
                       <p className="text-sm font-medium">{item.category}</p>
                       <p className="text-xs text-muted-foreground">
-                        {formatNumber(item.quantity)} × {formatCurrency(item.unitPrice)}
+                        {formatNumber(item.quantity)} ×{' '}
+                        {formatCurrency(item.unitPrice)}
                       </p>
                     </div>
-                    <p className="text-sm font-bold">{formatCurrency(item.amount)}</p>
+                    <p className="text-sm font-bold">
+                      {formatCurrency(item.amount)}
+                    </p>
                   </motion.div>
                 ))}
 
                 <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/20">
                   <p className="text-sm font-bold">Total</p>
-                  <p className="text-lg font-bold">{formatCurrency(stats.costs.total)}</p>
+                  <p className="text-lg font-bold">
+                    {formatCurrency(stats.costs.total)}
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Usage Limits Warnings */}
             {limits.some((l) => (l.current / l.limit) * 100 > 80) && (
-              <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+              <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-sm">
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
                   ⚠️ Approaching Limits
                 </h4>
@@ -220,7 +246,8 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
                     .filter((l) => (l.current / l.limit) * 100 > 80)
                     .map((limit) => (
                       <li key={limit.metric}>
-                        • {metricLabels[limit.metric]}: {formatNumber(limit.current)} /{' '}
+                        • {metricLabels[limit.metric]}:{' '}
+                        {formatNumber(limit.current)} /{' '}
                         {formatNumber(limit.limit)} (
                         {((limit.current / limit.limit) * 100).toFixed(0)}%)
                       </li>
@@ -236,25 +263,35 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 rounded-lg bg-muted/50 text-center">
                 <p className="text-xs text-muted-foreground">Period</p>
-                <p className="text-sm font-semibold capitalize">{stats.period}</p>
+                <p className="text-sm font-semibold capitalize">
+                  {stats.period}
+                </p>
               </div>
               <div className="p-3 rounded-lg bg-muted/50 text-center">
                 <p className="text-xs text-muted-foreground">Start Date</p>
                 <p className="text-sm font-semibold">
-                  {stats.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  {stats.startDate.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
                 </p>
               </div>
               <div className="p-3 rounded-lg bg-muted/50 text-center">
                 <p className="text-xs text-muted-foreground">End Date</p>
                 <p className="text-sm font-semibold">
-                  {stats.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  {stats.endDate.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
                 </p>
               </div>
             </div>
 
             {/* Usage Tips */}
             <div className="p-4 bg-muted/50 rounded-lg">
-              <h4 className="text-sm font-semibold mb-2">💡 Tips to Save Credits</h4>
+              <h4 className="text-sm font-semibold mb-2">
+                💡 Tips to Save Credits
+              </h4>
               <ul className="text-xs space-y-1 text-muted-foreground">
                 <li>• Use shorter prompts for simple questions</li>
                 <li>• Enable context management to reduce redundant queries</li>
@@ -267,4 +304,6 @@ export const UsageDashboard: React.FC<UsageDashboardProps> = ({
       </CardContent>
     </Card>
   )
-}
+})
+
+UsageDashboard.displayName = 'UsageDashboard'

@@ -1,0 +1,76 @@
+import type { Lead, Deal } from '../types'
+
+export const mockLeads: Lead[] = [
+  {
+    id: 'lead-1',
+    name: 'John Smith',
+    title: 'VP of Engineering',
+    company: 'Acme Corp',
+    email: 'john@acme.com',
+    phone: '+1 (555) 123-4567',
+    location: 'San Francisco, CA',
+    score: 75,
+    stage: 'Qualification',
+    lastContact: new Date(),
+  },
+  {
+    id: 'lead-2',
+    name: 'Sarah Johnson',
+    title: 'CTO',
+    company: 'TechStart Inc',
+    email: 'sarah@techstart.com',
+    phone: '+1 (555) 234-5678',
+    location: 'New York, NY',
+    score: 85,
+    stage: 'Proposal',
+    lastContact: new Date(Date.now() - 86400000),
+  },
+]
+
+export const mockDeals: Deal[] = [
+  {
+    id: 'deal-1',
+    name: 'Acme Corp - Enterprise',
+    value: 50000,
+    stage: 'Qualification',
+    probability: 60,
+    leadId: 'lead-1',
+    closeDate: new Date(Date.now() + 30 * 86400000),
+  },
+  {
+    id: 'deal-2',
+    name: 'TechStart - Pro Plan',
+    value: 25000,
+    stage: 'Proposal',
+    probability: 75,
+    leadId: 'lead-2',
+    closeDate: new Date(Date.now() + 15 * 86400000),
+  },
+  {
+    id: 'deal-3',
+    name: 'Beta Corp - Starter',
+    value: 10000,
+    stage: 'Prospecting',
+    probability: 30,
+    leadId: 'lead-1',
+    closeDate: new Date(Date.now() + 60 * 86400000),
+  },
+  {
+    id: 'deal-4',
+    name: 'Gamma Inc - Enterprise',
+    value: 75000,
+    stage: 'Negotiation',
+    probability: 85,
+    leadId: 'lead-2',
+    closeDate: new Date(Date.now() + 7 * 86400000),
+  },
+  {
+    id: 'deal-5',
+    name: 'Delta LLC - Premium',
+    value: 40000,
+    stage: 'Closed Won',
+    probability: 100,
+    leadId: 'lead-1',
+    closeDate: new Date(),
+  },
+]

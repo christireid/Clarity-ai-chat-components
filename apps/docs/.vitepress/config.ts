@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import path from 'path'
 
 export default defineConfig({
   title: 'Clarity Chat',
@@ -89,6 +90,20 @@ export default defineConfig({
 
     search: {
       provider: 'local',
+    },
+  },
+
+  vite: {
+    resolve: {
+      alias: {
+        '@clarity-chat/react': path.resolve(__dirname, '../../..', 'packages/react/src/index.ts'),
+        '@clarity-chat/primitives': path.resolve(__dirname, '../../..', 'packages/primitives/src/index.ts'),
+        '@clarity-chat/types': path.resolve(__dirname, '../../..', 'packages/types/src/index.ts'),
+      },
+      dedupe: ['react', 'react-dom'],
+    },
+    ssr: {
+      noExternal: ['@clarity-chat/react', '@clarity-chat/primitives', '@clarity-chat/types'],
     },
   },
 })

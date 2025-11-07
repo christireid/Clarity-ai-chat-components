@@ -1,0 +1,109 @@
+{
+  "issues": [
+    {
+      "id": "ISSUE-001",
+      "category": "build",
+      "severity": "blocker",
+      "scope": "packages/react/src/hooks/use-chat-enhanced.ts:467",
+      "summary": "Syntax error: Unexpected 'catch' - missing closing brace in if-else structure",
+      "evidence": "Build error: 'Unexpected catch' at line 467. TypeScript error: 'try' expected at line 467.",
+      "root_cause": "Missing closing brace for if block containing try-catch, causing parser to misinterpret the catch statement",
+      "fix": {
+        "strategy": "Fix brace structure: ensure if block at line 361 properly closes before else if at line 433. The try-catch block needs proper indentation and the if block needs to close correctly.",
+        "files": ["packages/react/src/hooks/use-chat-enhanced.ts"],
+        "patch_example": "Fix indentation and brace structure around lines 361-433",
+        "risk": "medium",
+        "effort_hours": 1
+      }
+    },
+    {
+      "id": "ISSUE-002",
+      "category": "build",
+      "severity": "blocker",
+      "scope": "packages/react/src/utils/memory/token-optimized-context.ts:177",
+      "summary": "Cannot assign to constant 'remainingBudget'",
+      "evidence": "Build error: 'Cannot assign to remainingBudget because it is a constant' at line 177",
+      "root_cause": "Variable declared as const but later modified with -= operator",
+      "fix": {
+        "strategy": "Change const to let for remainingBudget variable",
+        "files": ["packages/react/src/utils/memory/token-optimized-context.ts"],
+        "patch_example": "Change 'const remainingBudget' to 'let remainingBudget' at line 168",
+        "risk": "low",
+        "effort_hours": 0.1
+      }
+    },
+    {
+      "id": "ISSUE-003",
+      "category": "dependencies",
+      "severity": "critical",
+      "scope": "examples/*/package.json",
+      "summary": "Workspace protocol 'workspace:*' not supported by npm",
+      "evidence": "npm install fails with 'Unsupported URL Type workspace:'",
+      "root_cause": "npm workspaces don't support 'workspace:*' protocol (pnpm/yarn feature)",
+      "fix": {
+        "strategy": "Replace 'workspace:*' with '*' for npm workspaces compatibility",
+        "files": [
+          "examples/token-optimization-demo/package.json",
+          "examples/enterprise-ai-ops/package.json",
+          "examples/conversational-analytics/package.json",
+          "examples/ai-research-platform/package.json"
+        ],
+        "patch_example": "Replace '@clarity-chat/react': 'workspace:*' with '@clarity-chat/react': '*'",
+        "risk": "low",
+        "effort_hours": 0.2
+      }
+    },
+    {
+      "id": "ISSUE-004",
+      "category": "dependencies",
+      "severity": "major",
+      "scope": "examples/*/package.json",
+      "summary": "Peer dependency conflict: React 19 vs lucide-react supporting only React 16-18",
+      "evidence": "npm install requires --legacy-peer-deps flag. lucide-react@0.344.0 only supports '^16.5.1 || ^17.0.0 || ^18.0.0'",
+      "root_cause": "Examples use React 19 but lucide-react doesn't support it yet",
+      "fix": {
+        "strategy": "Either downgrade React to 18.x in examples or upgrade lucide-react to a version supporting React 19, or use --legacy-peer-deps in CI",
+        "files": [
+          "examples/enterprise-ai-ops/package.json",
+          "examples/conversational-analytics/package.json",
+          "examples/ai-research-platform/package.json"
+        ],
+        "patch_example": "Update lucide-react to ^0.400.0+ if available, or pin React to ^18.0.0",
+        "risk": "medium",
+        "effort_hours": 1
+      }
+    },
+    {
+      "id": "ISSUE-005",
+      "category": "dependencies",
+      "severity": "minor",
+      "scope": "root",
+      "summary": "24 npm vulnerabilities (23 moderate, 1 critical)",
+      "evidence": "npm audit reports vulnerabilities after install",
+      "root_cause": "Outdated dependencies with known security issues",
+      "fix": {
+        "strategy": "Run npm audit fix and review critical vulnerability, update affected packages",
+        "files": ["package.json", "package-lock.json"],
+        "patch_example": "npm audit fix (with review of breaking changes)",
+        "risk": "low",
+        "effort_hours": 0.5
+      }
+    },
+    {
+      "id": "ISSUE-006",
+      "category": "dependencies",
+      "severity": "minor",
+      "scope": "root",
+      "summary": "Deprecated packages in dependency tree",
+      "evidence": "Warnings for rimraf@2.6.3, glob@7.2.3, eslint@8.57.1, etc.",
+      "root_cause": "Transitive dependencies using deprecated versions",
+      "fix": {
+        "strategy": "Update direct dependencies to versions that don't pull in deprecated packages",
+        "files": ["package.json"],
+        "patch_example": "Update eslint and other packages to latest versions",
+        "risk": "low",
+        "effort_hours": 1
+      }
+    }
+  ]
+}

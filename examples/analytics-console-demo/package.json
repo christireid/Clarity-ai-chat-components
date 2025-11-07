@@ -2,6 +2,7 @@
   "name": "analytics-console-demo",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Analytics Console - Token Usage Tracking & Cost Analytics",
   "scripts": {
     "dev": "next dev -p 3003",

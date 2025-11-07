@@ -80,6 +80,66 @@ const examples = [
       },
     ],
   },
+  {
+    title: 'Industry Solutions',
+    icon: FileText,
+    examples: [
+      {
+        title: 'Healthcare Assistant',
+        href: '/examples/healthcare-assistant',
+        description: 'HIPAA-compliant medical chatbot with patient records',
+        difficulty: 'Advanced',
+      },
+      {
+        title: 'Financial Advisor',
+        href: '/examples/financial-advisor',
+        description: 'Budget planning, expense tracking, and investment insights',
+        difficulty: 'Advanced',
+      },
+      {
+        title: 'Ecommerce Assistant',
+        href: '/examples/ecommerce-assistant',
+        description: 'Product recommendations and shopping cart integration',
+        difficulty: 'Intermediate',
+      },
+      {
+        title: 'Education Tutor',
+        href: '/examples/education-tutor',
+        description: 'Interactive learning with quizzes and progress tracking',
+        difficulty: 'Intermediate',
+      },
+    ],
+  },
+  {
+    title: 'Enterprise Workflows',
+    icon: Zap,
+    examples: [
+      {
+        title: 'AI Agents Workflow',
+        href: '/examples/ai-agents-workflow',
+        description: 'Multi-agent orchestration with custom tools',
+        difficulty: 'Advanced',
+      },
+      {
+        title: 'Code Assistant',
+        href: '/examples/code-assistant',
+        description: 'AI-powered code help with syntax highlighting',
+        difficulty: 'Advanced',
+      },
+      {
+        title: 'Email Assistant',
+        href: '/examples/email-assistant',
+        description: 'Smart email composition and response suggestions',
+        difficulty: 'Intermediate',
+      },
+      {
+        title: 'Document Summarizer',
+        href: '/examples/document-summarizer',
+        description: 'Upload and summarize documents with AI',
+        difficulty: 'Advanced',
+      },
+    ],
+  },
 ]
 
 const difficultyColor = {

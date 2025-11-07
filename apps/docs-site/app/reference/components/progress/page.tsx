@@ -1,8 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next';
-import LiveDemo from '@/components/LiveDemo';
-import ApiTable from '@/components/ApiTable';
-import Callout from '@/components/Callout';
+import { LiveDemo } from '@/components/Demo/LiveDemo';
+import { ApiTable } from '@/components/Demo/ApiTable';
+import { Callout } from '@/components/MDX/Callout';
 
 export const metadata: Metadata = {
   title: 'Progress Component - Clarity Chat Components',
@@ -58,61 +58,61 @@ export default function BasicProgress() {
           title="Progress Props"
           data={[
             {
-              prop: 'value',
+              name: 'value',
               type: 'number',
               default: '0',
               description: 'Current progress value (0-100)'
             },
             {
-              prop: 'max',
+              name: 'max',
               type: 'number',
               default: '100',
               description: 'Maximum value for progress calculation'
             },
             {
-              prop: 'size',
+              name: 'size',
               type: "'sm' | 'md' | 'lg'",
               default: "'md'",
               description: 'Height of the progress bar (sm=4px, md=8px, lg=12px)'
             },
             {
-              prop: 'color',
+              name: 'color',
               type: "'primary' | 'secondary' | 'success' | 'warning' | 'error'",
               default: "'primary'",
               description: 'Progress bar color variant'
             },
             {
-              prop: 'variant',
+              name: 'variant',
               type: "'linear' | 'circular'",
               default: "'linear'",
               description: 'Progress bar style'
             },
             {
-              prop: 'showLabel',
+              name: 'showLabel',
               type: 'boolean',
               default: 'false',
               description: 'Whether to show percentage label'
             },
             {
-              prop: 'isIndeterminate',
+              name: 'isIndeterminate',
               type: 'boolean',
               default: 'false',
               description: 'Whether progress is indeterminate (animated without value)'
             },
             {
-              prop: 'striped',
+              name: 'striped',
               type: 'boolean',
               default: 'false',
               description: 'Whether to show striped pattern'
             },
             {
-              prop: 'animated',
+              name: 'animated',
               type: 'boolean',
               default: 'false',
               description: 'Whether to animate the stripes'
             },
             {
-              prop: 'className',
+              name: 'className',
               type: 'string',
               default: 'undefined',
               description: 'Additional CSS classes'
@@ -368,7 +368,6 @@ export default function AnimatedProgress() {
     </div>
   );
 }`}
-          scope={{ useState: React.useState, useEffect: React.useEffect }}
         />
       </section>
 
@@ -411,7 +410,6 @@ export default function FileUploadProgress() {
     </div>
   );
 }`}
-          scope={{ useState: React.useState }}
         />
       </section>
 
@@ -489,7 +487,6 @@ export default function MultiStepProgress() {
     </div>
   );
 }`}
-          scope={{ useState: React.useState }}
         />
       </section>
 

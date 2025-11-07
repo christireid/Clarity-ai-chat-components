@@ -5,6 +5,7 @@
  */
 
 import * as React from 'react'
+import { Badge, Button, cn } from '@clarity-chat/primitives'
 import type { ModelConfig, ModelInfo } from '../adapters/types'
 
 export interface ModelSelectorProps {
@@ -44,61 +45,68 @@ export function ModelSelector({
     setIsOpen(false)
   }
   
-  const getBadgeColor = (type: string, value: string) => {
-    const colors: Record<string, Record<string, string>> = {
-      speed: {
-        fast: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        slow: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-      },
-      cost: {
-        low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-      },
-      quality: {
-        good: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-        excellent: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-        best: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-      }
+  const getBadgeProps = (type: 'speed' | 'cost' | 'quality', value: string): { variant: React.ComponentProps<typeof Badge>['variant']; label: string } => {
+    switch (type) {
+      case 'speed':
+        if (value === 'fast') return { variant: 'success', label: 'Fast' }
+        if (value === 'medium') return { variant: 'warning', label: 'Moderate' }
+        return { variant: 'destructive', label: 'Slow' }
+      case 'cost':
+        if (value === 'low') return { variant: 'success', label: 'Low cost' }
+        if (value === 'medium') return { variant: 'warning', label: 'Medium cost' }
+        return { variant: 'destructive', label: 'High cost' }
+      case 'quality':
+        if (value === 'best') return { variant: 'success', label: 'Best quality' }
+        if (value === 'excellent') return { variant: 'info', label: 'Excellent' }
+        return { variant: 'secondary', label: 'Good' }
+      default:
+        return { variant: 'secondary', label: value }
     }
-    return colors[type]?.[value] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
   }
-  
+
   return (
-    <div className={`relative ${className}`}>
-      <button
+    <div className={cn('relative', className)}>
+      <Button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        variant="surface"
+        onClick={() => setIsOpen((open) => !open)}
         disabled={disabled}
-        className="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full justify-between rounded-xl border border-border/60 bg-[hsl(var(--surface-elevated))] px-4 py-3 text-left text-sm shadow-[0_14px_28px_rgba(15,23,42,0.12)] hover:bg-[hsl(var(--surface-overlay))]"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="font-medium truncate">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <span className="truncate text-foreground font-medium">
             {selectedModel?.name || 'Select model'}
           </span>
           {showMetrics && selectedModel && (
-            <div className="flex gap-1">
-              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('speed', selectedModel.speed)}`}>
-                {selectedModel.speed}
-              </span>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('cost', selectedModel.cost)}`}>
-                ${selectedModel.cost}
-              </span>
+            <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+              {(['speed', 'cost'] as const).map((type) => {
+                const { variant, label } = getBadgeProps(type, selectedModel[type])
+                const displayValue = type === 'cost' ? `$${selectedModel[type]}` : selectedModel[type]
+                return (
+                  <Badge
+                    key={type}
+                    variant={variant}
+                    className="rounded-full px-2 py-0.5 capitalize"
+                    title={label}
+                  >
+                    {displayValue}
+                  </Badge>
+                )
+              })}
             </div>
           )}
         </div>
         <svg
-          className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'transform rotate-180' : ''}`}
+          className={cn('h-4 w-4 text-muted-foreground transition-transform', isOpen && 'rotate-180')}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
-      </button>
+      </Button>
       
       {isOpen && (
         <>
@@ -108,7 +116,7 @@ export function ModelSelector({
           />
           <div
             role="listbox"
-            className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-auto"
+            className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/60 bg-[hsl(var(--surface-overlay))] shadow-[0_18px_38px_rgba(15,23,42,0.2)] backdrop-blur-sm"
           >
             {models.map((model) => (
               <button
@@ -117,33 +125,44 @@ export function ModelSelector({
                 role="option"
                 aria-selected={model.id === value}
                 onClick={() => handleSelect(model)}
-                className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors first:rounded-t-lg last:rounded-b-lg"
+                className={cn(
+                  'w-full px-4 py-3 text-left transition-colors first:rounded-t-2xl last:rounded-b-2xl',
+                  model.id === value
+                    ? 'bg-[hsl(var(--surface-muted))] text-foreground'
+                    : 'text-muted-foreground hover:bg-[hsl(var(--surface-muted))] hover:text-foreground'
+                )}
               >
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                    <span className="font-medium text-foreground">
                       {model.name}
                     </span>
                     {showMetrics && (
-                      <div className="flex gap-1 flex-shrink-0">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('speed', model.speed)}`}>
-                          {model.speed}
-                        </span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('quality', model.quality)}`}>
-                          {model.quality}
-                        </span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('cost', model.cost)}`}>
-                          ${model.cost}
-                        </span>
+                      <div className="flex flex-wrap gap-1">
+                        {(['speed', 'quality', 'cost'] as const).map((type) => {
+                          const { variant, label } = getBadgeProps(type, model[type])
+                          const displayValue =
+                            type === 'cost' ? `$${model[type]}` : model[type]
+                          return (
+                            <Badge
+                              key={type}
+                              variant={variant}
+                              className="rounded-full px-2 py-0.5 capitalize"
+                              title={label}
+                            >
+                              {displayValue}
+                            </Badge>
+                          )
+                        })}
                       </div>
                     )}
                   </div>
                   {showDescription && model.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       {model.description}
                     </p>
                   )}
-                  <p className="text-xs text-gray-500 dark:text-gray-500">
+                  <p className="text-xs text-muted-foreground/80">
                     {(model.contextWindow / 1000).toFixed(0)}K context
                     {model.vision && ' · Vision'}
                     {model.toolCalling && ' · Tools'}

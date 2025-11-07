@@ -3,6 +3,8 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
+import { LibraryStats } from '@/components/Diagrams/StatisticsShowcase'
+import { ChatWindowComposition } from '@/components/Diagrams/ComponentCompositionDiagram'
 
 export const metadata: Metadata = {
   title: 'Quick Start',
@@ -23,6 +25,8 @@ export default function QuickStartPage() {
       <Callout type="tip">
         Already have a React project? Jump straight to the installation step below.
       </Callout>
+
+      <LibraryStats />
 
       <h2 id="prerequisites">Prerequisites</h2>
       

@@ -57,6 +57,7 @@ export default [
         // Node globals for build
         process: 'readonly',
         NodeJS: 'readonly',
+        global: 'readonly',
       },
     },
     plugins: {
@@ -83,6 +84,49 @@ export default [
     settings: {
       react: {
         version: '19.0',
+      },
+    },
+  },
+  {
+    files: ['**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        // Browser globals
+        document: 'readonly',
+        window: 'readonly',
+        navigator: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        // Node globals
+        process: 'readonly',
+        NodeJS: 'readonly',
+        global: 'readonly',
+      },
+    },
+  },
+  {
+    files: ['**/*.test.{js,ts,tsx}', '**/__tests__/**', '**/test/**'],
+    languageOptions: {
+      globals: {
+        // Vitest globals
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        // Node globals for tests
+        global: 'readonly',
+        process: 'readonly',
+        console: 'readonly',
       },
     },
   },
