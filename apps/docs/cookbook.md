@@ -762,6 +762,282 @@ function ChatWithWebhooks() {
 }
 ```
 
+### 21. RBAC-Protected Chat
+
+Implement role-based access control:
+
+```tsx
+import {
+  ChatWindow,
+  RBACManager,
+  MemoryRBACStorage,
+  CommonRoles,
+} from '@clarity-chat/react'
+
+function SecureChat() {
+  const [messages, setMessages] = useState([])
+  const [userRole, setUserRole] = useState('viewer')
+  
+  const storage = new MemoryRBACStorage()
+  const rbac = new RBACManager(storage)
+
+  useEffect(() => {
+    // Initialize roles
+    storage.addRole(CommonRoles.ADMIN)
+    storage.addRole(CommonRoles.USER)
+    storage.addRole(CommonRoles.VIEWER)
+    
+    // Assign role to current user
+    storage.assignRoles('current-user', [userRole])
+  }, [userRole])
+
+  const handleSend = async (content: string) => {
+    // Check permission
+    const canSend = await rbac.hasPermission(
+      { userId: 'current-user', roles: [userRole] },
+      'chat.send'
+    )
+
+    if (!canSend) {
+      alert('You do not have permission to send messages')
+      return
+    }
+
+    // Send message...
+    setMessages(prev => [...prev, {
+      id: Date.now().toString(),
+      role: 'user',
+      content,
+      timestamp: Date.now(),
+    }])
+  }
+
+  const canSend = await rbac.hasPermission(
+    { userId: 'current-user', roles: [userRole] },
+    'chat.send'
+  )
+
+  return (
+    <div>
+      <select value={userRole} onChange={(e) => setUserRole(e.target.value)}>
+        <option value="viewer">Viewer</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSend}
+        disabled={!canSend}
+      />
+      {!canSend && (
+        <p className="text-red-500">You need the "user" role to send messages</p>
+      )}
+    </div>
+  )
+}
+```
+
+### 22. Multi-Tenant Chat with Isolation
+
+Build a multi-tenant chat with data isolation:
+
+```tsx
+import {
+  ChatWindow,
+  TenantManager,
+  MemoryTenantStorage,
+  PineconeVectorStore,
+} from '@clarity-chat/react'
+
+function MultiTenantChat() {
+  const [messages, setMessages] = useState([])
+  const [tenantId, setTenantId] = useState('acme-corp')
+  
+  const storage = new MemoryTenantStorage()
+  const tenants = new TenantManager(storage)
+  
+  const vectorStore = new PineconeVectorStore({
+    apiKey: process.env.PINECONE_API_KEY,
+    indexName: 'documents',
+  })
+
+  useEffect(() => {
+    // Initialize tenant
+    storage.addTenant({
+      id: tenantId,
+      name: 'Acme Corp',
+      status: 'active',
+      quotas: { tokens: 1000000 },
+      createdAt: Date.now(),
+    })
+
+    // Set tenant context
+    const tenant = await tenants.getTenant(tenantId)
+    tenants.setContext({
+      tenant,
+      userId: 'current-user',
+    })
+  }, [tenantId])
+
+  const handleSend = async (content: string) => {
+    // Check tenant status
+    const isActive = await tenants.isActive(tenantId)
+    if (!isActive) {
+      alert('Your account is suspended')
+      return
+    }
+
+    // Use tenant namespace for RAG
+    const namespace = tenants.getNamespace(tenantId)
+    const results = await vectorStore.query({
+      namespace,
+      vector: await generateEmbedding(content),
+      topK: 5,
+    })
+
+    const context = results.map(r => r.content).join('\n\n')
+    
+    // Send message with tenant context
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({
+        message: content,
+        context,
+        tenantId,
+      }),
+    })
+
+    const data = await response.json()
+    setMessages(prev => [...prev, {
+      id: data.id,
+      role: 'assistant',
+      content: data.message,
+      timestamp: Date.now(),
+    }])
+  }
+
+  return (
+    <div>
+      <select value={tenantId} onChange={(e) => setTenantId(e.target.value)}>
+        <option value="acme-corp">Acme Corp</option>
+        <option value="startup-1">Startup Inc</option>
+      </select>
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSend}
+      />
+    </div>
+  )
+}
+```
+
+### 23. Chat with Webhook Events
+
+Emit webhooks for all chat events:
+
+```tsx
+import {
+  ChatWindow,
+  WebhookManager,
+  WebhookEvents,
+} from '@clarity-chat/react'
+
+function ChatWithWebhooks() {
+  const [messages, setMessages] = useState([])
+  const webhooks = new WebhookManager({
+    maxRetries: 3,
+    timeout: 5000,
+  })
+
+  useEffect(() => {
+    // Register analytics webhook
+    webhooks.register({
+      id: 'analytics',
+      url: '/api/webhooks/analytics',
+      events: [
+        WebhookEvents.CHAT_MESSAGE_SENT,
+        WebhookEvents.CHAT_COMPLETION,
+      ],
+      secret: process.env.WEBHOOK_SECRET,
+    })
+
+    // Register monitoring webhook
+    webhooks.register({
+      id: 'monitoring',
+      url: '/api/webhooks/monitoring',
+      events: [WebhookEvents.CHAT_ERROR],
+    })
+  }, [])
+
+  const handleSend = async (content: string) => {
+    try {
+      const messageId = Date.now().toString()
+
+      // Add user message
+      setMessages(prev => [...prev, {
+        id: messageId,
+        role: 'user',
+        content,
+        timestamp: Date.now(),
+      }])
+
+      // Emit message sent event
+      await webhooks.emit({
+        id: `msg-${messageId}`,
+        type: WebhookEvents.CHAT_MESSAGE_SENT,
+        data: { messageId, content },
+        timestamp: Date.now(),
+      })
+
+      // Get AI response
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        body: JSON.stringify({ message: content }),
+      })
+
+      if (!response.ok) throw new Error('Chat request failed')
+
+      const data = await response.json()
+
+      // Add assistant message
+      setMessages(prev => [...prev, {
+        id: data.id,
+        role: 'assistant',
+        content: data.message,
+        timestamp: Date.now(),
+      }])
+
+      // Emit completion event
+      await webhooks.emit({
+        id: `comp-${data.id}`,
+        type: WebhookEvents.CHAT_COMPLETION,
+        data: {
+          messageId: data.id,
+          tokens: data.tokens,
+          model: data.model,
+        },
+        timestamp: Date.now(),
+      })
+    } catch (error) {
+      // Emit error event
+      await webhooks.emit({
+        id: `err-${Date.now()}`,
+        type: WebhookEvents.CHAT_ERROR,
+        data: { error: error.message },
+        timestamp: Date.now(),
+      })
+    }
+  }
+
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+    />
+  )
+}
+```
+
 ## More Recipes
 
 For additional recipes covering:

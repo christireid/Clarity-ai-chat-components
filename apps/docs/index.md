@@ -159,5 +159,8 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 - [Plugins](/guide/plugins) - Extend functionality with plugins
 - [Audit Logging](/guide/audit-logging) - Track actions for compliance
 - [Usage Quotas](/guide/usage-quotas) - Control costs and enforce limits
+- [RBAC](/guide/rbac) - Role-based access control
+- [Multi-Tenancy](/guide/multi-tenancy) - Build multi-tenant applications
+- [Webhooks](/guide/webhooks) - Event-driven notifications
 
 </div>
