@@ -42,23 +42,41 @@ export function useLocalStorage<T>(
     initializeWithValue = true,
   } = options
 
-  // Get initial value
+  // Store stable references to avoid unnecessary re-renders
+  const initialValueRef = React.useRef(initialValue)
+  const deserializerRef = React.useRef(deserializer)
+  
+  React.useEffect(() => {
+    initialValueRef.current = initialValue
+  }, [initialValue])
+  
+  React.useEffect(() => {
+    deserializerRef.current = deserializer
+  }, [deserializer])
+
+  // Get initial value - memoized with stable dependencies
   const readValue = React.useCallback((): T => {
     if (typeof window === 'undefined') {
-      return initialValue instanceof Function ? initialValue() : initialValue
+      return initialValueRef.current instanceof Function 
+        ? initialValueRef.current() 
+        : initialValueRef.current
     }
 
     try {
       const item = window.localStorage.getItem(key)
       if (item) {
-        return deserializer(item)
+        return deserializerRef.current(item)
       }
-      return initialValue instanceof Function ? initialValue() : initialValue
+      return initialValueRef.current instanceof Function 
+        ? initialValueRef.current() 
+        : initialValueRef.current
     } catch (error) {
       console.warn(`Error reading localStorage key "${key}":`, error)
-      return initialValue instanceof Function ? initialValue() : initialValue
+      return initialValueRef.current instanceof Function 
+        ? initialValueRef.current() 
+        : initialValueRef.current
     }
-  }, [key, initialValue, deserializer])
+  }, [key]) // Only key as dependency, others via refs
 
   // State to store our value
   const [storedValue, setStoredValue] = React.useState<T>(

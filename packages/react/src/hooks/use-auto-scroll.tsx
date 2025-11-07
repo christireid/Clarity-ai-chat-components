@@ -109,6 +109,13 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScroll
   }, [checkIfNearBottom])
 
   // Auto-scroll when dependencies change
+  // Create a stable string representation of dependencies for comparison
+  const dependenciesKey = React.useMemo(
+    () => JSON.stringify(dependencies),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    dependencies
+  )
+
   React.useEffect(() => {
     if (!enabled) return
 
@@ -119,8 +126,7 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScroll
         scrollToBottom()
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, scrollToBottom, checkIfNearBottom, ...dependencies])
+  }, [enabled, scrollToBottom, checkIfNearBottom, dependenciesKey])
 
   return {
     scrollRef,
