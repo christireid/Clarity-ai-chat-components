@@ -162,5 +162,6 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 - [RBAC](/guide/rbac) - Role-based access control
 - [Multi-Tenancy](/guide/multi-tenancy) - Build multi-tenant applications
 - [Webhooks](/guide/webhooks) - Event-driven notifications
+- [Prompt Templates](/guide/prompts) - Manage and render AI prompts
 
 </div>

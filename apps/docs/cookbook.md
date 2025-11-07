@@ -1038,6 +1038,94 @@ function ChatWithWebhooks() {
 }
 ```
 
+### 24. Chat with Prompt Templates
+
+Use prompt templates for consistent AI interactions:
+
+```tsx
+import {
+  ChatWindow,
+  PromptTemplateLibrary,
+  PromptTemplateEngine,
+  builtInPrompts,
+} from '@clarity-chat/react'
+
+function ChatWithPrompts() {
+  const [messages, setMessages] = useState([])
+  const library = new PromptTemplateLibrary()
+  const engine = new PromptTemplateEngine()
+
+  useEffect(() => {
+    // Initialize with built-in templates
+    Object.values(builtInPrompts).forEach(template => {
+      library.add(template)
+    })
+
+    // Add custom template
+    library.add({
+      id: 'customer-support',
+      name: 'Customer Support',
+      template: `You are a helpful customer support agent.
+
+Customer question: {{question}}
+Customer context: {{context}}
+
+Please provide a helpful response.`,
+      variables: [
+        { name: 'question', type: 'string', required: true },
+        { name: 'context', type: 'string', required: false },
+      ],
+    })
+  }, [])
+
+  const handleSend = async (content: string) => {
+    // Get template
+    const template = library.get('customer-support')
+    if (!template) return
+
+    // Render prompt
+    const result = engine.render(template, {
+      variables: {
+        question: content,
+        context: 'Premium customer',
+      },
+      validate: true,
+    })
+
+    if (!result.success) {
+      console.error(result.errors)
+      return
+    }
+
+    // Use rendered prompt
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({
+        messages: [
+          { role: 'system', content: result.prompt },
+          { role: 'user', content },
+        ],
+      }),
+    })
+
+    const data = await response.json()
+    setMessages(prev => [...prev, {
+      id: data.id,
+      role: 'assistant',
+      content: data.message,
+      timestamp: Date.now(),
+    }])
+  }
+
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+    />
+  )
+}
+```
+
 ## More Recipes
 
 For additional recipes covering:
