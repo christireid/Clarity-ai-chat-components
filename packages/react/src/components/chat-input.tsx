@@ -1,13 +1,14 @@
-import { memo, useState, useRef, useMemo, useCallback, useEffect } from 'react'
+import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Textarea,
   Button,
   cn,
-  type ButtonState,
 } from '@clarity-chat/primitives'
 import { SendIcon } from './icons'
 import { FeedbackAnimations } from '../animations/microanimations'
+import { useCharacterCounter } from '../hooks/use-character-counter'
+import { useSubmitButtonState } from '../hooks/use-submit-button-state'
 
 export interface ChatInputProps {
   value: string
@@ -28,19 +29,24 @@ export interface ChatInputProps {
   className?: string
 }
 
-// Shake animation keyframes - extracted as constant
-const SHAKE_KEYFRAMES = [
-  { transform: 'translateX(0)' },
-  { transform: 'translateX(-8px)' },
-  { transform: 'translateX(8px)' },
-  { transform: 'translateX(-8px)' },
-  { transform: 'translateX(8px)' },
-  { transform: 'translateX(0)' },
-] as const
+// Memoized focus ring glow animation variants
+const createContainerVariants = (glowOnFocus: boolean) => ({
+  idle: {
+    boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
+  },
+  focused: glowOnFocus
+    ? {
+        boxShadow: [
+          '0 0 0 0 hsl(var(--primary) / 0)',
+          '0 0 0 4px hsl(var(--primary) / 0.15)',
+          '0 0 0 4px hsl(var(--primary) / 0.15)',
+        ],
+        transition: { duration: 0.3, ease: 'easeOut' },
+      }
+    : {},
+})
 
-const SHAKE_OPTIONS = { duration: 400, easing: 'ease-in-out' } as const
-
-export const ChatInput = memo(function ChatInput({
+export const ChatInput = React.memo(function ChatInput({
   value,
   onChange,
   onSubmit,
@@ -53,88 +59,40 @@ export const ChatInput = memo(function ChatInput({
   glowOnFocus = true,
   className,
 }: ChatInputProps) {
-  const [isFocused, setIsFocused] = useState(false)
-  const [buttonState, setButtonState] = useState<ButtonState>('idle')
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const [isFocused, setIsFocused] = React.useState(false)
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
-  // Memoized computed values
-  const charCount = useMemo(() => value.length, [value])
-  const isOverLimit = useMemo(
-    () => (maxLength ? charCount > maxLength : false),
-    [maxLength, charCount]
-  )
-  const isNearLimit = useMemo(
-    () => (maxLength ? charCount >= maxLength * warningThreshold : false),
-    [maxLength, charCount, warningThreshold]
-  )
-  const hasContent = useMemo(() => value.trim().length > 0, [value])
+  // Use character counter hook
+  const {
+    charCount,
+    isOverLimit,
+    isNearLimit,
+    hasContent,
+    counterColor,
+    progressColor,
+    progressPercentage,
+  } = useCharacterCounter({
+    value,
+    maxLength,
+    warningThreshold,
+  })
 
-  // Memoized character counter color
-  const counterColor = useMemo(() => {
-    if (isOverLimit) return 'text-destructive font-semibold'
-    if (isNearLimit) return 'text-[hsl(var(--warning))] font-medium'
-    if (charCount > 0) return 'text-primary'
-    return 'text-muted-foreground'
-  }, [isOverLimit, isNearLimit, charCount])
+  // Use submit button state hook
+  const { buttonState, handleSubmit } = useSubmitButtonState({
+    onSubmit,
+    value,
+    disabled,
+    isOverLimit,
+  })
 
-  // Memoized progress bar color
-  const progressColor = useMemo(() => {
-    if (isOverLimit) return 'bg-destructive'
-    if (isNearLimit) return 'bg-[hsl(var(--warning))]'
-    return 'bg-primary'
-  }, [isOverLimit, isNearLimit])
-
-  // Memoized container animation variants
-  const containerVariants = useMemo(
-    () => ({
-      idle: {
-        boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
-      },
-      focused: glowOnFocus
-        ? {
-            boxShadow: [
-              '0 0 0 0 hsl(var(--primary) / 0)',
-              '0 0 0 4px hsl(var(--primary) / 0.15)',
-              '0 0 0 4px hsl(var(--primary) / 0.15)',
-            ],
-            transition: { duration: 0.3, ease: 'easeOut' },
-          }
-        : {},
-    }),
+  // Memoized container variants
+  const containerVariants = React.useMemo(
+    () => createContainerVariants(glowOnFocus),
     [glowOnFocus]
   )
 
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
-
-  // Optimized submit handler with useCallback
-  const handleSubmit = useCallback(async () => {
-    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading')
-      return
-
-    setButtonState('loading')
-    try {
-      await onSubmit(value)
-      setButtonState('success')
-      // Auto-reset after showing success
-      timeoutRef.current = setTimeout(() => setButtonState('idle'), 1000)
-    } catch (error) {
-      setButtonState('error')
-      console.error('[ChatInput] Submit error:', error)
-      // Auto-reset after showing error
-      timeoutRef.current = setTimeout(() => setButtonState('idle'), 2000)
-    }
-  }, [value, isOverLimit, disabled, buttonState, onSubmit])
-
-  // Optimized keydown handler with useCallback
-  const handleKeyDown = useCallback(
+  // Memoized keyboard handler
+  const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
@@ -142,30 +100,26 @@ export const ChatInput = memo(function ChatInput({
           handleSubmit()
         } else if (isOverLimit) {
           // Shake animation for error feedback
-          textareaRef.current?.animate(SHAKE_KEYFRAMES, SHAKE_OPTIONS)
+          textareaRef.current?.animate(
+            [
+              { transform: 'translateX(0)' },
+              { transform: 'translateX(-8px)' },
+              { transform: 'translateX(8px)' },
+              { transform: 'translateX(-8px)' },
+              { transform: 'translateX(8px)' },
+              { transform: 'translateX(0)' },
+            ],
+            { duration: 400, easing: 'ease-in-out' }
+          )
         }
       }
     },
     [value, isOverLimit, handleSubmit]
   )
 
-  // Memoized change handler
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      onChange(e.target.value)
-    },
-    [onChange]
-  )
-
   // Memoized focus handlers
-  const handleFocus = useCallback(() => setIsFocused(true), [])
-  const handleBlur = useCallback(() => setIsFocused(false), [])
-
-  // Memoized progress percentage
-  const progressPercentage = useMemo(() => {
-    if (!maxLength) return 0
-    return Math.min((charCount / maxLength) * 100, 100)
-  }, [maxLength, charCount])
+  const handleFocus = React.useCallback(() => setIsFocused(true), [])
+  const handleBlur = React.useCallback(() => setIsFocused(false), [])
 
   return (
     <motion.div
@@ -187,7 +141,9 @@ export const ChatInput = memo(function ChatInput({
           <Textarea
             ref={textareaRef}
             value={value}
-            onChange={handleChange}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              onChange(e.target.value)
+            }
             onKeyDown={handleKeyDown}
             onFocus={handleFocus}
             onBlur={handleBlur}
@@ -202,9 +158,6 @@ export const ChatInput = memo(function ChatInput({
               isFocused && glowOnFocus && 'ring-2 ring-primary/30 shadow-md',
               isOverLimit && 'animate-[shake_0.4s_ease-in-out]'
             )}
-            aria-label="Message input"
-            aria-invalid={isOverLimit}
-            aria-describedby={isOverLimit ? 'chat-input-error' : undefined}
           />
 
           {/* Character Counter with progress bar */}
@@ -218,7 +171,7 @@ export const ChatInput = memo(function ChatInput({
                   className="absolute bottom-2 right-2 flex flex-col items-end gap-1"
                 >
                   {/* Progress bar */}
-                  <div className="w-16 h-1 bg-muted rounded-full overflow-hidden" role="progressbar" aria-valuenow={charCount} aria-valuemin={0} aria-valuemax={maxLength}>
+                  <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
                     <motion.div
                       className={cn('h-full', progressColor)}
                       initial={{ width: 0 }}
@@ -233,7 +186,6 @@ export const ChatInput = memo(function ChatInput({
                   <motion.div
                     className={cn('text-xs tabular-nums', counterColor)}
                     animate={isOverLimit ? FeedbackAnimations.pulse : {}}
-                    aria-live="polite"
                   >
                     {charCount}/{maxLength}
                   </motion.div>
@@ -285,13 +237,10 @@ export const ChatInput = memo(function ChatInput({
       <AnimatePresence>
         {isOverLimit && (
           <motion.p
-            id="chat-input-error"
-            role="alert"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="text-xs text-destructive px-1"
-            aria-live="assertive"
           >
             Message exceeds maximum length by {charCount - (maxLength || 0)}{' '}
             characters
