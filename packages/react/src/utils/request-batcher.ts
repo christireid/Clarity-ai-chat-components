@@ -72,7 +72,7 @@ export class RequestBatcher<T = any, R = any> {
     resolve: (result: R) => void
     reject: (error: Error) => void
   }> = new Map()
-  private timer: NodeJS.Timeout | null = null
+  private timer: ReturnType<typeof setTimeout> | null = null
   private processing = false
   private stats = {
     totalRequests: 0,
@@ -256,7 +256,7 @@ export class RequestBatcher<T = any, R = any> {
  */
 export class DebouncedBatcher<T = any, R = any> {
   private pending: BatchRequest<T> | null = null
-  private timer: NodeJS.Timeout | null = null
+  private timer: ReturnType<typeof setTimeout> | null = null
   private pendingPromise: {
     resolve: (result: R) => void
     reject: (error: Error) => void

@@ -30,7 +30,7 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
   const [debouncedValue, setDebouncedValue] = React.useState<T>(value)
 
   React.useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer: ReturnType<typeof setTimeout> = setTimeout(() => {
       setDebouncedValue(value)
     }, delay)
 
@@ -99,4 +99,66 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
     },
     [delay]
   )
+}
+
+/**
+ * Debounced callback with controls (cancel/flush)
+ * Returns a stable object containing the debounced function and control methods.
+ */
+export function useDebouncedCallbackWithControls<T extends (...args: any[]) => any>(
+  callback: T,
+  delay: number = 500
+): {
+  call: (...args: Parameters<T>) => void
+  cancel: () => void
+  flush: (...args: Parameters<T>) => void
+} {
+  const savedCallback = React.useRef(callback)
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  React.useEffect(() => {
+    savedCallback.current = callback
+  }, [callback])
+
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
+  }, [])
+
+  const cancel = React.useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [])
+
+  const call = React.useCallback(
+    (...args: Parameters<T>) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      timeoutRef.current = setTimeout(() => {
+        savedCallback.current(...args)
+        timeoutRef.current = null
+      }, delay)
+    },
+    [delay]
+  )
+
+  const flush = React.useCallback(
+    (...args: Parameters<T>) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      savedCallback.current(...args)
+    },
+    []
+  )
+
+  return { call, cancel, flush }
 }
