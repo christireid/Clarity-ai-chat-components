@@ -9,7 +9,7 @@
  * @status NEW - Implementation based on blueprint analysis
  */
 
-import React, { useRef, useEffect, useState, useCallback } from 'react'
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { Message } from '@clarity-chat/types'
@@ -94,7 +94,7 @@ interface MessageItemProps extends ListChildComponentProps {
   }
 }
 
-function MessageItem({ index, style, data }: MessageItemProps) {
+const MessageItem = React.memo(function MessageItem({ index, style, data }: MessageItemProps) {
   const { messages, renderMessage, heightCache, setItemHeight } = data
   const message = messages[index]
   const itemRef = useRef<HTMLDivElement>(null)
@@ -111,14 +111,30 @@ function MessageItem({ index, style, data }: MessageItemProps) {
     }
   }, [message, index, heightCache, setItemHeight])
 
+  // Memoize rendered message to prevent unnecessary re-renders
+  const renderedMessage = useMemo(
+    () => renderMessage(message, index),
+    [renderMessage, message, index]
+  )
+
   return (
     <div style={style}>
       <div ref={itemRef}>
-        {renderMessage(message, index)}
+        {renderedMessage}
       </div>
     </div>
   )
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  // Only re-render if message, index, or style changes
+  return (
+    prevProps.index === nextProps.index &&
+    prevProps.style === nextProps.style &&
+    prevProps.data.messages[prevProps.index]?.id === nextProps.data.messages[nextProps.index]?.id
+  )
+})
+
+MessageItem.displayName = 'MessageItem'
 
 // ============================================================================
 // Virtualized Message List Component
