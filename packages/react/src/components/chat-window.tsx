@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { memo, useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
@@ -38,7 +38,41 @@ export interface ChatWindowProps {
   className?: string
 }
 
-export const ChatWindow = React.memo(function ChatWindow({
+// Default empty state component - extracted for better performance
+const DefaultEmptyState = () => (
+  <motion.div
+    className="text-center space-y-6"
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.3 }}
+  >
+    <motion.div
+      className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm ring-1 ring-primary/20"
+      animate={{
+        scale: [1, 1.05, 1],
+        rotate: [0, 2, -2, 0],
+      }}
+      transition={{
+        duration: 3,
+        repeat: Infinity,
+        ease: 'easeInOut',
+      }}
+    >
+      <BotIcon size={36} className="text-primary" />
+    </motion.div>
+    <div className="space-y-2">
+      <h3 className="text-xl font-semibold text-foreground">
+        Start a conversation
+      </h3>
+      <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+        Send a message to begin chatting with the AI assistant. I'm here to help
+        with your questions and tasks.
+      </p>
+    </div>
+  </motion.div>
+)
+
+export const ChatWindow = memo(function ChatWindow({
   messages,
   isLoading = false,
   aiStatus,
@@ -56,46 +90,28 @@ export const ChatWindow = React.memo(function ChatWindow({
   onClear,
   className,
 }: ChatWindowProps) {
-  const [input, setInput] = React.useState('')
+  const [input, setInput] = useState('')
 
-  const handleSubmit = (content: string) => {
-    onSendMessage(content)
-    setInput('')
-  }
-
-  // Default empty state with animation
-  const defaultEmptyState = (
-    <motion.div
-      className="text-center space-y-6"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <motion.div
-        className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm ring-1 ring-primary/20"
-        animate={{
-          scale: [1, 1.05, 1],
-          rotate: [0, 2, -2, 0],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      >
-        <BotIcon size={36} className="text-primary" />
-      </motion.div>
-      <div className="space-y-2">
-        <h3 className="text-xl font-semibold text-foreground">
-          Start a conversation
-        </h3>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-          Send a message to begin chatting with the AI assistant. I'm here to
-          help with your questions and tasks.
-        </p>
-      </div>
-    </motion.div>
+  // Memoized submit handler
+  const handleSubmit = useCallback(
+    (content: string) => {
+      onSendMessage(content)
+      setInput('')
+    },
+    [onSendMessage]
   )
+
+  // Memoized empty state
+  const effectiveEmptyState = useMemo(
+    () => emptyState || <DefaultEmptyState />,
+    [emptyState]
+  )
+
+  // Memoized message count text
+  const messageCountText = useMemo(() => {
+    if (messages.length === 0) return null
+    return `${messages.length} ${messages.length === 1 ? 'message' : 'messages'}`
+  }, [messages.length])
 
   return (
     <Card
@@ -126,10 +142,9 @@ export const ChatWindow = React.memo(function ChatWindow({
                 </p>
               )}
             </div>
-            {showMessageCount && messages.length > 0 && (
-              <Badge variant="secondary" className="shrink-0">
-                {messages.length}{' '}
-                {messages.length === 1 ? 'message' : 'messages'}
+            {showMessageCount && messageCountText && (
+              <Badge variant="secondary" className="shrink-0" aria-label={messageCountText}>
+                {messageCountText}
               </Badge>
             )}
           </div>
@@ -198,7 +213,7 @@ export const ChatWindow = React.memo(function ChatWindow({
           onMessageCopy={onMessageCopy}
           onMessageFeedback={onMessageFeedback}
           onMessageRetry={onMessageRetry}
-          emptyState={emptyState || defaultEmptyState}
+          emptyState={effectiveEmptyState}
           className="flex-1"
         />
 

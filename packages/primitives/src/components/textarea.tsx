@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { forwardRef, useRef, useCallback, useEffect, useMemo } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
@@ -26,20 +26,72 @@ export interface TextareaProps
   maxRows?: number
 }
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, variant, error, autoResize = false, maxRows, onChange, ...props }, ref) => {
-    const textareaRef = React.useRef<HTMLTextAreaElement | null>(null)
-    const hasError = error || variant === 'error'
+// Extracted error message component for reusability and consistency
+interface ErrorMessageProps {
+  error: string
+  id?: string
+}
 
-    const adjustHeight = React.useCallback(() => {
-      const textarea = textareaRef.current
+const ErrorMessage = ({ error, id }: ErrorMessageProps) => (
+  <p
+    id={id}
+    role="alert"
+    className="mt-1.5 text-xs text-destructive flex items-center gap-1"
+    aria-live="polite"
+  >
+    <svg
+      className="h-3 w-3 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+    {error}
+  </p>
+)
+
+const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
+  (
+    { className, variant, error, autoResize = false, maxRows, onChange, id, ...props },
+    ref
+  ) => {
+    const internalRef = useRef<HTMLTextAreaElement | null>(null)
+    const hasError = useMemo(() => error || variant === 'error', [error, variant])
+    const errorId = useMemo(() => (id ? `${id}-error` : undefined), [id])
+    const effectiveVariant = useMemo(
+      () => (hasError ? 'error' : variant),
+      [hasError, variant]
+    )
+
+    // Combined ref callback to support both internal and external refs
+    const setRefs = useCallback(
+      (node: HTMLTextAreaElement | null) => {
+        internalRef.current = node
+        if (typeof ref === 'function') {
+          ref(node)
+        } else if (ref) {
+          ref.current = node
+        }
+      },
+      [ref]
+    )
+
+    const adjustHeight = useCallback(() => {
+      const textarea = internalRef.current
       if (!textarea || !autoResize) return
 
       textarea.style.height = 'auto'
       const scrollHeight = textarea.scrollHeight
-      
+
       if (maxRows) {
-        const lineHeight = parseInt(getComputedStyle(textarea).lineHeight)
+        const lineHeight = parseInt(getComputedStyle(textarea).lineHeight, 10)
         const maxHeight = lineHeight * maxRows
         textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
       } else {
@@ -47,41 +99,30 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       }
     }, [autoResize, maxRows])
 
-    React.useEffect(() => {
+    useEffect(() => {
       adjustHeight()
     }, [adjustHeight])
 
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      adjustHeight()
-      onChange?.(e)
-    }
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        adjustHeight()
+        onChange?.(e)
+      },
+      [adjustHeight, onChange]
+    )
 
     return (
       <div>
         <textarea
-          className={cn(
-            textareaVariants({ variant: hasError ? 'error' : variant }),
-            className
-          )}
-          ref={(node) => {
-            textareaRef.current = node
-            if (typeof ref === 'function') {
-              ref(node)
-            } else if (ref) {
-              ref.current = node
-            }
-          }}
+          id={id}
+          className={cn(textareaVariants({ variant: effectiveVariant }), className)}
+          ref={setRefs}
           onChange={handleChange}
+          aria-invalid={hasError}
+          aria-describedby={errorId}
           {...props}
         />
-        {error && (
-          <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
-            <svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {error}
-          </p>
-        )}
+        {error && <ErrorMessage error={error} id={errorId} />}
       </div>
     )
   }

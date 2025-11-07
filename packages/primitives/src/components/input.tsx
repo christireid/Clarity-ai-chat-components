@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { forwardRef, useMemo } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
@@ -32,65 +32,95 @@ export interface InputProps
   iconPosition?: 'left' | 'right'
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, variant, inputSize, type, error, icon, iconPosition = 'left', ...props }, ref) => {
-    const hasError = error || variant === 'error'
+// Extracted error message component for reusability and consistency
+interface ErrorMessageProps {
+  error: string
+  id?: string
+}
+
+const ErrorMessage = ({ error, id }: ErrorMessageProps) => (
+  <p
+    id={id}
+    role="alert"
+    className="mt-1.5 text-xs text-destructive flex items-center gap-1"
+    aria-live="polite"
+  >
+    <svg
+      className="h-3 w-3 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+    {error}
+  </p>
+)
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  (
+    { className, variant, inputSize, type, error, icon, iconPosition = 'left', id, ...props },
+    ref
+  ) => {
+    const hasError = useMemo(() => error || variant === 'error', [error, variant])
+    const errorId = useMemo(() => (id ? `${id}-error` : undefined), [id])
+    const effectiveVariant = useMemo(
+      () => (hasError ? 'error' : variant),
+      [hasError, variant]
+    )
+
+    const inputElement = (
+      <input
+        type={type}
+        id={id}
+        className={cn(
+          inputVariants({ variant: effectiveVariant, inputSize }),
+          icon && iconPosition === 'left' && 'pl-10',
+          icon && iconPosition === 'right' && 'pr-10',
+          className
+        )}
+        ref={ref}
+        aria-invalid={hasError}
+        aria-describedby={errorId}
+        {...props}
+      />
+    )
 
     if (icon) {
       return (
         <div className="relative">
           {iconPosition === 'left' && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <div
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+              aria-hidden="true"
+            >
               {icon}
             </div>
           )}
-          <input
-            type={type}
-            className={cn(
-              inputVariants({ variant: hasError ? 'error' : variant, inputSize }),
-              iconPosition === 'left' && 'pl-10',
-              iconPosition === 'right' && 'pr-10',
-              className
-            )}
-            ref={ref}
-            {...props}
-          />
+          {inputElement}
           {iconPosition === 'right' && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <div
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+              aria-hidden="true"
+            >
               {icon}
             </div>
           )}
-          {error && (
-            <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
-              <svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {error}
-            </p>
-          )}
+          {error && <ErrorMessage error={error} id={errorId} />}
         </div>
       )
     }
 
     return (
       <div>
-        <input
-          type={type}
-          className={cn(
-            inputVariants({ variant: hasError ? 'error' : variant, inputSize }),
-            className
-          )}
-          ref={ref}
-          {...props}
-        />
-        {error && (
-          <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
-            <svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {error}
-          </p>
-        )}
+        {inputElement}
+        {error && <ErrorMessage error={error} id={errorId} />}
       </div>
     )
   }
