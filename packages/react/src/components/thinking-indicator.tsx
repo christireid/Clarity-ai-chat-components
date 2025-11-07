@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { memo, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import type { AIStatus } from '@clarity-chat/types'
 import { cn } from '@clarity-chat/primitives'
@@ -16,7 +16,7 @@ export interface ThinkingIndicatorProps {
   className?: string
 }
 
-export const ThinkingIndicator = React.memo(function ThinkingIndicator({
+export const ThinkingIndicator = memo(function ThinkingIndicator({
   status,
   className,
 }: ThinkingIndicatorProps) {
@@ -83,14 +83,14 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
         }}
         className="text-primary"
       >
-        {status ? getStageIcon(status.stage) : <BotIcon size={20} />}
+        {stageIcon}
       </motion.div>
 
       {/* Status Text */}
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium text-sm">
-            {status ? getStageLabel(status.stage) : 'Processing'}
+            {stageLabel}
           </span>
 
           {/* Animated Dots */}
@@ -146,17 +146,13 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
       </div>
 
       {/* Estimated Time */}
-      {status?.estimatedCompletion && (
+      {estimatedSeconds !== null && (
         <motion.span
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-xs text-muted-foreground"
         >
-          ~
-          {Math.ceil(
-            (status.estimatedCompletion.getTime() - Date.now()) / 1000
-          )}
-          s
+          ~{estimatedSeconds}s
         </motion.span>
       )}
     </motion.div>

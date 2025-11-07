@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { memo, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
@@ -11,6 +11,7 @@ import {
   createStaggerChildVariant,
 } from '../animations/utils'
 import { INTERACTION_VARIANTS } from '../animations/constants'
+import type { ReactNode } from 'react'
 
 export interface MessageListProps {
   messages: MessageType[]
@@ -22,11 +23,11 @@ export interface MessageListProps {
   /** Number of skeleton messages to show while loading */
   loadingCount?: number
   /** Empty state content */
-  emptyState?: React.ReactNode
+  emptyState?: ReactNode
   className?: string
 }
 
-export const MessageList = React.memo(function MessageList({
+export const MessageList = memo(function MessageList({
   messages,
   onMessageCopy,
   onMessageFeedback,
@@ -62,7 +63,7 @@ export const MessageList = React.memo(function MessageList({
   return (
     <div className="relative h-full">
       <ScrollArea
-        ref={scrollRef as React.RefObject<HTMLDivElement>}
+        ref={scrollRef}
         className={cn('h-full bg-transparent px-2 py-4 sm:px-4', className)}
       >
         {/* Loading skeletons */}

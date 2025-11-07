@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useRef, useEffect, memo, forwardRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import {
@@ -18,6 +18,9 @@ import {
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
+
+// Confetti colors - extracted as constant
+const CONFETTI_COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'] as const
 
 export interface MessageProps {
   message: MessageType
@@ -67,16 +70,26 @@ export const Message = React.memo(
     },
     ref
   ) {
-    const [isHovered, setIsHovered] = React.useState(false)
-    const [feedbackGiven, setFeedbackGiven] = React.useState<
-      'up' | 'down' | null
-    >(message.feedback?.type || null)
+    const [isHovered, setIsHovered] = useState(false)
+    const [feedbackGiven, setFeedbackGiven] = useState<'up' | 'down' | null>(
+      message.feedback?.type || null
+    )
+    const [showConfetti, setShowConfetti] = useState(false)
+    const confettiTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-    const isUser = message.role === 'user'
-    const isAssistant = message.role === 'assistant'
-    const isStreaming = message.status === 'streaming'
+    // Memoized computed values
+    const isUser = useMemo(() => message.role === 'user', [message.role])
+    const isAssistant = useMemo(() => message.role === 'assistant', [message.role])
+    const isStreaming = useMemo(() => message.status === 'streaming', [message.status])
 
-    const [showConfetti, setShowConfetti] = React.useState(false)
+    // Cleanup confetti timeout
+    useEffect(() => {
+      return () => {
+        if (confettiTimeoutRef.current) {
+          clearTimeout(confettiTimeoutRef.current)
+        }
+      }
+    }, [])
 
     // Memoize markdown plugins to prevent recreation on every render
     const remarkPlugins = React.useMemo(() => [remarkGfm], [])
@@ -90,7 +103,10 @@ export const Message = React.memo(
       if (type === 'up') {
         // Trigger confetti animation
         setShowConfetti(true)
-        setTimeout(() => setShowConfetti(false), 1000)
+        if (confettiTimeoutRef.current) {
+          clearTimeout(confettiTimeoutRef.current)
+        }
+        confettiTimeoutRef.current = setTimeout(() => setShowConfetti(false), 1000)
       }
     }, [onFeedback])
 
@@ -108,8 +124,8 @@ export const Message = React.memo(
           duration: ANIMATION_DURATION.normal / 1000,
           ease: ANIMATION_EASING.out,
         }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className={cn(
           'group flex gap-3 p-4 rounded-xl transition-all duration-200',
           isUser && 'flex-row-reverse',
@@ -292,12 +308,7 @@ export const Message = React.memo(
                             transition={{ duration: 0.6, ease: 'easeOut' }}
                             className="absolute top-1/2 left-1/2 w-2 h-2 bg-success rounded-full pointer-events-none"
                             style={{
-                              backgroundColor: [
-                                '#10b981',
-                                '#f59e0b',
-                                '#3b82f6',
-                                '#ef4444',
-                              ][i % 4],
+                              backgroundColor: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
                             }}
                           />
                         ))}

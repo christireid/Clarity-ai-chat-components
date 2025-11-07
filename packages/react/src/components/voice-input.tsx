@@ -1,7 +1,8 @@
-import * as React from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import { useVoiceInput } from '../hooks/use-voice-input'
+import type { ReactNode } from 'react'
 
 /**
  * Voice input component props
@@ -26,10 +27,10 @@ export interface VoiceInputProps {
   variant?: 'primary' | 'secondary' | 'ghost'
 
   /** Custom icon when not listening */
-  icon?: React.ReactNode
+  icon?: ReactNode
 
   /** Custom icon when listening */
-  listeningIcon?: React.ReactNode
+  listeningIcon?: ReactNode
 
   /** Show tooltip */
   showTooltip?: boolean
@@ -132,8 +133,8 @@ export function VoiceInput({
   onStop,
   onError,
 }: VoiceInputProps) {
-  const [showTranscript, setShowTranscript] = React.useState(false)
-  const lastFinalTranscriptRef = React.useRef('')
+  const [showTranscript, setShowTranscript] = useState(false)
+  const lastFinalTranscriptRef = useRef('')
 
   // Memoize voice input config to prevent unnecessary re-initialization
   const voiceConfig = React.useMemo(
@@ -222,11 +223,11 @@ export function VoiceInput({
       <div className="relative">
         <Button
           size={size === 'sm' ? 'icon' : size === 'lg' ? 'lg' : 'icon'}
-          variant={voice.isListening ? 'destructive' : variantMap[variant]}
+          variant={buttonVariant}
           onClick={handleToggle}
           disabled={disabled}
           className={cn('rounded-full', className)}
-          aria-label={voice.isListening ? 'Stop recording' : 'Start recording'}
+          aria-label={ariaLabel}
           title={voice.isListening ? 'Stop recording' : tooltipText}
         >
           {/* Pulse animation when listening */}
