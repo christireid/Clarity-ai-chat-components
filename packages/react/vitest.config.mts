@@ -31,6 +31,8 @@ export default defineConfig({
       'src/prompts/__tests__/**/*.test.ts',
       'src/plugins/__tests__/**/*.test.ts',
       'src/safety/__tests__/**/*.test.ts',
+      'src/hooks/__tests__/use-streamable-ui.test.ts',
+      'src/components/__tests__/stream-block.test.tsx',
     ],
     coverage: {
       provider: 'v8',
