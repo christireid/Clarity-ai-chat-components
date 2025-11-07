@@ -374,9 +374,397 @@ export function ChatWithNetwork() {
 }
 ```
 
+## Advanced Recipes
+
+### 11. RAG Chat with Vector Store
+
+Build a RAG-powered chat that retrieves information from your documents:
+
+```tsx
+import { ChatWindow, PineconeVectorStore, PDFLoader, OpenAIEmbeddings } from '@clarity-chat/react'
+
+function RAGChat() {
+  const [messages, setMessages] = useState([])
+  
+  const vectorStore = new PineconeVectorStore({
+    apiKey: process.env.PINECONE_API_KEY,
+    indexName: 'documents',
+  })
+  
+  const embeddings = new OpenAIEmbeddings({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+
+  const handleSend = async (question: string) => {
+    // Generate query embedding
+    const queryEmbedding = await embeddings.embedQuery(question)
+    
+    // Retrieve relevant context
+    const results = await vectorStore.similaritySearch({
+      query: queryEmbedding,
+      topK: 5,
+    })
+    
+    const context = results.map(r => r.content).join('\n\n')
+    
+    // Generate response with context
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({
+        messages: [
+          {
+            role: 'system',
+            content: `Answer using this context: ${context}`,
+          },
+          { role: 'user', content: question },
+        ],
+      }),
+    })
+    
+    const data = await response.json()
+    setMessages(prev => [...prev, {
+      id: Date.now().toString(),
+      role: 'assistant',
+      content: data.message,
+      timestamp: Date.now(),
+    }])
+  }
+
+  return <ChatWindow messages={messages} onSendMessage={handleSend} />
+}
+```
+
+### 12. Agent with Tools
+
+Create an AI agent that can call external tools:
+
+```tsx
+import { ReactAgent, useAgent, AgentRunFeed } from '@clarity-chat/react'
+
+const agent = new ReactAgent({
+  model: 'gpt-4-turbo-preview',
+  apiKey: process.env.OPENAI_API_KEY,
+  tools: [
+    {
+      name: 'get_weather',
+      description: 'Get current weather for a location',
+      parameters: {
+        type: 'object',
+        properties: {
+          location: { type: 'string' },
+        },
+        required: ['location'],
+      },
+      execute: async ({ location }) => {
+        const response = await fetch(`/api/weather?location=${location}`)
+        return response.json()
+      },
+    },
+  ],
+})
+
+function AgentChat() {
+  const { messages, sendMessage, isRunning, steps } = useAgent({ agent })
+
+  return (
+    <div>
+      <AgentRunFeed steps={steps} />
+      <ChatWindow
+        messages={messages}
+        onSendMessage={sendMessage}
+        isLoading={isRunning}
+      />
+    </div>
+  )
+}
+```
+
+### 13. Chat with Memory
+
+Enable your assistant to remember information across conversations:
+
+```tsx
+import { ChatWindow, MemoryService, MemoryProvider, MemoryInspector } from '@clarity-chat/react'
+
+const memoryService = new MemoryService({
+  provider: 'local',
+})
+
+function ChatWithMemory() {
+  const [messages, setMessages] = useState([])
+  const [memories, setMemories] = useState([])
+
+  useEffect(() => {
+    memoryService.getAll({ scope: 'thread' }).then(setMemories)
+  }, [messages])
+
+  const handleSend = async (content: string) => {
+    // Store important information automatically
+    await memoryService.extractAndStore(content, 'thread')
+    
+    // Send message
+    // ...
+  }
+
+  return (
+    <MemoryProvider service={memoryService}>
+      <MemoryInspector memories={memories} />
+      <ChatWindow messages={messages} onSendMessage={handleSend} />
+    </MemoryProvider>
+  )
+}
+```
+
+### 14. Safety-First Chat
+
+Add content moderation and PII detection:
+
+```tsx
+import { ChatWindow, PIIDetector, ContentFilter, SafetyStatusCard } from '@clarity-chat/react'
+
+function SafeChat() {
+  const [messages, setMessages] = useState([])
+  const [safetyChecks, setSafetyChecks] = useState([])
+  
+  const piiDetector = new PIIDetector({ redact: true })
+  const contentFilter = new ContentFilter({ enabled: true })
+
+  const handleSend = async (content: string) => {
+    // Run safety checks
+    const [piiResult, contentResult] = await Promise.all([
+      piiDetector.detect(content),
+      contentFilter.check(content),
+    ])
+
+    setSafetyChecks([
+      {
+        id: 'pii',
+        label: 'PII Detection',
+        status: piiResult.hasPII ? 'warn' : 'pass',
+      },
+      {
+        id: 'content',
+        label: 'Content Filter',
+        status: contentResult.flagged ? 'fail' : 'pass',
+      },
+    ])
+
+    if (!piiResult.hasPII && !contentResult.flagged) {
+      const safeContent = piiResult.redactedText || content
+      // Send safe content
+    }
+  }
+
+  return (
+    <div>
+      <SafetyStatusCard checks={safetyChecks} />
+      <ChatWindow messages={messages} onSendMessage={handleSend} />
+    </div>
+  )
+}
+```
+
+### 15. Multi-Model Chat
+
+Let users switch between different AI models:
+
+```tsx
+import { ChatWindow, ModelSelector, openAIAdapter, anthropicAdapter } from '@clarity-chat/react'
+
+const adapters = {
+  'gpt-4': openAIAdapter({ apiKey: process.env.OPENAI_API_KEY }),
+  'claude-3': anthropicAdapter({ apiKey: process.env.ANTHROPIC_API_KEY }),
+}
+
+function MultiModelChat() {
+  const [messages, setMessages] = useState([])
+  const [selectedModel, setSelectedModel] = useState('gpt-4')
+  const adapter = adapters[selectedModel]
+
+  const handleSend = async (content: string) => {
+    const response = await adapter.complete({
+      messages: [{ role: 'user', content }],
+    })
+    // Add response to messages
+  }
+
+  return (
+    <div>
+      <ModelSelector
+        models={[
+          { id: 'gpt-4', name: 'GPT-4', provider: 'OpenAI' },
+          { id: 'claude-3', name: 'Claude 3', provider: 'Anthropic' },
+        ]}
+        selectedModel={selectedModel}
+        onSelect={setSelectedModel}
+      />
+      <ChatWindow messages={messages} onSendMessage={handleSend} />
+    </div>
+  )
+}
+```
+
+### 16. Token-Optimized Chat
+
+Optimize token usage with compression and smart caching:
+
+```tsx
+import { ChatWindow, useTokenTracker, usePromptCompression, TokenCounter } from '@clarity-chat/react'
+
+function OptimizedChat() {
+  const [messages, setMessages] = useState([])
+  
+  const { compress } = usePromptCompression({
+    enabled: true,
+    targetReduction: 0.3, // Reduce by 30%
+  })
+  
+  const { tokenCount, estimatedCost, isNearLimit } = useTokenTracker({
+    messages,
+    model: 'gpt-4',
+  })
+
+  const handleSend = async (content: string) => {
+    // Compress messages if near limit
+    const messagesToSend = isNearLimit
+      ? await compress(messages)
+      : messages
+    
+    // Send compressed messages
+    // ...
+  }
+
+  return (
+    <div>
+      <TokenCounter
+        tokens={tokenCount}
+        maxTokens={8000}
+        showCost
+      />
+      <ChatWindow messages={messages} onSendMessage={handleSend} />
+    </div>
+  )
+}
+```
+
+### 17. Observability-Enabled Chat
+
+Monitor your chat with comprehensive observability:
+
+```tsx
+import { ChatWindow, ObservabilityProvider, Tracer, MetricsCollector } from '@clarity-chat/react'
+
+const tracer = new Tracer({ enabled: true })
+const metrics = new MetricsCollector({ enabled: true })
+
+function MonitoredChat() {
+  return (
+    <ObservabilityProvider
+      tracer={tracer}
+      metrics={metrics}
+      autoTrace={true}
+    >
+      <ChatWindow messages={messages} onSendMessage={handleSend} />
+    </ObservabilityProvider>
+  )
+}
+```
+
+### 18. Enterprise Chat with RBAC
+
+Add role-based access control:
+
+```tsx
+import { ChatWindow, RBACProvider, useRBAC } from '@clarity-chat/react'
+
+const rbacConfig = {
+  roles: {
+    admin: ['read', 'write', 'delete', 'manage'],
+    user: ['read', 'write'],
+    viewer: ['read'],
+  },
+}
+
+function EnterpriseChat() {
+  return (
+    <RBACProvider config={rbacConfig}>
+      <ChatWithRBAC />
+    </RBACProvider>
+  )
+}
+
+function ChatWithRBAC() {
+  const { can } = useRBAC()
+  
+  const handleSend = async (content: string) => {
+    if (!can('write')) {
+      return // User doesn't have permission
+    }
+    // Send message
+  }
+
+  return <ChatWindow messages={messages} onSendMessage={handleSend} />
+}
+```
+
+### 19. Multi-Tenant Chat
+
+Support multiple organizations:
+
+```tsx
+import { ChatWindow, MultiTenancyProvider, useTenant } from '@clarity-chat/react'
+
+function MultiTenantApp() {
+  return (
+    <MultiTenancyProvider>
+      <ChatWithTenancy />
+    </MultiTenancyProvider>
+  )
+}
+
+function ChatWithTenancy() {
+  const { tenantId, switchTenant } = useTenant()
+  
+  // Messages are automatically scoped to current tenant
+  return <ChatWindow messages={messages} onSendMessage={handleSend} />
+}
+```
+
+### 20. Chat with Webhooks
+
+Receive webhooks for chat events:
+
+```tsx
+import { ChatWindow, WebhookManager } from '@clarity-chat/react'
+
+const webhookManager = new WebhookManager({
+  endpoints: [
+    {
+      url: 'https://your-app.com/webhooks/chat',
+      events: ['message.sent', 'message.received'],
+    },
+  ],
+})
+
+function ChatWithWebhooks() {
+  const handleSend = async (content: string) => {
+    // Send message
+    await sendMessage(content)
+    
+    // Trigger webhook
+    await webhookManager.trigger('message.sent', {
+      content,
+      timestamp: Date.now(),
+    })
+  }
+
+  return <ChatWindow messages={messages} onSendMessage={handleSend} />
+}
+```
+
 ## More Recipes
 
-For the complete cookbook with 25+ recipes covering:
+For additional recipes covering:
 
 - Getting started patterns
 - Advanced features (branching, regeneration, undo/redo)
