@@ -115,10 +115,16 @@ export function useOptimisticMessage(
     [onSend, onConfirm, onError, defaultUser]
   )
 
+  // Use ref to avoid stale closure with messages array
+  const messagesRef = React.useRef(messages)
+  React.useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
+
   // Retry failed message
   const retry = React.useCallback(
     async (messageId: string) => {
-      const message = messages.find((m) => m.id === messageId)
+      const message = messagesRef.current.find((m) => m.id === messageId)
       if (!message || message.status !== 'error') return
 
       // Reset status to sending
@@ -165,7 +171,7 @@ export function useOptimisticMessage(
         })
       }
     },
-    [messages, onSend, onConfirm, onError]
+    [onSend, onConfirm, onError] // Removed messages, using ref instead
   )
 
   // Cancel optimistic message

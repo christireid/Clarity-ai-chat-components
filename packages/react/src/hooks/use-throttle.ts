@@ -1,52 +1,7 @@
 import * as React from 'react'
 
-export interface ThrottleOptions {
-  /**
-   * Invoke on the leading edge
-   * @default true
-   */
-  leading?: boolean
-  /**
-   * Invoke on the trailing edge
-   * @default true
-   */
-  trailing?: boolean
-}
-
-export interface ThrottledFunc<T extends (...args: any[]) => any> {
-  /**
-   * Call the throttled function
-   */
-  (...args: Parameters<T>): void
-  /**
-   * Cancel any pending invocations
-   */
-  cancel: () => void
-  /**
-   * Check if there's a pending invocation
-   */
-  pending: () => boolean
-}
-
 /**
- * Throttle a value - only updates at most once per delay period.
- * Ensures value updates are limited to a maximum frequency.
- * 
- * **How it works:**
- * - First change applies immediately
- * - Subsequent changes within delay period are ignored
- * - After delay period, next change applies immediately
- * 
- * **Use Cases:**
- * - Scroll position tracking
- * - Window resize handling
- * - Mouse movement tracking
- * - Real-time data updates
- * 
- * @template T - The type of value to throttle
- * @param {T} value - The value to throttle
- * @param {number} [delay=500] - Minimum time between updates in milliseconds
- * @returns {T} The throttled value
+ * Throttle a value - only updates at most once per delay period
  * 
  * @example
  * ```tsx
@@ -58,35 +13,30 @@ export interface ThrottledFunc<T extends (...args: any[]) => any> {
  *   window.addEventListener('scroll', handleScroll)
  *   return () => window.removeEventListener('scroll', handleScroll)
  * }, [])
- * 
- * // throttledScrollY updates at most once per 100ms
  * ```
  */
 export function useThrottle<T>(value: T, delay: number = 500): T {
   const [throttledValue, setThrottledValue] = React.useState<T>(value)
-  const lastExecuted = React.useRef<number>(0)
+  const lastRan = React.useRef<number>(Date.now())
   const timeoutRef = React.useRef<NodeJS.Timeout>()
 
   React.useEffect(() => {
     const now = Date.now()
-    const timeSinceLastExecution = now - lastExecuted.current
+    const timeSinceLastRun = now - lastRan.current
+    const remainingTime = delay - timeSinceLastRun
 
-    if (timeSinceLastExecution >= delay) {
-      // Enough time has passed, update immediately
+    // If enough time has passed, update immediately
+    if (remainingTime <= 0) {
       setThrottledValue(value)
-      lastExecuted.current = now
-    } else {
-      // Not enough time passed, schedule update for later
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-      
-      const remainingTime = delay - timeSinceLastExecution
-      timeoutRef.current = setTimeout(() => {
-        setThrottledValue(value)
-        lastExecuted.current = Date.now()
-      }, remainingTime)
+      lastRan.current = now
+      return
     }
+
+    // Otherwise, schedule update for remaining time
+    timeoutRef.current = setTimeout(() => {
+      setThrottledValue(value)
+      lastRan.current = Date.now()
+    }, remainingTime)
 
     return () => {
       if (timeoutRef.current) {
@@ -99,28 +49,9 @@ export function useThrottle<T>(value: T, delay: number = 500): T {
 }
 
 /**
- * Throttle a callback function - limits the frequency of function execution
- * to at most once per delay period. Fixes the previous implementation which
- * was actually a debounce.
+ * Throttle a callback function
  * 
- * **How it works:**
- * - First call executes immediately (leading edge)
- * - Subsequent calls within delay period are queued
- * - One final call executes after delay period (trailing edge)
- * 
- * **Use Cases:**
- * - Scroll event handlers
- * - Window resize handlers
- * - Button click spam prevention
- * - API rate limiting
- * 
- * @template T - The callback function type
- * @param {T} callback - The function to throttle
- * @param {number} [delay=500] - Minimum time between executions (default: 500ms)
- * @param {ThrottleOptions} [options] - Throttle behavior options
- * @returns {ThrottledFunc<T>} Throttled function with cancel method
- * 
- * @example Basic usage
+ * @example
  * ```tsx
  * const throttledResize = useThrottledCallback(
  *   () => console.log('Resized!'),
@@ -129,41 +60,24 @@ export function useThrottle<T>(value: T, delay: number = 500): T {
  * 
  * useEffect(() => {
  *   window.addEventListener('resize', throttledResize)
- *   return () => {
- *     window.removeEventListener('resize', throttledResize)
- *     throttledResize.cancel()
- *   }
+ *   return () => window.removeEventListener('resize', throttledResize)
  * }, [throttledResize])
- * ```
- * 
- * @example With trailing edge disabled
- * ```tsx
- * const throttledClick = useThrottledCallback(
- *   handleClick,
- *   1000,
- *   { trailing: false }
- * )
- * // Only first click executes, subsequent clicks within 1s are ignored completely
  * ```
  */
 export function useThrottledCallback<T extends (...args: any[]) => any>(
   callback: T,
-  delay: number = 500,
-  options: ThrottleOptions = {}
-): ThrottledFunc<T> {
-  const { leading = true, trailing = true } = options
-
-  // Store latest callback to avoid stale closures
+  delay: number = 500
+): (...args: Parameters<T>) => void {
+  const lastRan = React.useRef<number>(Date.now())
+  const timeoutRef = React.useRef<NodeJS.Timeout>()
   const callbackRef = React.useRef(callback)
-  React.useLayoutEffect(() => {
+
+  // Keep callback ref up to date
+  React.useEffect(() => {
     callbackRef.current = callback
   }, [callback])
 
-  const lastExecuted = React.useRef<number>(0)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
-  const lastArgsRef = React.useRef<Parameters<T>>()
-
-  // Cleanup on unmount
+  // Cleanup timeout on unmount
   React.useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -172,71 +86,34 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
     }
   }, [])
 
-  const cancel = React.useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = undefined
-    }
-    lastArgsRef.current = undefined
-  }, [])
-
-  const pending = React.useCallback(() => {
-    return timeoutRef.current !== undefined
-  }, [])
-
-  const throttled = React.useCallback(
+  return React.useCallback(
     (...args: Parameters<T>) => {
       const now = Date.now()
-      const timeSinceLastExecution = now - lastExecuted.current
+      const timeSinceLastRun = now - lastRan.current
+      const remainingTime = delay - timeSinceLastRun
 
-      lastArgsRef.current = args
-
-      // Leading edge: execute immediately if enough time has passed
-      if (timeSinceLastExecution >= delay) {
-        if (leading) {
-          try {
-            callbackRef.current(...args)
-          } catch (error) {
-            console.error('[useThrottledCallback] Error in callback:', error)
-            throw error
-          }
-        }
-        lastExecuted.current = now
-        lastArgsRef.current = undefined
-        
-        // Clear any pending trailing call
+      // If enough time has passed, execute immediately
+      if (remainingTime <= 0) {
+        callbackRef.current(...args)
+        lastRan.current = now
+        // Clear any pending timeout
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current)
           timeoutRef.current = undefined
         }
-      }
-      // Trailing edge: schedule execution for later
-      else if (trailing) {
+      } else {
+        // Clear existing timeout
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current)
         }
-        
-        const remainingTime = delay - timeSinceLastExecution
+        // Schedule execution for remaining time
         timeoutRef.current = setTimeout(() => {
-          if (lastArgsRef.current) {
-            try {
-              callbackRef.current(...lastArgsRef.current)
-            } catch (error) {
-              console.error('[useThrottledCallback] Error in callback:', error)
-            }
-          }
-          lastExecuted.current = Date.now()
+          callbackRef.current(...args)
+          lastRan.current = Date.now()
           timeoutRef.current = undefined
-          lastArgsRef.current = undefined
         }, remainingTime)
       }
     },
-    [delay, leading, trailing]
+    [delay]
   )
-
-  const throttledFunc = throttled as ThrottledFunc<T>
-  throttledFunc.cancel = cancel
-  throttledFunc.pending = pending
-
-  return throttledFunc
 }

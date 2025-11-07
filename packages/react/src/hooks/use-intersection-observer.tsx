@@ -56,16 +56,22 @@ export function useIntersectionObserver(
 
   React.useEffect(() => {
     const node = ref.current
-    const hasIOSupport = !!window.IntersectionObserver
+    const hasIOSupport = typeof window !== 'undefined' && !!window.IntersectionObserver
 
     if (!hasIOSupport || frozen || !node) return
 
     const observerParams = { threshold, root, rootMargin }
-    const observer = new IntersectionObserver(([entry]) => setEntry(entry), observerParams)
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry) {
+        setEntry(entry)
+      }
+    }, observerParams)
 
     observer.observe(node)
 
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+    }
   }, [threshold, root, rootMargin, frozen])
 
   return {
