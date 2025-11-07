@@ -57,27 +57,37 @@ export const ToastItem = React.memo(function ToastItem({
   action,
   onClose,
 }: ToastProps) {
-  const Icon = {
-    success: CheckCircleIcon,
-    error: XCircleIcon,
-    info: InfoIcon,
-    warning: AlertCircleIcon,
-  }[type]
+  // Memoize icon selection
+  const Icon = React.useMemo(
+    () =>
+      ({
+        success: CheckCircleIcon,
+        error: XCircleIcon,
+        info: InfoIcon,
+        warning: AlertCircleIcon,
+      }[type]),
+    [type]
+  )
 
-  const colorClasses = {
+  // Memoize color classes
+  const colorClasses = React.useMemo(() => ({
     success: 'bg-success/10 border-success/20 text-success-foreground',
     error:
       'bg-destructive/10 border-destructive/20 text-destructive-foreground',
     info: 'bg-info/10 border-info/20 text-info-foreground',
     warning: 'bg-warning/10 border-warning/20 text-warning-foreground',
-  }
+  }[type]), [type])
 
-  const iconColorClasses = {
+  // Memoize icon color classes
+  const iconColorClasses = React.useMemo(() => ({
     success: 'text-success',
     error: 'text-destructive',
     info: 'text-info',
     warning: 'text-warning',
-  }
+  }[type]), [type])
+
+  // Memoize close handler
+  const handleClose = React.useCallback(() => onClose(id), [onClose, id])
 
   return (
     <motion.div
@@ -92,11 +102,11 @@ export const ToastItem = React.memo(function ToastItem({
       className={cn(
         'relative flex gap-3 p-4 rounded-xl border-2 shadow-xl backdrop-blur-md',
         'min-w-[320px] max-w-[420px]',
-        colorClasses[type]
+        colorClasses
       )}
     >
       {/* Icon */}
-      <div className={cn('flex-shrink-0 mt-0.5', iconColorClasses[type])}>
+      <div className={cn('flex-shrink-0 mt-0.5', iconColorClasses)}>
         <Icon size={20} />
       </div>
 
@@ -120,7 +130,7 @@ export const ToastItem = React.memo(function ToastItem({
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        onClick={() => onClose(id)}
+        onClick={handleClose}
         className="flex-shrink-0 p-1 rounded hover:bg-background/20 transition-colors"
         aria-label="Close notification"
       >
