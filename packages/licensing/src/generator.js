@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 /**
  * Generate a license key
  */
@@ -94,23 +94,7 @@ export function parseLicenseKey(key) {
         valid: tier !== null && type !== null,
     };
 }
-function parseTierPrefix(prefix1, prefix2) {
-    const combined = `${prefix1}-${prefix2}`;
-    switch (combined) {
-        case 'FREE-ANN':
-        case 'FREE-LTD':
-            return 'free';
-        case 'PRO-IND':
-            return 'pro-individual';
-        case 'PRO-TEAM':
-            return 'pro-team';
-        case 'ENT-ANN':
-        case 'ENT-LTD':
-            return 'enterprise';
-        default:
-            return null;
-    }
-}
+// Removed unused parseTierPrefix helper
 function parseTypePrefix(prefix) {
     switch (prefix) {
         case 'ANN':
