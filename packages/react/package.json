@@ -51,13 +51,15 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
+    "@clarity-chat/memory": "*",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.0",
     "jszip": "^3.10.1",
     "katex": "^0.16.25",
-    "lucide-react": "^0.263.1",
+    "mermaid": "^10.9.1",
+    "lucide-react": "^0.552.0",
     "react-markdown": "^9.0.0",
     "react-virtualized-auto-sizer": "^1.0.26",
     "react-window": "^1.8.11",

@@ -40,9 +40,9 @@ export interface TokenOptimizationDashboardProps {
 
 /**
  * Token Optimization Dashboard Component
- * 
+ *
  * Displays comprehensive token optimization metrics and savings.
- * 
+ *
  * @example
  * ```tsx
  * <TokenOptimizationDashboard
@@ -126,9 +126,7 @@ export function TokenOptimizationDashboard({
           <div className="text-2xl font-bold text-success">
             {formatNumber(displayMetrics.tokensSaved)}
           </div>
-          <div className="text-sm text-muted-foreground mt-1">
-            Tokens Saved
-          </div>
+          <div className="text-sm text-muted-foreground mt-1">Tokens Saved</div>
           <div className="text-xs text-success mt-2">
             {displayMetrics.savingsPercent.toFixed(1)}% reduction
           </div>
@@ -139,9 +137,7 @@ export function TokenOptimizationDashboard({
           <div className="text-2xl font-bold text-primary">
             {formatCost(displayMetrics.costSaved)}
           </div>
-          <div className="text-sm text-muted-foreground mt-1">
-            Cost Saved
-          </div>
+          <div className="text-sm text-muted-foreground mt-1">Cost Saved</div>
           <div className="text-xs text-primary mt-2">
             Per {formatNumber(displayMetrics.totalTokens)} tokens
           </div>
@@ -152,9 +148,7 @@ export function TokenOptimizationDashboard({
           <div className="text-2xl font-bold text-foreground">
             {formatNumber(displayMetrics.totalTokens)}
           </div>
-          <div className="text-sm text-muted-foreground mt-1">
-            Total Tokens
-          </div>
+          <div className="text-sm text-muted-foreground mt-1">Total Tokens</div>
           <div className="text-xs text-muted-foreground mt-2">
             Processed in session
           </div>
@@ -172,7 +166,9 @@ export function TokenOptimizationDashboard({
           {displayMetrics.breakdown.promptCompression.tokens > 0 && (
             <OptimizationItem
               label="Prompt Compression"
-              value={formatNumber(displayMetrics.breakdown.promptCompression.tokens)}
+              value={formatNumber(
+                displayMetrics.breakdown.promptCompression.tokens
+              )}
               percent={displayMetrics.breakdown.promptCompression.percent}
               icon="✂️"
               description="Shortened prompts while preserving meaning"
@@ -184,7 +180,11 @@ export function TokenOptimizationDashboard({
             <OptimizationItem
               label="Smart Caching"
               value={formatNumber(displayMetrics.breakdown.caching.savings)}
-              percent={(displayMetrics.breakdown.caching.savings / displayMetrics.totalTokens) * 100}
+              percent={
+                (displayMetrics.breakdown.caching.savings /
+                  displayMetrics.totalTokens) *
+                100
+              }
               icon="💾"
               description={`${displayMetrics.breakdown.caching.hits} cache hits`}
             />
@@ -194,7 +194,9 @@ export function TokenOptimizationDashboard({
           {displayMetrics.breakdown.modelRouting.savings > 0 && (
             <OptimizationItem
               label="Model Routing"
-              value={formatNumber(displayMetrics.breakdown.modelRouting.savings)}
+              value={formatNumber(
+                displayMetrics.breakdown.modelRouting.savings
+              )}
               percent={displayMetrics.breakdown.modelRouting.percent}
               icon="🎯"
               description="Used cheaper models for simple queries"
@@ -205,7 +207,9 @@ export function TokenOptimizationDashboard({
           {displayMetrics.breakdown.responseLimiting.tokens > 0 && (
             <OptimizationItem
               label="Response Limiting"
-              value={formatNumber(displayMetrics.breakdown.responseLimiting.tokens)}
+              value={formatNumber(
+                displayMetrics.breakdown.responseLimiting.tokens
+              )}
               percent={displayMetrics.breakdown.responseLimiting.percent}
               icon="✨"
               description="Enforced concise responses"
@@ -217,7 +221,11 @@ export function TokenOptimizationDashboard({
             <OptimizationItem
               label="Request Batching"
               value={formatNumber(displayMetrics.breakdown.batching.savings)}
-              percent={(displayMetrics.breakdown.batching.savings / displayMetrics.totalTokens) * 100}
+              percent={
+                (displayMetrics.breakdown.batching.savings /
+                  displayMetrics.totalTokens) *
+                100
+              }
               icon="📦"
               description={`${displayMetrics.breakdown.batching.requests} requests batched`}
             />
@@ -282,16 +290,10 @@ function OptimizationItem({
       <div className="text-2xl">{icon}</div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2 mb-1">
-          <span className="text-sm font-medium text-foreground">
-            {label}
-          </span>
-          <span className="text-sm font-semibold text-success">
-            {value}
-          </span>
+          <span className="text-sm font-medium text-foreground">{label}</span>
+          <span className="text-sm font-semibold text-success">{value}</span>
         </div>
-        <div className="text-xs text-muted-foreground">
-          {description}
-        </div>
+        <div className="text-xs text-muted-foreground">{description}</div>
         {percent > 0 && (
           <div className="mt-2">
             <div className="h-1.5 bg-muted-foreground/20 rounded-full overflow-hidden">
@@ -306,7 +308,6 @@ function OptimizationItem({
     </div>
   )
 }
-
 /**
  * Compact version for minimal UI (internal component)
  */

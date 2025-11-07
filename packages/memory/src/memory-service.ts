@@ -1,6 +1,6 @@
 /**
  * Memory Service
- * 
+ *
  * Production-ready memory management for AI chat applications
  * Implements hybrid memory system with:
  * - Short-term and long-term memory
@@ -23,8 +23,12 @@ import type {
   MemoryEventListener,
   MemoryBuffer,
   MemoryContext,
+  VectorStore,
+  VectorStoreMatch,
+  VectorStoreVector,
+  VectorStoreQuery,
+  EmbeddingProvider,
 } from './types'
-import type { VectorStore, EmbeddingProvider, VectorMatch } from './types'
 import { TokenCounter, ContextOptimizer } from './token-optimizer'
 
 /**
@@ -71,7 +75,10 @@ export class MemoryService {
       this.startCleanupTask()
     }
 
-    if (this.config.enableAutoSummarization && this.config.summarizationInterval) {
+    if (
+      this.config.enableAutoSummarization &&
+      this.config.summarizationInterval
+    ) {
       this.startSummarizationTask()
     }
   }
@@ -139,7 +146,10 @@ export class MemoryService {
     this.buffer.totalTokens += memory.tokens
 
     // Auto-flush if threshold reached
-    if (this.buffer.autoFlush && this.buffer.items.length >= this.buffer.flushThreshold) {
+    if (
+      this.buffer.autoFlush &&
+      this.buffer.items.length >= this.buffer.flushThreshold
+    ) {
       await this.flushBuffer()
     }
 
@@ -223,7 +233,9 @@ export class MemoryService {
   /**
    * Vector search
    */
-  private async vectorSearch(query: MemoryQuery): Promise<MemorySearchResult[]> {
+  private async vectorSearch(
+    query: MemoryQuery
+  ): Promise<MemorySearchResult[]> {
     if (!this.vectorStore || !query.embedding) {
       return []
     }
@@ -236,9 +248,9 @@ export class MemoryService {
         filter: query.metadata,
         namespace: this.config.persistence.vectorStoreNamespace,
         includeMetadata: true,
-      })
+      } satisfies VectorStoreQuery)
 
-      return matches.map((match: VectorMatch) => ({
+      return matches.map((match: VectorStoreMatch) => ({
         memory: this.cache.get(match.id) || this.createMemoryFromMatch(match),
         relevance: match.score,
         distance: 1 - match.score,
@@ -261,13 +273,17 @@ export class MemoryService {
       // Apply basic filters
       if (query.types && !query.types.includes(memory.type)) continue
       if (query.scopes && !query.scopes.includes(memory.scope)) continue
-      if (query.priorities && !query.priorities.includes(memory.priority)) continue
-      if (query.minConfidence && memory.confidence < query.minConfidence) continue
+      if (query.priorities && !query.priorities.includes(memory.priority))
+        continue
+      if (query.minConfidence && memory.confidence < query.minConfidence)
+        continue
 
       // Time range filter
       if (query.timeRange) {
-        if (query.timeRange.start && memory.createdAt < query.timeRange.start) continue
-        if (query.timeRange.end && memory.createdAt > query.timeRange.end) continue
+        if (query.timeRange.start && memory.createdAt < query.timeRange.start)
+          continue
+        if (query.timeRange.end && memory.createdAt > query.timeRange.end)
+          continue
       }
 
       // Text search
@@ -298,11 +314,20 @@ export class MemoryService {
   /**
    * Apply query filters
    */
-  private applyFilters(results: MemorySearchResult[], query: MemoryQuery): MemorySearchResult[] {
-    return results.filter(result => {
-      if (query.userId && result.memory.metadata.userId !== query.userId) return false
-      if (query.threadId && result.memory.metadata.threadId !== query.threadId) return false
-      if (query.sessionId && result.memory.metadata.sessionId !== query.sessionId) return false
+  private applyFilters(
+    results: MemorySearchResult[],
+    query: MemoryQuery
+  ): MemorySearchResult[] {
+    return results.filter((result) => {
+      if (query.userId && result.memory.metadata.userId !== query.userId)
+        return false
+      if (query.threadId && result.memory.metadata.threadId !== query.threadId)
+        return false
+      if (
+        query.sessionId &&
+        result.memory.metadata.sessionId !== query.sessionId
+      )
+        return false
       return true
     })
   }
@@ -332,7 +357,10 @@ export class MemoryService {
   /**
    * Update memory item
    */
-  async updateMemory(id: string, updates: Partial<MemoryItem>): Promise<MemoryItem | null> {
+  async updateMemory(
+    id: string,
+    updates: Partial<MemoryItem>
+  ): Promise<MemoryItem | null> {
     const memory = this.cache.get(id)
     if (!memory) return null
 
@@ -345,7 +373,7 @@ export class MemoryService {
     // Recalculate tokens if content changed
     if (updates.content && updates.content !== memory.content) {
       updated.tokens = TokenCounter.count(updates.content)
-      
+
       // Regenerate embedding
       if (this.embeddings) {
         try {
@@ -425,7 +453,10 @@ export class MemoryService {
   /**
    * Promote memory to higher scope
    */
-  async promoteMemory(id: string, targetScope: MemoryScope): Promise<MemoryItem | null> {
+  async promoteMemory(
+    id: string,
+    targetScope: MemoryScope
+  ): Promise<MemoryItem | null> {
     const memory = this.cache.get(id)
     if (!memory) return null
 
@@ -449,7 +480,10 @@ export class MemoryService {
   /**
    * Compress memory
    */
-  async compressMemory(id: string, ratio: number = 0.5): Promise<MemoryItem | null> {
+  async compressMemory(
+    id: string,
+    ratio: number = 0.5
+  ): Promise<MemoryItem | null> {
     const memory = this.cache.get(id)
     if (!memory) return null
 
@@ -505,9 +539,9 @@ export class MemoryService {
   private async updateVectorStore(memories: MemoryItem[]): Promise<void> {
     if (!this.vectorStore) return
 
-    const vectors = memories
-      .filter(m => m.embedding && m.embedding.length > 0)
-      .map(m => ({
+    const vectors: VectorStoreVector[] = memories
+      .filter((m) => m.embedding && m.embedding.length > 0)
+      .map((m) => ({
         id: m.id,
         values: m.embedding!,
         metadata: {
@@ -538,7 +572,7 @@ export class MemoryService {
    */
   getMemoryContext(): MemoryContext {
     const stats = this.getStats()
-    
+
     return {
       conversationActivity: this.assessConversationActivity(),
       preferenceRichness: this.assessPreferenceRichness(),
@@ -593,7 +627,8 @@ export class MemoryService {
       byScope,
       byPriority,
       totalTokens,
-      averageConfidence: this.cache.size > 0 ? totalConfidence / this.cache.size : 0,
+      averageConfidence:
+        this.cache.size > 0 ? totalConfidence / this.cache.size : 0,
     }
   }
 
@@ -638,7 +673,7 @@ export class MemoryService {
    */
   private startCleanupTask(): void {
     this.cleanupInterval = setInterval(() => {
-      this.cleanup().catch(error => {
+      this.cleanup().catch((error) => {
         if (this.config.debug) {
           console.error('Cleanup task failed:', error)
         }
@@ -728,7 +763,7 @@ export class MemoryService {
     return priorities[Math.min(index + 1, priorities.length - 1)]
   }
 
-  private createMemoryFromMatch(match: VectorMatch): MemoryItem {
+  private createMemoryFromMatch(match: VectorStoreMatch): MemoryItem {
     return {
       id: match.id,
       type: match.metadata?.type || 'episodic',
@@ -748,7 +783,7 @@ export class MemoryService {
 
   private assessConversationActivity(): 'low' | 'medium' | 'high' {
     // Simple heuristic based on recent memories
-    const recentMemories = Array.from(this.cache.values()).filter(m => {
+    const recentMemories = Array.from(this.cache.values()).filter((m) => {
       const age = Date.now() - m.createdAt.getTime()
       return age < 5 * 60 * 1000 // Last 5 minutes
     })
@@ -760,7 +795,7 @@ export class MemoryService {
 
   private assessPreferenceRichness(): 'low' | 'medium' | 'high' {
     const semanticMemories = Array.from(this.cache.values()).filter(
-      m => m.type === 'semantic'
+      (m) => m.type === 'semantic'
     )
 
     if (semanticMemories.length > 20) return 'high'
@@ -771,6 +806,22 @@ export class MemoryService {
   private assessTaskComplexity(): 'low' | 'medium' | 'high' {
     // Could be based on conversation depth, technical terms, etc.
     return 'medium'
+  }
+
+  private getRetentionForScope(scope: MemoryScope): number {
+    const policy = this.config.retentionPolicy
+    switch (scope) {
+      case 'session':
+        return policy.session
+      case 'thread':
+        return policy.thread
+      case 'global':
+        return policy.global
+      case 'user':
+        return policy.user ?? 0
+      default:
+        return 0
+    }
   }
 
   /**

@@ -34,3 +34,4 @@
 
 export * from './types'
 export * from './tenant-manager'
+export * from './react'
