@@ -20,7 +20,8 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
   status,
   className,
 }: ThinkingIndicatorProps) {
-  const getStageIcon = (stage: AIStatus['stage']) => {
+  // Memoize icon and label getters to prevent recreation on every render
+  const getStageIcon = React.useCallback((stage: AIStatus['stage']) => {
     const iconProps = { size: 20 }
     switch (stage) {
       case 'thinking':
@@ -36,9 +37,9 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
       default:
         return <BotIcon {...iconProps} />
     }
-  }
+  }, [])
 
-  const getStageLabel = (stage: AIStatus['stage']) => {
+  const getStageLabel = React.useCallback((stage: AIStatus['stage']) => {
     switch (stage) {
       case 'thinking':
         return 'Thinking'
@@ -53,7 +54,7 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
       default:
         return 'Processing'
     }
-  }
+  }, [])
 
   return (
     <motion.div
