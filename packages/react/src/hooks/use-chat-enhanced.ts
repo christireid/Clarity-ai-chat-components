@@ -80,7 +80,7 @@ export interface UseChatOptions {
   streamProtocol?: 'sse' | 'data'
   
   /** Generate unique ID for each message */
-  id?: string
+  id?: () => string
   
   /** Callback when response is received */
   onResponse?: (response: Response) => void | Promise<void>
@@ -365,88 +365,88 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                 }
 
                 try {
-                const parsed = JSON.parse(data)
-                
-                // Handle different streaming formats
-                let contentDelta = ''
-                
-                if (parsed.choices?.[0]?.delta?.content) {
-                  // OpenAI chat completions format
-                  contentDelta = parsed.choices[0].delta.content
-                } else if (parsed.choices?.[0]?.text) {
-                  // OpenAI completions format
-                  contentDelta = parsed.choices[0].text
-                } else if (parsed.content) {
-                  // Direct content field
-                  contentDelta = typeof parsed.content === 'string' ? parsed.content : ''
-                } else if (parsed.text) {
-                  // Text field
-                  contentDelta = parsed.text
-                } else if (parsed.delta) {
-                  // Delta format
-                  contentDelta = typeof parsed.delta === 'string' ? parsed.delta : ''
-                } else if (parsed.message?.content) {
-                  // Message wrapper format
-                  contentDelta = parsed.message.content
-                } else if (typeof parsed === 'string') {
-                  // String response
-                  contentDelta = parsed
-                }
-
-                if (contentDelta) {
-                  accumulatedContent += contentDelta
+                  const parsed = JSON.parse(data)
                   
-                  if (mountedRef.current) {
-                    currentMessage = {
-                      ...currentMessage,
-                      content: accumulatedContent,
-                    }
-                    currentAssistantMessageRef.current = currentMessage
-                    setMessages((prev) =>
-                      prev.map((msg) =>
-                        msg.id === assistantMessageId ? currentMessage : msg
+                  // Handle different streaming formats
+                  let contentDelta = ''
+                  
+                  if (parsed.choices?.[0]?.delta?.content) {
+                    // OpenAI chat completions format
+                    contentDelta = parsed.choices[0].delta.content
+                  } else if (parsed.choices?.[0]?.text) {
+                    // OpenAI completions format
+                    contentDelta = parsed.choices[0].text
+                  } else if (parsed.content) {
+                    // Direct content field
+                    contentDelta = typeof parsed.content === 'string' ? parsed.content : ''
+                  } else if (parsed.text) {
+                    // Text field
+                    contentDelta = parsed.text
+                  } else if (parsed.delta) {
+                    // Delta format
+                    contentDelta = typeof parsed.delta === 'string' ? parsed.delta : ''
+                  } else if (parsed.message?.content) {
+                    // Message wrapper format
+                    contentDelta = parsed.message.content
+                  } else if (typeof parsed === 'string') {
+                    // String response
+                    contentDelta = parsed
+                  }
+
+                  if (contentDelta) {
+                    accumulatedContent += contentDelta
+                    
+                    if (mountedRef.current) {
+                      currentMessage = {
+                        ...currentMessage,
+                        content: accumulatedContent,
+                      }
+                      currentAssistantMessageRef.current = currentMessage
+                      setMessages((prev) =>
+                        prev.map((msg) =>
+                          msg.id === assistantMessageId ? currentMessage : msg
+                        )
                       )
-                    )
-                    setData(currentMessage)
+                      setData(currentMessage)
+                    }
+                  }
+                } catch {
+                  // Non-JSON line, treat as plain text
+                  if (data.trim() && data !== '[DONE]') {
+                    accumulatedContent += data
+                    if (mountedRef.current) {
+                      currentMessage = {
+                        ...currentMessage,
+                        content: accumulatedContent,
+                      }
+                      currentAssistantMessageRef.current = currentMessage
+                      setMessages((prev) =>
+                        prev.map((msg) =>
+                          msg.id === assistantMessageId ? currentMessage : msg
+                        )
+                      )
+                      setData(currentMessage)
+                    }
                   }
                 }
-              } catch {
-                // Non-JSON line, treat as plain text
-                if (data.trim() && data !== '[DONE]') {
-                  accumulatedContent += data
-                  if (mountedRef.current) {
-                    currentMessage = {
-                      ...currentMessage,
-                      content: accumulatedContent,
-                    }
-                    currentAssistantMessageRef.current = currentMessage
-                    setMessages((prev) =>
-                      prev.map((msg) =>
-                        msg.id === assistantMessageId ? currentMessage : msg
-                      )
-                    )
-                    setData(currentMessage)
+              } else if (line.trim()) {
+                // Plain text streaming
+                accumulatedContent += line
+                if (mountedRef.current) {
+                  currentMessage = {
+                    ...currentMessage,
+                    content: accumulatedContent,
                   }
-                }
-              }
-            } else if (line.trim()) {
-              // Plain text streaming
-              accumulatedContent += line
-              if (mountedRef.current) {
-                currentMessage = {
-                  ...currentMessage,
-                  content: accumulatedContent,
-                }
-                currentAssistantMessageRef.current = currentMessage
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === assistantMessageId ? currentMessage : msg
+                  currentAssistantMessageRef.current = currentMessage
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === assistantMessageId ? currentMessage : msg
+                    )
                   )
-                )
-                setData(currentMessage)
+                  setData(currentMessage)
+                }
               }
             }
-          }
           }
 
           // Finalize message
@@ -516,7 +516,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const reload = React.useCallback(
     async (options?: { data?: Record<string, any> }): Promise<string | null> => {
       // Find last user message
-      const lastUserMessageIndex = messages.findLastIndex((msg) => msg.role === 'user')
+      const lastUserMessageIndex = messages.findLastIndex((msg: CoreMessage) => msg.role === 'user')
       if (lastUserMessageIndex === -1) return null
 
       // Remove messages after last user message

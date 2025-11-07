@@ -112,7 +112,11 @@ export * from './components/virtualized-message-list'
 export * from './components/markdown-renderer-enhanced'
 
 // Export hooks
-export * from './hooks/use-chat'
+export {
+  useChat,
+  type UseChatOptions as UseChatOptionsLegacy,
+  type UseChatReturn as UseChatReturnLegacy,
+} from './hooks/use-chat'
 export * from './hooks/use-chat-enhanced'
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'

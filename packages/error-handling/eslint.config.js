@@ -4,12 +4,8 @@ import tsparser from '@typescript-eslint/parser'
 import reactPlugin from 'eslint-plugin-react'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y'
-import globals from 'globals'
 
 export default [
-  {
-    ignores: ['dist/', 'node_modules/', 'coverage/', '.storybook/', 'src/**/*.js'],
-  },
   js.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
@@ -23,26 +19,45 @@ export default [
         },
       },
       globals: {
-        ...globals.browser,
-        ...globals.node,
-        ...globals.jest,
         React: 'readonly',
         JSX: 'readonly',
-        IntersectionObserver: 'readonly',
-        IntersectionObserverEntry: 'readonly',
-        IntersectionObserverInit: 'readonly',
-        IntersectionObserverCallback: 'readonly',
-        ResizeObserver: 'readonly',
-        ResizeObserverEntry: 'readonly',
-        ResizeObserverCallback: 'readonly',
-        RequestCredentials: 'readonly',
-        ScrollBehavior: 'readonly',
-        WindowEventMap: 'readonly',
-        DocumentEventMap: 'readonly',
-        HTMLElementEventMap: 'readonly',
-        AddEventListenerOptions: 'readonly',
-        EventListener: 'readonly',
-        vi: 'readonly',
+        // Browser globals
+        document: 'readonly',
+        window: 'readonly',
+        navigator: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        getComputedStyle: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        // HTML Elements
+        HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
+        HTMLButtonElement: 'readonly',
+        HTMLDivElement: 'readonly',
+        HTMLSpanElement: 'readonly',
+        HTMLAnchorElement: 'readonly',
+        HTMLParagraphElement: 'readonly',
+        HTMLUListElement: 'readonly',
+        HTMLLIElement: 'readonly',
+        HTMLImageElement: 'readonly',
+        Element: 'readonly',
+        // SVG Elements
+        SVGSVGElement: 'readonly',
+        SVGPathElement: 'readonly',
+        // Events
+        Event: 'readonly',
+        EventTarget: 'readonly',
+        KeyboardEvent: 'readonly',
+        MouseEvent: 'readonly',
+        TouchEvent: 'readonly',
+        // Node globals for build
+        process: 'readonly',
+        NodeJS: 'readonly',
+        global: 'readonly',
       },
     },
     plugins: {
@@ -73,28 +88,49 @@ export default [
     },
   },
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['**/*.js'],
     languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
       globals: {
-        ...globals.browser,
-        ...globals.node,
-        ...globals.jest,
-        IntersectionObserver: 'readonly',
-        IntersectionObserverEntry: 'readonly',
-        IntersectionObserverInit: 'readonly',
-        IntersectionObserverCallback: 'readonly',
-        ResizeObserver: 'readonly',
-        ResizeObserverEntry: 'readonly',
-        ResizeObserverCallback: 'readonly',
-        RequestCredentials: 'readonly',
-        ScrollBehavior: 'readonly',
-        WindowEventMap: 'readonly',
-        DocumentEventMap: 'readonly',
-        HTMLElementEventMap: 'readonly',
-        AddEventListenerOptions: 'readonly',
-        EventListener: 'readonly',
-        vi: 'readonly',
+        // Browser globals
+        document: 'readonly',
+        window: 'readonly',
+        navigator: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        // Node globals
+        process: 'readonly',
+        NodeJS: 'readonly',
+        global: 'readonly',
       },
     },
+  },
+  {
+    files: ['**/*.test.{js,ts,tsx}', '**/__tests__/**', '**/test/**'],
+    languageOptions: {
+      globals: {
+        // Vitest globals
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        // Node globals for tests
+        global: 'readonly',
+        process: 'readonly',
+        console: 'readonly',
+      },
+    },
+  },
+  {
+    ignores: ['dist/', 'node_modules/', 'coverage/', '.storybook/'],
   },
 ]

@@ -31,7 +31,7 @@
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext ts",
-    "test": "echo \"No tests yet\" && exit 0",
+    "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {

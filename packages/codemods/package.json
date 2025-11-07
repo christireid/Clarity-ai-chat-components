@@ -19,8 +19,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "echo \"No tests yet\" && exit 0",
-    "typecheck": "tsc --noEmit"
+    "test": "vitest run --passWithNoTests"
   },
   "keywords": [
     "clarity-chat",

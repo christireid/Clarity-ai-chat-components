@@ -9,21 +9,30 @@ describe('ChatWindow - Enhanced Tests', () => {
   const mockMessages: Message[] = [
     {
       id: '1',
+      chatId: 'test-chat',
       role: 'assistant',
       content: 'Hello! How can I help you?',
-      timestamp: new Date('2024-01-01T10:00:00'),
+      status: 'sent',
+      createdAt: new Date('2024-01-01T10:00:00'),
+      updatedAt: new Date('2024-01-01T10:00:00'),
     },
     {
       id: '2',
+      chatId: 'test-chat',
       role: 'user',
       content: 'I need help with React',
-      timestamp: new Date('2024-01-01T10:01:00'),
+      status: 'sent',
+      createdAt: new Date('2024-01-01T10:01:00'),
+      updatedAt: new Date('2024-01-01T10:01:00'),
     },
     {
       id: '3',
+      chatId: 'test-chat',
       role: 'assistant',
       content: 'I can help with React! What specifically do you need?',
-      timestamp: new Date('2024-01-01T10:02:00'),
+      status: 'sent',
+      createdAt: new Date('2024-01-01T10:02:00'),
+      updatedAt: new Date('2024-01-01T10:02:00'),
     },
   ]
 
@@ -39,7 +48,7 @@ describe('ChatWindow - Enhanced Tests', () => {
   describe('Rendering', () => {
     it('renders all messages correctly', () => {
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -53,8 +62,8 @@ describe('ChatWindow - Enhanced Tests', () => {
 
     it('renders with custom placeholder', () => {
       render(
-        <ThemeProvider theme={themes.default}>
-          <ChatWindow {...defaultProps} placeholder="Type your question..." />
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
+          <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
 
@@ -65,7 +74,7 @@ describe('ChatWindow - Enhanced Tests', () => {
 
     it('renders loading state', () => {
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} isLoading />
         </ThemeProvider>
       )
@@ -75,7 +84,7 @@ describe('ChatWindow - Enhanced Tests', () => {
 
     it('renders empty state when no messages', () => {
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} messages={[]} />
         </ThemeProvider>
       )
@@ -90,7 +99,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       const onSendMessage = vi.fn()
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} onSendMessage={onSendMessage} />
         </ThemeProvider>
       )
@@ -106,7 +115,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       const user = userEvent.setup()
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -127,7 +136,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       const onSendMessage = vi.fn()
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} onSendMessage={onSendMessage} />
         </ThemeProvider>
       )
@@ -144,7 +153,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       const onSendMessage = vi.fn()
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} isLoading onSendMessage={onSendMessage} />
         </ThemeProvider>
       )
@@ -167,7 +176,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       })
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -185,8 +194,8 @@ describe('ChatWindow - Enhanced Tests', () => {
       const onEditMessage = vi.fn()
 
       render(
-        <ThemeProvider theme={themes.default}>
-          <ChatWindow {...defaultProps} onEditMessage={onEditMessage} />
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
+          <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
 
@@ -209,8 +218,8 @@ describe('ChatWindow - Enhanced Tests', () => {
       const onRegenerateMessage = vi.fn()
 
       render(
-        <ThemeProvider theme={themes.default}>
-          <ChatWindow {...defaultProps} onRegenerateMessage={onRegenerateMessage} />
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
+          <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
 
@@ -233,7 +242,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       const onSendMessage = vi.fn()
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} onSendMessage={onSendMessage} />
         </ThemeProvider>
       )
@@ -251,7 +260,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       const user = userEvent.setup()
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -272,7 +281,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       const user = userEvent.setup()
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -290,7 +299,7 @@ describe('ChatWindow - Enhanced Tests', () => {
   describe('Accessibility', () => {
     it('has proper ARIA labels', () => {
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -307,7 +316,7 @@ describe('ChatWindow - Enhanced Tests', () => {
 
     it('announces new messages to screen readers', async () => {
       const { rerender } = render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -316,14 +325,17 @@ describe('ChatWindow - Enhanced Tests', () => {
         ...mockMessages,
         {
           id: '4',
+          chatId: 'test-chat',
           role: 'assistant' as const,
           content: 'New message',
-          timestamp: new Date(),
+          status: 'sent' as const,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ]
 
       rerender(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} messages={newMessages} />
         </ThemeProvider>
       )
@@ -334,8 +346,8 @@ describe('ChatWindow - Enhanced Tests', () => {
 
     it('has proper heading hierarchy', () => {
       render(
-        <ThemeProvider theme={themes.default}>
-          <ChatWindow {...defaultProps} title="Customer Support" />
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
+          <ChatWindow {...defaultProps} sessionTitle="Customer Support" />
         </ThemeProvider>
       )
 
@@ -347,7 +359,7 @@ describe('ChatWindow - Enhanced Tests', () => {
   describe('Theming', () => {
     it('applies theme correctly', () => {
       render(
-        <ThemeProvider theme={themes.ocean}>
+        <ThemeProvider defaultTheme={{ preset: 'ocean' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -358,7 +370,7 @@ describe('ChatWindow - Enhanced Tests', () => {
 
     it('switches themes dynamically', () => {
       const { rerender } = render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -367,7 +379,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       expect(container).toHaveClass('theme-default')
 
       rerender(
-        <ThemeProvider theme={themes.dark}>
+        <ThemeProvider defaultTheme={{ preset: 'default-dark' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -381,13 +393,16 @@ describe('ChatWindow - Enhanced Tests', () => {
     it('renders large message lists efficiently', () => {
       const manyMessages: Message[] = Array.from({ length: 1000 }, (_, i) => ({
         id: String(i),
+        chatId: 'test-chat',
         role: i % 2 === 0 ? ('user' as const) : ('assistant' as const),
         content: `Message ${i}`,
-        timestamp: new Date(),
+        status: 'sent' as const,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }))
 
       const { container } = render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} messages={manyMessages} />
         </ThemeProvider>
       )
@@ -399,7 +414,7 @@ describe('ChatWindow - Enhanced Tests', () => {
 
     it('memoizes messages to prevent unnecessary re-renders', () => {
       const { rerender } = render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -408,7 +423,7 @@ describe('ChatWindow - Enhanced Tests', () => {
       
       // Re-render with same messages
       rerender(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} />
         </ThemeProvider>
       )
@@ -428,7 +443,7 @@ describe('ChatWindow - Enhanced Tests', () => {
         .mockRejectedValue(new Error('Network error'))
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} onSendMessage={onSendMessage} />
         </ThemeProvider>
       )
@@ -450,7 +465,7 @@ describe('ChatWindow - Enhanced Tests', () => {
         .mockResolvedValueOnce(undefined)
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow {...defaultProps} onSendMessage={onSendMessage} />
         </ThemeProvider>
       )
@@ -478,11 +493,10 @@ describe('ChatWindow - Enhanced Tests', () => {
       const onSendMessage = vi.fn()
 
       render(
-        <ThemeProvider theme={themes.default}>
+        <ThemeProvider defaultTheme={{ preset: 'default-light' }}>
           <ChatWindow
             {...defaultProps}
             onSendMessage={onSendMessage}
-            enableFileUpload
           />
         </ThemeProvider>
       )

@@ -110,10 +110,10 @@ describe('Adapter Index', () => {
     })
 
     it('should filter by speed', () => {
-      const fastestModels = allModels.filter(m => m.speed === 'fastest')
-      expect(fastestModels.length).toBeGreaterThan(0)
-      fastestModels.forEach(m => {
-        expect(m.speed).toBe('fastest')
+      const fastModels = allModels.filter(m => m.speed === 'fast')
+      expect(fastModels.length).toBeGreaterThan(0)
+      fastModels.forEach(m => {
+        expect(m.speed).toBe('fast')
       })
     })
 
@@ -135,7 +135,7 @@ describe('Adapter Index', () => {
 
     it('should support complex filtering', () => {
       const fastAndCheap = allModels.filter(
-        m => m.speed === 'fastest' && m.cost === 'low'
+        m => m.speed === 'fast' && m.cost === 'low'
       )
       expect(fastAndCheap.length).toBeGreaterThan(0)
     })

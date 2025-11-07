@@ -403,7 +403,7 @@ export const AdvancedChatInput = React.forwardRef<HTMLTextAreaElement, AdvancedC
             <Textarea
               ref={textareaRef}
               value={value}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
               onKeyDown={handleKeyDown}
               onSelect={handleCursorChange}
               onClick={handleCursorChange}

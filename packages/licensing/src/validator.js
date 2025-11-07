@@ -32,6 +32,8 @@ export async function validateLicense(key, config) {
 /**
  * Validate with API endpoint
  */
+/* eslint-env node, browser */
+/* global fetch, process */
 async function validateWithAPI(key, endpoint) {
     try {
         const response = await fetch(endpoint, {
@@ -57,7 +59,7 @@ async function validateWithAPI(key, endpoint) {
             daysUntilExpiration: data.daysUntilExpiration,
         };
     }
-    catch (error) {
+    catch {
         return {
             valid: false,
             error: 'Network error during validation',
@@ -151,7 +153,8 @@ function addDays(date, days) {
  * Verify license signature (for production use)
  * This would verify the license key was signed by your private key
  */
-export async function verifyLicenseSignature(key, signature, publicKey) {
+// eslint-disable-next-line no-unused-vars
+export async function verifyLicenseSignature(_key, _signature, _publicKey) {
     // TODO: Implement RSA signature verification
     // For now, return true in development
     if (process.env.NODE_ENV === 'development') {

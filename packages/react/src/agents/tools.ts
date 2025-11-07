@@ -134,7 +134,7 @@ export const fileReadTool: Tool = {
     required: ['path'],
   },
   requiresApproval: true,
-  async execute(args) {
+  async execute(_args) {
     // Mock implementation - in production, use fs/fs-promises
     throw new Error('File system access not available in browser')
   },
@@ -217,7 +217,7 @@ export const codeExecutionTool: Tool = {
     required: ['code', 'language'],
   },
   requiresApproval: true,
-  async execute(args) {
+  async execute(_args) {
     // Mock implementation - in production, use a proper sandbox like vm2 or isolated-vm
     throw new Error('Code execution requires a secure sandbox environment')
   },
