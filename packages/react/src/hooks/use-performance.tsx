@@ -174,6 +174,13 @@ export function useLazyLoad<T>(
   const [data, setData] = React.useState<T | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<Error | null>(null)
+  
+  // Store loader in ref to avoid dependency issues
+  const loaderRef = React.useRef(loader)
+  
+  React.useLayoutEffect(() => {
+    loaderRef.current = loader
+  }, [loader])
 
   React.useEffect(() => {
     let cancelled = false
@@ -181,7 +188,7 @@ export function useLazyLoad<T>(
     setLoading(true)
     setError(null)
 
-    loader()
+    loaderRef.current()
       .then((result) => {
         if (!cancelled) {
           setData(result)
@@ -190,7 +197,7 @@ export function useLazyLoad<T>(
       })
       .catch((err) => {
         if (!cancelled) {
-          setError(err)
+          setError(err instanceof Error ? err : new Error(String(err)))
           setLoading(false)
         }
       })
@@ -198,7 +205,8 @@ export function useLazyLoad<T>(
     return () => {
       cancelled = true
     }
-  }, deps)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps) // Loader accessed via ref
 
   return { data, loading, error }
 }
@@ -233,18 +241,36 @@ export function useThrottlePerformance<T>(
   limit: number = 100
 ): T {
   const [throttledValue, setThrottledValue] = React.useState<T>(value)
-  const lastRan = React.useRef(Date.now())
+  const lastRan = React.useRef<number>(Date.now())
+  const timeoutRef = React.useRef<NodeJS.Timeout>()
 
   React.useEffect(() => {
-    const handler = setTimeout(() => {
-      if (Date.now() - lastRan.current >= limit) {
+    const now = Date.now()
+    const timeSinceLastRun = now - lastRan.current
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    // If enough time has passed, update immediately
+    if (timeSinceLastRun >= limit) {
+      setThrottledValue(value)
+      lastRan.current = now
+    } else {
+      // Schedule update for remaining time
+      const remainingTime = limit - timeSinceLastRun
+      timeoutRef.current = setTimeout(() => {
         setThrottledValue(value)
         lastRan.current = Date.now()
-      }
-    }, limit - (Date.now() - lastRan.current))
+        timeoutRef.current = undefined
+      }, Math.max(0, remainingTime))
+    }
 
     return () => {
-      clearTimeout(handler)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
     }
   }, [value, limit])
 

@@ -219,6 +219,23 @@ export function useErrorRecovery<T = any>(
   const [attemptNumber, setAttemptNumber] = React.useState(0)
   const [data, setData] = React.useState<T | null>(null)
   const lastArgsRef = React.useRef<any[]>([])
+  
+  // Store callbacks in refs to avoid recreating execute function
+  const operationRef = React.useRef(operation)
+  const shouldRetryRef = React.useRef(shouldRetry)
+  const onRetryStartRef = React.useRef(onRetryStart)
+  const onRetrySuccessRef = React.useRef(onRetrySuccess)
+  const onRetryFailRef = React.useRef(onRetryFail)
+  const onMaxAttemptsReachedRef = React.useRef(onMaxAttemptsReached)
+  
+  React.useLayoutEffect(() => {
+    operationRef.current = operation
+    shouldRetryRef.current = shouldRetry
+    onRetryStartRef.current = onRetryStart
+    onRetrySuccessRef.current = onRetrySuccess
+    onRetryFailRef.current = onRetryFail
+    onMaxAttemptsReachedRef.current = onMaxAttemptsReached
+  }, [operation, shouldRetry, onRetryStart, onRetrySuccess, onRetryFail, onMaxAttemptsReached])
 
   const canRetry = attemptNumber < maxAttempts && error !== null
   const errorType = error ? classifyError(error) : null
@@ -258,7 +275,7 @@ export function useErrorRecovery<T = any>(
           // Show retry state for attempts > 1
           if (currentAttempt > 1) {
             setIsRetrying(true)
-            onRetryStart?.(currentAttempt)
+            onRetryStartRef.current?.(currentAttempt)
 
             // Wait for backoff delay
             const delay = getDelay(currentAttempt - 1)
@@ -266,7 +283,7 @@ export function useErrorRecovery<T = any>(
           }
 
           // Execute operation
-          const result = await operation(...args)
+          const result = await operationRef.current(...args)
           
           // Success
           setData(result)
@@ -275,7 +292,7 @@ export function useErrorRecovery<T = any>(
           setIsRetrying(false)
           
           if (currentAttempt > 1) {
-            onRetrySuccess?.(result, currentAttempt)
+            onRetrySuccessRef.current?.(result, currentAttempt)
           }
           
           return result
@@ -284,7 +301,7 @@ export function useErrorRecovery<T = any>(
           console.error(`[useErrorRecovery] Attempt ${currentAttempt} failed:`, err)
 
           // Check if should retry
-          if (!shouldRetry(lastError, currentAttempt)) {
+          if (!shouldRetryRef.current(lastError, currentAttempt)) {
             console.log('[useErrorRecovery] shouldRetry returned false - stopping retries')
             break
           }
@@ -297,7 +314,7 @@ export function useErrorRecovery<T = any>(
 
           // Notify retry failure
           if (currentAttempt > 1) {
-            onRetryFail?.(lastError, currentAttempt)
+            onRetryFailRef.current?.(lastError, currentAttempt)
           }
         }
       }
@@ -308,12 +325,12 @@ export function useErrorRecovery<T = any>(
       setIsRetrying(false)
 
       if (lastError) {
-        onMaxAttemptsReached?.(lastError)
+        onMaxAttemptsReachedRef.current?.(lastError)
       }
 
       return null
     },
-    [operation, maxAttempts, shouldRetry, onRetryStart, onRetrySuccess, onRetryFail, onMaxAttemptsReached, getDelay]
+    [maxAttempts, getDelay] // Callbacks accessed via refs
   )
 
   /**

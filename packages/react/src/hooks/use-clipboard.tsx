@@ -55,6 +55,15 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
   const [value, setValue] = React.useState<string>('')
   const [copied, setCopied] = React.useState<boolean>(false)
   const timeoutRef = React.useRef<NodeJS.Timeout>()
+  
+  // Store callbacks in refs to avoid recreating copy function
+  const onSuccessRef = React.useRef(onSuccess)
+  const onErrorRef = React.useRef(onError)
+  
+  React.useLayoutEffect(() => {
+    onSuccessRef.current = onSuccess
+    onErrorRef.current = onError
+  }, [onSuccess, onError])
 
   const copy = React.useCallback(
     async (text: string) => {
@@ -83,7 +92,7 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
 
         setValue(text)
         setCopied(true)
-        onSuccess?.()
+        onSuccessRef.current?.()
 
         // Reset after timeout
         if (timeoutRef.current) {
@@ -91,20 +100,22 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
         }
         timeoutRef.current = setTimeout(() => {
           setCopied(false)
+          timeoutRef.current = undefined
         }, timeout)
       } catch (error) {
         const err = error instanceof Error ? error : new Error('Failed to copy')
-        onError?.(err)
+        onErrorRef.current?.(err)
         throw err
       }
     },
-    [timeout, onSuccess, onError]
+    [timeout] // Callbacks accessed via refs
   )
 
   const reset = React.useCallback(() => {
     setCopied(false)
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
+      timeoutRef.current = undefined
     }
   }, [])
 
