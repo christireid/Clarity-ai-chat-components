@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 /**
@@ -149,7 +149,7 @@ function formatRelativeTime(timestamp: number): string {
  * />
  * ```
  */
-export function ConversationList({
+export const ConversationList = memo(function ConversationList({
   conversations,
   activeId,
   onSelect,
@@ -165,16 +165,16 @@ export function ConversationList({
   onSelectionChange,
   className = '',
 }: ConversationListProps) {
-  const [searchQuery, setSearchQuery] = React.useState('')
-  const [sortBy, setSortBy] = React.useState<SortOption>('recent')
-  const [filterTags] = React.useState<string[]>([])
-  const [showPinnedOnly, setShowPinnedOnly] = React.useState(false)
-  const [showFavoritesOnly, setShowFavoritesOnly] = React.useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<SortOption>('recent')
+  const [filterTags] = useState<string[]>([])
+  const [showPinnedOnly, setShowPinnedOnly] = useState(false)
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
 
   /**
    * Filter and sort conversations
    */
-  const filteredConversations = React.useMemo(() => {
+  const filteredConversations = useMemo(() => {
     let filtered = [...conversations]
 
     // Search filter
@@ -237,7 +237,7 @@ export function ConversationList({
   /**
    * Handle conversation selection
    */
-  const handleSelect = (id: string) => {
+  const handleSelect = useCallback((id: string) => {
     if (multiSelect && onSelectionChange) {
       const newSelection = selectedIds.includes(id)
         ? selectedIds.filter((sid) => sid !== id)
@@ -246,7 +246,7 @@ export function ConversationList({
     } else {
       onSelect(id)
     }
-  }
+  }, [multiSelect, onSelectionChange, selectedIds, onSelect])
 
   /**
    * Get all unique tags (currently unused but available for tag filtering UI)
@@ -602,4 +602,6 @@ export function ConversationList({
       </div>
     </div>
   )
-}
+})
+
+ConversationList.displayName = 'ConversationList'
