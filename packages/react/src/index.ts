@@ -101,6 +101,15 @@ export * from './components/token-optimization-badge'
 export * from './components/context-visualizer'
 export * from './components/conversation-list'
 
+// v2.1 Blueprint Features - Conversation Branching
+export * from './components/conversation-branch-visualizer'
+
+// v2.1 Blueprint Features - Virtual Scrolling
+export * from './components/virtualized-message-list'
+
+// v2.1 Blueprint Features - Enhanced Markdown with LaTeX
+export * from './components/markdown-renderer-enhanced'
+
 // Export hooks
 export * from './hooks/use-chat'
 export * from './hooks/use-chat-enhanced'
@@ -159,6 +168,9 @@ export * from './utils/streaming-parser'
 // Performance utilities
 export * from './utils/performance'
 export * from './utils/performance-optimization'
+
+// v2.1 Blueprint Features - Advanced Export Utilities
+export * from './utils/export-utils'
 
 // Enhanced TypeScript types
 export * from './types/chat-types'
