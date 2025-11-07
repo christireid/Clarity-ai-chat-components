@@ -24,8 +24,7 @@ import type {
   MemoryBuffer,
   MemoryContext,
 } from './types'
-import type { VectorStore } from '../vector-stores/types'
-import type { EmbeddingProvider } from '../embeddings/types'
+import type { VectorStore, EmbeddingProvider, VectorMatch } from './types'
 import { TokenCounter, ContextOptimizer } from './token-optimizer'
 
 /**
@@ -239,7 +238,7 @@ export class MemoryService {
         includeMetadata: true,
       })
 
-      return matches.map(match => ({
+      return matches.map((match: VectorMatch) => ({
         memory: this.cache.get(match.id) || this.createMemoryFromMatch(match),
         relevance: match.score,
         distance: 1 - match.score,
@@ -613,7 +612,7 @@ export class MemoryService {
       }
 
       // Check retention policy
-      const retention = this.config.retentionPolicy[memory.scope]
+      const retention = this.getRetentionForScope(memory.scope)
       if (retention > 0) {
         const age = now.getTime() - memory.createdAt.getTime()
         if (age > retention * 1000) {
@@ -667,6 +666,21 @@ export class MemoryService {
     if (this.summarizationInterval) {
       clearInterval(this.summarizationInterval)
     }
+  }
+
+  /**
+   * Get retention time (in seconds) for a given scope
+   * Handles scopes not present in the retention policy by returning 0
+   */
+  private getRetentionForScope(scope: MemoryScope): number {
+    const policy = this.config.retentionPolicy
+    const map: Record<MemoryScope, number> = {
+      session: policy.session,
+      thread: policy.thread,
+      global: policy.global,
+      user: 0,
+    }
+    return map[scope] ?? 0
   }
 
   /**
