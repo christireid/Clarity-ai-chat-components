@@ -3,33 +3,33 @@ import { Metadata } from 'next'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 
 export const metadata: Metadata = {
-  title: 'StreamCancellation - Clarity Chat Components',
-  description: 'Provide stop/cancel controls for active streams.',
+  title: 'SSOConfigWizard - Clarity Chat Components',
+  description: 'Enterprise: guided setup for SSO providers and metadata.',
 }
 
-export default function StreamCancellationPage() {
+export default function SSOConfigWizardPage() {
   return (
     <div className="docs-content">
       <div className="docs-header">
-        <span className="docs-badge">Component</span>
-        <h1>StreamCancellation</h1>
-        <p className="docs-lead">Allows users to cancel active generations and recover gracefully.</p>
+        <span className="docs-badge">Enterprise</span>
+        <h1>SSOConfigWizard</h1>
+        <p className="docs-lead">Simplifies configuring SAML/OIDC providers and testing logins.</p>
       </div>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <LiveDemo
           title="Example"
-          code={`import { StreamCancellation } from '@clarity-chat/react'
+          code={`import { SSOConfigWizard } from '@clarity-chat/react'
 
 export default function Example() {
   return (
     <div className="p-4">
-      <StreamCancellation />
+      <SSOConfigWizard />
     </div>
   )
 }`} 
-          height="160px"
+          height="300px"
         />
       </section>
     </div>

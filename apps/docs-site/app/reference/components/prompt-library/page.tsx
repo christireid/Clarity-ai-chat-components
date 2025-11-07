@@ -1,5 +1,41 @@
-import type { Metadata } from 'next'
-export const metadata: Metadata = { title: 'Prompt Library | Clarity Chat', description: 'Manage and organize reusable prompts with categories and favorites.' }
+import React from 'react'
+import { Metadata } from 'next'
+import { LiveDemo } from '@/components/Demo/LiveDemo'
+
+export const metadata: Metadata = {
+  title: 'PromptLibrary - Clarity Chat Components',
+  description: 'Manage reusable prompts and insert them into chats.',
+}
+
 export default function PromptLibraryPage() {
-  return (<div className="max-w-5xl mx-auto px-4 py-8"><h1 className="text-4xl font-bold mb-4">Prompt Library</h1><p className="text-xl text-muted-foreground mb-8">Save, organize, and reuse prompts with categories, tags, and favorites.</p><section className="mb-12"><h2 className="text-3xl font-semibold mb-4">Features</h2><ul className="list-disc list-inside space-y-2 text-muted-foreground"><li>Save/edit/delete prompts</li><li>Category organization</li><li>Tag system</li><li>Favorites</li><li>Usage tracking</li><li>Search and filter</li></ul></section></div>)
+  return (
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Component</span>
+        <h1>PromptLibrary</h1>
+        <p className="docs-lead">Organize and apply prompt templates with variables.</p>
+      </div>
+
+      <section className="docs-section">
+        <h2>Basic Usage</h2>
+        <LiveDemo
+          title="Example"
+          code={`import { PromptLibrary } from '@clarity-chat/react'
+
+export default function Example() {
+  const items = [
+    { id: 'summarize', label: 'Summarize Selection' },
+    { id: 'rewrite', label: 'Rewrite for Tone' },
+  ]
+  return (
+    <div className="p-4">
+      <PromptLibrary items={items} onApply={(id) => console.log(id)} />
+    </div>
+  )
+}`} 
+          height="200px"
+        />
+      </section>
+    </div>
+  )
 }

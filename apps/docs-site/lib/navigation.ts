@@ -27,6 +27,7 @@ export const learnNavigation: NavItem[] = [
       { title: 'Performance', href: '/learn/guides/performance' },
       { title: 'Testing', href: '/learn/guides/testing' },
       { title: 'TypeScript', href: '/learn/guides/typescript' },
+      { title: 'Token Optimization', href: '/guides/token-optimization' },
     ],
   },
 ]
@@ -52,6 +53,8 @@ export const referenceNavigation: NavItem[] = [
           { title: 'ContextMenu', href: '/reference/components/context-menu' },
           { title: 'Draggable', href: '/reference/components/draggable' },
           { title: 'KeyboardHint', href: '/reference/components/keyboard-hint' },
+          { title: 'AdvancedMessageSearch', href: '/reference/components/advanced-message-search' },
+          { title: 'RetryButton', href: '/reference/components/retry-button' },
         ],
       },
       {
@@ -62,6 +65,38 @@ export const referenceNavigation: NavItem[] = [
           { title: 'Badge', href: '/reference/components/badge' },
           { title: 'Tooltip', href: '/reference/components/tooltip' },
           { title: 'Modal', href: '/reference/components/modal' },
+          { title: 'NetworkStatus', href: '/reference/components/network-status' },
+          { title: 'PromptLibrary', href: '/reference/components/prompt-library' },
+          { title: 'PromptSuggestions', href: '/reference/components/prompt-suggestions' },
+          { title: 'StreamingTextRenderer', href: '/reference/components/streaming-text-renderer' },
+          { title: 'StreamBlock', href: '/reference/components/stream-block' },
+          { title: 'StreamCancellation', href: '/reference/components/stream-cancellation' },
+          { title: 'ToolInvocationCard', href: '/reference/components/tool-invocation-card' },
+        ],
+      },
+      {
+        title: 'Optimization',
+        items: [
+          { title: 'TokenOptimizationBadge', href: '/reference/components/token-optimization-badge' },
+          { title: 'TokenOptimizationPanel', href: '/reference/components/token-optimization-panel' },
+          { title: 'TokenOptimizationDashboard', href: '/reference/components/token-optimization-dashboard' },
+        ],
+      },
+      {
+        title: 'Operations',
+        items: [
+          { title: 'UsageDashboard', href: '/reference/components/usage-dashboard' },
+          { title: 'PerformanceDashboard', href: '/reference/components/performance-dashboard' },
+          { title: 'ProjectSidebar', href: '/reference/components/project-sidebar' },
+        ],
+      },
+      {
+        title: 'Enterprise',
+        items: [
+          { title: 'AuthTenantDashboard', href: '/reference/components/auth-tenant-dashboard' },
+          { title: 'ApiTokenManager', href: '/reference/components/api-token-manager' },
+          { title: 'SeatInviteDialog', href: '/reference/components/seat-invite-dialog' },
+          { title: 'SSOConfigWizard', href: '/reference/components/sso-config-wizard' },
         ],
       },
     ],
@@ -104,6 +139,7 @@ export const examplesNavigation: NavItem[] = [
       { title: 'File Sharing', href: '/examples/file-sharing' },
       { title: 'Real-time Updates', href: '/examples/realtime' },
       { title: 'Custom Commands', href: '/examples/custom-commands' },
+      { title: 'Token Optimization', href: '/examples/token-optimization' },
     ],
   },
   {
