@@ -1,14 +1,13 @@
-import { memo, useState, useRef, useCallback, useMemo } from 'react'
+import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Textarea,
   Button,
   cn,
+  type ButtonState,
 } from '@clarity-chat/primitives'
 import { SendIcon } from './icons'
 import { FeedbackAnimations } from '../animations/microanimations'
-import { useCharacterCounter } from '../hooks/use-character-counter'
-import { useSubmitButtonState } from '../hooks/use-submit-button-state'
 
 export interface ChatInputProps {
   value: string
@@ -29,24 +28,7 @@ export interface ChatInputProps {
   className?: string
 }
 
-// Memoized focus ring glow animation variants
-const createContainerVariants = (glowOnFocus: boolean) => ({
-  idle: {
-    boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
-  },
-  focused: glowOnFocus
-    ? {
-        boxShadow: [
-          '0 0 0 0 hsl(var(--primary) / 0)',
-          '0 0 0 4px hsl(var(--primary) / 0.15)',
-          '0 0 0 4px hsl(var(--primary) / 0.15)',
-        ],
-        transition: { duration: 0.3, ease: 'easeOut' },
-      }
-    : {},
-})
-
-export const ChatInput = memo(function ChatInput({
+export const ChatInput = React.memo(function ChatInput({
   value,
   onChange,
   onSubmit,
@@ -59,40 +41,73 @@ export const ChatInput = memo(function ChatInput({
   glowOnFocus = true,
   className,
 }: ChatInputProps) {
-  const [isFocused, setIsFocused] = useState(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [isFocused, setIsFocused] = React.useState(false)
+  const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
-  // Use character counter hook
-  const {
-    charCount,
-    isOverLimit,
-    isNearLimit,
-    hasContent,
-    counterColor,
-    progressColor,
-    progressPercentage,
-  } = useCharacterCounter({
-    value,
-    maxLength,
-    warningThreshold,
-  })
-
-  // Use submit button state hook
-  const { buttonState, handleSubmit } = useSubmitButtonState({
-    onSubmit,
-    value,
-    disabled,
-    isOverLimit,
-  })
-
-  // Memoized container variants
-  const containerVariants = useMemo(
-    () => createContainerVariants(glowOnFocus),
-    [glowOnFocus]
+  // Memoize computed values to avoid recalculation on every render
+  const charCount = React.useMemo(() => value.length, [value])
+  const isOverLimit = React.useMemo(
+    () => (maxLength ? charCount > maxLength : false),
+    [maxLength, charCount]
   )
+  const isNearLimit = React.useMemo(
+    () => (maxLength ? charCount >= maxLength * warningThreshold : false),
+    [maxLength, charCount, warningThreshold]
+  )
+  const hasContent = React.useMemo(() => value.trim().length > 0, [value])
 
-  // Memoized keyboard handler
-  const handleKeyDown = useCallback(
+  // Memoize character counter color calculation
+  const counterColor = React.useMemo(() => {
+    if (isOverLimit) return 'text-destructive font-semibold'
+    if (isNearLimit) return 'text-[hsl(var(--warning))] font-medium'
+    if (charCount > 0) return 'text-primary'
+    return 'text-muted-foreground'
+  }, [isOverLimit, isNearLimit, charCount])
+
+  // Memoize progress bar color calculation
+  const progressColor = React.useMemo(() => {
+    if (isOverLimit) return 'bg-destructive'
+    if (isNearLimit) return 'bg-[hsl(var(--warning))]'
+    return 'bg-primary'
+  }, [isOverLimit, isNearLimit])
+
+  // Memoize shake animation function
+  const triggerShakeAnimation = React.useCallback(() => {
+    textareaRef.current?.animate(
+      [
+        { transform: 'translateX(0)' },
+        { transform: 'translateX(-8px)' },
+        { transform: 'translateX(8px)' },
+        { transform: 'translateX(-8px)' },
+        { transform: 'translateX(8px)' },
+        { transform: 'translateX(0)' },
+      ],
+      { duration: 400, easing: 'ease-in-out' }
+    )
+  }, [])
+
+  // Memoize submit handler to prevent unnecessary re-renders
+  const handleSubmit = React.useCallback(async () => {
+    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading')
+      return
+
+    setButtonState('loading')
+    try {
+      await onSubmit(value)
+      setButtonState('success')
+      // Auto-reset after showing success
+      setTimeout(() => setButtonState('idle'), 1000)
+    } catch (error) {
+      setButtonState('error')
+      console.error('[ChatInput] Submit error:', error)
+      // Auto-reset after showing error
+      setTimeout(() => setButtonState('idle'), 2000)
+    }
+  }, [value, isOverLimit, disabled, buttonState, onSubmit])
+
+  // Memoize keyboard handler
+  const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
@@ -100,26 +115,39 @@ export const ChatInput = memo(function ChatInput({
           handleSubmit()
         } else if (isOverLimit) {
           // Shake animation for error feedback
-          textareaRef.current?.animate(
-            [
-              { transform: 'translateX(0)' },
-              { transform: 'translateX(-8px)' },
-              { transform: 'translateX(8px)' },
-              { transform: 'translateX(-8px)' },
-              { transform: 'translateX(8px)' },
-              { transform: 'translateX(0)' },
-            ],
-            { duration: 400, easing: 'ease-in-out' }
-          )
+          triggerShakeAnimation()
         }
       }
     },
-    [value, isOverLimit, handleSubmit]
+    [value, isOverLimit, handleSubmit, triggerShakeAnimation]
   )
 
-  // Memoized focus handlers
-  const handleFocus = useCallback(() => setIsFocused(true), [])
-  const handleBlur = useCallback(() => setIsFocused(false), [])
+  // Memoize focus handlers
+  const handleFocus = React.useCallback(() => setIsFocused(true), [])
+  const handleBlur = React.useCallback(() => setIsFocused(false), [])
+  
+  // Memoize change handler
+  const handleChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value),
+    [onChange]
+  )
+
+  // Focus ring glow animation variants
+  const containerVariants = {
+    idle: {
+      boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
+    },
+    focused: glowOnFocus
+      ? {
+          boxShadow: [
+            '0 0 0 0 hsl(var(--primary) / 0)',
+            '0 0 0 4px hsl(var(--primary) / 0.15)',
+            '0 0 0 4px hsl(var(--primary) / 0.15)',
+          ],
+          transition: { duration: 0.3, ease: 'easeOut' },
+        }
+      : {},
+  }
 
   return (
     <motion.div
@@ -141,9 +169,7 @@ export const ChatInput = memo(function ChatInput({
           <Textarea
             ref={textareaRef}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              onChange(e.target.value)
-            }
+            onChange={handleChange}
             onKeyDown={handleKeyDown}
             onFocus={handleFocus}
             onBlur={handleBlur}
@@ -176,7 +202,7 @@ export const ChatInput = memo(function ChatInput({
                       className={cn('h-full', progressColor)}
                       initial={{ width: 0 }}
                       animate={{
-                        width: `${progressPercentage}%`,
+                        width: `${Math.min((charCount / maxLength) * 100, 100)}%`,
                       }}
                       transition={{ duration: 0.2 }}
                     />
