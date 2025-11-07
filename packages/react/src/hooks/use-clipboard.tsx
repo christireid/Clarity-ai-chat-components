@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 
 export interface UseClipboardOptions {
   /**
@@ -52,20 +52,20 @@ export interface UseClipboardReturn {
 export function useClipboard(options: UseClipboardOptions = {}): UseClipboardReturn {
   const { timeout = 2000, onSuccess, onError } = options
 
-  const [value, setValue] = React.useState<string>('')
-  const [copied, setCopied] = React.useState<boolean>(false)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const [value, setValue] = useState<string>('')
+  const [copied, setCopied] = useState<boolean>(false)
+  const timeoutRef = useRef<NodeJS.Timeout>()
   
   // Store callbacks in refs to avoid recreating copy function
-  const onSuccessRef = React.useRef(onSuccess)
-  const onErrorRef = React.useRef(onError)
+  const onSuccessRef = useRef(onSuccess)
+  const onErrorRef = useRef(onError)
   
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     onSuccessRef.current = onSuccess
     onErrorRef.current = onError
   }, [onSuccess, onError])
 
-  const copy = React.useCallback(
+  const copy = useCallback(
     async (text: string) => {
       try {
         // Modern clipboard API
@@ -111,7 +111,7 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
     [timeout] // Callbacks accessed via refs
   )
 
-  const reset = React.useCallback(() => {
+  const reset = useCallback(() => {
     setCopied(false)
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
@@ -119,7 +119,7 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
     }
   }, [])
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
