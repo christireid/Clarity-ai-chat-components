@@ -3,33 +3,34 @@ import { Metadata } from 'next'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 
 export const metadata: Metadata = {
-  title: 'StreamCancellation - Clarity Chat Components',
-  description: 'Provide stop/cancel controls for active streams.',
+  title: 'PromptSuggestions - Clarity Chat Components',
+  description: 'Suggest follow-up prompts to keep conversations moving.',
 }
 
-export default function StreamCancellationPage() {
+export default function PromptSuggestionsPage() {
   return (
     <div className="docs-content">
       <div className="docs-header">
         <span className="docs-badge">Component</span>
-        <h1>StreamCancellation</h1>
-        <p className="docs-lead">Allows users to cancel active generations and recover gracefully.</p>
+        <h1>PromptSuggestions</h1>
+        <p className="docs-lead">Inline suggestions that users can click to continue.</p>
       </div>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <LiveDemo
           title="Example"
-          code={`import { StreamCancellation } from '@clarity-chat/react'
+          code={`import { PromptSuggestions } from '@clarity-chat/react'
 
 export default function Example() {
+  const suggestions = ['Summarize that', 'Give me 3 options', 'Explain like I\'m 5']
   return (
     <div className="p-4">
-      <StreamCancellation />
+      <PromptSuggestions suggestions={suggestions} />
     </div>
   )
 }`} 
-          height="160px"
+          height="180px"
         />
       </section>
     </div>

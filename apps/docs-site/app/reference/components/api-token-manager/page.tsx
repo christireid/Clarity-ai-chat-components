@@ -3,33 +3,33 @@ import { Metadata } from 'next'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 
 export const metadata: Metadata = {
-  title: 'StreamCancellation - Clarity Chat Components',
-  description: 'Provide stop/cancel controls for active streams.',
+  title: 'ApiTokenManager - Clarity Chat Components',
+  description: 'Enterprise: manage API tokens, rotation, and access policies.',
 }
 
-export default function StreamCancellationPage() {
+export default function ApiTokenManagerPage() {
   return (
     <div className="docs-content">
       <div className="docs-header">
-        <span className="docs-badge">Component</span>
-        <h1>StreamCancellation</h1>
-        <p className="docs-lead">Allows users to cancel active generations and recover gracefully.</p>
+        <span className="docs-badge">Enterprise</span>
+        <h1>ApiTokenManager</h1>
+        <p className="docs-lead">CRUD and rotation flows for API tokens with audit trails.</p>
       </div>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
         <LiveDemo
           title="Example"
-          code={`import { StreamCancellation } from '@clarity-chat/react'
+          code={`import { ApiTokenManager } from '@clarity-chat/react'
 
 export default function Example() {
   return (
     <div className="p-4">
-      <StreamCancellation />
+      <ApiTokenManager />
     </div>
   )
 }`} 
-          height="160px"
+          height="260px"
         />
       </section>
     </div>

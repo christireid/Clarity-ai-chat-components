@@ -3,18 +3,18 @@ import { Metadata } from 'next'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 
 export const metadata: Metadata = {
-  title: 'ProjectSidebar - Clarity Chat Components',
-  description: 'Sidebar for navigating conversations, documents, and tools.',
+  title: 'TokenOptimizationDashboard - Clarity Chat Components',
+  description: 'Dashboard view of token optimization strategies and results.',
 }
 
-export default function ProjectSidebarPage() {
+export default function TokenOptimizationDashboardPage() {
   return (
     <div className="docs-content">
       <div className="docs-header">
         <span className="docs-badge">Component</span>
-        <h1>ProjectSidebar</h1>
+        <h1>TokenOptimizationDashboard</h1>
         <p className="docs-lead">
-          A structured sidebar for AI projects showing threads, files, and quick actions.
+          High-level view of compression, reranking, and memory policies across sessions.
         </p>
       </div>
 
@@ -22,16 +22,16 @@ export default function ProjectSidebarPage() {
         <h2>Basic Usage</h2>
         <LiveDemo
           title="Example"
-          code={`import { ProjectSidebar } from '@clarity-chat/react'
+          code={`import { TokenOptimizationDashboard } from '@clarity-chat/react'
 
 export default function Example() {
   return (
-    <div className="h-[420px] border rounded overflow-hidden">
-      <ProjectSidebar />
+    <div className="p-6">
+      <TokenOptimizationDashboard />
     </div>
   )
 }`} 
-          height="460px"
+          height="240px"
         />
       </section>
     </div>
