@@ -52,22 +52,40 @@ export const ChatInput = React.memo(function ChatInput({
     : false
   const hasContent = value.trim().length > 0
 
-  // Calculate character counter color
-  const getCounterColor = () => {
+  // Memoize character counter color for performance
+  const counterColor = React.useMemo(() => {
     if (isOverLimit) return 'text-destructive font-semibold'
     if (isNearLimit) return 'text-[hsl(var(--warning))] font-medium'
     if (charCount > 0) return 'text-primary'
     return 'text-muted-foreground'
-  }
+  }, [isOverLimit, isNearLimit, charCount])
 
-  // Calculate progress bar color
-  const getProgressColor = () => {
+  // Memoize progress bar color for performance
+  const progressColor = React.useMemo(() => {
     if (isOverLimit) return 'bg-destructive'
     if (isNearLimit) return 'bg-[hsl(var(--warning))]'
     return 'bg-primary'
-  }
+  }, [isOverLimit, isNearLimit])
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleSubmit = React.useCallback(async () => {
+    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading')
+      return
+
+    setButtonState('loading')
+    try {
+      await onSubmit(value)
+      setButtonState('success')
+      // Auto-reset after showing success
+      setTimeout(() => setButtonState('idle'), 1000)
+    } catch (error) {
+      setButtonState('error')
+      console.error('[ChatInput] Submit error:', error)
+      // Auto-reset after showing error
+      setTimeout(() => setButtonState('idle'), 2000)
+    }
+  }, [value, isOverLimit, disabled, buttonState, onSubmit])
+
+  const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       if (value.trim() && !isOverLimit) {
@@ -87,25 +105,7 @@ export const ChatInput = React.memo(function ChatInput({
         )
       }
     }
-  }
-
-  const handleSubmit = async () => {
-    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading')
-      return
-
-    setButtonState('loading')
-    try {
-      await onSubmit(value)
-      setButtonState('success')
-      // Auto-reset after showing success
-      setTimeout(() => setButtonState('idle'), 1000)
-    } catch (error) {
-      setButtonState('error')
-      console.error('[ChatInput] Submit error:', error)
-      // Auto-reset after showing error
-      setTimeout(() => setButtonState('idle'), 2000)
-    }
-  }
+  }, [value, isOverLimit, handleSubmit])
 
   // Focus ring glow animation variants
   const containerVariants = {
@@ -174,7 +174,7 @@ export const ChatInput = React.memo(function ChatInput({
                   {/* Progress bar */}
                   <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
                     <motion.div
-                      className={cn('h-full', getProgressColor())}
+                      className={cn('h-full', progressColor)}
                       initial={{ width: 0 }}
                       animate={{
                         width: `${Math.min((charCount / maxLength) * 100, 100)}%`,
@@ -185,7 +185,7 @@ export const ChatInput = React.memo(function ChatInput({
 
                   {/* Counter text */}
                   <motion.div
-                    className={cn('text-xs tabular-nums', getCounterColor())}
+                    className={cn('text-xs tabular-nums', counterColor)}
                     animate={isOverLimit ? FeedbackAnimations.pulse : {}}
                   >
                     {charCount}/{maxLength}

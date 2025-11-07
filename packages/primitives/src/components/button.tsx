@@ -93,6 +93,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const [ripples, setRipples] = React.useState<RippleType[]>([])
     const rippleIdRef = React.useRef(0)
     const stateTimeoutRef = React.useRef<NodeJS.Timeout>()
+    const rippleTimeoutsRef = React.useRef<NodeJS.Timeout[]>([])
 
     const currentState =
       controlledState || (loading ? 'loading' : internalState)
@@ -117,6 +118,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     }, [currentState, controlledState, stateDuration])
 
+    // Cleanup ripple timeouts on unmount
+    React.useEffect(() => {
+      return () => {
+        rippleTimeoutsRef.current.forEach(clearTimeout)
+      }
+    }, [])
+
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       // Add ripple effect
       if (shouldShowRipple) {
@@ -135,17 +143,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
         setRipples((prev) => [...prev, ripple])
 
-        // Remove ripple after animation
-        setTimeout(() => {
+        // Remove ripple after animation with proper cleanup tracking
+        const timeout = setTimeout(() => {
           setRipples((prev) => prev.filter((r) => r.id !== ripple.id))
         }, 600)
+        rippleTimeoutsRef.current.push(timeout)
       }
 
       onClick?.(e)
     }
 
-    // Get ripple color based on variant
-    const getRippleColor = () => {
+    // Memoize ripple color based on variant for performance
+    const rippleColorValue = React.useMemo(() => {
       if (rippleColor) return rippleColor
 
       const palette = {
@@ -162,7 +171,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       } as const
 
       return palette[variant ?? 'default'] ?? 'rgba(22, 119, 255, 0.22)'
-    }
+    }, [variant, rippleColor])
 
     // Get state content
     const getStateContent = () => {
@@ -266,7 +275,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 top: ripple.y,
                 width: ripple.size,
                 height: ripple.size,
-                backgroundColor: getRippleColor(),
+                backgroundColor: rippleColorValue,
               }}
             />
           ))}
