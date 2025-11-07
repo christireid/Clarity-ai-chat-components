@@ -91,7 +91,17 @@ export class Batcher<T> {
 }
 
 /**
- * Measure performance
+ * Measure performance for synchronous functions
+ * 
+ * @param name - Label for the performance measurement
+ * @param fn - Synchronous function to measure
+ * @returns Result of the function and duration in milliseconds
+ * @example
+ * ```ts
+ * const result = measurePerformance('heavy-computation', () => {
+ *   return processLargeArray(data)
+ * })
+ * ```
  */
 export function measurePerformance<T>(
   name: string,
@@ -100,12 +110,97 @@ export function measurePerformance<T>(
   const start = performance.now()
   const result = fn()
   const end = performance.now()
+  const duration = end - start
   
   if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
-    console.log(`[Performance] ${name}: ${end - start}ms`)
+    console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
   }
   
   return result
+}
+
+/**
+ * Measure performance for asynchronous functions
+ * 
+ * @param name - Label for the performance measurement
+ * @param fn - Async function to measure
+ * @returns Promise that resolves to function result and duration
+ * @example
+ * ```ts
+ * const result = await measurePerformanceAsync('api-call', async () => {
+ *   return await fetch('/api/data').then(r => r.json())
+ * })
+ * ```
+ */
+export async function measurePerformanceAsync<T>(
+  name: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  const start = performance.now()
+  
+  try {
+    const result = await fn()
+    const end = performance.now()
+    const duration = end - start
+    
+    if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
+      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
+    }
+    
+    return result
+  } catch (error) {
+    const end = performance.now()
+    const duration = end - start
+    
+    if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
+      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms (failed)`)
+    }
+    
+    throw error
+  }
+}
+
+/**
+ * Measure performance and return both result and duration
+ * 
+ * @param name - Label for the performance measurement
+ * @param fn - Async function to measure
+ * @returns Promise with result and duration
+ * @example
+ * ```ts
+ * const { result, duration } = await measureWithResult('fetch-users', async () => {
+ *   return await getUsers()
+ * })
+ * 
+ * if (duration > 1000) {
+ *   console.warn('Slow query detected')
+ * }
+ * ```
+ */
+export async function measureWithResult<T>(
+  name: string,
+  fn: () => Promise<T>
+): Promise<{ result: T; duration: number }> {
+  const start = performance.now()
+  
+  try {
+    const result = await fn()
+    const duration = performance.now() - start
+    
+    if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
+      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`)
+    }
+    
+    return { result, duration }
+  } catch (error) {
+    const duration = performance.now() - start
+    
+    if (typeof window !== 'undefined' && (window as any).__PERF_LOGGING__) {
+      console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms (failed)`)
+    }
+    
+    throw error
+  }
 }
 
 /**

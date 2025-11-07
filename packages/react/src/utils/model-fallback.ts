@@ -17,8 +17,15 @@ export interface FallbackOptions {
   maxTotalRetries?: number
   retryDelay?: number
   exponentialBackoff?: boolean
+  /** 
+   * Add jitter to retry delays to prevent thundering herd (default: true)
+   * Jitter randomizes delays between 50-150% of calculated value
+   */
+  jitter?: boolean
   onFallback?: (from: FallbackModelConfig, to: FallbackModelConfig, error: Error) => void
   onRetry?: (attempt: number, model: FallbackModelConfig, error: Error) => void
+  /** Optional AbortSignal to cancel entire fallback chain */
+  signal?: AbortSignal
 }
 
 export interface FallbackResult<T> {
@@ -98,9 +105,10 @@ export async function withModelFallback<T>(
           const delay = calculateDelay(
             options.retryDelay ?? 1000,
             attempt,
-            options.exponentialBackoff ?? true
+            options.exponentialBackoff ?? true,
+            options.jitter ?? true
           )
-          await sleep(delay)
+          await sleep(delay, options.signal)
         }
       }
     }
@@ -155,24 +163,92 @@ function isNonRetryableError(error: any): boolean {
 }
 
 /**
- * Calculate retry delay with optional exponential backoff
+ * Calculate retry delay with optional exponential backoff and jitter.
+ * 
+ * **Jitter prevents "thundering herd" problem** where multiple clients
+ * retry simultaneously, overwhelming the service. Adding randomness
+ * distributes retry attempts over time.
+ * 
+ * @param baseDelay - Base delay in milliseconds
+ * @param attempt - Current attempt number (1-indexed)
+ * @param exponential - Whether to use exponential backoff
+ * @param jitter - Add randomized jitter (0.5-1.5x multiplier) to prevent thundering herd
+ * @returns Calculated delay in milliseconds
  */
 function calculateDelay(
   baseDelay: number,
   attempt: number,
-  exponential: boolean
+  exponential: boolean,
+  jitter: boolean = true
 ): number {
+  let delay: number
+  
   if (exponential) {
-    return baseDelay * Math.pow(2, attempt - 1)
+    // Exponential backoff: 1x, 2x, 4x, 8x, etc.
+    delay = baseDelay * Math.pow(2, attempt - 1)
+  } else {
+    delay = baseDelay
   }
-  return baseDelay
+
+  if (jitter) {
+    // Add jitter: randomize between 50% and 150% of calculated delay
+    // This distributes retry attempts and prevents synchronized retries
+    const jitterMultiplier = 0.5 + Math.random()
+    delay = Math.floor(delay * jitterMultiplier)
+  }
+
+  return delay
 }
 
 /**
- * Sleep helper
+ * Sleep helper with optional AbortSignal support for cancellation.
+ * 
+ * @param ms - Milliseconds to sleep
+ * @param signal - Optional AbortSignal to cancel the sleep
+ * @returns Promise that resolves after delay or rejects if aborted
+ * @throws {DOMException} AbortError if signal is aborted
+ * 
+ * @example
+ * ```ts
+ * const controller = new AbortController()
+ * 
+ * // Cancel sleep after 1 second
+ * setTimeout(() => controller.abort(), 1000)
+ * 
+ * try {
+ *   await sleep(5000, controller.signal)
+ * } catch (error) {
+ *   if (error.name === 'AbortError') {
+ *     console.log('Sleep was cancelled')
+ *   }
+ * }
+ * ```
  */
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms))
+function sleep(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // Check if already aborted
+    if (signal?.aborted) {
+      reject(new DOMException('Sleep aborted', 'AbortError'))
+      return
+    }
+
+    const timeoutId = setTimeout(() => {
+      cleanup()
+      resolve()
+    }, ms)
+
+    const cleanup = () => {
+      clearTimeout(timeoutId)
+      signal?.removeEventListener('abort', handleAbort)
+    }
+
+    const handleAbort = () => {
+      cleanup()
+      reject(new DOMException('Sleep aborted', 'AbortError'))
+    }
+
+    signal?.addEventListener('abort', handleAbort)
+  })
 }
 
 /**
