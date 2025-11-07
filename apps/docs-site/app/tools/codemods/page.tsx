@@ -1,100 +1,115 @@
-import { GitBranch, Play, Eye, FileCode } from 'lucide-react'
+import { Metadata } from 'next'
+import { Callout } from '@/components/MDX/Callout'
+import { CodeBlock } from '@/components/MDX/CodeBlock'
 
-export default function CodemodsPage() {
+export const metadata: Metadata = {
+  title: '@clarity-chat/codemods - Developer Tools',
+  description:
+    'Automated jscodeshift transforms for upgrading Clarity Chat projects safely.',
+}
+
+export default function CodemodsToolsPage() {
   return (
-    <div className="space-y-12">
-      <header>
-        <div className="flex items-center gap-3 mb-4">
-          <GitBranch className="w-10 h-10 text-brand-500" />
-          <h1 className="text-5xl font-bold">Codemods</h1>
-        </div>
-        <p className="text-xl text-text-secondary max-w-2xl">
-          Upgrade Clarity Chat projects in minutes. AST-powered codemods migrate breaking changes,
-          rename APIs, and modernise configuration automatically.
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Package</span>
+        <h1>@clarity-chat/codemods</h1>
+        <p className="docs-lead">
+          Upgrade across major versions without manually touching hundreds of files.
+          These codemods are the same ones we run internally during releases.
         </p>
-      </header>
+      </div>
 
-      <section className="bg-bg-secondary rounded-xl p-8 space-y-4">
-        <h2 className="text-2xl font-bold">🚀 Quick Start</h2>
-        <pre className="bg-bg rounded-lg p-4 overflow-x-auto">
-          <code>{`npm install -D @clarity-chat/codemods
+      <section className="docs-section">
+        <h2>Installation</h2>
+        <CodeBlock
+          language="bash"
+          code={`npm install -D @clarity-chat/codemods
+# or run without installing
+npx @clarity-chat/codemods`}
+        />
+      </section>
 
-# Preview available transforms
+      <section className="docs-section">
+        <h2>Common Commands</h2>
+        <CodeBlock
+          language="bash"
+          code={`# List available codemods
 clarity-codemod list
 
-# Dry run v1 -> v2 migration
-clarity-codemod run v1-to-v2 ./src --dry
+# Preview v1 -> v2 migration (no changes written)
+clarity-codemod run v1-to-v2 ./src --dry --print
 
-# Apply changes
-clarity-codemod run v1-to-v2 ./src`}</code>
-        </pre>
+# Apply migration
+clarity-codemod run v1-to-v2 ./src
+
+# Chain multiple migrations (v1 -> v3)
+clarity-codemod migrate 1 3 ./src --dry
+clarity-codemod migrate 1 3 ./src`}
+        />
+        <Callout type="warning">
+          Always commit before running codemods and start with <code>--dry</code> +
+          <code>--print</code>. The tool preserves formatting/comments, but version
+          control is your safety net.
+        </Callout>
       </section>
 
-      <section className="grid md:grid-cols-3 gap-6">
-        <FeatureCard
-          icon={<Play className="w-6 h-6" />}
-          title="Automated Migrations"
-          description="Transforms handle breaking changes, prop renames, and configuration updates across versions."
-        />
-        <FeatureCard
-          icon={<Eye className="w-6 h-6" />}
-          title="Dry Run &amp; Verbose"
-          description="Preview diffs, print transformed output, and enable verbose logs for confident upgrades."
-        />
-        <FeatureCard
-          icon={<FileCode className="w-6 h-6" />}
-          title="AST Precision"
-          description="Built with jscodeshift, preserving formatting, comments, and unrelated code."
-        />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-3xl font-bold">Available Transforms</h2>
-        <ul className="list-disc list-inside text-text-secondary space-y-1">
+      <section className="docs-section">
+        <h2>Transforms Included</h2>
+        <ul>
           <li>
-            <strong>v1-to-v2:</strong> renames <code>ChatWindow → ChatInterface</code>, updates props, and
-            modernises API key handling.
+            <strong>v1-to-v2</strong> — renames props, updates component names, adjusts config schema
           </li>
           <li>
-            <strong>Migrations:</strong> chain multiple transforms with <code>clarity-codemod migrate 1 3</code>
-            to hop versions safely.
+            <strong>v2-to-v3</strong> — (example) reorganises streaming APIs, updates token helpers
           </li>
           <li>
-            <strong>Custom scenarios:</strong> extend with your own transforms using the exported
-            TypeScript helpers.
+            <strong>Custom</strong> — add your own by registering transforms in <code>src/transforms</code>
           </li>
         </ul>
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-3xl font-bold">Best Practices</h2>
-        <ol className="list-decimal list-inside text-text-secondary space-y-1">
-          <li>Commit your branch before running codemods.</li>
-          <li>Run with <code>--dry --print</code> to inspect changes.</li>
-          <li>Apply changes, review git diff, then run tests + lint.</li>
-          <li>Use <code>--parser</code> when working with non-TSX files.</li>
-        </ol>
+      <section className="docs-section">
+        <h2>Before &amp; After Preview</h2>
+        <CodeBlock
+          language="tsx"
+          code={`// Before (v1)
+import { ChatWindow } from '@clarity-chat/react'
+
+<ChatWindow
+  onMessage={(msg) => console.log(msg)}
+  config={{ apiKey: process.env.CLARITY_KEY }}
+/>
+
+// After (v2)
+import { ChatInterface } from '@clarity-chat/react'
+
+<ChatInterface
+  onSend={(msg) => console.log(msg)}
+  config={{ credentials: { apiKey: process.env.CLARITY_KEY } }}
+/>
+`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Tips</h2>
+        <ul>
+          <li>Run lint and tests after applying transforms</li>
+          <li>Use <code>--parser</code> to switch between <code>babel</code>, <code>ts</code>, and <code>tsx</code> as needed</li>
+          <li>Add <code>--verbose</code> for detailed logs when debugging</li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <h2>Extending</h2>
+        <p>
+          Codemods are powered by jscodeshift. Create a new transform file, export a
+          <code>Transform</code>, and register it in <code>src/transforms/index.ts</code>.
+          Use the provided tests as a template for coverage.
+        </p>
       </section>
     </div>
   )
 }
 
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode
-  title: string
-  description: string
-}) {
-  return (
-    <div className="bg-bg border border-border rounded-xl p-6 space-y-3">
-      <div className="flex items-center gap-3">
-        <span className="text-brand-500">{icon}</span>
-        <h3 className="text-xl font-semibold">{title}</h3>
-      </div>
-      <p className="text-sm text-text-secondary">{description}</p>
-    </div>
-  )
-}

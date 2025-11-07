@@ -1,107 +1,98 @@
-import { Eye, Keyboard, Sparkles, FilePlus } from 'lucide-react'
+import { Metadata } from 'next'
+import { Callout } from '@/components/MDX/Callout'
 
-export default function VSCodeToolsPage() {
+export const metadata: Metadata = {
+  title: 'VS Code Extension - Developer Tools',
+  description:
+    'Boost productivity with IntelliSense, snippets, CodeLens hints, and commands for Clarity Chat development.',
+}
+
+export default function VscodeToolsPage() {
   return (
-    <div className="space-y-12">
-      <header>
-        <div className="flex items-center gap-3 mb-4">
-          <Sparkles className="w-10 h-10 text-brand-500" />
-          <h1 className="text-5xl font-bold">VS Code Extension</h1>
-        </div>
-        <p className="text-xl text-text-secondary max-w-2xl">
-          Intelligent completions, inline docs, snippets, CodeLens, and project automation for the Clarity
-          Chat ecosystem—directly inside VS Code.
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Extension</span>
+        <h1>Clarity Chat – VS Code Extension</h1>
+        <p className="docs-lead">
+          Intelligent completions, snippets, hover docs, and CLI integration right
+          inside VS Code.
         </p>
-      </header>
-
-      <section className="bg-bg-secondary rounded-xl p-8 space-y-4">
-        <h2 className="text-2xl font-bold">✨ Highlights</h2>
-        <ul className="list-disc list-inside text-text-secondary space-y-2">
-          <li>Model-aware completions with pricing, context window, and documentation links.</li>
-          <li>Hover tooltips for API keys, provider capabilities, and best practices.</li>
-          <li>60+ snippets covering adapters, API routes, hooks, and RAG flows.</li>
-          <li>Command palette helpers: initialise projects, add providers, validate configuration.</li>
-        </ul>
-      </section>
-
-      <section className="grid md:grid-cols-2 gap-6">
-        <FeatureCard
-          icon={<Eye className="w-6 h-6" />}
-          title="Hover Intelligence"
-          description="Hover model IDs or env vars to see context windows, pricing, setup instructions, and quick docs links."
-        />
-        <FeatureCard
-          icon={<Keyboard className="w-6 h-6" />}
-          title="Smart Completions"
-          description="Autocomplete provider models, environment variables, adapter APIs, and component props with inline docs."
-        />
-        <FeatureCard
-          icon={<FilePlus className="w-6 h-6" />}
-          title="Snippets"
-          description="Prefix with `cc-` for production-ready snippets: chat UI, streaming hooks, Next.js API routes, cost tracking, and RAG workflows."
-        />
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-3xl font-bold">Commands</h2>
-        <ul className="list-disc list-inside text-text-secondary space-y-1">
-          <li>
-            <strong>Clarity Chat: Initialize Project</strong> – bootstrap Next.js, Express, or Hono apps with
-            configured providers.
-          </li>
-          <li>
-            <strong>Clarity Chat: Add Provider</strong> – install SDKs, create env vars, and scaffold example code.
-          </li>
-          <li>
-            <strong>Clarity Chat: Validate Configuration</strong> – lint env files, detect missing keys, and check
-            error handling.
-          </li>
-          <li>
-            <strong>Clarity Chat: Show Examples</strong> – insert ready-to-run patterns (streaming, RAG, function
-            calling, cost tracking, etc.).
-          </li>
-        </ul>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-3xl font-bold">Installation</h2>
-        <pre className="bg-bg-secondary rounded-lg p-4 overflow-x-auto">
-          <code>{`# Marketplace
-# Search "Clarity Chat" and click Install
-
-# VSIX
-code --install-extension clarity-chat-0.1.0.vsix`}</code>
-        </pre>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-3xl font-bold">Configuration</h2>
-        <ul className="list-disc list-inside text-text-secondary space-y-1">
-          <li>Enable/disable IntelliSense, CodeLens, and inline hints in <code>Preferences → Settings → Clarity Chat</code>.</li>
-          <li>Set default provider for snippets (<code>openai</code>, <code>anthropic</code>, <code>google</code>).</li>
-          <li>Manage API keys with the built-in secure key manager (encrypted via VS Code secrets storage).</li>
-        </ul>
-      </section>
-    </div>
-  )
-}
-
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode
-  title: string
-  description: string
-}) {
-  return (
-    <div className="bg-bg border border-border rounded-xl p-6 space-y-3">
-      <div className="flex items-center gap-3">
-        <span className="text-brand-500">{icon}</span>
-        <h3 className="text-xl font-semibold">{title}</h3>
       </div>
-      <p className="text-sm text-text-secondary">{description}</p>
+
+      <section className="docs-section">
+        <h2>Features</h2>
+        <ul>
+          <li>🤖 Model-aware IntelliSense with pricing, context window, use cases</li>
+          <li>📄 60+ TypeScript/React snippets for providers, hooks, API routes</li>
+          <li>💡 Hover documentation for models, env vars, configuration</li>
+          <li>🔎 CodeLens hints for API calls + quick docs links</li>
+          <li>🛠️ Command palette integration for project init, provider setup, validation</li>
+          <li>🔑 API key manager &amp; config validator panel</li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <h2>Installation</h2>
+        <ol>
+          <li>Open VS Code → Extensions (<kbd>Cmd/Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>X</kbd>)</li>
+          <li>Search for “Clarity Chat”</li>
+          <li>Click Install</li>
+          <li>Run <code>Clarity Chat: Initialize Project</code> from the command palette</li>
+        </ol>
+      </section>
+
+      <section className="docs-section">
+        <h2>Command Palette</h2>
+        <ul>
+          <li>
+            <strong>Clarity Chat: Initialize Project</strong> — bootstrap a new project with provider templates
+          </li>
+          <li>
+            <strong>Clarity Chat: Add Provider</strong> — install &amp; configure OpenAI/Anthropic/Google AI
+          </li>
+          <li>
+            <strong>Clarity Chat: Validate Configuration</strong> — ensure env vars &amp; SDKs are present
+          </li>
+          <li>
+            <strong>Clarity Chat: Show Examples</strong> — insert common patterns into the editor
+          </li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <h2>Snippets</h2>
+        <p>Prefixes start with <code>cc-</code>. Highlights:</p>
+        <ul>
+          <li><code>cc-openai-chat</code> — OpenAI chat completion boilerplate</li>
+          <li><code>cc-openai-stream</code> — Streaming API route with SSE</li>
+          <li><code>cc-react-chat</code> — Fully wired chat component</li>
+          <li><code>cc-rag-processor</code> — RAG ingestion helper</li>
+          <li><code>cc-token-counter</code> — Token usage + cost calculator</li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <h2>Configuration</h2>
+        <p>
+          Access settings via <em>Preferences → Settings → Clarity Chat</em>. Enable or disable
+          IntelliSense, CodeLens, inline hints, and choose a default provider.
+        </p>
+      </section>
+
+      <section className="docs-section">
+        <h2>Tips</h2>
+        <ul>
+          <li>Use <code>cc-</code> + <kbd>Ctrl/Cmd</kbd> + <kbd>Space</kbd> to trigger snippet suggestions</li>
+          <li>Run <code>Clarity Chat: Validate Configuration</code> before shipping</li>
+          <li>Hover over environment variables to see setup instructions &amp; docs links</li>
+          <li>Enable “Inline hints” to visualise token costs beside API calls</li>
+        </ul>
+        <Callout type="warning">
+          The extension requires VS Code 1.85+ and Node 16+ if developing locally.
+          Snippets support TypeScript, JavaScript, and TSX/JSX files.
+        </Callout>
+      </section>
     </div>
   )
 }
+

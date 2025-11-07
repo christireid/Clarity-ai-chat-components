@@ -1,108 +1,77 @@
+import Link from 'next/link'
 import { Metadata } from 'next'
-import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
-  title: 'Performance Guide',
-  description: 'Deliver fast, efficient chat experiences with virtualization and optimization hooks.',
+  title: 'Performance Quickstart - Learn Clarity Chat',
+  description:
+    'Immediate steps to keep Clarity Chat responsive before diving into the full performance guide.',
 }
 
-export default function PerformanceGuidePage() {
+export default function LearnPerformanceGuidePage() {
   return (
-    <>
-      <Breadcrumbs />
-
-      <h1>Performance Guide</h1>
-
-      <p className="lead">
-        Clarity Chat is engineered for large enterprises handling thousands of messages per session.
-        Combine virtualization, streaming optimizations, and token management to keep UI latency low.
-      </p>
-
-      <h2 id="virtualized-timelines">Virtualized Timelines</h2>
-      <p>
-        Use <code>VirtualizedMessageList</code> or the higher-level <code>MessageList</code> to window
-        large histories. Provide stable <code>message.id</code> values and avoid recreating render
-        functions each render.
-      </p>
-      <CodeBlock
-        language="tsx"
-        code={`import { ChatWindow, MessageList, Message } from '@clarity-chat/react'
-
-function Transcript({ messages }: { messages: Message[] }) {
-  return (
-    <ChatWindow
-      messages={messages}
-      messageListRenderer={(props) => (
-        <MessageList
-          messages={props.messages}
-          renderMessage={props.renderMessage}
-          virtualizationThreshold={120}
-        />
-      )}
-    />
-  )
-}`}
-      />
-
-      <h2 id="streaming-efficiency">Streaming Efficiency</h2>
-      <ul>
-        <li>Batch token payloads on the server to reduce render thrash.</li>
-        <li>
-          <code>StreamingMessage</code> only re-renders diffed spans, minimising DOM churn.
-        </li>
-        <li>
-          Debounce analytics updates with <code>useDebounce</code> (e.g., once per second during streams).
-        </li>
-      </ul>
-
-      <h2 id="memoization">Memoization Checklist</h2>
-      <CodeBlock
-        language="tsx"
-        code={`import { memo, useMemo } from 'react'
-import { ChatWindow } from '@clarity-chat/react'
-
-const MemoChatWindow = memo(ChatWindow)
-
-export function FastChat({ initialMessages }) {
-  const messages = useMemo(() => initialMessages, [initialMessages])
-  return <MemoChatWindow messages={messages} />
-}`}
-      />
-
-      <h2 id="optimized-hooks">Optimized Hooks</h2>
-      <ul>
-        <li>
-          <code>useChatOptimized</code> memoizes messages, debounces input, and batches updates.
-        </li>
-        <li>
-          <code>useTokenTracker</code> and <code>useTokenOptimization</code> manage context budgets so you
-          send fewer tokens without manual pruning.
-        </li>
-        <li>
-          <code>useMessageListPerformance</code> records render metrics via <code>requestIdleCallback</code>.
-        </li>
-      </ul>
-
-      <h2 id="asset-optimisation">Asset Optimisation</h2>
-      <ul>
-        <li>Lazy load heavy adapters (embeddings, summarisation) with dynamic imports.</li>
-        <li>Tree-shake unused components via ESM deep imports, e.g. <code>@clarity-chat/react/message</code>.</li>
-        <li>Run <code>npm run analyze</code> and <code>npm run size</code> to monitor bundle size.</li>
-      </ul>
-
-      <Callout type="info">
-        <p>
-          Combine this guide with the <a href="/cookbook/analytics-tracking">analytics tracking recipe</a>{' '}
-          to monitor latency, throughput, and cost per conversation.
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Quick Guide</span>
+        <h1>Performance</h1>
+        <p className="docs-lead">
+          These are the fast wins to keep your chat experience feeling instant.
+          Adopt them first, then explore the full performance guide for deeper
+          tooling.
         </p>
-      </Callout>
+      </div>
 
-      <p>
-        Continue with the <a href="/learn/guides/accessibility">Accessibility Guide</a> to ensure
-        optimized experiences remain inclusive.
-      </p>
-    </>
+      <section className="docs-section">
+        <h2>Checklist</h2>
+        <ul>
+          <li>Enable <strong>virtualized message lists</strong> when > 400 messages</li>
+          <li>Use <strong>streaming</strong> (SSE/WebSockets) for long responses</li>
+          <li>Memoize expensive render props (Markdown, code blocks)</li>
+          <li>Track render times with <strong>PerformanceDashboard</strong></li>
+          <li>Run <code>npm run analyze</code> and <code>npm run benchmark</code> before releases</li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <h2>Key APIs</h2>
+        <ul>
+          <li>
+            <code>VirtualizedMessageList</code> — drop into <code>ChatWindow</code> to render large histories
+          </li>
+          <li>
+            <code>useRenderPerformance</code> — grab render metrics per component
+          </li>
+          <li>
+            <code>usePerformance</code> — track FPS, CPU, and memory usage
+          </li>
+          <li>
+            <code>TokenCounter</code> — expose token usage to users to prevent runaway payloads
+          </li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <h2>Run the Tooling</h2>
+        <ul>
+          <li>
+            <code>npm run analyze</code> — generates bundle report (<code>bundle-reports/</code>)
+          </li>
+          <li>
+            <code>npm run benchmark</code> — measures render throughput (<code>benchmark-results/</code>)
+          </li>
+          <li>
+            <code>clarity-chat analyze --report</code> — CLI report of bundle size, code splitting, and dependency drift
+          </li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <Callout type="success">
+          Want to instrument production, set up webhooks, and enforce budgets? Read
+          the <Link href="/guides/performance">Performance Optimization Guide</Link>.
+        </Callout>
+      </section>
+    </div>
   )
 }
+

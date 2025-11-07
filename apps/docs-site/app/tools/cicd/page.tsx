@@ -1,107 +1,143 @@
-import { Workflow, GitBranch, ShieldCheck } from 'lucide-react'
+import { Metadata } from 'next'
+import { Callout } from '@/components/MDX/Callout'
+import { CodeBlock } from '@/components/MDX/CodeBlock'
+import Link from 'next/link'
 
-export default function CICDToolsPage() {
+export const metadata: Metadata = {
+  title: 'CI/CD Automation - Developer Tools',
+  description:
+    'Reference pipeline, workflows, and scripts for shipping Clarity Chat safely.',
+}
+
+export default function CicdToolsPage() {
   return (
-    <div className="space-y-12">
-      <header>
-        <div className="flex items-center gap-3 mb-4">
-          <Workflow className="w-10 h-10 text-brand-500" />
-          <h1 className="text-5xl font-bold">CI/CD Automation</h1>
-        </div>
-        <p className="text-xl text-text-secondary max-w-2xl">
-          Five GitHub Actions workflows manage quality gates, releases, dependency updates, and preview
-          deployments. Everything runs in parallel with caching for sub-minute feedback.
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Automation</span>
+        <h1>CI/CD Reference Pipeline</h1>
+        <p className="docs-lead">
+          The repository includes a production-ready CI/CD recipe tested during the
+          “CI/CD Final Status” audit. Use it as-is or tailor it to your platform.
         </p>
-      </header>
+      </div>
 
-      <section className="grid md:grid-cols-2 gap-6">
-        <WorkflowCard
-          icon={<ShieldCheck className="w-6 h-6" />}
-          title="quality.yml"
-          description="Runs lint, typecheck, unit tests, e2e tests, and accessibility audits on every PR."
-          steps={[
-            'Turbo remote cache for installs + builds',
-            'Vitest coverage report upload',
-            'Playwright traces + screenshots on failure',
-            'Bundle size regression check',
-          ]}
-        />
-        <WorkflowCard
-          icon={<GitBranch className="w-6 h-6" />}
-          title="release.yml"
-          description="Changesets-driven release pipeline with npm publish, GitHub release notes, and docs deploy."
-          steps={[
-            'Version packages via changesets',
-            'Publish to npm with provenance',
-            'Trigger docs-site static export',
-            'Notify Slack webhook on success',
-          ]}
-        />
-        <WorkflowCard
-          icon={<Workflow className="w-6 h-6" />}
-          title="preview.yml"
-          description="Deploys preview docs to Vercel and marketing site to Netlify for stakeholder review."
-          steps={[
-            'PR comment with preview URLs',
-            'Smoke tests against preview environments',
-            'Auto-expire previews on merge',
-          ]}
-        />
-        <WorkflowCard
-          icon={<Workflow className="w-6 h-6" />}
-          title="renovate.json"
-          description="Automated dependency updates with grouping rules, test runs, and release notes."
-          steps={[
-            'Weekly dependency batches',
-            'Automatic compatibility tests',
-            'Labels and assignees preconfigured',
-          ]}
+      <section className="docs-section">
+        <h2>Workflow Overview</h2>
+        <ul>
+          <li>🔁 Trigger on PRs to <code>main</code> and on every push</li>
+          <li>🏗️ Jobs: lint, unit tests, Playwright, typecheck, bundle analysis</li>
+          <li>📦 Caches: Turbo repo + npm for repeatable builds</li>
+          <li>📜 Artifacts: bundle-report, benchmark-report, Playwright traces</li>
+          <li>🚀 Deployment: Vercel preview builds + manual promotion to production</li>
+        </ul>
+        <Callout type="info">
+          Review <Link href="/CI_CD_FINAL_STATUS">CI_CD_FINAL_STATUS.md</Link> for the
+          original audit notes, pass/fail logs, and recommendations.
+        </Callout>
+      </section>
+
+      <section className="docs-section">
+        <h2>GitHub Actions Workflow</h2>
+        <CodeBlock
+          language="yaml"
+          code={`name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test -- --run
+      - run: npm run test:e2e
+      - run: npm run analyze
+      - run: npm run benchmark
+      - name: Upload bundle report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-report
+          path: bundle-reports/**
+      - name: Upload benchmark report
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-report
+          path: benchmark-results/**
+`}
         />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-3xl font-bold">Secrets &amp; Caching</h2>
-        <ul className="list-disc list-inside text-text-secondary space-y-1">
-          <li>GitHub OIDC auth for npm publish (no long-lived tokens).</li>
-          <li>Turbo + Playwright caches persisted between jobs for fast reruns.</li>
-          <li>Artifact uploads for Storybook, Playwright traces, and bundle reports.</li>
+      <section className="docs-section">
+        <h2>Pre-Commit Hooks</h2>
+        <p>
+          Husky + lint-staged ensure code quality before it hits CI. This keeps your
+          pipeline fast and reduces noise.
+        </p>
+        <CodeBlock
+          language="json"
+          code={`{
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{md,json}": [
+      "prettier --write"
+    ]
+  }
+}`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Deployment</h2>
+        <ul>
+          <li>
+            <strong>Docs Site</strong>: <code>npm run docs:build</code> &gt; deploy via Vercel (`vercel deploy --prod apps/docs-site`)
+          </li>
+          <li>
+            <strong>Marketing Site</strong>: same pipeline, different workspace
+          </li>
+          <li>
+            <strong>Packages</strong>: use Changesets <code>npm run release</code> to version + publish
+          </li>
         </ul>
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-3xl font-bold">Status Dashboards</h2>
-        <p className="text-text-secondary">
-          Each workflow posts a summary comment with coverage metrics, bundle size diff, failing suites,
-          and preview URLs—mirroring the React.dev editorial workflow.
+      <section className="docs-section">
+        <h2>Secrets &amp; Config</h2>
+        <p>
+          Store provider keys in platform secrets (Vercel, GitHub Actions, HashiCorp
+          Vault). The <code>clarity-chat doctor</code> command validates required
+          environment variables before deploy.
         </p>
+      </section>
+
+      <section className="docs-section">
+        <h2>Rollbacks &amp; Incident Response</h2>
+        <ul>
+          <li>
+            <code>clarity-chat upgrade --rollback</code> to revert dependency upgrades
+          </li>
+          <li>
+            Use <code>getTracer()</code> logs to identify failing models/providers
+          </li>
+          <li>
+            Replay audit and quota logs to confirm impact scope
+          </li>
+        </ul>
       </section>
     </div>
   )
 }
 
-function WorkflowCard({
-  icon,
-  title,
-  description,
-  steps,
-}: {
-  icon: React.ReactNode
-  title: string
-  description: string
-  steps: string[]
-}) {
-  return (
-    <div className="bg-bg border border-border rounded-xl p-6 space-y-3">
-      <div className="flex items-center gap-3">
-        <span className="text-brand-500">{icon}</span>
-        <h3 className="text-xl font-semibold">{title}</h3>
-      </div>
-      <p className="text-sm text-text-secondary">{description}</p>
-      <ul className="text-sm text-text-secondary space-y-1 list-disc list-inside">
-        {steps.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-    </div>
-  )
-}

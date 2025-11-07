@@ -1,157 +1,201 @@
 import { Metadata } from 'next'
-import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Callout } from '@/components/MDX/Callout'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
 export const metadata: Metadata = {
-  title: 'Hook Fundamentals',
-  description: 'Learn how Clarity Chat hooks orchestrate chat state, streaming, and optimization.',
+  title: 'Hooks Overview - Learn Clarity Chat',
+  description:
+    'Map the Clarity Chat hook ecosystem—from chat state containers to streaming, analytics, and enterprise utilities.',
 }
 
-export default function HookConceptsPage() {
+export default function HooksConceptPage() {
   return (
-    <>
-      <Breadcrumbs />
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Concept</span>
+        <h1>Hook Ecosystem</h1>
+        <p className="docs-lead">
+          Clarity Chat provides more than 40 hooks. Grouped together, they cover
+          state management, streaming, storage, analytics, safety, and enterprise
+          operations.
+        </p>
+      </div>
 
-      <h1>Hook Fundamentals</h1>
+      <section className="docs-section">
+        <h2>Hook Categories</h2>
+        <ul>
+          <li>
+            <strong>Chat State:</strong> <code>useChat</code>,{' '}
+            <code>useChatEnhanced</code>, <code>useChatOptimized</code>
+          </li>
+          <li>
+            <strong>Streaming &amp; Transport:</strong> <code>useStreamingSSE</code>,{' '}
+            <code>useStreamingWebSocket</code>, <code>useStreamableUI</code>
+          </li>
+          <li>
+            <strong>Operations &amp; History:</strong> <code>useMessageOperations</code>,{' '}
+            <code>useUndoRedo</code>, <code>useMessageHistory</code>
+          </li>
+          <li>
+            <strong>Persistence:</strong> <code>useLocalStorage</code>,{' '}
+            <code>useIndexedDb</code>, <code>useSmartCache</code>
+          </li>
+          <li>
+            <strong>Analytics &amp; Observability:</strong>{' '}
+            <code>useAnalytics</code>, <code>usePerformance</code>,{' '}
+            <code>useRenderPerformance</code>
+          </li>
+          <li>
+            <strong>UX &amp; Device:</strong> <code>useAutoScroll</code>,{' '}
+            <code>useMobileKeyboard</code>, <code>useTyping</code>,{' '}
+            <code>useHaptic</code>
+          </li>
+          <li>
+            <strong>Enterprise:</strong> <code>useTokenTracker</code>,{' '}
+            <code>useTokenOptimization</code>, <code>useQuota</code> (via manager)
+          </li>
+        </ul>
+        <Callout type="tip">
+          Hooks follow React naming conventions and are safe in server components
+          unless explicitly documented as client-only (e.g. streaming hooks).
+        </Callout>
+      </section>
 
-      <p className="lead">
-        Clarity Chat exposes ergonomic React hooks that encapsulate chat workflows, state machines,
-        and side effects. Hooks are written in TypeScript, battle-tested in production, and integrate
-        with every adapter and component.
-      </p>
+      <section className="docs-section">
+        <h2>Combining Hooks</h2>
+        <p>
+          Hooks are composable. Start with <code>useChat</code> and layer streaming
+          or operations only when required.
+        </p>
+        <CodeBlock
+          language="tsx"
+          code={`import {
+  useChat,
+  useStreamingSSE,
+  useMessageOperations,
+  useTokenTracker,
+} from '@clarity-chat/react'
 
-      <h2 id="use-chat">`useChat`</h2>
-      <p>
-        Manages end-to-end chat state: optimistic updates, retries, persisted history, attachments,
-        and message lifecycle events.
-      </p>
-      <CodeBlock
-        language="tsx"
-        title="Support widget"
-        code={`import { ChatWindow, useChat } from '@clarity-chat/react'
-
-export function SupportWidget() {
-  const {
-    messages,
-    isLoading,
-    sendMessage,
-    regenerateLastResponse,
-  } = useChat({ chatId: 'support', model: 'gpt-4o-mini' })
+export function AdvancedChat() {
+  const chat = useChat({ id: 'advanced', api: '/api/chat/advanced' })
+  const streamer = useStreamingSSE({
+    onToken: chat.appendStreamingChunk,
+    onFinish: chat.finishStreamingMessage,
+    onError: chat.failStreamingMessage,
+  })
+  const operations = useMessageOperations({
+    messages: chat.messages,
+    onMessagesChange: chat.setMessages,
+  })
+  const tokenStats = useTokenTracker({
+    messages: chat.messages,
+    model: 'gpt-4o',
+    onChange: (stats) => console.log('Usage', stats),
+  })
 
   return (
     <ChatWindow
-      messages={messages}
-      isLoading={isLoading}
-      onSendMessage={(content) => sendMessage({ role: 'user', content })}
-      onRegenerate={regenerateLastResponse}
+      messages={chat.messages}
+      onSendMessage={async (value) => {
+        const controller = new AbortController()
+        chat.startStreamingMessage(controller)
+        await streamer.startStream({
+          url: '/api/chat/advanced',
+          body: { messages: chat.messages.concat({ role: 'user', content: value }) },
+          signal: controller.signal,
+        })
+      }}
+      onStop={streamer.cancelStream}
+      onRegenerateMessage={operations.regenerateMessage}
+      onUndo={operations.undo}
+      onRedo={operations.redo}
+      footer={
+        <div className="text-xs text-muted-foreground flex justify-between">
+          <span>{tokenStats.totalTokens} tokens</span>
+          <span>${tokenStats.estimatedCost.toFixed(4)}</span>
+        </div>
+      }
     />
   )
 }`}
-      />
+        />
+      </section>
 
-      <h2 id="use-chat-optimized">`useChatOptimized`</h2>
-      <p>
-        Blueprint v2.1 introduces <code>useChatOptimized</code>, a high-performance variant with
-        memoized callbacks, debounced input, and batched updates. Use it for enterprise dashboards or
-        conversations with heavy telemetry.
-      </p>
-      <CodeBlock
-        language="tsx"
-        code={`import { useChatOptimized } from '@clarity-chat/react'
-
-const { messages, append, debouncedInput, isLoading } = useChatOptimized({
-  api: '/api/chat',
-  debounceMs: 120,
-  memoizeMessages: true,
-  batchUpdates: true,
-})`}
-      />
-
-      <Callout type="tip">
+      <section className="docs-section">
+        <h2>Storage &amp; Sync Hooks</h2>
         <p>
-          <strong>When to upgrade?</strong> If your chat surface integrates token counters, streaming
-          markdown, or analytics dashboards, <code>useChatOptimized</code> prevents unnecessary
-          renders and keeps interactions snappy.
+          Persist conversation state locally or remotely with drop-in hooks.
         </p>
-      </Callout>
+        <CodeBlock
+          language="tsx"
+          code={`import {
+  useChat,
+  useLocalStorage,
+  useIndexedDb,
+} from '@clarity-chat/react'
 
-      <h2 id="streaming">Streaming Hooks</h2>
-      <ul>
-        <li>
-          <code>useStreamingChat</code> orchestrates Server-Sent Events or WebSockets with automatic
-          abort + retry logic.
-        </li>
-        <li>
-          <code>useStreamingSSE</code> / <code>useStreamingWebSocket</code> expose lower-level control
-          when you need manual buffering.
-        </li>
-        <li>
-          <code>useStreamableUI</code> renders streaming UI elements in tandem with the Vercel AI SDK.
-        </li>
-      </ul>
+export function OfflineReadyChat() {
+  const [drafts, setDrafts] = useLocalStorage<Record<string, string>>('drafts', {})
+  const history = useIndexedDb('clarity-chat')
 
-      <h2 id="message-ops">Message Operations</h2>
-      <p>
-        <code>useMessageOperations</code> powers message editing, retry, undo/redo, branching, and
-        tagging. Combine it with <code>ConversationBranchVisualizer</code> to expose speculative
-        paths for reviewers.
-      </p>
+  const chat = useChat({
+    id: 'offline',
+    initialInput: drafts['offline'] ?? '',
+    onInputChange: (value) => setDrafts((prev) => ({ ...prev, offline: value })),
+    onMessagesChange: async (messages) => {
+      await history.store('conversations', { id: 'offline', messages })
+    },
+  })
 
-      <h2 id="token-optimization">Token Optimization Suite</h2>
-      <p>
-        Control spend with a dedicated suite introduced in Phase 4:
-      </p>
-      <ul>
-        <li>
-          <code>useTokenTracker</code> – live token + cost tracking for the current conversation.
-        </li>
-        <li>
-          <code>useTokenOptimization</code> – orchestrates smart compression, summarisation, and chunking.
-        </li>
-        <li>
-          <code>usePromptCompression</code>, <code>useSmartCache</code>, <code>useSmartThrottle</code>,
-          <code>useRequestBatcher</code>, and <code>useModelRouter</code> – targeted utilities you can
-          opt into based on workload.
-        </li>
-      </ul>
+  return <ChatWindow {...chat} />
+}
+`}
+        />
+        <Callout type="info">
+          The storage hooks are optional. If you have your own data layer (Redux,
+          tRPC, GraphQL), simply pass new message arrays to <code>useChat</code>.
+        </Callout>
+      </section>
 
-      <Callout type="success">
+      <section className="docs-section">
+        <h2>Observability Hooks</h2>
         <p>
-          Pair token optimization hooks with <code>MemoryService</code> from{' '}
-          <code>@clarity-chat/memory</code> to cut context costs by 60–90% without losing accuracy.
+          Track runtime metrics, analytics, and user behaviour without sprinkling
+          analytics calls everywhere.
         </p>
-      </Callout>
+        <CodeBlock
+          language="tsx"
+          code={`import { useAnalytics, useRenderPerformance } from '@clarity-chat/react'
 
-      <h2 id="device-experience">Device Experience</h2>
-      <ul>
-        <li>
-          <code>useMobileKeyboard</code> smooths viewport height changes on iOS Safari.
-        </li>
-        <li>
-          <code>useVoiceInput</code> captures microphone audio, transcribes, and submits messages.
-        </li>
-        <li>
-          <code>useHaptic</code> and <code>useKeyboardShortcuts</code> layer delight and accessibility.
-        </li>
-      </ul>
+function SuggestionButton({ suggestion }: { suggestion: string }) {
+  const { track } = useAnalytics()
+  const perf = useRenderPerformance('SuggestionButton')
 
-      <h2 id="best-practices">Best Practices</h2>
-      <ul>
-        <li>Scope hooks per conversation ID to avoid cross-talk in multi-chat dashboards.</li>
-        <li>
-          Combine <code>useChat</code> with <code>ModelSelector</code> to swap adapters in real-time.
-        </li>
-        <li>
-          Wrap streaming hooks in an <code>ErrorBoundary</code> and <code>RetryButton</code> for resilient UX.
-        </li>
-      </ul>
-
-      <p>
-        Continue with <a href="/reference/hooks">the hook reference</a> for full API details, or jump
-        to the <a href="/cookbook/analytics-tracking">cookbook</a> to see hooks orchestrating real
-        products.
-      </p>
-    </>
+  return (
+    <button
+      onClick={() => {
+        track('suggestion_clicked', { suggestion, renderTime: perf.lastRenderTime })
+        insertSuggestion(suggestion)
+      }}
+    >
+      {suggestion}
+    </button>
   )
 }
+`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Key Takeaways</h2>
+        <ul>
+          <li>Start with <code>useChat</code>; scale up with additional hooks as requirements grow.</li>
+          <li>Use streaming hooks when you need bespoke streaming UX (multi-model, diffing, etc.).</li>
+          <li>Persistence hooks are optional—compatible with any backend or state library.</li>
+          <li>Instrument with analytics and performance hooks to monitor real-world usage.</li>
+        </ul>
+      </section>
+    </div>
+  )
+}
+

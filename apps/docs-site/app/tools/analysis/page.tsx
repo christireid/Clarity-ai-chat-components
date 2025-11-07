@@ -1,102 +1,113 @@
-import { Gauge, BarChart2, Cpu } from 'lucide-react'
+import { Metadata } from 'next'
+import { Callout } from '@/components/MDX/Callout'
+import { CodeBlock } from '@/components/MDX/CodeBlock'
+
+export const metadata: Metadata = {
+  title: 'Bundle & Performance Analysis - Developer Tools',
+  description:
+    'Use the built-in analysis and benchmarking scripts to monitor bundle size, performance, and regression drift.',
+}
 
 export default function AnalysisToolsPage() {
   return (
-    <div className="space-y-12">
-      <header>
-        <div className="flex items-center gap-3 mb-4">
-          <Gauge className="w-10 h-10 text-brand-500" />
-          <h1 className="text-5xl font-bold">Analysis & Monitoring</h1>
-        </div>
-        <p className="text-xl text-text-secondary max-w-2xl">
-          Understand bundle size, runtime performance, and cost metrics with first-class tooling and
-          automated reports.
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Tooling</span>
+        <h1>Bundle &amp; Performance Analysis</h1>
+        <p className="docs-lead">
+          Keep bundle size and runtime performance under control with repeatable
+          scripts that generate HTML dashboards and regression reports.
         </p>
-      </header>
+      </div>
 
-      <section className="bg-bg-secondary rounded-xl p-8 space-y-4">
-        <h2 className="text-2xl font-bold">📦 Bundle Analysis</h2>
-        <ul className="list-disc list-inside text-text-secondary space-y-2">
+      <section className="docs-section">
+        <h2>Commands</h2>
+        <CodeBlock
+          language="bash"
+          code={`# Analyse bundle sizes (ESM/CJS/UMD) and generate HTML report
+npm run analyze
+
+# Benchmark JSON parsing, array operations, and cloning (100 iterations)
+npm run benchmark
+
+# Check size-limit budgets
+npm run size`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Outputs</h2>
+        <ul>
           <li>
-            <code>npm run analyze</code> generates interactive visualization (rollup + source-map-explorer)
-            saved to <code>artifacts/bundle-analysis.html</code>.
+            <code>bundle-reports/bundle-report.html</code> — per-package size breakdown with history comparisons
           </li>
           <li>
-            <code>npm run size</code> (size-limit) enforces budgets per package; CI fails if thresholds are exceeded.
+            <code>benchmark-results/benchmark-report.html</code> — latency statistics (mean, p95, p99) for key operations
           </li>
-          <li>Tree-shaking guidance and import suggestions included in the generated report.</li>
+          <li>
+            JSON counterparts for both reports (use in CI dashboards or Grafana)
+          </li>
         </ul>
       </section>
 
-      <section className="grid md:grid-cols-2 gap-6">
-        <Tile
-          icon={<Cpu className="w-6 h-6" />}
-          title="Runtime Benchmarks"
-          bulletPoints={[
-            'scripts/benchmark.js simulates streaming workloads with concurrency controls.',
-            'Outputs latency percentiles, throughput, and memory stats.',
-            'Integrates with dev-tools profiler for deep dives.',
-          ]}
-        />
-        <Tile
-          icon={<BarChart2 className="w-6 h-6" />}
-          title="Cost Dashboards"
-          bulletPoints={[
-            'Usage telemetry connects to token tracker hooks.',
-            'Reports aggregate spend by provider + conversation.',
-            'Exports CSV/JSON for finance hand-off.',
-          ]}
-        />
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-3xl font-bold">Artifacts</h2>
-        <p className="text-text-secondary">
-          CI uploads bundle reports, benchmark summaries, and token analytics as build artifacts. They are
-          linked in PR comments for quick review.
+      <section className="docs-section">
+        <h2>Bundle Analysis Script</h2>
+        <p>
+          The analyze script traverses every workspace package, measures ESM/CJS/UMD
+          bundles, and compares them with the previous report.
         </p>
+        <CodeBlock
+          language="ts"
+          code={`// scripts/analyze-bundle.js
+const report = {
+  timestamp: new Date().toISOString(),
+  packages: packages.map(analyzePackage),
+  totalSize: 0,
+}
+const comparison = generateComparison(report) // highlights increases/decreases
+writeHTMLReport(report, comparison)
+`}
+        />
+        <Callout type="tip">
+          Commit the latest <code>bundle-report.json</code> to your telemetry
+          pipeline to graph bundle size over time.
+        </Callout>
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-3xl font-bold">Local Workflow</h2>
-        <pre className="bg-bg-secondary rounded-lg p-4 overflow-x-auto">
-          <code>{`# Analyze bundle composition
-npm run analyze
+      <section className="docs-section">
+        <h2>Benchmark Script</h2>
+        <p>
+          Benchmarks simulate heavy operations (JSON parsing, array filtering,
+          deep cloning) with warmup runs and 100 iterations.
+        </p>
+        <CodeBlock
+          language="ts"
+          code={`const results = {
+  timestamp: new Date().toISOString(),
+  benchmarks: [
+    await benchmarkJSONParsing(),
+    await benchmarkArrayOperations(),
+    await benchmarkObjectCloning(),
+  ],
+}
+`}
+        />
+        <Callout type="info">
+          Extend the script with your own benchmarks (e.g. streaming throughput,
+          serialization) to track domain-specific performance budgets.
+        </Callout>
+      </section>
 
-# Size-limit budgets
-npm run size
-
-# Performance benchmark
-npm run benchmark
-
-# Token analytics dashboard
-npm run dev --workspace=@clarity-chat/dev-tools`}</code>
-        </pre>
+      <section className="docs-section">
+        <h2>Integrating with CI</h2>
+        <ul>
+          <li>Run <code>npm run analyze</code> + <code>npm run benchmark</code> in every PR</li>
+          <li>Upload HTML/JSON reports as artifacts (see the CI/CD guide)</li>
+          <li>Alert when bundle growth exceeds thresholds (size-limit fails the build)</li>
+          <li>Feed JSON output into Grafana/Datadog for trends</li>
+        </ul>
       </section>
     </div>
   )
 }
 
-function Tile({
-  icon,
-  title,
-  bulletPoints,
-}: {
-  icon: React.ReactNode
-  title: string
-  bulletPoints: string[]
-}) {
-  return (
-    <div className="bg-bg border border-border rounded-xl p-6 space-y-3">
-      <div className="flex items-center gap-3">
-        <span className="text-brand-500">{icon}</span>
-        <h3 className="text-xl font-semibold">{title}</h3>
-      </div>
-      <ul className="text-sm text-text-secondary space-y-1 list-disc list-inside">
-        {bulletPoints.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-    </div>
-  )
-}

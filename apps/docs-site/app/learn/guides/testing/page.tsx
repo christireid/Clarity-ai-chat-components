@@ -1,91 +1,67 @@
+import Link from 'next/link'
 import { Metadata } from 'next'
-import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
-  title: 'Testing Strategy',
-  description: 'Validate Clarity Chat with unit, integration, accessibility, and E2E tooling.',
+  title: 'Testing Quickstart - Learn Clarity Chat',
+  description:
+    'High-level testing plan before exploring the full testing/QA guide.',
 }
 
-export default function TestingGuidePage() {
+export default function LearnTestingGuidePage() {
   return (
-    <>
-      <Breadcrumbs />
-
-      <h1>Testing Strategy</h1>
-
-      <p className="lead">
-        Clarity Chat ships with a full testing stack—Vitest, Playwright, Storybook, Axe—and a CLI
-        that scaffolds new tests automatically. This guide shows how to plug it into your CI.
-      </p>
-
-      <h2 id="unit-testing">Unit &amp; Component Testing</h2>
-      <ul>
-        <li>
-          Use <code>vitest</code> + <code>@testing-library/react</code> (preconfigured in{' '}
-          <code>packages/react/vitest.config.mts</code>).
-        </li>
-        <li>Mock streaming APIs with the provided <code>createMockStream</code> helper.</li>
-        <li>
-          Run <code>npm run test --workspace=@clarity-chat/react</code> for watch mode and coverage.
-        </li>
-      </ul>
-
-      <CodeBlock
-        language="tsx"
-        title="Example component test"
-        code={`import { render, screen } from '@testing-library/react'
-import { ChatWindow } from '@clarity-chat/react'
-
-test('renders initial messages', () => {
-  render(<ChatWindow messages={[{ id: '1', role: 'user', content: 'Hi!' }]} />)
-  expect(screen.getByText('Hi!')).toBeInTheDocument()
-})`}
-      />
-
-      <h2 id="storybook">Visual Regression</h2>
-      <p>
-        Storybook stories live in <code>apps/storybook</code>. Use Chromatic or Loki for visual
-        regression testing—stories already include interaction tests for critical components.
-      </p>
-
-      <h2 id="e2e-testing">End-to-End &amp; Accessibility</h2>
-      <ul>
-        <li>
-          Playwright specs reside in <code>tests/e2e</code>; run them with{' '}
-          <code>npm run test:e2e</code> or <code>npm run test:e2e:ui</code>.
-        </li>
-        <li>
-          Accessibility checks integrate <code>@axe-core/playwright</code>—see{' '}
-          <code>tests/e2e/accessibility.spec.ts</code>.
-        </li>
-        <li>
-          CI workflows in <code>.github/workflows/test.yml</code> run unit + E2E suites on every PR.
-        </li>
-      </ul>
-
-      <h2 id="cli-scaffolding">CLI Scaffolding</h2>
-      <p>
-        The <code>@clarity-chat/cli</code> command <code>clarity-chat generate test</code> scaffolds
-        Vitest + Testing Library suites aligned with our conventions.
-      </p>
-
-      <CodeBlock
-        language="bash"
-        code={`clarity-chat generate test --name ChatWindow
-
-# Generates:
-# ├── ChatWindow.test.tsx
-# └── __snapshots__/ChatWindow.test.tsx.snap`}
-      />
-
-      <Callout type="info">
-        <p>
-          Use the <a href="/tools/testing">Testing Tools</a> page for an overview of available scripts,
-          coverage targets, and CI status.
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Quick Guide</span>
+        <h1>Testing Clarity Chat</h1>
+        <p className="docs-lead">
+          Use this cheat sheet to set up essential tests in minutes. When you are
+          ready, the full Testing Strategy guide dives into mocked providers,
+          accessibility tooling, and CI/CD integration.
         </p>
-      </Callout>
-    </>
+      </div>
+
+      <section className="docs-section">
+        <h2>Baseline Commands</h2>
+        <ul>
+          <li>
+            <code>npm run test</code> — runs jest + jest-axe suites (fast feedback)
+          </li>
+          <li>
+            <code>npm run test:e2e</code> — Playwright powered end-to-end flows
+          </li>
+          <li>
+            <code>clarity-chat doctor</code> — validates project configuration before deploy
+          </li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <h2>Mocked Providers</h2>
+        <p>
+          Install <code>@clarity-chat/dev-tools</code> and swap real providers for{' '}
+          <code>createMockProviders</code>. You get deterministic completions,
+          streaming, and error scenarios for unit and integration tests.
+        </p>
+      </section>
+
+      <section className="docs-section">
+        <h2>Accessibility Always-On</h2>
+        <ul>
+          <li>Integrate jest-axe into your component tests</li>
+          <li>Add Playwright axe project for end-to-end coverage</li>
+          <li>Include manual keyboard + screen reader smoke checks in your release checklist</li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <Callout type="success">
+          Ready for the full playbook (mock providers, profiling, CLI health
+          checks, incident response)? Read the{' '}
+          <Link href="/guides/testing">Testing Strategy Guide</Link>.
+        </Callout>
+      </section>
+    </div>
   )
 }
+

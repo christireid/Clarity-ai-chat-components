@@ -1,119 +1,198 @@
 import { Metadata } from 'next'
-import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Callout } from '@/components/MDX/Callout'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
 export const metadata: Metadata = {
-  title: 'Theming System',
-  description: 'Customize Clarity Chat with design tokens, runtime providers, and variant packs.',
+  title: 'Theming Basics - Learn Clarity Chat',
+  description:
+    'Customize the visual system: theme provider, CSS variables, presets, and per-component overrides.',
 }
 
-export default function ThemingConceptsPage() {
+export default function ThemingConceptPage() {
   return (
-    <>
-      <Breadcrumbs />
-
-      <h1>Theming System</h1>
-
-      <p className="lead">
-        Clarity Chat supports layered theming with runtime providers, CSS token overrides, and
-        component-level variants. Ship branded chat experiences without forking our components.
-      </p>
-
-      <h2 id="theme-provider">Theme Provider</h2>
-      <p>
-        Wrap your app in <code>ClarityThemeProvider</code> to toggle light/dark themes, swap accent
-        colors, and standardise typography. The provider works with Next.js App Router, Remix, and Vite.
-      </p>
-      <CodeBlock
-        language="tsx"
-        title="Global theme provider"
-        code={`import { ClarityThemeProvider } from '@clarity-chat/react'
-
-export function App({ children }: { children: React.ReactNode }) {
-  return (
-    <ClarityThemeProvider
-      value={{
-        mode: 'dark',
-        accentColor: '#4b7cf5',
-        radius: '0.75rem',
-      }}
-    >
-      {children}
-    </ClarityThemeProvider>
-  )
-}`}
-      />
-
-      <Callout type="info">
-        <p>
-          The theme provider syncs with system preferences by default. Pass{' '}
-          <code>mode="system"</code> to let users opt into their preferred scheme.
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Concept</span>
+        <h1>Theming System</h1>
+        <p className="docs-lead">
+          Clarity Chat exposes an opinionated but flexible theme layer based on
+          CSS variables. Change colour palettes, typography, spacing, and even
+          animation presets without editing component source.
         </p>
-      </Callout>
+      </div>
 
-      <h2 id="design-tokens">Design Tokens</h2>
-      <p>
-        Tweak tokens using CSS variables scoped to any container. Every component reads from the{' '}
-        <code>--clarity-*</code> token namespace, so you can remix palettes while keeping accessibility
-        intact.
-      </p>
-      <CodeBlock
-        language="css"
-        title="Scoped overrides"
-        code={`.chat-shell {
-  --clarity-message-user-bg: #0f172a;
-  --clarity-message-assistant-bg: #1e293b;
-  --clarity-border-strong: #334155;
-  --clarity-radius-lg: 16px;
-}`}
-      />
+      <section className="docs-section">
+        <h2>Theme Provider</h2>
+        <p>
+          Wrap your app with <code>ThemeProvider</code> and pass either built-in
+          presets or your own token map.
+        </p>
+        <CodeBlock
+          language="tsx"
+          code={`import {
+  ThemeProvider,
+  ThemeSwitcher,
+  createTheme,
+  defaultTheme,
+} from '@clarity-chat/react'
 
-      <h2 id="variant-packs">Variant Packs</h2>
-      <p>
-        Extend base components with custom variants using the same primitives we do internally.
-        Compose with Tailwind, vanilla CSS, or CSS-in-JS—the components expose className hooks across
-        every surface.
-      </p>
-      <CodeBlock
-        language="tsx"
-        code={`import { Message } from '@clarity-chat/react'
+const brandTheme = createTheme({
+  name: 'brand',
+  colors: {
+    primary: '#2563EB',
+    primaryForeground: '#ffffff',
+    secondary: '#9333EA',
+    secondaryForeground: '#ffffff',
+    surface: '#0B1120',
+    surfaceForeground: '#E2E8F0',
+  },
+  radii: {
+    md: '12px',
+    lg: '20px',
+  },
+  fonts: {
+    heading: 'Switzer, Inter, sans-serif',
+    body: 'Inter, system-ui, sans-serif',
+  },
+})
 
-export const OutlineMessage = (props: React.ComponentProps<typeof Message>) => (
-  <Message
-    {...props}
-    className="rounded-lg border border-slate-500/60 bg-transparent"
-    avatarVariant="mono"
-  />
-)`}
-      />
-
-      <h2 id="theme-tooling">Theme Tooling</h2>
-      <ul>
-        <li>
-          <code>ThemeBuilder</code> turns brand palettes into full token sets with contrast guards.
-        </li>
-        <li>
-          <code>ThemePreview</code> renders live previews for marketing reviews.
-        </li>
-        <li>
-          <code>ThemeSwitcher</code> and <code>ThemeSelector</code> ship finished UI for user-driven theming.
-        </li>
-      </ul>
-
-      <h2 id="best-practices">Best Practices</h2>
-      <ul>
-        <li>Keep minimum contrast ratios above 4.5:1—our ThemeBuilder enforces it automatically.</li>
-        <li>Leverage <code>ThemeProvider</code> per workspace to give tenants bespoke branding.</li>
-        <li>
-          Pair theme overrides with <a href="/guides/styling">styling guide</a> for a complete brand system.
-        </li>
-      </ul>
-
-      <p>
-        Next, review the <a href="/guides/performance">performance guide</a> to ensure themed components
-        stay responsive across devices.
-      </p>
-    </>
+export function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider themes={[defaultTheme, brandTheme]} defaultTheme="brand">
+      <ThemeSwitcher className="fixed bottom-4 right-4" />
+      {children}
+    </ThemeProvider>
   )
 }
+`}
+        />
+        <Callout type="tip">
+          Themes are serialisable JSON objects. Store them in your CMS or database
+          to deliver enterprise-specific branding on the fly.
+        </Callout>
+      </section>
+
+      <section className="docs-section">
+        <h2>Token Reference</h2>
+        <p>
+          All components reference CSS variables such as{' '}
+          <code>--chat-background</code>, <code>--chat-border</code>,{' '}
+          <code>--chat-font-body</code>. Inspect them via browser devtools or the
+          Theme Panel inside the docs site.
+        </p>
+        <CodeBlock
+          language="css"
+          code={`:root {
+  --chat-background: hsl(210 30% 98%);
+  --chat-surface: hsl(215 25% 96%);
+  --chat-border: hsl(215 18% 90%);
+  --chat-primary: hsl(221 83% 53%);
+  --chat-primary-foreground: hsl(0 0% 100%);
+  --chat-radius-md: 12px;
+  --chat-font-body: 'Inter', sans-serif;
+}`}
+        />
+        <Callout type="info">
+          Prefer Tailwind? The docs and Storybook use TailwindCSS with CSS
+          variables mapped to utility classes. You can follow the same pattern.
+        </Callout>
+      </section>
+
+      <section className="docs-section">
+        <h2>Per-Component Overrides</h2>
+        <p>
+          Override tokens per component using the <code>className</code> /
+          <code>style</code> props or by targeting CSS variables directly.
+        </p>
+        <CodeBlock
+          language="tsx"
+          code={`<ChatWindow
+  className="bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950"
+  components={{
+    Message: (props) => (
+      <Message
+        {...props}
+        style={
+          props.message.role === 'assistant'
+            ? {
+                ['--chat-surface' as any]: 'rgba(37, 99, 235, 0.08)',
+                ['--chat-surface-foreground' as any]: '#0f172a',
+              }
+            : undefined
+        }
+      />
+    ),
+  }}
+/>`}
+        />
+        <Callout type="warning">
+          Remember accessibility: maintain the 7:1 contrast ratio from the
+          default theme when introducing custom colours.
+        </Callout>
+      </section>
+
+      <section className="docs-section">
+        <h2>Dark Mode &amp; System Preference</h2>
+        <p>
+          <code>ThemeProvider</code> watches <code>prefers-color-scheme</code> and
+          stores user overrides in localStorage. Expose a toggle via{' '}
+          <code>ThemeSwitcher</code> or roll your own using the{' '}
+          <code>useTheme</code> hook.
+        </p>
+        <CodeBlock
+          language="tsx"
+          code={`import { useTheme } from '@clarity-chat/react'
+
+function ThemeToggle() {
+  const { theme, setTheme, resolvedTheme } = useTheme()
+
+  return (
+    <button
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      className="rounded-full border border-border px-3 py-1 text-xs"
+    >
+      {resolvedTheme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+    </button>
+  )
+}
+`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Animations &amp; Motion</h2>
+        <p>
+          The theming system also controls motion through animation presets. See
+          the Animations concept page for full details, but you can override
+          duration/easing from the theme:
+        </p>
+        <CodeBlock
+          language="tsx"
+          code={`const fastMotionTheme = createTheme({
+  name: 'fast-motion',
+  motion: {
+    duration: {
+      normal: 180,
+      slow: 260,
+    },
+    easing: {
+      default: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+    },
+  },
+})`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Key Takeaways</h2>
+        <ul>
+          <li>Use <code>ThemeProvider</code> with presets or custom tokens.</li>
+          <li>Override specific components using CSS variables for consistent results.</li>
+          <li>Provide light/dark or tenant-specific themes via the built-in switcher.</li>
+          <li>Keep accessibility in mind—test contrast and motion preferences.</li>
+        </ul>
+      </section>
+    </div>
+  )
+}
+

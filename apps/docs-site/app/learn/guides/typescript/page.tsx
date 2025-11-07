@@ -1,94 +1,116 @@
+import Link from 'next/link'
 import { Metadata } from 'next'
-import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
+import { CodeBlock } from '@/components/MDX/CodeBlock'
 
 export const metadata: Metadata = {
-  title: 'TypeScript Guide',
-  description: 'Work with strongly typed messages, adapters, and hooks across the Clarity Chat stack.',
+  title: 'TypeScript Quickstart - Learn Clarity Chat',
+  description:
+    'How to get full IntelliSense, strict typings, and safe adapters when using Clarity Chat.',
 }
 
-export default function TypeScriptGuidePage() {
+export default function LearnTypeScriptGuidePage() {
   return (
-    <>
-      <Breadcrumbs />
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Quick Guide</span>
+        <h1>TypeScript</h1>
+        <p className="docs-lead">
+          Clarity Chat is built in TypeScript with 100% type coverage. Use this
+          quickstart to wire up types correctly and avoid implicit <code>any</code>{' '}
+          sneaking into your codebase.
+        </p>
+      </div>
 
-      <h1>TypeScript Guide</h1>
+      <section className="docs-section">
+        <h2>Install Types</h2>
+        <p>
+          The primary package exports types, but you can optionally install{' '}
+          <code>@clarity-chat/types</code> for shared models between frontend and
+          backend.
+        </p>
+        <CodeBlock
+          language="bash"
+          code={`npm install @clarity-chat/react @clarity-chat/types`}
+        />
+      </section>
 
-      <p className="lead">
-        Clarity Chat is written in TypeScript end-to-end. Use the shared <code>@clarity-chat/types</code>
-        package to keep domain models consistent from server to client.
-      </p>
+      <section className="docs-section">
+        <h2>Typed Messages</h2>
+        <p>
+          Import base interfaces for messages, tools, and adapters. They keep your
+          API routes and client components aligned.
+        </p>
+        <CodeBlock
+          language="ts"
+          code={`import type {
+  Message,
+  ToolInvocation,
+  ProviderResponse,
+} from '@clarity-chat/types'
 
-      <h2 id="core-types">Core Message Types</h2>
-      <CodeBlock
-        language="ts"
-        code={`import type { Message, Conversation, ToolInvocation } from '@clarity-chat/types'
+const messages: Message[] = [
+  { id: '1', role: 'user', content: 'Hello!', createdAt: new Date() },
+]
 
-const greeting: Message = {
-  id: 'msg-1',
-  role: 'assistant',
-  content: 'Hello! How can I help?',
-  timestamp: new Date(),
-  metadata: {
-    tokens: 24,
-    citations: [{ id: 'doc-1', title: 'Safety policy' }],
-  },
-}`}
-      />
-
-      <h2 id="hook-inference">Hook Inference</h2>
-      <p>
-        Hooks expose generics so you can specify domain-specific payloads. Types flow from server
-        responses through to UI components, enabling end-to-end safety.
-      </p>
-      <CodeBlock
-        language="tsx"
-        code={`import { useChat } from '@clarity-chat/react'
-
-type SupportMessage = {
-  id: string
-  role: 'user' | 'assistant' | 'system'
-  content: string
-  sentiment?: 'positive' | 'neutral' | 'negative'
+function handleToolInvocation(tool: ToolInvocation) {
+  if (tool.name === 'search_docs') {
+    // ...
+  }
 }
 
-const { messages } = useChat<SupportMessage>({ chatId: 'support' })`}
-      />
+function normalizeResponse(response: ProviderResponse) {
+  return response.choices[0].message
+}
+`}
+        />
+      </section>
 
-      <h2 id="adapters">Adapter Typings</h2>
-      <p>
-        Model adapters implement shared interfaces—<code>ChatAdapter</code>, <code>StreamingAdapter</code>,
-        <code>EmbeddingsAdapter</code>—defined in <code>@clarity-chat/types</code>. Extend them to integrate
-        new providers while retaining tooling support.
-      </p>
-
-      <h2 id="memory-types">Memory &amp; Context Types</h2>
-      <p>
-        The <code>@clarity-chat/memory</code> package exports <code>MemoryService</code>,
-        <code>MemoryRecord</code>, and context optimization helpers. Import them directly in server
-        environments to ensure typed context pipelines.
-      </p>
-
-      <Callout type="tip">
+      <section className="docs-section">
+        <h2>Custom Hooks &amp; Components</h2>
         <p>
-          Enable <code>"strict": true</code> and <code>"strictNullChecks": true</code> in <code>tsconfig.json</code>.
-          Our generators and templates assume strict mode and ship appropriate typings.
+          Extend the built-in hooks with your own typed wrappers. The generics
+          make it easy to plug in custom message metadata.
         </p>
-      </Callout>
+        <CodeBlock
+          language="ts"
+          code={`import type { Message } from '@clarity-chat/types'
+import { useChat } from '@clarity-chat/react'
 
-      <h2 id="intellisense">IntelliSense &amp; Tooling</h2>
-      <ul>
-        <li>
-          The VSCode extension surfaces component props and hook signatures inline (see{' '}
-          <a href="/tools/vscode">VSCode tools</a>).
-        </li>
-        <li>Generated d.ts bundles live in every package for consumers using JavaScript.</li>
-        <li>
-          Run <code>npm run typecheck</code> from the repo root to validate all workspaces with project
-          references.
-        </li>
-      </ul>
-    </>
+interface SupportMessage extends Message {
+  sentiment?: 'positive' | 'neutral' | 'negative'
+  ticketId?: string
+}
+
+export function useSupportChat() {
+  return useChat<SupportMessage>({
+    id: 'support',
+    initialMessages: [],
+  })
+}
+`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Strict Type Safety Tips</h2>
+        <ul>
+          <li>Enable <code>"strict": true</code> in <code>tsconfig.json</code></li>
+          <li>Use <code>ProviderConfig</code> and <code>AdapterConfig</code> types to validate adapters</li>
+          <li>For streaming handlers, type responses with <code>StreamingChunk</code></li>
+          <li>Wrap API routes with <code>ValidatedRequest</code> to catch schema mismatches</li>
+        </ul>
+      </section>
+
+      <section className="docs-section">
+        <Callout type="success">
+          Want to see exhaustive examples (mock providers, testing helpers, error
+          boundaries)? Visit the{' '}
+          <Link href="/guides/testing">Testing Strategy Guide</Link> and{' '}
+          <Link href="/guides/state-management">State Management Guide</Link>.
+        </Callout>
+      </section>
+    </div>
   )
 }
+

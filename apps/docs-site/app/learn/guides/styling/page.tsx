@@ -1,102 +1,87 @@
+import Link from 'next/link'
 import { Metadata } from 'next'
-import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
-  title: 'Styling & Customization',
-  description: 'Match Clarity Chat to your brand with CSS tokens, slots, and localization.',
+  title: 'Styling Guide - Learn Clarity Chat',
+  description:
+    'Quick tips for customizing Clarity Chat visual design before diving into the full theming documentation.',
 }
 
-export default function StylingGuidePage() {
+export default function LearnStylingGuidePage() {
   return (
-    <>
-      <Breadcrumbs />
-
-      <h1>Styling &amp; Customization</h1>
-
-      <p className="lead">
-        Tailor the Clarity Chat experience to match your product’s voice, brand, and workflows without
-        forking core components.
-      </p>
-
-      <h2 id="css-variables">CSS Variable Tokens</h2>
-      <p>
-        All components expose design tokens under the <code>--clarity-*</code> namespace. Override
-        them globally or scope them to specific shells.
-      </p>
-      <CodeBlock
-        language="css"
-        code={`:root {
-  --clarity-background: #050816;
-  --clarity-surface: #10122b;
-  --clarity-primary: #4b7cf5;
-  --clarity-success: #31c48d;
-}`}
-      />
-
-      <h2 id="utility-first">Utility-First Styling</h2>
-      <p>
-        Use <code>className</code> or slot-specific props to add Tailwind or utility classes while
-        keeping built-in accessibility attributes.
-      </p>
-      <CodeBlock
-        language="tsx"
-        code={`import { ChatWindow } from '@clarity-chat/react'
-
-<ChatWindow
-  className="rounded-xl border border-slate-700 shadow-lg"
-  headerClassName="bg-slate-900/80 backdrop-blur"
-  composerClassName="bg-slate-950"
-  messages={messages}
-/>`}
-      />
-
-      <h2 id="component-slots">Component Slots</h2>
-      <p>
-        Swap internals via render props. Keep default structure but inject your own variants or copy.
-      </p>
-      <CodeBlock
-        language="tsx"
-        code={`import { ChatWindow, Composer, Message } from '@clarity-chat/react'
-
-<ChatWindow
-  messages={messages}
-  renderMessage={(props) => (
-    <Message {...props} showAvatar={false} variant="compact" />
-  )}
-  renderComposer={(props) => (
-    <Composer {...props} placeholder="Ask our AI anything…" />
-  )}
-/>`}
-      />
-
-      <h2 id="layout">Layouts &amp; Shells</h2>
-      <p>
-        Use primitives from <code>@clarity-chat/primitives</code> (Card, Drawer, ScrollArea) to frame
-        chat surfaces. Combine with <code>ProjectSidebar</code>, <code>ContextManager</code>, and
-        <code>UsageDashboard</code> for enterprise workflows.
-      </p>
-
-      <h2 id="localization">Localization</h2>
-      <p>
-        Translate labels via props such as <code>composerLabels</code>, <code>attachmentLabels</code>,
-        and <code>errorMessages</code>. Hooks expose friendly APIs for locale-specific prompts.
-      </p>
-
-      <Callout type="tip">
-        <p>
-          Build multi-brand SaaS by wrapping each tenant view in a <code>ClarityThemeProvider</code> and
-          applying per-tenant token overrides.
+    <div className="docs-content">
+      <div className="docs-header">
+        <span className="docs-badge">Quick Guide</span>
+        <h1>Styling Clarity Chat</h1>
+        <p className="docs-lead">
+          Brand the chat experience in minutes. This page highlights the fastest
+          wins and points you to deeper resources.
         </p>
-      </Callout>
+      </div>
 
-      <h2 id="next-steps">Next Steps</h2>
-      <ul>
-        <li>Read <a href="/learn/concepts/theming">Theming System</a> for runtime token orchestration.</li>
-        <li>Browse <a href="/reference/components">component reference</a> to discover slot props.</li>
-        <li>Check the <a href="/cookbook/custom-theming">Custom Theming</a> recipe for end-to-end setup.</li>
-      </ul>
-    </>
+      <section className="docs-section">
+        <h2>Start with ThemeProvider</h2>
+        <p>
+          Wrap your app with <code>ThemeProvider</code> and use the built-in
+          <code>ThemeSwitcher</code> while you iterate. Once you’re happy with the
+          look, disable the switcher or replace it with your own toggle.
+        </p>
+        <Callout type="info">
+          Each theme is just a JSON object of CSS variables. Store them in your CMS
+          or database to deliver customer-specific branding.
+        </Callout>
+        <p>
+          📚 Go deeper: <Link href="/learn/concepts/theming">Theming System Overview</Link>
+        </p>
+      </section>
+
+      <section className="docs-section">
+        <h2>Customising Components</h2>
+        <ul>
+          <li>
+            Use <code>className</code> to apply utility classes (Tailwind works out of the box)
+          </li>
+          <li>
+            Override slots via the <code>components</code> prop for structural changes
+          </li>
+          <li>
+            Target CSS variables (e.g. <code>--chat-surface</code>) for fine-grained colour tweaks
+          </li>
+        </ul>
+        <p>
+          📚 Examples: <Link href="/guides/state-management">State Management Guide</Link>{' '}
+          demonstrates slot overrides in a real layout.
+        </p>
+      </section>
+
+      <section className="docs-section">
+        <h2>Animations &amp; Motion</h2>
+        <p>
+          Motion tokens keep transitions consistent. Override them in your theme or
+          use <code>AnimatedList</code>, <code>FeedbackAnimation</code>, and
+          framer-motion variants for bespoke experiences.
+        </p>
+        <p>
+          📚 Learn more: <Link href="/learn/concepts/animations">Animations Concept</Link>{' '}
+          + <Link href="/guides/performance">Performance Guide</Link> (motion tips).
+        </p>
+      </section>
+
+      <section className="docs-section">
+        <h2>Design System Checklist</h2>
+        <ul>
+          <li>✅ ⚖️ Confirm 7:1 contrast ratios still hold after colour changes</li>
+          <li>✅ 🌓 Verify both light and dark themes</li>
+          <li>✅ 🧩 Ensure tokens integrate with your design system naming (map variables)</li>
+          <li>✅ 🎨 Document component overrides for designers &amp; engineers</li>
+        </ul>
+        <Callout type="success">
+          Ready for more? Read the <Link href="/guides/accessibility">Accessibility Guide</Link>{' '}
+          to ensure your customisations retain WCAG AAA compliance.
+        </Callout>
+      </section>
+    </div>
   )
 }
+
