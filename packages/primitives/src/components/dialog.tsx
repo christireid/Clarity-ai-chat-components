@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect, useCallback, createContext, useContext, isValidElement, cloneElement } from 'react'
+import * as React from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
+import { useBodyScrollLock } from '../hooks/use-body-scroll-lock'
 
 // ============================================================================
 // Types
@@ -67,10 +69,10 @@ interface DialogContextValue {
   setOpen: (open: boolean) => void
 }
 
-const DialogContext = createContext<DialogContextValue | null>(null)
+const DialogContext = React.createContext<DialogContextValue | null>(null)
 
 const useDialog = () => {
-  const context = useContext(DialogContext)
+  const context = React.useContext(DialogContext)
   if (!context) {
     throw new Error('Dialog components must be used within a Dialog')
   }
@@ -81,22 +83,20 @@ const useDialog = () => {
 // Focus Trap Hook
 // ============================================================================
 
-// Memoized focusable selector for performance
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not(:disabled), textarea:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])'
-
 function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
-  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null)
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (!enabled || !ref.current) return
 
     const element = ref.current
-    previouslyFocusedElementRef.current = document.activeElement as HTMLElement
+    const previouslyFocusedElement = document.activeElement as HTMLElement
 
-    // Get all focusable elements - function defined inside effect
+    // Get all focusable elements
     const getFocusableElements = () => {
-      return Array.from(element.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+      return Array.from(
+        element.querySelectorAll<HTMLElement>(
+          'a[href], button:not(:disabled), textarea:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])'
+        )
+      )
     }
 
     // Focus first element
@@ -105,28 +105,27 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
       focusableElements[0].focus()
     }
 
-    // Handle tab key - optimized event handler
+    // Handle tab key
     const handleTab = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return
-
       const focusableElements = getFocusableElements()
       if (focusableElements.length === 0) return
 
       const firstElement = focusableElements[0]
       const lastElement = focusableElements[focusableElements.length - 1]
-      const activeElement = document.activeElement
 
-      if (e.shiftKey) {
-        // Shift + Tab
-        if (activeElement === firstElement) {
-          e.preventDefault()
-          lastElement.focus()
-        }
-      } else {
-        // Tab
-        if (activeElement === lastElement) {
-          e.preventDefault()
-          firstElement.focus()
+      if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          // Shift + Tab
+          if (document.activeElement === firstElement) {
+            e.preventDefault()
+            lastElement.focus()
+          }
+        } else {
+          // Tab
+          if (document.activeElement === lastElement) {
+            e.preventDefault()
+            firstElement.focus()
+          }
         }
       }
     }
@@ -136,8 +135,8 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
     return () => {
       element.removeEventListener('keydown', handleTab)
       // Return focus to previously focused element
-      if (previouslyFocusedElementRef.current) {
-        previouslyFocusedElementRef.current.focus()
+      if (previouslyFocusedElement) {
+        previouslyFocusedElement.focus()
       }
     }
   }, [enabled, ref])
@@ -147,16 +146,16 @@ function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
 // Dialog Root Component
 // ============================================================================
 
-export const Dialog = ({
+export const Dialog: React.FC<DialogProps> = ({
   open: controlledOpen,
   onOpenChange,
   children,
   defaultOpen = false,
-}: DialogProps) => {
-  const [internalOpen, setInternalOpen] = useState(defaultOpen)
+}) => {
+  const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
 
-  const setOpen = useCallback(
+  const setOpen = React.useCallback(
     (newOpen: boolean) => {
       if (controlledOpen === undefined) {
         setInternalOpen(newOpen)
@@ -177,26 +176,26 @@ export const Dialog = ({
 // Dialog Trigger
 // ============================================================================
 
-export const DialogTrigger = ({
+export const DialogTrigger: React.FC<DialogTriggerProps> = ({
   children,
   onClick,
   asChild,
-}: DialogTriggerProps) => {
+}) => {
   const { setOpen } = useDialog()
 
-  const handleClick = useCallback(() => {
+  const handleClick = () => {
     setOpen(true)
     onClick?.()
-  }, [setOpen, onClick])
+  }
 
-  if (asChild && isValidElement(children)) {
-    return cloneElement(children, {
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
       onClick: handleClick,
     } as any)
   }
 
   return (
-    <button onClick={handleClick} type="button" aria-haspopup="dialog">
+    <button onClick={handleClick} type="button">
       {children}
     </button>
   )
@@ -214,6 +213,7 @@ const sizeClasses = {
   full: 'max-w-full mx-4',
 }
 
+// Memoized animation variants to prevent recreation on every render
 const contentAnimations = {
   scale: {
     initial: { scale: 0.95, opacity: 0 },
@@ -240,9 +240,9 @@ const contentAnimations = {
     animate: { scale: 1, opacity: 1 },
     exit: { scale: 0.8, opacity: 0 },
   },
-}
+} as const
 
-export const DialogContent = ({
+export const DialogContent: React.FC<DialogContentProps> = ({
   children,
   className,
   size = 'md',
@@ -252,15 +252,31 @@ export const DialogContent = ({
   animation = 'scale',
   blurBackdrop = true,
   overlayClassName,
-}: DialogContentProps) => {
+}) => {
   const { open, setOpen } = useDialog()
-  const contentRef = useRef<HTMLDivElement>(null)
+  const contentRef = React.useRef<HTMLDivElement>(null)
+  const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null)
+  const { lock, unlock } = useBodyScrollLock()
+
+  // Get or create portal container
+  React.useEffect(() => {
+    let container = document.getElementById('dialog-portal-root')
+    if (!container) {
+      container = document.createElement('div')
+      container.id = 'dialog-portal-root'
+      document.body.appendChild(container)
+    }
+    setPortalContainer(container)
+    return () => {
+      // Don't remove container on unmount as other dialogs might use it
+    }
+  }, [])
 
   // Focus trap
   useFocusTrap(contentRef, open)
 
-  // Escape key handling - optimized with useCallback
-  const handleEscape = useCallback(
+  // Escape key handling - memoized callback
+  const handleEscape = React.useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape' && open && closeOnEscape) {
         setOpen(false)
@@ -269,27 +285,29 @@ export const DialogContent = ({
     [open, closeOnEscape, setOpen]
   )
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!open || !closeOnEscape) return
-
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
   }, [open, closeOnEscape, handleEscape])
 
-  // Body scroll lock
-  useEffect(() => {
+  // Body scroll lock using custom hook
+  React.useEffect(() => {
     if (open) {
-      const originalOverflow = document.body.style.overflow
-      document.body.style.overflow = 'hidden'
-      return () => {
-        document.body.style.overflow = originalOverflow
-      }
+      const unlockFn = lock()
+      return unlockFn
     }
-  }, [open])
+  }, [open, lock])
 
-  if (!open) return null
+  // Memoize animation props
+  const animationProps = React.useMemo(
+    () => contentAnimations[animation],
+    [animation]
+  )
 
-  return (
+  if (!open || !portalContainer) return null
+
+  const dialogContent = (
     <AnimatePresence>
       {open && (
         <>
@@ -312,7 +330,7 @@ export const DialogContent = ({
           <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 pointer-events-none">
             <motion.div
               ref={contentRef}
-              {...contentAnimations[animation]}
+              {...animationProps}
               transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
               onClick={(e) => e.stopPropagation()}
               className={cn(
@@ -343,6 +361,7 @@ export const DialogContent = ({
                     viewBox="0 0 15 15"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                   >
                     <path
                       d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
@@ -361,13 +380,19 @@ export const DialogContent = ({
       )}
     </AnimatePresence>
   )
+
+  // Render via Portal for proper z-index stacking
+  return createPortal(dialogContent, portalContainer)
 }
 
 // ============================================================================
 // Dialog Sub-components
 // ============================================================================
 
-export const DialogHeader = ({ children, className }: DialogHeaderProps) => {
+export const DialogHeader: React.FC<DialogHeaderProps> = ({
+  children,
+  className,
+}) => {
   return (
     <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b', className)}>
       {children}
@@ -375,7 +400,10 @@ export const DialogHeader = ({ children, className }: DialogHeaderProps) => {
   )
 }
 
-export const DialogTitle = ({ children, className }: DialogTitleProps) => {
+export const DialogTitle: React.FC<DialogTitleProps> = ({
+  children,
+  className,
+}) => {
   return (
     <h2
       className={cn(
@@ -388,10 +416,10 @@ export const DialogTitle = ({ children, className }: DialogTitleProps) => {
   )
 }
 
-export const DialogDescription = ({
+export const DialogDescription: React.FC<DialogDescriptionProps> = ({
   children,
   className,
-}: DialogDescriptionProps) => {
+}) => {
   return (
     <p className={cn('text-sm text-muted-foreground', className)}>
       {children}
@@ -399,17 +427,17 @@ export const DialogDescription = ({
   )
 }
 
-export const DialogBody = ({
+export const DialogBody: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
   className,
-}: {
-  children: React.ReactNode
-  className?: string
 }) => {
   return <div className={cn('px-6 py-4', className)}>{children}</div>
 }
 
-export const DialogFooter = ({ children, className }: DialogFooterProps) => {
+export const DialogFooter: React.FC<DialogFooterProps> = ({
+  children,
+  className,
+}) => {
   return (
     <div
       className={cn(
@@ -422,25 +450,21 @@ export const DialogFooter = ({ children, className }: DialogFooterProps) => {
   )
 }
 
-export const DialogClose = ({
+export const DialogClose: React.FC<DialogCloseProps> = ({
   children,
   className,
   asChild,
-}: DialogCloseProps) => {
+}) => {
   const { setOpen } = useDialog()
 
-  const handleClose = useCallback(() => {
-    setOpen(false)
-  }, [setOpen])
-
-  if (asChild && isValidElement(children)) {
-    return cloneElement(children, {
-      onClick: handleClose,
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      onClick: () => setOpen(false),
     } as any)
   }
 
   return (
-    <button onClick={handleClose} className={className} type="button" aria-label="Close dialog">
+    <button onClick={() => setOpen(false)} className={className} type="button">
       {children}
     </button>
   )
