@@ -386,9 +386,18 @@ export function exportToHTML(
 }
 
 function escapeHtml(text: string): string {
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
+  if (typeof document !== 'undefined') {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
+  }
+  // SSR-safe HTML escaping
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
 }
 
 // ============================================================================
@@ -487,6 +496,10 @@ export async function downloadConversation(
   messages: Message[],
   options: ExportOptions
 ): Promise<void> {
+  if (typeof document === 'undefined' || typeof URL === 'undefined') {
+    throw new Error('Download functionality requires a browser environment')
+  }
+
   const blob = await exportConversation(messages, options)
   
   const extensions: Record<ExportFormat, string> = {
@@ -513,18 +526,33 @@ export async function downloadConversation(
 // Batch Export
 // ============================================================================
 
+/**
+ * Export multiple conversations as a zip file
+ * NOTE: Requires jszip dependency to be installed and imported at call site
+ * 
+ * @example
+ * ```tsx
+ * import JSZip from 'jszip'
+ * const zip = new JSZip()
+ * // Use exportConversation for each and add to zip manually
+ * ```
+ */
 export async function exportMultipleConversations(
   conversations: Array<{ id: string; messages: Message[]; title?: string }>,
-  options: ExportOptions
+  options: ExportOptions,
+  // Require caller to provide JSZip instance to avoid dynamic require
+  zipInstance?: any
 ): Promise<Blob> {
-  const zip = require('jszip')() // Would need to add jszip dependency
+  if (!zipInstance) {
+    throw new Error('JSZip instance required for batch export. Install jszip and pass an instance.')
+  }
 
   for (const conv of conversations) {
     const filename = conv.title || conv.id
     const blob = await exportConversation(conv.messages, options)
     const content = await blob.text()
-    zip.file(`${filename}.${options.format}`, content)
+    zipInstance.file(`${filename}.${options.format}`, content)
   }
 
-  return await zip.generateAsync({ type: 'blob' })
+  return await zipInstance.generateAsync({ type: 'blob' })
 }

@@ -24,12 +24,12 @@ export function useRenderPerformance(componentName: string): PerformanceMetrics 
   const renderTimes = React.useRef<number[]>([])
   const startTime = React.useRef<number>(0)
 
-  // Mark render start
-  startTime.current = performance.now()
+  // Mark render start (guard for SSR)
+  startTime.current = typeof performance !== 'undefined' ? performance.now() : Date.now()
 
   // Mark render end and calculate metrics
   React.useEffect(() => {
-    const endTime = performance.now()
+    const endTime = typeof performance !== 'undefined' ? performance.now() : Date.now()
     const renderTime = endTime - startTime.current
 
     renderCount.current += 1
@@ -41,7 +41,7 @@ export function useRenderPerformance(componentName: string): PerformanceMetrics 
     }
 
     // Log slow renders in development
-    if (process.env.NODE_ENV === 'development' && renderTime > 16) {
+    if (process.env['NODE_ENV'] === 'development' && renderTime > 16) {
       console.warn(
         `[Performance] ${componentName} took ${renderTime.toFixed(2)}ms to render (${renderCount.current} renders)`
       )
@@ -95,13 +95,13 @@ export function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
  */
 export function useMountTime(componentName: string) {
   React.useEffect(() => {
-    const mountTime = performance.now()
+    const mountTime = typeof performance !== 'undefined' ? performance.now() : Date.now()
     
     return () => {
-      const unmountTime = performance.now()
+      const unmountTime = typeof performance !== 'undefined' ? performance.now() : Date.now()
       const lifetime = unmountTime - mountTime
 
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env['NODE_ENV'] === 'development') {
         console.log(
           `[Mount Time] ${componentName} was mounted for ${lifetime.toFixed(2)}ms`
         )
@@ -119,10 +119,10 @@ export function useSlowRenderDetection(
 ) {
   const startTime = React.useRef<number>(0)
 
-  startTime.current = performance.now()
+  startTime.current = typeof performance !== 'undefined' ? performance.now() : Date.now()
 
   React.useEffect(() => {
-    const endTime = performance.now()
+    const endTime = typeof performance !== 'undefined' ? performance.now() : Date.now()
     const renderTime = endTime - startTime.current
 
     if (renderTime > threshold) {
@@ -143,7 +143,7 @@ export const PerformanceReport: React.FC<PerformanceReportProps> = ({
   metrics,
   threshold = 16,
 }) => {
-  if (process.env.NODE_ENV !== 'development') return null
+  if (process.env['NODE_ENV'] !== 'development') return null
 
   const isSlowRender = metrics.lastRenderTime > threshold
   const isSlowAverage = metrics.averageRenderTime > threshold
@@ -253,14 +253,20 @@ export function useThrottlePerformance<T>(
 
 /**
  * Memory leak detector
+ * WARNING: Modifying global prototypes can cause issues. Use with caution and only in development.
+ * Consider using React DevTools Profiler for production-safe memory analysis.
  */
 export function useMemoryLeakDetector(componentName: string) {
   React.useEffect(() => {
+    if (typeof window === 'undefined' || process.env['NODE_ENV'] !== 'development') {
+      return
+    }
+
     const listeners: any[] = []
     const originalAddEventListener = EventTarget.prototype.addEventListener
     const originalRemoveEventListener = EventTarget.prototype.removeEventListener
 
-    // Override addEventListener
+    // Override addEventListener (only in dev)
     EventTarget.prototype.addEventListener = function (type, listener, options) {
       listeners.push({ type, listener, target: this })
       return originalAddEventListener.call(this, type, listener, options)
@@ -271,7 +277,7 @@ export function useMemoryLeakDetector(componentName: string) {
       EventTarget.prototype.addEventListener = originalAddEventListener
       EventTarget.prototype.removeEventListener = originalRemoveEventListener
 
-      if (listeners.length > 0 && process.env.NODE_ENV === 'development') {
+      if (listeners.length > 0) {
         console.warn(
           `[Memory Leak] ${componentName} may have ${listeners.length} unremoved event listeners:`,
           listeners.map((l) => l.type)

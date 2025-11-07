@@ -56,7 +56,7 @@ export function useIntersectionObserver(
 
   React.useEffect(() => {
     const node = ref.current
-    const hasIOSupport = !!window.IntersectionObserver
+    const hasIOSupport = typeof window !== 'undefined' && !!window.IntersectionObserver
 
     if (!hasIOSupport || frozen || !node) return
 

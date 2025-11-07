@@ -54,17 +54,17 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
 
   const [value, setValue] = React.useState<string>('')
   const [copied, setCopied] = React.useState<boolean>(false)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const copy = React.useCallback(
     async (text: string) => {
       try {
         // Modern clipboard API
-        if (navigator?.clipboard?.writeText) {
+        if (typeof navigator !== 'undefined' && navigator?.clipboard?.writeText) {
           await navigator.clipboard.writeText(text)
         }
-        // Fallback for older browsers
-        else {
+        // Fallback for older browsers or non-secure contexts
+        else if (typeof document !== 'undefined') {
           const textArea = document.createElement('textarea')
           textArea.value = text
           textArea.style.position = 'fixed'
@@ -79,6 +79,8 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
           } finally {
             textArea.remove()
           }
+        } else {
+          throw new Error('Clipboard API not available')
         }
 
         setValue(text)
@@ -86,7 +88,7 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
         onSuccess?.()
 
         // Reset after timeout
-        if (timeoutRef.current) {
+        if (timeoutRef.current !== undefined) {
           clearTimeout(timeoutRef.current)
         }
         timeoutRef.current = setTimeout(() => {
@@ -103,14 +105,14 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
 
   const reset = React.useCallback(() => {
     setCopied(false)
-    if (timeoutRef.current) {
+    if (timeoutRef.current !== undefined) {
       clearTimeout(timeoutRef.current)
     }
   }, [])
 
   React.useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
       }
     }

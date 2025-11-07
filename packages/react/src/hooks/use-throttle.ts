@@ -54,11 +54,11 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
   delay: number = 500
 ): (...args: Parameters<T>) => void {
   const lastRan = React.useRef<number>(Date.now())
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   React.useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
       }
     }
@@ -70,7 +70,7 @@ export function useThrottledCallback<T extends (...args: any[]) => any>(
         callback(...args)
         lastRan.current = Date.now()
       } else {
-        if (timeoutRef.current) {
+        if (timeoutRef.current !== undefined) {
           clearTimeout(timeoutRef.current)
         }
         timeoutRef.current = setTimeout(() => {
