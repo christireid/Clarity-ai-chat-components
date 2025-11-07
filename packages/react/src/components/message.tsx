@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { memo, forwardRef, useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import {
@@ -32,8 +32,8 @@ export interface MessageProps {
   className?: string
 }
 
-export const Message = React.memo(
-  React.forwardRef<HTMLDivElement, MessageProps>(function Message(
+export const Message = memo(
+  forwardRef<HTMLDivElement, MessageProps>(function Message(
     {
       message,
       onFeedback,
@@ -44,8 +44,8 @@ export const Message = React.memo(
     },
     ref
   ) {
-    const [isHovered, setIsHovered] = React.useState(false)
-    const [feedbackGiven, setFeedbackGiven] = React.useState<
+    const [isHovered, setIsHovered] = useState(false)
+    const [feedbackGiven, setFeedbackGiven] = useState<
       'up' | 'down' | null
     >(message.feedback?.type || null)
 
@@ -53,10 +53,10 @@ export const Message = React.memo(
     const isAssistant = message.role === 'assistant'
     const isStreaming = message.status === 'streaming'
 
-    const [showConfetti, setShowConfetti] = React.useState(false)
+    const [showConfetti, setShowConfetti] = useState(false)
 
     // Memoized feedback handler
-    const handleFeedback = React.useCallback(
+    const handleFeedback = useCallback(
       (type: 'up' | 'down') => {
         setFeedbackGiven(type)
         onFeedback?.(type)
@@ -72,7 +72,7 @@ export const Message = React.memo(
     )
 
     // Memoize markdown components
-    const markdownComponents = React.useMemo(
+    const markdownComponents = useMemo(
       () => ({
         code: MarkdownCodeBlock,
       }),
@@ -80,8 +80,8 @@ export const Message = React.memo(
     )
 
     // Memoize plugins
-    const remarkPlugins = React.useMemo(() => [remarkGfm], [])
-    const rehypePlugins = React.useMemo(
+    const remarkPlugins = useMemo(() => [remarkGfm], [])
+    const rehypePlugins = useMemo(
       () => [
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         rehypeHighlight as any, // Type incompatibility between vfile versions

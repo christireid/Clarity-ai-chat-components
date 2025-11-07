@@ -45,17 +45,17 @@ export const MessageList = memo(function MessageList({
   })
 
   // Memoize animation variants to prevent recreation on every render
-  const containerVariants = React.useMemo(
+  const containerVariants = useMemo(
     () => createStaggerContainerVariant('normal', 0),
     []
   )
-  const itemVariants = React.useMemo(
+  const itemVariants = useMemo(
     () => createStaggerChildVariant('slide', 'fast'),
     []
   )
 
   // Memoize empty state check
-  const showEmptyState = React.useMemo(
+  const showEmptyState = useMemo(
     () => messages.length === 0 && !isLoading && emptyState,
     [messages.length, isLoading, emptyState]
   )
@@ -145,6 +145,7 @@ export const MessageList = memo(function MessageList({
                 variant="default"
                 onClick={scrollToBottom}
                 className="shadow-xl gap-1.5 bg-primary/95 hover:bg-primary backdrop-blur-sm"
+                aria-label="Scroll to bottom of messages"
               >
                 <ArrowDownIcon size={16} />
                 Scroll to bottom

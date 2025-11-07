@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { memo, useState, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Textarea,
@@ -46,7 +46,7 @@ const createContainerVariants = (glowOnFocus: boolean) => ({
     : {},
 })
 
-export const ChatInput = React.memo(function ChatInput({
+export const ChatInput = memo(function ChatInput({
   value,
   onChange,
   onSubmit,
@@ -59,8 +59,8 @@ export const ChatInput = React.memo(function ChatInput({
   glowOnFocus = true,
   className,
 }: ChatInputProps) {
-  const [isFocused, setIsFocused] = React.useState(false)
-  const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+  const [isFocused, setIsFocused] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Use character counter hook
   const {
@@ -86,13 +86,13 @@ export const ChatInput = React.memo(function ChatInput({
   })
 
   // Memoized container variants
-  const containerVariants = React.useMemo(
+  const containerVariants = useMemo(
     () => createContainerVariants(glowOnFocus),
     [glowOnFocus]
   )
 
   // Memoized keyboard handler
-  const handleKeyDown = React.useCallback(
+  const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
@@ -118,8 +118,8 @@ export const ChatInput = React.memo(function ChatInput({
   )
 
   // Memoized focus handlers
-  const handleFocus = React.useCallback(() => setIsFocused(true), [])
-  const handleBlur = React.useCallback(() => setIsFocused(false), [])
+  const handleFocus = useCallback(() => setIsFocused(true), [])
+  const handleBlur = useCallback(() => setIsFocused(false), [])
 
   return (
     <motion.div
