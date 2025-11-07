@@ -613,7 +613,7 @@ export class MemoryService {
       }
 
       // Check retention policy
-      const retention = this.config.retentionPolicy[memory.scope]
+      const retention = this.getRetentionForScope(memory.scope)
       if (retention > 0) {
         const age = now.getTime() - memory.createdAt.getTime()
         if (age > retention * 1000) {
@@ -704,6 +704,17 @@ export class MemoryService {
   /**
    * Utility methods
    */
+  private getRetentionForScope(scope: MemoryScope): number {
+    const policy = this.config.retentionPolicy
+    const map: Record<MemoryScope, number> = {
+      session: policy.session,
+      thread: policy.thread,
+      global: policy.global,
+      user: 0,
+    }
+    return map[scope] ?? 0
+  }
+
   private generateId(): string {
     return `mem_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   }
