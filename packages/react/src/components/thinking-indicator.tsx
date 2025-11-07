@@ -16,44 +16,44 @@ export interface ThinkingIndicatorProps {
   className?: string
 }
 
+// Stage icon mapping - extracted to module level to prevent recreation
+const STAGE_ICONS: Record<AIStatus['stage'], React.ComponentType<{ size: number }>> = {
+  thinking: BotIcon,
+  researching: SearchIcon,
+  compiling: FileIcon,
+  generating: SparklesIcon,
+  finalizing: CheckCircleIcon,
+}
+
+// Stage label mapping - extracted to module level
+const STAGE_LABELS: Record<AIStatus['stage'], string> = {
+  thinking: 'Thinking',
+  researching: 'Researching',
+  compiling: 'Compiling',
+  generating: 'Generating',
+  finalizing: 'Finalizing',
+}
+
 export const ThinkingIndicator = React.memo(function ThinkingIndicator({
   status,
   className,
 }: ThinkingIndicatorProps) {
-  const getStageIcon = (stage: AIStatus['stage']) => {
-    const iconProps = { size: 20 }
-    switch (stage) {
-      case 'thinking':
-        return <BotIcon {...iconProps} />
-      case 'researching':
-        return <SearchIcon {...iconProps} />
-      case 'compiling':
-        return <FileIcon {...iconProps} />
-      case 'generating':
-        return <SparklesIcon {...iconProps} />
-      case 'finalizing':
-        return <CheckCircleIcon {...iconProps} />
-      default:
-        return <BotIcon {...iconProps} />
-    }
-  }
-
-  const getStageLabel = (stage: AIStatus['stage']) => {
-    switch (stage) {
-      case 'thinking':
-        return 'Thinking'
-      case 'researching':
-        return 'Researching'
-      case 'compiling':
-        return 'Compiling'
-      case 'generating':
-        return 'Generating'
-      case 'finalizing':
-        return 'Finalizing'
-      default:
-        return 'Processing'
-    }
-  }
+  // Memoize computed values
+  const stage = status?.stage || 'thinking'
+  const IconComponent = React.useMemo(
+    () => STAGE_ICONS[stage] || BotIcon,
+    [stage]
+  )
+  
+  const stageLabel = React.useMemo(
+    () => STAGE_LABELS[stage] || 'Processing',
+    [stage]
+  )
+  
+  const stageIcon = React.useMemo(
+    () => <IconComponent size={20} />,
+    [IconComponent]
+  )
 
   return (
     <motion.div
@@ -82,14 +82,14 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
         }}
         className="text-primary"
       >
-        {status ? getStageIcon(status.stage) : <BotIcon size={20} />}
+        {stageIcon}
       </motion.div>
 
       {/* Status Text */}
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium text-sm">
-            {status ? getStageLabel(status.stage) : 'Processing'}
+            {stageLabel}
           </span>
 
           {/* Animated Dots */}
