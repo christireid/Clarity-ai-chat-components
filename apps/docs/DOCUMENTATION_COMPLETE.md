@@ -30,20 +30,22 @@ The documentation site now provides comprehensive coverage of all library featur
 
 16. **Model Adapters** (`model-adapters.md`) - Switch between AI providers ⭐ NEW
 17. **AI Agents** (`agents.md`) - Build agents with tool calling ⭐ NEW
-18. **RAG System** (`/guides/rag-guide.md`) - Retrieval-augmented generation ⭐ NEW
-19. **Safety & Moderation** (`safety.md`) - Content filtering and PII detection ⭐ NEW
-20. **Memory System** (`memory.md`) - Persistent memory across conversations ⭐ NEW
-21. **Observability** (`observability.md`) - Monitoring and tracing ⭐ NEW
-22. **Token Optimization** (`token-optimization.md`) - Reduce costs and improve performance ⭐ NEW
-23. **Performance Guide** (`performance.md`) - Optimize your application ⭐ NEW
-24. **Migration Guide** (`migration.md`) - Upgrade between versions ⭐ NEW
-25. **Plugins** (`plugins.md`) - Extend functionality with plugins ⭐ NEW
-26. **Audit Logging** (`audit-logging.md`) - Track actions for compliance ⭐ NEW
-27. **Usage Quotas** (`usage-quotas.md`) - Control costs and enforce limits ⭐ NEW
-28. **RBAC** (`rbac.md`) - Role-based access control ⭐ NEW
-29. **Multi-Tenancy** (`multi-tenancy.md`) - Build multi-tenant applications ⭐ NEW
-30. **Webhooks** (`webhooks.md`) - Event-driven notifications ⭐ NEW
-31. **Prompt Templates** (`prompts.md`) - Manage and render AI prompts ⭐ NEW
+18. **RAG System** (`rag.md`) - Retrieval-augmented generation ⭐ NEW
+19. **Reranking** (`reranking.md`) - Improve search result relevance ⭐ NEW
+20. **Safety & Moderation** (`safety.md`) - Content filtering and PII detection ⭐ NEW
+21. **Memory System** (`memory.md`) - Persistent memory across conversations ⭐ NEW
+22. **Observability** (`observability.md`) - Monitoring and tracing ⭐ NEW
+23. **Token Optimization** (`token-optimization.md`) - Reduce costs and improve performance ⭐ NEW
+24. **Performance Guide** (`performance.md`) - Optimize your application ⭐ NEW
+25. **Migration Guide** (`migration.md`) - Upgrade between versions ⭐ NEW
+26. **Plugins** (`plugins.md`) - Extend functionality with plugins ⭐ NEW
+27. **Audit Logging** (`audit-logging.md`) - Track actions for compliance ⭐ NEW
+28. **Usage Quotas** (`usage-quotas.md`) - Control costs and enforce limits ⭐ NEW
+29. **RBAC** (`rbac.md`) - Role-based access control ⭐ NEW
+30. **Multi-Tenancy** (`multi-tenancy.md`) - Build multi-tenant applications ⭐ NEW
+31. **Webhooks** (`webhooks.md`) - Event-driven notifications ⭐ NEW
+32. **Prompt Templates** (`prompts.md`) - Manage and render AI prompts ⭐ NEW
+33. **Tutorials** (`tutorials.md`) - Step-by-step tutorials ⭐ NEW
 
 ### API Reference (`/api/`)
 
@@ -94,17 +96,18 @@ The cookbook now contains **24 recipes** covering:
 19. Usage Quotas
 20. Multi-Tenant Chat
 
-**Enterprise Recipes (21-24):** ⭐ NEW
+**Enterprise Recipes (21-25):** ⭐ NEW
 21. RBAC-Protected Chat
 22. Multi-Tenant Chat with Isolation
 23. Chat with Webhook Events
 24. Chat with Prompt Templates
+25. RAG with Reranking
 
 ## Documentation Statistics
 
-- **Total Guides**: 31
-- **New Guides Added**: 16
-- **Cookbook Recipes**: 24 (14 new)
+- **Total Guides**: 33
+- **New Guides Added**: 18
+- **Cookbook Recipes**: 25 (15 new)
 - **Tutorials**: 5 step-by-step tutorials
 - **API Reference Pages**: 6
 - **Integration Guides**: 3
@@ -122,7 +125,7 @@ The cookbook now contains **24 recipes** covering:
 ### Advanced Features
 ✅ Model adapters (OpenAI, Anthropic, Google AI)
 ✅ AI agents with tool calling
-✅ RAG system (vector stores, embeddings, loaders)
+✅ RAG system (vector stores, embeddings, loaders, reranking)
 ✅ Safety & content moderation
 ✅ Memory system (session, thread, global)
 ✅ Observability (tracing, metrics, dashboards)

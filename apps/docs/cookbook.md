@@ -1126,6 +1126,97 @@ Please provide a helpful response.`,
 }
 ```
 
+### 25. RAG with Reranking
+
+Improve RAG results with reranking:
+
+```tsx
+import {
+  ChatWindow,
+  PineconeVectorStore,
+  OpenAIEmbeddings,
+  SimpleReranker,
+} from '@clarity-chat/react'
+
+function RerankedRAGChat() {
+  const [messages, setMessages] = useState([])
+  
+  const vectorStore = new PineconeVectorStore({
+    apiKey: process.env.PINECONE_API_KEY!,
+    indexName: 'documents',
+  })
+  
+  const embeddings = new OpenAIEmbeddings({
+    apiKey: process.env.OPENAI_API_KEY!,
+  })
+  
+  const reranker = new SimpleReranker()
+
+  const handleSend = async (content: string) => {
+    setMessages(prev => [...prev, {
+      id: Date.now().toString(),
+      role: 'user',
+      content,
+      timestamp: Date.now(),
+    }])
+
+    // Generate query embedding
+    const queryEmbedding = await embeddings.embedQuery(content)
+
+    // Initial search (retrieve more than needed)
+    const searchResults = await vectorStore.similaritySearch({
+      query: queryEmbedding,
+      topK: 20,
+    })
+
+    // Rerank for better relevance
+    const reranked = await reranker.rerank({
+      query: content,
+      documents: searchResults,
+      topK: 5,
+    })
+
+    // Build context from reranked results
+    const context = reranked.results
+      .map(r => r.content)
+      .join('\n\n')
+
+    // Generate response
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({
+        messages: [
+          {
+            role: 'system',
+            content: `Answer using this context:\n\n${context}`,
+          },
+          { role: 'user', content },
+        ],
+      }),
+    })
+
+    const data = await response.json()
+    
+    setMessages(prev => [...prev, {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: data.message,
+      metadata: {
+        sources: reranked.results.map(r => r.metadata?.source),
+      },
+      timestamp: Date.now(),
+    }])
+  }
+
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+    />
+  )
+}
+```
+
 ## More Recipes
 
 For additional recipes covering:
