@@ -11,6 +11,13 @@ export const learnNavigation: NavItem[] = [
     ],
   },
   {
+    title: 'Tutorials',
+    items: [
+      { title: 'Building Your First Chatbot', href: '/learn/tutorials/building-first-chatbot' },
+      { title: 'Adding RAG', href: '/learn/tutorials/adding-rag' },
+    ],
+  },
+  {
     title: 'Core Concepts',
     items: [
       { title: 'Components', href: '/learn/concepts/components' },
@@ -111,14 +118,54 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useUndoRedo', href: '/reference/hooks/use-undo-redo' },
       { title: 'useHaptic', href: '/reference/hooks/use-haptic' },
       { title: 'useTheme', href: '/reference/hooks/use-theme' },
+      { title: 'useTokenOptimization', href: '/reference/hooks/use-token-optimization' },
+      { title: 'useModelRouter', href: '/reference/hooks/use-model-router' },
+      { title: 'usePerformance', href: '/reference/hooks/use-performance' },
+      { title: 'useTokenTracker', href: '/reference/hooks/use-token-tracker' },
     ],
   },
   {
     title: 'API',
     items: [
       { title: 'Types', href: '/reference/api/types' },
-      { title: 'Utilities', href: '/reference/api/utilities' },
+      { title: 'Utilities', href: '/reference/utilities' },
       { title: 'Configuration', href: '/reference/api/configuration' },
+    ],
+  },
+]
+
+export const cookbookNavigation: NavItem[] = [
+  {
+    title: 'Getting Started',
+    items: [
+      { title: 'OpenAI Streaming Chat', href: '/cookbook/openai-streaming-chat' },
+      { title: 'Next.js Integration', href: '/cookbook/nextjs-integration' },
+      { title: 'Custom Theming', href: '/cookbook/custom-theming' },
+    ],
+  },
+  {
+    title: 'Advanced Patterns',
+    items: [
+      { title: 'Streaming with Memory', href: '/cookbook/streaming-with-memory' },
+      { title: 'RAG Document Chat', href: '/cookbook/rag-document-chat' },
+      { title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' },
+      { title: 'Agent with Tools', href: '/cookbook/agent-with-tools' },
+      { title: 'Advanced Agent Workflow', href: '/cookbook/advanced-agent-workflow' },
+    ],
+  },
+  {
+    title: 'Production',
+    items: [
+      { title: 'Error Handling', href: '/cookbook/error-handling' },
+      { title: 'Authentication', href: '/cookbook/authentication' },
+      { title: 'Analytics Tracking', href: '/cookbook/analytics-tracking' },
+      { title: 'Production Monitoring', href: '/cookbook/production-monitoring' },
+    ],
+  },
+  {
+    title: 'Enterprise',
+    items: [
+      { title: 'Enterprise SSO Setup', href: '/cookbook/enterprise-sso-setup' },
     ],
   },
 ]
