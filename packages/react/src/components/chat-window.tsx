@@ -42,20 +42,20 @@ export interface ChatWindowProps {
 const DefaultEmptyState = () => (
   <motion.div
     className="text-center space-y-6"
-    initial={{ opacity: 0, scale: 0.95, y: 10 }}
-    animate={{ opacity: 1, scale: 1, y: 0 }}
-    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.3 }}
   >
     <motion.div
-      className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-[0_4px_12px_rgba(0,0,0,0.08)] ring-1 ring-primary/20"
+      className="inline-flex items-center justify-center w-20 h-20 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ring-1 ring-primary/20"
       animate={{
         scale: [1, 1.05, 1],
         rotate: [0, 2, -2, 0],
       }}
       transition={{
-        duration: 4,
+        duration: 3,
         repeat: Infinity,
-        ease: [0.25, 0.1, 0.25, 1],
+        ease: 'easeInOut',
       }}
     >
       <BotIcon size={36} className="text-primary" />
@@ -114,22 +114,22 @@ export const ChatWindow = memo(function ChatWindow({
   }, [messages.length])
 
   return (
-    <Card
+      <Card
       className={cn(
-        'flex h-full flex-col overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-border/40 rounded-2xl',
+        'flex h-full flex-col overflow-hidden shadow-[0_10px_24px_rgba(15,23,42,0.12)]',
         className
       )}
     >
       {/* Optional Header */}
       {showHeader && (
         <motion.div
-          className="flex items-center justify-between gap-4 border-b border-border/40 bg-card/95 backdrop-blur-sm px-6 py-4"
+          className="flex items-center justify-between gap-4 border-b bg-card px-4 py-3 sm:px-6"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.2 }}
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-primary/20">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
               <BotIcon size={20} />
             </div>
             <div className="min-w-0 flex-1">
@@ -158,7 +158,7 @@ export const ChatWindow = memo(function ChatWindow({
                 size="sm"
                 variant="ghost"
                 onClick={onExport}
-                className="gap-1.5 h-9 w-9 rounded-xl hover:bg-accent/80 transition-colors duration-200"
+                className="gap-1.5"
                 title="Export conversation"
               >
                 <svg
@@ -183,7 +183,7 @@ export const ChatWindow = memo(function ChatWindow({
                 size="sm"
                 variant="ghost"
                 onClick={onClear}
-                className="gap-1.5 h-9 w-9 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors duration-200"
+                className="gap-1.5 text-muted-foreground hover:text-destructive"
                 title="Clear conversation"
               >
                 <svg
