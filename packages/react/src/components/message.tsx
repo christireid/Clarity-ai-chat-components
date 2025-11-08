@@ -172,11 +172,11 @@ export const Message = memo(
 
           {/* Content */}
           <div
-            className={cn(
-              'prose prose-sm dark:prose-invert max-w-none',
-              isUser &&
-                'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm'
-            )}
+          className={cn(
+            'prose prose-sm dark:prose-invert max-w-none',
+            isUser &&
+              'bg-primary text-primary-foreground px-4 py-3 rounded-2xl rounded-br-md inline-block shadow-xs'
+          )}
           >
             {isUser ? (
               <p className="m-0 whitespace-pre-wrap">{message.content}</p>

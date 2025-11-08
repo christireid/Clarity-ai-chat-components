@@ -116,7 +116,7 @@ export const ChatWindow = memo(function ChatWindow({
   return (
     <Card
       className={cn(
-        'flex h-full flex-col overflow-hidden shadow-lg',
+        'flex h-full flex-col overflow-hidden shadow-md border border-border',
         className
       )}
     >
@@ -129,7 +129,7 @@ export const ChatWindow = memo(function ChatWindow({
           transition={{ duration: 0.2 }}
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-xs ring-1 ring-primary/20">
               <BotIcon size={20} />
             </div>
             <div className="min-w-0 flex-1">
