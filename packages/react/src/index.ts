@@ -284,6 +284,7 @@ export * from './hooks/use-haptic'
 
 // Token Optimization Components
 export * from './components/token-optimization-dashboard'
+// token-optimization-badge already exported in Phase 3 section
 
 // Token Optimization Hooks
 export * from './hooks/use-prompt-compression'

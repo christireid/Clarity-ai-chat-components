@@ -10,7 +10,7 @@ export default function Home() {
       id: '1',
       role: 'assistant',
       content: 'Hello! I\'m your AI assistant with real-time streaming support. Try asking me something!',
-      timestamp: Date.now() - 5000,
+      createdAt: new Date(Date.now() - 5000),
     },
   ])
   const [isLoading, setIsLoading] = useState(false)
@@ -22,7 +22,7 @@ export default function Home() {
       id: Date.now().toString(),
       role: 'user',
       content,
-      timestamp: Date.now(),
+      createdAt: new Date(),
     }
     
     setMessages((prev) => [...prev, userMessage])
@@ -33,7 +33,7 @@ export default function Home() {
       id: (Date.now() + 1).toString(),
       role: 'assistant',
       content: '',
-      timestamp: Date.now(),
+      createdAt: new Date(),
       isStreaming: true,
     }
     

@@ -728,7 +728,7 @@ export class MemoryService {
     return priorities[Math.min(index + 1, priorities.length - 1)]
   }
 
-  private createMemoryFromMatch(match: any): MemoryItem {
+  private createMemoryFromMatch(match: VectorMatch): MemoryItem {
     return {
       id: match.id,
       type: match.metadata?.type || 'episodic',

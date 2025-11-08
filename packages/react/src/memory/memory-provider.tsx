@@ -472,9 +472,9 @@ export function useConversationMemory(options: {
 }
 
 /**
- * Use Token Optimization Hook
+ * Use Memory Token Optimization Hook
  */
-export function useTokenOptimization(options: {
+export function useMemoryTokenOptimization(options: {
   systemPrompt: string
   userPreferences?: Record<string, any>
   recentMessages?: string[]
