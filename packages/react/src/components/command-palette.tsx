@@ -125,7 +125,7 @@ export const CommandPalette = forwardRef<
               exit={{ opacity: 0 }}
               transition={{ duration: ANIMATION_DURATION.normal / 1000 }}
               onClick={onClose}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[var(--z-modal-backdrop)]"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[var(--z-modal-backdrop)]"
             />
 
             {/* Command Palette */}
@@ -140,7 +140,7 @@ export const CommandPalette = forwardRef<
               }}
               className={cn(
                 'fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4',
-                'bg-card border shadow-2xl rounded-2xl z-[var(--z-modal)]',
+                'bg-card border shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1),0_8px_10px_-6px_rgb(0_0_0_/_0.1)] rounded-lg z-[var(--z-modal)]',
                 'flex flex-col max-h-[60vh] overflow-hidden',
                 className
               )}
