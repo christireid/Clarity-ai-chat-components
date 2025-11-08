@@ -84,7 +84,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                 ease: ANIMATION_EASING.out,
               }}
               className={cn(
-                'fixed bg-background border border-border/60 rounded-lg shadow-[0_24px_48px_rgba(15,23,42,0.32)] z-50 backdrop-blur-sm',
+                'fixed bg-background ring-1 ring-border/50 rounded-lg shadow-xl z-50 backdrop-blur-sm',
                 'max-w-md max-h-[80vh] overflow-hidden flex flex-col',
                 positionClasses[position],
                 className
@@ -105,7 +105,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                     onClick={onClose}
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-1 rounded hover:bg-muted transition-colors"
+                    className="p-1 rounded-md hover:bg-muted/30 transition-all duration-200 hover:shadow-xs"
                     aria-label="Close"
                   >
                     <svg
@@ -150,7 +150,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                                 delay: groupIndex * 0.05 + index * 0.03 + 0.15,
                               }}
                               whileHover={{ x: 4, scale: 1.02 }}
-                              className="flex items-center justify-between gap-4 p-2 rounded hover:bg-muted transition-all"
+                              className="flex items-center justify-between gap-4 p-2 rounded-md hover:bg-muted/30 transition-all duration-200"
                             >
                               <span className="text-sm">
                                 {shortcut.description}
@@ -166,8 +166,8 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                                     <motion.kbd
                                       whileHover={{ scale: 1.1 }}
                                       className={cn(
-                                        'px-2 py-1 text-xs font-mono rounded border',
-                                        'bg-muted border-border/60 shadow-[0_1px_2px_rgba(15,23,42,0.08)]',
+                                        'px-2 py-1 text-xs font-mono rounded-sm ring-1',
+                                        'bg-muted ring-border/30 shadow-xs',
                                         'inline-flex items-center justify-center min-w-[24px]'
                                       )}
                                     >
