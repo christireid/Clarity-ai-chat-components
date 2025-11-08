@@ -60,7 +60,7 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
   }
 
   return (
-    <div className={cn('ring-1 ring-border/30 rounded-lg shadow-xs', className)}>
+    <div className={cn('border border-border/60 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]', className)}>
       {/* Trigger */}
       <motion.button
         type="button"
