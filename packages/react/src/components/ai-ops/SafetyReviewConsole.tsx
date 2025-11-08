@@ -89,7 +89,7 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
   }
 
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm', className)}>
       <CardHeader className="space-y-2">
         <CardTitle className="text-lg font-semibold text-foreground">Safety review console</CardTitle>
         <CardDescription className="text-sm text-muted-foreground/80">

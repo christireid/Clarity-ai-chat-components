@@ -111,7 +111,7 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
               const style = typeStyles[event.type]
               const isLast = index === sortedEvents.length - 1
               const timelineDotClasses = cn(
-                'absolute left-0 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border bg-[hsl(var(--surface-elevated))] shadow-[0_6px_16px_rgba(15,23,42,0.16)]',
+                'absolute left-0 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full border bg-[hsl(var(--surface-elevated))] shadow-xs',
                 style.border
               )
 

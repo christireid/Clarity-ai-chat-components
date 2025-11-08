@@ -41,7 +41,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
   subtitle = defaultSubtitle,
 }: WorkflowSuggestionListProps) {
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm', className)}>
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
           <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
@@ -59,7 +59,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
           {workflows.map((workflow) => (
             <li
               key={workflow.id}
-              className="space-y-3 rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-[0_12px_30px_rgba(15,23,42,0.12)]"
+              className="space-y-3 rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-xs"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex flex-col gap-2">

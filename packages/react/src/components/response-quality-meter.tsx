@@ -51,7 +51,7 @@ export const ResponseQualityMeter: React.FC<ResponseQualityMeterProps> = ({
   const overall = overallScore !== undefined ? clampScore(overallScore) : undefined
 
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_18px_42px_rgba(15,23,42,0.16)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm', className)}>
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
           <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
@@ -73,7 +73,7 @@ export const ResponseQualityMeter: React.FC<ResponseQualityMeterProps> = ({
 
         <div className="space-y-4">
           {normalizedMetrics.map((metric) => (
-            <div key={metric.id} className="space-y-2 rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-[0_12px_32px_rgba(15,23,42,0.12)]">
+            <div key={metric.id} className="space-y-2 rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-xs">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-foreground">{metric.label}</span>

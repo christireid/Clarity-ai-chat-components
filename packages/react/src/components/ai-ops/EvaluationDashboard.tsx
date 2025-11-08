@@ -46,7 +46,7 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
 }) => {
   return (
     <div className={cn('grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]', className)}>
-      <Card className="border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_18px_42px_rgba(15,23,42,0.16)]">
+      <Card className="border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm">
         <CardHeader className="space-y-2">
           <CardTitle className="text-lg font-semibold text-foreground">Evaluation snapshot</CardTitle>
           <CardDescription className="text-sm text-muted-foreground/80">
@@ -74,11 +74,11 @@ export const EvaluationDashboard: React.FC<EvaluationDashboardProps> = ({
 
       <div className="space-y-6">
         {quality && (
-          <ResponseQualityMeter {...quality} className="border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_18px_42px_rgba(15,23,42,0.16)]" />
+          <ResponseQualityMeter {...quality} className="border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm" />
         )}
 
         {sparklines.length > 0 && (
-          <Card className="border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_18px_42px_rgba(15,23,42,0.16)]">
+          <Card className="border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm">
             <CardHeader className="space-y-2">
               <CardTitle className="text-lg font-semibold text-foreground">Cost & latency trends</CardTitle>
               <CardDescription className="text-sm text-muted-foreground/80">

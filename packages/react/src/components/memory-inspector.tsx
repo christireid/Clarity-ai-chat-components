@@ -108,7 +108,7 @@ export const MemoryInspector: React.FC<MemoryInspectorProps> = ({
   }, [memories])
 
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_26px_56px_rgba(15,23,42,0.18)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm', className)}>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1.5">
           <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
@@ -160,7 +160,7 @@ export const MemoryInspector: React.FC<MemoryInspectorProps> = ({
                   {grouped[scope].map((memory) => (
                     <li
                       key={memory.id}
-                      className="rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-[0_12px_28px_rgba(15,23,42,0.12)]"
+                      className="rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-xs"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="flex-1 space-y-2">
