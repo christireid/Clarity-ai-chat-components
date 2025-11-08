@@ -270,7 +270,7 @@ export const ConversationList = memo(function ConversationList({
         {onCreate && (
           <button
             onClick={onCreate}
-            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-200 hover:scale-110"
+            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-150 ease-out hover:scale-105"
             aria-label="New conversation"
           >
             <svg
@@ -312,7 +312,7 @@ export const ConversationList = memo(function ConversationList({
               placeholder="Search conversations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-shadow duration-200"
+              className="w-full pl-9 pr-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-transparent transition-shadow duration-150 ease-out"
             />
           </div>
         </div>
@@ -325,7 +325,7 @@ export const ConversationList = memo(function ConversationList({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-shadow duration-200"
+              className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-shadow duration-150 ease-out"
             >
               <option value="recent">Most Recent</option>
               <option value="oldest">Oldest</option>
@@ -338,7 +338,7 @@ export const ConversationList = memo(function ConversationList({
             <div className="flex gap-2">
               <button
                 onClick={() => setShowPinnedOnly(!showPinnedOnly)}
-                className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
+                className={`px-3 py-1 text-xs rounded-full transition-all duration-150 ease-out ${
                   showPinnedOnly
                     ? 'bg-primary/10 text-primary scale-105'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -349,7 +349,7 @@ export const ConversationList = memo(function ConversationList({
 
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
+                className={`px-3 py-1 text-xs rounded-full transition-all duration-150 ease-out ${
                   showFavoritesOnly
                     ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] scale-105'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -388,7 +388,7 @@ export const ConversationList = memo(function ConversationList({
               {onCreate && !searchQuery && (
                 <button
                   onClick={onCreate}
-                  className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5"
+                  className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-150 ease-out hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px"
                 >
                   Start a conversation
                 </button>
@@ -417,7 +417,7 @@ export const ConversationList = memo(function ConversationList({
                     }}
                     layout
                     onClick={() => handleSelect(conversation.id)}
-                    className={`p-4 cursor-pointer transition-all duration-200 ${
+                    className={`p-4 cursor-pointer transition-all duration-150 ease-out ${
                       isActive
                         ? 'bg-primary/10 border-l-4 border-primary'
                         : isSelected
@@ -509,7 +509,7 @@ export const ConversationList = memo(function ConversationList({
                               rotate: conversation.isPinned ? 0 : 15,
                             }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-muted rounded transition-colors duration-200"
+                            className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
                             aria-label={conversation.isPinned ? 'Unpin' : 'Pin'}
                           >
                             <motion.span
@@ -531,7 +531,7 @@ export const ConversationList = memo(function ConversationList({
                             onClick={() => onToggleFavorite(conversation.id)}
                             whileHover={{ scale: 1.2 }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-muted rounded transition-colors duration-200"
+                            className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
                             aria-label={
                               conversation.isFavorite
                                 ? 'Unfavorite'
@@ -557,7 +557,7 @@ export const ConversationList = memo(function ConversationList({
                             onClick={() => onDelete(conversation.id)}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-destructive/10 rounded transition-all duration-200"
+                            className="p-1 hover:bg-destructive/10 rounded transition-all duration-150 ease-out"
                             aria-label="Delete conversation"
                           >
                             <svg
