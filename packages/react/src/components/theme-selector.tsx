@@ -95,7 +95,7 @@ export function ThemeSelector({
             {showPreview && metadata.preview && (
               <div className="theme-preview flex gap-1 items-center">
                 <div
-                  className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+                  className="w-8 h-8 rounded-full border-2 border-white shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
                   style={{ backgroundColor: metadata.preview.primaryColor }}
                   aria-hidden="true"
                 />
@@ -222,7 +222,7 @@ export function ThemeSelectorDropdown({
           <div
             className="
               absolute top-full left-0 right-0 mt-2 z-50
-              bg-popover border border-border rounded-lg shadow-lg
+              bg-popover border border-border/60 rounded-lg shadow-[0_24px_48px_rgba(15,23,42,0.32)] backdrop-blur-sm
               max-h-96 overflow-y-auto
             "
             role="listbox"
