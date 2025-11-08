@@ -4,13 +4,13 @@ import { cn } from '../lib/utils'
 import { ErrorMessage } from './error-message'
 
 const inputVariants = cva(
-  'flex w-full rounded-lg border-2 border-border/60 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:ring-[3px] focus-visible:border-primary focus-visible:shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:border-border/80 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200',
+  'flex w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-1 focus-visible:border-primary focus-visible:shadow-[0_0_0_3px_hsl(var(--ring)/0.1)] hover:border-input/70 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-150 ease-out',
   {
     variants: {
       variant: {
         default: '',
-        error: 'border-destructive/70 focus-visible:border-destructive focus-visible:ring-destructive/30 focus-visible:shadow-[0_4px_12px_rgba(239,68,68,0.15)]',
-        success: 'border-[hsl(var(--success))]/70 focus-visible:border-[hsl(var(--success))] focus-visible:ring-[hsl(var(--success))]/30 focus-visible:shadow-[0_4px_12px_rgba(34,197,94,0.15)]',
+        error: 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/40 focus-visible:shadow-[0_0_0_3px_hsl(var(--destructive)/0.1)]',
+        success: 'border-green-500 focus-visible:border-green-500 focus-visible:ring-green-500/40 focus-visible:shadow-[0_0_0_3px_rgb(34_197_94_/_0.1)]',
       },
       inputSize: {
         default: 'h-10',
