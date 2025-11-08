@@ -4,13 +4,13 @@ import { cn } from '../lib/utils'
 import { ErrorMessage } from './error-message'
 
 const textareaVariants = cva(
-  'flex min-h-[80px] w-full rounded-lg border-2 border-border/60 bg-background px-3 py-2 text-sm shadow-[0_1px_3px_rgba(15,23,42,0.1)] ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:ring-[3px] focus-visible:border-primary focus-visible:shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:border-border/80 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200 resize-none',
+  'flex min-h-[80px] w-full rounded-xl border border-input/60 bg-background px-3 py-2 text-sm shadow-[0_1px_3px_rgba(0,0,0,0.08)] ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/10 focus-visible:border-primary focus-visible:shadow-[0_0_0_3px_rgba(var(--primary),0.08),0_2px_8px_rgba(0,0,0,0.1)] hover:border-input/80 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-[border-color,box-shadow,background-color] duration-200 ease-out resize-none',
   {
     variants: {
       variant: {
         default: '',
-        error: 'ring-destructive focus-visible:ring-destructive focus-visible:ring-destructive/20',
-        success: 'ring-green-500 focus-visible:ring-green-500 focus-visible:ring-green-500/20',
+        error: 'border-destructive/60 focus-visible:border-destructive focus-visible:ring-destructive/10 focus-visible:shadow-[0_0_0_3px_rgba(239,68,68,0.08),0_2px_8px_rgba(239,68,68,0.1)]',
+        success: 'border-green-500/60 focus-visible:border-green-500 focus-visible:ring-green-500/10 focus-visible:shadow-[0_0_0_3px_rgba(34,197,94,0.08),0_2px_8px_rgba(34,197,94,0.1)]',
       },
     },
     defaultVariants: {
