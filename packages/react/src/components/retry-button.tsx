@@ -279,7 +279,7 @@ export function RetryButton({
       >
         {!isRetrying && (
           <svg
-            className="w-5 h-5 transition-transform duration-200 group-hover:rotate-180"
+            className="w-5 h-5 transition-transform duration-150 ease-out group-hover:rotate-180"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
