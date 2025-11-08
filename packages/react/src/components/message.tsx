@@ -101,29 +101,29 @@ export const Message = memo(
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{
           duration: ANIMATION_DURATION.normal / 1000,
-          ease: ANIMATION_EASING.out,
+          ease: [0.25, 0.1, 0.25, 1],
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group flex gap-3 p-4 rounded-lg transition-all duration-150 ease-out',
+          'group flex gap-3 p-4 rounded-xl transition-all duration-200 ease-out',
           isUser && 'flex-row-reverse',
-          isHovered && 'bg-muted/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+          isHovered && 'bg-muted/30',
           className
         )}
       >
         {/* Avatar */}
         {showAvatar && (
-          <motion.div
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            transition={{
-              type: 'spring',
-              stiffness: 500,
-              damping: 25,
-              delay: 0.1,
-            }}
-          >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{
+                type: 'spring',
+                stiffness: 400,
+                damping: 30,
+                delay: 0.05,
+              }}
+            >
             <Avatar
               src={isUser ? undefined : '/ai-avatar.png'}
               alt={isUser ? 'User' : 'AI Assistant'}
@@ -147,15 +147,15 @@ export const Message = memo(
               isUser && 'flex-row-reverse'
             )}
           >
-            <span className="font-semibold text-sm">
+            <span className="font-semibold text-sm text-foreground">
               {isUser ? 'You' : 'AI Assistant'}
             </span>
             {showTimestamp && (
               <motion.span
                 initial={{ opacity: 0 }}
-                animate={{ opacity: isHovered ? 1 : 0.6 }}
-                transition={{ duration: 0.2 }}
-                className="text-xs text-muted-foreground"
+                animate={{ opacity: isHovered ? 1 : 0.7 }}
+                transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                className="text-xs text-muted-foreground/80"
               >
                 {formatRelativeTime(message.createdAt)}
               </motion.span>
@@ -175,7 +175,7 @@ export const Message = memo(
             className={cn(
               'prose prose-sm dark:prose-invert max-w-none',
               isUser &&
-                'bg-primary text-primary-foreground px-4 py-3 rounded-lg inline-block shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]'
+                'bg-primary text-primary-foreground px-4 py-2.5 rounded-2xl inline-block shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-primary/10'
             )}
           >
             {isUser ? (

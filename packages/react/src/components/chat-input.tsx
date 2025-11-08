@@ -139,12 +139,8 @@ export const ChatInput = React.memo(function ChatInput({
     },
     focused: glowOnFocus
       ? {
-          boxShadow: [
-            '0 0 0 0 hsl(var(--primary) / 0)',
-            '0 0 0 4px hsl(var(--primary) / 0.15)',
-            '0 0 0 4px hsl(var(--primary) / 0.15)',
-          ],
-          transition: { duration: 0.3, ease: 'easeOut' },
+          boxShadow: '0 0 0 3px rgba(var(--primary-rgb), 0.08)',
+          transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] },
         }
       : {},
   }
@@ -152,7 +148,7 @@ export const ChatInput = React.memo(function ChatInput({
   return (
     <motion.div
       className={cn(
-        'relative flex flex-col gap-2 p-4 border-t border-border/50 bg-background/95 backdrop-blur-sm',
+        'relative flex flex-col gap-2 p-4 border-t border-border/40 bg-background/98 backdrop-blur-md',
         className
       )}
       initial="idle"
@@ -180,8 +176,8 @@ export const ChatInput = React.memo(function ChatInput({
             maxRows={6}
             variant={isOverLimit ? 'error' : 'default'}
             className={cn(
-              'transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
-              isFocused && glowOnFocus && 'ring-2 ring-primary/30 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+              'transition-all duration-200 ease-out shadow-[0_1px_3px_rgba(0,0,0,0.08)]',
+              isFocused && glowOnFocus && 'ring-[3px] ring-primary/10 shadow-[0_2px_8px_rgba(0,0,0,0.1)]',
               isOverLimit && 'animate-[shake_0.4s_ease-in-out]'
             )}
           />
@@ -197,14 +193,14 @@ export const ChatInput = React.memo(function ChatInput({
                   className="absolute bottom-2 right-2 flex flex-col items-end gap-1"
                 >
                   {/* Progress bar */}
-                  <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
+                  <div className="w-20 h-0.5 bg-muted/30 rounded-full overflow-hidden">
                     <motion.div
                       className={cn('h-full', progressColor)}
                       initial={{ width: 0 }}
                       animate={{
                         width: `${Math.min((charCount / maxLength) * 100, 100)}%`,
                       }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                     />
                   </div>
 
@@ -228,9 +224,9 @@ export const ChatInput = React.memo(function ChatInput({
           state={buttonState}
           size="icon"
           className={cn(
-            'transition-all duration-150 ease-out shrink-0 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+            'transition-all duration-200 ease-out shrink-0 h-11 w-11 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)]',
             hasContent && !isOverLimit
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-[1px]'
               : 'bg-muted text-muted-foreground'
           )}
           aria-label={
@@ -250,7 +246,7 @@ export const ChatInput = React.memo(function ChatInput({
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: 0.15 }}
+                transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
               >
                 <SendIcon size={18} />
               </motion.div>
@@ -284,11 +280,11 @@ export const ChatInput = React.memo(function ChatInput({
             className="text-xs text-muted-foreground px-1"
           >
             Press{' '}
-            <kbd className="px-1.5 py-0.5 text-xs border border-border/50 rounded bg-muted">
+            <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
               Enter
             </kbd>{' '}
             to send ?{' '}
-            <kbd className="px-1.5 py-0.5 text-xs border border-border/50 rounded bg-muted">
+            <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
               Shift + Enter
             </kbd>{' '}
             for new line

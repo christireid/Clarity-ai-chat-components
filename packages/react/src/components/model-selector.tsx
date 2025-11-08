@@ -4,10 +4,10 @@
  * Dropdown to switch between AI models with metrics (speed, cost, quality)
  */
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import * as React from 'react'
+import { motion } from 'framer-motion'
 import { Badge, Button, cn } from '@clarity-chat/primitives'
 import type { ModelConfig, ModelInfo } from '../adapters/types'
-import type { ComponentProps } from 'react'
 
 export interface ModelSelectorProps {
   /** Available models */
@@ -36,6 +36,10 @@ export function ModelSelector({
   showDescription = true
 }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = React.useState(false)
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  
+  const handleToggle = React.useCallback(() => setIsOpen(!isOpen), [isOpen])
+  const handleBackdropClick = React.useCallback(() => setIsOpen(false), [])
   
   // Memoize selected model lookup
   const selectedModel = React.useMemo(
@@ -79,7 +83,7 @@ export function ModelSelector({
         variant="surface"
         onClick={handleToggle}
         disabled={disabled}
-        className="w-full justify-between rounded-xl border border-border/60 bg-[hsl(var(--surface-elevated))] px-4 py-3 text-left text-sm shadow-[0_14px_28px_rgba(15,23,42,0.12)] hover:bg-[hsl(var(--surface-overlay))]"
+        className="w-full justify-between rounded-xl border border-border/40 bg-card/95 backdrop-blur-sm px-4 py-3 text-left text-sm shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:border-border/60 transition-all duration-200 ease-out"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -107,7 +111,7 @@ export function ModelSelector({
           )}
         </div>
         <svg
-          className={cn('h-4 w-4 text-muted-foreground transition-transform', isOpen && 'rotate-180')}
+          className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', isOpen && 'rotate-180')}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -123,9 +127,13 @@ export function ModelSelector({
             onClick={handleBackdropClick}
             aria-hidden="true"
           />
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             role="listbox"
-            className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/60 bg-[hsl(var(--surface-overlay))] shadow-[0_18px_38px_rgba(15,23,42,0.2)] backdrop-blur-sm"
+            className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/40 bg-card/98 backdrop-blur-md shadow-[0_12px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)]"
           >
             {models.map((model) => (
               <button
@@ -135,10 +143,10 @@ export function ModelSelector({
                 aria-selected={model.id === value}
                 onClick={() => handleSelect(model)}
                 className={cn(
-                  'w-full px-4 py-3 text-left transition-colors first:rounded-t-2xl last:rounded-b-2xl',
+                  'w-full px-4 py-3 text-left transition-colors duration-150 ease-out first:rounded-t-2xl last:rounded-b-2xl',
                   model.id === value
-                    ? 'bg-[hsl(var(--surface-muted))] text-foreground'
-                    : 'text-muted-foreground hover:bg-[hsl(var(--surface-muted))] hover:text-foreground'
+                    ? 'bg-muted/50 text-foreground'
+                    : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground'
                 )}
               >
                 <div className="flex flex-col gap-1.5">
@@ -179,7 +187,7 @@ export function ModelSelector({
                 </div>
               </button>
             ))}
-          </div>
+          </motion.div>
         </>
       )}
     </div>
