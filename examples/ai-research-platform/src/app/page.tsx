@@ -29,6 +29,10 @@ export default function ResearchPlatform() {
   const [activeView, setActiveView] = useState<'chat' | 'dashboard' | 'knowledge'>('chat')
   const [researchTopic, setResearchTopic] = useState('')
   
+  if (typeof window === 'undefined') {
+    return null
+  }
+
   const {
     messages,
     addMessage,
@@ -300,19 +304,19 @@ export default function ResearchPlatform() {
           )}
 
           {activeView === 'knowledge' && (
-            <div className="h-full p-6">
-              <KnowledgeGraph
-                nodes={[
-                  { id: '1', label: 'Quantum Computing', type: 'concept' },
-                  { id: '2', label: 'Superposition', type: 'concept' },
-                  { id: '3', label: 'Entanglement', type: 'concept' },
-                ]}
-                edges={[
-                  { source: '1', target: '2', strength: 0.9 },
-                  { id: '3', target: '2', strength: 0.8 },
-                ]}
-              />
-            </div>
+              <div className="h-full p-6">
+                <KnowledgeGraph
+                  nodes={[
+                    { id: '1', label: 'Quantum Computing', type: 'concept' },
+                    { id: '2', label: 'Superposition', type: 'concept' },
+                    { id: '3', label: 'Entanglement', type: 'concept' },
+                  ]}
+                  edges={[
+                    { source: '1', target: '2', strength: 0.9 },
+                    { source: '3', target: '2', strength: 0.8 },
+                  ]}
+                />
+              </div>
           )}
         </div>
 

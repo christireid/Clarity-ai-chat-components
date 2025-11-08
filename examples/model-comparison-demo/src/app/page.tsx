@@ -25,6 +25,10 @@ export default function Home() {
   const [leftError, setLeftError] = useState<string | null>(null)
   const [rightError, setRightError] = useState<string | null>(null)
 
+  if (typeof window === 'undefined') {
+    return null
+  }
+
   const getModelMetadata = (modelId: string): ModelMetadata | undefined => {
     return allModels.find(m => m.id === modelId)
   }

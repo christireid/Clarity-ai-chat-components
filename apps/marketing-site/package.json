@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Marketing website for Clarity Chat",
+  "type": "module",
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
@@ -11,9 +12,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "^15.1.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "next": "^14.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.552.0",
     "@clarity-chat/react": "*",
@@ -21,8 +22,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
     "typescript": "^5.3.3",
     "tailwindcss": "^3.4.0",
     "postcss": "^8.4.0",
