@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const avatarVariants = cva(
-  'relative flex shrink-0 overflow-hidden rounded-full border-2 border-background shadow-sm transition-all duration-200',
+  'relative flex shrink-0 overflow-hidden rounded-full border-2 border-background shadow-[0_1px_3px_rgba(15,23,42,0.1)] transition-all duration-200',
   {
     variants: {
       size: {
@@ -86,7 +86,7 @@ const Avatar = React.memo(
         className={cn(
           avatarVariants({ size, className }),
           hoverable &&
-            'hover:scale-110 hover:shadow-md cursor-pointer hover:-translate-y-0.5'
+            'hover:scale-110 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] cursor-pointer hover:-translate-y-0.5'
         )}
         {...props}
       >
