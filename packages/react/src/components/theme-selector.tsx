@@ -102,12 +102,12 @@ export function ThemeSelector({
                 {!isHorizontal && (
                   <>
                     <div
-                      className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                      className="w-6 h-6 rounded-full border-2 border-white shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
                       style={{ backgroundColor: metadata.preview.secondaryColor }}
                       aria-hidden="true"
                     />
                     <div
-                      className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                      className="w-6 h-6 rounded-full border-2 border-white shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
                       style={{ backgroundColor: metadata.preview.backgroundColor }}
                       aria-hidden="true"
                     />
