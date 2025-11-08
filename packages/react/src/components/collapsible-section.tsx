@@ -60,7 +60,7 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
   }
 
   return (
-    <div className={cn('border rounded-lg', className)}>
+    <div className={cn('border border-border/60 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]', className)}>
       {/* Trigger */}
       <motion.button
         type="button"
@@ -68,9 +68,9 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
         disabled={disabled}
         className={cn(
           'w-full flex items-center justify-between p-4',
-          'text-left font-medium transition-colors',
-          'hover:bg-muted/50',
-          'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+          'text-left font-medium transition-all duration-200',
+          'hover:bg-muted/30',
+          'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1',
           'disabled:opacity-50 disabled:cursor-not-allowed',
           triggerClassName
         )}
@@ -106,7 +106,7 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
             transition={{ duration: duration, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className={cn('p-4 pt-0 border-t', contentClassName)}>
+            <div className={cn('p-4 pt-0 border-t border-border/50', contentClassName)}>
               {children}
             </div>
           </motion.div>

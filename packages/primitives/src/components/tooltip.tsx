@@ -227,7 +227,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
                 className={cn(
                   'px-3 py-1.5 text-xs rounded-md',
                   'bg-popover text-popover-foreground',
-                  'ring-1 ring-border/50 shadow-xs',
+                  'border border-border/70 shadow-[0_16px_32px_rgba(15,23,42,0.32)]',
                   'pointer-events-none backdrop-blur-sm',
                   contentClassName
                 )}

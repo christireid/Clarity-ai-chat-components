@@ -539,7 +539,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
           <span className="truncate text-left">{children}</span>
         </div>
         {shortcut && (
-          <kbd className="rounded-sm ring-1 ring-border/30 bg-[hsl(var(--surface-muted))] px-2 py-0.5 text-[11px] font-medium text-muted-foreground shadow-xs">
+          <kbd className="rounded-sm ring-1 ring-border/30 bg-[hsl(var(--surface-muted))] px-2 py-0.5 text-[11px] font-medium text-muted-foreground shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
             {shortcut}
           </kbd>
         )}
