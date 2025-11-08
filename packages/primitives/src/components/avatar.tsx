@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const avatarVariants = cva(
-  'relative flex shrink-0 overflow-hidden rounded-full ring-2 ring-background shadow-[0_1px_3px_rgba(15,23,42,0.1)] transition-all duration-200',
+  'relative flex shrink-0 overflow-hidden rounded-full ring-2 ring-background/80 shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-all duration-200 ease-out',
   {
     variants: {
       size: {
@@ -65,10 +65,10 @@ const Avatar = React.memo(
     }
 
     const statusColors = {
-      online: 'bg-green-500 ring-green-400/30',
-      offline: 'bg-gray-400 ring-gray-300/30',
-      away: 'bg-yellow-500 ring-yellow-400/30',
-      busy: 'bg-red-500 ring-red-400/30',
+      online: 'bg-green-500 ring-green-400/40 shadow-[0_0_8px_rgba(34,197,94,0.4)]',
+      offline: 'bg-gray-400 ring-gray-300/40',
+      away: 'bg-amber-500 ring-amber-400/40 shadow-[0_0_8px_rgba(245,158,11,0.4)]',
+      busy: 'bg-red-500 ring-red-400/40 shadow-[0_0_8px_rgba(239,68,68,0.4)]',
     }
 
     const statusSizes = {
@@ -86,7 +86,7 @@ const Avatar = React.memo(
         className={cn(
           avatarVariants({ size, className }),
           hoverable &&
-            'hover:scale-110 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] cursor-pointer hover:-translate-y-0.5'
+            'hover:scale-110 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] cursor-pointer hover:-translate-y-[2px]'
         )}
         {...props}
       >
@@ -98,7 +98,7 @@ const Avatar = React.memo(
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none">
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none animate-in fade-in duration-200">
             {getFallbackText()}
           </div>
         )}
@@ -107,13 +107,13 @@ const Avatar = React.memo(
         {status && !statusBadge && (
           <span
             className={cn(
-              'absolute bottom-0 right-0 block rounded-full ring-2 ring-background shadow-[0_1px_2px_rgba(15,23,42,0.08)]',
+              'absolute bottom-0 right-0 block rounded-full ring-2 ring-background/80',
               statusSizes[size || 'default'],
               statusColors[status]
             )}
           >
-            {status === 'online' && (
-              <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
+            {(status === 'online' || status === 'away') && (
+              <span className="absolute inset-0 rounded-full animate-ping opacity-60" style={{ backgroundColor: status === 'online' ? 'rgb(34, 197, 94)' : 'rgb(245, 158, 11)' }} />
             )}
           </span>
         )}
