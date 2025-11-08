@@ -174,7 +174,7 @@ export function ContextVisualizer({
 
   return (
     <div
-      className={`flex flex-col gap-4 p-4 bg-card rounded-lg border border-border shadow-sm ${className}`}
+      className={`flex flex-col gap-4 p-4 bg-card rounded-lg border border-border/60 shadow-[0_1px_3px_rgba(15,23,42,0.1)] ${className}`}
       role="region"
       aria-label="Context window visualization"
     >

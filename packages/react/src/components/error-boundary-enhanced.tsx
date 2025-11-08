@@ -55,7 +55,7 @@ const DefaultEnhancedFallback = React.memo(function DefaultEnhancedFallback({
   return (
     <div
       role="alert"
-      className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-destructive/20 bg-destructive/10 p-6 shadow-lg"
+      className="flex min-h-[200px] flex-col items-center justify-center rounded-xl border-2 border-destructive/20 bg-destructive/10 p-6 shadow-[0_10px_24px_rgba(15,23,42,0.12)]"
     >
       <div className="mb-4 flex items-center gap-3">
         <svg
@@ -83,7 +83,7 @@ const DefaultEnhancedFallback = React.memo(function DefaultEnhancedFallback({
       <div className="flex gap-3">
         <button
           onClick={resetError}
-          className="rounded-lg bg-destructive px-4 py-2 text-destructive-foreground transition-all duration-200 hover:opacity-90 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="rounded-lg bg-destructive px-4 py-2 text-destructive-foreground transition-all duration-200 hover:opacity-90 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-ring/50 focus:ring-offset-2 focus:ring-[3px]"
         >
           Try Again
         </button>
@@ -91,7 +91,7 @@ const DefaultEnhancedFallback = React.memo(function DefaultEnhancedFallback({
         {enableFeedback && (
           <button
             onClick={() => setShowFeedbackModal(true)}
-            className="rounded-lg border-2 border-destructive bg-card px-4 py-2 text-destructive transition-all duration-200 hover:bg-destructive/10 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            className="rounded-lg border-2 border-destructive bg-card px-4 py-2 text-destructive transition-all duration-200 hover:bg-destructive/10 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-ring/50 focus:ring-offset-2 focus:ring-[3px]"
           >
             Report Issue
           </button>

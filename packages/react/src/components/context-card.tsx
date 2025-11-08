@@ -75,7 +75,7 @@ export const ContextCard = React.memo(function ContextCard({
     >
       <Card
         className={cn(
-          'group relative transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer',
+          'group relative transition-all duration-200 shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] hover:-translate-y-0.5 cursor-pointer',
           !context.isActive && 'opacity-60',
           className
         )}
@@ -86,7 +86,7 @@ export const ContextCard = React.memo(function ContextCard({
             {/* Icon/Thumbnail */}
             <div
               className={cn(
-                'flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-sm',
+                'flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-[0_1px_2px_rgba(15,23,42,0.08)]',
                 getTypeColor()
               )}
             >
