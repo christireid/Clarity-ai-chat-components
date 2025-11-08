@@ -131,7 +131,7 @@ export function ToolInvocationCard({
       transition={{ duration: 0.2 }}
       className={className}
     >
-      <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+      <Card className="relative overflow-hidden shadow-xs hover:shadow-sm transition-shadow duration-200">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-4">
             {/* Tool Info */}

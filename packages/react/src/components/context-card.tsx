@@ -75,7 +75,7 @@ export const ContextCard = React.memo(function ContextCard({
     >
       <Card
         className={cn(
-          'group relative transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer',
+          'group relative transition-all duration-200 shadow-xs hover:shadow-sm hover:-translate-y-[1px] cursor-pointer',
           !context.isActive && 'opacity-60',
           className
         )}

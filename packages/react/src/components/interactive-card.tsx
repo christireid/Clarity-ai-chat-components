@@ -75,21 +75,21 @@ export const InteractiveCard = React.memo(
     const hoverVariants = {
       none: {},
       subtle: {
-        y: -2,
+        y: -1,
         boxShadow:
-          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
       },
       medium: {
-        y: -4,
+        y: -1,
         boxShadow:
-          '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
         transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
       },
       strong: {
-        y: -8,
+        y: -2,
         boxShadow:
-          '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
       },
     }
@@ -100,12 +100,12 @@ export const InteractiveCard = React.memo(
       <Component
         ref={ref}
         className={cn(
-          'relative overflow-hidden rounded-xl border-2 bg-card transition-all duration-200 shadow-sm',
-          interactive && 'cursor-pointer hover:shadow-md',
+          'relative overflow-hidden rounded-xl border bg-card transition-all duration-200 shadow-xs',
+          interactive && 'cursor-pointer hover:shadow-sm',
           disabled && 'opacity-50 cursor-not-allowed',
-          selected && 'ring-2 ring-primary ring-offset-2 shadow-md',
+          selected && 'ring-2 ring-primary ring-offset-1 shadow-sm',
           showFocusRing &&
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
           className
         )}
         tabIndex={interactive && !disabled ? 0 : undefined}
@@ -236,10 +236,10 @@ export const InteractiveButton = React.forwardRef<
         transition={INTERACTION_VARIANTS.button.transition}
         disabled={disabled || loading}
         className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 shadow-sm',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 shadow-xs tracking-[0.13px]',
+          'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
           'disabled:opacity-50 disabled:pointer-events-none',
-          'hover:shadow-md hover:-translate-y-0.5',
+          'hover:shadow-sm hover:-translate-y-[1px]',
           variantClasses[variant],
           sizeClasses[size],
           className

@@ -61,7 +61,7 @@ export const LinkPreview = React.memo(function LinkPreview({
       <Card
         className={cn(
           'group relative overflow-hidden transition-all',
-          onClick && 'cursor-pointer hover:shadow-lg'
+          onClick && 'cursor-pointer hover:shadow-sm'
         )}
         onClick={onClick}
       >
