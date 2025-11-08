@@ -190,12 +190,13 @@ export const PromptSuggestions = React.memo(function PromptSuggestions({
             {processedSuggestions.map((suggestion, index) => (
               <motion.div
                 key={suggestion.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -10 }}
                 transition={{
-                  duration: 0.2,
+                  duration: 0.25,
                   delay: index * 0.05,
+                  ease: [0.25, 0.1, 0.25, 1],
                 }}
               >
                 <Button
@@ -203,10 +204,10 @@ export const PromptSuggestions = React.memo(function PromptSuggestions({
                   size="sm"
                   onClick={() => onSelect(suggestion)}
                   className={cn(
-                    'group relative',
-                    'hover:bg-primary hover:text-primary-foreground',
-                    'transition-all duration-150 ease-out',
-                    'hover:scale-105 active:scale-95'
+                    'group relative rounded-full',
+                    'hover:bg-primary hover:text-primary-foreground hover:border-primary',
+                    'transition-all duration-200 ease-out',
+                    'hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-[1px]'
                   )}
                   aria-label={suggestion.label || suggestion.text}
                 >
@@ -239,33 +240,42 @@ export const PromptSuggestions = React.memo(function PromptSuggestions({
           {processedSuggestions.map((suggestion, index) => (
             <motion.div
               key={suggestion.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: 10, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.96 }}
               transition={{
-                duration: 0.2,
+                duration: 0.25,
                 delay: index * 0.05,
+                ease: [0.25, 0.1, 0.25, 1],
               }}
             >
               <Card
+                hoverable
                 className={cn(
-                  'cursor-pointer transition-all',
-                  'hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] hover:border-primary',
-                  'hover:-translate-y-1'
+                  'cursor-pointer transition-all duration-200 ease-out',
+                  'hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] hover:border-primary/60',
+                  'hover:-translate-y-[2px]',
+                  'group'
                 )}
                 onClick={() => onSelect(suggestion)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     {suggestion.icon && (
-                      <div className="flex-shrink-0">{suggestion.icon}</div>
+                      <motion.div
+                        className="flex-shrink-0 text-primary"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      >
+                        {suggestion.icon}
+                      </motion.div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-sm mb-1">
+                      <h4 className="font-semibold text-sm mb-1 text-foreground group-hover:text-primary transition-colors duration-200">
                         {suggestion.label || suggestion.text}
                       </h4>
                       {suggestion.description && (
-                        <p className="text-xs text-muted-foreground line-clamp-2">
+                        <p className="text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed">
                           {suggestion.description}
                         </p>
                       )}
@@ -292,12 +302,13 @@ export const PromptSuggestions = React.memo(function PromptSuggestions({
         {processedSuggestions.map((suggestion, index) => (
           <motion.div
             key={suggestion.id}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
+            initial={{ opacity: 0, x: -10, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 10, scale: 0.98 }}
             transition={{
               duration: 0.2,
               delay: index * 0.03,
+              ease: [0.25, 0.1, 0.25, 1],
             }}
           >
             <Button
