@@ -259,7 +259,7 @@ export function TokenCounter({
       {showBar && (
         <div className="relative w-full bg-muted rounded-full overflow-hidden">
           <div
-            className={`${sizes.bar} ${colors.bg} transition-all duration-200 ease-out`}
+            className={`${sizes.bar} ${colors.bg} transition-all duration-150 ease-out`}
             style={{ width: `${percentage}%` }}
             role="progressbar"
             aria-valuenow={currentTokens}
@@ -277,7 +277,7 @@ export function TokenCounter({
       {/* Warning message */}
       {showWarning && isWarning && (
         <div
-          className={`flex items-start gap-2 p-3 rounded-xl border border-border/60 ${colors.border} ${colors.bg}/10 shadow-[0_1px_3px_rgba(15,23,42,0.1)]`}
+          className={`flex items-start gap-2 p-3 rounded-lg border ${colors.border} ${colors.bg}/10 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]`}
           role="alert"
         >
           <svg
