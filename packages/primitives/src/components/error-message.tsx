@@ -21,7 +21,7 @@ export const ErrorMessage = React.memo<ErrorMessageProps>(
     return (
       <p
         className={cn(
-          'mt-1.5 text-xs text-destructive flex items-center gap-1 animate-in fade-in-0 slide-in-from-top-1 duration-200',
+          'mt-1.5 text-xs text-destructive flex items-center gap-1.5 animate-in fade-in-0 slide-in-from-top-1 duration-150 font-medium',
           className
         )}
         role="alert"

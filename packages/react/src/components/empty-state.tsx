@@ -60,9 +60,9 @@ export const EmptyState = React.memo(function EmptyState({
 
   return (
     <motion.div
-      variants={scaleVariant}
-      initial="initial"
-      animate="animate"
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
         'flex flex-col items-center justify-center text-center p-8 space-y-6',
         className
@@ -71,28 +71,38 @@ export const EmptyState = React.memo(function EmptyState({
       {/* Icon */}
       {icon && (
         <motion.div
-          initial={{ scale: 0, rotate: -180 }}
+          initial={{ scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
-          className="inline-flex items-center justify-center w-20 h-20 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 shadow-[0_1px_3px_rgba(15,23,42,0.1)] ring-1 ring-primary/10"
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
+          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-[0_4px_12px_rgba(0,0,0,0.08)] ring-1 ring-primary/20"
         >
           {icon}
         </motion.div>
       )}
 
       {/* Content */}
-      <div className="space-y-3 max-w-md">
-        <h3 className="text-xl font-semibold">{title}</h3>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
+        className="space-y-3 max-w-md"
+      >
+        <h3 className="text-xl font-semibold text-foreground">{title}</h3>
         {description && (
-          <p className="text-base text-muted-foreground leading-relaxed">
+          <p className="text-base text-muted-foreground/80 leading-relaxed">
             {description}
           </p>
         )}
-      </div>
+      </motion.div>
 
       {/* Actions */}
       {(action || secondaryAction) && (
-        <div className="flex gap-3">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
+          className="flex gap-3"
+        >
           {action && (
             <InteractiveButton
               variant={action.variant || 'primary'}
@@ -109,7 +119,7 @@ export const EmptyState = React.memo(function EmptyState({
               {secondaryAction.label}
             </InteractiveButton>
           )}
-        </div>
+        </motion.div>
       )}
     </motion.div>
   )
@@ -370,8 +380,9 @@ export const LoadingState = React.memo(function LoadingState({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
         'flex flex-col items-center justify-center text-center p-8 space-y-6',
         className
@@ -381,16 +392,21 @@ export const LoadingState = React.memo(function LoadingState({
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-        className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
+        className="w-12 h-12 border-4 border-primary/60 border-t-primary rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
       />
 
       {/* Content */}
-      <div className="space-y-2 max-w-sm">
-        <h3 className="text-lg font-semibold">{title}</h3>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+        className="space-y-2 max-w-sm"
+      >
+        <h3 className="text-lg font-semibold text-foreground">{title}</h3>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="text-sm text-muted-foreground/80 leading-relaxed">{description}</p>
         )}
-      </div>
+      </motion.div>
     </motion.div>
   )
 })
