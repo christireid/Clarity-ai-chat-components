@@ -154,8 +154,8 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
       data-state={open ? 'open' : 'closed'}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center gap-2 rounded-lg border border-border/60 bg-[hsl(var(--surface-elevated))] px-3 py-2 text-sm font-medium shadow-sm transition-all duration-200',
-        'hover:border-primary/40 hover:text-primary hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60'
+        'inline-flex items-center gap-2 rounded-lg border border-border/60 bg-[hsl(var(--surface-elevated))] px-3 py-2 text-sm font-medium shadow-[0_1px_3px_rgba(15,23,42,0.1)] transition-all duration-200',
+        'hover:border-primary/40 hover:text-primary hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-0 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-60'
       )}
     >
       {children}
@@ -523,7 +523,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
         onClick={handleClick}
         className={cn(
           'flex w-full items-center justify-between gap-3 px-4 py-2.5 text-sm font-medium text-foreground/85 transition-all duration-150',
-          'rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-0',
+          'rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-0 focus-visible:ring-[3px]',
           destructive
             ? 'hover:bg-destructive/12 hover:text-destructive'
             : 'hover:bg-primary/10 hover:text-primary',
