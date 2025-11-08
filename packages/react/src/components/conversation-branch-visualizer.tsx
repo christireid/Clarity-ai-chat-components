@@ -11,7 +11,7 @@
 
 import React, { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '../utils'
+import { cn } from '@clarity-chat/primitives'
 
 // ============================================================================
 // Types

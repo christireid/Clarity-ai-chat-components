@@ -14,7 +14,7 @@ export { MemoryService } from './memory-service'
 
 // Token optimization
 export {
-  TokenCounter,
+  TokenCounter as MemoryTokenCounter,
   TokenBudgetManager,
   MemoryCompressor,
   SemanticChunker,
@@ -29,7 +29,7 @@ export {
   useMemoryStats,
   useMemoryEvents,
   useConversationMemory,
-  useTokenOptimization,
+  useMemoryTokenOptimization,
 } from './memory-provider'
 
 export type { MemoryProviderProps } from './memory-provider'

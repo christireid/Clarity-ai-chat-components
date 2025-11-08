@@ -125,7 +125,7 @@ export const CommandPalette = forwardRef<
               exit={{ opacity: 0 }}
               transition={{ duration: ANIMATION_DURATION.normal / 1000 }}
               onClick={onClose}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[var(--z-modal-backdrop)]"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[var(--z-modal-backdrop)]"
             />
 
             {/* Command Palette */}
@@ -140,7 +140,7 @@ export const CommandPalette = forwardRef<
               }}
               className={cn(
                 'fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4',
-                'bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-2xl z-[var(--z-modal)]',
+                'bg-card border shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1),0_8px_10px_-6px_rgb(0_0_0_/_0.1)] rounded-lg z-[var(--z-modal)]',
                 'flex flex-col max-h-[60vh] overflow-hidden',
                 className
               )}
@@ -231,7 +231,7 @@ export const CommandPalette = forwardRef<
                                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg',
                                     'transition-all duration-150 text-left',
                                     isSelected
-                                      ? 'bg-primary text-primary-foreground shadow-[0_4px_12px_rgba(15,23,42,0.15)]'
+                                      ? 'bg-primary text-primary-foreground shadow-md'
                                       : 'hover:bg-accent'
                                   )}
                                 >
@@ -305,19 +305,19 @@ export const CommandPalette = forwardRef<
               >
                 <div className="flex gap-3 sm:gap-4">
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
+                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
                       ↑↓
                     </kbd>
                     <span className="hidden sm:inline">Navigate</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
+                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
                       ↵
                     </kbd>
                     <span className="hidden sm:inline">Select</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
+                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
                       Esc
                     </kbd>
                     <span className="hidden sm:inline">Close</span>

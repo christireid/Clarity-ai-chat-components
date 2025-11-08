@@ -16,7 +16,6 @@ import {
   VoiceInput,
   ContextManager,
   SafetyStatusCard,
-  AuditLogViewer,
 } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 import { DevOpsHeader } from './components/DevOpsHeader'

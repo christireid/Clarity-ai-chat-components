@@ -41,7 +41,7 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
   return (
     <div
       role="alert"
-      className="flex flex-col items-center justify-center min-h-[200px] p-6 bg-destructive/10 rounded-xl border-2 border-destructive/20 shadow-[0_10px_24px_rgba(15,23,42,0.12)]"
+      className="flex flex-col items-center justify-center min-h-[200px] p-6 bg-destructive/10 rounded-lg border border-destructive/20 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]"
     >
       <div className="flex items-center gap-3 mb-4">
         <svg
@@ -68,7 +68,7 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
       
       <button
         onClick={resetError}
-        className="px-4 py-2 bg-destructive hover:opacity-90 text-destructive-foreground rounded-lg transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-ring/50 focus:ring-offset-2 focus:ring-[3px]"
+        className="px-4 py-2 bg-destructive hover:opacity-90 text-destructive-foreground rounded-lg transition-all duration-150 ease-out hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px focus:outline-none focus:ring-2 focus:ring-ring/50 focus:ring-offset-2"
       >
         Try Again
       </button>

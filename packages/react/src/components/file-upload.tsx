@@ -145,10 +145,10 @@ export const FileUpload = React.memo(function FileUpload({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={cn(
-          'relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
+          'relative border border-dashed rounded-lg p-8 text-center transition-all duration-150 ease-out cursor-pointer shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
           isDragging
-            ? 'border-primary bg-primary/10 shadow-[0_4px_12px_rgba(15,23,42,0.15)] scale-[1.02]'
-            : 'border-border/60 hover:border-primary/50 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)]'
+            ? 'border-primary bg-primary/10 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] scale-[1.02]'
+            : 'border-border hover:border-primary/50 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]'
         )}
         onClick={() => fileInputRef.current?.click()}
       >
@@ -195,7 +195,7 @@ export const FileUpload = React.memo(function FileUpload({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-destructive/10 border-2 border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
+            className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg text-sm shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
           >
             {error}
           </motion.div>
@@ -232,7 +232,7 @@ export const FileUpload = React.memo(function FileUpload({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="flex items-center gap-3 p-3 bg-muted rounded-xl shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] transition-shadow"
+                  className="flex items-center gap-3 p-3 bg-muted rounded-lg shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-shadow duration-150 ease-out"
                 >
                   <span className="text-2xl">{getFileIcon(file)}</span>
                   <div className="flex-1 min-w-0">

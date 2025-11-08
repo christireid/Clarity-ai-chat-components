@@ -318,8 +318,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
-              blurBackdrop && 'backdrop-blur-md',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/50',
+              blurBackdrop && 'backdrop-blur-sm',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -331,10 +331,10 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             <motion.div
               ref={contentRef}
               {...animationProps}
-              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                'relative w-full bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-2xl pointer-events-auto',
+                'relative w-full bg-card border border-border/50 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1),0_8px_10px_-6px_rgb(0_0_0_/_0.1)] rounded-lg pointer-events-auto',
                 sizeClasses[size],
                 className
               )}
