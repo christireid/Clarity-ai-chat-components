@@ -106,7 +106,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border/40 bg-background/70 p-4">
+              <div className="rounded-lg border border-border/50 bg-background/70 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground/70">
                   Steps
                 </p>
