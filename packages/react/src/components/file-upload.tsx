@@ -145,10 +145,10 @@ export const FileUpload = React.memo(function FileUpload({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={cn(
-          'relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer shadow-sm',
+          'relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
           isDragging
-            ? 'border-primary bg-primary/10 shadow-md scale-[1.02]'
-            : 'border-border hover:border-primary/50 hover:shadow-md'
+            ? 'border-primary bg-primary/10 shadow-[0_4px_12px_rgba(15,23,42,0.15)] scale-[1.02]'
+            : 'border-border/60 hover:border-primary/50 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)]'
         )}
         onClick={() => fileInputRef.current?.click()}
       >
@@ -195,7 +195,7 @@ export const FileUpload = React.memo(function FileUpload({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-destructive/10 border-2 border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm shadow-sm"
+            className="bg-destructive/10 border-2 border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
           >
             {error}
           </motion.div>
@@ -232,7 +232,7 @@ export const FileUpload = React.memo(function FileUpload({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="flex items-center gap-3 p-3 bg-muted rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                  className="flex items-center gap-3 p-3 bg-muted rounded-xl shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] transition-shadow"
                 >
                   <span className="text-2xl">{getFileIcon(file)}</span>
                   <div className="flex-1 min-w-0">
