@@ -1,7 +1,7 @@
 {
   "name": "@clarity-chat/react",
-  "version": "0.1.0",
-  "description": "React components for Clarity Chat",
+  "version": "2.2.0",
+  "description": "Premium React components for Clarity Chat - AI SDK Elements quality",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
