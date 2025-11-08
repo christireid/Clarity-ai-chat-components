@@ -98,7 +98,7 @@ export function AnalyticsDashboard({
   return (
     <div
       className={cn(
-        'space-y-6 rounded-2xl border border-border bg-card/70 p-6 shadow-sm backdrop-blur',
+        'space-y-6 rounded-2xl border border-border/60 bg-card/70 p-6 shadow-[0_1px_3px_rgba(15,23,42,0.1)] backdrop-blur',
         className
       )}
     >
@@ -177,7 +177,7 @@ function MetricCard({
         : 'text-muted-foreground'
 
   return (
-    <div className="rounded-2xl border border-border bg-gradient-to-br from-background/70 via-background/40 to-accent/10 p-5 shadow-sm backdrop-blur">
+    <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-background/70 via-background/40 to-accent/10 p-5 shadow-[0_1px_3px_rgba(15,23,42,0.1)] backdrop-blur">
       <div className="flex items-center justify-between">
         <span className="text-lg">{icon}</span>
         {change.direction !== 'none' ? (
@@ -202,7 +202,7 @@ function PipelineSummary({
   const change = calculateChange(value, previous)
 
   return (
-    <div className="rounded-xl border border-border bg-card/80 p-5 shadow-sm">
+    <div className="rounded-xl border border-border/60 bg-card/80 p-5 shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">
           Pipeline Value
@@ -244,7 +244,7 @@ function WinRateSummary({
 }) {
   const change = calculateChange(value, previous)
   return (
-    <div className="rounded-xl border border-border bg-card/80 p-5 shadow-sm">
+    <div className="rounded-xl border border-border/60 bg-card/80 p-5 shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
       <h3 className="text-sm font-medium text-muted-foreground">Win Rate</h3>
       <div className="mt-2 flex items-baseline gap-2">
         <span className="text-2xl font-semibold text-foreground">
@@ -285,7 +285,7 @@ function Leaderboard({ entries }: { entries?: AnalyticsLeaderboardEntry[] }) {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card/80 p-5 shadow-sm">
+    <div className="rounded-xl border border-border/60 bg-card/80 p-5 shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
       <h3 className="text-sm font-semibold text-foreground">Top Performers</h3>
       <ul className="mt-4 space-y-3">
         {entries.map((entry, index) => (
@@ -327,7 +327,7 @@ function ActivityList({ activities }: { activities?: AnalyticsActivity[] }) {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card/80 p-5 shadow-sm">
+    <div className="rounded-xl border border-border/60 bg-card/80 p-5 shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
       <h3 className="text-sm font-semibold text-foreground">Recent Activity</h3>
       <ul className="mt-4 space-y-3">
         {activities.map((activity) => (
@@ -372,7 +372,7 @@ function InsightsPanel({
   }
 
   return (
-    <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 shadow-sm">
+    <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
       <h3 className="text-sm font-semibold text-primary">
         AI-Generated Insights
       </h3>
