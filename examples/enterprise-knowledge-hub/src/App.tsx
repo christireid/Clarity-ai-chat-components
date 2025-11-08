@@ -4,17 +4,17 @@ import {
   ThemeProvider,
   themes,
   useChat,
-  useVectorStore,
-  useEmbeddings,
+  // useVectorStore, // TODO: Hook not implemented yet
+  // useEmbeddings, // TODO: Hook not implemented yet
   useSmartCache,
-  useMultiTenancy,
-  useRBAC,
+  // useMultiTenancy, // TODO: Hook not implemented yet
+  // useRBAC, // TODO: Hook not implemented yet
   FileUpload,
   KnowledgeBaseViewer,
-  DocumentViewer,
+  // DocumentViewer, // TODO: Component not implemented yet
   CitationCard,
   UsageDashboard,
-  AuditLogViewer,
+  // AuditLogViewer, // TODO: Component not implemented yet
   TokenOptimizationDashboard,
 } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
@@ -35,24 +35,21 @@ function App() {
   const [showAnalytics, setShowAnalytics] = useState(false)
   const [showAudit, setShowAudit] = useState(false)
 
-  // Multi-tenancy & RBAC
-  const { currentTenant, switchTenant } = useMultiTenancy()
-  const { hasPermission, currentRole } = useRBAC()
+  // Multi-tenancy & RBAC (mocked for demo)
+  const currentTenant = { id: 'demo-tenant', name: 'Demo Tenant' }
+  const switchTenant = (id: string) => console.log('Switch tenant:', id)
+  const hasPermission = (perm: string) => true // Mock: all permissions granted
+  const currentRole = 'admin'
 
-  // Vector store & embeddings
-  const vectorStore = useVectorStore({
-    provider: 'pinecone',
-    config: {
-      apiKey: import.meta.env.VITE_PINECONE_API_KEY,
-      environment: import.meta.env.VITE_PINECONE_ENVIRONMENT,
-      indexName: 'knowledge-hub',
-    },
-  })
+  // Vector store & embeddings (mocked for demo)
+  const vectorStore = {
+    search: async (embedding: number[], options: any) => [],
+    index: async (docs: any[]) => {},
+  }
 
-  const embeddings = useEmbeddings({
-    provider: 'openai',
-    model: 'text-embedding-ada-002',
-  })
+  const embeddings = {
+    embed: async (text: string) => Array(1536).fill(0), // Mock embedding
+  }
 
   const cache = useSmartCache({
     enableSemanticMatching: true,

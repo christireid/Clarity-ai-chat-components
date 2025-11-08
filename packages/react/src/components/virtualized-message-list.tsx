@@ -228,7 +228,7 @@ export function VirtualizedMessageList({
 // Smart Message List (Auto-enables virtualization)
 // ============================================================================
 
-export function MessageList({
+export function AutoVirtualizedMessageList({
   messages,
   renderMessage,
   virtualizationThreshold = 100,

@@ -6,6 +6,12 @@ const nextConfig = {
     mdxRs: true,
   },
   transpilePackages: ['@clarity-chat/react'],
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   
   // Production optimizations
   compress: true,

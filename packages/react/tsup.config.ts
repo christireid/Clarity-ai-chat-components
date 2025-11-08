@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: ['src/index.ts', 'src/styles/index.css'],
   format: ['cjs', 'esm'],
-  dts: false, // Use tsc for declarations (see build script)
+  dts: false, // Disabled due to export name conflicts - needs cleanup
   external: ['react', 'react-dom', 'framer-motion', '@clarity-chat/types'],
   noExternal: ['@clarity-chat/primitives'],
   clean: true,

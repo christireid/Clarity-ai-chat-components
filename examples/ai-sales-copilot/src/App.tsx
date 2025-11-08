@@ -5,10 +5,10 @@ import {
   themes,
   useChat,
   useAssistant,
-  useSentimentAnalysis,
-  useAnalytics,
-  useTokenOptimization,
-  AnalyticsDashboard,
+  // useSentimentAnalysis, // TODO: Hook not implemented yet
+  // useAnalytics, // TODO: Hook not implemented yet
+  // useTokenOptimization, // TODO: Hook not implemented yet
+  // AnalyticsDashboard, // TODO: Component not implemented yet
   ConversationTimeline,
 } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
@@ -29,21 +29,19 @@ function App() {
   const [showEmailComposer, setShowEmailComposer] = useState(false)
   const [showAnalytics, setShowAnalytics] = useState(false)
 
-  // Analytics & tracking
-  const analytics = useAnalytics({
-    providers: ['mixpanel'],
-    autoTrack: true,
-  })
+  // Analytics & tracking (mocked for demo)
+  const analytics = {
+    track: (event: string, props: any) => console.log('Track:', event, props),
+  }
 
-  // Token optimization
-  const tokenOpt = useTokenOptimization({
-    enableCompression: true,
-    enableCaching: true,
-    enableRouting: true,
-  })
+  // Token optimization (mocked for demo)
+  const tokenOpt = {
+    stats: { tokensSaved: 0, costSaved: 0 },
+  }
 
-  // Sentiment analysis
-  const { analyzeSentiment, currentSentiment } = useSentimentAnalysis()
+  // Sentiment analysis (mocked for demo)
+  const analyzeSentiment = async (text: string) => ({ score: 0.7, label: 'positive' })
+  const currentSentiment = { score: 0.7, label: 'positive' as const }
 
   // Main chat interface
   const {

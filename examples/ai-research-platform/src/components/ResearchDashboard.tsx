@@ -10,10 +10,10 @@ interface ResearchDashboardProps {
   researchTopic: string
 }
 
-export function ResearchDashboard({ messages, metrics, researchTopic }: ResearchDashboardProps) {
+export function ResearchDashboard({ messages = [], metrics = {}, researchTopic }: ResearchDashboardProps) {
   const stats = useMemo(() => {
-    const agentMessages = messages.filter(m => m.role === 'assistant')
-    const citations = messages.reduce((acc, m) => acc + (m.citations?.length || 0), 0)
+    const agentMessages = messages.filter(m => m?.role === 'assistant')
+    const citations = messages.reduce((acc, m) => acc + (m?.citations?.length || 0), 0)
     
     return {
       totalMessages: messages.length,
