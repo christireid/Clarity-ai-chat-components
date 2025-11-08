@@ -55,19 +55,19 @@ const TOAST_ICONS = {
   warning: AlertCircleIcon,
 } as const
 
-// Color classes - extracted as constants
+// Color classes - refined with better opacity
 const TOAST_COLOR_CLASSES = {
-  success: 'bg-success/10 border-success/20 text-success-foreground',
-  error: 'bg-destructive/10 border-destructive/20 text-destructive-foreground',
-  info: 'bg-info/10 border-info/20 text-info-foreground',
-  warning: 'bg-warning/10 border-warning/20 text-warning-foreground',
+  success: 'bg-green-50 dark:bg-green-950/40 border-green-200/60 dark:border-green-800/40 text-green-900 dark:text-green-100',
+  error: 'bg-red-50 dark:bg-red-950/40 border-red-200/60 dark:border-red-800/40 text-red-900 dark:text-red-100',
+  info: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200/60 dark:border-blue-800/40 text-blue-900 dark:text-blue-100',
+  warning: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200/60 dark:border-amber-800/40 text-amber-900 dark:text-amber-100',
 } as const
 
 const TOAST_ICON_COLOR_CLASSES = {
-  success: 'text-success',
-  error: 'text-destructive',
-  info: 'text-info',
-  warning: 'text-warning',
+  success: 'text-green-600 dark:text-green-400',
+  error: 'text-red-600 dark:text-red-400',
+  info: 'text-blue-600 dark:text-blue-400',
+  warning: 'text-amber-600 dark:text-amber-400',
 } as const
 
 /**
@@ -93,22 +93,9 @@ export const ToastItem = memo(function ToastItem({
     [type]
   )
 
-  // Memoize color classes
-  const colorClasses = React.useMemo(() => ({
-    success: 'bg-success/10 border-success/20 text-success-foreground',
-    error:
-      'bg-destructive/10 border-destructive/20 text-destructive-foreground',
-    info: 'bg-info/10 border-info/20 text-info-foreground',
-    warning: 'bg-warning/10 border-warning/20 text-warning-foreground',
-  }[type]), [type])
-
-  // Memoize icon color classes
-  const iconColorClasses = React.useMemo(() => ({
-    success: 'text-success',
-    error: 'text-destructive',
-    info: 'text-info',
-    warning: 'text-warning',
-  }[type]), [type])
+  // Memoize color classes using constants
+  const colorClasses = React.useMemo(() => TOAST_COLOR_CLASSES[type], [type])
+  const iconColorClasses = React.useMemo(() => TOAST_ICON_COLOR_CLASSES[type], [type])
 
   // Memoize close handler
   const handleClose = React.useCallback(() => onClose(id), [onClose, id])
@@ -116,38 +103,61 @@ export const ToastItem = memo(function ToastItem({
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: -20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: -20, scale: 0.96, x: 20 }}
+      animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
       exit={{ opacity: 0, x: 100, scale: 0.95 }}
       transition={{
-        duration: ANIMATION_DURATION.normal / 1000,
-        ease: ANIMATION_EASING.spring,
+        duration: 0.25,
+        ease: [0.25, 0.1, 0.25, 1],
       }}
       className={cn(
-        'relative flex gap-3 p-4 rounded-lg ring-1 ring-border/30 shadow-sm backdrop-blur-sm',
+        'relative flex gap-3 p-4 rounded-2xl border backdrop-blur-md',
         'min-w-[320px] max-w-[420px]',
+        'shadow-[0_8px_24px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.04)]',
         colorClasses
       )}
     >
-      {/* Icon */}
-      <div className={cn('flex-shrink-0 mt-0.5', iconColorClasses)}>
+      {/* Icon with entrance animation */}
+      <motion.div
+        initial={{ scale: 0, rotate: -90 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ delay: 0.1, type: 'spring', stiffness: 500, damping: 30 }}
+        className={cn('flex-shrink-0 mt-0.5', iconColorClasses)}
+      >
         <Icon size={20} />
-      </div>
+      </motion.div>
 
       {/* Content */}
-      <div className="flex-1 space-y-1">
+      <div className="flex-1 space-y-1.5">
         {title && (
-          <div className="font-semibold text-sm leading-none">{title}</div>
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05, duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            className="font-semibold text-sm leading-none"
+          >
+            {title}
+          </motion.div>
         )}
-        <div className="text-sm opacity-90">{description}</div>
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          className="text-sm opacity-90"
+        >
+          {description}
+        </motion.div>
         {action && (
-          <button
-            onClick={handleAction}
-            className="text-sm font-medium underline hover:no-underline mt-2"
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.2 }}
+            onClick={() => { action.onClick(); handleClose(); }}
+            className="text-sm font-medium underline hover:no-underline mt-2 transition-colors duration-150"
             aria-label={action.label}
           >
             {action.label}
-          </button>
+          </motion.button>
         )}
       </div>
 
@@ -156,10 +166,10 @@ export const ToastItem = memo(function ToastItem({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleClose}
-        className="flex-shrink-0 p-1 rounded-md hover:bg-background/20 hover:shadow-xs transition-all duration-200"
+        className="flex-shrink-0 h-6 w-6 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 transition-colors duration-150 flex items-center justify-center"
         aria-label="Close notification"
       >
-        <CloseIcon size={16} />
+        <CloseIcon size={14} />
       </motion.button>
     </motion.div>
   )
