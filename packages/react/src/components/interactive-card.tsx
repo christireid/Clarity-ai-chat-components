@@ -305,8 +305,8 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
       className={cn(
         'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-150 ease-out',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        'hover:bg-accent/50 hover:shadow-sm',
-        selected && 'bg-accent shadow-sm',
+        'hover:bg-accent/50 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]',
+        selected && 'bg-accent shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
         disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
