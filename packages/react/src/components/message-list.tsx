@@ -85,7 +85,8 @@ export const MessageList = memo(function MessageList({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex h-full items-center justify-center px-6 py-12"
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            className="flex h-full items-center justify-center px-6 py-12 bg-gradient-to-b from-background/0 to-muted/10"
           >
             {emptyState}
           </motion.div>
@@ -117,6 +118,7 @@ export const MessageList = memo(function MessageList({
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               >
                 <SkeletonMessage role="assistant" lines={3} variant="shimmer" />
               </motion.div>
@@ -130,10 +132,10 @@ export const MessageList = memo(function MessageList({
         {!isNearBottom && messages.length > 0 && (
           <motion.div
             className="absolute bottom-4 right-4"
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
           >
             <motion.div
               whileHover={INTERACTION_VARIANTS.button.hover}
@@ -144,7 +146,7 @@ export const MessageList = memo(function MessageList({
                 size="sm"
                 variant="default"
                 onClick={scrollToBottom}
-                className="shadow-xl gap-1.5 bg-primary/95 hover:bg-primary backdrop-blur-sm"
+                className="shadow-[0_4px_16px_rgba(0,0,0,0.12)] gap-1.5 bg-primary/95 hover:bg-primary hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] backdrop-blur-sm rounded-full"
                 aria-label="Scroll to bottom of messages"
               >
                 <ArrowDownIcon size={16} />
