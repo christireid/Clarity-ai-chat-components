@@ -116,20 +116,20 @@ export const ChatWindow = memo(function ChatWindow({
   return (
     <Card
       className={cn(
-        'flex h-full flex-col overflow-hidden shadow-lg',
+        'flex h-full flex-col overflow-hidden shadow-sm',
         className
       )}
     >
       {/* Optional Header */}
       {showHeader && (
         <motion.div
-          className="flex items-center justify-between gap-4 border-b bg-card px-4 py-3 sm:px-6"
+          className="flex items-center justify-between gap-4 border-b border-border/50 bg-card px-4 py-3 sm:px-6 backdrop-blur-sm"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary shadow-xs ring-1 ring-primary/20">
               <BotIcon size={20} />
             </div>
             <div className="min-w-0 flex-1">

@@ -4,13 +4,13 @@ import { cn } from '../lib/utils'
 import { ErrorMessage } from './error-message'
 
 const inputVariants = cva(
-  'flex w-full rounded-lg border-2 border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:border-primary focus-visible:shadow-sm hover:border-input/70 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200',
+  'flex w-full rounded-md ring-1 ring-border bg-background px-3 py-2 text-sm shadow-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:border-primary/60 hover:ring-border/70 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200',
   {
     variants: {
       variant: {
         default: '',
-        error: 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20 focus-visible:shadow-[var(--shadow-error)]',
-        success: 'border-[hsl(var(--success))] focus-visible:border-[hsl(var(--success))] focus-visible:ring-[hsl(var(--success))]/20 focus-visible:shadow-[var(--shadow-success)]',
+        error: 'ring-destructive focus-visible:ring-destructive focus-visible:ring-destructive/20',
+        success: 'ring-green-500 focus-visible:ring-green-500 focus-visible:ring-green-500/20',
       },
       inputSize: {
         default: 'h-10',

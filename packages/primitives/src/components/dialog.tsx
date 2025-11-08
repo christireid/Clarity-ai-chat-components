@@ -318,8 +318,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
-              blurBackdrop && 'backdrop-blur-md',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/50',
+              blurBackdrop && 'backdrop-blur-sm',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -334,7 +334,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
               transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                'relative w-full bg-card border shadow-2xl rounded-2xl pointer-events-auto',
+                'relative w-full bg-card ring-1 ring-border shadow-xl rounded-lg pointer-events-auto',
                 sizeClasses[size],
                 className
               )}
@@ -351,7 +351,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                     'text-muted-foreground hover:text-foreground',
                     'hover:bg-muted/50',
                     'transition-colors duration-200',
-                    'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                    'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1'
                   )}
                   aria-label="Close dialog"
                 >

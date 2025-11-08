@@ -71,7 +71,7 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
         ease: ANIMATION_EASING.out,
       }}
       className={cn(
-        'flex items-center gap-3 rounded-2xl border border-border/60 bg-[hsl(var(--surface-muted))] px-5 py-4 shadow-[0_12px_28px_rgba(15,23,42,0.12)]',
+        'flex items-center gap-3 rounded-md ring-1 ring-border/30 bg-muted/30 px-5 py-4 shadow-xs',
         className
       )}
     >

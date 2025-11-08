@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const avatarVariants = cva(
-  'relative flex shrink-0 overflow-hidden rounded-full border-2 border-background shadow-sm transition-all duration-200',
+  'relative flex shrink-0 overflow-hidden rounded-full ring-2 ring-background shadow-xs transition-all duration-200',
   {
     variants: {
       size: {
@@ -86,7 +86,7 @@ const Avatar = React.memo(
         className={cn(
           avatarVariants({ size, className }),
           hoverable &&
-            'hover:scale-110 hover:shadow-md cursor-pointer hover:-translate-y-0.5'
+            'hover:scale-110 hover:shadow-sm cursor-pointer hover:-translate-y-[2px]'
         )}
         {...props}
       >
@@ -107,7 +107,7 @@ const Avatar = React.memo(
         {status && !statusBadge && (
           <span
             className={cn(
-              'absolute bottom-0 right-0 block rounded-full border-2 border-background shadow-sm ring-2',
+              'absolute bottom-0 right-0 block rounded-full ring-2 ring-background shadow-xs',
               statusSizes[size || 'default'],
               statusColors[status]
             )}

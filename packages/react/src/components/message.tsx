@@ -106,9 +106,9 @@ export const Message = memo(
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group flex gap-3 p-4 rounded-xl transition-all duration-200',
+          'group flex gap-3 p-4 rounded-lg transition-all duration-200',
           isUser && 'flex-row-reverse',
-          isHovered && 'bg-muted/50 shadow-sm',
+          isHovered && 'bg-muted/30 shadow-xs',
           className
         )}
       >
@@ -175,7 +175,7 @@ export const Message = memo(
             className={cn(
               'prose prose-sm dark:prose-invert max-w-none',
               isUser &&
-                'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm'
+                'bg-primary text-primary-foreground px-4 py-3 rounded-md inline-block shadow-xs ring-1 ring-primary/20'
             )}
           >
             {isUser ? (

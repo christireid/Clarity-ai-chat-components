@@ -74,7 +74,7 @@ export const EmptyState = React.memo(function EmptyState({
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
-          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm border border-primary/10"
+          className="inline-flex items-center justify-center w-20 h-20 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 shadow-xs ring-1 ring-primary/10"
         >
           {icon}
         </motion.div>

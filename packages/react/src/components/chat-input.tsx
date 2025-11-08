@@ -152,7 +152,7 @@ export const ChatInput = React.memo(function ChatInput({
   return (
     <motion.div
       className={cn(
-        'relative flex flex-col gap-2 p-4 border-t-2 bg-background/95 backdrop-blur-sm',
+        'relative flex flex-col gap-2 p-4 border-t ring-1 ring-border/50 bg-background/95 backdrop-blur-sm shadow-xs',
         className
       )}
       initial="idle"
@@ -180,8 +180,8 @@ export const ChatInput = React.memo(function ChatInput({
             maxRows={6}
             variant={isOverLimit ? 'error' : 'default'}
             className={cn(
-              'transition-all duration-200 shadow-sm',
-              isFocused && glowOnFocus && 'ring-2 ring-primary/30 shadow-md',
+              'transition-all duration-200 shadow-xs',
+              isFocused && glowOnFocus && 'ring-[3px] ring-ring/50 shadow-sm',
               isOverLimit && 'animate-[shake_0.4s_ease-in-out]'
             )}
           />
@@ -228,9 +228,9 @@ export const ChatInput = React.memo(function ChatInput({
           state={buttonState}
           size="icon"
           className={cn(
-            'transition-all duration-200 shrink-0 shadow-sm',
+            'transition-all duration-200 shrink-0 shadow-xs',
             hasContent && !isOverLimit
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:-translate-y-0.5'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-sm hover:-translate-y-[2px]'
               : 'bg-muted text-muted-foreground'
           )}
           aria-label={
