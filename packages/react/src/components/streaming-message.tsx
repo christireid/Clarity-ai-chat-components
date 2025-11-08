@@ -307,7 +307,7 @@ const CitationItem = React.memo(function CitationItem({
       className="bg-muted/50 border border-border/60 rounded-xl p-3 shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
           <svg 
             className="w-4 h-4" 
             fill="currentColor" 
