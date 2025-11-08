@@ -153,33 +153,33 @@ export const Tooltip: React.FC<TooltipProps> = ({
     }
   }, [])
 
-  // Animation variants based on side
+  // Animation variants based on side - refined
   const getAnimationVariants = () => {
-    const offset = 8
+    const offset = 6
     switch (side) {
       case 'top':
         return {
-          initial: { opacity: 0, y: offset },
-          animate: { opacity: 1, y: 0 },
-          exit: { opacity: 0, y: offset },
+          initial: { opacity: 0, y: offset, scale: 0.95 },
+          animate: { opacity: 1, y: 0, scale: 1 },
+          exit: { opacity: 0, y: offset, scale: 0.95 },
         }
       case 'bottom':
         return {
-          initial: { opacity: 0, y: -offset },
-          animate: { opacity: 1, y: 0 },
-          exit: { opacity: 0, y: -offset },
+          initial: { opacity: 0, y: -offset, scale: 0.95 },
+          animate: { opacity: 1, y: 0, scale: 1 },
+          exit: { opacity: 0, y: -offset, scale: 0.95 },
         }
       case 'left':
         return {
-          initial: { opacity: 0, x: offset },
-          animate: { opacity: 1, x: 0 },
-          exit: { opacity: 0, x: offset },
+          initial: { opacity: 0, x: offset, scale: 0.95 },
+          animate: { opacity: 1, x: 0, scale: 1 },
+          exit: { opacity: 0, x: offset, scale: 0.95 },
         }
       case 'right':
         return {
-          initial: { opacity: 0, x: -offset },
-          animate: { opacity: 1, x: 0 },
-          exit: { opacity: 0, x: -offset },
+          initial: { opacity: 0, x: -offset, scale: 0.95 },
+          animate: { opacity: 1, x: 0, scale: 1 },
+          exit: { opacity: 0, x: -offset, scale: 0.95 },
         }
     }
   }
@@ -215,7 +215,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
               <motion.div
                 ref={tooltipRef}
                 {...getAnimationVariants()}
-                transition={{ duration: 0.15, ease: 'easeOut' }}
+                transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                 style={{
                   position: 'fixed',
                   left: 0,
@@ -225,10 +225,10 @@ export const Tooltip: React.FC<TooltipProps> = ({
                   zIndex: 9999,
                 }}
                 className={cn(
-                  'px-3 py-1.5 text-xs rounded-md',
-                  'bg-popover text-popover-foreground',
-                  'border border-border/70 shadow-[0_16px_32px_rgba(15,23,42,0.32)]',
-                  'pointer-events-none backdrop-blur-sm',
+                  'px-3 py-1.5 text-xs font-medium rounded-lg',
+                  'bg-popover/95 text-popover-foreground',
+                  'border border-border/40 shadow-[0_8px_24px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.04)]',
+                  'pointer-events-none backdrop-blur-md',
                   contentClassName
                 )}
                 role="tooltip"
@@ -239,7 +239,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
                 {showArrow && (
                   <div
                     className={cn(
-                      'absolute w-2 h-2 bg-popover ring-1 ring-border/30',
+                      'absolute w-2 h-2 bg-popover border-border/40',
                       getArrowClasses(side, align)
                     )}
                     style={{ transform: getArrowTransform(side) }}
