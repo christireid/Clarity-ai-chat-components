@@ -388,7 +388,7 @@ export const ConversationList = memo(function ConversationList({
               {onCreate && !searchQuery && (
                 <button
                   onClick={onCreate}
-                  className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+                  className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5"
                 >
                   Start a conversation
                 </button>
@@ -461,7 +461,7 @@ export const ConversationList = memo(function ConversationList({
                           {/* Unread badge */}
                           {conversation.unreadCount &&
                             conversation.unreadCount > 0 && (
-                              <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full shadow-sm">
+                              <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                                 {conversation.unreadCount}
                               </span>
                             )}

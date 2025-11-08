@@ -88,7 +88,7 @@ export const Draggable = React.forwardRef<HTMLDivElement, DraggableProps>(
         className={cn(
           'touch-none',
           !disabled && 'cursor-grab active:cursor-grabbing',
-          isDragging && 'shadow-2xl',
+          isDragging && 'shadow-[0_24px_48px_rgba(15,23,42,0.32)]',
           className
         )}
         data-drag-id={dragId}

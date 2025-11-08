@@ -453,7 +453,7 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
               zIndex: 9999,
             }}
             className={cn(
-              'min-w-[12rem] overflow-hidden rounded-xl border border-border/60 bg-[hsl(var(--surface-elevated))] py-2 shadow-[0_24px_48px_rgba(15,23,42,0.32)] ring-1 ring-black/5 backdrop-blur-md',
+              'min-w-[12rem] overflow-hidden rounded-lg border border-border/50 bg-popover py-1 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] backdrop-blur-sm',
               className
             )}
             role="menu"

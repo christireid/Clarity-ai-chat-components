@@ -131,13 +131,13 @@ export function ToolInvocationCard({
       transition={{ duration: 0.2 }}
       className={className}
     >
-      <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+      <Card className="relative overflow-hidden shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] transition-shadow duration-200">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-4">
             {/* Tool Info */}
             <div className="flex items-start gap-3 flex-1 min-w-0">
               {/* Icon */}
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>

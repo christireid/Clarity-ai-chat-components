@@ -248,7 +248,7 @@ export const ThemeSwitcher = React.forwardRef<
                             className="flex flex-col items-center gap-1"
                           >
                             <div
-                              className="w-10 h-10 rounded-full border-2 border-border shadow-sm"
+                              className="w-10 h-10 rounded-full border-2 border-border/60 shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
                               style={{ backgroundColor: color }}
                             />
                             <span className="text-xs text-muted-foreground capitalize">

@@ -279,7 +279,7 @@ export function VoiceInput({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card border shadow-xl rounded-xl z-[var(--z-popover)]"
+            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-xl z-[var(--z-popover)] backdrop-blur-sm"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
@@ -416,7 +416,7 @@ export function VoiceInput({
 
       {/* Tooltip */}
       {showTooltip && !voice.isListening && !showTranscript && (
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-foreground text-background text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-foreground text-background text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-[0_16px_32px_rgba(15,23,42,0.32)]">
           {tooltipText}
         </div>
       )}
