@@ -68,19 +68,19 @@ export const UsageDashboard = React.memo(function UsageDashboard({
   }
 
   return (
-    <Card className={cn('h-full flex flex-col', className)}>
+    <Card elevation="md" className={cn('h-full flex flex-col', className)}>
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-foreground">
               Usage Dashboard
               {isLowBalance && (
-                <Badge variant="destructive" className="animate-pulse">
+                <Badge variant="destructive" pulse>
                   Low Balance
                 </Badge>
               )}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-muted-foreground/80">
               Track your usage and manage credits
             </CardDescription>
           </div>
@@ -110,14 +110,14 @@ export const UsageDashboard = React.memo(function UsageDashboard({
               </div>
 
               {/* Progress Bar */}
-              <div className="relative h-3 bg-muted rounded-full overflow-hidden">
+              <div className="relative h-3 bg-muted/30 rounded-full overflow-hidden shadow-inner">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${usagePercentage}%` }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                  transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
                   className={cn(
                     'h-full rounded-full',
-                    isLowBalance ? 'bg-destructive' : 'bg-primary'
+                    isLowBalance ? 'bg-gradient-to-r from-red-500 to-destructive' : 'bg-gradient-to-r from-primary/80 to-primary'
                   )}
                 />
               </div>
@@ -153,38 +153,50 @@ export const UsageDashboard = React.memo(function UsageDashboard({
                     return (
                       <motion.div
                         key={key}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{
+                          delay: Object.keys(stats.metrics).indexOf(key) * 0.05,
+                          duration: 0.25,
+                          ease: [0.25, 0.1, 0.25, 1],
+                        }}
                         className={cn(
-                          'p-4 rounded-lg border',
+                          'p-4 rounded-xl border border-border/40 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-shadow duration-200',
                           isNearLimit &&
-                            'border-[hsl(var(--warning))]/50 bg-[hsl(var(--warning))]/5'
+                            'border-amber-500/50 bg-amber-50 dark:bg-amber-950/20'
                         )}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-2xl">{metricIcons[key]}</span>
+                          <motion.span
+                            className="text-2xl"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: Object.keys(stats.metrics).indexOf(key) * 0.05 + 0.1, type: 'spring', stiffness: 500, damping: 30 }}
+                          >
+                            {metricIcons[key]}
+                          </motion.span>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs text-muted-foreground truncate">
+                            <p className="text-xs text-muted-foreground/80 truncate">
                               {metricLabels[key]}
                             </p>
-                            <p className="text-xl font-bold">
+                            <p className="text-xl font-bold text-foreground">
                               {formatNumber(value)}
                             </p>
                           </div>
                         </div>
                         {limit && (
                           <div>
-                            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                              <div
+                            <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.min(percentage, 100)}%` }}
+                                transition={{ delay: Object.keys(stats.metrics).indexOf(key) * 0.05 + 0.2, duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
                                 className={cn(
-                                  'h-full rounded-full transition-all duration-150 ease-out',
+                                  'h-full rounded-full',
                                   isNearLimit
-                                    ? 'bg-[hsl(var(--warning))]'
-                                    : 'bg-primary'
+                                    ? 'bg-gradient-to-r from-amber-500/80 to-amber-500'
+                                    : 'bg-gradient-to-r from-primary/80 to-primary'
                                 )}
-                                style={{
-                                  width: `${Math.min(percentage, 100)}%`,
-                                }}
                               />
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
@@ -208,14 +220,14 @@ export const UsageDashboard = React.memo(function UsageDashboard({
                 {stats.costs.breakdown.map((item, index) => (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                    initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    transition={{ delay: index * 0.05, duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-border/40 hover:bg-muted/50 transition-colors duration-200"
                   >
                     <div className="flex-1">
-                      <p className="text-sm font-medium">{item.category}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm font-semibold text-foreground">{item.category}</p>
+                      <p className="text-xs text-muted-foreground/80">
                         {formatNumber(item.quantity)} ×{' '}
                         {formatCurrency(item.unitPrice)}
                       </p>
@@ -226,7 +238,7 @@ export const UsageDashboard = React.memo(function UsageDashboard({
                   </motion.div>
                 ))}
 
-                <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/20">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/30 shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
                   <p className="text-sm font-bold">Total</p>
                   <p className="text-lg font-bold">
                     {formatCurrency(stats.costs.total)}
@@ -237,7 +249,12 @@ export const UsageDashboard = React.memo(function UsageDashboard({
 
             {/* Usage Limits Warnings */}
             {limits.some((l) => (l.current / l.limit) * 100 > 80) && (
-              <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-500/30 rounded-xl shadow-[0_2px_8px_rgba(245,158,11,0.1)]"
+              >
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
                   ⚠️ Approaching Limits
                 </h4>
@@ -253,10 +270,10 @@ export const UsageDashboard = React.memo(function UsageDashboard({
                       </li>
                     ))}
                 </ul>
-                <p className="text-xs mt-2">
+                <p className="text-xs mt-2 text-muted-foreground/80">
                   Resets on {limits[0]?.resetDate.toLocaleDateString()}
                 </p>
-              </div>
+              </motion.div>
             )}
 
             {/* Quick Stats */}
