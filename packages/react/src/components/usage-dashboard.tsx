@@ -177,7 +177,7 @@ export const UsageDashboard = React.memo(function UsageDashboard({
                             <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                               <div
                                 className={cn(
-                                  'h-full rounded-full transition-all duration-200',
+                                  'h-full rounded-full transition-all duration-150 ease-out',
                                   isNearLimit
                                     ? 'bg-[hsl(var(--warning))]'
                                     : 'bg-primary'
