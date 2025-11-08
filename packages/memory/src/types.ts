@@ -236,6 +236,7 @@ export interface VectorStore {
  */
 export interface EmbeddingProvider {
   embedText(text: string): Promise<number[]>
+  embedBatch?(texts: string[]): Promise<number[][]>
 }
 
 /**
@@ -574,50 +575,3 @@ export interface MemoryEvent {
  * Memory event listener
  */
 export type MemoryEventListener = (event: MemoryEvent) => void | Promise<void>
-
-// ============================================================================
-// Integration Interfaces (Vector Store & Embeddings)
-// These lightweight interfaces allow the memory package to typecheck without
-// depending on other packages being built.
-// ============================================================================
-
-/** Vector match result from a vector store query */
-export interface VectorMatch {
-  id: string
-  score: number
-  values?: number[]
-  metadata?: Record<string, any>
-}
-
-/** Options for upserting vectors */
-export interface VectorUpsertOptions {
-  namespace?: string
-  batchSize?: number
-}
-
-/** Query parameters for vector search */
-export interface VectorQuery {
-  vector: number[]
-  topK?: number
-  minScore?: number
-  filter?: Record<string, any>
-  namespace?: string
-  includeMetadata?: boolean
-}
-
-/** Minimal vector store interface required by MemoryService */
-export interface VectorStore {
-  initialize(): Promise<void>
-  upsert(
-    vectors: Array<{ id: string; values: number[]; metadata?: Record<string, any> }>,
-    options?: VectorUpsertOptions
-  ): Promise<void>
-  query(query: VectorQuery): Promise<VectorMatch[]>
-  delete(ids: string[], namespace?: string): Promise<void>
-}
-
-/** Minimal embeddings provider interface required by MemoryService */
-export interface EmbeddingProvider {
-  embedText(text: string): Promise<number[]>
-  embedBatch?(texts: string[]): Promise<number[][]>
-}

@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -p 3004",
-    "build": "echo 'Skipping build - requires runtime fixes for SSR' && exit 0",
-    "build:real": "next build",
+    "build": "next build",
     "start": "next start -p 3004",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
@@ -16,7 +15,7 @@
     "@clarity-chat/react": "*",
     "@clarity-chat/primitives": "*",
     "@clarity-chat/types": "*",
-    "next": "14.2.0",
+    "next": "^14.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^2.10.3",
@@ -25,8 +24,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
-    "@types/react": "^18.0.6",
-    "@types/react-dom": "^18.0.2",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",

@@ -704,21 +704,6 @@ export class MemoryService {
   }
 
   /**
-   * Get retention time (in seconds) for a given scope
-   * Handles scopes not present in the retention policy by returning 0
-   */
-  private getRetentionForScope(scope: MemoryScope): number {
-    const policy = this.config.retentionPolicy
-    const map: Record<MemoryScope, number> = {
-      session: policy.session,
-      thread: policy.thread,
-      global: policy.global,
-      user: 0,
-    }
-    return map[scope] ?? 0
-  }
-
-  /**
    * Event management
    */
   on(eventType: string, listener: MemoryEventListener): void {

@@ -15,13 +15,13 @@
     "@clarity-chat/types": "*",
     "@tanstack/react-query": "^5.62.14",
     "@tanstack/react-query-devtools": "^5.62.14",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
-    "@types/react": "^18.0.6",
-    "@types/react-dom": "^18.0.2",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.7.2",
     "vite": "^6.0.5"

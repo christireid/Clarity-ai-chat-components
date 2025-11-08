@@ -19,7 +19,7 @@ import {
   MarkdownCodeBlock,
   MessageActions,
   MessageMetadata,
-} from './message'
+} from './message/index'
 
 export interface MessageProps {
   message: MessageType

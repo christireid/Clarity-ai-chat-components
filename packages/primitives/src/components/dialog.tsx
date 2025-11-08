@@ -256,7 +256,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
   const { open, setOpen } = useDialog()
   const contentRef = React.useRef<HTMLDivElement>(null)
   const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null)
-  const { lock, unlock } = useBodyScrollLock()
+  const { lock } = useBodyScrollLock()
 
   // Get or create portal container
   React.useEffect(() => {
