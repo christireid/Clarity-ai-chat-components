@@ -106,9 +106,9 @@ export const PersonaPanel = React.memo(function PersonaPanel({
                   <Button
                     variant={isActive ? 'surface' : 'outline'}
                     className={cn(
-                      'group flex w-full items-start gap-4 rounded-2xl border border-border/50 p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_16px_36px_rgba(15,23,42,0.12)]',
+                      'group flex w-full items-start gap-4 rounded-2xl border border-border/50 p-4 text-left transition-all duration-200 hover:-translate-y-[1px] hover:border-primary/40 hover:shadow-sm',
                       isActive &&
-                        'border-primary/50 shadow-[0_22px_48px_rgba(15,23,42,0.14)]'
+                        'border-primary/50 shadow-xs'
                     )}
                     onClick={() => onSelect?.(persona)}
                     data-state={isActive ? 'active' : 'inactive'}

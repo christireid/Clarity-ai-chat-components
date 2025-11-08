@@ -299,7 +299,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             {...slideAnimations[side]}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
-              'fixed z-[var(--z-modal)] bg-card border shadow-2xl',
+              'fixed z-[var(--z-modal)] bg-card border shadow-md',
               positionClasses[side],
               sizeClasses[side][size],
               side === 'left' && 'border-r rounded-r-2xl',

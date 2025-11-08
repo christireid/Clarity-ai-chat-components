@@ -270,7 +270,7 @@ export const ConversationList = memo(function ConversationList({
         {onCreate && (
           <button
             onClick={onCreate}
-            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-200 hover:scale-110"
+            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-200 hover:scale-[1.02]"
             aria-label="New conversation"
           >
             <svg

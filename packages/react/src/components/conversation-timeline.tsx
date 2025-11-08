@@ -127,7 +127,7 @@ export const ConversationTimeline: React.FC<ConversationTimelineProps> = ({
                   <span className={timelineDotClasses}>{event.icon ?? style.icon}</span>
                   <div
                     className={cn(
-                      'group flex flex-col gap-2 rounded-2xl border bg-gradient-to-br p-4 text-sm shadow-[0_18px_42px_rgba(15,23,42,0.12)] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40',
+                      'group flex flex-col gap-2 rounded-2xl border bg-gradient-to-br p-4 text-sm shadow-xs backdrop-blur-sm transition-all duration-200 hover:-translate-y-[1px] hover:border-primary/40',
                       style.bg,
                       style.border
                     )}

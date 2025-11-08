@@ -92,7 +92,7 @@ export const CitationCard = React.memo(function CitationCard({
     >
       <Card
         className={cn(
-          'group relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5',
+          'group relative overflow-hidden shadow-xs hover:shadow-sm transition-all duration-200 hover:-translate-y-[1px]',
           onClick && 'cursor-pointer',
           className
         )}

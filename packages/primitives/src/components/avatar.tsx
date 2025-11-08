@@ -86,7 +86,7 @@ const Avatar = React.memo(
         className={cn(
           avatarVariants({ size, className }),
           hoverable &&
-            'hover:scale-110 hover:shadow-md cursor-pointer hover:-translate-y-0.5'
+            'hover:scale-[1.02] hover:shadow-sm cursor-pointer hover:-translate-y-[1px]'
         )}
         {...props}
       >

@@ -356,7 +356,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
             }}
             className={cn(
               'bg-popover text-popover-foreground',
-              'border-2 rounded-xl shadow-xl',
+              'border rounded-xl shadow-md',
               'outline-none backdrop-blur-sm',
               'animate-in fade-in-0 zoom-in-95',
               className
