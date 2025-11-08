@@ -144,7 +144,7 @@ export const MessageList = memo(function MessageList({
                 size="sm"
                 variant="default"
                 onClick={scrollToBottom}
-                className="shadow-xl gap-1.5 bg-primary/95 hover:bg-primary backdrop-blur-sm"
+                className="shadow-[0_24px_48px_rgba(15,23,42,0.32)] gap-1.5 bg-primary/95 hover:bg-primary backdrop-blur-sm"
                 aria-label="Scroll to bottom of messages"
               >
                 <ArrowDownIcon size={16} />
