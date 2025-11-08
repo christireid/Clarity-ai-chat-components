@@ -283,10 +283,10 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
             className={cn(
-              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/50',
-              blurBackdrop && 'backdrop-blur-sm',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
+              blurBackdrop && 'backdrop-blur-md',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}

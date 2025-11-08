@@ -345,7 +345,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
           <motion.div
             ref={contentRef}
             {...getAnimationVariants()}
-            transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             style={{
               position: 'fixed',
               left: position.x,
@@ -355,10 +355,9 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
               zIndex: 9999,
             }}
             className={cn(
-              'bg-popover text-popover-foreground',
-              'border-2 border-border/60 rounded-xl shadow-[0_24px_48px_rgba(15,23,42,0.32)]',
-              'outline-none backdrop-blur-sm',
-              'animate-in fade-in-0 zoom-in-95',
+              'bg-popover/98 text-popover-foreground',
+              'border border-border/40 rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)]',
+              'outline-none backdrop-blur-md',
               className
             )}
             role="dialog"
@@ -370,7 +369,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
             {showArrow && (
               <div
                 className={cn(
-                  'absolute w-3 h-3 bg-popover ring-1 ring-border/30',
+                  'absolute w-3 h-3 bg-popover border-border/40',
                   getArrowClasses(actualSide, align)
                 )}
                 style={{ transform: 'rotate(45deg)' }}
