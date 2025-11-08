@@ -79,7 +79,7 @@ export function ModelSelector({
         variant="surface"
         onClick={handleToggle}
         disabled={disabled}
-        className="w-full justify-between rounded-xl border border-border/60 bg-[hsl(var(--surface-elevated))] px-4 py-3 text-left text-sm shadow-[0_14px_28px_rgba(15,23,42,0.12)] hover:bg-[hsl(var(--surface-overlay))]"
+        className="w-full justify-between rounded-lg border border-border/50 bg-background px-4 py-3 text-left text-sm shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:bg-accent"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -125,7 +125,7 @@ export function ModelSelector({
           />
           <div
             role="listbox"
-            className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/60 bg-[hsl(var(--surface-overlay))] shadow-[0_18px_38px_rgba(15,23,42,0.2)] backdrop-blur-sm"
+            className="absolute z-20 mt-2 w-full overflow-auto rounded-lg border border-border/50 bg-popover shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] backdrop-blur-sm"
           >
             {models.map((model) => (
               <button
