@@ -2,13 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  transpilePackages: ['@clarity-chat/react', '@clarity-chat/primitives'],
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     domains: ['clarity-chat.dev', 'avatars.githubusercontent.com'],
   },
@@ -28,5 +21,5 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig
 

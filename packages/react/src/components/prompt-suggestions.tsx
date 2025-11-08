@@ -205,7 +205,7 @@ export const PromptSuggestions = React.memo(function PromptSuggestions({
                   className={cn(
                     'group relative',
                     'hover:bg-primary hover:text-primary-foreground',
-                    'transition-all duration-200',
+                    'transition-all duration-150 ease-out',
                     'hover:scale-105 active:scale-95'
                   )}
                   aria-label={suggestion.label || suggestion.text}

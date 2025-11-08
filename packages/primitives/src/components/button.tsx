@@ -6,32 +6,32 @@ import { useRippleEffect } from '../hooks/use-ripple-effect'
 import { LoadingIcon, SuccessIcon, ErrorIcon } from './button-state-icons'
 
 const buttonVariants = cva(
-  'relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:shadow-[0_0_0_3px_rgba(var(--primary),0.1)] disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
+  'relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
+          'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(239,68,68,0.2)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
         outline:
-          'border border-input/60 bg-background hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)]',
+          'ring-1 ring-border bg-background hover:bg-accent hover:text-accent-foreground hover:ring-border/70 hover:shadow-xs',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         success:
-          'bg-green-600 text-white hover:bg-green-700 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(34,197,94,0.2)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
+          'bg-green-600 text-white hover:bg-green-700 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
         error:
-          'bg-red-600 text-white hover:bg-red-700 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(239,68,68,0.2)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
+          'bg-red-600 text-white hover:bg-red-700 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
         surface:
-          'bg-surface text-surface-foreground hover:bg-surface/80 border border-border/40 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.08)]',
+          'bg-surface text-surface-foreground hover:bg-surface/80 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs ring-1 ring-border',
       },
       size: {
         default: 'h-10 px-4 py-2',
-        sm: 'h-8 rounded-xl px-3 text-xs',
-        lg: 'h-12 rounded-xl px-8 text-base',
-        icon: 'h-10 w-10 rounded-xl',
+        sm: 'h-8 rounded-md px-3 text-xs',
+        lg: 'h-12 rounded-md px-8 text-base',
+        icon: 'h-10 w-10',
       },
     },
     defaultVariants: {

@@ -1,6 +1,7 @@
 /**
- * Type declarations for @clarity-chat/react
- * Re-exports from source due to bundle size constraints
+ * Source type declarations for @clarity-chat/react.
+ * Used during build to compose the distributed type bundle.
  */
-export * from '../src/index'
-export * from '@clarity-chat/types'
+export * from './index'
+
+export * from "@clarity-chat/types";

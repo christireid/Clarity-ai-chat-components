@@ -231,7 +231,7 @@ export const CommandPalette = forwardRef<
                                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg',
                                     'transition-all duration-150 text-left',
                                     isSelected
-                                      ? 'bg-primary text-primary-foreground shadow-md'
+                                      ? 'bg-primary text-primary-foreground shadow-[0_4px_12px_rgba(15,23,42,0.15)]'
                                       : 'hover:bg-accent'
                                   )}
                                 >
@@ -305,19 +305,19 @@ export const CommandPalette = forwardRef<
               >
                 <div className="flex gap-3 sm:gap-4">
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
+                    <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                       ↑↓
                     </kbd>
                     <span className="hidden sm:inline">Navigate</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
+                    <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                       ↵
                     </kbd>
                     <span className="hidden sm:inline">Select</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
+                    <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                       Esc
                     </kbd>
                     <span className="hidden sm:inline">Close</span>

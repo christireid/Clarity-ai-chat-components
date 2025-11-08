@@ -35,7 +35,7 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/update-types.js",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
@@ -47,17 +47,19 @@
     "size:why": "size-limit --why"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": ">=18.2.0",
+    "react-dom": ">=18.2.0"
   },
   "dependencies": {
+    "@clarity-chat/memory": "*",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.0",
     "jszip": "^3.10.1",
     "katex": "^0.16.25",
-    "lucide-react": "^0.263.1",
+    "mermaid": "^10.9.1",
+    "lucide-react": "^0.552.0",
     "react-markdown": "^9.0.0",
     "react-virtualized-auto-sizer": "^1.0.26",
     "react-window": "^1.8.11",
@@ -74,8 +76,8 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
     "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^5.0.4",
     "@vitest/coverage-v8": "^3.2.4",
