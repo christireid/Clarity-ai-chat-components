@@ -16,7 +16,7 @@ import remarkMath from 'remark-math'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeKatex from 'rehype-katex'
 import rehypeRaw from 'rehype-raw'
-import { cn } from '../utils'
+import { cn } from '@clarity-chat/primitives'
 
 // Import KaTeX CSS
 import 'katex/dist/katex.min.css'

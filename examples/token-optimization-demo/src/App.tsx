@@ -7,7 +7,6 @@ import {
   useRequestBatcher,
   useSmartThrottle,
   TokenOptimizationDashboard,
-  TokenOptimizationBadge,
   ThemeProvider,
   themes,
 } from '@clarity-chat/react'
@@ -191,11 +190,15 @@ export function App() {
             <p className="text-lg text-muted-foreground">
               Experience all optimization features working together
             </p>
-            <TokenOptimizationBadge
-              tokensSaved={totalTokensSaved}
-              savingsPercent={metrics.savingsPercent}
-              className="mt-4"
-            />
+            <div className="inline-flex items-center gap-2 rounded-full border bg-muted/50 px-3 py-1.5 mt-4">
+              <span className="font-medium text-green-600">
+                {totalTokensSaved.toLocaleString()} saved
+              </span>
+              <span className="text-muted-foreground">•</span>
+              <span className="text-muted-foreground">
+                {metrics.savingsPercent.toFixed(1)}%
+              </span>
+            </div>
           </div>
 
           {/* Dashboard */}
