@@ -228,7 +228,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
                   'px-3.5 py-2 text-xs rounded-lg',
                   'bg-[hsl(var(--surface-overlay))] text-foreground/90',
                   'border border-border/70 shadow-[0_16px_32px_rgba(15,23,42,0.32)] ring-1 ring-black/5',
-                  'pointer-events-none',
+                  'pointer-events-none backdrop-blur-sm',
                   contentClassName
                 )}
                 role="tooltip"
