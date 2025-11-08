@@ -180,8 +180,8 @@ function BranchNodeComponent({
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 10 }}
         className={cn(
-          'group relative flex items-center gap-2 p-2 rounded-lg border-2 transition-all',
-          'hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] cursor-pointer',
+          'group relative flex items-center gap-2 p-2 rounded-lg border transition-all duration-150 ease-out',
+          'hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] cursor-pointer',
           isActive && 'border-blue-500 bg-blue-50 dark:bg-blue-900/20',
           isInActivePath && !isActive && 'border-blue-300 bg-blue-25 dark:bg-blue-900/10',
           !isActive && !isInActivePath && 'border-gray-200 dark:border-gray-700',

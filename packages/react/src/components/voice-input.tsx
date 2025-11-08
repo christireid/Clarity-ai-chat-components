@@ -279,7 +279,7 @@ export function VoiceInput({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-xl z-[var(--z-popover)] backdrop-blur-sm"
+            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card border border-border/50 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] rounded-lg z-[var(--z-popover)] backdrop-blur-sm"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-3">

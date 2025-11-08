@@ -82,13 +82,13 @@ export const MultiModalPreview: React.FC<MultiModalPreviewProps> = ({
         <img
           src={attachment.thumbnailUrl}
           alt={attachment.title}
-          className="h-16 w-16 rounded-xl object-cover"
+          className="h-16 w-16 rounded-lg object-cover"
         />
       )
     }
 
     return (
-      <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[hsl(var(--surface-muted))] text-muted-foreground">
+      <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-muted text-muted-foreground">
         {typeIcon[attachment.type]}
       </div>
     )

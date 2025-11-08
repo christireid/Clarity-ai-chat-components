@@ -50,7 +50,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
       </CardHeader>
       <CardContent className="space-y-4">
         {workflows.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-border/50 bg-[hsl(var(--surface-muted))] p-6 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed border-border/50 bg-muted p-6 text-center text-sm text-muted-foreground">
             No workflows available. Define templated flows to guide users through complex tasks.
           </div>
         )}
@@ -59,7 +59,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
           {workflows.map((workflow) => (
             <li
               key={workflow.id}
-              className="space-y-3 rounded-2xl border border-border/60 bg-[hsl(var(--surface-muted))] p-4 shadow-[0_10px_24px_rgba(15,23,42,0.12)]"
+              className="space-y-3 rounded-lg border border-border/50 bg-muted p-4 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex flex-col gap-2">

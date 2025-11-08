@@ -47,7 +47,7 @@ const DefaultEmptyState = () => (
     transition={{ duration: 0.3 }}
   >
     <motion.div
-      className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-[0_1px_3px_rgba(15,23,42,0.1)] ring-1 ring-primary/20"
+      className="inline-flex items-center justify-center w-20 h-20 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ring-1 ring-primary/20"
       animate={{
         scale: [1, 1.05, 1],
         rotate: [0, 2, -2, 0],
