@@ -319,7 +319,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
                   'absolute top-4 right-4 w-8 h-8 rounded-md',
                   'flex items-center justify-center',
                   'text-muted-foreground hover:text-foreground',
-                  'hover:bg-muted/30 hover:shadow-xs hover:-translate-y-[1px]',
+                  'hover:bg-muted/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:-translate-y-[1px]',
                   'transition-all duration-200',
                   'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1',
                   'z-10'

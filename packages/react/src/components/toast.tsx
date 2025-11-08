@@ -156,7 +156,7 @@ export const ToastItem = memo(function ToastItem({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleClose}
-        className="flex-shrink-0 p-1 rounded-md hover:bg-background/20 hover:shadow-xs transition-all duration-200"
+        className="flex-shrink-0 p-1 rounded-md hover:bg-background/20 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08)] transition-all duration-200"
         aria-label="Close notification"
       >
         <CloseIcon size={16} />
