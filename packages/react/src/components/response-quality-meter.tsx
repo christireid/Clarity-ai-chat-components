@@ -51,7 +51,7 @@ export const ResponseQualityMeter: React.FC<ResponseQualityMeterProps> = ({
   const overall = overallScore !== undefined ? clampScore(overallScore) : undefined
 
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_18px_42px_rgba(15,23,42,0.16)]', className)}>
+    <Card className={cn('border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]', className)}>
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
           <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
@@ -60,7 +60,7 @@ export const ResponseQualityMeter: React.FC<ResponseQualityMeterProps> = ({
       </CardHeader>
       <CardContent className="space-y-6">
         {overall !== undefined && (
-          <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] px-4 py-3">
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border/50 bg-muted px-4 py-3">
             <span className="text-sm font-semibold text-foreground">{overallLabel}</span>
             <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
               <span>{Math.round(overall * 100)}%</span>
@@ -73,7 +73,7 @@ export const ResponseQualityMeter: React.FC<ResponseQualityMeterProps> = ({
 
         <div className="space-y-4">
           {normalizedMetrics.map((metric) => (
-            <div key={metric.id} className="space-y-2 rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-[0_12px_32px_rgba(15,23,42,0.12)]">
+            <div key={metric.id} className="space-y-2 rounded-lg border border-border/50 bg-muted p-4 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-foreground">{metric.label}</span>
@@ -108,7 +108,7 @@ export const ResponseQualityMeter: React.FC<ResponseQualityMeterProps> = ({
           ))}
         </div>
 
-        <footer className="rounded-xl border border-dashed border-border/50 bg-[hsl(var(--surface-muted))] px-4 py-3 text-xs text-muted-foreground/70">
+        <footer className="rounded-lg border border-dashed border-border/50 bg-muted px-4 py-3 text-xs text-muted-foreground/70">
           {scaleLabel}: 0-40% (low trust) · 40-75% (needs review) · 75-100% (ship with confidence)
         </footer>
       </CardContent>

@@ -305,7 +305,7 @@ export const PromptLibrary = React.memo(function PromptLibrary({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="mb-4 p-4 border-2 border-primary rounded-lg space-y-3 bg-primary/5"
+              className="mb-4 p-4 border border-primary rounded-lg space-y-3 bg-primary/5"
             >
               <h3 className="font-semibold text-sm flex items-center gap-2">
                 ✏️ Edit Prompt: {editingPrompt.name}
@@ -378,7 +378,7 @@ export const PromptLibrary = React.memo(function PromptLibrary({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                   >
-                    <Card className="group hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] transition-shadow">
+                    <Card className="group hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-shadow duration-150 ease-out">
                       <CardContent className="p-4">
                         <div className="space-y-2">
                           {/* Header */}
