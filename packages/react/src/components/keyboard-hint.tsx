@@ -84,7 +84,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                 ease: ANIMATION_EASING.out,
               }}
               className={cn(
-                'fixed bg-background ring-1 ring-border/50 rounded-lg shadow-xl z-50 backdrop-blur-sm',
+                'fixed bg-background border border-border/60 rounded-lg shadow-[0_24px_48px_rgba(15,23,42,0.32)] z-50 backdrop-blur-sm',
                 'max-w-md max-h-[80vh] overflow-hidden flex flex-col',
                 positionClasses[position],
                 className
@@ -105,7 +105,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                     onClick={onClose}
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-1 rounded-md hover:bg-muted/30 transition-all duration-200 hover:shadow-xs"
+                    className="p-1 rounded-md hover:bg-muted/30 transition-all duration-200 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
                     aria-label="Close"
                   >
                     <svg
@@ -167,7 +167,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                                       whileHover={{ scale: 1.1 }}
                                       className={cn(
                                         'px-2 py-1 text-xs font-mono rounded-sm ring-1',
-                                        'bg-muted ring-border/30 shadow-xs',
+                                        'bg-muted border-border/60 shadow-[0_1px_2px_rgba(15,23,42,0.08)]',
                                         'inline-flex items-center justify-center min-w-[24px]'
                                       )}
                                     >

@@ -152,7 +152,7 @@ export const ChatInput = React.memo(function ChatInput({
   return (
     <motion.div
       className={cn(
-        'relative flex flex-col gap-2 p-4 border-t ring-1 ring-border/50 bg-background/95 backdrop-blur-sm shadow-xs',
+        'relative flex flex-col gap-2 p-4 border-t border-border/60 bg-background/95 backdrop-blur-sm shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
         className
       )}
       initial="idle"

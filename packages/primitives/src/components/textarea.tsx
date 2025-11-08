@@ -4,7 +4,7 @@ import { cn } from '../lib/utils'
 import { ErrorMessage } from './error-message'
 
 const textareaVariants = cva(
-  'flex min-h-[80px] w-full rounded-md ring-1 ring-border bg-background px-3 py-2 text-sm shadow-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:border-primary/60 hover:ring-border/70 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200 resize-none',
+  'flex min-h-[80px] w-full rounded-lg border-2 border-border/60 bg-background px-3 py-2 text-sm shadow-[0_1px_3px_rgba(15,23,42,0.1)] ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:ring-[3px] focus-visible:border-primary focus-visible:shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:border-border/80 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200 resize-none',
   {
     variants: {
       variant: {
