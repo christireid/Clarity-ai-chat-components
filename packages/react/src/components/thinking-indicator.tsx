@@ -68,23 +68,23 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
       exit={{ opacity: 0, y: -10 }}
       transition={{
         duration: ANIMATION_DURATION.normal / 1000,
-        ease: ANIMATION_EASING.out,
+        ease: [0.25, 0.1, 0.25, 1],
       }}
       className={cn(
-        'flex items-center gap-3 rounded-lg border border-border/50 bg-muted px-5 py-4 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+        'flex items-center gap-3 rounded-2xl border border-border/40 bg-card/95 backdrop-blur-sm px-5 py-4 shadow-[0_8px_24px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04)]',
         className
       )}
     >
       {/* Animated Icon */}
       <motion.div
         animate={{
-          scale: [1, 1.15, 1],
-          rotate: [0, 3, -3, 0],
+          scale: [1, 1.08, 1],
+          rotate: [0, 2, -2, 0],
         }}
         transition={{
-          duration: 2,
+          duration: 3,
           repeat: Infinity,
-          ease: ANIMATION_EASING.inOut,
+          ease: [0.25, 0.1, 0.25, 1],
         }}
         className="text-primary"
       >
@@ -108,10 +108,10 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
                   scale: [0.8, 1, 0.8],
                 }}
                 transition={{
-                  duration: 1.5,
+                  duration: 2,
                   repeat: Infinity,
-                  delay: i * 0.2,
-                  ease: ANIMATION_EASING.inOut,
+                  delay: i * 0.25,
+                  ease: [0.25, 0.1, 0.25, 1],
                 }}
                 className="w-1.5 h-1.5 rounded-full bg-current"
               />
@@ -126,9 +126,9 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: ANIMATION_DURATION.fast / 1000,
-              ease: ANIMATION_EASING.out,
+              ease: [0.25, 0.1, 0.25, 1],
             }}
-            className="text-xs text-muted-foreground mt-1"
+            className="text-xs text-muted-foreground/80 mt-1"
           >
             {status.topic}
           </motion.p>
@@ -136,15 +136,15 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
 
         {/* Progress Bar */}
         {status?.progress !== undefined && (
-          <div className="mt-2 h-1 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
+          <div className="mt-2 h-1 overflow-hidden rounded-full bg-muted/30">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${status.progress}%` }}
               transition={{
                 duration: ANIMATION_DURATION.slow / 1000,
-                ease: ANIMATION_EASING.out,
+                ease: [0.25, 0.1, 0.25, 1],
               }}
-              className="h-full bg-primary rounded-full"
+              className="h-full bg-gradient-to-r from-primary/80 to-primary rounded-full"
             />
           </div>
         )}

@@ -4,18 +4,36 @@ import { cn } from '../lib/utils'
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & {
   hoverable?: boolean
   bordered?: boolean
-}>(({ className, hoverable = false, bordered = true, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      'rounded-lg bg-card text-card-foreground shadow-[0_1px_3px_0_rgb(0_0_0_/_0.1),0_1px_2px_-1px_rgb(0_0_0_/_0.1)] transition-all duration-150 ease-out',
-      bordered && 'border border-border',
-      hoverable && 'hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px cursor-pointer',
-      className
-    )}
-    {...props}
-  />
-))
+  elevation?: 'flat' | 'sm' | 'md' | 'lg'
+}>(({ className, hoverable = false, bordered = true, elevation = 'sm', ...props }, ref) => {
+  const elevationClasses = {
+    flat: '',
+    sm: 'shadow-[0_1px_2px_rgba(0,0,0,0.05)]',
+    md: 'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.03)]',
+    lg: 'shadow-[0_12px_24px_rgba(0,0,0,0.12),0_4px_8px_rgba(0,0,0,0.04)]'
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'rounded-2xl bg-card text-card-foreground transition-all duration-200 ease-out',
+        bordered && 'border border-border/40',
+        !hoverable && elevationClasses[elevation],
+        hoverable && [
+          'cursor-pointer',
+          elevation === 'flat' ? 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 
+          elevation === 'sm' ? 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.03)]' :
+          elevation === 'md' ? 'hover:shadow-[0_8px_16px_rgba(0,0,0,0.12),0_4px_8px_rgba(0,0,0,0.04)]' :
+          'hover:shadow-[0_20px_40px_rgba(0,0,0,0.15),0_8px_16px_rgba(0,0,0,0.06)]',
+          'hover:-translate-y-[2px] hover:border-border/60'
+        ],
+        className
+      )}
+      {...props}
+    />
+  )
+})
 Card.displayName = 'Card'
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
