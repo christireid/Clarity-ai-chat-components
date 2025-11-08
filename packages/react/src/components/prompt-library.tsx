@@ -378,7 +378,7 @@ export const PromptLibrary = React.memo(function PromptLibrary({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                   >
-                    <Card className="group hover:shadow-md transition-shadow">
+                    <Card className="group hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] transition-shadow">
                       <CardContent className="p-4">
                         <div className="space-y-2">
                           {/* Header */}
