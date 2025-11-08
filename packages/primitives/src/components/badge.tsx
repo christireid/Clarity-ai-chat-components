@@ -3,24 +3,24 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-ring/50 focus:ring-offset-2',
   {
     variants: {
       variant: {
         default:
-          'border-transparent bg-primary/90 text-primary-foreground hover:bg-primary shadow-sm hover:shadow-md',
+          'border-transparent bg-primary/90 text-primary-foreground hover:bg-primary shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_2px_4px_0_rgb(0_0_0_/_0.1)]',
         secondary:
-          'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm hover:shadow',
+          'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_2px_4px_0_rgb(0_0_0_/_0.1)]',
         destructive:
-          'border-transparent bg-destructive/90 text-destructive-foreground hover:bg-destructive shadow-sm hover:shadow-[var(--shadow-error)]',
+          'border-transparent bg-destructive/90 text-destructive-foreground hover:bg-destructive shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_2px_4px_0_rgb(0_0_0_/_0.1)]',
         outline: 
-          'border-2 border-border text-foreground hover:bg-accent hover:border-accent-foreground/20 hover:shadow-sm',
+          'border border-border text-foreground hover:bg-accent hover:border-accent-foreground/20 hover:shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
         success:
-          'border-transparent bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] hover:bg-[hsl(var(--success))]/90 shadow-sm hover:shadow-[var(--shadow-success)]',
+          'border-transparent bg-green-600 text-white hover:bg-green-700 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_2px_4px_0_rgb(0_0_0_/_0.1)]',
         warning:
-          'border-transparent bg-[hsl(var(--warning))] text-[hsl(var(--warning-foreground))] hover:bg-[hsl(var(--warning))]/90 shadow-sm hover:shadow-[var(--shadow-warning)]',
+          'border-transparent bg-yellow-500 text-white hover:bg-yellow-600 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_2px_4px_0_rgb(0_0_0_/_0.1)]',
         info: 
-          'border-transparent bg-[hsl(var(--info))] text-[hsl(var(--info-foreground))] hover:bg-[hsl(var(--info))]/90 shadow-sm hover:shadow-blue-500/20',
+          'border-transparent bg-blue-600 text-white hover:bg-blue-700 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_2px_4px_0_rgb(0_0_0_/_0.1)]',
         subtle:
           'border-transparent bg-muted text-muted-foreground hover:bg-muted/80',
         ghost:

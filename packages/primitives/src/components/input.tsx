@@ -4,13 +4,13 @@ import { cn } from '../lib/utils'
 import { ErrorMessage } from './error-message'
 
 const inputVariants = cva(
-  'flex w-full rounded-lg border-2 border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:border-primary focus-visible:shadow-sm hover:border-input/70 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200',
+  'flex w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-1 focus-visible:border-primary focus-visible:shadow-[0_0_0_3px_hsl(var(--ring)/0.1)] hover:border-input/70 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-150 ease-out',
   {
     variants: {
       variant: {
         default: '',
-        error: 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20 focus-visible:shadow-[var(--shadow-error)]',
-        success: 'border-[hsl(var(--success))] focus-visible:border-[hsl(var(--success))] focus-visible:ring-[hsl(var(--success))]/20 focus-visible:shadow-[var(--shadow-success)]',
+        error: 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/40 focus-visible:shadow-[0_0_0_3px_hsl(var(--destructive)/0.1)]',
+        success: 'border-green-500 focus-visible:border-green-500 focus-visible:ring-green-500/40 focus-visible:shadow-[0_0_0_3px_rgb(34_197_94_/_0.1)]',
       },
       inputSize: {
         default: 'h-10',
@@ -78,7 +78,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+          <p className="mt-1.5 text-xs text-destructive flex items-center gap-1.5 font-medium">
             <svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>

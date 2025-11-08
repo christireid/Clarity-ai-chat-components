@@ -154,8 +154,8 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
       data-state={open ? 'open' : 'closed'}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center gap-2 rounded-lg border border-border/60 bg-[hsl(var(--surface-elevated))] px-3 py-2 text-sm font-medium shadow-sm transition-all duration-200',
-        'hover:border-primary/40 hover:text-primary hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60'
+        'inline-flex items-center gap-2 rounded-lg border border-border/50 bg-background px-3 py-2 text-sm font-medium shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] transition-all duration-150 ease-out',
+        'hover:border-primary/40 hover:text-primary hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60'
       )}
     >
       {children}
@@ -443,7 +443,7 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
             ref={contentRef}
             data-dropdown-content="true"
             {...animationVariants}
-            transition={{ duration: 0.16, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
             style={{
               position: 'fixed',
               left: position.x,
@@ -453,7 +453,7 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
               zIndex: 9999,
             }}
             className={cn(
-              'min-w-[12rem] overflow-hidden rounded-xl border border-border/60 bg-[hsl(var(--surface-elevated))] py-2 shadow-[0_24px_48px_rgba(15,23,42,0.32)] ring-1 ring-black/5 backdrop-blur-md',
+              'min-w-[12rem] overflow-hidden rounded-lg border border-border/50 bg-popover py-1 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] backdrop-blur-sm',
               className
             )}
             role="menu"
@@ -522,12 +522,12 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
         disabled={disabled}
         onClick={handleClick}
         className={cn(
-          'flex w-full items-center justify-between gap-3 px-4 py-2.5 text-sm font-medium text-foreground/85 transition-all duration-150',
-          'rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-0',
+          'flex w-full items-center justify-between gap-3 px-3 py-2 text-sm font-medium text-foreground transition-all duration-150 ease-out',
+          'rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-0',
           destructive
-            ? 'hover:bg-destructive/12 hover:text-destructive'
-            : 'hover:bg-primary/10 hover:text-primary',
-          active && !destructive && 'bg-primary/10 text-primary shadow-[inset_0_0_0_1px_rgba(22,119,255,0.18)]',
+            ? 'hover:bg-destructive/10 hover:text-destructive'
+            : 'hover:bg-accent hover:text-accent-foreground',
+          active && !destructive && 'bg-accent text-accent-foreground',
           inset && 'pl-10',
           disabled && 'cursor-not-allowed opacity-50',
           className
@@ -539,7 +539,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
           <span className="truncate text-left">{children}</span>
         </div>
         {shortcut && (
-          <kbd className="rounded-md border border-border/60 bg-[hsl(var(--surface-muted))] px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+          <kbd className="rounded border border-border/50 bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
             {shortcut}
           </kbd>
         )}
@@ -550,7 +550,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
 DropdownMenuItem.displayName = 'DropdownMenuItem'
 
 export const DropdownMenuSeparator: React.FC<{ className?: string }> = ({ className }) => {
-  return <div role="separator" className={cn('my-1 h-px bg-border/60', className)} />
+  return <div role="separator" className={cn('my-1 h-px bg-border/50', className)} />
 }
 
 export const DropdownMenuLabel: React.FC<{ children: React.ReactNode; className?: string }> = ({
@@ -560,7 +560,7 @@ export const DropdownMenuLabel: React.FC<{ children: React.ReactNode; className?
   return (
     <div
       role="presentation"
-      className={cn('px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground/70', className)}
+      className={cn('px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground/70', className)}
     >
       {children}
     </div>

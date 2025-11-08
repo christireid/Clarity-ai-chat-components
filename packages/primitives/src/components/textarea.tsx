@@ -4,13 +4,13 @@ import { cn } from '../lib/utils'
 import { ErrorMessage } from './error-message'
 
 const textareaVariants = cva(
-  'flex min-h-[80px] w-full rounded-lg border-2 border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:border-primary focus-visible:shadow-sm hover:border-input/70 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200 resize-none',
+  'flex min-h-[80px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-1 focus-visible:border-primary focus-visible:shadow-[0_0_0_3px_hsl(var(--ring)/0.1)] hover:border-input/70 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-150 ease-out resize-none',
   {
     variants: {
       variant: {
         default: '',
-        error: 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20 focus-visible:shadow-[var(--shadow-error)]',
-        success: 'border-[hsl(var(--success))] focus-visible:border-[hsl(var(--success))] focus-visible:ring-[hsl(var(--success))]/20 focus-visible:shadow-[var(--shadow-success)]',
+        error: 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/40 focus-visible:shadow-[0_0_0_3px_hsl(var(--destructive)/0.1)]',
+        success: 'border-green-500 focus-visible:border-green-500 focus-visible:ring-green-500/40 focus-visible:shadow-[0_0_0_3px_rgb(34_197_94_/_0.1)]',
       },
     },
     defaultVariants: {
@@ -40,7 +40,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       const scrollHeight = textarea.scrollHeight
       
       if (maxRows) {
-        const lineHeight = parseInt(getComputedStyle(textarea).lineHeight)
+        const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20
         const maxHeight = lineHeight * maxRows
         textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
       } else {
