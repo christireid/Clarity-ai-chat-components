@@ -137,8 +137,8 @@ export const ExportDialog = React.memo(function ExportDialog({
                   className={cn(
                     'flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all',
                     format === fmt.value
-                      ? 'border-primary bg-primary/5 shadow-md'
-                      : 'border-border hover:border-primary/50'
+                      ? 'border-primary bg-primary/5 shadow-[0_4px_12px_rgba(15,23,42,0.15)]'
+                      : 'border-border/60 hover:border-primary/50'
                   )}
                 >
                   <motion.span
@@ -299,7 +299,7 @@ export const ExportDialog = React.memo(function ExportDialog({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: 0.7 }}
-            className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-sm"
+            className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
           >
             <p className="text-xs text-muted-foreground">
               💡 <strong>Tip:</strong> PDF and DOCX formats preserve formatting

@@ -71,7 +71,7 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
       <Button
         variant="outline"
         className={cn(
-          'group flex w-full flex-col items-start gap-2 rounded-xl p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary/40 hover:bg-accent/5',
+          'group flex w-full flex-col items-start gap-2 rounded-xl p-4 text-left shadow-[0_1px_3px_rgba(15,23,42,0.1)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] hover:border-primary/40 hover:bg-accent/5',
           layout === 'list' && 'rounded-lg'
         )}
         onClick={() => onSelect(suggestion)}
@@ -80,7 +80,7 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
         <div className="flex w-full items-center justify-between gap-3">
           <div className="flex items-center gap-3 text-sm font-semibold text-foreground">
             {suggestion.icon && (
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20 group-hover:bg-primary/15 transition-colors">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20 group-hover:bg-primary/15 transition-colors">
                 {suggestion.icon}
               </span>
             )}
@@ -135,7 +135,7 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2, delay: index * 0.05 }}
-          className="rounded-xl border bg-muted/50 p-4 shadow-sm"
+          className="rounded-xl border border-border/60 bg-muted/50 p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
         >
           <div className="flex items-center gap-3">
             <Skeleton width={32} height={32} rounded="lg" variant="shimmer" />
@@ -159,10 +159,10 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
     >
-      <Card ref={containerRef} className={cn('shadow-lg', className)}>
+      <Card ref={containerRef} className={cn('shadow-[0_10px_24px_rgba(15,23,42,0.12)]', className)}>
         <CardHeader className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
               <svg
                 className="h-4 w-4"
                 fill="none"

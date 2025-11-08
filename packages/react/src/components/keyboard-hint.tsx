@@ -84,7 +84,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                 ease: ANIMATION_EASING.out,
               }}
               className={cn(
-                'fixed bg-background border rounded-lg shadow-xl z-50',
+                'fixed bg-background border border-border/60 rounded-lg shadow-[0_24px_48px_rgba(15,23,42,0.32)] z-50 backdrop-blur-sm',
                 'max-w-md max-h-[80vh] overflow-hidden flex flex-col',
                 positionClasses[position],
                 className
@@ -167,7 +167,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                                       whileHover={{ scale: 1.1 }}
                                       className={cn(
                                         'px-2 py-1 text-xs font-mono rounded border',
-                                        'bg-muted border-border shadow-sm',
+                                        'bg-muted border-border/60 shadow-[0_1px_2px_rgba(15,23,42,0.08)]',
                                         'inline-flex items-center justify-center min-w-[24px]'
                                       )}
                                     >
