@@ -106,9 +106,9 @@ export const Message = memo(
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group flex gap-3 p-4 rounded-xl transition-all duration-200',
+          'group flex gap-3 p-3 rounded-2xl transition-all duration-200',
           isUser && 'flex-row-reverse',
-          isHovered && 'bg-muted/50 shadow-sm',
+          isHovered && 'bg-muted/30 shadow-xs',
           className
         )}
       >
@@ -128,7 +128,7 @@ export const Message = memo(
               src={isUser ? undefined : '/ai-avatar.png'}
               alt={isUser ? 'User' : 'AI Assistant'}
               fallback={isUser ? 'U' : 'AI'}
-              className="flex-shrink-0"
+              className="flex-shrink-0 border border-border/20 shadow-xs"
             />
           </motion.div>
         )}
@@ -147,7 +147,7 @@ export const Message = memo(
               isUser && 'flex-row-reverse'
             )}
           >
-            <span className="font-semibold text-sm">
+            <span className="font-medium text-xs tracking-wide text-muted-foreground">
               {isUser ? 'You' : 'AI Assistant'}
             </span>
             {showTimestamp && (
@@ -155,7 +155,7 @@ export const Message = memo(
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isHovered ? 1 : 0.6 }}
                 transition={{ duration: 0.2 }}
-                className="text-xs text-muted-foreground"
+                className="text-[11px] text-muted-foreground"
               >
                 {formatRelativeTime(message.createdAt)}
               </motion.span>
@@ -175,7 +175,7 @@ export const Message = memo(
             className={cn(
               'prose prose-sm dark:prose-invert max-w-none',
               isUser &&
-                'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm'
+                'bg-primary text-primary-foreground px-4 py-2.5 rounded-2xl rounded-tr-md inline-block shadow-xs'
             )}
           >
             {isUser ? (

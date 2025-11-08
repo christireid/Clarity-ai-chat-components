@@ -47,10 +47,10 @@ const DefaultEmptyState = () => (
     transition={{ duration: 0.3 }}
   >
     <motion.div
-      className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm ring-1 ring-primary/20"
+      className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 shadow-xs ring-1 ring-primary/10"
       animate={{
-        scale: [1, 1.05, 1],
-        rotate: [0, 2, -2, 0],
+        scale: [1, 1.03, 1],
+        rotate: [0, 1, -1, 0],
       }}
       transition={{
         duration: 3,
@@ -58,13 +58,13 @@ const DefaultEmptyState = () => (
         ease: 'easeInOut',
       }}
     >
-      <BotIcon size={36} className="text-primary" />
+      <BotIcon size={28} className="text-primary" />
     </motion.div>
     <div className="space-y-2">
-      <h3 className="text-xl font-semibold text-foreground">
+      <h3 className="text-lg font-semibold text-foreground">
         Start a conversation
       </h3>
-      <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+      <p className="text-sm text-muted-foreground/80 max-w-md mx-auto leading-normal">
         Send a message to begin chatting with the AI assistant. I'm here to help
         with your questions and tasks.
       </p>
@@ -116,41 +116,41 @@ export const ChatWindow = memo(function ChatWindow({
   return (
     <Card
       className={cn(
-        'flex h-full flex-col overflow-hidden shadow-lg',
+        'flex h-full flex-col overflow-hidden shadow-lg border border-border/20',
         className
       )}
     >
       {/* Optional Header */}
       {showHeader && (
         <motion.div
-          className="flex items-center justify-between gap-4 border-b bg-card px-4 py-3 sm:px-6"
+          className="flex items-center justify-between gap-4 border-b border-border/40 bg-card/80 backdrop-blur-sm px-4 py-3"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
-              <BotIcon size={20} />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-xs ring-1 ring-primary/20">
+              <BotIcon size={18} />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-sm font-semibold text-foreground truncate">
+              <h2 className="text-sm font-medium text-foreground truncate">
                 {sessionTitle}
               </h2>
               {sessionSubtitle && (
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="text-xs text-muted-foreground/70 truncate">
                   {sessionSubtitle}
                 </p>
               )}
             </div>
             {showMessageCount && messageCountText && (
-              <Badge variant="secondary" className="shrink-0" aria-label={messageCountText}>
+              <Badge variant="secondary" size="sm" className="shrink-0" aria-label={messageCountText}>
                 {messageCountText}
               </Badge>
             )}
           </div>
 
           {/* Header Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             {headerActions}
 
             {onExport && messages.length > 0 && (
@@ -158,11 +158,11 @@ export const ChatWindow = memo(function ChatWindow({
                 size="sm"
                 variant="ghost"
                 onClick={onExport}
-                className="gap-1.5"
+                className="gap-1.5 h-8"
                 title="Export conversation"
               >
                 <svg
-                  className="h-4 w-4"
+                  className="h-3.5 w-3.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -183,11 +183,11 @@ export const ChatWindow = memo(function ChatWindow({
                 size="sm"
                 variant="ghost"
                 onClick={onClear}
-                className="gap-1.5 text-muted-foreground hover:text-destructive"
+                className="gap-1.5 h-8 text-muted-foreground hover:text-destructive"
                 title="Clear conversation"
               >
                 <svg
-                  className="h-4 w-4"
+                  className="h-3.5 w-3.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

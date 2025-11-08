@@ -216,19 +216,19 @@ const sizeClasses = {
 // Memoized animation variants to prevent recreation on every render
 const contentAnimations = {
   scale: {
-    initial: { scale: 0.95, opacity: 0 },
+    initial: { scale: 0.96, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
-    exit: { scale: 0.95, opacity: 0 },
+    exit: { scale: 0.96, opacity: 0 },
   },
   'slide-up': {
-    initial: { y: 20, opacity: 0 },
+    initial: { y: 16, opacity: 0 },
     animate: { y: 0, opacity: 1 },
-    exit: { y: 20, opacity: 0 },
+    exit: { y: 16, opacity: 0 },
   },
   'slide-down': {
-    initial: { y: -20, opacity: 0 },
+    initial: { y: -16, opacity: 0 },
     animate: { y: 0, opacity: 1 },
-    exit: { y: -20, opacity: 0 },
+    exit: { y: -16, opacity: 0 },
   },
   fade: {
     initial: { opacity: 0 },
@@ -236,9 +236,9 @@ const contentAnimations = {
     exit: { opacity: 0 },
   },
   zoom: {
-    initial: { scale: 0.8, opacity: 0 },
+    initial: { scale: 0.92, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
-    exit: { scale: 0.8, opacity: 0 },
+    exit: { scale: 0.92, opacity: 0 },
   },
 } as const
 
@@ -318,8 +318,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
-              blurBackdrop && 'backdrop-blur-md',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/50',
+              blurBackdrop && 'backdrop-blur-md backdrop-saturate-150',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -331,10 +331,10 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             <motion.div
               ref={contentRef}
               {...animationProps}
-              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                'relative w-full bg-card border shadow-2xl rounded-2xl pointer-events-auto',
+                'relative w-full bg-card border border-border/20 shadow-2xl rounded-2xl pointer-events-auto',
                 sizeClasses[size],
                 className
               )}
@@ -346,12 +346,12 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                 <button
                   onClick={() => setOpen(false)}
                   className={cn(
-                    'absolute top-4 right-4 w-8 h-8 rounded-md',
+                    'absolute top-3 right-3 w-7 h-7 rounded-md',
                     'flex items-center justify-center',
                     'text-muted-foreground hover:text-foreground',
-                    'hover:bg-muted/50',
+                    'hover:bg-accent/50',
                     'transition-colors duration-200',
-                    'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                    'focus:outline-none focus:ring-1 focus:ring-primary/50 focus:ring-offset-1'
                   )}
                   aria-label="Close dialog"
                 >

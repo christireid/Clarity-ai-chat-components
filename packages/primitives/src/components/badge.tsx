@@ -3,31 +3,31 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-ring/50 focus:ring-offset-1',
   {
     variants: {
       variant: {
         default:
-          'border-transparent bg-primary/90 text-primary-foreground hover:bg-primary shadow-sm hover:shadow-md',
+          'bg-primary/10 text-primary hover:bg-primary/15',
         secondary:
-          'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm hover:shadow',
+          'bg-secondary/10 text-secondary-foreground hover:bg-secondary/15',
         destructive:
-          'border-transparent bg-destructive/90 text-destructive-foreground hover:bg-destructive shadow-sm hover:shadow-[var(--shadow-error)]',
+          'bg-destructive/10 text-destructive hover:bg-destructive/15',
         outline: 
-          'border-2 border-border text-foreground hover:bg-accent hover:border-accent-foreground/20 hover:shadow-sm',
+          'border border-border/40 text-foreground hover:bg-accent/50 hover:border-border/60',
         success:
-          'border-transparent bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] hover:bg-[hsl(var(--success))]/90 shadow-sm hover:shadow-[var(--shadow-success)]',
+          'bg-green-500/10 text-green-700 dark:text-green-400 hover:bg-green-500/15',
         warning:
-          'border-transparent bg-[hsl(var(--warning))] text-[hsl(var(--warning-foreground))] hover:bg-[hsl(var(--warning))]/90 shadow-sm hover:shadow-[var(--shadow-warning)]',
+          'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/15',
         info: 
-          'border-transparent bg-[hsl(var(--info))] text-[hsl(var(--info-foreground))] hover:bg-[hsl(var(--info))]/90 shadow-sm hover:shadow-blue-500/20',
+          'bg-blue-500/10 text-blue-700 dark:text-blue-400 hover:bg-blue-500/15',
         subtle:
-          'border-transparent bg-muted text-muted-foreground hover:bg-muted/80',
+          'bg-muted/50 text-muted-foreground hover:bg-muted/70',
         ghost:
-          'border-transparent hover:bg-accent hover:text-accent-foreground',
+          'hover:bg-accent/50 hover:text-accent-foreground',
       },
       size: {
-        sm: 'px-2 py-0.5 text-[10px]',
+        sm: 'px-2 py-0 text-[10px]',
         default: 'px-2.5 py-0.5 text-xs',
         lg: 'px-3 py-1 text-sm',
       },

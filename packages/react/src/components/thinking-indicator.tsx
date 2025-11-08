@@ -71,15 +71,15 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
         ease: ANIMATION_EASING.out,
       }}
       className={cn(
-        'flex items-center gap-3 rounded-2xl border border-border/60 bg-[hsl(var(--surface-muted))] px-5 py-4 shadow-[0_12px_28px_rgba(15,23,42,0.12)]',
+        'flex items-center gap-3 rounded-xl border border-border/30 bg-[hsl(var(--surface-muted))] px-4 py-3 shadow-xs',
         className
       )}
     >
       {/* Animated Icon */}
       <motion.div
         animate={{
-          scale: [1, 1.15, 1],
-          rotate: [0, 3, -3, 0],
+          scale: [1, 1.08, 1],
+          rotate: [0, 2, -2, 0],
         }}
         transition={{
           duration: 2,
@@ -88,13 +88,13 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
         }}
         className="text-primary"
       >
-        {stageIcon}
+        {React.cloneElement(stageIcon as React.ReactElement, { size: 18 })}
       </motion.div>
 
       {/* Status Text */}
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-sm">
+          <span className="font-normal text-sm">
             {stageLabel}
           </span>
 
@@ -113,7 +113,7 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
                   delay: i * 0.2,
                   ease: ANIMATION_EASING.inOut,
                 }}
-                className="w-1.5 h-1.5 rounded-full bg-current"
+                className="w-1 h-1 rounded-full bg-current"
               />
             ))}
           </div>
@@ -128,7 +128,7 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
               duration: ANIMATION_DURATION.fast / 1000,
               ease: ANIMATION_EASING.out,
             }}
-            className="text-xs text-muted-foreground mt-1"
+            className="text-xs text-muted-foreground/70 mt-1"
           >
             {status.topic}
           </motion.p>
@@ -136,7 +136,7 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
 
         {/* Progress Bar */}
         {status?.progress !== undefined && (
-          <div className="mt-2 h-1 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
+          <div className="mt-2 h-0.5 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${status.progress}%` }}

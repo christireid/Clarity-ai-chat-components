@@ -141,10 +141,10 @@ export const ChatInput = React.memo(function ChatInput({
       ? {
           boxShadow: [
             '0 0 0 0 hsl(var(--primary) / 0)',
-            '0 0 0 4px hsl(var(--primary) / 0.15)',
-            '0 0 0 4px hsl(var(--primary) / 0.15)',
+            '0 0 0 3px hsl(var(--primary) / 0.08)',
+            '0 0 0 3px hsl(var(--primary) / 0.08)',
           ],
-          transition: { duration: 0.3, ease: 'easeOut' },
+          transition: { duration: 0.25, ease: 'easeOut' },
         }
       : {},
   }
@@ -152,7 +152,7 @@ export const ChatInput = React.memo(function ChatInput({
   return (
     <motion.div
       className={cn(
-        'relative flex flex-col gap-2 p-4 border-t-2 bg-background/95 backdrop-blur-sm',
+        'relative flex flex-col gap-2 p-3 border-t border-border/40 bg-background/95 backdrop-blur-sm',
         className
       )}
       initial="idle"
@@ -177,11 +177,11 @@ export const ChatInput = React.memo(function ChatInput({
             disabled={disabled}
             maxLength={maxLength}
             autoResize
-            maxRows={6}
+            maxRows={5}
             variant={isOverLimit ? 'error' : 'default'}
             className={cn(
-              'transition-all duration-200 shadow-sm',
-              isFocused && glowOnFocus && 'ring-2 ring-primary/30 shadow-md',
+              'transition-all duration-200 shadow-inner',
+              isFocused && glowOnFocus && 'ring-1 ring-primary/20',
               isOverLimit && 'animate-[shake_0.4s_ease-in-out]'
             )}
           />
@@ -194,7 +194,7 @@ export const ChatInput = React.memo(function ChatInput({
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 5 }}
-                  className="absolute bottom-2 right-2 flex flex-col items-end gap-1"
+                  className="absolute bottom-2 right-2 flex flex-col items-end gap-1 bg-background/80 backdrop-blur-sm rounded-full px-2"
                 >
                   {/* Progress bar */}
                   <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
@@ -228,9 +228,9 @@ export const ChatInput = React.memo(function ChatInput({
           state={buttonState}
           size="icon"
           className={cn(
-            'transition-all duration-200 shrink-0 shadow-sm',
+            'transition-all duration-200 shrink-0 shadow-xs w-9 h-9',
             hasContent && !isOverLimit
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:-translate-y-0.5'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
               : 'bg-muted text-muted-foreground'
           )}
           aria-label={
@@ -281,14 +281,14 @@ export const ChatInput = React.memo(function ChatInput({
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="text-xs text-muted-foreground px-1"
+            className="text-[11px] text-muted-foreground/70 px-1"
           >
             Press{' '}
-            <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
+            <kbd className="px-1.5 py-px text-[11px] border border-border/40 rounded bg-muted">
               Enter
             </kbd>{' '}
             to send ?{' '}
-            <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
+            <kbd className="px-1.5 py-px text-[11px] border border-border/40 rounded bg-muted">
               Shift + Enter
             </kbd>{' '}
             for new line

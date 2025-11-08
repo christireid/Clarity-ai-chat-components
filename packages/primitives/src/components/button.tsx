@@ -6,31 +6,31 @@ import { useRippleEffect } from '../hooks/use-ripple-effect'
 import { LoadingIcon, SuccessIcon, ErrorIcon } from './button-state-icons'
 
 const buttonVariants = cva(
-  'relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
+  'relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:shadow-focus-primary disabled:pointer-events-none disabled:opacity-50 overflow-hidden active:scale-[0.98]',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+          'bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs hover:shadow-md hover:-translate-y-px active:translate-y-0 active:shadow-xs',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-xs hover:shadow-md hover:-translate-y-px active:translate-y-0 active:shadow-xs',
         outline:
-          'border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20 hover:shadow-sm',
+          'border border-input/40 bg-background hover:bg-accent/50 hover:text-accent-foreground hover:border-input/60',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
-        ghost: 'hover:bg-accent hover:text-accent-foreground hover:shadow-sm',
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-xs hover:shadow-md hover:-translate-y-px active:translate-y-0 active:shadow-xs',
+        ghost: 'hover:bg-accent/50 hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         success:
-          'bg-green-600 text-white hover:bg-green-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+          'bg-green-600 text-white hover:bg-green-700 shadow-xs hover:shadow-md hover:-translate-y-px active:translate-y-0 active:shadow-xs',
         error:
-          'bg-red-600 text-white hover:bg-red-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+          'bg-red-600 text-white hover:bg-red-700 shadow-xs hover:shadow-md hover:-translate-y-px active:translate-y-0 active:shadow-xs',
         surface:
-          'bg-surface text-surface-foreground hover:bg-surface/80 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm border border-border',
+          'bg-surface text-surface-foreground hover:bg-surface/80 shadow-xs hover:shadow-md hover:-translate-y-px active:translate-y-0 active:shadow-xs border border-border/40',
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-8 rounded-lg px-3 text-xs',
-        lg: 'h-12 rounded-lg px-8 text-base',
+        default: 'h-10 px-5 py-2',
+        sm: 'h-8 rounded-lg px-4 text-xs',
+        lg: 'h-12 rounded-lg px-6 text-base',
         icon: 'h-10 w-10',
       },
     },
@@ -174,8 +174,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           buttonVariants({ variant: effectiveVariant, size, className }),
           currentState === 'success' &&
-            'after:absolute after:inset-0 after:rounded-inherit after:border-2 after:border-success/40 after:animate-[pulse_0.8s_ease-out_2] after:content-[""]',
-          currentState === 'error' && 'animate-[error-shake_0.4s_ease-in-out]'
+            'after:absolute after:inset-0 after:rounded-inherit after:border after:border-success/40 after:animate-[pulse_0.8s_ease-out_2] after:content-[""]',
+          currentState === 'error' && 'animate-error-shake'
         )}
         ref={ref}
         disabled={isDisabled}
