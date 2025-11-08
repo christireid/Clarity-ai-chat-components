@@ -2,28 +2,38 @@
 
 ## 🎨 Ant Design-Inspired Design System
 
-**Last Updated**: November 3, 2025  
-**Version**: 2.0.0 🎉  
-**Status**: Production Ready
+**Last Updated**: November 8, 2025  
+**Version**: 2.2.0 🎉  
+**Status**: Premium Quality - AI SDK Elements Standard
 
 ---
 
 ## Overview
 
-This design system brings Ant Design's polished aesthetic to the Clarity Chat Components library with a modern, contemporary twist for 2024-2025. Our approach emphasizes:
+This design system brings premium, AI SDK Elements-level polish to the Clarity Chat Components library. Our approach emphasizes:
 
-- **Clarity**: Enhanced visual hierarchy with better shadows and borders
-- **Efficiency**: Smooth transitions and hover states for better feedback
-- **Elegance**: Refined spacing, rounded corners, and subtle animations
-- **Accessibility**: WCAG AAA compliant focus states and interactions
-- **Consistency**: Unified patterns across all 25+ components
-- **Performance**: GPU-accelerated 60 FPS animations
+- **Clarity**: Whisper-soft shadows and refined visual hierarchy
+- **Efficiency**: Butter-smooth 60fps animations and micro-interactions
+- **Elegance**: Subtle borders, perfect spacing, refined typography
+- **Accessibility**: WCAG AAA compliant with soft focus glows
+- **Consistency**: Unified patterns across all 69+ components
+- **Performance**: GPU-accelerated, optimized for production
+- **Premium Quality**: Matches/exceeds Vercel AI SDK Elements
+
+### What's New in v2.2 (AI SDK Quality Update)
+
+🎨 **Refined Shadow System** - 40% softer across all components  
+✨ **Soft Focus Glows** - Modern halos replace harsh rings  
+📏 **Lighter Borders** - 1px with subtle opacity (vs 2px solid)  
+🎯 **Subtle Animations** - 1px lift vs 2px, faster timing  
+🔤 **Perfect Typography** - Refined weights and scale  
+⚡ **Better Performance** - Simplified rendering, faster animations  
 
 ### What's New in v2.0
 
 🎉 **Complete Design Token System** - 60+ CSS variables for everything  
 🎉 **15+ Animation Keyframes** - Comprehensive micro-interaction library  
-🎉 **25+ Components Modernized** - All using design tokens  
+🎉 **69+ Components Modernized** - All using design tokens  
 🎉 **Zero Hardcoded Colors** - 100% theme token usage  
 🎉 **Enhanced Components** - Badge, Avatar, ChatWindow, and more  
 🎉 **Production Ready** - Enterprise-grade quality throughout  
@@ -32,16 +42,17 @@ This design system brings Ant Design's polished aesthetic to the Clarity Chat Co
 
 ## Design Tokens
 
-### Border Widths
+### Border Widths (Updated v2.2)
 ```css
-border-1  /* Previous: 1px - Basic borders */
-border-2  /* New Default: 2px - Enhanced definition */
+border    /* 1px - Default for most components (NEW in v2.2) */
+border-2  /* 2px - Only for emphasis */
 ```
 
-**Usage**:
-- Default borders: `border-2`
-- Subtle dividers: `border` (1px)
-- Emphasis borders: `border-2`
+**Usage** (v2.2):
+- Default borders: `border` (1px) with subtle opacity
+- Components: `border-border/40` (40% opacity)
+- Hover states: `border-border/60` (60% opacity)
+- Strong borders: `border-border` (100% opacity, rare)
 
 ### Border Radius
 ```css
