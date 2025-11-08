@@ -230,18 +230,31 @@ export function VoiceInput({
           aria-label={ariaLabel}
           title={voice.isListening ? 'Stop recording' : tooltipText}
         >
-          {/* Pulse animation when listening */}
+          {/* Enhanced pulse animation when listening */}
           {voice.isListening && (
-            <motion.div
-              className="absolute inset-0 rounded-full bg-destructive"
-              initial={{ scale: 1, opacity: 0.6 }}
-              animate={{ scale: 1.5, opacity: 0 }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: 'easeOut',
-              }}
-            />
+            <>
+              <motion.div
+                className="absolute inset-0 rounded-full bg-destructive"
+                initial={{ scale: 1, opacity: 0.5 }}
+                animate={{ scale: 1.8, opacity: 0 }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
+              />
+              <motion.div
+                className="absolute inset-0 rounded-full bg-destructive"
+                initial={{ scale: 1, opacity: 0.3 }}
+                animate={{ scale: 1.5, opacity: 0 }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: [0.25, 0.1, 0.25, 1],
+                  delay: 0.5,
+                }}
+              />
+            </>
           )}
 
           {/* Icon */}
@@ -275,11 +288,11 @@ export function VoiceInput({
       <AnimatePresence>
         {showTranscript && (voice.transcript || voice.isListening) && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            initial={{ opacity: 0, y: 10, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-xl z-[var(--z-popover)] backdrop-blur-sm"
+            exit={{ opacity: 0, y: 10, scale: 0.96 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card/95 border border-border/40 shadow-[0_12px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] rounded-2xl z-[var(--z-popover)] backdrop-blur-md"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
@@ -326,8 +339,29 @@ export function VoiceInput({
               </Button>
             </div>
 
+            {/* Waveform visualization when listening */}
+            {voice.isListening && (
+              <div className="mb-3 flex items-center justify-center gap-1 h-12">
+                {[...Array(5)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-1 bg-destructive rounded-full"
+                    animate={{
+                      height: ['12px', '32px', '12px'],
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      repeat: Infinity,
+                      ease: [0.25, 0.1, 0.25, 1],
+                      delay: i * 0.1,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+
             {/* Transcript text */}
-            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto p-3 bg-muted/50 border rounded-lg">
+            <div className="mb-3 min-h-[60px] max-h-[120px] overflow-y-auto p-3 bg-muted/30 border border-border/40 rounded-xl">
               {voice.transcript ? (
                 <p className="text-sm text-foreground">
                   {voice.finalTranscript && (
@@ -349,7 +383,10 @@ export function VoiceInput({
 
             {/* Error message */}
             {voice.error && (
-              <div className="mb-3 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-3 p-3 bg-destructive/5 border border-destructive/20 rounded-xl">
                 <div className="flex items-start gap-2">
                   <svg
                     className="h-4 w-4 text-destructive shrink-0 mt-0.5"
@@ -366,7 +403,7 @@ export function VoiceInput({
                   </svg>
                   <p className="text-sm text-destructive">{voice.error}</p>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Actions */}
@@ -400,12 +437,12 @@ export function VoiceInput({
                     {Math.round(voice.confidence * 100)}%
                   </Badge>
                 </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-[hsl(var(--success))]"
+                    className="h-full bg-gradient-to-r from-green-500/80 to-green-500 rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${voice.confidence * 100}%` }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                   />
                 </div>
               </div>
