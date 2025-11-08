@@ -149,7 +149,7 @@ export const PerformanceReport: React.FC<PerformanceReportProps> = ({
   const isSlowAverage = metrics.averageRenderTime > threshold
 
   return (
-    <div className="fixed bottom-4 left-4 p-3 rounded-lg bg-background border shadow-lg text-xs font-mono space-y-1 z-50">
+    <div className="fixed bottom-4 left-4 p-3 rounded-lg bg-background border border-border/60 shadow-[0_10px_24px_rgba(15,23,42,0.12)] text-xs font-mono space-y-1 z-50 backdrop-blur-sm">
       <div className="font-semibold text-foreground">Performance Metrics</div>
       <div className="text-muted-foreground">Renders: {metrics.renderCount}</div>
       <div className={isSlowRender ? 'text-destructive' : 'text-muted-foreground'}>

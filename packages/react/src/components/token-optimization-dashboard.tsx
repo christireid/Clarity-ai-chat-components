@@ -98,7 +98,7 @@ export function TokenOptimizationDashboard({
 
   return (
     <div
-      className={`p-6 bg-card rounded-xl border border-border shadow-sm ${className}`}
+      className={`p-6 bg-card rounded-xl border border-border/60 shadow-[0_1px_3px_rgba(15,23,42,0.1)] ${className}`}
       onClick={onClick}
     >
       {/* Header */}

@@ -131,13 +131,13 @@ export function ToolInvocationCard({
       transition={{ duration: 0.2 }}
       className={className}
     >
-      <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+      <Card className="relative overflow-hidden shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-shadow duration-150 ease-out">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-4">
             {/* Tool Info */}
             <div className="flex items-start gap-3 flex-1 min-w-0">
               {/* Icon */}
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
@@ -204,7 +204,7 @@ export function ToolInvocationCard({
               <span>Arguments</span>
               <svg
                 className={cn(
-                  'h-4 w-4 transition-transform duration-200',
+                  'h-4 w-4 transition-transform duration-150 ease-out',
                   isArgsExpanded && 'rotate-180'
                 )}
                 fill="none"
@@ -260,7 +260,7 @@ export function ToolInvocationCard({
                     </span>
                     <svg
                       className={cn(
-                        'h-4 w-4 transition-transform duration-200',
+                        'h-4 w-4 transition-transform duration-150 ease-out',
                         isResultExpanded && 'rotate-180'
                       )}
                       fill="none"

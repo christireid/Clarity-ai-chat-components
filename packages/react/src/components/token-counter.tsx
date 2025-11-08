@@ -277,7 +277,7 @@ export function TokenCounter({
       {/* Warning message */}
       {showWarning && isWarning && (
         <div
-          className={`flex items-start gap-2 p-3 rounded-xl border ${colors.border} ${colors.bg}/10 shadow-sm`}
+          className={`flex items-start gap-2 p-3 rounded-xl border border-border/60 ${colors.border} ${colors.bg}/10 shadow-[0_1px_3px_rgba(15,23,42,0.1)]`}
           role="alert"
         >
           <svg

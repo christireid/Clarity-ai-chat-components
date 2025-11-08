@@ -41,7 +41,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
   subtitle = defaultSubtitle,
 }: WorkflowSuggestionListProps) {
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_48px_rgba(15,23,42,0.32)]', className)}>
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
           <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
@@ -50,7 +50,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
       </CardHeader>
       <CardContent className="space-y-4">
         {workflows.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-border/50 bg-[hsl(var(--surface-muted))] p-6 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed border-border/50 bg-muted p-6 text-center text-sm text-muted-foreground">
             No workflows available. Define templated flows to guide users through complex tasks.
           </div>
         )}
@@ -59,7 +59,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
           {workflows.map((workflow) => (
             <li
               key={workflow.id}
-              className="space-y-3 rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-[0_12px_30px_rgba(15,23,42,0.12)]"
+              className="space-y-3 rounded-lg border border-border/50 bg-muted p-4 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex flex-col gap-2">
@@ -106,7 +106,7 @@ export const WorkflowSuggestionList = React.memo(function WorkflowSuggestionList
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border/40 bg-background/70 p-4">
+              <div className="rounded-lg border border-border/50 bg-background/70 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground/70">
                   Steps
                 </p>

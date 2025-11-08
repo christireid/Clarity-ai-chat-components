@@ -343,7 +343,7 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-full left-4 right-4 mb-2 bg-popover border rounded-lg shadow-lg max-h-64 overflow-y-auto z-50"
+              className="absolute bottom-full left-4 right-4 mb-2 bg-popover border border-border/60 rounded-lg shadow-[0_24px_48px_rgba(15,23,42,0.32)] max-h-64 overflow-y-auto z-50 backdrop-blur-sm"
               role="listbox"
               aria-label="Suggestions"
             >

@@ -356,7 +356,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
             }}
             className={cn(
               'bg-popover text-popover-foreground',
-              'border-2 rounded-xl shadow-xl',
+              'border border-border/50 rounded-lg shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
               'outline-none backdrop-blur-sm',
               'animate-in fade-in-0 zoom-in-95',
               className
@@ -370,7 +370,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
             {showArrow && (
               <div
                 className={cn(
-                  'absolute w-3 h-3 bg-[hsl(var(--surface-elevated))] border border-border/60',
+                  'absolute w-3 h-3 bg-popover border border-border/60',
                   getArrowClasses(actualSide, align)
                 )}
                 style={{ transform: 'rotate(45deg)' }}
