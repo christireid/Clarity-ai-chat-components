@@ -206,7 +206,7 @@ export const PromptSuggestions = React.memo(function PromptSuggestions({
                     'group relative',
                     'hover:bg-primary hover:text-primary-foreground',
                     'transition-all duration-200',
-                    'hover:scale-105 active:scale-95'
+                    'hover:scale-[1.02] active:scale-[0.98]'
                   )}
                   aria-label={suggestion.label || suggestion.text}
                 >
@@ -250,8 +250,8 @@ export const PromptSuggestions = React.memo(function PromptSuggestions({
               <Card
                 className={cn(
                   'cursor-pointer transition-all',
-                  'hover:shadow-lg hover:border-primary',
-                  'hover:-translate-y-1'
+                  'hover:shadow-sm hover:border-primary',
+                  'hover:-translate-y-[1px]'
                 )}
                 onClick={() => onSelect(suggestion)}
               >
