@@ -213,22 +213,22 @@ const sizeClasses = {
   full: 'max-w-full mx-4',
 }
 
-// Memoized animation variants to prevent recreation on every render
+// Memoized animation variants - refined with better values
 const contentAnimations = {
   scale: {
-    initial: { scale: 0.95, opacity: 0 },
+    initial: { scale: 0.96, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
-    exit: { scale: 0.95, opacity: 0 },
+    exit: { scale: 0.96, opacity: 0 },
   },
   'slide-up': {
-    initial: { y: 20, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: 20, opacity: 0 },
+    initial: { y: 24, opacity: 0, scale: 0.98 },
+    animate: { y: 0, opacity: 1, scale: 1 },
+    exit: { y: 24, opacity: 0, scale: 0.98 },
   },
   'slide-down': {
-    initial: { y: -20, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: -20, opacity: 0 },
+    initial: { y: -24, opacity: 0, scale: 0.98 },
+    animate: { y: 0, opacity: 1, scale: 1 },
+    exit: { y: -24, opacity: 0, scale: 0.98 },
   },
   fade: {
     initial: { opacity: 0 },
@@ -236,9 +236,9 @@ const contentAnimations = {
     exit: { opacity: 0 },
   },
   zoom: {
-    initial: { scale: 0.8, opacity: 0 },
+    initial: { scale: 0.9, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
-    exit: { scale: 0.8, opacity: 0 },
+    exit: { scale: 0.9, opacity: 0 },
   },
 } as const
 
@@ -311,15 +311,15 @@ export const DialogContent: React.FC<DialogContentProps> = ({
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop - refined */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
             className={cn(
-              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/50',
-              blurBackdrop && 'backdrop-blur-sm',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
+              blurBackdrop && 'backdrop-blur-md',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -331,10 +331,10 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             <motion.div
               ref={contentRef}
               {...animationProps}
-              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                'relative w-full bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-2xl pointer-events-auto',
+                'relative w-full bg-card border border-border/40 shadow-[0_20px_40px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.1)] rounded-2xl pointer-events-auto',
                 sizeClasses[size],
                 className
               )}
@@ -343,15 +343,17 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             >
               {/* Close button */}
               {showCloseButton && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    'absolute top-4 right-4 w-8 h-8 rounded-md',
+                    'absolute top-4 right-4 w-8 h-8 rounded-xl',
                     'flex items-center justify-center',
                     'text-muted-foreground hover:text-foreground',
                     'hover:bg-muted/50',
-                    'transition-colors duration-200',
-                    'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1'
+                    'transition-colors duration-150 ease-out',
+                    'focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2'
                   )}
                   aria-label="Close dialog"
                 >
@@ -370,7 +372,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                       clipRule="evenodd"
                     />
                   </svg>
-                </button>
+                </motion.button>
               )}
 
               {children}
@@ -394,7 +396,7 @@ export const DialogHeader: React.FC<DialogHeaderProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b', className)}>
+    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b border-border/40', className)}>
       {children}
     </div>
   )
@@ -407,7 +409,7 @@ export const DialogTitle: React.FC<DialogTitleProps> = ({
   return (
     <h2
       className={cn(
-        'text-xl font-semibold leading-none tracking-tight',
+        'text-xl font-semibold leading-none tracking-tight text-foreground',
         className
       )}
     >
@@ -421,7 +423,7 @@ export const DialogDescription: React.FC<DialogDescriptionProps> = ({
   className,
 }) => {
   return (
-    <p className={cn('text-sm text-muted-foreground', className)}>
+    <p className={cn('text-sm text-muted-foreground/80 leading-relaxed', className)}>
       {children}
     </p>
   )
@@ -441,7 +443,7 @@ export const DialogFooter: React.FC<DialogFooterProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center justify-end gap-2 px-6 py-4 border-t',
+        'flex items-center justify-end gap-2 px-6 py-4 border-t border-border/40',
         className
       )}
     >
