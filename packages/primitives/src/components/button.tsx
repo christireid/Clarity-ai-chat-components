@@ -6,32 +6,32 @@ import { useRippleEffect } from '../hooks/use-ripple-effect'
 import { LoadingIcon, SuccessIcon, ErrorIcon } from './button-state-icons'
 
 const buttonVariants = cva(
-  'relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
+  'relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:shadow-[0_0_0_3px_rgba(var(--primary),0.1)] disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+          'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(239,68,68,0.2)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
         outline:
-          'border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/20 hover:shadow-sm',
+          'border border-input/60 bg-background hover:bg-accent hover:text-accent-foreground hover:border-accent-foreground/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)]',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
-        ghost: 'hover:bg-accent hover:text-accent-foreground hover:shadow-sm',
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         success:
-          'bg-green-600 text-white hover:bg-green-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+          'bg-green-600 text-white hover:bg-green-700 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(34,197,94,0.2)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
         error:
-          'bg-red-600 text-white hover:bg-red-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm',
+          'bg-red-600 text-white hover:bg-red-700 shadow-[0_1px_3px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(239,68,68,0.2)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.1)]',
         surface:
-          'bg-surface text-surface-foreground hover:bg-surface/80 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm shadow-sm border border-border',
+          'bg-surface text-surface-foreground hover:bg-surface/80 border border-border/40 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_3px_rgba(0,0,0,0.08)]',
       },
       size: {
         default: 'h-10 px-4 py-2',
-        sm: 'h-8 rounded-lg px-3 text-xs',
-        lg: 'h-12 rounded-lg px-8 text-base',
-        icon: 'h-10 w-10',
+        sm: 'h-8 rounded-xl px-3 text-xs',
+        lg: 'h-12 rounded-xl px-8 text-base',
+        icon: 'h-10 w-10 rounded-xl',
       },
     },
     defaultVariants: {
