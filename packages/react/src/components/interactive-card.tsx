@@ -100,12 +100,12 @@ export const InteractiveCard = React.memo(
       <Component
         ref={ref}
         className={cn(
-          'relative overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
-          interactive && 'cursor-pointer hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+          'relative overflow-hidden rounded-lg ring-1 ring-border/30 bg-card transition-all duration-200 shadow-xs',
+          interactive && 'cursor-pointer hover:shadow-sm',
           disabled && 'opacity-50 cursor-not-allowed',
-          selected && 'ring-2 ring-primary/50 ring-offset-2 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+          selected && 'ring-2 ring-primary/50 ring-offset-2 shadow-sm',
           showFocusRing &&
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
           className
         )}
         tabIndex={interactive && !disabled ? 0 : undefined}
@@ -236,10 +236,10 @@ export const InteractiveButton = React.forwardRef<
         transition={INTERACTION_VARIANTS.button.transition}
         disabled={disabled || loading}
         className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2',
+          'inline-flex items-center justify-center gap-2 rounded-md font-medium transition-all duration-200 shadow-xs',
+          'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
           'disabled:opacity-50 disabled:pointer-events-none',
-          'hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px',
+          'hover:shadow-sm hover:-translate-y-[2px]',
           variantClasses[variant],
           sizeClasses[size],
           className
@@ -303,10 +303,10 @@ export const InteractiveListItem: React.FC<InteractiveListItemProps> = ({
       whileTap={!disabled ? { scale: 0.98 } : {}}
       onClick={!disabled ? onClick : undefined}
       className={cn(
-        'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-150 ease-out',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        'hover:bg-accent/50 hover:shadow-sm',
-        selected && 'bg-accent shadow-sm',
+        'flex items-center gap-3 p-3 rounded-md cursor-pointer transition-all duration-200',
+        'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1',
+        'hover:bg-accent/30 hover:shadow-xs',
+        selected && 'bg-accent/50 shadow-xs',
         disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
