@@ -246,7 +246,7 @@ export function ThemeSelectorDropdown({
                   <div className="flex items-center gap-3 flex-1">
                     {metadata.preview && (
                       <div
-                        className="w-6 h-6 rounded-full border-2 border-white shadow-sm flex-shrink-0"
+                        className="w-6 h-6 rounded-full border-2 border-white shadow-[0_1px_2px_rgba(15,23,42,0.08)] flex-shrink-0"
                         style={{ backgroundColor: metadata.preview.primaryColor }}
                         aria-hidden="true"
                       />
