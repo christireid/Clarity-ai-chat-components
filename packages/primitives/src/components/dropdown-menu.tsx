@@ -400,37 +400,37 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
   }, [open, autoFocus, focusFirstRef, focusItemByIndex])
 
   const animationVariants = React.useMemo(() => {
-    const offset = 8
+    const offset = 6
     switch (actualSide) {
       case 'top':
         return {
-          initial: { opacity: 0, y: offset, scale: 0.98 },
+          initial: { opacity: 0, y: offset, scale: 0.96 },
           animate: { opacity: 1, y: 0, scale: 1 },
-          exit: { opacity: 0, y: offset, scale: 0.98 },
+          exit: { opacity: 0, y: offset, scale: 0.96 },
         }
       case 'bottom':
         return {
-          initial: { opacity: 0, y: -offset, scale: 0.98 },
+          initial: { opacity: 0, y: -offset, scale: 0.96 },
           animate: { opacity: 1, y: 0, scale: 1 },
-          exit: { opacity: 0, y: -offset, scale: 0.98 },
+          exit: { opacity: 0, y: -offset, scale: 0.96 },
         }
       case 'left':
         return {
-          initial: { opacity: 0, x: offset, scale: 0.98 },
+          initial: { opacity: 0, x: offset, scale: 0.96 },
           animate: { opacity: 1, x: 0, scale: 1 },
-          exit: { opacity: 0, x: offset, scale: 0.98 },
+          exit: { opacity: 0, x: offset, scale: 0.96 },
         }
       case 'right':
         return {
-          initial: { opacity: 0, x: -offset, scale: 0.98 },
+          initial: { opacity: 0, x: -offset, scale: 0.96 },
           animate: { opacity: 1, x: 0, scale: 1 },
-          exit: { opacity: 0, x: -offset, scale: 0.98 },
+          exit: { opacity: 0, x: -offset, scale: 0.96 },
         }
       default:
         return {
-          initial: { opacity: 0, y: -offset, scale: 0.98 },
+          initial: { opacity: 0, y: -offset, scale: 0.96 },
           animate: { opacity: 1, y: 0, scale: 1 },
-          exit: { opacity: 0, y: -offset, scale: 0.98 },
+          exit: { opacity: 0, y: -offset, scale: 0.96 },
         }
     }
   }, [actualSide])
@@ -443,7 +443,7 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
             ref={contentRef}
             data-dropdown-content="true"
             {...animationVariants}
-            transition={{ duration: 0.16, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             style={{
               position: 'fixed',
               left: position.x,
@@ -453,7 +453,7 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
               zIndex: 9999,
             }}
             className={cn(
-              'min-w-[12rem] overflow-hidden rounded-lg border border-border/50 bg-popover py-1 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] backdrop-blur-sm',
+              'min-w-[12rem] overflow-hidden rounded-xl border border-border/40 bg-popover/98 py-1 shadow-[0_12px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] backdrop-blur-md',
               className
             )}
             role="menu"
@@ -539,7 +539,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
           <span className="truncate text-left">{children}</span>
         </div>
         {shortcut && (
-          <kbd className="rounded-md border border-border/60 bg-[hsl(var(--surface-muted))] px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+          <kbd className="rounded-sm ring-1 ring-border/30 bg-[hsl(var(--surface-muted))] px-2 py-0.5 text-[11px] font-medium text-muted-foreground shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
             {shortcut}
           </kbd>
         )}

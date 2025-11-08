@@ -1,27 +1,7 @@
-import { Metadata } from 'next'
-import Hero from '@/components/Hero'
-import Features from '@/components/Features'
-import Pricing from '@/components/PricingPreview'
-import Testimonials from '@/components/Testimonials'
-import CTA from '@/components/CTA'
-import FAQ from '@/components/FAQ'
-
-export const metadata: Metadata = {
-  title: 'Home',
-  description:
-    'Ship production-ready AI chat interfaces 10-50x faster. Save $150K+ vs custom build. WCAG AAA certified. Start free, upgrade anytime.',
-}
-
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="min-h-screen">
-      <Hero />
-      <Features />
-      <Testimonials />
-      <Pricing />
-      <FAQ />
-      <CTA />
+    <main className="min-h-screen flex items-center justify-center">
+      <h1 className="text-4xl font-bold">Clarity Chat Marketing Site</h1>
     </main>
   )
 }
-

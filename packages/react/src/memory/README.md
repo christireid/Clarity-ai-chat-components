@@ -9,15 +9,12 @@
 ✅ **Token Optimization** - Intelligent compression and allocation  
 ✅ **Auto-Management** - Automatic cleanup and summarization  
 ✅ **Event System** - Subscribe to memory lifecycle events  
-✅ **Production Ready** - Docker infrastructure included  
+✅ **Production Ready** - Docker infrastructure included
 
 ## Quick Start
 
 ```tsx
-import {
-  MemoryProvider,
-  useConversationMemory,
-} from '@clarity-chat/react/memory'
+import { MemoryProvider, useConversationMemory } from '@clarity-chat/react/memory'
 
 function App() {
   return (
@@ -35,12 +32,12 @@ function Chat() {
   const handleMessage = async (text: string) => {
     // Capture message
     await captureMessage(text, 'user')
-    
+
     // Get relevant context
     const memories = await getRelevantMemories(text, 5)
-    
+
     // Use in your LLM call
-    const context = memories.map(m => m.memory.content).join('\n')
+    const context = memories.map((m) => m.memory.content).join('\n')
   }
 
   return <div>{/* Your chat UI */}</div>
@@ -54,9 +51,9 @@ const config: MemoryServiceConfig = {
   tokenOptimization: {
     maxContextWindow: 4096,
     allocation: {
-      systemPrompt: 0.10,
+      systemPrompt: 0.1,
       userPreferences: 0.15,
-      recentContext: 0.30,
+      recentContext: 0.3,
       semanticMemory: 0.25,
       episodicMemory: 0.15,
       responseReserve: 0.05,
@@ -73,10 +70,10 @@ const config: MemoryServiceConfig = {
   enableAutoSummarization: true,
   enableAutoCleanup: true,
   retentionPolicy: {
-    shortTerm: 3600,    // 1 hour
-    session: 86400,     // 24 hours
-    thread: 604800,     // 7 days
-    global: 0,          // Never expires
+    shortTerm: 3600, // 1 hour
+    session: 86400, // 24 hours
+    thread: 604800, // 7 days
+    global: 0, // Never expires
   },
 }
 ```
@@ -97,6 +94,7 @@ docker-compose -f docker-compose.memory.yml up -d
 ```
 
 Services included:
+
 - **Qdrant** - Vector database for semantic search
 - **Redis** - Fast cache layer
 - **PostgreSQL** - Persistent storage
@@ -110,7 +108,7 @@ Services included:
 - `useMemoryStats()` - Get memory statistics
 - `useMemoryEvents()` - Subscribe to events
 - `useConversationMemory()` - High-level conversation API
-- `useTokenOptimization()` - Optimize context for LLM
+- `useMemoryOptimization()` - Optimize context for LLM
 
 ### Memory Operations
 
@@ -146,22 +144,24 @@ await compressMemory(id, 0.5)
 
 ## Memory Types
 
-| Type | Purpose | Scope | Example |
-|------|---------|-------|---------|
-| **Episodic** | Specific events | Session, Thread | "User asked about React hooks" |
-| **Semantic** | Learned facts | User, Global | "User prefers TypeScript" |
-| **Procedural** | How-to knowledge | Global | "Deploy process steps" |
-| **Short-term** | Recent context | Session | "Last 10 messages" |
+| Type           | Purpose          | Scope           | Example                        |
+| -------------- | ---------------- | --------------- | ------------------------------ |
+| **Episodic**   | Specific events  | Session, Thread | "User asked about React hooks" |
+| **Semantic**   | Learned facts    | User, Global    | "User prefers TypeScript"      |
+| **Procedural** | How-to knowledge | Global          | "Deploy process steps"         |
+| **Short-term** | Recent context   | Session         | "Last 10 messages"             |
 
 ## Token Optimization
 
 The system automatically optimizes token usage:
 
 **Without Memory System:**
+
 - 50 turn conversation = 50,000 tokens
 - Cost: $1.50 per conversation (GPT-4)
 
 **With Memory System:**
+
 - 50 turn conversation = 15,000 tokens
 - Cost: $0.45 per conversation
 - **70% savings**
@@ -176,6 +176,7 @@ The system automatically optimizes token usage:
 ## Examples
 
 See complete examples:
+
 - `/examples/memory-system-basic.tsx`
 - `/examples/memory-system-advanced.tsx`
 

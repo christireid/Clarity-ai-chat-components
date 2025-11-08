@@ -50,4 +50,4 @@
 
 export * from './types'
 export * from './rbac-manager'
-
+export * from './react'

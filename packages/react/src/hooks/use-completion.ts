@@ -26,6 +26,10 @@ interface CacheEntry {
   expiresAt: number
 }
 
+type CompletionRequestOptions = {
+  body?: Record<string, any>
+}
+
 /**
  * Options for useCompletion hook
  */
@@ -264,133 +268,126 @@ export function useCompletion(options: UseCompletionOptions = {}): UseCompletion
   /**
    * Complete a prompt with optional caching
    */
-  const complete = React.useCallback(
-    async (
-      prompt: string,
-      options?: { body?: Record<string, any> }
-    ): Promise<string | null> {
-      const trimmedPrompt = prompt.trim()
-      if (!trimmedPrompt) {
-        const emptyError = new Error('Prompt cannot be empty')
-        onError?.(emptyError)
-        return null
-      }
-
-      // Check cache first
-      if (enableCache && cacheRef.current) {
-        const requestBody = { ...body, ...options?.body }
-        const cached = cacheRef.current.get(trimmedPrompt, requestBody)
-        if (cached) {
-          setCompletion(cached)
-          // Call onFinish for cached results too
-          await onFinish?.(trimmedPrompt, cached)
-          return cached
-        }
-      }
-
-      setIsLoading(true)
-      setError(undefined)
-      setCompletion('')
-
-      abortControllerRef.current = new AbortController()
-
-      try {
-        const requestBody: Record<string, any> = {
-          ...body,
-          ...options?.body,
-          prompt: trimmedPrompt,
-        }
-
-        const response = await customFetch(api, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...headers,
-          },
-          credentials,
-          body: JSON.stringify(requestBody),
-          signal: abortControllerRef.current.signal,
-        })
-
-        await onResponse?.(response)
-
-        if (!response.ok) {
-          const errorText = await response.text().catch(() => '')
-          throw new Error(
-            `HTTP ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ''}`
-          )
-        }
-
-        if (!stream || !response.body) {
-          // Non-streaming response
-          const result = await response.json()
-          const completionText = result.completion || result.text || result.content || ''
-          
-          setCompletion(completionText)
-          setIsLoading(false)
-          await onFinish?.(trimmedPrompt, completionText)
-
-          // Cache the result
-          if (enableCache && cacheRef.current) {
-            cacheRef.current.set(trimmedPrompt, completionText, requestBody)
-          }
-          
-          return completionText
-        }
-
-        // Streaming response using shared utilities
-        const result = await processStream(response.body, {
-          format: streamFormat,
-          signal: abortControllerRef.current.signal,
-          onChunk: (chunk) => {
-            setCompletion((prev) => prev + chunk)
-          },
-          onProgress,
-          onError,
-        })
-
-        // Finalize
-        setCompletion(result.content)
-        setIsLoading(false)
-        await onFinish?.(trimmedPrompt, result.content)
-
-        // Cache the result
-        if (enableCache && cacheRef.current) {
-          cacheRef.current.set(trimmedPrompt, result.content, requestBody)
-        }
-
-        return result.content
-      } catch (err: unknown) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          setIsLoading(false)
+    const complete = React.useCallback(
+      async (
+        prompt: string,
+        options: CompletionRequestOptions = {}
+      ): Promise<string | null> => {
+        const trimmedPrompt = prompt.trim()
+        if (!trimmedPrompt) {
+          const emptyError = new Error('Prompt cannot be empty')
+          onError?.(emptyError)
           return null
         }
 
-        const error = err instanceof Error ? err : new Error(String(err))
-        setError(error)
-        onError?.(error)
-        setIsLoading(false)
+        if (enableCache && cacheRef.current) {
+          const requestBody = { ...body, ...options.body }
+          const cached = cacheRef.current.get(trimmedPrompt, requestBody)
+          if (cached) {
+            setCompletion(cached)
+            await onFinish?.(trimmedPrompt, cached)
+            return cached
+          }
+        }
 
-        throw error
-      } finally {
-        abortControllerRef.current = null
-      }
-    },
-    [
-      api,
-      body,
-      headers,
-      credentials,
-      customFetch,
-      stream,
-      streamFormat,
-      enableCache,
-      onResponse,
-      onFinish,
-      onError,
-      onProgress,
-    ]
-  )
+        setIsLoading(true)
+        setError(undefined)
+        setCompletion('')
+
+        abortControllerRef.current = new AbortController()
+
+        try {
+          const requestBody: Record<string, any> = {
+            ...body,
+            ...options.body,
+            prompt: trimmedPrompt,
+          }
+
+          const response = await customFetch(api, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...headers,
+            },
+            credentials,
+            body: JSON.stringify(requestBody),
+            signal: abortControllerRef.current.signal,
+          })
+
+          await onResponse?.(response)
+
+          if (!response.ok) {
+            const errorText = await response.text().catch(() => '')
+            throw new Error(
+              `HTTP ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ''}`
+            )
+          }
+
+          if (!stream || !response.body) {
+            const result = await response.json()
+            const completionText = result.completion || result.text || result.content || ''
+
+            setCompletion(completionText)
+            setIsLoading(false)
+            await onFinish?.(trimmedPrompt, completionText)
+
+            if (enableCache && cacheRef.current) {
+              cacheRef.current.set(trimmedPrompt, completionText, requestBody)
+            }
+
+            return completionText
+          }
+
+          const result = await processStream(response.body, {
+            format: streamFormat,
+            signal: abortControllerRef.current.signal,
+            onChunk: (chunk) => {
+              setCompletion((prev) => prev + chunk)
+            },
+            onProgress,
+            onError,
+          })
+
+          setCompletion(result.content)
+          setIsLoading(false)
+          await onFinish?.(trimmedPrompt, result.content)
+
+          if (enableCache && cacheRef.current) {
+            cacheRef.current.set(trimmedPrompt, result.content, requestBody)
+          }
+
+          return result.content
+        } catch (err: unknown) {
+          if (err instanceof Error && err.name === 'AbortError') {
+            setIsLoading(false)
+            return null
+          }
+
+          const error = err instanceof Error ? err : new Error(String(err))
+          setError(error)
+          onError?.(error)
+          setIsLoading(false)
+
+          throw error
+        } finally {
+          abortControllerRef.current = null
+        }
+      },
+      [
+        api,
+        body,
+        credentials,
+        customFetch,
+        enableCache,
+        headers,
+        onError,
+        onFinish,
+        onProgress,
+        onResponse,
+        stream,
+        streamFormat,
+      ]
+    )
 
   /**
    * Clear cache manually

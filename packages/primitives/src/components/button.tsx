@@ -11,21 +11,21 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
+          'bg-primary text-primary-foreground shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_1px_2px_rgba(15,23,42,0.1)]',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
+          'bg-destructive text-destructive-foreground shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:bg-destructive/90 hover:shadow-[0_4px_12px_rgba(239,68,68,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_1px_2px_rgba(15,23,42,0.1)]',
         outline:
-          'ring-1 ring-border bg-background hover:bg-accent hover:text-accent-foreground hover:ring-border/70 hover:shadow-xs',
+          'border-2 border-border/60 bg-background hover:bg-accent hover:text-accent-foreground hover:border-primary/40 hover:shadow-[0_4px_12px_rgba(15,23,42,0.08)] transition-colors duration-200',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+          'bg-secondary text-secondary-foreground shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:bg-secondary/80 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_1px_2px_rgba(15,23,42,0.1)]',
+        ghost: 'hover:bg-accent hover:text-accent-foreground hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)] transition-colors duration-200',
+        link: 'text-primary underline-offset-4 hover:underline transition-colors duration-200',
         success:
-          'bg-green-600 text-white hover:bg-green-700 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
+          'bg-green-600 text-white shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:bg-green-700 hover:shadow-[0_4px_12px_rgba(34,197,94,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_1px_2px_rgba(15,23,42,0.1)]',
         error:
-          'bg-red-600 text-white hover:bg-red-700 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs',
+          'bg-red-600 text-white shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:bg-red-700 hover:shadow-[0_4px_12px_rgba(239,68,68,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_1px_2px_rgba(15,23,42,0.1)]',
         surface:
-          'bg-surface text-surface-foreground hover:bg-surface/80 hover:shadow-sm hover:-translate-y-[2px] active:translate-y-0 active:shadow-xs shadow-xs ring-1 ring-border',
+          'bg-surface text-surface-foreground border border-border/60 shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:bg-surface/80 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_1px_2px_rgba(15,23,42,0.1)]',
       },
       size: {
         default: 'h-10 px-4 py-2',

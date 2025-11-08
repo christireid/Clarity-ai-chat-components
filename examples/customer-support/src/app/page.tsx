@@ -2,24 +2,38 @@
 
 import { useState, useEffect } from 'react'
 import { ChatWindow } from '@clarity-chat/react'
-import type { Message } from '@clarity-chat/types'
 import { CustomerForm } from '@/components/CustomerForm'
 import { useStore } from '@/lib/store'
 import { supabase } from '@/lib/supabase'
 
+type SupportMessage = {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: number
+}
+
 export default function Home() {
   const { customer, setCustomer } = useStore()
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<SupportMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
+
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  const hasSupabase = Boolean(supabase)
 
   // Load conversation history
   useEffect(() => {
-    if (customer?.conversationId) {
+    if (hasSupabase && customer?.conversationId) {
       loadConversationHistory(customer.conversationId)
     }
-  }, [customer?.conversationId])
+  }, [customer?.conversationId, hasSupabase])
 
   const loadConversationHistory = async (conversationId: string) => {
+    if (!supabase) return
+
     const { data, error } = await supabase
       .from('messages')
       .select('*')
@@ -27,7 +41,7 @@ export default function Home() {
       .order('created_at', { ascending: true })
 
     if (data && !error) {
-      const formattedMessages: Message[] = data.map((msg) => ({
+        const formattedMessages: SupportMessage[] = data.map((msg) => ({
         id: msg.id,
         role: msg.role,
         content: msg.content,
@@ -38,40 +52,49 @@ export default function Home() {
   }
 
   const handleCustomerSubmit = async (data: { email: string; name: string; subject: string }) => {
-    // Create conversation in Supabase
-    const { data: conversation, error } = await supabase
-      .from('conversations')
-      .insert({
-        customer_email: data.email,
-        customer_name: data.name,
-        subject: data.subject,
-        status: 'open',
-        priority: 'medium',
-      })
-      .select()
-      .single()
+    let conversationId: string | null = null
 
-    if (conversation && !error) {
+    if (supabase) {
+      const { data: conversation, error } = await supabase
+        .from('conversations')
+        .insert({
+          customer_email: data.email,
+          customer_name: data.name,
+          subject: data.subject,
+          status: 'open',
+          priority: 'medium',
+        })
+        .select()
+        .single()
+
+      if (conversation && !error) {
+        conversationId = conversation.id
+      }
+    } else {
+      conversationId = Date.now().toString()
+    }
+
+    if (conversationId) {
       setCustomer({
         email: data.email,
         name: data.name,
-        conversationId: conversation.id,
+        conversationId,
       })
 
-      // Add welcome message
-      const welcomeMessage: Message = {
+      const welcomeMessage: SupportMessage = {
         id: '1',
         role: 'assistant',
         content: `Hello ${data.name}! I'm here to help with "${data.subject}". How can I assist you today?`,
         timestamp: Date.now(),
       }
 
-      // Save to Supabase
-      await supabase.from('messages').insert({
-        conversation_id: conversation.id,
-        role: 'assistant',
-        content: welcomeMessage.content,
-      })
+      if (supabase) {
+        await supabase.from('messages').insert({
+          conversation_id: conversationId,
+          role: 'assistant',
+          content: welcomeMessage.content,
+        })
+      }
 
       setMessages([welcomeMessage])
     }
@@ -81,7 +104,7 @@ export default function Home() {
     if (!customer?.conversationId) return
 
     // Create user message
-    const userMessage: Message = {
+    const userMessage: SupportMessage = {
       id: Date.now().toString(),
       role: 'user',
       content,
@@ -91,17 +114,19 @@ export default function Home() {
     setMessages((prev) => [...prev, userMessage])
 
     // Save to Supabase
-    await supabase.from('messages').insert({
-      conversation_id: customer.conversationId,
-      role: 'user',
-      content,
-    })
+    if (supabase) {
+      await supabase.from('messages').insert({
+        conversation_id: customer.conversationId,
+        role: 'user',
+        content,
+      })
+    }
 
     setIsLoading(true)
 
     // Simulate AI response (replace with actual API call)
     setTimeout(async () => {
-      const aiMessage: Message = {
+      const aiMessage: SupportMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: `Thank you for your message. I understand you're asking about "${content.substring(0, 50)}..."\n\nLet me help you with that. [This would be replaced with actual AI response]`,
@@ -111,17 +136,21 @@ export default function Home() {
       setMessages((prev) => [...prev, aiMessage])
 
       // Save to Supabase
-      await supabase.from('messages').insert({
-        conversation_id: customer.conversationId!,
-        role: 'assistant',
-        content: aiMessage.content,
-      })
+      if (supabase) {
+        await supabase.from('messages').insert({
+          conversation_id: customer.conversationId!,
+          role: 'assistant',
+          content: aiMessage.content,
+        })
+      }
 
       // Update conversation timestamp
-      await supabase
-        .from('conversations')
-        .update({ updated_at: new Date().toISOString() })
-        .eq('id', customer.conversationId!)
+      if (supabase) {
+        await supabase
+          .from('conversations')
+          .update({ updated_at: new Date().toISOString() })
+          .eq('id', customer.conversationId!)
+      }
 
       setIsLoading(false)
     }, 2000)

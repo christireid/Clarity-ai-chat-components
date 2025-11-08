@@ -1,8 +1,8 @@
 /**
  * AI Memory & Context System
- * 
+ *
  * Production-ready memory management for AI chat applications
- * 
+ *
  * @module @clarity-chat/react/memory
  */
 
@@ -29,7 +29,7 @@ export {
   useMemoryStats,
   useMemoryEvents,
   useConversationMemory,
-  useMemoryTokenOptimization,
+  useMemoryOptimization,
 } from './memory-provider'
 
 export type { MemoryProviderProps } from './memory-provider'

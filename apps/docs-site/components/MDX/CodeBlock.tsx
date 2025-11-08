@@ -106,7 +106,6 @@ export function CodeBlock({
       )}
 
       {/* Code */}
-      {/* @ts-expect-error - prism-react-renderer has type incompatibility with React 19 */}
       <Highlight theme={highlightTheme} code={code.trim()} language={language}>
         {({
           className: highlightClassName,

@@ -227,7 +227,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
                 className={cn(
                   'px-3 py-1.5 text-xs rounded-md',
                   'bg-popover text-popover-foreground',
-                  'border border-border/50 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
+                  'border border-border/70 shadow-[0_16px_32px_rgba(15,23,42,0.32)]',
                   'pointer-events-none backdrop-blur-sm',
                   contentClassName
                 )}
@@ -239,7 +239,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
                 {showArrow && (
                   <div
                     className={cn(
-                      'absolute w-2 h-2 bg-popover border border-border/50',
+                      'absolute w-2 h-2 bg-popover ring-1 ring-border/30',
                       getArrowClasses(side, align)
                     )}
                     style={{ transform: getArrowTransform(side) }}

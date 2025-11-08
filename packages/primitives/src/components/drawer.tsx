@@ -285,8 +285,8 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
-              blurBackdrop && 'backdrop-blur-md',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/50',
+              blurBackdrop && 'backdrop-blur-sm',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -302,10 +302,10 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
               'fixed z-[var(--z-modal)] bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)]',
               positionClasses[side],
               sizeClasses[side][size],
-              side === 'left' && 'border-r rounded-r-2xl',
-              side === 'right' && 'border-l rounded-l-2xl',
-              side === 'top' && 'border-b rounded-b-2xl',
-              side === 'bottom' && 'border-t rounded-t-2xl',
+              side === 'left' && 'border-r rounded-r-lg',
+              side === 'right' && 'border-l rounded-l-lg',
+              side === 'top' && 'border-b rounded-b-lg',
+              side === 'bottom' && 'border-t rounded-t-lg',
               className
             )}
             role="dialog"
@@ -319,9 +319,9 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
                   'absolute top-4 right-4 w-8 h-8 rounded-md',
                   'flex items-center justify-center',
                   'text-muted-foreground hover:text-foreground',
-                  'hover:bg-muted/50',
-                  'transition-colors duration-200',
-                  'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                  'hover:bg-muted/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:-translate-y-[1px]',
+                  'transition-all duration-200',
+                  'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1',
                   'z-10'
                 )}
                 aria-label="Close drawer"
@@ -360,7 +360,7 @@ export const DrawerHeader: React.FC<{
   className?: string
 }> = ({ children, className }) => {
   return (
-    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b', className)}>
+    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b border-border/50', className)}>
       {children}
     </div>
   )

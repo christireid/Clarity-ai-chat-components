@@ -47,7 +47,7 @@ const DefaultEmptyState = () => (
     transition={{ duration: 0.3 }}
   >
     <motion.div
-      className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm ring-1 ring-primary/20"
+      className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-[0_1px_3px_rgba(15,23,42,0.1)] ring-1 ring-primary/20"
       animate={{
         scale: [1, 1.05, 1],
         rotate: [0, 2, -2, 0],
@@ -116,7 +116,7 @@ export const ChatWindow = memo(function ChatWindow({
   return (
     <Card
       className={cn(
-        'flex h-full flex-col overflow-hidden shadow-sm',
+        'flex h-full flex-col overflow-hidden shadow-[0_10px_24px_rgba(15,23,42,0.12)]',
         className
       )}
     >
@@ -129,7 +129,7 @@ export const ChatWindow = memo(function ChatWindow({
           transition={{ duration: 0.2 }}
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary shadow-xs ring-1 ring-primary/20">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
               <BotIcon size={20} />
             </div>
             <div className="min-w-0 flex-1">

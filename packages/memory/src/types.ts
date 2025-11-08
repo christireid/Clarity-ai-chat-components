@@ -1,6 +1,6 @@
 /**
  * AI Memory & Context Types
- * 
+ *
  * Production-ready memory system for AI chat applications with support for:
  * - Short-term and long-term memory
  * - Episodic and semantic memory
@@ -30,16 +30,16 @@ export type MemoryPriority = 'critical' | 'high' | 'medium' | 'low'
 export interface MemoryItem {
   /** Unique identifier */
   id: string
-  
+
   /** Memory type */
   type: MemoryType
-  
+
   /** Memory scope */
   scope: MemoryScope
-  
+
   /** Memory content */
   content: string
-  
+
   /** Structured metadata */
   metadata: {
     /** Topic or category */
@@ -59,37 +59,37 @@ export interface MemoryItem {
     /** Custom metadata */
     [key: string]: any
   }
-  
+
   /** Embedding vector for semantic search */
   embedding?: number[]
-  
+
   /** Confidence score (0-1) */
   confidence: number
-  
+
   /** Priority level */
   priority: MemoryPriority
-  
+
   /** Token count */
   tokens: number
-  
+
   /** Access count (for importance tracking) */
   accessCount: number
-  
+
   /** Last accessed timestamp */
   lastAccessed: Date
-  
+
   /** Created timestamp */
   createdAt: Date
-  
+
   /** Updated timestamp */
   updatedAt: Date
-  
+
   /** Expiry time (optional) */
   expiresAt?: Date
-  
+
   /** Compressed version of content */
   compressed?: string
-  
+
   /** Original content if compressed */
   original?: string
 }
@@ -100,46 +100,46 @@ export interface MemoryItem {
 export interface MemoryQuery {
   /** Query text */
   query?: string
-  
+
   /** Query embedding */
   embedding?: number[]
-  
+
   /** Filter by memory type */
   types?: MemoryType[]
-  
+
   /** Filter by scope */
   scopes?: MemoryScope[]
-  
+
   /** Filter by priority */
   priorities?: MemoryPriority[]
-  
+
   /** Minimum confidence threshold */
   minConfidence?: number
-  
+
   /** Maximum results */
   limit?: number
-  
+
   /** Token budget for results */
   tokenBudget?: number
-  
+
   /** Metadata filters */
   metadata?: Record<string, any>
-  
+
   /** Time range filter */
   timeRange?: {
     start?: Date
     end?: Date
   }
-  
+
   /** User ID filter */
   userId?: string
-  
+
   /** Thread ID filter */
   threadId?: string
-  
+
   /** Session ID filter */
   sessionId?: string
-  
+
   /** Include embeddings in results */
   includeEmbeddings?: boolean
 }
@@ -150,15 +150,93 @@ export interface MemoryQuery {
 export interface MemorySearchResult {
   /** Memory item */
   memory: MemoryItem
-  
+
   /** Relevance score (0-1) */
   relevance: number
-  
+
   /** Distance metric (for vector search) */
   distance?: number
-  
+
   /** Highlights (for keyword search) */
   highlights?: string[]
+}
+
+/**
+ * Vector store query options
+ */
+export interface VectorStoreQuery {
+  /** Query vector */
+  vector: number[]
+
+  /** Number of results to return */
+  topK?: number
+
+  /** Minimum score threshold */
+  minScore?: number
+
+  /** Metadata filter */
+  filter?: Record<string, any>
+
+  /** Namespace or collection */
+  namespace?: string
+
+  /** Include metadata in results */
+  includeMetadata?: boolean
+}
+
+/**
+ * Vector store match
+ */
+export interface VectorStoreMatch {
+  /** Match identifier */
+  id: string
+
+  /** Similarity score */
+  score: number
+
+  /** Stored vector values */
+  values: number[]
+
+  /** Associated metadata */
+  metadata?: Record<string, any>
+}
+
+/**
+ * Vector data for upsert operations
+ */
+export interface VectorStoreVector {
+  id: string
+  values: number[]
+  metadata?: Record<string, any>
+}
+
+/**
+ * Vector store upsert options
+ */
+export interface VectorStoreUpsertOptions {
+  namespace?: string
+  batchSize?: number
+}
+
+/**
+ * Vector store interface
+ */
+export interface VectorStore {
+  initialize(): Promise<void> | void
+  query(options: VectorStoreQuery): Promise<VectorStoreMatch[]>
+  upsert(
+    vectors: VectorStoreVector[],
+    options?: VectorStoreUpsertOptions
+  ): Promise<void>
+  delete(ids: string[], namespace?: string): Promise<void>
+}
+
+/**
+ * Embedding provider interface
+ */
+export interface EmbeddingProvider {
+  embedText(text: string): Promise<number[]>
+  embedBatch?(texts: string[]): Promise<number[][]>
 }
 
 /**
@@ -167,19 +245,19 @@ export interface MemorySearchResult {
 export interface TokenAllocation {
   /** System prompt allocation */
   systemPrompt: number
-  
+
   /** User preferences allocation */
   userPreferences: number
-  
+
   /** Recent context allocation */
   recentContext: number
-  
+
   /** Semantic memory allocation */
   semanticMemory: number
-  
+
   /** Episodic memory allocation */
   episodicMemory: number
-  
+
   /** Reserved for response */
   responseReserve: number
 }
@@ -190,7 +268,7 @@ export interface TokenAllocation {
 export interface TokenOptimizationConfig {
   /** Maximum context window */
   maxContextWindow: number
-  
+
   /** Token allocation percentages */
   allocation: {
     systemPrompt: number
@@ -200,22 +278,22 @@ export interface TokenOptimizationConfig {
     episodicMemory: number
     responseReserve: number
   }
-  
+
   /** Enable dynamic allocation */
   dynamicAllocation: boolean
-  
+
   /** Enable compression */
   enableCompression: boolean
-  
+
   /** Compression ratio target */
   compressionRatio?: number
-  
+
   /** Enable semantic chunking */
   enableChunking: boolean
-  
+
   /** Chunk size */
   chunkSize?: number
-  
+
   /** Chunk overlap */
   chunkOverlap?: number
 }
@@ -226,25 +304,25 @@ export interface TokenOptimizationConfig {
 export interface MemoryChunk {
   /** Chunk ID */
   id: string
-  
+
   /** Chunk content */
   text: string
-  
+
   /** Token count */
   tokens: number
-  
+
   /** Embedding */
   embedding: number[]
-  
+
   /** Extracted topic */
   topic?: string
-  
+
   /** Relevance score */
   relevance?: number
-  
+
   /** Source memory ID */
   sourceMemoryId?: string
-  
+
   /** Chunk index in source */
   chunkIndex?: number
 }
@@ -255,13 +333,13 @@ export interface MemoryChunk {
 export interface MemoryContext {
   /** Conversation activity level */
   conversationActivity: 'low' | 'medium' | 'high'
-  
+
   /** User preference richness */
   preferenceRichness: 'low' | 'medium' | 'high'
-  
+
   /** Task complexity */
   taskComplexity: 'low' | 'medium' | 'high'
-  
+
   /** Memory usage stats */
   stats: {
     totalMemories: number
@@ -278,19 +356,19 @@ export interface MemoryContext {
 export interface CompressedMemory {
   /** Original content */
   original: string
-  
+
   /** Compressed content */
   compressed: string
-  
+
   /** Original token count */
   originalTokens: number
-  
+
   /** Compressed token count */
   compressedTokens: number
-  
+
   /** Compression ratio */
   compressionRatio: number
-  
+
   /** Compression method */
   method: 'summarization' | 'truncation' | 'semantic' | 'selective'
 }
@@ -301,16 +379,16 @@ export interface CompressedMemory {
 export interface MemoryBuffer {
   /** Buffered memories */
   items: MemoryItem[]
-  
+
   /** Total tokens */
   totalTokens: number
-  
+
   /** Buffer capacity */
   capacity: number
-  
+
   /** Flush threshold */
   flushThreshold: number
-  
+
   /** Auto-flush enabled */
   autoFlush: boolean
 }
@@ -321,22 +399,22 @@ export interface MemoryBuffer {
 export interface MemoryPersistenceOptions {
   /** Use vector store for semantic search */
   useVectorStore: boolean
-  
+
   /** Vector store namespace */
   vectorStoreNamespace?: string
-  
+
   /** Use cache layer */
   useCache: boolean
-  
+
   /** Cache TTL in seconds */
   cacheTTL?: number
-  
+
   /** Use database for persistence */
   useDatabase: boolean
-  
+
   /** Database connection string */
   databaseUrl?: string
-  
+
   /** Batch size for operations */
   batchSize?: number
 }
@@ -347,22 +425,22 @@ export interface MemoryPersistenceOptions {
 export interface MemoryStats {
   /** Total memories */
   total: number
-  
+
   /** By type */
   byType: Record<MemoryType, number>
-  
+
   /** By scope */
   byScope: Record<MemoryScope, number>
-  
+
   /** By priority */
   byPriority: Record<MemoryPriority, number>
-  
+
   /** Total tokens */
   totalTokens: number
-  
+
   /** Average confidence */
   averageConfidence: number
-  
+
   /** Cache statistics */
   cache?: {
     hits: number
@@ -370,7 +448,7 @@ export interface MemoryStats {
     hitRate: number
     size: number
   }
-  
+
   /** Vector store statistics */
   vectorStore?: {
     totalVectors: number
@@ -385,22 +463,22 @@ export interface MemoryStats {
 export interface MemoryServiceConfig {
   /** Token optimization config */
   tokenOptimization: TokenOptimizationConfig
-  
+
   /** Persistence options */
   persistence: MemoryPersistenceOptions
-  
+
   /** Enable automatic summarization */
   enableAutoSummarization: boolean
-  
+
   /** Summarization interval (ms) */
   summarizationInterval?: number
-  
+
   /** Enable automatic cleanup */
   enableAutoCleanup: boolean
-  
+
   /** Cleanup interval (ms) */
   cleanupInterval?: number
-  
+
   /** Memory retention policy */
   retentionPolicy: {
     /** Short-term memory TTL (seconds) */
@@ -411,10 +489,10 @@ export interface MemoryServiceConfig {
     thread: number
     /** Global memory TTL (seconds, 0 = never expires) */
     global: number
-    /** User memory TTL (seconds) */
-    user: number
+    /** User-scoped memory TTL (seconds, 0 = never expires) */
+    user?: number
   }
-  
+
   /** Enable debug logging */
   debug?: boolean
 }
@@ -466,7 +544,7 @@ export interface VectorStore {
 /**
  * Memory event types
  */
-export type MemoryEventType = 
+export type MemoryEventType =
   | 'memory:created'
   | 'memory:updated'
   | 'memory:deleted'
@@ -482,13 +560,13 @@ export type MemoryEventType =
 export interface MemoryEvent {
   /** Event type */
   type: MemoryEventType
-  
+
   /** Event timestamp */
   timestamp: Date
-  
+
   /** Memory item (if applicable) */
   memory?: MemoryItem
-  
+
   /** Additional event data */
   data?: Record<string, any>
 }
@@ -497,50 +575,3 @@ export interface MemoryEvent {
  * Memory event listener
  */
 export type MemoryEventListener = (event: MemoryEvent) => void | Promise<void>
-
-// ============================================================================
-// Integration Interfaces (Vector Store & Embeddings)
-// These lightweight interfaces allow the memory package to typecheck without
-// depending on other packages being built.
-// ============================================================================
-
-/** Vector match result from a vector store query */
-export interface VectorMatch {
-  id: string
-  score: number
-  values?: number[]
-  metadata?: Record<string, any>
-}
-
-/** Options for upserting vectors */
-export interface VectorUpsertOptions {
-  namespace?: string
-  batchSize?: number
-}
-
-/** Query parameters for vector search */
-export interface VectorQuery {
-  vector: number[]
-  topK?: number
-  minScore?: number
-  filter?: Record<string, any>
-  namespace?: string
-  includeMetadata?: boolean
-}
-
-/** Minimal vector store interface required by MemoryService */
-export interface VectorStore {
-  initialize(): Promise<void>
-  upsert(
-    vectors: Array<{ id: string; values: number[]; metadata?: Record<string, any> }>,
-    options?: VectorUpsertOptions
-  ): Promise<void>
-  query(query: VectorQuery): Promise<VectorMatch[]>
-  delete(ids: string[], namespace?: string): Promise<void>
-}
-
-/** Minimal embeddings provider interface required by MemoryService */
-export interface EmbeddingProvider {
-  embedText(text: string): Promise<number[]>
-  embedBatch?(texts: string[]): Promise<number[][]>
-}

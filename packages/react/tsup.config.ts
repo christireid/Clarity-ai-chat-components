@@ -3,8 +3,16 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: ['src/index.ts', 'src/styles/index.css'],
   format: ['cjs', 'esm'],
-  dts: false, // Disabled due to memory constraints in large codebase
-  external: ['react', 'react-dom', 'framer-motion', '@clarity-chat/primitives', '@clarity-chat/types'],
+  dts: false, // Use tsc for declarations (see build script)
+  external: [
+    'react',
+    'react-dom',
+    'framer-motion',
+    '@clarity-chat/primitives',
+    '@clarity-chat/types',
+    '@clarity-chat/memory',
+    'mermaid',
+  ],
   clean: true,
   sourcemap: false,
   minify: false,
