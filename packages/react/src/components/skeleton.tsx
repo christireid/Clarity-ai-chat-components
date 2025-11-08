@@ -217,7 +217,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('rounded-xl border-2 bg-card overflow-hidden shadow-sm', className)}>
+    <div className={cn('rounded-lg border bg-card overflow-hidden shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]', className)}>
       {/* Image */}
       {showImage && (
         <Skeleton variant={variant} height={imageHeight} rounded="none" />
