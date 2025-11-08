@@ -159,7 +159,7 @@ export const ThemeSwitcher = React.forwardRef<
                 whileTap={{ scale: 0.95 }}
                 className={cn(
                   'relative flex items-center gap-3 px-4 py-3 rounded-lg',
-                  'border-2 transition-all',
+                  'border transition-all duration-150 ease-out',
                   'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
                   isActive
                     ? 'border-primary bg-primary/10'
@@ -248,7 +248,7 @@ export const ThemeSwitcher = React.forwardRef<
                             className="flex flex-col items-center gap-1"
                           >
                             <div
-                              className="w-10 h-10 rounded-full border-2 border-border/60 shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
+                              className="w-10 h-10 rounded-full border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
                               style={{ backgroundColor: color }}
                             />
                             <span className="text-xs text-muted-foreground capitalize">

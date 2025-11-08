@@ -84,7 +84,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                 ease: ANIMATION_EASING.out,
               }}
               className={cn(
-                'fixed bg-background border border-border/60 rounded-lg shadow-[0_24px_48px_rgba(15,23,42,0.32)] z-50 backdrop-blur-sm',
+                'fixed bg-background border border-border/50 rounded-lg shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] z-50 backdrop-blur-sm',
                 'max-w-md max-h-[80vh] overflow-hidden flex flex-col',
                 positionClasses[position],
                 className
