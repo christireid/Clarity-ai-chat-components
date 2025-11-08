@@ -84,7 +84,7 @@ export const FeedbackAnimation: React.FC<FeedbackAnimationProps> = ({
             ease: ANIMATION_EASING.spring,
           }}
           className={cn(
-            'flex flex-col items-center justify-center gap-3 p-6 rounded-xl shadow-[0_10px_24px_rgba(15,23,42,0.12)] border-2 border-border/60',
+            'flex flex-col items-center justify-center gap-3 p-6 rounded-lg shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] border border-border/50',
             colorClasses[type],
             className
           )}
@@ -407,7 +407,7 @@ export const SlideNotification: React.FC<{
             ease: ANIMATION_EASING.spring,
           }}
           className={cn(
-            'flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-border/60 backdrop-blur-md shadow-[0_4px_12px_rgba(15,23,42,0.15)]',
+            'flex items-center gap-2 px-4 py-3 rounded-lg border border-border/50 backdrop-blur-sm shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]',
             colorClasses[type],
             className
           )}

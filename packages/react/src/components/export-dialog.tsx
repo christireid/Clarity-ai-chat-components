@@ -135,10 +135,10 @@ export const ExportDialog = React.memo(function ExportDialog({
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setFormat(fmt.value)}
                   className={cn(
-                    'flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all',
+                    'flex flex-col items-center gap-2 p-4 rounded-lg border transition-all duration-150 ease-out',
                     format === fmt.value
-                      ? 'border-primary bg-primary/5 shadow-[0_4px_12px_rgba(15,23,42,0.15)]'
-                      : 'border-border/60 hover:border-primary/50'
+                      ? 'border-primary bg-primary/5 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]'
+                      : 'border-border/50 hover:border-primary/50'
                   )}
                 >
                   <motion.span

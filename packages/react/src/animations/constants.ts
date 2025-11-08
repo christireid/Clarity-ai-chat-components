@@ -25,6 +25,17 @@ export const ANIMATION_EASING = {
   spring: 'spring',
 } as const
 
+export const STAGGER_TIMING = {
+  /** 0ms - Immediate sequencing */
+  instant: 0,
+  /** 50ms - Fast stagger for subtle motion */
+  fast: 0.05,
+  /** 100ms - Balanced stagger for standard lists */
+  normal: 0.1,
+  /** 200ms - Emphasized stagger for dramatic reveals */
+  slow: 0.2,
+} as const
+
 export const INTERACTION_VARIANTS = {
   button: {
     hover: { scale: 1.05, y: -2 },
@@ -117,3 +128,7 @@ export const Z_INDEX = {
   tooltip: 1600,
   toast: 1700,
 } as const
+
+export type AnimationDuration = keyof typeof ANIMATION_DURATION
+export type AnimationEasing = keyof typeof ANIMATION_EASING
+export type StaggerTiming = keyof typeof STAGGER_TIMING

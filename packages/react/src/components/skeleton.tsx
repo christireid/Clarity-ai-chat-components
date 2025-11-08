@@ -58,7 +58,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   return (
     <Component
       className={cn(
-        'bg-muted/60 backdrop-blur-sm',
+        'bg-muted/50 backdrop-blur-sm',
         roundedClasses[rounded],
         className
       )}
@@ -217,7 +217,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('rounded-xl border-2 border-border/60 bg-card overflow-hidden shadow-[0_1px_3px_rgba(15,23,42,0.1)]', className)}>
+    <div className={cn('rounded-lg ring-1 ring-border/30 bg-card overflow-hidden shadow-xs', className)}>
       {/* Image */}
       {showImage && (
         <Skeleton variant={variant} height={imageHeight} rounded="none" />

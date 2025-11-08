@@ -97,7 +97,7 @@ const ErrorDisplay = React.memo(function ErrorDisplay({ error }: { error: string
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-destructive/5 border border-destructive/20 rounded-xl p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
+      className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
       role="alert"
     >
       <div className="flex items-start gap-3">
@@ -139,7 +139,7 @@ const ThinkingSteps = React.memo(function ThinkingSteps({
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
-      className="bg-info/5 border border-info/20 rounded-xl p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
+      className="bg-info/5 border border-info/20 rounded-lg p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
     >
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
@@ -228,12 +228,12 @@ const ToolCallItem = React.memo(function ToolCallItem({
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 10 }}
-      className="bg-accent/50 border border-border/60 rounded-xl p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
+      className="bg-accent/50 border rounded-lg p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ring-1 ring-primary/20">
               <svg 
                 className="w-4 h-4" 
                 fill="none" 
@@ -304,7 +304,7 @@ const CitationItem = React.memo(function CitationItem({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ delay: index * 0.05 }}
-      className="bg-muted/50 border border-border/60 rounded-xl p-3 shadow-[0_1px_3px_rgba(15,23,42,0.1)] hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+      className="bg-muted/50 border rounded-lg p-3 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px transition-all duration-150 ease-out cursor-pointer"
     >
       <div className="flex items-start gap-3">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">

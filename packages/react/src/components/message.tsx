@@ -19,7 +19,7 @@ import {
   MarkdownCodeBlock,
   MessageActions,
   MessageMetadata,
-} from './message'
+} from './message/index'
 
 export interface MessageProps {
   message: MessageType
@@ -106,9 +106,9 @@ export const Message = memo(
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group flex gap-3 p-4 rounded-lg transition-all duration-150 ease-out',
+          'group flex gap-3 p-4 rounded-lg transition-all duration-200',
           isUser && 'flex-row-reverse',
-          isHovered && 'bg-muted/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+          isHovered && 'bg-muted/30 shadow-xs',
           className
         )}
       >
@@ -175,7 +175,7 @@ export const Message = memo(
             className={cn(
               'prose prose-sm dark:prose-invert max-w-none',
               isUser &&
-                'bg-primary text-primary-foreground px-4 py-3 rounded-lg inline-block shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]'
+                'bg-primary text-primary-foreground px-4 py-3 rounded-md inline-block shadow-xs ring-1 ring-primary/20'
             )}
           >
             {isUser ? (

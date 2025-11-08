@@ -256,7 +256,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
   const { open, setOpen } = useDialog()
   const contentRef = React.useRef<HTMLDivElement>(null)
   const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null)
-  const { lock, unlock } = useBodyScrollLock()
+  const { lock } = useBodyScrollLock()
 
   // Get or create portal container
   React.useEffect(() => {
@@ -331,10 +331,10 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             <motion.div
               ref={contentRef}
               {...animationProps}
-              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                'relative w-full bg-card border border-border/50 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1),0_8px_10px_-6px_rgb(0_0_0_/_0.1)] rounded-lg pointer-events-auto',
+                'relative w-full bg-card ring-1 ring-border shadow-xl rounded-lg pointer-events-auto',
                 sizeClasses[size],
                 className
               )}
@@ -351,7 +351,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                     'text-muted-foreground hover:text-foreground',
                     'hover:bg-muted/50',
                     'transition-colors duration-200',
-                    'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                    'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1'
                   )}
                   aria-label="Close dialog"
                 >

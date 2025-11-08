@@ -71,7 +71,7 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
       <Button
         variant="outline"
         className={cn(
-          'group flex w-full flex-col items-start gap-2 rounded-xl p-4 text-left shadow-[0_1px_3px_rgba(15,23,42,0.1)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] hover:border-primary/40 hover:bg-accent/5',
+          'group flex w-full flex-col items-start gap-2 rounded-lg p-4 text-left shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] transition-all duration-150 ease-out hover:-translate-y-px hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:border-primary/40 hover:bg-accent/5',
           layout === 'list' && 'rounded-lg'
         )}
         onClick={() => onSelect(suggestion)}
@@ -135,7 +135,7 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2, delay: index * 0.05 }}
-          className="rounded-xl border border-border/60 bg-muted/50 p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
+          className="rounded-lg border bg-muted/50 p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
         >
           <div className="flex items-center gap-3">
             <Skeleton width={32} height={32} rounded="lg" variant="shimmer" />
@@ -208,7 +208,7 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.2 }}
-              className="rounded-xl border border-dashed bg-muted/50 p-8 text-center"
+              className="rounded-lg border border-dashed bg-muted/50 p-8 text-center"
             >
               <svg
                 className="mx-auto h-12 w-12 text-muted-foreground/40 mb-3"

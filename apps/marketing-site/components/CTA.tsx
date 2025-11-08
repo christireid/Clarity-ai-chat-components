@@ -1,7 +1,4 @@
-'use client'
-
 import Link from 'next/link'
-import { ArrowRight, Sparkles } from 'lucide-react'
 
 export default function CTA() {
   return (
@@ -11,8 +8,8 @@ export default function CTA() {
 
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
         {/* Icon */}
-        <div className="inline-flex p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6">
-          <Sparkles className="h-8 w-8 text-white" />
+        <div className="inline-flex p-4 rounded-full bg-white/10 backdrop-blur-sm mb-6 text-3xl">
+          <span aria-hidden>✨</span>
         </div>
 
         {/* Heading */}
@@ -22,8 +19,8 @@ export default function CTA() {
 
         {/* Description */}
         <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-          Join 1,000+ developers building amazing AI chat experiences. Start
-          free, upgrade when you're ready. 30-day money-back guarantee.
+          Join 1,000+ developers building amazing AI chat experiences. Start free, upgrade when
+          you're ready. 30-day money-back guarantee.
         </p>
 
         {/* CTAs */}
@@ -33,7 +30,7 @@ export default function CTA() {
             className="inline-flex items-center justify-center rounded-lg bg-white px-8 py-4 text-lg font-semibold text-brand-600 shadow-lg hover:bg-gray-50 transition-all hover:scale-105"
           >
             View Pricing
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <span aria-hidden className="ml-2 text-xl">→</span>
           </Link>
 
           <Link
