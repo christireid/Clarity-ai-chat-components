@@ -124,7 +124,7 @@ export function ErrorFeedback({
       aria-labelledby="error-feedback-title"
       aria-modal="true"
     >
-      <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl">
+      <div className="w-full max-w-2xl rounded-lg bg-white border border-border/60 p-6 shadow-[0_24px_48px_rgba(15,23,42,0.32)] backdrop-blur-sm">
         <div className="mb-4">
           <h2
             id="error-feedback-title"
