@@ -124,7 +124,7 @@ export const ToastItem = memo(function ToastItem({
         ease: ANIMATION_EASING.spring,
       }}
       className={cn(
-        'relative flex gap-3 p-4 rounded-xl border-2 shadow-xl backdrop-blur-md',
+        'relative flex gap-3 p-4 rounded-xl border-2 border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] backdrop-blur-md',
         'min-w-[320px] max-w-[420px]',
         colorClasses
       )}
