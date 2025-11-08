@@ -137,7 +137,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                 'w-full flex items-center gap-3 px-3 py-2 text-sm text-left',
                 'transition-all duration-150 rounded-lg',
                 item.disabled && 'opacity-50 cursor-not-allowed',
-                !item.disabled && 'hover:bg-accent hover:shadow-sm',
+                !item.disabled && 'hover:bg-accent hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]',
                 item.danger && !item.disabled && 'text-destructive hover:bg-destructive/10 hover:text-destructive'
               )}
             >
@@ -156,7 +156,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
 
               {/* Shortcut or Submenu Arrow */}
               {item.shortcut && !hasSubmenu && (
-                <kbd className="px-1.5 py-0.5 text-xs text-muted-foreground font-mono bg-muted border rounded shadow-sm">
+                    <kbd className="px-1.5 py-0.5 text-xs text-muted-foreground font-mono bg-muted border border-border/60 rounded shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                   {item.shortcut}
                 </kbd>
               )}
@@ -195,7 +195,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                   }}
                   className={cn(
                     'absolute left-full top-0 ml-2',
-                    'min-w-[180px] bg-card border shadow-lg rounded-lg',
+                    'min-w-[180px] bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-lg',
                     'p-2 z-10'
                   )}
                 >
@@ -234,7 +234,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                   top: position.y,
                   zIndex: 'var(--z-popover)',
                 }}
-                className="min-w-[200px] bg-card border shadow-xl rounded-xl p-2"
+                className="min-w-[200px] bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-xl p-2 backdrop-blur-sm"
               >
                 {renderMenuItems(items)}
               </motion.div>

@@ -107,7 +107,7 @@ const Avatar = React.memo(
         {status && !statusBadge && (
           <span
             className={cn(
-              'absolute bottom-0 right-0 block rounded-full border-2 border-background shadow-sm ring-2',
+              'absolute bottom-0 right-0 block rounded-full border-2 border-background shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-2',
               statusSizes[size || 'default'],
               statusColors[status]
             )}

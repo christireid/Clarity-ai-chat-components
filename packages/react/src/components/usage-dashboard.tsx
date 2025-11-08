@@ -237,7 +237,7 @@ export const UsageDashboard = React.memo(function UsageDashboard({
 
             {/* Usage Limits Warnings */}
             {limits.some((l) => (l.current / l.limit) * 100 > 80) && (
-              <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-sm">
+              <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
                   ⚠️ Approaching Limits
                 </h4>

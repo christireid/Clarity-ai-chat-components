@@ -281,7 +281,7 @@ export function NetworkStatus({
       aria-live="polite"
       aria-label={`Network status: ${config.label}`}
     >
-      <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg shadow-xl border">
+      <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg shadow-[0_24px_48px_rgba(15,23,42,0.32)] border border-border/60 backdrop-blur-sm">
         {/* Status indicator dot */}
         <div className="relative flex h-3 w-3">
           <div
