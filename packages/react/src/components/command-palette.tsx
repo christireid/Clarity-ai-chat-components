@@ -140,7 +140,7 @@ export const CommandPalette = forwardRef<
               }}
               className={cn(
                 'fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4',
-                'bg-card border shadow-2xl rounded-2xl z-[var(--z-modal)]',
+                'bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-2xl z-[var(--z-modal)]',
                 'flex flex-col max-h-[60vh] overflow-hidden',
                 className
               )}
