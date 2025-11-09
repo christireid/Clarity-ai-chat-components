@@ -1,0 +1,53 @@
+{
+  "name": "@clarity-chat/testing-utils",
+  "version": "2.0.0",
+  "description": "Testing utilities for Clarity Chat Components",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "test": "vitest",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "testing",
+    "utilities",
+    "react",
+    "components",
+    "accessibility"
+  ],
+  "peerDependencies": {
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "axe-core": "^4.8.3",
+    "tsup": "^8.0.1",
+    "typescript": "^5.4.5",
+    "vitest": "^1.1.0"
+  },
+  "dependencies": {
+    "faker": "^6.6.6"
+  }
+}

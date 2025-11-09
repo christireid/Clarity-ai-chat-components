@@ -63,7 +63,7 @@ export function DocumentViewer({
     return (
       <div
         className={cn(
-          'flex h-full flex-col items-center justify-center rounded-xl border border-dashed border-border/70 bg-muted/20 p-6 text-sm text-muted-foreground',
+          'flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-border/50 bg-muted/20 p-6 text-sm text-muted-foreground',
           className
         )}
       >
@@ -81,7 +81,7 @@ export function DocumentViewer({
         className
       )}
     >
-      <header className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border/60 bg-card/70 p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)] backdrop-blur">
+      <header className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-border/50 bg-card/70 p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] backdrop-blur-sm">
         <div>
           <h3 className="text-base font-semibold text-foreground">
             {name ?? 'Document'}
@@ -115,7 +115,7 @@ export function DocumentViewer({
       </header>
 
       {summary ? (
-        <section className="rounded-xl border border-border/60 bg-background/60 p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
+        <section className="rounded-lg border border-border/50 bg-background/60 p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Summary
           </h4>
@@ -125,7 +125,7 @@ export function DocumentViewer({
         </section>
       ) : null}
 
-      <section className="flex-1 overflow-y-auto rounded-xl border border-border/60 bg-background/70 p-4 shadow-inner">
+      <section className="flex-1 overflow-y-auto rounded-lg border border-border/50 bg-background/70 p-4 shadow-inner">
         <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Content
         </h4>
@@ -145,7 +145,7 @@ export function DocumentViewer({
       </section>
 
       {metadata && Object.keys(metadata).length ? (
-        <section className="rounded-xl border border-border/60 bg-background/60 p-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
+        <section className="rounded-lg border border-border/50 bg-background/60 p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Metadata
           </h4>
