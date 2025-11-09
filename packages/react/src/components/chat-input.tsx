@@ -211,7 +211,14 @@ export const ChatInput = React.memo(function ChatInput({
                   {/* Counter text */}
                   <motion.div
                     className={cn('text-xs tabular-nums', counterColor)}
-                    animate={isOverLimit ? FeedbackAnimations.pulse : undefined}
+                    animate={isOverLimit ? {
+                      scale: [1, 1.05, 1],
+                      transition: {
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      },
+                    } : undefined}
                   >
                     {charCount}/{maxLength}
                   </motion.div>

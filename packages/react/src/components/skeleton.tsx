@@ -83,8 +83,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
       )}
       style={baseStyle}
       variants={variants}
+      initial="initial"
       animate="animate"
-      {...props}
+      {...(props as any)}
     />
   )
 }

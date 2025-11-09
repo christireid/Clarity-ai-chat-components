@@ -94,10 +94,11 @@ export const InteractiveCard = React.memo(
       },
     }
 
-    const Component = interactive || onCardClick ? motion.div : motion.div
+    // Extract HTML drag event handlers to avoid conflicts with Framer Motion
+    const { onDrag, onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDrop, ...motionProps } = props as any
 
     return (
-      <Component
+      <motion.div
         ref={ref}
         className={cn(
           'relative overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-out shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
@@ -131,14 +132,14 @@ export const InteractiveCard = React.memo(
                 ...hoverVariants[hoverIntensity],
                 scale: hoverIntensity !== 'none' ? 1.02 : 1,
               }
-            : { scale: 1 }
+            : undefined
         }
         whileTap={
           !disabled && interactive
             ? { scale: 0.98, transition: { duration: 0.1 } }
-            : {}
+            : undefined
         }
-        {...props}
+        {...motionProps}
       >
         {/* Ripple effects */}
         {showRipple && (
@@ -167,7 +168,7 @@ export const InteractiveCard = React.memo(
             className="absolute top-0 left-0 right-0 h-1 bg-primary origin-left"
           />
         )}
-      </Component>
+      </motion.div>
     )
   })
 )
@@ -226,13 +227,16 @@ export const InteractiveButton = React.forwardRef<
       lg: 'h-12 px-6 text-lg',
     }
 
+    // Extract HTML drag event handlers to avoid conflicts with Framer Motion
+    const { onDrag, onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDrop, ...motionButtonProps } = props as any
+
     return (
       <motion.button
         ref={ref}
         whileHover={
-          !disabled && !loading ? INTERACTION_VARIANTS.button.hover : {}
+          !disabled && !loading ? INTERACTION_VARIANTS.button.hover : undefined
         }
-        whileTap={!disabled && !loading ? INTERACTION_VARIANTS.button.tap : {}}
+        whileTap={!disabled && !loading ? INTERACTION_VARIANTS.button.tap : undefined}
         transition={INTERACTION_VARIANTS.button.transition}
         disabled={disabled || loading}
         className={cn(
@@ -244,7 +248,7 @@ export const InteractiveButton = React.forwardRef<
           sizeClasses[size],
           className
         )}
-        {...props}
+        {...motionButtonProps}
       >
         {loading && (
           <motion.div
