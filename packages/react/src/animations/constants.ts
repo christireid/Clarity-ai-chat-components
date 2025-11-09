@@ -38,13 +38,13 @@ export const STAGGER_TIMING = {
 
 export const INTERACTION_VARIANTS = {
   button: {
-    hover: { scale: 1.05, y: -2 },
-    tap: { scale: 0.95, y: 0 },
+    hover: { scale: 1.02, y: -1 },
+    tap: { scale: 0.98, y: 0 },
     transition: { duration: 0.15, ease: 'easeOut' },
   },
   card: {
-    hover: { y: -4, boxShadow: '0 12px 24px rgba(0,0,0,0.12)' },
-    tap: { scale: 0.98 },
+    hover: { y: -1, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' },
+    tap: { scale: 0.99 },
     transition: { duration: 0.2, ease: 'easeOut' },
   },
   icon: {

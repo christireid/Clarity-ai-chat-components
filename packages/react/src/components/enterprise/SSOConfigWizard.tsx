@@ -50,7 +50,7 @@ export const SSOConfigWizard: React.FC<SSOConfigWizardProps> = ({
   className,
 }) => {
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-md', className)}>
       <CardHeader className="space-y-2">
         <CardTitle className="text-lg font-semibold text-foreground">Configure {providerName} SSO</CardTitle>
         <CardDescription className="text-sm text-muted-foreground/80">

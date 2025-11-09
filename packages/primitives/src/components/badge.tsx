@@ -3,24 +3,24 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1 ring-1',
+  'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium tracking-[0.13px] transition-all duration-200 focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1 ring-1',
   {
     variants: {
       variant: {
         default:
-          'ring-primary/20 bg-primary/90 text-primary-foreground hover:bg-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)]',
+          'ring-primary/20 bg-primary/90 text-primary-foreground hover:bg-primary shadow-xs',
         secondary:
-          'ring-border/20 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-[0_1px_2px_rgba(15,23,42,0.08)]',
+          'ring-border/20 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-xs',
         destructive:
-          'ring-destructive/20 bg-destructive/90 text-destructive-foreground hover:bg-destructive shadow-[0_1px_2px_rgba(239,68,68,0.2)]',
+          'ring-destructive/20 bg-destructive/90 text-destructive-foreground hover:bg-destructive shadow-xs',
         outline: 
           'ring-border bg-transparent text-foreground hover:bg-accent hover:ring-border/70',
         success:
-          'ring-green-500/20 bg-green-500 text-white hover:bg-green-600 shadow-[0_1px_2px_rgba(34,197,94,0.2)]',
+          'ring-green-500/20 bg-green-500 text-white hover:bg-green-600 shadow-xs',
         warning:
-          'ring-yellow-500/20 bg-yellow-500 text-white hover:bg-yellow-600 shadow-[0_1px_2px_rgba(234,179,8,0.2)]',
+          'ring-yellow-500/20 bg-yellow-500 text-white hover:bg-yellow-600 shadow-xs',
         info: 
-          'ring-blue-500/20 bg-blue-500 text-white hover:bg-blue-600 shadow-[0_1px_2px_rgba(59,130,246,0.2)]',
+          'ring-blue-500/20 bg-blue-500 text-white hover:bg-blue-600 shadow-xs',
         subtle:
           'ring-border/20 bg-muted text-muted-foreground hover:bg-muted/80',
         ghost:

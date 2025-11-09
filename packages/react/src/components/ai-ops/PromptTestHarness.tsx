@@ -79,7 +79,7 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
   }
 
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_22px_48px_rgba(15,23,42,0.16)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm', className)}>
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
           <CardTitle className="text-lg font-semibold text-foreground">Prompt regression harness</CardTitle>
@@ -97,7 +97,7 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
             <select
               value={selectedDataset ?? ''}
               onChange={(event) => handleDatasetChange(event.target.value)}
-              className="min-w-[200px] rounded-lg border border-border/60 bg-background px-3 py-2 text-sm text-foreground shadow-[0_1px_2px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+              className="min-w-[200px] rounded-lg border border-border/60 bg-background px-3 py-2 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
             >
               {datasets.map((ds) => (
                 <option key={ds.id} value={ds.id}>
@@ -118,7 +118,7 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
             <select
               value={selectedVariant ?? ''}
               onChange={(event) => handleVariantChange(event.target.value)}
-              className="min-w-[200px] rounded-lg border border-border/60 bg-background px-3 py-2 text-sm text-foreground shadow-[0_1px_2px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+              className="min-w-[200px] rounded-lg border border-border/60 bg-background px-3 py-2 text-sm text-foreground shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
             >
               {variants.map((variant) => (
                 <option key={variant.id} value={variant.id}>
