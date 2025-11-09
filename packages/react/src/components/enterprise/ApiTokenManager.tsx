@@ -43,7 +43,7 @@ export const ApiTokenManager: React.FC<ApiTokenManagerProps> = ({
   className,
 }) => {
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm', className)}>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1.5">
           <CardTitle className="text-lg font-semibold text-foreground">API access tokens</CardTitle>
