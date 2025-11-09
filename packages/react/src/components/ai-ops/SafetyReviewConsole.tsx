@@ -89,7 +89,7 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
   }
 
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
+    <Card className={cn('border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]', className)}>
       <CardHeader className="space-y-2">
         <CardTitle className="text-lg font-semibold text-foreground">Safety review console</CardTitle>
         <CardDescription className="text-sm text-muted-foreground/80">
@@ -98,7 +98,7 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
       </CardHeader>
       <CardContent className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-3">
-          <div className="rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 text-sm leading-relaxed">
+          <div className="rounded-lg border border-border/50 bg-muted p-4 text-sm leading-relaxed">
             {sortedHighlights.length > 0 ? (
               <p className="space-x-1 whitespace-pre-wrap">{renderHighlightedContent()}</p>
             ) : (
@@ -113,11 +113,11 @@ export const SafetyReviewConsole: React.FC<SafetyReviewConsoleProps> = ({
           />
         </div>
         <aside className="space-y-4">
-          <div className="rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] p-4">
+          <div className="rounded-lg border border-border/50 bg-muted p-4">
             <h3 className="text-sm font-semibold text-foreground">Flag details</h3>
             <ul className="mt-3 space-y-3 text-xs text-muted-foreground/80">
               {sortedHighlights.map((highlight) => (
-                <li key={`flag-${highlight.id}`} className="rounded-xl border border-dashed border-border/60 bg-background/80 p-3">
+                <li key={`flag-${highlight.id}`} className="rounded-lg border border-dashed border-border/50 bg-background/80 p-3">
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-foreground">{highlight.category}</span>
                     <Badge variant={severityVariant[highlight.severity ?? 'low']}>

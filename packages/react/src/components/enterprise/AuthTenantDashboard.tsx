@@ -115,7 +115,7 @@ export const AuthTenantDashboard: React.FC<AuthTenantDashboardProps> = ({
           </p>
         </div>
 
-        <div className="space-y-3 rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] p-4">
+        <div className="space-y-3 rounded-lg border border-border/50 bg-muted p-4">
           <div className="flex items-center justify-between text-sm text-muted-foreground/80">
             <span>Renewal</span>
             <span>{renewalDate ?? 'Contact sales'}</span>
