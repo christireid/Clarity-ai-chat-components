@@ -9,10 +9,10 @@ export const ScrollArea = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
         ref={ref}
         className={cn(
           'relative overflow-auto',
-          // Custom scrollbar styling
+          // Custom scrollbar styling with refined opacity
           'scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent',
-          'hover:scrollbar-thumb-muted-foreground/30',
-          'transition-colors',
+          'hover:scrollbar-thumb-muted-foreground/40',
+          'transition-colors duration-200 ease-out',
           className
         )}
         {...props}
