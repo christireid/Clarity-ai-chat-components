@@ -102,7 +102,7 @@ export const MemoryProvider: React.FC<MemoryProviderProps> = ({
   React.useEffect(() => {
     if (!autoStart) return
 
-    const memoryService = new MemoryService(config, vectorStore, embeddings)
+    const memoryService = new MemoryService(config, vectorStore as any, embeddings)
     setService(memoryService)
     setIsInitialized(true)
 

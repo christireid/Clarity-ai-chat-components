@@ -513,11 +513,17 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
           : message
 
       const messageContent = typeof message === 'string' ? message : message.content
+      const messageContentStr = typeof messageContent === 'string' 
+        ? messageContent 
+        : messageContent
+          .filter((part) => part.type === 'text')
+          .map((part) => (part.type === 'text' ? part.text : ''))
+          .join('')
 
       // Check cache first
       if (enableCache && cacheRef.current) {
         const requestContext = { ...body, ...options?.data, assistantId, threadId }
-        const cached = cacheRef.current.get(messageContent, requestContext)
+        const cached = cacheRef.current.get(messageContentStr, requestContext)
         if (cached) {
           setMessages((prev) => [...prev, userMessage, cached.message])
           setData(cached.message)
@@ -599,7 +605,14 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
 
           // Execute tools if present
           if (finalMessage.toolInvocations && finalMessage.toolInvocations.length > 0) {
-            const executedTools = await executeToolCalls(finalMessage.toolInvocations)
+            const toolInvocationsForExecution = finalMessage.toolInvocations.map(tool => ({
+              toolCallId: tool.toolCallId,
+              toolName: tool.toolName,
+              args: tool.args,
+              state: tool.state as 'partial-call' | 'call' | 'result',
+              result: tool.result,
+            })) as ToolInvocation[]
+            const executedTools = await executeToolCalls(toolInvocationsForExecution)
             setToolInvocations(executedTools)
           }
 
@@ -608,8 +621,14 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
 
           // Cache the result
           if (enableCache && cacheRef.current) {
+            const messageContentStr = typeof messageContent === 'string' 
+              ? messageContent 
+              : messageContent
+                .filter((part) => part.type === 'text')
+                .map((part) => (part.type === 'text' ? part.text : ''))
+                .join('')
             cacheRef.current.set(
-              messageContent,
+              messageContentStr,
               { message: finalMessage, toolInvocations: finalMessage.toolInvocations || [] },
               requestBody
             )
@@ -627,10 +646,10 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
         await processStream(response.body, {
           format: streamFormat,
           signal: abortControllerRef.current.signal,
-          onData: (parsed) => {
+          onData: (parsed: any) => {
             // Handle tool invocations
-            if (parsed.toolInvocation) {
-              const toolCall: ToolInvocation = parsed.toolInvocation
+            if (parsed?.toolInvocation) {
+              const toolCall: ToolInvocation = parsed.toolInvocation as ToolInvocation
               currentToolInvocations = [...currentToolInvocations, toolCall]
               onToolCall?.(toolCall)
               setToolInvocations(currentToolInvocations)
@@ -642,7 +661,13 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
               id: assistantMessageId,
               role: 'assistant',
               content: accumulatedContent,
-              toolInvocations: currentToolInvocations,
+              toolInvocations: currentToolInvocations.map(tool => ({
+                toolCallId: tool.toolCallId,
+                toolName: tool.toolName,
+                args: tool.args,
+                state: tool.state === 'error' ? 'call' : tool.state as 'partial-call' | 'call' | 'result',
+                result: tool.result,
+              })),
             }
             setMessages((prev) =>
               prev.map((msg) =>
@@ -660,13 +685,25 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
           id: assistantMessageId,
           role: 'assistant',
           content: accumulatedContent,
-          toolInvocations: currentToolInvocations,
+          toolInvocations: currentToolInvocations.map(tool => ({
+            toolCallId: tool.toolCallId,
+            toolName: tool.toolName,
+            args: tool.args,
+            state: tool.state === 'error' ? 'call' : tool.state as 'partial-call' | 'call' | 'result',
+            result: tool.result,
+          })),
         }
 
         // Execute tools if present
         if (currentToolInvocations.length > 0) {
           const executedTools = await executeToolCalls(currentToolInvocations)
-          finalMessage.toolInvocations = executedTools
+          finalMessage.toolInvocations = executedTools.map(tool => ({
+            toolCallId: tool.toolCallId,
+            toolName: tool.toolName,
+            args: tool.args,
+            state: tool.state === 'error' ? 'call' : tool.state as 'partial-call' | 'call' | 'result',
+            result: tool.result,
+          }))
           setToolInvocations(executedTools)
         }
 
@@ -681,8 +718,14 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
 
         // Cache the result
         if (enableCache && cacheRef.current) {
+          const messageContentStr = typeof messageContent === 'string' 
+            ? messageContent 
+            : messageContent
+              .filter((part) => part.type === 'text')
+              .map((part) => (part.type === 'text' ? part.text : ''))
+              .join('')
           cacheRef.current.set(
-            messageContent,
+            messageContentStr,
             { message: finalMessage, toolInvocations: finalMessage.toolInvocations || [] },
             requestBody
           )

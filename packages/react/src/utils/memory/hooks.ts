@@ -54,10 +54,10 @@ export function useMemories(
 
   // Memoize options to prevent unnecessary re-renders
   const memoizedOptions = useMemo(() => options, [
-    options?.limit,
+    (options as any)?.limit,
     options?.scope,
     options?.type,
-    options?.minImportanceScore,
+    (options as any)?.minImportanceScore,
   ])
 
   const retrieve = useCallback(
