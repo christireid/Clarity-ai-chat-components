@@ -4,7 +4,7 @@
  * Measure and assert component performance
  */
 
-import { performance } from 'perf_hooks'
+// Use browser performance API (available in test environments)
 
 /**
  * Measure render performance

@@ -31,23 +31,22 @@
     "accessibility"
   ],
   "peerDependencies": {
-    "@clarity-chat/primitives": "workspace:*",
-    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/primitives": "*",
+    "@clarity-chat/react": "*",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@types/jest-axe": "^3.1.1",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "axe-core": "^4.8.3",
-    "tsup": "^8.0.1",
-    "typescript": "^5.4.5",
-    "vitest": "^1.1.0"
-  },
-  "dependencies": {
-    "faker": "^6.6.6"
+    "jest-axe": "^8.0.0"
   }
 }
