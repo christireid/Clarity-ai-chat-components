@@ -299,13 +299,13 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             {...slideAnimations[side]}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
-              'fixed z-[var(--z-modal)] bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)]',
+              'fixed z-[var(--z-modal)] bg-card border shadow-md',
               positionClasses[side],
               sizeClasses[side][size],
-              side === 'left' && 'border-r rounded-r-lg',
-              side === 'right' && 'border-l rounded-l-lg',
-              side === 'top' && 'border-b rounded-b-lg',
-              side === 'bottom' && 'border-t rounded-t-lg',
+              side === 'left' && 'border-r rounded-r-2xl',
+              side === 'right' && 'border-l rounded-l-2xl',
+              side === 'top' && 'border-b rounded-b-2xl',
+              side === 'bottom' && 'border-t rounded-t-2xl',
               className
             )}
             role="dialog"
@@ -319,7 +319,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
                   'absolute top-4 right-4 w-8 h-8 rounded-md',
                   'flex items-center justify-center',
                   'text-muted-foreground hover:text-foreground',
-                  'hover:bg-muted/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:-translate-y-[1px]',
+                  'hover:bg-muted/50',
                   'transition-all duration-150 ease-out',
                   'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1',
                   'z-10'

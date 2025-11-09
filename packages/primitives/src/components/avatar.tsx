@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const avatarVariants = cva(
-  'relative flex shrink-0 overflow-hidden rounded-full ring-2 ring-background/80 shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-all duration-200 ease-out',
+  'relative flex shrink-0 overflow-hidden rounded-full ring-2 ring-background/80 shadow-xs transition-all duration-200 ease-out',
   {
     variants: {
       size: {
@@ -65,10 +65,10 @@ const Avatar = React.memo(
     }
 
     const statusColors = {
-      online: 'bg-green-500 ring-green-400/40 shadow-[0_0_8px_rgba(34,197,94,0.4)]',
+      online: 'bg-green-500 ring-green-400/40',
       offline: 'bg-gray-400 ring-gray-300/40',
-      away: 'bg-amber-500 ring-amber-400/40 shadow-[0_0_8px_rgba(245,158,11,0.4)]',
-      busy: 'bg-red-500 ring-red-400/40 shadow-[0_0_8px_rgba(239,68,68,0.4)]',
+      away: 'bg-amber-500 ring-amber-400/40',
+      busy: 'bg-red-500 ring-red-400/40',
     }
 
     const statusSizes = {
@@ -86,7 +86,7 @@ const Avatar = React.memo(
         className={cn(
           avatarVariants({ size, className }),
           hoverable &&
-            'hover:scale-110 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] cursor-pointer hover:-translate-y-[2px]'
+            'hover:scale-[1.02] hover:shadow-sm cursor-pointer hover:-translate-y-[1px]'
         )}
         {...props}
       >

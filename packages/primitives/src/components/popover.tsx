@@ -355,9 +355,9 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
               zIndex: 9999,
             }}
             className={cn(
-              'bg-popover/98 text-popover-foreground',
-              'border border-border/40 rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)]',
-              'outline-none backdrop-blur-md',
+              'bg-popover text-popover-foreground',
+              'border rounded-xl shadow-md',
+              'outline-none backdrop-blur-sm',
               className
             )}
             role="dialog"
