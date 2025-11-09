@@ -286,7 +286,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
             className={cn(
               'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
-              blurBackdrop && 'backdrop-blur-md',
+              blurBackdrop && 'backdrop-blur-sm',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -320,7 +320,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
                   'flex items-center justify-center',
                   'text-muted-foreground hover:text-foreground',
                   'hover:bg-muted/30 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08)] hover:-translate-y-[1px]',
-                  'transition-all duration-200',
+                  'transition-all duration-150 ease-out',
                   'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1',
                   'z-10'
                 )}
