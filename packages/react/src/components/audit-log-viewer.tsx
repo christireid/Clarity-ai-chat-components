@@ -59,7 +59,7 @@ export function AuditLogViewer({
     return (
       <div
         className={cn(
-          'rounded-xl border border-dashed border-muted-foreground/20 bg-card/50 p-6 text-center text-sm text-muted-foreground',
+          'rounded-lg border border-dashed border-muted-foreground/20 bg-card/50 p-6 text-center text-sm text-muted-foreground',
           className
         )}
       >
@@ -71,7 +71,7 @@ export function AuditLogViewer({
   return (
     <div
       className={cn(
-        'rounded-xl border border-border/60 bg-card shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
+        'rounded-lg border border-border/50 bg-card shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
         className
       )}
     >
