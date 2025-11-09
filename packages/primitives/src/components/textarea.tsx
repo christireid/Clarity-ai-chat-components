@@ -9,8 +9,8 @@ const textareaVariants = cva(
     variants: {
       variant: {
         default: '',
-        error: 'border-destructive/60 focus-visible:border-destructive focus-visible:ring-destructive/10 focus-visible:shadow-[0_0_0_3px_rgba(239,68,68,0.08),0_2px_8px_rgba(239,68,68,0.1)]',
-        success: 'border-green-500/60 focus-visible:border-green-500 focus-visible:ring-green-500/10 focus-visible:shadow-[0_0_0_3px_rgba(34,197,94,0.08),0_2px_8px_rgba(34,197,94,0.1)]',
+        error: 'border-destructive focus-visible:border-destructive focus-visible:ring-destructive/50',
+        success: 'border-green-500 focus-visible:border-green-500 focus-visible:ring-green-500/50',
       },
     },
     defaultVariants: {
