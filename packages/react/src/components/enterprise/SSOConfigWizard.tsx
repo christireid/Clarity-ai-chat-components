@@ -50,7 +50,7 @@ export const SSOConfigWizard: React.FC<SSOConfigWizardProps> = ({
   className,
 }) => {
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
+    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-md', className)}>
       <CardHeader className="space-y-2">
         <CardTitle className="text-lg font-semibold text-foreground">Configure {providerName} SSO</CardTitle>
         <CardDescription className="text-sm text-muted-foreground/80">
@@ -60,7 +60,7 @@ export const SSOConfigWizard: React.FC<SSOConfigWizardProps> = ({
       <CardContent className="space-y-6">
         <ol className="space-y-4">
           {steps.map((step, index) => (
-            <li key={step.id} className="rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] p-4">
+            <li key={step.id} className="rounded-lg border border-border/50 bg-muted p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground/70">
@@ -80,7 +80,7 @@ export const SSOConfigWizard: React.FC<SSOConfigWizardProps> = ({
         </ol>
 
         {metadata && (
-          <div className="space-y-3 rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] p-4">
+          <div className="space-y-3 rounded-lg border border-border/50 bg-muted p-4">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-semibold text-foreground">Service provider metadata</h4>
               <Button variant="ghost" size="sm" onClick={onDownloadMetadata}>

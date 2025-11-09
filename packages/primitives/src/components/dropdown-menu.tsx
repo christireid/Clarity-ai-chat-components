@@ -154,8 +154,8 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
       data-state={open ? 'open' : 'closed'}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center gap-2 rounded-lg border border-border/60 bg-[hsl(var(--surface-elevated))] px-3 py-2 text-sm font-medium shadow-[0_1px_3px_rgba(15,23,42,0.1)] transition-all duration-200',
-        'hover:border-primary/40 hover:text-primary hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-0 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-60'
+        'inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm font-medium tracking-[0.13px] shadow-xs transition-all duration-200',
+        'hover:border-primary/40 hover:text-primary hover:shadow-sm focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60'
       )}
     >
       {children}
@@ -453,7 +453,7 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
               zIndex: 9999,
             }}
             className={cn(
-              'min-w-[12rem] overflow-hidden rounded-xl border border-border/40 bg-popover/98 py-1 shadow-[0_12px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] backdrop-blur-md',
+              'min-w-[12rem] overflow-hidden rounded-xl border bg-popover py-1 shadow-md backdrop-blur-sm',
               className
             )}
             role="menu"
@@ -527,7 +527,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
           destructive
             ? 'hover:bg-destructive/12 hover:text-destructive'
             : 'hover:bg-primary/10 hover:text-primary',
-          active && !destructive && 'bg-primary/10 text-primary shadow-[inset_0_0_0_1px_rgba(22,119,255,0.18)]',
+          active && !destructive && 'bg-primary/10 text-primary',
           inset && 'pl-10',
           disabled && 'cursor-not-allowed opacity-50',
           className
@@ -539,7 +539,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
           <span className="truncate text-left">{children}</span>
         </div>
         {shortcut && (
-          <kbd className="rounded-sm ring-1 ring-border/30 bg-[hsl(var(--surface-muted))] px-2 py-0.5 text-[11px] font-medium text-muted-foreground shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
+          <kbd className="rounded-sm ring-1 ring-border bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground shadow-xs">
             {shortcut}
           </kbd>
         )}

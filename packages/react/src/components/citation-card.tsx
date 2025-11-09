@@ -86,13 +86,13 @@ export const CitationCard = React.memo(function CitationCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
     >
       <Card
         className={cn(
-          'group relative overflow-hidden shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:shadow-[0_10px_15px_-3px_rgb(0_0_0_/_0.1),0_4px_6px_-4px_rgb(0_0_0_/_0.1)] transition-all duration-150 ease-out hover:-translate-y-px',
+          'group relative overflow-hidden border-border/40 shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-200 ease-out hover:-translate-y-[2px]',
           onClick && 'cursor-pointer',
           className
         )}
