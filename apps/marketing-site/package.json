@@ -17,8 +17,8 @@
     "react-dom": "^18.2.0",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.552.0",
-    "@clarity-chat/react": "*",
-    "@clarity-chat/primitives": "*"
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
