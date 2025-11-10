@@ -12,6 +12,8 @@ export default defineConfig({
     '@clarity-chat/types',
     '@clarity-chat/memory',
     'mermaid',
+    'highlight.js/styles/github-dark.css',
+    'katex/dist/katex.min.css',
   ],
   clean: true,
   sourcemap: false,
