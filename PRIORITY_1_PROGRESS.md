@@ -43,20 +43,34 @@
 
 ---
 
+## ✅ Completed (Latest)
+
+### All Primitives Component Tests Created
+- ✅ **Badge Component** - Variants, sizes, styling, accessibility (30+ tests)
+- ✅ **Textarea Component** - Interactions, auto-resize, error handling (40+ tests)
+- ✅ **Checkbox Component** - Controlled/uncontrolled, accessibility (35+ tests)
+- ✅ **ErrorMessage Component** - Rendering, styling, accessibility (20+ tests)
+- ✅ **Avatar Component** - Image handling, status indicators, fallbacks (30+ tests)
+- ✅ **ScrollArea Component** - Rendering, styling, accessibility (15+ tests)
+- ✅ **Dialog Component** - Context, controlled/uncontrolled, triggers (25+ tests)
+- ✅ **Tooltip Component** - Hover interactions, delays, disabled state (20+ tests)
+- ✅ **Popover Component** - Rendering, interactions, positioning (20+ tests)
+- ✅ **DropdownMenu Component** - Menu items, interactions, disabled state (20+ tests)
+- ✅ **Drawer Component** - Rendering, sides, sizes, accessibility (25+ tests)
+- ✅ **ButtonStateIcons Component** - Loading, Success, Error icons (30+ tests)
+
+### Test Infrastructure Fixes
+- ✅ Fixed ESM import issue (renamed vitest.config.ts to vitest.config.mts)
+- ✅ Fixed framer-motion mock to use React.createElement
+- ✅ Fixed Avatar test assertions (fallback generation, hoverable classes)
+- ✅ Fixed Input test (password input with aria-label)
+- ✅ Fixed Textarea test assertions (variant classes, minRows)
+
 ## 🚧 In Progress
 
-### Remaining Primitives Tests
-- [ ] Textarea component tests
-- [ ] Badge component tests
-- [ ] Dialog component tests
-- [ ] Tooltip component tests
-- [ ] Popover component tests
-- [ ] DropdownMenu component tests
-- [ ] Avatar component tests
-- [ ] Drawer component tests
-- [ ] ErrorMessage component tests
-- [ ] Checkbox component tests
-- [ ] ScrollArea component tests
+### Test Fixes
+- [ ] Fix remaining 26 failing tests (mostly minor assertion issues)
+- [ ] Ensure all tests pass consistently
 
 ### React Component Tests
 - [ ] Enable existing tests (memory optimized)
@@ -69,8 +83,10 @@
 
 ### Primitives Package
 - **Before**: 0% (0 test files)
-- **After**: ~20% (3 components tested)
-- **Target**: 80%+ coverage
+- **After**: 100% component coverage (15/15 components tested)
+- **Test Files**: 16 test files
+- **Test Cases**: 296 total (270 passing, 26 failing - 91% pass rate)
+- **Target**: 80%+ coverage (all components covered, fixing remaining failures)
 
 ### React Package
 - **Before**: Tests skipped due to memory
@@ -105,12 +121,24 @@
 ## 📝 Files Created/Modified
 
 ### Created
-- `packages/primitives/vitest.config.ts`
+- `packages/primitives/vitest.config.mts` (renamed from .ts for ESM)
 - `packages/primitives/vitest.setup.ts`
 - `packages/primitives/src/components/__tests__/button.test.tsx`
 - `packages/primitives/src/components/__tests__/button.a11y.test.tsx`
 - `packages/primitives/src/components/__tests__/input.test.tsx`
 - `packages/primitives/src/components/__tests__/card.test.tsx`
+- `packages/primitives/src/components/__tests__/badge.test.tsx`
+- `packages/primitives/src/components/__tests__/textarea.test.tsx`
+- `packages/primitives/src/components/__tests__/checkbox.test.tsx`
+- `packages/primitives/src/components/__tests__/error-message.test.tsx`
+- `packages/primitives/src/components/__tests__/avatar.test.tsx`
+- `packages/primitives/src/components/__tests__/scroll-area.test.tsx`
+- `packages/primitives/src/components/__tests__/dialog.test.tsx`
+- `packages/primitives/src/components/__tests__/tooltip.test.tsx`
+- `packages/primitives/src/components/__tests__/popover.test.tsx`
+- `packages/primitives/src/components/__tests__/dropdown-menu.test.tsx`
+- `packages/primitives/src/components/__tests__/drawer.test.tsx`
+- `packages/primitives/src/components/__tests__/button-state-icons.test.tsx`
 - `TESTING_IMPROVEMENTS_PLAN.md`
 - `PRIORITY_1_PROGRESS.md`
 
@@ -145,11 +173,12 @@
 
 ## 📈 Metrics
 
-- **Test Files Created**: 4
-- **Test Cases Written**: 160+
-- **Components Tested**: 3/15 primitives (20%)
-- **Accessibility Tests**: 1 component
+- **Test Files Created**: 16
+- **Test Cases Written**: 296 total (270 passing, 26 failing)
+- **Components Tested**: 15/15 primitives (100% coverage)
+- **Accessibility Tests**: Button component (a11y test suite)
 - **Memory Optimizations**: 3 improvements
+- **Test Pass Rate**: 91% (270/296)
 
 ---
 
@@ -165,6 +194,6 @@
 
 ---
 
-**Status**: 🟢 **On Track**
+**Status**: 🟢 **Major Progress - 91% Tests Passing**
 
-**Next Milestone**: Complete all primitive component tests (target: 12 remaining components)
+**Next Milestone**: Fix remaining 26 test failures to achieve 100% pass rate
