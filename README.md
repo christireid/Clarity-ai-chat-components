@@ -22,7 +22,9 @@
 [→ View UI/UX Enhancements](./UI_UX_ENHANCEMENT_COMPLETE.md) | [→ Design System Guide](./DESIGN_SYSTEM_GUIDE.md)
 
 **[Documentation](./docs/README.md)** • **[Examples](./examples/README.md)** •
-**[Storybook](https://storybook.clarity-chat.dev)** • **[Discord](https://discord.gg/clarity-chat)**
+**[Storybook](./apps/storybook)** • **[Discord](https://discord.gg/clarity-chat)**
+
+> 🚀 **To deploy Storybook**: Run `./apps/storybook/DEPLOY.sh` (Vercel, Netlify, or Chromatic)
 
 ---
 
