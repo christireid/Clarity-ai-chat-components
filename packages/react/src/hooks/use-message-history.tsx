@@ -263,7 +263,7 @@ export function useMessageHistory(
     if (isAvailable && conversationId && loadRef.current) {
       loadRef.current()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [conversationId, isAvailable]) // load accessed via ref
 
   const clear = React.useCallback(async () => {
