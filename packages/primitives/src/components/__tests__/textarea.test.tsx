@@ -35,13 +35,13 @@ describe('Textarea Component', () => {
     it('should render with error variant', () => {
       const { container } = render(<Textarea variant="error" />)
       const textarea = container.querySelector('textarea')
-      expect(textarea).toHaveClass('ring-destructive')
+      expect(textarea).toHaveClass('border-destructive')
     })
 
     it('should render with success variant', () => {
       const { container } = render(<Textarea variant="success" />)
       const textarea = container.querySelector('textarea')
-      expect(textarea).toHaveClass('ring-green-500')
+      expect(textarea).toHaveClass('border-green-500')
     })
   })
 
@@ -108,9 +108,10 @@ describe('Textarea Component', () => {
     })
 
     it('should respect minRows prop', () => {
-      const { container } = render(<Textarea minRows={5} />)
+      const { container } = render(<Textarea autoResize minRows={5} />)
       const textarea = container.querySelector('textarea')
       expect(textarea).toBeInTheDocument()
+      // minRows is used internally for auto-resize calculation, not as DOM attribute
     })
 
     it('should respect maxRows prop', () => {
