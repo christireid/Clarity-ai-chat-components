@@ -25,7 +25,7 @@ interface UseRippleEffectOptions {
 export function useRippleEffect({ enabled, onRipple }: UseRippleEffectOptions = { enabled: true }) {
   const [ripples, setRipples] = React.useState<RippleType[]>([])
   const rippleIdRef = React.useRef(0)
-  const timeoutRefsRef = React.useRef<Map<number, NodeJS.Timeout>>(new Map())
+  const timeoutRefsRef = React.useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map())
 
   const addRipple = React.useCallback(
     (e: React.MouseEvent<HTMLElement>) => {

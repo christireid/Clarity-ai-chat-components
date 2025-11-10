@@ -11,9 +11,9 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@clarity-chat/react": "*",
-    "@clarity-chat/primitives": "*",
-    "@clarity-chat/types": "*",
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
     "@remix-run/node": "^2.15.1",
     "@remix-run/react": "^2.15.1",
     "@remix-run/serve": "^2.15.1",

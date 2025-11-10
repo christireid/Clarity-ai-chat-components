@@ -13,8 +13,8 @@
     "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
-    "@clarity-chat/react": "*",
-    "@clarity-chat/types": "*",
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "@monaco-editor/react": "^4.6.0",

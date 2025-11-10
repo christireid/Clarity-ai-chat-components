@@ -14,7 +14,7 @@
     "analyze": "npm run build:stats && npx vite-bundle-visualizer storybook-static"
   },
   "dependencies": {
-    "@clarity-chat/react": "^0.1.0",
+    "@clarity-chat/react": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

@@ -9,9 +9,9 @@
     "preview": "vitepress preview"
   },
   "dependencies": {
-    "@clarity-chat/react": "*",
-    "@clarity-chat/primitives": "*",
-    "@clarity-chat/types": "*"
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/types": "workspace:*"
   },
   "devDependencies": {
     "vitepress": "^1.5.0",
