@@ -27,8 +27,8 @@ export interface IndexedDBConfig {
 export interface UseIndexedDBReturn<T> {
   /** Current data */
   data: T | null
-  /** Loading state */
-  isLoading: boolean
+  /** Whether operations are pending (React 19's useTransition) */
+  isPending: boolean
   /** Error state */
   error: Error | null
   /** Save data to IndexedDB */
@@ -41,25 +41,33 @@ export interface UseIndexedDBReturn<T> {
   clear: () => Promise<void>
   /** Check if IndexedDB is available */
   isAvailable: boolean
+  /** @deprecated Use isPending instead */
+  isLoading: boolean
 }
 
 /**
- * IndexedDB hook for large data persistence
+ * IndexedDB hook for large data persistence (React 19 Version)
  * 
  * Use this hook for storing large conversations (>5MB) or when you need
  * structured queries. Falls back to localStorage for smaller data or
  * when IndexedDB is unavailable.
  * 
+ * **React 19 Improvements:**
+ * - Uses `useTransition` for non-blocking DB operations
+ * - Automatic pending state management
+ * - Better concurrent rendering during saves/loads
+ * - Simpler state management
+ * 
  * Features:
  * - Automatic database initialization
  * - Type-safe operations
  * - Error handling
- * - Loading states
+ * - Automatic pending states
  * - Fallback to localStorage
  * 
  * @example
  * ```tsx
- * const { data, save, load, isLoading } = useIndexedDB<Message[]>({
+ * const { data, save, load, isPending } = useIndexedDB<Message[]>({
  *   dbName: 'clarity-chat',
  *   version: 1,
  *   stores: [{
@@ -68,6 +76,9 @@ export interface UseIndexedDBReturn<T> {
  *     indexes: [{ name: 'createdAt', keyPath: 'createdAt' }]
  *   }]
  * }, 'conversations', 'conversation-123')
+ * 
+ * // isPending automatically tracked during operations
+ * <button onClick={() => save(data)} disabled={isPending}>Save</button>
  * ```
  */
 export function useIndexedDB<T>(
@@ -76,9 +87,12 @@ export function useIndexedDB<T>(
   key?: string
 ): UseIndexedDBReturn<T> {
   const [data, setData] = React.useState<T | null>(null)
-  const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
   const [isAvailable, setIsAvailable] = React.useState(false)
+  
+  // React 19: useTransition for non-blocking DB operations
+  const [isPending, startTransition] = React.useTransition()
+  
   const dbRef = React.useRef<IDBDatabase | null>(null)
 
   // Check IndexedDB availability
@@ -164,29 +178,28 @@ export function useIndexedDB<T>(
         }
       }
 
-      setIsLoading(true)
       setError(null)
 
-      try {
-        const transaction = dbRef.current.transaction([storeName], 'readwrite')
-        const store = transaction.objectStore(storeName)
+      // React 19: useTransition for non-blocking save
+      startTransition(async () => {
+        try {
+          const transaction = dbRef.current!.transaction([storeName], 'readwrite')
+          const store = transaction.objectStore(storeName)
 
-        await new Promise<void>((resolve, reject) => {
-          const request = store.put({ id: key, data: value, updatedAt: new Date() })
-          request.onsuccess = () => resolve()
-          request.onerror = () => reject(request.error)
-        })
+          await new Promise<void>((resolve, reject) => {
+            const request = store.put({ id: key, data: value, updatedAt: new Date() })
+            request.onsuccess = () => resolve()
+            request.onerror = () => reject(request.error)
+          })
 
-        setData(value)
-      } catch (err) {
-        const error = err as Error
-        setError(error)
-        throw error
-      } finally {
-        setIsLoading(false)
-      }
+          setData(value)
+        } catch (err) {
+          const error = err as Error
+          setError(error)
+        }
+      })
     },
-    [isAvailable, key, storeName]
+    [isAvailable, key, storeName, startTransition]
   )
 
   const load = React.useCallback(async (): Promise<T | null> => {
@@ -207,32 +220,37 @@ export function useIndexedDB<T>(
 
     if (!dbRef.current) return null
 
-    setIsLoading(true)
     setError(null)
+    let result: T | null = null
 
-    try {
-      const transaction = dbRef.current.transaction([storeName], 'readonly')
-      const store = transaction.objectStore(storeName)
+    // React 19: useTransition for non-blocking load
+    await new Promise<void>((resolveTransition) => {
+      startTransition(async () => {
+        try {
+          const transaction = dbRef.current!.transaction([storeName], 'readonly')
+          const store = transaction.objectStore(storeName)
 
-      const result = await new Promise<T | null>((resolve, reject) => {
-        const request = store.get(key)
-        request.onsuccess = () => {
-          const record = request.result
-          resolve(record ? record.data : null)
+          result = await new Promise<T | null>((resolve, reject) => {
+            const request = store.get(key)
+            request.onsuccess = () => {
+              const record = request.result
+              resolve(record ? record.data : null)
+            }
+            request.onerror = () => reject(request.error)
+          })
+
+          setData(result)
+        } catch (err) {
+          const error = err as Error
+          setError(error)
+        } finally {
+          resolveTransition()
         }
-        request.onerror = () => reject(request.error)
       })
+    })
 
-      setData(result)
-      return result
-    } catch (err) {
-      const error = err as Error
-      setError(error)
-      return null
-    } finally {
-      setIsLoading(false)
-    }
-  }, [isAvailable, key, storeName])
+    return result
+  }, [isAvailable, key, storeName, startTransition])
 
   const remove = React.useCallback(async (): Promise<void> => {
     if (!isAvailable || !key) {
@@ -245,28 +263,27 @@ export function useIndexedDB<T>(
 
     if (!dbRef.current) return
 
-    setIsLoading(true)
     setError(null)
 
-    try {
-      const transaction = dbRef.current.transaction([storeName], 'readwrite')
-      const store = transaction.objectStore(storeName)
+    // React 19: useTransition for non-blocking remove
+    startTransition(async () => {
+      try {
+        const transaction = dbRef.current!.transaction([storeName], 'readwrite')
+        const store = transaction.objectStore(storeName)
 
-      await new Promise<void>((resolve, reject) => {
-        const request = store.delete(key)
-        request.onsuccess = () => resolve()
-        request.onerror = () => reject(request.error)
-      })
+        await new Promise<void>((resolve, reject) => {
+          const request = store.delete(key)
+          request.onsuccess = () => resolve()
+          request.onerror = () => reject(request.error)
+        })
 
-      setData(null)
-    } catch (err) {
-      const error = err as Error
-      setError(error)
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }, [isAvailable, key, storeName])
+        setData(null)
+      } catch (err) {
+        const error = err as Error
+        setError(error)
+      }
+    })
+  }, [isAvailable, key, storeName, startTransition])
 
   const clear = React.useCallback(async (): Promise<void> => {
     if (!isAvailable) {
@@ -282,38 +299,39 @@ export function useIndexedDB<T>(
 
     if (!dbRef.current) return
 
-    setIsLoading(true)
     setError(null)
 
-    try {
-      const transaction = dbRef.current.transaction([storeName], 'readwrite')
-      const store = transaction.objectStore(storeName)
+    // React 19: useTransition for non-blocking clear
+    startTransition(async () => {
+      try {
+        const transaction = dbRef.current!.transaction([storeName], 'readwrite')
+        const store = transaction.objectStore(storeName)
 
-      await new Promise<void>((resolve, reject) => {
-        const request = store.clear()
-        request.onsuccess = () => resolve()
-        request.onerror = () => reject(request.error)
-      })
+        await new Promise<void>((resolve, reject) => {
+          const request = store.clear()
+          request.onsuccess = () => resolve()
+          request.onerror = () => reject(request.error)
+        })
 
-      setData(null)
-    } catch (err) {
-      const error = err as Error
-      setError(error)
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }, [isAvailable, storeName, key])
+        setData(null)
+      } catch (err) {
+        const error = err as Error
+        setError(error)
+      }
+    })
+  }, [isAvailable, storeName, key, startTransition])
 
   return {
     data,
-    isLoading,
+    isPending,
     error,
     save,
     load,
     remove,
     clear,
     isAvailable,
+    // Backwards compatibility: isLoading is now an alias for isPending
+    isLoading: isPending,
   }
 }
 

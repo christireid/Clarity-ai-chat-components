@@ -8,15 +8,23 @@ export interface UseStreamingOptions {
 
 export interface UseStreamingReturn {
   content: string
-  isStreaming: boolean
+  isPending: boolean
   startStreaming: (stream: ReadableStream<Uint8Array>, options?: { signal?: AbortSignal }) => Promise<void>
   stopStreaming: () => void
   reset: () => void
+  /** @deprecated Use isPending instead */
+  isStreaming: boolean
 }
 
 /**
  * Generic streaming hook for handling ReadableStream data with automatic
  * text decoding and state management.
+ * 
+ * **React 19 Improvements:**
+ * - Uses `useTransition` for automatic pending state
+ * - Non-blocking stream processing
+ * - Better integration with concurrent features
+ * - Simpler state management
  * 
  * **Features:**
  * - Automatic text decoding from Uint8Array
@@ -38,7 +46,7 @@ export interface UseStreamingReturn {
  * @returns {UseStreamingReturn} Streaming state and controls
  * @example
  * ```tsx
- * const { content, isStreaming, startStreaming, stopStreaming } = useStreaming({
+ * const { content, isPending, startStreaming, stopStreaming } = useStreaming({
  *   onChunk: (chunk) => console.log('Received:', chunk),
  *   onComplete: (full) => console.log('Done!', full)
  * })
@@ -47,15 +55,18 @@ export interface UseStreamingReturn {
  * const controller = new AbortController()
  * await startStreaming(response.body, { signal: controller.signal })
  * 
- * // Stop streaming early if needed
- * stopStreaming()
+ * // isPending automatically tracked by React 19's useTransition
+ * <div>{isPending && <LoadingSpinner />}</div>
  * ```
  */
 export function useStreaming(options: UseStreamingOptions = {}): UseStreamingReturn {
   const { onChunk, onComplete, onError } = options
   
   const [content, setContent] = React.useState('')
-  const [isStreaming, setIsStreaming] = React.useState(false)
+  
+  // React 19: useTransition for automatic pending state
+  const [isPending, startTransition] = React.useTransition()
+  
   const readerRef = React.useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
   const abortControllerRef = React.useRef<AbortController | null>(null)
   
@@ -79,7 +90,7 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
       abortControllerRef.current.abort()
       abortControllerRef.current = null
     }
-    setIsStreaming(false)
+    // Note: Can't manually stop useTransition, but canceling the reader/controller will stop the operation
   }, [])
 
   const startStreaming = React.useCallback(
@@ -87,7 +98,6 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
       // Stop any existing streaming
       stopStreaming()
 
-      setIsStreaming(true)
       setContent('')
 
       // Create AbortController if not provided
@@ -95,46 +105,48 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
       abortControllerRef.current = controller
       const signal = options?.signal || controller.signal
 
-      try {
-        const reader = stream.getReader()
-        readerRef.current = reader
-        const decoder = new TextDecoder()
-        let fullText = ''
+      // React 19: useTransition makes streaming non-blocking
+      startTransition(async () => {
+        try {
+          const reader = stream.getReader()
+          readerRef.current = reader
+          const decoder = new TextDecoder()
+          let fullText = ''
 
-        while (true) {
-          // Check if aborted
-          if (signal?.aborted) {
-            throw new DOMException('Streaming aborted', 'AbortError')
+          while (true) {
+            // Check if aborted
+            if (signal?.aborted) {
+              throw new DOMException('Streaming aborted', 'AbortError')
+            }
+
+            const { done, value } = await reader.read()
+
+            if (done) {
+              break
+            }
+
+            const chunk = decoder.decode(value, { stream: true })
+            fullText += chunk
+
+            setContent(fullText)
+            onChunkRef.current?.(chunk)
           }
 
-          const { done, value } = await reader.read()
-
-          if (done) {
-            break
+          onCompleteRef.current?.(fullText)
+        } catch (err) {
+          // Don't call onError for abort
+          if (err instanceof Error && err.name !== 'AbortError') {
+            onErrorRef.current?.(err)
           }
-
-          const chunk = decoder.decode(value, { stream: true })
-          fullText += chunk
-
-          setContent(fullText)
-          onChunkRef.current?.(chunk)
+        } finally {
+          readerRef.current = null
+          if (abortControllerRef.current === controller) {
+            abortControllerRef.current = null
+          }
         }
-
-        onCompleteRef.current?.(fullText)
-      } catch (err) {
-        // Don't call onError for abort
-        if (err instanceof Error && err.name !== 'AbortError') {
-          onErrorRef.current?.(err)
-        }
-      } finally {
-        setIsStreaming(false)
-        readerRef.current = null
-        if (abortControllerRef.current === controller) {
-          abortControllerRef.current = null
-        }
-      }
+      })
     },
-    [stopStreaming] // Callbacks accessed via refs, so not in deps
+    [stopStreaming, startTransition]
   )
 
   const reset = React.useCallback(() => {
@@ -151,9 +163,11 @@ export function useStreaming(options: UseStreamingOptions = {}): UseStreamingRet
 
   return {
     content,
-    isStreaming,
+    isPending,
     startStreaming,
     stopStreaming,
     reset,
+    // Backwards compatibility: isStreaming is now an alias for isPending
+    isStreaming: isPending,
   }
 }
