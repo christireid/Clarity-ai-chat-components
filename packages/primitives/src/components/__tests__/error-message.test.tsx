@@ -81,8 +81,10 @@ describe('ErrorMessage Component', () => {
   describe('Animation', () => {
     it('should have transition classes', () => {
       const { container } = render(<ErrorMessage error="Error message" />)
-      const errorElement = container.querySelector('.transition-all')
+      const errorElement = container.querySelector('p')
+      // ErrorMessage uses animate-in classes, not transition-all
       expect(errorElement).toBeInTheDocument()
+      expect(errorElement).toHaveClass('animate-in')
     })
 
     it('should have duration class', () => {

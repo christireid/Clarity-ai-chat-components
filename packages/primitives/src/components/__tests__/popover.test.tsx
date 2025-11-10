@@ -161,14 +161,19 @@ describe('Popover Component', () => {
 
   describe('Accessibility', () => {
     it('should support aria-label', () => {
-      const { container } = render(
+      render(
         <Popover open>
           <PopoverContent aria-label="Popover content">Content</PopoverContent>
         </Popover>
       )
-      // Popover content is positioned absolutely, check by container
-      const popover = container.querySelector('[aria-label="Popover content"]')
+      // Popover content is rendered in document, check by text content
+      expect(screen.getByText('Content')).toBeInTheDocument()
+      // Popover doesn't have a role by default, check aria-label attribute directly
+      const popover = document.querySelector('[aria-label="Popover content"]')
       expect(popover).toBeInTheDocument()
+      if (popover) {
+        expect(popover).toHaveAttribute('aria-label', 'Popover content')
+      }
     })
   })
 })

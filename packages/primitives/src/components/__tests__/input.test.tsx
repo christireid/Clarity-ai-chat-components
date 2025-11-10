@@ -163,8 +163,10 @@ describe('Input Component', () => {
     })
 
     it('should render password input type', () => {
-      render(<Input type="password" />)
-      expect(screen.getByLabelText(/password/i) || screen.getByDisplayValue('')).toHaveAttribute('type', 'password')
+      const { container } = render(<Input type="password" />)
+      const input = container.querySelector('input[type="password"]')
+      expect(input).toBeInTheDocument()
+      expect(input).toHaveAttribute('type', 'password')
     })
 
     it('should render number input type', () => {

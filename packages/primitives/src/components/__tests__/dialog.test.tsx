@@ -206,16 +206,18 @@ describe('Dialog Component', () => {
     })
 
     it('should support aria-label on content', () => {
-      const { container } = render(
+      render(
         <Dialog open>
           <DialogContent aria-label="Custom dialog">
             <DialogTitle>Dialog</DialogTitle>
           </DialogContent>
         </Dialog>
       )
-      // Dialog content is rendered in portal, check by role or container
-      const dialog = container.querySelector('[aria-label="Custom dialog"]')
+      // Dialog content is rendered in portal, check by role (aria-label may not be accessible via name)
+      const dialog = screen.getByRole('dialog')
       expect(dialog).toBeInTheDocument()
+      // Check aria-label attribute directly
+      expect(dialog).toHaveAttribute('aria-label', 'Custom dialog')
     })
   })
 

@@ -154,7 +154,8 @@ describe('DropdownMenu Component', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       )
-      const item = screen.getByText('Disabled Item')
+      // Get the button element, not the text span
+      const item = screen.getByRole('menuitem', { name: 'Disabled Item' })
       expect(item).toBeDisabled()
     })
   })

@@ -158,8 +158,11 @@ describe('Card Component', () => {
         </Card>
       )
 
-      // Card should have proper structure
-      expect(container.querySelector('.rounded-lg')).toBeInTheDocument()
+      // Card should have proper structure with rounded-xl
+      const card = container.querySelector('.rounded-xl')
+      expect(card).toBeInTheDocument()
+      // Should have h3 for title
+      expect(screen.getByRole('heading', { level: 3 })).toBeInTheDocument()
     })
   })
 
