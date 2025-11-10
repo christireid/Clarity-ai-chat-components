@@ -17,28 +17,27 @@ import * as React from 'react'
  * })
  * ```
  */
-// Function overloads for type safety
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+/* eslint-disable @typescript-eslint/no-redeclare */
+// Function overloads for type safety - these are intentionally redeclared
 export function useEventListener<K extends keyof WindowEventMap>(
   eventName: K,
   handler: (event: WindowEventMap[K]) => void,
   element?: React.RefObject<HTMLElement> | null,
   options?: boolean | AddEventListenerOptions
 ): void
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export function useEventListener<K extends keyof DocumentEventMap>(
   eventName: K,
   handler: (event: DocumentEventMap[K]) => void,
   element: React.RefObject<Document>,
   options?: boolean | AddEventListenerOptions
 ): void
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export function useEventListener<K extends keyof HTMLElementEventMap>(
   eventName: K,
   handler: (event: HTMLElementEventMap[K]) => void,
   element: React.RefObject<HTMLElement>,
   options?: boolean | AddEventListenerOptions
 ): void
+/* eslint-enable @typescript-eslint/no-redeclare */
 export function useEventListener<
   KW extends keyof WindowEventMap,
   KH extends keyof HTMLElementEventMap,
