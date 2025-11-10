@@ -155,7 +155,7 @@ describe('DropdownMenu Component', () => {
         </DropdownMenu>
       )
       const item = screen.getByText('Disabled Item')
-      expect(item).toHaveAttribute('aria-disabled', 'true')
+      expect(item).toBeDisabled()
     })
   })
 

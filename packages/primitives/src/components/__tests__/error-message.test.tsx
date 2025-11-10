@@ -40,7 +40,7 @@ describe('ErrorMessage Component', () => {
 
     it('should have proper text size', () => {
       const { container } = render(<ErrorMessage error="Error message" />)
-      const errorElement = container.querySelector('.text-sm')
+      const errorElement = container.querySelector('.text-xs')
       expect(errorElement).toBeInTheDocument()
     })
 

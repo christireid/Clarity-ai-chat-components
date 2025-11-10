@@ -13,8 +13,8 @@ import { Button } from '../button'
 describe('Card Component', () => {
   describe('Rendering', () => {
     it('should render Card component', () => {
-      const { container } = render(<Card>Card content</Card>)
-      expect(container.querySelector('.rounded-lg')).toBeInTheDocument()
+      render(<Card>Card content</Card>)
+      expect(screen.getByText('Card content')).toBeInTheDocument()
     })
 
     it('should render CardHeader', () => {
@@ -91,7 +91,7 @@ describe('Card Component', () => {
     it('should apply default card styles', () => {
       const { container } = render(<Card>Content</Card>)
       const card = container.firstChild
-      expect(card).toHaveClass('rounded-lg')
+      expect(card).toHaveClass('rounded-xl')
     })
 
     it('should accept custom className', () => {

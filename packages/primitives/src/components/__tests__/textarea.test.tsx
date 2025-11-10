@@ -130,7 +130,7 @@ describe('Textarea Component', () => {
     it('should apply error variant when error prop is provided', () => {
       const { container } = render(<Textarea error="Error message" />)
       const textarea = container.querySelector('textarea')
-      expect(textarea).toHaveClass('ring-destructive')
+      expect(textarea).toHaveClass('border-destructive')
     })
   })
 

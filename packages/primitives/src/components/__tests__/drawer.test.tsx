@@ -213,14 +213,16 @@ describe('Drawer Component', () => {
     })
 
     it('should support aria-label on content', () => {
-      render(
+      const { container } = render(
         <Drawer open>
           <DrawerContent aria-label="Custom drawer">
             <DrawerTitle>Drawer</DrawerTitle>
           </DrawerContent>
         </Drawer>
       )
-      expect(screen.getByLabelText('Custom drawer')).toBeInTheDocument()
+      // Drawer content is rendered in portal, check by container
+      const drawer = container.querySelector('[aria-label="Custom drawer"]')
+      expect(drawer).toBeInTheDocument()
     })
   })
 

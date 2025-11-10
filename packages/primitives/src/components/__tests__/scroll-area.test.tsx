@@ -143,8 +143,10 @@ describe('ScrollArea Component', () => {
     })
 
     it('should accept id attribute', () => {
-      render(<ScrollArea id="scroll-container" />)
-      expect(screen.getByRole('generic')).toHaveAttribute('id', 'scroll-container')
+      const { container } = render(<ScrollArea id="scroll-container" />)
+      const scrollArea = container.querySelector('#scroll-container')
+      expect(scrollArea).toBeInTheDocument()
+      expect(scrollArea).toHaveAttribute('id', 'scroll-container')
     })
   })
 })

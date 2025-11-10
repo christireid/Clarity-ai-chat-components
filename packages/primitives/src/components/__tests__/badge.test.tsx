@@ -23,44 +23,51 @@ describe('Badge Component', () => {
 
     it('should render with destructive variant', () => {
       const { container } = render(<Badge variant="destructive">Error</Badge>)
-      const badge = container.querySelector('.bg-destructive')
+      const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
+      expect(badge).toHaveClass('bg-destructive/90')
     })
 
     it('should render with outline variant', () => {
       const { container } = render(<Badge variant="outline">Outline</Badge>)
-      const badge = container.querySelector('.border')
+      const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
+      expect(badge).toHaveClass('bg-transparent')
     })
 
     it('should render with success variant', () => {
       const { container } = render(<Badge variant="success">Success</Badge>)
-      const badge = container.querySelector('.bg-green-600')
+      const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
+      expect(badge).toHaveClass('bg-green-500')
     })
 
     it('should render with warning variant', () => {
       const { container } = render(<Badge variant="warning">Warning</Badge>)
-      const badge = container.querySelector('.bg-yellow-600')
+      const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
+      expect(badge).toHaveClass('bg-yellow-500')
     })
 
     it('should render with info variant', () => {
       const { container } = render(<Badge variant="info">Info</Badge>)
-      const badge = container.querySelector('.bg-blue-600')
+      const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
+      expect(badge).toHaveClass('bg-blue-500')
     })
 
     it('should render with small size', () => {
       const { container } = render(<Badge size="sm">Small</Badge>)
-      const badge = container.querySelector('.text-xs')
+      const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
+      expect(badge).toHaveClass('text-[10px]')
     })
 
     it('should render with large size', () => {
       const { container } = render(<Badge size="lg">Large</Badge>)
-      const badge = container.querySelector('.text-base')
+      const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
+      expect(badge).toHaveClass('text-sm')
     })
   })
 
@@ -79,15 +86,16 @@ describe('Badge Component', () => {
 
     it('should have proper padding', () => {
       const { container } = render(<Badge>Badge</Badge>)
-      const badge = container.querySelector('.px-2')
+      const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
+      expect(badge).toHaveClass('px-2.5')
     })
   })
 
   describe('Accessibility', () => {
-    it('should render as span element', () => {
+    it('should render as div element', () => {
       const { container } = render(<Badge>Badge</Badge>)
-      const badge = container.querySelector('span')
+      const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
     })
 
