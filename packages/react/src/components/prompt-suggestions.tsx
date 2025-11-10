@@ -89,7 +89,7 @@ export interface PromptSuggestionsProps {
 export const PromptSuggestions = React.memo(function PromptSuggestions({
   suggestions,
   onSelect,
-  messages = [],
+  messages: _messages = [],
   suggestionType = 'starter',
   layout = 'chips',
   isLoading = false,

@@ -70,7 +70,7 @@ export function TokenOptimizationDashboard({
   showBreakdown = true,
   realTime = false,
   refreshInterval = 5000,
-  costPerToken = 0.000002,
+  costPerToken: _costPerToken = 0.000002,
   className = '',
   onClick,
 }: TokenOptimizationDashboardProps) {
