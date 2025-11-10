@@ -31,8 +31,8 @@
     "accessibility"
   ],
   "peerDependencies": {
-    "@clarity-chat/primitives": "*",
-    "@clarity-chat/react": "*",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/react": "workspace:*",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
