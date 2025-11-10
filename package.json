@@ -1,6 +1,7 @@
 {
   "name": "clarity-chat",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "description": "Premium AI Chat Component Library by Code & Clarity",
   "packageManager": "pnpm@10.21.0",

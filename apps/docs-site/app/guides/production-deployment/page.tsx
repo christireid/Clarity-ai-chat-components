@@ -84,7 +84,7 @@ const tracer = getTracer({ sampleRate: 0.3 })
 const webhooks = new WebhookManager({ maxRetries: 3, signatureSecret: process.env.WEBHOOK_SECRET })
 
 export async function generateResponse({ tenantId, userId, messages }: GenerateRequest) {
-  await rateLimiter.consume(`${tenantId}:${userId}`)
+  await rateLimiter.consume(\`\${tenantId}:\${userId}\`)
   const quota = await quotas.checkQuota(tenantId, 'tokens', 2_000)
   if (!quota.allowed) {
     await webhooks.emit({

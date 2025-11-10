@@ -1,4 +1,3 @@
-// @ts-nocheck - Example app needs refactoring to match current API
 import { useState } from 'react'
 import {
   ChatWindow,
