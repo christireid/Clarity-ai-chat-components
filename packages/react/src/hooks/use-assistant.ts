@@ -1,16 +1,21 @@
 /**
- * useAssistant hook - Vercel AI SDK compatible
+ * useAssistant hook - Vercel AI SDK compatible (React 19 Version)
  * 
  * Hook for managing AI assistant interactions with tool calling support,
  * multi-step workflows, and thread/run management.
  * 
- * **2025 Improvements**:
+ * **React 19 Improvements**:
+ * - Uses `useTransition` for non-blocking async operations
+ * - Automatic pending state management (no manual isLoading)
+ * - Better concurrent rendering during tool execution
+ * - Simpler error handling integration
+ * 
+ * **Previous Improvements (2025)**:
  * - Uses shared streaming-helpers for consistent behavior
  * - State machine with granular status tracking
  * - Parallel tool execution support
  * - Tool result caching
  * - Request deduplication cache
- * - Removed deprecated mountedRef pattern
  * - Better error handling with type guards
  * - Progress tracking support
  */
@@ -164,8 +169,8 @@ export interface UseAssistantReturn {
   /** Set input value */
   setInput: React.Dispatch<React.SetStateAction<string>>
   
-  /** Whether currently loading */
-  isLoading: boolean
+  /** Whether currently pending (React 19's useTransition) */
+  isPending: boolean
   
   /** Current error */
   error: Error | undefined
@@ -193,6 +198,9 @@ export interface UseAssistantReturn {
   
   /** Get cache statistics */
   getCacheStats: () => { enabled: boolean; size: number; toolCacheSize: number }
+  
+  /** @deprecated Use isPending instead */
+  isLoading: boolean
 }
 
 /**
@@ -371,10 +379,12 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
   const [status, setStatus] = React.useState<AssistantStatus>('idle')
   const [messages, setMessages] = React.useState<CoreMessage[]>(initialMessages)
   const [input, setInput] = React.useState('')
-  const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | undefined>()
   const [data, setData] = React.useState<CoreMessage | undefined>()
   const [toolInvocations, setToolInvocations] = React.useState<ToolInvocation[]>([])
+  
+  // React 19: useTransition for automatic pending state
+  const [isPending, startTransition] = React.useTransition()
   
   const abortControllerRef = React.useRef<AbortController | null>(null)
   const cacheRef = React.useRef<AssistantCache | null>(null)
@@ -400,7 +410,7 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
   const updateStatus = React.useCallback((newStatus: AssistantStatus) => {
     setStatus(newStatus)
     onStatusChangeRef.current?.(newStatus)
-    setIsLoading(newStatus !== 'idle' && newStatus !== 'complete' && newStatus !== 'error')
+    // Note: isLoading is now derived from isPending (useTransition)
   }, [])
 
   /**
@@ -547,7 +557,9 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
       setMessages((prev) => [...prev, assistantMessage])
       setData(assistantMessage)
 
-      try {
+      // React 19: useTransition for non-blocking async operations
+      startTransition(async () => {
+        try {
         const requestBody: Record<string, any> = {
           ...body,
           ...options?.data,
@@ -679,27 +691,28 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
         updateStatus('complete')
         await onFinish?.(finalMessage)
 
-        // Cache the result
-        if (enableCache && cacheRef.current) {
-          cacheRef.current.set(
-            messageContent,
-            { message: finalMessage, toolInvocations: finalMessage.toolInvocations || [] },
-            requestBody
-          )
-        }
-      } catch (err: unknown) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          updateStatus('idle')
-          return
-        }
+          // Cache the result
+          if (enableCache && cacheRef.current) {
+            cacheRef.current.set(
+              messageContent,
+              { message: finalMessage, toolInvocations: finalMessage.toolInvocations || [] },
+              requestBody
+            )
+          }
+        } catch (err: unknown) {
+          if (err instanceof Error && err.name === 'AbortError') {
+            updateStatus('idle')
+            return
+          }
 
-        const error = err instanceof Error ? err : new Error(String(err))
-        setError(error)
-        onError?.(error)
-        updateStatus('error')
-      } finally {
-        abortControllerRef.current = null
-      }
+          const error = err instanceof Error ? err : new Error(String(err))
+          setError(error)
+          onError?.(error)
+          updateStatus('error')
+        } finally {
+          abortControllerRef.current = null
+        }
+      })
     },
     [
       api,
@@ -721,6 +734,7 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
       onProgress,
       updateStatus,
       executeToolCalls,
+      startTransition,
     ]
   )
 
@@ -731,7 +745,7 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
     (event?: React.FormEvent<HTMLFormElement>, options?: { data?: Record<string, any> }) => {
       event?.preventDefault()
       
-      if (!input.trim() || isLoading) return
+      if (!input.trim() || isPending) return
 
       submitMessage(input.trim(), options).then(() => {
         setInput('')
@@ -739,7 +753,7 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
         // Error already handled
       })
     },
-    [input, isLoading, submitMessage]
+    [input, isPending, submitMessage]
   )
 
   /**
@@ -788,7 +802,7 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
     handleSubmit,
     input,
     setInput,
-    isLoading,
+    isPending,
     error,
     data,
     toolInvocations,
@@ -798,5 +812,7 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
     clearCache,
     clearToolCache,
     getCacheStats,
+    // Backwards compatibility: isLoading is now an alias for isPending
+    isLoading: isPending,
   }
 }

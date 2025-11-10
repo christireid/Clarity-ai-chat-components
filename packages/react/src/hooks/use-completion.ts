@@ -1,13 +1,18 @@
 /**
- * useCompletion hook - Vercel AI SDK compatible
+ * useCompletion hook - Vercel AI SDK compatible (React 19 Version)
  * 
  * Hook for managing text completion state with streaming support.
  * Ideal for single-turn completions, autocomplete, and text generation.
  * 
- * **2025 Improvements**:
+ * **React 19 Improvements**:
+ * - Uses `useTransition` for automatic pending state (now supports async!)
+ * - Non-blocking streaming with better concurrent rendering
+ * - Simpler error handling integration
+ * - No manual loading state management
+ * 
+ * **Previous Improvements (2025)**:
  * - Uses shared streaming-helpers for consistent behavior
  * - Request deduplication cache (prevents redundant API calls)
- * - Removed deprecated mountedRef pattern
  * - Better error handling with type guards
  * - Progress tracking support
  * - Cache configuration options
@@ -100,8 +105,8 @@ export interface UseCompletionReturn {
   /** Stop the current completion */
   stop: () => void
   
-  /** Whether currently loading */
-  isLoading: boolean
+  /** Whether currently loading (uses React 19's useTransition) */
+  isPending: boolean
   
   /** Current error */
   error: Error | undefined
@@ -114,6 +119,9 @@ export interface UseCompletionReturn {
 
   /** Get cache statistics */
   getCacheStats: () => { enabled: boolean; size: number; maxSize: number }
+  
+  /** @deprecated Use isPending instead */
+  isLoading: boolean
 }
 
 /**
@@ -232,8 +240,10 @@ export function useCompletion(options: UseCompletionOptions = {}): UseCompletion
   } = options
 
   const [completion, setCompletion] = React.useState(initialCompletion)
-  const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | undefined>()
+  
+  // React 19: useTransition now supports async functions!
+  const [isPending, startTransition] = React.useTransition()
   
   const abortControllerRef = React.useRef<AbortController | null>(null)
   const cacheRef = React.useRef<CompletionCache | null>(null)
@@ -258,7 +268,7 @@ export function useCompletion(options: UseCompletionOptions = {}): UseCompletion
    */
   const stop = React.useCallback(() => {
     abort()
-    setIsLoading(false)
+    // Note: Can't manually stop useTransition, but abort will cancel the operation
   }, [abort])
 
   /**
@@ -276,7 +286,7 @@ export function useCompletion(options: UseCompletionOptions = {}): UseCompletion
         return null
       }
 
-      // Check cache first
+      // Check cache first (synchronously, before transition)
       if (enableCache && cacheRef.current) {
         const requestBody = { ...body, ...options?.body }
         const cached = cacheRef.current.get(trimmedPrompt, requestBody)
@@ -288,13 +298,18 @@ export function useCompletion(options: UseCompletionOptions = {}): UseCompletion
         }
       }
 
-      setIsLoading(true)
       setError(undefined)
       setCompletion('')
-
+      
       abortControllerRef.current = new AbortController()
 
-      try {
+      // React 19: useTransition with async - no manual loading state needed!
+      // This makes the UI non-blocking during completion
+      let result: string | null = null
+      
+      await new Promise<void>((resolveTransition) => {
+        startTransition(async () => {
+          try {
         const requestBody: Record<string, any> = {
           ...body,
           ...options?.body,
@@ -321,60 +336,64 @@ export function useCompletion(options: UseCompletionOptions = {}): UseCompletion
           )
         }
 
-        if (!stream || !response.body) {
-          // Non-streaming response
-          const result = await response.json()
-          const completionText = result.completion || result.text || result.content || ''
-          
-          setCompletion(completionText)
-          setIsLoading(false)
-          await onFinish?.(trimmedPrompt, completionText)
+            if (!stream || !response.body) {
+              // Non-streaming response
+              const jsonResult = await response.json()
+              const completionText = jsonResult.completion || jsonResult.text || jsonResult.content || ''
+              
+              setCompletion(completionText)
+              await onFinish?.(trimmedPrompt, completionText)
 
-          // Cache the result
-          if (enableCache && cacheRef.current) {
-            cacheRef.current.set(trimmedPrompt, completionText, requestBody)
+              // Cache the result
+              if (enableCache && cacheRef.current) {
+                cacheRef.current.set(trimmedPrompt, completionText, requestBody)
+              }
+              
+              result = completionText
+              resolveTransition()
+              return
+            }
+
+            // Streaming response using shared utilities
+            const streamResult = await processStream(response.body, {
+              format: streamFormat,
+              signal: abortControllerRef.current.signal,
+              onChunk: (chunk) => {
+                setCompletion((prev) => prev + chunk)
+              },
+              onProgress,
+              onError,
+            })
+
+            // Finalize
+            setCompletion(streamResult.content)
+            await onFinish?.(trimmedPrompt, streamResult.content)
+
+            // Cache the result
+            if (enableCache && cacheRef.current) {
+              cacheRef.current.set(trimmedPrompt, streamResult.content, requestBody)
+            }
+
+            result = streamResult.content
+            resolveTransition()
+          } catch (err: unknown) {
+            if (err instanceof Error && err.name === 'AbortError') {
+              result = null
+              resolveTransition()
+              return
+            }
+
+            const error = err instanceof Error ? err : new Error(String(err))
+            setError(error)
+            onError?.(error)
+            resolveTransition()
+          } finally {
+            abortControllerRef.current = null
           }
-          
-          return completionText
-        }
-
-        // Streaming response using shared utilities
-        const result = await processStream(response.body, {
-          format: streamFormat,
-          signal: abortControllerRef.current.signal,
-          onChunk: (chunk) => {
-            setCompletion((prev) => prev + chunk)
-          },
-          onProgress,
-          onError,
         })
-
-        // Finalize
-        setCompletion(result.content)
-        setIsLoading(false)
-        await onFinish?.(trimmedPrompt, result.content)
-
-        // Cache the result
-        if (enableCache && cacheRef.current) {
-          cacheRef.current.set(trimmedPrompt, result.content, requestBody)
-        }
-
-        return result.content
-      } catch (err: unknown) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          setIsLoading(false)
-          return null
-        }
-
-        const error = err instanceof Error ? err : new Error(String(err))
-        setError(error)
-        onError?.(error)
-        setIsLoading(false)
-
-        throw error
-      } finally {
-        abortControllerRef.current = null
-      }
+      })
+      
+      return result
     },
     [
       api,
@@ -389,6 +408,7 @@ export function useCompletion(options: UseCompletionOptions = {}): UseCompletion
       onFinish,
       onError,
       onProgress,
+      startTransition,
     ]
   )
 
@@ -431,10 +451,12 @@ export function useCompletion(options: UseCompletionOptions = {}): UseCompletion
     setCompletion,
     complete,
     stop,
-    isLoading,
+    isPending,
     error,
     abort,
     clearCache,
     getCacheStats,
+    // Backwards compatibility: isLoading is now an alias for isPending
+    isLoading: isPending,
   }
 }
