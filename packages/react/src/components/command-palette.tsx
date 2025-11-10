@@ -1,4 +1,4 @@
-import { forwardRef, useState, useRef, useMemo, useEffect, useCallback } from 'react'
+import { forwardRef, useState, useRef, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'

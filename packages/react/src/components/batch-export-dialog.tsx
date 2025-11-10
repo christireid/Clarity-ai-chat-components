@@ -101,7 +101,6 @@ export const BatchExportDialog = React.memo(function BatchExportDialog({
 
   // Select/deselect all
   const allSelected = selectedIds.size === resources.length && resources.length > 0
-  const someSelected = selectedIds.size > 0 && selectedIds.size < resources.length
 
   const handleSelectAll = () => {
     if (allSelected) {

@@ -7,7 +7,6 @@ import {
   type ButtonState,
 } from '@clarity-chat/primitives'
 import { SendIcon } from './icons'
-import { FeedbackAnimations } from '../animations/microanimations'
 
 export interface ChatInputProps {
   value: string
