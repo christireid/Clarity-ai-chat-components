@@ -270,7 +270,7 @@ export const FileUpload: Story = {
 
     return (
       <div className="space-y-4 max-w-md">
-        <div className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl text-center">
+        <div className="p-4 border border-dashed border-border/50 rounded-lg text-center">
           <p className="text-sm text-muted-foreground mb-3">
             Drop files here or click to upload
           </p>
@@ -462,7 +462,7 @@ export const InstallationProgress: Story = {
     }
 
     return (
-      <div className="space-y-4 max-w-md p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl">
+      <div className="space-y-4 max-w-md p-6 border border-border/50 rounded-lg shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold">Install Application</h3>
           {progress === 100 && (
