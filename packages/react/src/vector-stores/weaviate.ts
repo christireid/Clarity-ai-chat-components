@@ -27,7 +27,7 @@ export class WeaviateVectorStore implements VectorStore {
   private apiKey?: string
   private endpoint: string
   private className: string
-  private _initialized = false  // eslint-disable-line @typescript-eslint/no-unused-vars
+  private _initialized = false   
   
   constructor(config: WeaviateConfig) {
     if (!config.endpoint) {

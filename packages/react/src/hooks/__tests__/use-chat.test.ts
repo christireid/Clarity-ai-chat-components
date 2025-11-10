@@ -170,7 +170,9 @@ describe('useChat', () => {
     it('should abort previous request when sending new message', async () => {
       let abortedSignals: AbortSignal[] = []
       const onSendMessage = vi.fn().mockImplementation(async (_msg, options) => {
-        abortedSignals.push(options?.signal!)
+        if (options?.signal) {
+          abortedSignals.push(options.signal)
+        }
         await new Promise(resolve => setTimeout(resolve, 100))
       })
 

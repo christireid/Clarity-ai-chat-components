@@ -408,7 +408,7 @@ export function useCompletion(options: UseCompletionOptions = {}): UseCompletion
     return {
       enabled: true,
       size: cacheRef.current.size(),
-      maxSize,
+      maxSize: maxCacheSize,
     }
   }, [maxCacheSize])
 

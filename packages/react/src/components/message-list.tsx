@@ -63,7 +63,7 @@ export const MessageList = memo(function MessageList({
   return (
     <div className="relative h-full">
       <ScrollArea
-        ref={scrollRef}
+        ref={scrollRef as React.LegacyRef<HTMLDivElement>}
         className={cn('h-full bg-transparent px-2 py-4 sm:px-4', className)}
       >
         {/* Loading skeletons */}

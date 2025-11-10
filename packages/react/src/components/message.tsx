@@ -181,10 +181,11 @@ export const Message = memo(
             {isUser ? (
               <p className="m-0 whitespace-pre-wrap">{message.content}</p>
             ) : (
+              // @ts-expect-error - ReactMarkdown v9 has type compatibility issues
               <ReactMarkdown
                 remarkPlugins={remarkPlugins}
                 rehypePlugins={rehypePlugins}
-                components={markdownComponents}
+                components={markdownComponents as any}
               >
                 {message.content}
               </ReactMarkdown>
