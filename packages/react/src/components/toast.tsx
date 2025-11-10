@@ -5,7 +5,7 @@
  * Supports auto-dismiss, queue management, and custom durations.
  */
 
-import { useState, useCallback, useRef, useEffect, memo, createContext, useContext, useMemo } from 'react'
+import React, { useState, useCallback, useRef, useEffect, memo, createContext, useContext, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import {
@@ -142,7 +142,7 @@ export const ToastItem = memo(function ToastItem({
         <div className="text-sm opacity-90">{description}</div>
         {action && (
           <button
-            onClick={handleAction}
+            onClick={action.onClick}
             className="text-sm font-medium underline hover:no-underline mt-2"
             aria-label={action.label}
           >

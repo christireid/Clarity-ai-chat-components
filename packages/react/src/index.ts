@@ -165,7 +165,10 @@ export * from './hooks/use-performance'
 export * from './hooks/use-deferred-search'
 
 // Utility Functions (Model Fallback, Context Window, Rate Limiting, Hybrid Search, etc.)
+// Note: StreamChunk from './utils/streaming-helpers' conflicts with './adapters/types'
+// Export utils first, then explicitly export adapter StreamChunk
 export * from './utils'
+export type { StreamChunk } from './adapters/types'
 
 // Note: The following are already exported via './utils' above
 // Kept here as documentation of what's available:

@@ -300,6 +300,7 @@ export function MarkdownRendererEnhanced({
 
   return (
     <div className={cn('markdown-content prose dark:prose-invert max-w-none', className)}>
+      {/* @ts-expect-error - ReactMarkdown v9 has type compatibility issues */}
       <ReactMarkdown
         remarkPlugins={remarkPlugins}
         rehypePlugins={rehypePlugins}
