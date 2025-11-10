@@ -10,15 +10,19 @@ export function ConversationSidebar() {
   } = useAppStore()
 
   const handleNewConversation = () => {
+    const conversationId = Date.now().toString()
     const newConversation = {
-      id: Date.now().toString(),
+      id: conversationId,
       title: 'New Conversation',
       messages: [
         {
           id: '1',
+          chatId: conversationId,
           role: 'assistant' as const,
           content: 'Hello! I\'m your AI assistant. How can I help you today?',
-          timestamp: Date.now(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          status: 'sent' as const,
         },
       ],
       createdAt: Date.now(),
