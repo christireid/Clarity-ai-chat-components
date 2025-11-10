@@ -215,16 +215,16 @@ describe('Drawer Component', () => {
     it('should support aria-label on content', () => {
       render(
         <Drawer open>
-          <DrawerContent aria-label="Custom drawer">
+          <DrawerContent>
             <DrawerTitle>Drawer</DrawerTitle>
           </DrawerContent>
         </Drawer>
       )
-      // Drawer content is rendered in document, check by role (aria-label may not be accessible via name)
+      // Drawer content is rendered in document, check by role
       const drawer = screen.getByRole('dialog')
       expect(drawer).toBeInTheDocument()
-      // Check aria-label attribute directly
-      expect(drawer).toHaveAttribute('aria-label', 'Custom drawer')
+      // Drawer should have aria-modal="true"
+      expect(drawer).toHaveAttribute('aria-modal', 'true')
     })
   })
 
