@@ -42,7 +42,12 @@ export function renderWithProviders(
  * )
  * ```
  */
-export function renderComponent(ui: ReactElement, options?: RenderOptions) {
+export function renderComponent(ui: ReactElement, options?: RenderOptions): RenderResult & {
+  getButton: (name: string) => HTMLElement
+  getInput: (label: string) => HTMLElement
+  getHeading: (name: string) => HTMLElement
+  getLink: (name: string) => HTMLElement
+} {
   const result = renderWithProviders(ui, options)
 
   return {

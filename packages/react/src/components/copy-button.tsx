@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo } from 'react'
 import { Button, type ButtonProps } from '@clarity-chat/primitives'
 import { useClipboard } from '../hooks/use-clipboard'
 import { CopyIcon, CheckIcon } from './icons'

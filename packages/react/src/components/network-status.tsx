@@ -170,7 +170,6 @@ export function NetworkStatus({
    * Handle online event
    */
   const handleOnline = React.useCallback(() => {
-    console.log('[NetworkStatus] Network online')
     setInternalStatus('online')
     checkConnection()
   }, [checkConnection])
@@ -179,7 +178,6 @@ export function NetworkStatus({
    * Handle offline event
    */
   const handleOffline = React.useCallback(() => {
-    console.log('[NetworkStatus] Network offline')
     setInternalStatus('offline')
     setLatency(null)
   }, [])
