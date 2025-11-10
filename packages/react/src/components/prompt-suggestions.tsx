@@ -408,7 +408,7 @@ export function usePromptSuggestions(
     })
 
     return followUps.slice(0, maxSuggestions)
-  }, [messages, maxSuggestions, suggestionType])
+  }, [messages, maxSuggestions])
 
   return suggestions
 }
