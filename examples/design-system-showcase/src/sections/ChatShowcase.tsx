@@ -4,30 +4,40 @@
  * Demonstrates chat-specific components
  */
 
-import { Message, ChatInput, ThinkingIndicator, EmptyState, Button } from '@clarity-chat/react'
+import { Message, ChatInput, ThinkingIndicator, EmptyState } from '@clarity-chat/react'
 import { useState } from 'react'
+import type { Message as MessageType } from '@clarity-chat/types'
 
 export function ChatShowcase() {
   const [inputValue, setInputValue] = useState('')
   
-  const messages = [
+  const messages: MessageType[] = [
     {
       id: '1',
-      role: 'assistant' as const,
+      chatId: 'showcase',
+      role: 'assistant',
       content: 'Hello! How can I help you today?',
       createdAt: new Date(Date.now() - 60000),
+      updatedAt: new Date(Date.now() - 60000),
+      status: 'sent',
     },
     {
       id: '2',
-      role: 'user' as const,
+      chatId: 'showcase',
+      role: 'user',
       content: 'I need help understanding the design system patterns.',
       createdAt: new Date(Date.now() - 30000),
+      updatedAt: new Date(Date.now() - 30000),
+      status: 'sent',
     },
     {
       id: '3',
-      role: 'assistant' as const,
+      chatId: 'showcase',
+      role: 'assistant',
       content: "I'd be happy to help! The design system uses 6 core patterns: ring-based borders, refined shadows, consistent radius, enhanced focus states, precise hover effects, and consistent opacity. Which would you like to learn about?",
       createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
     },
   ]
 
@@ -87,7 +97,7 @@ export function ChatShowcase() {
         <div className="max-w-2xl">
           <ChatInput
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(value) => setInputValue(value)}
             onSubmit={() => {
               console.log('Submitted:', inputValue)
               setInputValue('')
@@ -119,11 +129,10 @@ export function ChatShowcase() {
             }
             title="No messages yet"
             description="Start a conversation to see messages appear here"
-            action={
-              <Button>
-                Start Chatting
-              </Button>
-            }
+            action={{
+              label: 'Start Chatting',
+              onClick: () => console.log('Start chatting clicked')
+            }}
           />
         </div>
         <div className="mt-4 p-4 rounded-lg ring-1 ring-border/30 bg-muted/30">
@@ -171,7 +180,7 @@ export function ChatShowcase() {
           <div className="border-t ring-1 ring-border/50 shadow-xs">
             <ChatInput
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={(value) => setInputValue(value)}
               onSubmit={() => {
                 console.log('Submitted:', inputValue)
                 setInputValue('')

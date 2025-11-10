@@ -15,21 +15,21 @@ import {
   DialogTitle, 
   Tooltip,
   Badge,
-  Progress,
-  Skeleton,
 } from '@clarity-chat/primitives'
 import { 
   ChatInput, 
   EmptyState, 
   Message, 
   ThinkingIndicator,
-  Toast,
+  ToastProvider,
   useToast,
   useAutoScroll,
   TokenCounter,
   NetworkStatus,
   useTokenTracker,
   ErrorBoundary,
+  Progress,
+  Skeleton,
 } from '@clarity-chat/react'
 import type { Message as MessageType } from '@clarity-chat/types'
 import '@clarity-chat/primitives/dist/index.css'
@@ -48,9 +48,12 @@ function ComponentDemoApp() {
   const [isLoading, setIsLoading] = useState(false)
   
   // Hooks
-  const { show: showToast } = useToast()
+  const toast = useToast()
   const { scrollRef } = useAutoScroll({ dependencies: [messages] })
-  const { totalTokens, addInputTokens, addOutputTokens } = useTokenTracker({
+  const { 
+    tokens: totalTokens,
+    addMessage: addTokenMessage
+  } = useTokenTracker({
     modelName: 'gpt-3.5-turbo'
   })
 
@@ -68,16 +71,17 @@ function ComponentDemoApp() {
     }
     
     setMessages(prev => [...prev, userMessage])
+    const messageContent = inputValue
     setInputValue('')
     setIsLoading(true)
     
     // Track tokens
-    addInputTokens(Math.ceil(inputValue.length / 4))
+    addTokenMessage({ role: 'user', content: messageContent })
     
     // Simulate AI response
     await new Promise(resolve => setTimeout(resolve, 1500))
     
-    const aiResponse = `I received your message: "${userMessage.content}". This is a demo response showcasing the Message component!`
+    const aiResponse = `I received your message: "${messageContent}". This is a demo response showcasing the Message component!`
     
     const aiMessage: MessageType = {
       id: (Date.now() + 1).toString(),
@@ -90,9 +94,9 @@ function ComponentDemoApp() {
     }
     
     setMessages(prev => [...prev, aiMessage])
-    addOutputTokens(Math.ceil(aiResponse.length / 4))
+    addTokenMessage({ role: 'assistant', content: aiResponse })
     setIsLoading(false)
-  }, [inputValue, addInputTokens, addOutputTokens])
+  }, [inputValue, addTokenMessage])
 
   return (
     <div className="min-h-screen bg-background">
@@ -107,7 +111,13 @@ function ComponentDemoApp() {
               </p>
             </div>
             <div className="flex gap-3 items-center">
-              <TokenCounter tokens={totalTokens} compact />
+              <TokenCounter 
+                currentTokens={totalTokens}
+                maxTokens={16000}
+                costPerToken={0.0000015}
+                showCost={false}
+                size="sm"
+              />
               <NetworkStatus />
             </div>
           </div>
@@ -154,11 +164,10 @@ function ComponentDemoApp() {
               </div>
               <Button 
                 className="w-full" 
-                onClick={() => showToast({
-                  title: 'Form Submitted!',
-                  description: `Welcome, ${formData.name || 'Guest'}!`,
-                  variant: 'success'
-                })}
+                onClick={() => toast.success(
+                  `Welcome, ${formData.name || 'Guest'}!`,
+                  'Form Submitted!'
+                )}
               >
                 Submit Form
               </Button>
@@ -246,11 +255,10 @@ function ComponentDemoApp() {
                 </Button>
                 <Button onClick={() => {
                   setDialogOpen(false)
-                  showToast({
-                    title: 'Action Confirmed',
-                    description: 'Dialog action was successful',
-                    variant: 'success'
-                  })
+                  toast.success(
+                    'Dialog action was successful',
+                    'Action Confirmed'
+                  )
                 }}>
                   Confirm
                 </Button>
@@ -276,9 +284,9 @@ function ComponentDemoApp() {
         <section className="mb-12">
           <h2 className="text-xl font-semibold mb-4">Chat Interface</h2>
           <Card className="max-w-2xl">
-            <div ref={scrollRef} className="h-[400px] flex flex-col">
+            <div className="h-[400px] flex flex-col">
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div ref={scrollRef as any} className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.length === 0 ? (
                   <EmptyState
                     icon={
@@ -334,15 +342,12 @@ function ComponentDemoApp() {
           </div>
         </section>
       </main>
-
-      {/* Toast Container */}
-      <Toast />
     </div>
   )
 }
 
-// Wrap in ErrorBoundary
-export default function App() {
+// Wrap in ErrorBoundary and ToastProvider
+function App() {
   return (
     <ErrorBoundary
       fallback={(error) => (
@@ -361,7 +366,11 @@ export default function App() {
         </div>
       )}
     >
-      <ComponentDemoApp />
+      <ToastProvider>
+        <ComponentDemoApp />
+      </ToastProvider>
     </ErrorBoundary>
   )
 }
+
+export default App

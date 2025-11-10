@@ -6,14 +6,7 @@
 
 import { useState } from 'react'
 import { Button } from '@clarity-chat/primitives'
-import { 
-  ChatWindow, 
-  Message, 
-  ThinkingIndicator,
-  EmptyState,
-  Toast,
-  ToastProvider
-} from '@clarity-chat/react'
+import { ToastProvider } from '@clarity-chat/react'
 
 // Showcase sections
 import { DesignTokens } from './sections/DesignTokens'
