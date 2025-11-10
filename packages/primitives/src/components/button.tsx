@@ -99,7 +99,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = (asChild ? Slot : 'button') as 'button'
     const [internalState, setInternalState] =
       React.useState<ButtonState>('idle')
-    const stateTimeoutRef = React.useRef<NodeJS.Timeout>()
+    const stateTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
 
     const currentState =
       controlledState || (loading ? 'loading' : internalState)

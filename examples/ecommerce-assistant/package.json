@@ -11,8 +11,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clarity-chat/react": "*",
-    "@clarity-chat/types": "*",
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
     "agentkeepalive": "^4.5.0",
     "form-data-encoder": "^4.0.2",
     "formdata-node": "^6.0.3",
