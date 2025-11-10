@@ -87,7 +87,7 @@ export const AdvancedMessageSearch = React.memo(
   function AdvancedMessageSearch({
     messages,
     onResultsChange,
-    enableFuzzySearch = false,
+    enableFuzzySearch: _enableFuzzySearch = false, // Reserved for future fuzzy search implementation
     enableAdvancedFilters = true,
     placeholder = 'Search messages...',
     showFilterCount = true,
