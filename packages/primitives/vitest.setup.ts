@@ -18,20 +18,20 @@ Object.defineProperty(window, 'scrollTo', {
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', async () => {
-  const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion')
+  const React = await import('react')
   return {
-    ...actual,
-    motion: new Proxy(actual.motion, {
-      get(target, prop) {
+    motion: new Proxy({}, {
+      get(_target, prop) {
         if (typeof prop === 'string') {
           return ({ children, ...props }: any) => {
             const { animate, initial, exit, transition, whileHover, whileTap, ...restProps } = props
-            return actual.createElement(prop, restProps, children)
+            return React.createElement(prop, restProps, children)
           }
         }
-        return target[prop as keyof typeof target]
+        return undefined
       },
     }),
+    AnimatePresence: ({ children }: any) => children,
   }
 })
 
