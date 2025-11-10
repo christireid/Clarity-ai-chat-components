@@ -17,7 +17,7 @@ import * as React from 'react'
  * })
  * ```
  */
-/* eslint-disable @typescript-eslint/no-redeclare */
+ 
 // Function overloads for type safety - these are intentionally redeclared
 export function useEventListener<K extends keyof WindowEventMap>(
   eventName: K,
@@ -37,7 +37,7 @@ export function useEventListener<K extends keyof HTMLElementEventMap>(
   element: React.RefObject<HTMLElement>,
   options?: boolean | AddEventListenerOptions
 ): void
-/* eslint-enable @typescript-eslint/no-redeclare */
+ 
 export function useEventListener<
   KW extends keyof WindowEventMap,
   KH extends keyof HTMLElementEventMap,
