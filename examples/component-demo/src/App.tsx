@@ -1,132 +1,265 @@
 /**
  * Component Demo
  * 
- * Simple demonstrations of common component patterns
+ * Comprehensive demonstration of Clarity Chat Components
  */
 
-import { useState } from 'react'
-import { Button, Input, Card, Dialog, DialogContent, DialogHeader, DialogTitle, Tooltip } from '@clarity-chat/primitives'
-import { ChatInput, EmptyState, Message, type Message as MessageType } from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import { 
+  Button, 
+  Input, 
+  Card, 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  Tooltip,
+  Badge,
+} from '@clarity-chat/primitives'
+import { 
+  ChatInput, 
+  EmptyState, 
+  Message, 
+  ThinkingIndicator,
+  ToastProvider,
+  useToast,
+  useAutoScroll,
+  TokenCounter,
+  NetworkStatus,
+  useTokenTracker,
+  ErrorBoundary,
+  Progress,
+  Skeleton,
+} from '@clarity-chat/react'
+import type { Message as MessageType } from '@clarity-chat/types'
+import '@clarity-chat/primitives/dist/index.css'
+import '@clarity-chat/react/dist/styles/index.css'
 
-export default function App() {
+function ComponentDemoApp() {
+  // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false)
+  
+  // Form state
   const [inputValue, setInputValue] = useState('')
-  const [messages, setMessages] = useState<Array<MessageType>>([])
+  const [formData, setFormData] = useState({ name: '', email: '' })
+  
+  // Chat state
+  const [messages, setMessages] = useState<MessageType[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  
+  // Hooks
+  const toast = useToast()
+  const { scrollRef } = useAutoScroll({ dependencies: [messages] })
+  const { 
+    tokens: totalTokens,
+    addMessage: addTokenMessage
+  } = useTokenTracker({
+    modelName: 'gpt-3.5-turbo'
+  })
 
-  const handleSend = () => {
+  const handleSend = useCallback(async () => {
     if (!inputValue.trim()) return
     
-    const newMessage: MessageType = {
+    const userMessage: MessageType = {
       id: Date.now().toString(),
+      chatId: 'demo',
       role: 'user',
       content: inputValue,
       createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
     }
     
-    setMessages(prev => [...prev, newMessage])
+    setMessages(prev => [...prev, userMessage])
+    const messageContent = inputValue
     setInputValue('')
+    setIsLoading(true)
+    
+    // Track tokens
+    addTokenMessage({ role: 'user', content: messageContent })
     
     // Simulate AI response
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: `I received your message: "${newMessage.content}". This is a demo response!`,
-        createdAt: new Date(),
-      }])
-    }, 1000)
-  }
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    const aiResponse = `I received your message: "${messageContent}". This is a demo response showcasing the Message component!`
+    
+    const aiMessage: MessageType = {
+      id: (Date.now() + 1).toString(),
+      chatId: 'demo',
+      role: 'assistant',
+      content: aiResponse,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
+    }
+    
+    setMessages(prev => [...prev, aiMessage])
+    addTokenMessage({ role: 'assistant', content: aiResponse })
+    setIsLoading(false)
+  }, [inputValue, addTokenMessage])
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-background/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold">Component Demo</h1>
-          <p className="text-sm text-muted-foreground">
-            Common patterns with Clarity Chat Components
-          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold">Component Demo</h1>
+              <p className="text-sm text-muted-foreground">
+                Common patterns with Clarity Chat Components
+              </p>
+            </div>
+            <div className="flex gap-3 items-center">
+              <TokenCounter 
+                currentTokens={totalTokens}
+                maxTokens={16000}
+                costPerToken={0.0000015}
+                showCost={false}
+                size="sm"
+              />
+              <NetworkStatus />
+            </div>
+          </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8 space-y-12">
-        {/* Buttons */}
-        <section>
+      <main className="container mx-auto px-4 py-8">
+        {/* Buttons Section */}
+        <section className="mb-12">
           <h2 className="text-xl font-semibold mb-4">Buttons</h2>
-          <div className="flex flex-wrap gap-4">
-            <Button>Primary</Button>
+          <div className="flex flex-wrap gap-3">
+            <Button variant="default">Default</Button>
             <Button variant="secondary">Secondary</Button>
             <Button variant="outline">Outline</Button>
             <Button variant="ghost">Ghost</Button>
             <Button variant="destructive">Destructive</Button>
-            <Button variant="link">Link</Button>
+            <Button disabled>Disabled</Button>
+            <Button size="sm">Small</Button>
+            <Button size="lg">Large</Button>
           </div>
         </section>
 
-        {/* Form */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Form Example</h2>
+        {/* Form Elements Section */}
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold mb-4">Form Elements</h2>
           <Card className="p-6 max-w-md">
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Name</label>
-                <Input placeholder="Enter your name" />
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Name</label>
+                <Input 
+                  placeholder="Enter your name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
-                <Input type="email" placeholder="you@example.com" />
+              <div>
+                <label className="text-sm font-medium mb-2 block">Email</label>
+                <Input 
+                  type="email"
+                  placeholder="your@email.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                />
               </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline">Cancel</Button>
-                <Button>Submit</Button>
-              </div>
-            </form>
+              <Button 
+                className="w-full" 
+                onClick={() => toast.success(
+                  `Welcome, ${formData.name || 'Guest'}!`,
+                  'Form Submitted!'
+                )}
+              >
+                Submit Form
+              </Button>
+            </div>
           </Card>
         </section>
 
-        {/* Cards */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Card Examples</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Cards Section */}
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold mb-4">Cards</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="p-6">
-              <h3 className="font-semibold mb-2">Default Card</h3>
+              <h3 className="font-semibold mb-2">Basic Card</h3>
               <p className="text-sm text-muted-foreground">
-                A basic card with default styling
+                Simple card with shadow and border
               </p>
             </Card>
-            <Card className="p-6 cursor-pointer transition-all duration-200 hover:shadow-sm hover:-translate-y-[2px]">
+            <Card className="p-6 hover:shadow-sm hover:-translate-y-[2px] transition-all cursor-pointer">
               <h3 className="font-semibold mb-2">Interactive Card</h3>
               <p className="text-sm text-muted-foreground">
-                Hover me to see the effect
+                Hover for lift effect
               </p>
             </Card>
-            <Card className="p-6 ring-2 ring-primary/50">
+            <Card className="p-6 ring-2 ring-primary">
               <h3 className="font-semibold mb-2">Selected Card</h3>
               <p className="text-sm text-muted-foreground">
-                With ring-2 ring-primary/50
+                With primary ring
               </p>
             </Card>
           </div>
         </section>
 
+        {/* Badges & Status */}
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold mb-4">Badges & Status</h2>
+          <div className="flex flex-wrap gap-3 items-center">
+            <Badge>Default</Badge>
+            <Badge variant="secondary">Secondary</Badge>
+            <Badge variant="success">Success</Badge>
+            <Badge variant="warning">Warning</Badge>
+            <Badge variant="destructive">Error</Badge>
+            <Badge variant="outline">Outline</Badge>
+          </div>
+        </section>
+
+        {/* Progress & Loading */}
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold mb-4">Progress & Loading</h2>
+          <Card className="p-6 max-w-md space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Progress Bar</label>
+              <Progress value={65} />
+              <p className="text-xs text-muted-foreground mt-1">65% complete</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Loading Skeleton</label>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            </div>
+          </Card>
+        </section>
+
         {/* Dialog */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Dialog Example</h2>
-          <Button onClick={() => setDialogOpen(true)}>Open Dialog</Button>
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold mb-4">Dialog / Modal</h2>
+          <Button onClick={() => setDialogOpen(true)}>
+            Open Dialog
+          </Button>
           
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Confirm Action</DialogTitle>
+                <DialogTitle>Example Dialog</DialogTitle>
               </DialogHeader>
               <p className="text-sm text-muted-foreground py-4">
-                Are you sure you want to continue with this action?
+                This is a modal dialog built with Clarity Chat primitives.
+                It includes backdrop blur and smooth animations.
               </p>
-              <div className="flex justify-end gap-2">
+              <div className="flex gap-3 justify-end">
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={() => setDialogOpen(false)}>
+                <Button onClick={() => {
+                  setDialogOpen(false)
+                  toast.success(
+                    'Dialog action was successful',
+                    'Action Confirmed'
+                  )
+                }}>
                   Confirm
                 </Button>
               </div>
@@ -135,25 +268,25 @@ export default function App() {
         </section>
 
         {/* Tooltips */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Tooltip Example</h2>
+        <section className="mb-12">
+          <h2 className="text-xl font-semibold mb-4">Tooltips</h2>
           <div className="flex gap-4">
             <Tooltip content="This is a helpful tooltip">
-              <Button>Hover for Tooltip</Button>
+              <Button>Hover for tooltip</Button>
             </Tooltip>
-            <Tooltip content="You can use tooltips to provide context">
-              <Button variant="outline">Another Tooltip</Button>
+            <Tooltip content="Tooltips help provide context" side="right">
+              <Button variant="outline">Hover me too</Button>
             </Tooltip>
           </div>
         </section>
 
         {/* Chat Interface */}
-        <section>
+        <section className="mb-12">
           <h2 className="text-xl font-semibold mb-4">Chat Interface</h2>
           <Card className="max-w-2xl">
             <div className="h-[400px] flex flex-col">
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div ref={scrollRef as any} className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.length === 0 ? (
                   <EmptyState
                     icon={
@@ -169,15 +302,18 @@ export default function App() {
                     <Message key={message.id} message={message} />
                   ))
                 )}
+                
+                {isLoading && <ThinkingIndicator />}
               </div>
               
               {/* Input */}
-              <div className="border-t ring-1 ring-border/50">
+              <div className="border-t border-border/50 p-4">
                 <ChatInput
                   value={inputValue}
-                  onChange={(value: string) => setInputValue(value)}
+                  onChange={(value) => setInputValue(value)}
                   onSubmit={handleSend}
                   placeholder="Type your message..."
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -185,7 +321,7 @@ export default function App() {
         </section>
 
         {/* Feature Grid */}
-        <section>
+        <section className="mb-12">
           <h2 className="text-xl font-semibold mb-4">Feature Grid</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
@@ -198,21 +334,43 @@ export default function App() {
                 key={i}
                 className="p-6 text-center cursor-pointer transition-all duration-200 hover:shadow-sm hover:-translate-y-[2px]"
               >
-                <div className="text-4xl mb-3">{feature.emoji}</div>
+                <div className="text-4xl mb-2">{feature.emoji}</div>
                 <h3 className="font-semibold mb-1">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground">{feature.desc}</p>
               </Card>
             ))}
           </div>
         </section>
-
-        {/* Footer */}
-        <footer className="pt-12 pb-6 border-t border-border/50">
-          <p className="text-center text-sm text-muted-foreground">
-            Clarity Chat Components v2.0 • Production Ready ✅
-          </p>
-        </footer>
-      </div>
+      </main>
     </div>
   )
 }
+
+// Wrap in ErrorBoundary and ToastProvider
+function App() {
+  return (
+    <ErrorBoundary
+      fallback={(error) => (
+        <div className="flex items-center justify-center min-h-screen">
+          <Card className="p-8 max-w-md text-center">
+            <h1 className="text-xl font-semibold text-destructive mb-2">
+              Something went wrong
+            </h1>
+            <p className="text-sm text-muted-foreground mb-4">
+              {error.message}
+            </p>
+            <Button onClick={() => window.location.reload()}>
+              Reload Page
+            </Button>
+          </Card>
+        </div>
+      )}
+    >
+      <ToastProvider>
+        <ComponentDemoApp />
+      </ToastProvider>
+    </ErrorBoundary>
+  )
+}
+
+export default App
