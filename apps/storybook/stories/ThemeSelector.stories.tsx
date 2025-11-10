@@ -28,7 +28,7 @@ const meta = {
   decorators: [
     (Story) => (
       <div className="flex w-full max-w-5xl flex-col gap-6">
-        <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
+        <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
           <div>
             <h3 className="text-sm font-semibold text-foreground">Global toolbar</h3>
             <p className="text-xs text-muted-foreground">Live preview uses Storybook global toolbar controls.</p>
@@ -62,7 +62,7 @@ export const DropdownAndSelector: Story = {
   render: (args) => (
     <div className="grid gap-6 md:grid-cols-[280px_1fr]">
       <ThemeSelector {...args} />
-      <div className="space-y-4 rounded-xl border border-border bg-card p-6">
+      <div className="space-y-4 rounded-lg border border-border/50 bg-card p-6 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
         <h3 className="text-sm font-semibold text-foreground">Dropdown surface</h3>
         <p className="text-xs text-muted-foreground">
           Use the compact dropdown variant inside headers or mobile sheets while keeping the full selector available in settings.

@@ -163,7 +163,7 @@ export const ButtonSkeleton: Story = {
 
 export const UserProfile: Story = {
   render: () => (
-    <div className="max-w-md p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
+    <div className="max-w-md p-6 border border-border/50 rounded-lg shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] space-y-4">
       <div className="flex items-center gap-4">
         <SkeletonAvatar size="lg" />
         <div className="flex-1 space-y-2">
@@ -227,7 +227,7 @@ export const ArticleLayout: Story = {
       </div>
 
       {/* Featured Image */}
-      <Skeleton className="h-64 w-full rounded-xl" />
+      <Skeleton className="h-64 w-full rounded-lg" />
 
       {/* Content */}
       <div className="space-y-2">
@@ -258,7 +258,7 @@ export const DashboardCards: Story = {
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl space-y-3"
+          className="p-6 border border-border/50 rounded-lg shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] space-y-3"
         >
           <Skeleton className="h-6 w-24" />
           <Skeleton className="h-10 w-32" />
@@ -329,7 +329,7 @@ export const LoadingSimulation: Story = {
     }, [])
 
     return (
-      <div className="max-w-md p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl">
+      <div className="max-w-md p-6 border border-border/50 rounded-lg shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
         {loading ? (
           <div className="space-y-4">
             <div className="flex items-center gap-4">
@@ -412,7 +412,7 @@ export const ProgressiveLoading: Story = {
         <div className="space-y-4">
           {/* Stage 1: Basic structure */}
           {stage >= 0 && (
-            <div className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl">
+            <div className="p-6 border border-border/50 rounded-lg shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
               {stage === 0 ? (
                 <SkeletonText lines={3} />
               ) : (
@@ -428,7 +428,7 @@ export const ProgressiveLoading: Story = {
           {stage >= 1 && (
             <div className="space-y-3">
               {stage <= 1 ? (
-                <Skeleton className="h-48 w-full rounded-xl" />
+                <Skeleton className="h-48 w-full rounded-lg" />
               ) : (
                 <div className="h-48 w-full rounded-xl bg-gradient-to-br from-blue-500 to-purple-600" />
               )}

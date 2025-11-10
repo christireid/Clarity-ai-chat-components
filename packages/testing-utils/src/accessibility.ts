@@ -6,8 +6,17 @@
 
 import { axe, toHaveNoViolations } from 'jest-axe'
 
-// Extend Jest matchers
-expect.extend(toHaveNoViolations)
+// Type for Jest matchers (will be extended at test runtime)
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toHaveNoViolations(): R
+    }
+  }
+}
+
+// Export for test setup
+export { toHaveNoViolations }
 
 /**
  * Check if a component is accessible
@@ -23,7 +32,9 @@ export async function expectAccessible(
   options?: Record<string, unknown>
 ): Promise<void> {
   const results = await axe(container, options)
-  expect(results).toHaveNoViolations()
+  if (results.violations.length > 0) {
+    throw new Error(`Accessibility violations found: ${JSON.stringify(results.violations, null, 2)}`)
+  }
 }
 
 /**
@@ -41,10 +52,12 @@ export async function expectWCAGLevel(
   const results = await axe(container, {
     runOnly: {
       type: 'tag',
-      values: [`wcag2${level.toLowerCase()}`],
+      values: [`wcag2${level.toLowerCase()}` as string],
     },
   })
-  expect(results).toHaveNoViolations()
+  if (results.violations.length > 0) {
+    throw new Error(`WCAG ${level} violations found: ${JSON.stringify(results.violations, null, 2)}`)
+  }
 }
 
 /**
@@ -127,5 +140,7 @@ export async function expectColorContrast(container: Element): Promise<void> {
       values: ['color-contrast'],
     },
   })
-  expect(results).toHaveNoViolations()
+  if (results.violations.length > 0) {
+    throw new Error(`Color contrast violations found: ${JSON.stringify(results.violations, null, 2)}`)
+  }
 }

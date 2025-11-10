@@ -319,7 +319,7 @@ animate={{ opacity: 1, scale: 1 }}`}</code>
             <h4 className="font-medium mb-2 text-destructive">❌ Don't</h4>
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>• Overuse animations</li>
-              <li>• Make animations too slow (>500ms)</li>
+              <li>• Make animations too slow ({'>'}500ms)</li>
               <li>• Animate without purpose</li>
               <li>• Use jarring movements</li>
               <li>• Ignore reduced-motion preferences</li>

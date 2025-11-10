@@ -47,7 +47,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="mx-auto w-full max-w-3xl rounded-xl border border-border bg-card p-4">
+      <div className="mx-auto w-full max-w-3xl rounded-lg border border-border/50 bg-card p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
         <Story />
       </div>
     ),

@@ -6,19 +6,19 @@
 
 import { useState } from 'react'
 import { Button, Input, Card, Dialog, DialogContent, DialogHeader, DialogTitle, Tooltip } from '@clarity-chat/primitives'
-import { Message, ChatInput, EmptyState } from '@clarity-chat/react'
+import { ChatInput, EmptyState, Message, type Message as MessageType } from '@clarity-chat/react'
 
 export default function App() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
-  const [messages, setMessages] = useState<Array<{id: string; role: 'user' | 'assistant'; content: string; createdAt: Date}>>([])
+  const [messages, setMessages] = useState<Array<MessageType>>([])
 
   const handleSend = () => {
     if (!inputValue.trim()) return
     
-    const newMessage = {
+    const newMessage: MessageType = {
       id: Date.now().toString(),
-      role: 'user' as const,
+      role: 'user',
       content: inputValue,
       createdAt: new Date(),
     }
@@ -175,7 +175,7 @@ export default function App() {
               <div className="border-t ring-1 ring-border/50">
                 <ChatInput
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={(value: string) => setInputValue(value)}
                   onSubmit={handleSend}
                   placeholder="Type your message..."
                 />
