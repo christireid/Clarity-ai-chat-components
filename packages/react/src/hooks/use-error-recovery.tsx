@@ -5,7 +5,7 @@ import * as React from 'react'
  */
 export interface UseErrorRecoveryOptions<T> {
   /** The async operation to execute and retry */
-  operation: (...args: any[]) => Promise<T>
+  operation: (...args: unknown[]) => Promise<T>
   
   /** Maximum retry attempts (default: 3) */
   maxAttempts?: number
@@ -34,7 +34,7 @@ export interface UseErrorRecoveryOptions<T> {
  */
 export interface UseErrorRecoveryReturn<T> {
   /** Execute operation with retry logic */
-  execute: (...args: any[]) => Promise<T | null>
+  execute: (...args: unknown[]) => Promise<T | null>
   
   /** Manually retry last failed operation */
   retry: () => Promise<T | null>
@@ -218,7 +218,7 @@ export function useErrorRecovery<T = any>(
   const [isRetrying, setIsRetrying] = React.useState(false)
   const [attemptNumber, setAttemptNumber] = React.useState(0)
   const [data, setData] = React.useState<T | null>(null)
-  const lastArgsRef = React.useRef<any[]>([])
+  const lastArgsRef = React.useRef<unknown[]>([])
   
   // Store callbacks in refs to avoid recreating execute function
   const operationRef = React.useRef(operation)
@@ -256,7 +256,7 @@ export function useErrorRecovery<T = any>(
    * Execute operation with retry logic
    */
   const execute = React.useCallback(
-    async (...args: any[]): Promise<T | null> => {
+    async (...args: unknown[]): Promise<T | null> => {
       // Store args for manual retry
       lastArgsRef.current = args
 

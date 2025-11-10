@@ -17,6 +17,8 @@ import * as React from 'react'
  * })
  * ```
  */
+ 
+// Function overloads for type safety - these are intentionally redeclared
 export function useEventListener<K extends keyof WindowEventMap>(
   eventName: K,
   handler: (event: WindowEventMap[K]) => void,
@@ -35,6 +37,7 @@ export function useEventListener<K extends keyof HTMLElementEventMap>(
   element: React.RefObject<HTMLElement>,
   options?: boolean | AddEventListenerOptions
 ): void
+ 
 export function useEventListener<
   KW extends keyof WindowEventMap,
   KH extends keyof HTMLElementEventMap,

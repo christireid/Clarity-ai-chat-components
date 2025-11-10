@@ -153,18 +153,8 @@ export function useMessageHistory(
     return () => clearInterval(interval)
   }, [autoSave, saveInterval, conversationId, saveConversation, isAvailable])
 
-  // Load from storage on mount
-  const loadRef = React.useRef(load)
-  React.useEffect(() => {
-    loadRef.current = load
-  }, [load])
-
-  React.useEffect(() => {
-    if (isAvailable && conversationId) {
-      loadRef.current()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [conversationId, isAvailable]) // load accessed via ref
+  // Load function will be defined later, use ref for early effect
+  const loadRef = React.useRef<(() => Promise<void>) | null>(null)
 
   const goToPage = React.useCallback((page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -262,6 +252,19 @@ export function useMessageHistory(
       setIsLoading(false)
     }
   }, [conversationId, loadConversation])
+
+  // Update ref when load changes
+  React.useEffect(() => {
+    loadRef.current = load
+  }, [load])
+
+  // Load from storage on mount
+  React.useEffect(() => {
+    if (isAvailable && conversationId && loadRef.current) {
+      loadRef.current()
+    }
+     
+  }, [conversationId, isAvailable]) // load accessed via ref
 
   const clear = React.useCallback(async () => {
     setIsLoading(true)

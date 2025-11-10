@@ -72,8 +72,8 @@ export const EnhancedMarkdownRenderer = React.memo(
     React.useEffect(() => {
       if (enableMermaid && !mermaidInitialized.current && typeof window !== 'undefined') {
         // Dynamically import mermaid only if needed
-        // @ts-expect-error - mermaid is an optional peer dependency
-        import('mermaid').then((mermaid) => {
+        // mermaid is an optional peer dependency
+        import('mermaid').then((mermaid: any) => {
           mermaid.default.initialize({
             startOnLoad: false,
             theme: codeTheme === 'dark' ? 'dark' : 'default',
@@ -96,12 +96,12 @@ export const EnhancedMarkdownRenderer = React.memo(
     // Render Mermaid diagrams after content updates
     React.useEffect(() => {
       if (enableMermaid && mermaidInitialized.current && containerRef.current) {
-        // @ts-expect-error - mermaid is an optional peer dependency
-        import('mermaid').then((mermaid) => {
+        // mermaid is an optional peer dependency
+        import('mermaid').then((mermaid: any) => {
           const mermaidElements = containerRef.current?.querySelectorAll('.language-mermaid')
           if (mermaidElements && mermaidElements.length > 0) {
             mermaid.default.run({
-              nodes: Array.from(mermaidElements),
+              nodes: Array.from(mermaidElements) as HTMLElement[],
             })
           }
         }).catch(() => {
@@ -145,12 +145,13 @@ export const EnhancedMarkdownRenderer = React.memo(
           className
         )}
       >
+        {/* @ts-expect-error - ReactMarkdown v9 has type compatibility issues */}
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={rehypePlugins}
           components={{
             // Custom code block rendering for Mermaid
-            code({ node, inline, className, children, ...props }: any) {
+            code({ node: _node, inline: _inline, className, children, ...props }: any) {
               const match = /language-(\w+)/.exec(className || '')
               const language = match ? match[1] : ''
               const codeString = String(children).replace(/\n$/, '')

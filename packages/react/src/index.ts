@@ -143,8 +143,6 @@ export * from './hooks/use-mounted'
 export * from './hooks/use-previous'
 export * from './hooks/use-toggle'
 export * from './hooks/use-window-size'
-export * from './hooks/use-element-size'
-
 // Phase 3 Enhancement - Error Recovery & Token Tracking
 export * from './hooks/use-error-recovery'
 export * from './hooks/use-token-tracker'
@@ -165,7 +163,10 @@ export * from './hooks/use-performance'
 export * from './hooks/use-deferred-search'
 
 // Utility Functions (Model Fallback, Context Window, Rate Limiting, Hybrid Search, etc.)
+// Note: StreamChunk from './utils/streaming-helpers' conflicts with './adapters/types'
+// Export utils first, then explicitly export adapter StreamChunk
 export * from './utils'
+export type { StreamChunk } from './adapters/types'
 
 // Note: The following are already exported via './utils' above
 // Kept here as documentation of what's available:
@@ -179,8 +180,6 @@ export * from './utils'
 export * from './types/chat-types'
 
 // Optimized hooks
-export * from './hooks/use-chat-optimized'
-
 // Theme System
 export * from './theme'
 
@@ -276,11 +275,7 @@ export * from './components/context-menu'
 export * from './components/theme-switcher'
 
 // Phase 8 - Undo/Redo Hook
-export * from './hooks/use-undo-redo'
-
 // Phase 8 - Haptic Feedback
-export * from './hooks/use-haptic'
-
 // ============================================================================
 // TOKEN OPTIMIZATION FEATURES
 // ============================================================================
@@ -290,9 +285,6 @@ export * from './components/token-optimization-dashboard'
 // token-optimization-badge already exported in Phase 3 section
 
 // Token Optimization Hooks
-export * from './hooks/use-prompt-compression'
 export * from './hooks/use-smart-cache'
 export * from './hooks/use-model-router'
-export * from './hooks/use-response-limiter'
-export * from './hooks/use-request-batcher'
 export * from './hooks/use-smart-throttle'

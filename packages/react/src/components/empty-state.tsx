@@ -21,7 +21,7 @@ import {
   InfoIcon,
 } from './icons'
 import { InteractiveButton } from './interactive-card'
-import { createScaleVariant } from '../animations'
+// import { createScaleVariant } from '../animations' // Reserved for future use
 
 export interface EmptyStateProps {
   /** Icon to display */
@@ -56,8 +56,6 @@ export const EmptyState = React.memo(function EmptyState({
   secondaryAction,
   className,
 }: EmptyStateProps) {
-  const scaleVariant = createScaleVariant(0.95, 'normal', 'spring')
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}

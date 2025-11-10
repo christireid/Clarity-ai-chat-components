@@ -47,29 +47,45 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     backgroundSize: '200% 100%',
   } : {}
 
-  const animation = variant === 'pulse' 
+  const variants = variant === 'pulse' 
     ? createPulseAnimation()
     : variant === 'shimmer'
     ? createShimmerAnimation()
     : undefined
 
-  const Component = variant !== 'none' ? motion.div : 'div'
+  const baseStyle = {
+    width: width ?? '100%',
+    height: height ?? '1rem',
+    ...shimmerStyle,
+    ...style,
+  }
+
+  if (variant === 'none') {
+    return (
+      <div
+        className={cn(
+          'bg-muted/50 backdrop-blur-sm',
+          roundedClasses[rounded],
+          className
+        )}
+        style={baseStyle}
+        {...props}
+      />
+    )
+  }
 
   return (
-    <Component
+    <motion.div
       className={cn(
         'bg-muted/50 backdrop-blur-sm',
         roundedClasses[rounded],
         className
       )}
-      style={{
-        width,
-        height,
-        ...shimmerStyle,
-        ...style,
-      }}
-      {...(animation && { variants: animation, animate: 'animate' })}
-      {...props}
+      style={baseStyle}
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      {...(props as any)}
     />
   )
 }

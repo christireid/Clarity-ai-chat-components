@@ -24,7 +24,7 @@ export default function LearnPerformanceGuidePage() {
       <section className="docs-section">
         <h2>Checklist</h2>
         <ul>
-          <li>Enable <strong>virtualized message lists</strong> when > 400 messages</li>
+          <li>Enable <strong>virtualized message lists</strong> when {'>'} 400 messages</li>
           <li>Use <strong>streaming</strong> (SSE/WebSockets) for long responses</li>
           <li>Memoize expensive render props (Markdown, code blocks)</li>
           <li>Track render times with <strong>PerformanceDashboard</strong></li>

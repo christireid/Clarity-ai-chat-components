@@ -70,7 +70,7 @@ export function TokenOptimizationDashboard({
   showBreakdown = true,
   realTime = false,
   refreshInterval = 5000,
-  costPerToken = 0.000002,
+  costPerToken: _costPerToken = 0.000002,
   className = '',
   onClick,
 }: TokenOptimizationDashboardProps) {
@@ -310,7 +310,9 @@ function OptimizationItem({
 }
 /**
  * Compact version for minimal UI (internal component)
+ * Reserved for future use
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function TokenOptimizationCompactBadge({
   tokensSaved,
   savingsPercent,

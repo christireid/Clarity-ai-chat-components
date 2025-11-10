@@ -84,7 +84,7 @@ export function useVectorStore({
       const instance = createVectorStore({
         provider,
         ...(config as Record<string, any>),
-      })
+      } as VectorStoreConfig)
       storeRef.current = instance
       setStatus('idle')
       setError(null)

@@ -136,7 +136,7 @@ export function FormShowcase() {
                 <Checkbox
                   id="agree"
                   checked={agreed}
-                  onCheckedChange={(checked) => setAgreed(checked as boolean)}
+                  onChange={(e) => setAgreed(e.target.checked)}
                 />
                 <label
                   htmlFor="agree"

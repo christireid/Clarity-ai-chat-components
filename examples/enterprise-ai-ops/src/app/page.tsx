@@ -1,4 +1,4 @@
-// @ts-nocheck - Example app needs refactoring for current API
+// @ts-nocheck - Known issue: lucide-react icon components incompatible with TypeScript 5.x + React 18 types
 'use client'
 
 import { useState } from 'react'

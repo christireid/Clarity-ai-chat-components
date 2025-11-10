@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react'
+import React, { useState, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import { useVoiceInput } from '../hooks/use-voice-input'
@@ -223,11 +223,11 @@ export function VoiceInput({
       <div className="relative">
         <Button
           size={size === 'sm' ? 'icon' : size === 'lg' ? 'lg' : 'icon'}
-          variant={buttonVariant}
+          variant={variant === 'primary' ? 'default' : variant === 'secondary' ? 'secondary' : 'ghost'}
           onClick={handleToggle}
           disabled={disabled}
           className={cn('rounded-full', className)}
-          aria-label={ariaLabel}
+          aria-label={voice.isListening ? 'Stop recording' : tooltipText || 'Start voice input'}
           title={voice.isListening ? 'Stop recording' : tooltipText}
         >
           {/* Enhanced pulse animation when listening */}

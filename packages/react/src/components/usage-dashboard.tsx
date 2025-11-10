@@ -68,7 +68,7 @@ export const UsageDashboard = React.memo(function UsageDashboard({
   }
 
   return (
-    <Card elevation="md" className={cn('h-full flex flex-col', className)}>
+    <Card className={cn('h-full flex flex-col', className)}>
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>

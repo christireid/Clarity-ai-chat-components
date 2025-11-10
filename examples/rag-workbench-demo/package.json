@@ -11,9 +11,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@clarity-chat/react": "*",
-    "@clarity-chat/primitives": "*",
-    "@clarity-chat/types": "*",
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
     "next": "^14.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

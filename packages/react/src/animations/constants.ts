@@ -4,8 +4,8 @@
  */
 
 export const ANIMATION_DURATION = {
-  /** 100ms - Instant interactions */
-  instant: 100,
+  /** 0ms - Instant transitions */
+  instant: 0,
   /** 150ms - Quick interactions */
   fast: 150,
   /** 300ms - Standard transitions */
@@ -18,15 +18,15 @@ export const ANIMATION_DURATION = {
 
 export const ANIMATION_EASING = {
   /** Default easing */
-  default: 'easeOut',
+  default: 'easeInOut',
   /** Smooth acceleration */
   in: 'easeIn',
   /** Smooth deceleration */
   out: 'easeOut',
   /** Smooth acceleration and deceleration */
   inOut: 'easeInOut',
-  /** Sharp, immediate easing */
-  sharp: 'linear',
+  /** Sharp, immediate transitions */
+  sharp: 'easeInOut',
   /** Spring physics */
   spring: 'spring',
 } as const
@@ -59,8 +59,8 @@ export const INTERACTION_VARIANTS = {
     transition: { duration: 0.15, type: 'spring', stiffness: 400 },
   },
   iconButton: {
-    hover: { scale: 1.1, y: -1 },
-    tap: { scale: 0.95 },
+    hover: { scale: 1.1 },
+    tap: { scale: 0.9 },
     transition: { duration: 0.15, ease: 'easeOut' },
   },
 } as const

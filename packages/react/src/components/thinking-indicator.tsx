@@ -59,7 +59,12 @@ export const ThinkingIndicator = memo(function ThinkingIndicator({
   // Compute values from status
   const stageIcon = useMemo(() => getStageIcon(status?.stage || 'thinking'), [status?.stage, getStageIcon])
   const stageLabel = useMemo(() => getStageLabel(status?.stage || 'thinking'), [status?.stage, getStageLabel])
-  const estimatedSeconds = useMemo(() => status?.estimatedSeconds ?? null, [status?.estimatedSeconds])
+  const estimatedSeconds = useMemo(() => {
+    if (!status?.estimatedCompletion) return null
+    const now = Date.now()
+    const completion = status.estimatedCompletion.getTime()
+    return Math.max(0, Math.round((completion - now) / 1000))
+  }, [status?.estimatedCompletion])
 
   return (
     <motion.div

@@ -69,6 +69,19 @@ const config: StorybookConfig = {
         { find: '@clarity-chat/types', replacement: path.resolve(__dirname, '../../../packages/types/src/index.ts') },
         ...existingAlias,
       ]
+      
+      // Configure build options for CSS imports
+      config.build = config.build || {}
+      config.build.rollupOptions = config.build.rollupOptions || {}
+      config.build.rollupOptions.external = config.build.rollupOptions.external || []
+      
+      if (Array.isArray(config.build.rollupOptions.external)) {
+        config.build.rollupOptions.external.push(
+          'highlight.js/styles/github-dark.css',
+          'katex/dist/katex.min.css'
+        )
+      }
+      
       return config
     },
 
