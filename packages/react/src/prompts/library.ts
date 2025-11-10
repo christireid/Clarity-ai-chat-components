@@ -119,7 +119,7 @@ export class PromptTemplateLibrary {
       if (data.versions) {
         this.versions = new Map(data.versions)
       }
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Invalid library JSON')
     }
   }
