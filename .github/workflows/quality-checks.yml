@@ -1,0 +1,215 @@
+name: Quality Checks
+
+on:
+  push:
+    branches: [main, develop, 'cursor/**']
+  pull_request:
+    branches: [main, develop]
+
+# Cancel in-progress runs when a new workflow starts
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Lint check
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run ESLint
+        run: npm run lint
+
+  # Type check
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run TypeScript compiler
+        run: npm run typecheck
+
+  # Unit tests
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run tests
+        run: npm run test
+        
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: false
+
+  # Build check
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build all packages
+        run: npm run build
+        
+      - name: Check for build artifacts
+        run: |
+          if [ ! -d "packages/react/dist" ]; then
+            echo "❌ React package did not build"
+            exit 1
+          fi
+          if [ ! -d "packages/primitives/dist" ]; then
+            echo "❌ Primitives package did not build"
+            exit 1
+          fi
+          echo "✅ All packages built successfully"
+
+  # Bundle size check
+  bundle-size:
+    name: Bundle Size
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build packages
+        run: npm run build
+        
+      - name: Check bundle size
+        run: npm run size
+        
+      - name: Run bundle analyzer
+        run: npm run analyze
+        
+      - name: Upload bundle report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bundle-report
+          path: bundle-reports/
+          retention-days: 30
+
+  # Format check
+  format:
+    name: Format Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Check formatting
+        run: npx prettier --check "**/*.{ts,tsx,js,jsx,json,md,yml,yaml}"
+
+  # Validation gate (all checks must pass)
+  validation:
+    name: Validation Gate
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, test, build, bundle-size, format]
+    if: always()
+    
+    steps:
+      - name: Check if all jobs succeeded
+        run: |
+          if [ "${{ needs.lint.result }}" != "success" ]; then
+            echo "❌ Lint failed"
+            exit 1
+          fi
+          if [ "${{ needs.typecheck.result }}" != "success" ]; then
+            echo "❌ Type check failed"
+            exit 1
+          fi
+          if [ "${{ needs.test.result }}" != "success" ]; then
+            echo "❌ Tests failed"
+            exit 1
+          fi
+          if [ "${{ needs.build.result }}" != "success" ]; then
+            echo "❌ Build failed"
+            exit 1
+          fi
+          if [ "${{ needs.bundle-size.result }}" != "success" ]; then
+            echo "❌ Bundle size check failed"
+            exit 1
+          fi
+          if [ "${{ needs.format.result }}" != "success" ]; then
+            echo "❌ Format check failed"
+            exit 1
+          fi
+          echo "✅ All quality checks passed!"

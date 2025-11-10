@@ -1,32 +1,58 @@
 [
   {
+    "name": "@clarity-chat/primitives (ESM)",
+    "path": "packages/primitives/dist/index.mjs",
+    "limit": "50 KB",
+    "gzip": true,
+    "running": false
+  },
+  {
+    "name": "@clarity-chat/primitives (CJS)",
+    "path": "packages/primitives/dist/index.js",
+    "limit": "55 KB",
+    "gzip": true,
+    "running": false
+  },
+  {
     "name": "@clarity-chat/react (ESM)",
     "path": "packages/react/dist/index.mjs",
-    "limit": "100 KB",
-    "webpack": false
+    "limit": "80 KB",
+    "gzip": true,
+    "running": false
   },
   {
     "name": "@clarity-chat/react (CJS)",
     "path": "packages/react/dist/index.js",
-    "limit": "100 KB",
-    "webpack": false
+    "limit": "85 KB",
+    "gzip": true,
+    "running": false
   },
   {
-    "name": "@clarity-chat/error-handling",
-    "path": "packages/error-handling/dist/index.js",
-    "limit": "50 KB",
-    "webpack": false
-  },
-  {
-    "name": "@clarity-chat/primitives",
-    "path": "packages/primitives/dist/index.js",
-    "limit": "30 KB",
-    "webpack": false
+    "name": "@clarity-chat/react (CSS)",
+    "path": "packages/react/dist/theme.css",
+    "limit": "15 KB",
+    "gzip": true,
+    "running": false
   },
   {
     "name": "@clarity-chat/types",
-    "path": "packages/types/dist/index.js",
+    "path": "packages/types/dist/index.mjs",
+    "limit": "5 KB",
+    "gzip": true,
+    "running": false
+  },
+  {
+    "name": "@clarity-chat/error-handling",
+    "path": "packages/error-handling/dist/index.mjs",
     "limit": "10 KB",
-    "webpack": false
+    "gzip": true,
+    "running": false
+  },
+  {
+    "name": "@clarity-chat/memory",
+    "path": "packages/memory/dist/index.mjs",
+    "limit": "25 KB",
+    "gzip": true,
+    "running": false
   }
 ]

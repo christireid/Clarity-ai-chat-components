@@ -1,0 +1,68 @@
+# Dependabot Configuration
+# Keeps dependencies up-to-date automatically
+
+version: 2
+
+updates:
+  # NPM Dependencies - Root
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    groups:
+      # Group dev dependencies together
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group production dependencies together
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group testing tools
+      testing-tools:
+        patterns:
+          - "vitest"
+          - "playwright"
+          - "@testing-library/*"
+          - "@vitest/*"
+      # Group linting tools
+      linting-tools:
+        patterns:
+          - "eslint"
+          - "prettier"
+          - "@typescript-eslint/*"
+          - "eslint-plugin-*"
+      # Group build tools
+      build-tools:
+        patterns:
+          - "turbo"
+          - "tsup"
+          - "typescript"
+          - "vite"
+    labels:
+      - "dependencies"
+      - "automated"
+    reviewers:
+      - "christireid"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "ci"
+      - "dependencies"
+    commit-message:
+      prefix: "ci"

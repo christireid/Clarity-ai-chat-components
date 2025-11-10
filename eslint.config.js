@@ -27,7 +27,7 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'off',
+      'react-hooks/exhaustive-deps': 'warn', // Warn about missing deps
       'no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
@@ -81,11 +81,11 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react-hooks/rules-of-hooks': 'error',
-      // Enforce no warnings policy by disabling warning-prone rules
-      'react-hooks/exhaustive-deps': 'off',
+      // Warn about missing deps (better than off)
+      'react-hooks/exhaustive-deps': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/no-explicit-any': 'off',
       'jsx-a11y/alt-text': 'error',
@@ -115,53 +115,37 @@ export default [
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
-  // Loosen certain rules within the React package to achieve zero-errors linting
+  // Packages: Allow some flexibility but keep quality high
   {
-    files: ['packages/react/**/*.{ts,tsx,js,jsx}'],
+    files: ['packages/**/*.{ts,tsx,js,jsx}'],
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-unused-vars': 'off',
-      'no-case-declarations': 'off',
-      '@typescript-eslint/no-require-imports': 'off',
-      'no-import-assign': 'off',
-      '@typescript-eslint/no-unsafe-function-type': 'off',
-      '@typescript-eslint/no-empty-object-type': 'off',
-      'jsx-a11y/role-supports-aria-props': 'off',
+      // Allow intentionally unused vars prefixed with _
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      'no-unused-vars': 'off', // TypeScript handles this
+      // Allow some flexibility for packages
+      '@typescript-eslint/no-empty-object-type': 'warn',
+      '@typescript-eslint/no-unsafe-function-type': 'warn',
     },
   },
-  // Loosen certain rules within the Dev Tools package to achieve zero-errors linting
+  // Apps and examples: More permissive for rapid development
   {
-    files: ['packages/dev-tools/**/*.{ts,tsx,js,jsx}'],
+    files: ['apps/**/*.{ts,tsx,js,jsx}', 'examples/**/*.{ts,tsx,js,jsx}'],
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       'no-unused-vars': 'off',
-    },
-  },
-  // Loosen unused-var rules within the CLI package to achieve zero-errors linting
-  {
-    files: ['packages/cli/**/*.{ts,tsx,js,jsx}'],
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-unused-vars': 'off',
-    },
-  },
-  // Loosen rules within apps to achieve zero-errors linting
-  {
-    files: ['apps/**/*.{ts,tsx,js,jsx}'],
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-unused-vars': 'off',
-      'no-useless-escape': 'off',
-      '@typescript-eslint/triple-slash-reference': 'off',
-    },
-  },
-  // Loosen rules within examples to achieve zero-errors linting
-  {
-    files: ['examples/**/*.{ts,tsx,js,jsx}'],
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-unused-vars': 'off',
-      '@typescript-eslint/triple-slash-reference': 'off',
     },
   },
   {

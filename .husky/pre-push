@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run tests before pushing to ensure quality
+echo "🧪 Running tests before push..."
+
+npm run typecheck || {
+  echo "❌ Type check failed. Fix errors before pushing."
+  exit 1
+}
+
+npm run test || {
+  echo "❌ Tests failed. Fix tests before pushing."
+  exit 1
+}
+
+echo "✅ All checks passed. Pushing..."

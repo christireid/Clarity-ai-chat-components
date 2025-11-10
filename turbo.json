@@ -1,26 +1,45 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
+  "globalEnv": ["NODE_ENV", "CI"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "storybook-static/**"]
+      "inputs": ["src/**", "package.json", "tsconfig.json"],
+      "outputs": ["dist/**", ".next/**", "storybook-static/**", "build/**"],
+      "outputLogs": "new-only"
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "outputLogs": "full"
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "*.{js,ts,tsx,jsx}", "eslint.config.js", ".eslintrc*"],
+      "outputs": [],
+      "outputLogs": "errors-only"
     },
     "typecheck": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "*.{ts,tsx}", "tsconfig.json"],
+      "outputs": ["*.tsbuildinfo"],
+      "outputLogs": "errors-only"
     },
     "test": {
-      "dependsOn": []
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "test-setup.ts", "vitest.config.ts"],
+      "outputs": ["coverage/**"],
+      "outputLogs": "new-only"
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true,
+      "outputLogs": "full"
     },
     "clean": {
       "cache": false
     }
-  }
+  },
+  "ui": "tui"
 }
