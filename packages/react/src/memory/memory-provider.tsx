@@ -19,7 +19,6 @@ import type {
   MemoryPriority,
   MemoryStats,
   MemoryEvent,
-  MemoryContext,
 } from '@clarity-chat/memory'
 import type { VectorStore } from '../vector-stores/types'
 import type { EmbeddingProvider } from '../embeddings/types'
@@ -63,7 +62,7 @@ interface MemoryContextValue {
   // Stats and context
   getStats: () => MemoryStats
 
-  getContext: () => MemoryContext
+  getContext: () => Record<string, unknown>
 
   // Event subscription
   subscribe: (
@@ -350,7 +349,7 @@ export function useConversationMemory(
   } = {}
 ) {
   const { addMemory, query, getContext } = useMemory()
-  const [context, setContext] = React.useState<MemoryContext | null>(null)
+  const [context, setContext] = React.useState<Record<string, unknown> | null>(null)
 
   // Update context periodically
   React.useEffect(() => {

@@ -10,7 +10,7 @@ export class PluginManager {
   private plugins = new Map<string, PluginConfig>()
   private config: Required<PluginManagerConfig>
   private sharedState: Record<string, any> = {}
-  private eventHandlers = new Map<string, Set<Function>>()
+  private eventHandlers = new Map<string, Set<(data: unknown) => void>>()
 
   constructor(config?: PluginManagerConfig) {
     this.config = {
