@@ -8,6 +8,8 @@ import { axe, toHaveNoViolations } from 'jest-axe'
 
 // Type for Jest matchers (will be extended at test runtime)
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const expect: any
   namespace jest {
     interface Matchers<R> {
       toHaveNoViolations(): R
