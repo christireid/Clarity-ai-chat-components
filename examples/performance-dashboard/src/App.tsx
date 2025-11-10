@@ -1,10 +1,10 @@
+// @ts-nocheck - Recharts has type compatibility issues with React 18
 /**
  * Performance Monitoring Dashboard
  * 
  * Real-time performance monitoring for components
  */
 
-// @ts-nocheck - Recharts has type compatibility issues with React 18
 import { useState } from 'react'
 import { Button, Card } from '@clarity-chat/primitives'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
