@@ -577,7 +577,7 @@ export const ConfidenceScores: Story = {
 
         <div className="space-y-3">
           {results.length === 0 ? (
-            <div className="border-2 border-dashed rounded-lg p-8 text-center text-muted-foreground">
+            <div className="border border-dashed border-border/50 rounded-lg p-8 text-center text-muted-foreground">
               Click button to simulate recognition with confidence scores
             </div>
           ) : (
