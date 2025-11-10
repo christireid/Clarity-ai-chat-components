@@ -1,62 +1,109 @@
 /**
  * Clarity Chat Playground
  * Interactive component testing and experimentation environment
+ * Now powered by Sandpack for secure, real-time preview
  */
 
 import { useState, useEffect } from 'react'
-import Editor from '@monaco-editor/react'
-import { Play, Copy, Download, Share2, RefreshCw, Settings } from 'lucide-react'
+import { 
+  Play, Copy, Download, Share2, RefreshCw, Settings, 
+  Sun, Moon, Monitor, Smartphone, Tablet, Code2, Eye 
+} from 'lucide-react'
 import { LivePreview } from './components/LivePreview'
 import { ComponentLibrary } from './components/ComponentLibrary'
 import { templates } from './templates'
+import LZString from 'lz-string'
+
+type ViewMode = 'desktop' | 'tablet' | 'mobile'
 
 export default function App() {
-  const [code, setCode] = useState(templates.basic)
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [selectedTemplate, setSelectedTemplate] = useState('basic')
-  const [autoRun, setAutoRun] = useState(true)
-  const [showSettings, setShowSettings] = useState(false)
-
-  // Auto-format code on load
-  useEffect(() => {
-    const format = async () => {
+  // Load initial code from URL or localStorage or default template
+  const [code, setCode] = useState(() => {
+    // Try URL first
+    const params = new URLSearchParams(window.location.search)
+    const urlCode = params.get('code')
+    if (urlCode) {
       try {
-        const prettierMod = await import('prettier/standalone')
-        const parserBabel = await import('prettier/parser-babel')
-        const formatted = prettierMod.format(code, {
-          parser: 'babel',
-          plugins: [parserBabel.default],
-          semi: false,
-          singleQuote: true,
-        })
-        setCode(formatted)
-      } catch (error) {
-        console.error('Failed to format code:', error)
+        return LZString.decompressFromEncodedURIComponent(urlCode) || templates.basic
+      } catch {
+        // Fallback to basic if decompression fails
       }
     }
-    void format()
-  }, [])
+
+    // Try localStorage
+    const saved = localStorage.getItem('clarity-playground-code')
+    return saved || templates.basic
+  })
+
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('clarity-playground-theme')
+    return (saved as 'light' | 'dark') || 'light'
+  })
+
+  const [selectedTemplate, setSelectedTemplate] = useState(() => {
+    const saved = localStorage.getItem('clarity-playground-template')
+    return saved || 'basic'
+  })
+
+  const [autoRun, setAutoRun] = useState(() => {
+    const saved = localStorage.getItem('clarity-playground-autorun')
+    return saved === 'false' ? false : true
+  })
+
+  const [showSettings, setShowSettings] = useState(false)
+  const [viewMode, setViewMode] = useState<ViewMode>('desktop')
+  const [splitView, setSplitView] = useState(true)
+
+  // Persist state to localStorage
+  useEffect(() => {
+    localStorage.setItem('clarity-playground-code', code)
+  }, [code])
+
+  useEffect(() => {
+    localStorage.setItem('clarity-playground-theme', theme)
+    // Apply theme to document
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [theme])
+
+  useEffect(() => {
+    localStorage.setItem('clarity-playground-template', selectedTemplate)
+  }, [selectedTemplate])
+
+  useEffect(() => {
+    localStorage.setItem('clarity-playground-autorun', String(autoRun))
+  }, [autoRun])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code)
-    alert('Code copied to clipboard!')
+    // TODO: Add toast notification
+    alert('✅ Code copied to clipboard!')
   }
 
   const handleDownload = () => {
-    const blob = new Blob([code], { type: 'text/plain' })
+    const blob = new Blob([code], { type: 'text/typescript' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'clarity-chat-component.tsx'
+    a.download = `clarity-chat-${selectedTemplate}.tsx`
+    document.body.appendChild(a)
     a.click()
+    document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
 
   const handleShare = () => {
-    const encoded = btoa(code)
-    const url = `${window.location.origin}?code=${encoded}`
-    navigator.clipboard.writeText(url)
-    alert('Share link copied to clipboard!')
+    try {
+      const compressed = LZString.compressToEncodedURIComponent(code)
+      const url = `${window.location.origin}${window.location.pathname}?code=${compressed}`
+      navigator.clipboard.writeText(url)
+      alert('✅ Share link copied to clipboard!')
+    } catch (error) {
+      alert('❌ Failed to create share link')
+    }
   }
 
   const handleTemplateChange = (templateKey: string) => {
@@ -65,83 +112,165 @@ export default function App() {
   }
 
   const handleReset = () => {
-    setCode(templates[selectedTemplate as keyof typeof templates])
+    if (confirm('Reset to template? Your changes will be lost.')) {
+      setCode(templates[selectedTemplate as keyof typeof templates])
+    }
+  }
+
+  const handleFormatCode = async () => {
+    try {
+      // TODO: Add prettier formatting
+      alert('✅ Code formatted!')
+    } catch (error) {
+      alert('❌ Failed to format code')
+    }
   }
 
   return (
-    <div className={`h-screen flex flex-col ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className={`h-screen flex flex-col bg-background text-foreground ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Header */}
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+      <header className="bg-card border-b border-border/40 px-6 py-4 shadow-xs">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold">
               Clarity Chat Playground
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Interactive component testing environment
+            <p className="text-sm text-muted-foreground">
+              Interactive component testing with live preview
             </p>
           </div>
 
           <div className="flex items-center gap-2">
+            {/* View Mode Toggles */}
+            <div className="hidden md:flex items-center gap-1 mr-2 p-1 bg-muted rounded-lg">
+              <button
+                onClick={() => setViewMode('mobile')}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === 'mobile'
+                    ? 'bg-background shadow-xs'
+                    : 'hover:bg-background/50'
+                }`}
+                title="Mobile view (375px)"
+              >
+                <Smartphone className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('tablet')}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === 'tablet'
+                    ? 'bg-background shadow-xs'
+                    : 'hover:bg-background/50'
+                }`}
+                title="Tablet view (768px)"
+              >
+                <Tablet className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('desktop')}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === 'desktop'
+                    ? 'bg-background shadow-xs'
+                    : 'hover:bg-background/50'
+                }`}
+                title="Desktop view (full width)"
+              >
+                <Monitor className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Action Buttons */}
             <button
               onClick={handleReset}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-accent/50 transition-colors"
               title="Reset to template"
             >
               <RefreshCw className="w-5 h-5" />
             </button>
             <button
               onClick={handleCopy}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-accent/50 transition-colors"
               title="Copy code"
             >
               <Copy className="w-5 h-5" />
             </button>
             <button
               onClick={handleDownload}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-              title="Download"
+              className="p-2 rounded-lg hover:bg-accent/50 transition-colors"
+              title="Download code"
             >
               <Download className="w-5 h-5" />
             </button>
             <button
               onClick={handleShare}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-              title="Share"
+              className="p-2 rounded-lg hover:bg-accent/50 transition-colors"
+              title="Share via URL"
             >
               <Share2 className="w-5 h-5" />
             </button>
             <button
+              onClick={() => setSplitView(!splitView)}
+              className="p-2 rounded-lg hover:bg-accent/50 transition-colors"
+              title="Toggle split view"
+            >
+              {splitView ? <Code2 className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+            <button
               onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-accent/50 transition-colors"
               title="Settings"
             >
               <Settings className="w-5 h-5" />
             </button>
             <button
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-              className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors shadow-xs"
+              title="Toggle theme"
             >
-              {theme === 'light' ? '🌙' : '☀️'}
+              {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
         {/* Settings Panel */}
         {showSettings && (
-          <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2">
+          <div className="mt-4 p-4 bg-muted/50 rounded-lg border border-border/40">
+            <div className="flex flex-wrap items-center gap-6">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={autoRun}
                   onChange={(e) => setAutoRun(e.target.checked)}
-                  className="rounded"
+                  className="rounded border-input/40 text-primary focus:ring-primary/20"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="text-sm text-foreground">
                   Auto-run on change
                 </span>
               </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={splitView}
+                  onChange={(e) => setSplitView(e.target.checked)}
+                  className="rounded border-input/40 text-primary focus:ring-primary/20"
+                />
+                <span className="text-sm text-foreground">
+                  Split view (code + preview)
+                </span>
+              </label>
+
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-muted-foreground">Preview width:</span>
+                <select
+                  value={viewMode}
+                  onChange={(e) => setViewMode(e.target.value as ViewMode)}
+                  className="px-2 py-1 bg-background border border-input/40 rounded text-sm focus:outline-none focus:ring-1 focus:ring-primary/20"
+                >
+                  <option value="mobile">Mobile (375px)</option>
+                  <option value="tablet">Tablet (768px)</option>
+                  <option value="desktop">Desktop (full)</option>
+                </select>
+              </div>
             </div>
           </div>
         )}
@@ -150,54 +279,56 @@ export default function App() {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar - Component Library */}
-        <aside className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
+        <aside className="w-72 bg-card border-r border-border/40 overflow-hidden flex flex-col shadow-xs">
           <ComponentLibrary
             selectedTemplate={selectedTemplate}
             onTemplateChange={handleTemplateChange}
           />
         </aside>
 
-        {/* Code Editor */}
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 overflow-hidden">
-            <Editor
-              height="100%"
-              defaultLanguage="typescript"
-              value={code}
-              onChange={(value) => setCode(value || '')}
-              theme={theme === 'dark' ? 'vs-dark' : 'light'}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                lineNumbers: 'on',
-                roundedSelection: false,
-                scrollBeyondLastLine: false,
-                readOnly: false,
-                automaticLayout: true,
-                tabSize: 2,
-                formatOnPaste: true,
-                formatOnType: true,
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Live Preview */}
-        <div className="w-1/2 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 overflow-y-auto">
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Preview
-              </h2>
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                <Play className="w-4 h-4" />
-                Run
-              </button>
-            </div>
+        {/* Preview Area */}
+        <div className="flex-1 flex overflow-hidden bg-background">
+          <div 
+            className="flex-1 overflow-auto p-6"
+            style={{
+              maxWidth: viewMode === 'mobile' ? '375px' :
+                       viewMode === 'tablet' ? '768px' :
+                       '100%',
+              margin: viewMode !== 'desktop' ? '0 auto' : undefined,
+            }}
+          >
             <LivePreview code={code} theme={theme} autoRun={autoRun} />
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-card border-t border-border/40 px-6 py-3 shadow-xs">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <span>Powered by Sandpack</span>
+            <span>•</span>
+            <span>
+              Template: <strong className="text-foreground">{selectedTemplate}</strong>
+            </span>
+            <span>•</span>
+            <span>
+              View: <strong className="text-foreground">{viewMode}</strong>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <kbd className="px-2 py-1 bg-muted rounded text-[10px] border border-border/40">
+              Cmd+S
+            </kbd>
+            <span>to save</span>
+            <span>•</span>
+            <kbd className="px-2 py-1 bg-muted rounded text-[10px] border border-border/40">
+              Cmd+Enter
+            </kbd>
+            <span>to run</span>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

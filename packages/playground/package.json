@@ -1,32 +1,38 @@
 {
   "name": "@clarity-chat/playground",
-  "version": "0.1.0",
-  "description": "Interactive component playground and REPL for Clarity Chat",
+  "version": "1.0.0",
+  "description": "Interactive component playground and REPL for Clarity Chat with Sandpack",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vite --port 5174 --open",
+    "build": "tsc && vite build",
     "preview": "vite preview",
-    "typecheck": "echo \"Type checking skipped due to React type conflicts\" && exit 0",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext ts,tsx",
     "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
+    "@clarity-chat/primitives": "*",
     "@clarity-chat/react": "*",
     "@clarity-chat/types": "*",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@monaco-editor/react": "^4.6.0",
-    "prettier": "^3.4.0",
-    "lucide-react": "^0.263.1"
+    "@codesandbox/sandpack-react": "^2.13.5",
+    "@codesandbox/sandpack-themes": "^2.0.21",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "lucide-react": "^0.263.1",
+    "lz-string": "^1.5.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
-    "tailwindcss": "^3.4.0",
+    "tailwindcss": "^4.0.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.10"
   }
