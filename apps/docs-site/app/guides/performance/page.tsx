@@ -216,7 +216,7 @@ async function streamWithTracing(request: ChatRequest) {
       <section className="docs-section">
         <h2>Optimization Checklist</h2>
         <ul>
-          <li>✅ Virtualize message lists when > 400 items</li>
+          <li>✅ Virtualize message lists when {'>'}400 items</li>
           <li>✅ Debounce streaming updates to 30–60&nbsp;ms intervals</li>
           <li>✅ Use <code>startTransition</code> (built into <code>useChatEnhanced</code>) for heavy updates</li>
           <li>✅ Memoize expensive render props (Markdown renderer, code blocks)</li>

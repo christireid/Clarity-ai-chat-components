@@ -1,4 +1,4 @@
-// @ts-nocheck - Example hook needs type updates
+// Type-safe streaming chat hook - Example hook needs type updates
 import { useState, useCallback } from 'react'
 
 // Local types for model comparison  
