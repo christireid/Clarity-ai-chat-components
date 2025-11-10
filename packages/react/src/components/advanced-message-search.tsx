@@ -10,7 +10,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { SearchIcon, XIcon } from './icons'
+import { SearchIcon } from './icons'
 import { Filter as FilterIcon } from 'lucide-react'
 
 // Type assertion to fix React 18/19 compatibility

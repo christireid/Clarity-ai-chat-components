@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Button, cn } from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
