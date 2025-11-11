@@ -46,11 +46,6 @@ const config: StorybookConfig = {
   core: {
     disableTelemetry: true,
   },
-  
-  features: {
-    storyStoreV7: true,
-    buildStoriesJson: true,
-  },
     viteFinal: async (config) => {
       config.resolve = config.resolve || {}
       const existingAlias = Array.isArray(config.resolve.alias)

@@ -9,7 +9,7 @@ export interface KeyboardHintShortcut {
   category?: string
 }
 
-export interface KeyboardHintProps {
+export interface KeyboardHintProps extends React.ComponentPropsWithoutRef<'div'> {
   shortcuts: KeyboardHintShortcut[]
   visible: boolean
   onClose?: () => void
@@ -30,11 +30,20 @@ const positionClasses = {
   center: 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
 }
 
-export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
-  (
-    { shortcuts, visible, onClose, position = 'bottom-right', className },
-    ref
-  ) => {
+/**
+ * KeyboardHint component - Modernized for React 19
+ * 
+ * React 19: Using ref as prop (React 19 supports ref as a regular prop)
+ */
+export function KeyboardHint({
+  shortcuts,
+  visible,
+  onClose,
+  position = 'bottom-right',
+  className,
+  ...props
+}: KeyboardHintProps) {
+  const ref = (props as { ref?: React.Ref<HTMLDivElement> }).ref
     // Group shortcuts by category
     const groupedShortcuts = React.useMemo(() => {
       const groups: Record<string, KeyboardHintShortcut[]> = {}
@@ -203,7 +212,4 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
         )}
       </AnimatePresence>
     )
-  }
-)
-
-KeyboardHint.displayName = 'KeyboardHint'
+}

@@ -18,7 +18,7 @@ export interface ThemeSwitcherPreview {
   }
 }
 
-export interface ThemeSwitcherProps {
+export interface ThemeSwitcherProps extends React.ComponentPropsWithoutRef<'div'> {
   currentTheme: Theme
   onThemeChange: (theme: Theme) => void
   showPreview?: boolean
@@ -111,20 +111,20 @@ const defaultThemes: ThemeSwitcherPreview[] = [
   },
 ]
 
-export const ThemeSwitcher = React.forwardRef<
-  HTMLDivElement,
-  ThemeSwitcherProps
->(
-  (
-    {
-      currentTheme,
-      onThemeChange,
-      showPreview = true,
-      compact = false,
-      className,
-    },
-    ref
-  ) => {
+/**
+ * ThemeSwitcher component - Modernized for React 19
+ * 
+ * React 19: Using ref as prop (React 19 supports ref as a regular prop)
+ */
+export function ThemeSwitcher({
+  currentTheme,
+  onThemeChange,
+  showPreview = true,
+  compact = false,
+  className,
+  ...props
+}: ThemeSwitcherProps) {
+  const ref = (props as { ref?: React.Ref<HTMLDivElement> }).ref
     const [hoveredTheme, setHoveredTheme] = React.useState<Theme | null>(null)
 
     const handleThemeChange = (theme: Theme) => {
@@ -310,10 +310,7 @@ export const ThemeSwitcher = React.forwardRef<
         )}
       </div>
     )
-  }
-)
-
-ThemeSwitcher.displayName = 'ThemeSwitcher'
+}
 
 // Hook for simple theme management (light/dark/system only)
 // For full theme system, use useTheme from ThemeProvider
