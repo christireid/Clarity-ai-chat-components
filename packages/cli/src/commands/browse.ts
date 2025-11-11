@@ -198,13 +198,14 @@ export async function browseCommand() {
   // Interactive menu
   await createDivider()
   console.log()
-  featureHighlight('Quick Actions', [
+  const quickActions = [
     'View all components by category',
     'Search components',
     'Show popular components',
     'Open documentation',
     'Exit',
-  ])
+  ].join('\n  • ')
+  console.log(featureHighlight('Quick Actions', `  • ${quickActions}`, '⚡'))
   console.log()
 
   // Tip

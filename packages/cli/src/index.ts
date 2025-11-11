@@ -170,34 +170,49 @@ program
 // Completion command
 program
   .command('completion <shell>')
-  .description('Generate shell completion script')
-  .option('--install', 'Install completion script')
-  .action((shell: string, options: { install?: boolean }) => {
+  .description('🔧 Generate shell completion script')
+  .option('--install', 'Show installation instructions')
+  .action(async (shell: string, options: { install?: boolean }) => {
     const validShells = ['bash', 'zsh', 'fish']
     if (!validShells.includes(shell)) {
-      console.error(`Invalid shell: ${shell}. Supported: ${validShells.join(', ')}`)
-      process.exit(1)
+      handleError(new Error(`Invalid shell: ${shell}. Supported: ${validShells.join(', ')}`))
+      return
     }
     
     const script = generateCompletion(program, shell as 'bash' | 'zsh' | 'fish')
     
     if (options.install) {
-      // Installation instructions
-      console.log(chalk.cyan('\n📝 Installation instructions:\n'))
+      // Beautiful installation instructions
+      const { createBanner } = await import('./ui/banner.js')
+      const { infoMessage, tipMessage, commandExample } = await import('./ui/messages.js')
+      
+      await createBanner('🔧 Shell Completion', {
+        gradient: true,
+        style: 'bold',
+      })
+      console.log()
+      
       switch (shell) {
         case 'bash':
-          console.log(chalk.gray('Add to ~/.bashrc or ~/.bash_profile:'))
-          console.log(chalk.white(`  eval "$(clarity-chat completion ${shell})"`))
+          infoMessage('Add this line to your ~/.bashrc or ~/.bash_profile:')
+          console.log(commandExample(`eval "$(clarity-chat completion ${shell})"`))
+          console.log()
+          tipMessage('Then reload your shell: source ~/.bashrc')
           break
         case 'zsh':
-          console.log(chalk.gray('Add to ~/.zshrc:'))
-          console.log(chalk.white(`  eval "$(clarity-chat completion ${shell})"`))
+          infoMessage('Add this line to your ~/.zshrc:')
+          console.log(commandExample(`eval "$(clarity-chat completion ${shell})"`))
+          console.log()
+          tipMessage('Then reload your shell: source ~/.zshrc')
           break
         case 'fish':
-          console.log(chalk.gray('Save to ~/.config/fish/completions/clarity-chat.fish:'))
-          console.log(chalk.white(`  clarity-chat completion ${shell} > ~/.config/fish/completions/clarity-chat.fish`))
+          infoMessage('Save the completion script to:')
+          console.log(commandExample(`clarity-chat completion ${shell} > ~/.config/fish/completions/clarity-chat.fish`))
+          console.log()
+          tipMessage('Fish will automatically load completions from this directory')
           break
       }
+      console.log()
     } else {
       console.log(script)
     }
