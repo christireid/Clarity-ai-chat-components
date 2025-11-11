@@ -350,50 +350,146 @@ export function ChatWithStages() {
 
 ---
 
-### Recipe 9: Message Operations (Edit, Regenerate)
+### Recipe 9: Message Operations (Edit, Regenerate, Delete)
 
-Allow users to edit messages and regenerate responses.
+Allow users to edit messages, regenerate responses, and delete messages with full undo/redo support.
 
 ```tsx
 import { ChatWindow, useMessageOperations } from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
 
 export function ChatWithOperations() {
   const {
-    messages,
+    messages: operationMessages,
+    addMessage,
     editMessage,
-    regenerateResponse,
-    branchConversation,
+    regenerateMessage,
+    deleteMessage,
     undo,
     redo,
     canUndo,
     canRedo,
   } = useMessageOperations({
     initialMessages: [],
+    onEdit: (messageId, newContent) => {
+      console.log('Message edited:', messageId, newContent)
+      // Optionally re-send from this point
+    },
+    onRegenerate: (messageId) => {
+      console.log('Regenerating:', messageId)
+      handleRegenerate(messageId)
+    },
+    onDelete: (messageId) => {
+      console.log('Message deleted:', messageId)
+    },
   })
 
-  const handleEdit = (messageId: string, newContent: string) => {
-    editMessage(messageId, newContent)
-    // Re-send from this point
-  }
+  // Convert to Message format for ChatWindow
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'chat-1',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
 
-  const handleRegenerate = (messageId: string) => {
-    regenerateResponse(messageId)
-    // Call API to regenerate
-  }
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleEdit = useCallback((messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message) return
+
+    // In a real app, show an inline editor
+    const newContent = prompt('Edit message:', message.content) || message.content
+    if (newContent !== message.content) {
+      editMessage(messageId, newContent)
+      // Optionally re-send from this point
+    }
+  }, [messages, editMessage])
+
+  const handleRegenerate = useCallback(async (messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message || message.role !== 'assistant') return
+
+    setIsLoading(true)
+    try {
+      // Find the user message that prompted this
+      const index = messages.findIndex(m => m.id === messageId)
+      const userMessage = messages[index - 1]
+
+      if (userMessage && userMessage.role === 'user') {
+        // Delete old response
+        deleteMessage(messageId)
+
+        // Call API to regenerate
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          body: JSON.stringify({ message: userMessage.content }),
+        })
+        const data = await response.json()
+
+        // Add new response
+        addMessage({
+          chatId: 'chat-1',
+          role: 'assistant',
+          content: data.response,
+        })
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, deleteMessage, addMessage])
+
+  const handleDelete = useCallback((messageId: string) => {
+    if (confirm('Delete this message?')) {
+      deleteMessage(messageId)
+    }
+  }, [deleteMessage])
+
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({
+      chatId: 'chat-1',
+      role: 'user',
+      content,
+    })
+
+    // Call API and add response...
+  }, [addMessage])
 
   return (
     <div>
-      <button onClick={undo} disabled={!canUndo}>Undo</button>
-      <button onClick={redo} disabled={!canRedo}>Redo</button>
+      {/* Undo/Redo Controls */}
+      <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
+        <button onClick={undo} disabled={!canUndo}>
+          ↶ Undo
+        </button>
+        <button onClick={redo} disabled={!canRedo}>
+          ↷ Redo
+        </button>
+      </div>
+
       <ChatWindow
         messages={messages}
-        onMessageEdit={handleEdit}
-        onMessageRegenerate={handleRegenerate}
+        isLoading={isLoading}
+        onSendMessage={handleSend}
+        onEditMessage={handleEdit}
+        onRegenerateMessage={handleRegenerate}
+        onDeleteMessage={handleDelete}
       />
     </div>
   )
 }
 ```
+
+**Features:**
+- ✅ Edit user messages
+- ✅ Regenerate AI responses
+- ✅ Delete any message
+- ✅ Undo/Redo support
+- ✅ Full operation history
 
 ---
 
@@ -890,7 +986,110 @@ export function ChatWithPrompts() {
 
 ## More Recipes
 
-### Recipe 21: Authentication
+### Recipe 21: Conversation Branching
+
+Create alternative conversation paths from any message.
+
+```tsx
+import { useMessageOperations } from '@clarity-chat/react'
+
+export function ChatWithBranching() {
+  const {
+    messages,
+    branchConversation,
+    switchToBranch,
+    getBranches,
+    currentBranchId,
+  } = useMessageOperations({
+    initialMessages: [],
+    onBranch: (branchId, parentMessageId) => {
+      console.log('Branched from:', parentMessageId, 'to:', branchId)
+    },
+  })
+
+  const handleBranch = (messageId: string) => {
+    const branchId = branchConversation(messageId)
+    switchToBranch(branchId)
+    // Continue conversation from this branch
+  }
+
+  const branches = getBranches()
+
+  return (
+    <div>
+      {/* Show branch selector */}
+      {branches.size > 1 && (
+        <select value={currentBranchId} onChange={(e) => switchToBranch(e.target.value)}>
+          {Array.from(branches.keys()).map(branchId => (
+            <option key={branchId} value={branchId}>
+              Branch {branchId}
+            </option>
+          ))}
+        </select>
+      )}
+
+      {/* Chat interface */}
+      <ChatWindow messages={messages} />
+    </div>
+  )
+}
+```
+
+---
+
+### Recipe 22: Export Conversations
+
+Export chat history to multiple formats.
+
+```tsx
+import { ChatWindow, ExportDialog } from '@clarity-chat/react'
+import { exportMessages } from '@clarity-chat/react/utils/export-utils'
+import { useState } from 'react'
+
+export function ExportableChat() {
+  const [messages, setMessages] = useState([])
+  const [showExport, setShowExport] = useState(false)
+
+  const handleExport = async (format: 'pdf' | 'markdown' | 'json' | 'html') => {
+    const exported = await exportMessages(messages, {
+      format,
+      includeMetadata: true,
+      includeImages: true,
+    })
+    
+    // Download file
+    const blob = new Blob([exported], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `conversation-${Date.now()}.${format}`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div>
+      <button onClick={() => setShowExport(true)}>Export</button>
+      
+      <ChatWindow messages={messages} />
+      
+      {showExport && (
+        <ExportDialog
+          open={showExport}
+          onOpenChange={setShowExport}
+          onExport={handleExport}
+          resourceType="chat"
+          resourceName="Conversation"
+        />
+      )}
+    </div>
+  )
+}
+```
+
+---
+
+### Recipe 23: Authentication
 
 Protect chat with user authentication.
 
@@ -911,7 +1110,7 @@ export function AuthenticatedChat() {
 
 ---
 
-### Recipe 22: Multi-User Chat
+### Recipe 24: Multi-User Chat
 
 Enable real-time multi-user conversations.
 
@@ -942,7 +1141,7 @@ export function MultiUserChat() {
 
 ---
 
-### Recipe 23: Voice Input
+### Recipe 25: Voice Input
 
 Add speech-to-text capabilities.
 
@@ -975,7 +1174,7 @@ export function VoiceEnabledChat() {
 
 ---
 
-### Recipe 24: Testing
+### Recipe 26: Testing
 
 Test your chat components.
 
@@ -999,7 +1198,7 @@ describe('ChatWindow', () => {
 
 ---
 
-### Recipe 25: Performance Optimization
+### Recipe 27: Performance Optimization
 
 Optimize for large message lists.
 

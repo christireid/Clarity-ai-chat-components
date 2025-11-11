@@ -18,6 +18,9 @@ export interface MessageListProps {
   onMessageCopy?: (messageId: string, content: string) => void
   onMessageFeedback?: (messageId: string, type: 'up' | 'down') => void
   onMessageRetry?: (messageId: string) => void
+  onEditMessage?: (messageId: string) => void
+  onRegenerateMessage?: (messageId: string) => void
+  onDeleteMessage?: (messageId: string) => void
   /** Show loading skeleton while messages are being fetched */
   isLoading?: boolean
   /** Number of skeleton messages to show while loading */
@@ -32,6 +35,9 @@ export const MessageList = memo(function MessageList({
   onMessageCopy,
   onMessageFeedback,
   onMessageRetry,
+  onEditMessage,
+  onRegenerateMessage,
+  onDeleteMessage,
   isLoading = false,
   loadingCount = 3,
   emptyState,
@@ -108,6 +114,9 @@ export const MessageList = memo(function MessageList({
                     onCopy={(content) => onMessageCopy?.(message.id, content)}
                     onFeedback={(type) => onMessageFeedback?.(message.id, type)}
                     onRetry={() => onMessageRetry?.(message.id)}
+                    onEdit={() => onEditMessage?.(message.id)}
+                    onRegenerate={() => onRegenerateMessage?.(message.id)}
+                    onDelete={() => onDeleteMessage?.(message.id)}
                   />
                 </motion.div>
               ))}

@@ -4,6 +4,7 @@ import {
   useAutoScroll,
   useTokenTracker,
   useRealisticTyping,
+  useMessageOperations,
   ErrorBoundary,
   NetworkStatus,
   TokenCounter,
@@ -13,19 +14,53 @@ import '@clarity-chat/react/dist/styles/index.css'
 import type { Message } from '@clarity-chat/types'
 
 function ChatApp() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      chatId: 'demo-chat',
-      role: 'assistant',
-      content: 'Hello! I\'m your AI assistant. How can I help you today?',
-      createdAt: new Date(Date.now() - 5000),
-      updatedAt: new Date(Date.now() - 5000),
-      status: 'sent',
+  // Use message operations hook for edit/regenerate/delete functionality
+  const {
+    messages: operationMessages,
+    addMessage,
+    editMessage,
+    regenerateMessage,
+    deleteMessage,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useMessageOperations({
+    initialMessages: [
+      {
+        id: '1',
+        chatId: 'demo-chat',
+        role: 'assistant' as const,
+        content: 'Hello! I\'m your AI assistant. How can I help you today?',
+        timestamp: Date.now() - 5000,
+      },
+    ],
+    onEdit: (messageId, newContent) => {
+      console.log('Message edited:', messageId, newContent)
     },
-  ])
+    onRegenerate: (messageId) => {
+      console.log('Regenerating message:', messageId)
+      // Will be handled by handleRegenerate below
+    },
+    onDelete: (messageId) => {
+      console.log('Message deleted:', messageId)
+    },
+  })
+
+  // Convert operation messages to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'demo-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   
   // Auto-scroll for better UX
   const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({ 
@@ -59,22 +94,72 @@ function ChatApp() {
   // Responsive design
   const isMobile = useMediaQuery('(max-width: 768px)')
 
+  // Handle message edit
+  const handleEdit = useCallback((messageId: string) => {
+    setEditingMessageId(messageId)
+    const message = messages.find(m => m.id === messageId)
+    if (message) {
+      const newContent = prompt('Edit message:', message.content) || message.content
+      if (newContent !== message.content) {
+        editMessage(messageId, newContent)
+      }
+    }
+    setEditingMessageId(null)
+  }, [messages, editMessage])
+
+  // Handle message regenerate
+  const handleRegenerate = useCallback(async (messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message || message.role !== 'assistant') return
+
+    setIsLoading(true)
+    try {
+      // Find the user message that prompted this response
+      const messageIndex = messages.findIndex(m => m.id === messageId)
+      const previousUserMessage = messages[messageIndex - 1]
+      
+      if (previousUserMessage && previousUserMessage.role === 'user') {
+        // Delete old message first
+        deleteMessage(messageId)
+        await new Promise(resolve => setTimeout(resolve, 300))
+        
+        // Simulate regenerating the response
+        const responseContent = `[Regenerated] You said: "${previousUserMessage.content}". This is a regenerated response with different wording.`
+        
+        // Add new regenerated message
+        addMessage({
+          chatId: 'demo-chat',
+          role: 'assistant',
+          content: responseContent,
+        })
+        
+        // Simulate AI response delay
+        await new Promise(resolve => setTimeout(resolve, 800))
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to regenerate')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, deleteMessage, addMessage])
+
+  // Handle message delete
+  const handleDelete = useCallback((messageId: string) => {
+    if (confirm('Delete this message?')) {
+      deleteMessage(messageId)
+    }
+  }, [deleteMessage])
+
   const handleSendMessage = useCallback(async (content: string) => {
     try {
       setError(null)
       
-      // Add user message
-      const userMessage: Message = {
-        id: Date.now().toString(),
+      // Add user message using operations hook
+      addMessage({
         chatId: 'demo-chat',
         role: 'user',
         content,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        status: 'sent',
-      }
-      
-      setMessages((prev) => [...prev, userMessage])
+      })
       
       // Estimate user message tokens (rough: 1 token ≈ 4 chars)
       const userTokens = Math.ceil(content.length / 4)
@@ -91,34 +176,33 @@ Here are some things you could try:
 - Ask me a question
 - Request code examples  
 - Get explanations for complex topics
+- **Try editing your message** - Click the Edit button on your message
+- **Try regenerating** - Click Regenerate on an AI response
+- **Try deleting** - Click Delete on any message
 
 I'm here to help!`
       
       // Apply realistic delay
       await delayResponse(responseContent, content)
       
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        chatId: 'demo-chat',
-        role: 'assistant',
-        content: responseContent,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        status: 'sent',
-      }
-      
       // Estimate AI response tokens
       const aiTokens = Math.ceil(responseContent.length / 4)
       addOutputTokens(aiTokens)
       
-      setMessages((prev) => [...prev, aiMessage])
+      // Add AI message using operations hook
+      addMessage({
+        chatId: 'demo-chat',
+        role: 'assistant',
+        content: responseContent,
+      })
+      
       setIsLoading(false)
     } catch (err) {
       setIsLoading(false)
       setError(err instanceof Error ? err.message : 'Failed to send message')
       console.error('Error sending message:', err)
     }
-  }, [addInputTokens, addOutputTokens, startTyping, delayResponse])
+  }, [addMessage, addInputTokens, addOutputTokens, startTyping, delayResponse])
 
   return (
     <div 
@@ -142,11 +226,53 @@ I'm here to help!`
         justifyContent: 'space-between',
         alignItems: 'center',
         flexShrink: 0,
+        flexWrap: 'wrap',
+        gap: '1rem',
       }}>
-        <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>
-          Basic Chat Demo
-        </h2>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>
+            Basic Chat Demo
+          </h2>
+          <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#6b7280' }}>
+            Try editing, regenerating, or deleting messages!
+          </p>
+        </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Undo/Redo buttons */}
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              onClick={undo}
+              disabled={!canUndo}
+              style={{
+                padding: '0.5rem',
+                background: canUndo ? '#f3f4f6' : '#e5e7eb',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                cursor: canUndo ? 'pointer' : 'not-allowed',
+                fontSize: '0.875rem',
+                opacity: canUndo ? 1 : 0.5,
+              }}
+              title="Undo (Ctrl+Z)"
+            >
+              ↶ Undo
+            </button>
+            <button
+              onClick={redo}
+              disabled={!canRedo}
+              style={{
+                padding: '0.5rem',
+                background: canRedo ? '#f3f4f6' : '#e5e7eb',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                cursor: canRedo ? 'pointer' : 'not-allowed',
+                fontSize: '0.875rem',
+                opacity: canRedo ? 1 : 0.5,
+              }}
+              title="Redo (Ctrl+Y)"
+            >
+              ↷ Redo
+            </button>
+          </div>
           <TokenCounter 
             tokens={totalTokens}
             cost={estimatedCost}
@@ -234,6 +360,9 @@ I'm here to help!`
           messages={messages}
           isLoading={isLoading}
           onSendMessage={handleSendMessage}
+          onEditMessage={handleEdit}
+          onRegenerateMessage={handleRegenerate}
+          onDeleteMessage={handleDelete}
         />
       </div>
     </div>

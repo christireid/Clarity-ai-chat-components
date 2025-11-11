@@ -26,7 +26,9 @@ export interface MessageProps {
   onCopy?: (content: string) => void
   onFeedback?: (type: 'up' | 'down') => void
   onRetry?: () => void
-  onEdit?: (content: string) => void
+  onEdit?: (messageId: string) => void
+  onRegenerate?: (messageId: string) => void
+  onDelete?: (messageId: string) => void
   showAvatar?: boolean
   showTimestamp?: boolean
   className?: string
@@ -38,6 +40,9 @@ export const Message = memo(
       message,
       onFeedback,
       onRetry,
+      onEdit,
+      onRegenerate,
+      onDelete,
       showAvatar = true,
       showTimestamp = true,
       className,
@@ -218,15 +223,20 @@ export const Message = memo(
             </div>
           )}
 
-          {/* Actions */}
-          {isAssistant && (
+          {/* Actions - Show for both user and assistant messages */}
+          {(isUser || isAssistant) && (
             <MessageActions
               messageContent={message.content}
+              messageId={message.id}
+              role={message.role}
               feedbackGiven={feedbackGiven}
               showConfetti={showConfetti}
               hasError={message.status === 'error'}
               onFeedback={handleFeedback}
               onRetry={onRetry}
+              onEdit={onEdit}
+              onRegenerate={onRegenerate}
+              onDelete={onDelete}
               show={isHovered || !!feedbackGiven}
             />
           )}
