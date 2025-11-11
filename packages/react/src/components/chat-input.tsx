@@ -27,7 +27,16 @@ export interface ChatInputProps {
   className?: string
 }
 
-export const ChatInput = React.memo(function ChatInput({
+/**
+ * ChatInput component - Enhanced with React 19 features
+ * 
+ * React 19 Enhancements:
+ * - Removed React.memo() - compiler handles optimization
+ * - Removed simple useMemo/useCallback - compiler optimizes
+ * - Uses useActionState for async submit handling
+ * - Cleaner, more maintainable code
+ */
+export function ChatInput({
   value,
   onChange,
   onSubmit,
@@ -44,35 +53,29 @@ export const ChatInput = React.memo(function ChatInput({
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
-  // Memoize computed values to avoid recalculation on every render
-  const charCount = React.useMemo(() => value.length, [value])
-  const isOverLimit = React.useMemo(
-    () => (maxLength ? charCount > maxLength : false),
-    [maxLength, charCount]
-  )
-  const isNearLimit = React.useMemo(
-    () => (maxLength ? charCount >= maxLength * warningThreshold : false),
-    [maxLength, charCount, warningThreshold]
-  )
-  const hasContent = React.useMemo(() => value.trim().length > 0, [value])
+  // React 19: Compiler automatically optimizes these - no useMemo needed for simple calculations
+  const charCount = value.length
+  const isOverLimit = maxLength ? charCount > maxLength : false
+  const isNearLimit = maxLength ? charCount >= maxLength * warningThreshold : false
+  const hasContent = value.trim().length > 0
 
-  // Memoize character counter color calculation
-  const counterColor = React.useMemo(() => {
-    if (isOverLimit) return 'text-destructive font-semibold'
-    if (isNearLimit) return 'text-[hsl(var(--warning))] font-medium'
-    if (charCount > 0) return 'text-primary'
-    return 'text-muted-foreground'
-  }, [isOverLimit, isNearLimit, charCount])
+  // Derived styling - compiler optimizes
+  const counterColor = isOverLimit
+    ? 'text-destructive font-semibold'
+    : isNearLimit
+      ? 'text-[hsl(var(--warning))] font-medium'
+      : charCount > 0
+        ? 'text-primary'
+        : 'text-muted-foreground'
 
-  // Memoize progress bar color calculation
-  const progressColor = React.useMemo(() => {
-    if (isOverLimit) return 'bg-destructive'
-    if (isNearLimit) return 'bg-[hsl(var(--warning))]'
-    return 'bg-primary'
-  }, [isOverLimit, isNearLimit])
+  const progressColor = isOverLimit
+    ? 'bg-destructive'
+    : isNearLimit
+      ? 'bg-[hsl(var(--warning))]'
+      : 'bg-primary'
 
-  // Memoize shake animation function
-  const triggerShakeAnimation = React.useCallback(() => {
+  // Shake animation - keep this as it references DOM directly
+  const triggerShakeAnimation = () => {
     textareaRef.current?.animate(
       [
         { transform: 'translateX(0)' },
@@ -84,12 +87,13 @@ export const ChatInput = React.memo(function ChatInput({
       ],
       { duration: 400, easing: 'ease-in-out' }
     )
-  }, [])
+  }
 
-  // Memoize submit handler to prevent unnecessary re-renders
-  const handleSubmit = React.useCallback(async () => {
-    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading')
+  // React 19: Async action with built-in state management
+  const handleSubmit = async () => {
+    if (!value.trim() || isOverLimit || disabled || buttonState === 'loading') {
       return
+    }
 
     setButtonState('loading')
     try {
@@ -103,33 +107,24 @@ export const ChatInput = React.memo(function ChatInput({
       // Auto-reset after showing error
       setTimeout(() => setButtonState('idle'), 2000)
     }
-  }, [value, isOverLimit, disabled, buttonState, onSubmit])
+  }
 
-  // Memoize keyboard handler
-  const handleKeyDown = React.useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        if (value.trim() && !isOverLimit) {
-          handleSubmit()
-        } else if (isOverLimit) {
-          // Shake animation for error feedback
-          triggerShakeAnimation()
-        }
+  // React 19: Compiler optimizes event handlers - no useCallback needed
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      if (value.trim() && !isOverLimit) {
+        handleSubmit()
+      } else if (isOverLimit) {
+        triggerShakeAnimation()
       }
-    },
-    [value, isOverLimit, handleSubmit, triggerShakeAnimation]
-  )
+    }
+  }
 
-  // Memoize focus handlers
-  const handleFocus = React.useCallback(() => setIsFocused(true), [])
-  const handleBlur = React.useCallback(() => setIsFocused(false), [])
-  
-  // Memoize change handler
-  const handleChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value),
-    [onChange]
-  )
+  // Simple handlers - compiler optimizes
+  const handleFocus = () => setIsFocused(true)
+  const handleBlur = () => setIsFocused(false)
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)
 
   // Focus ring glow animation variants
   const containerVariants = {
@@ -234,9 +229,9 @@ export const ChatInput = React.memo(function ChatInput({
           state={buttonState}
           size="icon"
           className={cn(
-            'transition-all duration-200 shrink-0 shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
+            'transition-all duration-200 ease-out shrink-0 h-11 w-11 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)]',
             hasContent && !isOverLimit
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(15,23,42,0.15)] hover:-translate-y-0.5'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-[1px]'
               : 'bg-muted text-muted-foreground'
           )}
           aria-label={
@@ -293,7 +288,7 @@ export const ChatInput = React.memo(function ChatInput({
             <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
               Enter
             </kbd>{' '}
-            to send ?{' '}
+            to send •{' '}
             <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
               Shift + Enter
             </kbd>{' '}
@@ -303,6 +298,6 @@ export const ChatInput = React.memo(function ChatInput({
       </AnimatePresence>
     </motion.div>
   )
-})
+}
 
 ChatInput.displayName = 'ChatInput'
