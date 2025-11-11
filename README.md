@@ -1128,7 +1128,7 @@ Pre-built prompt templates for common tasks:
 ## 📚 Documentation
 
 ### Getting Started
-- [Quick Start Guide](./QUICK_START_GUIDE.md) - Get started in 5 minutes
+- [Quick Start Guide](./apps/docs/guide/quick-start.md) - Get started in 5 minutes
 - [Installation Guide](./apps/docs/guide/installation.md)
 - [First Component Tutorial](./apps/docs/guide/getting-started.md)
 
