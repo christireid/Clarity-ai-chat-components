@@ -1,6 +1,6 @@
 # Clarity Chat Cookbook
 
-> 31+ recipes and patterns for building production-ready AI chat applications
+> 32+ recipes and patterns for building production-ready AI chat applications
 
 ## Table of Contents
 
@@ -1462,6 +1462,155 @@ function MultiConversationApp() {
 - Sort by date, title, message count
 - Pin/favorite conversations
 - Multi-select for bulk operations
+
+---
+
+## Recipe 32: Command Palette with Message Operations
+
+Integrate message operations (edit, regenerate, delete) with the Command Palette for keyboard-driven workflows.
+
+### Features
+
+- **Message Operation Commands**: Edit, regenerate, and delete commands appear when a message is selected
+- **Keyboard Shortcuts**: Ctrl+E (edit), Ctrl+R (regenerate), Ctrl+D (delete)
+- **Undo/Redo Integration**: Undo/Redo commands with availability checks
+- **Dynamic Commands**: Commands appear/disappear based on message selection and type
+
+### Example
+
+```tsx
+import {
+  CommandPalette,
+  useCommandPaletteCommands,
+  useMessageOperations,
+} from '@clarity-chat/react'
+
+function ChatApp() {
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
+  const [showCommandPalette, setShowCommandPalette] = useState(false)
+
+  const {
+    messages,
+    editMessage,
+    regenerateMessage,
+    deleteMessage,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  const selectedMessage = selectedMessageId
+    ? messages.find(m => m.id === selectedMessageId)
+    : null
+
+  // Generate message operation commands
+  const messageOperationCommands = useCommandPaletteCommands({
+    selectedMessageId,
+    isUserMessage: selectedMessage?.role === 'user',
+    isAssistantMessage: selectedMessage?.role === 'assistant',
+    onEdit: (id) => {
+      const message = messages.find(m => m.id === id)
+      if (message) {
+        const newContent = prompt('Edit:', message.content) || message.content
+        editMessage(id, newContent)
+      }
+      setSelectedMessageId(null)
+    },
+    onRegenerate: regenerateMessage,
+    onDelete: (id) => {
+      if (confirm('Delete?')) {
+        deleteMessage(id)
+        if (selectedMessageId === id) setSelectedMessageId(null)
+      }
+    },
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  })
+
+  // Additional custom commands
+  const customCommands = [
+    {
+      id: 'new-chat',
+      label: 'New Chat',
+      description: 'Start a new conversation',
+      shortcut: ['Ctrl', 'N'],
+      category: 'Conversation',
+      onSelect: () => {
+        // Start new chat
+        setShowCommandPalette(false)
+      },
+    },
+    {
+      id: 'export',
+      label: 'Export Conversation',
+      description: 'Export current conversation',
+      shortcut: ['Ctrl', 'E'],
+      category: 'Conversation',
+      onSelect: () => {
+        // Export logic
+        setShowCommandPalette(false)
+      },
+    },
+  ]
+
+  const allCommands = [...customCommands, ...messageOperationCommands]
+
+  // Keyboard shortcut to open palette
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setShowCommandPalette(true)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  return (
+    <>
+      <ChatWindow
+        messages={messages}
+        onMessageClick={(messageId) => setSelectedMessageId(messageId)}
+        // ... other props
+      />
+
+      <CommandPalette
+        items={allCommands}
+        open={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+      />
+    </>
+  )
+}
+```
+
+### Command Categories
+
+- **Message**: Edit, Regenerate, Delete (appear when message selected)
+- **Edit**: Undo, Redo (always available)
+- **Conversation**: New Chat, Export, etc. (custom commands)
+
+### Keyboard Shortcuts
+
+- **Ctrl+K** (or Cmd+K): Open command palette
+- **Ctrl+E**: Edit selected message (if user message)
+- **Ctrl+R**: Regenerate selected message (if assistant message)
+- **Ctrl+D**: Delete selected message
+- **Ctrl+Z**: Undo last operation
+- **Ctrl+Y**: Redo last undone operation
+
+### Tips
+
+1. **Message Selection**: Implement click handlers on messages to set `selectedMessageId`
+2. **Command Availability**: Commands automatically appear/disappear based on selection
+3. **Custom Commands**: Add your own commands alongside message operations
+4. **Keyboard Navigation**: Use arrow keys to navigate, Enter to select, Esc to close
 
 ---
 
