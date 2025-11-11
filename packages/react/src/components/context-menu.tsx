@@ -15,14 +15,26 @@ export interface ContextMenuItem {
   onSelect?: () => void
 }
 
-export interface ContextMenuProps {
+export interface ContextMenuProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'ref'> {
   items: ContextMenuItem[]
   children: React.ReactNode
   className?: string
+  /** React 19: ref can be a prop directly */
+  ref?: React.Ref<HTMLDivElement>
 }
 
-export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
-  ({ items, children, className }, ref) => {
+/**
+ * ContextMenu component - Modernized for React 19
+ * 
+ * React 19: Using ref as prop
+ */
+export function ContextMenu({
+  items,
+  children,
+  className,
+  ref,
+  ...props
+}: ContextMenuProps) {
     const [isOpen, setIsOpen] = React.useState(false)
     const [position, setPosition] = React.useState({ x: 0, y: 0 })
     const [submenuOpen, setSubmenuOpen] = React.useState<string | null>(null)
@@ -243,7 +255,4 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
         </AnimatePresence>
       </div>
     )
-  }
-)
-
-ContextMenu.displayName = 'ContextMenu'
+}

@@ -48,6 +48,12 @@ const DEFAULT_COMMANDS: InputSuggestion[] = [
   { id: '4', type: 'command', label: 'model', description: 'Switch AI model', value: '/model' },
 ] as const
 
+/**
+ * AdvancedChatInput component - React 19 compatible
+ * 
+ * Note: Uses forwardRef because it uses useImperativeHandle for ref forwarding.
+ * This is still the recommended pattern in React 19 when using useImperativeHandle.
+ */
 export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInputProps>(
   (
     {

@@ -2,8 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
+  // Next.js 15: React 19 support
   experimental: {
     mdxRs: true,
+    // Enable React 19 features
+    reactCompiler: false, // Can enable when stable
   },
   transpilePackages: ['@clarity-chat/react'],
   typescript: {

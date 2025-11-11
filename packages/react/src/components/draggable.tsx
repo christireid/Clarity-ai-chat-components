@@ -9,7 +9,7 @@ export interface DragInfo {
   velocity: { x: number; y: number }
 }
 
-export interface DraggableProps {
+export interface DraggableProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'ref'> {
   children: React.ReactNode
   onDragStart?: () => void
   onDragEnd?: (info: DragInfo) => void
@@ -19,23 +19,28 @@ export interface DraggableProps {
   axis?: 'x' | 'y' | 'both'
   showGhost?: boolean
   className?: string
+  /** React 19: ref can be a prop directly */
+  ref?: React.Ref<HTMLDivElement>
 }
 
-export const Draggable = React.forwardRef<HTMLDivElement, DraggableProps>(
-  (
-    {
-      children,
-      onDragStart,
-      onDragEnd,
-      onDrop,
-      dragId,
-      disabled = false,
-      axis = 'both',
-      showGhost = true,
-      className,
-    },
-    ref
-  ) => {
+/**
+ * Draggable component - Modernized for React 19
+ * 
+ * React 19: Using ref as prop
+ */
+export function Draggable({
+  children,
+  onDragStart,
+  onDragEnd,
+  onDrop,
+  dragId,
+  disabled = false,
+  axis = 'both',
+  showGhost = true,
+  className,
+  ref,
+  ...props
+}: DraggableProps) {
     const [isDragging, setIsDragging] = React.useState(false)
 
     const handleDragStart = () => {
@@ -96,12 +101,9 @@ export const Draggable = React.forwardRef<HTMLDivElement, DraggableProps>(
         {children}
       </motion.div>
     )
-  }
-)
+}
 
-Draggable.displayName = 'Draggable'
-
-export interface DropZoneProps {
+export interface DropZoneProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'ref'> {
   children: React.ReactNode
   onDrop?: (dragId: string | null) => void
   dropId: string
@@ -109,10 +111,24 @@ export interface DropZoneProps {
   isOver?: boolean
   className?: string
   activeClassName?: string
+  /** React 19: ref can be a prop directly */
+  ref?: React.Ref<HTMLDivElement>
 }
 
-export const DropZone = React.forwardRef<HTMLDivElement, DropZoneProps>(
-  ({ children, onDrop, dropId, className, activeClassName }, ref) => {
+/**
+ * DropZone component - Modernized for React 19
+ * 
+ * React 19: Using ref as prop
+ */
+export function DropZone({
+  children,
+  onDrop,
+  dropId,
+  className,
+  activeClassName,
+  ref,
+  ...props
+}: DropZoneProps) {
     const [isHovered, setIsHovered] = React.useState(false)
 
     const handleDragEnter = (e: React.DragEvent) => {
@@ -185,10 +201,7 @@ export const DropZone = React.forwardRef<HTMLDivElement, DropZoneProps>(
         {children}
       </motion.div>
     )
-  }
-)
-
-DropZone.displayName = 'DropZone'
+}
 
 // Hook for drag and drop state management
 export interface UseDragDropOptions<T> {

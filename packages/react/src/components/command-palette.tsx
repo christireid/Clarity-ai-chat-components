@@ -1,4 +1,4 @@
-import { forwardRef, useState, useRef, useMemo, useEffect } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
@@ -13,7 +13,7 @@ export interface CommandItem {
   onSelect: () => void
 }
 
-export interface CommandPaletteProps {
+export interface CommandPaletteProps extends React.ComponentPropsWithoutRef<'div'> {
   items: CommandItem[]
   open: boolean
   onClose: () => void
@@ -21,14 +21,20 @@ export interface CommandPaletteProps {
   className?: string
 }
 
-export const CommandPalette = forwardRef<
-  HTMLDivElement,
-  CommandPaletteProps
->(
-  (
-    { items, open, onClose, placeholder = 'Type a command...', className },
-    ref
-  ) => {
+/**
+ * CommandPalette component - Modernized for React 19
+ * 
+ * React 19: Using ref as prop (React 19 supports ref as a regular prop)
+ */
+export function CommandPalette({
+  items,
+  open,
+  onClose,
+  placeholder = 'Type a command...',
+  className,
+  ...props
+}: CommandPaletteProps) {
+  const ref = (props as { ref?: React.Ref<HTMLDivElement> }).ref
     const [search, setSearch] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(0)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -332,7 +338,4 @@ export const CommandPalette = forwardRef<
         )}
       </AnimatePresence>
     )
-  }
-)
-
-CommandPalette.displayName = 'CommandPalette'
+}

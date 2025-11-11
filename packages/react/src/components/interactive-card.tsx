@@ -11,7 +11,7 @@ import { cn } from '@clarity-chat/primitives'
 import { INTERACTION_VARIANTS } from '../animations'
 
 export interface InteractiveCardProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'ref'> {
   /** Whether card is clickable */
   interactive?: boolean
   /** Whether card is selected */
@@ -28,27 +28,28 @@ export interface InteractiveCardProps
   onCardClick?: () => void
   /** Children */
   children: React.ReactNode
+  /** React 19: ref can be a prop directly */
+  ref?: React.Ref<HTMLDivElement>
 }
 
 /**
  * Card with enhanced interactivity
+ * 
+ * React 19: Modernized - ref is now a prop, memo kept for explicit optimization
  */
-export const InteractiveCard = React.memo(
-  React.forwardRef<HTMLDivElement, InteractiveCardProps>(function InteractiveCard(
-    {
-      interactive = false,
-      selected = false,
-      disabled = false,
-      hoverIntensity = 'medium',
-      showFocusRing = true,
-      showRipple = false,
-      onCardClick,
-      className,
-      children,
-      ...props
-    }: InteractiveCardProps,
-    ref
-  ) {
+export const InteractiveCard = React.memo(function InteractiveCard({
+  interactive = false,
+  selected = false,
+  disabled = false,
+  hoverIntensity = 'medium',
+  showFocusRing = true,
+  showRipple = false,
+  onCardClick,
+  className,
+  children,
+  ref,
+  ...props
+}: InteractiveCardProps) {
     const [isHovered, setIsHovered] = React.useState(false)
     const [ripples, setRipples] = React.useState<
       { x: number; y: number; id: number }[]
@@ -170,16 +171,13 @@ export const InteractiveCard = React.memo(
         )}
       </motion.div>
     )
-  })
-)
-
-InteractiveCard.displayName = 'InteractiveCard'
+})
 
 /**
  * Interactive button with enhanced states
  */
 export interface InteractiveButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'ref'> {
   /** Visual variant */
   variant?: 'default' | 'primary' | 'success' | 'destructive' | 'ghost'
   /** Size variant */
@@ -192,26 +190,27 @@ export interface InteractiveButtonProps
   iconRight?: React.ReactNode
   /** Children */
   children?: React.ReactNode
+  /** React 19: ref can be a prop directly */
+  ref?: React.Ref<HTMLButtonElement>
 }
 
-export const InteractiveButton = React.forwardRef<
-  HTMLButtonElement,
-  InteractiveButtonProps
->(
-  (
-    {
-      variant = 'default',
-      size = 'md',
-      loading = false,
-      icon,
-      iconRight,
-      disabled,
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+/**
+ * InteractiveButton - Modernized for React 19
+ * 
+ * React 19: Using ref as prop
+ */
+export function InteractiveButton({
+  variant = 'default',
+  size = 'md',
+  loading = false,
+  icon,
+  iconRight,
+  disabled,
+  className,
+  children,
+  ref,
+  ...props
+}: InteractiveButtonProps) {
     const variantClasses = {
       default: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
       primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
@@ -262,10 +261,7 @@ export const InteractiveButton = React.forwardRef<
         {!loading && iconRight}
       </motion.button>
     )
-  }
-)
-
-InteractiveButton.displayName = 'InteractiveButton'
+}
 
 /**
  * Interactive list item
