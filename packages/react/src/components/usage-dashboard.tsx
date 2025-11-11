@@ -321,6 +321,6 @@ export function UsageDashboard({
       </CardContent>
     </Card>
   )
-})
+}
 
 UsageDashboard.displayName = 'UsageDashboard'

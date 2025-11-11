@@ -163,7 +163,7 @@ export function ToastItem({
       </motion.button>
     </motion.div>
   )
-})
+}
 
 ToastItem.displayName = 'ToastItem'
 
@@ -209,7 +209,7 @@ export function ToastContainer({
       </AnimatePresence>
     </div>
   )
-})
+}
 
 ToastContainer.displayName = 'ToastContainer'
 

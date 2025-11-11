@@ -170,7 +170,7 @@ export function StreamingTextRenderer({
       )}
     </span>
   )
-})
+}
 
 StreamingTextRenderer.displayName = 'StreamingTextRenderer'
 

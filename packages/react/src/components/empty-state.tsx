@@ -121,7 +121,7 @@ export function EmptyState({
       )}
     </motion.div>
   )
-})
+}
 
 EmptyState.displayName = 'EmptyState'
 
