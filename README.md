@@ -1128,7 +1128,7 @@ Pre-built prompt templates for common tasks:
 ## 📚 Documentation
 
 ### Getting Started
-- [Quick Start Guide](./apps/docs/guide/quick-start.md) - Get started in 5 minutes
+- [Quick Start Guide](./QUICK_START_GUIDE.md) - Get started in 5 minutes
 - [Installation Guide](./apps/docs/guide/installation.md)
 - [First Component Tutorial](./apps/docs/guide/getting-started.md)
 
@@ -1146,7 +1146,7 @@ Pre-built prompt templates for common tasks:
 - [Utilities](./apps/docs/api/utilities.md)
 - [TypeScript Types](./apps/docs/api/types.md)
 
-### Examples Gallery (17 Production-Ready Examples)
+### Examples Gallery (30+ Production-Ready Examples)
 
 ```
 📁 examples/
@@ -1159,12 +1159,28 @@ Pre-built prompt templates for common tasks:
 ├── 🆕 healthcare-assistant/        # Appointment booking
 ├── 🆕 financial-advisor/          # Budget planning
 ├── 🆕 ai-tutor/                    # Adaptive learning
+├── advanced-chat-features/        # All modern features
+├── basic-chat/                     # Simple chat interface
+├── comprehensive-chat-demo/       # Complete integration
+├── component-demo/                # Component patterns
+├── design-system-showcase/         # Design system demo
+├── theme-builder/                  # Theme customization
+├── performance-dashboard/          # Performance monitoring
 ├── model-comparison-demo/          # Compare AI providers
 ├── rag-workbench-demo/             # Document Q&A
 ├── analytics-console-demo/        # Usage tracking
 ├── ai-assistant/                   # TanStack Query patterns
+├── ai-research-platform/           # Research assistant
+├── ai-sales-copilot/               # Sales automation
 ├── customer-support/               # Supabase integration
-└── streaming-chat/                 # Streaming patterns
+├── streaming-chat/                 # Streaming patterns
+├── conversational-analytics/       # Analytics dashboard
+├── devops-command-center/         # DevOps assistant
+├── enterprise-ai-ops/              # Enterprise operations
+├── enterprise-knowledge-hub/       # Knowledge management
+├── multi-user-chat/                # Multi-user support
+├── vercel-ai-sdk-compatible/       # Vercel AI SDK integration
+└── integration-examples/           # Integration patterns
 ```
 
 **[→ View All Examples](./examples/README.md)**
@@ -1471,7 +1487,7 @@ npm run storybook
 ║                                                               ║
 ║  📚 Documentation                                              ║
 ║  ┌──────────────────────────────────────────────────────────┐ ║
-║  │ Examples:            17 production-ready                  │║
+║  │ Examples:            30+ production-ready                 │║
 ║  │ Guides:              10+ comprehensive                     ║
 ║  │ API Docs:            100% coverage                         ║
 ║  └──────────────────────────────────────────────────────────┘ ║

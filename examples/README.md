@@ -162,7 +162,8 @@ For complete documentation on using Clarity Chat Components, see:
 - [Main Documentation](../apps/docs/)
 - [Component Guide](../COMPONENT_PATTERNS_GUIDE.md)
 - [Design System Guide](../DESIGN_SYSTEM_GUIDE.md)
-- [Quick Start Guide](../apps/docs/guide/quick-start.md)
+- [Quick Start Guide](../QUICK_START_GUIDE.md)
+- [Performance Guide](../PERFORMANCE_GUIDE.md)
 
 ## 🤝 Contributing
 
