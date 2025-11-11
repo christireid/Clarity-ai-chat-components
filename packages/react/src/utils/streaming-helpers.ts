@@ -112,8 +112,8 @@ export function extractStreamContent(chunk: unknown): string {
     const obj = chunk as Record<string, unknown>
     
     // OpenAI chat format
-    if (obj.choices && Array.isArray(obj.choices)) {
-      const choice = obj.choices[0] as Record<string, unknown>
+    if (obj['choices'] && Array.isArray(obj['choices'])) {
+      const choice = (obj['choices'] as unknown[])[0] as Record<string, unknown>
       if (choice?.['delta'] && typeof choice['delta'] === 'object') {
         const delta = choice['delta'] as Record<string, unknown>
         if (typeof delta['content'] === 'string') {
