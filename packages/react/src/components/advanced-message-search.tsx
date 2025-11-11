@@ -10,7 +10,11 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { SearchIcon, FilterIcon, XIcon } from './icons'
+import { SearchIcon } from './icons'
+import { Filter as FilterIcon } from 'lucide-react'
+
+// Type assertion to fix React 18/19 compatibility
+const FilterIconComponent = FilterIcon as React.ComponentType<{ className?: string }>
 import { useDeferredSearch } from '../hooks/use-deferred-search'
 
 /**
@@ -83,7 +87,7 @@ export const AdvancedMessageSearch = React.memo(
   function AdvancedMessageSearch({
     messages,
     onResultsChange,
-    enableFuzzySearch = false,
+    enableFuzzySearch: _enableFuzzySearch = false, // Reserved for future fuzzy search implementation
     enableAdvancedFilters = true,
     placeholder = 'Search messages...',
     showFilterCount = true,
@@ -220,7 +224,7 @@ export const AdvancedMessageSearch = React.memo(
                     )}
                     aria-label="Advanced filters"
                   >
-                    <FilterIcon className="h-4 w-4" />
+                    <FilterIconComponent className="h-4 w-4" />
                     {activeFilterCount > 0 && showFilterCount && (
                       <Badge
                         variant="secondary"

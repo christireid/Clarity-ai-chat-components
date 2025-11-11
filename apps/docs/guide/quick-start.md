@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
     const { messages } = await req.json()
     
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4-turbo',
       messages,
     })
     
@@ -172,7 +172,7 @@ export default async function handler(
     const { messages } = req.body
     
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4-turbo',
       messages,
     })
     
@@ -206,7 +206,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const { messages } = await request.json()
     
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4-turbo',
       messages,
     })
     
@@ -407,9 +407,9 @@ import type { Message } from '@clarity-chat/types'
 
 Check out the complete working examples in our repository:
 
-- [Basic Chat (Vite)](https://github.com/yourusername/clarity-chat/tree/main/examples/basic-chat)
-- [Streaming Chat (Next.js)](https://github.com/yourusername/clarity-chat/tree/main/examples/streaming-chat)
-- [Customer Support (Next.js + Supabase)](https://github.com/yourusername/clarity-chat/tree/main/examples/customer-support)
+- [Basic Chat (Vite)](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/basic-chat)
+- [Streaming Chat (Next.js)](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/streaming-chat)
+- [Customer Support (Next.js + Supabase)](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/customer-support)
 
 ## Learn More
 

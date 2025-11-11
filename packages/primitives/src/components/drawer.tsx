@@ -283,10 +283,10 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
             className={cn(
               'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
-              blurBackdrop && 'backdrop-blur-md',
+              blurBackdrop && 'backdrop-blur-sm',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -299,7 +299,7 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
             {...slideAnimations[side]}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
-              'fixed z-[var(--z-modal)] bg-card border shadow-2xl',
+              'fixed z-[var(--z-modal)] bg-card border shadow-md',
               positionClasses[side],
               sizeClasses[side][size],
               side === 'left' && 'border-r rounded-r-2xl',
@@ -320,8 +320,8 @@ export const DrawerContent: React.FC<DrawerContentProps> = ({
                   'flex items-center justify-center',
                   'text-muted-foreground hover:text-foreground',
                   'hover:bg-muted/50',
-                  'transition-colors duration-200',
-                  'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                  'transition-all duration-150 ease-out',
+                  'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1',
                   'z-10'
                 )}
                 aria-label="Close drawer"
@@ -360,7 +360,7 @@ export const DrawerHeader: React.FC<{
   className?: string
 }> = ({ children, className }) => {
   return (
-    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b', className)}>
+    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b border-border/50', className)}>
       {children}
     </div>
   )

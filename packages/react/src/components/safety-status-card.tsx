@@ -92,7 +92,7 @@ export const SafetyStatusCard: React.FC<SafetyStatusCardProps> = ({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] p-4 text-xs font-medium text-muted-foreground/80">
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border/50 bg-muted p-4 text-xs font-medium text-muted-foreground/80">
           <span>Checks: {checks.length}</span>
           <span>Warnings: {totalWarnings}</span>
           <span>Failures: {totalFails}</span>
@@ -103,7 +103,7 @@ export const SafetyStatusCard: React.FC<SafetyStatusCardProps> = ({
           {checks.map((check) => (
             <li
               key={check.id}
-              className="flex flex-col gap-2 rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-[0_10px_28px_rgba(15,23,42,0.12)]"
+              className="flex flex-col gap-2 rounded-lg border border-border/50 bg-muted p-4 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -120,7 +120,7 @@ export const SafetyStatusCard: React.FC<SafetyStatusCardProps> = ({
                 </p>
               )}
               {check.remediation && (
-                <div className="rounded-xl border border-dashed border-border/40 bg-background/60 p-3 text-xs text-muted-foreground/80">
+                <div className="rounded-lg border border-dashed border-border/50 bg-background/60 p-3 text-xs text-muted-foreground/80">
                   {check.remediation}
                 </div>
               )}

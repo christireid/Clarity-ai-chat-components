@@ -80,7 +80,7 @@ export interface UseChatOptions {
   streamProtocol?: 'sse' | 'data'
   
   /** Generate unique ID for each message */
-  id?: string
+  id?: () => string
   
   /** Callback when response is received */
   onResponse?: (response: Response) => void | Promise<void>
@@ -429,24 +429,22 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
                     }
                   }
                 }
-              }
-            }
-            
-            if (!line.startsWith('data: ') && line.trim()) {
-              // Plain text streaming
-              accumulatedContent += line
-              if (mountedRef.current) {
-                currentMessage = {
-                  ...currentMessage,
-                  content: accumulatedContent,
-                }
-                currentAssistantMessageRef.current = currentMessage
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === assistantMessageId ? currentMessage : msg
+              } else if (line.trim()) {
+                // Plain text streaming
+                accumulatedContent += line
+                if (mountedRef.current) {
+                  currentMessage = {
+                    ...currentMessage,
+                    content: accumulatedContent,
+                  }
+                  currentAssistantMessageRef.current = currentMessage
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === assistantMessageId ? currentMessage : msg
+                    )
                   )
-                )
-                setData(currentMessage)
+                  setData(currentMessage)
+                }
               }
             }
           }
@@ -518,7 +516,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
   const reload = React.useCallback(
     async (options?: { data?: Record<string, any> }): Promise<string | null> => {
       // Find last user message
-      const lastUserMessageIndex = messages.findLastIndex((msg) => msg.role === 'user')
+      const lastUserMessageIndex = messages.findLastIndex((msg: CoreMessage) => msg.role === 'user')
       if (lastUserMessageIndex === -1) return null
 
       // Remove messages after last user message

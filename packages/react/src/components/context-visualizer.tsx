@@ -174,7 +174,7 @@ export function ContextVisualizer({
 
   return (
     <div
-      className={`flex flex-col gap-4 p-4 bg-card rounded-lg border border-border shadow-sm ${className}`}
+      className={`flex flex-col gap-4 p-4 bg-card rounded-lg border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
       role="region"
       aria-label="Context window visualization"
     >
@@ -221,7 +221,7 @@ export function ContextVisualizer({
         
         <div className="relative w-full h-2 bg-muted rounded-full overflow-hidden">
           <div
-            className={`h-full transition-all duration-200 ${
+            className={`h-full transition-all duration-150 ease-out ${
               percentage >= 95
                 ? 'bg-destructive'
                 : percentage >= 80
@@ -246,7 +246,7 @@ export function ContextVisualizer({
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`p-3 rounded-lg border transition-all duration-200 ${
+            className={`p-3 rounded-lg border transition-all duration-150 ease-out ${
               message.isIncluded
                 ? highlightIncluded
                   ? 'bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/20'
@@ -316,7 +316,7 @@ export function ContextVisualizer({
               {onToggleMessage && (
                 <button
                   onClick={() => onToggleMessage(message.id, !message.isIncluded)}
-                  className={`px-2 py-1 text-xs rounded transition-colors duration-200 ${
+                  className={`px-2 py-1 text-xs rounded transition-colors duration-150 ease-out ${
                     message.isIncluded
                       ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
                       : 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20'
@@ -358,7 +358,7 @@ export function ContextVisualizer({
               </p>
               <button
                 onClick={handlePruneAll}
-                className="mt-2 px-3 py-1 bg-[hsl(var(--warning))] hover:opacity-90 text-[hsl(var(--warning-foreground))] text-xs rounded transition-all duration-200"
+                className="mt-2 px-3 py-1 bg-[hsl(var(--warning))] hover:opacity-90 text-[hsl(var(--warning-foreground))] text-xs rounded transition-all duration-150 ease-out"
               >
                 Prune {pruneSuggestions.length} messages
               </button>

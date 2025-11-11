@@ -5,14 +5,17 @@
  * Use what you need, extend as needed.
  */
 
+// Class name utility
+export * from './cn'
+
 // Model fallback and retry
 export * from './model-fallback'
 
 // Context window management
 export * from './context-window'
 
-// Memory & Context Management (Advanced AI Memory System)
-export * from './memory'
+// Memory & Context Management - exported separately via ./memory module
+// export * from './memory'
 
 // Rate limiting
 export * from './rate-limiting'
@@ -24,7 +27,9 @@ export * from './hybrid-search'
 export * from './mobile'
 
 // Token Optimization Utilities
-export * from './prompt-compression'
+// Note: CompressionOptions/Result from prompt-compression conflict with memory types
+// Only export the compressPrompt function from here
+export { compressPrompt } from './prompt-compression'
 export * from './smart-cache'
 export * from './model-router'
 export * from './response-limiter'
@@ -33,4 +38,7 @@ export * from './reference-handler'
 
 // Configuration Builder
 export * from './chat-config-builder'
+
+// Streaming utilities (shared across hooks)
+export * from './streaming-helpers'
 

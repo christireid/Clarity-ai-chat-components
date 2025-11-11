@@ -19,6 +19,12 @@ export interface ChatWindowProps {
   onMessageFeedback?: (messageId: string, type: 'up' | 'down') => void
   /** Callback when retry is requested */
   onMessageRetry?: (messageId: string) => void
+  /** Callback when message is edited */
+  onEditMessage?: (messageId: string) => void
+  /** Callback when message is regenerated */
+  onRegenerateMessage?: (messageId: string) => void
+  /** Callback when message is deleted */
+  onDeleteMessage?: (messageId: string) => void
   /** Custom empty state */
   emptyState?: React.ReactNode
   /** Show header with session info */
@@ -38,7 +44,48 @@ export interface ChatWindowProps {
   className?: string
 }
 
-export const ChatWindow = React.memo(function ChatWindow({
+// Default empty state component - extracted for better performance
+const DefaultEmptyState = () => (
+  <motion.div
+    className="text-center space-y-6"
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.3 }}
+  >
+    <motion.div
+      className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-[0_1px_3px_rgba(15,23,42,0.1)] ring-1 ring-primary/20"
+      animate={{
+        scale: [1, 1.05, 1],
+        rotate: [0, 2, -2, 0],
+      }}
+      transition={{
+        duration: 3,
+        repeat: Infinity,
+        ease: 'easeInOut',
+      }}
+    >
+      <BotIcon size={36} className="text-primary" />
+    </motion.div>
+    <div className="space-y-2">
+      <h3 className="text-xl font-semibold text-foreground">
+        Start a conversation
+      </h3>
+      <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+        Send a message to begin chatting with the AI assistant. I'm here to help
+        with your questions and tasks.
+      </p>
+    </div>
+  </motion.div>
+)
+
+/**
+ * ChatWindow component - Enhanced with React 19 features
+ * 
+ * React 19 Enhancements:
+ * - Removed memo() wrapper - compiler handles optimization
+ * - Removed simple useCallback/useMemo - compiler optimizes
+ */
+export function ChatWindow({
   messages,
   isLoading = false,
   aiStatus,
@@ -46,6 +93,9 @@ export const ChatWindow = React.memo(function ChatWindow({
   onMessageCopy,
   onMessageFeedback,
   onMessageRetry,
+  onEditMessage,
+  onRegenerateMessage,
+  onDeleteMessage,
   emptyState,
   showHeader = false,
   sessionTitle = 'Chat Session',
@@ -58,62 +108,38 @@ export const ChatWindow = React.memo(function ChatWindow({
 }: ChatWindowProps) {
   const [input, setInput] = React.useState('')
 
+  // React 19: Compiler optimizes - no useCallback needed
   const handleSubmit = (content: string) => {
     onSendMessage(content)
     setInput('')
   }
 
-  // Default empty state with animation
-  const defaultEmptyState = (
-    <motion.div
-      className="text-center space-y-6"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <motion.div
-        className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm ring-1 ring-primary/20"
-        animate={{
-          scale: [1, 1.05, 1],
-          rotate: [0, 2, -2, 0],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      >
-        <BotIcon size={36} className="text-primary" />
-      </motion.div>
-      <div className="space-y-2">
-        <h3 className="text-xl font-semibold text-foreground">
-          Start a conversation
-        </h3>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-          Send a message to begin chatting with the AI assistant. I'm here to
-          help with your questions and tasks.
-        </p>
-      </div>
-    </motion.div>
-  )
+  // React 19: Simple derivation - compiler optimizes
+  const effectiveEmptyState = emptyState || <DefaultEmptyState />
+
+  // React 19: Simple string derivation - compiler optimizes
+  const messageCountText =
+    messages.length === 0
+      ? null
+      : `${messages.length} ${messages.length === 1 ? 'message' : 'messages'}`
 
   return (
     <Card
       className={cn(
-        'flex h-full flex-col overflow-hidden shadow-lg',
+        'flex h-full flex-col overflow-hidden shadow-[0_10px_24px_rgba(15,23,42,0.12)]',
         className
       )}
     >
       {/* Optional Header */}
       {showHeader && (
         <motion.div
-          className="flex items-center justify-between gap-4 border-b bg-card px-4 py-3 sm:px-6"
+          className="flex items-center justify-between gap-4 border-b border-border/50 bg-card px-4 py-3 sm:px-6 backdrop-blur-sm"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
               <BotIcon size={20} />
             </div>
             <div className="min-w-0 flex-1">
@@ -126,10 +152,9 @@ export const ChatWindow = React.memo(function ChatWindow({
                 </p>
               )}
             </div>
-            {showMessageCount && messages.length > 0 && (
-              <Badge variant="secondary" className="shrink-0">
-                {messages.length}{' '}
-                {messages.length === 1 ? 'message' : 'messages'}
+            {showMessageCount && messageCountText && (
+              <Badge variant="secondary" className="shrink-0" aria-label={messageCountText}>
+                {messageCountText}
               </Badge>
             )}
           </div>
@@ -198,7 +223,10 @@ export const ChatWindow = React.memo(function ChatWindow({
           onMessageCopy={onMessageCopy}
           onMessageFeedback={onMessageFeedback}
           onMessageRetry={onMessageRetry}
-          emptyState={emptyState || defaultEmptyState}
+          onEditMessage={onEditMessage}
+          onRegenerateMessage={onRegenerateMessage}
+          onDeleteMessage={onDeleteMessage}
+          emptyState={effectiveEmptyState}
           className="flex-1"
         />
 
@@ -220,6 +248,6 @@ export const ChatWindow = React.memo(function ChatWindow({
       </div>
     </Card>
   )
-})
+}
 
 ChatWindow.displayName = 'ChatWindow'

@@ -18,6 +18,7 @@ export async function sendChatMessage(
 
   const lastMessage = messages[messages.length - 1]
   const content = lastMessage.content.toLowerCase()
+  const chatId = lastMessage.chatId
 
   // Simple AI simulation based on keywords
   let response = ''
@@ -39,9 +40,12 @@ export async function sendChatMessage(
   return {
     message: {
       id: Date.now().toString(),
+      chatId,
       role: 'assistant',
       content: response,
-      timestamp: Date.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
     },
   }
 }

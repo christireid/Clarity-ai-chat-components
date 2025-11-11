@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { forwardRef, useState, useRef, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
@@ -21,7 +21,7 @@ export interface CommandPaletteProps {
   className?: string
 }
 
-export const CommandPalette = React.forwardRef<
+export const CommandPalette = forwardRef<
   HTMLDivElement,
   CommandPaletteProps
 >(
@@ -29,12 +29,12 @@ export const CommandPalette = React.forwardRef<
     { items, open, onClose, placeholder = 'Type a command...', className },
     ref
   ) => {
-    const [search, setSearch] = React.useState('')
-    const [selectedIndex, setSelectedIndex] = React.useState(0)
-    const inputRef = React.useRef<HTMLInputElement>(null)
+    const [search, setSearch] = useState('')
+    const [selectedIndex, setSelectedIndex] = useState(0)
+    const inputRef = useRef<HTMLInputElement>(null)
 
     // Filter items based on search
-    const filteredItems = React.useMemo(() => {
+    const filteredItems = useMemo(() => {
       if (!search) return items
 
       const query = search.toLowerCase()
@@ -47,7 +47,7 @@ export const CommandPalette = React.forwardRef<
     }, [items, search])
 
     // Group items by category
-    const groupedItems = React.useMemo(() => {
+    const groupedItems = useMemo(() => {
       const groups: Record<string, CommandItem[]> = {}
 
       filteredItems.forEach((item) => {
@@ -62,12 +62,12 @@ export const CommandPalette = React.forwardRef<
     }, [filteredItems])
 
     // Reset selection when filtered items change
-    React.useEffect(() => {
+    useEffect(() => {
       setSelectedIndex(0)
     }, [filteredItems])
 
     // Focus input when opened
-    React.useEffect(() => {
+    useEffect(() => {
       if (open) {
         inputRef.current?.focus()
         setSearch('')
@@ -76,7 +76,7 @@ export const CommandPalette = React.forwardRef<
     }, [open])
 
     // Handle keyboard navigation
-    React.useEffect(() => {
+    useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
         if (!open) return
 
@@ -110,7 +110,7 @@ export const CommandPalette = React.forwardRef<
     }, [open, filteredItems, selectedIndex, onClose])
 
     // Calculate flat index for keyboard navigation
-    const flatItems = React.useMemo(() => {
+    const flatItems = useMemo(() => {
       return Object.values(groupedItems).flat()
     }, [groupedItems])
 
@@ -125,7 +125,7 @@ export const CommandPalette = React.forwardRef<
               exit={{ opacity: 0 }}
               transition={{ duration: ANIMATION_DURATION.normal / 1000 }}
               onClick={onClose}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[var(--z-modal-backdrop)]"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[var(--z-modal-backdrop)]"
             />
 
             {/* Command Palette */}
@@ -140,7 +140,7 @@ export const CommandPalette = React.forwardRef<
               }}
               className={cn(
                 'fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl mx-4',
-                'bg-card border shadow-2xl rounded-2xl z-[var(--z-modal)]',
+                'bg-card border shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.1),0_8px_10px_-6px_rgb(0_0_0_/_0.1)] rounded-lg z-[var(--z-modal)]',
                 'flex flex-col max-h-[60vh] overflow-hidden',
                 className
               )}
@@ -155,9 +155,7 @@ export const CommandPalette = React.forwardRef<
                     ref={inputRef}
                     type="text"
                     value={search}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setSearch(e.target.value)
-                    }
+                    onChange={(e) => setSearch(e.target.value)}
                     placeholder={placeholder}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -233,7 +231,7 @@ export const CommandPalette = React.forwardRef<
                                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg',
                                     'transition-all duration-150 text-left',
                                     isSelected
-                                      ? 'bg-primary text-primary-foreground shadow-md'
+                                      ? 'bg-primary text-primary-foreground shadow-[0_4px_12px_rgba(15,23,42,0.15)]'
                                       : 'hover:bg-accent'
                                   )}
                                 >
@@ -307,19 +305,19 @@ export const CommandPalette = React.forwardRef<
               >
                 <div className="flex gap-3 sm:gap-4">
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
+                    <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                       ↑↓
                     </kbd>
                     <span className="hidden sm:inline">Navigate</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
+                    <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                       ↵
                     </kbd>
                     <span className="hidden sm:inline">Select</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <kbd className="px-2 py-1 bg-background border rounded-md text-xs font-mono shadow-sm">
+                    <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                       Esc
                     </kbd>
                     <span className="hidden sm:inline">Close</span>

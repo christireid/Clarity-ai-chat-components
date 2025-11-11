@@ -44,18 +44,21 @@ export function useWindowSize(): WindowSize {
     }
   })
 
+  const timeoutRef = React.useRef<NodeJS.Timeout>()
+
   React.useEffect(() => {
     if (typeof window === 'undefined') return
 
-    let timeoutId: NodeJS.Timeout
-
     const handleResize = () => {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      timeoutRef.current = setTimeout(() => {
         setWindowSize({
           width: window.innerWidth,
           height: window.innerHeight,
         })
+        timeoutRef.current = undefined
       }, 150) // Throttle resize events
     }
 
@@ -66,7 +69,9 @@ export function useWindowSize(): WindowSize {
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      clearTimeout(timeoutId)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
     }
   }, [])
 

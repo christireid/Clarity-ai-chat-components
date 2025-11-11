@@ -1,4 +1,4 @@
-import type { LicenseKey, LicenseValidationResult, LicenseConfig } from './types'
+import type { LicenseKey, LicenseValidationResult, LicenseConfig, LicenseTier, LicenseType } from './types'
 import { parseLicenseKey } from './generator'
 
 /**
@@ -71,7 +71,7 @@ async function validateWithAPI(
       validatedAt: new Date(),
       daysUntilExpiration: data.daysUntilExpiration,
     }
-  } catch (error) {
+  } catch {
     return {
       valid: false,
       error: 'Network error during validation',
@@ -104,10 +104,10 @@ function validateLocally(
   return {
     valid: true,
     validatedAt,
-    license: {
-      key,
-      tier: tier as any,
-      type: type as any,
+      license: {
+        key,
+        tier: tier as LicenseTier,
+        type: type as LicenseType,
       email: '',
       seats: tier === 'pro-team' ? 5 : tier === 'enterprise' ? 10 : 1,
       issuedAt: new Date(),
@@ -182,13 +182,13 @@ function addDays(date: Date, days: number): Date {
  * This would verify the license key was signed by your private key
  */
 export async function verifyLicenseSignature(
-  key: string,
-  signature: string,
-  publicKey: string
+  _key: string,
+  _signature: string,
+  _publicKey: string
 ): Promise<boolean> {
   // TODO: Implement RSA signature verification
   // For now, return true in development
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env['NODE_ENV'] === 'development') {
     return true
   }
 

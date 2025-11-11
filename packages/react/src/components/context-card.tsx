@@ -20,7 +20,7 @@ export interface ContextCardProps {
   className?: string
 }
 
-export const ContextCard = React.memo(function ContextCard({
+export function ContextCard({
   context,
   onRemove,
   onToggle,
@@ -68,14 +68,14 @@ export const ContextCard = React.memo(function ContextCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.96 }}
+      transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
     >
       <Card
         className={cn(
-          'group relative transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer',
+          'group relative transition-all duration-200 ease-out border-border/40 shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:-translate-y-[2px] cursor-pointer',
           !context.isActive && 'opacity-60',
           className
         )}
@@ -86,7 +86,7 @@ export const ContextCard = React.memo(function ContextCard({
             {/* Icon/Thumbnail */}
             <div
               className={cn(
-                'flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-sm',
+                'flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center text-2xl shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
                 getTypeColor()
               )}
             >
@@ -197,7 +197,7 @@ export const ContextCard = React.memo(function ContextCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation()
                     onToggle(context.id)
                   }}
@@ -232,7 +232,7 @@ export const ContextCard = React.memo(function ContextCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation()
                     onPreview(context)
                   }}
@@ -264,7 +264,7 @@ export const ContextCard = React.memo(function ContextCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation()
                     onRemove(context.id)
                   }}
@@ -292,6 +292,6 @@ export const ContextCard = React.memo(function ContextCard({
       </Card>
     </motion.div>
   )
-})
+}
 
 ContextCard.displayName = 'ContextCard'

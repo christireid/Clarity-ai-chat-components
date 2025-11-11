@@ -133,25 +133,28 @@ export function useMessageHistory(
   const hasNextPage = currentPage < totalPages
   const hasPrevPage = currentPage > 1
 
+  // Use ref to avoid excessive saves when messages array reference changes
+  const messagesRef = React.useRef(messages)
+  React.useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
+
   // Auto-save functionality
   React.useEffect(() => {
     if (!autoSave || !isAvailable) return
 
     const interval = setInterval(() => {
-      saveConversation(conversationId, messages).catch((err) => {
+      // Use ref to get latest messages without re-creating interval
+      saveConversation(conversationId, messagesRef.current).catch((err) => {
         console.error('Auto-save failed:', err)
       })
     }, saveInterval)
 
     return () => clearInterval(interval)
-  }, [autoSave, saveInterval, conversationId, messages, saveConversation, isAvailable])
+  }, [autoSave, saveInterval, conversationId, saveConversation, isAvailable])
 
-  // Load from storage on mount
-  React.useEffect(() => {
-    if (isAvailable && conversationId) {
-      load()
-    }
-  }, [conversationId, isAvailable])
+  // Load function will be defined later, use ref for early effect
+  const loadRef = React.useRef<(() => Promise<void>) | null>(null)
 
   const goToPage = React.useCallback((page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -249,6 +252,19 @@ export function useMessageHistory(
       setIsLoading(false)
     }
   }, [conversationId, loadConversation])
+
+  // Update ref when load changes
+  React.useEffect(() => {
+    loadRef.current = load
+  }, [load])
+
+  // Load from storage on mount
+  React.useEffect(() => {
+    if (isAvailable && conversationId && loadRef.current) {
+      loadRef.current()
+    }
+     
+  }, [conversationId, isAvailable]) // load accessed via ref
 
   const clear = React.useCallback(async () => {
     setIsLoading(true)

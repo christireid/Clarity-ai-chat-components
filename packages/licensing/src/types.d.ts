@@ -33,7 +33,7 @@ export interface LicenseKey {
     /** License status */
     status: LicenseStatus;
     /** Metadata */
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
 }
 /**
  * License validation result

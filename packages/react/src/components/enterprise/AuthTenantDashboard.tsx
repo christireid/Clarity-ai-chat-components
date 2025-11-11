@@ -61,7 +61,7 @@ export const AuthTenantDashboard: React.FC<AuthTenantDashboardProps> = ({
   return (
     <Card
       className={cn(
-        'border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]',
+        'border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm',
         className
       )}
     >
@@ -115,7 +115,7 @@ export const AuthTenantDashboard: React.FC<AuthTenantDashboardProps> = ({
           </p>
         </div>
 
-        <div className="space-y-3 rounded-2xl border border-border/40 bg-[hsl(var(--surface-muted))] p-4">
+        <div className="space-y-3 rounded-lg border border-border/50 bg-muted p-4">
           <div className="flex items-center justify-between text-sm text-muted-foreground/80">
             <span>Renewal</span>
             <span>{renewalDate ?? 'Contact sales'}</span>

@@ -48,23 +48,42 @@ const config: StorybookConfig = {
   },
   
   features: {
-    storyStoreV7: true,
+    // Storybook 10 uses storyStoreV8 by default
     buildStoriesJson: true,
   },
-  viteFinal: async (config) => {
-    config.resolve = config.resolve || {};
-      config.resolve.alias = {
-        ...(config.resolve.alias || {}),
-        '@clarity-chat/react': path.resolve(__dirname, '../../../packages/react/src'),
-        '@clarity-chat/react/examples': path.resolve(
-          __dirname,
-          '../../../packages/react/src/examples'
-        ),
-        '@clarity-chat/primitives': path.resolve(__dirname, '../../../packages/primitives/src'),
-        '@clarity-chat/types': path.resolve(__dirname, '../../../packages/types/src'),
-      };
-    return config;
-  },
+    viteFinal: async (config) => {
+      config.resolve = config.resolve || {}
+      const existingAlias = Array.isArray(config.resolve.alias)
+        ? config.resolve.alias
+        : Object.entries(config.resolve.alias || {}).map(([find, replacement]) => ({
+            find,
+            replacement,
+          }))
+
+      config.resolve.alias = [
+        { find: /^@clarity-chat\/react\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/react/src/$1') },
+        { find: '@clarity-chat/react', replacement: path.resolve(__dirname, '../../../packages/react/src/index.ts') },
+        { find: /^@clarity-chat\/primitives\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/primitives/src/$1') },
+        { find: '@clarity-chat/primitives', replacement: path.resolve(__dirname, '../../../packages/primitives/src/index.ts') },
+        { find: /^@clarity-chat\/types\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/types/src/$1') },
+        { find: '@clarity-chat/types', replacement: path.resolve(__dirname, '../../../packages/types/src/index.ts') },
+        ...existingAlias,
+      ]
+      
+      // Configure build options for CSS imports
+      config.build = config.build || {}
+      config.build.rollupOptions = config.build.rollupOptions || {}
+      config.build.rollupOptions.external = config.build.rollupOptions.external || []
+      
+      if (Array.isArray(config.build.rollupOptions.external)) {
+        config.build.rollupOptions.external.push(
+          'highlight.js/styles/github-dark.css',
+          'katex/dist/katex.min.css'
+        )
+      }
+      
+      return config
+    },
 
 }
 

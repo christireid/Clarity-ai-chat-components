@@ -5,7 +5,7 @@
  * Can save 40-60% on costs by using cheaper models for simple queries.
  */
 
-export interface ModelConfig {
+export interface RouteModelConfig {
   /** Model identifier */
   id: string
   /** Model name */
@@ -35,7 +35,7 @@ export interface QueryComplexity {
 
 export interface RoutingDecision {
   /** Selected model */
-  model: ModelConfig
+  model: RouteModelConfig
   /** Query complexity analysis */
   complexity: QueryComplexity
   /** Estimated cost with this model */
@@ -49,7 +49,7 @@ export interface RoutingDecision {
 /**
  * Common model configurations
  */
-export const COMMON_MODELS: ModelConfig[] = [
+export const COMMON_MODELS: RouteModelConfig[] = [
   // OpenAI Models
   {
     id: 'gpt-3.5-turbo',
@@ -214,7 +214,7 @@ export function analyzeComplexity(query: string, context?: string[]): QueryCompl
 export function routeQuery(
   query: string,
   options: {
-    availableModels?: ModelConfig[]
+    availableModels?: RouteModelConfig[]
     context?: string[]
     preferProvider?: string
     maxCost?: number
@@ -278,9 +278,14 @@ export function routeQuery(
       .filter((m) => m.inputCost <= maxCost)
       .sort((a, b) => b.tier.localeCompare(a.tier)) // Prefer higher tier within budget
     
-    if (cheaperModels.length > 0) {
+    if (cheaperModels.length > 0 && cheaperModels[0]) {
       selectedModel = cheaperModels[0]
     }
+  }
+
+  // Ensure we have a model
+  if (!selectedModel) {
+    throw new Error('No models available for routing')
   }
 
   // Calculate cost
@@ -290,6 +295,9 @@ export function routeQuery(
 
   // Calculate savings vs most expensive model
   const mostExpensive = models.sort((a, b) => b.outputCost - a.outputCost)[0]
+  if (!mostExpensive) {
+    throw new Error('No models available')
+  }
   const maxCostEstimate =
     (complexity.estimatedTokens * mostExpensive.inputCost) +
     (complexity.estimatedTokens * 2 * mostExpensive.outputCost)
@@ -324,7 +332,7 @@ export class ModelRouter {
   }[] = []
 
   constructor(
-    private availableModels: ModelConfig[] = COMMON_MODELS,
+    private availableModels: RouteModelConfig[] = COMMON_MODELS,
     private options: {
       preferProvider?: string
       maxCost?: number

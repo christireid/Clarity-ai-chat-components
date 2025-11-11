@@ -45,7 +45,7 @@ export interface StreamingTextRendererProps {
   onCharacterDisplayed?: (char: string, index: number) => void
 }
 
-export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
+export function StreamingTextRenderer({
   text,
   isStreaming = false,
   typingSpeed = 30,
@@ -89,7 +89,7 @@ export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
 
     if (displayMode === 'chunk') {
       // Chunk-based display
-      const chunks = []
+      const chunks: string[] = []
       for (let i = 0; i < newContent.length; i += chunkSize) {
         chunks.push(newContent.slice(i, i + chunkSize))
       }
@@ -99,7 +99,7 @@ export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
         if (chunkIndex < chunks.length) {
           setDisplayedText((prev) => {
             const updated = prev + chunks[chunkIndex]
-            chunks[chunkIndex].split('').forEach((char, idx) => {
+            chunks[chunkIndex].split('').forEach((char: string, idx: number) => {
               onCharacterDisplayed?.(char, prev.length + idx)
             })
             return updated
@@ -138,7 +138,7 @@ export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
         clearTimeout(animationRef.current)
       }
     }
-  }, [text, isStreaming, displayMode, typingSpeed, chunkSize, displayedText.length, onCharacterDisplayed, onStreamingComplete])
+  }, [text, isStreaming, displayMode, typingSpeed, chunkSize, displayedText, onCharacterDisplayed, onStreamingComplete])
 
   // Reset when text changes completely (new message)
   React.useEffect(() => {
@@ -170,7 +170,7 @@ export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
       )}
     </span>
   )
-})
+}
 
 StreamingTextRenderer.displayName = 'StreamingTextRenderer'
 

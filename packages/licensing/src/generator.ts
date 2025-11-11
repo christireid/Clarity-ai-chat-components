@@ -26,7 +26,8 @@ export function generateLicenseKey(options: {
   // Example: PRO-IND-ABC123DEF456GHI789
   const tierPrefix = getTierPrefix(tier)
   const typePrefix = type === 'annual' ? 'ANN' : 'LTD'
-  const random = nanoid(16).toUpperCase()
+  // Generate an uppercase alphanumeric id of length 16
+  const random = generateAlphaNumericId(16)
   const key = `${tierPrefix}-${typePrefix}-${random}`
 
   const issuedAt = new Date()
@@ -73,6 +74,27 @@ function addMonths(date: Date, months: number): Date {
 }
 
 /**
+ * Generate an uppercase alphanumeric ID of a given length
+ * Avoids relying on customAlphabet to prevent bundling issues
+ */
+function generateAlphaNumericId(length: number): string {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let id = ''
+  // Use nanoid for randomness source, map to alphabet to enforce charset
+  // Generate slightly more than needed to reduce modulo bias
+  while (id.length < length) {
+    const chunk = nanoid(length)
+    for (let i = 0; i < chunk.length && id.length < length; i++) {
+      const code = chunk.charCodeAt(i)
+      // Map to 0..35 range using a simple hash
+      const idx = (code + i) % alphabet.length
+      id += alphabet[idx]
+    }
+  }
+  return id
+}
+
+/**
  * Parse license key to extract tier and type
  */
 export function parseLicenseKey(key: string): {
@@ -86,11 +108,32 @@ export function parseLicenseKey(key: string): {
     return { tier: null, type: null, valid: false }
   }
 
-  const tierPrefix = parts[0]
-  const typePrefix = parts[1]
+  // Handle different tier formats:
+  // - PRO-IND-ANN-RANDOM (pro-individual)
+  // - PRO-TEAM-ANN-RANDOM (pro-team)
+  // - ENT-ANN-RANDOM (enterprise)
+  // - FREE-ANN-RANDOM (free)
+  
+  let tier: LicenseTier | null = null
+  let type: LicenseType | null = null
 
-  const tier = parseTierPrefix(tierPrefix, parts[1])
-  const type = parseTypePrefix(typePrefix)
+  if (parts[0] === 'PRO' && parts[1] === 'IND') {
+    // PRO-IND-ANN-RANDOM or PRO-IND-LTD-RANDOM
+    tier = 'pro-individual'
+    type = parts[2] ? parseTypePrefix(parts[2]) : null
+  } else if (parts[0] === 'PRO' && parts[1] === 'TEAM') {
+    // PRO-TEAM-ANN-RANDOM or PRO-TEAM-LTD-RANDOM
+    tier = 'pro-team'
+    type = parts[2] ? parseTypePrefix(parts[2]) : null
+  } else if (parts[0] === 'ENT') {
+    // ENT-ANN-RANDOM or ENT-LTD-RANDOM
+    tier = 'enterprise'
+    type = parts[1] ? parseTypePrefix(parts[1]) : null
+  } else if (parts[0] === 'FREE') {
+    // FREE-ANN-RANDOM or FREE-LTD-RANDOM
+    tier = 'free'
+    type = parts[1] ? parseTypePrefix(parts[1]) : null
+  }
 
   return {
     tier,
@@ -99,30 +142,11 @@ export function parseLicenseKey(key: string): {
   }
 }
 
-function parseTierPrefix(prefix1: string, prefix2: string): LicenseTier | null {
-  const combined = `${prefix1}-${prefix2}`
-
-  switch (combined) {
-    case 'FREE-ANN':
-    case 'FREE-LTD':
-      return 'free'
-    case 'PRO-IND':
-      return 'pro-individual'
-    case 'PRO-TEAM':
-      return 'pro-team'
-    case 'ENT-ANN':
-    case 'ENT-LTD':
-      return 'enterprise'
-    default:
-      return null
-  }
-}
+// Removed unused parseTierPrefix helper
 
 function parseTypePrefix(prefix: string): LicenseType | null {
   switch (prefix) {
     case 'ANN':
-    case 'IND': // For PRO-IND
-    case 'TEAM': // For PRO-TEAM
       return 'annual'
     case 'LTD':
       return 'lifetime'

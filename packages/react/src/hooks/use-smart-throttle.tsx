@@ -199,10 +199,8 @@ export function useSmartThrottle<T = any>(
     }
   }, [])
 
-  // Calculate calls saved
-  const callsSaved = stats.totalInputs > 0
-    ? stats.totalInputs - (stats.totalInputs - stats.throttleCount)
-    : 0
+  // Calculate calls saved (inputs that were throttled/cancelled)
+  const callsSaved = stats.throttleCount
 
   return {
     throttledValue,
@@ -228,24 +226,29 @@ export function useStreamThrottle(delay: number = 300) {
     
     if (timerRef.current) {
       clearTimeout(timerRef.current)
+      timerRef.current = undefined
     }
 
     timerRef.current = setTimeout(() => {
       setIsReady(true)
+      timerRef.current = undefined
     }, delay)
   }, [delay])
 
   const reset = React.useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current)
+      timerRef.current = undefined
     }
     setIsReady(true)
   }, [])
 
+  // Cleanup on unmount
   React.useEffect(() => {
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current)
+        timerRef.current = undefined
       }
     }
   }, [])

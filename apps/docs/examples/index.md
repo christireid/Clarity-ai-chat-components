@@ -4,7 +4,7 @@ Complete working examples demonstrating different use cases and integrations.
 
 ## Demo Applications
 
-All examples are available in the [`examples/`](https://github.com/yourusername/clarity-chat/tree/main/examples) directory of the repository.
+All examples are available in the [`examples/`](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples) directory of the repository.
 
 ### 1. Basic Chat (Vite + React)
 
@@ -25,7 +25,7 @@ npm install
 npm run dev
 ```
 
-[View Source](https://github.com/yourusername/clarity-chat/tree/main/examples/basic-chat) | [Live Demo](#)
+[View Source](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/basic-chat) | [Live Demo](#)
 
 ---
 
@@ -48,7 +48,7 @@ npm install
 npm run dev
 ```
 
-[View Source](https://github.com/yourusername/clarity-chat/tree/main/examples/streaming-chat) | [Live Demo](#)
+[View Source](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/streaming-chat) | [Live Demo](#)
 
 ---
 
@@ -80,7 +80,7 @@ npm run db:migrate
 npm run dev
 ```
 
-[View Source](https://github.com/yourusername/clarity-chat/tree/main/examples/customer-support) | [Live Demo](#)
+[View Source](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/customer-support) | [Live Demo](#)
 
 ---
 
@@ -106,7 +106,7 @@ npm run dev
 # Open multiple browser windows to test
 ```
 
-[View Source](https://github.com/yourusername/clarity-chat/tree/main/examples/multi-user-chat) | [Live Demo](#)
+[View Source](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/multi-user-chat) | [Live Demo](#)
 
 ---
 
@@ -131,7 +131,7 @@ npm install
 npm run dev
 ```
 
-[View Source](https://github.com/yourusername/clarity-chat/tree/main/examples/ai-assistant) | [Live Demo](#)
+[View Source](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/ai-assistant) | [Live Demo](#)
 
 ---
 
@@ -248,7 +248,7 @@ Visit `http://localhost:6006` to see:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/clarity-chat.git
+git clone https://github.com/christireid/Clarity-ai-chat-components.git
 cd clarity-chat
 ```
 

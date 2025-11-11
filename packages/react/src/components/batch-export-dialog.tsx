@@ -10,7 +10,6 @@ import {
   DialogFooter,
   Button,
   Badge,
-  Checkbox,
   cn,
 } from '@clarity-chat/primitives'
 import { Progress } from './progress'
@@ -82,7 +81,7 @@ export interface BatchExportDialogProps {
  * />
  * ```
  */
-export const BatchExportDialog = React.memo(function BatchExportDialog({
+export function BatchExportDialog({
   open,
   onOpenChange,
   resources,
@@ -102,7 +101,6 @@ export const BatchExportDialog = React.memo(function BatchExportDialog({
 
   // Select/deselect all
   const allSelected = selectedIds.size === resources.length && resources.length > 0
-  const someSelected = selectedIds.size > 0 && selectedIds.size < resources.length
 
   const handleSelectAll = () => {
     if (allSelected) {
@@ -212,10 +210,12 @@ export const BatchExportDialog = React.memo(function BatchExportDialog({
                         isSelected && 'bg-primary/5'
                       )}
                     >
-                      <Checkbox
+                      <input
+                        type="checkbox"
                         checked={isSelected}
-                        onCheckedChange={() => handleToggleResource(resource.id)}
+                        onChange={() => handleToggleResource(resource.id)}
                         disabled={isExporting}
+                        className="h-4 w-4 rounded border"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -386,7 +386,7 @@ export const BatchExportDialog = React.memo(function BatchExportDialog({
       </DialogContent>
     </Dialog>
   )
-})
+}
 
 // Helper functions
 function formatBytes(bytes: number): string {

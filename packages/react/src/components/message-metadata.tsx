@@ -2,7 +2,13 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Badge, Tooltip, cn } from '@clarity-chat/primitives'
 import type { Message } from '@clarity-chat/types'
-import { ClockIcon, DollarSignIcon, TrendingUpIcon, ShieldIcon } from './icons'
+import { Clock as ClockIcon, DollarSign as DollarSignIcon, TrendingUp as TrendingUpIcon, Shield as ShieldIcon } from 'lucide-react'
+
+// Type assertions to fix React 18/19 compatibility
+const ClockIconComponent = ClockIcon as React.ComponentType<{ className?: string }>
+const DollarSignIconComponent = DollarSignIcon as React.ComponentType<{ className?: string }>
+const TrendingUpIconComponent = TrendingUpIcon as React.ComponentType<{ className?: string }>
+const ShieldIconComponent = ShieldIcon as React.ComponentType<{ className?: string }>
 
 /**
  * Enhanced message metadata display
@@ -47,7 +53,7 @@ export interface MessageMetadataProps {
  * />
  * ```
  */
-export const MessageMetadata = React.memo(function MessageMetadata({
+export function MessageMetadata({
   message,
   showCost = true,
   showResponseTime = true,
@@ -167,7 +173,7 @@ export const MessageMetadata = React.memo(function MessageMetadata({
       {showCost && formattedCost && (
         <Tooltip content={`Estimated cost: ${formattedCost}`}>
           <Badge variant="secondary" className="gap-1">
-            <DollarSignIcon className="h-3 w-3" />
+            <DollarSignIconComponent className="h-3 w-3" />
             <span>{formattedCost}</span>
           </Badge>
         </Tooltip>
@@ -177,7 +183,7 @@ export const MessageMetadata = React.memo(function MessageMetadata({
       {showResponseTime && formattedResponseTime && (
         <Tooltip content={`Response time: ${formattedResponseTime}`}>
           <Badge variant="secondary" className="gap-1">
-            <ClockIcon className="h-3 w-3" />
+            <ClockIconComponent className="h-3 w-3" />
             <span>{formattedResponseTime}</span>
           </Badge>
         </Tooltip>
@@ -197,7 +203,7 @@ export const MessageMetadata = React.memo(function MessageMetadata({
       {showConfidence && confidence !== undefined && (
         <Tooltip content={`Confidence: ${(confidence * 100).toFixed(1)}%`}>
           <Badge variant={confidenceColor} className="gap-1">
-            <TrendingUpIcon className="h-3 w-3" />
+            <TrendingUpIconComponent className="h-3 w-3" />
             <span>{(confidence * 100).toFixed(0)}%</span>
           </Badge>
         </Tooltip>
@@ -209,7 +215,7 @@ export const MessageMetadata = React.memo(function MessageMetadata({
           content={`${sources.length} source${sources.length !== 1 ? 's' : ''} referenced`}
         >
           <Badge variant="secondary" className="gap-1">
-            <ShieldIcon className="h-3 w-3" />
+            <ShieldIconComponent className="h-3 w-3" />
             <span>{sources.length} source{sources.length !== 1 ? 's' : ''}</span>
           </Badge>
         </Tooltip>
@@ -226,6 +232,6 @@ export const MessageMetadata = React.memo(function MessageMetadata({
       )}
     </motion.div>
   )
-})
+}
 
 MessageMetadata.displayName = 'MessageMetadata'

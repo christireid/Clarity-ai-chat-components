@@ -24,7 +24,7 @@ export interface ProjectSidebarProps {
   className?: string
 }
 
-export const ProjectSidebar = React.memo(function ProjectSidebar({
+export function ProjectSidebar({
   projects,
   selectedProjectId,
   selectedChatId,
@@ -353,6 +353,6 @@ export const ProjectSidebar = React.memo(function ProjectSidebar({
       )}
     </div>
   )
-})
+}
 
 ProjectSidebar.displayName = 'ProjectSidebar'

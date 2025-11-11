@@ -51,10 +51,26 @@ module.exports = {
           foreground: 'hsl(var(--card-foreground))',
         },
       },
+      boxShadow: {
+        'xs': '0 1px 2px 0 rgb(0 0 0 / 0.03)',
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      boxShadow: {
+        'xs': '0 1px 2px rgba(0, 0, 0, 0.05)',
+        'sm': '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+        'md': '0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.03)',
+        'lg': '0 12px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.04)',
+        'xl': '0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.06)',
+        '2xl': '0 24px 48px rgba(0, 0, 0, 0.18), 0 12px 24px rgba(0, 0, 0, 0.08)',
+      },
+      transitionTimingFunction: {
+        'smooth': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+        'snappy': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'natural': 'cubic-bezier(0.4, 0, 0.1, 1)',
       },
       keyframes: {
         'accordion-down': {
@@ -75,10 +91,12 @@ module.exports = {
         },
       },
       animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
-        'slide-up': 'slide-up 0.3s ease-out',
-        'fade-in': 'fade-in 0.1s ease-in',
+        'accordion-down': 'accordion-down 0.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
+        'accordion-up': 'accordion-up 0.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
+        'slide-up': 'slide-up 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)',
+        'fade-in': 'fade-in 0.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
+        'ripple': 'ripple 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)',
+        'shake': 'shake 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
       },
     },
   },

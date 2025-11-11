@@ -27,7 +27,7 @@ export class WeaviateVectorStore implements VectorStore {
   private apiKey?: string
   private endpoint: string
   private className: string
-  private _initialized = false
+  private _initialized = false   
   
   constructor(config: WeaviateConfig) {
     if (!config.endpoint) {

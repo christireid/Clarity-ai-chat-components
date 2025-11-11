@@ -672,10 +672,10 @@ const { toolInvocations } = useAssistant({
 
 ## Migration from Vercel AI SDK
 
-See [MIGRATION_FROM_VERCEL.md](../../MIGRATION_FROM_VERCEL.md) for detailed migration guide.
+See [Migration Guide](../../MIGRATION_GUIDE_V2.md) for detailed migration instructions.
 
 ## Additional Resources
 
 - [Examples](../../examples/vercel-ai-sdk-compatible/)
-- [Integration Guide](../../VERCEL_AI_SDK_INTEGRATION.md)
-- [Complete Documentation](../README.md)
+- [Migration Guide](../../MIGRATION_GUIDE_V2.md)
+- [Complete Documentation](https://docs.clarity-chat.dev)

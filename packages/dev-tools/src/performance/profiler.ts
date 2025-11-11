@@ -8,6 +8,11 @@
  * - Streaming performance
  */
 
+import type { TableColumn } from '../ui/table'
+import { table, keyValueTable } from '../ui/table'
+import { infoBox } from '../ui/box'
+import chalk from 'chalk'
+
 export interface PerformanceMetrics {
   name: string
   startTime: number
@@ -230,64 +235,92 @@ class Profiler {
   }
 
   /**
-   * Print metrics report
+   * Print metrics report with beautiful formatting
    */
   printReport(): void {
     const summary = this.getSummary()
 
-    console.log('\n📊 Performance Report')
-    console.log('='.repeat(50))
-    console.log(`Total Operations: ${summary.totalOperations}`)
-    console.log(`Total Duration: ${summary.totalDuration.toFixed(2)}ms`)
-    console.log(`Average Duration: ${summary.avgDuration.toFixed(2)}ms`)
-
-    if (summary.slowestOperation) {
-      console.log(`\nSlowest Operation: ${summary.slowestOperation.name}`)
-      console.log(`  Duration: ${summary.slowestOperation.duration?.toFixed(2)}ms`)
-    }
-
-    if (summary.fastestOperation) {
-      console.log(`\nFastest Operation: ${summary.fastestOperation.name}`)
-      console.log(`  Duration: ${summary.fastestOperation.duration?.toFixed(2)}ms`)
-    }
-
-    console.log('\nAll Operations:')
-    this.getAllMetrics()
-      .filter(m => m.duration !== undefined)
-      .sort((a, b) => (b.duration || 0) - (a.duration || 0))
-      .forEach(m => {
-        console.log(`  ${m.name}: ${m.duration?.toFixed(2)}ms`)
-        
-        if (m.memoryDelta) {
-          const heapMB = (m.memoryDelta.heapUsed / 1024 / 1024).toFixed(2)
-          console.log(`    Memory: ${heapMB} MB`)
-        }
-
-        if (m.custom) {
-          Object.entries(m.custom).forEach(([key, value]) => {
-            console.log(`    ${key}: ${value}`)
-          })
-        }
-      })
+    // Summary box
+    const summaryContent = [
+      `Total Operations: ${chalk.cyan(summary.totalOperations)}`,
+      `Total Duration: ${chalk.cyan(summary.totalDuration.toFixed(2) + 'ms')}`,
+      `Average Duration: ${chalk.cyan(summary.avgDuration.toFixed(2) + 'ms')}`,
+    ].join('\n')
 
     console.log()
+    console.log(infoBox(summaryContent, '📊 Performance Summary'))
+    console.log()
+
+    // Operations table
+    const operations = this.getAllMetrics()
+      .filter(m => m.duration !== undefined)
+      .sort((a, b) => (b.duration || 0) - (a.duration || 0))
+
+    if (operations.length > 0) {
+      const columns: TableColumn[] = [
+        { header: 'Operation', width: 30, color: chalk.yellow },
+        { header: 'Duration', width: 15, align: 'right', color: chalk.cyan },
+        { header: 'Memory', width: 15, align: 'right' },
+        { header: 'Details', width: 30 },
+      ]
+
+      const tableData = operations.map(m => {
+        const memory = m.memoryDelta
+          ? `${(m.memoryDelta.heapUsed / 1024 / 1024).toFixed(2)} MB`
+          : '—'
+        
+        const details = m.custom
+          ? Object.entries(m.custom).map(([k, v]) => `${k}: ${v}`).join(', ')
+          : '—'
+
+        return [
+          m.name,
+          `${m.duration?.toFixed(2)}ms`,
+          memory,
+          details,
+        ]
+      })
+
+      console.log(table(tableData, columns))
+      console.log()
+
+      // Highlight slowest/fastest
+      if (summary.slowestOperation && summary.fastestOperation) {
+        const highlight = [
+          chalk.yellow('⚡ Fastest: ') + chalk.green(summary.fastestOperation.name) + 
+            chalk.gray(` (${summary.fastestOperation.duration?.toFixed(2)}ms)`),
+          chalk.yellow('🐌 Slowest: ') + chalk.red(summary.slowestOperation.name) + 
+            chalk.gray(` (${summary.slowestOperation.duration?.toFixed(2)}ms)`),
+        ].join('\n')
+        console.log(infoBox(highlight, '⚡ Highlights'))
+        console.log()
+      }
+    }
   }
 
   /**
-   * Print streaming metrics
+   * Print streaming metrics with beautiful formatting
    */
   printStreamingMetrics(metrics: StreamingMetrics): void {
-    console.log('\n📡 Streaming Performance')
-    console.log('='.repeat(50))
-    console.log(`Time to First Byte: ${metrics.ttfb.toFixed(2)}ms`)
-    console.log(`Total Chunks: ${metrics.chunks}`)
-    console.log(`Total Bytes: ${metrics.totalBytes}`)
-    console.log(`Duration: ${metrics.duration.toFixed(2)}ms`)
-    console.log(`Throughput: ${(metrics.throughput / 1024).toFixed(2)} KB/s`)
-    console.log(`\nChunk Timing:`)
-    console.log(`  Average: ${metrics.avgChunkTime.toFixed(2)}ms`)
-    console.log(`  Min: ${metrics.minChunkTime.toFixed(2)}ms`)
-    console.log(`  Max: ${metrics.maxChunkTime.toFixed(2)}ms`)
+
+    const metricsData = {
+      'Time to First Byte': chalk.cyan(metrics.ttfb.toFixed(2) + 'ms'),
+      'Total Chunks': chalk.cyan(metrics.chunks.toString()),
+      'Total Bytes': chalk.cyan(formatBytes(metrics.totalBytes)),
+      'Duration': chalk.cyan(metrics.duration.toFixed(2) + 'ms'),
+      'Throughput': chalk.cyan((metrics.throughput / 1024).toFixed(2) + ' KB/s'),
+    }
+
+    const timingData = {
+      'Average': chalk.cyan(metrics.avgChunkTime.toFixed(2) + 'ms'),
+      'Min': chalk.green(metrics.minChunkTime.toFixed(2) + 'ms'),
+      'Max': chalk.yellow(metrics.maxChunkTime.toFixed(2) + 'ms'),
+    }
+
+    console.log()
+    console.log(infoBox(keyValueTable(metricsData), '📡 Streaming Performance'))
+    console.log()
+    console.log(infoBox(keyValueTable(timingData), '⏱️  Chunk Timing'))
     console.log()
   }
 

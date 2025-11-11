@@ -25,7 +25,7 @@ export class ReactAgent implements Agent {
   
   private config: AgentConfig
   private callbacks?: AgentCallbacks
-  private _modelAdapter: any // Would use actual model adapter
+  // private _modelAdapter: any // Would use actual model adapter
   
   constructor(config: AgentConfig, callbacks?: AgentCallbacks) {
     this.name = config.name
@@ -299,7 +299,7 @@ When you have enough information, provide a final ANSWER.`
   
   private generateContinuedThought(_query: string, steps: AgentStep[]): string {
     // Simplified - in reality use LLM
-    const _lastObservation = steps.filter(s => s.type === 'observation').pop()
+    void steps.filter(s => s.type === 'observation').pop()
     return `Based on the previous results, I need to continue investigating.`
   }
   
@@ -307,6 +307,9 @@ When you have enough information, provide a final ANSWER.`
     // Simplified parser - in reality use LLM to determine tool and args
     // For now, just return first tool
     const tool = this.tools[0]
+    if (!tool) {
+      throw new Error('No tools available')
+    }
     return {
       tool: tool.name,
       args: {},
@@ -323,7 +326,7 @@ When you have enough information, provide a final ANSWER.`
   private generateAnswer(steps: AgentStep[]): string {
     // Generate final answer from all steps
     // Simplified - in reality use LLM
-    const _observations = steps.filter(s => s.type === 'observation')
+    void steps.filter(s => s.type === 'observation')
     return `Based on my analysis, here is the answer.`
   }
   

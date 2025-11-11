@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { memo, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import type { AIStatus } from '@clarity-chat/types'
 import { cn } from '@clarity-chat/primitives'
@@ -16,11 +16,12 @@ export interface ThinkingIndicatorProps {
   className?: string
 }
 
-export const ThinkingIndicator = React.memo(function ThinkingIndicator({
+export function ThinkingIndicator({
   status,
   className,
 }: ThinkingIndicatorProps) {
-  const getStageIcon = (stage: AIStatus['stage']) => {
+  // Memoize icon and label getters to prevent recreation on every render
+  const getStageIcon = useCallback((stage: AIStatus['stage']) => {
     const iconProps = { size: 20 }
     switch (stage) {
       case 'thinking':
@@ -36,9 +37,9 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
       default:
         return <BotIcon {...iconProps} />
     }
-  }
+  }, [])
 
-  const getStageLabel = (stage: AIStatus['stage']) => {
+  const getStageLabel = useCallback((stage: AIStatus['stage']) => {
     switch (stage) {
       case 'thinking':
         return 'Thinking'
@@ -53,7 +54,17 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
       default:
         return 'Processing'
     }
-  }
+  }, [])
+
+  // Compute values from status
+  const stageIcon = useMemo(() => getStageIcon(status?.stage || 'thinking'), [status?.stage, getStageIcon])
+  const stageLabel = useMemo(() => getStageLabel(status?.stage || 'thinking'), [status?.stage, getStageLabel])
+  const estimatedSeconds = useMemo(() => {
+    if (!status?.estimatedCompletion) return null
+    const now = Date.now()
+    const completion = status.estimatedCompletion.getTime()
+    return Math.max(0, Math.round((completion - now) / 1000))
+  }, [status?.estimatedCompletion])
 
   return (
     <motion.div
@@ -65,7 +76,7 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
         ease: ANIMATION_EASING.out,
       }}
       className={cn(
-        'flex items-center gap-3 rounded-2xl border border-border/60 bg-[hsl(var(--surface-muted))] px-5 py-4 shadow-[0_12px_28px_rgba(15,23,42,0.12)]',
+        'flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 px-5 py-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
         className
       )}
     >
@@ -82,14 +93,14 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
         }}
         className="text-primary"
       >
-        {status ? getStageIcon(status.stage) : <BotIcon size={20} />}
+        {stageIcon}
       </motion.div>
 
       {/* Status Text */}
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium text-sm">
-            {status ? getStageLabel(status.stage) : 'Processing'}
+            {stageLabel}
           </span>
 
           {/* Animated Dots */}
@@ -145,21 +156,17 @@ export const ThinkingIndicator = React.memo(function ThinkingIndicator({
       </div>
 
       {/* Estimated Time */}
-      {status?.estimatedCompletion && (
+      {estimatedSeconds !== null && (
         <motion.span
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-xs text-muted-foreground"
         >
-          ~
-          {Math.ceil(
-            (status.estimatedCompletion.getTime() - Date.now()) / 1000
-          )}
-          s
+          ~{estimatedSeconds}s
         </motion.span>
       )}
     </motion.div>
   )
-})
+}
 
 ThinkingIndicator.displayName = 'ThinkingIndicator'

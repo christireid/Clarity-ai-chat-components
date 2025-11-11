@@ -4,7 +4,7 @@
  * Context provider for AI features (suggestions, moderation, sentiment)
  */
 
-import * as React from 'react'
+import { createContext, useContext, useCallback, useMemo } from 'react'
 import type {
   AIConfig,
   Suggestion,
@@ -36,7 +36,7 @@ interface AIContextValue {
   config: AIConfig
 }
 
-const AIContext = React.createContext<AIContextValue | undefined>(undefined)
+const AIContext = createContext<AIContextValue | undefined>(undefined)
 
 export interface AIProviderProps {
   children: React.ReactNode
@@ -65,7 +65,7 @@ export interface AIProviderProps {
  * ```
  */
 export function AIProvider({ children, config }: AIProviderProps) {
-  const getSuggestions = React.useCallback(
+  const getSuggestions = useCallback(
     async (context: SuggestionContext): Promise<Suggestion[]> => {
       if (!config.enableSuggestions || !config.suggestionProviders?.length) {
         return []
@@ -99,7 +99,7 @@ export function AIProvider({ children, config }: AIProviderProps) {
     [config]
   )
   
-  const moderateContent = React.useCallback(
+  const moderateContent = useCallback(
     async (content: string, context?: ModerationContext): Promise<ModerationResult> => {
       if (!config.enableModeration || !config.moderationProvider) {
         // Default: allow everything
@@ -127,7 +127,7 @@ export function AIProvider({ children, config }: AIProviderProps) {
     [config]
   )
   
-  const analyzeSentiment = React.useCallback(
+  const analyzeSentiment = useCallback(
     async (text: string): Promise<SentimentResult> => {
       if (!config.enableSentiment || !config.sentimentAnalyzer) {
         // Default: neutral
@@ -162,7 +162,7 @@ export function AIProvider({ children, config }: AIProviderProps) {
     [config]
   )
   
-  const value = React.useMemo<AIContextValue>(
+  const value = useMemo<AIContextValue>(
     () => ({
       getSuggestions,
       moderateContent,
@@ -201,7 +201,7 @@ export function AIProvider({ children, config }: AIProviderProps) {
  * ```
  */
 export function useAI() {
-  const context = React.useContext(AIContext)
+  const context = useContext(AIContext)
   
   if (!context) {
     throw new Error('useAI must be used within an AIProvider')

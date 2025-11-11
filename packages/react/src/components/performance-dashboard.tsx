@@ -156,7 +156,7 @@ export function PerformanceDashboard({
         {metrics.map(metric => (
           <div
             key={metric.name}
-            className="p-3 rounded-xl border border-border bg-muted/30 hover:shadow-md transition-all duration-200"
+            className="p-3 rounded-lg border border-border/50 bg-muted/30 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-all duration-150 ease-out"
           >
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-muted-foreground">{metric.name}</span>
@@ -221,7 +221,7 @@ export function PerformanceBadge({ className }: { className?: string }) {
   
   return (
     <div
-      className={`performance-badge inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border shadow-sm transition-all duration-200 hover:shadow-md ${
+      className={`performance-badge inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] transition-all duration-150 ease-out hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] ${
         status === 'good'
           ? 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/20'
           : status === 'warning'

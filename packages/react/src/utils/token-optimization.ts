@@ -214,8 +214,8 @@ export function shortenPrompt(
 ): string {
   const {
     removeDuplicates = true,
-    removeFillers = true,
-    simplifySentences = true,
+    removeFillers: shouldRemoveFillers = true,
+    simplifySentences: shouldSimplifySentences = true,
     targetReduction = 0.2,
     preserveKeywords = [],
   } = options
@@ -228,12 +228,12 @@ export function shortenPrompt(
   }
 
   // Remove fillers
-  if (removeFillers) {
+  if (shouldRemoveFillers) {
     result = removeFillers(result, preserveKeywords)
   }
 
   // Simplify sentences
-  if (simplifySentences) {
+  if (shouldSimplifySentences) {
     result = simplifySentences(result)
   }
 
@@ -339,6 +339,7 @@ export function limitHistoryFIFO(
   const keptMessages: CoreMessage[] = []
   for (let i = remainingMessages.length - 1; i >= 0; i--) {
     const msg = remainingMessages[i]
+    if (!msg) continue
     const msgTokens = estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content))
     
     if (tokensUsed + msgTokens <= maxTokens) {
@@ -395,6 +396,7 @@ export function limitHistorySmart(
   const keptTurns: CoreMessage[][] = []
   for (let i = turns.length - 1; i >= 0; i--) {
     const turn = turns[i]
+    if (!turn) continue
     const turnTokens = turn.reduce(
       (sum, msg) => sum + estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)),
       0
@@ -567,7 +569,7 @@ class RequestThrottler {
     // Check minimum delay
     if (this.requests.length > 0) {
       const lastRequest = this.requests[this.requests.length - 1]
-      if (now - lastRequest < this.minDelay) {
+      if (lastRequest && now - lastRequest < this.minDelay) {
         return false
       }
     }
@@ -584,6 +586,7 @@ class RequestThrottler {
 
     const now = Date.now()
     const lastRequest = this.requests[this.requests.length - 1]
+    if (!lastRequest) return 0
     const timeSinceLastRequest = now - lastRequest
 
     if (timeSinceLastRequest < this.minDelay) {
@@ -825,10 +828,12 @@ class RequestBatcher {
     // Resolve/reject each promise
     batch.forEach((req, index) => {
       const result = results[index]
+      if (!result) return
       if (result.status === 'fulfilled') {
         req.resolve(result.value)
       } else {
-        req.reject(result.reason)
+        // TypeScript doesn't narrow properly, so we assert
+        req.reject((result as PromiseRejectedResult).reason)
       }
     })
   }

@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
-import { BatchExportDialog, type BatchExportResource, type BatchExportProgress } from '@clarity-chat/react'
-import { Button } from '@clarity-chat/react'
+import {
+  BatchExportDialog,
+  type BatchExportResource,
+  type BatchExportProgress,
+} from '@clarity-chat/react'
+import { Button } from '@clarity-chat/primitives'
 
 const meta: Meta<typeof BatchExportDialog> = {
   title: 'Components/BatchExportDialog',

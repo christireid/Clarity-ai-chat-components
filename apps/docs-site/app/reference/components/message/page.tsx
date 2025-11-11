@@ -1,16 +1,16 @@
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { ApiTable } from '@/components/Demo/ApiTable'
+import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
 export const metadata: Metadata = {
   title: 'Message',
   description: 'Display individual chat messages with rich content',
 }
 
-const messageProps = [
+const messageProps: Prop[] = [
   {
     name: 'id',
     type: 'string',
@@ -127,14 +127,14 @@ export default function MessagePage() {
 
       <h2 id="import">Import</h2>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { Message } from '@clarity-chat/react'`}
         language="tsx"
       />
 
       <h2 id="basic-usage">Basic Usage</h2>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { Message } from '@clarity-chat/react'
 
 function MessageExample() {
@@ -155,7 +155,7 @@ function MessageExample() {
 
       <p>Add user avatars to personalize messages:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const message = {
   id: '1',
   text: 'Hello!',
@@ -176,7 +176,7 @@ function MessageExample() {
 
       <p>Choose from different visual styles:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`// Default style (standard message box)
 <Message {...message} variant="default" />
 
@@ -192,7 +192,7 @@ function MessageExample() {
 
       <p>Align messages left or right based on sender:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`// User messages (right-aligned)
 <Message 
   {...userMessage} 
@@ -213,7 +213,7 @@ function MessageExample() {
 
       <p>Enable emoji reactions on messages:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const [message, setMessage] = useState({
   id: '1',
   text: 'Great idea!',
@@ -248,7 +248,7 @@ const handleReactionClick = (emoji: string) => {
 
       <p>Display file attachments with messages:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const message = {
   id: '1',
   text: 'Here are the documents you requested',
@@ -282,7 +282,7 @@ const handleReactionClick = (emoji: string) => {
 
       <p>Add edit and delete actions:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const handleEdit = (messageId: string) => {
   // Show edit modal or inline editor
   console.log('Editing message:', messageId)
@@ -304,7 +304,7 @@ const handleDelete = (messageId: string) => {
 
       <h2 id="edited-deleted">Edited & Deleted States</h2>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`// Edited message
 <Message 
   {...message}
@@ -324,7 +324,7 @@ const handleDelete = (messageId: string) => {
 
       <p>Enable markdown rendering in messages:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { Message } from '@clarity-chat/react'
 import ReactMarkdown from 'react-markdown'
 
@@ -356,13 +356,13 @@ const message = {
 
       <h2 id="props">Props</h2>
 
-      <ApiTable data={messageProps} />
+      <PropsTable props={messageProps} data={messageProps} />
 
       <h2 id="types">Type Definitions</h2>
 
       <h3>Avatar Type</h3>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`interface Avatar {
   src: string
   alt: string
@@ -373,7 +373,7 @@ const message = {
 
       <h3>Attachment Type</h3>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`interface Attachment {
   id: string
   name: string
@@ -390,7 +390,7 @@ const message = {
 
       <p>Customize message appearance with CSS classes:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`// Custom user message style
 <Message
   {...message}
@@ -424,7 +424,7 @@ const message = {
 
       <h3>Chat Bubble Style</h3>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`function ChatBubbleMessages() {
   const messages = [
     {
@@ -461,7 +461,7 @@ const message = {
 
       <h3>Rich Message with All Features</h3>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const richMessage = {
   id: '1',
   text: 'Check out this document and let me know what you think!',

@@ -19,7 +19,7 @@ export interface LinkPreviewProps {
   className?: string
 }
 
-export const LinkPreview = React.memo(function LinkPreview({
+export function LinkPreview({
   metadata,
   onClick,
   onRemove,
@@ -61,7 +61,7 @@ export const LinkPreview = React.memo(function LinkPreview({
       <Card
         className={cn(
           'group relative overflow-hidden transition-all',
-          onClick && 'cursor-pointer hover:shadow-lg'
+          onClick && 'cursor-pointer hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)]'
         )}
         onClick={onClick}
       >
@@ -141,7 +141,7 @@ export const LinkPreview = React.memo(function LinkPreview({
       </Card>
     </motion.div>
   )
-})
+}
 
 LinkPreview.displayName = 'LinkPreview'
 
@@ -204,7 +204,7 @@ export interface InlineLinkProps {
   className?: string
 }
 
-export const InlineLink = React.memo(function InlineLink({
+export function InlineLink({
   url,
   onPreview,
   children,
@@ -260,6 +260,6 @@ export const InlineLink = React.memo(function InlineLink({
       )}
     </span>
   )
-})
+}
 
 InlineLink.displayName = 'InlineLink'

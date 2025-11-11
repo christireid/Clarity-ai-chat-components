@@ -38,10 +38,14 @@ import * as React from 'react'
  */
 export function usePrevious<T>(value: T): T | undefined {
   const ref = React.useRef<T>()
+  const previousRef = React.useRef<T | undefined>(undefined)
 
-  React.useEffect(() => {
+  // Use useLayoutEffect to update synchronously after render but before paint
+  // This ensures we return the value from the immediate previous render
+  React.useLayoutEffect(() => {
+    previousRef.current = ref.current
     ref.current = value
   }, [value])
 
-  return ref.current
+  return previousRef.current
 }

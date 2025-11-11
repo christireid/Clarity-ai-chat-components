@@ -1,5 +1,17 @@
-import * as React from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+
+/**
+ * Folder for organizing conversations
+ */
+export interface Folder {
+  id: string
+  name: string
+  color?: string
+  icon?: string
+  createdAt: number
+  conversationCount?: number
+}
 
 /**
  * Conversation item
@@ -14,6 +26,8 @@ export interface Conversation {
   tags?: string[]
   isPinned?: boolean
   isFavorite?: boolean
+  /** Folder ID this conversation belongs to */
+  folderId?: string
 }
 
 /**
@@ -38,14 +52,29 @@ export interface ConversationListProps {
   /** List of conversations */
   conversations: Conversation[]
 
+  /** List of folders for organization */
+  folders?: Folder[]
+
   /** Currently active conversation ID */
   activeId?: string
+
+  /** Currently active folder ID (for filtering) */
+  activeFolderId?: string
 
   /** Callback when conversation is selected */
   onSelect: (conversationId: string) => void
 
+  /** Callback when folder is selected */
+  onFolderSelect?: (folderId: string | null) => void
+
   /** Callback when conversation is deleted */
   onDelete?: (conversationId: string) => void
+
+  /** Callback when folder is deleted */
+  onDeleteFolder?: (folderId: string) => void
+
+  /** Callback when conversation is moved to folder */
+  onMoveToFolder?: (conversationId: string, folderId: string | null) => void
 
   /** Callback when conversation is pinned/unpinned */
   onTogglePin?: (conversationId: string) => void
@@ -56,6 +85,12 @@ export interface ConversationListProps {
   /** Callback when new conversation is created */
   onCreate?: () => void
 
+  /** Callback when new folder is created */
+  onCreateFolder?: (name: string, color?: string) => void
+
+  /** Callback when folder is renamed */
+  onRenameFolder?: (folderId: string, newName: string) => void
+
   /** Show search bar */
   showSearch?: boolean
 
@@ -64,6 +99,9 @@ export interface ConversationListProps {
 
   /** Show sort options */
   showSort?: boolean
+
+  /** Show folder organization */
+  showFolders?: boolean
 
   /** Enable multi-select */
   multiSelect?: boolean
@@ -151,31 +189,71 @@ function formatRelativeTime(timestamp: number): string {
  */
 export function ConversationList({
   conversations,
+  folders = [],
   activeId,
+  activeFolderId,
   onSelect,
+  onFolderSelect,
   onDelete,
+  onDeleteFolder,
+  onMoveToFolder,
   onTogglePin,
   onToggleFavorite,
   onCreate,
+  onCreateFolder,
+  onRenameFolder,
   showSearch = true,
   showFilters = false,
   showSort = false,
+  showFolders = false,
   multiSelect = false,
   selectedIds = [],
   onSelectionChange,
   className = '',
 }: ConversationListProps) {
-  const [searchQuery, setSearchQuery] = React.useState('')
-  const [sortBy, setSortBy] = React.useState<SortOption>('recent')
-  const [filterTags] = React.useState<string[]>([])
-  const [showPinnedOnly, setShowPinnedOnly] = React.useState(false)
-  const [showFavoritesOnly, setShowFavoritesOnly] = React.useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<SortOption>('recent')
+  const [filterTags] = useState<string[]>([])
+  const [showPinnedOnly, setShowPinnedOnly] = useState(false)
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
+  const [showCreateFolder, setShowCreateFolder] = useState(false)
+  const [newFolderName, setNewFolderName] = useState('')
+
+  /**
+   * Group conversations by folder
+   */
+  const conversationsByFolder = useMemo(() => {
+    const grouped: Record<string, Conversation[]> = {}
+    const uncategorized: Conversation[] = []
+
+    conversations.forEach((conv) => {
+      if (conv.folderId && folders.some((f) => f.id === conv.folderId)) {
+        if (!grouped[conv.folderId]) {
+          grouped[conv.folderId] = []
+        }
+        grouped[conv.folderId].push(conv)
+      } else {
+        uncategorized.push(conv)
+      }
+    })
+
+    return { grouped, uncategorized }
+  }, [conversations, folders])
 
   /**
    * Filter and sort conversations
    */
-  const filteredConversations = React.useMemo(() => {
+  const filteredConversations = useMemo(() => {
     let filtered = [...conversations]
+
+    // Folder filter
+    if (activeFolderId !== undefined && activeFolderId !== null) {
+      filtered = filtered.filter((c) => c.folderId === activeFolderId)
+    } else if (showFolders && activeFolderId === null) {
+      // Show only uncategorized when "Uncategorized" folder is selected
+      filtered = filtered.filter((c) => !c.folderId)
+    }
 
     // Search filter
     if (searchQuery) {
@@ -227,17 +305,45 @@ export function ConversationList({
     return [...pinned, ...unpinned]
   }, [
     conversations,
+    activeFolderId,
     searchQuery,
     sortBy,
     filterTags,
     showPinnedOnly,
     showFavoritesOnly,
+    showFolders,
   ])
+
+  /**
+   * Toggle folder expansion
+   */
+  const toggleFolder = useCallback((folderId: string) => {
+    setExpandedFolders((prev) => {
+      const next = new Set(prev)
+      if (next.has(folderId)) {
+        next.delete(folderId)
+      } else {
+        next.add(folderId)
+      }
+      return next
+    })
+  }, [])
+
+  /**
+   * Handle create folder
+   */
+  const handleCreateFolder = useCallback(() => {
+    if (newFolderName.trim() && onCreateFolder) {
+      onCreateFolder(newFolderName.trim())
+      setNewFolderName('')
+      setShowCreateFolder(false)
+    }
+  }, [newFolderName, onCreateFolder])
 
   /**
    * Handle conversation selection
    */
-  const handleSelect = (id: string) => {
+  const handleSelect = useCallback((id: string) => {
     if (multiSelect && onSelectionChange) {
       const newSelection = selectedIds.includes(id)
         ? selectedIds.filter((sid) => sid !== id)
@@ -246,7 +352,7 @@ export function ConversationList({
     } else {
       onSelect(id)
     }
-  }
+  }, [multiSelect, onSelectionChange, selectedIds, onSelect])
 
   /**
    * Get all unique tags (currently unused but available for tag filtering UI)
@@ -267,28 +373,217 @@ export function ConversationList({
       <div className="flex items-center justify-between p-4 border-b border-border">
         <h2 className="text-lg font-semibold text-foreground">Conversations</h2>
 
-        {onCreate && (
-          <button
-            onClick={onCreate}
-            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-200 hover:scale-110"
-            aria-label="New conversation"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        <div className="flex items-center gap-2">
+          {showFolders && onCreateFolder && (
+            <button
+              onClick={() => setShowCreateFolder(!showCreateFolder)}
+              className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-all duration-150 ease-out hover:scale-105"
+              aria-label="New folder"
+              title="New folder"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </button>
-        )}
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                />
+              </svg>
+            </button>
+          )}
+          {onCreate && (
+            <button
+              onClick={onCreate}
+              className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-150 ease-out hover:scale-105"
+              aria-label="New conversation"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Create folder input */}
+      {showCreateFolder && onCreateFolder && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="p-3 border-b border-border"
+        >
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Folder name..."
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleCreateFolder()
+                } else if (e.key === 'Escape') {
+                  setShowCreateFolder(false)
+                  setNewFolderName('')
+                }
+              }}
+              className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50"
+              autoFocus
+            />
+            <button
+              onClick={handleCreateFolder}
+              className="px-3 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:opacity-90 transition-opacity"
+            >
+              Create
+            </button>
+            <button
+              onClick={() => {
+                setShowCreateFolder(false)
+                setNewFolderName('')
+              }}
+              className="px-3 py-2 bg-muted text-muted-foreground text-sm rounded-lg hover:bg-muted/80 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Folder list */}
+      {showFolders && folders.length > 0 && (
+        <div className="border-b border-border">
+          {/* All conversations / Uncategorized */}
+          <button
+            onClick={() => onFolderSelect?.(null)}
+            className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+              activeFolderId === null || activeFolderId === undefined
+                ? 'bg-primary/10 text-primary font-medium'
+                : 'hover:bg-muted/50 text-foreground'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                />
+              </svg>
+              <span>All Conversations</span>
+              <span className="ml-auto text-xs text-muted-foreground">
+                {conversations.length}
+              </span>
+            </div>
+          </button>
+
+          {/* Folders */}
+          {folders.map((folder) => {
+            const folderConversations = conversationsByFolder.grouped[folder.id] || []
+            const isExpanded = expandedFolders.has(folder.id)
+            const isActive = activeFolderId === folder.id
+
+            return (
+              <div key={folder.id} className="border-b border-border/50 last:border-b-0">
+                <button
+                  onClick={() => {
+                    if (showFolders) {
+                      toggleFolder(folder.id)
+                    }
+                    onFolderSelect?.(folder.id)
+                  }}
+                  className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                    isActive
+                      ? 'bg-primary/10 text-primary font-medium'
+                      : 'hover:bg-muted/50 text-foreground'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <motion.svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      animate={{ rotate: isExpanded ? 90 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </motion.svg>
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                      />
+                    </svg>
+                    <span className="flex-1 truncate">{folder.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {folderConversations.length}
+                    </span>
+                    {onDeleteFolder && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (confirm(`Delete folder "${folder.name}"?`)) {
+                            onDeleteFolder(folder.id)
+                          }
+                        }}
+                        className="p-1 hover:bg-destructive/10 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label={`Delete folder ${folder.name}`}
+                      >
+                        <svg
+                          className="w-3 h-3 text-destructive"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       {/* Search bar */}
       {showSearch && (
@@ -312,7 +607,7 @@ export function ConversationList({
               placeholder="Search conversations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-shadow duration-200"
+              className="w-full pl-9 pr-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-transparent transition-shadow duration-150 ease-out"
             />
           </div>
         </div>
@@ -325,7 +620,7 @@ export function ConversationList({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-shadow duration-200"
+              className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-shadow duration-150 ease-out"
             >
               <option value="recent">Most Recent</option>
               <option value="oldest">Oldest</option>
@@ -338,7 +633,7 @@ export function ConversationList({
             <div className="flex gap-2">
               <button
                 onClick={() => setShowPinnedOnly(!showPinnedOnly)}
-                className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
+                className={`px-3 py-1 text-xs rounded-full transition-all duration-150 ease-out ${
                   showPinnedOnly
                     ? 'bg-primary/10 text-primary scale-105'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -349,7 +644,7 @@ export function ConversationList({
 
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
+                className={`px-3 py-1 text-xs rounded-full transition-all duration-150 ease-out ${
                   showFavoritesOnly
                     ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] scale-105'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -388,7 +683,7 @@ export function ConversationList({
               {onCreate && !searchQuery && (
                 <button
                   onClick={onCreate}
-                  className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+                  className="mt-3 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground text-sm rounded-lg transition-all duration-150 ease-out hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px"
                 >
                   Start a conversation
                 </button>
@@ -417,7 +712,7 @@ export function ConversationList({
                     }}
                     layout
                     onClick={() => handleSelect(conversation.id)}
-                    className={`p-4 cursor-pointer transition-all duration-200 ${
+                    className={`p-4 cursor-pointer transition-all duration-150 ease-out ${
                       isActive
                         ? 'bg-primary/10 border-l-4 border-primary'
                         : isSelected
@@ -461,7 +756,7 @@ export function ConversationList({
                           {/* Unread badge */}
                           {conversation.unreadCount &&
                             conversation.unreadCount > 0 && (
-                              <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full shadow-sm">
+                              <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                                 {conversation.unreadCount}
                               </span>
                             )}
@@ -501,6 +796,52 @@ export function ConversationList({
                         className="flex flex-col gap-1"
                         onClick={(e) => e.stopPropagation()}
                       >
+                        {showFolders && onMoveToFolder && (
+                          <motion.button
+                            onClick={() => {
+                              // Simple implementation: move to first folder or remove from folder
+                              const currentFolderId = conversation.folderId
+                              const newFolderId = currentFolderId ? null : folders[0]?.id || null
+                              onMoveToFolder(conversation.id, newFolderId)
+                            }}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
+                            aria-label={
+                              conversation.folderId
+                                ? 'Remove from folder'
+                                : 'Move to folder'
+                            }
+                            title={
+                              conversation.folderId
+                                ? 'Remove from folder'
+                                : 'Move to folder'
+                            }
+                          >
+                            <svg
+                              className="w-4 h-4 text-muted-foreground"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              {conversation.folderId ? (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                                />
+                              ) : (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                                />
+                              )}
+                            </svg>
+                          </motion.button>
+                        )}
                         {onTogglePin && (
                           <motion.button
                             onClick={() => onTogglePin(conversation.id)}
@@ -509,7 +850,7 @@ export function ConversationList({
                               rotate: conversation.isPinned ? 0 : 15,
                             }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-muted rounded transition-colors duration-200"
+                            className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
                             aria-label={conversation.isPinned ? 'Unpin' : 'Pin'}
                           >
                             <motion.span
@@ -531,7 +872,7 @@ export function ConversationList({
                             onClick={() => onToggleFavorite(conversation.id)}
                             whileHover={{ scale: 1.2 }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-muted rounded transition-colors duration-200"
+                            className="p-1 hover:bg-muted rounded transition-colors duration-150 ease-out"
                             aria-label={
                               conversation.isFavorite
                                 ? 'Unfavorite'
@@ -557,7 +898,7 @@ export function ConversationList({
                             onClick={() => onDelete(conversation.id)}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-1 hover:bg-destructive/10 rounded transition-all duration-200"
+                            className="p-1 hover:bg-destructive/10 rounded transition-all duration-150 ease-out"
                             aria-label="Delete conversation"
                           >
                             <svg
@@ -603,3 +944,5 @@ export function ConversationList({
     </div>
   )
 }
+
+ConversationList.displayName = 'ConversationList'

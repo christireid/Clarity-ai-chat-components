@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
   const { content } = await req.json()
   
   const completion = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages: [{ role: 'user', content }],
   })
   
@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
   const { content } = await req.json()
   
   const stream = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages: [{ role: 'user', content }],
     stream: true,
   })
@@ -251,7 +251,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { content } = req.body
   
   const completion = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages: [{ role: 'user', content }],
   })
   
@@ -307,6 +307,6 @@ npx wrangler pages publish .next
 
 ## Examples
 
-- [Basic Chat](https://github.com/yourusername/clarity-chat/tree/main/examples/basic-chat)
-- [Streaming Chat](https://github.com/yourusername/clarity-chat/tree/main/examples/streaming-chat)
-- [Customer Support](https://github.com/yourusername/clarity-chat/tree/main/examples/customer-support)
+- [Basic Chat](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/basic-chat)
+- [Streaming Chat](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/streaming-chat)
+- [Customer Support](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/customer-support)

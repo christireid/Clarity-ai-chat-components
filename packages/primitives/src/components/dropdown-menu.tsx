@@ -154,8 +154,8 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
       data-state={open ? 'open' : 'closed'}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center gap-2 rounded-lg border border-border/60 bg-[hsl(var(--surface-elevated))] px-3 py-2 text-sm font-medium shadow-sm transition-all duration-200',
-        'hover:border-primary/40 hover:text-primary hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60'
+        'inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm font-medium tracking-[0.13px] shadow-xs transition-all duration-200',
+        'hover:border-primary/40 hover:text-primary hover:shadow-sm focus:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60'
       )}
     >
       {children}
@@ -400,37 +400,37 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
   }, [open, autoFocus, focusFirstRef, focusItemByIndex])
 
   const animationVariants = React.useMemo(() => {
-    const offset = 8
+    const offset = 6
     switch (actualSide) {
       case 'top':
         return {
-          initial: { opacity: 0, y: offset, scale: 0.98 },
+          initial: { opacity: 0, y: offset, scale: 0.96 },
           animate: { opacity: 1, y: 0, scale: 1 },
-          exit: { opacity: 0, y: offset, scale: 0.98 },
+          exit: { opacity: 0, y: offset, scale: 0.96 },
         }
       case 'bottom':
         return {
-          initial: { opacity: 0, y: -offset, scale: 0.98 },
+          initial: { opacity: 0, y: -offset, scale: 0.96 },
           animate: { opacity: 1, y: 0, scale: 1 },
-          exit: { opacity: 0, y: -offset, scale: 0.98 },
+          exit: { opacity: 0, y: -offset, scale: 0.96 },
         }
       case 'left':
         return {
-          initial: { opacity: 0, x: offset, scale: 0.98 },
+          initial: { opacity: 0, x: offset, scale: 0.96 },
           animate: { opacity: 1, x: 0, scale: 1 },
-          exit: { opacity: 0, x: offset, scale: 0.98 },
+          exit: { opacity: 0, x: offset, scale: 0.96 },
         }
       case 'right':
         return {
-          initial: { opacity: 0, x: -offset, scale: 0.98 },
+          initial: { opacity: 0, x: -offset, scale: 0.96 },
           animate: { opacity: 1, x: 0, scale: 1 },
-          exit: { opacity: 0, x: -offset, scale: 0.98 },
+          exit: { opacity: 0, x: -offset, scale: 0.96 },
         }
       default:
         return {
-          initial: { opacity: 0, y: -offset, scale: 0.98 },
+          initial: { opacity: 0, y: -offset, scale: 0.96 },
           animate: { opacity: 1, y: 0, scale: 1 },
-          exit: { opacity: 0, y: -offset, scale: 0.98 },
+          exit: { opacity: 0, y: -offset, scale: 0.96 },
         }
     }
   }, [actualSide])
@@ -443,7 +443,7 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
             ref={contentRef}
             data-dropdown-content="true"
             {...animationVariants}
-            transition={{ duration: 0.16, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             style={{
               position: 'fixed',
               left: position.x,
@@ -453,7 +453,7 @@ const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
               zIndex: 9999,
             }}
             className={cn(
-              'min-w-[12rem] overflow-hidden rounded-xl border border-border/60 bg-[hsl(var(--surface-elevated))] py-2 shadow-[0_24px_48px_rgba(15,23,42,0.32)] ring-1 ring-black/5 backdrop-blur-md',
+              'min-w-[12rem] overflow-hidden rounded-xl border bg-popover py-1 shadow-md backdrop-blur-sm',
               className
             )}
             role="menu"
@@ -523,11 +523,11 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
         onClick={handleClick}
         className={cn(
           'flex w-full items-center justify-between gap-3 px-4 py-2.5 text-sm font-medium text-foreground/85 transition-all duration-150',
-          'rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-0',
+          'rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-0 focus-visible:ring-[3px]',
           destructive
             ? 'hover:bg-destructive/12 hover:text-destructive'
             : 'hover:bg-primary/10 hover:text-primary',
-          active && !destructive && 'bg-primary/10 text-primary shadow-[inset_0_0_0_1px_rgba(22,119,255,0.18)]',
+          active && !destructive && 'bg-primary/10 text-primary',
           inset && 'pl-10',
           disabled && 'cursor-not-allowed opacity-50',
           className
@@ -539,7 +539,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
           <span className="truncate text-left">{children}</span>
         </div>
         {shortcut && (
-          <kbd className="rounded-md border border-border/60 bg-[hsl(var(--surface-muted))] px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+          <kbd className="rounded-sm ring-1 ring-border bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground shadow-xs">
             {shortcut}
           </kbd>
         )}

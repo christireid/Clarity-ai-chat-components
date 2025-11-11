@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { ApiTable } from '@/components/Demo/ApiTable'
+import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground'
 import { ChatWindowAnatomy } from '@/components/Diagrams/ChatWindowAnatomy'
@@ -14,91 +14,85 @@ export const metadata: Metadata = {
   description: 'The main container component for chat interfaces',
 }
 
-const chatWindowProps = [
+const chatWindowProps: Prop[] = [
   {
     name: 'messages',
     type: 'Message[]',
     required: true,
-    description: 'Array of message objects to display in the chat',
+    description: 'Array of message objects to display in the chat. Each message must have id, chatId, role, content, createdAt, updatedAt, and status fields.',
   },
   {
     name: 'onSendMessage',
-    type: '(text: string) => void',
+    type: '(content: string) => void | Promise<void>',
     required: true,
-    description: 'Callback function triggered when user sends a message',
+    description: 'Callback function triggered when user sends a message. Can be async for API calls.',
+  },
+  {
+    name: 'isLoading',
+    type: 'boolean',
+    default: 'false',
+    description: 'Whether the chat is currently loading a response. Shows a loading indicator.',
+  },
+  {
+    name: 'emptyState',
+    type: 'ReactNode',
+    description: 'Custom content to display when there are no messages.',
   },
   {
     name: 'placeholder',
     type: 'string',
     default: '"Type a message..."',
-    description: 'Placeholder text for the message input field',
+    description: 'Placeholder text for the message input field.',
   },
   {
     name: 'height',
     type: 'string | number',
     default: '"100%"',
-    description: 'Height of the chat window (CSS value or pixels)',
+    description: 'Height of the chat window. Can be a CSS value (e.g., "600px") or number (pixels).',
   },
   {
     name: 'theme',
     type: '"light" | "dark" | "auto"',
     default: '"auto"',
-    description: 'Color theme for the chat interface',
+    description: 'Color theme for the chat interface. "auto" follows system preference.',
   },
   {
     name: 'showTimestamps',
     type: 'boolean',
     default: 'true',
-    description: 'Whether to display message timestamps',
+    description: 'Whether to display message timestamps.',
   },
   {
     name: 'showAvatars',
     type: 'boolean',
     default: 'true',
-    description: 'Whether to display user avatars',
+    description: 'Whether to display user avatars next to messages.',
   },
   {
     name: 'enableMarkdown',
     type: 'boolean',
     default: 'false',
-    description: 'Enable markdown rendering in messages',
+    description: 'Enable markdown rendering in messages. Supports code blocks, links, and formatting.',
   },
   {
-    name: 'enableReactions',
-    type: 'boolean',
-    default: 'false',
-    description: 'Allow users to react to messages with emojis',
+    name: 'onEditMessage',
+    type: '(messageId: string, newContent: string) => void',
+    description: 'Callback when user edits a message. Enables edit functionality.',
   },
   {
-    name: 'typingUsers',
-    type: 'User[]',
-    description: 'Array of users currently typing',
-  },
-  {
-    name: 'onReaction',
-    type: '(messageId: string, emoji: string) => void',
-    description: 'Callback when user adds a reaction to a message',
-  },
-  {
-    name: 'onMessageEdit',
-    type: '(messageId: string, newText: string) => void',
-    description: 'Callback when user edits a message',
-  },
-  {
-    name: 'onMessageDelete',
+    name: 'onRegenerateMessage',
     type: '(messageId: string) => void',
-    description: 'Callback when user deletes a message',
+    description: 'Callback when user requests message regeneration. Enables regenerate button.',
   },
   {
-    name: 'animationPreset',
-    type: '"none" | "smooth" | "bouncy" | "spring"',
-    default: '"smooth"',
-    description: 'Animation style for message transitions',
+    name: 'onDeleteMessage',
+    type: '(messageId: string) => void',
+    description: 'Callback when user deletes a message. Enables delete functionality.',
   },
   {
     name: 'className',
     type: 'string',
-    description: 'Additional CSS classes to apply to the container',
+    description: 'Additional CSS classes to apply to the container element.',
   },
 ]
 
@@ -167,7 +161,7 @@ export default function Example() {
 
       <h2 id="import">Import</h2>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'`}
         language="tsx"
@@ -222,7 +216,7 @@ function BasicChat() {
 
       <p>Add user avatars to messages for a more personalized experience:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const [messages, setMessages] = useState<Message[]>([
   {
     id: '1',
@@ -251,7 +245,7 @@ return (
 
       <p>Show when other users are typing:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const [typingUsers, setTypingUsers] = useState([
   { id: 'bot', name: 'Assistant' }
 ])
@@ -270,7 +264,7 @@ return (
 
       <p>Enable emoji reactions for messages:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const handleReaction = (messageId: string, emoji: string) => {
   setMessages(messages.map(msg => 
     msg.id === messageId
@@ -301,7 +295,7 @@ return (
 
       <p>ChatWindow supports light, dark, and auto themes:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`<ChatWindow
   messages={messages}
   onSendMessage={handleSend}
@@ -321,7 +315,7 @@ return (
 
       <p>Choose from different animation styles:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`// Smooth animations (default)
 <ChatWindow animationPreset="smooth" {...props} />
 
@@ -338,13 +332,13 @@ return (
 
       <h2 id="props">Props</h2>
 
-      <ApiTable data={chatWindowProps} />
+      <PropsTable props={chatWindowProps} />
 
       <h2 id="message-type">Message Type</h2>
 
       <p>The Message interface defines the structure of chat messages:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`interface Message {
   id: string
   text: string
@@ -365,7 +359,7 @@ return (
 
       <h3>Multi-User Chat</h3>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const users = {
   user1: {
     id: 'user1',
@@ -410,7 +404,7 @@ return (
 
       <h3>With File Attachments</h3>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const [messages, setMessages] = useState([
   {
     id: '1',

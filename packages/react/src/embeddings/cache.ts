@@ -219,14 +219,13 @@ export class SemanticEmbeddingCache implements EmbeddingCache {
     hits: 0,
     misses: 0,
   }
-  // @ts-expect-error - Reserved for future semantic similarity implementation
-  private _similarityThreshold: number
+  private _similarityThreshold: number // Reserved for future semantic similarity implementation
   
   constructor(similarityThreshold = 0.95) {
     this._similarityThreshold = similarityThreshold
   }
   
-  // @ts-expect-error - Reserved for future semantic similarity implementation
+  // Reserved for future semantic similarity implementation
   private _cosineSimilarity(a: number[], b: number[]): number {
     let dotProduct = 0
     let normA = 0

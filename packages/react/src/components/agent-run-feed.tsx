@@ -78,7 +78,7 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
   }
 
   return (
-    <Card className={cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-[0_24px_54px_rgba(15,23,42,0.18)]', className)}>
+    <Card className={cn('border-border/50 bg-background shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]', className)}>
       <CardHeader className="space-y-3">
         <div className="flex flex-col gap-1">
           <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
@@ -95,7 +95,7 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-                className="rounded-2xl border border-border/50 bg-[hsl(var(--surface-muted))] p-4 shadow-[0_12px_32px_rgba(15,23,42,0.12)]"
+                className="rounded-lg border border-border/50 bg-muted p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
@@ -131,7 +131,7 @@ export const AgentRunFeed: React.FC<AgentRunFeedProps> = ({
                 )}
 
                 {step.outputPreview && (
-                  <div className="mt-3 rounded-xl border border-dashed border-border/40 bg-background/70 p-3 text-xs text-muted-foreground/80">
+                  <div className="mt-3 rounded-lg border border-dashed border-border/50 bg-background/70 p-3 text-xs text-muted-foreground/80">
                     {step.outputPreview}
                   </div>
                 )}

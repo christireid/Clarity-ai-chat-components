@@ -14,7 +14,6 @@ interface LivePreviewProps {
 
 export function LivePreview({ code, theme, autoRun }: LivePreviewProps) {
   const [error, setError] = useState<string | null>(null)
-  const [output, setOutput] = useState<string>('')
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {
@@ -106,16 +105,7 @@ export function LivePreview({ code, theme, autoRun }: LivePreviewProps) {
         />
       </div>
 
-      {output && (
-        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-            Console Output
-          </h3>
-          <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono">
-            {output}
-          </pre>
-        </div>
-      )}
+      
     </div>
   )
 }

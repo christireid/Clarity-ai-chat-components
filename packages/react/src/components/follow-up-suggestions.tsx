@@ -46,7 +46,7 @@ const gridClasses = {
   list: 'flex flex-col gap-3',
 }
 
-export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
+export function FollowUpSuggestions({
   suggestions,
   onSelect,
   title = 'Suggested follow-ups',
@@ -63,16 +63,16 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
     <motion.li
       key={suggestion.id}
       layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.2, delay: index * 0.05 }}
+      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.96 }}
+      transition={{ duration: 0.25, delay: index * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
     >
       <Button
         variant="outline"
         className={cn(
-          'group flex w-full flex-col items-start gap-2 rounded-xl p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary/40 hover:bg-accent/5',
-          layout === 'list' && 'rounded-lg'
+          'group flex w-full flex-col items-start gap-2 rounded-2xl p-4 text-left border-border/40 shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all duration-200 ease-out hover:-translate-y-[2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:border-primary/50 hover:bg-accent/50',
+          layout === 'list' && 'rounded-2xl'
         )}
         onClick={() => onSelect(suggestion)}
         aria-label={`Follow up with ${suggestion.title}`}
@@ -80,11 +80,15 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
         <div className="flex w-full items-center justify-between gap-3">
           <div className="flex items-center gap-3 text-sm font-semibold text-foreground">
             {suggestion.icon && (
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20 group-hover:bg-primary/15 transition-colors">
+              <motion.span
+                className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-primary/20 group-hover:bg-primary/20 transition-all duration-200"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              >
                 {suggestion.icon}
-              </span>
+              </motion.span>
             )}
-            <span className="group-hover:text-primary transition-colors">
+            <span className="group-hover:text-primary transition-colors duration-200">
               {suggestion.title}
             </span>
           </div>
@@ -135,7 +139,7 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2, delay: index * 0.05 }}
-          className="rounded-xl border bg-muted/50 p-4 shadow-sm"
+          className="rounded-lg border bg-muted/50 p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
         >
           <div className="flex items-center gap-3">
             <Skeleton width={32} height={32} rounded="lg" variant="shimmer" />
@@ -159,10 +163,10 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
     >
-      <Card ref={containerRef} className={cn('shadow-lg', className)}>
+      <Card ref={containerRef} className={cn('shadow-[0_10px_24px_rgba(15,23,42,0.12)]', className)}>
         <CardHeader className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -208,7 +212,7 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.2 }}
-              className="rounded-xl border border-dashed bg-muted/50 p-8 text-center"
+              className="rounded-lg border border-dashed bg-muted/50 p-8 text-center"
             >
               <svg
                 className="mx-auto h-12 w-12 text-muted-foreground/40 mb-3"
@@ -233,6 +237,6 @@ export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
       </Card>
     </motion.div>
   )
-})
+}
 
 FollowUpSuggestions.displayName = 'FollowUpSuggestions'

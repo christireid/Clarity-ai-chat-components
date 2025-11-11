@@ -1,16 +1,16 @@
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { ApiTable } from '@/components/Demo/ApiTable'
+import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 
 export const metadata: Metadata = {
   title: 'CommandPalette',
   description: 'Keyboard-driven command interface (Cmd+K)',
 }
 
-const commandPaletteProps = [
+const commandPaletteProps: Prop[] = [
   {
     name: 'items',
     type: 'CommandItem[]',
@@ -97,14 +97,14 @@ export default function CommandPalettePage() {
 
       <h2 id="import">Import</h2>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { CommandPalette } from '@clarity-chat/react'`}
         language="tsx"
       />
 
       <h2 id="basic-usage">Basic Usage</h2>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { useState, useEffect } from 'react'
 import { CommandPalette, CommandItem } from '@clarity-chat/react'
 
@@ -168,7 +168,7 @@ function App() {
 
       <p>Organize commands into logical groups:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const commands: CommandItem[] = [
   // Navigation
   {
@@ -221,7 +221,7 @@ function App() {
 
       <p>Use emoji or React components as icons:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { MessageSquare, Search, Settings } from 'lucide-react'
 
 const commands: CommandItem[] = [
@@ -252,7 +252,7 @@ const commands: CommandItem[] = [
 
       <p>Display keyboard shortcuts for commands:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const commands: CommandItem[] = [
   {
     id: 'save',
@@ -288,7 +288,7 @@ const commands: CommandItem[] = [
 
       <p>The CommandPalette includes built-in fuzzy search:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`// User types "nm" → matches "New Message"
 // User types "stgs" → matches "Settings"
 // User types "dk" → matches "Dark Mode"
@@ -306,7 +306,7 @@ const commands: CommandItem[] = [
 
       <p>Execute custom logic when commands are selected:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const commands: CommandItem[] = [
   {
     id: 'delete-chat',
@@ -341,7 +341,7 @@ const commands: CommandItem[] = [
 
       <p>Generate commands based on application state:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`function useCommands() {
   const { user } = useAuth()
   const { chats } = useChats()
@@ -392,11 +392,11 @@ function App() {
 
       <h2 id="props">Props</h2>
 
-      <ApiTable data={commandPaletteProps} />
+      <PropsTable props={commandPaletteProps} data={commandPaletteProps} />
 
       <h2 id="types">Type Definitions</h2>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`interface CommandItem {
   id: string
   label: string
@@ -413,7 +413,7 @@ function App() {
 
       <h2 id="styling">Custom Styling</h2>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`<CommandPalette
   items={commands}
   open={open}
@@ -428,7 +428,7 @@ function App() {
 
       <h3>Full-Featured Command Palette</h3>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { useState, useEffect, useMemo } from 'react'
 import { CommandPalette, CommandItem } from '@clarity-chat/react'
 import { 

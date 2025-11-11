@@ -30,7 +30,7 @@ export interface SettingsPanelProps {
   className?: string
 }
 
-export const SettingsPanel = React.memo(function SettingsPanel({
+export function SettingsPanel({
   settings,
   onUpdate,
   onReset,
@@ -412,7 +412,7 @@ export const SettingsPanel = React.memo(function SettingsPanel({
                   ))}
                 </div>
 
-                <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-sm">
+                <div className="p-4 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]">
                   <h4 className="text-sm font-medium mb-2">
                     ⚠️ Privacy Notice
                   </h4>
@@ -515,6 +515,6 @@ export const SettingsPanel = React.memo(function SettingsPanel({
       </div>
     </Card>
   )
-})
+}
 
 SettingsPanel.displayName = 'SettingsPanel'

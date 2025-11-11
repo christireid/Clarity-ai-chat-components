@@ -85,13 +85,16 @@ export const MessageOptimized = React.memo(
         if (isUser) return null
 
         return (
-          <ReactMarkdown
+          <>
+            {/* @ts-expect-error - ReactMarkdown v9 has type compatibility issues */}
+            <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeHighlight as any]}
             components={markdownComponents}
           >
             {message.content}
           </ReactMarkdown>
+          </>
         )
       }, [message.content, isUser])
 

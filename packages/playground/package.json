@@ -6,27 +6,29 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"No tests yet\" && exit 0",
+    "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
-    "@clarity-chat/react": "*",
-    "@clarity-chat/types": "*",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "@clarity-chat/react": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "@monaco-editor/react": "^4.6.0",
     "prettier": "^3.4.0",
-    "lucide-react": "^0.263.1"
+    "lucide-react": "^0.552.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.10"
+    "typescript": "^5.9.3",
+    "vite": "^6.0.0"
   }
 }

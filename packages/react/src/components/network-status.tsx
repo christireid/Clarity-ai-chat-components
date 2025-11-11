@@ -170,7 +170,6 @@ export function NetworkStatus({
    * Handle online event
    */
   const handleOnline = React.useCallback(() => {
-    console.log('[NetworkStatus] Network online')
     setInternalStatus('online')
     checkConnection()
   }, [checkConnection])
@@ -179,7 +178,6 @@ export function NetworkStatus({
    * Handle offline event
    */
   const handleOffline = React.useCallback(() => {
-    console.log('[NetworkStatus] Network offline')
     setInternalStatus('offline')
     setLatency(null)
   }, [])
@@ -281,7 +279,7 @@ export function NetworkStatus({
       aria-live="polite"
       aria-label={`Network status: ${config.label}`}
     >
-      <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg shadow-xl border">
+      <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] border border-border/50 backdrop-blur-sm">
         {/* Status indicator dot */}
         <div className="relative flex h-3 w-3">
           <div

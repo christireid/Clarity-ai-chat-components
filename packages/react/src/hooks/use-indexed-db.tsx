@@ -154,6 +154,7 @@ export function useIndexedDB<T>(
     async (value: T): Promise<void> => {
       if (!isAvailable || !key || !dbRef.current) {
         // Fallback to localStorage
+        if (!key) throw new Error('Key is required for storage')
         try {
           localStorage.setItem(key, JSON.stringify(value))
           setData(value)
@@ -191,6 +192,7 @@ export function useIndexedDB<T>(
   const load = React.useCallback(async (): Promise<T | null> => {
     if (!isAvailable || !key) {
       // Fallback to localStorage
+      if (!key) return null
       try {
         const item = localStorage.getItem(key)
         if (!item) return null
@@ -235,6 +237,7 @@ export function useIndexedDB<T>(
   const remove = React.useCallback(async (): Promise<void> => {
     if (!isAvailable || !key) {
       // Fallback to localStorage
+      if (!key) return
       localStorage.removeItem(key)
       setData(null)
       return

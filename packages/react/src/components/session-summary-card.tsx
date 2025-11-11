@@ -105,7 +105,7 @@ const defaultTitle = 'Conversation recap'
 const defaultSubtitle =
   'Share this executive summary with stakeholders or use the follow-up plan to continue the workflow.'
 
-export const SessionSummaryCard = React.memo(function SessionSummaryCard({
+export function SessionSummaryCard({
   summary,
   metrics,
   onAction,
@@ -116,13 +116,13 @@ export const SessionSummaryCard = React.memo(function SessionSummaryCard({
 }: SessionSummaryCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
     >
       <Card
         className={cn(
-          'shadow-xl hover:shadow-2xl transition-shadow duration-200',
+          'shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:shadow-[0_10px_15px_-3px_rgb(0_0_0_/_0.1),0_4px_6px_-4px_rgb(0_0_0_/_0.1)] transition-shadow duration-150 ease-out',
           className
         )}
       >
@@ -189,7 +189,7 @@ export const SessionSummaryCard = React.memo(function SessionSummaryCard({
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2, delay: index * 0.05 }}
-                  className="flex items-start gap-3 rounded-xl border bg-muted/50 px-4 py-3 text-sm text-muted-foreground shadow-sm"
+                  className="flex items-start gap-3 rounded-lg border bg-muted/50 px-4 py-3 text-sm text-muted-foreground shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
                 >
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
                     {index + 1}
@@ -207,7 +207,7 @@ export const SessionSummaryCard = React.memo(function SessionSummaryCard({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2, delay: index * 0.05 }}
-                className="flex flex-col gap-2 rounded-xl border bg-muted/50 px-4 py-3 text-sm shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                className="flex flex-col gap-2 rounded-lg border bg-muted/50 px-4 py-3 text-sm shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] hover:-translate-y-px transition-all duration-150 ease-out"
               >
                 <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {metric.label}
@@ -295,6 +295,6 @@ export const SessionSummaryCard = React.memo(function SessionSummaryCard({
       </Card>
     </motion.div>
   )
-})
+}
 
 SessionSummaryCard.displayName = 'SessionSummaryCard'

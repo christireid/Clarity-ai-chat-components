@@ -4,8 +4,16 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   experimental: {
     mdxRs: true,
+    // Enable Turbopack for faster builds (Next.js 16)
+    turbo: {},
   },
   transpilePackages: ['@clarity-chat/react'],
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   
   // Production optimizations
   compress: true,

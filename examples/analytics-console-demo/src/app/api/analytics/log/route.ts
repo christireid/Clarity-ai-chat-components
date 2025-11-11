@@ -38,11 +38,14 @@ export async function POST(request: NextRequest) {
     }
     
     // Add entry
+    const promptCount = Number(promptTokens)
+    const completionCount = Number(completionTokens)
     const entry = addEntry({
       provider,
       model,
-      promptTokens: Number(promptTokens),
-      completionTokens: Number(completionTokens),
+      promptTokens: promptCount,
+      completionTokens: completionCount,
+      totalTokens: promptCount + completionCount,
       cost: Number(cost) || 0,
       responseTime: Number(responseTime) || 0,
       userId,

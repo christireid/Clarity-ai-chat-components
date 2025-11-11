@@ -1,9 +1,11 @@
+'use client'
+
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const avatarVariants = cva(
-  'relative flex shrink-0 overflow-hidden rounded-full border-2 border-background shadow-sm transition-all duration-200',
+  'relative flex shrink-0 overflow-hidden rounded-full ring-2 ring-background/80 shadow-xs transition-all duration-200 ease-out',
   {
     variants: {
       size: {
@@ -32,23 +34,21 @@ export interface AvatarProps
   hoverable?: boolean
   /** Custom status badge content */
   statusBadge?: React.ReactNode
+  ref?: React.Ref<HTMLDivElement>
 }
 
-const Avatar = React.memo(
-  React.forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
-    {
-      className,
-      size,
-      src,
-      alt,
-      fallback,
-      status,
-      hoverable = false,
-      statusBadge,
-      ...props
-    },
-    ref
-  ) {
+const Avatar = ({
+  className,
+  size,
+  src,
+  alt,
+  fallback,
+  status,
+  hoverable = false,
+  statusBadge,
+  ref,
+  ...props
+}: AvatarProps) => {
     const [imageError, setImageError] = React.useState(false)
 
     const getFallbackText = () => {
@@ -65,10 +65,10 @@ const Avatar = React.memo(
     }
 
     const statusColors = {
-      online: 'bg-green-500 ring-green-400/30',
-      offline: 'bg-gray-400 ring-gray-300/30',
-      away: 'bg-yellow-500 ring-yellow-400/30',
-      busy: 'bg-red-500 ring-red-400/30',
+      online: 'bg-green-500 ring-green-400/40',
+      offline: 'bg-gray-400 ring-gray-300/40',
+      away: 'bg-amber-500 ring-amber-400/40',
+      busy: 'bg-red-500 ring-red-400/40',
     }
 
     const statusSizes = {
@@ -86,7 +86,7 @@ const Avatar = React.memo(
         className={cn(
           avatarVariants({ size, className }),
           hoverable &&
-            'hover:scale-110 hover:shadow-md cursor-pointer hover:-translate-y-0.5'
+            'hover:scale-[1.02] hover:shadow-sm cursor-pointer hover:-translate-y-[1px]'
         )}
         {...props}
       >
@@ -98,7 +98,7 @@ const Avatar = React.memo(
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none">
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none animate-in fade-in duration-200">
             {getFallbackText()}
           </div>
         )}
@@ -107,13 +107,13 @@ const Avatar = React.memo(
         {status && !statusBadge && (
           <span
             className={cn(
-              'absolute bottom-0 right-0 block rounded-full border-2 border-background shadow-sm ring-2',
+              'absolute bottom-0 right-0 block rounded-full ring-2 ring-background/80',
               statusSizes[size || 'default'],
               statusColors[status]
             )}
           >
-            {status === 'online' && (
-              <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
+            {(status === 'online' || status === 'away') && (
+              <span className="absolute inset-0 rounded-full animate-ping opacity-60" style={{ backgroundColor: status === 'online' ? 'rgb(34, 197, 94)' : 'rgb(245, 158, 11)' }} />
             )}
           </span>
         )}
@@ -124,8 +124,7 @@ const Avatar = React.memo(
         )}
       </div>
     )
-  })
-)
+}
 
 Avatar.displayName = 'Avatar'
 

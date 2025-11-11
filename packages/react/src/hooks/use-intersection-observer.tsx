@@ -54,19 +54,26 @@ export function useIntersectionObserver(
 
   const frozen = entry?.isIntersecting && freezeOnceVisible
 
+  // Store options in ref to avoid recreating observer when object references change
+  const optionsRef = React.useRef({ threshold, root, rootMargin })
+  
+  React.useLayoutEffect(() => {
+    optionsRef.current = { threshold, root, rootMargin }
+  }, [threshold, root, rootMargin])
+
   React.useEffect(() => {
     const node = ref.current
-    const hasIOSupport = !!window.IntersectionObserver
+    const hasIOSupport = typeof window !== 'undefined' && !!window.IntersectionObserver
 
     if (!hasIOSupport || frozen || !node) return
 
-    const observerParams = { threshold, root, rootMargin }
+    const observerParams = optionsRef.current
     const observer = new IntersectionObserver(([entry]) => setEntry(entry), observerParams)
 
     observer.observe(node)
 
     return () => observer.disconnect()
-  }, [threshold, root, rootMargin, frozen])
+  }, [frozen]) // Only recreate when frozen state changes
 
   return {
     ref,

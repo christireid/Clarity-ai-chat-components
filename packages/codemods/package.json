@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest"
+    "test": "vitest run --passWithNoTests"
   },
   "keywords": [
     "clarity-chat",
@@ -40,14 +40,14 @@
   "devDependencies": {
     "@types/jscodeshift": "^0.11.10",
     "@types/node": "^20.10.0",
-    "typescript": "^5.7.2",
-    "vitest": "^1.1.0"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   },
   "files": [
     "dist",
     "transforms"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }

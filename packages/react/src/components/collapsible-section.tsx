@@ -35,7 +35,7 @@ export interface CollapsibleSectionProps {
 /**
  * Collapsible section with smooth height animation
  */
-export const CollapsibleSection = React.memo(function CollapsibleSection({
+export function CollapsibleSection({
   open: controlledOpen,
   onOpenChange,
   defaultOpen = false,
@@ -60,7 +60,7 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
   }
 
   return (
-    <div className={cn('border rounded-lg', className)}>
+    <div className={cn('border border-border/50 rounded-lg shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]', className)}>
       {/* Trigger */}
       <motion.button
         type="button"
@@ -68,9 +68,9 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
         disabled={disabled}
         className={cn(
           'w-full flex items-center justify-between p-4',
-          'text-left font-medium transition-colors',
-          'hover:bg-muted/50',
-          'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+          'text-left font-medium transition-all duration-150 ease-out',
+          'hover:bg-muted/30',
+          'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1',
           'disabled:opacity-50 disabled:cursor-not-allowed',
           triggerClassName
         )}
@@ -106,7 +106,7 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
             transition={{ duration: duration, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className={cn('p-4 pt-0 border-t', contentClassName)}>
+            <div className={cn('p-4 pt-0 border-t border-border/50', contentClassName)}>
               {children}
             </div>
           </motion.div>
@@ -114,7 +114,7 @@ export const CollapsibleSection = React.memo(function CollapsibleSection({
       </AnimatePresence>
     </div>
   )
-})
+}
 
 /**
  * Accordion - Multiple collapsible sections where only one can be open
@@ -140,7 +140,7 @@ export interface AccordionProps {
   duration?: number
 }
 
-export const Accordion = React.memo(function Accordion({
+export function Accordion({
   items,
   openId: controlledOpenId,
   onOpenChange,
@@ -199,7 +199,7 @@ export const Accordion = React.memo(function Accordion({
       })}
     </div>
   )
-})
+}
 
 Accordion.displayName = 'Accordion'
 
@@ -221,7 +221,7 @@ export interface ExpandableListItemProps {
   className?: string
 }
 
-export const ExpandableListItem = React.memo(function ExpandableListItem({
+export function ExpandableListItem({
   title,
   badge,
   icon,
@@ -244,6 +244,6 @@ export const ExpandableListItem = React.memo(function ExpandableListItem({
       {children}
     </CollapsibleSection>
   )
-})
+}
 
 ExpandableListItem.displayName = 'ExpandableListItem'

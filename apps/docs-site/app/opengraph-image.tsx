@@ -65,9 +65,9 @@ export default async function Image() {
               color: '#94a3b8',
             }}
           >
-            <span>📦 24 Components</span>
+            <span>📦 70+ Components</span>
             <span>•</span>
-            <span>🪝 6 Hooks</span>
+            <span>🪝 35+ Hooks</span>
             <span>•</span>
             <span>♿ Accessible</span>
           </div>

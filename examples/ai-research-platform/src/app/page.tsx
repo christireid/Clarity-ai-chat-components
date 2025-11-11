@@ -6,8 +6,8 @@ import {
   ThemeProvider,
   themes,
   useMessageOperations,
-  useTokenOptimization,
-  TokenOptimizationDashboard,
+  // useTokenOptimization, // TODO: Fix metrics structure
+  // TokenOptimizationDashboard, // TODO: Fix metrics structure
   AgentRunFeed,
   ContextVisualizer,
   KnowledgeBaseViewer,
@@ -29,6 +29,10 @@ export default function ResearchPlatform() {
   const [activeView, setActiveView] = useState<'chat' | 'dashboard' | 'knowledge'>('chat')
   const [researchTopic, setResearchTopic] = useState('')
   
+  if (typeof window === 'undefined') {
+    return null
+  }
+
   const {
     messages,
     addMessage,
@@ -37,14 +41,14 @@ export default function ResearchPlatform() {
     branchConversation,
   } = useMessageOperations()
 
-  const {
-    metrics,
-    enableOptimization,
-    disableOptimization,
-  } = useTokenOptimization({
-    enabled: true,
-    trackMetrics: true,
-  })
+  // const {
+  //   metrics,
+  //   enableOptimization,
+  //   disableOptimization,
+  // } = useTokenOptimization({
+  //   enabled: true,
+  //   trackMetrics: true,
+  // })
 
   const { streamMessage, isStreaming } = useStreamingSSE({
     url: '/api/research',
@@ -145,7 +149,8 @@ export default function ResearchPlatform() {
               <aside className="w-80 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-y-auto">
                 <div className="p-4 space-y-4">
                   {/* Token Optimization */}
-                  <motion.div
+                  {/* Commented out until metrics structure is fixed */}
+                  {/* <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
@@ -155,7 +160,7 @@ export default function ResearchPlatform() {
                       showBreakdown={true}
                       compact={true}
                     />
-                  </motion.div>
+                  </motion.div> */}
 
                   {/* Research Agents Status */}
                   <motion.div
@@ -292,27 +297,30 @@ export default function ResearchPlatform() {
           )}
 
           {activeView === 'dashboard' && (
-            <ResearchDashboard
-              messages={messages}
-              metrics={metrics}
-              researchTopic={researchTopic}
-            />
+            <div className="h-full p-6 flex items-center justify-center">
+              <p className="text-gray-500">Dashboard view - Coming soon</p>
+            </div>
+            // <ResearchDashboard
+            //   messages={messages}
+            //   metrics={metrics}
+            //   researchTopic={researchTopic}
+            // />
           )}
 
           {activeView === 'knowledge' && (
-            <div className="h-full p-6">
-              <KnowledgeGraph
-                nodes={[
-                  { id: '1', label: 'Quantum Computing', type: 'concept' },
-                  { id: '2', label: 'Superposition', type: 'concept' },
-                  { id: '3', label: 'Entanglement', type: 'concept' },
-                ]}
-                edges={[
-                  { source: '1', target: '2', strength: 0.9 },
-                  { id: '3', target: '2', strength: 0.8 },
-                ]}
-              />
-            </div>
+              <div className="h-full p-6">
+                <KnowledgeGraph
+                  nodes={[
+                    { id: '1', label: 'Quantum Computing', type: 'concept' },
+                    { id: '2', label: 'Superposition', type: 'concept' },
+                    { id: '3', label: 'Entanglement', type: 'concept' },
+                  ]}
+                  edges={[
+                    { source: '1', target: '2', strength: 0.9 },
+                    { source: '3', target: '2', strength: 0.8 },
+                  ]}
+                />
+              </div>
           )}
         </div>
 

@@ -42,7 +42,7 @@ export function HeroSection({
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 text-sm font-medium mb-8"
           >
             <Sparkles className="w-4 h-4" />
-            <span>70+ Components · 30+ Hooks · 150+ Animations</span>
+            <span>70+ Components · 35+ Hooks · 150+ Animations</span>
           </motion.div>
 
           {/* Title */}
@@ -102,7 +102,7 @@ export function HeroSection({
               <div className="text-sm text-text-secondary">Components</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-brand-500 mb-2">30+</div>
+              <div className="text-4xl font-bold text-brand-500 mb-2">35+</div>
               <div className="text-sm text-text-secondary">Hooks</div>
             </div>
             <div>

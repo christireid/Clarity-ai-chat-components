@@ -3,6 +3,11 @@
  * Record and replay conversation states for debugging
  */
 
+import type { TableColumn } from '../ui/table'
+import { table, keyValueTable } from '../ui/table'
+import { infoBox } from '../ui/box'
+import chalk from 'chalk'
+
 export interface StateSnapshot {
   id: string
   timestamp: Date
@@ -284,45 +289,82 @@ export function createTimeTravelHook(timeTravel: TimeTravelDebugger) {
 }
 
 /**
- * Visual timeline renderer
+ * Visual timeline renderer with beautiful formatting
  */
 export function renderTimeline(timeTravel: TimeTravelDebugger): string {
   const timeline = timeTravel.getTimeline()
-  const lines: string[] = []
+  const output: string[] = []
 
-  lines.push('═'.repeat(80))
-  lines.push('TIME-TRAVEL DEBUGGER TIMELINE')
-  lines.push('═'.repeat(80))
-  lines.push('')
+  // Header
+  output.push('')
+  output.push(infoBox('Time-Travel Debugger Timeline', '⏱️  Timeline'))
+  output.push('')
 
-  timeline.forEach((entry, index) => {
+  if (timeline.length === 0) {
+    output.push(chalk.gray('No snapshots recorded yet.'))
+    output.push('')
+    return output.join('\n')
+  }
+
+  // Timeline table
+  const columns: TableColumn[] = [
+    { header: '#', width: 4, align: 'right' },
+    { header: 'Time', width: 12, color: chalk.gray },
+    { header: 'Label', width: 20, color: chalk.yellow },
+    { header: 'Messages', width: 10, align: 'center', color: chalk.cyan },
+    { header: 'Action', width: 20 },
+    { header: 'Status', width: 10, align: 'center' },
+  ]
+
+  const tableData = timeline.map((entry, index) => {
     const { snapshot, transition, isCurrent } = entry
-    const marker = isCurrent ? '▶' : ' '
     const time = snapshot.timestamp.toLocaleTimeString()
-    const label = snapshot.label || snapshot.id.substr(0, 12)
+    const label = snapshot.label || snapshot.id.substring(0, 12)
+    const action = transition?.action || '—'
+    const status = isCurrent ? chalk.green('▶ Current') : chalk.gray('○')
 
-    lines.push(`${marker} [${index}] ${time} - ${label}`)
-    lines.push(`   Messages: ${snapshot.messages.length} | Config: ${Object.keys(snapshot.config).length} keys`)
-
-    if (transition) {
-      lines.push(`   Action: ${transition.action}`)
-      if (transition.diff.messages) {
-        lines.push(`   └─ +${transition.diff.messages.added} messages`)
-      }
-      if (transition.diff.config) {
-        lines.push(`   └─ Config changed: ${transition.diff.config.keys.join(', ')}`)
-      }
-    }
-
-    lines.push('')
+    return [
+      index.toString(),
+      time,
+      label,
+      snapshot.messages.length.toString(),
+      action,
+      status,
+    ]
   })
 
-  const stats = timeTravel.getStats()
-  lines.push('─'.repeat(80))
-  lines.push(`Total Snapshots: ${stats.totalSnapshots} | Time Span: ${Math.round(stats.timeSpan / 1000)}s`)
-  lines.push(`Average Messages: ${stats.averageMessageCount.toFixed(1)}`)
-  lines.push('')
+  output.push(table(tableData, columns))
+  output.push('')
 
-  return lines.join('\n')
+  // Current snapshot details
+  const current = timeline.find(e => e.isCurrent)
+  if (current) {
+    const details: Record<string, string> = {
+      'Snapshot ID': chalk.gray(current.snapshot.id.substring(0, 20) + '...'),
+      'Messages': chalk.cyan(current.snapshot.messages.length.toString()),
+      'Config Keys': chalk.cyan(Object.keys(current.snapshot.config).length.toString()),
+    }
+
+    if (current.snapshot.label) {
+      details['Label'] = chalk.yellow(current.snapshot.label)
+    }
+
+    output.push(infoBox(keyValueTable(details), '📍 Current Snapshot'))
+    output.push('')
+  }
+
+  // Statistics
+  const stats = timeTravel.getStats()
+  const statsData: Record<string, string> = {
+    'Total Snapshots': chalk.cyan(stats.totalSnapshots.toString()),
+    'Total Transitions': chalk.cyan(stats.totalTransitions.toString()),
+    'Time Span': chalk.cyan(`${Math.round(stats.timeSpan / 1000)}s`),
+    'Avg Messages': chalk.cyan(stats.averageMessageCount.toFixed(1)),
+  }
+
+  output.push(infoBox(keyValueTable(statsData), '📊 Statistics'))
+  output.push('')
+
+  return output.join('\n')
 }
 

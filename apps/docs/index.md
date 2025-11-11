@@ -14,12 +14,12 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: View on GitHub
-      link: https://github.com/yourusername/clarity-chat
+      link: https://github.com/christireid/Clarity-ai-chat-components
 
 features:
   - icon: 🎨
     title: Beautiful UI Components
-    details: 43 professionally designed chat components with modern aesthetics and smooth animations
+    details: 70+ production-ready chat components with modern aesthetics and smooth animations
   
   - icon: ⚡
     title: Model-Agnostic Adapters
@@ -39,7 +39,7 @@ features:
   
   - icon: ♿
     title: Accessible
-    details: WCAG 2.1 compliant with keyboard navigation and screen reader support
+    details: WCAG 2.1 AAA compliant with keyboard navigation and screen reader support
   
   - icon: 📱
     title: Responsive
@@ -100,7 +100,7 @@ Every component is battle-tested with comprehensive error handling, loading stat
 
 ### 🎯 Developer Experience
 
-Intuitive API design with TypeScript support, comprehensive documentation, and 5 working demo applications to get you started quickly.
+Intuitive API design with TypeScript support, comprehensive documentation, and 17+ working demo applications to get you started quickly.
 
 ### 🔋 Batteries Included
 
@@ -114,21 +114,21 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 
 ### 📚 Comprehensive Documentation
 
-- 23 Storybook stories with interactive examples
-- 5 complete demo applications
-- 25+ cookbook recipes
+- 77 Storybook stories with interactive examples
+- 17+ complete demo applications
+- 33+ cookbook recipes
 - Integration guides for Next.js, Remix, Vite
 - API reference with TypeScript definitions
 
 ## What's Included
 
-- **43 Chat Components**: ChatWindow, StreamingMessage, ModelSelector, ToolInvocationCard, CitationCard, and more
+- **70+ Chat Components**: ChatWindow, StreamingMessage, ModelSelector, ToolInvocationCard, CitationCard, and more
 - **Model Adapters**: OpenAI, Anthropic, Google AI with cost estimation
-- **21 React Hooks**: useChat, useStreamingChat, useMessageOperations, etc.
+- **35+ React Hooks**: useChat, useStreamingChat, useMessageOperations, etc.
 - **Type Definitions**: Complete TypeScript types and interfaces
 - **77 Storybook Stories**: Interactive component documentation
-- **Demo Applications**: 5 working examples
-- **Cookbook**: 25+ recipes for common use cases
+- **Demo Applications**: 17+ working examples
+- **Cookbook**: 33+ recipes for common use cases
 
 ## Next Steps
 
@@ -136,9 +136,34 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 
 - [Getting Started](/guide/getting-started) - Learn the basics
 - [Quick Start](/guide/quick-start) - Build your first chat app
+- [Tutorials](/guide/tutorials) - Step-by-step guides
 - [Components](/guide/components) - Explore all components
 - [API Reference](/api/components) - Complete API documentation
 - [Examples](/examples/) - See working demos
 - [Cookbook](/cookbook) - Recipes for common patterns
+
+</div>
+
+## Advanced Features
+
+<div class="vp-doc">
+
+- [Model Adapters](/guide/model-adapters) - Switch between AI providers
+- [AI Agents](/guide/agents) - Build agents with tool calling
+- [RAG System](/guide/rag) - Retrieval-augmented generation
+- [Reranking](/guide/reranking) - Improve search result relevance
+- [Safety & Moderation](/guide/safety) - Content filtering and PII detection
+- [Memory System](/guide/memory) - Persistent memory across conversations
+- [Observability](/guide/observability) - Monitoring and tracing
+- [Token Optimization](/guide/token-optimization) - Reduce costs and improve performance
+- [Performance Guide](/guide/performance) - Optimize your application
+- [Migration Guide](/guide/migration) - Upgrade between versions
+- [Plugins](/guide/plugins) - Extend functionality with plugins
+- [Audit Logging](/guide/audit-logging) - Track actions for compliance
+- [Usage Quotas](/guide/usage-quotas) - Control costs and enforce limits
+- [RBAC](/guide/rbac) - Role-based access control
+- [Multi-Tenancy](/guide/multi-tenancy) - Build multi-tenant applications
+- [Webhooks](/guide/webhooks) - Event-driven notifications
+- [Prompt Templates](/guide/prompts) - Manage and render AI prompts
 
 </div>

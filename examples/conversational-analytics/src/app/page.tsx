@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useCallback, useMemo } from 'react'
 import {
   ChatWindow,
@@ -26,10 +28,13 @@ export default function ConversationalAnalytics() {
   const [generatedCharts, setGeneratedCharts] = useState<any[]>([])
   const [insights, setInsights] = useState<any[]>([])
 
-  const {
-    messages,
-    addMessage,
-  } = useMessageOperations()
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  const messageOps = useMessageOperations() || {}
+  const messages = messageOps.messages ?? []
+  const addMessage = messageOps.addMessage ?? (() => {})
 
   const { streamMessage, isStreaming } = useStreamingSSE({
     url: '/api/analytics',
@@ -200,19 +205,19 @@ export default function ConversationalAnalytics() {
                               <div className="prose dark:prose-invert max-w-none">
                                 {message.content}
                               </div>
-                              {message.metadata.insights && (
-                                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
-                                  <h4 className="font-semibold mb-2 flex items-center">
-                                    <Sparkles className="w-4 h-4 mr-2 text-yellow-600 dark:text-yellow-400" />
-                                    AI Insights
-                                  </h4>
-                                  <ul className="space-y-1">
-                                    {message.metadata.insights.map((insight: string, idx: number) => (
-                                      <li key={idx} className="text-sm">{insight}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
+                                {Array.isArray(message.metadata?.insights) && (
+                                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                                    <h4 className="font-semibold mb-2 flex items-center">
+                                      <Sparkles className="w-4 h-4 mr-2 text-yellow-600 dark:text-yellow-400" />
+                                      AI Insights
+                                    </h4>
+                                    <ul className="space-y-1">
+                                      {message.metadata?.insights?.map((insight: string, idx: number) => (
+                                        <li key={idx} className="text-sm">{insight}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
                             </div>
                           )
                         }

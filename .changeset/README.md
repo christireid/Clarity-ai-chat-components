@@ -1,126 +1,299 @@
 # Changesets
 
-This directory contains changeset files that describe changes to packages in this repository.
+This directory contains [Changesets](https://github.com/changesets/changesets) - automated changelog and version management for the Clarity Chat Components monorepo.
 
-## What are changesets?
+## What are Changesets?
 
-Changesets are a way to manage versioning and changelogs with a focus on monorepos. They help automate the process of:
+Changesets are a way to manage versions, changelogs, and publishing in a monorepo. They allow developers to:
 
-1. **Version bumping** - Automatically increment versions based on semantic versioning
-2. **Changelog generation** - Create CHANGELOG.md files automatically
-3. **Publishing** - Publish packages to npm with proper versioning
+- **Declare Changes**: Document what changed and why
+- **Automate Versioning**: Automatically bump package versions
+- **Generate Changelogs**: Create beautiful changelogs automatically
+- **Coordinate Releases**: Manage dependencies between packages
 
-## How to use changesets
+## Quick Start
 
-### Adding a changeset
+### 1. Creating a Changeset
 
-When you make changes to the codebase:
+When you make a change that should be included in the changelog:
 
 ```bash
+# Run the changeset CLI
 npx changeset
+
+# Follow the prompts:
+# 1. Select which packages changed
+# 2. Choose version bump type (major/minor/patch)
+# 3. Write a summary of the change
 ```
 
-This will:
-1. Ask which packages have changed
-2. Ask what type of change it is (major/minor/patch)
-3. Ask for a summary of the changes
-4. Create a changeset file in `.changeset/`
+### 2. Changeset Types
 
-### Example changeset session
-
-```
-$ npx changeset
-🦋  Which packages would you like to include?
-  ✔ @clarity-chat/react
-
-🦋  Which type of change is this for @clarity-chat/react?
-  ○ patch (bugfix, performance, etc)
-  ● minor (new feature)
-  ○ major (breaking change)
-
-🦋  Please enter a summary for this change:
-Added voice input component with speech-to-text
-
-🦋  Changeset added! 
+**Major (Breaking Change)**
+```bash
+# For API changes that break existing code
+✓ @clarity-chat/primitives (major)
+Summary: Removed deprecated Button variant prop
 ```
 
-### Consuming changesets
+**Minor (New Feature)**
+```bash
+# For new features that don't break existing code
+✓ @clarity-chat/react (minor)
+Summary: Added new ChatWindow component with streaming support
+```
 
-When ready to release:
+**Patch (Bug Fix)**
+```bash
+# For bug fixes and minor improvements
+✓ @clarity-chat/primitives (patch)
+Summary: Fixed focus ring color in dark mode
+```
+
+### 3. Committing Changes
 
 ```bash
-# Update package versions
-npx changeset version
+# Add the changeset file
+git add .changeset/*.md
 
-# Build packages
-npm run build
-
-# Publish to npm
-npx changeset publish
+# Commit with your code changes
+git commit -m "feat: add new feature with changeset"
 ```
 
-## Automated releases (CI)
+## Changeset Workflow
 
-Our GitHub Actions workflow automatically:
-1. Creates a release PR when changesets are added
-2. Publishes packages when the PR is merged
-3. Creates GitHub releases
-4. Updates CHANGELOG.md
+### For Contributors
 
-## Changeset types
+1. **Make Your Changes**
+   ```bash
+   # Edit code, add features, fix bugs
+   ```
 
-### Patch (0.0.X)
-- Bug fixes
-- Performance improvements
-- Documentation updates
-- Refactoring (no API changes)
+2. **Create Changeset**
+   ```bash
+   npx changeset
+   ```
 
-### Minor (0.X.0)
+3. **Commit Everything**
+   ```bash
+   git add .
+   git commit -m "feat: your feature"
+   git push
+   ```
+
+### For Maintainers
+
+1. **Review Changes**
+   ```bash
+   # Review pending changesets
+   npx changeset status
+   ```
+
+2. **Version Packages**
+   ```bash
+   # This updates package.json versions and generates CHANGELOG.md
+   npx changeset version
+   ```
+
+3. **Publish Packages**
+   ```bash
+   # Build and publish to npm
+   npx changeset publish
+   ```
+
+## Changeset File Format
+
+Changesets are stored as markdown files in `.changeset/` directory:
+
+```markdown
+---
+"@clarity-chat/primitives": patch
+"@clarity-chat/react": minor
+---
+
+Added new ChatWindow component with real-time streaming support.
+
+This includes:
+- New ChatWindow component
+- Streaming message renderer
+- Auto-scroll behavior
+- Enhanced loading states
+```
+
+## Best Practices
+
+### Writing Good Summaries
+
+✅ **Good**
+```
+Added dark mode support to all primitive components
+
+- Button, Input, Card now respond to theme changes
+- Uses CSS variables for easy customization
+- Includes smooth transition animations
+```
+
+❌ **Bad**
+```
+Updated stuff
+```
+
+### When to Create Changesets
+
+**Always create a changeset for:**
 - New features
-- New components
-- New hooks
-- Backward-compatible changes
-
-### Major (X.0.0)
+- Bug fixes
 - Breaking changes
-- API redesigns
-- Removed features
-- Incompatible updates
+- Performance improvements
+- API changes
 
-## Best practices
+**Don't create changesets for:**
+- Documentation-only changes
+- Internal refactoring (no API change)
+- Test updates
+- Build configuration changes
 
-1. **Create changesets for every PR** that changes package code
-2. **Be descriptive** in changeset summaries
-3. **Group related changes** in a single changeset
-4. **Follow semantic versioning** strictly
-5. **Don't commit changeset files** manually (use `npx changeset`)
+### Semantic Versioning
 
-## Manual workflow
+Follow [SemVer](https://semver.org/):
 
-For manual releases:
+- **Major (x.0.0)**: Breaking changes that require user action
+- **Minor (0.x.0)**: New features, backwards compatible
+- **Patch (0.0.x)**: Bug fixes, backwards compatible
 
+## Commands
+
+### Create Changeset
 ```bash
-# 1. Create changesets for your changes
 npx changeset
-
-# 2. Commit the changeset
-git add .changeset
-git commit -m "chore: add changeset"
-
-# 3. When ready to release
-npx changeset version
-git add .
-git commit -m "chore: version packages"
-
-# 4. Build
-npm run build
-
-# 5. Publish
-npx changeset publish
-git push --follow-tags
 ```
 
-## Learn more
+### Check Status
+```bash
+npx changeset status
+```
 
-- [Changesets documentation](https://github.com/changesets/changesets)
-- [Versioning guide](https://semver.org/)
+### Version Packages
+```bash
+npx changeset version
+```
+
+### Publish Packages
+```bash
+npx changeset publish
+```
+
+### Pre-release
+```bash
+# Enter pre-release mode
+npx changeset pre enter alpha
+
+# Create versions
+npx changeset version
+
+# Exit pre-release mode
+npx changeset pre exit
+```
+
+## CI/CD Integration
+
+Changesets work with GitHub Actions:
+
+1. **PR Checks**: Verifies changeset exists for code changes
+2. **Version PR**: Creates automated PR with version bumps
+3. **Publish**: Publishes packages on merge to main
+
+## Examples
+
+### Example 1: Adding a Feature
+
+```bash
+# Make changes
+git add src/components/new-feature.tsx
+
+# Create changeset
+npx changeset
+# Select: @clarity-chat/react (minor)
+# Summary: "Added NewFeature component"
+
+# Commit
+git commit -m "feat: add NewFeature component"
+```
+
+### Example 2: Fixing a Bug
+
+```bash
+# Make changes
+git add src/components/button.tsx
+
+# Create changeset
+npx changeset
+# Select: @clarity-chat/primitives (patch)
+# Summary: "Fixed Button focus ring in Safari"
+
+# Commit
+git commit -m "fix: button focus ring in Safari"
+```
+
+### Example 3: Breaking Change
+
+```bash
+# Make changes
+git add src/components/chat-input.tsx
+
+# Create changeset
+npx changeset
+# Select: @clarity-chat/react (major)
+# Summary: "Removed deprecated onSend prop, use onSubmit instead"
+
+# Commit
+git commit -m "feat!: remove deprecated onSend prop"
+```
+
+## Configuration
+
+Configuration is in `.changeset/config.json`:
+
+```json
+{
+  "changelog": ["@changesets/changelog-github", { "repo": "..." }],
+  "commit": false,
+  "baseBranch": "main",
+  "access": "restricted"
+}
+```
+
+## Troubleshooting
+
+### No Changesets Found
+```bash
+# Create a changeset first
+npx changeset
+```
+
+### Version Conflicts
+```bash
+# Pull latest changes
+git pull
+
+# Re-run version
+npx changeset version
+```
+
+### Publish Errors
+```bash
+# Ensure you're authenticated
+npm login
+
+# Check package.json publishConfig
+```
+
+## Resources
+
+- [Changesets Documentation](https://github.com/changesets/changesets)
+- [Semantic Versioning](https://semver.org/)
+- [Conventional Commits](https://www.conventionalcommits.org/)
+
+---
+
+**Questions?** See the [Changesets GitHub](https://github.com/changesets/changesets) or ask the maintainers.

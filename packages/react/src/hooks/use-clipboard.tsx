@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 
 export interface UseClipboardOptions {
   /**
@@ -52,19 +52,28 @@ export interface UseClipboardReturn {
 export function useClipboard(options: UseClipboardOptions = {}): UseClipboardReturn {
   const { timeout = 2000, onSuccess, onError } = options
 
-  const [value, setValue] = React.useState<string>('')
-  const [copied, setCopied] = React.useState<boolean>(false)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const [value, setValue] = useState<string>('')
+  const [copied, setCopied] = useState<boolean>(false)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  
+  // Store callbacks in refs to avoid recreating copy function
+  const onSuccessRef = useRef(onSuccess)
+  const onErrorRef = useRef(onError)
+  
+  useLayoutEffect(() => {
+    onSuccessRef.current = onSuccess
+    onErrorRef.current = onError
+  }, [onSuccess, onError])
 
-  const copy = React.useCallback(
+  const copy = useCallback(
     async (text: string) => {
       try {
         // Modern clipboard API
-        if (navigator?.clipboard?.writeText) {
+        if (typeof navigator !== 'undefined' && navigator?.clipboard?.writeText) {
           await navigator.clipboard.writeText(text)
         }
-        // Fallback for older browsers
-        else {
+        // Fallback for older browsers or non-secure contexts
+        else if (typeof document !== 'undefined') {
           const textArea = document.createElement('textarea')
           textArea.value = text
           textArea.style.position = 'fixed'
@@ -79,38 +88,42 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
           } finally {
             textArea.remove()
           }
+        } else {
+          throw new Error('Clipboard API not available')
         }
 
         setValue(text)
         setCopied(true)
-        onSuccess?.()
+        onSuccessRef.current?.()
 
         // Reset after timeout
-        if (timeoutRef.current) {
+        if (timeoutRef.current !== undefined) {
           clearTimeout(timeoutRef.current)
         }
         timeoutRef.current = setTimeout(() => {
           setCopied(false)
+          timeoutRef.current = undefined
         }, timeout)
       } catch (error) {
         const err = error instanceof Error ? error : new Error('Failed to copy')
-        onError?.(err)
+        onErrorRef.current?.(err)
         throw err
       }
     },
-    [timeout, onSuccess, onError]
+    [timeout] // Callbacks accessed via refs
   )
 
-  const reset = React.useCallback(() => {
+  const reset = useCallback(() => {
     setCopied(false)
-    if (timeoutRef.current) {
+    if (timeoutRef.current !== undefined) {
       clearTimeout(timeoutRef.current)
+      timeoutRef.current = undefined
     }
   }, [])
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
       }
     }

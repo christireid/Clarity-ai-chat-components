@@ -2,13 +2,84 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { PromptSuggestions, type PromptSuggestion } from '@clarity-chat/react'
 import { SparklesIcon, CodeIcon, FileTextIcon, MessageSquareIcon } from 'lucide-react'
 
+/**
+ * **PromptSuggestions Component**
+ * 
+ * Display prompt suggestions for starting or continuing conversations.
+ * Supports starter prompts and follow-up prompts with icons and categories.
+ * 
+ * **Key Features:**
+ * - Starter prompts for new conversations
+ * - Follow-up prompts for continuing
+ * - Icons and categories
+ * - Usage statistics
+ * - Confidence scores
+ * - Accessible with keyboard navigation
+ * 
+ * **Use Cases:**
+ * - Chat interfaces
+ * - AI assistants
+ * - Prompt libraries
+ * - User onboarding
+ */
 const meta: Meta<typeof PromptSuggestions> = {
   title: 'Components/PromptSuggestions',
   component: PromptSuggestions,
   parameters: {
     layout: 'padded',
+    docs: {
+      description: {
+        component: `
+Display prompt suggestions for starting or continuing conversations.
+Supports starter prompts and follow-up prompts with icons and categories.
+
+## Features
+
+- ✅ Starter prompts for new conversations
+- ✅ Follow-up prompts for continuing
+- ✅ Icons and categories
+- ✅ Usage statistics
+- ✅ Confidence scores
+- ✅ Accessible with keyboard navigation
+- ✅ Smooth animations
+
+## Basic Usage
+
+\`\`\`tsx
+<PromptSuggestions
+  suggestions={prompts}
+  onSelect={(suggestion) => {
+    console.log('Selected:', suggestion)
+  }}
+/>
+\`\`\`
+        `,
+      },
+    },
   },
   tags: ['autodocs'],
+  argTypes: {
+    suggestions: {
+      description: 'Array of prompt suggestions',
+      control: { type: 'object' },
+    },
+    onSelect: {
+      description: 'Callback when a prompt is selected',
+      action: 'prompt-selected',
+    },
+    showIcons: {
+      description: 'Show icons for prompts',
+      control: 'boolean',
+    },
+    showUsageCount: {
+      description: 'Show usage count statistics',
+      control: 'boolean',
+    },
+    maxSuggestions: {
+      description: 'Maximum number of suggestions to display',
+      control: { type: 'number', min: 1, max: 20 },
+    },
+  },
 }
 
 export default meta

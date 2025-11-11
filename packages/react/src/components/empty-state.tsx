@@ -21,7 +21,7 @@ import {
   InfoIcon,
 } from './icons'
 import { InteractiveButton } from './interactive-card'
-import { createScaleVariant } from '../animations'
+// import { createScaleVariant } from '../animations' // Reserved for future use
 
 export interface EmptyStateProps {
   /** Icon to display */
@@ -48,7 +48,7 @@ export interface EmptyStateProps {
 /**
  * Base Empty State Component
  */
-export const EmptyState = React.memo(function EmptyState({
+export function EmptyState({
   icon,
   title,
   description,
@@ -56,13 +56,11 @@ export const EmptyState = React.memo(function EmptyState({
   secondaryAction,
   className,
 }: EmptyStateProps) {
-  const scaleVariant = createScaleVariant(0.95, 'normal', 'spring')
-
   return (
     <motion.div
-      variants={scaleVariant}
-      initial="initial"
-      animate="animate"
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
         'flex flex-col items-center justify-center text-center p-8 space-y-6',
         className
@@ -71,28 +69,38 @@ export const EmptyState = React.memo(function EmptyState({
       {/* Icon */}
       {icon && (
         <motion.div
-          initial={{ scale: 0, rotate: -180 }}
+          initial={{ scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
-          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm border border-primary/10"
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
+          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-[0_4px_12px_rgba(0,0,0,0.08)] ring-1 ring-primary/20"
         >
           {icon}
         </motion.div>
       )}
 
       {/* Content */}
-      <div className="space-y-3 max-w-md">
-        <h3 className="text-xl font-semibold">{title}</h3>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
+        className="space-y-3 max-w-md"
+      >
+        <h3 className="text-xl font-semibold text-foreground">{title}</h3>
         {description && (
-          <p className="text-base text-muted-foreground leading-relaxed">
+          <p className="text-base text-muted-foreground/80 leading-relaxed">
             {description}
           </p>
         )}
-      </div>
+      </motion.div>
 
       {/* Actions */}
       {(action || secondaryAction) && (
-        <div className="flex gap-3">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
+          className="flex gap-3"
+        >
           {action && (
             <InteractiveButton
               variant={action.variant || 'primary'}
@@ -109,18 +117,18 @@ export const EmptyState = React.memo(function EmptyState({
               {secondaryAction.label}
             </InteractiveButton>
           )}
-        </div>
+        </motion.div>
       )}
     </motion.div>
   )
-})
+}
 
 EmptyState.displayName = 'EmptyState'
 
 /**
  * Empty Chat State
  */
-export const EmptyChatState = React.memo(function EmptyChatState({
+export function EmptyChatState({
   onStartChat,
   className,
 }: {
@@ -144,14 +152,14 @@ export const EmptyChatState = React.memo(function EmptyChatState({
       className={className}
     />
   )
-})
+}
 
 EmptyChatState.displayName = 'EmptyChatState'
 
 /**
  * No Search Results State
  */
-export const NoSearchResultsState = React.memo(function NoSearchResultsState({
+export function NoSearchResultsState({
   searchQuery,
   onClearSearch,
   className,
@@ -180,14 +188,14 @@ export const NoSearchResultsState = React.memo(function NoSearchResultsState({
       className={className}
     />
   )
-})
+}
 
 NoSearchResultsState.displayName = 'NoSearchResultsState'
 
 /**
  * No Conversations State
  */
-export const NoConversationsState = React.memo(function NoConversationsState({
+export function NoConversationsState({
   onCreateConversation,
   className,
 }: {
@@ -211,14 +219,14 @@ export const NoConversationsState = React.memo(function NoConversationsState({
       className={className}
     />
   )
-})
+}
 
 NoConversationsState.displayName = 'NoConversationsState'
 
 /**
  * No Files State
  */
-export const NoFilesState = React.memo(function NoFilesState({
+export function NoFilesState({
   onUpload,
   className,
 }: {
@@ -242,14 +250,14 @@ export const NoFilesState = React.memo(function NoFilesState({
       className={className}
     />
   )
-})
+}
 
 NoFilesState.displayName = 'NoFilesState'
 
 /**
  * Error State
  */
-export const ErrorState = React.memo(function ErrorState({
+export function ErrorState({
   title = 'Something went wrong',
   description = 'An error occurred. Please try again.',
   onRetry,
@@ -287,14 +295,14 @@ export const ErrorState = React.memo(function ErrorState({
       className={className}
     />
   )
-})
+}
 
 ErrorState.displayName = 'ErrorState'
 
 /**
  * Success State
  */
-export const SuccessState = React.memo(function SuccessState({
+export function SuccessState({
   title,
   description,
   onContinue,
@@ -322,14 +330,14 @@ export const SuccessState = React.memo(function SuccessState({
       className={className}
     />
   )
-})
+}
 
 SuccessState.displayName = 'SuccessState'
 
 /**
  * Info State
  */
-export const InfoState = React.memo(function InfoState({
+export function InfoState({
   title,
   description,
   onAction,
@@ -352,14 +360,14 @@ export const InfoState = React.memo(function InfoState({
       className={className}
     />
   )
-})
+}
 
 InfoState.displayName = 'InfoState'
 
 /**
  * Loading State (with animated icon)
  */
-export const LoadingState = React.memo(function LoadingState({
+export function LoadingState({
   title = 'Loading...',
   description = 'Please wait while we load your content',
   className,
@@ -370,8 +378,9 @@ export const LoadingState = React.memo(function LoadingState({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
         'flex flex-col items-center justify-center text-center p-8 space-y-6',
         className
@@ -381,26 +390,31 @@ export const LoadingState = React.memo(function LoadingState({
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-        className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
+        className="w-12 h-12 border-4 border-primary/60 border-t-primary rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
       />
 
       {/* Content */}
-      <div className="space-y-2 max-w-sm">
-        <h3 className="text-lg font-semibold">{title}</h3>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+        className="space-y-2 max-w-sm"
+      >
+        <h3 className="text-lg font-semibold text-foreground">{title}</h3>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <p className="text-sm text-muted-foreground/80 leading-relaxed">{description}</p>
         )}
-      </div>
+      </motion.div>
     </motion.div>
   )
-})
+}
 
 LoadingState.displayName = 'LoadingState'
 
 /**
  * Offline State
  */
-export const OfflineState = React.memo(function OfflineState({
+export function OfflineState({
   onRetry,
   className,
 }: {
@@ -424,6 +438,6 @@ export const OfflineState = React.memo(function OfflineState({
       className={className}
     />
   )
-})
+}
 
 OfflineState.displayName = 'OfflineState'

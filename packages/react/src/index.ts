@@ -46,12 +46,14 @@ export * from './rbac'
 // Export all components
 export * from './components/message'
 export * from './components/message-metadata'
-export * from './components/message-list'
+// Note: MessageList is exported from virtualized-message-list below (smarter auto-virtualizing version)
+// export * from './components/message-list'
 export * from './components/chat-input'
 export * from './components/advanced-chat-input'
 export * from './components/chat-window'
 export * from './components/model-selector'
 export * from './components/streaming-message'
+export * from './components/stream-block'
 export * from './components/tool-invocation-card'
 export * from './components/citation-card'
 export * from './components/thinking-indicator'
@@ -79,6 +81,8 @@ export * from './components/persona-panel'
 export * from './components/conversation-timeline'
 export * from './components/memory-inspector'
 export * from './components/safety-status-card'
+export * from './components/audit-log-viewer'
+export * from './components/document-viewer'
 export * from './components/response-quality-meter'
 export * from './components/multi-modal-preview'
 export * from './components/agent-run-feed'
@@ -86,6 +90,7 @@ export * from './components/session-summary-card'
 export * from './components/workflow-suggestion-list'
 export * from './components/ai-ops'
 export * from './components/enterprise'
+export * from './components/analytics-dashboard'
 
 // Phase 3 Enhancement - Error Handling & Recovery
 export * from './components/error-boundary'
@@ -101,14 +106,28 @@ export * from './components/token-optimization-badge'
 export * from './components/context-visualizer'
 export * from './components/conversation-list'
 
+// v2.1 Blueprint Features - Conversation Branching
+export * from './components/conversation-branch-visualizer'
+
+// v2.1 Blueprint Features - Virtual Scrolling
+export * from './components/virtualized-message-list'
+
+// v2.1 Blueprint Features - Enhanced Markdown with LaTeX
+export * from './components/markdown-renderer-enhanced'
+
 // Export hooks
-export * from './hooks/use-chat'
+export {
+  useChat,
+  type UseChatOptions as UseChatOptionsLegacy,
+  type UseChatReturn as UseChatReturnLegacy,
+} from './hooks/use-chat'
 export * from './hooks/use-chat-enhanced'
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'
 export * from './hooks/use-streaming-sse'
 export * from './hooks/use-streaming-websocket'
+export * from './hooks/use-streamable-ui'
 export * from './hooks/use-auto-scroll'
 export * from './hooks/use-clipboard'
 export * from './hooks/use-debounce'
@@ -124,7 +143,6 @@ export * from './hooks/use-mounted'
 export * from './hooks/use-previous'
 export * from './hooks/use-toggle'
 export * from './hooks/use-window-size'
-
 // Phase 3 Enhancement - Error Recovery & Token Tracking
 export * from './hooks/use-error-recovery'
 export * from './hooks/use-token-tracker'
@@ -134,6 +152,7 @@ export * from './hooks/use-token-optimization'
 export * from './hooks/use-message-operations'
 export * from './hooks/use-message-history'
 export * from './hooks/use-realistic-typing'
+export * from './hooks/use-command-palette-commands'
 
 // Optimistic Updates
 export * from './hooks/use-optimistic-message'
@@ -145,27 +164,23 @@ export * from './hooks/use-performance'
 export * from './hooks/use-deferred-search'
 
 // Utility Functions (Model Fallback, Context Window, Rate Limiting, Hybrid Search, etc.)
+// Note: StreamChunk from './utils/streaming-helpers' conflicts with './adapters/types'
+// Export utils first, then explicitly export adapter StreamChunk
 export * from './utils'
+export type { StreamChunk } from './adapters/types'
 
-// StreamableValue utilities (Vercel AI SDK compatible)
-export * from './utils/streamable-value'
-
-// Chat helper utilities
-export * from './utils/chat-helpers'
-
-// Streaming parser utilities
-export * from './utils/streaming-parser'
-
-// Performance utilities
-export * from './utils/performance'
-export * from './utils/performance-optimization'
+// Note: The following are already exported via './utils' above
+// Kept here as documentation of what's available:
+// - StreamableValue utilities (./utils/streamable-value)
+// - Chat helpers (./utils/chat-helpers)
+// - Streaming parser (./utils/streaming-parser)
+// - Performance utilities (./utils/performance, ./utils/performance-optimization)
+// - Export utilities (./utils/export-utils)
 
 // Enhanced TypeScript types
 export * from './types/chat-types'
 
 // Optimized hooks
-export * from './hooks/use-chat-optimized'
-
 // Theme System
 export * from './theme'
 
@@ -212,8 +227,8 @@ export * from './analytics'
 // AI Features
 export * from './ai'
 
-// AI Memory & Context System
-export * from './memory'
+// Note: Memory system already exported via './utils' -> './utils/memory'
+// Kept here as documentation: AI Memory & Context System (./memory)
 
 // Error Tracking System
 export * from './error'
@@ -261,22 +276,16 @@ export * from './components/context-menu'
 export * from './components/theme-switcher'
 
 // Phase 8 - Undo/Redo Hook
-export * from './hooks/use-undo-redo'
-
 // Phase 8 - Haptic Feedback
-export * from './hooks/use-haptic'
-
 // ============================================================================
 // TOKEN OPTIMIZATION FEATURES
 // ============================================================================
 
 // Token Optimization Components
 export * from './components/token-optimization-dashboard'
+// token-optimization-badge already exported in Phase 3 section
 
 // Token Optimization Hooks
-export * from './hooks/use-prompt-compression'
 export * from './hooks/use-smart-cache'
 export * from './hooks/use-model-router'
-export * from './hooks/use-response-limiter'
-export * from './hooks/use-request-batcher'
 export * from './hooks/use-smart-throttle'

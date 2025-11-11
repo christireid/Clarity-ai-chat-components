@@ -20,57 +20,63 @@ export function isStringContent(
  */
 export function isArrayContent(
   content: CoreMessageContent
-): content is Array<{
-  type: 'text' | 'image' | 'tool-call' | 'tool-result'
-  [key: string]: any
-}> {
+): content is Extract<CoreMessageContent, Array<any>> {
   return Array.isArray(content)
 }
+
+/**
+ * Content part type
+ */
+type ContentPart = 
+  | { type: 'text'; text: string }
+  | { type: 'image'; image: string | ArrayBuffer }
+  | { type: 'tool-call'; toolCallId: string; toolName: string; args: Record<string, any> }
+  | { type: 'tool-result'; toolCallId: string; toolName: string; result: any }
 
 /**
  * Type guard for text content part
  */
 export function isTextContentPart(
-  part: CoreMessageContent extends Array<infer T> ? T : never
+  part: unknown
 ): part is { type: 'text'; text: string } {
-  return typeof part === 'object' && part !== null && 'type' in part && part.type === 'text'
+  return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'text'
 }
 
 /**
  * Type guard for image content part
  */
 export function isImageContentPart(
-  part: CoreMessageContent extends Array<infer T> ? T : never
+  part: unknown
 ): part is { type: 'image'; image: string | ArrayBuffer } {
-  return typeof part === 'object' && part !== null && 'type' in part && part.type === 'image'
+  return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'image'
 }
 
 /**
  * Type guard for tool call content part
  */
 export function isToolCallContentPart(
-  part: CoreMessageContent extends Array<infer T> ? T : never
+  part: unknown
 ): part is {
   type: 'tool-call'
   toolCallId: string
   toolName: string
   args: Record<string, any>
 } {
-  return typeof part === 'object' && part !== null && 'type' in part && part.type === 'tool-call'
+  return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'tool-call'
 }
 
 /**
  * Type guard for tool result content part
  */
 export function isToolResultContentPart(
-  part: CoreMessageContent extends Array<infer T> ? T : never
+  part: unknown
 ): part is {
   type: 'tool-result'
   toolCallId: string
   toolName: string
   result: any
 } {
-  return typeof part === 'object' && part !== null && 'type' in part && part.type === 'tool-result'
+  return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'tool-result'
 }
 
 /**
@@ -201,7 +207,7 @@ export class MessageValidator {
 /**
  * Type helper for inferring message content type
  */
-export type InferMessageContent<T> = T extends CoreMessage<infer C> ? C : never
+export type InferMessageContent<T extends CoreMessage> = T['content']
 
 /**
  * Type helper for creating message with specific content type

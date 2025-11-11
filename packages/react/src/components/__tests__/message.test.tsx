@@ -406,7 +406,7 @@ describe('Message Component', () => {
     it('should handle undefined optional props', () => {
       const messageWithFeedback = {
         ...mockAssistantMessage,
-        feedback: { type: 'up' as const, comment: undefined },
+        feedback: { type: 'up' as const, timestamp: new Date() },
       }
       expect(() =>
         render(<Message message={messageWithFeedback} />)

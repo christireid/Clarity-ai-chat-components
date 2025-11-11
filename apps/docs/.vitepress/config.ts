@@ -80,7 +80,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/yourusername/clarity-chat' },
+      { icon: 'github', link: 'https://github.com/christireid/Clarity-ai-chat-components' },
     ],
 
     footer: {
@@ -93,15 +93,36 @@ export default defineConfig({
     },
   },
 
-  vite: {
-    resolve: {
-      alias: {
-        '@clarity-chat/react': path.resolve(__dirname, '../../..', 'packages/react/src/index.ts'),
-        '@clarity-chat/primitives': path.resolve(__dirname, '../../..', 'packages/primitives/src/index.ts'),
-        '@clarity-chat/types': path.resolve(__dirname, '../../..', 'packages/types/src/index.ts'),
+    vite: {
+      resolve: {
+        alias: [
+          {
+            find: /^@clarity-chat\/react\/(.+)$/,
+            replacement: path.resolve(__dirname, '../../..', 'packages/react/src/$1'),
+          },
+          {
+            find: '@clarity-chat/react',
+            replacement: path.resolve(__dirname, '../../..', 'packages/react/src/index.ts'),
+          },
+          {
+            find: /^@clarity-chat\/primitives\/(.+)$/,
+            replacement: path.resolve(__dirname, '../../..', 'packages/primitives/src/$1'),
+          },
+          {
+            find: '@clarity-chat/primitives',
+            replacement: path.resolve(__dirname, '../../..', 'packages/primitives/src/index.ts'),
+          },
+          {
+            find: /^@clarity-chat\/types\/(.+)$/,
+            replacement: path.resolve(__dirname, '../../..', 'packages/types/src/$1'),
+          },
+          {
+            find: '@clarity-chat/types',
+            replacement: path.resolve(__dirname, '../../..', 'packages/types/src/index.ts'),
+          },
+        ],
+        dedupe: ['react', 'react-dom'],
       },
-      dedupe: ['react', 'react-dom'],
-    },
     ssr: {
       noExternal: ['@clarity-chat/react', '@clarity-chat/primitives', '@clarity-chat/types'],
     },
