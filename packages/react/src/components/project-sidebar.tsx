@@ -353,6 +353,6 @@ export function ProjectSidebar({
       )}
     </div>
   )
-})
+}
 
 ProjectSidebar.displayName = 'ProjectSidebar'

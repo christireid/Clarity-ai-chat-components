@@ -515,6 +515,6 @@ export function SettingsPanel({
       </div>
     </Card>
   )
-})
+}
 
 SettingsPanel.displayName = 'SettingsPanel'

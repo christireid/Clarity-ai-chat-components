@@ -232,6 +232,6 @@ export function MessageMetadata({
       )}
     </motion.div>
   )
-})
+}
 
 MessageMetadata.displayName = 'MessageMetadata'

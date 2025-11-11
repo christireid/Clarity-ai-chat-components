@@ -152,7 +152,7 @@ export function EmptyChatState({
       className={className}
     />
   )
-})
+}
 
 EmptyChatState.displayName = 'EmptyChatState'
 
@@ -188,7 +188,7 @@ export function NoSearchResultsState({
       className={className}
     />
   )
-})
+}
 
 NoSearchResultsState.displayName = 'NoSearchResultsState'
 
@@ -219,7 +219,7 @@ export function NoConversationsState({
       className={className}
     />
   )
-})
+}
 
 NoConversationsState.displayName = 'NoConversationsState'
 
@@ -250,7 +250,7 @@ export function NoFilesState({
       className={className}
     />
   )
-})
+}
 
 NoFilesState.displayName = 'NoFilesState'
 
@@ -295,7 +295,7 @@ export function ErrorState({
       className={className}
     />
   )
-})
+}
 
 ErrorState.displayName = 'ErrorState'
 
@@ -330,7 +330,7 @@ export function SuccessState({
       className={className}
     />
   )
-})
+}
 
 SuccessState.displayName = 'SuccessState'
 
@@ -360,7 +360,7 @@ export function InfoState({
       className={className}
     />
   )
-})
+}
 
 InfoState.displayName = 'InfoState'
 
@@ -407,7 +407,7 @@ export function LoadingState({
       </motion.div>
     </motion.div>
   )
-})
+}
 
 LoadingState.displayName = 'LoadingState'
 
@@ -438,6 +438,6 @@ export function OfflineState({
       className={className}
     />
   )
-})
+}
 
 OfflineState.displayName = 'OfflineState'

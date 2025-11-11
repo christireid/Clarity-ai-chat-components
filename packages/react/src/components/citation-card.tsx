@@ -234,6 +234,6 @@ export function CitationCard({
       </Card>
     </motion.div>
   )
-})
+}
 
 CitationCard.displayName = 'CitationCard'

@@ -386,7 +386,7 @@ export function BatchExportDialog({
       </DialogContent>
     </Dialog>
   )
-})
+}
 
 // Helper functions
 function formatBytes(bytes: number): string {

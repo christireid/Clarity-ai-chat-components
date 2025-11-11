@@ -237,6 +237,6 @@ export function FollowUpSuggestions({
       </Card>
     </motion.div>
   )
-})
+}
 
 FollowUpSuggestions.displayName = 'FollowUpSuggestions'

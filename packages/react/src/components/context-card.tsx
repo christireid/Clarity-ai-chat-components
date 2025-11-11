@@ -292,6 +292,6 @@ export function ContextCard({
       </Card>
     </motion.div>
   )
-})
+}
 
 ContextCard.displayName = 'ContextCard'
