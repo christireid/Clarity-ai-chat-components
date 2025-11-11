@@ -991,11 +991,19 @@ export function ChatWithStages() {
 Allow users to edit messages, regenerate responses, and delete messages with full undo/redo support.
 
 ```tsx
-import { ChatWindow, useMessageOperations } from '@clarity-chat/react'
+import { 
+  ChatWindow, 
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
 import { useState, useCallback } from 'react'
 import type { Message } from '@clarity-chat/types'
 
 export function ChatWithOperations() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
+  const [editContent, setEditContent] = useState('')
+
   const {
     messages: operationMessages,
     addMessage,
@@ -1014,7 +1022,6 @@ export function ChatWithOperations() {
     },
     onRegenerate: (messageId) => {
       console.log('Regenerating:', messageId)
-      handleRegenerate(messageId)
     },
     onDelete: (messageId) => {
       console.log('Message deleted:', messageId)
@@ -1032,19 +1039,37 @@ export function ChatWithOperations() {
     status: 'sent' as const,
   }))
 
-  const [isLoading, setIsLoading] = useState(false)
-
   const handleEdit = useCallback((messageId: string) => {
     const message = messages.find(m => m.id === messageId)
     if (!message) return
 
-    // In a real app, show an inline editor
-    const newContent = prompt('Edit message:', message.content) || message.content
-    if (newContent !== message.content) {
-      editMessage(messageId, newContent)
-      // Optionally re-send from this point
+    setEditingMessageId(messageId)
+    setEditContent(message.content)
+  }, [messages])
+
+  const handleSaveEdit = useCallback(async () => {
+    if (!editingMessageId) return
+
+    const message = messages.find(m => m.id === editingMessageId)
+    if (!message || editContent === message.content) {
+      setEditingMessageId(null)
+      return
     }
-  }, [messages, editMessage])
+
+    editMessage(editingMessageId, editContent)
+    setEditingMessageId(null)
+
+    // Optionally re-send from this point if it's a user message
+    if (message.role === 'user') {
+      // Find all messages after this one and remove them
+      const index = messages.findIndex(m => m.id === editingMessageId)
+      const messagesToRemove = messages.slice(index + 1)
+      messagesToRemove.forEach(msg => deleteMessage(msg.id))
+
+      // Re-send the edited message
+      await handleSend(editContent)
+    }
+  }, [editingMessageId, editContent, messages, editMessage, deleteMessage])
 
   const handleRegenerate = useCallback(async (messageId: string) => {
     const message = messages.find(m => m.id === messageId)
@@ -1063,8 +1088,20 @@ export function ChatWithOperations() {
         // Call API to regenerate
         const response = await fetch('/api/chat', {
           method: 'POST',
-          body: JSON.stringify({ message: userMessage.content }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message: userMessage.content,
+            history: messages.slice(0, index - 1).map(m => ({
+              role: m.role,
+              content: m.content,
+            })),
+          }),
         })
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`)
+        }
+
         const data = await response.json()
 
         // Add new response
@@ -1074,13 +1111,15 @@ export function ChatWithOperations() {
           content: data.response,
         })
       }
+    } catch (error) {
+      console.error('Failed to regenerate:', error)
     } finally {
       setIsLoading(false)
     }
   }, [messages, deleteMessage, addMessage])
 
   const handleDelete = useCallback((messageId: string) => {
-    if (confirm('Delete this message?')) {
+    if (window.confirm('Delete this message? This action can be undone.')) {
       deleteMessage(messageId)
     }
   }, [deleteMessage])
@@ -1092,40 +1131,113 @@ export function ChatWithOperations() {
       content,
     })
 
-    // Call API and add response...
-  }, [addMessage])
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'chat-1',
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, addMessage])
 
   return (
-    <div>
-      {/* Undo/Redo Controls */}
-      <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
-        <button onClick={undo} disabled={!canUndo}>
-          ↶ Undo
-        </button>
-        <button onClick={redo} disabled={!canRedo}>
-          ↷ Redo
-        </button>
-      </div>
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        {/* Undo/Redo Controls */}
+        <div className="flex items-center justify-between p-4 border-b bg-card">
+          <h1 className="text-xl font-semibold">Chat with Operations</h1>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={undo}
+              disabled={!canUndo}
+              className="px-3 py-1.5 text-sm rounded-md border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent"
+            >
+              ↶ Undo
+            </button>
+            <button
+              onClick={redo}
+              disabled={!canRedo}
+              className="px-3 py-1.5 text-sm rounded-md border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent"
+            >
+              ↷ Redo
+            </button>
+          </div>
+        </div>
 
-      <ChatWindow
-        messages={messages}
-        isLoading={isLoading}
-        onSendMessage={handleSend}
-        onEditMessage={handleEdit}
-        onRegenerateMessage={handleRegenerate}
-        onDeleteMessage={handleDelete}
-      />
-    </div>
+        {/* Inline Edit Modal */}
+        {editingMessageId && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-card p-6 rounded-lg shadow-lg max-w-2xl w-full mx-4">
+              <h2 className="text-lg font-semibold mb-4">Edit Message</h2>
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                className="w-full p-3 border rounded-md min-h-[100px]"
+                autoFocus
+              />
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  onClick={() => setEditingMessageId(null)}
+                  className="px-4 py-2 text-sm rounded-md border hover:bg-accent"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <ChatWindow
+          messages={messages}
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+          onEditMessage={handleEdit}
+          onRegenerateMessage={handleRegenerate}
+          onDeleteMessage={handleDelete}
+        />
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
 
-**Features:**
-- ✅ Edit user messages
-- ✅ Regenerate AI responses
-- ✅ Delete any message
-- ✅ Undo/Redo support
-- ✅ Full operation history
+**Key Features:**
+- ✅ Edit user messages with inline editor
+- ✅ Regenerate AI responses with context
+- ✅ Delete any message with confirmation
+- ✅ Undo/Redo support with visual feedback
+- ✅ Full operation history tracking
+- ✅ Error handling and recovery
+- ✅ TypeScript types throughout
+- ✅ Modern UI with Tailwind CSS
 
 ---
 
@@ -1133,29 +1245,96 @@ export function ChatWithOperations() {
 
 ### Recipe 10: Next.js App Router Integration
 
-Use with Next.js 14+ App Router.
+Use with Next.js 14+ App Router with Server Actions and streaming support.
 
 ```tsx
 // app/chat/page.tsx
 'use client'
 
-import { ChatWindow } from '@clarity-chat/react'
-import { useState } from 'react'
+import { 
+  ChatWindow, 
+  useMessageOperations,
+  ErrorBoundary,
+  NetworkStatus 
+} from '@clarity-chat/react'
+import { useState, useCallback, useEffect } from 'react'
+import type { Message } from '@clarity-chat/types'
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
 
-  const handleSend = async (content: string) => {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({ message: content }),
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'default-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  const handleSend = useCallback(async (content: string) => {
+    // Add user message
+    addMessage({
+      chatId: 'default-chat',
+      role: 'user',
+      content,
     })
-    
-    const data = await response.json()
-    // Update messages...
-  }
 
-  return <ChatWindow messages={messages} onSendMessage={handleSend} />
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      
+      // Add AI response
+      addMessage({
+        chatId: 'default-chat',
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, addMessage])
+
+  return (
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        <NetworkStatus />
+        <ChatWindow 
+          messages={messages} 
+          isLoading={isLoading}
+          onSendMessage={handleSend} 
+        />
+      </div>
+    </ErrorBoundary>
+  )
 }
 ```
 
@@ -1164,21 +1343,116 @@ export default function ChatPage() {
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI()
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
 export async function POST(request: Request) {
-  const { message } = await request.json()
+  try {
+    const { message, history = [] } = await request.json()
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages: [{ role: 'user', content: message }],
-  })
+    if (!message) {
+      return NextResponse.json(
+        { error: 'Message is required' },
+        { status: 400 }
+      )
+    }
 
-  return NextResponse.json({
-    response: completion.choices[0].message.content,
-  })
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4-turbo',
+      messages: [
+        ...history,
+        { role: 'user', content: message },
+      ],
+      temperature: 0.7,
+      max_tokens: 2000,
+    })
+
+    const response = completion.choices[0]?.message?.content
+
+    if (!response) {
+      return NextResponse.json(
+        { error: 'No response from AI' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ response })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return NextResponse.json(
+      { error: 'Failed to process chat request' },
+      { status: 500 }
+    )
+  }
 }
 ```
+
+```tsx
+// app/api/chat/stream/route.ts (Optional: Streaming support)
+import { NextResponse } from 'next/server'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+export async function POST(request: Request) {
+  try {
+    const { message, history = [] } = await request.json()
+
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-4-turbo',
+      messages: [
+        ...history,
+        { role: 'user', content: message },
+      ],
+      stream: true,
+    })
+
+    const encoder = new TextEncoder()
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || ''
+            if (content) {
+              controller.enqueue(encoder.encode(content))
+            }
+          }
+          controller.close()
+        } catch (error) {
+          controller.error(error)
+        }
+      },
+    })
+
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    })
+  } catch (error) {
+    console.error('Stream error:', error)
+    return NextResponse.json(
+      { error: 'Failed to stream response' },
+      { status: 500 }
+    )
+  }
+}
+```
+
+**Key Features:**
+- ✅ Next.js 14+ App Router support
+- ✅ Server Actions integration
+- ✅ Streaming API route option
+- ✅ Error handling
+- ✅ Message history context
+- ✅ TypeScript types
+- ✅ Network status detection
+- ✅ Error boundaries
 
 ---
 
