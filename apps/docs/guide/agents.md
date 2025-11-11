@@ -308,7 +308,6 @@ const agent = new ReactAgent({
 
 ## Next Steps
 
-- [Tool Invocation Card](/api/components/tool-invocation-card) - Display tool calls
-- [Agent Run Feed](/api/components/agent-run-feed) - Show execution steps
+- [Components API](/api/components) - Display tool calls and agent execution
 - [Memory System](/guide/memory) - Learn about memory management
-- [API Reference](/api/agents) - Complete agent API
+- [Model Adapters API](/api/model-adapters) - Complete adapter API

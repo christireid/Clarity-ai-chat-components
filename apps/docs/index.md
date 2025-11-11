@@ -100,7 +100,7 @@ Every component is battle-tested with comprehensive error handling, loading stat
 
 ### 🎯 Developer Experience
 
-Intuitive API design with TypeScript support, comprehensive documentation, and 5 working demo applications to get you started quickly.
+Intuitive API design with TypeScript support, comprehensive documentation, and 17+ working demo applications to get you started quickly.
 
 ### 🔋 Batteries Included
 
@@ -114,9 +114,9 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 
 ### 📚 Comprehensive Documentation
 
-- 23 Storybook stories with interactive examples
-- 5 complete demo applications
-- 25+ cookbook recipes
+- 77 Storybook stories with interactive examples
+- 17+ complete demo applications
+- 33+ cookbook recipes
 - Integration guides for Next.js, Remix, Vite
 - API reference with TypeScript definitions
 
@@ -127,8 +127,8 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 - **35+ React Hooks**: useChat, useStreamingChat, useMessageOperations, etc.
 - **Type Definitions**: Complete TypeScript types and interfaces
 - **77 Storybook Stories**: Interactive component documentation
-- **Demo Applications**: 5 working examples
-- **Cookbook**: 25+ recipes for common use cases
+- **Demo Applications**: 17+ working examples
+- **Cookbook**: 33+ recipes for common use cases
 
 ## Next Steps
 

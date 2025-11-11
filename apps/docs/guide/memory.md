@@ -303,6 +303,6 @@ const memoryService = new MemoryService({
 
 ## Next Steps
 
-- [Memory Inspector Component](/api/components/memory-inspector) - View stored memories
-- [Memory API Reference](/api/memory) - Complete memory API
+- [Components API](/api/components) - View MemoryInspector component
 - [Vector Stores](/guide/rag) - Use vector stores for persistent memory
+- [Hooks API](/api/hooks) - Memory-related hooks
