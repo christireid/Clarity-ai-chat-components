@@ -1,8 +1,11 @@
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
+import { TutorialStep } from '@/components/Enhanced/TutorialStep'
+import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
+import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
 
 export const metadata: Metadata = {
@@ -15,40 +18,90 @@ export default function TutorialPage() {
     <>
       <Breadcrumbs />
       
-      <h1>Tutorial: Build a Complete Chat App</h1>
-      
-      <p className="lead">
-        In this hands-on tutorial, you'll build a fully-featured chat application from scratch. You'll learn core concepts, best practices, and advanced patterns.
-      </p>
-
-      <Callout type="info">
-        <p>
-          <strong>Time:</strong> ~30 minutes<br />
-          <strong>Level:</strong> Beginner to Intermediate<br />
-          <strong>Prerequisites:</strong> Basic React knowledge
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+          Tutorial: Build a Complete Chat App
+        </h1>
+        
+        <p className="text-xl text-text-secondary leading-relaxed">
+          In this hands-on tutorial, you'll build a fully-featured chat application from scratch. You'll learn core concepts, best practices, and advanced patterns.
         </p>
+      </div>
+
+      <Callout type="info" className="mb-8">
+        <div className="grid md:grid-cols-3 gap-4">
+          <div>
+            <strong>Time:</strong> ~30 minutes
+          </div>
+          <div>
+            <strong>Level:</strong> Beginner to Intermediate
+          </div>
+          <div>
+            <strong>Prerequisites:</strong> Basic React knowledge
+          </div>
+        </div>
       </Callout>
 
-      <h2 id="what-youll-build">What You'll Build</h2>
-      
-      <p>By the end of this tutorial, you'll have a chat app with:</p>
+      <YouWillLearn
+        items={[
+          'How to set up a React project with Clarity Chat',
+          'Build a complete chat interface with real-time messaging',
+          'Add user avatars, timestamps, and typing indicators',
+          'Implement message reactions and file attachments',
+          'Create a dark mode toggle and custom theming',
+          'Handle errors and loading states',
+          'Optimize performance for large message lists',
+        ]}
+      />
 
-      <ul>
-        <li>✅ Real-time message display</li>
-        <li>✅ User avatars and timestamps</li>
-        <li>✅ Typing indicators</li>
-        <li>✅ Message reactions</li>
-        <li>✅ File attachments</li>
-        <li>✅ Dark mode toggle</li>
-        <li>✅ Custom theming</li>
-      </ul>
+      <div id="what-youll-build" className="mt-12 mb-8">
+        <h2 className="text-3xl font-bold mb-4">What You'll Build</h2>
+        
+        <p className="text-text-secondary mb-6">
+          By the end of this tutorial, you'll have a production-ready chat app with:
+        </p>
 
-      <h2 id="setup">Step 1: Project Setup</h2>
-      
-      <p>Create a new React project with Vite:</p>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="p-4 rounded-lg bg-bg-secondary border border-border">
+            <div className="text-2xl mb-2">💬</div>
+            <h4 className="font-semibold text-text-primary mb-1">Real-time Messaging</h4>
+            <p className="text-sm text-text-secondary">Instant message display with smooth animations</p>
+          </div>
+          <div className="p-4 rounded-lg bg-bg-secondary border border-border">
+            <div className="text-2xl mb-2">👤</div>
+            <h4 className="font-semibold text-text-primary mb-1">User Avatars</h4>
+            <p className="text-sm text-text-secondary">Personalized avatars and timestamps</p>
+          </div>
+          <div className="p-4 rounded-lg bg-bg-secondary border border-border">
+            <div className="text-2xl mb-2">⌨️</div>
+            <h4 className="font-semibold text-text-primary mb-1">Typing Indicators</h4>
+            <p className="text-sm text-secondary">Show when users are typing</p>
+          </div>
+          <div className="p-4 rounded-lg bg-bg-secondary border border-border">
+            <div className="text-2xl mb-2">😊</div>
+            <h4 className="font-semibold text-text-primary mb-1">Message Reactions</h4>
+            <p className="text-sm text-text-secondary">Emoji reactions for messages</p>
+          </div>
+          <div className="p-4 rounded-lg bg-bg-secondary border border-border">
+            <div className="text-2xl mb-2">📎</div>
+            <h4 className="font-semibold text-text-primary mb-1">File Attachments</h4>
+            <p className="text-sm text-text-secondary">Upload and display files</p>
+          </div>
+          <div className="p-4 rounded-lg bg-bg-secondary border border-border">
+            <div className="text-2xl mb-2">🌙</div>
+            <h4 className="font-semibold text-text-primary mb-1">Dark Mode</h4>
+            <p className="text-sm text-text-secondary">Theme switching with smooth transitions</p>
+          </div>
+        </div>
+      </div>
 
-      <CodeBlock
-        code={`# Create new project
+      <TutorialStep step={1} title="Project Setup" nextStepHref="#basic-chat" nextStepTitle="Basic Chat Interface">
+        <p className="text-text-secondary mb-4">
+          Create a new React project with Vite and install Clarity Chat:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`# Create new project
 npm create vite@latest my-chat-app -- --template react-ts
 
 # Navigate to project
@@ -59,17 +112,27 @@ npm install
 
 # Install Clarity Chat
 npm install @clarity-chat/react`}
-        language="bash"
-        title="Terminal"
-      />
+          language="bash"
+          filename="Terminal"
+          showCopyButton
+        />
+
+        <Callout type="tip" className="mt-4">
+          <p>
+            <strong>Alternative:</strong> You can also use Next.js, Remix, or any other React framework. 
+            See the <a href="/learn/installation" className="text-brand-500 hover:underline">Installation Guide</a> for framework-specific instructions.
+          </p>
+        </Callout>
+      </TutorialStep>
 
       <UseChatFlowAnimation />
 
-      <h2 id="basic-chat">Step 2: Basic Chat Interface</h2>
-      
-      <p>Replace the contents of <code>src/App.tsx</code>:</p>
+      <TutorialStep step={2} title="Basic Chat Interface" nextStepHref="#enhancements" nextStepTitle="Adding Enhancements">
+        <p className="text-text-secondary mb-4">
+          Replace the contents of <code className="px-1.5 py-0.5 bg-bg-secondary rounded text-sm">src/App.tsx</code>:
+        </p>
 
-      <CodeBlock
+        <EnhancedCodeBlock
         code={`import { useState } from 'react'
 import { ChatWindow, Message } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
@@ -126,7 +189,7 @@ export default App`}
 
       <p>Run your app:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code="npm run dev"
         language="bash"
       />
@@ -139,7 +202,7 @@ export default App`}
       
       <p>Enhance messages with user avatars:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const [messages, setMessages] = useState<Message[]>([
   {
     id: '1',
@@ -188,7 +251,7 @@ const handleSendMessage = (text: string) => {
       
       <p>Show when the bot is "typing":</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { useState } from 'react'
 import { ChatWindow, Message, useTyping } from '@clarity-chat/react'
 
@@ -236,7 +299,7 @@ function App() {
       
       <p>Allow users to react to messages:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`const handleReaction = (messageId: string, emoji: string) => {
   setMessages((prev) =>
     prev.map((msg) =>
@@ -268,7 +331,7 @@ return (
       
       <p>Add theme switching:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { useState } from 'react'
 import { ChatWindow, ThemeProvider } from '@clarity-chat/react'
 
@@ -319,7 +382,7 @@ function App() {
       
       <p>Here's the full implementation:</p>
 
-      <CodeBlock
+      <EnhancedCodeBlock
         code={`import { useState } from 'react'
 import {
   ChatWindow,
