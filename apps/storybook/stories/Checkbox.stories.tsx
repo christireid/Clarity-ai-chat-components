@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Checkbox } from '@clarity-chat/primitives'
 import { useState } from 'react'
+import { expect, within, userEvent } from '@storybook/test'
 
 /**
  * Checkbox component for binary selection.
@@ -55,6 +56,29 @@ export const Default: Story = {
         </label>
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const checkbox = canvas.getByRole('checkbox', { name: /accept terms/i })
+    
+    await expect(checkbox).toBeVisible()
+    await expect(checkbox).not.toBeChecked()
+    
+    // Test clicking checkbox
+    await userEvent.click(checkbox)
+    await expect(checkbox).toBeChecked()
+    
+    // Test clicking again to uncheck
+    await userEvent.click(checkbox)
+    await expect(checkbox).not.toBeChecked()
+    
+    // Test keyboard navigation
+    await userEvent.tab()
+    await expect(checkbox).toHaveFocus()
+    
+    // Test Space key to toggle
+    await userEvent.keyboard(' ')
+    await expect(checkbox).toBeChecked()
   },
 }
 
@@ -146,6 +170,31 @@ export const MultipleOptions: Story = {
         ))}
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    
+    // Verify all checkboxes are visible
+    const emailCheckbox = canvas.getByRole('checkbox', { name: /email/i })
+    const smsCheckbox = canvas.getByRole('checkbox', { name: /sms/i })
+    const pushCheckbox = canvas.getByRole('checkbox', { name: /push/i })
+    
+    await expect(emailCheckbox).toBeVisible()
+    await expect(smsCheckbox).toBeVisible()
+    await expect(pushCheckbox).toBeVisible()
+    
+    // Verify initial states
+    await expect(emailCheckbox).not.toBeChecked()
+    await expect(smsCheckbox).not.toBeChecked()
+    await expect(pushCheckbox).toBeChecked()
+    
+    // Test toggling email checkbox
+    await userEvent.click(emailCheckbox)
+    await expect(emailCheckbox).toBeChecked()
+    
+    // Test toggling push checkbox
+    await userEvent.click(pushCheckbox)
+    await expect(pushCheckbox).not.toBeChecked()
   },
 }
 

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Avatar } from '@clarity-chat/primitives'
+import { expect, within } from '@storybook/test'
 
 /**
  * Avatar component displays user profile pictures with fallback support.
@@ -37,6 +38,13 @@ export const Default: Story = {
     src: 'https://github.com/shadcn.png',
     alt: 'User avatar',
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const avatar = canvas.getByAltText('User avatar')
+    
+    await expect(avatar).toBeVisible()
+    await expect(avatar).toHaveAttribute('src', 'https://github.com/shadcn.png')
+  },
 }
 
 export const WithFallback: Story = {
@@ -44,6 +52,15 @@ export const WithFallback: Story = {
     src: 'invalid-url',
     alt: 'John Doe',
     fallback: 'JD',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const avatar = canvas.getByAltText('John Doe')
+    
+    await expect(avatar).toBeVisible()
+    // Verify fallback is displayed (image fails to load)
+    const fallback = canvas.getByText('JD')
+    await expect(fallback).toBeVisible()
   },
 }
 
