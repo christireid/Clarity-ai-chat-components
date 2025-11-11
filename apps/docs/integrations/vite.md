@@ -307,8 +307,8 @@ npx wrangler pages publish dist
 
 ## Examples
 
-- [Basic Chat](https://github.com/yourusername/clarity-chat/tree/main/examples/basic-chat) - Simple Vite setup
-- [AI Assistant](https://github.com/yourusername/clarity-chat/tree/main/examples/ai-assistant) - Vite with TanStack Query
+- [Basic Chat](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/basic-chat) - Simple Vite setup
+- [AI Assistant](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/ai-assistant) - Vite with TanStack Query
 
 ## Performance Tips
 

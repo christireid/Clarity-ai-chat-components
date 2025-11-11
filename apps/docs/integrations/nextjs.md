@@ -307,6 +307,6 @@ npx wrangler pages publish .next
 
 ## Examples
 
-- [Basic Chat](https://github.com/yourusername/clarity-chat/tree/main/examples/basic-chat)
-- [Streaming Chat](https://github.com/yourusername/clarity-chat/tree/main/examples/streaming-chat)
-- [Customer Support](https://github.com/yourusername/clarity-chat/tree/main/examples/customer-support)
+- [Basic Chat](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/basic-chat)
+- [Streaming Chat](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/streaming-chat)
+- [Customer Support](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/customer-support)

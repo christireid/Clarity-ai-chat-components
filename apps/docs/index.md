@@ -14,12 +14,12 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: View on GitHub
-      link: https://github.com/yourusername/clarity-chat
+      link: https://github.com/christireid/Clarity-ai-chat-components
 
 features:
   - icon: 🎨
     title: Beautiful UI Components
-    details: 43 professionally designed chat components with modern aesthetics and smooth animations
+    details: 70+ production-ready chat components with modern aesthetics and smooth animations
   
   - icon: ⚡
     title: Model-Agnostic Adapters
@@ -122,9 +122,9 @@ Intuitive API design with TypeScript support, comprehensive documentation, and 5
 
 ## What's Included
 
-- **43 Chat Components**: ChatWindow, StreamingMessage, ModelSelector, ToolInvocationCard, CitationCard, and more
+- **70+ Chat Components**: ChatWindow, StreamingMessage, ModelSelector, ToolInvocationCard, CitationCard, and more
 - **Model Adapters**: OpenAI, Anthropic, Google AI with cost estimation
-- **21 React Hooks**: useChat, useStreamingChat, useMessageOperations, etc.
+- **35+ React Hooks**: useChat, useStreamingChat, useMessageOperations, etc.
 - **Type Definitions**: Complete TypeScript types and interfaces
 - **77 Storybook Stories**: Interactive component documentation
 - **Demo Applications**: 5 working examples

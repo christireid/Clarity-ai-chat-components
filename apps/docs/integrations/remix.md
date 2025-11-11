@@ -294,4 +294,4 @@ npx wrangler pages publish public
 
 ## Example
 
-See the complete [Multi-User Chat example](https://github.com/yourusername/clarity-chat/tree/main/examples/multi-user-chat) built with Remix and Socket.io.
+See the complete [Multi-User Chat example](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/multi-user-chat) built with Remix and Socket.io.

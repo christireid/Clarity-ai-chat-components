@@ -1,6 +1,6 @@
 # Cookbook
 
-Common recipes and patterns for building with Clarity Chat. For the complete cookbook with all 25 recipes, see [COOKBOOK.md](https://github.com/yourusername/clarity-chat/blob/main/COOKBOOK.md) in the repository.
+Common recipes and patterns for building with Clarity Chat. For the complete cookbook with all 33+ recipes, see [COOKBOOK.md](../COOKBOOK.md) in the repository.
 
 ## Quick Recipes
 
@@ -1229,7 +1229,7 @@ For additional recipes covering:
 - Performance optimization
 - Testing strategies
 
-Visit the [full COOKBOOK.md](https://github.com/yourusername/clarity-chat/blob/main/COOKBOOK.md) in the repository.
+Visit the [full COOKBOOK.md](../COOKBOOK.md) in the repository.
 
 ## Troubleshooting
 

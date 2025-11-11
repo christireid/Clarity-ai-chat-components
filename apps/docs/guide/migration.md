@@ -258,4 +258,4 @@ Enable virtualization for large message lists:
 
 - Check the [API Reference](/api/components) for updated APIs
 - Review [Examples](/examples/) for migration patterns
-- Open an issue on [GitHub](https://github.com/yourusername/clarity-chat/issues)
+- Open an issue on [GitHub](https://github.com/christireid/Clarity-ai-chat-components/issues)

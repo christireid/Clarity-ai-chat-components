@@ -208,7 +208,7 @@ Now that you have a basic chat working, explore more features:
 - Check the [Examples](/examples/) for working demos
 - Read the [Cookbook](/cookbook) for common patterns
 - Browse the [API Reference](/api/components) for detailed documentation
-- Join our [GitHub Discussions](https://github.com/yourusername/clarity-chat/discussions)
+- Join our [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)
 
 ## Common Issues
 
