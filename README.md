@@ -4,23 +4,51 @@
 
 ### **The Most Complete AI Chat Component Library for React**
 
-[![NPM Version](https://img.shields.io/npm/v/@clarity-chat/react?style=for-the-badge&colorA=18181B&colorB=4A90E2)](https://www.npmjs.com/package/@clarity-chat/react)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge&colorA=18181B&colorB=4A90E2)](./LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?style=for-the-badge&colorA=18181B&colorB=4A90E2)](https://www.typescriptlang.org/)
-[![Test Coverage](https://img.shields.io/codecov/c/github/christireid/Clarity-ai-chat-components?style=for-the-badge&colorA=18181B&colorB=4A90E2)](https://codecov.io/gh/christireid/Clarity-ai-chat-components)
-[![WCAG AAA](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AAA-success?style=for-the-badge)](./LICENSE)
-[![Discord](https://img.shields.io/discord/clarity-chat?style=for-the-badge&colorA=18181B&colorB=4A90E2)](https://discord.gg/clarity-chat)
+<p align="center">
+  <a href="https://www.npmjs.com/package/@clarity-chat/react">
+    <img src="https://img.shields.io/npm/v/@clarity-chat/react?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="NPM Version" />
+  </a>
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="License" />
+  </a>
+  <a href="https://www.typescriptlang.org/">
+    <img src="https://img.shields.io/badge/TypeScript-5.3-blue?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="TypeScript" />
+  </a>
+  <a href="https://codecov.io/gh/christireid/Clarity-ai-chat-components">
+    <img src="https://img.shields.io/codecov/c/github/christireid/Clarity-ai-chat-components?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="Test Coverage" />
+  </a>
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/badge/Accessibility-WCAG%202.1%20AAA-success?style=for-the-badge" alt="WCAG AAA" />
+  </a>
+  <a href="https://discord.gg/clarity-chat">
+    <img src="https://img.shields.io/discord/clarity-chat?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="Discord" />
+  </a>
+</p>
 
-**70+ Production-Ready Components • 35+ Custom Hooks • 11 Beautiful Themes • Enterprise AI Infrastructure**
+<p align="center">
+  <strong>70+ Production-Ready Components</strong> • 
+  <strong>35+ Custom Hooks</strong> • 
+  <strong>11 Beautiful Themes</strong> • 
+  <strong>Enterprise AI Infrastructure</strong>
+</p>
+
+<p align="center">
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-documentation">Documentation</a> •
+  <a href="#-examples">Examples</a> •
+  <a href="https://discord.gg/clarity-chat">Discord</a>
+</p>
 
 </div>
 
+---
+
 ## 📑 Table of Contents
 
-- [Links](#-links)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Features](#-features)
+- [Why Clarity Chat?](#-why-clarity-chat)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Key Features](#-key-features)
 - [What Makes This Library Special?](#-what-makes-this-library-special)
   - [Blueprint Coverage](#the-only-library-with-100-blueprint-coverage)
   - [Feature Comparison](#feature-comparison)
@@ -66,38 +94,29 @@
 
 ---
 
-## Links
+## 🚀 Why Clarity Chat?
 
-- [Documentation](https://docs.clarity-chat.dev) - Complete API reference and guides
-- [Examples](./examples/README.md) - 17 production-ready examples
-- [Storybook](https://storybook.clarity-chat.dev) - Interactive component playground
-- [Discord](https://discord.gg/clarity-chat) - Join our community
-- [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions) - Ask questions and share ideas
-- [Changelog](./CHANGELOG.md) - See what's new
+Building an AI chat interface from scratch is **hard**. You need streaming, error handling, token management, accessibility, performance optimization, and so much more. Clarity Chat gives you **everything** you need in one beautifully designed package.
+
+**Stop building. Start shipping.** 🎯
 
 ---
 
-## Installation
-
-Install Clarity Chat using your preferred package manager:
+## 📦 Installation
 
 ```bash
-# npm
 npm install @clarity-chat/react
-
-# yarn
+# or
 yarn add @clarity-chat/react
-
-# pnpm
+# or
 pnpm add @clarity-chat/react
-
-# bun
+# or
 bun add @clarity-chat/react
 ```
 
 ---
 
-## Quick Start
+## ⚡ Quick Start
 
 Get a production-ready AI chat interface in 60 seconds:
 
@@ -123,9 +142,16 @@ function App() {
 }
 ```
 
-**That's it!** You now have a production-ready AI chat interface with beautiful animations, full keyboard navigation, mobile responsiveness, and optimized performance.
+**That's it!** ✨ You now have a production-ready AI chat interface with:
 
-**[→ Full Quick Start Guide](./QUICK_START_GUIDE.md)**
+- ✨ Beautiful animations and transitions
+- ⌨️ Full keyboard navigation
+- 📱 Mobile responsive design
+- ⚡ Optimized performance
+- ♿ WCAG AAA accessibility
+- 🔒 Production-ready security
+
+**[📖 View Full Quick Start Guide](./QUICK_START_GUIDE.md)** • **[📚 Browse Examples](./examples/README.md)**
 
 ---
 
@@ -1484,10 +1510,17 @@ Built with amazing open-source tools:
 
 <div align="center">
 
-**Built with ❤️ by [Code & Clarity](https://codeclarity.ai)**
+## 🌟 Built with ❤️ by [Code & Clarity](https://codeclarity.ai)
 
-[⭐ Star on GitHub](https://github.com/christireid/Clarity-ai-chat-components) •
-[📖 Read the Docs](https://docs.clarity-chat.dev) • 
-[🚀 Try Examples](./examples/README.md)
+<p align="center">
+  <a href="https://github.com/christireid/Clarity-ai-chat-components">⭐ Star on GitHub</a> •
+  <a href="https://docs.clarity-chat.dev">📖 Read the Docs</a> •
+  <a href="./examples/README.md">🚀 Try Examples</a> •
+  <a href="https://discord.gg/clarity-chat">💬 Join Discord</a>
+</p>
+
+<p align="center">
+  <sub>If Clarity Chat helps you build something amazing, we'd love to see it!</sub>
+</p>
 
 </div>
