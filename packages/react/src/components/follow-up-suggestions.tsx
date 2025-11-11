@@ -46,7 +46,7 @@ const gridClasses = {
   list: 'flex flex-col gap-3',
 }
 
-export const FollowUpSuggestions = React.memo(function FollowUpSuggestions({
+export function FollowUpSuggestions({
   suggestions,
   onSelect,
   title = 'Suggested follow-ups',

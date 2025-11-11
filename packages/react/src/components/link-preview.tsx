@@ -19,7 +19,7 @@ export interface LinkPreviewProps {
   className?: string
 }
 
-export const LinkPreview = React.memo(function LinkPreview({
+export function LinkPreview({
   metadata,
   onClick,
   onRemove,
@@ -204,7 +204,7 @@ export interface InlineLinkProps {
   className?: string
 }
 
-export const InlineLink = React.memo(function InlineLink({
+export function InlineLink({
   url,
   onPreview,
   children,

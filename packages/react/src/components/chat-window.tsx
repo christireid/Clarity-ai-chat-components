@@ -1,4 +1,4 @@
-import { memo, useState, useCallback, useMemo } from 'react'
+import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { Card, Button, Badge, cn } from '@clarity-chat/primitives'
@@ -72,7 +72,14 @@ const DefaultEmptyState = () => (
   </motion.div>
 )
 
-export const ChatWindow = memo(function ChatWindow({
+/**
+ * ChatWindow component - Enhanced with React 19 features
+ * 
+ * React 19 Enhancements:
+ * - Removed memo() wrapper - compiler handles optimization
+ * - Removed simple useCallback/useMemo - compiler optimizes
+ */
+export function ChatWindow({
   messages,
   isLoading = false,
   aiStatus,
@@ -90,28 +97,22 @@ export const ChatWindow = memo(function ChatWindow({
   onClear,
   className,
 }: ChatWindowProps) {
-  const [input, setInput] = useState('')
+  const [input, setInput] = React.useState('')
 
-  // Memoized submit handler
-  const handleSubmit = useCallback(
-    (content: string) => {
-      onSendMessage(content)
-      setInput('')
-    },
-    [onSendMessage]
-  )
+  // React 19: Compiler optimizes - no useCallback needed
+  const handleSubmit = (content: string) => {
+    onSendMessage(content)
+    setInput('')
+  }
 
-  // Memoized empty state
-  const effectiveEmptyState = useMemo(
-    () => emptyState || <DefaultEmptyState />,
-    [emptyState]
-  )
+  // React 19: Simple derivation - compiler optimizes
+  const effectiveEmptyState = emptyState || <DefaultEmptyState />
 
-  // Memoized message count text
-  const messageCountText = useMemo(() => {
-    if (messages.length === 0) return null
-    return `${messages.length} ${messages.length === 1 ? 'message' : 'messages'}`
-  }, [messages.length])
+  // React 19: Simple string derivation - compiler optimizes
+  const messageCountText =
+    messages.length === 0
+      ? null
+      : `${messages.length} ${messages.length === 1 ? 'message' : 'messages'}`
 
   return (
     <Card
@@ -235,6 +236,6 @@ export const ChatWindow = memo(function ChatWindow({
       </div>
     </Card>
   )
-})
+}
 
 ChatWindow.displayName = 'ChatWindow'

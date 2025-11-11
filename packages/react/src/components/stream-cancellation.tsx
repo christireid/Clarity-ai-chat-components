@@ -65,7 +65,7 @@ export interface StreamCancellationProps {
  * }
  * ```
  */
-export const StreamCancellation = React.memo(function StreamCancellation({
+export function StreamCancellation({
   isStreaming,
   onCancel,
   cancelLabel = 'Cancel',

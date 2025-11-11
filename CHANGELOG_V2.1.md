@@ -462,8 +462,7 @@ Thanks to the React team for `useSyncExternalStore` and excellent concurrent ren
 ## 📝 Full Diff
 
 For complete code changes, see:
-- [REACT_HOOKS_AND_UTILS_ANALYSIS.md](./REACT_HOOKS_AND_UTILS_ANALYSIS.md)
-- [REFACTORING_IMPLEMENTATION_SUMMARY.md](./REFACTORING_IMPLEMENTATION_SUMMARY.md)
+- [Architecture Overview](./ARCHITECTURE_OVERVIEW.md) - System architecture and design patterns
 
 ---
 

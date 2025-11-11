@@ -645,10 +645,7 @@ test('button uses correct shadow classes', () => {
 ## 📚 Additional Resources
 
 ### Internal Documentation
-- [`DESIGN_SYSTEM_GUIDE.md`](./DESIGN_SYSTEM_GUIDE.md) - Complete design standards
-- [`UI_UX_DESIGN_ELEVATION_PLAN.md`](./UI_UX_DESIGN_ELEVATION_PLAN.md) - Original strategy
-- [`COMPLETE_UI_UX_ELEVATION_PROJECT_SUMMARY.md`](./COMPLETE_UI_UX_ELEVATION_PROJECT_SUMMARY.md) - Full project summary
-- [`PHASE_4_REMAINING_UPDATES_SUMMARY.md`](./PHASE_4_REMAINING_UPDATES_SUMMARY.md) - Latest updates
+- [Design System Guide](./DESIGN_SYSTEM_GUIDE.md) - Complete design standards and reference
 
 ### Code Examples
 - Check `/packages/primitives/src/components/` for updated primitive patterns

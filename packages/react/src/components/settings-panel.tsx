@@ -30,7 +30,7 @@ export interface SettingsPanelProps {
   className?: string
 }
 
-export const SettingsPanel = React.memo(function SettingsPanel({
+export function SettingsPanel({
   settings,
   onUpdate,
   onReset,

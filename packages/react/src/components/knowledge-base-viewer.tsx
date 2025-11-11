@@ -24,7 +24,7 @@ export interface KnowledgeBaseViewerProps {
   className?: string
 }
 
-export const KnowledgeBaseViewer = React.memo(function KnowledgeBaseViewer({
+export function KnowledgeBaseViewer({
   knowledgeBase,
   onUpdate,
   onDelete,

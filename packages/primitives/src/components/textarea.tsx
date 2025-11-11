@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
@@ -25,61 +27,63 @@ export interface TextareaProps
   error?: string
   autoResize?: boolean
   maxRows?: number
+  ref?: React.Ref<HTMLTextAreaElement>
 }
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, variant, error, autoResize = false, maxRows, onChange, ...props }, ref) => {
-    const textareaRef = React.useRef<HTMLTextAreaElement | null>(null)
-    const hasError = error || variant === 'error'
+const Textarea = ({ className, variant, error, autoResize = false, maxRows, onChange, ref, ...props }: TextareaProps) => {
+  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null)
+  const hasError = error || variant === 'error'
 
-    const adjustHeight = React.useCallback(() => {
-      const textarea = textareaRef.current
-      if (!textarea || !autoResize) return
+  // React Compiler will optimize this automatically
+  const adjustHeight = () => {
+    const textarea = textareaRef.current
+    if (!textarea || !autoResize) return
 
-      textarea.style.height = 'auto'
-      const scrollHeight = textarea.scrollHeight
-      
-      if (maxRows) {
-        const lineHeight = parseInt(getComputedStyle(textarea).lineHeight)
-        const maxHeight = lineHeight * maxRows
-        textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
-      } else {
-        textarea.style.height = `${scrollHeight}px`
-      }
-    }, [autoResize, maxRows])
-
-    React.useEffect(() => {
-      adjustHeight()
-    }, [adjustHeight])
-
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      adjustHeight()
-      onChange?.(e)
+    textarea.style.height = 'auto'
+    const scrollHeight = textarea.scrollHeight
+    
+    if (maxRows) {
+      const lineHeight = parseInt(getComputedStyle(textarea).lineHeight)
+      const maxHeight = lineHeight * maxRows
+      textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
+    } else {
+      textarea.style.height = `${scrollHeight}px`
     }
-
-    return (
-      <div>
-        <textarea
-          className={cn(
-            textareaVariants({ variant: hasError ? 'error' : variant }),
-            className
-          )}
-          ref={(node) => {
-            textareaRef.current = node
-            if (typeof ref === 'function') {
-              ref(node)
-            } else if (ref) {
-              ref.current = node
-            }
-          }}
-          onChange={handleChange}
-          {...props}
-        />
-        <ErrorMessage error={error} />
-      </div>
-    )
   }
-)
+
+  React.useEffect(() => {
+    adjustHeight()
+  }, [autoResize, maxRows]) // Direct dependencies instead of callback dependency
+
+  // React Compiler will optimize this automatically
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    adjustHeight()
+    onChange?.(e)
+  }
+
+  return (
+    <div>
+      <textarea
+        className={cn(
+          textareaVariants({ variant: hasError ? 'error' : variant }),
+          className
+        )}
+        ref={(node) => {
+          textareaRef.current = node
+          if (typeof ref === 'function') {
+            ref(node)
+          } else if (ref) {
+            (ref as React.MutableRefObject<HTMLTextAreaElement | null>).current = node
+          }
+        }}
+        onChange={handleChange}
+        {...props}
+      />
+      <ErrorMessage error={error} />
+    </div>
+  )
+}
+
 Textarea.displayName = 'Textarea'
 
 export { Textarea, textareaVariants }

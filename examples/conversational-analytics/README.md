@@ -256,9 +256,9 @@ This demo includes mock data. For production use:
 
 ## 📚 Documentation
 
-- [Clarity Chat Docs](../../docs/README.md)
-- [Advanced Components Guide](../../docs/guides/components.md)
-- [Streaming Guide](../../docs/guides/streaming.md)
+- [Clarity Chat Docs](https://docs.clarity-chat.dev)
+- [Components Guide](../../apps/docs/guide/components.md)
+- [Streaming Guide](../../apps/docs/guide/streaming.md)
 
 ## 🤝 Contributing
 

@@ -571,6 +571,6 @@ MIT
 
 ## Support
 
-- [Documentation](../../AI_MEMORY_CONTEXT_GUIDE.md)
+- [Memory Guide](../../apps/docs/guide/memory.md)
 - [GitHub Issues](https://github.com/your-repo/issues)
 - [Examples](../../examples/)

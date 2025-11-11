@@ -28,7 +28,7 @@ export interface MessageSearchProps {
  * />
  * ```
  */
-export const MessageSearch = React.memo(function MessageSearch({
+export function MessageSearch({
   messages,
   onResultsChange,
   placeholder = 'Search messages...',

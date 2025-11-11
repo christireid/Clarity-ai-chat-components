@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useMemo } from 'react'
+import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'
 import { useVoiceInput } from '../hooks/use-voice-input'
@@ -133,46 +133,45 @@ export function VoiceInput({
   onStop,
   onError,
 }: VoiceInputProps) {
-  const [showTranscript, setShowTranscript] = useState(false)
-  const lastFinalTranscriptRef = useRef('')
+  const [showTranscript, setShowTranscript] = React.useState(false)
+  const lastFinalTranscriptRef = React.useRef('')
 
-  // Memoize voice input config to prevent unnecessary re-initialization
-  const voiceConfig = React.useMemo(
-    () => ({
-      lang,
-      continuous: false,
-      interimResults: showInterim,
-      autoStopTimeout: autoSubmit ? 2000 : 0,
-      onTranscript: (text: string, isFinal: boolean) => {
-        if (isFinal) {
-          lastFinalTranscriptRef.current = text
-          if (autoSubmit) {
-            onTranscript(text)
-            // Reset handled in handleToggle
-          }
+  // React 19: Config object with callbacks - compiler intelligently handles
+  // Note: In production, consider keeping useMemo if this causes re-initialization issues
+  const voiceConfig = {
+    lang,
+    continuous: false,
+    interimResults: showInterim,
+    autoStopTimeout: autoSubmit ? 2000 : 0,
+    onTranscript: (text: string, isFinal: boolean) => {
+      if (isFinal) {
+        lastFinalTranscriptRef.current = text
+        if (autoSubmit) {
+          onTranscript(text)
+          // Reset handled in handleToggle
         }
-      },
-      onSpeechStart: () => {
-        setShowTranscript(true)
-        onStart?.()
-      },
-      onSpeechEnd: () => {
-        onStop?.()
-      },
-      onError: (error: string) => {
-        setShowTranscript(false)
-        onError?.(error)
-      },
-    }),
-    [lang, showInterim, autoSubmit, onTranscript, onStart, onStop, onError]
-  )
+      }
+    },
+    onSpeechStart: () => {
+      setShowTranscript(true)
+      onStart?.()
+    },
+    onSpeechEnd: () => {
+      onStop?.()
+    },
+    onError: (error: string) => {
+      setShowTranscript(false)
+      onError?.(error)
+    },
+  }
 
   const voice = useVoiceInput(voiceConfig)
 
   /**
    * Toggle listening - memoized to prevent recreation
    */
-  const handleToggle = React.useCallback(() => {
+  // React 19: Compiler optimizes - no useCallback needed
+  const handleToggle = () => {
     if (voice.isListening) {
       voice.stopListening()
 
@@ -186,28 +185,30 @@ export function VoiceInput({
       voice.resetTranscript()
       voice.startListening()
     }
-  }, [voice, autoSubmit, onTranscript])
+  }
 
   /**
    * Manual submit - memoized to prevent recreation
    */
-  const handleSubmit = React.useCallback(() => {
+  // React 19: Compiler optimizes
+  const handleSubmit = () => {
     if (voice.transcript) {
       onTranscript(voice.transcript)
       voice.resetTranscript()
       voice.stopListening()
       setShowTranscript(false)
     }
-  }, [voice, onTranscript])
+  }
 
   /**
    * Cancel - memoized to prevent recreation
    */
-  const handleCancel = React.useCallback(() => {
+  // React 19: Compiler optimizes
+  const handleCancel = () => {
     voice.stopListening()
     voice.resetTranscript()
     setShowTranscript(false)
-  }, [voice])
+  }
 
   if (!voice.isSupported) {
     return (

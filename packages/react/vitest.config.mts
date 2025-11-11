@@ -11,28 +11,36 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./vitest.setup.ts'],
-    // Optimize memory usage
-    pool: 'forks',
+    // Optimize memory usage - use threads instead of forks for better memory management
+    pool: 'threads',
     poolOptions: {
-      forks: {
-        singleFork: true, // Run tests in a single process to reduce memory
+      threads: {
+        singleThread: false,
+        maxThreads: 2, // Limit threads to reduce memory usage
+        minThreads: 1,
       },
     },
     // Reduce parallelism to avoid memory issues
-    maxConcurrency: 1,
+    maxConcurrency: 2,
     // Increase test timeout for slower execution
-    testTimeout: 10000,
+    testTimeout: 15000,
     // Isolate tests properly
     isolate: true,
-    // Only run enterprise module tests that work without memory issues
-    // See TEST_INFRASTRUCTURE_ISSUES.md for details on excluded tests
+    // Enable more component tests with memory optimizations
     include: [
       'src/embeddings/__tests__/**/*.test.ts',
       'src/prompts/__tests__/**/*.test.ts',
       'src/plugins/__tests__/**/*.test.ts',
       'src/safety/__tests__/**/*.test.ts',
-      'src/hooks/__tests__/use-streamable-ui.test.ts',
-      'src/components/__tests__/stream-block.test.tsx',
+      'src/hooks/__tests__/**/*.test.ts',
+      'src/components/__tests__/**/*.test.tsx',
+    ],
+    // Exclude heavy tests that cause memory issues
+    exclude: [
+      'node_modules',
+      'dist',
+      '**/*.stories.tsx',
+      '**/chat-window.test.enhanced.tsx', // Heavy test, enable separately
     ],
     coverage: {
       provider: 'v8',
