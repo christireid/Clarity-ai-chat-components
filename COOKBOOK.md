@@ -1964,124 +1964,569 @@ export function OpenAIStreamingChat() {
 
 ### Recipe 14: Rate Limiting
 
-Implement client-side rate limiting.
+Implement client-side rate limiting with visual feedback and proper cleanup.
 
 ```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { useState, useRef } from 'react'
+import { 
+  ChatWindow, 
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface RateLimitConfig {
+  maxRequests: number
+  windowMs: number
+}
 
 export function RateLimitedChat() {
-  const [messages, setMessages] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
   const [rateLimitExceeded, setRateLimitExceeded] = useState(false)
+  const [remainingRequests, setRemainingRequests] = useState(10)
+  const [resetTime, setResetTime] = useState<Date | null>(null)
+  
   const requestCount = useRef(0)
-  const resetTimer = useRef(null)
+  const resetTimer = useRef<NodeJS.Timeout | null>(null)
+  const requestTimestamps = useRef<number[]>([])
 
-  const handleSend = async (content: string) => {
-    if (requestCount.current >= 10) {
+  const rateLimitConfig: RateLimitConfig = {
+    maxRequests: 10,
+    windowMs: 60000, // 1 minute
+  }
+
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'rate-limited-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  // Clean up timers on unmount
+  useEffect(() => {
+    return () => {
+      if (resetTimer.current) {
+        clearTimeout(resetTimer.current)
+      }
+    }
+  }, [])
+
+  const checkRateLimit = useCallback((): boolean => {
+    const now = Date.now()
+    
+    // Remove timestamps outside the window
+    requestTimestamps.current = requestTimestamps.current.filter(
+      timestamp => now - timestamp < rateLimitConfig.windowMs
+    )
+
+    if (requestTimestamps.current.length >= rateLimitConfig.maxRequests) {
+      const oldestRequest = requestTimestamps.current[0]
+      const resetAt = new Date(oldestRequest + rateLimitConfig.windowMs)
+      setResetTime(resetAt)
       setRateLimitExceeded(true)
+      setRemainingRequests(0)
+      return false
+    }
+
+    setRemainingRequests(rateLimitConfig.maxRequests - requestTimestamps.current.length - 1)
+    setRateLimitExceeded(false)
+    return true
+  }, [rateLimitConfig])
+
+  const handleSend = useCallback(async (content: string) => {
+    // Check rate limit
+    if (!checkRateLimit()) {
       return
     }
 
-    requestCount.current++
-    
-    if (!resetTimer.current) {
-      resetTimer.current = setTimeout(() => {
-        requestCount.current = 0
-        setRateLimitExceeded(false)
-        resetTimer.current = null
-      }, 60000) // Reset after 1 minute
-    }
+    // Record request timestamp
+    requestTimestamps.current.push(Date.now())
 
-    // Send message...
-  }
+    // Add user message
+    addMessage({
+      chatId: 'rate-limited-chat',
+      role: 'user',
+      content,
+    })
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (response.status === 429) {
+        // Server-side rate limit hit
+        const retryAfter = response.headers.get('Retry-After')
+        setRateLimitExceeded(true)
+        if (retryAfter) {
+          const resetAt = new Date(Date.now() + parseInt(retryAfter) * 1000)
+          setResetTime(resetAt)
+        }
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'rate-limited-chat',
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, addMessage, checkRateLimit])
+
+  // Update remaining requests display
+  useEffect(() => {
+    const interval = setInterval(() => {
+      checkRateLimit()
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [checkRateLimit])
 
   return (
-    <div>
-      {rateLimitExceeded && <p>Rate limit exceeded. Please wait.</p>}
-      <ChatWindow messages={messages} onSendMessage={handleSend} />
-    </div>
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        {/* Rate Limit Indicator */}
+        <div className="p-4 border-b bg-card">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-semibold">Rate Limited Chat</h1>
+            <div className="flex items-center gap-4">
+              {rateLimitExceeded ? (
+                <div className="text-sm text-destructive">
+                  Rate limit exceeded
+                  {resetTime && (
+                    <span className="ml-2 text-muted-foreground">
+                      (resets in {Math.ceil((resetTime.getTime() - Date.now()) / 1000)}s)
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  {remainingRequests} requests remaining
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <ChatWindow 
+          messages={messages} 
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+          disabled={rateLimitExceeded}
+        />
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Sliding window rate limiting
+- ✅ Visual feedback for rate limit status
+- ✅ Remaining requests counter
+- ✅ Reset timer display
+- ✅ Server-side rate limit handling
+- ✅ Proper cleanup
+- ✅ TypeScript types
 
 ---
 
 ### Recipe 15: Network Status Detection
 
-Detect and handle network issues.
+Detect and handle network issues with automatic retry and offline queue.
 
 ```tsx
-import { ChatWindow, NetworkStatus, useErrorRecovery } from '@clarity-chat/react'
-import { useState } from 'react'
+import { 
+  ChatWindow, 
+  NetworkStatus,
+  useMessageOperations,
+  useErrorRecovery,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface QueuedMessage {
+  id: string
+  content: string
+  timestamp: number
+}
 
 export function NetworkAwareChat() {
-  const [messages, setMessages] = useState([])
-  const [networkStatus, setNetworkStatus] = useState('online')
-  const { handleError } = useErrorRecovery()
+  const [isLoading, setIsLoading] = useState(false)
+  const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'slow'>('online')
+  const [offlineQueue, setOfflineQueue] = useState<QueuedMessage[]>([])
+  const isProcessingQueue = useRef(false)
 
-  const handleSend = async (content: string) => {
-    if (networkStatus === 'offline') {
-      alert('You are offline. Please check your connection.')
-      return
+  const { handleError, retry, canRetry } = useErrorRecovery({
+    maxRetries: 3,
+    retryDelay: 1000,
+  })
+
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'network-aware-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  // Monitor network status
+  useEffect(() => {
+    const updateOnlineStatus = () => setNetworkStatus('online')
+    const updateOfflineStatus = () => setNetworkStatus('offline')
+
+    window.addEventListener('online', updateOnlineStatus)
+    window.addEventListener('offline', updateOfflineStatus)
+
+    // Check initial status
+    setNetworkStatus(navigator.onLine ? 'online' : 'offline')
+
+    return () => {
+      window.removeEventListener('online', updateOnlineStatus)
+      window.removeEventListener('offline', updateOfflineStatus)
     }
+  }, [])
+
+  // Process offline queue when coming back online
+  useEffect(() => {
+    if (networkStatus === 'online' && offlineQueue.length > 0 && !isProcessingQueue.current) {
+      processOfflineQueue()
+    }
+  }, [networkStatus, offlineQueue.length])
+
+  const processOfflineQueue = useCallback(async () => {
+    if (isProcessingQueue.current || offlineQueue.length === 0) return
+
+    isProcessingQueue.current = true
+
+    while (offlineQueue.length > 0) {
+      const queued = offlineQueue[0]
+      setOfflineQueue(prev => prev.slice(1))
+
+      try {
+        await sendMessage(queued.content)
+      } catch (error) {
+        console.error('Failed to process queued message:', error)
+        // Re-queue if still offline
+        if (networkStatus === 'offline') {
+          setOfflineQueue(prev => [queued, ...prev])
+        }
+      }
+    }
+
+    isProcessingQueue.current = false
+  }, [offlineQueue, networkStatus])
+
+  const sendMessage = useCallback(async (content: string) => {
+    setIsLoading(true)
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        body: JSON.stringify({ message: content }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+        signal: AbortSignal.timeout(30000), // 30 second timeout
       })
 
-      if (!response.ok) throw new Error('Network error')
-      
-      // Process response...
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'network-aware-chat',
+        role: 'assistant',
+        content: data.response,
+      })
     } catch (error) {
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        setNetworkStatus('slow')
+      }
       handleError(error)
+      throw error
+    } finally {
+      setIsLoading(false)
     }
-  }
+  }, [messages, addMessage, handleError])
+
+  const handleSend = useCallback(async (content: string) => {
+    // Add user message optimistically
+    addMessage({
+      chatId: 'network-aware-chat',
+      role: 'user',
+      content,
+    })
+
+    if (networkStatus === 'offline') {
+      // Queue message for when we come back online
+      setOfflineQueue(prev => [...prev, {
+        id: `queued-${Date.now()}`,
+        content,
+        timestamp: Date.now(),
+      }])
+      return
+    }
+
+    try {
+      await sendMessage(content)
+    } catch (error) {
+      // Error already handled by sendMessage
+      console.error('Failed to send message:', error)
+    }
+  }, [networkStatus, addMessage, sendMessage])
 
   return (
-    <div>
-      <NetworkStatus status={networkStatus} onStatusChange={setNetworkStatus} />
-      <ChatWindow messages={messages} onSendMessage={handleSend} />
-    </div>
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        <NetworkStatus 
+          status={networkStatus}
+          onStatusChange={setNetworkStatus}
+        />
+        
+        {offlineQueue.length > 0 && (
+          <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 border-b text-sm text-center">
+            {offlineQueue.length} message{offlineQueue.length > 1 ? 's' : ''} queued for sending when online
+          </div>
+        )}
+
+        <ChatWindow 
+          messages={messages} 
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+          disabled={networkStatus === 'offline'}
+        />
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Automatic network status detection
+- ✅ Offline message queue
+- ✅ Automatic retry when online
+- ✅ Slow connection detection
+- ✅ Visual status indicators
+- ✅ Timeout handling
+- ✅ Error recovery integration
+- ✅ TypeScript types
 
 ---
 
 ### Recipe 16: Export Conversations
 
-Export chat history to various formats.
+Export chat history to various formats with proper formatting and error handling.
 
 ```tsx
-import { ChatWindow, ExportDialog } from '@clarity-chat/react'
-import { useState } from 'react'
+import { 
+  ChatWindow, 
+  ExportDialog,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
 
 export function ExportableChat() {
-  const [messages, setMessages] = useState([])
   const [showExport, setShowExport] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
 
-  const handleExport = async (format: 'pdf' | 'docx' | 'markdown' | 'json') => {
-    const exported = await exportMessages(messages, format)
-    downloadFile(exported, `chat-export.${format}`)
-  }
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'exportable-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  const exportToMarkdown = useCallback((msgs: Message[]): string => {
+    return msgs.map(msg => {
+      const role = msg.role === 'user' ? '**You**' : '**Assistant**'
+      const timestamp = msg.createdAt.toLocaleString()
+      return `${role} (${timestamp})\n\n${msg.content}\n\n---\n`
+    }).join('\n')
+  }, [])
+
+  const exportToJSON = useCallback((msgs: Message[]): string => {
+    return JSON.stringify(msgs.map(msg => ({
+      role: msg.role,
+      content: msg.content,
+      timestamp: msg.createdAt.toISOString(),
+    })), null, 2)
+  }, [])
+
+  const exportToTXT = useCallback((msgs: Message[]): string => {
+    return msgs.map(msg => {
+      const role = msg.role === 'user' ? 'You' : 'Assistant'
+      const timestamp = msg.createdAt.toLocaleString()
+      return `[${timestamp}] ${role}: ${msg.content}`
+    }).join('\n\n')
+  }, [])
+
+  const downloadFile = useCallback((content: string, filename: string, mimeType: string) => {
+    const blob = new Blob([content], { type: mimeType })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }, [])
+
+  const handleExport = useCallback(async (format: 'markdown' | 'json' | 'txt') => {
+    if (messages.length === 0) {
+      alert('No messages to export')
+      return
+    }
+
+    setIsExporting(true)
+
+    try {
+      let content: string
+      let filename: string
+      let mimeType: string
+
+      switch (format) {
+        case 'markdown':
+          content = exportToMarkdown(messages)
+          filename = `chat-export-${Date.now()}.md`
+          mimeType = 'text/markdown'
+          break
+        case 'json':
+          content = exportToJSON(messages)
+          filename = `chat-export-${Date.now()}.json`
+          mimeType = 'application/json'
+          break
+        case 'txt':
+          content = exportToTXT(messages)
+          filename = `chat-export-${Date.now()}.txt`
+          mimeType = 'text/plain'
+          break
+        default:
+          throw new Error(`Unsupported format: ${format}`)
+      }
+
+      downloadFile(content, filename, mimeType)
+      setShowExport(false)
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert(`Failed to export: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setIsExporting(false)
+    }
+  }, [messages, exportToMarkdown, exportToJSON, exportToTXT, downloadFile])
+
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({
+      chatId: 'exportable-chat',
+      role: 'user',
+      content,
+    })
+
+    // Call API and add response...
+  }, [addMessage])
 
   return (
-    <div>
-      <button onClick={() => setShowExport(true)}>Export</button>
-      <ChatWindow messages={messages} />
-      {showExport && (
-        <ExportDialog
-          messages={messages}
-          onExport={handleExport}
-          onClose={() => setShowExport(false)}
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        {/* Header with Export Button */}
+        <div className="flex items-center justify-between p-4 border-b bg-card">
+          <h1 className="text-xl font-semibold">Chat</h1>
+          <button
+            onClick={() => setShowExport(true)}
+            disabled={messages.length === 0}
+            className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Export
+          </button>
+        </div>
+
+        <ChatWindow 
+          messages={messages} 
+          onSendMessage={handleSend}
         />
-      )}
-    </div>
+
+        {showExport && (
+          <ExportDialog
+            messages={messages}
+            onExport={handleExport}
+            onClose={() => setShowExport(false)}
+            isExporting={isExporting}
+          />
+        )}
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Multiple export formats (Markdown, JSON, TXT)
+- ✅ Proper file formatting
+- ✅ Download functionality
+- ✅ Error handling
+- ✅ Loading states
+- ✅ TypeScript types
+- ✅ User-friendly UI
 
 ---
 
