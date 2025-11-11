@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
     const { messages } = await req.json()
     
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4-turbo',
       messages,
     })
     
@@ -172,7 +172,7 @@ export default async function handler(
     const { messages } = req.body
     
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4-turbo',
       messages,
     })
     
@@ -206,7 +206,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const { messages } = await request.json()
     
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4-turbo',
       messages,
     })
     

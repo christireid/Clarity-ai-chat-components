@@ -227,7 +227,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json()
   
   const completion = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages,
   })
   
@@ -249,7 +249,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json()
   
   const stream = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages,
     stream: true,
   })
@@ -442,7 +442,7 @@ Create an AI agent that can call external tools:
 import { ReactAgent, useAgent, AgentRunFeed } from '@clarity-chat/react'
 
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   apiKey: process.env.OPENAI_API_KEY,
   tools: [
     {

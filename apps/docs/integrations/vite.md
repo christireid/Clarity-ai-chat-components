@@ -121,7 +121,7 @@ app.post('/api/chat', async (req, res) => {
   const { content } = req.body
   
   const completion = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages: [{ role: 'user', content }],
   })
   
@@ -226,7 +226,7 @@ app.post('/api/chat/stream', async (req, res) => {
   const { content } = req.body
   
   const stream = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages: [{ role: 'user', content }],
     stream: true,
   })
