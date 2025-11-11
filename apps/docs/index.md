@@ -39,7 +39,7 @@ features:
   
   - icon: ♿
     title: Accessible
-    details: WCAG 2.1 compliant with keyboard navigation and screen reader support
+    details: WCAG 2.1 AAA compliant with keyboard navigation and screen reader support
   
   - icon: 📱
     title: Responsive

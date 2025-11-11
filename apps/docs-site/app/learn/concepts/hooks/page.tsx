@@ -21,7 +21,7 @@ export default function HooksConceptPage() {
           React Hooks
         </h1>
         <p className="text-xl text-text-secondary leading-relaxed">
-          Clarity Chat provides 30+ React hooks to handle chat functionality, state management,
+          Clarity Chat provides 35+ React hooks to handle chat functionality, state management,
           streaming, and more. Hooks provide a clean, composable API for building chat interfaces.
         </p>
       </div>

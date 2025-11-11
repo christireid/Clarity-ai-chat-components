@@ -25,7 +25,7 @@ export default function HomePage() {
             <span className="text-brand-500">Lightning Fast</span>
           </>
         }
-        description="A comprehensive React UI library with 70+ components, 30+ hooks, and 150+ animations. Built with TypeScript, Tailwind CSS, and Framer Motion."
+        description="A comprehensive React UI library with 70+ components, 35+ hooks, and 150+ animations. Built with TypeScript, Tailwind CSS, and Framer Motion."
         primaryCta={{
           text: 'Get Started',
           href: '/learn/quick-start',
