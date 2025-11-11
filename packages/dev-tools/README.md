@@ -23,6 +23,8 @@ npm install @clarity-chat/dev-tools
 
 ## Quick Start
 
+### TypeScript Utilities
+
 ```typescript
 import {
   getAPIInspector,
@@ -643,6 +645,7 @@ import {
   ProfilerPanel,
   ValidationForm,
   TimeTravelPanel,
+  ModelComparisonPanel,
 } from '@clarity-chat/dev-tools/react'
 
 // API Inspector with real-time updates
@@ -656,6 +659,9 @@ import {
 
 // Time-travel debugging
 <TimeTravelPanel />
+
+// Model comparison
+<ModelComparisonPanel promptId="prompt-1" />
 ```
 
 ### Hooks
@@ -668,6 +674,7 @@ import {
   useAPIKeyValidation,
   useChatConfigValidation,
   useTimeTravel,
+  useModelComparison,
 } from '@clarity-chat/dev-tools/react'
 
 // API Inspector hook with optimistic updates
@@ -683,16 +690,33 @@ const { validate: validateConfig } = useChatConfigValidation()
 
 // Time-travel debugging hook
 const { snapshots, current, record, goBack, goForward } = useTimeTravel()
+
+// Model comparison hook
+const { addResponse, compare, getComparison, stats } = useModelComparison()
 ```
 
 ### React 19 Features Used
 
-- **useOptimistic**: For optimistic UI updates in API inspector and profiler
+- **useOptimistic**: For optimistic UI updates in API inspector, profiler, time-travel, and model comparison
 - **Client-Side Form State**: For form submission state in validation forms (useFormStatus requires Server Actions)
 - **Real-time updates**: Components automatically update as data changes
 - **Optimistic updates**: Instant UI feedback with automatic error handling
 
+### React 19 Components (New!)
+
+```tsx
+import { DevToolsDashboard } from '@clarity-chat/dev-tools/react'
+
+function App() {
+  return <DevToolsDashboard />
+}
+```
+
+See [QUICK_START.md](./QUICK_START.md) for a 5-minute quick start guide.
+
 See [REACT_19_MIGRATION.md](./REACT_19_MIGRATION.md) for complete migration guide and examples.
+
+See [INTEGRATION_GUIDE.md](./INTEGRATION_GUIDE.md) for complete integration guide.
 
 ## TypeScript Support
 
