@@ -206,7 +206,7 @@ export class SlidingWindowRateLimiter {
     
     if (!allowed) {
       // Calculate retry after based on oldest timestamp in window
-      const oldestTime = times.length > 0 ? times[0] : now
+      const oldestTime = times.length > 0 && times[0] !== undefined ? times[0] : now
       result.retryAfter = Math.max(0, oldestTime + this.config.windowMs - now)
       
       if (this.config.onLimitExceeded) {
