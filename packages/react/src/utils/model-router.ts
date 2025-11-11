@@ -278,9 +278,14 @@ export function routeQuery(
       .filter((m) => m.inputCost <= maxCost)
       .sort((a, b) => b.tier.localeCompare(a.tier)) // Prefer higher tier within budget
     
-    if (cheaperModels.length > 0) {
+    if (cheaperModels.length > 0 && cheaperModels[0]) {
       selectedModel = cheaperModels[0]
     }
+  }
+
+  // Ensure we have a model
+  if (!selectedModel) {
+    throw new Error('No models available for routing')
   }
 
   // Calculate cost
@@ -290,6 +295,9 @@ export function routeQuery(
 
   // Calculate savings vs most expensive model
   const mostExpensive = models.sort((a, b) => b.outputCost - a.outputCost)[0]
+  if (!mostExpensive) {
+    throw new Error('No models available')
+  }
   const maxCostEstimate =
     (complexity.estimatedTokens * mostExpensive.inputCost) +
     (complexity.estimatedTokens * 2 * mostExpensive.outputCost)
