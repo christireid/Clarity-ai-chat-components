@@ -18,20 +18,64 @@ import { upgradeCommand } from './commands/upgrade.js'
 import { analyzeCommand } from './commands/analyze.js'
 import { benchmarkCommand } from './commands/benchmark.js'
 import { browseCommand, searchComponents } from './commands/browse.js'
-import { displayBanner } from './ui/banner.js'
+import { generateCompletion } from './utils/completion.js'
+import { initOutputMode } from './utils/output.js'
+import { handleError, withErrorHandling } from './utils/errors.js'
+import { setGlobalLogLevel, LogLevel } from './utils/logger.js'
+import { checkAndNotifyUpdate } from './utils/update.js'
+import { createBanner } from './ui/banner.js'
 
 const program = new Command()
 
-// Display beautiful banner
-displayBanner({ gradient: 'pastel', margin: 1 })
+// Beautiful gradient banner - create synchronously for main entry
+import gradient from 'gradient-string'
+
+const banner = gradient.pastel.multiline([
+  '  ____  _               _ _         ____  _           _   ',
+  ' / ___|| | __ _ _ __(_) |_ _   _/ ___|| |__   __ _| |_ ',
+  '| |    | |/ _` | \'__| | __| | | | |    | \'_ \\ / _` | __|',
+  '| |___ | | (_| | |  | | |_| |_| | |___ | | | | (_| | |_ ',
+  ' \\____|_|\\__,_|_|  |_|\\__|\\__, |\\____|_| |_|\\__,_|\\__|',
+  '                           |___/                          ',
+].join('\n'))
+
+// Only show banner if not in JSON mode
+if (!process.argv.includes('--json')) {
+  console.log('\n' + banner + '\n')
+}
 
 program
   .name('clarity-chat')
-  .description(chalk.cyan('🎨 Beautiful CLI for Clarity Chat - AI Component Library'))
+  .description('🎨 Beautiful CLI for Clarity Chat - AI Component Library')
   .version('0.1.0')
-  .configureHelp({
-    helpWidth: 80,
-    sortSubcommands: true,
+  .option('--json', 'Output JSON for machine parsing')
+  .option('-q, --quiet', 'Suppress non-error output')
+  .option('-v, --verbose', 'Show detailed output')
+  .option('--debug', 'Show debug information')
+  .hook('preAction', async (thisCommand, actionCommand) => {
+    // Initialize output mode from global options
+    const globalOpts = thisCommand.opts()
+    initOutputMode({
+      json: globalOpts.json || false,
+      quiet: globalOpts.quiet || false,
+      verbose: globalOpts.verbose || false,
+    })
+    
+    // Set log level
+    if (globalOpts.debug || process.env.DEBUG) {
+      setGlobalLogLevel(LogLevel.DEBUG)
+    } else if (globalOpts.verbose) {
+      setGlobalLogLevel(LogLevel.INFO)
+    }
+
+    // Check for updates (non-blocking, only for certain commands)
+    const commandName = actionCommand.name()
+    if (['init', 'add', 'dev'].includes(commandName)) {
+      // Check for updates in background (don't await)
+      checkAndNotifyUpdate().catch(() => {
+        // Silently ignore update check errors
+      })
+    }
   })
 
 // Register commands
@@ -49,6 +93,7 @@ program
   .description('➕ Add a component to your project')
   .option('-p, --path <path>', 'Installation path', './src/components')
   .option('--no-deps', 'Skip dependency installation')
+  .option('--batch <components>', 'Add multiple components (comma-separated)')
   .action(addCommand)
 
 program
@@ -65,6 +110,7 @@ program
   .description('🔥 Start development server with hot reload')
   .option('-p, --port <port>', 'Port number', '3000')
   .option('--open', 'Open in browser')
+  .option('--watch', 'Watch mode (auto-restart on changes)')
   .action(devCommand)
 
 program
@@ -121,5 +167,69 @@ program
   .description('🔍 Search for components')
   .action(searchComponents)
 
-// Parse commands
-program.parse()
+// Completion command
+program
+  .command('completion <shell>')
+  .description('🔧 Generate shell completion script')
+  .option('--install', 'Show installation instructions')
+  .action(async (shell: string, options: { install?: boolean }) => {
+    const validShells = ['bash', 'zsh', 'fish']
+    if (!validShells.includes(shell)) {
+      handleError(new Error(`Invalid shell: ${shell}. Supported: ${validShells.join(', ')}`))
+      return
+    }
+    
+    const script = generateCompletion(program, shell as 'bash' | 'zsh' | 'fish')
+    
+    if (options.install) {
+      // Beautiful installation instructions
+      const { createBanner } = await import('./ui/banner.js')
+      const { infoMessage, tipMessage, commandExample } = await import('./ui/messages.js')
+      
+      await createBanner('🔧 Shell Completion', {
+        gradient: true,
+        style: 'bold',
+      })
+      console.log()
+      
+      switch (shell) {
+        case 'bash':
+          infoMessage('Add this line to your ~/.bashrc or ~/.bash_profile:')
+          console.log(commandExample(`eval "$(clarity-chat completion ${shell})"`))
+          console.log()
+          tipMessage('Then reload your shell: source ~/.bashrc')
+          break
+        case 'zsh':
+          infoMessage('Add this line to your ~/.zshrc:')
+          console.log(commandExample(`eval "$(clarity-chat completion ${shell})"`))
+          console.log()
+          tipMessage('Then reload your shell: source ~/.zshrc')
+          break
+        case 'fish':
+          infoMessage('Save the completion script to:')
+          console.log(commandExample(`clarity-chat completion ${shell} > ~/.config/fish/completions/clarity-chat.fish`))
+          console.log()
+          tipMessage('Fish will automatically load completions from this directory')
+          break
+      }
+      console.log()
+    } else {
+      console.log(script)
+    }
+  })
+
+// Error handling
+program.configureOutput({
+  writeErr: (str) => {
+    if (!process.argv.includes('--json')) {
+      process.stderr.write(str)
+    }
+  },
+})
+
+// Parse commands with error handling
+try {
+  program.parse()
+} catch (error) {
+  handleError(error)
+}

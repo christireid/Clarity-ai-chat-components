@@ -7,6 +7,11 @@
 import chalk from 'chalk'
 import { execSync } from 'child_process'
 import open from 'open'
+import { createBanner, createDivider } from '../ui/banner.js'
+import { infoMessage, successMessage, featureHighlight, tipMessage } from '../ui/messages.js'
+import { createTable } from '../ui/table.js'
+import { createSpinner } from '../ui/progress.js'
+import { handleError } from '../utils/errors.js'
 
 // Component catalog with categories
 const COMPONENT_CATALOG = {
@@ -148,20 +153,15 @@ const COMPONENT_CATALOG = {
 export async function browseCommand() {
   console.clear()
   
-  // Beautiful header using Lipgloss-style formatting
-  console.log(
-    chalk.bold.cyan('\n╔═══════════════════════════════════════════════════════════════╗')
-  )
-  console.log(
-    chalk.bold.cyan('║') +
-      chalk.bold.white('              🎨 Clarity Chat Component Browser              ') +
-      chalk.bold.cyan('║')
-  )
-  console.log(
-    chalk.bold.cyan('╚═══════════════════════════════════════════════════════════════╝\n')
-  )
-
-  console.log(chalk.gray('  Navigate with arrow keys, Enter to select, Q to quit\n'))
+  // Beautiful banner
+  await createBanner('🎨 Component Browser', {
+    gradient: true,
+    style: 'bold',
+  })
+  
+  console.log()
+  infoMessage('Navigate with arrow keys, Enter to select, Q to quit')
+  console.log()
 
   // Display categories
   const categories = Object.keys(COMPONENT_CATALOG)
@@ -196,22 +196,20 @@ export async function browseCommand() {
   }
 
   // Interactive menu
-  console.log(chalk.bold.white('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'))
-  console.log(chalk.bold.cyan('  Quick Actions:\n'))
-  console.log(chalk.white('  1.') + chalk.gray(' View all components by category'))
-  console.log(chalk.white('  2.') + chalk.gray(' Search components'))
-  console.log(chalk.white('  3.') + chalk.gray(' Show popular components'))
-  console.log(chalk.white('  4.') + chalk.gray(' Open documentation'))
-  console.log(chalk.white('  5.') + chalk.gray(' Exit'))
+  await createDivider()
+  console.log()
+  const quickActions = [
+    'View all components by category',
+    'Search components',
+    'Show popular components',
+    'Open documentation',
+    'Exit',
+  ].join('\n  • ')
+  console.log(featureHighlight('Quick Actions', `  • ${quickActions}`, '⚡'))
   console.log()
 
-  // Note about interactive mode
-  console.log(
-    chalk.yellow.bold('💡 Tip: ') +
-      chalk.gray('Use ') +
-      chalk.cyan('clarity-chat add <component>') +
-      chalk.gray(' to install any component')
-  )
+  // Tip
+  tipMessage('Use `clarity-chat add <component>` to install any component')
   console.log()
 }
 
@@ -269,22 +267,16 @@ export async function showComponentDetails(componentName: string) {
   }
 
   if (!component) {
-    console.log(chalk.red(`\n❌ Component "${componentName}" not found\n`))
+    handleError(new Error(`Component "${componentName}" not found`))
     return
   }
 
-  // Header
-  console.log(
-    chalk.bold.cyan('\n╔═══════════════════════════════════════════════════════════════╗')
-  )
-  console.log(
-    chalk.bold.cyan('║') +
-      chalk.bold.white(`  ${component.name}`.padEnd(61)) +
-      chalk.bold.cyan('║')
-  )
-  console.log(
-    chalk.bold.cyan('╚═══════════════════════════════════════════════════════════════╝\n')
-  )
+  // Beautiful header
+  await createBanner(component.name, {
+    gradient: true,
+    style: 'bold',
+  })
+  console.log()
 
   // Category
   console.log(chalk.gray('  Category: ') + chalk.cyan(category))
@@ -342,25 +334,29 @@ export async function showComponentDetails(componentName: string) {
  * Install component interactively
  */
 export async function installComponentInteractive(componentName: string) {
-  const spinner = chalk.cyan('⠋')
-  console.log(`\n${spinner} Installing ${chalk.bold(componentName)}...\n`)
+  const spinner = await createSpinner(`Installing ${componentName}...`, {
+    color: 'cyan',
+  })
   
   try {
+    spinner.start()
     execSync(`clarity-chat add ${componentName.toLowerCase()}`, {
       stdio: 'inherit',
     })
+    spinner.succeed()
     
-    console.log(chalk.green.bold(`\n✓ ${componentName} installed successfully!\n`))
+    successMessage(`${componentName} installed successfully!`)
+    console.log()
     
     // Show next steps
-    console.log(chalk.bold.white('Next steps:'))
-    console.log(chalk.gray('  1. Import the component in your code'))
-    console.log(chalk.cyan(`     import { ${componentName} } from '@clarity-chat/react'`))
-    console.log(chalk.gray('  2. Check the documentation for usage examples'))
-    console.log(chalk.cyan(`     clarity-chat docs ${componentName.toLowerCase()}`))
+    infoMessage('Next steps:', [
+      `Import the component: import { ${componentName} } from '@clarity-chat/react'`,
+      `View docs: clarity-chat docs ${componentName.toLowerCase()}`,
+    ])
     console.log()
   } catch (error) {
-    console.log(chalk.red(`\n❌ Failed to install ${componentName}\n`))
+    spinner.fail()
+    handleError(error)
   }
 }
 

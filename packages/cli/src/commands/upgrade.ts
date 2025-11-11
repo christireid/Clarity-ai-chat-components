@@ -1,18 +1,22 @@
 /**
  * Upgrade command - Check for and install updates
- * Enhanced with beautiful UI components
  */
 
 import { execSync } from 'child_process'
 import chalk from 'chalk'
+import ora from 'ora'
+import prompts from 'prompts'
 import fs from 'fs-extra'
 import path from 'path'
-import prompts from 'prompts'
 import { getLogger } from '../utils/logger.js'
-import { sectionHeader } from '../ui/banner.js'
-import { table, TableColumn } from '../ui/table.js'
+import { ValidationError, handleError } from '../utils/errors.js'
+import { detectPackageManager } from '../utils/detect.js'
+import { success, info, warn, error, outputJson } from '../utils/output.js'
+import { execa } from 'execa'
+import { createBanner, createDivider } from '../ui/banner.js'
+import { successMessage, infoMessage, warningMessage } from '../ui/messages.js'
+import { createTable } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
-import { successBox, warningBox, infoBox } from '../ui/box.js'
 
 const logger = getLogger('upgrade')
 
@@ -27,7 +31,7 @@ interface PackageUpdate {
  * Check for available updates
  */
 async function checkForUpdates(): Promise<PackageUpdate[]> {
-  const spinner = createSpinner('Checking for updates...')
+  const spinner = createSpinner('Checking for updates...', { color: 'cyan' })
   spinner.start()
   
   try {
@@ -106,106 +110,111 @@ function determineUpdateType(
 }
 
 /**
- * Display update information with beautiful formatting
+ * Display update information
  */
-function displayUpdates(updates: PackageUpdate[]) {
+async function displayUpdates(updates: PackageUpdate[]) {
+  if (process.argv.includes('--json') || process.argv.includes('--quiet')) {
+    // Simple output for JSON/quiet mode
+    console.log(chalk.blue.bold('\n📦 Available Updates\n'))
+    updates.forEach(update => {
+      console.log(`${update.name}: ${update.current} → ${update.latest} (${update.type})`)
+    })
+    return
+  }
+
   console.log()
-  console.log(sectionHeader('📦 Available Updates'))
+  console.log(createBanner('Available Updates', { gradient: 'rainbow', border: true, borderColor: 'cyan' }))
   console.log()
 
-  // Group updates by type
   const majorUpdates = updates.filter(u => u.type === 'major')
   const minorUpdates = updates.filter(u => u.type === 'minor')
   const patchUpdates = updates.filter(u => u.type === 'patch')
 
-  // Create table columns
-  const columns: TableColumn[] = [
-    { header: 'Package', width: 35, color: chalk.yellow },
-    { header: 'Current', width: 12, align: 'center', color: chalk.gray },
-    { header: '→', width: 4, align: 'center', color: chalk.gray },
-    { header: 'Latest', width: 12, align: 'center', color: chalk.green },
-    { header: 'Type', width: 10, align: 'center' },
-  ]
-
-  // Display major updates
   if (majorUpdates.length > 0) {
-    const majorData = majorUpdates.map(update => [
+    console.log(chalk.bold.red('  🔴 Major Updates (Breaking Changes)'))
+    console.log(createDivider(50, '─', 'red'))
+    const majorRows = majorUpdates.map(update => [
       update.name,
-      update.current,
-      '→',
-      update.latest,
-      chalk.red.bold('MAJOR'),
+      `${update.current} → ${update.latest}`,
     ])
-
-    console.log(chalk.red.bold('🔴 Major Updates (Breaking Changes)'))
-    console.log(table(majorData, columns))
+    const majorTable = await createTable(['Package', 'Version'], majorRows, {
+      headerColor: 'red',
+      align: 'left',
+    })
+    console.log(majorTable)
     console.log()
   }
 
-  // Display minor updates
   if (minorUpdates.length > 0) {
-    const minorData = minorUpdates.map(update => [
+    console.log(chalk.bold.yellow('  🟡 Minor Updates (New Features)'))
+    console.log(createDivider(50, '─', 'yellow'))
+    const minorRows = minorUpdates.map(update => [
       update.name,
-      update.current,
-      '→',
-      update.latest,
-      chalk.yellow.bold('MINOR'),
+      `${update.current} → ${update.latest}`,
     ])
-
-    console.log(chalk.yellow.bold('🟡 Minor Updates (New Features)'))
-    console.log(table(minorData, columns))
+    const minorTable = await createTable(['Package', 'Version'], minorRows, {
+      headerColor: 'yellow',
+      align: 'left',
+    })
+    console.log(minorTable)
     console.log()
   }
 
-  // Display patch updates
   if (patchUpdates.length > 0) {
-    const patchData = patchUpdates.map(update => [
+    console.log(chalk.bold.green('  🟢 Patch Updates (Bug Fixes)'))
+    console.log(createDivider(50, '─', 'green'))
+    const patchRows = patchUpdates.map(update => [
       update.name,
-      update.current,
-      '→',
-      update.latest,
-      chalk.green.bold('PATCH'),
+      `${update.current} → ${update.latest}`,
     ])
-
-    console.log(chalk.green.bold('🟢 Patch Updates (Bug Fixes)'))
-    console.log(table(patchData, columns))
+    const patchTable = await createTable(['Package', 'Version'], patchRows, {
+      headerColor: 'green',
+      align: 'left',
+    })
+    console.log(patchTable)
     console.log()
   }
-
-  // Summary
-  const summary = {
-    'Major Updates': chalk.red(majorUpdates.length.toString()),
-    'Minor Updates': chalk.yellow(minorUpdates.length.toString()),
-    'Patch Updates': chalk.green(patchUpdates.length.toString()),
-    'Total': chalk.cyan(updates.length.toString()),
-  }
-
-  console.log(infoBox(
-    Object.entries(summary)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n'),
-    'Summary'
-  ))
-  console.log()
 }
 
 /**
  * Install updates
  */
 async function installUpdates(updates: PackageUpdate[]) {
-  const spinner = createSpinner('Installing updates...')
+  const spinner = createSpinner('Installing updates...', { color: 'cyan' })
   spinner.start()
 
   try {
-    const packageNames = updates.map(u => `${u.name}@${u.latest}`).join(' ')
-    execSync(`npm install ${packageNames}`, {
+    const cwd = process.cwd()
+    const packageManager = await detectPackageManager(cwd)
+    const packageNames = updates.map(u => `${u.name}@${u.latest}`)
+    
+    const commands: Record<string, string[]> = {
+      npm: ['install', ...packageNames],
+      yarn: ['add', ...packageNames],
+      pnpm: ['add', ...packageNames],
+      bun: ['add', ...packageNames],
+    }
+
+    const cmd = commands[packageManager] || commands.npm
+    
+    await execa(packageManager === 'npm' ? 'npm' : packageManager, cmd, {
+      cwd,
       stdio: 'inherit',
     })
 
     spinner.succeed('Updates installed successfully!')
-  } catch (error) {
+    success('Updates installed successfully!')
+  } catch (err) {
     spinner.fail('Failed to install updates')
-    throw error
+    logger.error(err)
+    throw new ValidationError(
+      'Failed to install updates',
+      [
+        'Check your internet connection',
+        'Verify package manager is installed',
+        'Check package.json for conflicts',
+      ]
+    )
   }
 }
 
@@ -213,9 +222,7 @@ async function installUpdates(updates: PackageUpdate[]) {
  * Show changelog for a package
  */
 async function showChangelog(packageName: string, version: string) {
-  console.log()
-  console.log(sectionHeader(`📋 Changelog for ${packageName}@${version}`))
-  console.log()
+  console.log(chalk.blue.bold(`\n📋 Changelog for ${packageName}@${version}\n`))
 
   try {
     // Try to fetch changelog from GitHub
@@ -227,7 +234,7 @@ async function showChangelog(packageName: string, version: string) {
     const homepage = result.trim()
     const changelogUrl = `${homepage}/blob/main/CHANGELOG.md`
 
-    console.log(chalk.gray(`View full changelog: ${chalk.cyan(changelogUrl)}`))
+    console.log(chalk.gray(`View full changelog: ${changelogUrl}`))
   } catch (error) {
     console.log(chalk.gray('Changelog not available'))
   }
@@ -243,17 +250,18 @@ export async function upgradeCommand(options: {
   minor?: boolean
   patch?: boolean
 }) {
-  console.log()
-  console.log(sectionHeader('🚀 Clarity Chat Upgrade Tool'))
-  console.log()
-
   try {
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log(chalk.blue.bold('\n🚀 Clarity Chat Upgrade Tool\n'))
+    }
     // Check for updates
     const updates = await checkForUpdates()
 
     if (updates.length === 0) {
-      console.log(successBox('All packages are up to date!', '✓ Up to Date'))
-      console.log()
+      success('All packages are up to date!')
+      if (process.argv.includes('--json')) {
+        outputJson({ updates: [], upToDate: true })
+      }
       return
     }
 
@@ -263,14 +271,8 @@ export async function upgradeCommand(options: {
     if (options.minor) filteredUpdates = updates.filter(u => u.type === 'minor')
     if (options.patch) filteredUpdates = updates.filter(u => u.type === 'patch')
 
-    if (filteredUpdates.length === 0) {
-      console.log(warningBox('No updates found for the specified type', '⚠ No Updates'))
-      console.log()
-      return
-    }
-
     // Display updates
-    displayUpdates(filteredUpdates)
+    await displayUpdates(filteredUpdates)
 
     // Interactive mode
     if (options.interactive && !options.yes) {
@@ -280,7 +282,6 @@ export async function upgradeCommand(options: {
         message: 'Select packages to update:',
         choices: filteredUpdates.map(update => ({
           title: `${update.name} (${update.current} → ${update.latest})`,
-          description: `${update.type} update`,
           value: update,
           selected: update.type === 'patch', // Auto-select patches
         })),
@@ -313,23 +314,25 @@ export async function upgradeCommand(options: {
     // Show changelogs for major updates
     const majorUpdates = filteredUpdates.filter(u => u.type === 'major')
     if (majorUpdates.length > 0) {
-      console.log()
-      console.log(warningBox(
-        'Major updates installed! Please review breaking changes.',
-        '⚠ Breaking Changes'
-      ))
-      console.log()
+      console.log(chalk.yellow.bold('\n⚠️  Major updates installed!'))
+      console.log(chalk.gray('Please review breaking changes:\n'))
 
       for (const update of majorUpdates) {
         await showChangelog(update.name, update.latest)
       }
     }
 
-    console.log()
-    console.log(successBox('Upgrade complete!', '✓ Success'))
-    console.log()
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log()
+      console.log(successMessage('Upgrade complete!', {
+        title: '✨ Complete',
+        borderColor: 'green',
+      }))
+    } else {
+      success('Upgrade complete!')
+    }
   } catch (error) {
-    logger.error(error as Error)
-    process.exit(1)
+    handleError(error)
   }
 }
+

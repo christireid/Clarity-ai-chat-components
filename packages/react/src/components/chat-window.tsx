@@ -19,6 +19,12 @@ export interface ChatWindowProps {
   onMessageFeedback?: (messageId: string, type: 'up' | 'down') => void
   /** Callback when retry is requested */
   onMessageRetry?: (messageId: string) => void
+  /** Callback when message is edited */
+  onEditMessage?: (messageId: string) => void
+  /** Callback when message is regenerated */
+  onRegenerateMessage?: (messageId: string) => void
+  /** Callback when message is deleted */
+  onDeleteMessage?: (messageId: string) => void
   /** Custom empty state */
   emptyState?: React.ReactNode
   /** Show header with session info */
@@ -87,6 +93,9 @@ export function ChatWindow({
   onMessageCopy,
   onMessageFeedback,
   onMessageRetry,
+  onEditMessage,
+  onRegenerateMessage,
+  onDeleteMessage,
   emptyState,
   showHeader = false,
   sessionTitle = 'Chat Session',
@@ -214,6 +223,9 @@ export function ChatWindow({
           onMessageCopy={onMessageCopy}
           onMessageFeedback={onMessageFeedback}
           onMessageRetry={onMessageRetry}
+          onEditMessage={onEditMessage}
+          onRegenerateMessage={onRegenerateMessage}
+          onDeleteMessage={onDeleteMessage}
           emptyState={effectiveEmptyState}
           className="flex-1"
         />

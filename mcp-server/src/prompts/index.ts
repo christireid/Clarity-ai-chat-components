@@ -5,6 +5,9 @@
  */
 
 import { Prompt } from '@modelcontextprotocol/sdk/types.js'
+import { logger } from '../utils/logger.js'
+import { ValidationError, NotFoundError } from '../utils/errors.js'
+import { validateRequired, validateString } from '../utils/validation.js'
 
 /**
  * Available prompts
@@ -93,27 +96,49 @@ export const prompts: Prompt[] = [
 ]
 
 /**
- * Handle prompt generation
+ * Handle prompt generation with validation
  */
 export async function handlePromptGet(name: string, args: Record<string, string>): Promise<string> {
-  switch (name) {
-    case 'implement-feature':
-      return generateImplementFeaturePrompt(args.feature, args.provider)
-    
-    case 'debug-issue':
-      return generateDebugIssuePrompt(args.issue, args.code)
-    
-    case 'optimize-performance':
-      return generateOptimizePerformancePrompt(args.context)
-    
-    case 'review-code':
-      return generateReviewCodePrompt(args.code, args.focus)
-    
-    case 'convert-example':
-      return generateConvertExamplePrompt(args.code, args.from, args.to)
-    
-    default:
-      throw new Error(`Unknown prompt: ${name}`)
+  logger.debug('Generating prompt', { prompt: name, args })
+  
+  try {
+    switch (name) {
+      case 'implement-feature':
+        validateRequired(args, ['feature'])
+        const feature = validateString(args.feature, 'feature')
+        const provider = args.provider ? validateString(args.provider, 'provider') : undefined
+        return generateImplementFeaturePrompt(feature, provider)
+      
+      case 'debug-issue':
+        validateRequired(args, ['issue'])
+        const issue = validateString(args.issue, 'issue')
+        const code = args.code ? validateString(args.code, 'code') : undefined
+        return generateDebugIssuePrompt(issue, code)
+      
+      case 'optimize-performance':
+        validateRequired(args, ['context'])
+        const context = validateString(args.context, 'context')
+        return generateOptimizePerformancePrompt(context)
+      
+      case 'review-code':
+        validateRequired(args, ['code'])
+        const reviewCode = validateString(args.code, 'code')
+        const focus = args.focus ? validateString(args.focus, 'focus') : undefined
+        return generateReviewCodePrompt(reviewCode, focus)
+      
+      case 'convert-example':
+        validateRequired(args, ['code', 'from', 'to'])
+        const convertCode = validateString(args.code, 'code')
+        const from = validateString(args.from, 'from')
+        const to = validateString(args.to, 'to')
+        return generateConvertExamplePrompt(convertCode, from, to)
+      
+      default:
+        throw new NotFoundError('Prompt', name)
+    }
+  } catch (error) {
+    logger.error(`Failed to generate prompt: ${name}`, error instanceof Error ? error : undefined, { args })
+    throw error
   }
 }
 

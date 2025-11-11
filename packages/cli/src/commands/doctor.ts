@@ -1,16 +1,21 @@
 /**
  * doctor command - Check project health and configuration
- * Enhanced with beautiful UI components
  */
 
 import chalk from 'chalk'
+import ora from 'ora'
 import path from 'path'
 import fs from 'fs-extra'
 import { getLogger } from '../utils/logger.js'
-import { sectionHeader } from '../ui/banner.js'
-import { table, TableColumn } from '../ui/table.js'
+import { ValidationError, ConfigError, handleError } from '../utils/errors.js'
+import { loadConfig } from '../utils/config.js'
+import { detectFramework, detectPackageManager, isTypeScriptProject, hasTailwind } from '../utils/detect.js'
+import { success, info, warn, error, outputJson, outputTable } from '../utils/output.js'
+import { ensureEnvInGitignore } from '../utils/security.js'
+import { createBanner, createDivider } from '../ui/banner.js'
+import { successMessage, errorMessage, warningMessage, infoMessage } from '../ui/messages.js'
+import { createStatusTable } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
-import { successBox, errorBox, warningBox, infoBox } from '../ui/box.js'
 
 const logger = getLogger('doctor')
 
@@ -21,53 +26,77 @@ interface DoctorOptions {
 interface CheckResult {
   status: 'pass' | 'warn' | 'fail'
   message: string
-  suggestion?: string
   fix?: () => Promise<void>
+  category: string
+  severity: 'critical' | 'warning' | 'info'
 }
 
 export async function doctorCommand(options: DoctorOptions) {
-  console.log()
-  console.log(sectionHeader('🩺 Clarity Chat Health Check'))
-  console.log()
-  
-  const cwd = process.cwd()
-  const checks: Array<{ name: string; result: CheckResult }> = []
+  try {
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(createBanner('Health Check', { gradient: 'teen', border: true, borderColor: 'cyan' }))
+      console.log()
+    }
+    
+    const cwd = process.cwd()
+    const checks: Array<{ name: string; result: CheckResult }> = []
+    
+    // Load config to check configuration
+    let config
+    try {
+      config = await loadConfig(cwd)
+    } catch (err) {
+      logger.debug('Config not found or invalid', err)
+    }
 
-  // Check 1: package.json exists
-  const spinner = createSpinner('Checking project structure...')
-  spinner.start()
-  
-  const packageJsonPath = path.join(cwd, 'package.json')
-  if (await fs.pathExists(packageJsonPath)) {
-    checks.push({
-      name: 'package.json',
-      result: { status: 'pass', message: 'Found' }
-    })
-  } else {
-    checks.push({
-      name: 'package.json',
-      result: { 
-        status: 'fail', 
-        message: 'Not found',
-        suggestion: 'Not in a Node.js project. Run this command from a Node.js project directory.'
+    // Check 1: package.json exists
+    const spinner = createSpinner('Checking project structure...', { color: 'cyan' })
+    spinner.start()
+    
+    const packageJsonPath = path.join(cwd, 'package.json')
+    if (await fs.pathExists(packageJsonPath)) {
+      checks.push({
+        name: 'package.json',
+        result: { 
+          status: 'pass', 
+          message: 'Found',
+          category: 'Project Structure',
+          severity: 'info'
+        }
+      })
+    } else {
+      checks.push({
+        name: 'package.json',
+        result: { 
+          status: 'fail', 
+          message: 'Not found - not in a Node.js project',
+          category: 'Project Structure',
+          severity: 'critical'
+        }
+      })
+      spinner.fail('Project structure check failed')
+      if (process.argv.includes('--json')) {
+        outputJson({ checks, summary: { pass: 0, warn: 0, fail: 1 } })
       }
-    })
-  }
+      process.exit(1)
+    }
 
-  // Check 2: Clarity Chat dependencies
-  if (await fs.pathExists(packageJsonPath)) {
+    // Check 2: Clarity Chat dependencies
     const packageJson = await fs.readJson(packageJsonPath)
     const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
     
-    const clarityChatDeps = Object.keys(deps).filter(dep => dep.startsWith('@clarity-chat/'))
+    const clarityChatPackages = Object.keys(deps).filter(dep => dep.startsWith('@clarity-chat/'))
+    const hasClarityChat = clarityChatPackages.length > 0
     
-    if (clarityChatDeps.length > 0) {
+    if (hasClarityChat) {
       checks.push({
         name: 'Clarity Chat packages',
         result: { 
           status: 'pass', 
-          message: `Installed (${clarityChatDeps.length} packages)`,
-          suggestion: `Found: ${clarityChatDeps.join(', ')}`
+          message: `Installed (${clarityChatPackages.length} packages)`,
+          category: 'Dependencies',
+          severity: 'info'
         }
       })
     } else {
@@ -75,112 +104,194 @@ export async function doctorCommand(options: DoctorOptions) {
         name: 'Clarity Chat packages',
         result: { 
           status: 'warn', 
-          message: 'Not installed',
-          suggestion: 'Run: clarity-chat init',
+          message: 'Not installed - run: clarity-chat init',
+          category: 'Dependencies',
+          severity: 'warning',
           fix: async () => {
-            logger.info('Run: clarity-chat init to install packages')
+            info('Run: clarity-chat init to install packages')
           }
         }
       })
     }
-  }
-
-  // Check 3: .env.local with API keys
-  const envPath = path.join(cwd, '.env.local')
-  if (await fs.pathExists(envPath)) {
-    const envContent = await fs.readFile(envPath, 'utf-8')
-    const keys = {
-      openai: /^OPENAI_API_KEY=.+$/m.test(envContent),
-      anthropic: /^ANTHROPIC_API_KEY=.+$/m.test(envContent),
-      google: /^GOOGLE_API_KEY=.+$/m.test(envContent),
-    }
-    const keyCount = Object.values(keys).filter(Boolean).length
     
-    if (keyCount > 0) {
-      const configured = Object.entries(keys)
-        .filter(([_, has]) => has)
-        .map(([name]) => name)
-        .join(', ')
-      
+    // Check 2.5: Framework detection
+    const detectedFramework = await detectFramework(cwd)
+    if (detectedFramework) {
       checks.push({
-        name: 'API keys',
-        result: { 
-          status: 'pass', 
-          message: `Configured (${keyCount}/3)`,
-          suggestion: `Found: ${configured}`
+        name: 'Framework detection',
+        result: {
+          status: 'pass',
+          message: `Detected: ${detectedFramework}`,
+          category: 'Project Structure',
+          severity: 'info'
         }
       })
+    }
+    
+    // Check 2.6: Package manager detection
+    const packageManager = await detectPackageManager(cwd)
+    checks.push({
+      name: 'Package manager',
+      result: {
+        status: 'pass',
+        message: `Detected: ${packageManager}`,
+        category: 'Project Structure',
+        severity: 'info'
+      }
+    })
+
+    // Check 3: .env.local with API keys
+    const envPath = path.join(cwd, '.env.local')
+    if (await fs.pathExists(envPath)) {
+      const envContent = await fs.readFile(envPath, 'utf-8')
+      const keyPattern = /^(OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY)=(.+)$/m
+      const matches = envContent.match(keyPattern)
+      const hasValidKeys = matches && matches[2] && !matches[2].includes('your_') && !matches[2].includes('_key_here')
+      
+      if (hasValidKeys) {
+        const configuredKeys = (envContent.match(/^(OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY)=/gm) || []).length
+        checks.push({
+          name: 'API keys',
+          result: { 
+            status: 'pass', 
+            message: `Configured (${configuredKeys} keys found)`,
+            category: 'Configuration',
+            severity: 'info'
+          }
+        })
+      } else {
+        checks.push({
+          name: 'API keys',
+          result: { 
+            status: 'warn', 
+            message: 'No valid keys found - add with: clarity-chat keys add',
+            category: 'Configuration',
+            severity: 'warning'
+          }
+        })
+      }
+      
+      // Check if .env.local is in .gitignore
+      const gitignorePath = path.join(cwd, '.gitignore')
+      if (await fs.pathExists(gitignorePath)) {
+        const gitignoreContent = await fs.readFile(gitignorePath, 'utf-8')
+        if (gitignoreContent.includes('.env.local')) {
+          checks.push({
+            name: '.env.local in .gitignore',
+            result: {
+              status: 'pass',
+              message: 'Protected from git',
+              category: 'Security',
+              severity: 'info'
+            }
+          })
+        } else {
+          checks.push({
+            name: '.env.local in .gitignore',
+            result: {
+              status: 'warn',
+              message: 'Not in .gitignore - security risk',
+              category: 'Security',
+              severity: 'warning',
+              fix: async () => {
+                await ensureEnvInGitignore(cwd)
+                success('Added .env.local to .gitignore')
+              }
+            }
+          })
+        }
+      }
     } else {
       checks.push({
         name: 'API keys',
         result: { 
           status: 'warn', 
-          message: 'No keys found',
-          suggestion: 'Add keys with: clarity-chat keys add <provider>'
-        }
-      })
-    }
-  } else {
-    checks.push({
-      name: 'API keys',
-      result: { 
-        status: 'warn', 
-        message: '.env.local not found',
-        suggestion: 'Create .env.local and add API keys',
-        fix: async () => {
-          await fs.writeFile(envPath, `# Clarity Chat API Keys
-# Get your keys from:
-# - OpenAI: https://platform.openai.com/api-keys
-# - Anthropic: https://console.anthropic.com/
-# - Google: https://makersuite.google.com/app/apikey
-
+          message: '.env.local not found',
+          category: 'Configuration',
+          severity: 'warning',
+          fix: async () => {
+            await fs.writeFile(envPath, `# Clarity Chat API Keys
 OPENAI_API_KEY=your_key_here
 ANTHROPIC_API_KEY=your_key_here
 GOOGLE_API_KEY=your_key_here
 `, 'utf-8')
-          logger.success('Created .env.local template')
+            await ensureEnvInGitignore(cwd)
+            success('Created .env.local and added to .gitignore')
+          }
         }
-      }
-    })
-  }
+      })
+    }
 
-  // Check 4: Tailwind CSS
-  const tailwindConfigPath = path.join(cwd, 'tailwind.config.js')
-  const tailwindConfigTsPath = path.join(cwd, 'tailwind.config.ts')
-  
-  if (await fs.pathExists(tailwindConfigPath) || await fs.pathExists(tailwindConfigTsPath)) {
-    checks.push({
-      name: 'Tailwind CSS',
-      result: { status: 'pass', message: 'Configured' }
-    })
-  } else {
-    checks.push({
-      name: 'Tailwind CSS',
-      result: { 
-        status: 'warn', 
-        message: 'Not found',
-        suggestion: 'Clarity Chat works best with Tailwind CSS. Install: npm install -D tailwindcss'
-      }
-    })
-  }
+    // Check 4: Tailwind CSS
+    const hasTailwindConfig = await hasTailwind(cwd)
+    if (hasTailwindConfig) {
+      checks.push({
+        name: 'Tailwind CSS',
+        result: { 
+          status: 'pass', 
+          message: 'Configured',
+          category: 'Styling',
+          severity: 'info'
+        }
+      })
+    } else {
+      checks.push({
+        name: 'Tailwind CSS',
+        result: { 
+          status: 'warn', 
+          message: 'Not found - Clarity Chat works best with Tailwind CSS',
+          category: 'Styling',
+          severity: 'warning'
+        }
+      })
+    }
 
-  // Check 5: TypeScript
-  const tsconfigPath = path.join(cwd, 'tsconfig.json')
-  if (await fs.pathExists(tsconfigPath)) {
-    checks.push({
-      name: 'TypeScript',
-      result: { status: 'pass', message: 'Configured' }
-    })
-  } else {
-    checks.push({
-      name: 'TypeScript',
-      result: { 
-        status: 'warn', 
-        message: 'Not found',
-        suggestion: 'TypeScript recommended for best experience'
-      }
-    })
-  }
+    // Check 5: TypeScript
+    const hasTypeScript = await isTypeScriptProject(cwd)
+    if (hasTypeScript) {
+      checks.push({
+        name: 'TypeScript',
+        result: { 
+          status: 'pass', 
+          message: 'Configured',
+          category: 'Language',
+          severity: 'info'
+        }
+      })
+    } else {
+      checks.push({
+        name: 'TypeScript',
+        result: { 
+          status: 'warn', 
+          message: 'Not found - TypeScript recommended for best experience',
+          category: 'Language',
+          severity: 'warning'
+        }
+      })
+    }
+    
+    // Check 5.5: Config file
+    if (config) {
+      checks.push({
+        name: 'Config file',
+        result: {
+          status: 'pass',
+          message: 'Found clarity-chat.config.js',
+          category: 'Configuration',
+          severity: 'info'
+        }
+      })
+    } else {
+      checks.push({
+        name: 'Config file',
+        result: {
+          status: 'info',
+          message: 'No config file (using defaults)',
+          category: 'Configuration',
+          severity: 'info'
+        }
+      })
+    }
 
   // Check 6: Git repository
   const gitPath = path.join(cwd, '.git')
@@ -194,115 +305,128 @@ GOOGLE_API_KEY=your_key_here
       name: 'Git repository',
       result: { 
         status: 'warn', 
-        message: 'Not initialized',
-        suggestion: 'Run: git init'
+        message: 'Not initialized - run: git init' 
       }
     })
   }
 
-  spinner.succeed('Health check complete')
-  console.log()
+    spinner.succeed('Health check complete\n')
 
-  // Display results in a beautiful table
-  const columns: TableColumn[] = [
-    {
-      header: 'Check',
-      width: 25,
-      color: chalk.white,
-    },
-    {
-      header: 'Status',
-      width: 12,
-      align: 'center',
-      color: (text: string) => {
-        if (text.includes('✓')) return chalk.green(text)
-        if (text.includes('⚠')) return chalk.yellow(text)
-        if (text.includes('✗')) return chalk.red(text)
-        return text
-      },
-    },
-    {
-      header: 'Message',
-      width: 30,
-    },
-  ]
+    // Group checks by category
+    const checksByCategory = checks.reduce((acc, check) => {
+      const category = check.result.category || 'Other'
+      if (!acc[category]) acc[category] = []
+      acc[category].push(check)
+      return acc
+    }, {} as Record<string, typeof checks>)
 
-  const tableData = checks.map(({ name, result }) => {
-    const statusIcon =
-      result.status === 'pass'
-        ? chalk.green('✓ Pass')
-        : result.status === 'warn'
-        ? chalk.yellow('⚠ Warn')
-        : chalk.red('✗ Fail')
-
-    return [name, statusIcon, result.message]
-  })
-
-  console.log(table(tableData, columns))
-  console.log()
-
-  // Summary
-  const passCount = checks.filter(c => c.result.status === 'pass').length
-  const warnCount = checks.filter(c => c.result.status === 'warn').length
-  const failCount = checks.filter(c => c.result.status === 'fail').length
-  const total = checks.length
-
-  const summaryContent = [
-    chalk.green(`✓ Passed: ${passCount}/${total}`),
-    warnCount > 0 ? chalk.yellow(`⚠ Warnings: ${warnCount}/${total}`) : '',
-    failCount > 0 ? chalk.red(`✗ Failed: ${failCount}/${total}`) : '',
-  ].filter(Boolean).join('\n')
-
-  if (failCount > 0) {
-    console.log(errorBox(summaryContent, 'Summary'))
-  } else if (warnCount > 0) {
-    console.log(warningBox(summaryContent, 'Summary'))
-  } else {
-    console.log(successBox(summaryContent, 'Summary'))
-  }
-
-  // Show suggestions for warnings/failures
-  const issues = checks.filter(c => c.result.status !== 'pass' && c.result.suggestion)
-  if (issues.length > 0) {
-    console.log()
-    console.log(sectionHeader('💡 Suggestions'))
-    issues.forEach(({ name, result }) => {
-      if (result.suggestion) {
-        console.log(chalk.cyan(`  • ${name}:`), result.suggestion)
+    // Display results
+    if (process.argv.includes('--json')) {
+      const summary = {
+        pass: checks.filter(c => c.result.status === 'pass').length,
+        warn: checks.filter(c => c.result.status === 'warn').length,
+        fail: checks.filter(c => c.result.status === 'fail').length,
+        checks: checks.map(c => ({
+          name: c.name,
+          status: c.result.status,
+          message: c.result.message,
+          category: c.result.category,
+          severity: c.result.severity,
+        })),
       }
-    })
-  }
-
-  // Auto-fix if requested
-  if (options.fix) {
-    console.log()
-    console.log(sectionHeader('🔧 Applying Fixes'))
-    
-    const fixableChecks = checks.filter(c => c.result.fix && c.result.status !== 'pass')
-    
-    if (fixableChecks.length === 0) {
-      console.log(infoBox('No automatic fixes available', 'Info'))
+      outputJson(summary)
       return
     }
 
-    for (const { name, result } of fixableChecks) {
-      const fixSpinner = createSpinner(`Fixing ${name}...`)
-      fixSpinner.start()
-      try {
-        await result.fix!()
-        fixSpinner.succeed(`Fixed ${name}`)
-      } catch (error) {
-        fixSpinner.fail(`Failed to fix ${name}`)
-        logger.error(error as Error)
+    // Display by category with beautiful formatting
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      for (const [category, categoryChecks] of Object.entries(checksByCategory)) {
+        console.log()
+        console.log(chalk.bold.cyan(`  ${category}`))
+        console.log(createDivider(50, '─', 'gray'))
+        
+        const statusItems = categoryChecks.map(({ name, result }) => ({
+          name,
+          status: result.status === 'pass' ? 'success' as const : result.status === 'warn' ? 'warning' as const : 'error' as const,
+          message: result.message,
+        }))
+        
+        const statusTable = await createStatusTable(statusItems)
+        console.log(statusTable)
+      }
+    } else {
+      // Simple output for quiet/JSON mode
+      Object.entries(checksByCategory).forEach(([category, categoryChecks]) => {
+        categoryChecks.forEach(({ name, result }) => {
+          if (result.status === 'pass') {
+            success(`${name}: ${result.message}`)
+          } else if (result.status === 'warn') {
+            warn(`${name}: ${result.message}`)
+          } else {
+            error(`${name}: ${result.message}`)
+          }
+        })
+      })
+    }
+
+    // Summary with beautiful formatting
+    const passCount = checks.filter(c => c.result.status === 'pass').length
+    const warnCount = checks.filter(c => c.result.status === 'warn').length
+    const failCount = checks.filter(c => c.result.status === 'fail').length
+
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(createDivider(60, '═', 'cyan'))
+      const summaryItems = [
+        { name: 'Passed', status: 'success' as const, message: `${passCount} checks` },
+      ]
+      if (warnCount > 0) {
+        summaryItems.push({ name: 'Warnings', status: 'warning' as const, message: `${warnCount} checks` })
+      }
+      if (failCount > 0) {
+        summaryItems.push({ name: 'Failed', status: 'error' as const, message: `${failCount} checks` })
+      }
+      const summaryTable = await createStatusTable(summaryItems)
+      console.log(summaryTable)
+      console.log(createDivider(60, '═', 'cyan'))
+    } else {
+      console.log('\n' + chalk.bold('Summary:'))
+      success(`Passed: ${passCount}`)
+      if (warnCount > 0) warn(`Warnings: ${warnCount}`)
+      if (failCount > 0) error(`Failed: ${failCount}`)
+    }
+
+    // Auto-fix if requested
+    if (options.fix) {
+      if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+        console.log('\n' + chalk.bold.cyan('Applying fixes...\n'))
+      }
+      
+      const fixableChecks = checks.filter(c => c.result.fix && c.result.status !== 'pass')
+      
+      if (fixableChecks.length === 0) {
+        info('No fixes available')
+      } else {
+        for (const { name, result } of fixableChecks) {
+          const fixSpinner = ora(`Fixing ${name}...`).start()
+          try {
+            await result.fix!()
+            fixSpinner.succeed(`Fixed ${name}`)
+            success(`Fixed: ${name}`)
+          } catch (err) {
+            fixSpinner.fail(`Failed to fix ${name}`)
+            logger.error(err)
+            error(`Failed to fix: ${name}`)
+          }
+        }
       }
     }
-    
-    console.log()
-    logger.success('Fixes applied! Run doctor again to verify.')
-  }
 
-  // Exit code
-  if (failCount > 0) {
-    process.exit(1)
+    // Exit code
+    if (failCount > 0) {
+      process.exit(1)
+    }
+  } catch (error) {
+    handleError(error)
   }
 }

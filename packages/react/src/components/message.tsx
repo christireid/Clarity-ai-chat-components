@@ -26,7 +26,9 @@ export interface MessageProps {
   onCopy?: (content: string) => void
   onFeedback?: (type: 'up' | 'down') => void
   onRetry?: () => void
-  onEdit?: (content: string) => void
+  onEdit?: (messageId: string) => void
+  onRegenerate?: (messageId: string) => void
+  onDelete?: (messageId: string) => void
   showAvatar?: boolean
   showTimestamp?: boolean
   className?: string
@@ -35,18 +37,26 @@ export interface MessageProps {
 }
 
 /**
- * Message component - Enhanced with React 19 features
+ * Message component - Enhanced with React 19 features and message operations
  * 
  * React 19 Enhancements:
  * - Removed memo() wrapper - compiler handles optimization
  * - Ref as prop instead of forwardRef
  * - Removed simple useCallback/useMemo - compiler optimizes
  * - Cleaner component signature
+ * 
+ * Message Operations:
+ * - Edit user messages
+ * - Regenerate assistant responses
+ * - Delete any message
  */
 export function Message({
   message,
   onFeedback,
   onRetry,
+  onEdit,
+  onRegenerate,
+  onDelete,
   showAvatar = true,
   showTimestamp = true,
   className,
@@ -217,15 +227,20 @@ export function Message({
             </div>
           )}
 
-          {/* Actions */}
-          {isAssistant && (
+          {/* Actions - Show for both user and assistant messages */}
+          {(isUser || isAssistant) && (
             <MessageActions
               messageContent={message.content}
+              messageId={message.id}
+              role={message.role}
               feedbackGiven={feedbackGiven}
               showConfetti={showConfetti}
               hasError={message.status === 'error'}
               onFeedback={handleFeedback}
               onRetry={onRetry}
+              onEdit={onEdit}
+              onRegenerate={onRegenerate}
+              onDelete={onDelete}
               show={isHovered || !!feedbackGiven}
             />
           )}

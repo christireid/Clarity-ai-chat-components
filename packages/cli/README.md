@@ -11,19 +11,12 @@
 - ⚡ **Code Generation** - Generate components, hooks, adapters, and tests
 - 📚 **Documentation** - Quick access to docs and examples
 - 🩺 **Health Check** - Diagnose and fix project issues
-- 📊 **Project Analysis** - Analyze component usage and generate reports
-- 🚀 **Upgrade Tool** - Check for and install package updates
-
-## Beautiful UI
-
-The CLI features a modern, beautiful interface inspired by top-tier developer tools:
-
-- ✨ **Gradient banners** for brand identity
-- 📊 **Beautiful tables** for data display
-- 📈 **Progress bars** for long operations
-- 🎨 **Color-coded output** for quick scanning
-- 📦 **Information boxes** for important messages
-- ✅ **Consistent styling** throughout
+- 🎯 **Enhanced Developer Experience** - Comprehensive error handling, validation, and helpful suggestions
+- 🔒 **Security** - Path validation, secure credential handling, and input sanitization
+- 📊 **Multiple Output Modes** - Human-readable, JSON, quiet, and verbose modes
+- ⌨️ **Shell Completion** - Bash, zsh, and fish completion support
+- ⚙️ **Configuration Management** - Flexible config file support with cosmiconfig
+- 🎨 **Beautiful UI/UX** - Eye-catching gradients, formatted tables, beautiful message boxes, and smooth animations
 
 ## Installation
 
@@ -64,6 +57,9 @@ Add a component to your project:
 ```bash
 clarity-chat add chat-interface
 clarity-chat add model-selector --path ./src/components
+
+# Add multiple components at once
+clarity-chat add chat-interface --batch "model-selector,token-counter"
 ```
 
 **Available Components:**
@@ -72,6 +68,11 @@ clarity-chat add model-selector --path ./src/components
 - `token-counter` - Token usage display
 - `cost-estimator` - API cost calculator
 - `streaming-handler` - SSE streaming utilities
+
+**Options:**
+- `-p, --path <path>` - Installation path (default: `./src/components`)
+- `--no-deps` - Skip dependency installation
+- `--batch <components>` - Add multiple components (comma-separated)
 
 ### `clarity-chat keys`
 
@@ -85,7 +86,7 @@ clarity-chat keys
 clarity-chat keys add openai
 clarity-chat keys add anthropic
 
-# List configured keys (beautiful table display)
+# List configured keys
 clarity-chat keys list
 
 # Validate all keys
@@ -103,7 +104,20 @@ Start development server with hot reload:
 clarity-chat dev
 clarity-chat dev --port 3001
 clarity-chat dev --open  # Open browser automatically
+clarity-chat dev --watch  # Watch mode (auto-restart on changes)
 ```
+
+**Features:**
+- Automatic framework detection (Next.js, Remix, Vite, Astro)
+- Package manager detection (npm, yarn, pnpm, bun)
+- Port validation
+- Graceful shutdown handling
+- Browser auto-open option
+
+**Options:**
+- `-p, --port <port>` - Port number (default: `3000`)
+- `--open` - Open browser automatically
+- `--watch` - Watch mode (auto-restart on changes)
 
 ### `clarity-chat generate <type>`
 
@@ -135,74 +149,95 @@ clarity-chat docs --offline       # Use offline docs (coming soon)
 
 ### `clarity-chat doctor`
 
-Check project health and configuration with beautiful output:
+Check project health and configuration:
 
 ```bash
 clarity-chat doctor       # Run health check
 clarity-chat doctor --fix # Auto-fix common issues
 ```
 
-**Features:**
-- Beautiful table display of checks
-- Color-coded status indicators
-- Summary box with statistics
-- Suggestions for improvements
-- Auto-fix for common issues
+## Workflow Acceleration Features
 
-### `clarity-chat analyze`
+### Batch Operations
 
-Analyze project for Clarity Chat usage:
+Add multiple components at once:
 
 ```bash
-clarity-chat analyze              # Analyze and display results
-clarity-chat analyze --report     # Generate detailed reports
-clarity-chat analyze --verbose   # Show detailed file usage
+clarity-chat add chat-interface --batch "model-selector,token-counter,cost-estimator"
 ```
 
-**Features:**
-- Summary box with key metrics
-- Beautiful tables for components and hooks
-- Usage bars for visual representation
-- Progress bar during analysis
-- Recommendations for improvements
+### Watch Mode
 
-### `clarity-chat upgrade`
-
-Check for and install package updates:
+Automatically restart dev server on file changes:
 
 ```bash
-clarity-chat upgrade                    # Check and install all updates
-clarity-chat upgrade --interactive     # Interactive selection
-clarity-chat upgrade --yes             # Skip confirmation
-clarity-chat upgrade --major           # Only major updates
-clarity-chat upgrade --minor           # Only minor updates
-clarity-chat upgrade --patch           # Only patch updates
+clarity-chat dev --watch
 ```
 
-**Features:**
-- Beautiful table display of updates
-- Grouped by update type (major/minor/patch)
-- Color-coded update types
-- Summary statistics
-- Changelog links for major updates
+### Update Notifications
+
+The CLI automatically checks for updates when running common commands (`init`, `add`, `dev`) and notifies you if a new version is available.
+
+## Beautiful UI Features
+
+The CLI features a stunning visual design with:
+
+- **🌈 Gradient Banners** - Eye-catching headers for each command
+- **📦 Message Boxes** - Beautiful success, error, warning, and info boxes
+- **📊 Formatted Tables** - Professional table layouts for structured data
+- **⚡ Smooth Spinners** - Color-coded loading indicators
+- **🎯 Visual Hierarchy** - Clear structure with dividers and spacing
+- **✨ Consistent Design** - Cohesive visual language throughout
+
+### Visual Examples
+
+**Init Command:**
+```
+┌─────────────────────────────────────┐
+│   Initialize Project (gradient)     │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ 🚀 Getting Started                  │
+│ Setting up your AI-powered app...   │
+└─────────────────────────────────────┘
+```
+
+**Success Messages:**
+```
+┌─────────────────────────────────────┐
+│ ✨ All Set!                         │
+│ Project initialized successfully!   │
+└─────────────────────────────────────┘
+```
+
+**Status Tables:**
+```
+┌─────────────┬──────────────────────┐
+│ Item        │ Status               │
+├─────────────┼──────────────────────┤
+│ ✅ package.json │ Found             │
+│ ⚠️  API keys    │ Not configured    │
+└─────────────┴──────────────────────┘
+```
 
 ## Examples
 
 ### Quick Start
 
 ```bash
-# Create new project
+# Create new project (beautiful interactive wizard)
 npx @clarity-chat/cli init
 
-# Add components
+# Add components (single or batch)
 clarity-chat add chat-interface
-clarity-chat add model-selector
+clarity-chat add chat-interface --batch "model-selector,token-counter"
 
-# Configure API keys
+# Configure API keys (beautiful prompts)
 clarity-chat keys add openai
 
-# Start development
-clarity-chat dev
+# Start development (eye-catching server start)
+clarity-chat dev --open
 ```
 
 ### Adding to Existing Project
@@ -217,26 +252,6 @@ clarity-chat keys add anthropic
 
 ```bash
 clarity-chat generate component --name CustomChat --output ./src/components
-```
-
-### Health Check
-
-```bash
-# Check project health
-clarity-chat doctor
-
-# Auto-fix issues
-clarity-chat doctor --fix
-```
-
-### Analyze Usage
-
-```bash
-# Analyze component usage
-clarity-chat analyze
-
-# Generate detailed report
-clarity-chat analyze --report
 ```
 
 ## Configuration
@@ -273,16 +288,69 @@ GOOGLE_API_KEY=AIza...
 
 **Security Note**: `.env.local` is automatically added to `.gitignore`
 
-## UI Components
+## Output Modes
 
-The CLI uses beautiful UI components for consistent, professional output:
+The CLI supports multiple output modes for different use cases:
 
-- **Banners**: Gradient ASCII art banners
-- **Tables**: Beautiful formatted tables with borders
-- **Progress Bars**: Visual progress indicators
-- **Boxes**: Information boxes for important messages
-- **Spinners**: Animated loading indicators
-- **Colors**: Consistent color palette throughout
+### Human-readable (default)
+```bash
+clarity-chat add chat-interface
+```
+
+### JSON mode (for scripts/automation)
+```bash
+clarity-chat add chat-interface --json
+```
+
+### Quiet mode (minimal output)
+```bash
+clarity-chat add chat-interface --quiet
+```
+
+### Verbose mode (detailed output)
+```bash
+clarity-chat add chat-interface --verbose
+```
+
+### Debug mode
+```bash
+clarity-chat add chat-interface --debug
+```
+
+## Shell Completion
+
+Install shell completion for better developer experience:
+
+### Bash
+```bash
+eval "$(clarity-chat completion bash)"
+# Add to ~/.bashrc or ~/.bash_profile
+```
+
+### Zsh
+```bash
+eval "$(clarity-chat completion zsh)"
+# Add to ~/.zshrc
+```
+
+### Fish
+```bash
+clarity-chat completion fish > ~/.config/fish/completions/clarity-chat.fish
+```
+
+## Error Handling
+
+The CLI provides comprehensive error handling with actionable suggestions:
+
+- **Validation Errors**: Clear messages with suggestions for fixing invalid inputs
+- **Not Found Errors**: Helpful hints when resources aren't found
+- **Permission Errors**: Guidance on fixing permission issues
+- **Config Errors**: Suggestions for configuration problems
+
+All errors include:
+- Clear error messages
+- Actionable suggestions
+- Links to documentation (when available)
 
 ## Development
 
@@ -298,6 +366,9 @@ npm run build
 
 # Test
 npm test
+
+# Type check
+npm run type-check
 ```
 
 ## License

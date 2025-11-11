@@ -1,17 +1,19 @@
 /**
  * Analyze command - Analyze project structure and usage
- * Enhanced with beautiful UI components
  */
 
 import chalk from 'chalk'
+import ora from 'ora'
 import fs from 'fs-extra'
 import path from 'path'
 import { glob } from 'fast-glob'
 import { getLogger } from '../utils/logger.js'
-import { sectionHeader } from '../ui/banner.js'
-import { table, TableColumn, keyValueTable } from '../ui/table.js'
-import { createSpinner, ProgressBar } from '../ui/progress.js'
-import { successBox, infoBox } from '../ui/box.js'
+import { handleError } from '../utils/errors.js'
+import { success, info, warn, outputJson, outputTable } from '../utils/output.js'
+import { createBanner, createDivider } from '../ui/banner.js'
+import { successMessage, infoMessage } from '../ui/messages.js'
+import { createTable } from '../ui/table.js'
+import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('analyze')
 
@@ -40,7 +42,7 @@ interface HookUsage {
  * Analyze project for Clarity Chat usage
  */
 async function analyzeProject(): Promise<AnalysisResult> {
-  const spinner = createSpinner('Analyzing project...')
+  const spinner = createSpinner('Analyzing project...', { color: 'blue' })
   spinner.start()
 
   try {
@@ -54,7 +56,6 @@ async function analyzeProject(): Promise<AnalysisResult> {
     }
 
     // Find all source files
-    spinner.text = 'Scanning source files...'
     const files = await glob(['src/**/*.{ts,tsx,js,jsx}'], {
       cwd: process.cwd(),
       ignore: ['**/node_modules/**', '**/dist/**', '**/*.test.*', '**/*.spec.*'],
@@ -62,28 +63,12 @@ async function analyzeProject(): Promise<AnalysisResult> {
 
     result.totalFiles = files.length
 
-    if (files.length === 0) {
-      spinner.warn('No source files found')
-      return result
-    }
-
     // Track component and hook usage
     const componentUsage = new Map<string, Set<string>>()
     const hookUsage = new Map<string, Set<string>>()
 
-    // Progress bar for file analysis
-    const progressBar = new ProgressBar({
-      total: files.length,
-      width: 30,
-      showPercentage: true,
-      showCount: true,
-    })
-
     // Analyze each file
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      progressBar.update(i + 1, `Analyzing ${path.basename(file)}...`)
-
+    for (const file of files) {
       const content = await fs.readFile(path.join(process.cwd(), file), 'utf8')
 
       // Find Clarity Chat imports
@@ -93,7 +78,7 @@ async function analyzeProject(): Promise<AnalysisResult> {
       for (const match of matches) {
         const imports = match[1]
           .split(',')
-          .map(i => i.trim().replace(/as\s+\w+/, '').trim())
+          .map(i => i.trim())
           .filter(Boolean)
 
         imports.forEach(importName => {
@@ -115,9 +100,7 @@ async function analyzeProject(): Promise<AnalysisResult> {
       }
     }
 
-    progressBar.complete('Analysis complete')
-
-    // Convert to arrays
+    // Convert to result format
     result.components = Array.from(componentUsage.entries())
       .map(([name, files]) => ({
         name,
@@ -173,98 +156,106 @@ async function analyzeProject(): Promise<AnalysisResult> {
 }
 
 /**
- * Display analysis results with beautiful formatting
+ * Display analysis results
  */
-function displayResults(result: AnalysisResult) {
-  console.log()
-  console.log(sectionHeader('📊 Project Analysis'))
-  console.log()
-
-  // Summary box
-  const summaryData = {
-    'Files Scanned': chalk.cyan(result.totalFiles.toString()),
-    'Total Imports': chalk.cyan(result.totalImports.toString()),
-    'Components Used': chalk.cyan(result.components.length.toString()),
-    'Hooks Used': chalk.cyan(result.hooks.length.toString()),
+async function displayResults(result: AnalysisResult) {
+  if (process.argv.includes('--json') || process.argv.includes('--quiet')) {
+    // Simple output for JSON/quiet mode
+    console.log(chalk.blue.bold('\n📊 Project Analysis\n'))
+    console.log(`Total files scanned: ${chalk.cyan(result.totalFiles)}`)
+    console.log(`Total imports: ${chalk.cyan(result.totalImports)}`)
+    console.log(`Components used: ${chalk.cyan(result.components.length)}`)
+    console.log(`Hooks used: ${chalk.cyan(result.hooks.length)}`)
+    return
   }
 
-  console.log(infoBox(keyValueTable(summaryData), 'Summary'))
+  console.log()
+  console.log(createDivider(60, '═', 'blue'))
+  console.log()
+
+  // Summary table
+  const summaryTable = await createTable(
+    ['Metric', 'Value'],
+    [
+      ['Total files scanned', result.totalFiles.toString()],
+      ['Total imports', result.totalImports.toString()],
+      ['Components used', result.components.length.toString()],
+      ['Hooks used', result.hooks.length.toString()],
+    ],
+    {
+      headerColor: 'blue',
+      align: 'left',
+    }
+  )
+  console.log(summaryTable)
   console.log()
 
   // Top components table
   if (result.components.length > 0) {
-    const componentColumns: TableColumn[] = [
-      { header: '#', width: 4, align: 'right' },
-      { header: 'Component', width: 30, color: chalk.yellow },
-      { header: 'Files', width: 8, align: 'center', color: chalk.cyan },
-      { header: 'Usage', width: 20 },
-    ]
-
-    const componentData = result.components.slice(0, 10).map((component, index) => {
-      const usageBar = '█'.repeat(Math.min(component.importCount, 20))
-      return [
-        (index + 1).toString(),
-        component.name,
-        component.importCount.toString(),
-        chalk.green(usageBar),
-      ]
+    console.log(chalk.bold.cyan('  Most Used Components'))
+    console.log(createDivider(50, '─', 'gray'))
+    const componentRows = result.components.slice(0, 10).map((component, index) => [
+      `${index + 1}. ${component.name}`,
+      `used in ${component.importCount} file(s)`,
+    ])
+    const componentTable = await createTable(['Component', 'Usage'], componentRows, {
+      headerColor: 'cyan',
+      align: 'left',
+      compact: true,
     })
-
-    console.log(sectionHeader('🏆 Most Used Components'))
-    console.log(table(componentData, componentColumns))
+    console.log(componentTable)
     console.log()
   }
 
   // Top hooks table
   if (result.hooks.length > 0) {
-    const hookColumns: TableColumn[] = [
-      { header: '#', width: 4, align: 'right' },
-      { header: 'Hook', width: 30, color: chalk.magenta },
-      { header: 'Files', width: 8, align: 'center', color: chalk.cyan },
-      { header: 'Usage', width: 20 },
-    ]
-
-    const hookData = result.hooks.slice(0, 10).map((hook, index) => {
-      const usageBar = '█'.repeat(Math.min(hook.importCount, 20))
-      return [
-        (index + 1).toString(),
-        hook.name,
-        hook.importCount.toString(),
-        chalk.green(usageBar),
-      ]
+    console.log(chalk.bold.cyan('  Most Used Hooks'))
+    console.log(createDivider(50, '─', 'gray'))
+    const hookRows = result.hooks.slice(0, 5).map((hook, index) => [
+      `${index + 1}. ${hook.name}`,
+      `used in ${hook.importCount} file(s)`,
+    ])
+    const hookTable = await createTable(['Hook', 'Usage'], hookRows, {
+      headerColor: 'cyan',
+      align: 'left',
+      compact: true,
     })
-
-    console.log(sectionHeader('🎣 Most Used Hooks'))
-    console.log(table(hookData, hookColumns))
+    console.log(hookTable)
     console.log()
   }
 
   // Unused components warning
   if (result.unusedComponents.length > 0) {
-    console.log(sectionHeader('⚠️  Unused Components'))
+    console.log()
+    console.log(chalk.yellow.bold('  ⚠️  Unused Components'))
+    console.log(createDivider(50, '─', 'yellow'))
     result.unusedComponents.forEach(component => {
-      console.log(chalk.gray(`  • ${component}`))
+      console.log(chalk.gray(`    • ${component}`))
     })
-    console.log(chalk.gray('\n  Consider removing unused dependencies to reduce bundle size.'))
+    console.log(chalk.gray('\n    Consider removing unused dependencies to reduce bundle size.'))
     console.log()
   }
 
   // Recommendations
   if (result.recommendations.length > 0) {
-    console.log(sectionHeader('💡 Recommendations'))
+    console.log()
+    console.log(chalk.bold.cyan('  💡 Recommendations'))
+    console.log(createDivider(50, '─', 'cyan'))
     result.recommendations.forEach(rec => {
-      console.log(chalk.cyan(`  • ${rec}`))
+      console.log(chalk.gray(`    • ${rec}`))
     })
     console.log()
   }
+
+  console.log(createDivider(60, '═', 'blue'))
+  console.log()
 }
 
 /**
  * Generate detailed report
  */
 async function generateReport(result: AnalysisResult) {
-  const spinner = createSpinner('Generating detailed report...')
-  spinner.start()
+  const spinner = ora('Generating detailed report...').start()
 
   try {
     const reportDir = path.join(process.cwd(), 'clarity-reports')
@@ -280,8 +271,8 @@ async function generateReport(result: AnalysisResult) {
     await fs.writeFile(mdPath, markdown)
 
     spinner.succeed(`Reports saved to ${chalk.cyan('clarity-reports/')}`)
-    console.log(chalk.gray(`  ${jsonPath}`))
-    console.log(chalk.gray(`  ${mdPath}`))
+    console.log(`  ${chalk.gray(jsonPath)}`)
+    console.log(`  ${chalk.gray(mdPath)}`)
   } catch (error) {
     spinner.fail('Failed to generate report')
     throw error
@@ -327,34 +318,47 @@ Generated by Clarity Chat CLI
  * Main analyze command
  */
 export async function analyzeCommand(options: { report?: boolean; verbose?: boolean }) {
-  console.log()
-  console.log(sectionHeader('🔍 Analyzing Clarity Chat Usage'))
-  console.log()
-
   try {
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(createBanner('Project Analysis', { gradient: 'atlas', border: true, borderColor: 'blue' }))
+      console.log()
+    }
+
     const result = await analyzeProject()
-    displayResults(result)
+    
+    if (process.argv.includes('--json')) {
+      outputJson(result)
+      return
+    }
+    
+    await displayResults(result)
 
     if (options.report) {
       await generateReport(result)
     }
 
     if (options.verbose) {
-      console.log()
-      console.log(sectionHeader('📁 Detailed Usage by File'))
+      info('\nDetailed usage by file:')
       result.components.forEach(component => {
         console.log(chalk.yellow(`\n${component.name}:`))
         component.files.forEach(file => {
           console.log(chalk.gray(`  ${file}`))
         })
       })
-      console.log()
     }
 
-    console.log(successBox('Analysis complete!', '✓ Success'))
-    console.log()
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log()
+      console.log(successMessage('Analysis complete!', {
+        title: '✅ Complete',
+        borderColor: 'green',
+      }))
+    } else {
+      success('Analysis complete!')
+    }
   } catch (error) {
-    logger.error(error as Error)
-    process.exit(1)
+    handleError(error)
   }
 }
+

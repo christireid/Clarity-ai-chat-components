@@ -61,6 +61,9 @@
 ### 🧩 **70+ Production-Ready Components** ⭐ **50+ Enhanced in v2.0**
 
 - Rich message display with Markdown & code highlighting
+- **Message Operations** - Edit, regenerate, delete messages with undo/redo 🆕
+- **Export Functionality** - Export conversations to Markdown, JSON, or plain text 🆕
+- **Conversation Branching** - Create alternative conversation paths 🆕
 - Streaming chat with SSE/WebSocket support
 - Voice input with speech-to-text **+ animated waveform visualization** ✨
 - File upload with drag & drop **+ staggered animations** ✨

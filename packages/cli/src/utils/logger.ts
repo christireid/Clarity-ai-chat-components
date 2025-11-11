@@ -1,10 +1,25 @@
 /**
- * Enhanced logging utility with beautiful formatting
- * Inspired by modern CLIs like Vercel, Next.js, and Turbo
+ * Enhanced structured logging utility
+ * Supports log levels, structured output, and request tracking
  */
 
 import chalk from 'chalk'
-import { dim, bold, italic } from 'chalk'
+
+export enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3,
+}
+
+export interface LogEntry {
+  timestamp: string
+  level: LogLevel
+  namespace: string
+  message: string
+  data?: any
+  error?: Error
+}
 
 export interface Logger {
   info: (message: string, ...args: any[]) => void
@@ -12,136 +27,169 @@ export interface Logger {
   error: (message: string | Error, ...args: any[]) => void
   success: (message: string, ...args: any[]) => void
   debug: (message: string, ...args: any[]) => void
-  step: (step: number, total: number, message: string) => void
-  section: (title: string) => void
-  blank: () => void
+  setLevel: (level: LogLevel) => void
+  getLevel: () => LogLevel
 }
 
-const ICONS = {
-  info: 'ℹ',
-  success: '✓',
-  warn: '⚠',
-  error: '✖',
-  debug: '🐛',
-  step: '→',
-} as const
+let globalLogLevel: LogLevel = process.env.DEBUG ? LogLevel.DEBUG : LogLevel.INFO
+let requestId: string | null = null
 
-const COLORS = {
-  info: chalk.cyan,
-  success: chalk.green,
-  warn: chalk.yellow,
-  error: chalk.red,
-  debug: chalk.magenta,
-  step: chalk.blue,
-} as const
+/**
+ * Set global log level
+ */
+export function setGlobalLogLevel(level: LogLevel): void {
+  globalLogLevel = level
+}
 
-export function getLogger(namespace?: string): Logger {
-  const prefix = namespace ? dim(`[${namespace}]`) : ''
+/**
+ * Set request ID for tracing
+ */
+export function setRequestId(id: string | null): void {
+  requestId = id
+}
+
+/**
+ * Get request ID
+ */
+export function getRequestId(): string | null {
+  return requestId
+}
+
+/**
+ * Format log entry as JSON (for structured logging)
+ */
+function formatLogEntry(entry: LogEntry): string {
+  return JSON.stringify({
+    ...entry,
+    error: entry.error ? {
+      message: entry.error.message,
+      stack: entry.error.stack,
+      name: entry.error.name,
+    } : undefined,
+  })
+}
+
+/**
+ * Create logger instance
+ */
+export function getLogger(namespace: string, level: LogLevel = globalLogLevel): Logger {
+  let instanceLevel = level
+
+  const shouldLog = (logLevel: LogLevel): boolean => {
+    return logLevel >= instanceLevel && logLevel >= globalLogLevel
+  }
+
+  const formatPrefix = (icon: string, color: (str: string) => string): string => {
+    const parts = [chalk.gray(`[${namespace}]`), color(icon)]
+    if (requestId) {
+      parts.push(chalk.gray(`[${requestId.slice(0, 8)}]`))
+    }
+    return parts.join(' ')
+  }
 
   return {
     info: (message: string, ...args: any[]) => {
-      const icon = COLORS.info(ICONS.info)
-      const formatted = namespace 
-        ? `${prefix} ${icon} ${message}`
-        : `${icon} ${message}`
-      console.log(formatted, ...args)
+      if (!shouldLog(LogLevel.INFO)) return
+      
+      const entry: LogEntry = {
+        timestamp: new Date().toISOString(),
+        level: LogLevel.INFO,
+        namespace,
+        message,
+        data: args.length > 0 ? args : undefined,
+      }
+
+      if (process.env.JSON_LOGS) {
+        console.log(formatLogEntry(entry))
+      } else {
+        console.log(formatPrefix('ℹ', chalk.blue), message, ...args)
+      }
     },
 
     warn: (message: string, ...args: any[]) => {
-      const icon = COLORS.warn(ICONS.warn)
-      const formatted = namespace
-        ? `${prefix} ${icon} ${bold(COLORS.warn(message))}`
-        : `${icon} ${bold(COLORS.warn(message))}`
-      console.warn(formatted, ...args)
+      if (!shouldLog(LogLevel.WARN)) return
+      
+      const entry: LogEntry = {
+        timestamp: new Date().toISOString(),
+        level: LogLevel.WARN,
+        namespace,
+        message,
+        data: args.length > 0 ? args : undefined,
+      }
+
+      if (process.env.JSON_LOGS) {
+        console.warn(formatLogEntry(entry))
+      } else {
+        console.warn(formatPrefix('⚠', chalk.yellow), message, ...args)
+      }
     },
 
     error: (message: string | Error, ...args: any[]) => {
-      const errorMessage = message instanceof Error ? message.message : message
-      const icon = COLORS.error(ICONS.error)
-      const formatted = namespace
-        ? `${prefix} ${icon} ${bold(COLORS.error(errorMessage))}`
-        : `${icon} ${bold(COLORS.error(errorMessage))}`
-      console.error(formatted, ...args)
+      if (!shouldLog(LogLevel.ERROR)) return
       
-      if (message instanceof Error && message.stack && process.env.DEBUG) {
-        console.error(dim(message.stack))
+      const error = message instanceof Error ? message : undefined
+      const errorMessage = error ? error.message : message
+      
+      const entry: LogEntry = {
+        timestamp: new Date().toISOString(),
+        level: LogLevel.ERROR,
+        namespace,
+        message: errorMessage,
+        data: args.length > 0 ? args : undefined,
+        error,
+      }
+
+      if (process.env.JSON_LOGS) {
+        console.error(formatLogEntry(entry))
+      } else {
+        console.error(formatPrefix('✖', chalk.red), errorMessage, ...args)
+        
+        if (error?.stack && (process.env.DEBUG || process.env.VERBOSE)) {
+          console.error(chalk.gray(error.stack))
+        }
       }
     },
 
     success: (message: string, ...args: any[]) => {
-      const icon = COLORS.success(ICONS.success)
-      const formatted = namespace
-        ? `${prefix} ${icon} ${COLORS.success(message)}`
-        : `${icon} ${COLORS.success(message)}`
-      console.log(formatted, ...args)
-    },
+      if (!shouldLog(LogLevel.INFO)) return
+      
+      const entry: LogEntry = {
+        timestamp: new Date().toISOString(),
+        level: LogLevel.INFO,
+        namespace,
+        message,
+        data: args.length > 0 ? args : undefined,
+      }
 
-    debug: (message: string, ...args: any[]) => {
-      if (process.env.DEBUG) {
-        const icon = COLORS.debug(ICONS.debug)
-        const formatted = namespace
-          ? `${prefix} ${icon} ${dim(message)}`
-          : `${icon} ${dim(message)}`
-        console.log(formatted, ...args)
+      if (process.env.JSON_LOGS) {
+        console.log(formatLogEntry(entry))
+      } else {
+        console.log(formatPrefix('✔', chalk.green), message, ...args)
       }
     },
 
-    step: (step: number, total: number, message: string) => {
-      const stepText = dim(`[${step}/${total}]`)
-      const icon = COLORS.step(ICONS.step)
-      const formatted = namespace
-        ? `${prefix} ${stepText} ${icon} ${message}`
-        : `${stepText} ${icon} ${message}`
-      console.log(formatted)
+    debug: (message: string, ...args: any[]) => {
+      if (!shouldLog(LogLevel.DEBUG)) return
+      
+      const entry: LogEntry = {
+        timestamp: new Date().toISOString(),
+        level: LogLevel.DEBUG,
+        namespace,
+        message,
+        data: args.length > 0 ? args : undefined,
+      }
+
+      if (process.env.JSON_LOGS) {
+        console.log(formatLogEntry(entry))
+      } else {
+        console.log(formatPrefix('🐛', chalk.magenta), message, ...args)
+      }
     },
 
-    section: (title: string) => {
-      console.log()
-      console.log(bold(COLORS.info(title)))
-      console.log(dim('─'.repeat(Math.min(title.length + 4, 60))))
+    setLevel: (level: LogLevel) => {
+      instanceLevel = level
     },
 
-    blank: () => {
-      console.log()
-    },
+    getLevel: () => instanceLevel,
   }
-}
-
-/**
- * Create a formatted message with consistent styling
- */
-export function formatMessage(
-  type: 'info' | 'success' | 'warn' | 'error',
-  message: string
-): string {
-  const icon = COLORS[type](ICONS[type])
-  return `${icon} ${message}`
-}
-
-/**
- * Create a success message
- */
-export function success(message: string): string {
-  return formatMessage('success', COLORS.success(message))
-}
-
-/**
- * Create an error message
- */
-export function error(message: string): string {
-  return formatMessage('error', bold(COLORS.error(message)))
-}
-
-/**
- * Create a warning message
- */
-export function warn(message: string): string {
-  return formatMessage('warn', bold(COLORS.warn(message)))
-}
-
-/**
- * Create an info message
- */
-export function info(message: string): string {
-  return formatMessage('info', message)
 }

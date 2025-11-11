@@ -5,6 +5,7 @@
 import React from 'react'
 import { render } from 'ink'
 import chalk from 'chalk'
+import ora from 'ora'
 import { execa } from 'execa'
 import fs from 'fs-extra'
 import path from 'path'
@@ -12,8 +13,13 @@ import { InitWizard } from '../components/InitWizard.js'
 import { detectFramework, detectPackageManager } from '../utils/detect.js'
 import { installDependencies } from '../utils/install.js'
 import { getLogger } from '../utils/logger.js'
-import { successBox } from '../ui/box.js'
-import { sectionHeader } from '../ui/banner.js'
+import { ValidationError, ConfigError, handleError } from '../utils/errors.js'
+import { FrameworkSchema, TemplateSchema, validate } from '../utils/validation.js'
+import { validatePath, ensureEnvInGitignore } from '../utils/security.js'
+import { saveConfig } from '../utils/config.js'
+import { success, info, warn } from '../utils/output.js'
+import { createBanner, createDivider } from '../ui/banner.js'
+import { successMessage, nextStepsMessage, infoMessage } from '../ui/messages.js'
 import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('init')
@@ -26,12 +32,23 @@ interface InitOptions {
 }
 
 export async function initCommand(options: InitOptions) {
-  console.log()
-  console.log(sectionHeader('🚀 Initialize Clarity Chat Project'))
-  console.log(chalk.gray('Setting up your AI-powered application...'))
-  console.log()
-
   try {
+    // Only show banner if not in JSON/quiet mode
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      const initBanner = createBanner('Initialize Project', {
+        gradient: 'atlas',
+        border: true,
+        borderColor: 'cyan',
+      })
+      console.log(initBanner)
+      console.log(infoMessage('Setting up your AI-powered application...', {
+        title: '🚀 Getting Started',
+        borderColor: 'cyan',
+      }))
+      console.log()
+    }
+
     // Detect existing setup
     const cwd = process.cwd()
     const detectedFramework = await detectFramework(cwd)
@@ -40,9 +57,21 @@ export async function initCommand(options: InitOptions) {
     logger.info(`Detected framework: ${detectedFramework || 'none'}`)
     logger.info(`Package manager: ${packageManager}`)
 
+    // Validate options if provided
+    let validatedFramework: string | undefined
+    let validatedTemplate: string | undefined
+    
+    if (options.framework) {
+      validatedFramework = validate(FrameworkSchema, options.framework, 'Invalid framework')
+    }
+    
+    if (options.template) {
+      validatedTemplate = validate(TemplateSchema, options.template, 'Invalid template')
+    }
+
     // Interactive setup wizard if no options provided
     let config: any
-    if (!options.template && !options.framework) {
+    if (!validatedTemplate && !validatedFramework) {
       const { waitUntilExit } = render(React.createElement(InitWizard, {
         detectedFramework,
         packageManager,
@@ -54,8 +83,8 @@ export async function initCommand(options: InitOptions) {
     } else {
       // Use CLI options
       config = {
-        framework: options.framework || detectedFramework || 'nextjs',
-        template: options.template || 'basic',
+        framework: validatedFramework || detectedFramework || 'nextjs',
+        template: validatedTemplate || 'basic',
         components: ['chat-interface', 'model-selector'],
         apiKeys: {},
         installDeps: options.install !== false,
@@ -64,12 +93,11 @@ export async function initCommand(options: InitOptions) {
     }
 
     if (!config) {
-      logger.error('Setup cancelled')
-      process.exit(1)
+      throw new ValidationError('Setup cancelled', ['Run the command again to retry'])
     }
 
     // Create project structure
-    const spinner = createSpinner('Creating project structure...')
+    const spinner = createSpinner('Creating project structure...', { color: 'cyan' })
     spinner.start()
     
     await fs.ensureDir(path.join(cwd, 'src', 'components', 'clarity-chat'))
@@ -78,7 +106,7 @@ export async function initCommand(options: InitOptions) {
     spinner.succeed('Project structure created')
 
     // Copy template files
-    spinner.start('Installing components...')
+    spinner.text = chalk.cyan('Installing components...')
     
     const templatePath = path.join(__dirname, '..', '..', 'templates', config.template)
     if (await fs.pathExists(templatePath)) {
@@ -90,11 +118,23 @@ export async function initCommand(options: InitOptions) {
     // Generate configuration files
     await generateConfigFiles(cwd, config)
     
+    // Save config file
+    try {
+      await saveConfig({
+        framework: config.framework,
+        components: config.components,
+        apiKeys: config.apiKeys,
+      }, cwd)
+      logger.debug('Config file saved')
+    } catch (error) {
+      logger.warn('Failed to save config file', error)
+    }
+    
     spinner.succeed('Components installed')
 
     // Install dependencies
     if (config.installDeps) {
-      spinner.start(`Installing dependencies with ${packageManager}...`)
+      spinner.text = chalk.cyan(`Installing dependencies with ${packageManager}...`)
       
       try {
         await installDependencies(cwd, packageManager, [
@@ -106,12 +146,20 @@ export async function initCommand(options: InitOptions) {
       } catch (error) {
         spinner.fail('Failed to install dependencies')
         logger.error(error)
+        throw new ConfigError(
+          'Failed to install dependencies',
+          [
+            'Check your internet connection',
+            'Verify package manager is installed',
+            'Run with --no-install to skip dependency installation',
+          ]
+        )
       }
     }
 
     // Initialize git
     if (config.initGit) {
-      spinner.start('Initializing git repository...')
+      spinner.text = chalk.cyan('Initializing git repository...')
       try {
         await execa('git', ['init'], { cwd })
         await execa('git', ['add', '.'], { cwd })
@@ -135,25 +183,30 @@ GOOGLE_API_KEY=your_google_key_here
       logger.info('Created .env.local with placeholder keys')
     }
 
+    // Ensure .env.local is in .gitignore
+    await ensureEnvInGitignore(cwd)
+
     // Success message
-    console.log()
-    const nextSteps = [
-      'Add your API keys to .env.local',
-      `Run ${chalk.bold('npm run dev')} to start development`,
-      `Open ${chalk.bold('http://localhost:3000')} in your browser`,
-    ].join('\n')
-    
-    const helpText = chalk.gray('Need help? Run: ') + chalk.bold('clarity-chat docs')
-    
-    console.log(successBox(
-      `${chalk.bold('Project initialized successfully!')}\n\n${nextSteps}\n\n${helpText}`,
-      '✓ Success'
-    ))
-    console.log()
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(successMessage('Project initialized successfully!', {
+        title: '✨ All Set!',
+        borderColor: 'green',
+      }))
+      console.log()
+      console.log(nextStepsMessage([
+        'Add your API keys to .env.local',
+        `Run ${chalk.bold('npm run dev')} to start development`,
+        `Open ${chalk.bold('http://localhost:3000')} in your browser`,
+      ]))
+      console.log()
+      console.log(chalk.gray('💡 Need help? Run: ') + chalk.bold.cyan('clarity-chat docs'))
+    } else {
+      success('Project initialized successfully')
+    }
 
   } catch (error) {
-    logger.error('Initialization failed', error)
-    process.exit(1)
+    handleError(error)
   }
 }
 

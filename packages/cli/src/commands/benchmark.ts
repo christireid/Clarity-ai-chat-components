@@ -3,10 +3,14 @@
  */
 
 import chalk from 'chalk'
-import ora from 'ora'
 import { performance } from 'perf_hooks'
 import fs from 'fs-extra'
 import path from 'path'
+import { createBanner, createDivider } from '../ui/banner.js'
+import { successMessage, infoMessage, warningMessage } from '../ui/messages.js'
+import { createTable } from '../ui/table.js'
+import { createSpinner } from '../ui/progress.js'
+import { handleError } from '../utils/errors.js'
 
 interface BenchmarkResult {
   name: string
@@ -164,29 +168,37 @@ async function benchmarkStringOperations(): Promise<BenchmarkResult> {
 /**
  * Display results
  */
-function displayResults(suite: BenchmarkSuite) {
-  console.log(chalk.blue.bold('\n⚡ Benchmark Results\n'))
+async function displayResults(suite: BenchmarkSuite) {
+  await createDivider()
+  console.log()
+  
+  const tableData = suite.results.map((result, index) => ({
+    '#': index + 1,
+    'Benchmark': result.name,
+    'Iterations': result.iterations,
+    'Mean': formatDuration(result.mean),
+    'Median': formatDuration(result.median),
+    'Min': formatDuration(result.min),
+    'Max': formatDuration(result.max),
+    'P95': formatDuration(result.p95),
+    'P99': formatDuration(result.p99),
+  }))
 
-  suite.results.forEach((result, index) => {
-    console.log(chalk.white.bold(`${index + 1}. ${result.name}`))
-    console.log(`   ${chalk.gray('Iterations:')} ${chalk.cyan(result.iterations)}`)
-    console.log(`   ${chalk.gray('Mean:')} ${chalk.cyan(formatDuration(result.mean))}`)
-    console.log(`   ${chalk.gray('Median:')} ${chalk.cyan(formatDuration(result.median))}`)
-    console.log(`   ${chalk.gray('Min:')} ${chalk.green(formatDuration(result.min))}`)
-    console.log(`   ${chalk.gray('Max:')} ${chalk.red(formatDuration(result.max))}`)
-    console.log(`   ${chalk.gray('P95:')} ${chalk.cyan(formatDuration(result.p95))}`)
-    console.log(`   ${chalk.gray('P99:')} ${chalk.cyan(formatDuration(result.p99))}`)
-    console.log()
+  await createTable(tableData, {
+    title: '⚡ Benchmark Results',
+    border: true,
   })
+  console.log()
 }
 
 /**
  * Save results
  */
 async function saveResults(suite: BenchmarkSuite) {
-  const spinner = ora('Saving results...').start()
+  const spinner = await createSpinner('Saving results...', { color: 'cyan' })
 
   try {
+    spinner.start()
     const resultsDir = path.join(process.cwd(), 'clarity-reports')
     await fs.ensureDir(resultsDir)
 
@@ -198,12 +210,13 @@ async function saveResults(suite: BenchmarkSuite) {
     const markdown = generateMarkdownReport(suite)
     await fs.writeFile(mdPath, markdown)
 
-    spinner.succeed(`Results saved to ${chalk.cyan('clarity-reports/')}`)
-    console.log(`  ${chalk.gray(jsonPath)}`)
-    console.log(`  ${chalk.gray(mdPath)}`)
+    spinner.succeed()
+    successMessage(`Results saved to clarity-reports/`)
+    infoMessage(`Files: ${jsonPath}\n       ${mdPath}`)
+    console.log()
   } catch (error) {
-    spinner.fail('Failed to save results')
-    throw error
+    spinner.fail()
+    handleError(error)
   }
 }
 
@@ -250,24 +263,36 @@ async function compareWithPrevious(current: BenchmarkSuite): Promise<void> {
 
     const previous: BenchmarkSuite = await fs.readJSON(previousPath)
 
-    console.log(chalk.blue.bold('\n📊 Comparison with Previous Run\n'))
-
-    current.results.forEach(currentResult => {
-      const previousResult = previous.results.find(r => r.name === currentResult.name)
-      
-      if (previousResult) {
-        const diff = currentResult.mean - previousResult.mean
-        const percentChange = ((diff / previousResult.mean) * 100).toFixed(2)
-        const improved = diff < 0
-
-        console.log(chalk.white(currentResult.name))
-        console.log(
-          `  ${improved ? chalk.green('↓') : chalk.red('↑')} ${Math.abs(parseFloat(percentChange))}% ${improved ? 'faster' : 'slower'} (${formatDuration(Math.abs(diff))})`
-        )
-      }
-    })
-
+    await createDivider()
     console.log()
+    infoMessage('📊 Comparison with Previous Run')
+    console.log()
+
+    const comparisonData = current.results
+      .map(currentResult => {
+        const previousResult = previous.results.find(r => r.name === currentResult.name)
+        
+        if (previousResult) {
+          const diff = currentResult.mean - previousResult.mean
+          const percentChange = ((diff / previousResult.mean) * 100).toFixed(2)
+          const improved = diff < 0
+
+          return {
+            'Benchmark': currentResult.name,
+            'Change': `${improved ? '↓' : '↑'} ${Math.abs(parseFloat(percentChange))}% ${improved ? 'faster' : 'slower'}`,
+            'Difference': formatDuration(Math.abs(diff)),
+          }
+        }
+        return null
+      })
+      .filter(Boolean) as Array<{ Benchmark: string; Change: string; Difference: string }>
+
+    if (comparisonData.length > 0) {
+      await createTable(comparisonData, {
+        border: true,
+      })
+      console.log()
+    }
   } catch (error) {
     // Ignore comparison errors
   }
@@ -293,7 +318,11 @@ export async function benchmarkCommand(options: {
   save?: boolean
   compare?: boolean
 }) {
-  console.log(chalk.blue.bold('\n⚡ Running Performance Benchmarks\n'))
+  await createBanner('⚡ Performance Benchmarks', {
+    gradient: true,
+    style: 'bold',
+  })
+  console.log()
 
   const iterations = options.iterations || 100
 
@@ -304,7 +333,8 @@ export async function benchmarkCommand(options: {
     }
 
     // Run benchmarks
-    const spinner = ora('Running benchmarks...').start()
+    const spinner = await createSpinner('Running benchmarks...', { color: 'cyan' })
+    spinner.start()
 
     spinner.text = 'Benchmarking message processing...'
     suite.results.push(await benchmarkMessageProcessing())
@@ -319,9 +349,10 @@ export async function benchmarkCommand(options: {
     suite.results.push(await benchmarkStringOperations())
 
     spinner.succeed('Benchmarks complete')
+    console.log()
 
     // Display results
-    displayResults(suite)
+    await displayResults(suite)
 
     // Compare with previous
     if (options.compare) {
@@ -334,10 +365,10 @@ export async function benchmarkCommand(options: {
       await saveAsPrevious(suite)
     }
 
-    console.log(chalk.green.bold('✓ Benchmark complete!\n'))
+    successMessage('Benchmark complete!')
+    console.log()
   } catch (error) {
-    console.error(chalk.red(`\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`))
-    process.exit(1)
+    handleError(error)
   }
 }
 
