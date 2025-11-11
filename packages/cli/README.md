@@ -11,6 +11,11 @@
 - ⚡ **Code Generation** - Generate components, hooks, adapters, and tests
 - 📚 **Documentation** - Quick access to docs and examples
 - 🩺 **Health Check** - Diagnose and fix project issues
+- 🎯 **Enhanced Developer Experience** - Comprehensive error handling, validation, and helpful suggestions
+- 🔒 **Security** - Path validation, secure credential handling, and input sanitization
+- 📊 **Multiple Output Modes** - Human-readable, JSON, quiet, and verbose modes
+- ⌨️ **Shell Completion** - Bash, zsh, and fish completion support
+- ⚙️ **Configuration Management** - Flexible config file support with cosmiconfig
 
 ## Installation
 
@@ -196,6 +201,70 @@ GOOGLE_API_KEY=AIza...
 
 **Security Note**: `.env.local` is automatically added to `.gitignore`
 
+## Output Modes
+
+The CLI supports multiple output modes for different use cases:
+
+### Human-readable (default)
+```bash
+clarity-chat add chat-interface
+```
+
+### JSON mode (for scripts/automation)
+```bash
+clarity-chat add chat-interface --json
+```
+
+### Quiet mode (minimal output)
+```bash
+clarity-chat add chat-interface --quiet
+```
+
+### Verbose mode (detailed output)
+```bash
+clarity-chat add chat-interface --verbose
+```
+
+### Debug mode
+```bash
+clarity-chat add chat-interface --debug
+```
+
+## Shell Completion
+
+Install shell completion for better developer experience:
+
+### Bash
+```bash
+eval "$(clarity-chat completion bash)"
+# Add to ~/.bashrc or ~/.bash_profile
+```
+
+### Zsh
+```bash
+eval "$(clarity-chat completion zsh)"
+# Add to ~/.zshrc
+```
+
+### Fish
+```bash
+clarity-chat completion fish > ~/.config/fish/completions/clarity-chat.fish
+```
+
+## Error Handling
+
+The CLI provides comprehensive error handling with actionable suggestions:
+
+- **Validation Errors**: Clear messages with suggestions for fixing invalid inputs
+- **Not Found Errors**: Helpful hints when resources aren't found
+- **Permission Errors**: Guidance on fixing permission issues
+- **Config Errors**: Suggestions for configuration problems
+
+All errors include:
+- Clear error messages
+- Actionable suggestions
+- Links to documentation (when available)
+
 ## Development
 
 ```bash
@@ -210,6 +279,9 @@ npm run build
 
 # Test
 npm test
+
+# Type check
+npm run type-check
 ```
 
 ## License

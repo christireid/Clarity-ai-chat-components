@@ -19,6 +19,10 @@ import { upgradeCommand } from './commands/upgrade.js'
 import { analyzeCommand } from './commands/analyze.js'
 import { benchmarkCommand } from './commands/benchmark.js'
 import { browseCommand, searchComponents } from './commands/browse.js'
+import { generateCompletion } from './utils/completion.js'
+import { initOutputMode } from './utils/output.js'
+import { handleError, withErrorHandling } from './utils/errors.js'
+import { setGlobalLogLevel, LogLevel } from './utils/logger.js'
 
 const program = new Command()
 
@@ -32,12 +36,35 @@ const banner = gradient.pastel.multiline([
   '                           |___/                          ',
 ].join('\n'))
 
-console.log('\n' + banner + '\n')
+// Only show banner if not in JSON mode
+if (!process.argv.includes('--json')) {
+  console.log('\n' + banner + '\n')
+}
 
 program
   .name('clarity-chat')
   .description('🎨 Beautiful CLI for Clarity Chat - AI Component Library')
   .version('0.1.0')
+  .option('--json', 'Output JSON for machine parsing')
+  .option('-q, --quiet', 'Suppress non-error output')
+  .option('-v, --verbose', 'Show detailed output')
+  .option('--debug', 'Show debug information')
+  .hook('preAction', (thisCommand, actionCommand) => {
+    // Initialize output mode from global options
+    const globalOpts = thisCommand.opts()
+    initOutputMode({
+      json: globalOpts.json || false,
+      quiet: globalOpts.quiet || false,
+      verbose: globalOpts.verbose || false,
+    })
+    
+    // Set log level
+    if (globalOpts.debug || process.env.DEBUG) {
+      setGlobalLogLevel(LogLevel.DEBUG)
+    } else if (globalOpts.verbose) {
+      setGlobalLogLevel(LogLevel.INFO)
+    }
+  })
 
 // Register commands
 program
@@ -126,5 +153,54 @@ program
   .description('🔍 Search for components')
   .action(searchComponents)
 
-// Parse commands
-program.parse()
+// Completion command
+program
+  .command('completion <shell>')
+  .description('Generate shell completion script')
+  .option('--install', 'Install completion script')
+  .action((shell: string, options: { install?: boolean }) => {
+    const validShells = ['bash', 'zsh', 'fish']
+    if (!validShells.includes(shell)) {
+      console.error(`Invalid shell: ${shell}. Supported: ${validShells.join(', ')}`)
+      process.exit(1)
+    }
+    
+    const script = generateCompletion(program, shell as 'bash' | 'zsh' | 'fish')
+    
+    if (options.install) {
+      // Installation instructions
+      console.log(chalk.cyan('\n📝 Installation instructions:\n'))
+      switch (shell) {
+        case 'bash':
+          console.log(chalk.gray('Add to ~/.bashrc or ~/.bash_profile:'))
+          console.log(chalk.white(`  eval "$(clarity-chat completion ${shell})"`))
+          break
+        case 'zsh':
+          console.log(chalk.gray('Add to ~/.zshrc:'))
+          console.log(chalk.white(`  eval "$(clarity-chat completion ${shell})"`))
+          break
+        case 'fish':
+          console.log(chalk.gray('Save to ~/.config/fish/completions/clarity-chat.fish:'))
+          console.log(chalk.white(`  clarity-chat completion ${shell} > ~/.config/fish/completions/clarity-chat.fish`))
+          break
+      }
+    } else {
+      console.log(script)
+    }
+  })
+
+// Error handling
+program.configureOutput({
+  writeErr: (str) => {
+    if (!process.argv.includes('--json')) {
+      process.stderr.write(str)
+    }
+  },
+})
+
+// Parse commands with error handling
+try {
+  program.parse()
+} catch (error) {
+  handleError(error)
+}

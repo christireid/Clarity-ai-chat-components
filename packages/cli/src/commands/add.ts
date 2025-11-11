@@ -8,6 +8,13 @@ import path from 'path'
 import fs from 'fs-extra'
 import { execa } from 'execa'
 import { getLogger } from '../utils/logger.js'
+import { ValidationError, NotFoundError, handleError } from '../utils/errors.js'
+import { ComponentSchema, validate, PathSchema } from '../utils/validation.js'
+import { validatePath, validateProjectPath } from '../utils/security.js'
+import { loadConfig } from '../utils/config.js'
+import { outputJson, success, info } from '../utils/output.js'
+import { detectPackageManager } from '../utils/detect.js'
+import { installDependencies } from '../utils/install.js'
 
 const logger = getLogger('add')
 
@@ -50,32 +57,43 @@ const COMPONENTS = {
 }
 
 export async function addCommand(component: string, options: AddOptions) {
-  console.log('\n')
-  console.log(chalk.bold.cyan(`➕ Adding component: ${component}\n`))
-
-  const componentConfig = COMPONENTS[component as keyof typeof COMPONENTS]
-  
-  if (!componentConfig) {
-    logger.error(`Component "${component}" not found`)
-    console.log(chalk.yellow('\nAvailable components:'))
-    Object.entries(COMPONENTS).forEach(([key, value]) => {
-      console.log(chalk.cyan(`  • ${key}`) + chalk.gray(` - ${value.description}`))
-    })
-    process.exit(1)
-  }
-
-  const spinner = ora('Preparing installation...').start()
-
   try {
+    // Validate component name
+    const validatedComponent = validate(ComponentSchema, component, 'Invalid component name')
+    
+    const componentConfig = COMPONENTS[validatedComponent as keyof typeof COMPONENTS]
+    
+    if (!componentConfig) {
+      throw new NotFoundError(
+        `Component "${validatedComponent}" not found`,
+        [
+          'Run: clarity-chat browse to see all available components',
+          'Check component name spelling',
+        ]
+      )
+    }
+
+    info(`Adding component: ${validatedComponent}`)
+
+    const spinner = ora('Preparing installation...').start()
+
     const cwd = process.cwd()
-    const targetPath = path.join(cwd, options.path || './src/components/clarity-chat')
+    
+    // Load config for default paths
+    const config = await loadConfig(cwd)
+    const defaultPath = config.paths?.components || './src/components/clarity-chat'
+    
+    // Validate and resolve path
+    const targetPath = options.path 
+      ? validatePath(options.path, cwd)
+      : path.join(cwd, defaultPath)
 
     // Ensure directory exists
     await fs.ensureDir(targetPath)
     spinner.text = 'Copying component files...'
 
     // Copy component files
-    const templatesDir = path.join(__dirname, '..', '..', 'templates', 'components', component)
+    const templatesDir = path.join(__dirname, '..', '..', 'templates', 'components', validatedComponent)
     
     if (await fs.pathExists(templatesDir)) {
       for (const file of componentConfig.files) {
@@ -105,32 +123,30 @@ export async function addCommand(component: string, options: AddOptions) {
       
       try {
         const packageManager = await detectPackageManager(cwd)
-        const installCmd = packageManager === 'yarn' ? 'add' : 'install'
-        
-        await execa(packageManager, [installCmd, ...componentConfig.dependencies], { cwd })
+        await installDependencies(cwd, packageManager, componentConfig.dependencies)
         spinner.succeed('Dependencies installed')
       } catch (error) {
         spinner.fail('Failed to install dependencies')
         logger.error(error)
+        throw new ValidationError(
+          'Failed to install dependencies',
+          [
+            'Check your internet connection',
+            'Verify package manager is installed',
+            'Run with --no-deps to skip dependency installation',
+          ]
+        )
       }
     }
 
-    // Success message
-    console.log('\n' + chalk.green('✅ Component added successfully!\n'))
-    console.log(chalk.white('Import it in your code:\n'))
-    console.log(chalk.cyan(`  import { ${componentConfig.name.replace(/\s+/g, '')} } from '@/components/clarity-chat'\n`))
-    console.log(chalk.gray('📚 View docs: ') + chalk.bold('clarity-chat docs ' + component))
+    spinner.succeed('Component added successfully')
+    
+    success(`Component "${validatedComponent}" added successfully!`)
+    info(`Import it in your code:`)
+    console.log(chalk.cyan(`  import { ${componentConfig.name.replace(/\s+/g, '')} } from '@/components/clarity-chat'`))
+    console.log(chalk.gray('\n📚 View docs: ') + chalk.bold(`clarity-chat docs ${validatedComponent}`))
 
   } catch (error) {
-    spinner.fail('Failed to add component')
-    logger.error(error)
-    process.exit(1)
+    handleError(error)
   }
-}
-
-async function detectPackageManager(cwd: string): Promise<string> {
-  if (await fs.pathExists(path.join(cwd, 'package-lock.json'))) return 'npm'
-  if (await fs.pathExists(path.join(cwd, 'yarn.lock'))) return 'yarn'
-  if (await fs.pathExists(path.join(cwd, 'pnpm-lock.yaml'))) return 'pnpm'
-  return 'npm'
 }

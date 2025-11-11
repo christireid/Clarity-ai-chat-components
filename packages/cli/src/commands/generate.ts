@@ -8,6 +8,11 @@ import ora from 'ora'
 import path from 'path'
 import fs from 'fs-extra'
 import { getLogger } from '../utils/logger.js'
+import { ValidationError, NotFoundError, handleError } from '../utils/errors.js'
+import { GenerateTypeSchema, validate, validateComponentName } from '../utils/validation.js'
+import { validatePath } from '../utils/security.js'
+import { loadConfig } from '../utils/config.js'
+import { success, info } from '../utils/output.js'
 
 const logger = getLogger('generate')
 
@@ -145,79 +150,87 @@ describe('${name}', () => {
 }
 
 export async function generateCommand(type: string, options: GenerateOptions) {
-  console.log('\n' + chalk.bold.cyan('⚡ Code Generator\n'))
-
-  const generator = GENERATORS[type as keyof typeof GENERATORS]
-  
-  if (!generator) {
-    logger.error(`Unknown generator type: ${type}`)
-    console.log(chalk.yellow('\nAvailable generators:'))
-    Object.entries(GENERATORS).forEach(([key, value]) => {
-      console.log(chalk.cyan(`  ${value.icon} ${key}`) + chalk.gray(` - ${value.name}`))
-    })
-    process.exit(1)
-  }
-
-  // Get component name
-  let name = options.name
-  if (!name) {
-    const response = await prompts({
-      type: 'text',
-      name: 'name',
-      message: `Enter ${generator.name} name:`,
-      validate: (value: string) => value.length > 0 ? true : 'Name is required'
-    })
-    name = response.name
-  }
-
-  if (!name) {
-    logger.error('Name is required')
-    process.exit(1)
-  }
-
-  // Determine output path
-  const cwd = process.cwd()
-  let outputPath = options.output
-  
-  if (!outputPath) {
-    const defaultPaths: Record<string, string> = {
-      component: './src/components',
-      hook: './src/hooks',
-      adapter: './src/lib/adapters',
-      test: './src/__tests__',
-    }
-    outputPath = defaultPaths[type] || './src'
-  }
-
-  const fullPath = path.join(cwd, outputPath)
-  
-  // Confirm generation
-  console.log(chalk.gray('\nGenerating:'))
-  console.log(chalk.cyan(`  Type: ${generator.name}`))
-  console.log(chalk.cyan(`  Name: ${name}`))
-  console.log(chalk.cyan(`  Path: ${fullPath}\n`))
-
-  const { confirm } = await prompts({
-    type: 'confirm',
-    name: 'confirm',
-    message: 'Generate file?',
-    initial: true
-  })
-
-  if (!confirm) {
-    console.log(chalk.gray('Cancelled'))
-    return
-  }
-
-  const spinner = ora('Generating code...').start()
-
   try {
+    // Validate generator type
+    const validatedType = validate(GenerateTypeSchema, type, 'Invalid generator type')
+    
+    const generator = GENERATORS[validatedType as keyof typeof GENERATORS]
+    
+    if (!generator) {
+      throw new NotFoundError(
+        `Generator type "${validatedType}" not found`,
+        [
+          'Available types: component, hook, adapter, test',
+          'Run: clarity-chat generate --help for more info',
+        ]
+      )
+    }
+
+    info(`⚡ Code Generator: ${generator.name}`)
+
+    // Get component name
+    let name = options.name
+    if (!name) {
+      const response = await prompts({
+        type: 'text',
+        name: 'name',
+        message: `Enter ${generator.name} name:`,
+        validate: (value: string) => value.length > 0 ? true : 'Name is required'
+      })
+      name = response.name
+    }
+
+    if (!name) {
+      throw new ValidationError('Name is required', ['Provide --name option or enter name when prompted'])
+    }
+
+    // Validate component name format
+    const validatedName = validateComponentName(name)
+
+    // Determine output path
+    const cwd = process.cwd()
+    const config = await loadConfig(cwd)
+    
+    let outputPath = options.output
+    
+    if (!outputPath) {
+      const defaultPaths: Record<string, string> = {
+        component: config.paths?.components || './src/components',
+        hook: config.paths?.hooks || './src/hooks',
+        adapter: config.paths?.adapters || './src/lib/adapters',
+        test: './src/__tests__',
+      }
+      outputPath = defaultPaths[validatedType] || './src'
+    }
+
+    // Validate path
+    const fullPath = validatePath(outputPath, cwd)
+  
+    // Confirm generation
+    info(`Type: ${generator.name}`)
+    info(`Name: ${validatedName}`)
+    info(`Path: ${fullPath}`)
+
+    const { confirm } = await prompts({
+      type: 'confirm',
+      name: 'confirm',
+      message: 'Generate file?',
+      initial: true
+    })
+
+    if (!confirm) {
+      info('Cancelled')
+      return
+    }
+
+    const spinner = ora('Generating code...').start()
+
     // Ensure directory exists
     await fs.ensureDir(fullPath)
 
     // Generate file
-    const extension = type === 'component' ? '.tsx' : type === 'test' ? '.test.ts' : '.ts'
-    const fileName = `${name}${extension}`
+    const extension = validatedType === 'component' ? '.tsx' : validatedType === 'test' ? '.test.ts' : '.ts'
+    const fileName = `${validatedName}${extension}`
     const filePath = path.join(fullPath, fileName)
 
     if (await fs.pathExists(filePath)) {
@@ -230,23 +243,19 @@ export async function generateCommand(type: string, options: GenerateOptions) {
       })
       
       if (!overwrite) {
-        console.log(chalk.gray('Cancelled'))
+        info('Cancelled')
         return
       }
     }
 
-    const content = generator.template(name)
+    const content = generator.template(validatedName)
     await fs.writeFile(filePath, content, 'utf-8')
 
     spinner.succeed('Code generated')
-
-    console.log('\n' + chalk.green('✅ File created:\n'))
-    console.log(chalk.cyan(`  ${filePath}\n`))
-    console.log(chalk.gray('Open it in your editor and start coding!'))
+    success(`File created: ${filePath}`)
+    info('Open it in your editor and start coding!')
 
   } catch (error) {
-    spinner.fail('Failed to generate code')
-    logger.error(error)
-    process.exit(1)
+    handleError(error)
   }
 }
