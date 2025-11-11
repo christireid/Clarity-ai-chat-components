@@ -1,21 +1,17 @@
 /**
  * generate command - Generate code (component, hook, adapter, test)
+ * Enhanced with beautiful UI components
  */
 
 import chalk from 'chalk'
 import prompts from 'prompts'
-import ora from 'ora'
 import path from 'path'
 import fs from 'fs-extra'
 import { getLogger } from '../utils/logger.js'
-import { ValidationError, NotFoundError, handleError } from '../utils/errors.js'
-import { GenerateTypeSchema, validate, validateComponentName } from '../utils/validation.js'
-import { validatePath } from '../utils/security.js'
-import { loadConfig } from '../utils/config.js'
-import { success, info } from '../utils/output.js'
-import { createBanner } from '../ui/banner.js'
-import { successMessage, infoMessage } from '../ui/messages.js'
+import { sectionHeader } from '../ui/banner.js'
+import { table, TableColumn } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
+import { successBox, errorBox, infoBox } from '../ui/box.js'
 
 const logger = getLogger('generate')
 
@@ -153,97 +149,100 @@ describe('${name}', () => {
 }
 
 export async function generateCommand(type: string, options: GenerateOptions) {
-  try {
-    // Validate generator type
-    const validatedType = validate(GenerateTypeSchema, type, 'Invalid generator type')
-    
-    const generator = GENERATORS[validatedType as keyof typeof GENERATORS]
-    
-    if (!generator) {
-      throw new NotFoundError(
-        `Generator type "${validatedType}" not found`,
-        [
-          'Available types: component, hook, adapter, test',
-          'Run: clarity-chat generate --help for more info',
-        ]
-      )
-    }
+  console.log()
+  console.log(sectionHeader('⚡ Code Generator'))
+  console.log()
 
-    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-      console.log('\n')
-      console.log(createBanner(`Generate ${generator.name}`, { 
-        gradient: 'summer', 
-        border: true, 
-        borderColor: 'magenta' 
-      }))
-    }
-    
-    info(`⚡ Code Generator: ${generator.name}`)
-
-    // Get component name
-    let name = options.name
-    if (!name) {
-      const response = await prompts({
-        type: 'text',
-        name: 'name',
-        message: `Enter ${generator.name} name:`,
-        validate: (value: string) => value.length > 0 ? true : 'Name is required'
-      })
-      name = response.name
-    }
-
-    if (!name) {
-      throw new ValidationError('Name is required', ['Provide --name option or enter name when prompted'])
-    }
-
-    // Validate component name format
-    const validatedName = validateComponentName(name)
-
-    // Determine output path
-    const cwd = process.cwd()
-    const config = await loadConfig(cwd)
-    
-    let outputPath = options.output
-    
-    if (!outputPath) {
-      const defaultPaths: Record<string, string> = {
-        component: config.paths?.components || './src/components',
-        hook: config.paths?.hooks || './src/hooks',
-        adapter: config.paths?.adapters || './src/lib/adapters',
-        test: './src/__tests__',
-      }
-      outputPath = defaultPaths[validatedType] || './src'
-    }
-
-    // Validate path
-    const fullPath = validatePath(outputPath, cwd)
+  const generator = GENERATORS[type as keyof typeof GENERATORS]
   
-    // Confirm generation
-    info(`Type: ${generator.name}`)
-    info(`Name: ${validatedName}`)
-    info(`Path: ${fullPath}`)
+  if (!generator) {
+    logger.error(`Unknown generator type: ${type}`)
+    
+    // Display available generators in a beautiful table
+    const columns: TableColumn[] = [
+      { header: 'Type', width: 15, color: chalk.yellow },
+      { header: 'Name', width: 30 },
+    ]
 
-    const { confirm } = await prompts({
-      type: 'confirm',
-      name: 'confirm',
-      message: 'Generate file?',
-      initial: true
+    const generatorData = Object.entries(GENERATORS).map(([key, value]) => [
+      `${value.icon} ${key}`,
+      value.name,
+    ])
+
+    console.log()
+    console.log(sectionHeader('📦 Available Generators'))
+    console.log(table(generatorData, columns))
+    console.log()
+    
+    process.exit(1)
+  }
+
+  // Get component name
+  let name = options.name
+  if (!name) {
+    const response = await prompts({
+      type: 'text',
+      name: 'name',
+      message: `Enter ${generator.name} name:`,
+      validate: (value: string) => value.length > 0 ? true : 'Name is required'
     })
+    name = response.name
+  }
 
-    if (!confirm) {
-      info('Cancelled')
-      return
+  if (!name) {
+    logger.error('Name is required')
+    process.exit(1)
+  }
+
+  // Determine output path
+  const cwd = process.cwd()
+  let outputPath = options.output
+  
+  if (!outputPath) {
+    const defaultPaths: Record<string, string> = {
+      component: './src/components',
+      hook: './src/hooks',
+      adapter: './src/lib/adapters',
+      test: './src/__tests__',
     }
+    outputPath = defaultPaths[type] || './src'
+  }
 
-    const spinner = createSpinner('Generating code...', { color: 'magenta' })
-    spinner.start()
+  const fullPath = path.join(cwd, outputPath)
+  
+  // Display generation info
+  const infoContent = [
+    `${generator.icon} ${generator.name}`,
+    '',
+    `Name: ${chalk.cyan(name)}`,
+    `Path: ${chalk.cyan(fullPath)}`,
+  ].join('\n')
 
+  console.log(infoBox(infoContent, 'Generation Info'))
+  console.log()
+
+  const { confirm } = await prompts({
+    type: 'confirm',
+    name: 'confirm',
+    message: 'Generate file?',
+    initial: true
+  })
+
+  if (!confirm) {
+    console.log(chalk.gray('\nCancelled'))
+    return
+  }
+
+  const spinner = createSpinner('Generating code...')
+  spinner.start()
+
+  try {
     // Ensure directory exists
     await fs.ensureDir(fullPath)
 
     // Generate file
-    const extension = validatedType === 'component' ? '.tsx' : validatedType === 'test' ? '.test.ts' : '.ts'
-    const fileName = `${validatedName}${extension}`
+    const extension = type === 'component' ? '.tsx' : type === 'test' ? '.test.ts' : '.ts'
+    const fileName = `${name}${extension}`
     const filePath = path.join(fullPath, fileName)
 
     if (await fs.pathExists(filePath)) {
@@ -256,33 +255,35 @@ export async function generateCommand(type: string, options: GenerateOptions) {
       })
       
       if (!overwrite) {
-        info('Cancelled')
+        console.log(chalk.gray('\nCancelled'))
         return
       }
     }
 
-    const content = generator.template(validatedName)
+    const content = generator.template(name)
     await fs.writeFile(filePath, content, 'utf-8')
 
     spinner.succeed('Code generated')
-    
-    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-      console.log('\n')
-      console.log(successMessage(`File created: ${chalk.bold.cyan(filePath)}`, {
-        title: '✨ Generated',
-        borderColor: 'green',
-      }))
-      console.log()
-      console.log(infoMessage('Open it in your editor and start coding!', {
-        title: '💻 Next Step',
-        borderColor: 'blue',
-      }))
-    } else {
-      success(`File created: ${filePath}`)
-      info('Open it in your editor and start coding!')
-    }
+
+    console.log()
+    const successContent = [
+      chalk.bold('File created successfully!'),
+      '',
+      chalk.white('File:'),
+      chalk.cyan(`  ${filePath}`),
+      '',
+      chalk.gray('Open it in your editor and start coding!'),
+    ].join('\n')
+
+    console.log(successBox(successContent, '✓ Success'))
+    console.log()
 
   } catch (error) {
-    handleError(error)
+    spinner.fail('Failed to generate code')
+    logger.error(error)
+    console.log()
+    console.log(errorBox('Failed to generate code. Check the error above.', '✗ Error'))
+    console.log()
+    process.exit(1)
   }
 }

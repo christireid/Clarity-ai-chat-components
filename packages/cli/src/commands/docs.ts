@@ -1,14 +1,14 @@
 /**
  * docs command - Open documentation or search
+ * Enhanced with beautiful UI components
  */
 
 import chalk from 'chalk'
 import open from 'open'
 import { getLogger } from '../utils/logger.js'
-import { createBanner } from '../ui/banner.js'
-import { successMessage, infoMessage, tipMessage } from '../ui/messages.js'
-import { createSpinner } from '../ui/progress.js'
-import { handleError } from '../utils/errors.js'
+import { sectionHeader } from '../ui/banner.js'
+import { table, TableColumn } from '../ui/table.js'
+import { infoBox, warningBox } from '../ui/box.js'
 
 const logger = getLogger('docs')
 
@@ -26,20 +26,21 @@ const DOCS_URLS = {
 }
 
 export async function docsCommand(query?: string, options?: DocsOptions) {
-  await createBanner('📚 Documentation', {
-    gradient: true,
-    style: 'bold',
-  })
+  console.log()
+  console.log(sectionHeader('📚 Clarity Chat Documentation'))
   console.log()
 
   if (options?.offline) {
-    infoMessage('Offline documentation not yet available')
-    tipMessage('Visit: https://clarity-chat.dev')
+    console.log(warningBox(
+      'Offline documentation not yet available\n\nVisit: https://clarity-chat.dev',
+      '⚠ Offline Mode'
+    ))
+    console.log()
     return
   }
 
   let url = DOCS_URLS.main
-  let action = 'Opening main documentation...'
+  let docTitle = 'Main Documentation'
 
   if (query) {
     // Try to find specific doc page
@@ -50,28 +51,62 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
 
     if (matchedKey) {
       url = DOCS_URLS[matchedKey as keyof typeof DOCS_URLS]
-      action = `Opening docs for: ${matchedKey}`
+      docTitle = matchedKey.charAt(0).toUpperCase() + matchedKey.slice(1).replace(/-/g, ' ')
     } else {
       // Use search
       url = `${DOCS_URLS.main}/search?q=${encodeURIComponent(query)}`
-      action = `Searching docs for: "${query}"`
+      docTitle = `Search: "${query}"`
     }
   }
 
-  const spinner = await createSpinner(action, { color: 'cyan' })
-  
+  // Display available docs in a table if no query
+  if (!query) {
+    const columns: TableColumn[] = [
+      { header: 'Topic', width: 20, color: chalk.yellow },
+      { header: 'Description', width: 40 },
+    ]
+
+    const docsData = Object.entries(DOCS_URLS).map(([key, value]) => {
+      const description = key === 'main' 
+        ? 'Main documentation homepage'
+        : key === 'chat-interface'
+        ? 'Chat interface component docs'
+        : key === 'model-selector'
+        ? 'Model selector component docs'
+        : key === 'streaming'
+        ? 'Streaming guide'
+        : key === 'api-keys'
+        ? 'API keys setup guide'
+        : 'Example applications'
+      
+      return [key, description]
+    })
+
+    console.log(sectionHeader('📖 Available Documentation'))
+    console.log(table(docsData, columns))
+    console.log()
+  }
+
   try {
-    spinner.start()
+    const infoContent = [
+      chalk.bold(`Opening: ${docTitle}`),
+      '',
+      chalk.gray('URL: ') + chalk.cyan(url),
+    ].join('\n')
+
+    console.log(infoBox(infoContent, '📚 Opening Docs'))
+    console.log()
+
     await open(url)
-    spinner.succeed()
-    
-    successMessage(`Documentation opened successfully!`)
-    infoMessage(`URL: ${url}`)
+    console.log(chalk.gray(`Opened in browser: ${url}`))
     console.log()
   } catch (error) {
-    spinner.fail()
     logger.error('Failed to open browser')
-    tipMessage(`Manually visit: ${url}`)
-    handleError(error)
+    console.log()
+    console.log(warningBox(
+      `Failed to open browser automatically.\n\nManually visit: ${chalk.cyan(url)}`,
+      '⚠ Browser Error'
+    ))
+    console.log()
   }
 }

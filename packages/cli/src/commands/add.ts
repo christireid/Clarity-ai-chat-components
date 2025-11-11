@@ -1,31 +1,23 @@
 /**
  * add command - Add a component to your project
+ * Enhanced with beautiful UI components
  */
 
 import chalk from 'chalk'
-import ora from 'ora'
 import path from 'path'
 import fs from 'fs-extra'
 import { execa } from 'execa'
 import { getLogger } from '../utils/logger.js'
-import { ValidationError, NotFoundError, handleError } from '../utils/errors.js'
-import { ComponentSchema, validate, PathSchema } from '../utils/validation.js'
-import { validatePath, validateProjectPath } from '../utils/security.js'
-import { loadConfig } from '../utils/config.js'
-import { outputJson, success, info } from '../utils/output.js'
-import { detectPackageManager } from '../utils/detect.js'
-import { installDependencies } from '../utils/install.js'
-import { createBanner } from '../ui/banner.js'
-import { successMessage, infoMessage } from '../ui/messages.js'
+import { sectionHeader } from '../ui/banner.js'
+import { table, TableColumn } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
-import { createStatusTable } from '../ui/table.js'
+import { successBox, errorBox, infoBox } from '../ui/box.js'
 
 const logger = getLogger('add')
 
 interface AddOptions {
   path?: string
   deps?: boolean
-  batch?: string
 }
 
 const COMPONENTS = {
@@ -33,109 +25,97 @@ const COMPONENTS = {
     name: 'Chat Interface',
     files: ['ChatInterface.tsx', 'ChatMessage.tsx', 'ChatInput.tsx'],
     dependencies: ['@clarity-chat/react', '@clarity-chat/primitives'],
-    description: '💬 Full-featured chat UI component'
+    description: '💬 Full-featured chat UI component',
+    icon: '💬',
   },
   'model-selector': {
     name: 'Model Selector',
     files: ['ModelSelector.tsx'],
     dependencies: ['@clarity-chat/react', '@clarity-chat/types'],
-    description: '🤖 Dropdown to select AI models'
+    description: '🤖 Dropdown to select AI models',
+    icon: '🤖',
   },
   'token-counter': {
     name: 'Token Counter',
     files: ['TokenCounter.tsx'],
     dependencies: ['@clarity-chat/react'],
-    description: '📊 Real-time token usage display'
+    description: '📊 Real-time token usage display',
+    icon: '📊',
   },
   'cost-estimator': {
     name: 'Cost Estimator',
     files: ['CostEstimator.tsx'],
     dependencies: ['@clarity-chat/react', '@clarity-chat/types'],
-    description: '💰 Calculate API costs in real-time'
+    description: '💰 Calculate API costs in real-time',
+    icon: '💰',
   },
   'streaming-handler': {
     name: 'Streaming Handler',
     files: ['useStreaming.ts', 'StreamingProvider.tsx'],
     dependencies: ['@clarity-chat/primitives'],
-    description: '⚡ SSE streaming utilities'
+    description: '⚡ SSE streaming utilities',
+    icon: '⚡',
   },
 }
 
+async function detectPackageManager(cwd: string): Promise<string> {
+  if (await fs.pathExists(path.join(cwd, 'package-lock.json'))) return 'npm'
+  if (await fs.pathExists(path.join(cwd, 'yarn.lock'))) return 'yarn'
+  if (await fs.pathExists(path.join(cwd, 'pnpm-lock.yaml'))) return 'pnpm'
+  return 'npm'
+}
+
 export async function addCommand(component: string, options: AddOptions) {
+  console.log()
+  console.log(sectionHeader('➕ Add Component'))
+  console.log()
+
+  const componentConfig = COMPONENTS[component as keyof typeof COMPONENTS]
+  
+  if (!componentConfig) {
+    logger.error(`Component "${component}" not found`)
+    
+    // Display available components in a beautiful table
+    const columns: TableColumn[] = [
+      { header: 'Component', width: 25, color: chalk.yellow },
+      { header: 'Description', width: 40 },
+    ]
+
+    const componentData = Object.entries(COMPONENTS).map(([key, value]) => [
+      `${value.icon} ${key}`,
+      value.description,
+    ])
+
+    console.log()
+    console.log(sectionHeader('📦 Available Components'))
+    console.log(table(componentData, columns))
+    console.log()
+    
+    process.exit(1)
+  }
+
+  // Display component info
+  console.log(infoBox(
+    `${componentConfig.icon} ${componentConfig.name}\n${componentConfig.description}`,
+    'Component Info'
+  ))
+  console.log()
+
+  const spinner = createSpinner('Preparing installation...')
+  spinner.start()
+
   try {
-    // Handle batch mode
-    if (options.batch) {
-      if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-        console.log('\n')
-        console.log(createBanner('Add Components', { gradient: 'rainbow', border: true, borderColor: 'cyan' }))
-      }
-      
-      const { batchAddComponents } = await import('../utils/batch.js')
-      const components = options.batch.split(',').map(c => c.trim())
-      const result = await batchAddComponents(components, {
-        path: options.path,
-        deps: options.deps !== false,
-      })
-      
-      if (result.failed.length > 0) {
-        warn(`${result.failed.length} components failed to add`)
-        process.exit(1)
-      }
-      
-      if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-        console.log('\n')
-        console.log(successMessage(`Successfully added ${result.successful.length} components!`, {
-          title: '✨ Complete',
-          borderColor: 'green',
-        }))
-      } else {
-        success(`Successfully added ${result.successful.length} components`)
-      }
-      return
-    }
-
-    // Validate component name
-    const validatedComponent = validate(ComponentSchema, component, 'Invalid component name')
-    
-    const componentConfig = COMPONENTS[validatedComponent as keyof typeof COMPONENTS]
-    
-    if (!componentConfig) {
-      throw new NotFoundError(
-        `Component "${validatedComponent}" not found`,
-        [
-          'Run: clarity-chat browse to see all available components',
-          'Check component name spelling',
-        ]
-      )
-    }
-
-    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-      console.log('\n')
-      console.log(createBanner(`Add ${componentConfig.name}`, { gradient: 'cristal', border: true, borderColor: 'cyan' }))
-    }
-
-    info(`Adding component: ${validatedComponent}`)
-
-    const spinner = createSpinner('Preparing installation...', { color: 'cyan' })
-    spinner.start()
-
     const cwd = process.cwd()
-    
-    // Load config for default paths
-    const config = await loadConfig(cwd)
-    const defaultPath = config.paths?.components || './src/components/clarity-chat'
-    
-    // Validate and resolve path
-    const targetPath = options.path 
-      ? validatePath(options.path, cwd)
-      : path.join(cwd, defaultPath)
+    const targetPath = path.join(cwd, options.path || './src/components/clarity-chat')
 
     // Ensure directory exists
     await fs.ensureDir(targetPath)
     spinner.text = 'Copying component files...'
 
     // Copy component files
-    const templatesDir = path.join(__dirname, '..', '..', 'templates', 'components', validatedComponent)
+    const templatesDir = path.join(__dirname, '..', '..', 'templates', 'components', component)
+    
+    const copiedFiles: string[] = []
     
     if (await fs.pathExists(templatesDir)) {
       for (const file of componentConfig.files) {
@@ -144,17 +124,20 @@ export async function addCommand(component: string, options: AddOptions) {
         
         if (await fs.pathExists(sourcePath)) {
           await fs.copy(sourcePath, destPath)
+          copiedFiles.push(file)
           logger.info(`Copied ${file}`)
         }
       }
     } else {
       spinner.warn('Template files not found, creating placeholder...')
       // Create placeholder file
+      const placeholderFile = `${componentConfig.name.replace(/\s+/g, '')}.tsx`
       await fs.writeFile(
-        path.join(targetPath, `${componentConfig.name.replace(/\s+/g, '')}.tsx`),
+        path.join(targetPath, placeholderFile),
         `// ${componentConfig.name}\n// TODO: Implement component\n\nexport function ${componentConfig.name.replace(/\s+/g, '')}() {\n  return <div>Component placeholder</div>\n}\n`,
         'utf-8'
       )
+      copiedFiles.push(placeholderFile)
     }
 
     spinner.succeed('Component files copied')
@@ -165,44 +148,44 @@ export async function addCommand(component: string, options: AddOptions) {
       
       try {
         const packageManager = await detectPackageManager(cwd)
-        await installDependencies(cwd, packageManager, componentConfig.dependencies)
+        const installCmd = packageManager === 'yarn' ? 'add' : 'install'
+        
+        await execa(packageManager, [installCmd, ...componentConfig.dependencies], { cwd })
         spinner.succeed('Dependencies installed')
       } catch (error) {
         spinner.fail('Failed to install dependencies')
         logger.error(error)
-        throw new ValidationError(
-          'Failed to install dependencies',
-          [
-            'Check your internet connection',
-            'Verify package manager is installed',
-            'Run with --no-deps to skip dependency installation',
-          ]
-        )
       }
     }
 
-    spinner.succeed('Component added successfully')
+    // Success message
+    console.log()
+    const componentName = componentConfig.name.replace(/\s+/g, '')
+    const importPath = options.path 
+      ? `'${options.path}/${componentName}'`
+      : `'@/components/clarity-chat/${componentName}'`
     
-    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-      console.log('\n')
-      console.log(successMessage(`Component "${validatedComponent}" added successfully!`, {
-        title: '✅ Added',
-        borderColor: 'green',
-      }))
-      console.log()
-      console.log(infoMessage(`Import it in your code:\n\n${chalk.bold.cyan(`import { ${componentConfig.name.replace(/\s+/g, '')} } from '@/components/clarity-chat'`)}`, {
-        title: '💻 Usage',
-        borderColor: 'blue',
-      }))
-      console.log()
-      console.log(chalk.gray('📚 View docs: ') + chalk.bold.cyan(`clarity-chat docs ${validatedComponent}`))
-    } else {
-      success(`Component "${validatedComponent}" added successfully!`)
-      info(`Import it in your code:`)
-      console.log(chalk.cyan(`  import { ${componentConfig.name.replace(/\s+/g, '')} } from '@/components/clarity-chat'`))
-    }
+    const successContent = [
+      chalk.bold('Component added successfully!'),
+      '',
+      chalk.white('Files created:'),
+      ...copiedFiles.map(file => chalk.cyan(`  • ${file}`)),
+      '',
+      chalk.white('Import it in your code:'),
+      chalk.cyan(`  import { ${componentName} } from ${importPath}`),
+      '',
+      chalk.gray('📚 View docs: ') + chalk.bold(`clarity-chat docs ${component}`),
+    ].join('\n')
+
+    console.log(successBox(successContent, '✓ Success'))
+    console.log()
 
   } catch (error) {
-    handleError(error)
+    spinner.fail('Failed to add component')
+    logger.error(error)
+    console.log()
+    console.log(errorBox('Failed to add component. Check the error above.', '✗ Error'))
+    console.log()
+    process.exit(1)
   }
 }
