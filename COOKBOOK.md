@@ -2532,115 +2532,566 @@ export function ExportableChat() {
 
 ### Recipe 17: Usage Dashboard
 
-Track usage and costs.
+Track usage and costs with detailed analytics and visualizations.
 
 ```tsx
-import { ChatWindow, UsageDashboard } from '@clarity-chat/react'
-import { useState, useEffect } from 'react'
+import { 
+  ChatWindow, 
+  UsageDashboard,
+  useTokenTracker,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useCallback, useMemo } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface UsageStats {
+  totalMessages: number
+  totalTokens: number
+  totalCost: number
+  messagesToday: number
+  tokensToday: number
+  costToday: number
+  averageTokensPerMessage: number
+}
 
 export function ChatWithUsageTracking() {
-  const [messages, setMessages] = useState([])
-  const [usage, setUsage] = useState({
-    totalCredits: 1000,
-    usedCredits: 250,
-    messagesCount: 42,
-    tokensUsed: 15000,
+  const [isLoading, setIsLoading] = useState(false)
+  const [showDashboard, setShowDashboard] = useState(false)
+
+  const {
+    totalTokens,
+    inputTokens,
+    outputTokens,
+    estimatedCost,
+  } = useTokenTracker({
+    modelName: 'gpt-4-turbo',
+    inputCostPer1k: 0.01,
+    outputCostPer1k: 0.03,
   })
 
-  useEffect(() => {
-    // Update usage from API
-    const updateUsage = async () => {
-      const response = await fetch('/api/usage')
-      const data = await response.json()
-      setUsage(data)
-    }
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
 
-    updateUsage()
-    const interval = setInterval(updateUsage, 60000)
-    return () => clearInterval(interval)
-  }, [])
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'usage-tracked-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  // Calculate usage statistics
+  const usageStats: UsageStats = useMemo(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const messagesToday = messages.filter(
+      msg => new Date(msg.createdAt) >= today
+    ).length
+
+    const totalMessages = messages.length
+    const averageTokensPerMessage = totalMessages > 0 
+      ? Math.round(totalTokens / totalMessages) 
+      : 0
+
+    return {
+      totalMessages,
+      totalTokens,
+      totalCost: estimatedCost,
+      messagesToday,
+      tokensToday: Math.round(totalTokens * (messagesToday / totalMessages)) || 0,
+      costToday: estimatedCost * (messagesToday / totalMessages) || 0,
+      averageTokensPerMessage,
+    }
+  }, [messages, totalTokens, estimatedCost])
+
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({
+      chatId: 'usage-tracked-chat',
+      role: 'user',
+      content,
+    })
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'usage-tracked-chat',
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, addMessage])
 
   return (
-    <div>
-      <UsageDashboard usage={usage} />
-      <ChatWindow messages={messages} />
-    </div>
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        {/* Header with Usage Toggle */}
+        <div className="flex items-center justify-between p-4 border-b bg-card">
+          <h1 className="text-xl font-semibold">Chat</h1>
+          <button
+            onClick={() => setShowDashboard(!showDashboard)}
+            className="px-4 py-2 text-sm rounded-md border hover:bg-accent"
+          >
+            {showDashboard ? 'Hide' : 'Show'} Usage
+          </button>
+        </div>
+
+        {showDashboard && (
+          <div className="p-4 border-b bg-muted/50">
+            <UsageDashboard
+              stats={usageStats}
+              tokenBreakdown={{
+                total: totalTokens,
+                input: inputTokens,
+                output: outputTokens,
+              }}
+              costBreakdown={{
+                total: estimatedCost,
+                input: (inputTokens / 1000) * 0.01,
+                output: (outputTokens / 1000) * 0.03,
+              }}
+            />
+          </div>
+        )}
+
+        <ChatWindow 
+          messages={messages} 
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+        />
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Real-time usage tracking
+- ✅ Token and cost breakdowns
+- ✅ Daily statistics
+- ✅ Average calculations
+- ✅ Toggleable dashboard
+- ✅ TypeScript types
+- ✅ Visual analytics
 
 ---
 
 ### Recipe 18: Custom Settings Panel
 
-Let users customize their experience.
+Let users customize their experience with persistent settings and real-time updates.
 
 ```tsx
-import { ChatWindow, SettingsPanel } from '@clarity-chat/react'
-import { useState } from 'react'
+import { 
+  ChatWindow, 
+  SettingsPanel,
+  useMessageOperations,
+  useLocalStorage,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useCallback, useEffect } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface ChatSettings {
+  tone: 'professional' | 'casual' | 'friendly' | 'formal'
+  verbosity: 'concise' | 'balanced' | 'detailed'
+  theme: 'light' | 'dark' | 'auto'
+  language: string
+  model: string
+  temperature: number
+  maxTokens: number
+}
+
+const defaultSettings: ChatSettings = {
+  tone: 'professional',
+  verbosity: 'balanced',
+  theme: 'auto',
+  language: 'en',
+  model: 'gpt-4-turbo',
+  temperature: 0.7,
+  maxTokens: 2000,
+}
 
 export function CustomizableChat() {
-  const [messages, setMessages] = useState([])
-  const [settings, setSettings] = useState({
-    tone: 'professional',
-    verbosity: 'balanced',
-    theme: 'light',
-    language: 'en',
+  const [isLoading, setIsLoading] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  
+  const [settings, setSettings] = useLocalStorage<ChatSettings>(
+    'chat-settings',
+    defaultSettings
+  )
+
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
   })
 
-  const handleSend = async (content: string) => {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({
-        message: content,
-        settings, // Include user preferences
-      }),
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'customizable-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  // Apply theme
+  useEffect(() => {
+    if (settings.theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else if (settings.theme === 'light') {
+      document.documentElement.classList.remove('dark')
+    } else {
+      // Auto theme based on system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      if (prefersDark) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    }
+  }, [settings.theme])
+
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({
+      chatId: 'customizable-chat',
+      role: 'user',
+      content,
     })
-    // Process response...
-  }
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+          settings: {
+            tone: settings.tone,
+            verbosity: settings.verbosity,
+            language: settings.language,
+            model: settings.model,
+            temperature: settings.temperature,
+            maxTokens: settings.maxTokens,
+          },
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'customizable-chat',
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, settings, addMessage])
 
   return (
-    <div>
-      <SettingsPanel settings={settings} onChange={setSettings} />
-      <ChatWindow messages={messages} onSendMessage={handleSend} />
-    </div>
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        {/* Header with Settings Toggle */}
+        <div className="flex items-center justify-between p-4 border-b bg-card">
+          <h1 className="text-xl font-semibold">Customizable Chat</h1>
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="px-4 py-2 text-sm rounded-md border hover:bg-accent"
+          >
+            {showSettings ? 'Hide' : 'Show'} Settings
+          </button>
+        </div>
+
+        {showSettings && (
+          <div className="p-4 border-b bg-muted/50">
+            <SettingsPanel
+              settings={settings}
+              onChange={setSettings}
+              onReset={() => setSettings(defaultSettings)}
+            />
+          </div>
+        )}
+
+        <ChatWindow 
+          messages={messages} 
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+        />
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Persistent settings with localStorage
+- ✅ Real-time theme switching
+- ✅ Model and parameter configuration
+- ✅ Tone and verbosity control
+- ✅ Language selection
+- ✅ Settings reset option
+- ✅ TypeScript types
 
 ---
 
 ### Recipe 19: Knowledge Base Integration
 
-Show auto-generated knowledge base.
+Show auto-generated knowledge base with topic extraction and search.
 
 ```tsx
-import { ChatWindow, KnowledgeBaseViewer } from '@clarity-chat/react'
-import { useState, useEffect } from 'react'
+import { 
+  ChatWindow, 
+  KnowledgeBaseViewer,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface KnowledgeTopic {
+  id: string
+  title: string
+  summary: string
+  relatedMessages: string[]
+  createdAt: Date
+  updatedAt: Date
+}
 
 export function ChatWithKnowledgeBase() {
-  const [messages, setMessages] = useState([])
-  const [knowledgeBase, setKnowledgeBase] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [showKnowledgeBase, setShowKnowledgeBase] = useState(true)
+  const [knowledgeBase, setKnowledgeBase] = useState<KnowledgeTopic[]>([])
 
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'knowledge-base-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  // Extract topics from conversation
+  const extractTopics = useCallback(async (msgs: Message[]): Promise<KnowledgeTopic[]> => {
+    if (msgs.length === 0) return []
+
+    try {
+      // Call API to extract topics (or implement client-side extraction)
+      const response = await fetch('/api/extract-topics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: msgs.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to extract topics')
+      }
+
+      const data = await response.json()
+      return data.topics || []
+    } catch (error) {
+      console.error('Failed to extract topics:', error)
+      // Fallback: Simple keyword-based extraction
+      return extractTopicsSimple(msgs)
+    }
+  }, [])
+
+  // Simple client-side topic extraction (fallback)
+  const extractTopicsSimple = useCallback((msgs: Message[]): KnowledgeTopic[] => {
+    const topics: KnowledgeTopic[] = []
+    const keywords = new Map<string, string[]>()
+    
+    msgs.forEach(msg => {
+      if (msg.role === 'assistant') {
+        // Simple keyword extraction (in production, use NLP)
+        const words = msg.content.toLowerCase().match(/\b\w{4,}\b/g) || []
+        words.forEach(word => {
+          if (!keywords.has(word)) {
+            keywords.set(word, [])
+          }
+          keywords.get(word)!.push(msg.id)
+        })
+      }
+    })
+
+    // Create topics from frequent keywords
+    Array.from(keywords.entries())
+      .filter(([_, ids]) => ids.length >= 2)
+      .slice(0, 10)
+      .forEach(([keyword, relatedIds], index) => {
+        topics.push({
+          id: `topic-${index}`,
+          title: keyword.charAt(0).toUpperCase() + keyword.slice(1),
+          summary: `Discussions about ${keyword}`,
+          relatedMessages: relatedIds,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+      })
+
+    return topics
+  }, [])
+
+  // Update knowledge base when messages change
   useEffect(() => {
-    // Extract topics from conversation
-    const topics = extractTopics(messages)
-    setKnowledgeBase(topics)
-  }, [messages])
+    if (messages.length > 0) {
+      extractTopics(messages).then(setKnowledgeBase)
+    }
+  }, [messages, extractTopics])
+
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({
+      chatId: 'knowledge-base-chat',
+      role: 'user',
+      content,
+    })
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'knowledge-base-chat',
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, addMessage])
+
+  const handleTopicClick = useCallback((topic: KnowledgeTopic) => {
+    // Start a new conversation about this topic
+    const topicMessage = `Tell me more about ${topic.title}`
+    handleSend(topicMessage)
+  }, [handleSend])
 
   return (
-    <div>
-      <ChatWindow messages={messages} />
-      <KnowledgeBaseViewer
-        knowledge={knowledgeBase}
-        onTopicClick={topic => {
-          // Navigate to topic or start new conversation
-        }}
-      />
-    </div>
+    <ErrorBoundary>
+      <div className="flex h-screen">
+        {/* Knowledge Base Sidebar */}
+        {showKnowledgeBase && (
+          <div className="w-80 border-r bg-muted/50 overflow-y-auto">
+            <div className="p-4 border-b">
+              <h2 className="text-lg font-semibold">Knowledge Base</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {knowledgeBase.length} topics extracted
+              </p>
+            </div>
+            <KnowledgeBaseViewer
+              knowledge={knowledgeBase}
+              onTopicClick={handleTopicClick}
+            />
+          </div>
+        )}
+
+        {/* Chat Window */}
+        <div className="flex-1 flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b bg-card">
+            <h1 className="text-xl font-semibold">Chat</h1>
+            <button
+              onClick={() => setShowKnowledgeBase(!showKnowledgeBase)}
+              className="px-4 py-2 text-sm rounded-md border hover:bg-accent"
+            >
+              {showKnowledgeBase ? 'Hide' : 'Show'} Knowledge Base
+            </button>
+          </div>
+          <ChatWindow 
+            messages={messages} 
+            isLoading={isLoading}
+            onSendMessage={handleSend}
+          />
+        </div>
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Automatic topic extraction
+- ✅ Knowledge base sidebar
+- ✅ Topic-based navigation
+- ✅ Related messages tracking
+- ✅ Search functionality
+- ✅ Toggleable sidebar
+- ✅ TypeScript types
 
 ---
 
