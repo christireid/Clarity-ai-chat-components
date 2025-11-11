@@ -9,7 +9,7 @@
  * @status NEW - Implementation based on blueprint analysis
  */
 
-import React, { useRef, useEffect, useState, useCallback, useReducer } from 'react'
+import * as React from 'react'
 import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { Message } from '@clarity-chat/types'
@@ -101,9 +101,9 @@ interface MessageItemProps extends ListChildComponentProps {
 function MessageItem({ index, style, data }: MessageItemProps) {
   const { messages, renderMessage, heightCache, setItemHeight } = data
   const message = messages[index]
-  const itemRef = useRef<HTMLDivElement>(null)
+  const itemRef = React.useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (itemRef.current) {
       const height = itemRef.current.offsetHeight
       const messageKey = message.id || `msg-${index}`
@@ -128,6 +128,14 @@ function MessageItem({ index, style, data }: MessageItemProps) {
 // Virtualized Message List Component
 // ============================================================================
 
+/**
+ * VirtualizedMessageList - Enhanced with React 19 features
+ * 
+ * React 19 Enhancements:
+ * - Keeps performance-critical useCallback (for react-window integration)
+ * - Compiler optimizes the rest automatically
+ * - Note: Some callbacks kept for stable refs required by react-window
+ */
 export function VirtualizedMessageList({
   messages,
   renderMessage,
@@ -138,15 +146,16 @@ export function VirtualizedMessageList({
   className,
   itemKey,
 }: VirtualizedMessageListProps) {
-  const listRef = useRef<List>(null)
-  const heightCacheRef = useRef(new MessageHeightCache(estimatedItemSize))
+  const listRef = React.useRef<List>(null)
+  const heightCacheRef = React.useRef(new MessageHeightCache(estimatedItemSize))
   // Replace force update anti-pattern with useReducer
-  const [, forceRender] = useReducer((x: number) => x + 1, 0)
-  const previousMessagesLength = useRef(messages.length)
-  const isNearBottomRef = useRef(true)
+  const [, forceRender] = React.useReducer((x: number) => x + 1, 0)
+  const previousMessagesLength = React.useRef(messages.length)
+  const isNearBottomRef = React.useRef(true)
 
   // Track if user is near bottom
-  const handleScroll = useCallback(({ scrollOffset, scrollUpdateWasRequested }: any) => {
+  // React 19: Keep useCallback for stable ref (required by react-window)
+  const handleScroll = React.useCallback(({ scrollOffset, scrollUpdateWasRequested }: any) => {
     if (!scrollUpdateWasRequested && listRef.current) {
       const list = listRef.current
       const scrollHeight = messages.reduce((sum, msg, i) => 
@@ -162,7 +171,7 @@ export function VirtualizedMessageList({
   }, [messages, onScroll])
 
   // Auto-scroll to bottom on new messages
-  useEffect(() => {
+  React.useEffect(() => {
     if (
       autoScrollToBottom &&
       messages.length > previousMessagesLength.current &&
@@ -175,14 +184,16 @@ export function VirtualizedMessageList({
   }, [messages.length, autoScrollToBottom])
 
   // Get item height from cache
-  const getItemSize = useCallback((index: number) => {
+  // React 19: Keep useCallback - passed to react-window, needs stable ref
+  const getItemSize = React.useCallback((index: number) => {
     const message = messages[index]
     const key = message.id || `msg-${index}`
     return heightCacheRef.current.getHeight(key)
   }, [messages])
 
   // Update item height and trigger re-render
-  const setItemHeight = useCallback((index: number, height: number) => {
+  // React 19: Keep useCallback - passed to child components, needs stable ref
+  const setItemHeight = React.useCallback((index: number, height: number) => {
     if (listRef.current) {
       listRef.current.resetAfterIndex(index, false)
       forceRender()
@@ -190,12 +201,13 @@ export function VirtualizedMessageList({
   }, [])
 
   // Get item key
-  const getItemKey = useCallback((index: number, data: Message[]) => {
+  // React 19: Keep useCallback - passed to react-window, needs stable ref
+  const getItemKey = React.useCallback((index: number, data: Message[]) => {
     return itemKey?.(index, data) || data[index].id || `msg-${index}`
   }, [itemKey])
 
   // Clear cache when messages change dramatically
-  useEffect(() => {
+  React.useEffect(() => {
     if (Math.abs(messages.length - previousMessagesLength.current) > 50) {
       heightCacheRef.current.clear()
     }
@@ -204,10 +216,10 @@ export function VirtualizedMessageList({
   return (
     <div className={className} style={{ height: '100%', width: '100%' }}>
       <AutoSizerComponent>
-        {({ height, width }: { height: number; width: number }) => (
+        {({ height: _height, width }: { height: number; width: number }) => (
           <ListComponent
             ref={listRef}
-            height={height}
+            height={_height}
             width={width}
             itemCount={messages.length}
             itemSize={getItemSize}
@@ -281,7 +293,7 @@ export function useMessageListScroll(
   const [isNearBottom, setIsNearBottom] = useState(true)
   const [userHasScrolledUp, setUserHasScrolledUp] = useState(false)
 
-  const handleScroll = useCallback((scrollOffset: number) => {
+  const handleScroll = useCallback((_scrollOffset: number) => {
     // This would need the total height to work properly
     // Implementation depends on the container
     setUserHasScrolledUp(!isNearBottom)

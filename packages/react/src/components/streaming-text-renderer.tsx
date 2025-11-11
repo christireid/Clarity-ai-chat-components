@@ -45,7 +45,7 @@ export interface StreamingTextRendererProps {
   onCharacterDisplayed?: (char: string, index: number) => void
 }
 
-export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
+export function StreamingTextRenderer({
   text,
   isStreaming = false,
   typingSpeed = 30,
@@ -138,7 +138,7 @@ export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
         clearTimeout(animationRef.current)
       }
     }
-  }, [text, isStreaming, displayMode, typingSpeed, chunkSize, displayedText.length, onCharacterDisplayed, onStreamingComplete])
+  }, [text, isStreaming, displayMode, typingSpeed, chunkSize, displayedText, onCharacterDisplayed, onStreamingComplete])
 
   // Reset when text changes completely (new message)
   React.useEffect(() => {

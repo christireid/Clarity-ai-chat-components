@@ -149,7 +149,7 @@ export function CustomerSupportTemplate({
       }
       
       setMessages(prev => [...prev, assistantMessage])
-    } catch (error) {
+    } catch (_error) {
       // Fallback response
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),

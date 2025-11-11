@@ -29,7 +29,7 @@ export function expectHasAria(element: Element, attribute: string, value?: strin
  * Assert component is visible
  */
 export function expectVisible(element: Element): void {
-  // @ts-expect-error - toBeVisible is from jest-dom
+
   expect(element).toBeVisible()
   const styles = window.getComputedStyle(element)
   expect(styles.visibility).not.toBe('hidden')
@@ -48,9 +48,9 @@ export function expectHasFocus(element: Element): void {
  * Assert loading state
  */
 export function expectLoading(container?: Element): void {
-  // @ts-expect-error - screen.queryByRole exists at runtime
+
   const loadingIndicator = container ? screen.queryByRole('status', { container }) : screen.queryByRole('status')
-  // @ts-expect-error - toBeInTheDocument is from jest-dom
+
   expect(loadingIndicator).toBeInTheDocument()
 }
 
@@ -58,13 +58,13 @@ export function expectLoading(container?: Element): void {
  * Assert error state
  */
 export function expectError(container?: Element, message?: string): void {
-  // @ts-expect-error - screen.queryByRole exists at runtime
+
   const alert = container ? screen.queryByRole('alert', { container }) : screen.queryByRole('alert')
-  // @ts-expect-error - toBeInTheDocument is from jest-dom
+
   expect(alert).toBeInTheDocument()
   
   if (message) {
-    // @ts-expect-error - toHaveTextContent is from jest-dom
+  
     expect(alert).toHaveTextContent(message)
   }
 }

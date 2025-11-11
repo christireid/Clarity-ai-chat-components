@@ -58,5 +58,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  // @ts-expect-error - Remix Outlet type compatibility
   return <Outlet />
 }

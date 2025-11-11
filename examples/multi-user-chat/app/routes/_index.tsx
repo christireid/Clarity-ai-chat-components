@@ -1,4 +1,4 @@
-// @ts-nocheck - Example needs refactoring for current Message type
+// @ts-nocheck - Remix type incompatibility with React 18 (Outlet component) + ChatWindow import resolution
 import { useState, useEffect, useRef } from 'react'
 import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
@@ -33,9 +33,12 @@ export default function Index() {
         if (user.id !== socket.id) {
           const systemMessage: Message = {
             id: `system-${Date.now()}`,
+            chatId: room,
             role: 'system',
             content: `${user.username} joined the room`,
-            timestamp: Date.now(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            status: 'sent',
           }
           setMessages((prev) => [...prev, systemMessage])
         }
@@ -45,9 +48,12 @@ export default function Index() {
         setUsers(roomUsers)
         const systemMessage: Message = {
           id: `system-${Date.now()}`,
+          chatId: room,
           role: 'system',
           content: `${user.username} left the room`,
-          timestamp: Date.now(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          status: 'sent',
         }
         setMessages((prev) => [...prev, systemMessage])
       })
@@ -89,9 +95,12 @@ export default function Index() {
       
       const welcomeMessage: Message = {
         id: 'welcome',
+        chatId: newRoom,
         role: 'system',
         content: `Welcome to the ${newRoom} room! You can chat with other users here.`,
-        timestamp: Date.now(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
       }
       setMessages([welcomeMessage])
     }, 100)

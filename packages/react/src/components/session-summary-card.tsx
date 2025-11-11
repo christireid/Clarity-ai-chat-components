@@ -105,7 +105,7 @@ const defaultTitle = 'Conversation recap'
 const defaultSubtitle =
   'Share this executive summary with stakeholders or use the follow-up plan to continue the workflow.'
 
-export const SessionSummaryCard = React.memo(function SessionSummaryCard({
+export function SessionSummaryCard({
   summary,
   metrics,
   onAction,

@@ -1,4 +1,3 @@
-// @ts-nocheck - Example app needs refactoring for current API
 'use client'
 
 export const dynamic = 'force-dynamic'

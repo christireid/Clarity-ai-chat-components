@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
@@ -27,7 +27,14 @@ export interface MessageListProps {
   className?: string
 }
 
-export const MessageList = memo(function MessageList({
+/**
+ * MessageList component - Enhanced with React 19 features
+ * 
+ * React 19 Enhancements:
+ * - Removed memo() wrapper - compiler handles optimization
+ * - Removed simple useMemo - compiler optimizes static values
+ */
+export function MessageList({
   messages,
   onMessageCopy,
   onMessageFeedback,
@@ -44,21 +51,12 @@ export const MessageList = memo(function MessageList({
     threshold: 100,
   })
 
-  // Memoize animation variants to prevent recreation on every render
-  const containerVariants = useMemo(
-    () => createStaggerContainerVariant('normal', 0),
-    []
-  )
-  const itemVariants = useMemo(
-    () => createStaggerChildVariant('slide', 'fast'),
-    []
-  )
+  // React 19: Static function calls - compiler optimizes, no useMemo needed
+  const containerVariants = createStaggerContainerVariant('normal', 0)
+  const itemVariants = createStaggerChildVariant('slide', 'fast')
 
-  // Memoize empty state check
-  const showEmptyState = useMemo(
-    () => messages.length === 0 && !isLoading && emptyState,
-    [messages.length, isLoading, emptyState]
-  )
+  // React 19: Simple boolean derivation - compiler optimizes
+  const showEmptyState = messages.length === 0 && !isLoading && emptyState
 
   return (
     <div className="relative h-full">
@@ -158,6 +156,6 @@ export const MessageList = memo(function MessageList({
       </AnimatePresence>
     </div>
   )
-})
+}
 
 MessageList.displayName = 'MessageList'

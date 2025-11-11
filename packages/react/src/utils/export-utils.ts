@@ -550,7 +550,7 @@ export async function exportMultipleConversations(
     }
 
     return await zip.generateAsync({ type: 'blob' })
-  } catch (error) {
+  } catch (_error) {
     throw new Error(
       'jszip is required for batch exports. Install it with: npm install jszip'
     )

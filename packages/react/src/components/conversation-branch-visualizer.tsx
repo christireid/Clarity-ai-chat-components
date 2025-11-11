@@ -405,7 +405,7 @@ export interface UseBranchManagementOptions {
   onBranchChange?: (branchId: string) => void
 }
 
-export function useBranchManagement({ conversationId, onBranchChange }: UseBranchManagementOptions) {
+export function useBranchManagement({ conversationId: _conversationId, onBranchChange }: UseBranchManagementOptions) {
   const [branches, setBranches] = useState<ConversationBranch[]>([])
   const [currentBranchId, setCurrentBranchId] = useState<string>('main')
 

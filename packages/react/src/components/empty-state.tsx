@@ -21,7 +21,7 @@ import {
   InfoIcon,
 } from './icons'
 import { InteractiveButton } from './interactive-card'
-import { createScaleVariant } from '../animations'
+// import { createScaleVariant } from '../animations' // Reserved for future use
 
 export interface EmptyStateProps {
   /** Icon to display */
@@ -48,7 +48,7 @@ export interface EmptyStateProps {
 /**
  * Base Empty State Component
  */
-export const EmptyState = React.memo(function EmptyState({
+export function EmptyState({
   icon,
   title,
   description,
@@ -56,8 +56,6 @@ export const EmptyState = React.memo(function EmptyState({
   secondaryAction,
   className,
 }: EmptyStateProps) {
-  const scaleVariant = createScaleVariant(0.95, 'normal', 'spring')
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -130,7 +128,7 @@ EmptyState.displayName = 'EmptyState'
 /**
  * Empty Chat State
  */
-export const EmptyChatState = React.memo(function EmptyChatState({
+export function EmptyChatState({
   onStartChat,
   className,
 }: {
@@ -161,7 +159,7 @@ EmptyChatState.displayName = 'EmptyChatState'
 /**
  * No Search Results State
  */
-export const NoSearchResultsState = React.memo(function NoSearchResultsState({
+export function NoSearchResultsState({
   searchQuery,
   onClearSearch,
   className,
@@ -197,7 +195,7 @@ NoSearchResultsState.displayName = 'NoSearchResultsState'
 /**
  * No Conversations State
  */
-export const NoConversationsState = React.memo(function NoConversationsState({
+export function NoConversationsState({
   onCreateConversation,
   className,
 }: {
@@ -228,7 +226,7 @@ NoConversationsState.displayName = 'NoConversationsState'
 /**
  * No Files State
  */
-export const NoFilesState = React.memo(function NoFilesState({
+export function NoFilesState({
   onUpload,
   className,
 }: {
@@ -259,7 +257,7 @@ NoFilesState.displayName = 'NoFilesState'
 /**
  * Error State
  */
-export const ErrorState = React.memo(function ErrorState({
+export function ErrorState({
   title = 'Something went wrong',
   description = 'An error occurred. Please try again.',
   onRetry,
@@ -304,7 +302,7 @@ ErrorState.displayName = 'ErrorState'
 /**
  * Success State
  */
-export const SuccessState = React.memo(function SuccessState({
+export function SuccessState({
   title,
   description,
   onContinue,
@@ -339,7 +337,7 @@ SuccessState.displayName = 'SuccessState'
 /**
  * Info State
  */
-export const InfoState = React.memo(function InfoState({
+export function InfoState({
   title,
   description,
   onAction,
@@ -369,7 +367,7 @@ InfoState.displayName = 'InfoState'
 /**
  * Loading State (with animated icon)
  */
-export const LoadingState = React.memo(function LoadingState({
+export function LoadingState({
   title = 'Loading...',
   description = 'Please wait while we load your content',
   className,
@@ -416,7 +414,7 @@ LoadingState.displayName = 'LoadingState'
 /**
  * Offline State
  */
-export const OfflineState = React.memo(function OfflineState({
+export function OfflineState({
   onRetry,
   className,
 }: {
