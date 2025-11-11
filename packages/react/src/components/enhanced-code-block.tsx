@@ -52,7 +52,7 @@ export interface EnhancedCodeBlockProps {
   startLineNumber?: number
 }
 
-export const EnhancedCodeBlock = React.memo(function EnhancedCodeBlock({
+export function EnhancedCodeBlock({
   code,
   language = 'text',
   showLineNumbers = true,

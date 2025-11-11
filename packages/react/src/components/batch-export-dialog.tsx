@@ -81,7 +81,7 @@ export interface BatchExportDialogProps {
  * />
  * ```
  */
-export const BatchExportDialog = React.memo(function BatchExportDialog({
+export function BatchExportDialog({
   open,
   onOpenChange,
   resources,

@@ -339,7 +339,7 @@ const CitationItem = React.memo(function CitationItem({
 
 CitationItem.displayName = 'CitationItem'
 
-export const StreamingMessage = React.memo(function StreamingMessage({
+export function StreamingMessage({
   content,
   isStreaming = false,
   toolCalls = [],

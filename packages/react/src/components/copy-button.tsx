@@ -15,7 +15,7 @@ export interface CopyButtonProps
   copiedText?: string
 }
 
-export const CopyButton = memo(function CopyButton({
+export function CopyButton({
   text,
   onCopy,
   iconOnly = false,

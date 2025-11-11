@@ -35,7 +35,7 @@ export interface CollapsibleSectionProps {
 /**
  * Collapsible section with smooth height animation
  */
-export const CollapsibleSection = React.memo(function CollapsibleSection({
+export function CollapsibleSection({
   open: controlledOpen,
   onOpenChange,
   defaultOpen = false,
@@ -140,7 +140,7 @@ export interface AccordionProps {
   duration?: number
 }
 
-export const Accordion = React.memo(function Accordion({
+export function Accordion({
   items,
   openId: controlledOpenId,
   onOpenChange,
@@ -221,7 +221,7 @@ export interface ExpandableListItemProps {
   className?: string
 }
 
-export const ExpandableListItem = React.memo(function ExpandableListItem({
+export function ExpandableListItem({
   title,
   badge,
   icon,
