@@ -5,13 +5,7 @@
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build": "storybook build",
-    "build:stats": "storybook build --stats-json",
-    "clean": "rm -rf storybook-static",
-    "preview": "npx http-server storybook-static -p 6007 -o",
-    "deploy:vercel": "npm run build && vercel --prod",
-    "deploy:netlify": "npm run build && netlify deploy --prod --dir=storybook-static",
-    "deploy:gh-pages": "npm run build && gh-pages -d storybook-static",
-    "analyze": "npm run build:stats && npx vite-bundle-visualizer storybook-static"
+    "clean": "rm -rf storybook-static"
   },
   "dependencies": {
     "@clarity-chat/react": "^0.1.0",
