@@ -126,8 +126,8 @@ export function extractStreamContent(chunk: unknown): string {
     }
 
     // Common content fields
-    if (typeof obj.content === 'string') return obj.content
-    if (typeof obj.text === 'string') return obj.text
+    if (typeof obj['content'] === 'string') return obj['content']
+    if (typeof obj['text'] === 'string') return obj['text']
     if (typeof obj['delta'] === 'string') return obj['delta']
     if (typeof obj['data'] === 'string') return obj['data']
   }
