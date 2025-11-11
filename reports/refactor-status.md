@@ -46,12 +46,12 @@ This report tracks the execution of the repository refactoring plan.
 ### Documentation Consolidation
 - [x] Created migration script and documentation ⚠️ **IN PROGRESS**
 - [x] Migrated all 32 guides ✅ **COMPLETE** (error-handling, getting-started, installation, quick-start, theming, customization, components, hooks, file-upload, message-operations, messages, model-adapters, plugins, migration, interactive, prompts, memory, observability, safety, audit-logging, multi-tenancy, rbac, reranking, tutorials, usage-quotas, webhooks)
-- [ ] Migrate API docs (6 files)
+- [x] Migrated API docs (6 files) ✅ **COMPLETE** (components, hooks, model-adapters, streaming-components, types, utilities)
+- [x] Migrated examples docs (2 files) ✅ **COMPLETE** (model-switching, streaming - index already exists)
+- [x] Migrated integrations (3 files) ✅ **COMPLETE** (nextjs, remix, vite)
 - [ ] Migrate content from `docs/` (root)
 - [ ] Move `blog/` into `apps/docs-site/app/blog/`
 - [ ] Merge `commercial-docs/` into `apps/docs-site/app/enterprise/`
-- [ ] Migrate examples docs (3 files)
-- [ ] Migrate integrations (3 files)
 - [ ] Rename `apps/docs-site/` → `apps/docs/`
 - [ ] Delete old documentation directories
 - [ ] Update all documentation links

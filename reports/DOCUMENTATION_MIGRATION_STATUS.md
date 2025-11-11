@@ -103,13 +103,13 @@ export default function GuidePage() {
 
 ### API Docs from `apps/docs/api/` (6 files)
 
-**Need Migration**:
-- [ ] components.md → `apps/docs-site/app/reference/components/`
-- [ ] hooks.md → `apps/docs-site/app/reference/hooks/`
-- [ ] model-adapters.md → `apps/docs-site/app/reference/`
-- [ ] streaming-components.md → `apps/docs-site/app/reference/components/`
-- [ ] types.md → `apps/docs-site/app/reference/types/`
-- [ ] utilities.md → `apps/docs-site/app/reference/utilities/`
+**Migrated**:
+- [x] components.md → `apps/docs-site/app/reference/api/components/` ✅
+- [x] hooks.md → `apps/docs-site/app/reference/api/hooks/` ✅
+- [x] model-adapters.md → `apps/docs-site/app/reference/api/model-adapters/` ✅
+- [x] streaming-components.md → `apps/docs-site/app/reference/api/streaming-components/` ✅
+- [x] types.md → `apps/docs-site/app/reference/api/types/` ✅
+- [x] utilities.md → `apps/docs-site/app/reference/api/utilities/` ✅
 
 ### Content from `docs/` (root)
 
@@ -204,11 +204,11 @@ Create blog section structure and convert markdown to React components or use MD
 ## Progress Summary
 
 - **Guides**: 32/32 migrated (100%) ✅ **COMPLETE**
-- **API Docs**: 0/6 migrated (0%)
+- **API Docs**: 6/6 migrated (100%) ✅ **COMPLETE**
 - **Blog**: 0/4 posts migrated (0%)
 - **Enterprise**: 0/2 migrated (0%)
-- **Examples**: 0/3 migrated (0%)
-- **Integrations**: 0/3 migrated (0%)
+- **Examples**: 2/3 migrated (67%) - index.md already exists, model-switching ✅, streaming ✅
+- **Integrations**: 3/3 migrated (100%) ✅ **COMPLETE** (nextjs ✅, remix ✅, vite ✅)
 
 **Overall**: ~15% complete
 
