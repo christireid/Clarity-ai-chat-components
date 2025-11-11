@@ -3362,18 +3362,33 @@ export function ChatWithPrompts() {
 
 ### Recipe 21: Conversation Branching
 
-Create alternative conversation paths from any message.
+Create alternative conversation paths from any message with visual branch management.
 
 ```tsx
-import { useMessageOperations } from '@clarity-chat/react'
+import { 
+  ChatWindow,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useCallback, useMemo } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface Branch {
+  id: string
+  name: string
+  parentMessageId: string
+  createdAt: Date
+  messageCount: number
+}
 
 export function ChatWithBranching() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [branches, setBranches] = useState<Map<string, Branch>>(new Map())
+  const [currentBranchId, setCurrentBranchId] = useState<string>('main')
+
   const {
-    messages,
-    branchConversation,
-    switchToBranch,
-    getBranches,
-    currentBranchId,
+    messages: operationMessages,
+    addMessage,
   } = useMessageOperations({
     initialMessages: [],
     onBranch: (branchId, parentMessageId) => {
@@ -3381,85 +3396,374 @@ export function ChatWithBranching() {
     },
   })
 
-  const handleBranch = (messageId: string) => {
-    const branchId = branchConversation(messageId)
-    switchToBranch(branchId)
-    // Continue conversation from this branch
-  }
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'branching-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
 
-  const branches = getBranches()
+  const handleBranch = useCallback((messageId: string) => {
+    const branchId = `branch-${Date.now()}`
+    const parentMessage = messages.find(m => m.id === messageId)
+    
+    if (!parentMessage) return
+
+    // Create new branch
+    const newBranch: Branch = {
+      id: branchId,
+      name: `Branch from "${parentMessage.content.substring(0, 30)}..."`,
+      parentMessageId: messageId,
+      createdAt: new Date(),
+      messageCount: 0,
+    }
+
+    setBranches(prev => new Map(prev).set(branchId, newBranch))
+    setCurrentBranchId(branchId)
+
+    // In a real implementation, you'd filter messages to show only this branch
+    // This is a simplified example
+  }, [messages])
+
+  const handleSwitchBranch = useCallback((branchId: string) => {
+    setCurrentBranchId(branchId)
+    // In a real implementation, you'd load messages for this branch
+  }, [])
+
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({
+      chatId: 'branching-chat',
+      role: 'user',
+      content,
+    })
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+          branchId: currentBranchId,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'branching-chat',
+        role: 'assistant',
+        content: data.response,
+      })
+
+      // Update branch message count
+      if (currentBranchId !== 'main') {
+        setBranches(prev => {
+          const updated = new Map(prev)
+          const branch = updated.get(currentBranchId)
+          if (branch) {
+            updated.set(currentBranchId, {
+              ...branch,
+              messageCount: branch.messageCount + 2, // User + Assistant
+            })
+          }
+          return updated
+        })
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, currentBranchId, addMessage])
+
+  const branchList = useMemo(() => {
+    return Array.from(branches.values())
+  }, [branches])
 
   return (
-    <div>
-      {/* Show branch selector */}
-      {branches.size > 1 && (
-        <select value={currentBranchId} onChange={(e) => switchToBranch(e.target.value)}>
-          {Array.from(branches.keys()).map(branchId => (
-            <option key={branchId} value={branchId}>
-              Branch {branchId}
-            </option>
-          ))}
-        </select>
-      )}
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        {/* Branch Selector */}
+        {branchList.length > 0 && (
+          <div className="p-4 border-b bg-card">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium">Current Branch:</label>
+              <select
+                value={currentBranchId}
+                onChange={(e) => handleSwitchBranch(e.target.value)}
+                className="px-3 py-1.5 text-sm border rounded-md bg-background"
+              >
+                <option value="main">Main Branch</option>
+                {branchList.map(branch => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name} ({branch.messageCount} messages)
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
 
-      {/* Chat interface */}
-      <ChatWindow messages={messages} />
-    </div>
+        <ChatWindow
+          messages={messages}
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+          onMessageAction={(messageId, action) => {
+            if (action === 'branch') {
+              handleBranch(messageId)
+            }
+          }}
+        />
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Visual branch management
+- ✅ Branch creation from any message
+- ✅ Branch switching
+- ✅ Message count tracking
+- ✅ Branch naming
+- ✅ TypeScript types
+- ✅ Error handling
 
 ---
 
-### Recipe 22: Export Conversations
+### Recipe 22: Export Conversations (Enhanced)
 
-Export chat history to multiple formats.
+Export chat history to multiple formats with metadata and customization options.
 
 ```tsx
-import { ChatWindow, ExportDialog } from '@clarity-chat/react'
-import { exportMessages } from '@clarity-chat/react/utils/export-utils'
-import { useState } from 'react'
+import { 
+  ChatWindow, 
+  ExportDialog,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface ExportOptions {
+  format: 'markdown' | 'json' | 'html' | 'txt'
+  includeMetadata: boolean
+  includeTimestamps: boolean
+  includeImages: boolean
+  dateRange?: { start: Date; end: Date }
+}
 
 export function ExportableChat() {
-  const [messages, setMessages] = useState([])
   const [showExport, setShowExport] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
 
-  const handleExport = async (format: 'pdf' | 'markdown' | 'json' | 'html') => {
-    const exported = await exportMessages(messages, {
-      format,
-      includeMetadata: true,
-      includeImages: true,
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'exportable-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  const exportToFormat = useCallback(async (
+    msgs: Message[],
+    options: ExportOptions
+  ): Promise<string> => {
+    // Filter by date range if specified
+    let filteredMessages = msgs
+    if (options.dateRange) {
+      filteredMessages = msgs.filter(msg => {
+        const msgDate = new Date(msg.createdAt)
+        return msgDate >= options.dateRange!.start && msgDate <= options.dateRange!.end
+      })
+    }
+
+    switch (options.format) {
+      case 'markdown':
+        return filteredMessages.map(msg => {
+          const role = msg.role === 'user' ? '**You**' : '**Assistant**'
+          const timestamp = options.includeTimestamps 
+            ? ` (${msg.createdAt.toLocaleString()})` 
+            : ''
+          const metadata = options.includeMetadata 
+            ? `\n<!-- ID: ${msg.id}, Status: ${msg.status} -->\n` 
+            : ''
+          return `${metadata}${role}${timestamp}\n\n${msg.content}\n\n---\n`
+        }).join('\n')
+
+      case 'json':
+        return JSON.stringify(
+          filteredMessages.map(msg => ({
+            id: msg.id,
+            role: msg.role,
+            content: msg.content,
+            timestamp: msg.createdAt.toISOString(),
+            ...(options.includeMetadata && {
+              status: msg.status,
+              chatId: msg.chatId,
+            }),
+          })),
+          null,
+          2
+        )
+
+      case 'html':
+        return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Export</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .message { margin: 20px 0; padding: 15px; border-radius: 8px; }
+    .user { background: #e3f2fd; }
+    .assistant { background: #f5f5f5; }
+    .timestamp { font-size: 0.85em; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Chat Export</h1>
+  ${filteredMessages.map(msg => `
+    <div class="message ${msg.role}">
+      <strong>${msg.role === 'user' ? 'You' : 'Assistant'}</strong>
+      ${options.includeTimestamps ? `<span class="timestamp">${msg.createdAt.toLocaleString()}</span>` : ''}
+      <div>${msg.content.replace(/\n/g, '<br>')}</div>
+    </div>
+  `).join('')}
+</body>
+</html>`
+
+      case 'txt':
+        return filteredMessages.map(msg => {
+          const role = msg.role === 'user' ? 'You' : 'Assistant'
+          const timestamp = options.includeTimestamps 
+            ? ` [${msg.createdAt.toLocaleString()}]` 
+            : ''
+          return `${role}${timestamp}: ${msg.content}`
+        }).join('\n\n')
+
+      default:
+        throw new Error(`Unsupported format: ${options.format}`)
+    }
+  }, [])
+
+  const handleExport = useCallback(async (format: ExportOptions['format'], options: Partial<ExportOptions> = {}) => {
+    if (messages.length === 0) {
+      alert('No messages to export')
+      return
+    }
+
+    setIsExporting(true)
+
+    try {
+      const exportOptions: ExportOptions = {
+        format,
+        includeMetadata: options.includeMetadata ?? true,
+        includeTimestamps: options.includeTimestamps ?? true,
+        includeImages: options.includeImages ?? false,
+        dateRange: options.dateRange,
+      }
+
+      const content = await exportToFormat(messages, exportOptions)
+      const mimeTypes: Record<string, string> = {
+        markdown: 'text/markdown',
+        json: 'application/json',
+        html: 'text/html',
+        txt: 'text/plain',
+      }
+
+      const blob = new Blob([content], { type: mimeTypes[format] })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `conversation-${Date.now()}.${format}`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+
+      setShowExport(false)
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert(`Failed to export: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setIsExporting(false)
+    }
+  }, [messages, exportToFormat])
+
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({
+      chatId: 'exportable-chat',
+      role: 'user',
+      content,
     })
-    
-    // Download file
-    const blob = new Blob([exported], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `conversation-${Date.now()}.${format}`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+    // Call API and add response...
+  }, [addMessage])
 
   return (
-    <div>
-      <button onClick={() => setShowExport(true)}>Export</button>
-      
-      <ChatWindow messages={messages} />
-      
-      {showExport && (
-        <ExportDialog
-          open={showExport}
-          onOpenChange={setShowExport}
-          onExport={handleExport}
-          resourceType="chat"
-          resourceName="Conversation"
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        <div className="flex items-center justify-between p-4 border-b bg-card">
+          <h1 className="text-xl font-semibold">Chat</h1>
+          <button
+            onClick={() => setShowExport(true)}
+            disabled={messages.length === 0}
+            className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          >
+            Export
+          </button>
+        </div>
+
+        <ChatWindow 
+          messages={messages} 
+          onSendMessage={handleSend}
         />
-      )}
-    </div>
+
+        {showExport && (
+          <ExportDialog
+            messages={messages}
+            onExport={handleExport}
+            onClose={() => setShowExport(false)}
+            isExporting={isExporting}
+          />
+        )}
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Multiple export formats (Markdown, JSON, HTML, TXT)
+- ✅ Metadata inclusion options
+- ✅ Date range filtering
+- ✅ Timestamp options
+- ✅ Customizable export settings
+- ✅ Error handling
+- ✅ TypeScript types
 
 ---
 
