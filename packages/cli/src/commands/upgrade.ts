@@ -8,6 +8,13 @@ import ora from 'ora'
 import prompts from 'prompts'
 import fs from 'fs-extra'
 import path from 'path'
+import { getLogger } from '../utils/logger.js'
+import { ValidationError, handleError } from '../utils/errors.js'
+import { detectPackageManager } from '../utils/detect.js'
+import { success, info, warn, error, outputJson } from '../utils/output.js'
+import { execa } from 'execa'
+
+const logger = getLogger('upgrade')
 
 interface PackageUpdate {
   name: string
@@ -145,15 +152,37 @@ async function installUpdates(updates: PackageUpdate[]) {
   const spinner = ora('Installing updates...').start()
 
   try {
-    const packageNames = updates.map(u => `${u.name}@${u.latest}`).join(' ')
-    execSync(`npm install ${packageNames}`, {
+    const cwd = process.cwd()
+    const packageManager = await detectPackageManager(cwd)
+    const packageNames = updates.map(u => `${u.name}@${u.latest}`)
+    
+    const commands: Record<string, string[]> = {
+      npm: ['install', ...packageNames],
+      yarn: ['add', ...packageNames],
+      pnpm: ['add', ...packageNames],
+      bun: ['add', ...packageNames],
+    }
+
+    const cmd = commands[packageManager] || commands.npm
+    
+    await execa(packageManager === 'npm' ? 'npm' : packageManager, cmd, {
+      cwd,
       stdio: 'inherit',
     })
 
     spinner.succeed('Updates installed successfully!')
-  } catch (error) {
+    success('Updates installed successfully!')
+  } catch (err) {
     spinner.fail('Failed to install updates')
-    throw error
+    logger.error(err)
+    throw new ValidationError(
+      'Failed to install updates',
+      [
+        'Check your internet connection',
+        'Verify package manager is installed',
+        'Check package.json for conflicts',
+      ]
+    )
   }
 }
 
@@ -189,14 +218,18 @@ export async function upgradeCommand(options: {
   minor?: boolean
   patch?: boolean
 }) {
-  console.log(chalk.blue.bold('\n🚀 Clarity Chat Upgrade Tool\n'))
-
   try {
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log(chalk.blue.bold('\n🚀 Clarity Chat Upgrade Tool\n'))
+    }
     // Check for updates
     const updates = await checkForUpdates()
 
     if (updates.length === 0) {
-      console.log(chalk.green('✓ All packages are up to date!'))
+      success('All packages are up to date!')
+      if (process.argv.includes('--json')) {
+        outputJson({ updates: [], upToDate: true })
+      }
       return
     }
 
@@ -257,10 +290,9 @@ export async function upgradeCommand(options: {
       }
     }
 
-    console.log(chalk.green.bold('\n✓ Upgrade complete!\n'))
+    success('Upgrade complete!')
   } catch (error) {
-    console.error(chalk.red(`\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`))
-    process.exit(1)
+    handleError(error)
   }
 }
 
