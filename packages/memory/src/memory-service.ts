@@ -745,20 +745,22 @@ export class MemoryService {
   private getHigherPriority(current: MemoryPriority): MemoryPriority {
     const priorities: MemoryPriority[] = ['low', 'medium', 'high', 'critical']
     const index = priorities.indexOf(current)
-    return priorities[Math.min(index + 1, priorities.length - 1)]
+    const nextIndex = Math.min(index + 1, priorities.length - 1)
+    return priorities[nextIndex] ?? 'critical'
   }
 
   private createMemoryFromMatch(match: VectorStoreMatch): MemoryItem {
+    const metadata = match.metadata || {}
     return {
       id: match.id,
-      type: match.metadata?.type || 'episodic',
-      scope: match.metadata?.scope || 'session',
-      content: match.metadata?.content || '',
-      metadata: match.metadata || {},
+      type: (metadata['type'] as MemoryType | undefined) || 'episodic',
+      scope: (metadata['scope'] as MemoryScope | undefined) || 'session',
+      content: (metadata['content'] as string | undefined) || '',
+      metadata: metadata,
       embedding: match.values,
       confidence: match.score || 0.5,
-      priority: match.metadata?.priority || 'medium',
-      tokens: TokenCounter.count(match.metadata?.content || ''),
+      priority: (metadata['priority'] as MemoryPriority | undefined) || 'medium',
+      tokens: TokenCounter.count((metadata['content'] as string | undefined) || ''),
       accessCount: 0,
       lastAccessed: new Date(),
       createdAt: new Date(),

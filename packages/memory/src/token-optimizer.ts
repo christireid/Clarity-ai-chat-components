@@ -207,10 +207,10 @@ export class TokenBudgetManager {
     const distribution: Record<string, number> = {}
     
     // Base allocation
-    distribution.episodic = this.allocation.episodicMemory
-    distribution.semantic = this.allocation.semanticMemory
-    distribution.shortTerm = this.allocation.recentContext
-    distribution.procedural = Math.floor(this.allocation.semanticMemory * 0.2)
+    distribution['episodic'] = this.allocation.episodicMemory
+    distribution['semantic'] = this.allocation.semanticMemory
+    distribution['shortTerm'] = this.allocation.recentContext
+    distribution['procedural'] = Math.floor(this.allocation.semanticMemory * 0.2)
 
     return distribution
   }
@@ -290,6 +290,7 @@ export class MemoryCompressor {
     // Start from most recent
     for (let i = middleMessages.length - 1; i >= 0; i--) {
       const msg = middleMessages[i]
+      if (!msg) continue
       const tokens = TokenCounter.count(msg)
       
       if (usedTokens + tokens <= remainingBudget) {
@@ -327,15 +328,20 @@ export class MemoryCompressor {
     const selected: string[] = []
     
     for (let i = 0; i < sentences.length && selected.length < targetCount; i += step) {
-      selected.push(sentences[i])
+      const sentence = sentences[i]
+      if (sentence) {
+        selected.push(sentence)
+      }
     }
     
     // Always include first and last
-    if (!selected.includes(sentences[0])) {
-      selected.unshift(sentences[0])
+    const firstSentence = sentences[0]
+    const lastSentence = sentences[sentences.length - 1]
+    if (firstSentence && !selected.includes(firstSentence)) {
+      selected.unshift(firstSentence)
     }
-    if (!selected.includes(sentences[sentences.length - 1])) {
-      selected.push(sentences[sentences.length - 1])
+    if (lastSentence && !selected.includes(lastSentence)) {
+      selected.push(lastSentence)
     }
     
     return selected.join('. ') + '.'
