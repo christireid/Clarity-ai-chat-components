@@ -3097,39 +3097,264 @@ export function ChatWithKnowledgeBase() {
 
 ### Recipe 20: Prompt Library
 
-Provide quick-start prompts.
+Provide quick-start prompts with categories, search, and variable substitution.
 
 ```tsx
-import { ChatWindow, PromptLibrary } from '@clarity-chat/react'
-import { useState } from 'react'
+import { 
+  ChatWindow, 
+  PromptLibrary,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useCallback, useMemo } from 'react'
+import type { Message } from '@clarity-chat/types'
 
-const prompts = [
-  { id: '1', title: 'Code Review', content: 'Review this code for best practices: {code}', category: 'development' },
-  { id: '2', title: 'Explain Concept', content: 'Explain {concept} in simple terms', category: 'education' },
-  { id: '3', title: 'Debug Issue', content: 'Help me debug: {error}', category: 'development' },
+interface Prompt {
+  id: string
+  title: string
+  content: string
+  category: string
+  description?: string
+  variables?: string[]
+}
+
+const defaultPrompts: Prompt[] = [
+  {
+    id: '1',
+    title: 'Code Review',
+    content: 'Review this code for best practices, security issues, and potential improvements:\n\n{code}',
+    category: 'development',
+    description: 'Get feedback on your code',
+    variables: ['code'],
+  },
+  {
+    id: '2',
+    title: 'Explain Concept',
+    content: 'Explain {concept} in simple terms with examples.',
+    category: 'education',
+    description: 'Understand complex topics',
+    variables: ['concept'],
+  },
+  {
+    id: '3',
+    title: 'Debug Issue',
+    content: 'Help me debug this error:\n\n{error}\n\nContext: {context}',
+    category: 'development',
+    description: 'Troubleshoot problems',
+    variables: ['error', 'context'],
+  },
+  {
+    id: '4',
+    title: 'Write Documentation',
+    content: 'Write comprehensive documentation for:\n\n{topic}\n\nInclude examples and use cases.',
+    category: 'documentation',
+    description: 'Create documentation',
+    variables: ['topic'],
+  },
+  {
+    id: '5',
+    title: 'Generate Test Cases',
+    content: 'Generate comprehensive test cases for:\n\n{feature}\n\nConsider edge cases and error scenarios.',
+    category: 'testing',
+    description: 'Create test scenarios',
+    variables: ['feature'],
+  },
 ]
 
 export function ChatWithPrompts() {
-  const [messages, setMessages] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
   const [showPrompts, setShowPrompts] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
-  const handlePromptSelect = (prompt) => {
-    // Fill in variables and send
-    const filled = prompt.content.replace(/{(\w+)}/g, (_, key) => {
-      return window.prompt(`Enter ${key}:`) || ''
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'prompt-library-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  // Filter prompts by search and category
+  const filteredPrompts = useMemo(() => {
+    return defaultPrompts.filter(prompt => {
+      const matchesSearch = searchQuery === '' || 
+        prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        prompt.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      
+      const matchesCategory = selectedCategory === null || 
+        prompt.category === selectedCategory
+
+      return matchesSearch && matchesCategory
     })
-    handleSend(filled)
-    setShowPrompts(false)
-  }
+  }, [searchQuery, selectedCategory])
+
+  // Get unique categories
+  const categories = useMemo(() => {
+    return Array.from(new Set(defaultPrompts.map(p => p.category)))
+  }, [])
+
+  const fillPromptVariables = useCallback((prompt: Prompt): string => {
+    let filled = prompt.content
+
+    if (prompt.variables && prompt.variables.length > 0) {
+      prompt.variables.forEach(variable => {
+        const value = window.prompt(`Enter value for "${variable}":`) || ''
+        filled = filled.replace(new RegExp(`\\{${variable}\\}`, 'g'), value)
+      })
+    }
+
+    return filled
+  }, [])
+
+  const handlePromptSelect = useCallback((prompt: Prompt) => {
+    const filled = fillPromptVariables(prompt)
+    if (filled.trim()) {
+      handleSend(filled)
+      setShowPrompts(false)
+    }
+  }, [])
+
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({
+      chatId: 'prompt-library-chat',
+      role: 'user',
+      content,
+    })
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'prompt-library-chat',
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, addMessage])
 
   return (
-    <div>
-      {showPrompts && <PromptLibrary prompts={prompts} onPromptSelect={handlePromptSelect} />}
-      <ChatWindow messages={messages} />
-    </div>
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        {/* Prompt Library */}
+        {showPrompts && (
+          <div className="p-4 border-b bg-muted/50">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Prompt Library</h2>
+              <button
+                onClick={() => setShowPrompts(false)}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Close
+              </button>
+            </div>
+
+            {/* Search */}
+            <input
+              type="text"
+              placeholder="Search prompts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full p-2 mb-4 border rounded-md"
+            />
+
+            {/* Category Filter */}
+            <div className="flex gap-2 mb-4 flex-wrap">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className={`px-3 py-1 text-sm rounded-md ${
+                  selectedCategory === null
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-background border hover:bg-accent'
+                }`}
+              >
+                All
+              </button>
+              {categories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-3 py-1 text-sm rounded-md ${
+                    selectedCategory === category
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background border hover:bg-accent'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+
+            <PromptLibrary
+              prompts={filteredPrompts}
+              onPromptSelect={handlePromptSelect}
+            />
+          </div>
+        )}
+
+        {/* Chat Window */}
+        <div className="flex-1 flex flex-col">
+          {!showPrompts && (
+            <div className="p-4 border-b bg-card">
+              <button
+                onClick={() => setShowPrompts(true)}
+                className="px-4 py-2 text-sm rounded-md border hover:bg-accent"
+              >
+                Show Prompt Library
+              </button>
+            </div>
+          )}
+          <ChatWindow 
+            messages={messages} 
+            isLoading={isLoading}
+            onSendMessage={handleSend}
+          />
+        </div>
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Categorized prompts
+- ✅ Search functionality
+- ✅ Variable substitution
+- ✅ Category filtering
+- ✅ Toggleable library
+- ✅ Rich prompt descriptions
+- ✅ TypeScript types
 
 ---
 
