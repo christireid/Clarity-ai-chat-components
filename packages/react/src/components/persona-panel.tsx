@@ -64,7 +64,7 @@ const roleAccent: Record<PersonaRole, string> = {
   custom: 'from-primary/20 via-primary/10 to-transparent text-primary',
 }
 
-export const PersonaPanel = React.memo(function PersonaPanel({
+export function PersonaPanel({
   personas,
   activePersonaId,
   onSelect,

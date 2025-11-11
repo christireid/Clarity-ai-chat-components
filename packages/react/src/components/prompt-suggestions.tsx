@@ -86,7 +86,7 @@ export interface PromptSuggestionsProps {
  * />
  * ```
  */
-export const PromptSuggestions = React.memo(function PromptSuggestions({
+export function PromptSuggestions({
   suggestions,
   onSelect,
   messages: _messages = [],

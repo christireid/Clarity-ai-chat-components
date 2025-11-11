@@ -26,7 +26,7 @@ export interface UsageDashboardProps {
   className?: string
 }
 
-export const UsageDashboard = React.memo(function UsageDashboard({
+export function UsageDashboard({
   balance,
   stats,
   limits = [],

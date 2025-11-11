@@ -73,7 +73,7 @@ export interface ToastProps extends Toast {
 /**
  * Individual toast component
  */
-export const ToastItem = memo(function ToastItem({
+export function ToastItem({
   id,
   type,
   title,
@@ -186,7 +186,7 @@ const POSITION_CLASSES = {
   'bottom-right': 'bottom-4 right-4 items-end',
 } as const
 
-export const ToastContainer = memo(function ToastContainer({
+export function ToastContainer({
   toasts,
   position = 'top-right',
   onClose,

@@ -26,7 +26,7 @@ export interface PromptLibraryProps {
   className?: string
 }
 
-export const PromptLibrary = React.memo(function PromptLibrary({
+export function PromptLibrary({
   prompts,
   categories = [],
   onUsePrompt,

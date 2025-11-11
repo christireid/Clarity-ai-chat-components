@@ -149,7 +149,7 @@ function formatRelativeTime(timestamp: number): string {
  * />
  * ```
  */
-export const ConversationList = memo(function ConversationList({
+export function ConversationList({
   conversations,
   activeId,
   onSelect,

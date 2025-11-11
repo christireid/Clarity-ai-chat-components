@@ -26,7 +26,7 @@ export interface ContextManagerProps {
   className?: string
 }
 
-export const ContextManager = React.memo(function ContextManager({
+export function ContextManager({
   contexts,
   onAdd,
   onRemove,

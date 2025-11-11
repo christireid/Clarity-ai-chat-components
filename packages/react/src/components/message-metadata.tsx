@@ -53,7 +53,7 @@ export interface MessageMetadataProps {
  * />
  * ```
  */
-export const MessageMetadata = React.memo(function MessageMetadata({
+export function MessageMetadata({
   message,
   showCost = true,
   showResponseTime = true,

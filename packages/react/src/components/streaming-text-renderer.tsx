@@ -45,7 +45,7 @@ export interface StreamingTextRendererProps {
   onCharacterDisplayed?: (char: string, index: number) => void
 }
 
-export const StreamingTextRenderer = React.memo(function StreamingTextRenderer({
+export function StreamingTextRenderer({
   text,
   isStreaming = false,
   typingSpeed = 30,

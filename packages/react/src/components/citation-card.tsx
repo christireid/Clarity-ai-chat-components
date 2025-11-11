@@ -43,7 +43,7 @@ export interface CitationCardProps {
   className?: string
 }
 
-export const CitationCard = React.memo(function CitationCard({
+export function CitationCard({
   citation,
   defaultExpanded = false,
   previewLength = 150,
