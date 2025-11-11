@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
@@ -32,23 +34,21 @@ export interface AvatarProps
   hoverable?: boolean
   /** Custom status badge content */
   statusBadge?: React.ReactNode
+  ref?: React.Ref<HTMLDivElement>
 }
 
-const Avatar = React.memo(
-  React.forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
-    {
-      className,
-      size,
-      src,
-      alt,
-      fallback,
-      status,
-      hoverable = false,
-      statusBadge,
-      ...props
-    },
-    ref
-  ) {
+const Avatar = ({
+  className,
+  size,
+  src,
+  alt,
+  fallback,
+  status,
+  hoverable = false,
+  statusBadge,
+  ref,
+  ...props
+}: AvatarProps) => {
     const [imageError, setImageError] = React.useState(false)
 
     const getFallbackText = () => {
@@ -124,8 +124,7 @@ const Avatar = React.memo(
         )}
       </div>
     )
-  })
-)
+}
 
 Avatar.displayName = 'Avatar'
 

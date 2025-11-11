@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
@@ -73,29 +75,27 @@ export interface ButtonProps
   errorMessage?: React.ReactNode
   /** Duration for success/error state before returning to idle (ms, default: 2000) */
   stateDuration?: number
+  ref?: React.Ref<HTMLButtonElement>
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant,
-      size,
-      asChild = false,
-      loading = false,
-      state: controlledState,
-      ripple = true,
-      rippleColor,
-      successMessage,
-      errorMessage,
-      stateDuration = 2000,
-      disabled,
-      children,
-      onClick,
-      ...props
-    },
-    ref
-  ) => {
+const Button = ({
+  className,
+  variant,
+  size,
+  asChild = false,
+  loading = false,
+  state: controlledState,
+  ripple = true,
+  rippleColor,
+  successMessage,
+  errorMessage,
+  stateDuration = 2000,
+  disabled,
+  children,
+  onClick,
+  ref,
+  ...props
+}: ButtonProps) => {
     const Comp = (asChild ? Slot : 'button') as 'button'
     const [internalState, setInternalState] =
       React.useState<ButtonState>('idle')
@@ -111,11 +111,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       enabled: shouldShowRipple,
     })
 
-    // Memoize ripple color calculation
-    const rippleColorValue = React.useMemo(() => {
-      if (rippleColor) return rippleColor
-      return RIPPLE_COLORS[variant ?? 'default'] ?? 'rgba(22, 119, 255, 0.22)'
-    }, [rippleColor, variant])
+    // React Compiler will optimize this automatically
+    const rippleColorValue = rippleColor || RIPPLE_COLORS[variant ?? 'default'] || 'rgba(22, 119, 255, 0.22)'
 
     // Auto-reset state after duration
     React.useEffect(() => {
@@ -135,30 +132,27 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     }, [currentState, controlledState, stateDuration])
 
-    // Memoized click handler
-    const handleClick = React.useCallback(
-      (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (shouldShowRipple) {
-          addRipple(e)
-        }
-        onClick?.(e)
-      },
-      [shouldShowRipple, addRipple, onClick]
-    )
-
-    // Memoize state content
-    const stateContent = React.useMemo(() => {
-      switch (currentState) {
-        case 'loading':
-          return <LoadingIcon />
-        case 'success':
-          return successMessage || <SuccessIcon />
-        case 'error':
-          return errorMessage || <ErrorIcon />
-        default:
-          return null
+    // React Compiler will optimize this automatically
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (shouldShowRipple) {
+        addRipple(e)
       }
-    }, [currentState, successMessage, errorMessage])
+      onClick?.(e)
+    }
+
+    // React Compiler will optimize this automatically
+    let stateContent = null
+    switch (currentState) {
+      case 'loading':
+        stateContent = <LoadingIcon />
+        break
+      case 'success':
+        stateContent = successMessage || <SuccessIcon />
+        break
+      case 'error':
+        stateContent = errorMessage || <ErrorIcon />
+        break
+    }
     const isDisabled = disabled || currentState === 'loading'
 
     // Apply state-specific variant
@@ -206,8 +200,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </Comp>
     )
-  }
-)
+}
+
 Button.displayName = 'Button'
 
 export { Button, buttonVariants }
