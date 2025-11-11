@@ -5,6 +5,10 @@
 import chalk from 'chalk'
 import open from 'open'
 import { getLogger } from '../utils/logger.js'
+import { createBanner } from '../ui/banner.js'
+import { successMessage, infoMessage, tipMessage } from '../ui/messages.js'
+import { createSpinner } from '../ui/progress.js'
+import { handleError } from '../utils/errors.js'
 
 const logger = getLogger('docs')
 
@@ -22,15 +26,20 @@ const DOCS_URLS = {
 }
 
 export async function docsCommand(query?: string, options?: DocsOptions) {
-  console.log('\n' + chalk.bold.cyan('📚 Clarity Chat Documentation\n'))
+  await createBanner('📚 Documentation', {
+    gradient: true,
+    style: 'bold',
+  })
+  console.log()
 
   if (options?.offline) {
-    console.log(chalk.yellow('Offline documentation not yet available'))
-    console.log(chalk.gray('Visit: ') + chalk.cyan('https://clarity-chat.dev'))
+    infoMessage('Offline documentation not yet available')
+    tipMessage('Visit: https://clarity-chat.dev')
     return
   }
 
   let url = DOCS_URLS.main
+  let action = 'Opening main documentation...'
 
   if (query) {
     // Try to find specific doc page
@@ -41,21 +50,28 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
 
     if (matchedKey) {
       url = DOCS_URLS[matchedKey as keyof typeof DOCS_URLS]
-      console.log(chalk.green(`Opening docs for: ${matchedKey}\n`))
+      action = `Opening docs for: ${matchedKey}`
     } else {
       // Use search
       url = `${DOCS_URLS.main}/search?q=${encodeURIComponent(query)}`
-      console.log(chalk.green(`Searching docs for: "${query}"\n`))
+      action = `Searching docs for: "${query}"`
     }
-  } else {
-    console.log(chalk.green('Opening main documentation...\n'))
   }
 
+  const spinner = await createSpinner(action, { color: 'cyan' })
+  
   try {
+    spinner.start()
     await open(url)
-    console.log(chalk.gray(`Opened: ${url}`))
+    spinner.succeed()
+    
+    successMessage(`Documentation opened successfully!`)
+    infoMessage(`URL: ${url}`)
+    console.log()
   } catch (error) {
+    spinner.fail()
     logger.error('Failed to open browser')
-    console.log(chalk.yellow('\nManually visit: ') + chalk.cyan(url))
+    tipMessage(`Manually visit: ${url}`)
+    handleError(error)
   }
 }
