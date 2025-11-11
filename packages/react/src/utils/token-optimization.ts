@@ -567,7 +567,7 @@ class RequestThrottler {
     // Check minimum delay
     if (this.requests.length > 0) {
       const lastRequest = this.requests[this.requests.length - 1]
-      if (now - lastRequest < this.minDelay) {
+      if (lastRequest && now - lastRequest < this.minDelay) {
         return false
       }
     }
@@ -584,6 +584,7 @@ class RequestThrottler {
 
     const now = Date.now()
     const lastRequest = this.requests[this.requests.length - 1]
+    if (!lastRequest) return 0
     const timeSinceLastRequest = now - lastRequest
 
     if (timeSinceLastRequest < this.minDelay) {
@@ -825,10 +826,12 @@ class RequestBatcher {
     // Resolve/reject each promise
     batch.forEach((req, index) => {
       const result = results[index]
+      if (!result) return
       if (result.status === 'fulfilled') {
         req.resolve(result.value)
-      } else if (result.status === 'rejected') {
-        req.reject(result.reason)
+      } else {
+        // TypeScript doesn't narrow properly, so we assert
+        req.reject((result as PromiseRejectedResult).reason)
       }
     })
   }
