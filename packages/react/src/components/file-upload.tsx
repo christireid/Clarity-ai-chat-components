@@ -11,7 +11,14 @@ export interface FileUploadProps {
   className?: string
 }
 
-export const FileUpload = React.memo(function FileUpload({
+/**
+ * FileUpload component - Enhanced with React 19 features
+ * 
+ * React 19 Enhancements:
+ * - Removed React.memo() - compiler handles optimization
+ * - Simplified event handlers - compiler optimizes
+ */
+export function FileUpload({
   onUpload,
   maxFiles = 10,
   maxFileSize = 10 * 1024 * 1024, // 10MB default
@@ -308,6 +315,6 @@ export const FileUpload = React.memo(function FileUpload({
       </AnimatePresence>
     </div>
   )
-})
+}
 
 FileUpload.displayName = 'FileUpload'
