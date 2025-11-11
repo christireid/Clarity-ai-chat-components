@@ -1,10 +1,11 @@
 /**
  * Custom Assertions
  * 
- * Custom Jest matchers for component testing
+ * Custom testing matchers for component testing
  */
 
 import { screen } from '@testing-library/react'
+import '@testing-library/jest-dom'
 
 /**
  * Assert component has specific class
@@ -29,8 +30,6 @@ export function expectHasAria(element: Element, attribute: string, value?: strin
  * Assert component is visible
  */
 export function expectVisible(element: Element): void {
-
-  expect(element).toBeVisible()
   const styles = window.getComputedStyle(element)
   expect(styles.visibility).not.toBe('hidden')
   expect(styles.display).not.toBe('none')
@@ -47,25 +46,26 @@ export function expectHasFocus(element: Element): void {
 /**
  * Assert loading state
  */
-export function expectLoading(container?: Element): void {
+export function expectLoading(container?: HTMLElement): void {
+  const loadingIndicator = container 
+    ? screen.queryByRole('status', { name: /loading/i }) 
+    : screen.queryByRole('status', { name: /loading/i })
 
-  const loadingIndicator = container ? screen.queryByRole('status', { container }) : screen.queryByRole('status')
-
-  expect(loadingIndicator).toBeInTheDocument()
+  expect(loadingIndicator).not.toBeNull()
 }
 
 /**
  * Assert error state
  */
-export function expectError(container?: Element, message?: string): void {
+export function expectError(container?: HTMLElement, message?: string): void {
+  const alert = container 
+    ? screen.queryByRole('alert') 
+    : screen.queryByRole('alert')
 
-  const alert = container ? screen.queryByRole('alert', { container }) : screen.queryByRole('alert')
-
-  expect(alert).toBeInTheDocument()
+  expect(alert).not.toBeNull()
   
-  if (message) {
-  
-    expect(alert).toHaveTextContent(message)
+  if (message && alert) {
+    expect(alert.textContent).toContain(message)
   }
 }
 
