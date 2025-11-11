@@ -152,6 +152,7 @@ export * from './hooks/use-token-optimization'
 export * from './hooks/use-message-operations'
 export * from './hooks/use-message-history'
 export * from './hooks/use-realistic-typing'
+export * from './hooks/use-command-palette-commands'
 
 // Optimistic Updates
 export * from './hooks/use-optimistic-message'

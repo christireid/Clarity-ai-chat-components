@@ -25,6 +25,19 @@ Comprehensive demonstration of all modern AI chat features.
 - Token tracking and cost estimation
 - Auto-scroll
 
+### 3. **comprehensive-chat-demo**
+Complete integration example showing all features working together.
+
+**Features:**
+- All message operations
+- Multiple conversations with list
+- Advanced search with filters
+- Command palette (Ctrl+K)
+- Citation display (RAG)
+- Token tracking
+- Export functionality
+- Keyboard shortcuts throughout
+
 ### 3. **design-system-showcase**
 Interactive showcase of the design system with live examples of all design tokens, components, and animation patterns.
 
