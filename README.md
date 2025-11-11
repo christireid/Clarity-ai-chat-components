@@ -11,7 +11,7 @@
 [![WCAG AAA](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AAA-success?style=for-the-badge)](./LICENSE)
 [![Discord](https://img.shields.io/discord/clarity-chat?style=for-the-badge&colorA=18181B&colorB=4A90E2)](https://discord.gg/clarity-chat)
 
-**70+ Production-Ready Components • 30+ Custom Hooks • 11 Beautiful Themes • Enterprise AI Infrastructure**
+**70+ Production-Ready Components • 35+ Custom Hooks • 11 Beautiful Themes • Enterprise AI Infrastructure**
 
 </div>
 
@@ -766,6 +766,13 @@ useVectorStore()          // Vector database operations
 useRAGPipeline()          // RAG workflow
 useAgentOrchestration()   // Agent management
 useObservability()        // Tracing and metrics
+
+// Memory Management
+useSlidingContextManager()  // Sliding window with RAG retrieval
+useTokenOptimizedContext()  // Context compression and optimization
+useVectorStoreAdapter()      // Vector store integration for memory
+useMemoryRetrieval()        // Semantic memory search
+useMemoryStorage()          // Store and manage conversation memories
 ```
 
 ---
@@ -778,12 +785,16 @@ useObservability()        // Tracing and metrics
 | [`@clarity-chat/types`](./packages/types) | TypeScript definitions | ~8KB |
 | [`@clarity-chat/primitives`](./packages/primitives) | Base UI components | ~25KB |
 | [`@clarity-chat/error-handling`](./packages/error-handling) | Error recovery system | ~45KB |
+| [`@clarity-chat/cli`](./packages/cli) | Developer CLI tool 🛠️ | ~15KB |
+| [`@clarity-chat/mcp-server`](./mcp-server) | MCP server for AI agents 🤖 | ~20KB |
 
 **New in v2.0**:
 - Vector stores, embeddings, agents, RAG pipeline
 - AI safety, observability, webhooks, plugins
 - Multi-tenancy, RBAC, audit logging, quotas
 - Token optimization suite 🆕
+- Memory management tools 🧠
+- MCP server for AI agent integration 🤖
 - All optional, tree-shakeable modules (+35KB)
 
 ---
@@ -805,7 +816,7 @@ useObservability()        // Tracing and metrics
 
 ### API Reference
 - [Components (70+)](./apps/docs/api/components.md)
-- [Hooks (30+)](./apps/docs/api/hooks.md)
+- [Hooks (35+)](./apps/docs/api/hooks.md)
 - [Utilities](./apps/docs/api/utilities.md)
 - [TypeScript Types](./apps/docs/api/types.md)
 
@@ -893,13 +904,140 @@ clarity-chat benchmark
 
 # Project analysis
 clarity-chat analyze
+
+# Initialize new project
+clarity-chat init
+
+# Add components to project
+clarity-chat add component-name
+
+# Generate code from templates
+clarity-chat generate
+
+# Run development server
+clarity-chat dev
+
+# Check project health
+clarity-chat doctor
+
+# View documentation
+clarity-chat docs
 ```
 
 **CLI Features:**
 - 🎨 **12 Commands**: Complete developer toolkit
-- 🖥️ **9+ TUI Components**: Gorgeous terminal UI
+- 🖥️ **9+ TUI Components**: Gorgeous terminal UI with animations
 - 🔍 **Component Search**: Find what you need instantly
 - 📊 **Performance Analysis**: Benchmark your app
+- 🔧 **Project Scaffolding**: Initialize and configure projects
+- 📦 **Smart Updates**: Intelligent dependency management
+
+### MCP Server (Model Context Protocol)
+
+**Enable AI agents like Claude Desktop to interact with Clarity Chat projects**:
+
+```bash
+# Install globally
+npm install -g @clarity-chat/mcp-server
+
+# Or use via npx
+npx @clarity-chat/mcp-server
+```
+
+**Configure Claude Desktop** (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "clarity-chat": {
+      "command": "npx",
+      "args": ["@clarity-chat/mcp-server"]
+    }
+  }
+}
+```
+
+**MCP Server Features:**
+- 🛠️ **7 Tools**: Initialize projects, list examples, validate config, get model info, calculate costs, analyze projects
+- 📚 **6 Resources**: Documentation, architecture, API reference, examples, model pricing, capabilities
+- 💬 **5 Prompts**: Implement features, debug issues, optimize performance, review code, convert examples
+- 🔒 **Secure**: Input validation, path sanitization, structured error handling
+- ⚡ **Fast**: Resource caching, optimized queries, efficient data structures
+
+**Example Usage:**
+```
+"Can you initialize a new Clarity Chat project with OpenAI in /path/to/my-app?"
+"What are the capabilities and pricing of GPT-4 Turbo?"
+"How much would it cost to process 1000 input tokens with Claude 3 Opus?"
+```
+
+**[→ MCP Server Documentation](./mcp-server/README.md)**
+
+### Memory Management Tools
+
+**Advanced conversation memory and context management**:
+
+```tsx
+import {
+  useSlidingContextManager,
+  useTokenOptimizedContext,
+  useVectorStoreAdapter,
+} from '@clarity-chat/react'
+
+function MemoryEnabledChat() {
+  const memoryManager = useSlidingContextManager({
+    maxTokens: 8000,
+    vectorStore: 'qdrant', // or 'pinecone', 'weaviate', 'chroma'
+    enableRAG: true,
+  })
+
+  const optimizedContext = useTokenOptimizedContext({
+    compressionRatio: 0.7,
+    preserveImportantMessages: true,
+  })
+
+  const handleSend = async (message: string) => {
+    // 1. Retrieve relevant memories
+    const memories = await memoryManager.retrieveRelevant(message)
+    
+    // 2. Optimize context window
+    const context = optimizedContext.optimize([
+      ...memories,
+      ...recentMessages,
+    ])
+    
+    // 3. Send with optimized context
+    const response = await sendMessage(message, { context })
+    
+    // 4. Store important memories
+    await memoryManager.storeMemory({
+      type: 'episodic',
+      content: { message, response },
+      importanceScore: 0.8,
+    })
+    
+    return response
+  }
+
+  return <ChatWindow onSendMessage={handleSend} />
+}
+```
+
+**Memory Features:**
+- 🧠 **Sliding Context Window**: Fixed-size buffer with semantic retrieval
+- 🔍 **RAG Integration**: Vector-based memory search across conversation history
+- 💾 **Multi-Layer Memory**: Episodic, semantic, preference, and behavioral memory
+- 🎯 **Token Optimization**: Intelligent context compression (30-50% reduction)
+- 📊 **Memory Types**: Session, thread, global, and user-scoped memories
+- 🗄️ **Vector Store Support**: Qdrant, Pinecone, Weaviate, Chroma
+- 🔄 **Auto-Archival**: Automatic memory importance scoring and archival
+
+**Memory Infrastructure:**
+```bash
+# Start memory services (Qdrant, Redis, PostgreSQL)
+docker-compose -f docker-compose.memory.yml up -d
+```
+
+**[→ Memory Management Guide](./apps/docs/guide/memory-management.md)**
 
 ### VSCode Extension
 
@@ -907,16 +1045,27 @@ clarity-chat analyze
 - 💡 **IntelliSense**: Full TypeScript support with hover docs
 - 🔍 **Real-time Diagnostics**: Catch errors as you type
 - 👁️ **Component Preview**: See components in action
+- 🎨 **Theme Support**: Preview themes directly in editor
+- 📚 **Inline Documentation**: Quick access to API docs
 
 ### Interactive Playground
 
-Monaco-based REPL for testing components in real-time with live preview and templates.
+Monaco-based REPL for testing components in real-time:
+- 🎮 **Live Preview**: See components render as you code
+- 📝 **Code Templates**: Pre-built examples for common patterns
+- 🔄 **Hot Reload**: Instant updates as you type
+- 📦 **Import Any Component**: Test any component from the library
+- 🎨 **Theme Switcher**: Try all 11 themes instantly
+- 📊 **Performance Metrics**: Real-time performance monitoring
 
-### Advanced Debugging
+### Advanced Debugging Tools
 
 - ⏪ **Time-Travel Debugger**: Record and replay conversation states
 - 🔀 **Model Comparator**: Compare AI responses side-by-side
 - 📈 **Performance Profiler**: Track latency and token usage
+- 🐛 **Error Inspector**: Detailed error analysis with stack traces
+- 📊 **Token Tracker**: Real-time token usage visualization
+- 🔍 **Network Monitor**: Inspect API calls and streaming events
 
 ---
 
@@ -989,7 +1138,7 @@ npm run storybook
 ║  ┌───────────────────────────────────────────────────────┐ ║
 ║  │ Lines of Code:       35,000+  ████████████████████   │ ║
 ║  │ Components:          70+      ████████████████████    │ ║
-║  │ Hooks:                30+     ████████████████████    │ ║
+║  │ Hooks:                35+     ████████████████████    │ ║
 ║  │ Animations:          150+     ████████████████████    │ ║
 ║  │ Themes:               11      ████████████████████    │ ║
 ║  └───────────────────────────────────────────────────────┘ ║
