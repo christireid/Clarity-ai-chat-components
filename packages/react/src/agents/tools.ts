@@ -25,8 +25,12 @@ export const calculatorTool: Tool = {
   async execute(args) {
     try {
       // Use a safe math evaluator (in production, use a library like mathjs)
-      const result = eval(args.expression) // UNSAFE: Only for demo. Use mathjs in production!
-      return { result, expression: args.expression }
+      const expression = args['expression']
+      if (typeof expression !== 'string') {
+        throw new Error('Expression must be a string')
+      }
+      const result = eval(expression) // UNSAFE: Only for demo. Use mathjs in production!
+      return { result, expression }
     } catch (error: any) {
       throw new Error(`Calculation error: ${error.message}`)
     }

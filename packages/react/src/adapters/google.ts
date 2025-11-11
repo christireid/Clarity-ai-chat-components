@@ -17,7 +17,7 @@ export const googleAdapter: ModelAdapter = {
   
   async chat(messages, config) {
     const response = await fetch(
-      `${config.baseURL || 'https://generativelanguage.googleapis.com/v1beta'}/models/${config.model}:generateContent?key=${config.apiKey || process.env.GOOGLE_API_KEY}`,
+      `${config.baseURL || 'https://generativelanguage.googleapis.com/v1beta'}/models/${config.model}:generateContent?key=${config.apiKey || process.env['GOOGLE_API_KEY']}`,
       {
         method: 'POST',
         headers: {
@@ -58,7 +58,7 @@ export const googleAdapter: ModelAdapter = {
   
   async *stream(messages, config) {
     const response = await fetch(
-      `${config.baseURL || 'https://generativelanguage.googleapis.com/v1beta'}/models/${config.model}:streamGenerateContent?key=${config.apiKey || process.env.GOOGLE_API_KEY}`,
+      `${config.baseURL || 'https://generativelanguage.googleapis.com/v1beta'}/models/${config.model}:streamGenerateContent?key=${config.apiKey || process.env['GOOGLE_API_KEY']}`,
       {
         method: 'POST',
         headers: {
@@ -171,6 +171,7 @@ export const googleAdapter: ModelAdapter = {
     }
     
     const rate = rates[model] || rates['gemini-1.5-flash']
+    if (!rate) return 0
     
     return (
       (usage.promptTokens / 1000000) * rate.input +

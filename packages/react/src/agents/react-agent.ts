@@ -307,6 +307,9 @@ When you have enough information, provide a final ANSWER.`
     // Simplified parser - in reality use LLM to determine tool and args
     // For now, just return first tool
     const tool = this.tools[0]
+    if (!tool) {
+      throw new Error('No tools available')
+    }
     return {
       tool: tool.name,
       args: {},
