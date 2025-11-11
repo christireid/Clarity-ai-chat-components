@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
+import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
 export const metadata: Metadata = {
   title: 'Components Overview - Learn Clarity Chat',
@@ -11,15 +12,28 @@ export const metadata: Metadata = {
 export default function ComponentsConceptPage() {
   return (
     <div className="docs-content">
-      <div className="docs-header">
-        <span className="docs-badge">Concept</span>
-        <h1>Component System</h1>
-        <p className="docs-lead">
+      <div className="mb-8">
+        <div className="inline-block px-3 py-1 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 text-sm font-semibold mb-4">
+          Concept
+        </div>
+        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+          Component System
+        </h1>
+        <p className="text-xl text-text-secondary leading-relaxed">
           Clarity Chat ships 70+ composable components. This overview helps you
           pick the right building blocks for conversations, streaming, analytics,
           and enterprise workflows.
         </p>
       </div>
+
+      <YouWillLearn
+        items={[
+          'Understand the component architecture and families',
+          'Learn how to compose components for different use cases',
+          'Discover component composition patterns',
+          'Explore component customization options',
+        ]}
+      />
 
       <section className="docs-section">
         <h2>Component Families</h2>
@@ -67,7 +81,7 @@ export default function ComponentsConceptPage() {
           Components are designed to be composed like regular React building
           blocks. Here is a typical product page layout:
         </p>
-        <CodeBlock
+        <EnhancedCodeBlock
           language="tsx"
           code={`import {
   ChatWindow,

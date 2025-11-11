@@ -1,201 +1,294 @@
 import { Metadata } from 'next'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
+import { TryItOut } from '@/components/Enhanced/TryItOut'
 
 export const metadata: Metadata = {
   title: 'Hooks Overview - Learn Clarity Chat',
   description:
-    'Map the Clarity Chat hook ecosystem—from chat state containers to streaming, analytics, and enterprise utilities.',
+    'Understand the React hooks available in Clarity Chat and how to use them effectively.',
 }
 
 export default function HooksConceptPage() {
   return (
     <div className="docs-content">
-      <div className="docs-header">
-        <span className="docs-badge">Concept</span>
-        <h1>Hook Ecosystem</h1>
-        <p className="docs-lead">
-          Clarity Chat provides more than 40 hooks. Grouped together, they cover
-          state management, streaming, storage, analytics, safety, and enterprise
-          operations.
+      <div className="mb-8">
+        <div className="inline-block px-3 py-1 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 text-sm font-semibold mb-4">
+          Concept
+        </div>
+        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-brand-600 bg-clip-text text-transparent">
+          React Hooks
+        </h1>
+        <p className="text-xl text-text-secondary leading-relaxed">
+          Clarity Chat provides 30+ React hooks to handle chat functionality, state management,
+          streaming, and more. Hooks provide a clean, composable API for building chat interfaces.
         </p>
       </div>
 
-      <section className="docs-section">
-        <h2>Hook Categories</h2>
-        <ul>
-          <li>
-            <strong>Chat State:</strong> <code>useChat</code>,{' '}
-            <code>useChatEnhanced</code>, <code>useChatOptimized</code>
-          </li>
-          <li>
-            <strong>Streaming &amp; Transport:</strong> <code>useStreamingSSE</code>,{' '}
-            <code>useStreamingWebSocket</code>, <code>useStreamableUI</code>
-          </li>
-          <li>
-            <strong>Operations &amp; History:</strong> <code>useMessageOperations</code>,{' '}
-            <code>useUndoRedo</code>, <code>useMessageHistory</code>
-          </li>
-          <li>
-            <strong>Persistence:</strong> <code>useLocalStorage</code>,{' '}
-            <code>useIndexedDb</code>, <code>useSmartCache</code>
-          </li>
-          <li>
-            <strong>Analytics &amp; Observability:</strong>{' '}
-            <code>useAnalytics</code>, <code>usePerformance</code>,{' '}
-            <code>useRenderPerformance</code>
-          </li>
-          <li>
-            <strong>UX &amp; Device:</strong> <code>useAutoScroll</code>,{' '}
-            <code>useMobileKeyboard</code>, <code>useTyping</code>,{' '}
-            <code>useHaptic</code>
-          </li>
-          <li>
-            <strong>Enterprise:</strong> <code>useTokenTracker</code>,{' '}
-            <code>useTokenOptimization</code>, <code>useQuota</code> (via manager)
-          </li>
-        </ul>
-        <Callout type="tip">
-          Hooks follow React naming conventions and are safe in server components
-          unless explicitly documented as client-only (e.g. streaming hooks).
-        </Callout>
-      </section>
+      <YouWillLearn
+        items={[
+          'Understand the hook architecture and patterns',
+          'Learn core hooks for chat functionality',
+          'Discover hooks for advanced features',
+          'Explore hook composition patterns',
+        ]}
+      />
 
-      <section className="docs-section">
-        <h2>Combining Hooks</h2>
-        <p>
-          Hooks are composable. Start with <code>useChat</code> and layer streaming
-          or operations only when required.
-        </p>
-        <CodeBlock
-          language="tsx"
-          code={`import {
-  useChat,
-  useStreamingSSE,
-  useMessageOperations,
-  useTokenTracker,
-} from '@clarity-chat/react'
+      <section className="my-12">
+        <h2 className="text-3xl font-bold mb-6">Core Hooks</h2>
+        
+        <div className="space-y-8">
+          <div>
+            <h3 className="text-2xl font-semibold mb-3">useMessageOperations</h3>
+            <p className="text-text-secondary mb-4">
+              Manage message operations like edit, regenerate, delete, and undo/redo.
+            </p>
+            
+            <EnhancedCodeBlock
+              code={`import { useMessageOperations } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
-export function AdvancedChat() {
-  const chat = useChat({ id: 'advanced', api: '/api/chat/advanced' })
-  const streamer = useStreamingSSE({
-    onToken: chat.appendStreamingChunk,
-    onFinish: chat.finishStreamingMessage,
-    onError: chat.failStreamingMessage,
-  })
-  const operations = useMessageOperations({
-    messages: chat.messages,
-    onMessagesChange: chat.setMessages,
-  })
-  const tokenStats = useTokenTracker({
-    messages: chat.messages,
-    model: 'gpt-4o',
-    onChange: (stats) => console.log('Usage', stats),
+function ChatComponent() {
+  const [messages, setMessages] = useState<Message[]>([])
+  
+  const {
+    editMessage,
+    regenerateMessage,
+    deleteMessage,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useMessageOperations(messages, setMessages)
+
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+      onEditMessage={editMessage}
+      onRegenerateMessage={regenerateMessage}
+      onDeleteMessage={deleteMessage}
+    />
+  )
+}`}
+              language="tsx"
+              filename="ChatComponent.tsx"
+              showLineNumbers
+              showCopyButton
+            />
+          </div>
+
+          <div>
+            <h3 className="text-2xl font-semibold mb-3">useStreamingChat</h3>
+            <p className="text-text-secondary mb-4">
+              Handle streaming chat responses with real-time updates.
+            </p>
+            
+            <EnhancedCodeBlock
+              code={`import { useStreamingChat } from '@clarity-chat/react'
+
+function StreamingChat() {
+  const {
+    messages,
+    isLoading,
+    error,
+    sendMessage,
+    stopStreaming,
+  } = useStreamingChat({
+    apiEndpoint: '/api/chat/stream',
+    onError: (error) => {
+      console.error('Streaming error:', error)
+    },
   })
 
   return (
     <ChatWindow
-      messages={chat.messages}
-      onSendMessage={async (value) => {
-        const controller = new AbortController()
-        chat.startStreamingMessage(controller)
-        await streamer.startStream({
-          url: '/api/chat/advanced',
-          body: { messages: chat.messages.concat({ role: 'user', content: value }) },
-          signal: controller.signal,
-        })
-      }}
-      onStop={streamer.cancelStream}
-      onRegenerateMessage={operations.regenerateMessage}
-      onUndo={operations.undo}
-      onRedo={operations.redo}
-      footer={
-        <div className="text-xs text-muted-foreground flex justify-between">
-          <span>{tokenStats.totalTokens} tokens</span>
-          <span>${tokenStats.estimatedCost.toFixed(4)}</span>
-        </div>
-      }
+      messages={messages}
+      onSendMessage={sendMessage}
+      isLoading={isLoading}
     />
   )
 }`}
-        />
-      </section>
+              language="tsx"
+              filename="StreamingChat.tsx"
+              showLineNumbers
+              showCopyButton
+            />
+          </div>
 
-      <section className="docs-section">
-        <h2>Storage &amp; Sync Hooks</h2>
-        <p>
-          Persist conversation state locally or remotely with drop-in hooks.
-        </p>
-        <CodeBlock
-          language="tsx"
-          code={`import {
-  useChat,
-  useLocalStorage,
-  useIndexedDb,
-} from '@clarity-chat/react'
+          <div>
+            <h3 className="text-2xl font-semibold mb-3">useTokenTracker</h3>
+            <p className="text-text-secondary mb-4">
+              Track token usage and estimate costs for AI API calls.
+            </p>
+            
+            <EnhancedCodeBlock
+              code={`import { useTokenTracker, TokenCounter } from '@clarity-chat/react'
 
-export function OfflineReadyChat() {
-  const [drafts, setDrafts] = useLocalStorage<Record<string, string>>('drafts', {})
-  const history = useIndexedDb('clarity-chat')
-
-  const chat = useChat({
-    id: 'offline',
-    initialInput: drafts['offline'] ?? '',
-    onInputChange: (value) => setDrafts((prev) => ({ ...prev, offline: value })),
-    onMessagesChange: async (messages) => {
-      await history.store('conversations', { id: 'offline', messages })
-    },
+function ChatWithTracking() {
+  const [messages, setMessages] = useState<Message[]>([])
+  
+  const tokenStats = useTokenTracker(messages, {
+    model: 'gpt-4',
+    includeSystemPrompts: true,
   })
 
-  return <ChatWindow {...chat} />
-}
-`}
-        />
-        <Callout type="info">
-          The storage hooks are optional. If you have your own data layer (Redux,
-          tRPC, GraphQL), simply pass new message arrays to <code>useChat</code>.
-        </Callout>
-      </section>
-
-      <section className="docs-section">
-        <h2>Observability Hooks</h2>
-        <p>
-          Track runtime metrics, analytics, and user behaviour without sprinkling
-          analytics calls everywhere.
-        </p>
-        <CodeBlock
-          language="tsx"
-          code={`import { useAnalytics, useRenderPerformance } from '@clarity-chat/react'
-
-function SuggestionButton({ suggestion }: { suggestion: string }) {
-  const { track } = useAnalytics()
-  const perf = useRenderPerformance('SuggestionButton')
-
   return (
-    <button
-      onClick={() => {
-        track('suggestion_clicked', { suggestion, renderTime: perf.lastRenderTime })
-        insertSuggestion(suggestion)
-      }}
-    >
-      {suggestion}
-    </button>
+    <div>
+      <TokenCounter
+        inputTokens={tokenStats.inputTokens}
+        outputTokens={tokenStats.outputTokens}
+        totalTokens={tokenStats.totalTokens}
+        estimatedCost={tokenStats.estimatedCost}
+      />
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSend}
+      />
+    </div>
   )
-}
-`}
-        />
+}`}
+              language="tsx"
+              filename="ChatWithTracking.tsx"
+              showLineNumbers
+              showCopyButton
+            />
+          </div>
+        </div>
       </section>
 
-      <section className="docs-section">
-        <h2>Key Takeaways</h2>
-        <ul>
-          <li>Start with <code>useChat</code>; scale up with additional hooks as requirements grow.</li>
-          <li>Use streaming hooks when you need bespoke streaming UX (multi-model, diffing, etc.).</li>
-          <li>Persistence hooks are optional—compatible with any backend or state library.</li>
-          <li>Instrument with analytics and performance hooks to monitor real-world usage.</li>
-        </ul>
+      <section className="my-12">
+        <h2 className="text-3xl font-bold mb-6">Utility Hooks</h2>
+        
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="p-6 rounded-lg bg-bg-secondary border border-border">
+            <h4 className="font-semibold text-text-primary mb-2">useLocalStorage</h4>
+            <p className="text-sm text-text-secondary mb-4">
+              Persist state to localStorage with automatic serialization.
+            </p>
+            <EnhancedCodeBlock
+              code={`const [chatId, setChatId] = useLocalStorage('chatId', 'default')`}
+              language="tsx"
+              showCopyButton
+            />
+          </div>
+
+          <div className="p-6 rounded-lg bg-bg-secondary border border-border">
+            <h4 className="font-semibold text-text-primary mb-2">useIndexedDB</h4>
+            <p className="text-sm text-text-secondary mb-4">
+              Store large data in IndexedDB for offline support.
+            </p>
+            <EnhancedCodeBlock
+              code={`const { data, setData, loading } = useIndexedDB('messages')`}
+              language="tsx"
+              showCopyButton
+            />
+          </div>
+
+          <div className="p-6 rounded-lg bg-bg-secondary border border-border">
+            <h4 className="font-semibold text-text-primary mb-2">useAutoScroll</h4>
+            <p className="text-sm text-text-secondary mb-4">
+              Automatically scroll to bottom when new messages arrive.
+            </p>
+            <EnhancedCodeBlock
+              code={`const scrollRef = useAutoScroll(messages, { behavior: 'smooth' })`}
+              language="tsx"
+              showCopyButton
+            />
+          </div>
+
+          <div className="p-6 rounded-lg bg-bg-secondary border border-border">
+            <h4 className="font-semibold text-text-primary mb-2">useErrorRecovery</h4>
+            <p className="text-sm text-text-secondary mb-4">
+              Handle errors with automatic retry and recovery.
+            </p>
+            <EnhancedCodeBlock
+              code={`const { retry, isRetrying } = useErrorRecovery({ maxRetries: 3 })`}
+              language="tsx"
+              showCopyButton
+            />
+          </div>
+        </div>
       </section>
+
+      <section className="my-12">
+        <h2 className="text-3xl font-bold mb-6">Hook Composition</h2>
+        
+        <p className="text-text-secondary mb-6">
+          Hooks are designed to be composed together. Here's an example combining multiple hooks:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`import {
+  useMessageOperations,
+  useStreamingChat,
+  useTokenTracker,
+  useLocalStorage,
+  useAutoScroll,
+} from '@clarity-chat/react'
+
+function AdvancedChat() {
+  // Persist chat ID
+  const [chatId, setChatId] = useLocalStorage('chatId', 'default')
+  
+  // Handle streaming
+  const {
+    messages,
+    isLoading,
+    sendMessage,
+  } = useStreamingChat({
+    apiEndpoint: '/api/chat/stream',
+    chatId,
+  })
+  
+  // Message operations
+  const {
+    editMessage,
+    regenerateMessage,
+    deleteMessage,
+  } = useMessageOperations(messages, setMessages)
+  
+  // Token tracking
+  const tokenStats = useTokenTracker(messages)
+  
+  // Auto-scroll
+  const scrollRef = useAutoScroll(messages)
+  
+  return (
+    <div ref={scrollRef}>
+      <TokenCounter {...tokenStats} />
+      <ChatWindow
+        messages={messages}
+        onSendMessage={sendMessage}
+        onEditMessage={editMessage}
+        onRegenerateMessage={regenerateMessage}
+        onDeleteMessage={deleteMessage}
+        isLoading={isLoading}
+      />
+    </div>
+  )
+}`}
+          language="tsx"
+          filename="AdvancedChat.tsx"
+          showLineNumbers
+          showCopyButton
+        />
+
+        <TryItOut title="Try composing hooks">
+          <p className="text-text-secondary mb-4">
+            Experiment with combining different hooks. Each hook handles a specific concern,
+            making your code more maintainable and testable.
+          </p>
+        </TryItOut>
+      </section>
+
+      <Callout type="info">
+        <p>
+          <strong>Tip:</strong> Check out the <a href="/reference/hooks" className="text-brand-500 hover:underline">Hooks API Reference</a> for
+          complete documentation of all available hooks.
+        </p>
+      </Callout>
     </div>
   )
 }
-
