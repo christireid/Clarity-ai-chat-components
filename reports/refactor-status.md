@@ -45,8 +45,8 @@ This report tracks the execution of the repository refactoring plan.
 
 ### Documentation Consolidation
 - [x] Created migration script and documentation ⚠️ **IN PROGRESS**
-- [x] Migrated 7 guides ✅ (error-handling, getting-started, installation, quick-start, theming, customization, components)
-- [ ] Migrate remaining 14 guides from `apps/docs/guide/`
+- [x] Migrated 15 guides ✅ (error-handling, getting-started, installation, quick-start, theming, customization, components, hooks, file-upload, message-operations, messages, model-adapters, plugins, migration, interactive)
+- [ ] Migrate remaining 6 guides from `apps/docs/guide/`
 - [ ] Migrate API docs (6 files)
 - [ ] Migrate content from `docs/` (root)
 - [ ] Move `blog/` into `apps/docs-site/app/blog/`
