@@ -7,7 +7,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { validateEnv, validateAPIKey, validateChatConfig, validateMessages, type ValidationResult } from '../validate'
+import { validateEnv, validateAPIKey, validateChatConfig, validateMessages, type ValidationResult } from '../../validate'
 
 /**
  * Hook for environment validation

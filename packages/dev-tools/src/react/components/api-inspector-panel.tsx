@@ -7,7 +7,7 @@
 
 import * as React from 'react'
 import { useAPIInspector } from '../hooks/use-api-inspector'
-import type { APICallLog } from '../../debug'
+import type { APICallLog } from '../../debug/api-inspector'
 
 export interface APIInspectorPanelProps {
   className?: string

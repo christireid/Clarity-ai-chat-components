@@ -7,7 +7,7 @@
 
 import * as React from 'react'
 import { useProfiler } from '../hooks/use-profiler'
-import type { PerformanceMetrics } from '../../performance'
+import type { PerformanceMetrics } from '../../performance/profiler'
 
 export interface ProfilerPanelProps {
   className?: string

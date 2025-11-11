@@ -4,7 +4,7 @@ Comprehensive developer tools for debugging, testing, validation, and performanc
 
 **Now with React 19 components and hooks!** 🎉
 
-This package now includes React 19 components and hooks that leverage new React 19 features like `useOptimistic` for optimistic UI updates and `useFormStatus` for form state management.
+This package now includes React 19 components and hooks that leverage new React 19 features like `useOptimistic` for optimistic UI updates and client-side form state management.
 
 ## Features
 
@@ -688,7 +688,7 @@ const { snapshots, current, record, goBack, goForward } = useTimeTravel()
 ### React 19 Features Used
 
 - **useOptimistic**: For optimistic UI updates in API inspector and profiler
-- **useFormStatus**: For form submission state in validation forms
+- **Client-Side Form State**: For form submission state in validation forms (useFormStatus requires Server Actions)
 - **Real-time updates**: Components automatically update as data changes
 - **Optimistic updates**: Instant UI feedback with automatic error handling
 

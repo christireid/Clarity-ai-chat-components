@@ -1,6 +1,6 @@
 /**
  * Storybook stories for ValidationForm component
- * Demonstrates React 19 useFormStatus functionality
+ * Demonstrates React 19 client-side form state management
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
@@ -13,7 +13,7 @@ const meta: Meta<typeof ValidationForm> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Validation Form using React 19 useFormStatus for form state management.',
+        component: 'Validation Form using React 19 client-side form state management.',
       },
     },
   },

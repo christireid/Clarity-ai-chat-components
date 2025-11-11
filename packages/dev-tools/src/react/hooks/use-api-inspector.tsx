@@ -5,8 +5,9 @@
 
 'use client'
 
+import * as React from 'react'
 import { useOptimistic, useCallback, useMemo } from 'react'
-import { getAPIInspector, type APICallLog } from '../debug'
+import { getAPIInspector, type APICallLog } from '../../debug'
 
 interface APIInspectorState {
   logs: APICallLog[]
@@ -50,12 +51,15 @@ function reducer(
 export function useAPIInspector() {
   const inspector = getAPIInspector()
   
+  // Initialize state from inspector
+  const [initialState] = React.useState<APIInspectorState>(() => ({
+    logs: inspector.getLogs(),
+    enabled: (inspector as any).enabled || false,
+    verbose: (inspector as any).verbose || false,
+  }))
+
   const [state, dispatch] = useOptimistic<APIInspectorState, any>(
-    {
-      logs: inspector.getLogs(),
-      enabled: inspector['enabled'] || false,
-      verbose: inspector['verbose'] || false,
-    },
+    initialState,
     reducer
   )
 

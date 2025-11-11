@@ -1,12 +1,14 @@
 /**
  * Validation Form Component
- * React 19 component using useFormStatus and Actions
+ * React 19 component with client-side form state management
+ * Note: useFormStatus requires Server Actions (Next.js/Remix) - using client-side state instead
  */
 
 'use client'
 
 import * as React from 'react'
-import { useFormStatus } from 'react-dom'
+// Note: useFormStatus is from react-dom, but we'll use a client-side alternative
+// import { useFormStatus } from 'react-dom'
 import { useEnvValidation, useAPIKeyValidation, useChatConfigValidation } from '../hooks/use-validation'
 
 export interface ValidationFormProps {
@@ -16,7 +18,7 @@ export interface ValidationFormProps {
 
 /**
  * Validation Form Component
- * Uses React 19 useFormStatus for form state management
+ * Uses client-side state management for form submission state
  */
 export function ValidationForm({ className, type = 'env' }: ValidationFormProps) {
   const envValidation = useEnvValidation()
@@ -230,11 +232,12 @@ function ChatConfigValidationForm({ validation }: ChatConfigValidationFormProps)
 }
 
 function SubmitButton({ isPending }: { isPending: boolean }) {
-  const { pending } = useFormStatus()
+  // Note: useFormStatus requires Server Actions - using isPending prop instead
+  // const { pending } = useFormStatus()
   
   return (
-    <button type="submit" disabled={pending || isPending}>
-      {pending || isPending ? 'Validating...' : 'Validate'}
+    <button type="submit" disabled={isPending}>
+      {isPending ? 'Validating...' : 'Validate'}
     </button>
   )
 }

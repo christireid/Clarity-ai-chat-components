@@ -11,14 +11,14 @@ import { TimeTravelDebugger } from '../../debug/time-travel'
 
 export interface TimeTravelPanelProps {
   className?: string
-  debugger?: TimeTravelDebugger
+  timeTravelDebugger?: TimeTravelDebugger
 }
 
 /**
  * Time-Travel Debugging Panel Component
  * Displays state snapshots with optimistic updates
  */
-export function TimeTravelPanel({ className, debugger }: TimeTravelPanelProps) {
+export function TimeTravelPanel({ className, timeTravelDebugger }: TimeTravelPanelProps) {
   const {
     snapshots,
     currentIndex,
@@ -30,7 +30,7 @@ export function TimeTravelPanel({ className, debugger }: TimeTravelPanelProps) {
     goBack,
     goForward,
     clear,
-  } = useTimeTravel(debugger)
+  } = useTimeTravel(timeTravelDebugger)
 
   return (
     <div className={className} data-testid="time-travel-panel">

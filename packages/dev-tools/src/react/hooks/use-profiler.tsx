@@ -5,8 +5,9 @@
 
 'use client'
 
+import * as React from 'react'
 import { useOptimistic, useCallback, useMemo } from 'react'
-import { getProfiler, type PerformanceMetrics } from '../performance'
+import { getProfiler, type PerformanceMetrics } from '../../performance'
 
 interface ProfilerState {
   metrics: PerformanceMetrics[]
@@ -46,11 +47,14 @@ function reducer(
 export function useProfiler() {
   const profiler = getProfiler()
   
+  // Initialize state from profiler
+  const [initialState] = React.useState<ProfilerState>(() => ({
+    metrics: profiler.getAllMetrics(),
+    enabled: (profiler as any).enabled || false,
+  }))
+
   const [state, dispatch] = useOptimistic<ProfilerState, any>(
-    {
-      metrics: profiler.getAllMetrics(),
-      enabled: profiler['enabled'] || false,
-    },
+    initialState,
     reducer
   )
 

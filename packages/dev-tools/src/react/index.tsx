@@ -4,7 +4,7 @@
  * Enhanced developer tools using React 19 features:
  * - useOptimistic for optimistic UI updates
  * - use() for async data handling
- * - useFormStatus for form state management
+ * - Client-side form state management (useFormStatus requires Server Actions)
  * - Client-side validation hooks
  * - Real-time state management
  */

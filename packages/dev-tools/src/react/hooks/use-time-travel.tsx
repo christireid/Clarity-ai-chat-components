@@ -5,8 +5,9 @@
 
 'use client'
 
+import * as React from 'react'
 import { useOptimistic, useCallback, useMemo } from 'react'
-import { TimeTravelDebugger, type StateSnapshot } from '../debug/time-travel'
+import { TimeTravelDebugger, type StateSnapshot } from '../../debug/time-travel'
 
 interface TimeTravelState {
   snapshots: StateSnapshot[]
@@ -56,14 +57,17 @@ function reducer(
 /**
  * Hook for Time-Travel Debugging with optimistic updates
  */
-export function useTimeTravel(debugger?: TimeTravelDebugger) {
-  const timeTravel = debugger || new TimeTravelDebugger()
+export function useTimeTravel(timeTravelDebugger?: TimeTravelDebugger) {
+  const timeTravel = timeTravelDebugger || new TimeTravelDebugger()
   
+  // Initialize state from time travel debugger
+  const [initialState] = React.useState<TimeTravelState>(() => ({
+    snapshots: timeTravel.getAll(),
+    currentIndex: (timeTravel as any).currentIndex || -1,
+  }))
+
   const [state, dispatch] = useOptimistic<TimeTravelState, any>(
-    {
-      snapshots: timeTravel.getAll(),
-      currentIndex: timeTravel['currentIndex'] || -1,
-    },
+    initialState,
     reducer
   )
 

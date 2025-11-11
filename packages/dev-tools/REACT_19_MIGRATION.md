@@ -13,10 +13,10 @@ The `@clarity-chat/dev-tools` package has been enhanced with React 19 components
    - Provides instant feedback while async operations complete
    - Automatically reverts if operations fail
 
-2. **useFormStatus Hook**
+2. **Client-Side Form State Management**
    - Used in `ValidationForm` component for form submission state
-   - Provides built-in pending state management
-   - Better integration with form actions
+   - Provides pending state management via validation hooks
+   - Note: `useFormStatus` requires Server Actions (Next.js/Remix), so we use client-side state instead
 
 3. **Client-Side Validation Hooks**
    - `useEnvValidation`, `useAPIKeyValidation`, `useChatConfigValidation`
