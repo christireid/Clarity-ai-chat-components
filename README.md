@@ -1363,7 +1363,7 @@ function MemoryEnabledChat() {
 docker-compose -f docker-compose.memory.yml up -d
 ```
 
-**[→ Memory Management Guide](./apps/docs/guide/memory-management.md)**
+**[→ Memory Management Guide](./apps/docs/guide/memory.md)**
 
 ### VSCode Extension
 
