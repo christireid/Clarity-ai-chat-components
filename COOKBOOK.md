@@ -1,6 +1,6 @@
 # Clarity Chat Cookbook
 
-> 25+ recipes and patterns for building production-ready AI chat applications
+> 31+ recipes and patterns for building production-ready AI chat applications
 
 ## Table of Contents
 
@@ -1252,6 +1252,216 @@ export function OptimizedChat() {
 - Read the [API Documentation](../packages/react/README.md)
 - Explore [Demo Applications](../examples/)
 - Join our community forum
+
+---
+
+### Recipe 28: Advanced Message Search
+
+Search through messages with full-text search, filters, and highlighting.
+
+```tsx
+import { AdvancedMessageSearch } from '@clarity-chat/react'
+import { useState } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+function ChatWithSearch() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
+
+  return (
+    <div>
+      <AdvancedMessageSearch
+        messages={messages}
+        onResultsChange={setFilteredMessages}
+        enableAdvancedFilters
+        placeholder="Search messages..."
+      />
+      
+      {/* Display filtered messages */}
+      <MessageList messages={filteredMessages} />
+    </div>
+  )
+}
+```
+
+**Features:**
+- Full-text search with deferred updates
+- Filter by role, date, model, tokens
+- Real-time results
+- Accessible keyboard navigation
+
+---
+
+### Recipe 29: Command Palette
+
+Add a command palette for quick actions and keyboard shortcuts.
+
+```tsx
+import { CommandPalette } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
+
+function ChatWithCommands() {
+  const [showPalette, setShowPalette] = useState(false)
+
+  const commands = [
+    {
+      id: 'new-chat',
+      label: 'New Chat',
+      description: 'Start a new conversation',
+      shortcut: ['Ctrl', 'N'],
+      category: 'Conversation',
+      onSelect: () => {
+        // Create new chat
+        setShowPalette(false)
+      },
+    },
+    {
+      id: 'export',
+      label: 'Export Conversation',
+      description: 'Export current conversation',
+      shortcut: ['Ctrl', 'E'],
+      category: 'Conversation',
+      onSelect: () => {
+        // Export conversation
+        setShowPalette(false)
+      },
+    },
+    {
+      id: 'search',
+      label: 'Search Messages',
+      description: 'Search through messages',
+      shortcut: ['Ctrl', 'K'],
+      category: 'Navigation',
+      onSelect: () => {
+        // Focus search input
+        setShowPalette(false)
+      },
+    },
+  ]
+
+  // Open palette with Ctrl+K or Cmd+K
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setShowPalette(true)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  return (
+    <>
+      <ChatWindow messages={messages} onSendMessage={handleSend} />
+      <CommandPalette
+        items={commands}
+        open={showPalette}
+        onClose={() => setShowPalette(false)}
+      />
+    </>
+  )
+}
+```
+
+**Features:**
+- Fuzzy search through commands
+- Keyboard navigation (Arrow keys, Enter, Escape)
+- Shortcut hints
+- Categorized commands
+
+---
+
+### Recipe 30: Citation Display (RAG)
+
+Display citations from RAG sources with expandable previews.
+
+```tsx
+import { CitationCard } from '@clarity-chat/react'
+import type { Citation } from '@clarity-chat/react'
+
+function MessageWithCitations({ citations }: { citations: Citation[] }) {
+  return (
+    <div className="space-y-2">
+      {/* AI Response */}
+      <div>{response}</div>
+      
+      {/* Citations */}
+      {citations.length > 0 && (
+        <div className="mt-4 space-y-2">
+          <h4 className="text-sm font-semibold">Sources:</h4>
+          {citations.map((citation, index) => (
+            <CitationCard
+              key={index}
+              citation={citation}
+              showConfidence
+              onSourceClick={(url) => window.open(url, '_blank')}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+**Features:**
+- Confidence score badges
+- Expandable preview
+- Source link handling
+- Document metadata display
+
+---
+
+### Recipe 31: Conversation List with Search
+
+Organize multiple conversations with search and filters.
+
+```tsx
+import { ConversationList } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function MultiConversationApp() {
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [activeId, setActiveId] = useState<string>()
+
+  return (
+    <div className="flex">
+      <ConversationList
+        conversations={conversations}
+        activeId={activeId}
+        onSelect={setActiveId}
+        onDelete={(id) => {
+          setConversations(prev => prev.filter(c => c.id !== id))
+        }}
+        onTogglePin={(id) => {
+          setConversations(prev =>
+            prev.map(c =>
+              c.id === id ? { ...c, isPinned: !c.isPinned } : c
+            )
+          )
+        }}
+        showSearch
+        showFilters
+        showSort
+      />
+      
+      {/* Active conversation */}
+      <ChatWindow
+        messages={getMessagesForConversation(activeId)}
+        onSendMessage={handleSend}
+      />
+    </div>
+  )
+}
+```
+
+**Features:**
+- Search conversations
+- Filter by tags, pinned, favorites
+- Sort by date, title, message count
+- Pin/favorite conversations
+- Multi-select for bulk operations
 
 ---
 
