@@ -17,23 +17,27 @@
 
 ### Recipe 1: Basic Chat Setup
 
-The simplest way to get started with Clarity Chat.
+The simplest way to get started with Clarity Chat. This recipe demonstrates a complete, production-ready chat implementation with proper TypeScript types and error handling.
 
 ```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { useState } from 'react'
+import { ChatWindow, ErrorBoundary } from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
 import type { Message } from '@clarity-chat/types'
 
 export function BasicChat() {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSend = async (content: string) => {
+  const handleSend = useCallback(async (content: string) => {
+    // Create user message with proper structure
     const userMsg: Message = {
-      id: Date.now().toString(),
+      id: `msg-${Date.now()}`,
+      chatId: 'default-chat',
       role: 'user',
       content,
-      timestamp: Date.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
     }
     
     setMessages(prev => [...prev, userMsg])
@@ -42,78 +46,207 @@ export function BasicChat() {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        body: JSON.stringify({ message: content }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
       })
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
       
       const data = await response.json()
       const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
+        id: `msg-${Date.now() + 1}`,
+        chatId: 'default-chat',
         role: 'assistant',
-        content: data.response,
-        timestamp: Date.now(),
+        content: data.response || data.content,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
       }
       
       setMessages(prev => [...prev, aiMsg])
+    } catch (error) {
+      console.error('Failed to send message:', error)
+      // Optionally add error message to chat
+      const errorMsg: Message = {
+        id: `msg-error-${Date.now()}`,
+        chatId: 'default-chat',
+        role: 'assistant',
+        content: 'Sorry, I encountered an error. Please try again.',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'error',
+      }
+      setMessages(prev => [...prev, errorMsg])
     } finally {
       setIsLoading(false)
     }
-  }
-
-  return <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={handleSend} />
-}
-```
-
----
-
-### Recipe 2: With Error Handling
-
-Add robust error handling with automatic retry.
-
-```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { ErrorBoundary, useAsyncError } from '@clarity-chat/error-handling'
-import { useState } from 'react'
-
-export function ChatWithErrorHandling() {
-  const [messages, setMessages] = useState([])
-  const { executeAsync, isLoading, retryCount } = useAsyncError()
-
-  const handleSend = async (content: string) => {
-    const userMsg = { id: Date.now().toString(), role: 'user', content, timestamp: Date.now() }
-    setMessages(prev => [...prev, userMsg])
-
-    await executeAsync(
-      async () => {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          body: JSON.stringify({ message: content }),
-        })
-        
-        if (!response.ok) throw new Error('API Error')
-        
-        const data = await response.json()
-        setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: data.response,
-          timestamp: Date.now(),
-        }])
-      },
-      {
-        maxRetries: 3,
-        retryDelay: 1000,
-      }
-    )
-  }
+  }, [messages])
 
   return (
-    <ErrorBoundary>
-      <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={handleSend} />
-      {retryCount > 0 && <p>Retrying... (Attempt {retryCount})</p>}
+    <ErrorBoundary
+      fallback={(error) => (
+        <div className="p-4 text-center">
+          <h2 className="text-lg font-semibold text-destructive mb-2">
+            Something went wrong
+          </h2>
+          <p className="text-sm text-muted-foreground">{error.message}</p>
+        </div>
+      )}
+    >
+      <ChatWindow 
+        messages={messages} 
+        isLoading={isLoading} 
+        onSendMessage={handleSend}
+        emptyState={
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              Start a conversation by sending a message
+            </p>
+          </div>
+        }
+      />
     </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Proper TypeScript types throughout
+- ✅ Error handling with try/catch
+- ✅ Error boundary for React errors
+- ✅ Loading states
+- ✅ Message history context
+- ✅ Proper message structure with all required fields
+
+---
+
+### Recipe 2: With Error Handling & Retry
+
+Add robust error handling with automatic retry and user feedback.
+
+```tsx
+import { 
+  ChatWindow, 
+  ErrorBoundary, 
+  NetworkStatus,
+  useErrorRecovery 
+} from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+export function ChatWithErrorHandling() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const { handleError, retry, canRetry } = useErrorRecovery({
+    maxRetries: 3,
+    retryDelay: 1000,
+  })
+
+  const sendMessage = useCallback(async (content: string, attempt = 0): Promise<void> => {
+    const userMsg: Message = {
+      id: `msg-${Date.now()}`,
+      chatId: 'default-chat',
+      role: 'user',
+      content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
+    }
+    
+    setMessages(prev => [...prev, userMsg])
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: content }),
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+      
+      const data = await response.json()
+      const aiMsg: Message = {
+        id: `msg-${Date.now() + 1}`,
+        chatId: 'default-chat',
+        role: 'assistant',
+        content: data.response,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      }
+      
+      setMessages(prev => [...prev, aiMsg])
+    } catch (error) {
+      const errorObj = error instanceof Error ? error : new Error('Unknown error')
+      
+      if (attempt < 3) {
+        // Auto-retry with exponential backoff
+        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)))
+        return sendMessage(content, attempt + 1)
+      }
+      
+      handleError(errorObj)
+      
+      const errorMsg: Message = {
+        id: `msg-error-${Date.now()}`,
+        chatId: 'default-chat',
+        role: 'assistant',
+        content: `Error: ${errorObj.message}. ${canRetry ? 'Click retry to try again.' : ''}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'error',
+      }
+      setMessages(prev => [...prev, errorMsg])
+    } finally {
+      setIsLoading(false)
+    }
+  }, [handleError, canRetry])
+
+  const handleSend = useCallback((content: string) => {
+    sendMessage(content, 0)
+  }, [sendMessage])
+
+  return (
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        <NetworkStatus />
+        <ChatWindow 
+          messages={messages} 
+          isLoading={isLoading} 
+          onSendMessage={handleSend}
+          onMessageRetry={(messageId) => {
+            const message = messages.find(m => m.id === messageId)
+            if (message && message.role === 'user') {
+              handleSend(message.content)
+            }
+          }}
+        />
+      </div>
+    </ErrorBoundary>
+  )
+}
+```
+
+**Key Features:**
+- ✅ Automatic retry with exponential backoff
+- ✅ Network status detection
+- ✅ Error recovery hook
+- ✅ User-friendly error messages
+- ✅ Retry button on failed messages
+- ✅ Proper TypeScript types
 
 ---
 
