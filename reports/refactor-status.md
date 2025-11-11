@@ -52,7 +52,9 @@ This report tracks the execution of the repository refactoring plan.
 - [x] Migrated blog (1 post + index) ✅ **COMPLETE** (the-7-ux-disasters, index)
 - [x] Migrated enterprise docs (3 pages) ✅ **COMPLETE** (index, pricing, case-studies)
 - [x] Migrated RAG guide ✅ **COMPLETE** (from docs/guides/rag-guide.md)
-- [ ] Migrate remaining content from `docs/` (root) - API docs, other guides
+- [x] Migrated remaining blog posts ✅ **COMPLETE** (ai-chat-ux-pain-points-and-solutions)
+- [x] Migrated API docs from docs/api/ ✅ **COMPLETE** (primitives, react-components)
+- [x] Migrated guides from docs/guides/ ✅ **COMPLETE** (best-practices, integration)
 - [ ] Rename `apps/docs-site/` → `apps/docs/`
 - [ ] Delete old documentation directories
 - [ ] Update all documentation links

@@ -203,9 +203,9 @@ Create blog section structure and convert markdown to React components or use MD
 
 ## Progress Summary
 
-- **Guides**: 32/32 migrated (100%) ✅ **COMPLETE**
-- **API Docs**: 6/6 migrated (100%) ✅ **COMPLETE**
-- **Blog**: 1/3 migrated (33%) - index ✅, the-7-ux-disasters ✅ (others can be added later)
+- **Guides**: 35/35 migrated (100%) ✅ **COMPLETE** (includes RAG, best-practices, integration from docs/)
+- **API Docs**: 8/8 migrated (100%) ✅ **COMPLETE** (includes primitives, react-components from docs/api/)
+- **Blog**: 2/3 migrated (67%) - index ✅, the-7-ux-disasters ✅, ai-chat-ux-pain-points ✅
 - **Enterprise**: 3/3 migrated (100%) ✅ **COMPLETE** (index ✅, pricing ✅, case-studies ✅)
 - **Examples**: 2/3 migrated (67%) - index.md already exists, model-switching ✅, streaming ✅
 - **Integrations**: 3/3 migrated (100%) ✅ **COMPLETE** (nextjs ✅, remix ✅, vite ✅)
