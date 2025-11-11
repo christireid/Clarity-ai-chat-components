@@ -48,7 +48,7 @@ const config: StorybookConfig = {
   },
   
   features: {
-    storyStoreV7: true,
+    // Storybook 10 uses storyStoreV8 by default
     buildStoriesJson: true,
   },
     viteFinal: async (config) => {
