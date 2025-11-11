@@ -95,7 +95,7 @@ export const InteractiveCard = React.memo(
     }
 
     // Extract HTML drag event handlers to avoid conflicts with Framer Motion
-    const { onDrag, onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDrop, ...motionProps } = props as any
+    const { onDrag: _onDrag, onDragStart: _onDragStart, onDragEnd: _onDragEnd, onDragOver: _onDragOver, onDragEnter: _onDragEnter, onDragLeave: _onDragLeave, onDrop: _onDrop, ...motionProps } = props as any
 
     return (
       <motion.div
@@ -228,7 +228,7 @@ export const InteractiveButton = React.forwardRef<
     }
 
     // Extract HTML drag event handlers to avoid conflicts with Framer Motion
-    const { onDrag, onDragStart, onDragEnd, onDragOver, onDragEnter, onDragLeave, onDrop, ...motionButtonProps } = props as any
+    const { onDrag: _onDrag, onDragStart: _onDragStart, onDragEnd: _onDragEnd, onDragOver: _onDragOver, onDragEnter: _onDragEnter, onDragLeave: _onDragLeave, onDrop: _onDrop, ...motionButtonProps } = props as any
 
     return (
       <motion.button

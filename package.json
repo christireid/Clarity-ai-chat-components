@@ -1,6 +1,7 @@
 {
   "name": "clarity-chat",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "description": "Premium AI Chat Component Library by Code & Clarity",
   "packageManager": "pnpm@10.21.0",
@@ -60,8 +61,8 @@
   "overrides": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@types/react": "18.2.48",
-    "@types/react-dom": "18.2.18"
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0"
   },
   "engines": {
     "node": ">=18.0.0",

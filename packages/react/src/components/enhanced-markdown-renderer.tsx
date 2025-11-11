@@ -151,7 +151,7 @@ export const EnhancedMarkdownRenderer = React.memo(
           rehypePlugins={rehypePlugins}
           components={{
             // Custom code block rendering for Mermaid
-            code({ node, inline, className, children, ...props }: any) {
+            code({ node: _node, inline: _inline, className, children, ...props }: any) {
               const match = /language-(\w+)/.exec(className || '')
               const language = match ? match[1] : ''
               const codeString = String(children).replace(/\n$/, '')

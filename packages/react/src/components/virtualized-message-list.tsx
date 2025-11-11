@@ -204,10 +204,10 @@ export function VirtualizedMessageList({
   return (
     <div className={className} style={{ height: '100%', width: '100%' }}>
       <AutoSizerComponent>
-        {({ height, width }: { height: number; width: number }) => (
+        {({ height: _height, width }: { height: number; width: number }) => (
           <ListComponent
             ref={listRef}
-            height={height}
+            height={_height}
             width={width}
             itemCount={messages.length}
             itemSize={getItemSize}
@@ -281,7 +281,7 @@ export function useMessageListScroll(
   const [isNearBottom, setIsNearBottom] = useState(true)
   const [userHasScrolledUp, setUserHasScrolledUp] = useState(false)
 
-  const handleScroll = useCallback((scrollOffset: number) => {
+  const handleScroll = useCallback((_scrollOffset: number) => {
     // This would need the total height to work properly
     // Implementation depends on the container
     setUserHasScrolledUp(!isNearBottom)

@@ -21,7 +21,7 @@ import {
   InfoIcon,
 } from './icons'
 import { InteractiveButton } from './interactive-card'
-import { createScaleVariant } from '../animations'
+// import { createScaleVariant } from '../animations' // Reserved for future use
 
 export interface EmptyStateProps {
   /** Icon to display */

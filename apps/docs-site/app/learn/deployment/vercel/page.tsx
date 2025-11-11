@@ -326,7 +326,7 @@ curl -X POST https://api.vercel.com/v1/integrations/deploy/...
 # Use in CI/CD
 - name: Deploy to Vercel
   run: |
-    curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK }}`}</code></pre>
+    curl -X POST \${{ secrets.VERCEL_DEPLOY_HOOK }}`}</code></pre>
 
         <h3>Preview Comments</h3>
         <p>Vercel automatically comments on PRs with preview URLs</p>
