@@ -36,11 +36,12 @@ This guide documents the design standards for the Clarity Chat Components librar
 **Philosophy**: Inclusive design is good design
 
 **Application**:
-- Maintain WCAG 2.1 AA minimum
+- Maintain WCAG 2.1 AAA compliance (highest standard)
 - Visible focus indicators (3px rings)
 - Proper ARIA labels
 - Keyboard navigation support
 - Screen reader compatibility
+- 7:1 contrast ratios for text
 
 ### 4. Performance Matters
 **Philosophy**: Fast interactions feel professional

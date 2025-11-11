@@ -14,10 +14,10 @@ Clarity Chat is an enterprise-grade React component library for building AI chat
 - **Real-time Streaming**: Built-in SSE and WebSocket support
 - **Error Handling**: Comprehensive error recovery system
 - **Token Optimization**: Save 50-80% on AI API costs
-- **Enterprise AI Infrastructure**: Vector stores, RAG pipeline, agents
+- **Enterprise AI Infrastructure**: Vector stores, RAG pipeline, agent orchestration
 - **TypeScript**: Full type safety and IntelliSense
 - **Accessible**: WCAG 2.1 AAA compliant
-- **Customizable**: Extensive theming and styling options
+- **Customizable**: 11 built-in themes with extensive customization options
 - **Production Ready**: Battle-tested and optimized
 
 ## Prerequisites

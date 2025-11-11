@@ -159,10 +159,10 @@ npm run dev
 ## 📚 Documentation
 
 For complete documentation on using Clarity Chat Components, see:
-- [Main Documentation](../docs/)
+- [Main Documentation](../apps/docs/)
 - [Component Guide](../COMPONENT_PATTERNS_GUIDE.md)
-- [Design System Guide](../DESIGN_SYSTEM_GUIDE_V2.md)
-- [Quick Reference](../QUICK_REFERENCE_CARD.md)
+- [Design System Guide](../DESIGN_SYSTEM_GUIDE.md)
+- [Quick Start Guide](../apps/docs/guide/quick-start.md)
 
 ## 🤝 Contributing
 
@@ -190,7 +190,7 @@ cd performance-dashboard && npm run dev
 All examples follow the Clarity Chat design principles:
 - ✅ Clean, modern aesthetics
 - ✅ Smooth, purposeful animations
-- ✅ Accessible by default (WCAG 2.1 AA)
+- ✅ Accessible by default (WCAG 2.1 AAA)
 - ✅ Responsive and mobile-friendly
 - ✅ Performance-optimized
 
