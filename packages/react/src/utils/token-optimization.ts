@@ -827,7 +827,7 @@ class RequestBatcher {
       const result = results[index]
       if (result.status === 'fulfilled') {
         req.resolve(result.value)
-      } else {
+      } else if (result.status === 'rejected') {
         req.reject(result.reason)
       }
     })
