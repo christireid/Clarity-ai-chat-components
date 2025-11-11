@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { Sidebar, type NavItem } from '@/components/Navigation/Sidebar'
-import { TableOfContents } from './TableOfContents'
+import { TableOfContents } from '@/components/Enhanced/TableOfContents'
 import clsx from 'clsx'
 
 interface DocsLayoutProps {
@@ -63,13 +63,7 @@ export function DocsLayout({
         </main>
 
         {/* Table of Contents */}
-        {tableOfContents && tableOfContents.length > 0 && (
-          <aside className="hidden xl:block w-64 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="py-6">
-              <TableOfContents items={tableOfContents} />
-            </div>
-          </aside>
-        )}
+        <TableOfContents />
       </div>
     </div>
   )
