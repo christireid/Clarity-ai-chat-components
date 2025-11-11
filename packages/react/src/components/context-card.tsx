@@ -20,7 +20,7 @@ export interface ContextCardProps {
   className?: string
 }
 
-export const ContextCard = React.memo(function ContextCard({
+export function ContextCard({
   context,
   onRemove,
   onToggle,

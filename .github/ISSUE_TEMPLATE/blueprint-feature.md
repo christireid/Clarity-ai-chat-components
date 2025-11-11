@@ -14,7 +14,7 @@ assignees: ''
 
 **Priority:** [High / Medium / Low]
 
-**Blueprint Reference:** See [BLUEPRINT_ANALYSIS_AND_ENHANCEMENTS.md](../BLUEPRINT_ANALYSIS_AND_ENHANCEMENTS.md)
+**Blueprint Reference:** See [Architecture Overview](../../ARCHITECTURE_OVERVIEW.md) for system architecture details
 
 ---
 

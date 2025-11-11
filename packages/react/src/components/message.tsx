@@ -1,4 +1,4 @@
-import { memo, forwardRef, useState, useCallback, useMemo } from 'react'
+import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import {
@@ -32,67 +32,71 @@ export interface MessageProps {
   showAvatar?: boolean
   showTimestamp?: boolean
   className?: string
+  /** React 19: ref as prop */
+  ref?: React.Ref<HTMLDivElement>
 }
 
-export const Message = memo(
-  forwardRef<HTMLDivElement, MessageProps>(function Message(
-    {
-      message,
-      onFeedback,
-      onRetry,
-      onEdit,
-      onRegenerate,
-      onDelete,
-      showAvatar = true,
-      showTimestamp = true,
-      className,
-    },
-    ref
-  ) {
-    const [isHovered, setIsHovered] = useState(false)
-    const [feedbackGiven, setFeedbackGiven] = useState<
-      'up' | 'down' | null
-    >(message.feedback?.type || null)
+/**
+ * Message component - Enhanced with React 19 features and message operations
+ * 
+ * React 19 Enhancements:
+ * - Removed memo() wrapper - compiler handles optimization
+ * - Ref as prop instead of forwardRef
+ * - Removed simple useCallback/useMemo - compiler optimizes
+ * - Cleaner component signature
+ * 
+ * Message Operations:
+ * - Edit user messages
+ * - Regenerate assistant responses
+ * - Delete any message
+ */
+export function Message({
+  message,
+  onFeedback,
+  onRetry,
+  onEdit,
+  onRegenerate,
+  onDelete,
+  showAvatar = true,
+  showTimestamp = true,
+  className,
+  ref,
+}: MessageProps) {
+  const [isHovered, setIsHovered] = React.useState(false)
+  const [feedbackGiven, setFeedbackGiven] = React.useState<
+    'up' | 'down' | null
+  >(message.feedback?.type || null)
 
-    const isUser = message.role === 'user'
-    const isAssistant = message.role === 'assistant'
-    const isStreaming = message.status === 'streaming'
+  const isUser = message.role === 'user'
+  const isAssistant = message.role === 'assistant'
+  const isStreaming = message.status === 'streaming'
 
-    const [showConfetti, setShowConfetti] = useState(false)
+  const [showConfetti, setShowConfetti] = React.useState(false)
 
-    // Memoized feedback handler
-    const handleFeedback = useCallback(
-      (type: 'up' | 'down') => {
-        setFeedbackGiven(type)
-        onFeedback?.(type)
+  // React 19: Compiler optimizes this - no useCallback needed
+  const handleFeedback = (type: 'up' | 'down') => {
+    setFeedbackGiven(type)
+    onFeedback?.(type)
 
-        // Hooked principle: Variable reward
-        if (type === 'up') {
-          // Trigger confetti animation
-          setShowConfetti(true)
-          setTimeout(() => setShowConfetti(false), 1000)
-        }
-      },
-      [onFeedback]
-    )
+    // Hooked principle: Variable reward
+    if (type === 'up') {
+      // Trigger confetti animation
+      setShowConfetti(true)
+      setTimeout(() => setShowConfetti(false), 1000)
+    }
+  }
 
-    // Memoize markdown components
-    const markdownComponents = useMemo(
-      () => ({
-        code: MarkdownCodeBlock,
-      }),
-      []
-    )
+  // React 19: Compiler optimizes static objects - no useMemo needed
+  const markdownComponents = {
+    code: MarkdownCodeBlock,
+  }
 
-    // Memoize plugins
-    const remarkPlugins = useMemo(() => [remarkGfm], [])
-    const rehypePlugins = useMemo(
-      () => [
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        rehypeHighlight as any, // Type incompatibility between vfile versions
-      ],
-      []
-    )
+  // Static plugin arrays - compiler optimizes
+  const remarkPlugins = [remarkGfm]
+  const rehypePlugins = [
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rehypeHighlight as any, // Type incompatibility between vfile versions
+  ]
 
     return (
       <motion.div
@@ -111,9 +115,9 @@ export const Message = memo(
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group flex gap-3 p-4 rounded-lg transition-all duration-200',
+          'group flex gap-3 p-4 rounded-xl transition-all duration-200 ease-out',
           isUser && 'flex-row-reverse',
-          isHovered && 'bg-muted/30 shadow-[0_2px_8px_rgba(15,23,42,0.08)]',
+          isHovered && 'bg-muted/30',
           className
         )}
       >
@@ -158,9 +162,9 @@ export const Message = memo(
             {showTimestamp && (
               <motion.span
                 initial={{ opacity: 0 }}
-                animate={{ opacity: isHovered ? 1 : 0.6 }}
+                animate={{ opacity: isHovered ? 1 : 0.7 }}
                 transition={{ duration: 0.2 }}
-                className="text-xs text-muted-foreground"
+                className="text-xs text-muted-foreground/80"
               >
                 {formatRelativeTime(message.createdAt)}
               </motion.span>
@@ -184,7 +188,7 @@ export const Message = memo(
             )}
           >
             {isUser ? (
-              <p className="m-0 whitespace-pre-wrap">{message.content}</p>
+              <p className="m-0 whitespace-pre-wrap text-foreground">{message.content}</p>
             ) : (
               // @ts-expect-error - ReactMarkdown v9 has type compatibility issues
               <ReactMarkdown
@@ -246,7 +250,6 @@ export const Message = memo(
         </div>
       </motion.div>
     )
-  })
-)
+}
 
 Message.displayName = 'Message'

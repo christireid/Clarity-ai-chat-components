@@ -369,10 +369,9 @@ This demo showcases best practices for:
 
 ## 📚 Learn More
 
-- [Clarity Chat Documentation](../../docs/README.md)
-- [RAG Guide](../../docs/guides/rag.md)
-- [Vector Stores](../../docs/guides/vector-stores.md)
-- [Multi-Tenancy](../../docs/enterprise/multi-tenancy.md)
+- [Clarity Chat Documentation](https://docs.clarity-chat.dev)
+- [RAG Guide](../../apps/docs/guide/rag.md)
+- [Multi-Tenancy Guide](../../apps/docs/guide/multi-tenancy.md)
 
 ## 📝 License
 

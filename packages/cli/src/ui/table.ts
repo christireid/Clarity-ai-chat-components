@@ -1,187 +1,206 @@
 /**
- * Beautiful table utilities
- * Creates well-formatted tables for structured data
+ * Beautiful table formatting utilities
+ * Enhanced with colors, alignment, and styling
  */
 
 import chalk from 'chalk'
+import { dim, bold } from 'chalk'
 
-// Optional table - gracefully handle if not available
-// Will use fallback implementation
+export interface TableColumn {
+  header: string
+  key?: string
+  width?: number
+  align?: 'left' | 'center' | 'right'
+  color?: (text: string) => string
+}
 
 export interface TableOptions {
   border?: boolean
   padding?: number
-  align?: 'left' | 'center' | 'right'
-  headerStyle?: 'bold' | 'underline' | 'normal'
-  headerColor?: string
-  cellColor?: (row: number, col: number) => string | null
+  headerColor?: (text: string) => string
   compact?: boolean
+}
+
+const BORDER_CHARS = {
+  topLeft: '┌',
+  topRight: '┐',
+  bottomLeft: '└',
+  bottomRight: '┘',
+  topMiddle: '┬',
+  bottomMiddle: '┴',
+  leftMiddle: '├',
+  rightMiddle: '┤',
+  middle: '┼',
+  horizontal: '─',
+  vertical: '│',
 }
 
 /**
  * Create a beautiful table
  */
-export async function createTable(
-  headers: string[],
-  rows: (string | number)[][],
+export function table(
+  data: Record<string, any>[] | string[][],
+  columns: TableColumn[],
   options: TableOptions = {}
-): Promise<string> {
+): string {
   const {
     border = true,
     padding = 1,
-    align = 'left',
-    headerStyle = 'bold',
-    headerColor = 'cyan',
-    cellColor,
+    headerColor = chalk.bold.cyan,
     compact = false,
   } = options
 
-  // Prepare data
-  const data: string[][] = []
-  
-  // Add headers with styling
-  const styledHeaders = headers.map(header => {
-    let styled = header
-    if (headerStyle === 'bold') {
-      styled = chalk[headerColor as keyof typeof chalk].bold(header) || header
-    } else if (headerStyle === 'underline') {
-      styled = chalk[headerColor as keyof typeof chalk].underline(header) || header
-    }
-    return styled
-  })
-  data.push(styledHeaders)
+  // Normalize data to array of arrays
+  const rows: string[][] = Array.isArray(data[0]) && typeof data[0][0] === 'string'
+    ? data as string[][]
+    : (data as Record<string, any>[]).map(row =>
+        columns.map(col => {
+          const value = col.key ? row[col.key] : row[col.header]
+          return value != null ? String(value) : ''
+        })
+      )
 
-  // Add rows with optional coloring
-  rows.forEach((row, rowIndex) => {
-    const styledRow = row.map((cell, colIndex) => {
-      let styled = String(cell)
-      if (cellColor) {
-        const color = cellColor(rowIndex, colIndex)
-        if (color) {
-          styled = chalk[color as keyof typeof chalk](styled) || styled
-        }
-      }
-      return styled
-    })
-    data.push(styledRow)
+  // Calculate column widths
+  const widths = columns.map((col, i) => {
+    const headerWidth = col.header.length
+    const dataWidth = Math.max(...rows.map(row => (row[i] || '').length))
+    return col.width || Math.max(headerWidth, dataWidth) + (padding * 2)
   })
 
-  // Table configuration
-  const config = {
-    border: border ? {
-      topBody: '─',
-      topJoin: '┬',
-      topLeft: '┌',
-      topRight: '┐',
-      bottomBody: '─',
-      bottomJoin: '┴',
-      bottomLeft: '└',
-      bottomRight: '┘',
-      bodyLeft: '│',
-      bodyRight: '│',
-      bodyJoin: '│',
-      joinBody: '─',
-      joinLeft: '├',
-      joinRight: '┤',
-      joinJoin: '┼',
-    } : undefined,
-    columnDefault: {
-      paddingLeft: padding,
-      paddingRight: padding,
-      width: compact ? undefined : 20,
-    },
-    columns: headers.map(() => ({
-      alignment: align,
-    })),
+  const output: string[] = []
+
+  // Top border
+  if (border) {
+    const topBorder =
+      BORDER_CHARS.topLeft +
+      widths.map(w => BORDER_CHARS.horizontal.repeat(w)).join(BORDER_CHARS.topMiddle) +
+      BORDER_CHARS.topRight
+    output.push(dim(topBorder))
   }
 
-  // Try to use table library if available
-  try {
-    const tableLib = await import('table')
-    return tableLib.table(data, config)
-  } catch {
-    // Fallback simple table
-  }
-  
-  // Fallback simple table
-  const colWidths = headers.map((_, colIndex) => {
-    const maxWidth = Math.max(
-      headers[colIndex].length,
-      ...rows.map(row => String(row[colIndex] || '').length)
-    )
-    return Math.min(maxWidth + padding * 2, 30)
-  })
-  
-  let result = ''
-  
   // Header
-  if (border) {
-    result += '┌' + colWidths.map(w => '─'.repeat(w)).join('┬') + '┐\n'
-  }
-  result += '│' + headers.map((h, i) => {
-    const paddingStr = ' '.repeat(padding)
-    return paddingStr + h.padEnd(colWidths[i] - padding * 2) + paddingStr
-  }).join('│') + '│\n'
-  
-  if (border) {
-    result += '├' + colWidths.map(w => '─'.repeat(w)).join('┼') + '┤\n'
-  }
-  
-  // Rows
-  rows.forEach(row => {
-    result += '│' + row.map((cell, i) => {
-      const paddingStr = ' '.repeat(padding)
-      return paddingStr + String(cell || '').padEnd(colWidths[i] - padding * 2) + paddingStr
-    }).join('│') + '│\n'
+  const headerCells = columns.map((col, i) => {
+    const text = col.header
+    const width = widths[i]
+    const pad = ' '.repeat(padding)
+    
+    let aligned: string
+    if (col.align === 'center') {
+      const totalPad = width - text.length - (padding * 2)
+      const leftPad = Math.floor(totalPad / 2)
+      const rightPad = totalPad - leftPad
+      aligned = ' '.repeat(leftPad) + text + ' '.repeat(rightPad)
+    } else if (col.align === 'right') {
+      const totalPad = width - text.length - (padding * 2)
+      aligned = ' '.repeat(totalPad) + text
+    } else {
+      aligned = text.padEnd(width - (padding * 2))
+    }
+    
+    return pad + headerColor(aligned) + pad
   })
-  
+
+  output.push(
+    border
+      ? dim(BORDER_CHARS.vertical) + headerCells.join(dim(BORDER_CHARS.vertical)) + dim(BORDER_CHARS.vertical)
+      : headerCells.join('  ')
+  )
+
+  // Header separator
   if (border) {
-    result += '└' + colWidths.map(w => '─'.repeat(w)).join('┴') + '┘'
+    const separator =
+      BORDER_CHARS.leftMiddle +
+      widths.map(w => BORDER_CHARS.horizontal.repeat(w)).join(BORDER_CHARS.middle) +
+      BORDER_CHARS.rightMiddle
+    output.push(dim(separator))
+  } else if (!compact) {
+    output.push('')
   }
-  
-  return result
+
+  // Data rows
+  rows.forEach((row, rowIndex) => {
+    const cells = columns.map((col, i) => {
+      const text = row[i] || ''
+      const width = widths[i]
+      const pad = ' '.repeat(padding)
+      const colorFn = col.color || ((t: string) => t)
+      
+      let aligned: string
+      if (col.align === 'center') {
+        const totalPad = width - text.length - (padding * 2)
+        const leftPad = Math.floor(totalPad / 2)
+        const rightPad = totalPad - leftPad
+        aligned = ' '.repeat(leftPad) + text + ' '.repeat(rightPad)
+      } else if (col.align === 'right') {
+        const totalPad = width - text.length - (padding * 2)
+        aligned = ' '.repeat(totalPad) + text
+      } else {
+        aligned = text.padEnd(width - (padding * 2))
+      }
+      
+      return pad + colorFn(aligned) + pad
+    })
+
+    output.push(
+      border
+        ? dim(BORDER_CHARS.vertical) + cells.join(dim(BORDER_CHARS.vertical)) + dim(BORDER_CHARS.vertical)
+        : cells.join('  ')
+    )
+
+    // Row separator (except for last row)
+    if (border && rowIndex < rows.length - 1 && !compact) {
+      const separator =
+        BORDER_CHARS.leftMiddle +
+        widths.map(w => BORDER_CHARS.horizontal.repeat(w)).join(BORDER_CHARS.middle) +
+        BORDER_CHARS.rightMiddle
+      output.push(dim(separator))
+    }
+  })
+
+  // Bottom border
+  if (border) {
+    const bottomBorder =
+      BORDER_CHARS.bottomLeft +
+      widths.map(w => BORDER_CHARS.horizontal.repeat(w)).join(BORDER_CHARS.bottomMiddle) +
+      BORDER_CHARS.bottomRight
+    output.push(dim(bottomBorder))
+  }
+
+  return output.join('\n')
 }
 
 /**
- * Create a simple list table (key-value pairs)
+ * Create a simple list table (no borders)
  */
-export function createListTable(items: Array<{ key: string; value: string; color?: string }>): string {
-  const maxKeyLength = Math.max(...items.map(item => item.key.length))
+export function listTable(
+  items: Array<{ label: string; value: string; color?: (text: string) => string }>
+): string {
+  const maxLabelWidth = Math.max(...items.map(item => item.label.length))
   
-  return items.map(item => {
-    const key = item.key.padEnd(maxKeyLength)
-    const color = item.color || 'gray'
-    return `  ${chalk.bold(key)}  ${chalk[color as keyof typeof chalk](item.value)}`
-  }).join('\n')
+  return items
+    .map(item => {
+      const label = item.label.padEnd(maxLabelWidth)
+      const colorFn = item.color || ((t: string) => t)
+      return `${dim(label)}  ${colorFn(item.value)}`
+    })
+    .join('\n')
 }
 
 /**
- * Create a status table
+ * Create a key-value table
  */
-export async function createStatusTable(
-  items: Array<{ name: string; status: 'success' | 'warning' | 'error' | 'info'; message: string }>
-): Promise<string> {
-  const statusIcons = {
-    success: chalk.green('✅'),
-    warning: chalk.yellow('⚠️'),
-    error: chalk.red('❌'),
-    info: chalk.blue('ℹ️'),
-  }
-
-  const statusColors = {
-    success: 'green',
-    warning: 'yellow',
-    error: 'red',
-    info: 'blue',
-  }
-
-  const rows = items.map(item => [
-    `${statusIcons[item.status]} ${item.name}`,
-    chalk[statusColors[item.status] as keyof typeof chalk](item.message),
-  ])
-
-  return createTable(['Item', 'Status'], rows, {
-    headerColor: 'cyan',
-    align: 'left',
-  })
+export function keyValueTable(
+  data: Record<string, string | number | boolean>,
+  options: { labelColor?: (text: string) => string; valueColor?: (text: string) => string } = {}
+): string {
+  const { labelColor = dim, valueColor = (t: string) => t } = options
+  const maxKeyWidth = Math.max(...Object.keys(data).map(key => key.length))
+  
+  return Object.entries(data)
+    .map(([key, value]) => {
+      const label = labelColor(key.padEnd(maxKeyWidth))
+      const val = valueColor(String(value))
+      return `${label}  ${val}`
+    })
+    .join('\n')
 }

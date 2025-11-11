@@ -24,7 +24,7 @@ export interface ExportDialogProps {
   className?: string
 }
 
-export const ExportDialog = React.memo(function ExportDialog({
+export function ExportDialog({
   open,
   onOpenChange,
   onExport,

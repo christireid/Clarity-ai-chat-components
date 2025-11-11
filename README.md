@@ -19,12 +19,10 @@
 🌈 **Polished Color System** - Better contrast & hierarchy  
 📐 **4px Grid System** - Precise alignment throughout
 
-[→ View UI/UX Enhancements](./UI_UX_ENHANCEMENT_COMPLETE.md) | [→ Design System Guide](./DESIGN_SYSTEM_GUIDE.md)
+[→ Design System Guide](./DESIGN_SYSTEM_GUIDE.md)
 
-**[Documentation](./docs/README.md)** • **[Examples](./examples/README.md)** •
-**[Storybook](./apps/storybook)** • **[Discord](https://discord.gg/clarity-chat)**
-
-> 🚀 **To deploy Storybook**: Run `./apps/storybook/DEPLOY.sh` (Vercel, Netlify, or Chromatic)
+**[Documentation](https://docs.clarity-chat.dev)** • **[Examples](./examples/README.md)** •
+**[Storybook](https://storybook.clarity-chat.dev)** • **[Discord](https://discord.gg/clarity-chat)**
 
 ---
 
@@ -44,8 +42,6 @@
 - **Advanced Features** (2/2) - Token tracking, analytics
 
 **Plus 12 enterprise-only features** not in any competitor: Vector stores, embeddings, RAG pipeline, agent orchestration, AI safety, multi-tenancy, RBAC, audit logging, observability, webhooks, and plugins.
-
-[→ Read Full Blueprint Analysis](./BLUEPRINT_ANALYSIS_AND_ENHANCEMENTS.md)
 
 ---
 
@@ -96,7 +92,7 @@
 - **Reference Handling**: 50%+ payload reduction on large documents
 - **Real-time Dashboard**: Monitor savings with beautiful visualizations
 
-[→ Token Optimization Guide](./docs/guides/token-optimization.md) | [→ Live Demo](./examples/token-optimization-demo/)
+[→ Token Optimization Guide](./apps/docs/guide/token-optimization.md) | [→ Live Demo](./examples/token-optimization-demo/)
 
 ### 🤖 **Enterprise AI Infrastructure** ⭐
 
@@ -153,7 +149,7 @@ echo ".npmrc" >> .gitignore
 npm install @clarity-chat/react
 ```
 
-**[→ Complete GitHub Packages Setup Guide](./GITHUB_PACKAGES_QUICKSTART.md)**
+**Setup:** See [GitHub Packages Guide](./QUICK_START_GUIDE.md#github-packages-setup)
 
 ### Basic Usage (5 Minutes)
 
@@ -240,7 +236,7 @@ function OptimizedApp() {
 }
 ```
 
-**[→ Full Quick Start Guide](./docs/getting-started/quick-start.md)**
+**[→ Full Quick Start Guide](./QUICK_START_GUIDE.md)**
 
 ---
 
@@ -248,27 +244,25 @@ function OptimizedApp() {
 
 ### **Getting Started**
 
-- [Installation](./docs/getting-started/installation.md)
-- [Quick Start (5 min)](./docs/getting-started/quick-start.md)
-- [First Component](./docs/getting-started/first-component.md)
+- [Quick Start Guide](./QUICK_START_GUIDE.md) - Get started in 5 minutes
+- [Installation Guide](./apps/docs/guide/installation.md)
+- [First Component Tutorial](./apps/docs/guide/getting-started.md)
 
 ### **Guides**
 
-- [Theming System](./docs/guides/theming.md)
-- [Token Optimization](./docs/guides/token-optimization.md) 🆕 **NEW!**
-- [Voice Input](./docs/guides/voice-input.md)
-- [Streaming Messages](./docs/guides/streaming.md)
-- [Error Handling](./docs/guides/error-handling.md)
-- [Analytics Integration](./docs/guides/analytics.md)
-- [Accessibility](./docs/guides/accessibility.md)
-- [Mobile Optimization](./docs/guides/mobile.md)
+- [Theming System](./apps/docs/guide/theming.md)
+- [Token Optimization](./apps/docs/guide/token-optimization.md) 🆕 **NEW!**
+- [Streaming Messages](./apps/docs/guide/streaming.md)
+- [Error Handling](./apps/docs/guide/error-handling.md)
+- [Accessibility](./apps/docs/guide/accessibility.md)
+- [Performance Guide](./PERFORMANCE_GUIDE.md)
 
 ### **API Reference**
 
-- [Components (47+)](./docs/api/components.md)
-- [Hooks (30+)](./docs/api/hooks.md)
-- [Utilities](./docs/api/utilities.md)
-- [TypeScript Types](./docs/api/types.md)
+- [Components (47+)](./apps/docs/api/components.md)
+- [Hooks (30+)](./apps/docs/api/hooks.md)
+- [Utilities](./apps/docs/api/utilities.md)
+- [TypeScript Types](./apps/docs/api/types.md)
 
 ### **Examples**
 
@@ -324,7 +318,7 @@ const limiter = useResponseLimiter({ preset: 'brief' })
 - 🔗 Reference handling (50%+ payload reduction)
 - 📊 Real-time monitoring dashboard
 
-[→ Complete Token Optimization Guide](./docs/guides/token-optimization.md)
+[→ Complete Token Optimization Guide](./apps/docs/guide/token-optimization.md)
 
 ### **Voice Input**
 
@@ -484,7 +478,7 @@ themes.warm // Cozy warm tones
 themes.cool // Cool blue/gray
 ```
 
-**[→ Custom Theme Guide](./docs/guides/theming.md)**
+**[→ Custom Theme Guide](./apps/docs/guide/theming.md)**
 
 ---
 
@@ -510,7 +504,7 @@ npm run typecheck
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](./docs/architecture/contributing.md).
+We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md).
 
 ```bash
 # Clone the repo
@@ -599,7 +593,7 @@ npm run storybook
 - [ ] Performance benchmarks
 - [ ] Internationalization (i18n)
 
-**[→ Full Roadmap & Phase Documentation](./docs/architecture/roadmap.md)**
+**[→ Architecture Overview](./ARCHITECTURE_OVERVIEW.md)**
 
 ---
 
@@ -753,6 +747,6 @@ Built with amazing open-source tools:
 **Built with ❤️ by [Code & Clarity](https://codeclarity.ai)**
 
 [⭐ Star on GitHub](https://github.com/christireid/Clarity-ai-chat-components) •
-[📖 Read the Docs](./docs/README.md) • [🚀 Try Examples](./examples/README.md)
+[📖 Read the Docs](https://docs.clarity-chat.dev) • [🚀 Try Examples](./examples/README.md)
 
 </div>

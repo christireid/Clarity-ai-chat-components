@@ -1,139 +1,196 @@
 /**
  * Beautiful progress indicators
- * Creates eye-catching progress bars and spinners
+ * Enhanced progress bars and spinners
  */
 
-import ora, { Ora } from 'ora'
 import chalk from 'chalk'
+import ora, { Ora } from 'ora'
+import { dim } from 'chalk'
 
-// Optional cli-progress - gracefully handle if not available
-// Will use fallback implementation
-
-export interface ProgressOptions {
-  text?: string
-  color?: 'cyan' | 'green' | 'blue' | 'yellow' | 'magenta'
-  spinner?: 'dots' | 'dots2' | 'dots3' | 'dots4' | 'dots5' | 'dots6' | 'dots7' | 'dots8' | 'dots9' | 'dots10' | 'dots11' | 'dots12' | 'line' | 'line2' | 'pipe' | 'simpleDots' | 'simpleDotsScrolling' | 'star' | 'star2' | 'flip' | 'hamburger' | 'growVertical' | 'growHorizontal' | 'balloon' | 'balloon2' | 'noise' | 'bounce' | 'boxBounce' | 'boxBounce2' | 'triangle' | 'arc' | 'circle' | 'squareCorners' | 'circleQuarters' | 'circleHalves' | 'squish' | 'toggle' | 'toggle2' | 'toggle3' | 'toggle4' | 'toggle5' | 'toggle6' | 'toggle7' | 'toggle8' | 'toggle9' | 'toggle10' | 'toggle11' | 'toggle12' | 'toggle13' | 'arrow' | 'arrow2' | 'arrow3' | 'bouncingBar' | 'bouncingBall' | 'smiley' | 'monkey' | 'hearts' | 'clock' | 'earth' | 'moon' | 'runner' | 'pong' | 'shark' | 'dqpb' | 'weather' | 'christmas' | 'grenade' | 'point' | 'layer' | 'betaWave' | 'fingerDance' | 'fistBump' | 'soccerHeader' | 'mindblown' | 'speaker' | 'orangePulse' | 'bluePulse' | 'orangeBluePulse' | 'timeTravel' | 'aesthetic'
+export interface ProgressBarOptions {
+  total: number
+  width?: number
+  completeChar?: string
+  incompleteChar?: string
+  showPercentage?: boolean
+  showCount?: boolean
+  color?: (text: string) => string
 }
 
 /**
- * Create a beautiful spinner
+ * Enhanced progress bar
  */
-export function createSpinner(text: string, options: ProgressOptions = {}): Ora {
-  const {
-    color = 'cyan',
-    spinner = 'dots',
-  } = options
+export class ProgressBar {
+  private total: number
+  private current: number = 0
+  private text: string = ''
+  private width: number
+  private completeChar: string
+  private incompleteChar: string
+  private showPercentage: boolean
+  private showCount: boolean
+  private color: (text: string) => string
 
-  const spinnerInstance = ora({
-    text: chalk[color as keyof typeof chalk](text) || text,
-    spinner,
-    color: color as any,
+  constructor(options: ProgressBarOptions) {
+    this.total = options.total
+    this.width = options.width || 40
+    this.completeChar = options.completeChar || '█'
+    this.incompleteChar = options.incompleteChar || '░'
+    this.showPercentage = options.showPercentage ?? true
+    this.showCount = options.showCount ?? true
+    this.color = options.color || chalk.cyan
+  }
+
+  update(current: number, text?: string) {
+    this.current = Math.min(current, this.total)
+    if (text !== undefined) this.text = text
+    this.render()
+  }
+
+  increment(text?: string) {
+    this.current = Math.min(this.current + 1, this.total)
+    if (text !== undefined) this.text = text
+    this.render()
+  }
+
+  setText(text: string) {
+    this.text = text
+    this.render()
+  }
+
+  complete(text?: string) {
+    this.current = this.total
+    if (text !== undefined) this.text = text
+    this.render()
+    console.log() // New line after completion
+  }
+
+  private render() {
+    const percent = Math.min(100, Math.floor((this.current / this.total) * 100))
+    const filled = Math.floor((this.width * this.current) / this.total)
+    const empty = this.width - filled
+
+    const bar = this.color(this.completeChar.repeat(filled)) + dim(this.incompleteChar.repeat(empty))
+
+    const parts: string[] = [bar]
+
+    if (this.showPercentage) {
+      parts.push(chalk.bold(`${percent}%`))
+    }
+
+    if (this.showCount) {
+      parts.push(dim(`[${this.current}/${this.total}]`))
+    }
+
+    if (this.text) {
+      parts.push(this.text)
+    }
+
+    process.stdout.write(`\r${parts.join(' ')}`)
+  }
+}
+
+/**
+ * Create a spinner with enhanced styling
+ */
+export function createSpinner(text: string): Ora {
+  return ora({
+    text,
+    spinner: 'dots',
+    color: 'cyan',
   })
-
-  return spinnerInstance
-}
-
-/**
- * Create a progress bar
- */
-export async function createProgressBar(total: number, options: { title?: string; format?: string } = {}) {
-  const {
-    title = 'Progress',
-    format,
-  } = options
-
-  // Try to use cli-progress if available, otherwise use fallback
-  try {
-    const cliProgress = await import('cli-progress')
-    const { SingleBar, Presets } = cliProgress
-    const defaultFormat = `${title} |${chalk.cyan('{bar}')}| {percentage}% | {value}/{total} | ETA: {eta}s`
-    const bar = new SingleBar({
-      format: format || defaultFormat,
-      barCompleteChar: '\u2588',
-      barIncompleteChar: '\u2591',
-      hideCursor: true,
-      clearOnComplete: true,
-      ...Presets.shades_classic,
-    })
-    return bar
-  } catch {
-    // Fallback simple progress
-  }
-  
-  // Fallback simple progress
-  return {
-    start: (total: number, startValue: number, payload: any) => {},
-    update: (value: number, payload?: any) => {
-      const percent = Math.round((value / total) * 100)
-      const filled = Math.round((value / total) * 20)
-      const bar = '█'.repeat(filled) + '░'.repeat(20 - filled)
-      process.stdout.write(`\r${title} |${chalk.cyan(bar)}| ${percent}%`)
-    },
-    stop: () => {
-      process.stdout.write('\n')
-    },
-    setTotal: (total: number) => {},
-  }
 }
 
 /**
  * Create a multi-step progress indicator
  */
-export function createMultiStepProgress(steps: string[]) {
-  const currentStep = { index: 0 }
+export class StepProgress {
+  private steps: Array<{ name: string; status: 'pending' | 'active' | 'complete' | 'error' }>
+  private currentStep: number = 0
+  private spinner: Ora | null = null
 
-  const update = (stepIndex: number, status: 'pending' | 'active' | 'complete' | 'error') => {
-    const icons = {
-      pending: chalk.gray('○'),
-      active: chalk.cyan('◐'),
-      complete: chalk.green('●'),
-      error: chalk.red('✖'),
-    }
-
-    const colors = {
-      pending: chalk.gray,
-      active: chalk.cyan.bold,
-      complete: chalk.green,
-      error: chalk.red,
-    }
-
-    return steps.map((step, index) => {
-      if (index < stepIndex) {
-        return `${icons.complete} ${colors.complete(step)}`
-      } else if (index === stepIndex) {
-        return `${icons[status]} ${colors[status](step)}`
-      } else {
-        return `${icons.pending} ${colors.pending(step)}`
-      }
-    }).join('\n')
+  constructor(steps: string[]) {
+    this.steps = steps.map(name => ({ name, status: 'pending' as const }))
   }
 
-  return {
-    update,
-    next: () => {
-      currentStep.index++
-      return currentStep.index
-    },
-    getCurrent: () => currentStep.index,
+  start(stepIndex: number) {
+    if (stepIndex < 0 || stepIndex >= this.steps.length) return
+
+    this.currentStep = stepIndex
+    this.steps[stepIndex].status = 'active'
+    
+    if (this.spinner) {
+      this.spinner.stop()
+    }
+
+    this.spinner = createSpinner(this.steps[stepIndex].name)
+    this.spinner.start()
+  }
+
+  succeed(stepIndex: number, text?: string) {
+    if (stepIndex < 0 || stepIndex >= this.steps.length) return
+
+    this.steps[stepIndex].status = 'complete'
+    
+    if (this.spinner) {
+      this.spinner.succeed(text || this.steps[stepIndex].name)
+      this.spinner = null
+    }
+  }
+
+  fail(stepIndex: number, text?: string) {
+    if (stepIndex < 0 || stepIndex >= this.steps.length) return
+
+    this.steps[stepIndex].status = 'error'
+    
+    if (this.spinner) {
+      this.spinner.fail(text || this.steps[stepIndex].name)
+      this.spinner = null
+    }
+  }
+
+  renderSummary() {
+    console.log()
+    console.log(chalk.bold('Summary:'))
+    
+    this.steps.forEach((step, index) => {
+      const icon =
+        step.status === 'complete'
+          ? chalk.green('✓')
+          : step.status === 'error'
+          ? chalk.red('✗')
+          : step.status === 'active'
+          ? chalk.cyan('→')
+          : dim('○')
+
+      const status =
+        step.status === 'complete'
+          ? chalk.green('Complete')
+          : step.status === 'error'
+          ? chalk.red('Failed')
+          : step.status === 'active'
+          ? chalk.cyan('Active')
+          : dim('Pending')
+
+      console.log(`  ${icon} ${step.name} ${dim('—')} ${status}`)
+    })
   }
 }
 
 /**
- * Create a beautiful loading message with animation
+ * Create a percentage progress indicator
  */
-export function createLoadingMessage(messages: string[], interval: number = 2000): () => void {
-  let currentIndex = 0
-  const spinner = createSpinner(messages[0])
+export function percentageProgress(current: number, total: number, label?: string): string {
+  const percent = Math.floor((current / total) * 100)
+  const barWidth = 20
+  const filled = Math.floor((barWidth * current) / total)
+  const empty = barWidth - filled
 
-  spinner.start()
+  const bar = chalk.cyan('█'.repeat(filled)) + dim('░'.repeat(empty))
+  const percentText = chalk.bold(`${percent}%`)
+  const countText = dim(`(${current}/${total})`)
 
-  const intervalId = setInterval(() => {
-    currentIndex = (currentIndex + 1) % messages.length
-    spinner.text = messages[currentIndex]
-  }, interval)
-
-  return () => {
-    clearInterval(intervalId)
-    spinner.stop()
-  }
+  return label
+    ? `${bar} ${percentText} ${countText} ${label}`
+    : `${bar} ${percentText} ${countText}`
 }

@@ -16,7 +16,7 @@ export interface ThinkingIndicatorProps {
   className?: string
 }
 
-export const ThinkingIndicator = memo(function ThinkingIndicator({
+export function ThinkingIndicator({
   status,
   className,
 }: ThinkingIndicatorProps) {
