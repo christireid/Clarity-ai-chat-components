@@ -101,7 +101,7 @@ const router = useModelRouter({
     },
     {
       condition: (message) => message.includes('complex'),
-      model: 'gpt-4-turbo-preview', // Better model for complex queries
+      model: 'gpt-4-turbo', // Better model for complex queries
     },
     {
       default: true,

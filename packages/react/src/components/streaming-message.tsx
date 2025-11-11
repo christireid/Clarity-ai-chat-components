@@ -480,6 +480,6 @@ export function StreamingMessage({
       )}
     </motion.div>
   )
-})
+}
 
 StreamingMessage.displayName = 'StreamingMessage'

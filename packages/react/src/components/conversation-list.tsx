@@ -943,6 +943,6 @@ export function ConversationList({
       </div>
     </div>
   )
-})
+}
 
 ConversationList.displayName = 'ConversationList'

@@ -483,6 +483,6 @@ export function PromptLibrary({
       </CardContent>
     </Card>
   )
-})
+}
 
 PromptLibrary.displayName = 'PromptLibrary'

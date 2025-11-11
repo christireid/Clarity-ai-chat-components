@@ -386,7 +386,7 @@ export function AIAssistantTemplate({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [messages, addOperationMessage, selectedModel, availableModels, adapters, systemPrompt, context, maxTokens])
 
   const handleContextAdd = (newContexts: Context[]) => {
     setContext((prev) => [...prev, ...newContexts])

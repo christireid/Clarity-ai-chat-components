@@ -77,7 +77,7 @@ export function MessageSearch({
       )}
     </div>
   )
-})
+}
 
 MessageSearch.displayName = 'MessageSearch'
 

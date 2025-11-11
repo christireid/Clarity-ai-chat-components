@@ -151,7 +151,7 @@ function App() {
 - ♿ WCAG AAA accessibility
 - 🔒 Production-ready security
 
-**[📖 View Full Quick Start Guide](./QUICK_START_GUIDE.md)** • **[📚 Browse Examples](./examples/README.md)**
+**[📖 View Full Quick Start Guide](./apps/docs/guide/quick-start.md)** • **[📚 Browse Examples](./examples/README.md)**
 
 ---
 
@@ -173,15 +173,15 @@ function App() {
 Imagine building a ChatGPT-like interface. Now imagine having **every single component, hook, and utility** you need, perfectly polished, accessible, and ready to drop into your app. That's Clarity Chat.
 
 ```
-╔═════════════════════════════════════════════════════════════════╗
-║                                                                 ║
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
 ║     🎨  Beautiful Design System      🚀  Lightning Fast         ║
-║     ♿  WCAG AAA Accessible          🧩  70+ Components          ║
-║     💰  Token Optimization          🤖  Enterprise AI Ready    ║
-║     📊  Built-in Analytics          🎭  11 Stunning Themes     ║
+║     ♿  WCAG AAA Accessible          🧩  70+ Components         ║
+║     💰  Token Optimization          🤖  Enterprise AI Ready     ║
+║     📊  Built-in Analytics          🎭  11 Stunning Themes      ║
 ║     🔒  Production Security         ⚡  Streaming Support       ║
-║                                                                 ║
-╚═════════════════════════════════════════════════════════════════╝
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
 ```
 
 ### The Only Library with 100% Blueprint Coverage
@@ -192,34 +192,34 @@ We analyzed every major AI chat platform (ChatGPT, Claude, Gemini) and built **e
 ╔═══════════════════════════════════════════════════════════════╗
 ║          BLUEPRINT COVERAGE: 100% COMPLETE                    ║
 ╠═══════════════════════════════════════════════════════════════╣
-║                                                                ║
-║  ✅ 27/27 Essential Features Implemented                        ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ ✓ Message Management & Display        (6/6)  ████████     │ ║
-║  │ ✓ Conversation Management             (4/4)  ████████     │ ║
-║  │ ✓ Input & Interaction                 (5/5)  ████████     │ ║
-║  │ ✓ State & Error Management            (4/4)  ████████     │ ║
-║  │ ✓ Accessibility                       (3/3)  ████████     │ ║
-║  │ ✓ Performance                         (3/3)  ████████     │ ║
-║  │ ✓ Advanced Features                   (2/2)  ████████     │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                ║
+║                                                               ║
+║  ✅ 27/27 Essential Features Implemented                       ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ ✓ Message Management & Display        (6/6)  ████████   │  ║
+║  │ ✓ Conversation Management             (4/4)  ████████   │  ║
+║  │ ✓ Input & Interaction                 (5/5)  ████████   │  ║
+║  │ ✓ State & Error Management            (4/4)  ████████   │  ║
+║  │ ✓ Accessibility                       (3/3)  ████████   │  ║
+║  │ ✓ Performance                         (3/3)  ████████   │  ║
+║  │ ✓ Advanced Features                   (2/2)  ████████   │  ║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
 ║  ➕ 12 Enterprise Features (Beyond Competitors)                ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ 🗄️  Vector Stores & RAG Pipeline                           │ ║
-║  │ 🤖  Agent Orchestration                                     │ ║
-║  │ 🛡️  AI Safety Guardrails                                   │ ║
-║  │ 🏢  Multi-Tenancy & RBAC                                    │ ║
-║  │ 📊  Observability & Tracing                                │ ║
-║  │ 🔌  Webhook System                                         │ ║
-║  │ 🔌  Plugin Architecture                                    │ ║
-║  │ 📝  Audit Logging                                          │ ║
-║  │ 💰  Token Optimization Suite                               │ ║
-║  │ 📈  Analytics Integration                                  │ ║
-║  │ 🐛  Error Tracking                                         │ ║
-║  │ 🔐  Security Features                                      │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ 🗄️  Vector Stores & RAG Pipeline                         │ ║
+║  │ 🤖  Agent Orchestration                                   │ ║
+║  │ 🛡️  AI Safety Guardrails                                 │ ║
+║  │ 🏢  Multi-Tenancy & RBAC                                 │  ║
+║  │ 📊  Observability & Tracing                              │  ║
+║  │ 🔌  Webhook System                                       │  ║
+║  │ 🔌  Plugin Architecture                                  │  ║
+║  │ 📝  Audit Logging                                        │  ║
+║  │ 💰  Token Optimization Suite                             │  ║
+║  │ 📈  Analytics Integration                                │  ║
+║  │ 🐛  Error Tracking                                       │  ║
+║  │ 🔐  Security Features                                    │  ║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
@@ -266,7 +266,7 @@ We analyzed every major AI chat platform (ChatGPT, Claude, Gemini) and built **e
 ```
 ╔═══════════════════════════════════════════════════════════════════╗
 ║                    CLARITY CHAT ECOSYSTEM                         ║
-║              The Complete AI Chat Development Platform             ║
+║              The Complete AI Chat Development Platform            ║
 ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
@@ -317,15 +317,15 @@ We analyzed every major AI chat platform (ChatGPT, Claude, Gemini) and built **e
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                       │
 │  Vector Stores        Agents              RAG Pipeline               │
-│  ├─ Pinecone          ├─ ReAct Pattern    ├─ Document Loaders       │
-│  ├─ Qdrant            ├─ Tool Calling    ├─ Text Splitting         │
-│  ├─ Weaviate          └─ Orchestration    ├─ Hybrid Search          │
-│  └─ Chroma                              └─ Reranking               │
+│  ├─ Pinecone          ├─ ReAct Pattern    ├─ Document Loaders        │
+│  ├─ Qdrant            ├─ Tool Calling     ├─ Text Splitting          │
+│  ├─ Weaviate          └─ Orchestration    ├─ Hybrid Search            │
+│  └─ Chroma                              └─ Reranking                 │
 │                                                                       │
-│  AI Safety            Observability       Multi-Tenancy              │
-│  ├─ PII Detection     ├─ Tracing          ├─ Tenant Isolation       │
-│  ├─ Content Filter    ├─ Metrics          ├─ RBAC                   │
-│  └─ Guardrails        └─ Evaluation       └─ Audit Logging         │
+│  AI Safety            Observability       Multi-Tenancy               │
+│  ├─ PII Detection     ├─ Tracing          ├─ Tenant Isolation        │
+│  ├─ Content Filter    ├─ Metrics          ├─ RBAC                    │
+│  └─ Guardrails        └─ Evaluation       └─ Audit Logging           │
 │                                                                       │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -759,50 +759,50 @@ function AnalyticsChat() {
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
-║                  COMPONENT CATEGORIES                          ║
+║                  COMPONENT CATEGORIES                         ║
 ╠═══════════════════════════════════════════════════════════════╣
-║                                                                ║
-║  📨 Messaging Components (15)                                   ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ ChatWindow          │ MessageList                           │ ║
-║  │ Message             │ StreamingMessage                       │ ║
-║  │ MessageBubble       │ MessageMetadata                        │ ║
-║  │ MessageActions      │ MessageSearch                          │ ║
-║  │ ConversationTimeline│ MemoryInspector                        │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                ║
-║  ⌨️ Input & Interaction (12)                                   ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ ChatInput           │ AdvancedChatInput                     │ ║
-║  │ VoiceInput          │ FileUpload                            │ ║
-║  │ CommandPalette      │ ContextMenu                           │ ║
-║  │ FollowUpSuggestions │ PromptSuggestions                     │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                ║
+║                                                               ║
+║  📨 Messaging Components (15)                                  ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ ChatWindow          │ MessageList                         │║
+║  │ Message             │ StreamingMessage                    │║
+║  │ MessageBubble       │ MessageMetadata                     │║
+║  │ MessageActions      │ MessageSearch                       │║
+║  │ ConversationTimeline│ MemoryInspector                     │║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
+║  ⌨️ Input & Interaction (12)                                  ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ ChatInput           │ AdvancedChatInput                   │║
+║  │ VoiceInput          │ FileUpload                          │║
+║  │ CommandPalette      │ ContextMenu                         │║
+║  │ FollowUpSuggestions │ PromptSuggestions                   │║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
 ║  🎨 UI Primitives (20)                                         ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ Button              │ Input                                 │ ║
-║  │ Card                │ Badge                                 │ ║
-║  │ Dialog              │ Tooltip                               │ ║
-║  │ Dropdown            │ Tabs                                  │ ║
-║  │ Switch              │ Checkbox                              │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ Button              │ Input                               │║
+║  │ Card                │ Badge                               │║
+║  │ Dialog              │ Tooltip                             │║
+║  │ Dropdown            │ Tabs                                │║
+║  │ Switch              │ Checkbox                            │║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
 ║  📊 Data Display (10)                                          ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ TokenCounter       │ AnalyticsDashboard                    │ ║
-║  │ UsageDashboard     │ ResponseQualityMeter                  │ ║
-║  │ PerformanceMetrics │ SessionSummaryCard                    │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ TokenCounter       │ AnalyticsDashboard                  │ ║
+║  │ UsageDashboard     │ ResponseQualityMeter                │ ║
+║  │ PerformanceMetrics │ SessionSummaryCard                  │ ║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
 ║  🤖 Enterprise AI (13)                                         ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ VectorStoreViewer  │ AgentRunFeed                          │ ║
-║  │ RAGPipeline        │ SafetyStatusCard                      │ ║
-║  │ DocumentViewer     │ MultiModalPreview                     │ ║
-║  │ AuditLogViewer     │ WorkflowSuggestionList                │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ VectorStoreViewer  │ AgentRunFeed                        │ ║
+║  │ RAGPipeline        │ SafetyStatusCard                    │ ║
+║  │ DocumentViewer     │ MultiModalPreview                   │ ║
+║  │ AuditLogViewer     │ WorkflowSuggestionList              │ ║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
@@ -1128,7 +1128,7 @@ Pre-built prompt templates for common tasks:
 ## 📚 Documentation
 
 ### Getting Started
-- [Quick Start Guide](./QUICK_START_GUIDE.md) - Get started in 5 minutes
+- [Quick Start Guide](./apps/docs/guide/quick-start.md) - Get started in 5 minutes
 - [Installation Guide](./apps/docs/guide/installation.md)
 - [First Component Tutorial](./apps/docs/guide/getting-started.md)
 
@@ -1175,37 +1175,37 @@ Pre-built prompt templates for common tasks:
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
-║              PERFORMANCE BENCHMARKS                            ║
+║              PERFORMANCE BENCHMARKS                           ║
 ╠═══════════════════════════════════════════════════════════════╣
-║                                                                 ║
-║  ⚡ Bundle Size                                                  ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ Core Library:        ~120KB (gzipped)                      │ ║
-║  │ With Primitives:     ~145KB (gzipped)                      │ ║
-║  │ Full Enterprise:     ~180KB (gzipped)                      │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                 ║
-║  🚀 Rendering Performance                                       ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ Initial Render:      <50ms    ████████░░  80%              │ ║
-║  │ Message Append:      <16ms    ██████████ 100% (60fps)      │ ║
-║  │ Virtual Scrolling:   1000+    ██████████ 100% smooth       │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                 ║
-║  📊 Memory Usage                                                ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ Base:                ~2MB                                  │ ║
-║  │ 100 Messages:        ~5MB                                  │ ║
-║  │ 1000 Messages:       ~15MB (with virtualization)           │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                 ║
-║  ♿ Accessibility Score                                          ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ Lighthouse:          100/100  ██████████                  │ ║
-║  │ WCAG Level:          AAA      ██████████                  │ ║
-║  │ Keyboard Nav:        100%     ██████████                  │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                 ║
+║                                                               ║
+║  ⚡ Bundle Size                                                ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ Core Library:        ~120KB (gzipped)                    │ ║
+║  │ With Primitives:     ~145KB (gzipped)                     │║
+║  │ Full Enterprise:     ~180KB (gzipped)                     │║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
+║  🚀 Rendering Performance                                      ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ Initial Render:      <50ms    ████████░░  80%            │ ║
+║  │ Message Append:      <16ms    ██████████ 100% (60fps)    │ ║
+║  │ Virtual Scrolling:   1000+    ██████████ 100% smooth     │ ║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
+║  📊 Memory Usage                                               ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ Base:                ~2MB                                │ ║
+║  │ 100 Messages:        ~5MB                                │ ║
+║  │ 1000 Messages:       ~15MB (with virtualization)         │ ║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
+║  ♿ Accessibility Score                                        ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ Lighthouse:          100/100  ██████████                  │║
+║  │ WCAG Level:          AAA      ██████████                  │║
+║  │ Keyboard Nav:        100%     ██████████                  │║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
@@ -1363,7 +1363,7 @@ function MemoryEnabledChat() {
 docker-compose -f docker-compose.memory.yml up -d
 ```
 
-**[→ Memory Management Guide](./apps/docs/guide/memory-management.md)**
+**[→ Memory Management Guide](./apps/docs/guide/memory.md)**
 
 ### VSCode Extension
 
@@ -1459,31 +1459,31 @@ npm run storybook
 ╔═══════════════════════════════════════════════════════════════╗
 ║                    LIBRARY STATS                              ║
 ╠═══════════════════════════════════════════════════════════════╣
-║                                                                 ║
-║  📦 Codebase                                                     ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ Lines of Code:       35,000+  ████████████████████         │ ║
-║  │ Components:          70+      ████████████████████         │ ║
-║  │ Hooks:                35+      ████████████████████         │ ║
-║  │ Animations:          150+      ████████████████████         │ ║
-║  │ Themes:               11       ████████████████████         │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                 ║
-║  📚 Documentation                                               ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ Examples:            17 production-ready                    │ ║
-║  │ Guides:              10+ comprehensive                       │ ║
-║  │ API Docs:            100% coverage                           │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                 ║
-║  ✅ Quality                                                      ║
-║  ┌───────────────────────────────────────────────────────────┐ ║
-║  │ Test Coverage:       80%+     ████████████████░░           │ ║
-║  │ TypeScript:          100%     ████████████████████         │ ║
-║  │ Accessibility:       AAA      ████████████████████         │ ║
-║  │ Bundle Size:         ~120KB   ████████░░░░░░░░░░           │ ║
-║  └───────────────────────────────────────────────────────────┘ ║
-║                                                                 ║
+║                                                               ║
+║  📦 Codebase                                                   ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ Lines of Code:       35,000+  ████████████████████       │ ║
+║  │ Components:          70+      ████████████████████       │ ║
+║  │ Hooks:                35+      ████████████████████       │║
+║  │ Animations:          150+      ████████████████████       │║
+║  │ Themes:               11       ████████████████████       │║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
+║  📚 Documentation                                              ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ Examples:            17 production-ready                  │║
+║  │ Guides:              10+ comprehensive                     ║
+║  │ API Docs:            100% coverage                         ║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
+║  ✅ Quality                                                    ║
+║  ┌──────────────────────────────────────────────────────────┐ ║
+║  │ Test Coverage:       80%+     ████████████████░░         │ ║
+║  │ TypeScript:          100%     ████████████████████        │║
+║  │ Accessibility:       AAA      ████████████████████        │║
+║  │ Bundle Size:         ~120KB   ████████░░░░░░░░░░          │║
+║  └──────────────────────────────────────────────────────────┘ ║
+║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 

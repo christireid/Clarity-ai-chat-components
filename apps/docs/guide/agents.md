@@ -19,7 +19,7 @@ Agents enable your AI assistant to:
 import { ReactAgent, AgentTool } from '@clarity-chat/react'
 
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   apiKey: process.env.OPENAI_API_KEY,
   tools: [
     {
@@ -129,7 +129,7 @@ const memoryService = new MemoryService({
 })
 
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   memory: memoryService,
   systemPrompt: `You are a helpful assistant with memory.
     Remember important facts about the user and reference them in future conversations.`,
@@ -163,7 +163,7 @@ const preference = await memoryService.retrieve({
 
 ```tsx
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   tools: [searchTool, calculatorTool],
   executionMode: 'sequential', // Execute tools one at a time
 })
@@ -173,7 +173,7 @@ const agent = new ReactAgent({
 
 ```tsx
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   tools: [searchTool, weatherTool],
   executionMode: 'parallel', // Execute multiple tools simultaneously
 })
@@ -190,7 +190,7 @@ function AgentChat() {
   const [steps, setSteps] = useState([])
 
   const agent = new ReactAgent({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     tools: [searchTool],
     onStep: (step) => {
       setSteps(prev => [...prev, step])
@@ -212,7 +212,7 @@ Handle tool execution errors gracefully:
 
 ```tsx
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   tools: [
     {
       name: 'risky_tool',
@@ -246,7 +246,7 @@ Use pre-built agent templates for common use cases:
 import { CodeAssistantTemplate } from '@clarity-chat/react'
 
 const codeAgent = CodeAssistantTemplate({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   tools: [
     // Code-specific tools
   ],
@@ -265,7 +265,7 @@ Available templates:
 
 ```tsx
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   tools: [searchTool, calculatorTool],
   toolSelectionStrategy: (context, availableTools) => {
     // Custom logic to select which tools to use
@@ -281,7 +281,7 @@ const agent = new ReactAgent({
 
 ```tsx
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   tools: [searchTool],
   transformToolResult: (tool, result) => {
     // Transform tool results before sending to model

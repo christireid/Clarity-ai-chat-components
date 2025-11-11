@@ -94,7 +94,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const { content } = await request.json()
   
   const completion = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages: [{ role: 'user', content }],
   })
   
@@ -229,7 +229,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const { content } = await request.json()
   
   const stream = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages: [{ role: 'user', content }],
     stream: true,
   })
@@ -294,4 +294,4 @@ npx wrangler pages publish public
 
 ## Example
 
-See the complete [Multi-User Chat example](https://github.com/yourusername/clarity-chat/tree/main/examples/multi-user-chat) built with Remix and Socket.io.
+See the complete [Multi-User Chat example](https://github.com/christireid/Clarity-ai-chat-components/tree/main/examples/multi-user-chat) built with Remix and Socket.io.

@@ -1,6 +1,6 @@
 # Accessibility
 
-Clarity Chat is built to meet WCAG 2.1 AA guidelines and ships with sensible defaults for keyboard and screen-reader support.
+Clarity Chat is built to meet WCAG 2.1 AAA guidelines (the highest accessibility standard) and ships with sensible defaults for keyboard and screen-reader support.
 
 ## Keyboard Navigation
 
@@ -16,7 +16,7 @@ Clarity Chat is built to meet WCAG 2.1 AA guidelines and ships with sensible def
 
 ## Color Contrast
 
-Ensure themed color palettes maintain 4.5:1 contrast ratios. Use the provided CSS variables and audit with tools such as Axe or Lighthouse.
+Ensure themed color palettes maintain 7:1 contrast ratios for AAA compliance (4.5:1 for AA). Use the provided CSS variables and audit with tools such as Axe or Lighthouse.
 
 ## Testing Checklist
 

@@ -1,6 +1,6 @@
 # Cookbook
 
-Common recipes and patterns for building with Clarity Chat. For the complete cookbook with all 25 recipes, see [COOKBOOK.md](https://github.com/yourusername/clarity-chat/blob/main/COOKBOOK.md) in the repository.
+Common recipes and patterns for building with Clarity Chat. For the complete cookbook with all 33+ recipes, see [COOKBOOK.md](../COOKBOOK.md) in the repository.
 
 ## Quick Recipes
 
@@ -227,7 +227,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json()
   
   const completion = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages,
   })
   
@@ -249,7 +249,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json()
   
   const stream = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo',
     messages,
     stream: true,
   })
@@ -442,7 +442,7 @@ Create an AI agent that can call external tools:
 import { ReactAgent, useAgent, AgentRunFeed } from '@clarity-chat/react'
 
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   apiKey: process.env.OPENAI_API_KEY,
   tools: [
     {
@@ -1229,7 +1229,7 @@ For additional recipes covering:
 - Performance optimization
 - Testing strategies
 
-Visit the [full COOKBOOK.md](https://github.com/yourusername/clarity-chat/blob/main/COOKBOOK.md) in the repository.
+Visit the [full COOKBOOK.md](../COOKBOOK.md) in the repository.
 
 ## Troubleshooting
 

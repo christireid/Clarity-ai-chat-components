@@ -233,6 +233,6 @@ export function ContextManager({
       </CardContent>
     </Card>
   )
-})
+}
 
 ContextManager.displayName = 'ContextManager'

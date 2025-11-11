@@ -295,6 +295,6 @@ export function SessionSummaryCard({
       </Card>
     </motion.div>
   )
-})
+}
 
 SessionSummaryCard.displayName = 'SessionSummaryCard'

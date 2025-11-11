@@ -118,6 +118,6 @@ export function StreamCancellation({
       </Button>
     </div>
   )
-})
+}
 
 StreamCancellation.displayName = 'StreamCancellation'

@@ -141,7 +141,7 @@ export function LinkPreview({
       </Card>
     </motion.div>
   )
-})
+}
 
 LinkPreview.displayName = 'LinkPreview'
 
@@ -260,6 +260,6 @@ export function InlineLink({
       )}
     </span>
   )
-})
+}
 
 InlineLink.displayName = 'InlineLink'

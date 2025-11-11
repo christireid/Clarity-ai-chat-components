@@ -114,7 +114,7 @@ export function CollapsibleSection({
       </AnimatePresence>
     </div>
   )
-})
+}
 
 /**
  * Accordion - Multiple collapsible sections where only one can be open
@@ -199,7 +199,7 @@ export function Accordion({
       })}
     </div>
   )
-})
+}
 
 Accordion.displayName = 'Accordion'
 
@@ -244,6 +244,6 @@ export function ExpandableListItem({
       {children}
     </CollapsibleSection>
   )
-})
+}
 
 ExpandableListItem.displayName = 'ExpandableListItem'

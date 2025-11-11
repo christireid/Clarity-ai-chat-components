@@ -125,7 +125,7 @@ export function WorkflowSuggestionList({
       </CardContent>
     </Card>
   )
-})
+}
 
 WorkflowSuggestionList.displayName = 'WorkflowSuggestionList'
 

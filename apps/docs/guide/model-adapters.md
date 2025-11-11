@@ -20,12 +20,12 @@ import { openAIAdapter, openAIModels } from '@clarity-chat/react'
 
 const adapter = openAIAdapter({
   apiKey: process.env.OPENAI_API_KEY,
-  defaultModel: 'gpt-4-turbo-preview',
+  defaultModel: 'gpt-4-turbo',
 })
 
 // Available models
 const models = openAIModels
-// ['gpt-4-turbo-preview', 'gpt-4', 'gpt-3.5-turbo', ...]
+// ['gpt-4-turbo', 'gpt-4o', 'gpt-3.5-turbo', ...]
 ```
 
 ### Anthropic (Claude)
@@ -65,7 +65,7 @@ import { openAIAdapter } from '@clarity-chat/react'
 
 const adapter = openAIAdapter({
   apiKey: process.env.OPENAI_API_KEY,
-  defaultModel: 'gpt-4-turbo-preview',
+  defaultModel: 'gpt-4-turbo',
   maxTokens: 2000,
   temperature: 0.7,
 })
@@ -113,7 +113,7 @@ const response = await adapter.complete({
   messages: [
     { role: 'user', content: 'Hello!' }
   ],
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
 })
 
 console.log(response.content)
@@ -164,7 +164,7 @@ const {
   estimatedCost 
 } = useTokenTracker({
   messages,
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   adapter: openAIAdapter({ apiKey: '...' }),
 })
 

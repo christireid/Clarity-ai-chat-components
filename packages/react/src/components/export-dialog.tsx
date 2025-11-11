@@ -328,6 +328,6 @@ export function ExportDialog({
       </DialogContent>
     </Dialog>
   )
-})
+}
 
 ExportDialog.displayName = 'ExportDialog'

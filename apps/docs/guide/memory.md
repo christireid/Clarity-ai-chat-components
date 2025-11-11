@@ -189,7 +189,7 @@ Memories are automatically injected into the conversation context:
 
 ```tsx
 const agent = new ReactAgent({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4-turbo',
   memory: memoryService,
   systemPrompt: `You are a helpful assistant with memory.
     Remember important facts about the user and reference them naturally.`,

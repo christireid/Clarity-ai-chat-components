@@ -367,6 +367,6 @@ export function KnowledgeBaseViewer({
       </CardContent>
     </Card>
   )
-})
+}
 
 KnowledgeBaseViewer.displayName = 'KnowledgeBaseViewer'

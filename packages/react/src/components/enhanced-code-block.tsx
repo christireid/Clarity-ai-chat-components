@@ -230,7 +230,7 @@ export function EnhancedCodeBlock({
       )}
     </div>
   )
-})
+}
 
 EnhancedCodeBlock.displayName = 'EnhancedCodeBlock'
 

@@ -80,7 +80,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/yourusername/clarity-chat' },
+      { icon: 'github', link: 'https://github.com/christireid/Clarity-ai-chat-components' },
     ],
 
     footer: {

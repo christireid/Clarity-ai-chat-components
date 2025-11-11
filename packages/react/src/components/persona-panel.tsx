@@ -205,6 +205,6 @@ export function PersonaPanel({
       </CardContent>
     </Card>
   )
-})
+}
 
 PersonaPanel.displayName = 'PersonaPanel'

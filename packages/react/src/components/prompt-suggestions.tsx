@@ -336,7 +336,7 @@ export function PromptSuggestions({
       </AnimatePresence>
     </div>
   )
-})
+}
 
 /**
  * Hook to generate context-aware prompt suggestions

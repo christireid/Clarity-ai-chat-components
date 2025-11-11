@@ -167,6 +167,6 @@ export function ThinkingIndicator({
       )}
     </motion.div>
   )
-})
+}
 
 ThinkingIndicator.displayName = 'ThinkingIndicator'

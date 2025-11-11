@@ -188,7 +188,7 @@ export async function verifyLicenseSignature(
 ): Promise<boolean> {
   // TODO: Implement RSA signature verification
   // For now, return true in development
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env['NODE_ENV'] === 'development') {
     return true
   }
 

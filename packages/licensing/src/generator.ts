@@ -120,19 +120,19 @@ export function parseLicenseKey(key: string): {
   if (parts[0] === 'PRO' && parts[1] === 'IND') {
     // PRO-IND-ANN-RANDOM or PRO-IND-LTD-RANDOM
     tier = 'pro-individual'
-    type = parseTypePrefix(parts[2])
+    type = parts[2] ? parseTypePrefix(parts[2]) : null
   } else if (parts[0] === 'PRO' && parts[1] === 'TEAM') {
     // PRO-TEAM-ANN-RANDOM or PRO-TEAM-LTD-RANDOM
     tier = 'pro-team'
-    type = parseTypePrefix(parts[2])
+    type = parts[2] ? parseTypePrefix(parts[2]) : null
   } else if (parts[0] === 'ENT') {
     // ENT-ANN-RANDOM or ENT-LTD-RANDOM
     tier = 'enterprise'
-    type = parseTypePrefix(parts[1])
+    type = parts[1] ? parseTypePrefix(parts[1]) : null
   } else if (parts[0] === 'FREE') {
     // FREE-ANN-RANDOM or FREE-LTD-RANDOM
     tier = 'free'
-    type = parseTypePrefix(parts[1])
+    type = parts[1] ? parseTypePrefix(parts[1]) : null
   }
 
   return {

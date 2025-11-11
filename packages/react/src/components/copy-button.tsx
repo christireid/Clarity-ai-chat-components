@@ -56,6 +56,6 @@ export function CopyButton({
       )}
     </Button>
   )
-})
+}
 
 CopyButton.displayName = 'CopyButton'
