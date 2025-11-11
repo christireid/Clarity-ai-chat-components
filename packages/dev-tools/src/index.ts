@@ -18,3 +18,6 @@ export * from './validate'
 
 // Performance utilities
 export * from './performance'
+
+// React 19 components and hooks
+export * from './react'

@@ -2,6 +2,10 @@
 
 Comprehensive developer tools for debugging, testing, validation, and performance profiling of AI chat applications.
 
+**Now with React 19 components and hooks!** 🎉
+
+This package now includes React 19 components and hooks that leverage new React 19 features like `useOptimistic` for optimistic UI updates and `useFormStatus` for form state management.
+
 ## Features
 
 - 🔍 **API Inspector** - Deep inspection of AI provider API calls with timing and token tracking
@@ -629,6 +633,67 @@ inspector.printLogs()
 console.log(`\n✅ Tests: ${results.passed} passed, ${results.failed} failed`)
 ```
 
+## React 19 Components and Hooks
+
+### Components
+
+```tsx
+import {
+  APIInspectorPanel,
+  ProfilerPanel,
+  ValidationForm,
+  TimeTravelPanel,
+} from '@clarity-chat/dev-tools/react'
+
+// API Inspector with real-time updates
+<APIInspectorPanel maxLogs={100} />
+
+// Performance profiler
+<ProfilerPanel />
+
+// Configuration validation
+<ValidationForm type="env" />
+
+// Time-travel debugging
+<TimeTravelPanel />
+```
+
+### Hooks
+
+```tsx
+import {
+  useAPIInspector,
+  useProfiler,
+  useEnvValidation,
+  useAPIKeyValidation,
+  useChatConfigValidation,
+  useTimeTravel,
+} from '@clarity-chat/dev-tools/react'
+
+// API Inspector hook with optimistic updates
+const { logs, stats, startCall, completeCall } = useAPIInspector()
+
+// Performance profiler hook
+const { start, end, profile, summary } = useProfiler()
+
+// Validation hooks
+const { validate, isValid, errors, isPending } = useEnvValidation()
+const { validate: validateAPIKey } = useAPIKeyValidation()
+const { validate: validateConfig } = useChatConfigValidation()
+
+// Time-travel debugging hook
+const { snapshots, current, record, goBack, goForward } = useTimeTravel()
+```
+
+### React 19 Features Used
+
+- **useOptimistic**: For optimistic UI updates in API inspector and profiler
+- **useFormStatus**: For form submission state in validation forms
+- **Real-time updates**: Components automatically update as data changes
+- **Optimistic updates**: Instant UI feedback with automatic error handling
+
+See [REACT_19_MIGRATION.md](./REACT_19_MIGRATION.md) for complete migration guide and examples.
+
 ## TypeScript Support
 
 Full TypeScript support with comprehensive type definitions:
@@ -643,6 +708,11 @@ import type {
   StreamingMetrics
 } from '@clarity-chat/dev-tools'
 ```
+
+## Requirements
+
+- Node.js 18.0.0 or higher
+- For React components: React 19.0.0 or higher, React DOM 19.0.0 or higher
 
 ## License
 
