@@ -26,6 +26,7 @@ import {
   TokenCounter,
   ExportDialog,
   ErrorBoundary,
+  useCommandPaletteCommands,
 } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 import type { Message, Citation } from '@clarity-chat/types'
@@ -126,7 +127,27 @@ function ComprehensiveChatApp() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [showSidebar, setShowSidebar] = useState(true)
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
   const branches = getBranches()
+
+  // Get selected message details
+  const selectedMessage = selectedMessageId
+    ? messages.find(m => m.id === selectedMessageId)
+    : null
+
+  // Generate message operation commands
+  const messageOperationCommands = useCommandPaletteCommands({
+    selectedMessageId,
+    isUserMessage: selectedMessage?.role === 'user',
+    isAssistantMessage: selectedMessage?.role === 'assistant',
+    onEdit: handleEdit,
+    onRegenerate: handleRegenerate,
+    onDelete: handleDelete,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  })
 
   // Command palette commands
   const commands = [
@@ -207,6 +228,8 @@ function ComprehensiveChatApp() {
         setShowCommandPalette(false)
       },
     },
+    // Add message operation commands
+    ...messageOperationCommands,
   ]
 
   // Keyboard shortcuts
@@ -244,6 +267,7 @@ function ComprehensiveChatApp() {
     if (newContent !== message.content) {
       editMessage(messageId, newContent)
     }
+    setSelectedMessageId(null)
   }, [messages, editMessage])
 
   // Handle regenerate
@@ -280,8 +304,11 @@ function ComprehensiveChatApp() {
   const handleDelete = useCallback((messageId: string) => {
     if (confirm('Delete this message?')) {
       deleteMessage(messageId)
+      if (selectedMessageId === messageId) {
+        setSelectedMessageId(null)
+      }
     }
-  }, [deleteMessage])
+  }, [deleteMessage, selectedMessageId])
 
   // Handle send
   const handleSend = useCallback(async (content: string) => {
