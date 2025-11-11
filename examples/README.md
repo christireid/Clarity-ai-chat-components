@@ -4,7 +4,28 @@ This directory contains example applications showcasing Clarity Chat Components.
 
 ## 📦 Examples
 
-### 1. **design-system-showcase**
+### 1. **basic-chat**
+Simple chat interface with message operations (edit, regenerate, delete) and undo/redo support.
+
+**Features:**
+- Message operations
+- Undo/Redo functionality
+- Token tracking
+- Auto-scroll
+- Error handling
+
+### 2. **advanced-chat-features**
+Comprehensive demonstration of all modern AI chat features.
+
+**Features:**
+- Message operations (edit, regenerate, delete)
+- Undo/Redo with keyboard shortcuts
+- Conversation branching
+- Export functionality (Markdown, JSON, plain text)
+- Token tracking and cost estimation
+- Auto-scroll
+
+### 3. **design-system-showcase**
 Interactive showcase of the design system with live examples of all design tokens, components, and animation patterns.
 
 **Features:**
