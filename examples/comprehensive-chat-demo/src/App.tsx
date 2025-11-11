@@ -30,19 +30,26 @@ import {
 } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
 import type { Message, Citation } from '@clarity-chat/types'
-
-interface Conversation {
-  id: string
-  title: string
-  preview: string
-  timestamp: number
-  messageCount: number
-  tags?: string[]
-  isPinned?: boolean
-  isFavorite?: boolean
-}
+import type { Conversation, Folder } from '@clarity-chat/react'
 
 function ComprehensiveChatApp() {
+  // Folder management
+  const [folders, setFolders] = useState<Folder[]>([
+    {
+      id: 'folder-1',
+      name: 'Work',
+      createdAt: Date.now() - 172800000,
+      conversationCount: 0,
+    },
+    {
+      id: 'folder-2',
+      name: 'Personal',
+      createdAt: Date.now() - 86400000,
+      conversationCount: 0,
+    },
+  ])
+  const [activeFolderId, setActiveFolderId] = useState<string | null | undefined>(undefined)
+
   // Conversation management
   const [conversations, setConversations] = useState<Conversation[]>([
     {
@@ -52,6 +59,15 @@ function ComprehensiveChatApp() {
       timestamp: Date.now() - 86400000,
       messageCount: 2,
       isPinned: true,
+      folderId: 'folder-1',
+    },
+    {
+      id: '2',
+      title: 'Quick Question',
+      preview: 'What is React?',
+      timestamp: Date.now() - 3600000,
+      messageCount: 4,
+      folderId: 'folder-2',
     },
   ])
   const [activeConversationId, setActiveConversationId] = useState('1')
@@ -406,13 +422,41 @@ function ComprehensiveChatApp() {
           </div>
           <ConversationList
             conversations={conversations}
+            folders={folders}
             activeId={activeConversationId}
+            activeFolderId={activeFolderId}
             onSelect={setActiveConversationId}
+            onFolderSelect={setActiveFolderId}
             onDelete={(id) => {
               setConversations(prev => prev.filter(c => c.id !== id))
               if (id === activeConversationId && conversations.length > 1) {
                 setActiveConversationId(conversations.find(c => c.id !== id)?.id || conversations[0].id)
               }
+            }}
+            onDeleteFolder={(folderId) => {
+              setFolders(prev => prev.filter(f => f.id !== folderId))
+              setConversations(prev =>
+                prev.map(c => c.folderId === folderId ? { ...c, folderId: undefined } : c)
+              )
+              if (activeFolderId === folderId) {
+                setActiveFolderId(undefined)
+              }
+            }}
+            onMoveToFolder={(conversationId, folderId) => {
+              setConversations(prev =>
+                prev.map(c =>
+                  c.id === conversationId ? { ...c, folderId: folderId || undefined } : c
+                )
+              )
+            }}
+            onCreateFolder={(name) => {
+              const newFolder: Folder = {
+                id: `folder-${Date.now()}`,
+                name,
+                createdAt: Date.now(),
+                conversationCount: 0,
+              }
+              setFolders(prev => [...prev, newFolder])
             }}
             onTogglePin={(id) => {
               setConversations(prev =>
@@ -424,6 +468,7 @@ function ComprehensiveChatApp() {
             showSearch
             showFilters
             showSort
+            showFolders
           />
         </div>
       )}

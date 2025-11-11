@@ -1,6 +1,6 @@
 # Clarity Chat Cookbook
 
-> 32+ recipes and patterns for building production-ready AI chat applications
+> 33+ recipes and patterns for building production-ready AI chat applications
 
 ## Table of Contents
 
@@ -1611,6 +1611,161 @@ function ChatApp() {
 2. **Command Availability**: Commands automatically appear/disappear based on selection
 3. **Custom Commands**: Add your own commands alongside message operations
 4. **Keyboard Navigation**: Use arrow keys to navigate, Enter to select, Esc to close
+
+---
+
+## Recipe 33: Folder Organization for Conversations
+
+Organize conversations into folders for better management and navigation.
+
+### Features
+
+- **Create Folders**: Create custom folders to organize conversations
+- **Move Conversations**: Move conversations between folders or remove from folders
+- **Folder Filtering**: Filter conversations by selected folder
+- **Folder Management**: Delete folders and manage folder structure
+- **Visual Organization**: Clear visual hierarchy with folder indicators
+
+### Example
+
+```tsx
+import {
+  ConversationList,
+  type Conversation,
+  type Folder,
+} from '@clarity-chat/react'
+import { useState } from 'react'
+
+function OrganizedChatApp() {
+  const [folders, setFolders] = useState<Folder[]>([
+    {
+      id: 'work',
+      name: 'Work',
+      createdAt: Date.now(),
+      conversationCount: 0,
+    },
+    {
+      id: 'personal',
+      name: 'Personal',
+      createdAt: Date.now(),
+      conversationCount: 0,
+    },
+  ])
+
+  const [conversations, setConversations] = useState<Conversation[]>([
+    {
+      id: '1',
+      title: 'Project Discussion',
+      preview: 'Let\'s discuss the new feature...',
+      timestamp: Date.now(),
+      messageCount: 5,
+      folderId: 'work',
+    },
+    {
+      id: '2',
+      title: 'Weekend Plans',
+      preview: 'What are you doing this weekend?',
+      timestamp: Date.now(),
+      messageCount: 3,
+      folderId: 'personal',
+    },
+  ])
+
+  const [activeFolderId, setActiveFolderId] = useState<string | null | undefined>(undefined)
+
+  return (
+    <ConversationList
+      conversations={conversations}
+      folders={folders}
+      activeFolderId={activeFolderId}
+      onSelect={(id) => console.log('Selected:', id)}
+      onFolderSelect={setActiveFolderId}
+      onDelete={(id) => {
+        setConversations(prev => prev.filter(c => c.id !== id))
+      }}
+      onDeleteFolder={(folderId) => {
+        setFolders(prev => prev.filter(f => f.id !== folderId))
+        // Remove folderId from conversations
+        setConversations(prev =>
+          prev.map(c =>
+            c.folderId === folderId ? { ...c, folderId: undefined } : c
+          )
+        )
+      }}
+      onMoveToFolder={(conversationId, folderId) => {
+        setConversations(prev =>
+          prev.map(c =>
+            c.id === conversationId
+              ? { ...c, folderId: folderId || undefined }
+              : c
+          )
+        )
+      }}
+      onCreateFolder={(name) => {
+        const newFolder: Folder = {
+          id: `folder-${Date.now()}`,
+          name,
+          createdAt: Date.now(),
+          conversationCount: 0,
+        }
+        setFolders(prev => [...prev, newFolder])
+      }}
+      showFolders={true}
+      showSearch={true}
+      showFilters={true}
+      showSort={true}
+    />
+  )
+}
+```
+
+### Folder Interface
+
+```tsx
+interface Folder {
+  id: string
+  name: string
+  color?: string
+  icon?: string
+  createdAt: number
+  conversationCount?: number
+}
+```
+
+### Conversation Interface Update
+
+```tsx
+interface Conversation {
+  // ... existing fields
+  folderId?: string  // Optional folder assignment
+}
+```
+
+### Props
+
+- **`folders`**: Array of folder objects
+- **`activeFolderId`**: Currently selected folder (null for uncategorized, undefined for all)
+- **`onFolderSelect`**: Callback when folder is selected
+- **`onCreateFolder`**: Callback to create new folder
+- **`onDeleteFolder`**: Callback to delete folder
+- **`onMoveToFolder`**: Callback to move conversation to folder
+- **`onRenameFolder`**: Callback to rename folder (optional)
+- **`showFolders`**: Enable folder organization UI
+
+### Folder Operations
+
+1. **Create Folder**: Click folder icon in header, enter name, press Enter
+2. **Select Folder**: Click folder to filter conversations
+3. **Move Conversation**: Use folder icon button on conversation item
+4. **Delete Folder**: Click delete icon on folder (removes folderId from conversations)
+
+### Tips
+
+1. **Folder Structure**: Plan your folder structure before creating many folders
+2. **Uncategorized**: Conversations without `folderId` appear in "All Conversations"
+3. **Folder Counts**: Folder shows conversation count automatically
+4. **Filtering**: Selecting a folder filters conversations to that folder only
+5. **Bulk Operations**: Use multi-select with folder operations for bulk moves
 
 ---
 
