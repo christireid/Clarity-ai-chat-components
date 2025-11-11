@@ -9,16 +9,89 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?style=for-the-badge&colorA=18181B&colorB=4A90E2)](https://www.typescriptlang.org/)
 [![Test Coverage](https://img.shields.io/codecov/c/github/christireid/Clarity-ai-chat-components?style=for-the-badge&colorA=18181B&colorB=4A90E2)](https://codecov.io/gh/christireid/Clarity-ai-chat-components)
 [![WCAG AAA](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AAA-success?style=for-the-badge)](./LICENSE)
+[![Discord](https://img.shields.io/discord/clarity-chat?style=for-the-badge&colorA=18181B&colorB=4A90E2)](https://discord.gg/clarity-chat)
 
 **70+ Production-Ready Components • 30+ Custom Hooks • 11 Beautiful Themes • Enterprise AI Infrastructure**
 
-[Documentation](https://docs.clarity-chat.dev) • [Examples](./examples/README.md) • [Storybook](https://storybook.clarity-chat.dev) • [Discord](https://discord.gg/clarity-chat)
+</div>
+
+## Links
+
+- [Documentation](https://docs.clarity-chat.dev) - Complete API reference and guides
+- [Examples](./examples/README.md) - 17 production-ready examples
+- [Storybook](https://storybook.clarity-chat.dev) - Interactive component playground
+- [Discord](https://discord.gg/clarity-chat) - Join our community
+- [GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions) - Ask questions and share ideas
+- [Changelog](./CHANGELOG.md) - See what's new
 
 ---
 
-</div>
+## Installation
 
-## 🎯 **What Makes This Library Special?**
+Install Clarity Chat using your preferred package manager:
+
+```bash
+# npm
+npm install @clarity-chat/react
+
+# yarn
+yarn add @clarity-chat/react
+
+# pnpm
+pnpm add @clarity-chat/react
+
+# bun
+bun add @clarity-chat/react
+```
+
+---
+
+## Quick Start
+
+Get a production-ready AI chat interface in 60 seconds:
+
+```tsx
+import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  return (
+    <ThemeProvider theme={themes.ocean}>
+      <ChatWindow
+        messages={messages}
+        onSendMessage={async (content) => {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            body: JSON.stringify({ message: content }),
+          })
+          return response.json()
+        }}
+      />
+    </ThemeProvider>
+  )
+}
+```
+
+**That's it!** You now have a production-ready AI chat interface with beautiful animations, full keyboard navigation, mobile responsiveness, and optimized performance.
+
+**[→ Full Quick Start Guide](./QUICK_START_GUIDE.md)**
+
+---
+
+## ✨ Features
+
+- 🎨 **Beautiful Design System** - 11 stunning themes, 6-level shadow system, 150+ animations
+- ♿ **WCAG AAA Accessible** - Screen reader optimized, keyboard navigation, AAA contrast ratios
+- 💰 **Token Optimization** - Save 50-80% on AI API costs with comprehensive optimization suite
+- 🚀 **Lightning Fast** - Virtual scrolling, optimized rendering, <50ms initial render
+- 🤖 **Enterprise AI Ready** - Vector stores, RAG pipeline, agent orchestration, multi-tenancy
+- 📊 **Built-in Analytics** - 7 providers, 35+ events, A/B testing support
+- ⚡ **Streaming Support** - SSE and WebSocket with auto-reconnection
+- 🔒 **Production Security** - AI safety guardrails, PII detection, audit logging
+
+---
+
+## 🎯 What Makes This Library Special?
 
 Imagine building a ChatGPT-like interface. Now imagine having **every single component, hook, and utility** you need, perfectly polished, accessible, and ready to drop into your app. That's Clarity Chat.
 
@@ -34,28 +107,7 @@ Imagine building a ChatGPT-like interface. Now imagine having **every single com
 ╚═════════════════════════════════════════════════════════════════╝
 ```
 
-### **Feature Comparison Matrix**
-
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                         FEATURE COMPARISON                           │
-├──────────────────────┬──────────┬──────────┬──────────┬───────────┤
-│ Feature              │ Clarity  │ ChatGPT  │ Claude   │ Gemini    │
-├──────────────────────┼──────────┼──────────┼──────────┼───────────┤
-│ Components           │    70+   │    ❌     │    ❌     │    ❌     │
-│ Custom Hooks         │    30+   │    ❌     │    ❌     │    ❌     │
-│ Themes               │    11    │    1     │    1     │    1     │
-│ Token Optimization   │    ✅     │    ❌     │    ❌     │    ❌     │
-│ Vector Stores        │    4     │    ❌     │    ❌     │    ❌     │
-│ RAG Pipeline         │    ✅     │    ❌     │    ❌     │    ❌     │
-│ Agent Orchestration  │    ✅     │    ❌     │    ❌     │    ❌     │
-│ Accessibility        │   AAA     │    AA     │    AA     │    AA     │
-│ Open Source          │    ✅     │    ❌     │    ❌     │    ❌     │
-│ Customizable         │    ✅     │    ❌     │    ❌     │    ❌     │
-└──────────────────────┴──────────┴──────────┴──────────┴───────────┘
-```
-
-### **The Only Library with 100% Blueprint Coverage**
+### The Only Library with 100% Blueprint Coverage
 
 We analyzed every major AI chat platform (ChatGPT, Claude, Gemini) and built **every essential feature**:
 
@@ -94,55 +146,45 @@ We analyzed every major AI chat platform (ChatGPT, Claude, Gemini) and built **e
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
----
-
-## 🚀 **Get Started in 60 Seconds**
-
-```bash
-npm install @clarity-chat/react
-```
-
-```tsx
-import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react'
-import '@clarity-chat/react/styles.css'
-
-function App() {
-  return (
-    <ThemeProvider theme={themes.ocean}>
-      <ChatWindow
-        messages={messages}
-        onSendMessage={async (content) => {
-          const response = await fetch('/api/chat', {
-            method: 'POST',
-            body: JSON.stringify({ message: content }),
-          })
-          return response.json()
-        }}
-      />
-    </ThemeProvider>
-  )
-}
-```
+### Feature Comparison
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│   ✨ Beautiful animations      ♿ Full keyboard navigation  │
-│   📱 Mobile responsive         🎨 Professional styling      │
-│   ⚡ Optimized performance     🔒 Production security       │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                         FEATURE COMPARISON                           │
+├──────────────────────┬──────────┬──────────┬──────────┬───────────┤
+│ Feature              │ Clarity  │ ChatGPT  │ Claude   │ Gemini    │
+├──────────────────────┼──────────┼──────────┼──────────┼───────────┤
+│ Components           │    70+   │    ❌     │    ❌     │    ❌     │
+│ Custom Hooks         │    30+   │    ❌     │    ❌     │    ❌     │
+│ Themes               │    11    │    1     │    1     │    1     │
+│ Token Optimization   │    ✅     │    ❌     │    ❌     │    ❌     │
+│ Vector Stores        │    4     │    ❌     │    ❌     │    ❌     │
+│ RAG Pipeline         │    ✅     │    ❌     │    ❌     │    ❌     │
+│ Agent Orchestration  │    ✅     │    ❌     │    ❌     │    ❌     │
+│ Accessibility        │   AAA     │    AA     │    AA     │    AA     │
+│ Open Source          │    ✅     │    ❌     │    ❌     │    ❌     │
+│ Customizable         │    ✅     │    ❌     │    ❌     │    ❌     │
+└──────────────────────┴──────────┴──────────┴──────────┴───────────┘
 ```
-
-**That's it.** You now have a production-ready AI chat interface!
-
-**[→ Full Quick Start Guide](./QUICK_START_GUIDE.md)**
 
 ---
 
-## 🎨 **Visual Showcase**
+## 🖥️ Environment Support
 
-### **Component Architecture**
+- **Modern Browsers** - Chrome, Firefox, Safari, Edge (last 2 versions)
+- **Server-Side Rendering** - Next.js, Remix, and more
+- **Mobile** - iOS Safari, Chrome Mobile
+- **Node.js** - 18+ for server-side features
+
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Edge |
+| --- | --- | --- | --- |
+| ✅ Last 2 versions | ✅ Last 2 versions | ✅ Last 2 versions | ✅ Last 2 versions |
+
+---
+
+## 🎨 Visual Showcase
+
+### Component Architecture
 
 ```
 ╔═══════════════════════════════════════════════════════════════════╗
@@ -151,6 +193,10 @@ function App() {
 ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
+<details>
+<summary><b>View Full Architecture Diagram</b></summary>
+
+```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         UI COMPONENTS LAYER                          │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -207,7 +253,9 @@ function App() {
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### **Data Flow Visualization**
+</details>
+
+### Data Flow Visualization
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -267,9 +315,9 @@ function App() {
 
 ---
 
-## 🌟 **Feature Highlights**
+## 🌟 Feature Highlights
 
-### **1. Token Optimization Suite** 💰
+### 1. Token Optimization Suite 💰
 
 **Save 50-80% on AI API costs** with our comprehensive optimization toolkit:
 
@@ -331,7 +379,7 @@ function OptimizedChat() {
 
 ---
 
-### **2. Beautiful Design System** 🎨
+### 2. Beautiful Design System 🎨
 
 **11 Stunning Themes** with a 6-level shadow system and 150+ animations:
 
@@ -367,7 +415,7 @@ import { ThemeProvider, themes } from '@clarity-chat/react'
 
 ---
 
-### **3. Streaming & Real-Time Updates** ⚡
+### 3. Streaming & Real-Time Updates ⚡
 
 **Multiple streaming options** with automatic reconnection:
 
@@ -411,7 +459,7 @@ function StreamingChat() {
 
 ---
 
-### **4. Enterprise AI Infrastructure** 🤖
+### 4. Enterprise AI Infrastructure 🤖
 
 **Complete RAG pipeline, agents, and vector stores**:
 
@@ -464,7 +512,7 @@ function EnterpriseChat() {
 
 ---
 
-### **5. Advanced Message Operations** ✏️
+### 5. Advanced Message Operations ✏️
 
 **Edit, regenerate, branch, and undo/redo** conversations:
 
@@ -508,7 +556,7 @@ function AdvancedChat() {
 
 ---
 
-### **6. Voice Input & Multi-Modal** 🎤
+### 6. Voice Input & Multi-Modal 🎤
 
 **Voice input with animated waveform visualization**:
 
@@ -550,7 +598,7 @@ function MultiModalChat() {
 
 ---
 
-### **7. Command Palette & Keyboard Shortcuts** ⌨️
+### 7. Command Palette & Keyboard Shortcuts ⌨️
 
 **Power-user features for efficiency**:
 
@@ -590,7 +638,7 @@ function PowerUserChat() {
 
 ---
 
-### **8. Analytics & Monitoring** 📊
+### 8. Analytics & Monitoring 📊
 
 **Built-in analytics with 7 providers**:
 
@@ -628,9 +676,9 @@ function AnalyticsChat() {
 
 ---
 
-## 📦 **Component Library**
+## 📦 Component Library
 
-### **Core Components (70+)**
+### Core Components (70+)
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -678,10 +726,10 @@ function AnalyticsChat() {
 ║  │ AuditLogViewer     │ WorkflowSuggestionList               │ ║
 ║  └───────────────────────────────────────────────────────────┘ ║
 ║                                                               ║
-╚═══════════════════════════════════════════════════════════════╝
+╚═══════════════════════════════════════════════════════════╝
 ```
 
-### **Custom Hooks (30+)**
+### Custom Hooks (30+)
 
 ```tsx
 // Streaming
@@ -722,7 +770,71 @@ useObservability()        // Tracing and metrics
 
 ---
 
-## 🎯 **Performance Metrics**
+## 📦 Packages
+
+| Package | Description | Size |
+|---------|-------------|------|
+| [`@clarity-chat/react`](./packages/react) | Main library + AI infrastructure ⭐ | ~120KB |
+| [`@clarity-chat/types`](./packages/types) | TypeScript definitions | ~8KB |
+| [`@clarity-chat/primitives`](./packages/primitives) | Base UI components | ~25KB |
+| [`@clarity-chat/error-handling`](./packages/error-handling) | Error recovery system | ~45KB |
+
+**New in v2.0**:
+- Vector stores, embeddings, agents, RAG pipeline
+- AI safety, observability, webhooks, plugins
+- Multi-tenancy, RBAC, audit logging, quotas
+- Token optimization suite 🆕
+- All optional, tree-shakeable modules (+35KB)
+
+---
+
+## 📚 Documentation
+
+### Getting Started
+- [Quick Start Guide](./QUICK_START_GUIDE.md) - Get started in 5 minutes
+- [Installation Guide](./apps/docs/guide/installation.md)
+- [First Component Tutorial](./apps/docs/guide/getting-started.md)
+
+### Guides
+- [Theming System](./apps/docs/guide/theming.md)
+- [Token Optimization](./apps/docs/guide/token-optimization.md) 🆕
+- [Streaming Messages](./apps/docs/guide/streaming.md)
+- [Error Handling](./apps/docs/guide/error-handling.md)
+- [Accessibility](./apps/docs/guide/accessibility.md)
+- [Performance Guide](./PERFORMANCE_GUIDE.md)
+
+### API Reference
+- [Components (70+)](./apps/docs/api/components.md)
+- [Hooks (30+)](./apps/docs/api/hooks.md)
+- [Utilities](./apps/docs/api/utilities.md)
+- [TypeScript Types](./apps/docs/api/types.md)
+
+### Examples Gallery (17 Production-Ready Examples)
+
+```
+📁 examples/
+├── 🆕 token-optimization-demo/    # Complete optimization showcase
+├── 🆕 ecommerce-assistant/        # Shopping chatbot
+├── 🆕 code-assistant/              # AI coding companion
+├── 🆕 ai-agents-workflow/          # Multi-agent system
+├── 🆕 document-summarizer/         # Intelligent summarization
+├── 🆕 email-assistant/             # Email composition
+├── 🆕 healthcare-assistant/        # Appointment booking
+├── 🆕 financial-advisor/          # Budget planning
+├── 🆕 ai-tutor/                    # Adaptive learning
+├── model-comparison-demo/          # Compare AI providers
+├── rag-workbench-demo/             # Document Q&A
+├── analytics-console-demo/        # Usage tracking
+├── ai-assistant/                   # TanStack Query patterns
+├── customer-support/               # Supabase integration
+└── streaming-chat/                 # Streaming patterns
+```
+
+**[→ View All Examples](./examples/README.md)**
+
+---
+
+## 🎯 Performance Metrics
 
 ```
 ╔═══════════════════════════════════════════════════════════╗
@@ -762,9 +874,9 @@ useObservability()        // Tracing and metrics
 
 ---
 
-## 🛠️ **Developer Experience**
+## 🛠️ Developer Experience
 
-### **Beautiful CLI Tool**
+### Beautiful CLI Tool
 
 ```bash
 # Interactive component browser
@@ -789,18 +901,18 @@ clarity-chat analyze
 - 🔍 **Component Search**: Find what you need instantly
 - 📊 **Performance Analysis**: Benchmark your app
 
-### **VSCode Extension**
+### VSCode Extension
 
 - 📝 **60+ Code Snippets**: Type `cc-` for component templates
 - 💡 **IntelliSense**: Full TypeScript support with hover docs
 - 🔍 **Real-time Diagnostics**: Catch errors as you type
 - 👁️ **Component Preview**: See components in action
 
-### **Interactive Playground**
+### Interactive Playground
 
 Monaco-based REPL for testing components in real-time with live preview and templates.
 
-### **Advanced Debugging**
+### Advanced Debugging
 
 - ⏪ **Time-Travel Debugger**: Record and replay conversation states
 - 🔀 **Model Comparator**: Compare AI responses side-by-side
@@ -808,82 +920,7 @@ Monaco-based REPL for testing components in real-time with live preview and temp
 
 ---
 
-## 📚 **Documentation & Examples**
-
-### **Getting Started**
-- [Quick Start Guide](./QUICK_START_GUIDE.md) - Get started in 5 minutes
-- [Installation Guide](./apps/docs/guide/installation.md)
-- [First Component Tutorial](./apps/docs/guide/getting-started.md)
-
-### **Guides**
-- [Theming System](./apps/docs/guide/theming.md)
-- [Token Optimization](./apps/docs/guide/token-optimization.md) 🆕
-- [Streaming Messages](./apps/docs/guide/streaming.md)
-- [Error Handling](./apps/docs/guide/error-handling.md)
-- [Accessibility](./apps/docs/guide/accessibility.md)
-- [Performance Guide](./PERFORMANCE_GUIDE.md)
-
-### **API Reference**
-- [Components (70+)](./apps/docs/api/components.md)
-- [Hooks (30+)](./apps/docs/api/hooks.md)
-- [Utilities](./apps/docs/api/utilities.md)
-- [TypeScript Types](./apps/docs/api/types.md)
-
-### **Examples Gallery** (17 Production-Ready Examples)
-
-```
-📁 examples/
-├── 🆕 token-optimization-demo/    # Complete optimization showcase
-├── 🆕 ecommerce-assistant/        # Shopping chatbot
-├── 🆕 code-assistant/              # AI coding companion
-├── 🆕 ai-agents-workflow/          # Multi-agent system
-├── 🆕 document-summarizer/         # Intelligent summarization
-├── 🆕 email-assistant/             # Email composition
-├── 🆕 healthcare-assistant/        # Appointment booking
-├── 🆕 financial-advisor/          # Budget planning
-├── 🆕 ai-tutor/                    # Adaptive learning
-├── model-comparison-demo/          # Compare AI providers
-├── rag-workbench-demo/             # Document Q&A
-├── analytics-console-demo/        # Usage tracking
-├── ai-assistant/                   # TanStack Query patterns
-├── customer-support/               # Supabase integration
-└── streaming-chat/                 # Streaming patterns
-```
-
-**[→ View All Examples](./examples/README.md)**
-
----
-
-## 🏗️ **Project Structure**
-
-```
-clarity-chat/
-├── packages/
-│   ├── react/              # Main library (35,000+ LOC)
-│   │   ├── components/    # 70+ React components
-│   │   ├── hooks/         # 30+ custom hooks
-│   │   ├── adapters/      # AI provider adapters
-│   │   ├── vector-stores/ # Vector database integrations
-│   │   ├── agents/        # Agent orchestration
-│   │   └── ...
-│   ├── types/             # TypeScript definitions
-│   ├── primitives/        # Base UI components
-│   ├── error-handling/    # Error recovery system
-│   ├── cli/               # Developer CLI tool
-│   └── dev-tools/         # Debugging & dev tools
-│
-├── apps/
-│   ├── storybook/         # Component documentation
-│   └── docs/              # Documentation site
-│
-├── examples/              # 17 production-ready examples
-│
-└── docs/                  # Markdown documentation
-```
-
----
-
-## 🧪 **Testing & Quality**
+## 🧪 Testing & Quality
 
 ```bash
 # Run all tests
@@ -912,31 +949,36 @@ npm run test:e2e
 
 ---
 
-## 🎨 **Themes**
+## 🤝 Contributing
 
-Choose from **11 stunning built-in themes** or create your own:
+We welcome contributions! See our [Contributing Guide](./CONTRIBUTING.md) for details.
 
-```tsx
-import { themes } from '@clarity-chat/react'
+```bash
+# Clone the repo
+git clone https://github.com/christireid/Clarity-ai-chat-components.git
 
-themes.default        // Clean, professional
-themes.dark          // Dark mode
-themes.ocean         // Blue ocean vibes 🌊
-themes.glassmorphism // Modern glass effect ✨
-themes.sunset        // Warm sunset colors 🌅
-themes.forest        // Green nature theme 🌲
-themes.corporate     // Professional business 💼
-themes.neon          // Cyberpunk neon 💜
-themes.minimal       // Ultra minimal
-themes.warm          // Cozy warm tones 🔥
-themes.cool          // Cool blue/gray ❄️
+# Install dependencies
+npm install
+
+# Start development
+npm run dev
+
+# Run Storybook
+npm run storybook
 ```
-
-**[→ Custom Theme Guide](./apps/docs/guide/theming.md)**
 
 ---
 
-## 📊 **Stats & Metrics**
+## 💬 Community & Support
+
+- 💬 [Discord Community](https://discord.gg/clarity-chat) - Join our friendly community
+- 🐛 [Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues) - Found a bug?
+- 💡 [Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions) - Have an idea?
+- 📧 [Email Support](mailto:support@codeclarity.ai) - Need help?
+
+---
+
+## 📊 Stats & Metrics
 
 ```
 ╔═══════════════════════════════════════════════════════════╗
@@ -972,45 +1014,13 @@ themes.cool          // Cool blue/gray ❄️
 
 ---
 
-## 🤝 **Contributing**
-
-We welcome contributions! See our [Contributing Guide](./CONTRIBUTING.md) for details.
-
-```bash
-# Clone the repo
-git clone https://github.com/christireid/Clarity-ai-chat-components.git
-
-# Install dependencies
-npm install
-
-# Start development
-npm run dev
-
-# Run Storybook
-npm run storybook
-```
-
----
-
-## 🌟 **Showcase**
-
-Projects built with Clarity Chat:
-
-- **[AI Code Assistant](https://example.com)** - Pair programming AI
-- **[Customer Support Bot](https://example.com)** - 24/7 support automation
-- **[Documentation Helper](https://example.com)** - Interactive docs
-
-**[Submit your project](https://github.com/christireid/Clarity-ai-chat-components/discussions)**
-
----
-
-## 📄 **License**
+## 📄 License
 
 MIT © 2024 [Code & Clarity](https://codeclarity.ai)
 
 ---
 
-## 🙏 **Acknowledgments**
+## 🙏 Acknowledgments
 
 Built with amazing open-source tools:
 
@@ -1020,25 +1030,6 @@ Built with amazing open-source tools:
 - [Framer Motion](https://www.framer.com/motion/) - Animations
 - [Radix UI](https://www.radix-ui.com/) - Accessible primitives
 - [Vitest](https://vitest.dev/) - Testing
-
----
-
-## 🔗 **Links**
-
-- **Documentation:** [clarity-chat.dev](https://clarity-chat.dev)
-- **Storybook:** [storybook.clarity-chat.dev](https://storybook.clarity-chat.dev)
-- **Discord:** [Join Community](https://discord.gg/clarity-chat)
-- **Twitter:** [@clarity_chat](https://twitter.com/clarity_chat)
-- **GitHub:** [Repository](https://github.com/christireid/Clarity-ai-chat-components)
-
----
-
-## 📞 **Support**
-
-- 💬 [Discord Community](https://discord.gg/clarity-chat)
-- 🐛 [Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
-- 💡 [Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions)
-- 📧 [Email Support](mailto:support@codeclarity.ai)
 
 ---
 
