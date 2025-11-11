@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
+import { expect, within, userEvent } from '@storybook/test'
 
 /**
  * Enhanced Button component with ripple effect, loading states, and success/error feedback.
@@ -68,6 +69,18 @@ export const Default: Story = {
   args: {
     children: 'Default Button',
     variant: 'default',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /default button/i })
+    
+    // Verify button is visible and accessible
+    await expect(button).toBeVisible()
+    await expect(button).toBeEnabled()
+    
+    // Test keyboard interaction
+    await userEvent.tab()
+    await expect(button).toHaveFocus()
   },
 }
 
@@ -213,6 +226,21 @@ export const InteractiveStates: Story = {
         </p>
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /click me/i })
+    
+    // Verify initial state
+    await expect(button).toBeVisible()
+    await expect(button).toBeEnabled()
+    
+    // Click button and verify state change
+    await userEvent.click(button)
+    await expect(button).toBeDisabled()
+    
+    // Wait for async operation to complete
+    await expect(canvas.getByText(/processing/i)).toBeVisible()
   },
 }
 

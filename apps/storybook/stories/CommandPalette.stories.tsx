@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { CommandPalette, CommandItem } from '@clarity-chat/react'
 import { useState } from 'react'
+import { expect, within, userEvent } from '@storybook/test'
 
 /**
  * Command Palette
@@ -120,6 +121,26 @@ export const Default: Story = {
         />
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    
+    // Verify command palette is visible
+    const searchInput = canvas.getByPlaceholderText(/type a command/i)
+    await expect(searchInput).toBeVisible()
+    await expect(searchInput).toHaveFocus()
+    
+    // Test search functionality
+    await userEvent.type(searchInput, 'new')
+    const newChatCommand = canvas.getByText(/new chat/i)
+    await expect(newChatCommand).toBeVisible()
+    
+    // Test keyboard navigation
+    await userEvent.keyboard('{ArrowDown}')
+    await expect(canvas.getByText(/search messages/i)).toHaveFocus()
+    
+    // Test selection
+    await userEvent.keyboard('{Enter}')
   },
 }
 
