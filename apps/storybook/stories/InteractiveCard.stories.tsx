@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import React from 'react'
 import { InteractiveCard, InteractiveButton } from '@clarity-chat/react'
+import { expect, within, userEvent } from '@storybook/test'
 
 const meta = {
   title: 'Foundations/Micro-Interactions/Interactive Card',
@@ -99,6 +100,21 @@ export const PricingTiles: Story = {
         ))}
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    
+    // Verify cards are visible
+    const starterCard = canvas.getByText('Starter')
+    await expect(starterCard).toBeVisible()
+    
+    // Test keyboard navigation
+    const growthCard = canvas.getByText('Growth').closest('[role="button"]')
+    if (growthCard) {
+      await userEvent.tab()
+      await userEvent.tab()
+      await expect(growthCard).toHaveFocus()
+    }
   },
 }
 

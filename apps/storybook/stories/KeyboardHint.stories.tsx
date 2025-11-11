@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { KeyboardHint } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { KeyboardHintShortcut } from '@clarity-chat/react'
+import { expect, within, userEvent } from '@storybook/test'
 
 const meta: Meta<typeof KeyboardHint> = {
   title: 'Components/KeyboardHint',
@@ -69,6 +70,22 @@ export const Default: Story = {
         </div>
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    
+    // Verify keyboard hint panel is visible
+    const panel = canvas.getByText('Keyboard Shortcuts')
+    await expect(panel).toBeVisible()
+    
+    // Verify shortcuts are displayed
+    const commandPaletteShortcut = canvas.getByText(/open command palette/i)
+    await expect(commandPaletteShortcut).toBeVisible()
+    
+    // Test close button
+    const closeButton = canvas.getByLabelText('Close')
+    await userEvent.click(closeButton)
+    await expect(panel).not.toBeVisible()
   },
 }
 

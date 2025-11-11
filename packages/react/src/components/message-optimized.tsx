@@ -20,7 +20,7 @@ import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
 
-export interface MessageOptimizedProps {
+export interface MessageOptimizedProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'ref'> {
   message: MessageType
   onCopy?: (content: string) => void
   onFeedback?: (type: 'up' | 'down') => void
@@ -29,6 +29,8 @@ export interface MessageOptimizedProps {
   showAvatar?: boolean
   showTimestamp?: boolean
   className?: string
+  /** React 19: ref can be a prop directly */
+  ref?: React.Ref<HTMLDivElement>
 }
 
 /**
@@ -56,21 +58,20 @@ const markdownComponents: Components = {
 }
 
 /**
- * Optimized Message component with React.memo
+ * Optimized Message component - Modernized for React 19
+ * 
+ * React 19: Using ref as prop, memo kept for explicit optimization
  */
-export const MessageOptimized = React.memo(
-  React.forwardRef<HTMLDivElement, MessageOptimizedProps>(
-    (
-      {
-        message,
-        onFeedback,
-        onRetry,
-        showAvatar = true,
-        showTimestamp = true,
-        className,
-      },
-      ref
-    ) => {
+export const MessageOptimized = React.memo(function MessageOptimized({
+  message,
+  onFeedback,
+  onRetry,
+  showAvatar = true,
+  showTimestamp = true,
+  className,
+  ref,
+  ...props
+}: MessageOptimizedProps) {
       const [isHovered, setIsHovered] = React.useState(false)
       const [feedbackGiven, setFeedbackGiven] = React.useState<'up' | 'down' | null>(
         message.feedback?.type || null
@@ -294,20 +295,16 @@ export const MessageOptimized = React.memo(
           </div>
         </motion.div>
       )
-    }
-  ),
-  // Custom comparison function for React.memo
-  (prevProps, nextProps) => {
-    // Only re-render if these props change
-    return (
-      prevProps.message.id === nextProps.message.id &&
-      prevProps.message.content === nextProps.message.content &&
-      prevProps.message.status === nextProps.message.status &&
-      prevProps.message.feedback?.type === nextProps.message.feedback?.type &&
-      prevProps.showAvatar === nextProps.showAvatar &&
-      prevProps.showTimestamp === nextProps.showTimestamp
-    )
-  }
-)
-
-MessageOptimized.displayName = 'MessageOptimized'
+},
+// Custom comparison function for React.memo
+(prevProps, nextProps) => {
+  // Only re-render if these props change
+  return (
+    prevProps.message.id === nextProps.message.id &&
+    prevProps.message.content === nextProps.message.content &&
+    prevProps.message.status === nextProps.message.status &&
+    prevProps.message.feedback?.type === nextProps.message.feedback?.type &&
+    prevProps.showAvatar === nextProps.showAvatar &&
+    prevProps.showTimestamp === nextProps.showTimestamp
+  )
+})
