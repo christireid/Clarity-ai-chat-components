@@ -15,6 +15,57 @@
 
 </div>
 
+## 📑 Table of Contents
+
+- [Links](#-links)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Features](#-features)
+- [What Makes This Library Special?](#-what-makes-this-library-special)
+  - [Blueprint Coverage](#the-only-library-with-100-blueprint-coverage)
+  - [Feature Comparison](#feature-comparison)
+- [Environment Support](#️-environment-support)
+- [Visual Showcase](#-visual-showcase)
+  - [Component Architecture](#component-architecture)
+  - [Data Flow Visualization](#data-flow-visualization)
+- [Feature Highlights](#-feature-highlights)
+  - [Token Optimization Suite](#1-token-optimization-suite-)
+  - [Beautiful Design System](#2-beautiful-design-system-)
+  - [Streaming & Real-Time Updates](#3-streaming--real-time-updates-)
+  - [Enterprise AI Infrastructure](#4-enterprise-ai-infrastructure-)
+  - [Advanced Message Operations](#5-advanced-message-operations-)
+  - [Voice Input & Multi-Modal](#6-voice-input--multi-modal-)
+  - [Command Palette & Keyboard Shortcuts](#7-command-palette--keyboard-shortcuts-)
+  - [Analytics & Monitoring](#8-analytics--monitoring-)
+- [Component Library](#-component-library)
+  - [Core Components (70+)](#core-components-70)
+  - [Complete Component Reference](#complete-component-reference)
+  - [Custom Hooks (35+)](#custom-hooks-35)
+- [Enterprise AI Infrastructure](#️-enterprise-ai-infrastructure)
+- [Utilities & Helpers](#️-utilities--helpers)
+- [Templates & Pre-built Solutions](#-templates--pre-built-solutions)
+- [Analytics System](#-analytics-system)
+- [Accessibility Features](#️-accessibility-features)
+- [Theme System](#️-theme-system)
+- [Animation System](#️-animation-system)
+- [Packages](#-packages)
+- [Documentation](#-documentation)
+- [Performance Metrics](#-performance-metrics)
+- [Developer Experience](#️-developer-experience)
+  - [Beautiful CLI Tool](#beautiful-cli-tool)
+  - [MCP Server](#mcp-server-model-context-protocol)
+  - [Memory Management Tools](#memory-management-tools)
+  - [VSCode Extension](#vscode-extension)
+  - [Interactive Playground](#interactive-playground)
+  - [Advanced Debugging Tools](#advanced-debugging-tools)
+- [Testing & Quality](#-testing--quality)
+- [Community & Support](#-community--support)
+- [Stats & Metrics](#-stats--metrics)
+- [License](#-license)
+- [Acknowledgments](#-acknowledgments)
+
+---
+
 ## Links
 
 - [Documentation](https://docs.clarity-chat.dev) - Complete API reference and guides
@@ -729,51 +780,300 @@ function AnalyticsChat() {
 ╚═══════════════════════════════════════════════════════════╝
 ```
 
+#### Complete Component Reference
+
+**📨 Messaging Components (20+):** `ChatWindow`, `MessageList`, `VirtualizedMessageList`, `Message`, `MessageOptimized`, `StreamingMessage`, `MessageBubble`, `MessageMetadata`, `MessageSearch`, `AdvancedMessageSearch`, `ConversationTimeline`, `ConversationList`, `ConversationBranchVisualizer`, `MemoryInspector`, `StreamBlock`, `StreamingTextRenderer`, `ThinkingIndicator`, `CopyButton`, `StreamCancellation`, `EmptyState`
+
+**⌨️ Input & Interaction (15+):** `ChatInput`, `AdvancedChatInput`, `VoiceInput`, `FileUpload`, `CommandPalette`, `ContextMenu`, `Draggable`, `FollowUpSuggestions`, `PromptSuggestions`, `KeyboardHint`, `ModelSelector`, `PersonaPanel`
+
+**🎨 UI Primitives & Layout (25+):** `Button`, `Input`, `Card`, `InteractiveCard`, `Badge`, `Dialog`, `Tooltip`, `Dropdown`, `Tabs`, `Switch`, `Checkbox`, `Skeleton`, `AnimatedList`, `Toast`, `Progress`, `FeedbackAnimation`, `Icons`, `ThemeSelector`, `ThemeSwitcher`, `ThemePreview`, `ProjectSidebar`, `SettingsPanel`, `LinkPreview`, `ContextCard`, `ContextManager`, `ContextVisualizer`
+
+**📊 Data Display & Analytics (15+):** `TokenCounter`, `TokenOptimizationPanel`, `TokenOptimizationBadge`, `TokenOptimizationDashboard`, `AnalyticsDashboard`, `UsageDashboard`, `PerformanceDashboard`, `ResponseQualityMeter`, `SessionSummaryCard`, `PerformanceMetrics`, `NetworkStatus`, `ErrorBoundary`, `ErrorBoundaryEnhanced`, `RetryButton`
+
+**🤖 Enterprise AI (15+):** `VectorStoreViewer`, `AgentRunFeed`, `RAGPipeline`, `SafetyStatusCard`, `DocumentViewer`, `MultiModalPreview`, `AuditLogViewer`, `WorkflowSuggestionList`, `KnowledgeBaseViewer`, `CitationCard`, `ToolInvocationCard`, `AIOps`, `Enterprise`
+
+**📤 Export & Management (5+):** `ExportDialog`, `BatchExportDialog`, `PromptLibrary`
+
+**🎨 Enhanced Rendering (5+):** `EnhancedMarkdownRenderer`, `MarkdownRendererEnhanced`, `EnhancedCodeBlock`
+
 ### Custom Hooks (35+)
 
+#### Streaming Hooks
 ```tsx
-// Streaming
-useStreamingSSE()          // Server-Sent Events
-useStreamingWebSocket()    // WebSocket connections
+useStreamingSSE()          // Server-Sent Events with auto-reconnect
+useStreamingWebSocket()    // WebSocket connections with heartbeat
+useStreaming()             // Unified streaming interface
+useStreamableUI()          // Streamable UI components
+useAssistant()             // Assistant API integration
+```
 
-// Error Handling
+#### Error Handling Hooks
+```tsx
 useErrorRecovery()         // Retry with exponential backoff
 useRetry()                 // Manual retry logic
+```
 
-// Token Management
+#### Token Management Hooks
+```tsx
 useTokenTracker()          // Track usage and costs
-useTokenOptimization()    // Optimization suite
+useTokenOptimization()     // Comprehensive optimization suite
+useSmartCache()            // Semantic caching for token savings
+useModelRouter()           // Intelligent model routing
+useSmartThrottle()         // Smart request throttling
+```
 
-// Message Operations
-useMessageOperations()    // Edit, regenerate, branch
-useBranching()            // Conversation branching
+#### Message Operations Hooks
+```tsx
+useMessageOperations()     // Edit, regenerate, branch, undo/redo
+useMessageHistory()        // Message history management
+useBranching()             // Conversation branching
+useOptimisticMessage()     // Optimistic UI updates
+useChat()                  // Core chat functionality
+useChatEnhanced()          // Enhanced chat with advanced features
+useCompletion()             // Text completion
+```
 
-// UX Enhancements
-useRealisticTyping()      // Typing indicators
-useTypingIndicator()      // Multi-stage indicators
-useAutoScroll()           // Smart scrolling
+#### UX Enhancement Hooks
+```tsx
+useRealisticTyping()       // Realistic typing indicators
+useTypingIndicator()       // Multi-stage typing indicators
+useAutoScroll()            // Smart auto-scrolling
+useCommandPaletteCommands() // Command palette integration
+useDeferredSearch()        // Deferred search for performance
+```
 
-// Utilities
-useKeyboardShortcuts()    // Keyboard bindings
-useDebounce()             // Debounced values
-useThrottle()             // Throttled callbacks
-useClipboard()            // Clipboard operations
-useLocalStorage()         // Persistent state
-useMediaQuery()           // Responsive breakpoints
+#### Voice & Mobile Hooks
+```tsx
+useVoiceInput()            // Voice input with waveform
+useMobileKeyboard()        // Mobile keyboard handling
+```
 
-// Enterprise
+#### Utility Hooks
+```tsx
+useKeyboardShortcuts()     // Keyboard bindings
+useDebounce()              // Debounced values
+useThrottle()              // Throttled callbacks
+useClipboard()             // Clipboard operations
+useLocalStorage()          // LocalStorage persistence
+useIndexedDB()             // IndexedDB persistence
+useMediaQuery()            // Responsive breakpoints
+useEventListener()          // Event listener management
+useIntersectionObserver()  // Intersection observer
+useMounted()               // Component mount state
+usePrevious()              // Previous value tracking
+useToggle()                // Boolean toggle state
+useWindowSize()            // Window size tracking
+```
+
+#### Performance Hooks
+```tsx
+usePerformance()           // Performance monitoring
+```
+
+#### Enterprise AI Hooks
+```tsx
 useVectorStore()          // Vector database operations
-useRAGPipeline()          // RAG workflow
-useAgentOrchestration()   // Agent management
+useRAGPipeline()          // RAG workflow management
+useAgentOrchestration()   // Agent management and orchestration
 useObservability()        // Tracing and metrics
+```
 
-// Memory Management
+#### Memory Management Hooks
+```tsx
 useSlidingContextManager()  // Sliding window with RAG retrieval
 useTokenOptimizedContext()  // Context compression and optimization
-useVectorStoreAdapter()      // Vector store integration for memory
+useVectorStoreAdapter()     // Vector store integration for memory
 useMemoryRetrieval()        // Semantic memory search
 useMemoryStorage()          // Store and manage conversation memories
 ```
+
+---
+
+## 🏢 Enterprise AI Infrastructure
+
+### Vector Stores
+- **Pinecone** - High-performance vector database
+- **Qdrant** - Open-source vector search engine
+- **Weaviate** - Cloud-native vector database
+- **Chroma** - Embedding database
+
+### Embeddings
+- **OpenAI Embeddings** - text-embedding-ada-002, text-embedding-3-small/large
+- **Cohere Embeddings** - embed-english-v3.0, embed-multilingual-v3.0
+- **Caching** - Semantic similarity caching for cost reduction
+
+### Agent Orchestration
+- **ReAct Pattern** - Reasoning and Acting agent framework
+- **Tool Calling** - Function/tool invocation support
+- **Multi-Agent Systems** - Coordinate multiple agents
+- **Agent Run Feed** - Real-time agent execution visualization
+
+### RAG Pipeline
+- **Document Loaders** - PDF, Markdown, HTML, CSV, JSON, and more
+- **Text Splitting** - Intelligent chunking strategies
+- **Hybrid Search** - Keyword + semantic search
+- **Reranking** - Cohere, Jina, Voyage reranking support
+
+### AI Safety
+- **PII Detection** - Detect personally identifiable information
+- **Content Filtering** - Moderation and content safety
+- **Guardrails** - Prompt injection protection
+- **Safety Status Card** - Real-time safety monitoring
+
+### Observability
+- **Tracing** - Request tracing and debugging
+- **Metrics** - Performance and usage metrics
+- **Evaluation** - Response quality evaluation
+- **LangSmith Integration** - Compatible with LangSmith
+
+### Multi-Tenancy & RBAC
+- **Tenant Isolation** - Secure multi-tenant support
+- **Role-Based Access Control** - Fine-grained permissions
+- **Audit Logging** - Complete audit trail
+- **Usage Quotas** - Per-tenant quota management
+
+### Webhooks & Plugins
+- **Webhook System** - Event-driven webhooks
+- **Plugin Architecture** - Extensible plugin system
+- **Custom Integrations** - Build custom integrations
+
+---
+
+## 🛠️ Utilities & Helpers
+
+### Model Adapters
+- **OpenAI** - GPT-3.5, GPT-4, GPT-4 Turbo, GPT-4o
+- **Anthropic** - Claude 3 Opus/Sonnet/Haiku, Claude 3.5 Sonnet
+- **Google** - Gemini Pro, Gemini Ultra
+- **Azure OpenAI** - Azure-hosted OpenAI models
+- **Custom Providers** - Extensible adapter pattern
+
+### Streaming Utilities
+- **StreamableValue** - React Server Components streaming
+- **Streaming Parser** - Parse streaming responses
+- **Chat Helpers** - Message formatting and processing
+
+### Performance Utilities
+- **Performance Optimization** - React optimization helpers
+- **Virtual Scrolling** - Efficient list rendering
+- **Memoization** - Smart memoization utilities
+
+### Export Utilities
+- **Markdown Export** - Export conversations as Markdown
+- **JSON Export** - Export as structured JSON
+- **Batch Export** - Export multiple conversations
+
+### Context Management
+- **Context Window** - Manage conversation context
+- **Sliding Window** - Dynamic context window
+- **Token-Optimized Context** - Compress context intelligently
+
+### Rate Limiting
+- **Token-Based Rate Limiting** - Per-user rate limits
+- **Request Rate Limiting** - API rate limiting
+- **Smart Throttling** - Intelligent request throttling
+
+### Hybrid Search
+- **Keyword Search** - Traditional keyword matching
+- **Semantic Search** - Vector similarity search
+- **Hybrid Scoring** - Combine both approaches
+
+---
+
+## 📚 Templates & Pre-built Solutions
+
+### Application Templates
+Pre-built templates for common use cases:
+- **AI Assistant** - General-purpose AI assistant
+- **Code Assistant** - AI coding companion
+- **Customer Support** - Support chatbot template
+- **Documentation Helper** - Interactive docs assistant
+- **E-commerce Assistant** - Shopping assistant
+- **Healthcare Assistant** - Medical appointment booking
+- **Financial Advisor** - Budget planning assistant
+- **AI Tutor** - Adaptive learning system
+
+### Prompt Templates
+Pre-built prompt templates for common tasks:
+- **System Prompts** - Role-based system prompts
+- **Instruction Templates** - Task-specific instructions
+- **Few-Shot Examples** - Example-based prompts
+- **Chain-of-Thought** - Reasoning prompts
+- **Custom Templates** - Create your own prompt templates
+
+---
+
+## 📊 Analytics System
+
+### Analytics Providers
+- **Google Analytics 4** - GA4 integration
+- **Mixpanel** - Product analytics
+- **PostHog** - Open-source analytics
+- **Amplitude** - Product analytics
+- **Segment** - Customer data platform
+- **Custom Providers** - Extensible analytics
+
+### Event Tracking
+- **35+ Pre-defined Events** - Message sent, response received, errors, etc.
+- **Custom Events** - Track custom events
+- **A/B Testing** - Built-in A/B testing support
+- **Performance Monitoring** - Real-time performance metrics
+
+### Error Tracking
+- **Sentry** - Error tracking and monitoring
+- **Rollbar** - Real-time error tracking
+- **Bugsnag** - Application stability monitoring
+- **Custom Providers** - Integrate any error tracking service
+
+---
+
+## ♿ Accessibility Features
+
+- **WCAG 2.1 AAA Compliance** - Highest accessibility standard
+- **Screen Reader Support** - Full ARIA labels and descriptions
+- **Keyboard Navigation** - Complete keyboard accessibility
+- **Focus Management** - Proper focus handling
+- **High Contrast Support** - Enhanced contrast modes
+- **Reduced Motion** - Respects prefers-reduced-motion
+- **Voice Control** - Voice input and control support
+
+---
+
+## 🎨 Theme System
+
+### Built-in Themes (11)
+- **default** - Clean, professional
+- **dark** - Dark mode
+- **ocean** - Blue ocean vibes 🌊
+- **glassmorphism** - Modern glass effect ✨
+- **sunset** - Warm sunset colors 🌅
+- **forest** - Green nature theme 🌲
+- **corporate** - Professional business 💼
+- **neon** - Cyberpunk neon 💜
+- **minimal** - Ultra minimal
+- **warm** - Cozy warm tones 🔥
+- **cool** - Cool blue/gray ❄️
+
+### Theme Features
+- **Live Theme Editor** - Edit themes in real-time
+- **Custom Themes** - Create your own themes
+- **Theme Preview** - Preview themes before applying
+- **6-Level Shadow System** - xs, sm, md, lg, xl, 2xl
+- **150+ Animations** - Professional cubic-bezier easing
+- **4px Grid System** - Precise alignment
+- **Refined Typography** - Perfect spacing & font smoothing
+
+---
+
+## 🎬 Animation System
+
+- **150+ Animations** - Pre-built animation presets
+- **Framer Motion Integration** - Powered by Framer Motion
+- **Cubic-Bezier Easing** - Professional easing curves
+- **Staggered Animations** - Sequential element animations
+- **Feedback Animations** - User interaction feedback
+- **Performance Optimized** - GPU-accelerated animations
+- **Reduced Motion Support** - Respects accessibility preferences
 
 ---
 
