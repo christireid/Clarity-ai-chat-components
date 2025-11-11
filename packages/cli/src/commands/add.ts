@@ -15,6 +15,10 @@ import { loadConfig } from '../utils/config.js'
 import { outputJson, success, info } from '../utils/output.js'
 import { detectPackageManager } from '../utils/detect.js'
 import { installDependencies } from '../utils/install.js'
+import { createBanner } from '../ui/banner.js'
+import { successMessage, infoMessage } from '../ui/messages.js'
+import { createSpinner } from '../ui/progress.js'
+import { createStatusTable } from '../ui/table.js'
 
 const logger = getLogger('add')
 
@@ -61,6 +65,11 @@ export async function addCommand(component: string, options: AddOptions) {
   try {
     // Handle batch mode
     if (options.batch) {
+      if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+        console.log('\n')
+        console.log(createBanner('Add Components', { gradient: 'rainbow', border: true, borderColor: 'cyan' }))
+      }
+      
       const { batchAddComponents } = await import('../utils/batch.js')
       const components = options.batch.split(',').map(c => c.trim())
       const result = await batchAddComponents(components, {
@@ -73,7 +82,15 @@ export async function addCommand(component: string, options: AddOptions) {
         process.exit(1)
       }
       
-      success(`Successfully added ${result.successful.length} components`)
+      if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+        console.log('\n')
+        console.log(successMessage(`Successfully added ${result.successful.length} components!`, {
+          title: '✨ Complete',
+          borderColor: 'green',
+        }))
+      } else {
+        success(`Successfully added ${result.successful.length} components`)
+      }
       return
     }
 
@@ -92,9 +109,15 @@ export async function addCommand(component: string, options: AddOptions) {
       )
     }
 
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(createBanner(`Add ${componentConfig.name}`, { gradient: 'cristal', border: true, borderColor: 'cyan' }))
+    }
+
     info(`Adding component: ${validatedComponent}`)
 
-    const spinner = ora('Preparing installation...').start()
+    const spinner = createSpinner('Preparing installation...', { color: 'cyan' })
+    spinner.start()
 
     const cwd = process.cwd()
     
@@ -160,10 +183,24 @@ export async function addCommand(component: string, options: AddOptions) {
 
     spinner.succeed('Component added successfully')
     
-    success(`Component "${validatedComponent}" added successfully!`)
-    info(`Import it in your code:`)
-    console.log(chalk.cyan(`  import { ${componentConfig.name.replace(/\s+/g, '')} } from '@/components/clarity-chat'`))
-    console.log(chalk.gray('\n📚 View docs: ') + chalk.bold(`clarity-chat docs ${validatedComponent}`))
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(successMessage(`Component "${validatedComponent}" added successfully!`, {
+        title: '✅ Added',
+        borderColor: 'green',
+      }))
+      console.log()
+      console.log(infoMessage(`Import it in your code:\n\n${chalk.bold.cyan(`import { ${componentConfig.name.replace(/\s+/g, '')} } from '@/components/clarity-chat'`)}`, {
+        title: '💻 Usage',
+        borderColor: 'blue',
+      }))
+      console.log()
+      console.log(chalk.gray('📚 View docs: ') + chalk.bold.cyan(`clarity-chat docs ${validatedComponent}`))
+    } else {
+      success(`Component "${validatedComponent}" added successfully!`)
+      info(`Import it in your code:`)
+      console.log(chalk.cyan(`  import { ${componentConfig.name.replace(/\s+/g, '')} } from '@/components/clarity-chat'`))
+    }
 
   } catch (error) {
     handleError(error)

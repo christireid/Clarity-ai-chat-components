@@ -11,6 +11,9 @@ import { ValidationError, handleError } from '../utils/errors.js'
 import { PortSchema, validate } from '../utils/validation.js'
 import { detectFramework, detectPackageManager } from '../utils/detect.js'
 import { success, info, warn } from '../utils/output.js'
+import { createBanner, createDivider } from '../ui/banner.js'
+import { successMessage, infoMessage } from '../ui/messages.js'
+import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('dev')
 
@@ -28,10 +31,13 @@ export async function devCommand(options: DevOptions) {
       : '3000'
     
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-      console.log('\n' + chalk.bold.cyan('🔥 Starting development server...\n'))
+      console.log('\n')
+      console.log(createBanner('Development Server', { gradient: 'cristal', border: true, borderColor: 'green' }))
+      console.log()
     }
     
-    const spinner = ora('Detecting framework and package manager...').start()
+    const spinner = createSpinner('Detecting framework and package manager...', { color: 'green' })
+    spinner.start()
 
     // Detect framework and package manager
     const cwd = process.cwd()
@@ -59,10 +65,17 @@ export async function devCommand(options: DevOptions) {
     }
 
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-      console.log(chalk.gray('─'.repeat(60)))
-      success(`Server starting at: http://localhost:${port}`)
-      console.log(chalk.gray('─'.repeat(60)))
-      console.log(chalk.gray('\nPress Ctrl+C to stop\n'))
+      console.log()
+      console.log(createDivider(60, '═', 'green'))
+      console.log()
+      console.log(successMessage(`Server starting at: ${chalk.bold.underline.cyan(`http://localhost:${port}`)}`, {
+        title: '🚀 Ready',
+        borderColor: 'green',
+      }))
+      console.log()
+      console.log(createDivider(60, '═', 'green'))
+      console.log()
+      console.log(chalk.gray('Press ') + chalk.bold.white('Ctrl+C') + chalk.gray(' to stop\n'))
     } else {
       info(`Starting server on port ${port}`)
     }

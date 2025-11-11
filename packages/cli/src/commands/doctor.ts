@@ -12,6 +12,10 @@ import { loadConfig } from '../utils/config.js'
 import { detectFramework, detectPackageManager, isTypeScriptProject, hasTailwind } from '../utils/detect.js'
 import { success, info, warn, error, outputJson, outputTable } from '../utils/output.js'
 import { ensureEnvInGitignore } from '../utils/security.js'
+import { createBanner, createDivider } from '../ui/banner.js'
+import { successMessage, errorMessage, warningMessage, infoMessage } from '../ui/messages.js'
+import { createStatusTable } from '../ui/table.js'
+import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('doctor')
 
@@ -30,7 +34,9 @@ interface CheckResult {
 export async function doctorCommand(options: DoctorOptions) {
   try {
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
-      console.log('\n' + chalk.bold.cyan('🩺 Clarity Chat Health Check\n'))
+      console.log('\n')
+      console.log(createBanner('Health Check', { gradient: 'teen', border: true, borderColor: 'cyan' }))
+      console.log()
     }
     
     const cwd = process.cwd()
@@ -45,7 +51,8 @@ export async function doctorCommand(options: DoctorOptions) {
     }
 
     // Check 1: package.json exists
-    const spinner = ora('Checking project structure...').start()
+    const spinner = createSpinner('Checking project structure...', { color: 'cyan' })
+    spinner.start()
     
     const packageJsonPath = path.join(cwd, 'package.json')
     if (await fs.pathExists(packageJsonPath)) {
@@ -331,34 +338,63 @@ GOOGLE_API_KEY=your_key_here
       return
     }
 
-    // Display by category
-    Object.entries(checksByCategory).forEach(([category, categoryChecks]) => {
-      if (!process.argv.includes('--quiet')) {
-        console.log(chalk.bold.cyan(`\n${category}:`))
-      }
-      categoryChecks.forEach(({ name, result }) => {
-        const icon = result.status === 'pass' ? '✅' : result.status === 'warn' ? '⚠️' : '❌'
-        const color = result.status === 'pass' ? 'green' : result.status === 'warn' ? 'yellow' : 'red'
+    // Display by category with beautiful formatting
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      for (const [category, categoryChecks] of Object.entries(checksByCategory)) {
+        console.log()
+        console.log(chalk.bold.cyan(`  ${category}`))
+        console.log(createDivider(50, '─', 'gray'))
         
-        if (result.status === 'pass') {
-          success(`${name}: ${result.message}`)
-        } else if (result.status === 'warn') {
-          warn(`${name}: ${result.message}`)
-        } else {
-          error(`${name}: ${result.message}`)
-        }
+        const statusItems = categoryChecks.map(({ name, result }) => ({
+          name,
+          status: result.status === 'pass' ? 'success' as const : result.status === 'warn' ? 'warning' as const : 'error' as const,
+          message: result.message,
+        }))
+        
+        const statusTable = await createStatusTable(statusItems)
+        console.log(statusTable)
+      }
+    } else {
+      // Simple output for quiet/JSON mode
+      Object.entries(checksByCategory).forEach(([category, categoryChecks]) => {
+        categoryChecks.forEach(({ name, result }) => {
+          if (result.status === 'pass') {
+            success(`${name}: ${result.message}`)
+          } else if (result.status === 'warn') {
+            warn(`${name}: ${result.message}`)
+          } else {
+            error(`${name}: ${result.message}`)
+          }
+        })
       })
-    })
+    }
 
-    // Summary
+    // Summary with beautiful formatting
     const passCount = checks.filter(c => c.result.status === 'pass').length
     const warnCount = checks.filter(c => c.result.status === 'warn').length
     const failCount = checks.filter(c => c.result.status === 'fail').length
 
-    console.log('\n' + chalk.bold('Summary:'))
-    success(`Passed: ${passCount}`)
-    if (warnCount > 0) warn(`Warnings: ${warnCount}`)
-    if (failCount > 0) error(`Failed: ${failCount}`)
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(createDivider(60, '═', 'cyan'))
+      const summaryItems = [
+        { name: 'Passed', status: 'success' as const, message: `${passCount} checks` },
+      ]
+      if (warnCount > 0) {
+        summaryItems.push({ name: 'Warnings', status: 'warning' as const, message: `${warnCount} checks` })
+      }
+      if (failCount > 0) {
+        summaryItems.push({ name: 'Failed', status: 'error' as const, message: `${failCount} checks` })
+      }
+      const summaryTable = await createStatusTable(summaryItems)
+      console.log(summaryTable)
+      console.log(createDivider(60, '═', 'cyan'))
+    } else {
+      console.log('\n' + chalk.bold('Summary:'))
+      success(`Passed: ${passCount}`)
+      if (warnCount > 0) warn(`Warnings: ${warnCount}`)
+      if (failCount > 0) error(`Failed: ${failCount}`)
+    }
 
     // Auto-fix if requested
     if (options.fix) {

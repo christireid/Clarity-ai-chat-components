@@ -16,6 +16,7 @@
 - 📊 **Multiple Output Modes** - Human-readable, JSON, quiet, and verbose modes
 - ⌨️ **Shell Completion** - Bash, zsh, and fish completion support
 - ⚙️ **Configuration Management** - Flexible config file support with cosmiconfig
+- 🎨 **Beautiful UI/UX** - Eye-catching gradients, formatted tables, beautiful message boxes, and smooth animations
 
 ## Installation
 
@@ -177,22 +178,65 @@ clarity-chat dev --watch
 
 The CLI automatically checks for updates when running common commands (`init`, `add`, `dev`) and notifies you if a new version is available.
 
+## Beautiful UI Features
+
+The CLI features a stunning visual design with:
+
+- **🌈 Gradient Banners** - Eye-catching headers for each command
+- **📦 Message Boxes** - Beautiful success, error, warning, and info boxes
+- **📊 Formatted Tables** - Professional table layouts for structured data
+- **⚡ Smooth Spinners** - Color-coded loading indicators
+- **🎯 Visual Hierarchy** - Clear structure with dividers and spacing
+- **✨ Consistent Design** - Cohesive visual language throughout
+
+### Visual Examples
+
+**Init Command:**
+```
+┌─────────────────────────────────────┐
+│   Initialize Project (gradient)     │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ 🚀 Getting Started                  │
+│ Setting up your AI-powered app...   │
+└─────────────────────────────────────┘
+```
+
+**Success Messages:**
+```
+┌─────────────────────────────────────┐
+│ ✨ All Set!                         │
+│ Project initialized successfully!   │
+└─────────────────────────────────────┘
+```
+
+**Status Tables:**
+```
+┌─────────────┬──────────────────────┐
+│ Item        │ Status               │
+├─────────────┼──────────────────────┤
+│ ✅ package.json │ Found             │
+│ ⚠️  API keys    │ Not configured    │
+└─────────────┴──────────────────────┘
+```
+
 ## Examples
 
 ### Quick Start
 
 ```bash
-# Create new project
+# Create new project (beautiful interactive wizard)
 npx @clarity-chat/cli init
 
 # Add components (single or batch)
 clarity-chat add chat-interface
 clarity-chat add chat-interface --batch "model-selector,token-counter"
 
-# Configure API keys
+# Configure API keys (beautiful prompts)
 clarity-chat keys add openai
 
-# Start development
+# Start development (eye-catching server start)
 clarity-chat dev --open
 ```
 

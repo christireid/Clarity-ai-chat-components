@@ -7,7 +7,6 @@
 
 import { Command } from 'commander'
 import chalk from 'chalk'
-import gradient from 'gradient-string'
 import { initCommand } from './commands/init.js'
 import { addCommand } from './commands/add.js'
 import { keysCommand } from './commands/keys.js'
@@ -24,10 +23,13 @@ import { initOutputMode } from './utils/output.js'
 import { handleError, withErrorHandling } from './utils/errors.js'
 import { setGlobalLogLevel, LogLevel } from './utils/logger.js'
 import { checkAndNotifyUpdate } from './utils/update.js'
+import { createBanner } from './ui/banner.js'
 
 const program = new Command()
 
-// ASCII Art Banner
+// Beautiful gradient banner - create synchronously for main entry
+import gradient from 'gradient-string'
+
 const banner = gradient.pastel.multiline([
   '  ____  _               _ _         ____  _           _   ',
   ' / ___|| | __ _ _ __(_) |_ _   _/ ___|| |__   __ _| |_ ',

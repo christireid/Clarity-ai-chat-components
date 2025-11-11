@@ -13,6 +13,9 @@ import { GenerateTypeSchema, validate, validateComponentName } from '../utils/va
 import { validatePath } from '../utils/security.js'
 import { loadConfig } from '../utils/config.js'
 import { success, info } from '../utils/output.js'
+import { createBanner } from '../ui/banner.js'
+import { successMessage, infoMessage } from '../ui/messages.js'
+import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('generate')
 
@@ -166,6 +169,15 @@ export async function generateCommand(type: string, options: GenerateOptions) {
       )
     }
 
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(createBanner(`Generate ${generator.name}`, { 
+        gradient: 'summer', 
+        border: true, 
+        borderColor: 'magenta' 
+      }))
+    }
+    
     info(`⚡ Code Generator: ${generator.name}`)
 
     // Get component name
@@ -223,7 +235,8 @@ export async function generateCommand(type: string, options: GenerateOptions) {
       return
     }
 
-    const spinner = ora('Generating code...').start()
+    const spinner = createSpinner('Generating code...', { color: 'magenta' })
+    spinner.start()
 
     // Ensure directory exists
     await fs.ensureDir(fullPath)
@@ -252,8 +265,22 @@ export async function generateCommand(type: string, options: GenerateOptions) {
     await fs.writeFile(filePath, content, 'utf-8')
 
     spinner.succeed('Code generated')
-    success(`File created: ${filePath}`)
-    info('Open it in your editor and start coding!')
+    
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(successMessage(`File created: ${chalk.bold.cyan(filePath)}`, {
+        title: '✨ Generated',
+        borderColor: 'green',
+      }))
+      console.log()
+      console.log(infoMessage('Open it in your editor and start coding!', {
+        title: '💻 Next Step',
+        borderColor: 'blue',
+      }))
+    } else {
+      success(`File created: ${filePath}`)
+      info('Open it in your editor and start coding!')
+    }
 
   } catch (error) {
     handleError(error)

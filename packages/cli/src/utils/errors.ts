@@ -4,6 +4,7 @@
  */
 
 import chalk from 'chalk'
+import boxen from 'boxen'
 import { getLogger } from './logger.js'
 
 const logger = getLogger('errors')
@@ -62,18 +63,38 @@ export class PermissionError extends CLIError {
  * Format and display error with suggestions
  */
 export function handleError(error: unknown): never {
+  // Don't show beautiful error UI in JSON mode
+  const isJsonMode = process.argv.includes('--json')
+  
   if (error instanceof CLIError) {
-    console.error('\n' + chalk.red.bold('❌ Error:'), chalk.red(error.message))
-    
-    if (error.suggestions.length > 0) {
-      console.error('\n' + chalk.yellow.bold('💡 Suggestions:'))
-      error.suggestions.forEach(suggestion => {
-        console.error(chalk.gray('  •'), suggestion)
-      })
-    }
-    
-    if (error.docs) {
-      console.error('\n' + chalk.blue.bold('📚 Documentation:'), chalk.cyan(error.docs))
+    if (!isJsonMode) {
+      console.error('\n')
+      const errorBox = boxen(
+        chalk.red.bold(error.message) +
+        (error.suggestions.length > 0 
+          ? '\n\n' + chalk.yellow.bold('💡 Suggestions:\n') +
+            error.suggestions.map(s => chalk.gray('  • ') + s).join('\n')
+          : '') +
+        (error.docs 
+          ? '\n\n' + chalk.blue.bold('📚 Documentation: ') + chalk.cyan.underline(error.docs)
+          : ''),
+        {
+          padding: 1,
+          margin: 1,
+          borderStyle: 'round',
+          borderColor: 'red',
+          title: '❌ Error',
+          titleAlignment: 'center',
+        }
+      )
+      console.error(errorBox)
+    } else {
+      console.error(JSON.stringify({
+        error: error.message,
+        code: error.code,
+        suggestions: error.suggestions,
+        docs: error.docs,
+      }))
     }
     
     logger.error(error)
@@ -81,19 +102,49 @@ export function handleError(error: unknown): never {
   }
   
   if (error instanceof Error) {
-    console.error('\n' + chalk.red.bold('❌ Unexpected Error:'), chalk.red(error.message))
-    
-    if (process.env.DEBUG || process.env.VERBOSE) {
-      console.error('\n' + chalk.gray(error.stack || ''))
+    if (!isJsonMode) {
+      console.error('\n')
+      const errorBox = boxen(
+        chalk.red.bold('Unexpected Error:') + '\n\n' + chalk.red(error.message) +
+        (process.env.DEBUG || process.env.VERBOSE && error.stack
+          ? '\n\n' + chalk.gray(error.stack)
+          : '\n\n' + chalk.gray('Run with --debug for more details')),
+        {
+          padding: 1,
+          margin: 1,
+          borderStyle: 'round',
+          borderColor: 'red',
+          title: '❌ Error',
+          titleAlignment: 'center',
+        }
+      )
+      console.error(errorBox)
     } else {
-      console.error(chalk.gray('\nRun with --debug for more details'))
+      console.error(JSON.stringify({
+        error: error.message,
+        stack: error.stack,
+      }))
     }
     
     logger.error(error)
     process.exit(ExitCode.GENERAL_ERROR)
   }
   
-  console.error('\n' + chalk.red.bold('❌ Unknown Error'))
+  if (!isJsonMode) {
+    console.error('\n')
+    console.error(boxen(
+      chalk.red.bold('Unknown Error'),
+      {
+        padding: 1,
+        margin: 1,
+        borderStyle: 'round',
+        borderColor: 'red',
+        title: '❌ Error',
+        titleAlignment: 'center',
+      }
+    ))
+  }
+  
   logger.error('Unknown error', error)
   process.exit(ExitCode.GENERAL_ERROR)
 }

@@ -13,6 +13,10 @@ import { ValidationError, handleError } from '../utils/errors.js'
 import { detectPackageManager } from '../utils/detect.js'
 import { success, info, warn, error, outputJson } from '../utils/output.js'
 import { execa } from 'execa'
+import { createBanner, createDivider } from '../ui/banner.js'
+import { successMessage, infoMessage, warningMessage } from '../ui/messages.js'
+import { createTable } from '../ui/table.js'
+import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('upgrade')
 
@@ -27,7 +31,8 @@ interface PackageUpdate {
  * Check for available updates
  */
 async function checkForUpdates(): Promise<PackageUpdate[]> {
-  const spinner = ora('Checking for updates...').start()
+  const spinner = createSpinner('Checking for updates...', { color: 'cyan' })
+  spinner.start()
   
   try {
     // Read package.json
@@ -107,40 +112,66 @@ function determineUpdateType(
 /**
  * Display update information
  */
-function displayUpdates(updates: PackageUpdate[]) {
-  console.log(chalk.blue.bold('\n📦 Available Updates\n'))
+async function displayUpdates(updates: PackageUpdate[]) {
+  if (process.argv.includes('--json') || process.argv.includes('--quiet')) {
+    // Simple output for JSON/quiet mode
+    console.log(chalk.blue.bold('\n📦 Available Updates\n'))
+    updates.forEach(update => {
+      console.log(`${update.name}: ${update.current} → ${update.latest} (${update.type})`)
+    })
+    return
+  }
+
+  console.log()
+  console.log(createBanner('Available Updates', { gradient: 'rainbow', border: true, borderColor: 'cyan' }))
+  console.log()
 
   const majorUpdates = updates.filter(u => u.type === 'major')
   const minorUpdates = updates.filter(u => u.type === 'minor')
   const patchUpdates = updates.filter(u => u.type === 'patch')
 
   if (majorUpdates.length > 0) {
-    console.log(chalk.red.bold('🔴 Major Updates (Breaking Changes)'))
-    majorUpdates.forEach(update => {
-      console.log(
-        `  ${chalk.yellow(update.name)}: ${chalk.gray(update.current)} → ${chalk.green(update.latest)}`
-      )
+    console.log(chalk.bold.red('  🔴 Major Updates (Breaking Changes)'))
+    console.log(createDivider(50, '─', 'red'))
+    const majorRows = majorUpdates.map(update => [
+      update.name,
+      `${update.current} → ${update.latest}`,
+    ])
+    const majorTable = await createTable(['Package', 'Version'], majorRows, {
+      headerColor: 'red',
+      align: 'left',
     })
+    console.log(majorTable)
     console.log()
   }
 
   if (minorUpdates.length > 0) {
-    console.log(chalk.yellow.bold('🟡 Minor Updates (New Features)'))
-    minorUpdates.forEach(update => {
-      console.log(
-        `  ${chalk.yellow(update.name)}: ${chalk.gray(update.current)} → ${chalk.green(update.latest)}`
-      )
+    console.log(chalk.bold.yellow('  🟡 Minor Updates (New Features)'))
+    console.log(createDivider(50, '─', 'yellow'))
+    const minorRows = minorUpdates.map(update => [
+      update.name,
+      `${update.current} → ${update.latest}`,
+    ])
+    const minorTable = await createTable(['Package', 'Version'], minorRows, {
+      headerColor: 'yellow',
+      align: 'left',
     })
+    console.log(minorTable)
     console.log()
   }
 
   if (patchUpdates.length > 0) {
-    console.log(chalk.green.bold('🟢 Patch Updates (Bug Fixes)'))
-    patchUpdates.forEach(update => {
-      console.log(
-        `  ${chalk.yellow(update.name)}: ${chalk.gray(update.current)} → ${chalk.green(update.latest)}`
-      )
+    console.log(chalk.bold.green('  🟢 Patch Updates (Bug Fixes)'))
+    console.log(createDivider(50, '─', 'green'))
+    const patchRows = patchUpdates.map(update => [
+      update.name,
+      `${update.current} → ${update.latest}`,
+    ])
+    const patchTable = await createTable(['Package', 'Version'], patchRows, {
+      headerColor: 'green',
+      align: 'left',
     })
+    console.log(patchTable)
     console.log()
   }
 }
@@ -149,7 +180,8 @@ function displayUpdates(updates: PackageUpdate[]) {
  * Install updates
  */
 async function installUpdates(updates: PackageUpdate[]) {
-  const spinner = ora('Installing updates...').start()
+  const spinner = createSpinner('Installing updates...', { color: 'cyan' })
+  spinner.start()
 
   try {
     const cwd = process.cwd()
@@ -240,7 +272,7 @@ export async function upgradeCommand(options: {
     if (options.patch) filteredUpdates = updates.filter(u => u.type === 'patch')
 
     // Display updates
-    displayUpdates(filteredUpdates)
+    await displayUpdates(filteredUpdates)
 
     // Interactive mode
     if (options.interactive && !options.yes) {
@@ -290,7 +322,15 @@ export async function upgradeCommand(options: {
       }
     }
 
-    success('Upgrade complete!')
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log()
+      console.log(successMessage('Upgrade complete!', {
+        title: '✨ Complete',
+        borderColor: 'green',
+      }))
+    } else {
+      success('Upgrade complete!')
+    }
   } catch (error) {
     handleError(error)
   }
