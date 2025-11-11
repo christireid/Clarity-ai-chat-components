@@ -31,8 +31,6 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
     "size": "size-limit"
   },
   "keywords": [
