@@ -3769,86 +3769,722 @@ export function ExportableChat() {
 
 ### Recipe 23: Authentication
 
-Protect chat with user authentication.
+Protect chat with user authentication and session management.
 
 ```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { useAuth } from './auth-context'
+import { 
+  ChatWindow,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useEffect, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface User {
+  id: string
+  email: string
+  name: string
+}
+
+interface AuthContextType {
+  user: User | null
+  login: (email: string, password: string) => Promise<void>
+  logout: () => Promise<void>
+  isLoading: boolean
+}
+
+// Mock auth context - replace with your actual auth implementation
+function useAuth(): AuthContextType {
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Check for existing session
+    const storedUser = localStorage.getItem('chat-user')
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser))
+      } catch (error) {
+        console.error('Failed to parse stored user:', error)
+      }
+    }
+    setIsLoading(false)
+  }, [])
+
+  const login = useCallback(async (email: string, password: string) => {
+    setIsLoading(true)
+    try {
+      // Call your auth API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Login failed')
+      }
+
+      const userData = await response.json()
+      setUser(userData.user)
+      localStorage.setItem('chat-user', JSON.stringify(userData.user))
+      localStorage.setItem('chat-token', userData.token)
+    } catch (error) {
+      console.error('Login error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const logout = useCallback(async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('chat-token')}`,
+        },
+      })
+    } catch (error) {
+      console.error('Logout error:', error)
+    } finally {
+      setUser(null)
+      localStorage.removeItem('chat-user')
+      localStorage.removeItem('chat-token')
+    }
+  }, [])
+
+  return { user, login, logout, isLoading }
+}
 
 export function AuthenticatedChat() {
-  const { user, login } = useAuth()
+  const { user, login, logout, isLoading: authLoading } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  const [loginError, setLoginError] = useState<string | null>(null)
 
-  if (!user) {
-    return <button onClick={login}>Login to Chat</button>
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: user ? `chat-${user.id}` : 'default-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  const handleLogin = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginError(null)
+
+    try {
+      await login(loginEmail, loginPassword)
+      setLoginEmail('')
+      setLoginPassword('')
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : 'Login failed')
+    }
+  }, [loginEmail, loginPassword, login])
+
+  const handleSend = useCallback(async (content: string) => {
+    if (!user) return
+
+    addMessage({
+      chatId: `chat-${user.id}`,
+      role: 'user',
+      content,
+    })
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('chat-token')}`,
+        },
+        body: JSON.stringify({
+          message: content,
+          userId: user.id,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (response.status === 401) {
+        // Token expired, logout
+        await logout()
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: `chat-${user.id}`,
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [user, messages, addMessage, logout])
+
+  if (authLoading) {
+    return <div className="p-4">Loading...</div>
   }
 
-  return <ChatWindow userId={user.id} />
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-full max-w-md p-6 border rounded-lg">
+          <h2 className="text-2xl font-semibold mb-4">Login to Chat</h2>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                className="w-full p-2 border rounded-md"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Password</label>
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                className="w-full p-2 border rounded-md"
+                required
+              />
+            </div>
+            {loginError && (
+              <div className="text-sm text-destructive">{loginError}</div>
+            )}
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        <div className="flex items-center justify-between p-4 border-b bg-card">
+          <div>
+            <h1 className="text-xl font-semibold">Chat</h1>
+            <p className="text-sm text-muted-foreground">Logged in as {user.name}</p>
+          </div>
+          <button
+            onClick={logout}
+            className="px-4 py-2 text-sm rounded-md border hover:bg-accent"
+          >
+            Logout
+          </button>
+        </div>
+
+        <ChatWindow 
+          messages={messages} 
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+        />
+      </div>
+    </ErrorBoundary>
+  )
 }
 ```
+
+**Key Features:**
+- ✅ User authentication
+- ✅ Session management
+- ✅ Protected routes
+- ✅ Token-based auth
+- ✅ Auto-logout on token expiry
+- ✅ User-specific chat isolation
+- ✅ TypeScript types
 
 ---
 
 ### Recipe 24: Multi-User Chat
 
-Enable real-time multi-user conversations.
+Enable real-time multi-user conversations with presence indicators and typing status.
 
 ```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { useEffect, useState } from 'react'
-import io from 'socket.io-client'
+import { 
+  ChatWindow,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import type { Message } from '@clarity-chat/types'
+import io, { Socket } from 'socket.io-client'
+
+interface User {
+  id: string
+  name: string
+  avatar?: string
+}
+
+interface ChatMessage extends Message {
+  userId: string
+  userName: string
+}
 
 export function MultiUserChat() {
-  const [messages, setMessages] = useState([])
-  const socket = io('http://localhost:3001')
+  const [isLoading, setIsLoading] = useState(false)
+  const [users, setUsers] = useState<Map<string, User>>(new Map())
+  const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set())
+  const [currentUser] = useState<User>({
+    id: 'user-1', // In production, get from auth
+    name: 'You',
+  })
+  
+  const socketRef = useRef<Socket | null>(null)
+  const typingTimeoutRef = useRef<Map<string, NodeJS.Timeout>>(new Map())
+
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'multi-user-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
 
   useEffect(() => {
-    socket.on('message', (message) => {
-      setMessages(prev => [...prev, message])
+    // Initialize socket connection
+    socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001', {
+      auth: {
+        userId: currentUser.id,
+        userName: currentUser.name,
+      },
     })
 
-    return () => socket.disconnect()
+    const socket = socketRef.current
+
+    // Listen for messages
+    socket.on('message', (data: ChatMessage) => {
+      addMessage({
+        chatId: 'multi-user-chat',
+        role: data.role,
+        content: data.content,
+      })
+    })
+
+    // Listen for user join/leave
+    socket.on('user:joined', (user: User) => {
+      setUsers(prev => new Map(prev).set(user.id, user))
+    })
+
+    socket.on('user:left', (userId: string) => {
+      setUsers(prev => {
+        const updated = new Map(prev)
+        updated.delete(userId)
+        return updated
+      })
+    })
+
+    // Listen for typing indicators
+    socket.on('user:typing', (data: { userId: string; userName: string }) => {
+      setTypingUsers(prev => new Set(prev).add(data.userId))
+      
+      // Clear typing indicator after 3 seconds
+      const timeout = setTimeout(() => {
+        setTypingUsers(prev => {
+          const updated = new Set(prev)
+          updated.delete(data.userId)
+          return updated
+        })
+      }, 3000)
+
+      // Clear existing timeout
+      const existingTimeout = typingTimeoutRef.current.get(data.userId)
+      if (existingTimeout) {
+        clearTimeout(existingTimeout)
+      }
+      typingTimeoutRef.current.set(data.userId, timeout)
+    })
+
+    socket.on('user:stopped-typing', (userId: string) => {
+      setTypingUsers(prev => {
+        const updated = new Set(prev)
+        updated.delete(userId)
+        return updated
+      })
+    })
+
+    // Get initial users list
+    socket.emit('users:list', (usersList: User[]) => {
+      const usersMap = new Map(usersList.map(u => [u.id, u]))
+      setUsers(usersMap)
+    })
+
+    // Cleanup
+    return () => {
+      socket.disconnect()
+      typingTimeoutRef.current.forEach(timeout => clearTimeout(timeout))
+    }
+  }, [currentUser, addMessage])
+
+  const handleSend = useCallback((content: string) => {
+    if (!socketRef.current) return
+
+    // Add message optimistically
+    addMessage({
+      chatId: 'multi-user-chat',
+      role: 'user',
+      content,
+    })
+
+    // Emit to server
+    socketRef.current.emit('message', {
+      content,
+      userId: currentUser.id,
+      userName: currentUser.name,
+      role: 'user',
+    })
+
+    // Stop typing indicator
+    socketRef.current.emit('typing:stop')
+  }, [currentUser, addMessage])
+
+  const handleTyping = useCallback(() => {
+    if (!socketRef.current) return
+    socketRef.current.emit('typing:start')
   }, [])
 
-  const handleSend = (content: string) => {
-    socket.emit('message', { content, userId: 'user-id' })
-  }
+  const typingIndicator = typingUsers.size > 0
+    ? `${Array.from(typingUsers).map(id => users.get(id)?.name || 'Someone').join(', ')} ${typingUsers.size === 1 ? 'is' : 'are'} typing...`
+    : null
 
-  return <ChatWindow messages={messages} onSendMessage={handleSend} />
+  return (
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        {/* Users List */}
+        <div className="p-4 border-b bg-card">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-semibold">Multi-User Chat</h1>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {users.size} user{users.size !== 1 ? 's' : ''} online
+              </span>
+              {typingIndicator && (
+                <span className="text-sm text-muted-foreground italic">
+                  {typingIndicator}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <ChatWindow 
+          messages={messages} 
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+          onTyping={handleTyping}
+        />
+      </div>
+    </ErrorBoundary>
+  )
 }
 ```
+
+**Key Features:**
+- ✅ Real-time messaging with Socket.IO
+- ✅ User presence indicators
+- ✅ Typing indicators
+- ✅ User join/leave notifications
+- ✅ Optimistic updates
+- ✅ Error handling
+- ✅ TypeScript types
 
 ---
 
 ### Recipe 25: Voice Input
 
-Add speech-to-text capabilities.
+Add speech-to-text capabilities with visual feedback and error handling.
 
 ```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { useState } from 'react'
+import { 
+  ChatWindow,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  start(): void
+  stop(): void
+  abort(): void
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
+  onend: (() => void) | null
+  onstart: (() => void) | null
+}
+
+interface Window {
+  webkitSpeechRecognition: new () => SpeechRecognition
+  SpeechRecognition: new () => SpeechRecognition
+}
 
 export function VoiceEnabledChat() {
-  const [messages, setMessages] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
   const [isListening, setIsListening] = useState(false)
+  const [transcript, setTranscript] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
 
-  const startVoiceInput = () => {
-    const recognition = new window.webkitSpeechRecognition()
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript
-      handleSend(transcript)
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'voice-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const SpeechRecognition = 
+      (window as unknown as Window).webkitSpeechRecognition ||
+      (window as unknown as Window).SpeechRecognition
+
+    if (!SpeechRecognition) {
+      setError('Speech recognition not supported in this browser')
+      return
     }
-    recognition.start()
-    setIsListening(true)
-  }
+
+    const recognition = new SpeechRecognition()
+    recognition.continuous = true
+    recognition.interimResults = true
+    recognition.lang = 'en-US'
+
+    recognition.onstart = () => {
+      setIsListening(true)
+      setError(null)
+    }
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let interimTranscript = ''
+      let finalTranscript = ''
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + ' '
+        } else {
+          interimTranscript += transcript
+        }
+      }
+
+      setTranscript(finalTranscript || interimTranscript)
+    }
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error('Speech recognition error:', event.error)
+      setIsListening(false)
+      
+      switch (event.error) {
+        case 'no-speech':
+          setError('No speech detected. Please try again.')
+          break
+        case 'audio-capture':
+          setError('No microphone found. Please check your microphone.')
+          break
+        case 'not-allowed':
+          setError('Microphone permission denied. Please enable microphone access.')
+          break
+        default:
+          setError(`Speech recognition error: ${event.error}`)
+      }
+    }
+
+    recognition.onend = () => {
+      setIsListening(false)
+      if (transcript.trim()) {
+        handleSend(transcript.trim())
+        setTranscript('')
+      }
+    }
+
+    recognitionRef.current = recognition
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+    }
+  }, [transcript])
+
+  const startVoiceInput = useCallback(() => {
+    if (!recognitionRef.current) {
+      setError('Speech recognition not available')
+      return
+    }
+
+    try {
+      recognitionRef.current.start()
+    } catch (error) {
+      console.error('Failed to start recognition:', error)
+      setError('Failed to start voice input')
+    }
+  }, [])
+
+  const stopVoiceInput = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop()
+    }
+  }, [])
+
+  const handleSend = useCallback(async (content: string) => {
+    if (!content.trim()) return
+
+    addMessage({
+      chatId: 'voice-chat',
+      role: 'user',
+      content,
+    })
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'voice-chat',
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, addMessage])
 
   return (
-    <div>
-      <button onClick={startVoiceInput}>🎤 Voice Input</button>
-      <ChatWindow messages={messages} />
-    </div>
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        {/* Voice Input Controls */}
+        <div className="p-4 border-b bg-card">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-semibold">Voice-Enabled Chat</h1>
+            <div className="flex items-center gap-2">
+              {error && (
+                <span className="text-sm text-destructive">{error}</span>
+              )}
+              {isListening && (
+                <span className="text-sm text-muted-foreground animate-pulse">
+                  🎤 Listening...
+                </span>
+              )}
+              {transcript && !isListening && (
+                <span className="text-sm text-muted-foreground">
+                  "{transcript}"
+                </span>
+              )}
+              {!isListening ? (
+                <button
+                  onClick={startVoiceInput}
+                  className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  🎤 Start Voice Input
+                </button>
+              ) : (
+                <button
+                  onClick={stopVoiceInput}
+                  className="px-4 py-2 text-sm rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  ⏹ Stop
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <ChatWindow 
+          messages={messages} 
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+        />
+      </div>
+    </ErrorBoundary>
   )
 }
 ```
+
+**Key Features:**
+- ✅ Web Speech API integration
+- ✅ Real-time transcript display
+- ✅ Visual listening indicator
+- ✅ Error handling for various scenarios
+- ✅ Microphone permission handling
+- ✅ Continuous and interim results
+- ✅ TypeScript types
 
 ---
 
