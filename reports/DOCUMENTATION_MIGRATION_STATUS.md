@@ -87,16 +87,16 @@ export default function GuidePage() {
 - [x] plugins ✅
 - [x] migration ✅
 - [x] interactive ✅
+- [x] prompts ✅
+- [x] memory ✅
+- [x] observability ✅
+- [x] safety ✅
 
-**Need Migration** (11 files):
+**Need Migration** (7 files):
 - [ ] audit-logging
-- [ ] memory
 - [ ] multi-tenancy
-- [ ] observability
-- [ ] prompts
 - [ ] rbac
 - [ ] reranking
-- [ ] safety
 - [ ] tutorials
 - [ ] usage-quotas
 - [ ] webhooks
@@ -203,7 +203,7 @@ Create blog section structure and convert markdown to React components or use MD
 
 ## Progress Summary
 
-- **Guides**: 26/32 migrated (81%)
+- **Guides**: 30/32 migrated (94%) - 2 remaining
 - **API Docs**: 0/6 migrated (0%)
 - **Blog**: 0/4 posts migrated (0%)
 - **Enterprise**: 0/2 migrated (0%)
