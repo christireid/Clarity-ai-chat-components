@@ -4490,25 +4490,200 @@ export function VoiceEnabledChat() {
 
 ### Recipe 26: Testing
 
-Test your chat components.
+Test your chat components with comprehensive test coverage.
 
 ```tsx
-import { render, screen, fireEvent } from '@testing-library/react'
-import { ChatWindow } from '@clarity-chat/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { ChatWindow, useMessageOperations } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
+
+// Mock API responses
+global.fetch = jest.fn()
 
 describe('ChatWindow', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('sends messages', async () => {
     const onSend = jest.fn()
     render(<ChatWindow messages={[]} onSendMessage={onSend} />)
 
-    const input = screen.getByPlaceholderText('Type a message...')
+    const input = screen.getByPlaceholderText(/type a message/i)
     fireEvent.change(input, { target: { value: 'Hello' } })
     fireEvent.keyDown(input, { key: 'Enter' })
 
-    expect(onSend).toHaveBeenCalledWith('Hello')
+    await waitFor(() => {
+      expect(onSend).toHaveBeenCalledWith('Hello')
+    })
+  })
+
+  it('displays messages correctly', () => {
+    const messages: Message[] = [
+      {
+        id: '1',
+        chatId: 'test-chat',
+        role: 'user',
+        content: 'Hello',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      },
+      {
+        id: '2',
+        chatId: 'test-chat',
+        role: 'assistant',
+        content: 'Hi there!',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      },
+    ]
+
+    render(<ChatWindow messages={messages} onSendMessage={jest.fn()} />)
+
+    expect(screen.getByText('Hello')).toBeInTheDocument()
+    expect(screen.getByText('Hi there!')).toBeInTheDocument()
+  })
+
+  it('shows loading state', () => {
+    render(<ChatWindow messages={[]} isLoading={true} onSendMessage={jest.fn()} />)
+    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+  })
+
+  it('handles message operations', async () => {
+    const onEdit = jest.fn()
+    const onDelete = jest.fn()
+    const onRegenerate = jest.fn()
+
+    const messages: Message[] = [
+      {
+        id: '1',
+        chatId: 'test-chat',
+        role: 'user',
+        content: 'Test message',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      },
+    ]
+
+    render(
+      <ChatWindow
+        messages={messages}
+        onSendMessage={jest.fn()}
+        onEditMessage={onEdit}
+        onDeleteMessage={onDelete}
+        onRegenerateMessage={onRegenerate}
+      />
+    )
+
+    // Find and click edit button
+    const editButton = screen.getByLabelText(/edit/i)
+    fireEvent.click(editButton)
+    expect(onEdit).toHaveBeenCalledWith('1')
+  })
+
+  it('handles API errors gracefully', async () => {
+    ;(global.fetch as jest.Mock).mockRejectedValueOnce(new Error('API Error'))
+
+    const TestComponent = () => {
+      const [messages, setMessages] = useState<Message[]>([])
+      const [error, setError] = useState<string | null>(null)
+
+      const handleSend = async (content: string) => {
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            body: JSON.stringify({ message: content }),
+          })
+          if (!response.ok) throw new Error('API Error')
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Unknown error')
+        }
+      }
+
+      return (
+        <div>
+          {error && <div data-testid="error">{error}</div>}
+          <ChatWindow messages={messages} onSendMessage={handleSend} />
+        </div>
+      )
+    }
+
+    render(<TestComponent />)
+    const input = screen.getByPlaceholderText(/type a message/i)
+    fireEvent.change(input, { target: { value: 'Test' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error')).toBeInTheDocument()
+    })
+  })
+
+  it('handles empty state', () => {
+    render(
+      <ChatWindow
+        messages={[]}
+        onSendMessage={jest.fn()}
+        emptyState={<div>No messages yet</div>}
+      />
+    )
+    expect(screen.getByText('No messages yet')).toBeInTheDocument()
+  })
+})
+
+describe('useMessageOperations', () => {
+  it('manages message state correctly', () => {
+    const { result } = renderHook(() =>
+      useMessageOperations({ initialMessages: [] })
+    )
+
+    act(() => {
+      result.current.addMessage({
+        chatId: 'test',
+        role: 'user',
+        content: 'Test',
+      })
+    })
+
+    expect(result.current.messages.length).toBe(1)
+  })
+
+  it('supports undo/redo', () => {
+    const { result } = renderHook(() =>
+      useMessageOperations({ initialMessages: [] })
+    )
+
+    act(() => {
+      result.current.addMessage({
+        chatId: 'test',
+        role: 'user',
+        content: 'Test',
+      })
+    })
+
+    expect(result.current.canUndo).toBe(true)
+
+    act(() => {
+      result.current.undo()
+    })
+
+    expect(result.current.messages.length).toBe(0)
+    expect(result.current.canRedo).toBe(true)
   })
 })
 ```
+
+**Key Features:**
+- ✅ Comprehensive test coverage
+- ✅ Message sending tests
+- ✅ Message display tests
+- ✅ Loading state tests
+- ✅ Error handling tests
+- ✅ Message operations tests
+- ✅ Hook testing with renderHook
+- ✅ Async operation testing
 
 ---
 
