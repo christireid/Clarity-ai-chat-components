@@ -339,6 +339,7 @@ export function limitHistoryFIFO(
   const keptMessages: CoreMessage[] = []
   for (let i = remainingMessages.length - 1; i >= 0; i--) {
     const msg = remainingMessages[i]
+    if (!msg) continue
     const msgTokens = estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content))
     
     if (tokensUsed + msgTokens <= maxTokens) {
