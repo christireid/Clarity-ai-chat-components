@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Input } from '@clarity-chat/primitives'
 import { useState } from 'react'
+import { expect, within, userEvent } from '@storybook/test'
 
 /**
  * Input component for text entry with various states and types.
@@ -45,6 +46,19 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     placeholder: 'Enter text...',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const input = canvas.getByPlaceholderText('Enter text...')
+    
+    await expect(input).toBeVisible()
+    await expect(input).toBeEnabled()
+    
+    await userEvent.click(input)
+    await expect(input).toHaveFocus()
+    
+    await userEvent.type(input, 'Hello, World!')
+    await expect(input).toHaveValue('Hello, World!')
   },
 }
 
@@ -146,6 +160,23 @@ export const WithValidation: Story = {
         )}
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const input = canvas.getByPlaceholderText('you@example.com')
+    
+    // Test invalid email
+    await userEvent.type(input, 'invalid')
+    await userEvent.tab() // Trigger blur
+    const errorMessage = canvas.getByText(/please enter a valid email/i)
+    await expect(errorMessage).toBeVisible()
+    
+    // Test valid email
+    await userEvent.clear(input)
+    await userEvent.type(input, 'test@example.com')
+    await userEvent.tab() // Trigger blur
+    const successMessage = canvas.getByText(/valid email/i)
+    await expect(successMessage).toBeVisible()
   },
 }
 

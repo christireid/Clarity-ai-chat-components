@@ -13,6 +13,7 @@ import {
   Button,
   Input,
 } from '@clarity-chat/primitives'
+import { expect, within, userEvent } from '@storybook/test'
 
 const meta: Meta<typeof Dialog> = {
   title: 'Primitives/Dialog (Modal)',
@@ -64,6 +65,25 @@ export const Default: Story = {
       </Dialog>
     )
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    
+    // Open dialog
+    const openButton = canvas.getByRole('button', { name: /open dialog/i })
+    await userEvent.click(openButton)
+    
+    // Verify dialog is visible
+    const dialogTitle = canvas.getByText('Dialog Title')
+    await expect(dialogTitle).toBeVisible()
+    
+    // Verify dialog content
+    const dialogDescription = canvas.getByText(/this is a basic dialog/i)
+    await expect(dialogDescription).toBeVisible()
+    
+    // Test keyboard navigation - Escape key
+    await userEvent.keyboard('{Escape}')
+    await expect(dialogTitle).not.toBeVisible()
+  },
 }
 
 export const WithTrigger: Story = {
@@ -87,6 +107,21 @@ export const WithTrigger: Story = {
       </DialogContent>
     </Dialog>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    
+    // Open dialog via trigger
+    const triggerButton = canvas.getByRole('button', { name: /open with trigger/i })
+    await userEvent.click(triggerButton)
+    
+    // Verify dialog opened
+    const dialogTitle = canvas.getByText('Using DialogTrigger')
+    await expect(dialogTitle).toBeVisible()
+    
+    // Test close via Escape
+    await userEvent.keyboard('{Escape}')
+    await expect(dialogTitle).not.toBeVisible()
+  },
 }
 
 // ============================================================================
