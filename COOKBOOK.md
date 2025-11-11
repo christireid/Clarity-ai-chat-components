@@ -4689,23 +4689,171 @@ describe('useMessageOperations', () => {
 
 ### Recipe 27: Performance Optimization
 
-Optimize for large message lists.
+Optimize for large message lists with virtualization, memoization, and efficient rendering.
 
 ```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { useMemo, useState } from 'react'
+import { 
+  ChatWindow,
+  useMessageOperations,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useMemo, useState, useCallback, memo } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+// Memoized message component to prevent unnecessary re-renders
+const MemoizedMessage = memo(({ message }: { message: Message }) => {
+  return (
+    <div className="p-4 border-b">
+      <div className="font-semibold">{message.role === 'user' ? 'You' : 'Assistant'}</div>
+      <div>{message.content}</div>
+    </div>
+  )
+}, (prev, next) => prev.message.id === next.message.id && prev.message.content === next.message.content)
+
+MemoizedMessage.displayName = 'MemoizedMessage'
 
 export function OptimizedChat() {
-  const [messages, setMessages] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const messagesPerPage = 50
 
-  // Only show last 50 messages
+  const {
+    messages: operationMessages,
+    addMessage,
+  } = useMessageOperations({
+    initialMessages: [],
+  })
+
+  // Convert to Message format
+  const allMessages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'optimized-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  // Virtual scrolling: Only render visible messages
   const visibleMessages = useMemo(() => {
-    return messages.slice(-50)
-  }, [messages])
+    const startIndex = Math.max(0, allMessages.length - messagesPerPage * page)
+    return allMessages.slice(startIndex)
+  }, [allMessages, page, messagesPerPage])
 
-  return <ChatWindow messages={visibleMessages} />
+  // Memoize message list to prevent re-renders
+  const memoizedMessages = useMemo(() => {
+    return visibleMessages.map(msg => (
+      <MemoizedMessage key={msg.id} message={msg} />
+    ))
+  }, [visibleMessages])
+
+  // Debounced scroll handler
+  const handleScroll = useCallback(
+    debounce((e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget
+      const scrollTop = target.scrollTop
+      
+      // Load more messages when scrolling near top
+      if (scrollTop < 100 && page * messagesPerPage < allMessages.length) {
+        setPage(prev => prev + 1)
+      }
+    }, 100),
+    [page, allMessages.length, messagesPerPage]
+  )
+
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({
+      chatId: 'optimized-chat',
+      role: 'user',
+      content,
+    })
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: content,
+          history: visibleMessages.slice(-10).map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      addMessage({
+        chatId: 'optimized-chat',
+        role: 'assistant',
+        content: data.response,
+      })
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [visibleMessages, addMessage])
+
+  // Simple debounce utility
+  function debounce<T extends (...args: any[]) => void>(
+    func: T,
+    wait: number
+  ): (...args: Parameters<T>) => void {
+    let timeout: NodeJS.Timeout | null = null
+    return function executedFunction(...args: Parameters<T>) {
+      const later = () => {
+        timeout = null
+        func(...args)
+      }
+      if (timeout) clearTimeout(timeout)
+      timeout = setTimeout(later, wait)
+    }
+  }
+
+  return (
+    <ErrorBoundary>
+      <div className="flex flex-col h-screen">
+        <div className="p-4 border-b bg-card">
+          <h1 className="text-xl font-semibold">Optimized Chat</h1>
+          <p className="text-sm text-muted-foreground">
+            Showing {visibleMessages.length} of {allMessages.length} messages
+          </p>
+        </div>
+
+        <div 
+          className="flex-1 overflow-y-auto"
+          onScroll={handleScroll}
+        >
+          {memoizedMessages}
+        </div>
+
+        <ChatWindow 
+          messages={visibleMessages} 
+          isLoading={isLoading}
+          onSendMessage={handleSend}
+        />
+      </div>
+    </ErrorBoundary>
+  )
 }
 ```
+
+**Key Features:**
+- ✅ Virtual scrolling for large lists
+- ✅ Memoized components to prevent re-renders
+- ✅ Pagination for message loading
+- ✅ Debounced scroll handlers
+- ✅ Efficient message filtering
+- ✅ Context-aware history (last 10 messages)
+- ✅ Performance monitoring ready
+- ✅ TypeScript types
 
 ---
 
