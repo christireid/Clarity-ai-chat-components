@@ -11,17 +11,19 @@ import { APIInspectorPanel } from './api-inspector-panel'
 import { ProfilerPanel } from './profiler-panel'
 import { ValidationForm } from './validation-form'
 import { TimeTravelPanel } from './time-travel-panel'
+import { ModelComparisonPanel } from './model-comparison-panel'
 
 export interface DevToolsDashboardProps {
   className?: string
-  defaultTab?: 'inspector' | 'profiler' | 'validation' | 'time-travel'
+  defaultTab?: 'inspector' | 'profiler' | 'validation' | 'time-travel' | 'model-comparison'
   showInspector?: boolean
   showProfiler?: boolean
   showValidation?: boolean
   showTimeTravel?: boolean
+  showModelComparison?: boolean
 }
 
-type Tab = 'inspector' | 'profiler' | 'validation' | 'time-travel'
+type Tab = 'inspector' | 'profiler' | 'validation' | 'time-travel' | 'model-comparison'
 
 /**
  * Developer Tools Dashboard Component
@@ -34,6 +36,7 @@ export function DevToolsDashboard({
   showProfiler = true,
   showValidation = true,
   showTimeTravel = true,
+  showModelComparison = true,
 }: DevToolsDashboardProps) {
   const [activeTab, setActiveTab] = React.useState<Tab>(defaultTab)
 
@@ -52,9 +55,12 @@ export function DevToolsDashboard({
     if (showTimeTravel) {
       availableTabs.push({ id: 'time-travel', label: 'Time Travel', icon: '⏮️' })
     }
+    if (showModelComparison) {
+      availableTabs.push({ id: 'model-comparison', label: 'Model Comparison', icon: '⚖️' })
+    }
     
     return availableTabs
-  }, [showInspector, showProfiler, showValidation, showTimeTravel])
+  }, [showInspector, showProfiler, showValidation, showTimeTravel, showModelComparison])
 
   return (
     <div className={className} data-testid="dev-tools-dashboard">
@@ -101,6 +107,12 @@ export function DevToolsDashboard({
         {activeTab === 'time-travel' && showTimeTravel && (
           <div className="dev-tools-panel">
             <TimeTravelPanel />
+          </div>
+        )}
+
+        {activeTab === 'model-comparison' && showModelComparison && (
+          <div className="dev-tools-panel">
+            <ModelComparisonPanel />
           </div>
         )}
       </div>

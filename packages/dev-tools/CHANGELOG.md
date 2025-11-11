@@ -9,6 +9,7 @@
 - **ProfilerPanel** - React component for displaying performance metrics
 - **ValidationForm** - React component for configuration validation
 - **TimeTravelPanel** - React component for time-travel debugging
+- **ModelComparisonPanel** - React component for comparing AI model responses
 - **DevToolsDashboard** - Comprehensive dashboard combining all dev tools
 
 #### Hooks
@@ -19,9 +20,10 @@
 - **useChatConfigValidation** - Hook for chat configuration validation
 - **useMessageValidation** - Hook for message validation
 - **useTimeTravel** - Hook for time-travel debugging with optimistic updates
+- **useModelComparison** - Hook for comparing AI model responses with optimistic updates
 
 #### React 19 Features
-- **useOptimistic** - Used in API inspector, profiler, and time-travel hooks for optimistic UI updates
+- **useOptimistic** - Used in API inspector, profiler, time-travel, and model comparison hooks for optimistic UI updates
 - **Client-Side Form State** - Used in validation forms for form submission state (useFormStatus requires Server Actions)
 - Real-time updates - Components automatically update as data changes
 - Optimistic updates - Instant UI feedback with automatic error handling
@@ -33,12 +35,13 @@
 - Comprehensive examples and Storybook stories
 
 #### Testing
-- Test files for all hooks
+- Test files for all hooks (useAPIInspector, useProfiler, useValidation, useTimeTravel)
 - Coverage for optimistic updates, state management, and error handling
+- Vitest and @testing-library/react configured
 
 #### Examples
 - React 19 demo example
-- Storybook stories for all components
+- Storybook stories for all components (APIInspectorPanel, ProfilerPanel, ValidationForm, TimeTravelPanel, ModelComparisonPanel, DevToolsDashboard)
 - Comprehensive dashboard example
 
 ### Changed
