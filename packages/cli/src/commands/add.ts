@@ -21,6 +21,7 @@ const logger = getLogger('add')
 interface AddOptions {
   path?: string
   deps?: boolean
+  batch?: string
 }
 
 const COMPONENTS = {
@@ -58,6 +59,24 @@ const COMPONENTS = {
 
 export async function addCommand(component: string, options: AddOptions) {
   try {
+    // Handle batch mode
+    if (options.batch) {
+      const { batchAddComponents } = await import('../utils/batch.js')
+      const components = options.batch.split(',').map(c => c.trim())
+      const result = await batchAddComponents(components, {
+        path: options.path,
+        deps: options.deps !== false,
+      })
+      
+      if (result.failed.length > 0) {
+        warn(`${result.failed.length} components failed to add`)
+        process.exit(1)
+      }
+      
+      success(`Successfully added ${result.successful.length} components`)
+      return
+    }
+
     // Validate component name
     const validatedComponent = validate(ComponentSchema, component, 'Invalid component name')
     

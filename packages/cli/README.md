@@ -56,6 +56,9 @@ Add a component to your project:
 ```bash
 clarity-chat add chat-interface
 clarity-chat add model-selector --path ./src/components
+
+# Add multiple components at once
+clarity-chat add chat-interface --batch "model-selector,token-counter"
 ```
 
 **Available Components:**
@@ -64,6 +67,11 @@ clarity-chat add model-selector --path ./src/components
 - `token-counter` - Token usage display
 - `cost-estimator` - API cost calculator
 - `streaming-handler` - SSE streaming utilities
+
+**Options:**
+- `-p, --path <path>` - Installation path (default: `./src/components`)
+- `--no-deps` - Skip dependency installation
+- `--batch <components>` - Add multiple components (comma-separated)
 
 ### `clarity-chat keys`
 
@@ -95,7 +103,20 @@ Start development server with hot reload:
 clarity-chat dev
 clarity-chat dev --port 3001
 clarity-chat dev --open  # Open browser automatically
+clarity-chat dev --watch  # Watch mode (auto-restart on changes)
 ```
+
+**Features:**
+- Automatic framework detection (Next.js, Remix, Vite, Astro)
+- Package manager detection (npm, yarn, pnpm, bun)
+- Port validation
+- Graceful shutdown handling
+- Browser auto-open option
+
+**Options:**
+- `-p, --port <port>` - Port number (default: `3000`)
+- `--open` - Open browser automatically
+- `--watch` - Watch mode (auto-restart on changes)
 
 ### `clarity-chat generate <type>`
 
@@ -134,6 +155,28 @@ clarity-chat doctor       # Run health check
 clarity-chat doctor --fix # Auto-fix common issues
 ```
 
+## Workflow Acceleration Features
+
+### Batch Operations
+
+Add multiple components at once:
+
+```bash
+clarity-chat add chat-interface --batch "model-selector,token-counter,cost-estimator"
+```
+
+### Watch Mode
+
+Automatically restart dev server on file changes:
+
+```bash
+clarity-chat dev --watch
+```
+
+### Update Notifications
+
+The CLI automatically checks for updates when running common commands (`init`, `add`, `dev`) and notifies you if a new version is available.
+
 ## Examples
 
 ### Quick Start
@@ -142,15 +185,15 @@ clarity-chat doctor --fix # Auto-fix common issues
 # Create new project
 npx @clarity-chat/cli init
 
-# Add components
+# Add components (single or batch)
 clarity-chat add chat-interface
-clarity-chat add model-selector
+clarity-chat add chat-interface --batch "model-selector,token-counter"
 
 # Configure API keys
 clarity-chat keys add openai
 
 # Start development
-clarity-chat dev
+clarity-chat dev --open
 ```
 
 ### Adding to Existing Project

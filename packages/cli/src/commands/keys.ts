@@ -8,6 +8,10 @@ import ora from 'ora'
 import fs from 'fs-extra'
 import path from 'path'
 import { getLogger } from '../utils/logger.js'
+import { ValidationError, NotFoundError, handleError } from '../utils/errors.js'
+import { ProviderSchema, validate } from '../utils/validation.js'
+import { validatePath, maskSensitive, validateApiKeyFormat, ensureEnvInGitignore } from '../utils/security.js'
+import { success, info, warn, error, outputJson } from '../utils/output.js'
 
 const logger = getLogger('keys')
 
@@ -122,15 +126,19 @@ export async function keysCommand(options: KeysOptions) {
 }
 
 async function addKey(provider: string, envPath: string) {
-  const providerConfig = PROVIDERS[provider as keyof typeof PROVIDERS]
+  // Validate provider
+  const validatedProvider = validate(ProviderSchema, provider, 'Invalid provider')
+  
+  const providerConfig = PROVIDERS[validatedProvider as keyof typeof PROVIDERS]
   
   if (!providerConfig) {
-    logger.error(`Unknown provider: ${provider}`)
-    console.log(chalk.yellow('\nAvailable providers:'))
-    Object.keys(PROVIDERS).forEach(key => {
-      console.log(chalk.cyan(`  • ${key}`))
-    })
-    return
+    throw new NotFoundError(
+      `Provider "${validatedProvider}" not found`,
+      [
+        'Available providers: openai, anthropic, google',
+        'Run: clarity-chat keys --help for more info',
+      ]
+    )
   }
 
   console.log(chalk.gray(`\n📚 Get your key: ${providerConfig.docs}\n`))
@@ -139,12 +147,20 @@ async function addKey(provider: string, envPath: string) {
     type: 'password',
     name: 'apiKey',
     message: `Enter your ${providerConfig.name} API key:`,
-    validate: (value: string) => value.length > 0 ? true : 'API key is required'
+    validate: (value: string) => {
+      if (!value || value.length === 0) {
+        return 'API key is required'
+      }
+      // Basic format validation
+      if (!validateApiKeyFormat(value, validatedProvider as 'openai' | 'anthropic' | 'google')) {
+        return `Invalid ${providerConfig.name} API key format`
+      }
+      return true
+    }
   })
 
   if (!apiKey) {
-    logger.error('API key not provided')
-    return
+    throw new ValidationError('API key not provided', ['Provide a valid API key'])
   }
 
   // Read or create .env.local
@@ -167,28 +183,52 @@ async function addKey(provider: string, envPath: string) {
 
   await fs.writeFile(envPath, envContent, 'utf-8')
   
-  console.log(chalk.green(`\n✅ ${providerConfig.name} API key saved to .env.local`))
-  console.log(chalk.yellow('⚠️  Restart your dev server to use the new key'))
+  // Ensure .env.local is in .gitignore
+  const cwd = path.dirname(envPath)
+  await ensureEnvInGitignore(cwd)
+  
+  success(`${providerConfig.name} API key saved to .env.local`)
+  warn('Restart your dev server to use the new key')
 }
 
 async function listKeys(envPath: string) {
   if (!await fs.pathExists(envPath)) {
-    console.log(chalk.yellow('No .env.local file found'))
-    console.log(chalk.gray('Run: ') + chalk.bold('clarity-chat keys add') + chalk.gray(' to add keys'))
+    warn('No .env.local file found')
+    info('Run: clarity-chat keys add to add keys')
     return
   }
 
   const envContent = await fs.readFile(envPath, 'utf-8')
   
-  console.log(chalk.bold('Configured API Keys:\n'))
+  const keys: Record<string, { configured: boolean; masked?: string }> = {}
   
   Object.entries(PROVIDERS).forEach(([key, config]) => {
     const regex = new RegExp(`^${config.envVar}=(.+)$`, 'm')
     const match = envContent.match(regex)
     
-    if (match && match[1] && match[1] !== 'your_' + key + '_key_here') {
-      const maskedKey = match[1].slice(0, 8) + '...' + match[1].slice(-4)
-      console.log(chalk.green(`✅ ${config.icon} ${config.name}: ${maskedKey}`))
+    if (match && match[1] && !match[1].includes('your_') && !match[1].includes('_key_here')) {
+      keys[config.name] = {
+        configured: true,
+        masked: maskSensitive(match[1], 4),
+      }
+    } else {
+      keys[config.name] = {
+        configured: false,
+      }
+    }
+  })
+
+  if (process.argv.includes('--json')) {
+    outputJson(keys)
+    return
+  }
+
+  info('Configured API Keys:\n')
+  
+  Object.entries(PROVIDERS).forEach(([key, config]) => {
+    const keyInfo = keys[config.name]
+    if (keyInfo.configured && keyInfo.masked) {
+      success(`${config.icon} ${config.name}: ${keyInfo.masked}`)
     } else {
       console.log(chalk.gray(`⬜ ${config.icon} ${config.name}: Not configured`))
     }

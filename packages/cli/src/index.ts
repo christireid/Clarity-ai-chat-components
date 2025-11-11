@@ -23,6 +23,7 @@ import { generateCompletion } from './utils/completion.js'
 import { initOutputMode } from './utils/output.js'
 import { handleError, withErrorHandling } from './utils/errors.js'
 import { setGlobalLogLevel, LogLevel } from './utils/logger.js'
+import { checkAndNotifyUpdate } from './utils/update.js'
 
 const program = new Command()
 
@@ -49,7 +50,7 @@ program
   .option('-q, --quiet', 'Suppress non-error output')
   .option('-v, --verbose', 'Show detailed output')
   .option('--debug', 'Show debug information')
-  .hook('preAction', (thisCommand, actionCommand) => {
+  .hook('preAction', async (thisCommand, actionCommand) => {
     // Initialize output mode from global options
     const globalOpts = thisCommand.opts()
     initOutputMode({
@@ -63,6 +64,15 @@ program
       setGlobalLogLevel(LogLevel.DEBUG)
     } else if (globalOpts.verbose) {
       setGlobalLogLevel(LogLevel.INFO)
+    }
+
+    // Check for updates (non-blocking, only for certain commands)
+    const commandName = actionCommand.name()
+    if (['init', 'add', 'dev'].includes(commandName)) {
+      // Check for updates in background (don't await)
+      checkAndNotifyUpdate().catch(() => {
+        // Silently ignore update check errors
+      })
     }
   })
 
@@ -81,6 +91,7 @@ program
   .description('➕ Add a component to your project')
   .option('-p, --path <path>', 'Installation path', './src/components')
   .option('--no-deps', 'Skip dependency installation')
+  .option('--batch <components>', 'Add multiple components (comma-separated)')
   .action(addCommand)
 
 program
@@ -97,6 +108,7 @@ program
   .description('🔥 Start development server with hot reload')
   .option('-p, --port <port>', 'Port number', '3000')
   .option('--open', 'Open in browser')
+  .option('--watch', 'Watch mode (auto-restart on changes)')
   .action(devCommand)
 
 program

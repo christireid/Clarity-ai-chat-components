@@ -14,6 +14,11 @@ import { InitWizard } from '../components/InitWizard.js'
 import { detectFramework, detectPackageManager } from '../utils/detect.js'
 import { installDependencies } from '../utils/install.js'
 import { getLogger } from '../utils/logger.js'
+import { ValidationError, ConfigError, handleError } from '../utils/errors.js'
+import { FrameworkSchema, TemplateSchema, validate } from '../utils/validation.js'
+import { validatePath, ensureEnvInGitignore } from '../utils/security.js'
+import { saveConfig } from '../utils/config.js'
+import { success, info, warn } from '../utils/output.js'
 
 const logger = getLogger('init')
 
@@ -25,19 +30,22 @@ interface InitOptions {
 }
 
 export async function initCommand(options: InitOptions) {
-  console.log('\n')
-  console.log(boxen(
-    chalk.bold.cyan('🚀 Initialize Clarity Chat Project\n\n') +
-    chalk.gray('Setting up your AI-powered application...'),
-    { 
-      padding: 1, 
-      margin: 1, 
-      borderStyle: 'round',
-      borderColor: 'cyan'
-    }
-  ))
-
   try {
+    // Only show banner if not in JSON/quiet mode
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(boxen(
+        chalk.bold.cyan('🚀 Initialize Clarity Chat Project\n\n') +
+        chalk.gray('Setting up your AI-powered application...'),
+        { 
+          padding: 1, 
+          margin: 1, 
+          borderStyle: 'round',
+          borderColor: 'cyan'
+        }
+      ))
+    }
+
     // Detect existing setup
     const cwd = process.cwd()
     const detectedFramework = await detectFramework(cwd)
@@ -46,9 +54,21 @@ export async function initCommand(options: InitOptions) {
     logger.info(`Detected framework: ${detectedFramework || 'none'}`)
     logger.info(`Package manager: ${packageManager}`)
 
+    // Validate options if provided
+    let validatedFramework: string | undefined
+    let validatedTemplate: string | undefined
+    
+    if (options.framework) {
+      validatedFramework = validate(FrameworkSchema, options.framework, 'Invalid framework')
+    }
+    
+    if (options.template) {
+      validatedTemplate = validate(TemplateSchema, options.template, 'Invalid template')
+    }
+
     // Interactive setup wizard if no options provided
     let config: any
-    if (!options.template && !options.framework) {
+    if (!validatedTemplate && !validatedFramework) {
       const { waitUntilExit } = render(React.createElement(InitWizard, {
         detectedFramework,
         packageManager,
@@ -60,8 +80,8 @@ export async function initCommand(options: InitOptions) {
     } else {
       // Use CLI options
       config = {
-        framework: options.framework || detectedFramework || 'nextjs',
-        template: options.template || 'basic',
+        framework: validatedFramework || detectedFramework || 'nextjs',
+        template: validatedTemplate || 'basic',
         components: ['chat-interface', 'model-selector'],
         apiKeys: {},
         installDeps: options.install !== false,
@@ -70,8 +90,7 @@ export async function initCommand(options: InitOptions) {
     }
 
     if (!config) {
-      logger.error('Setup cancelled')
-      process.exit(1)
+      throw new ValidationError('Setup cancelled', ['Run the command again to retry'])
     }
 
     // Create project structure
@@ -95,6 +114,18 @@ export async function initCommand(options: InitOptions) {
     // Generate configuration files
     await generateConfigFiles(cwd, config)
     
+    // Save config file
+    try {
+      await saveConfig({
+        framework: config.framework,
+        components: config.components,
+        apiKeys: config.apiKeys,
+      }, cwd)
+      logger.debug('Config file saved')
+    } catch (error) {
+      logger.warn('Failed to save config file', error)
+    }
+    
     spinner.succeed('Components installed')
 
     // Install dependencies
@@ -111,6 +142,14 @@ export async function initCommand(options: InitOptions) {
       } catch (error) {
         spinner.fail('Failed to install dependencies')
         logger.error(error)
+        throw new ConfigError(
+          'Failed to install dependencies',
+          [
+            'Check your internet connection',
+            'Verify package manager is installed',
+            'Run with --no-install to skip dependency installation',
+          ]
+        )
       }
     }
 
@@ -140,26 +179,37 @@ GOOGLE_API_KEY=your_google_key_here
       logger.info('Created .env.local with placeholder keys')
     }
 
+    // Ensure .env.local is in .gitignore
+    await ensureEnvInGitignore(cwd)
+
     // Success message
-    console.log('\n')
-    console.log(boxen(
-      chalk.bold.green('✅ Project initialized successfully!\n\n') +
-      chalk.white('Next steps:\n') +
-      chalk.cyan('  1. Add your API keys to .env.local\n') +
-      chalk.cyan('  2. Run ') + chalk.bold('npm run dev') + chalk.cyan(' to start development\n') +
-      chalk.cyan('  3. Open ') + chalk.bold('http://localhost:3000') + chalk.cyan(' in your browser\n\n') +
-      chalk.gray('Need help? Run: ') + chalk.bold('clarity-chat docs'),
-      { 
-        padding: 1, 
-        margin: 1, 
-        borderStyle: 'round',
-        borderColor: 'green'
-      }
-    ))
+    if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
+      console.log('\n')
+      console.log(boxen(
+        chalk.bold.green('✅ Project initialized successfully!\n\n') +
+        chalk.white('Next steps:\n') +
+        chalk.cyan('  1. Add your API keys to .env.local\n') +
+        chalk.cyan('  2. Run ') + chalk.bold('npm run dev') + chalk.cyan(' to start development\n') +
+        chalk.cyan('  3. Open ') + chalk.bold('http://localhost:3000') + chalk.cyan(' in your browser\n\n') +
+        chalk.gray('Need help? Run: ') + chalk.bold('clarity-chat docs'),
+        { 
+          padding: 1, 
+          margin: 1, 
+          borderStyle: 'round',
+          borderColor: 'green'
+        }
+      ))
+    } else {
+      success('Project initialized successfully')
+    }
+
+    info('Next steps:')
+    info('1. Add your API keys to .env.local')
+    info('2. Run npm run dev to start development')
+    info('3. Open http://localhost:3000 in your browser')
 
   } catch (error) {
-    logger.error('Initialization failed', error)
-    process.exit(1)
+    handleError(error)
   }
 }
 
