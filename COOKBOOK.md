@@ -254,232 +254,735 @@ export function ChatWithErrorHandling() {
 
 ### Recipe 3: Streaming Responses
 
-Stream AI responses in real-time for better UX.
+Stream AI responses in real-time for better UX with proper status handling and error recovery.
 
 ```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { useStreaming } from '@clarity-chat/react'
-import { useState } from 'react'
+import { 
+  ChatWindow, 
+  StreamingMessage,
+  useStreaming,
+  ErrorBoundary 
+} from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
 
 export function StreamingChat() {
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState<Message[]>([])
   const { stream, isStreaming } = useStreaming()
 
-  const handleSend = async (content: string) => {
-    const userMsg = { id: Date.now().toString(), role: 'user', content, timestamp: Date.now() }
+  const handleSend = useCallback(async (content: string) => {
+    const userMsg: Message = {
+      id: `msg-${Date.now()}`,
+      chatId: 'default-chat',
+      role: 'user',
+      content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
+    }
+    
     setMessages(prev => [...prev, userMsg])
 
-    const aiMsg = {
-      id: (Date.now() + 1).toString(),
+    // Create placeholder for streaming response
+    const aiMsgId = `msg-${Date.now() + 1}`
+    const aiMsg: Message = {
+      id: aiMsgId,
+      chatId: 'default-chat',
       role: 'assistant',
       content: '',
-      timestamp: Date.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'streaming',
     }
     setMessages(prev => [...prev, aiMsg])
 
-    const response = await fetch('/api/chat/stream', {
-      method: 'POST',
-      body: JSON.stringify({ message: content }),
-    })
+    try {
+      const response = await fetch('/api/chat/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: content,
+          history: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
 
-    await stream(response, (chunk) => {
+      if (!response.ok) {
+        throw new Error(`Stream error: ${response.status}`)
+      }
+
+      await stream(response, (chunk: string) => {
+        setMessages(prev => {
+          const updated = [...prev]
+          const lastMsg = updated[updated.length - 1]
+          if (lastMsg.id === aiMsgId) {
+            lastMsg.content += chunk
+            lastMsg.updatedAt = new Date()
+          }
+          return updated
+        })
+      })
+
+      // Mark as complete
       setMessages(prev => {
         const updated = [...prev]
-        const last = updated[updated.length - 1]
-        last.content += chunk
+        const lastMsg = updated[updated.length - 1]
+        if (lastMsg.id === aiMsgId) {
+          lastMsg.status = 'sent'
+        }
         return updated
       })
-    })
-  }
+    } catch (error) {
+      // Mark as error
+      setMessages(prev => {
+        const updated = [...prev]
+        const lastMsg = updated[updated.length - 1]
+        if (lastMsg.id === aiMsgId) {
+          lastMsg.status = 'error'
+          lastMsg.content = 'Error streaming response. Please try again.'
+        }
+        return updated
+      })
+    }
+  }, [messages, stream])
 
-  return <ChatWindow messages={messages} isLoading={isStreaming} onSendMessage={handleSend} />
+  return (
+    <ErrorBoundary>
+      <ChatWindow 
+        messages={messages} 
+        isLoading={isStreaming} 
+        onSendMessage={handleSend}
+      />
+    </ErrorBoundary>
+  )
 }
 ```
+
+**Key Features:**
+- ✅ Real-time streaming updates
+- ✅ Proper streaming status handling
+- ✅ Error handling for stream failures
+- ✅ Message history context
+- ✅ Optimistic updates
+- ✅ TypeScript types throughout
 
 ---
 
 ### Recipe 4: Message Persistence
 
-Save and restore chat history with localStorage.
+Save and restore chat history with localStorage and IndexedDB for larger datasets.
 
 ```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { useLocalStorage } from '@clarity-chat/react'
-import { useEffect } from 'react'
+import { 
+  ChatWindow, 
+  useLocalStorage,
+  useIndexedDB 
+} from '@clarity-chat/react'
+import { useState, useEffect, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
 
 export function PersistentChat() {
-  const [messages, setMessages] = useLocalStorage('chat-messages', [])
+  // Use localStorage for small datasets (< 5MB)
+  const [chatId] = useLocalStorage('current-chat-id', 'chat-1')
+  
+  // Use IndexedDB for larger message histories
+  const { 
+    data: messages, 
+    setData: setMessages,
+    isLoading: isLoadingMessages 
+  } = useIndexedDB<Message[]>(`chat-${chatId}`, [])
 
-  const handleSend = async (content: string) => {
-    // Add message and save automatically
-    const newMessage = { id: Date.now().toString(), role: 'user', content, timestamp: Date.now() }
-    setMessages(prev => [...prev, newMessage])
+  // Load messages on mount
+  useEffect(() => {
+    if (messages.length === 0) {
+      // Try to load from localStorage as fallback
+      const stored = localStorage.getItem(`chat-messages-${chatId}`)
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored)
+          setMessages(parsed)
+        } catch (error) {
+          console.error('Failed to load messages:', error)
+        }
+      }
+    }
+  }, [chatId, messages.length, setMessages])
+
+  // Auto-save to localStorage as backup
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem(`chat-messages-${chatId}`, JSON.stringify(messages))
+    }
+  }, [messages, chatId])
+
+  const handleSend = useCallback(async (content: string) => {
+    const userMsg: Message = {
+      id: `msg-${Date.now()}`,
+      chatId,
+      role: 'user',
+      content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
+    }
     
-    // Call API...
-  }
-
-  return <ChatWindow messages={messages} onSendMessage={handleSend} />
-}
-```
-
----
-
-### Recipe 5: Token Tracking
-
-Monitor token usage and costs in real-time.
-
-```tsx
-import { ChatWindow, TokenCounter, useTokenTracker } from '@clarity-chat/react'
-
-export function ChatWithTokenTracking() {
-  const [messages, setMessages] = useState([])
-  const { tokenCount, estimateCost, trackMessage } = useTokenTracker({
-    model: 'gpt-4',
-    inputCostPer1k: 0.03,
-    outputCostPer1k: 0.06,
-  })
-
-  const handleSend = async (content: string) => {
-    trackMessage(content, 'input')
-    // Send message...
-    // Track response
-    trackMessage(response, 'output')
-  }
-
-  return (
-    <div>
-      <TokenCounter tokens={tokenCount} maxTokens={4000} cost={estimateCost()} />
-      <ChatWindow messages={messages} onSendMessage={handleSend} />
-    </div>
-  )
-}
-```
-
----
-
-## Advanced Patterns
-
-### Recipe 6: Multi-Turn Conversations
-
-Maintain conversation context across multiple turns.
-
-```tsx
-import { ChatWindow } from '@clarity-chat/react'
-import { useState, useRef } from 'react'
-
-export function ContextAwareChat() {
-  const [messages, setMessages] = useState([])
-  const conversationHistory = useRef([])
-
-  const handleSend = async (content: string) => {
-    const userMsg = { role: 'user', content }
-    conversationHistory.current.push(userMsg)
-
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({
-        messages: conversationHistory.current, // Send full history
-      }),
-    })
-
-    const data = await response.json()
-    const aiMsg = { role: 'assistant', content: data.response }
-    conversationHistory.current.push(aiMsg)
-
-    setMessages(conversationHistory.current.map((msg, i) => ({
-      ...msg,
-      id: i.toString(),
-      timestamp: Date.now(),
-    })))
-  }
-
-  return <ChatWindow messages={messages} onSendMessage={handleSend} />
-}
-```
-
----
-
-### Recipe 7: File Upload Integration
-
-Allow users to upload files as context.
-
-```tsx
-import { ChatWindow, FileUpload, ContextManager } from '@clarity-chat/react'
-import { useState } from 'react'
-
-export function ChatWithFileUpload() {
-  const [messages, setMessages] = useState([])
-  const [files, setFiles] = useState([])
-
-  const handleFilesSelected = async (selectedFiles) => {
-    const uploaded = await Promise.all(
-      selectedFiles.map(file => uploadFile(file))
-    )
-    setFiles(prev => [...prev, ...uploaded])
-  }
-
-  const handleSend = async (content: string) => {
-    // Include file references in message
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({
-        message: content,
-        fileIds: files.map(f => f.id),
-      }),
-    })
-    // Process response...
-  }
-
-  return (
-    <div>
-      <FileUpload onFilesSelected={handleFilesSelected} />
-      <ContextManager contexts={files} onRemove={id => setFiles(prev => prev.filter(f => f.id !== id))} />
-      <ChatWindow messages={messages} onSendMessage={handleSend} />
-    </div>
-  )
-}
-```
-
----
-
-### Recipe 8: Custom Thinking Indicators
-
-Show detailed AI processing stages.
-
-```tsx
-import { ChatWindow, ThinkingIndicator } from '@clarity-chat/react'
-import { useState } from 'react'
-
-export function ChatWithStages() {
-  const [messages, setMessages] = useState([])
-  const [stage, setStage] = useState(null)
-
-  const handleSend = async (content: string) => {
-    setStage('thinking')
+    setMessages(prev => [...prev, userMsg])
     
-    // Simulate stages
-    setTimeout(() => setStage('researching'), 1000)
-    setTimeout(() => setStage('generating'), 2000)
-    setTimeout(() => setStage('finalizing'), 3000)
+    // Call API and add response...
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: content }),
+      })
+      
+      const data = await response.json()
+      const aiMsg: Message = {
+        id: `msg-${Date.now() + 1}`,
+        chatId,
+        role: 'assistant',
+        content: data.response,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      }
+      
+      setMessages(prev => [...prev, aiMsg])
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    }
+  }, [chatId, setMessages])
 
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({ message: content }),
-    })
-
-    setStage(null)
-    // Add response...
+  if (isLoadingMessages) {
+    return <div className="p-4">Loading conversation...</div>
   }
 
   return (
-    <ChatWindow
-      messages={messages}
-      isLoading={!!stage}
+    <ChatWindow 
+      messages={messages} 
       onSendMessage={handleSend}
     />
   )
 }
 ```
+
+**Key Features:**
+- ✅ Dual storage (localStorage + IndexedDB)
+- ✅ Automatic persistence
+- ✅ Loading states
+- ✅ Error handling
+- ✅ Chat-specific storage
+- ✅ Fallback to localStorage
+
+---
+
+### Recipe 5: Token Tracking & Cost Estimation
+
+Monitor token usage and costs in real-time with detailed analytics.
+
+```tsx
+import { 
+  ChatWindow, 
+  TokenCounter,
+  useTokenTracker 
+} from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+export function ChatWithTokenTracking() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  
+  const {
+    totalTokens,
+    inputTokens,
+    outputTokens,
+    addInputTokens,
+    addOutputTokens,
+    estimatedCost,
+    reset,
+  } = useTokenTracker({
+    modelName: 'gpt-4-turbo',
+    inputCostPer1k: 0.01,
+    outputCostPer1k: 0.03,
+  })
+
+  const handleSend = useCallback(async (content: string) => {
+    // Track input tokens
+    const inputTokenCount = Math.ceil(content.length / 4) // Rough estimate
+    addInputTokens(inputTokenCount)
+
+    const userMsg: Message = {
+      id: `msg-${Date.now()}`,
+      chatId: 'default-chat',
+      role: 'user',
+      content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
+    }
+    
+    setMessages(prev => [...prev, userMsg])
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: content }),
+      })
+      
+      const data = await response.json()
+      const aiResponse = data.response || data.content
+      
+      // Track output tokens
+      const outputTokenCount = Math.ceil(aiResponse.length / 4)
+      addOutputTokens(outputTokenCount)
+      
+      const aiMsg: Message = {
+        id: `msg-${Date.now() + 1}`,
+        chatId: 'default-chat',
+        role: 'assistant',
+        content: aiResponse,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      }
+      
+      setMessages(prev => [...prev, aiMsg])
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [addInputTokens, addOutputTokens])
+
+  return (
+    <div className="flex flex-col h-screen">
+      {/* Token Counter Header */}
+      <div className="flex items-center justify-between p-4 border-b bg-card">
+        <h1 className="text-xl font-semibold">Chat</h1>
+        <div className="flex items-center gap-4">
+          <TokenCounter
+            tokens={totalTokens}
+            maxTokens={128000}
+            cost={estimatedCost}
+            showBreakdown
+          />
+          {totalTokens > 0 && (
+            <button
+              onClick={reset}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+      </div>
+
+      <ChatWindow 
+        messages={messages} 
+        isLoading={isLoading} 
+        onSendMessage={handleSend}
+      />
+    </div>
+  )
+}
+```
+
+**Key Features:**
+- ✅ Real-time token counting
+- ✅ Cost estimation
+- ✅ Input/output breakdown
+- ✅ Token limit warnings
+- ✅ Reset functionality
+- ✅ Detailed analytics display
+
+---
+
+## Advanced Patterns
+
+### Recipe 6: Multi-Turn Conversations with Context Management
+
+Maintain conversation context across multiple turns with automatic context window management.
+
+```tsx
+import { 
+  ChatWindow, 
+  ContextManager,
+  useTokenTracker 
+} from '@clarity-chat/react'
+import { useState, useCallback, useMemo } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+export function ContextAwareChat() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const { totalTokens } = useTokenTracker({ modelName: 'gpt-4-turbo' })
+
+  // Manage context window (keep last N messages if approaching limit)
+  const contextMessages = useMemo(() => {
+    const maxTokens = 128000
+    const reservedTokens = 1000 // Reserve for response
+    
+    if (totalTokens < maxTokens - reservedTokens) {
+      return messages // Use all messages
+    }
+    
+    // Keep last 20 messages if approaching limit
+    return messages.slice(-20)
+  }, [messages, totalTokens])
+
+  const handleSend = useCallback(async (content: string) => {
+    const userMsg: Message = {
+      id: `msg-${Date.now()}`,
+      chatId: 'default-chat',
+      role: 'user',
+      content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
+    }
+    
+    setMessages(prev => [...prev, userMsg])
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: content,
+          // Send conversation history for context
+          history: contextMessages.map(m => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+      
+      const data = await response.json()
+      const aiMsg: Message = {
+        id: `msg-${Date.now() + 1}`,
+        chatId: 'default-chat',
+        role: 'assistant',
+        content: data.response,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      }
+      
+      setMessages(prev => [...prev, aiMsg])
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [contextMessages])
+
+  return (
+    <div className="flex flex-col h-screen">
+      <ContextManager
+        messages={messages}
+        contextMessages={contextMessages}
+        onClearContext={() => setMessages([])}
+      />
+      
+      <ChatWindow 
+        messages={messages} 
+        isLoading={isLoading} 
+        onSendMessage={handleSend}
+      />
+    </div>
+  )
+}
+```
+
+**Key Features:**
+- ✅ Automatic context window management
+- ✅ Token-aware message pruning
+- ✅ Context visualization
+- ✅ Manual context clearing
+- ✅ Conversation history preservation
+- ✅ Smart message retention
+
+---
+
+### Recipe 7: File Upload Integration
+
+Allow users to upload files as context with preview and management.
+
+```tsx
+import { 
+  ChatWindow, 
+  FileUpload,
+  ContextManager 
+} from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import type { Message } from '@clarity-chat/types'
+
+interface UploadedFile {
+  id: string
+  name: string
+  type: string
+  size: number
+  url?: string
+  content?: string
+}
+
+export function ChatWithFileUpload() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [files, setFiles] = useState<UploadedFile[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleFilesSelected = useCallback(async (selectedFiles: File[]) => {
+    const uploaded: UploadedFile[] = await Promise.all(
+      selectedFiles.map(async (file) => {
+        // Upload file to your backend
+        const formData = new FormData()
+        formData.append('file', file)
+        
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        })
+        
+        if (!response.ok) {
+          throw new Error(`Upload failed: ${response.statusText}`)
+        }
+        
+        const data = await response.json()
+        
+        return {
+          id: data.id || `file-${Date.now()}`,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          url: data.url,
+          content: data.content, // Extracted text content
+        }
+      })
+    )
+    
+    setFiles(prev => [...prev, ...uploaded])
+  }, [])
+
+  const handleSend = useCallback(async (content: string) => {
+    const userMsg: Message = {
+      id: `msg-${Date.now()}`,
+      chatId: 'default-chat',
+      role: 'user',
+      content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
+    }
+    
+    setMessages(prev => [...prev, userMsg])
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: content,
+          fileIds: files.map(f => f.id),
+          fileContents: files.map(f => f.content).filter(Boolean),
+        }),
+      })
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      const aiMsg: Message = {
+        id: `msg-${Date.now() + 1}`,
+        chatId: 'default-chat',
+        role: 'assistant',
+        content: data.response,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      }
+      
+      setMessages(prev => [...prev, aiMsg])
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [files])
+
+  return (
+    <div className="flex flex-col h-screen">
+      {/* File Upload Area */}
+      <div className="p-4 border-b">
+        <FileUpload
+          onFilesSelected={handleFilesSelected}
+          accept=".pdf,.doc,.docx,.txt,.md"
+          maxSize={10 * 1024 * 1024} // 10MB
+          multiple
+        />
+      </div>
+
+      {/* Context Manager */}
+      {files.length > 0 && (
+        <ContextManager
+          contexts={files.map(f => ({
+            id: f.id,
+            type: 'file',
+            name: f.name,
+            content: f.content,
+          }))}
+          onRemove={(id) => setFiles(prev => prev.filter(f => f.id !== id))}
+        />
+      )}
+
+      <ChatWindow 
+        messages={messages} 
+        isLoading={isLoading} 
+        onSendMessage={handleSend}
+      />
+    </div>
+  )
+}
+```
+
+**Key Features:**
+- ✅ File upload with preview
+- ✅ Multiple file support
+- ✅ File size validation
+- ✅ Context management
+- ✅ File content extraction
+- ✅ Error handling
+- ✅ TypeScript types
+
+---
+
+### Recipe 8: Custom Thinking Indicators
+
+Show detailed AI processing stages with visual feedback.
+
+```tsx
+import { 
+  ChatWindow, 
+  ThinkingIndicator 
+} from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import type { Message, AIStatus } from '@clarity-chat/types'
+
+export function ChatWithStages() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [aiStatus, setAiStatus] = useState<AIStatus | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSend = useCallback(async (content: string) => {
+    const userMsg: Message = {
+      id: `msg-${Date.now()}`,
+      chatId: 'default-chat',
+      role: 'user',
+      content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
+    }
+    
+    setMessages(prev => [...prev, userMsg])
+    setIsLoading(true)
+    
+    // Set initial thinking stage
+    setAiStatus({
+      stage: 'thinking',
+      progress: 0,
+      message: 'Processing your request...',
+    })
+    
+    // Simulate stages with progress
+    setTimeout(() => {
+      setAiStatus({
+        stage: 'researching',
+        progress: 25,
+        message: 'Gathering information...',
+      })
+    }, 1000)
+    
+    setTimeout(() => {
+      setAiStatus({
+        stage: 'generating',
+        progress: 50,
+        message: 'Generating response...',
+      })
+    }, 2000)
+    
+    setTimeout(() => {
+      setAiStatus({
+        stage: 'finalizing',
+        progress: 75,
+        message: 'Finalizing answer...',
+      })
+    }, 3000)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: content }),
+      })
+      
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      const aiMsg: Message = {
+        id: `msg-${Date.now() + 1}`,
+        chatId: 'default-chat',
+        role: 'assistant',
+        content: data.response,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      }
+      
+      setMessages(prev => [...prev, aiMsg])
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    } finally {
+      setAiStatus(null)
+      setIsLoading(false)
+    }
+  }, [])
+
+  return (
+    <div className="flex flex-col h-screen">
+      {aiStatus && (
+        <div className="p-4 border-b">
+          <ThinkingIndicator status={aiStatus} />
+        </div>
+      )}
+      
+      <ChatWindow
+        messages={messages}
+        isLoading={isLoading}
+        aiStatus={aiStatus || undefined}
+        onSendMessage={handleSend}
+      />
+    </div>
+  )
+}
+```
+
+**Key Features:**
+- ✅ Visual processing stages
+- ✅ Progress indicators
+- ✅ Status messages
+- ✅ Smooth transitions
+- ✅ TypeScript types
+- ✅ Error handling
 
 ---
 
