@@ -173,8 +173,9 @@ export class RequestBatcher<T = any, R = any> {
         results.push(result)
 
         const promise = this.pendingPromises.get(request.id)
-        if (promise) {
-          promise.resolve(responses[index])
+        const response = responses[index]
+        if (promise && response !== undefined) {
+          promise.resolve(response)
           this.pendingPromises.delete(request.id)
         }
       })
