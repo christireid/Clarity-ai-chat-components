@@ -395,6 +395,7 @@ export function limitHistorySmart(
   const keptTurns: CoreMessage[][] = []
   for (let i = turns.length - 1; i >= 0; i--) {
     const turn = turns[i]
+    if (!turn) continue
     const turnTokens = turn.reduce(
       (sum, msg) => sum + estimateTokens(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)),
       0
