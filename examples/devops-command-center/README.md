@@ -294,9 +294,9 @@ Feel free to use as a template for your own projects!
 
 ## 📚 Learn More
 
-- [Clarity Chat Documentation](../../docs/README.md)
-- [Multi-Agent Guide](../../docs/guides/agents.md)
-- [Token Optimization](../../docs/guides/token-optimization.md)
+- [Clarity Chat Documentation](https://docs.clarity-chat.dev)
+- [Multi-Agent Guide](../../apps/docs/guide/agents.md)
+- [Token Optimization](../../apps/docs/guide/token-optimization.md)
 - [Enterprise Features](../../docs/enterprise/ENTERPRISE_FEATURES.md)
 
 ## 📝 License

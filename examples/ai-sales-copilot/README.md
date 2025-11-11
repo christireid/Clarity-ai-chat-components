@@ -363,10 +363,8 @@ This demo showcases best practices for:
 
 ## 📚 Learn More
 
-- [Clarity Chat Documentation](../../docs/README.md)
-- [Analytics Guide](../../docs/guides/analytics.md)
-- [CRM Integration](../../docs/guides/crm-integration.md)
-- [Conversation Intelligence](../../docs/guides/conversation-intelligence.md)
+- [Clarity Chat Documentation](https://docs.clarity-chat.dev)
+- [Observability Guide](../../apps/docs/guide/observability.md)
 
 ## 📝 License
 

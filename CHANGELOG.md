@@ -237,18 +237,16 @@ This release transforms Clarity Chat into a complete AI application toolkit with
 ### 📚 New Documentation
 
 - **Getting Started:**
-  - [Installation Guide](./docs/getting-started/installation.md)
-  - [5-Minute Quick Start](./docs/getting-started/quick-start.md)
+  - [Installation Guide](./apps/docs/guide/installation.md)
+  - [5-Minute Quick Start](./QUICK_START_GUIDE.md)
   - First Component Tutorial (coming soon)
 
 - **Architecture:**
-  - [System Overview](./docs/architecture/overview.md) with diagrams
-  - [Design Decisions](./docs/architecture/design-decisions.md) (coming soon)
-  - [Monorepo Structure](./docs/architecture/monorepo.md) (coming soon)
+  - [System Overview](./ARCHITECTURE_OVERVIEW.md) with architecture details
 
 - **API Reference:**
-  - [Components API](./docs/api/components.md) - ChatWindow, MessageList, VoiceInput, etc.
-  - [Hooks API](./docs/api/hooks.md) - All 25+ hooks documented
+  - [Components API](./apps/docs/api/components.md) - ChatWindow, MessageList, VoiceInput, etc.
+  - [Hooks API](./apps/docs/api/hooks.md) - All 25+ hooks documented
 
 ### 🐛 Bug Fixes
 
@@ -406,7 +404,7 @@ npm install @clarity-chat/react@latest
 ## Links
 
 - [GitHub Repository](https://github.com/christireid/Clarity-ai-chat-components)
-- [Documentation](./docs/README.md)
+- [Documentation](https://docs.clarity-chat.dev)
 - [Examples](./examples/README.md)
 - [Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
 - [Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)

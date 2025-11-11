@@ -182,6 +182,5 @@ Based on real-world usage:
 
 ## Learn More
 
-- [Token Optimization Guide](../../docs/guides/token-optimization.md)
-- [API Reference](../../docs/api/token-optimization.md)
-- [Best Practices](../../docs/guides/token-optimization-best-practices.md)
+- [Token Optimization Guide](../../apps/docs/guide/token-optimization.md)
+- [Token Optimization Quick Reference](../../docs/TOKEN_OPTIMIZATION_QUICK_REFERENCE.md)

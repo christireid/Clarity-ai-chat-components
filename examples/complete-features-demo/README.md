@@ -308,11 +308,10 @@ After exploring this demo, you'll understand:
 
 ## 🔗 Related Resources
 
-- [Blueprint Analysis](../../BLUEPRINT_ANALYSIS_AND_ENHANCEMENTS.md)
-- [Implementation Roadmap](../../IMPLEMENTATION_ROADMAP.md)
+- [Architecture Overview](../../ARCHITECTURE_OVERVIEW.md)
 - [Quick Start Guide](../../QUICK_START_GUIDE.md)
-- [Component Documentation](../../docs/components/)
-- [API Reference](../../docs/api/)
+- [Components Guide](../../apps/docs/guide/components.md)
+- [API Reference](../../apps/docs/api/components.md)
 
 ---
 

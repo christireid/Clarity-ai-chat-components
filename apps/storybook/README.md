@@ -150,7 +150,7 @@ export const Default: Story = {
 }
 ```
 
-3. See [STORYBOOK_DEVELOPER_GUIDE.md](../../STORYBOOK_DEVELOPER_GUIDE.md) for detailed instructions.
+3. See the [Storybook Documentation](https://storybook.js.org/docs) for detailed instructions.
 
 ### Writing Interaction Tests
 
@@ -259,11 +259,8 @@ For visual regression testing, consider integrating:
 
 ### Guides
 
-- [Developer Guide](../../STORYBOOK_DEVELOPER_GUIDE.md) - Complete guide for contributors
-- [Quick Reference](../../STORYBOOK_QUICK_REFERENCE.md) - Cheat sheet for common patterns
-- [Enhancement Summary](../../STORYBOOK_ENHANCEMENT_COMPLETE.md) - Project overview
-- [Interaction Tests](../../STORYBOOK_INTERACTION_TESTS_SUMMARY.md) - Testing guide
-- [Accessibility Audit](../../STORYBOOK_ACCESSIBILITY_AUDIT.md) - A11y compliance report
+- [Storybook Documentation](https://storybook.js.org/docs) - Official Storybook docs
+- [Accessibility Guide](../../apps/docs/guide/accessibility.md) - A11y guidelines
 
 ### In-Storybook Docs
 
@@ -383,8 +380,7 @@ npm run storybook
 ### Internal
 
 - [Project Repository](https://github.com/christireid/Clarity-ai-chat-components)
-- [Developer Guide](../../STORYBOOK_DEVELOPER_GUIDE.md)
-- [Quick Reference](../../STORYBOOK_QUICK_REFERENCE.md)
+- [Storybook Documentation](https://storybook.js.org/docs)
 
 ### External
 
@@ -397,7 +393,7 @@ npm run storybook
 
 ## 🤝 Contributing
 
-1. Read the [Developer Guide](../../STORYBOOK_DEVELOPER_GUIDE.md)
+1. Read the [Storybook Documentation](https://storybook.js.org/docs)
 2. Create a new branch
 3. Add your stories following CSF3 format
 4. Add interaction tests
