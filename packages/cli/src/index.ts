@@ -7,7 +7,6 @@
 
 import { Command } from 'commander'
 import chalk from 'chalk'
-import gradient from 'gradient-string'
 import { initCommand } from './commands/init.js'
 import { addCommand } from './commands/add.js'
 import { keysCommand } from './commands/keys.js'
@@ -19,25 +18,21 @@ import { upgradeCommand } from './commands/upgrade.js'
 import { analyzeCommand } from './commands/analyze.js'
 import { benchmarkCommand } from './commands/benchmark.js'
 import { browseCommand, searchComponents } from './commands/browse.js'
+import { displayBanner } from './ui/banner.js'
 
 const program = new Command()
 
-// ASCII Art Banner
-const banner = gradient.pastel.multiline([
-  '  ____  _               _ _         ____  _           _   ',
-  ' / ___|| | __ _ _ __(_) |_ _   _/ ___|| |__   __ _| |_ ',
-  '| |    | |/ _` | \'__| | __| | | | |    | \'_ \\ / _` | __|',
-  '| |___ | | (_| | |  | | |_| |_| | |___ | | | | (_| | |_ ',
-  ' \\____|_|\\__,_|_|  |_|\\__|\\__, |\\____|_| |_|\\__,_|\\__|',
-  '                           |___/                          ',
-].join('\n'))
-
-console.log('\n' + banner + '\n')
+// Display beautiful banner
+displayBanner({ gradient: 'pastel', margin: 1 })
 
 program
   .name('clarity-chat')
-  .description('🎨 Beautiful CLI for Clarity Chat - AI Component Library')
+  .description(chalk.cyan('🎨 Beautiful CLI for Clarity Chat - AI Component Library'))
   .version('0.1.0')
+  .configureHelp({
+    helpWidth: 80,
+    sortSubcommands: true,
+  })
 
 // Register commands
 program
