@@ -31,10 +31,11 @@ export interface InputProps
   error?: string
   icon?: React.ReactNode
   iconPosition?: 'left' | 'right'
+  /** React 19: ref is now a regular prop! */
+  ref?: React.Ref<HTMLInputElement>
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, variant, inputSize, type, error, icon, iconPosition = 'left', ...props }, ref) => {
+function Input({ className, variant, inputSize, type, error, icon, iconPosition = 'left', ref, ...props }: InputProps) {
     const hasError = error || variant === 'error'
 
     if (icon) {
@@ -88,7 +89,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       </div>
     )
   }
-)
-Input.displayName = 'Input'
+}
 
 export { Input, inputVariants }

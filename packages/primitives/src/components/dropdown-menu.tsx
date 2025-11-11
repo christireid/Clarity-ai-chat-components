@@ -475,25 +475,24 @@ export interface DropdownMenuItemProps extends React.ButtonHTMLAttributes<HTMLBu
   inset?: boolean
   keepOpenOnSelect?: boolean
   active?: boolean
+  /** React 19: ref is now a regular prop! */
+  ref?: React.Ref<HTMLButtonElement>
 }
 
-export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenuItemProps>(
-  (
-    {
-      className,
-      icon,
-      shortcut,
-      destructive = false,
-      inset = false,
-      keepOpenOnSelect = false,
-      active = false,
-      disabled = false,
-      onClick,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+export function DropdownMenuItem({
+  className,
+  icon,
+  shortcut,
+  destructive = false,
+  inset = false,
+  keepOpenOnSelect = false,
+  active = false,
+  disabled = false,
+  onClick,
+  children,
+  ref,
+  ...props
+}: DropdownMenuItemProps) {
     const { close } = useDropdownMenu()
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -545,9 +544,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
         )}
       </button>
     )
-  }
-)
-DropdownMenuItem.displayName = 'DropdownMenuItem'
+}
 
 export const DropdownMenuSeparator: React.FC<{ className?: string }> = ({ className }) => {
   return <div role="separator" className={cn('my-1 h-px bg-border/60', className)} />

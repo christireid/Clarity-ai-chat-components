@@ -48,10 +48,11 @@ export interface BadgeProps
   pulse?: boolean
   /** Enable glow effect */
   glow?: boolean
+  /** React 19: ref is now a regular prop! */
+  ref?: React.Ref<HTMLDivElement>
 }
 
-const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, dot = false, pulse = false, glow = false, children, ...props }, ref) => {
+function Badge({ className, variant, size, dot = false, pulse = false, glow = false, children, ref, ...props }: BadgeProps) {
     return (
       <div
         ref={ref}
@@ -72,8 +73,6 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         {children}
       </div>
     )
-  }
-)
-Badge.displayName = 'Badge'
+}
 
 export { Badge, badgeVariants }

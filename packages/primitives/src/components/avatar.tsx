@@ -32,23 +32,22 @@ export interface AvatarProps
   hoverable?: boolean
   /** Custom status badge content */
   statusBadge?: React.ReactNode
+  /** React 19: ref is now a regular prop! */
+  ref?: React.Ref<HTMLDivElement>
 }
 
-const Avatar = React.memo(
-  React.forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
-    {
-      className,
-      size,
-      src,
-      alt,
-      fallback,
-      status,
-      hoverable = false,
-      statusBadge,
-      ...props
-    },
-    ref
-  ) {
+const Avatar = React.memo(function Avatar({
+  className,
+  size,
+  src,
+  alt,
+  fallback,
+  status,
+  hoverable = false,
+  statusBadge,
+  ref,
+  ...props
+}: AvatarProps) {
     const [imageError, setImageError] = React.useState(false)
 
     const getFallbackText = () => {
@@ -124,8 +123,7 @@ const Avatar = React.memo(
         )}
       </div>
     )
-  })
-)
+})
 
 Avatar.displayName = 'Avatar'
 

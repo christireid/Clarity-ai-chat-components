@@ -25,10 +25,11 @@ export interface TextareaProps
   error?: string
   autoResize?: boolean
   maxRows?: number
+  /** React 19: ref is now a regular prop! */
+  ref?: React.Ref<HTMLTextAreaElement>
 }
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, variant, error, autoResize = false, maxRows, onChange, ...props }, ref) => {
+function Textarea({ className, variant, error, autoResize = false, maxRows, onChange, ref, ...props }: TextareaProps) {
     const textareaRef = React.useRef<HTMLTextAreaElement | null>(null)
     const hasError = error || variant === 'error'
 
@@ -79,7 +80,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       </div>
     )
   }
-)
-Textarea.displayName = 'Textarea'
+}
 
 export { Textarea, textareaVariants }

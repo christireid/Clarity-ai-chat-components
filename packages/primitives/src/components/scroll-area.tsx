@@ -1,9 +1,13 @@
 import * as React from 'react'
 import { cn } from '../lib/utils'
 
+interface ScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** React 19: ref is now a regular prop! */
+  ref?: React.Ref<HTMLDivElement>
+}
+
 // Simple scroll area component with enhanced scrollbar styling
-export const ScrollArea = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, children, ...props }, ref) => {
+export function ScrollArea({ className, children, ref, ...props }: ScrollAreaProps) {
     return (
       <div
         ref={ref}
@@ -20,6 +24,5 @@ export const ScrollArea = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
         {children}
       </div>
     )
-  }
-)
+}
 ScrollArea.displayName = 'ScrollArea'

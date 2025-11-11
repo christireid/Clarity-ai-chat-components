@@ -73,29 +73,28 @@ export interface ButtonProps
   errorMessage?: React.ReactNode
   /** Duration for success/error state before returning to idle (ms, default: 2000) */
   stateDuration?: number
+  /** React 19: ref is now a regular prop! */
+  ref?: React.Ref<HTMLButtonElement>
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant,
-      size,
-      asChild = false,
-      loading = false,
-      state: controlledState,
-      ripple = true,
-      rippleColor,
-      successMessage,
-      errorMessage,
-      stateDuration = 2000,
-      disabled,
-      children,
-      onClick,
-      ...props
-    },
-    ref
-  ) => {
+function Button({
+  className,
+  variant,
+  size,
+  asChild = false,
+  loading = false,
+  state: controlledState,
+  ripple = true,
+  rippleColor,
+  successMessage,
+  errorMessage,
+  stateDuration = 2000,
+  disabled,
+  children,
+  onClick,
+  ref,
+  ...props
+}: ButtonProps) {
     const Comp = (asChild ? Slot : 'button') as 'button'
     const [internalState, setInternalState] =
       React.useState<ButtonState>('idle')
@@ -206,9 +205,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </Comp>
     )
-  }
-)
-Button.displayName = 'Button'
+}
 
 export { Button, buttonVariants }
 export type { ButtonState }
