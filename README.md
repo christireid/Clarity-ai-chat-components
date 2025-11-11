@@ -151,7 +151,7 @@ function App() {
 - ♿ WCAG AAA accessibility
 - 🔒 Production-ready security
 
-**[📖 View Full Quick Start Guide](./QUICK_START_GUIDE.md)** • **[📚 Browse Examples](./examples/README.md)**
+**[📖 View Full Quick Start Guide](./apps/docs/guide/quick-start.md)** • **[📚 Browse Examples](./examples/README.md)**
 
 ---
 
@@ -1128,7 +1128,7 @@ Pre-built prompt templates for common tasks:
 ## 📚 Documentation
 
 ### Getting Started
-- [Quick Start Guide](./QUICK_START_GUIDE.md) - Get started in 5 minutes
+- [Quick Start Guide](./apps/docs/guide/quick-start.md) - Get started in 5 minutes
 - [Installation Guide](./apps/docs/guide/installation.md)
 - [First Component Tutorial](./apps/docs/guide/getting-started.md)
 
@@ -1363,7 +1363,7 @@ function MemoryEnabledChat() {
 docker-compose -f docker-compose.memory.yml up -d
 ```
 
-**[→ Memory Management Guide](./apps/docs/guide/memory-management.md)**
+**[→ Memory Management Guide](./apps/docs/guide/memory.md)**
 
 ### VSCode Extension
 
