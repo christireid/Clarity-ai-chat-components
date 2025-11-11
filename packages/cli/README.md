@@ -11,6 +11,19 @@
 - ⚡ **Code Generation** - Generate components, hooks, adapters, and tests
 - 📚 **Documentation** - Quick access to docs and examples
 - 🩺 **Health Check** - Diagnose and fix project issues
+- 📊 **Project Analysis** - Analyze component usage and generate reports
+- 🚀 **Upgrade Tool** - Check for and install package updates
+
+## Beautiful UI
+
+The CLI features a modern, beautiful interface inspired by top-tier developer tools:
+
+- ✨ **Gradient banners** for brand identity
+- 📊 **Beautiful tables** for data display
+- 📈 **Progress bars** for long operations
+- 🎨 **Color-coded output** for quick scanning
+- 📦 **Information boxes** for important messages
+- ✅ **Consistent styling** throughout
 
 ## Installation
 
@@ -72,7 +85,7 @@ clarity-chat keys
 clarity-chat keys add openai
 clarity-chat keys add anthropic
 
-# List configured keys
+# List configured keys (beautiful table display)
 clarity-chat keys list
 
 # Validate all keys
@@ -122,12 +135,56 @@ clarity-chat docs --offline       # Use offline docs (coming soon)
 
 ### `clarity-chat doctor`
 
-Check project health and configuration:
+Check project health and configuration with beautiful output:
 
 ```bash
 clarity-chat doctor       # Run health check
 clarity-chat doctor --fix # Auto-fix common issues
 ```
+
+**Features:**
+- Beautiful table display of checks
+- Color-coded status indicators
+- Summary box with statistics
+- Suggestions for improvements
+- Auto-fix for common issues
+
+### `clarity-chat analyze`
+
+Analyze project for Clarity Chat usage:
+
+```bash
+clarity-chat analyze              # Analyze and display results
+clarity-chat analyze --report     # Generate detailed reports
+clarity-chat analyze --verbose   # Show detailed file usage
+```
+
+**Features:**
+- Summary box with key metrics
+- Beautiful tables for components and hooks
+- Usage bars for visual representation
+- Progress bar during analysis
+- Recommendations for improvements
+
+### `clarity-chat upgrade`
+
+Check for and install package updates:
+
+```bash
+clarity-chat upgrade                    # Check and install all updates
+clarity-chat upgrade --interactive     # Interactive selection
+clarity-chat upgrade --yes             # Skip confirmation
+clarity-chat upgrade --major           # Only major updates
+clarity-chat upgrade --minor           # Only minor updates
+clarity-chat upgrade --patch           # Only patch updates
+```
+
+**Features:**
+- Beautiful table display of updates
+- Grouped by update type (major/minor/patch)
+- Color-coded update types
+- Summary statistics
+- Changelog links for major updates
 
 ## Examples
 
@@ -160,6 +217,26 @@ clarity-chat keys add anthropic
 
 ```bash
 clarity-chat generate component --name CustomChat --output ./src/components
+```
+
+### Health Check
+
+```bash
+# Check project health
+clarity-chat doctor
+
+# Auto-fix issues
+clarity-chat doctor --fix
+```
+
+### Analyze Usage
+
+```bash
+# Analyze component usage
+clarity-chat analyze
+
+# Generate detailed report
+clarity-chat analyze --report
 ```
 
 ## Configuration
@@ -195,6 +272,17 @@ GOOGLE_API_KEY=AIza...
 ```
 
 **Security Note**: `.env.local` is automatically added to `.gitignore`
+
+## UI Components
+
+The CLI uses beautiful UI components for consistent, professional output:
+
+- **Banners**: Gradient ASCII art banners
+- **Tables**: Beautiful formatted tables with borders
+- **Progress Bars**: Visual progress indicators
+- **Boxes**: Information boxes for important messages
+- **Spinners**: Animated loading indicators
+- **Colors**: Consistent color palette throughout
 
 ## Development
 

@@ -5,8 +5,6 @@
 import React from 'react'
 import { render } from 'ink'
 import chalk from 'chalk'
-import boxen from 'boxen'
-import ora from 'ora'
 import { execa } from 'execa'
 import fs from 'fs-extra'
 import path from 'path'
@@ -14,6 +12,9 @@ import { InitWizard } from '../components/InitWizard.js'
 import { detectFramework, detectPackageManager } from '../utils/detect.js'
 import { installDependencies } from '../utils/install.js'
 import { getLogger } from '../utils/logger.js'
+import { successBox } from '../ui/box.js'
+import { sectionHeader } from '../ui/banner.js'
+import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('init')
 
@@ -25,17 +26,10 @@ interface InitOptions {
 }
 
 export async function initCommand(options: InitOptions) {
-  console.log('\n')
-  console.log(boxen(
-    chalk.bold.cyan('🚀 Initialize Clarity Chat Project\n\n') +
-    chalk.gray('Setting up your AI-powered application...'),
-    { 
-      padding: 1, 
-      margin: 1, 
-      borderStyle: 'round',
-      borderColor: 'cyan'
-    }
-  ))
+  console.log()
+  console.log(sectionHeader('🚀 Initialize Clarity Chat Project'))
+  console.log(chalk.gray('Setting up your AI-powered application...'))
+  console.log()
 
   try {
     // Detect existing setup
@@ -75,7 +69,8 @@ export async function initCommand(options: InitOptions) {
     }
 
     // Create project structure
-    const spinner = ora('Creating project structure...').start()
+    const spinner = createSpinner('Creating project structure...')
+    spinner.start()
     
     await fs.ensureDir(path.join(cwd, 'src', 'components', 'clarity-chat'))
     await fs.ensureDir(path.join(cwd, 'src', 'lib'))
@@ -141,21 +136,20 @@ GOOGLE_API_KEY=your_google_key_here
     }
 
     // Success message
-    console.log('\n')
-    console.log(boxen(
-      chalk.bold.green('✅ Project initialized successfully!\n\n') +
-      chalk.white('Next steps:\n') +
-      chalk.cyan('  1. Add your API keys to .env.local\n') +
-      chalk.cyan('  2. Run ') + chalk.bold('npm run dev') + chalk.cyan(' to start development\n') +
-      chalk.cyan('  3. Open ') + chalk.bold('http://localhost:3000') + chalk.cyan(' in your browser\n\n') +
-      chalk.gray('Need help? Run: ') + chalk.bold('clarity-chat docs'),
-      { 
-        padding: 1, 
-        margin: 1, 
-        borderStyle: 'round',
-        borderColor: 'green'
-      }
+    console.log()
+    const nextSteps = [
+      'Add your API keys to .env.local',
+      `Run ${chalk.bold('npm run dev')} to start development`,
+      `Open ${chalk.bold('http://localhost:3000')} in your browser`,
+    ].join('\n')
+    
+    const helpText = chalk.gray('Need help? Run: ') + chalk.bold('clarity-chat docs')
+    
+    console.log(successBox(
+      `${chalk.bold('Project initialized successfully!')}\n\n${nextSteps}\n\n${helpText}`,
+      '✓ Success'
     ))
+    console.log()
 
   } catch (error) {
     logger.error('Initialization failed', error)

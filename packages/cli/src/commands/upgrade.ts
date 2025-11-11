@@ -1,13 +1,20 @@
 /**
  * Upgrade command - Check for and install updates
+ * Enhanced with beautiful UI components
  */
 
 import { execSync } from 'child_process'
 import chalk from 'chalk'
-import ora from 'ora'
-import prompts from 'prompts'
 import fs from 'fs-extra'
 import path from 'path'
+import prompts from 'prompts'
+import { getLogger } from '../utils/logger.js'
+import { sectionHeader } from '../ui/banner.js'
+import { table, TableColumn } from '../ui/table.js'
+import { createSpinner } from '../ui/progress.js'
+import { successBox, warningBox, infoBox } from '../ui/box.js'
+
+const logger = getLogger('upgrade')
 
 interface PackageUpdate {
   name: string
@@ -20,7 +27,8 @@ interface PackageUpdate {
  * Check for available updates
  */
 async function checkForUpdates(): Promise<PackageUpdate[]> {
-  const spinner = ora('Checking for updates...').start()
+  const spinner = createSpinner('Checking for updates...')
+  spinner.start()
   
   try {
     // Read package.json
@@ -98,51 +106,95 @@ function determineUpdateType(
 }
 
 /**
- * Display update information
+ * Display update information with beautiful formatting
  */
 function displayUpdates(updates: PackageUpdate[]) {
-  console.log(chalk.blue.bold('\n📦 Available Updates\n'))
+  console.log()
+  console.log(sectionHeader('📦 Available Updates'))
+  console.log()
 
+  // Group updates by type
   const majorUpdates = updates.filter(u => u.type === 'major')
   const minorUpdates = updates.filter(u => u.type === 'minor')
   const patchUpdates = updates.filter(u => u.type === 'patch')
 
+  // Create table columns
+  const columns: TableColumn[] = [
+    { header: 'Package', width: 35, color: chalk.yellow },
+    { header: 'Current', width: 12, align: 'center', color: chalk.gray },
+    { header: '→', width: 4, align: 'center', color: chalk.gray },
+    { header: 'Latest', width: 12, align: 'center', color: chalk.green },
+    { header: 'Type', width: 10, align: 'center' },
+  ]
+
+  // Display major updates
   if (majorUpdates.length > 0) {
+    const majorData = majorUpdates.map(update => [
+      update.name,
+      update.current,
+      '→',
+      update.latest,
+      chalk.red.bold('MAJOR'),
+    ])
+
     console.log(chalk.red.bold('🔴 Major Updates (Breaking Changes)'))
-    majorUpdates.forEach(update => {
-      console.log(
-        `  ${chalk.yellow(update.name)}: ${chalk.gray(update.current)} → ${chalk.green(update.latest)}`
-      )
-    })
+    console.log(table(majorData, columns))
     console.log()
   }
 
+  // Display minor updates
   if (minorUpdates.length > 0) {
+    const minorData = minorUpdates.map(update => [
+      update.name,
+      update.current,
+      '→',
+      update.latest,
+      chalk.yellow.bold('MINOR'),
+    ])
+
     console.log(chalk.yellow.bold('🟡 Minor Updates (New Features)'))
-    minorUpdates.forEach(update => {
-      console.log(
-        `  ${chalk.yellow(update.name)}: ${chalk.gray(update.current)} → ${chalk.green(update.latest)}`
-      )
-    })
+    console.log(table(minorData, columns))
     console.log()
   }
 
+  // Display patch updates
   if (patchUpdates.length > 0) {
+    const patchData = patchUpdates.map(update => [
+      update.name,
+      update.current,
+      '→',
+      update.latest,
+      chalk.green.bold('PATCH'),
+    ])
+
     console.log(chalk.green.bold('🟢 Patch Updates (Bug Fixes)'))
-    patchUpdates.forEach(update => {
-      console.log(
-        `  ${chalk.yellow(update.name)}: ${chalk.gray(update.current)} → ${chalk.green(update.latest)}`
-      )
-    })
+    console.log(table(patchData, columns))
     console.log()
   }
+
+  // Summary
+  const summary = {
+    'Major Updates': chalk.red(majorUpdates.length.toString()),
+    'Minor Updates': chalk.yellow(minorUpdates.length.toString()),
+    'Patch Updates': chalk.green(patchUpdates.length.toString()),
+    'Total': chalk.cyan(updates.length.toString()),
+  }
+
+  console.log(infoBox(
+    Object.entries(summary)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n'),
+    'Summary'
+  ))
+  console.log()
 }
 
 /**
  * Install updates
  */
 async function installUpdates(updates: PackageUpdate[]) {
-  const spinner = ora('Installing updates...').start()
+  const spinner = createSpinner('Installing updates...')
+  spinner.start()
 
   try {
     const packageNames = updates.map(u => `${u.name}@${u.latest}`).join(' ')
@@ -161,7 +213,9 @@ async function installUpdates(updates: PackageUpdate[]) {
  * Show changelog for a package
  */
 async function showChangelog(packageName: string, version: string) {
-  console.log(chalk.blue.bold(`\n📋 Changelog for ${packageName}@${version}\n`))
+  console.log()
+  console.log(sectionHeader(`📋 Changelog for ${packageName}@${version}`))
+  console.log()
 
   try {
     // Try to fetch changelog from GitHub
@@ -173,7 +227,7 @@ async function showChangelog(packageName: string, version: string) {
     const homepage = result.trim()
     const changelogUrl = `${homepage}/blob/main/CHANGELOG.md`
 
-    console.log(chalk.gray(`View full changelog: ${changelogUrl}`))
+    console.log(chalk.gray(`View full changelog: ${chalk.cyan(changelogUrl)}`))
   } catch (error) {
     console.log(chalk.gray('Changelog not available'))
   }
@@ -189,14 +243,17 @@ export async function upgradeCommand(options: {
   minor?: boolean
   patch?: boolean
 }) {
-  console.log(chalk.blue.bold('\n🚀 Clarity Chat Upgrade Tool\n'))
+  console.log()
+  console.log(sectionHeader('🚀 Clarity Chat Upgrade Tool'))
+  console.log()
 
   try {
     // Check for updates
     const updates = await checkForUpdates()
 
     if (updates.length === 0) {
-      console.log(chalk.green('✓ All packages are up to date!'))
+      console.log(successBox('All packages are up to date!', '✓ Up to Date'))
+      console.log()
       return
     }
 
@@ -205,6 +262,12 @@ export async function upgradeCommand(options: {
     if (options.major) filteredUpdates = updates.filter(u => u.type === 'major')
     if (options.minor) filteredUpdates = updates.filter(u => u.type === 'minor')
     if (options.patch) filteredUpdates = updates.filter(u => u.type === 'patch')
+
+    if (filteredUpdates.length === 0) {
+      console.log(warningBox('No updates found for the specified type', '⚠ No Updates'))
+      console.log()
+      return
+    }
 
     // Display updates
     displayUpdates(filteredUpdates)
@@ -217,6 +280,7 @@ export async function upgradeCommand(options: {
         message: 'Select packages to update:',
         choices: filteredUpdates.map(update => ({
           title: `${update.name} (${update.current} → ${update.latest})`,
+          description: `${update.type} update`,
           value: update,
           selected: update.type === 'patch', // Auto-select patches
         })),
@@ -249,18 +313,23 @@ export async function upgradeCommand(options: {
     // Show changelogs for major updates
     const majorUpdates = filteredUpdates.filter(u => u.type === 'major')
     if (majorUpdates.length > 0) {
-      console.log(chalk.yellow.bold('\n⚠️  Major updates installed!'))
-      console.log(chalk.gray('Please review breaking changes:\n'))
+      console.log()
+      console.log(warningBox(
+        'Major updates installed! Please review breaking changes.',
+        '⚠ Breaking Changes'
+      ))
+      console.log()
 
       for (const update of majorUpdates) {
         await showChangelog(update.name, update.latest)
       }
     }
 
-    console.log(chalk.green.bold('\n✓ Upgrade complete!\n'))
+    console.log()
+    console.log(successBox('Upgrade complete!', '✓ Success'))
+    console.log()
   } catch (error) {
-    console.error(chalk.red(`\n❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`))
+    logger.error(error as Error)
     process.exit(1)
   }
 }
-
