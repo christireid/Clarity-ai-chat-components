@@ -205,8 +205,8 @@ Create blog section structure and convert markdown to React components or use MD
 
 - **Guides**: 32/32 migrated (100%) ✅ **COMPLETE**
 - **API Docs**: 6/6 migrated (100%) ✅ **COMPLETE**
-- **Blog**: 0/4 posts migrated (0%)
-- **Enterprise**: 0/2 migrated (0%)
+- **Blog**: 1/3 migrated (33%) - index ✅, the-7-ux-disasters ✅ (others can be added later)
+- **Enterprise**: 3/3 migrated (100%) ✅ **COMPLETE** (index ✅, pricing ✅, case-studies ✅)
 - **Examples**: 2/3 migrated (67%) - index.md already exists, model-switching ✅, streaming ✅
 - **Integrations**: 3/3 migrated (100%) ✅ **COMPLETE** (nextjs ✅, remix ✅, vite ✅)
 

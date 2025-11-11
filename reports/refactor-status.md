@@ -49,9 +49,10 @@ This report tracks the execution of the repository refactoring plan.
 - [x] Migrated API docs (6 files) ✅ **COMPLETE** (components, hooks, model-adapters, streaming-components, types, utilities)
 - [x] Migrated examples docs (2 files) ✅ **COMPLETE** (model-switching, streaming - index already exists)
 - [x] Migrated integrations (3 files) ✅ **COMPLETE** (nextjs, remix, vite)
-- [ ] Migrate content from `docs/` (root)
-- [ ] Move `blog/` into `apps/docs-site/app/blog/`
-- [ ] Merge `commercial-docs/` into `apps/docs-site/app/enterprise/`
+- [x] Migrated blog (1 post + index) ✅ **COMPLETE** (the-7-ux-disasters, index)
+- [x] Migrated enterprise docs (3 pages) ✅ **COMPLETE** (index, pricing, case-studies)
+- [x] Migrated RAG guide ✅ **COMPLETE** (from docs/guides/rag-guide.md)
+- [ ] Migrate remaining content from `docs/` (root) - API docs, other guides
 - [ ] Rename `apps/docs-site/` → `apps/docs/`
 - [ ] Delete old documentation directories
 - [ ] Update all documentation links
