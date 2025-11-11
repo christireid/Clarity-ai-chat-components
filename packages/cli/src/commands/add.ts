@@ -1,13 +1,17 @@
 /**
  * add command - Add a component to your project
+ * Enhanced with beautiful UI components
  */
 
 import chalk from 'chalk'
-import ora from 'ora'
 import path from 'path'
 import fs from 'fs-extra'
 import { execa } from 'execa'
 import { getLogger } from '../utils/logger.js'
+import { sectionHeader } from '../ui/banner.js'
+import { table, TableColumn } from '../ui/table.js'
+import { createSpinner } from '../ui/progress.js'
+import { successBox, errorBox, infoBox } from '../ui/box.js'
 
 const logger = getLogger('add')
 
@@ -21,50 +25,84 @@ const COMPONENTS = {
     name: 'Chat Interface',
     files: ['ChatInterface.tsx', 'ChatMessage.tsx', 'ChatInput.tsx'],
     dependencies: ['@clarity-chat/react', '@clarity-chat/primitives'],
-    description: '💬 Full-featured chat UI component'
+    description: '💬 Full-featured chat UI component',
+    icon: '💬',
   },
   'model-selector': {
     name: 'Model Selector',
     files: ['ModelSelector.tsx'],
     dependencies: ['@clarity-chat/react', '@clarity-chat/types'],
-    description: '🤖 Dropdown to select AI models'
+    description: '🤖 Dropdown to select AI models',
+    icon: '🤖',
   },
   'token-counter': {
     name: 'Token Counter',
     files: ['TokenCounter.tsx'],
     dependencies: ['@clarity-chat/react'],
-    description: '📊 Real-time token usage display'
+    description: '📊 Real-time token usage display',
+    icon: '📊',
   },
   'cost-estimator': {
     name: 'Cost Estimator',
     files: ['CostEstimator.tsx'],
     dependencies: ['@clarity-chat/react', '@clarity-chat/types'],
-    description: '💰 Calculate API costs in real-time'
+    description: '💰 Calculate API costs in real-time',
+    icon: '💰',
   },
   'streaming-handler': {
     name: 'Streaming Handler',
     files: ['useStreaming.ts', 'StreamingProvider.tsx'],
     dependencies: ['@clarity-chat/primitives'],
-    description: '⚡ SSE streaming utilities'
+    description: '⚡ SSE streaming utilities',
+    icon: '⚡',
   },
 }
 
+async function detectPackageManager(cwd: string): Promise<string> {
+  if (await fs.pathExists(path.join(cwd, 'package-lock.json'))) return 'npm'
+  if (await fs.pathExists(path.join(cwd, 'yarn.lock'))) return 'yarn'
+  if (await fs.pathExists(path.join(cwd, 'pnpm-lock.yaml'))) return 'pnpm'
+  return 'npm'
+}
+
 export async function addCommand(component: string, options: AddOptions) {
-  console.log('\n')
-  console.log(chalk.bold.cyan(`➕ Adding component: ${component}\n`))
+  console.log()
+  console.log(sectionHeader('➕ Add Component'))
+  console.log()
 
   const componentConfig = COMPONENTS[component as keyof typeof COMPONENTS]
   
   if (!componentConfig) {
     logger.error(`Component "${component}" not found`)
-    console.log(chalk.yellow('\nAvailable components:'))
-    Object.entries(COMPONENTS).forEach(([key, value]) => {
-      console.log(chalk.cyan(`  • ${key}`) + chalk.gray(` - ${value.description}`))
-    })
+    
+    // Display available components in a beautiful table
+    const columns: TableColumn[] = [
+      { header: 'Component', width: 25, color: chalk.yellow },
+      { header: 'Description', width: 40 },
+    ]
+
+    const componentData = Object.entries(COMPONENTS).map(([key, value]) => [
+      `${value.icon} ${key}`,
+      value.description,
+    ])
+
+    console.log()
+    console.log(sectionHeader('📦 Available Components'))
+    console.log(table(componentData, columns))
+    console.log()
+    
     process.exit(1)
   }
 
-  const spinner = ora('Preparing installation...').start()
+  // Display component info
+  console.log(infoBox(
+    `${componentConfig.icon} ${componentConfig.name}\n${componentConfig.description}`,
+    'Component Info'
+  ))
+  console.log()
+
+  const spinner = createSpinner('Preparing installation...')
+  spinner.start()
 
   try {
     const cwd = process.cwd()
@@ -77,6 +115,8 @@ export async function addCommand(component: string, options: AddOptions) {
     // Copy component files
     const templatesDir = path.join(__dirname, '..', '..', 'templates', 'components', component)
     
+    const copiedFiles: string[] = []
+    
     if (await fs.pathExists(templatesDir)) {
       for (const file of componentConfig.files) {
         const sourcePath = path.join(templatesDir, file)
@@ -84,17 +124,20 @@ export async function addCommand(component: string, options: AddOptions) {
         
         if (await fs.pathExists(sourcePath)) {
           await fs.copy(sourcePath, destPath)
+          copiedFiles.push(file)
           logger.info(`Copied ${file}`)
         }
       }
     } else {
       spinner.warn('Template files not found, creating placeholder...')
       // Create placeholder file
+      const placeholderFile = `${componentConfig.name.replace(/\s+/g, '')}.tsx`
       await fs.writeFile(
-        path.join(targetPath, `${componentConfig.name.replace(/\s+/g, '')}.tsx`),
+        path.join(targetPath, placeholderFile),
         `// ${componentConfig.name}\n// TODO: Implement component\n\nexport function ${componentConfig.name.replace(/\s+/g, '')}() {\n  return <div>Component placeholder</div>\n}\n`,
         'utf-8'
       )
+      copiedFiles.push(placeholderFile)
     }
 
     spinner.succeed('Component files copied')
@@ -116,21 +159,33 @@ export async function addCommand(component: string, options: AddOptions) {
     }
 
     // Success message
-    console.log('\n' + chalk.green('✅ Component added successfully!\n'))
-    console.log(chalk.white('Import it in your code:\n'))
-    console.log(chalk.cyan(`  import { ${componentConfig.name.replace(/\s+/g, '')} } from '@/components/clarity-chat'\n`))
-    console.log(chalk.gray('📚 View docs: ') + chalk.bold('clarity-chat docs ' + component))
+    console.log()
+    const componentName = componentConfig.name.replace(/\s+/g, '')
+    const importPath = options.path 
+      ? `'${options.path}/${componentName}'`
+      : `'@/components/clarity-chat/${componentName}'`
+    
+    const successContent = [
+      chalk.bold('Component added successfully!'),
+      '',
+      chalk.white('Files created:'),
+      ...copiedFiles.map(file => chalk.cyan(`  • ${file}`)),
+      '',
+      chalk.white('Import it in your code:'),
+      chalk.cyan(`  import { ${componentName} } from ${importPath}`),
+      '',
+      chalk.gray('📚 View docs: ') + chalk.bold(`clarity-chat docs ${component}`),
+    ].join('\n')
+
+    console.log(successBox(successContent, '✓ Success'))
+    console.log()
 
   } catch (error) {
     spinner.fail('Failed to add component')
     logger.error(error)
+    console.log()
+    console.log(errorBox('Failed to add component. Check the error above.', '✗ Error'))
+    console.log()
     process.exit(1)
   }
-}
-
-async function detectPackageManager(cwd: string): Promise<string> {
-  if (await fs.pathExists(path.join(cwd, 'package-lock.json'))) return 'npm'
-  if (await fs.pathExists(path.join(cwd, 'yarn.lock'))) return 'yarn'
-  if (await fs.pathExists(path.join(cwd, 'pnpm-lock.yaml'))) return 'pnpm'
-  return 'npm'
 }
