@@ -114,14 +114,14 @@ export function extractStreamContent(chunk: unknown): string {
     // OpenAI chat format
     if (obj.choices && Array.isArray(obj.choices)) {
       const choice = obj.choices[0] as Record<string, unknown>
-      if (choice?.delta && typeof choice.delta === 'object') {
-        const delta = choice.delta as Record<string, unknown>
-        if (typeof delta.content === 'string') {
-          return delta.content
+      if (choice?.['delta'] && typeof choice['delta'] === 'object') {
+        const delta = choice['delta'] as Record<string, unknown>
+        if (typeof delta['content'] === 'string') {
+          return delta['content']
         }
       }
-      if (typeof choice?.text === 'string') {
-        return choice.text
+      if (typeof choice?.['text'] === 'string') {
+        return choice['text']
       }
     }
 
