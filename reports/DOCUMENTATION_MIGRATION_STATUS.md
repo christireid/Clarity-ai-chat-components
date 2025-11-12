@@ -13,7 +13,7 @@ Migrating documentation from 3 sources into a single Next.js documentation site:
 - `blog/` - Blog posts and HTML demos
 - `commercial-docs/` - Commercial documentation
 
-**Target**: `apps/docs-site/` (Next.js) → will become `apps/docs/`
+**Target**: `apps/docs/` (Next.js) ✅ **COMPLETE** - Renamed from `apps/docs-site/`
 
 ---
 
@@ -60,7 +60,7 @@ export default function GuidePage() {
 
 ### Guides from `apps/docs/guide/` (32 files)
 
-**Already Migrated** (exist in `apps/docs-site/app/guides/`):
+**Already Migrated** (exist in `apps/docs/app/guides/`):
 - [x] accessibility
 - [x] agents
 - [x] rag
@@ -104,12 +104,12 @@ export default function GuidePage() {
 ### API Docs from `apps/docs/api/` (6 files)
 
 **Migrated**:
-- [x] components.md → `apps/docs-site/app/reference/api/components/` ✅
-- [x] hooks.md → `apps/docs-site/app/reference/api/hooks/` ✅
-- [x] model-adapters.md → `apps/docs-site/app/reference/api/model-adapters/` ✅
-- [x] streaming-components.md → `apps/docs-site/app/reference/api/streaming-components/` ✅
-- [x] types.md → `apps/docs-site/app/reference/api/types/` ✅
-- [x] utilities.md → `apps/docs-site/app/reference/api/utilities/` ✅
+- [x] components.md → `apps/docs/app/reference/api/components/` ✅
+- [x] hooks.md → `apps/docs/app/reference/api/hooks/` ✅
+- [x] model-adapters.md → `apps/docs/app/reference/api/model-adapters/` ✅
+- [x] streaming-components.md → `apps/docs/app/reference/api/streaming-components/` ✅
+- [x] types.md → `apps/docs/app/reference/api/types/` ✅
+- [x] utilities.md → `apps/docs/app/reference/api/utilities/` ✅
 
 ### Content from `docs/` (root)
 
@@ -140,10 +140,9 @@ export default function GuidePage() {
 ### Blog (`blog/`)
 
 **Posts**:
-- [ ] ai-chat-ux-pain-points-and-solutions.md → `apps/docs-site/app/blog/`
-- [ ] the-7-ux-disasters-killing-ai-chat-apps.md → `apps/docs-site/app/blog/`
-- [ ] the-7-ux-disasters-killing-ai-chat-apps-v2.md → `apps/docs-site/app/blog/`
-- [ ] viral-strategies-research.md → `apps/docs-site/app/blog/`
+- [x] ai-chat-ux-pain-points-and-solutions.md → `apps/docs/app/blog/` ✅
+- [x] the-7-ux-disasters-killing-ai-chat-apps.md → `apps/docs/app/blog/` ✅
+- [ ] viral-strategies-research.md → `apps/docs/app/blog/` (optional)
 
 **Demos**:
 - [ ] blog/animations/*.html (8 files) - Convert to React components or keep as static HTML
@@ -151,25 +150,25 @@ export default function GuidePage() {
 
 ### Commercial Docs (`commercial-docs/`)
 
-- [ ] CASE_STUDIES.md → `apps/docs-site/app/enterprise/`
-- [ ] IMPLEMENTATION_GUIDE.md → `apps/docs-site/app/enterprise/`
-- [ ] PRICING.md → `apps/docs-site/app/enterprise/`
-- [ ] SALES_DECK_OUTLINE.md → `apps/docs-site/app/enterprise/`
-- [ ] TERMS_OF_SERVICE.md → `apps/docs-site/app/enterprise/`
-- [ ] PRIVACY_POLICY.md → `apps/docs-site/app/enterprise/`
+- [x] CASE_STUDIES.md → `apps/docs/app/enterprise/case-studies/` ✅
+- [x] PRICING.md → `apps/docs/app/enterprise/pricing/` ✅
+- [ ] IMPLEMENTATION_GUIDE.md → `apps/docs/app/enterprise/` (can be added later)
+- [ ] SALES_DECK_OUTLINE.md → `apps/docs/app/enterprise/` (can be added later)
+- [ ] TERMS_OF_SERVICE.md → `apps/docs/app/enterprise/` (can be added later)
+- [ ] PRIVACY_POLICY.md → `apps/docs/app/enterprise/` (can be added later)
 - [ ] LICENSE files → Keep in root or move to appropriate location
 
 ### Examples Docs (`apps/docs/examples/`)
 
-- [ ] index.md → `apps/docs-site/app/examples/`
-- [ ] model-switching.md → `apps/docs-site/app/examples/`
-- [ ] streaming.md → `apps/docs-site/app/examples/`
+- [x] index.md → `apps/docs/app/examples/` ✅ (already exists)
+- [x] model-switching.md → `apps/docs/app/examples/model-switching/` ✅
+- [x] streaming.md → `apps/docs/app/examples/streaming/` ✅
 
 ### Integrations (`apps/docs/integrations/`)
 
-- [ ] nextjs.md → `apps/docs-site/app/integrations/`
-- [ ] remix.md → `apps/docs-site/app/integrations/`
-- [ ] vite.md → `apps/docs-site/app/integrations/`
+- [x] nextjs.md → `apps/docs/app/integrations/nextjs/` ✅
+- [x] remix.md → `apps/docs/app/integrations/remix/` ✅
+- [x] vite.md → `apps/docs/app/integrations/vite/` ✅
 
 ---
 
@@ -178,7 +177,7 @@ export default function GuidePage() {
 ### For Each Guide:
 
 1. **Read the markdown file** from source
-2. **Create directory** `apps/docs-site/app/guides/{guide-name}/`
+2. **Create directory** `apps/docs/app/guides/{guide-name}/`
 3. **Create `page.tsx`** following the pattern above
 4. **Convert markdown to JSX**:
    - Headers → `<h2>`, `<h3>`, etc.
@@ -193,7 +192,7 @@ export default function GuidePage() {
 
 ### For API Docs:
 
-Similar process but place in `apps/docs-site/app/reference/` structure.
+Similar process but place in `apps/docs/app/reference/` structure.
 
 ### For Blog Posts:
 
@@ -223,7 +222,7 @@ Create blog section structure and convert markdown to React components or use MD
 5. Migrate examples and integrations
 6. Update all internal links
 7. Test all pages
-8. Rename `apps/docs-site` → `apps/docs`
+8. ✅ Rename `apps/docs-site` → `apps/docs` **COMPLETE**
 9. Delete old directories
 
 ---

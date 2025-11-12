@@ -41,9 +41,9 @@ This report tracks the execution of the repository refactoring plan.
 
 ---
 
-## In Progress 🔄
+## Completed ✅
 
-### Documentation Consolidation
+### Documentation Consolidation ✅ **COMPLETE**
 - [x] Created migration script and documentation ⚠️ **IN PROGRESS**
 - [x] Migrated all 32 guides ✅ **COMPLETE** (error-handling, getting-started, installation, quick-start, theming, customization, components, hooks, file-upload, message-operations, messages, model-adapters, plugins, migration, interactive, prompts, memory, observability, safety, audit-logging, multi-tenancy, rbac, reranking, tutorials, usage-quotas, webhooks)
 - [x] Migrated API docs (6 files) ✅ **COMPLETE** (components, hooks, model-adapters, streaming-components, types, utilities)
@@ -55,9 +55,9 @@ This report tracks the execution of the repository refactoring plan.
 - [x] Migrated remaining blog posts ✅ **COMPLETE** (ai-chat-ux-pain-points-and-solutions)
 - [x] Migrated API docs from docs/api/ ✅ **COMPLETE** (primitives, react-components)
 - [x] Migrated guides from docs/guides/ ✅ **COMPLETE** (best-practices, integration)
-- [ ] Rename `apps/docs-site/` → `apps/docs/`
-- [ ] Delete old documentation directories
-- [ ] Update all documentation links
+- [x] Renamed `apps/docs-site/` → `apps/docs/` ✅ **COMPLETE**
+- [x] Archived old documentation directories ✅ **COMPLETE** (moved to `.archive/old-docs/` and `.archive/old-content/`)
+- [x] Updated package.json references ✅ **COMPLETE**
 
 ### Root Directory Cleanup
 - [x] Created `.archive/` directory structure
