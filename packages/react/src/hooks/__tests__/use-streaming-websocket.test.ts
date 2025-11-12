@@ -4,10 +4,10 @@ import { useStreamingWebSocket } from '../use-streaming-websocket'
 
 // Mock WebSocket
 class MockWebSocket {
-  readyState = WebSocket.CONNECTING
+  readyState: number = WebSocket.CONNECTING
   url: string
   protocols?: string | string[]
-  
+
   constructor(url: string, protocols?: string | string[]) {
     this.url = url
     this.protocols = protocols
@@ -22,7 +22,7 @@ class MockWebSocket {
   removeEventListener = vi.fn()
   send = vi.fn()
   close = vi.fn()
-  
+
   onopen: ((event: Event) => void) | null = null
   onmessage: ((event: MessageEvent) => void) | null = null
   onerror: ((event: Event) => void) | null = null
@@ -62,9 +62,12 @@ describe('useStreamingWebSocket', () => {
 
     expect(result.current.status).toBe('connecting')
 
-    await waitFor(() => {
-      expect(result.current.status).toBe('connected')
-    }, { timeout: 3000 })
+    await waitFor(
+      () => {
+        expect(result.current.status).toBe('connected')
+      },
+      { timeout: 3000 }
+    )
   })
 
   it('should send messages', async () => {
@@ -81,7 +84,7 @@ describe('useStreamingWebSocket', () => {
     })
 
     const success = result.current.send({ type: 'test', data: 'hello' })
-    
+
     // Will fail since mock doesn't have full implementation
     // but tests the API surface
     expect(typeof success).toBe('boolean')
@@ -158,8 +161,11 @@ describe('useStreamingWebSocket', () => {
       })
     )
 
-    await waitFor(() => {
-      expect(result.current.status).not.toBe('idle')
-    }, { timeout: 3000 })
+    await waitFor(
+      () => {
+        expect(result.current.status).not.toBe('idle')
+      },
+      { timeout: 3000 }
+    )
   })
 })

@@ -135,18 +135,18 @@ export function PerformanceDashboard({
   return (
     <div className={`performance-dashboard p-4 rounded-lg border border-border bg-card ${className || ''}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Performance Metrics</h3>
-        <div className="flex gap-2 text-xs">
+        <h3 className="text-lg font-semibold text-foreground">Performance Metrics</h3>
+        <div className="flex gap-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+            <span className="w-2 h-2 rounded-full bg-[hsl(var(--success))]"></span>
             Good
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
+            <span className="w-2 h-2 rounded-full bg-[hsl(var(--warning))]"></span>
             Warning
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-red-500"></span>
+            <span className="w-2 h-2 rounded-full bg-destructive"></span>
             Poor
           </span>
         </div>
@@ -156,21 +156,21 @@ export function PerformanceDashboard({
         {metrics.map(metric => (
           <div
             key={metric.name}
-            className="p-3 rounded-md border border-border bg-background"
+            className="p-3 rounded-lg border border-border/50 bg-muted/30 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-all duration-150 ease-out"
           >
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-muted-foreground">{metric.name}</span>
               <span
                 className={`w-2 h-2 rounded-full ${
                   metric.status === 'good'
-                    ? 'bg-green-500'
+                    ? 'bg-[hsl(var(--success))]'
                     : metric.status === 'warning'
-                    ? 'bg-yellow-500'
-                    : 'bg-red-500'
+                    ? 'bg-[hsl(var(--warning))]'
+                    : 'bg-destructive'
                 }`}
               />
             </div>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-foreground">
               {metric.value}
               {metric.unit && <span className="text-sm ml-1 text-muted-foreground">{metric.unit}</span>}
             </div>
@@ -221,18 +221,18 @@ export function PerformanceBadge({ className }: { className?: string }) {
   
   return (
     <div
-      className={`performance-badge inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
+      className={`performance-badge inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] transition-all duration-150 ease-out hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] ${
         status === 'good'
-          ? 'bg-green-100 text-green-800 border-green-200'
+          ? 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/20'
           : status === 'warning'
-          ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
-          : 'bg-red-100 text-red-800 border-red-200'
-      } border ${className || ''}`}
+          ? 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border-[hsl(var(--warning))]/20'
+          : 'bg-destructive/10 text-destructive border-destructive/20'
+      } ${className || ''}`}
       title={`Last render: ${performanceMetrics.lastRenderTime.toFixed(2)}ms`}
     >
       <span
         className={`w-2 h-2 rounded-full ${
-          status === 'good' ? 'bg-green-500' : status === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
+          status === 'good' ? 'bg-[hsl(var(--success))]' : status === 'warning' ? 'bg-[hsl(var(--warning))]' : 'bg-destructive'
         }`}
       />
       {performanceMetrics.lastRenderTime.toFixed(1)}ms

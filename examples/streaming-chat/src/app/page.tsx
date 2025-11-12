@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
@@ -8,33 +8,47 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
+      chatId: 'streaming-demo',
       role: 'assistant',
       content: 'Hello! I\'m your AI assistant with real-time streaming support. Try asking me something!',
-      timestamp: Date.now() - 5000,
+      createdAt: new Date(Date.now() - 5000),
+      updatedAt: new Date(Date.now() - 5000),
+      status: 'sent',
     },
   ])
   const [isLoading, setIsLoading] = useState(false)
+  const [isStreaming, setIsStreaming] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
 
-  const handleSendMessage = async (content: string) => {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  const handleSendMessage = useCallback(async (content: string) => {
     // Create user message
     const userMessage: Message = {
       id: Date.now().toString(),
+      chatId: 'streaming-demo',
       role: 'user',
       content,
-      timestamp: Date.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent',
     }
     
     setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
+    setIsStreaming(true)
 
     // Create streaming assistant message
     const assistantMessage: Message = {
       id: (Date.now() + 1).toString(),
+      chatId: 'streaming-demo',
       role: 'assistant',
       content: '',
-      timestamp: Date.now(),
-      isStreaming: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sending',
     }
     
     setMessages((prev) => [...prev, assistantMessage])
@@ -95,12 +109,12 @@ export default function Home() {
                 setMessages((prev) =>
                   prev.map((msg) =>
                     msg.id === assistantMessage.id
-                      ? { ...msg, content: accumulatedContent, isStreaming: true }
+                      ? { ...msg, content: accumulatedContent, status: 'sending' as const }
                       : msg
                   )
                 )
               }
-            } catch (e) {
+            } catch {
               // Skip invalid JSON
             }
           }
@@ -111,7 +125,7 @@ export default function Home() {
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === assistantMessage.id
-            ? { ...msg, isStreaming: false }
+            ? { ...msg, status: 'sent' as const, updatedAt: new Date() }
             : msg
         )
       )
@@ -129,8 +143,8 @@ export default function Home() {
               ? { 
                   ...msg, 
                   content: 'Sorry, I encountered an error. Please try again.',
-                  isStreaming: false,
-                  error: true,
+                  status: 'error' as const,
+                  updatedAt: new Date(),
                 }
               : msg
           )
@@ -138,15 +152,18 @@ export default function Home() {
       }
     } finally {
       setIsLoading(false)
+      setIsStreaming(false)
       abortControllerRef.current = null
     }
-  }
+  }, [messages])
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
+      setIsStreaming(false)
+      setIsLoading(false)
     }
-  }
+  }, [])
 
   return (
     <main style={{ 
@@ -162,19 +179,52 @@ export default function Home() {
         maxWidth: '900px',
         marginBottom: '2rem',
       }}>
-        <h1 style={{ 
-          fontSize: '2rem', 
-          fontWeight: 'bold',
+        <div style={{ 
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           marginBottom: '0.5rem',
         }}>
-          Streaming Chat Demo
-        </h1>
+          <h1 style={{ 
+            fontSize: '2rem', 
+            fontWeight: 'bold',
+          }}>
+            Streaming Chat Demo
+          </h1>
+        </div>
         <p style={{ 
           color: 'var(--foreground)',
           opacity: 0.7,
+          marginBottom: '0.5rem',
         }}>
           Real-time AI responses with Server-Sent Events (SSE) streaming
         </p>
+        {isStreaming && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.5rem 1rem',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            borderRadius: '6px',
+          }}>
+            <span style={{ fontSize: '0.875rem' }}>🔴 Streaming in progress...</span>
+            <button 
+              onClick={handleCancel}
+              style={{
+                padding: '0.25rem 0.75rem',
+                fontSize: '0.875rem',
+                backgroundColor: 'white',
+                border: '1px solid rgba(128, 128, 128, 0.3)',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              Stop
+            </button>
+          </div>
+        )}
       </div>
       
       <div style={{ 
@@ -189,7 +239,6 @@ export default function Home() {
           messages={messages}
           isLoading={isLoading}
           onSendMessage={handleSendMessage}
-          onCancel={handleCancel}
         />
       </div>
     </main>

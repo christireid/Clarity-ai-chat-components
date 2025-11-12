@@ -9,6 +9,10 @@
  * - Log filtering
  */
 
+import { infoBox, warningBox, errorBox, successBox } from '../ui/box'
+import { keyValueTable } from '../ui/table'
+import chalk from 'chalk'
+
 export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error'
 
 export interface LogEntry {
@@ -136,18 +140,36 @@ export class Logger {
   }
 
   /**
-   * Log a group of related messages
+   * Log a group of related messages with beautiful formatting
    */
   group(title: string, fn: () => void): void {
-    this.info(`┌─ ${title}`)
-    const originalPrefix = this.prefix
-    this.prefix = originalPrefix + '│  '
+    const messages: string[] = []
+    const originalLog = this.log.bind(this)
+    
+    // Create a wrapper that captures messages
+    const groupLog = (level: LogLevel, message: string, context?: Record<string, any>) => {
+      messages.push(message)
+      originalLog(level, message, context)
+    }
+    
+    // Temporarily replace the log method
+    const savedLog = this.log
+    ;(this as any).log = groupLog
     
     try {
       fn()
     } finally {
-      this.prefix = originalPrefix
-      this.info('└─')
+      // Restore original log method
+      ;(this as any).log = savedLog
+      
+      // Display group summary
+      const groupContent = messages.length > 0 
+        ? messages.map((msg, i) => `${i + 1}. ${msg}`).join('\n')
+        : 'No messages'
+      
+      console.log()
+      console.log(infoBox(groupContent, `📦 ${title}`))
+      console.log()
     }
   }
 
@@ -193,9 +215,22 @@ export class Logger {
   }
 
   /**
-   * Export logs as JSON
+   * Export logs as JSON with beautiful summary
    */
   exportLogs(): string {
+    const summary: Record<string, string> = {
+      'Total Logs': chalk.cyan(this.logs.length.toString()),
+      'Trace': chalk.gray(this.getLogsByLevel('trace').length.toString()),
+      'Debug': chalk.cyan(this.getLogsByLevel('debug').length.toString()),
+      'Info': chalk.green(this.getLogsByLevel('info').length.toString()),
+      'Warn': chalk.yellow(this.getLogsByLevel('warn').length.toString()),
+      'Error': chalk.red(this.getLogsByLevel('error').length.toString()),
+    }
+
+    console.log()
+    console.log(infoBox(keyValueTable(summary), '📋 Log Summary'))
+    console.log()
+
     return JSON.stringify(this.logs, null, 2)
   }
 
@@ -225,7 +260,7 @@ export class Logger {
   }
 
   /**
-   * Format log entry for output
+   * Format log entry for output with enhanced formatting
    */
   private format(entry: LogEntry): string {
     const parts: string[] = []
@@ -236,7 +271,7 @@ export class Logger {
       parts.push(this.colorize(`[${time}]`, 'trace'))
     }
 
-    // Level icon and name
+    // Level icon and name with better spacing
     const icon = LEVEL_ICONS[entry.level]
     const levelText = entry.level.toUpperCase().padEnd(5)
     parts.push(this.colorize(`${icon} ${levelText}`, entry.level))
@@ -246,13 +281,21 @@ export class Logger {
       parts.push(this.prefix)
     }
 
-    // Message
-    parts.push(this.colorize(entry.message, entry.level))
+    // Message with enhanced colorization
+    const messageColor = this.colors 
+      ? (entry.level === 'error' ? chalk.red 
+         : entry.level === 'warn' ? chalk.yellow
+         : entry.level === 'info' ? chalk.green
+         : entry.level === 'debug' ? chalk.cyan
+         : chalk.gray)
+      : (text: string) => text
+    
+    parts.push(messageColor(entry.message))
 
-    // Context
+    // Context with better formatting
     if (entry.context && Object.keys(entry.context).length > 0) {
       const contextStr = this.formatContext(entry.context)
-      parts.push(this.colorize(contextStr, 'trace'))
+      parts.push(this.colorize(`  ${contextStr}`, 'trace'))
     }
 
     return parts.join(' ')

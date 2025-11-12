@@ -17,6 +17,8 @@ import * as React from 'react'
  * })
  * ```
  */
+ 
+// Function overloads for type safety - these are intentionally redeclared
 export function useEventListener<K extends keyof WindowEventMap>(
   eventName: K,
   handler: (event: WindowEventMap[K]) => void,
@@ -35,6 +37,7 @@ export function useEventListener<K extends keyof HTMLElementEventMap>(
   element: React.RefObject<HTMLElement>,
   options?: boolean | AddEventListenerOptions
 ): void
+ 
 export function useEventListener<
   KW extends keyof WindowEventMap,
   KH extends keyof HTMLElementEventMap,
@@ -53,8 +56,16 @@ export function useEventListener<
     savedHandler.current = handler
   }, [handler])
 
+  // Store options in ref to avoid recreating listener when object reference changes
+  const optionsRef = React.useRef(options)
+  
+  React.useLayoutEffect(() => {
+    optionsRef.current = options
+  }, [options])
+
   React.useEffect(() => {
     // Define the listening target
+    if (typeof window === 'undefined') return
     const targetElement: T | Window = element?.current ?? window
 
     if (!(targetElement && targetElement.addEventListener)) return
@@ -62,11 +73,12 @@ export function useEventListener<
     // Create event listener that calls handler function stored in ref
     const listener: typeof handler = (event) => savedHandler.current(event)
 
-    targetElement.addEventListener(eventName, listener as EventListener, options)
+    const currentOptions = optionsRef.current
+    targetElement.addEventListener(eventName, listener as EventListener, currentOptions)
 
     // Remove event listener on cleanup
     return () => {
-      targetElement.removeEventListener(eventName, listener as EventListener, options)
+      targetElement.removeEventListener(eventName, listener as EventListener, currentOptions)
     }
-  }, [eventName, element, options])
+  }, [eventName, element]) // Options accessed via ref
 }

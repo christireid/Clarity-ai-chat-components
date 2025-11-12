@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useRef, useLayoutEffect } from 'react'
 
 /**
  * Recovery strategy function type
@@ -53,9 +53,16 @@ export function useErrorRecovery() {
     })
   }, [])
 
+  // Store strategies in ref to avoid dependency issues
+  const strategiesRef = useRef(strategies)
+  
+  useLayoutEffect(() => {
+    strategiesRef.current = strategies
+  }, [strategies])
+
   const recover = useCallback(
     async (errorType: string): Promise<boolean> => {
-      const strategy = strategies.get(errorType)
+      const strategy = strategiesRef.current.get(errorType)
 
       if (!strategy) {
         console.warn(`No recovery strategy found for error type: ${errorType}`)
@@ -77,7 +84,7 @@ export function useErrorRecovery() {
         return false
       }
     },
-    [strategies]
+    [] // Strategies accessed via ref
   )
 
   const reset = useCallback(() => {

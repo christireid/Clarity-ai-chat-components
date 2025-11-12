@@ -1,6 +1,6 @@
 /**
  * Mobile Optimization Utilities
- * 
+ *
  * Utilities for mobile-specific optimizations:
  * - Touch target sizing
  * - Gesture detection
@@ -42,20 +42,13 @@ export function getViewportSize() {
 
 /**
  * Hook for mobile detection
+ * Note: Mobile detection is based on user agent, not viewport size.
+ * Resizing the window doesn't change whether a device is mobile.
  */
 export function useIsMobile(): boolean {
-  const [mobile, setMobile] = React.useState(() => isMobile())
-
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setMobile(isMobile())
-    }
-
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
-  return mobile
+  // Mobile detection is based on user agent, which doesn't change on resize
+  // So we only need to check once on mount
+  return React.useMemo(() => isMobile(), [])
 }
 
 /**
@@ -104,7 +97,9 @@ export const TOUCH_TARGET = {
 /**
  * Get appropriate touch target class
  */
-export function getTouchTargetClass(size: keyof typeof TOUCH_TARGET = 'comfortable'): string {
+export function getTouchTargetClass(
+  size: keyof typeof TOUCH_TARGET = 'comfortable'
+): string {
   const sizeMap = {
     minimum: 'min-h-[44px] min-w-[44px]',
     comfortable: 'min-h-[48px] min-w-[48px]',
@@ -134,7 +129,11 @@ export function useSwipe(
   threshold: number = 50,
   velocityThreshold: number = 0.3
 ) {
-  const touchStart = React.useRef<{ x: number; y: number; time: number } | null>(null)
+  const touchStart = React.useRef<{
+    x: number
+    y: number
+    time: number
+  } | null>(null)
 
   const handlers = React.useMemo(
     () => ({
@@ -167,8 +166,11 @@ export function useSwipe(
         }
 
         // Check if swipe meets thresholds
-        const primaryDelta = direction === 'left' || direction === 'right' ? Math.abs(deltaX) : Math.abs(deltaY)
-        
+        const primaryDelta =
+          direction === 'left' || direction === 'right'
+            ? Math.abs(deltaX)
+            : Math.abs(deltaY)
+
         if (primaryDelta >= threshold && velocity >= velocityThreshold) {
           onSwipe?.({
             direction,
@@ -190,10 +192,7 @@ export function useSwipe(
 /**
  * Hook for long press detection
  */
-export function useLongPress(
-  onLongPress: () => void,
-  duration: number = 500
-) {
+export function useLongPress(onLongPress: () => void, duration: number = 500) {
   const timerRef = React.useRef<NodeJS.Timeout>()
   const isLongPress = React.useRef(false)
 
@@ -318,12 +317,20 @@ export function useSafeAreaInsets() {
     if (typeof window === 'undefined') return
 
     const computedStyle = getComputedStyle(document.documentElement)
-    
+
     setInsets({
-      top: parseInt(computedStyle.getPropertyValue('--safe-area-inset-top') || '0'),
-      right: parseInt(computedStyle.getPropertyValue('--safe-area-inset-right') || '0'),
-      bottom: parseInt(computedStyle.getPropertyValue('--safe-area-inset-bottom') || '0'),
-      left: parseInt(computedStyle.getPropertyValue('--safe-area-inset-left') || '0'),
+      top: parseInt(
+        computedStyle.getPropertyValue('--safe-area-inset-top') || '0'
+      ),
+      right: parseInt(
+        computedStyle.getPropertyValue('--safe-area-inset-right') || '0'
+      ),
+      bottom: parseInt(
+        computedStyle.getPropertyValue('--safe-area-inset-bottom') || '0'
+      ),
+      left: parseInt(
+        computedStyle.getPropertyValue('--safe-area-inset-left') || '0'
+      ),
     })
   }, [])
 
@@ -346,9 +353,10 @@ export function hapticFeedback(type: 'light' | 'medium' | 'heavy' = 'medium') {
 }
 
 /**
- * Hook for haptic feedback
+ * Hook for simple haptic feedback
+ * @deprecated Use useHapticFeedback from hooks/use-haptic instead for more features
  */
-export function useHapticFeedback() {
+export function useSimpleHapticFeedback() {
   return React.useCallback((type: 'light' | 'medium' | 'heavy' = 'medium') => {
     hapticFeedback(type)
   }, [])

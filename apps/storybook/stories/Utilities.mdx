@@ -1,0 +1,57 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Utilities/Overview" />
+
+# Utility Functions
+
+Key utilities from `@clarity-chat/react/utils` that power robust chat experiences.
+
+## Text and Tokens
+
+```tsx
+import { estimateTokens, truncateByTokens } from '@clarity-chat/react/utils/tokens'
+
+const tokens = estimateTokens('Hello, world!')
+const short = truncateByTokens(longText, 200)
+```
+
+## Identifiers and Guards
+
+```tsx
+import { generateId, isNonEmptyString } from '@clarity-chat/react/utils'
+
+const id = generateId('msg') // msg_8f3a...
+if (!isNonEmptyString(input)) throw new Error('Message required')
+```
+
+## Async and Retries
+
+```tsx
+import { withRetry, sleep } from '@clarity-chat/react/utils/async'
+
+await withRetry(async () => {
+  // call provider
+}, { retries: 3, backoffMs: 250 })
+
+await sleep(100)
+```
+
+## Safe JSON
+
+```tsx
+import { safeParseJson, safeStringify } from '@clarity-chat/react/utils/json'
+
+const value = safeParseJson('{"ok":true}', null)
+const text = safeStringify(value)
+```
+
+## Formatting
+
+```tsx
+import { formatBytes, formatDuration } from '@clarity-chat/react/utils/format'
+
+formatBytes(1024) // 1 KB
+formatDuration(1250) // 1.25s
+```
+
+> Tip: Utilities are tree-shakeable. Import only what you use for optimal bundle size.

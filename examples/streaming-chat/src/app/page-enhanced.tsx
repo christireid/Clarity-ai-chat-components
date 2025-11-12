@@ -8,10 +8,20 @@ import {
   allModels,
   type ModelConfig 
 } from '@clarity-chat/react'
-import type { Message } from '@clarity-chat/types'
+type EnhancedMessage = {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp?: number | Date
+  createdAt?: Date
+  updatedAt?: Date
+  isStreaming?: boolean
+  chatId?: string
+  metadata?: any
+}
 
 export default function EnhancedStreamingChat() {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<EnhancedMessage[]>([
     {
       id: '1',
       chatId: 'demo-chat',
@@ -32,6 +42,10 @@ export default function EnhancedStreamingChat() {
   const [totalTokens, setTotalTokens] = useState(0)
   const abortControllerRef = useRef<AbortController | null>(null)
 
+  if (typeof window === 'undefined') {
+    return null
+  }
+
   const handleModelChange = (modelId: string, config: ModelConfig) => {
     setSelectedModel(modelId)
     setModelConfig(config)
@@ -39,7 +53,7 @@ export default function EnhancedStreamingChat() {
 
   const handleSendMessage = async (content: string) => {
     // Create user message
-    const userMessage: Message = {
+    const userMessage: EnhancedMessage = {
       id: Date.now().toString(),
       chatId: 'demo-chat',
       role: 'user',
@@ -53,7 +67,7 @@ export default function EnhancedStreamingChat() {
     setIsLoading(true)
 
     // Create streaming assistant message
-    const assistantMessage: Message = {
+    const assistantMessage: EnhancedMessage = {
       id: (Date.now() + 1).toString(),
       chatId: 'demo-chat',
       role: 'assistant',

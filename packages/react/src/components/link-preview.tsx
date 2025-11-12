@@ -19,13 +19,13 @@ export interface LinkPreviewProps {
   className?: string
 }
 
-export const LinkPreview: React.FC<LinkPreviewProps> = ({
+export function LinkPreview({
   metadata,
   onClick,
   onRemove,
   loading = false,
   className,
-}) => {
+}: LinkPreviewProps) {
   const [imageError, setImageError] = React.useState(false)
 
   const getDomain = (url: string) => {
@@ -61,7 +61,7 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
       <Card
         className={cn(
           'group relative overflow-hidden transition-all',
-          onClick && 'cursor-pointer hover:shadow-lg'
+          onClick && 'cursor-pointer hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)]'
         )}
         onClick={onClick}
       >
@@ -143,6 +143,8 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
   )
 }
 
+LinkPreview.displayName = 'LinkPreview'
+
 // Hook for fetching link metadata
 export function useLinkPreview() {
   const [loading, setLoading] = React.useState(false)
@@ -202,12 +204,12 @@ export interface InlineLinkProps {
   className?: string
 }
 
-export const InlineLink: React.FC<InlineLinkProps> = ({
+export function InlineLink({
   url,
   onPreview,
   children,
   className,
-}) => {
+}: InlineLinkProps) {
   const [showPreview, setShowPreview] = React.useState(false)
   const { metadata, loading, fetchMetadata } = useLinkPreview()
 
@@ -259,3 +261,5 @@ export const InlineLink: React.FC<InlineLinkProps> = ({
     </span>
   )
 }
+
+InlineLink.displayName = 'InlineLink'

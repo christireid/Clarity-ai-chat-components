@@ -82,7 +82,7 @@ export function ThemePreview({
   return (
     <div className={`theme-preview ${className || ''}`}>
       {/* Preview Panel */}
-      <div className="preview-panel space-y-4 p-6 rounded-lg border-2 border-border bg-background">
+      <div className="preview-panel space-y-4 p-6 rounded-lg border border-border bg-background">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Theme Preview</h3>
           {showEditor && (
