@@ -57,8 +57,17 @@ const renderPreview = (
         root.render(<Component />);
       }
     } catch (error) {
-      document.body.innerHTML = '<div style="color: red; padding: 16px; font-family: monospace;">' + 
-        '<strong>Error:</strong><br>' + error.message + '</div>';
+      const errorDiv = document.createElement('div');
+      errorDiv.style.cssText = 'color: red; padding: 16px; font-family: monospace;';
+      const strong = document.createElement('strong');
+      strong.textContent = 'Error:';
+      const br = document.createElement('br');
+      const message = document.createTextNode(error.message || 'Unknown error');
+      errorDiv.appendChild(strong);
+      errorDiv.appendChild(br);
+      errorDiv.appendChild(message);
+      document.body.innerHTML = '';
+      document.body.appendChild(errorDiv);
     }
   </script>
 </body>
@@ -118,9 +127,10 @@ export function LivePreview({ code, theme, autoRun, onRunRef }: LivePreviewProps
       <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden h-[600px]">
         <iframe
           ref={iframeRef}
-          title="preview"
-          sandbox="allow-scripts"
+          title="Live code preview"
+          sandbox="allow-scripts allow-same-origin"
           className="w-full h-full"
+          aria-label="Live preview of the code"
         />
       </div>
     </div>
