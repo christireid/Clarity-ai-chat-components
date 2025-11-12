@@ -260,7 +260,7 @@ For visual regression testing, consider integrating:
 ### Guides
 
 - [Storybook Documentation](https://storybook.js.org/docs) - Official Storybook docs
-- [Accessibility Guide](../../apps/docs/guide/accessibility.md) - A11y guidelines
+- [Accessibility Guide](../../apps/docs/app/guides/accessibility) - A11y guidelines
 
 ### In-Storybook Docs
 
