@@ -35,7 +35,7 @@ const Textarea = ({ className, variant, error, autoResize = false, maxRows, onCh
   const hasError = error || variant === 'error'
 
   // React Compiler will optimize this automatically
-  const adjustHeight = () => {
+  const adjustHeight = React.useCallback(() => {
     const textarea = textareaRef.current
     if (!textarea || !autoResize) return
 
@@ -49,11 +49,11 @@ const Textarea = ({ className, variant, error, autoResize = false, maxRows, onCh
     } else {
       textarea.style.height = `${scrollHeight}px`
     }
-  }
+  }, [autoResize, maxRows])
 
   React.useEffect(() => {
     adjustHeight()
-  }, [autoResize, maxRows]) // Direct dependencies instead of callback dependency
+  }, [adjustHeight])
 
   // React Compiler will optimize this automatically
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

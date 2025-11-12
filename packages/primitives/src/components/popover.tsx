@@ -104,7 +104,7 @@ export const PopoverTrigger: React.FC<PopoverTriggerProps> = ({
       onClick: handleClick,
       'aria-expanded': open,
       'aria-haspopup': 'dialog',
-    } as any)
+    } as React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> })
   }
 
   return (
@@ -480,7 +480,7 @@ export const PopoverClose: React.FC<{
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
       onClick: () => setOpen(false),
-    } as any)
+    } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (
