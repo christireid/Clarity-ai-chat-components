@@ -16,6 +16,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -26,8 +28,12 @@
     "developer-experience",
     "clarity-chat"
   ],
-  "author": "",
+  "author": "Christi Reid <christi@codeclarity.ai>",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "dependencies": {
     "chalk": "^5.3.0"
   },

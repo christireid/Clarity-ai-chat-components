@@ -25,6 +25,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly",
+    "typecheck": "tsc --noEmit",
     "test": "echo \"Tests temporarily skipped - React testing environment needs update\" && exit 0",
     "test:run": "vitest run",
     "test:watch": "vitest",
@@ -42,11 +43,12 @@
     "typescript",
     "react19"
   ],
-  "author": "Clarity Chat Contributors",
+  "author": "Christi Reid <christi@codeclarity.ai>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/christireid/Clarity-ai-chat-components.git"
+    "url": "git+https://github.com/christireid/Clarity-ai-chat-components.git",
+    "directory": "packages/error-handling"
   },
   "bugs": {
     "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
