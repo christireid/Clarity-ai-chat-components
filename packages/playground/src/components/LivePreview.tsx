@@ -10,14 +10,15 @@ interface LivePreviewProps {
   code: string
   theme: 'light' | 'dark'
   autoRun: boolean
+  forceRun?: number
 }
 
-export function LivePreview({ code, theme, autoRun }: LivePreviewProps) {
+export function LivePreview({ code, theme, autoRun, forceRun = 0 }: LivePreviewProps) {
   const [error, setError] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {
-    if (!autoRun) return
+    if (!autoRun && forceRun === 0) return
 
     try {
       setError(null)
@@ -76,7 +77,7 @@ export function LivePreview({ code, theme, autoRun }: LivePreviewProps) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
     }
-  }, [code, theme, autoRun])
+  }, [code, theme, autoRun, forceRun])
 
   return (
     <div className="h-full">
