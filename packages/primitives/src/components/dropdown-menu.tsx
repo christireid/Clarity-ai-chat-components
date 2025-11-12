@@ -10,7 +10,7 @@ interface DropdownMenuContextValue {
   open: boolean
   setOpen: (open: boolean) => void
   close: (options?: CloseOptions) => void
-  triggerRef: React.RefObject<HTMLElement>
+  triggerRef: React.RefObject<HTMLElement | null>
   focusFirstRef: React.MutableRefObject<boolean>
 }
 
@@ -38,7 +38,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
   children,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
-  const triggerRef = React.useRef<HTMLElement>(null)
+  const triggerRef = React.useRef<HTMLElement | null>(null)
   const focusFirstRef = React.useRef(false)
 
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
@@ -122,12 +122,11 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
   }
 
   if (asChild && React.isValidElement(children)) {
-    const child = children as React.ReactElement<any>
+    const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }>
     return React.cloneElement(child, {
       ref: (node: HTMLElement) => {
-        // @ts-expect-error - need to assign to ref for proper DOM reference
         triggerRef.current = node
-        const { ref } = child as any
+        const { ref } = child.props
         if (typeof ref === 'function') {
           ref(node)
         } else if (ref && typeof ref === 'object') {
@@ -140,7 +139,7 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
       'aria-expanded': open,
       'data-state': open ? 'open' : 'closed',
       disabled,
-    })
+    } as React.HTMLAttributes<HTMLElement> & { 'data-state'?: string })
   }
 
   return (

@@ -83,7 +83,7 @@ const useDialog = () => {
 // Focus Trap Hook
 // ============================================================================
 
-function useFocusTrap(ref: React.RefObject<HTMLElement>, enabled: boolean) {
+function useFocusTrap(ref: React.RefObject<HTMLElement | null>, enabled: boolean) {
   React.useEffect(() => {
     if (!enabled || !ref.current) return
 
