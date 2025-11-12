@@ -3,7 +3,7 @@
  * Interactive component testing and experimentation environment
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Editor from '@monaco-editor/react'
 import { Play, Copy, Download, Share2, RefreshCw, Settings } from 'lucide-react'
 import { LivePreview } from './components/LivePreview'
@@ -16,6 +16,7 @@ export default function App() {
   const [selectedTemplate, setSelectedTemplate] = useState('basic')
   const [autoRun, setAutoRun] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
+  const runPreviewRef = useRef<(() => void) | null>(null)
 
   // Auto-format code on load
   useEffect(() => {
@@ -200,12 +201,16 @@ export default function App() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Preview
               </h2>
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <button
+                onClick={() => runPreviewRef.current?.()}
+                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                title="Run preview manually"
+              >
                 <Play className="w-4 h-4" />
                 Run
               </button>
             </div>
-            <LivePreview code={code} theme={theme} autoRun={autoRun} />
+            <LivePreview code={code} theme={theme} autoRun={autoRun} onRunRef={runPreviewRef} />
           </div>
         </div>
       </div>

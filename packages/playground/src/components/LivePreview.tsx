@@ -3,27 +3,27 @@
  * Renders user code in real-time with error handling
  */
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { AlertCircle } from 'lucide-react'
 
 interface LivePreviewProps {
   code: string
   theme: 'light' | 'dark'
   autoRun: boolean
+  onRunRef?: React.MutableRefObject<(() => void) | null>
 }
 
-export function LivePreview({ code, theme, autoRun }: LivePreviewProps) {
-  const [error, setError] = useState<string | null>(null)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
+const renderPreview = (
+  code: string,
+  theme: 'light' | 'dark',
+  iframeRef: React.RefObject<HTMLIFrameElement | null>,
+  setError: (error: string | null) => void
+) => {
+  try {
+    setError(null)
 
-  useEffect(() => {
-    if (!autoRun) return
-
-    try {
-      setError(null)
-
-      // Create the HTML content for the iframe
-      const html = `
+    // Create the HTML content for the iframe
+    const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -65,18 +65,37 @@ export function LivePreview({ code, theme, autoRun }: LivePreviewProps) {
 </html>
       `
 
-      if (iframeRef.current) {
-        const doc = iframeRef.current.contentDocument
-        if (doc) {
-          doc.open()
-          doc.write(html)
-          doc.close()
-        }
+    if (iframeRef.current) {
+      const doc = iframeRef.current.contentDocument
+      if (doc) {
+        doc.open()
+        doc.write(html)
+        doc.close()
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
     }
-  }, [code, theme, autoRun])
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Unknown error')
+  }
+}
+
+export function LivePreview({ code, theme, autoRun, onRunRef }: LivePreviewProps) {
+  const [error, setError] = useState<string | null>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  const runPreview = useCallback(() => {
+    renderPreview(code, theme, iframeRef, setError)
+  }, [code, theme])
+
+  useEffect(() => {
+    if (onRunRef) {
+      onRunRef.current = runPreview
+    }
+  }, [onRunRef, runPreview])
+
+  useEffect(() => {
+    if (!autoRun) return
+    runPreview()
+  }, [autoRun, runPreview])
 
   return (
     <div className="h-full">
@@ -104,8 +123,6 @@ export function LivePreview({ code, theme, autoRun }: LivePreviewProps) {
           className="w-full h-full"
         />
       </div>
-
-      
     </div>
   )
 }
