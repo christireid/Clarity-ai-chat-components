@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import { render, screen, act } from '@testing-library/react'
 import { Avatar } from '../avatar'
 
 describe('Avatar Component', () => {
@@ -65,11 +65,14 @@ describe('Avatar Component', () => {
 
   describe('Image Handling', () => {
     it('should handle image load error', () => {
-      const { container, rerender } = render(<Avatar src="/invalid.jpg" alt="User" fallback="JD" />)
+      const { rerender } = render(<Avatar src="/invalid.jpg" alt="User" fallback="JD" />)
       
       const img = screen.getByAltText('User')
       const errorEvent = new Event('error')
-      img.dispatchEvent(errorEvent)
+      
+      act(() => {
+        img.dispatchEvent(errorEvent)
+      })
       
       // After error, should show fallback
       rerender(<Avatar src="/invalid.jpg" alt="User" fallback="JD" />)
@@ -77,15 +80,16 @@ describe('Avatar Component', () => {
     })
 
     it('should show fallback when image fails to load', async () => {
-      const { container } = render(<Avatar src="/broken.jpg" alt="User" fallback="FB" />)
+      render(<Avatar src="/broken.jpg" alt="User" fallback="FB" />)
       const img = screen.getByAltText('User')
       
       // Simulate image error by dispatching error event
-      const errorEvent = new Event('error')
-      img.dispatchEvent(errorEvent)
-      
-      // Wait for state update
-      await new Promise(resolve => setTimeout(resolve, 0))
+      await act(async () => {
+        const errorEvent = new Event('error')
+        img.dispatchEvent(errorEvent)
+        // Wait for state update
+        await new Promise(resolve => setTimeout(resolve, 0))
+      })
       
       // Fallback should be shown after error
       expect(screen.getByText('FB')).toBeInTheDocument()

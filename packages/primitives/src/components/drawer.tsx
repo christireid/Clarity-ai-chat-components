@@ -156,7 +156,7 @@ export const DrawerTrigger: React.FC<DrawerTriggerProps> = ({
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
       onClick: handleClick,
-    } as any)
+    } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (
