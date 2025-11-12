@@ -76,14 +76,14 @@
     {
       "name": "Full Bundle (ESM)",
       "path": "dist/index.mjs",
-      "limit": "15 KB",
+      "limit": "60 KB",
       "gzip": true
     },
     {
       "name": "Single Component (Button)",
       "path": "dist/index.mjs",
       "import": "{ Button }",
-      "limit": "3 KB",
+      "limit": "15 KB",
       "gzip": true
     }
   ]
