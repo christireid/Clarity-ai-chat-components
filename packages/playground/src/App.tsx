@@ -16,6 +16,21 @@ export default function App() {
   const [selectedTemplate, setSelectedTemplate] = useState('basic')
   const [autoRun, setAutoRun] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
+  const [forceRun, setForceRun] = useState(0)
+
+  // Load code from URL if present
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const codeParam = params.get('code')
+    if (codeParam) {
+      try {
+        const decoded = atob(codeParam)
+        setCode(decoded)
+      } catch (error) {
+        console.error('Failed to decode code from URL:', error)
+      }
+    }
+  }, [])
 
   // Auto-format code on load
   useEffect(() => {
@@ -37,9 +52,14 @@ export default function App() {
     void format()
   }, [])
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code)
-    alert('Code copied to clipboard!')
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      // Could add toast notification here instead of alert
+    } catch (error) {
+      console.error('Failed to copy:', error)
+      alert('Failed to copy code to clipboard')
+    }
   }
 
   const handleDownload = () => {
@@ -52,11 +72,16 @@ export default function App() {
     URL.revokeObjectURL(url)
   }
 
-  const handleShare = () => {
-    const encoded = btoa(code)
-    const url = `${window.location.origin}?code=${encoded}`
-    navigator.clipboard.writeText(url)
-    alert('Share link copied to clipboard!')
+  const handleShare = async () => {
+    try {
+      const encoded = btoa(code)
+      const url = `${window.location.origin}${window.location.pathname}?code=${encoded}`
+      await navigator.clipboard.writeText(url)
+      // Could add toast notification here instead of alert
+    } catch (error) {
+      console.error('Failed to share:', error)
+      alert('Failed to create share link')
+    }
   }
 
   const handleTemplateChange = (templateKey: string) => {
@@ -189,12 +214,17 @@ export default function App() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Preview
               </h2>
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <button
+                onClick={() => setForceRun((prev) => prev + 1)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Run code manually"
+                disabled={autoRun}
+              >
                 <Play className="w-4 h-4" />
                 Run
               </button>
             </div>
-            <LivePreview code={code} theme={theme} autoRun={autoRun} />
+            <LivePreview code={code} theme={theme} autoRun={autoRun} forceRun={forceRun} />
           </div>
         </div>
       </div>

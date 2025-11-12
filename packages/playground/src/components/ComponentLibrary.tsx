@@ -11,9 +11,7 @@ interface ComponentLibraryProps {
 
 const categories = {
   'Getting Started': ['basic', 'streaming', 'conversation'],
-  'Chat Components': ['chat-window', 'message-bubble', 'chat-input'],
-  Controls: ['model-selector', 'token-counter'],
-  Advanced: ['rag-pattern', 'function-calling'],
+  'Chat Components': ['chat-window'],
 }
 
 export function ComponentLibrary({
