@@ -84,9 +84,8 @@ describe('Avatar Component', () => {
       const img = screen.getByAltText('User')
       
       // Simulate image error by dispatching error event
-      const errorEvent = new Event('error')
-      
       await act(async () => {
+        const errorEvent = new Event('error')
         img.dispatchEvent(errorEvent)
         // Wait for state update
         await new Promise(resolve => setTimeout(resolve, 0))

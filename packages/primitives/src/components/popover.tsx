@@ -63,7 +63,7 @@ export const Popover: React.FC<PopoverProps> = ({
   defaultOpen = false,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
-  const triggerRef = React.useRef<HTMLElement>(null)
+  const triggerRef = React.useRef<HTMLElement | null>(null)
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
 
   const setOpen = React.useCallback(
@@ -104,7 +104,7 @@ export const PopoverTrigger: React.FC<PopoverTriggerProps> = ({
       onClick: handleClick,
       'aria-expanded': open,
       'aria-haspopup': 'dialog',
-    } as React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> })
+    } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (

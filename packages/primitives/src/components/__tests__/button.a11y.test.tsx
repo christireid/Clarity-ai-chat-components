@@ -1,7 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 import { axe } from 'vitest-axe'
+import { toHaveNoViolations } from 'vitest-axe/matchers'
 import { Button } from '../button'
+
+// Extend expect for this test file
+expect.extend({ toHaveNoViolations })
 
 describe('Button Accessibility', () => {
   it('should have no accessibility violations', async () => {

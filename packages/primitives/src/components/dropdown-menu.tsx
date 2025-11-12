@@ -38,7 +38,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
   children,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
-  const triggerRef = React.useRef<HTMLElement>(null)
+  const triggerRef = React.useRef<HTMLElement | null>(null)
   const focusFirstRef = React.useRef(false)
 
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
@@ -124,12 +124,12 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
   if (asChild && React.isValidElement(children)) {
     const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }>
     return React.cloneElement(child, {
-      ref: (node: HTMLElement | null) => {
+      ref: (node: HTMLElement) => {
         triggerRef.current = node
         const { ref } = child.props
         if (typeof ref === 'function') {
           ref(node)
-        } else if (ref && typeof ref === 'object' && 'current' in ref) {
+        } else if (ref && typeof ref === 'object') {
           ref.current = node
         }
       },
