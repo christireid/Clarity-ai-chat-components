@@ -122,11 +122,11 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
   }
 
   if (asChild && React.isValidElement(children)) {
-    const child = children as React.ReactElement<any>
+    const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }>
     return React.cloneElement(child, {
       ref: (node: HTMLElement | null) => {
         triggerRef.current = node
-        const { ref } = child as any
+        const { ref } = child.props
         if (typeof ref === 'function') {
           ref(node)
         } else if (ref && typeof ref === 'object') {
@@ -139,7 +139,7 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
       'aria-expanded': open,
       'data-state': open ? 'open' : 'closed',
       disabled,
-    })
+    } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (

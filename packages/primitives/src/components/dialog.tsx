@@ -191,7 +191,7 @@ export const DialogTrigger: React.FC<DialogTriggerProps> = ({
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
       onClick: handleClick,
-    } as any)
+    } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (
@@ -462,7 +462,7 @@ export const DialogClose: React.FC<DialogCloseProps> = ({
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
       onClick: () => setOpen(false),
-    } as any)
+    } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (
