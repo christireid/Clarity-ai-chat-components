@@ -127,10 +127,10 @@ clarity-chat/
 │   └── cli/              # CLI tools
 ├── apps/
 │   ├── storybook/        # Component documentation
-│   └── docs/             # Documentation site
-├── examples/             # Example applications
+│   ├── docs-site/        # Documentation site
+│   └── examples/         # Example applications
 ├── docs/                 # Markdown documentation
-└── .archive/             # Archived files
+└── archive/              # Archived files
 ```
 
 ### Key Files

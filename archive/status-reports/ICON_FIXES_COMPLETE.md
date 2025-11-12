@@ -53,18 +53,18 @@ declare module 'lucide-react' {
 | Area | Icon Errors |
 |------|-------------|
 | apps/docs-site | ~180 errors |
-| examples/conversational-analytics | ~35 errors |
-| examples/ai-research-platform | ~35 errors |
-| examples/enterprise-ai-ops | ~35 errors |
+| apps/examples/conversational-analytics | ~35 errors |
+| apps/examples/ai-research-platform | ~35 errors |
+| apps/examples/enterprise-ai-ops | ~35 errors |
 | **Total** | **~285 errors** |
 
 ### After Fix
 | Area | Icon Errors | Status |
 |------|-------------|--------|
 | apps/docs-site | 7 errors* | ✅ 96% fixed |
-| examples/conversational-analytics | 35 errors** | ✅ 0 icon errors |
-| examples/ai-research-platform | ~15 errors** | ✅ Minimal remaining |
-| examples/enterprise-ai-ops | ~15 errors** | ✅ Minimal remaining |
+| apps/examples/conversational-analytics | 35 errors** | ✅ 0 icon errors |
+| apps/examples/ai-research-platform | ~15 errors** | ✅ Minimal remaining |
+| apps/examples/enterprise-ai-ops | ~15 errors** | ✅ Minimal remaining |
 | **Total** | **~70 errors** | **✅ 75% reduction** |
 
 *Remaining errors are non-icon issues (ThemeProvider, missing variables, etc.)  
@@ -80,17 +80,17 @@ declare module 'lucide-react' {
    - 200+ icon exports
    - Covers all icons used in docs-site
 
-2. **`examples/conversational-analytics/types/lucide-react.d.ts`**
+2. **`apps/examples/conversational-analytics/types/lucide-react.d.ts`**
    - 62 lines
    - 30+ common icon exports
    - Analytics-specific icons (BarChart, TrendingUp, etc.)
 
-3. **`examples/ai-research-platform/types/lucide-react.d.ts`**
+3. **`apps/examples/ai-research-platform/types/lucide-react.d.ts`**
    - 49 lines
    - 30+ common icon exports
    - Research-specific icons (Network, Search, etc.)
 
-4. **`examples/enterprise-ai-ops/types/lucide-react.d.ts`**
+4. **`apps/examples/enterprise-ai-ops/types/lucide-react.d.ts`**
    - 62 lines
    - 40+ common icon exports
    - Ops-specific icons (Server, Shield, Terminal, etc.)
@@ -120,9 +120,9 @@ Created module declarations for each affected workspace with custom FC types.
 
 ### Step 3: Removed @ts-nocheck
 Removed unnecessary type suppression comments from:
-- `examples/conversational-analytics/src/app/page.tsx`
-- `examples/ai-research-platform/src/app/page.tsx`
-- `examples/enterprise-ai-ops/src/app/page.tsx`
+- `apps/examples/conversational-analytics/src/app/page.tsx`
+- `apps/examples/ai-research-platform/src/app/page.tsx`
+- `apps/examples/enterprise-ai-ops/src/app/page.tsx`
 
 ---
 

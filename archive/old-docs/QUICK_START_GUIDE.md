@@ -515,12 +515,12 @@ import '@clarity-chat/react/styles.css'
 
 Check out our complete working examples:
 
-- **[Basic Chat](./examples/basic-chat)** - Simple chat interface
-- **[Streaming Chat](./examples/streaming-chat)** - Real-time streaming
-- **[Customer Support](./examples/customer-support)** - Full-featured support chat
-- **[Token Optimization Demo](./examples/token-optimization-demo)** - Cost optimization showcase
+- **[Basic Chat](./apps/examples/basic-chat)** - Simple chat interface
+- **[Streaming Chat](./apps/examples/streaming-chat)** - Real-time streaming
+- **[Customer Support](./apps/examples/customer-support)** - Full-featured support chat
+- **[Token Optimization Demo](./apps/examples/token-optimization-demo)** - Cost optimization showcase
 
-**[→ View All Examples](./examples/README.md)**
+**[→ View All Examples](./apps/examples/README.md)**
 
 ---
 

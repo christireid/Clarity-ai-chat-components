@@ -151,7 +151,7 @@ function App() {
 - ♿ WCAG AAA accessibility
 - 🔒 Production-ready security
 
-**[📖 View Full Quick Start Guide](./apps/docs/guide/quick-start.md)** • **[📚 Browse Examples](./examples/README.md)**
+**[📖 View Full Quick Start Guide](./apps/docs-site/app/learn/quick-start)** • **[📚 Browse Examples](./apps/examples/README.md)**
 
 ---
 
@@ -1149,7 +1149,7 @@ Pre-built prompt templates for common tasks:
 ### Examples Gallery (30+ Production-Ready Examples)
 
 ```
-📁 examples/
+📁 apps/examples/
 ├── 🆕 token-optimization-demo/    # Complete optimization showcase
 ├── 🆕 ecommerce-assistant/        # Shopping chatbot
 ├── 🆕 code-assistant/              # AI coding companion
@@ -1183,7 +1183,7 @@ Pre-built prompt templates for common tasks:
 └── integration-examples/           # Integration patterns
 ```
 
-**[→ View All Examples](./examples/README.md)**
+**[→ View All Examples](./apps/examples/README.md)**
 
 ---
 
@@ -1531,7 +1531,7 @@ Built with amazing open-source tools:
 <p align="center">
   <a href="https://github.com/christireid/Clarity-ai-chat-components">⭐ Star on GitHub</a> •
   <a href="https://docs.clarity-chat.dev">📖 Read the Docs</a> •
-  <a href="./examples/README.md">🚀 Try Examples</a> •
+  <a href="./apps/examples/README.md">🚀 Try Examples</a> •
   <a href="https://discord.gg/clarity-chat">💬 Join Discord</a>
 </p>
 
