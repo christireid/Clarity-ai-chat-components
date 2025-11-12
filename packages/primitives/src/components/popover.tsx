@@ -39,7 +39,7 @@ export interface PopoverContentProps {
 interface PopoverContextValue {
   open: boolean
   setOpen: (open: boolean) => void
-  triggerRef: React.RefObject<HTMLElement>
+  triggerRef: React.RefObject<HTMLElement | null>
 }
 
 const PopoverContext = React.createContext<PopoverContextValue | null>(null)
