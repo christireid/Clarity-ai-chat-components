@@ -65,7 +65,7 @@ export interface StreamCancellationProps {
  * }
  * ```
  */
-export const StreamCancellation: React.FC<StreamCancellationProps> = ({
+export function StreamCancellation({
   isStreaming,
   onCancel,
   cancelLabel = 'Cancel',
@@ -74,7 +74,7 @@ export const StreamCancellation: React.FC<StreamCancellationProps> = ({
   className,
   showProgress = true,
   progressMessage = 'Streaming...',
-}) => {
+}: StreamCancellationProps) {
   if (!isStreaming) return null
 
   return (
@@ -83,13 +83,15 @@ export const StreamCancellation: React.FC<StreamCancellationProps> = ({
         <div className="flex items-center gap-2">
           {/* Animated progress indicator */}
           <div className="flex gap-1">
-            <span className="h-2 w-2 animate-bounce rounded-full bg-blue-500 [animation-delay:-0.3s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-blue-500 [animation-delay:-0.15s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-blue-500" />
+            <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]" />
+            <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.15s]" />
+            <span className="h-2 w-2 animate-bounce rounded-full bg-primary" />
           </div>
-          
+
           {!iconOnly && (
-            <span className="text-sm text-muted-foreground">{progressMessage}</span>
+            <span className="text-sm text-muted-foreground">
+              {progressMessage}
+            </span>
           )}
         </div>
       )}
@@ -111,7 +113,7 @@ export const StreamCancellation: React.FC<StreamCancellationProps> = ({
         >
           <rect x="3" y="3" width="10" height="10" rx="2" />
         </svg>
-        
+
         {!iconOnly && <span>{cancelLabel}</span>}
       </Button>
     </div>

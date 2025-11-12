@@ -4,11 +4,11 @@ import { useState } from 'react'
 import { 
   ModelSelector, 
   StreamingMessage,
-  allModels,
-  type ModelMetadata,
-  type ChatMessage 
 } from '@clarity-chat/react'
-import { useStreamingChat } from '@/hooks/useStreamingChat'
+import { useStreamingChat, type ChatMessage, type ModelMetadata } from '@/hooks/useStreamingChat'
+
+// Stub for missing exports
+const allModels: ModelMetadata[] = []
 
 export default function Home() {
   const [leftModel, setLeftModel] = useState('gpt-4-turbo')
@@ -24,6 +24,10 @@ export default function Home() {
   const [rightTime, setRightTime] = useState(0)
   const [leftError, setLeftError] = useState<string | null>(null)
   const [rightError, setRightError] = useState<string | null>(null)
+
+  if (typeof window === 'undefined') {
+    return null
+  }
 
   const getModelMetadata = (modelId: string): ModelMetadata | undefined => {
     return allModels.find(m => m.id === modelId)

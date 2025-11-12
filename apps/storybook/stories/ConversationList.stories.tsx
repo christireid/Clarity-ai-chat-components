@@ -1,9 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import * as React from 'react'
-import {
-  ConversationList,
-  type Conversation,
-} from '../../../packages/react/src/components/conversation-list'
+import { ConversationList, type Conversation } from '@clarity-chat/react'
 
 const meta: Meta<typeof ConversationList> = {
   title: 'Components/ConversationList',

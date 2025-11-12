@@ -1,5 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { SupportBot, CodeAssistant } from '@clarity-chat/react'
+import {
+  SupportBot,
+  CodeAssistant,
+  CustomerSupportTemplate,
+  AIAssistantTemplate,
+  CreativeWritingTemplate,
+  DataAnalystTemplate,
+  DocumentationBotTemplate,
+  SalesAssistantTemplate,
+  EducationTutorTemplate,
+  CodeHelperTemplate,
+} from '@clarity-chat/react'
 
 const meta: Meta = {
   title: 'Phase 4/Templates',
@@ -162,6 +173,106 @@ export const CodeAssistantTypeScript: StoryObj<typeof CodeAssistant> = {
 function getUserById(users: User[], id: number): User | undefined {
   return users.find(user => user.id === id)
 }`}
+      />
+    </div>
+  ),
+}
+
+export const CustomerSupportTemplateDefault: StoryObj<typeof CustomerSupportTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <CustomerSupportTemplate
+        companyName="Clarity Chat"
+        supportCategories={['Onboarding', 'Billing', 'Security']}
+        faqs={[
+          {
+            question: 'How do I add the chat widget to my product?',
+            answer: 'Install the @clarity-chat/react package and drop the <ChatWindow /> component into your page.',
+          },
+          {
+            question: 'Do you support SOC 2 compliance?',
+            answer: 'Yes, our enterprise plan includes SOC 2 Type II controls and audit documentation.',
+          },
+        ]}
+      />
+    </div>
+  ),
+}
+
+export const AIAssistantTemplateShowcase: StoryObj<typeof AIAssistantTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <AIAssistantTemplate
+        enableContextManagement
+        systemPrompt="You are Clarity, an expert product strategist."
+        defaultModel="gpt-4-turbo-preview"
+      />
+    </div>
+  ),
+}
+
+export const CreativeWritingTemplateStory: StoryObj<typeof CreativeWritingTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <CreativeWritingTemplate
+        systemPrompt="You write vibrant launch copy with strong narrative arcs."
+      />
+    </div>
+  ),
+}
+
+export const DataAnalystTemplateStory: StoryObj<typeof DataAnalystTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <DataAnalystTemplate
+        systemPrompt="You are a data analyst focused on SaaS revenue metrics."
+        enableContextManagement={false}
+      />
+    </div>
+  ),
+}
+
+export const SalesAssistantTemplateStory: StoryObj<typeof SalesAssistantTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <SalesAssistantTemplate
+        defaultPersona="account-executive"
+        playbooks={[
+          {
+            id: 'meddpicc',
+            name: 'MEDDPICC Discovery',
+            steps: ['Metrics', 'Economic Buyer', 'Decision Criteria'],
+          },
+        ]}
+      />
+    </div>
+  ),
+}
+
+export const EducationTutorTemplateStory: StoryObj<typeof EducationTutorTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <EducationTutorTemplate
+        systemPrompt="You are a patient calculus tutor helping students understand derivatives."
+      />
+    </div>
+  ),
+}
+
+export const CodeHelperTemplateStory: StoryObj<typeof CodeHelperTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <CodeHelperTemplate languages={['typescript', 'python', 'go']} />
+    </div>
+  ),
+}
+
+export const DocumentationBotTemplateStory: StoryObj<typeof DocumentationBotTemplate> = {
+  render: () => (
+    <div className="h-screen">
+      <DocumentationBotTemplate
+        companyName="Docs.ai"
+        supportCategories={['API Reference', 'Auth', 'Billing']}
       />
     </div>
   ),

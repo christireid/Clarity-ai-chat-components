@@ -16,9 +16,12 @@ export function useChat() {
 
       const userMessage: Message = {
         id: Date.now().toString(),
+        chatId: conversation.id,
         role: 'user',
         content,
-        timestamp: Date.now(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
       }
 
       const messages = [...conversation.messages, userMessage]

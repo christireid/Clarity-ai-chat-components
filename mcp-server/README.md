@@ -385,6 +385,19 @@ npm run build
 npm start
 ```
 
+### Testing
+
+```bash
+# Run all tests
+npm test
+
+# Watch mode
+npm run test:watch
+
+# With coverage
+npm run test:coverage
+```
+
 ### Testing with MCP Inspector
 
 ```bash
@@ -393,15 +406,26 @@ npx @modelcontextprotocol/inspector npx @clarity-chat/mcp-server
 
 ## Architecture
 
-The MCP server is organized into three main modules:
+The MCP server is organized into modular components:
 
-1. **Tools** (`src/tools/`) - Executable operations
-2. **Resources** (`src/resources/`) - Read-only documentation and data
+1. **Tools** (`src/tools/`) - Executable operations with validation and error handling
+2. **Resources** (`src/resources/`) - Read-only documentation and data with caching
 3. **Prompts** (`src/prompts/`) - Templated prompts for common tasks
+4. **Utils** (`src/utils/`) - Shared utilities for logging, validation, security, and caching
+
+### Key Features
+
+- ✅ **Comprehensive Error Handling** - Structured errors with proper codes
+- ✅ **Input Validation** - All inputs validated before processing
+- ✅ **Security** - Path validation and input sanitization
+- ✅ **Logging** - Structured logging with request tracing
+- ✅ **Caching** - Resource caching for improved performance
+- ✅ **Type Safety** - Full TypeScript with strict types
+- ✅ **Testing** - Comprehensive test suite with high coverage
 
 Each module exports:
 - List of available items
-- Handler function for requests
+- Handler function for requests with proper error handling
 
 ## Requirements
 

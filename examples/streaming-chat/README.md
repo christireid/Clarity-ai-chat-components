@@ -1,78 +1,238 @@
 # Streaming Chat Demo
 
-Real-time AI chat with Server-Sent Events (SSE) streaming using Next.js 15 App Router.
+Next.js application demonstrating real-time streaming responses with Server-Sent Events (SSE), including stream cancellation and progress tracking.
 
 ## Features
 
-- ✅ **Real-time streaming**: Uses SSE for token-by-token response delivery
-- ✅ **Cancellation support**: Cancel streaming responses in progress
-- ✅ **Next.js 15 App Router**: Modern React Server Components architecture
-- ✅ **Edge Runtime**: Deployed to edge for low latency worldwide
-- ✅ **Production ready**: Error handling, abort signals, proper cleanup
+✅ **Real-Time Streaming** - See AI responses character by character  
+✅ **SSE Integration** - Server-Sent Events for streaming  
+✅ **Stream Cancellation** - Stop generation mid-stream  
+✅ **Auto-Scroll** - Messages automatically scroll as they stream  
+✅ **Token Tracking** - Monitor token usage in real-time  
+✅ **Network Status** - Connection monitoring  
+✅ **Error Boundary** - Graceful error handling  
+✅ **Progress Indicator** - Visual feedback during streaming  
+✅ **TypeScript** - Full type safety  
+✅ **Next.js 14** - App router with React Server Components  
 
-## Getting Started
+## Quick Start
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+```bash
+# Install dependencies
+npm install
 
-2. **Run development server**:
-   ```bash
-   npm run dev
-   ```
+# Start dev server
+npm run dev
 
-3. **Open in browser**:
-   ```
-   http://localhost:3000
-   ```
+# Build for production
+npm run build
+npm start
+```
 
-## How It Works
+Open [http://localhost:3000](http://localhost:3000)
 
-### Client Side (page.tsx)
+## Architecture
 
-The client manages message state and establishes SSE connection:
+### Tech Stack
+- **Next.js 14** - App router, React Server Components
+- **TypeScript** - Type safety
+- **Clarity Chat Components** - UI components and hooks
+- **Fetch API** - Streaming responses
+- **AbortController** - Request cancellation
+
+### File Structure
+
+```
+streaming-chat/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx           # Main chat page (client component)
+│   │   ├── layout.tsx         # Root layout
+│   │   └── api/
+│   │       └── chat/
+│   │           └── route.ts   # Streaming API endpoint
+├── package.json
+└── README.md
+```
+
+## Key Concepts
+
+### 1. Server-Sent Events (SSE)
+
+Streams data from server to client in real-time:
 
 ```typescript
-const response = await fetch('/api/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ messages }),
-  signal: abortController.signal, // For cancellation
-})
-
+// Client side - Reading stream
 const reader = response.body?.getReader()
 const decoder = new TextDecoder()
 
-// Read stream chunks
 while (true) {
   const { done, value } = await reader.read()
   if (done) break
   
-  const chunk = decoder.decode(value)
-  // Update message with new content
+  const chunk = decoder.decode(value, { stream: true })
+  // Process chunk...
 }
 ```
 
-### Server Side (route.ts)
+### 2. Message Status States
 
-The API route creates a `ReadableStream` for SSE:
+Messages have dynamic status during streaming:
 
 ```typescript
-export const runtime = 'edge' // Deploy to edge
+type MessageStatus = 'sending' | 'sent' | 'error'
 
-export async function POST(req: NextRequest) {
+// Creating message
+{ status: 'sending' } // While streaming
+
+// Stream complete
+{ status: 'sent' }    // Success
+
+// Error occurred
+{ status: 'error' }   // Failed
+```
+
+### 3. Stream Cancellation
+
+Use AbortController to cancel ongoing requests:
+
+```typescript
+const abortController = new AbortController()
+
+fetch('/api/chat', { 
+  signal: abortController.signal 
+})
+
+// Later...
+abortController.abort() // Cancels request
+```
+
+### 4. Incremental Updates
+
+Update message content as chunks arrive:
+
+```typescript
+let accumulatedContent = ''
+
+// For each chunk
+accumulatedContent += parsed.content
+
+setMessages(prev =>
+  prev.map(msg =>
+    msg.id === streamingMsgId
+      ? { ...msg, content: accumulatedContent }
+      : msg
+  )
+)
+```
+
+### 5. Auto-Scroll During Stream
+
+Messages auto-scroll as content streams in:
+
+```typescript
+const { scrollRef } = useAutoScroll({
+  dependencies: [messages], // Re-scrolls on every update
+})
+
+<div ref={scrollRef}>
+  <ChatWindow messages={messages} />
+</div>
+```
+
+## Implementation Details
+
+### Client Side (page.tsx)
+
+**State Management:**
+```typescript
+const [messages, setMessages] = useState<Message[]>([])
+const [isStreaming, setIsStreaming] = useState(false)
+const abortControllerRef = useRef<AbortController | null>(null)
+```
+
+**Sending Message:**
+```typescript
+const handleSendMessage = async (content: string) => {
+  // 1. Add user message
+  const userMessage = { /* ... */ }
+  setMessages(prev => [...prev, userMessage])
+  
+  // 2. Create streaming assistant message
+  const assistantMessage = { 
+    content: '', 
+    status: 'sending' 
+  }
+  setMessages(prev => [...prev, assistantMessage])
+  
+  // 3. Stream response
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    body: JSON.stringify({ messages }),
+    signal: abortController.signal,
+  })
+  
+  // 4. Read stream
+  const reader = response.body?.getReader()
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    
+    // Update message incrementally
+    accumulatedContent += chunk
+    setMessages(prev => prev.map(/* update */))
+  }
+  
+  // 5. Mark complete
+  setMessages(prev => prev.map(msg => 
+    msg.id === assistantMessage.id
+      ? { ...msg, status: 'sent' }
+      : msg
+  ))
+}
+```
+
+**Cancelling Stream:**
+```typescript
+const handleCancel = () => {
+  if (abortControllerRef.current) {
+    abortControllerRef.current.abort()
+    setIsStreaming(false)
+  }
+}
+```
+
+### Server Side (api/chat/route.ts)
+
+**Streaming Response:**
+```typescript
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+  
+  // Create readable stream
   const stream = new ReadableStream({
     async start(controller) {
-      const encoder = new TextEncoder()
+      // Simulate streaming
+      const response = "Your AI response here"
+      const words = response.split(' ')
       
-      // Stream response chunks
-      for await (const chunk of generateResponse()) {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: chunk })}\n\n`))
+      for (const word of words) {
+        // Send SSE formatted chunk
+        const chunk = `data: ${JSON.stringify({ 
+          content: word + ' ' 
+        })}\n\n`
+        
+        controller.enqueue(
+          new TextEncoder().encode(chunk)
+        )
+        
+        await new Promise(r => setTimeout(r, 50))
       }
       
-      // Send done signal
-      controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
+      // Signal completion
+      controller.enqueue(
+        new TextEncoder().encode('data: [DONE]\n\n')
+      )
       controller.close()
     }
   })
@@ -87,123 +247,269 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-## Integration with Real AI APIs
+## Usage Patterns
 
-Replace the simulated streaming with actual API calls:
+### Basic Streaming Chat
 
-### OpenAI Integration
+```typescript
+import { ChatWindow, useAutoScroll } from '@clarity-chat/react'
+
+function StreamingChat() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const { scrollRef } = useAutoScroll({ dependencies: [messages] })
+  
+  const handleSendMessage = async (content: string) => {
+    // Add user message
+    setMessages(prev => [...prev, userMessage])
+    
+    // Create streaming message
+    const streamMsg = { content: '', status: 'sending' }
+    setMessages(prev => [...prev, streamMsg])
+    
+    // Stream response
+    const response = await fetch('/api/chat', { /* ... */ })
+    const reader = response.body?.getReader()
+    
+    let accumulated = ''
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      
+      accumulated += decoder.decode(value)
+      setMessages(prev => prev.map(msg =>
+        msg.id === streamMsg.id
+          ? { ...msg, content: accumulated }
+          : msg
+      ))
+    }
+    
+    // Mark complete
+    setMessages(prev => prev.map(msg =>
+      msg.id === streamMsg.id
+        ? { ...msg, status: 'sent' }
+        : msg
+    ))
+  }
+  
+  return (
+    <div ref={scrollRef}>
+      <ChatWindow 
+        messages={messages}
+        onSendMessage={handleSendMessage}
+      />
+    </div>
+  )
+}
+```
+
+### With Cancellation
+
+```typescript
+const abortControllerRef = useRef<AbortController | null>(null)
+const [isStreaming, setIsStreaming] = useState(false)
+
+const handleSendMessage = async (content: string) => {
+  abortControllerRef.current = new AbortController()
+  setIsStreaming(true)
+  
+  try {
+    const response = await fetch('/api/chat', {
+      signal: abortControllerRef.current.signal,
+    })
+    
+    // Stream handling...
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('Cancelled by user')
+    }
+  } finally {
+    setIsStreaming(false)
+    abortControllerRef.current = null
+  }
+}
+
+const handleCancel = () => {
+  abortControllerRef.current?.abort()
+}
+
+// UI
+{isStreaming && (
+  <Button onClick={handleCancel}>Stop Generation</Button>
+)}
+```
+
+### With Token Tracking
+
+```typescript
+const { tokens, addMessage } = useTokenTracker({
+  modelName: 'gpt-3.5-turbo'
+})
+
+const handleSendMessage = async (content: string) => {
+  // Track user message
+  addMessage({ role: 'user', content })
+  
+  // ... streaming ...
+  
+  // Track assistant message
+  addMessage({ role: 'assistant', content: accumulatedContent })
+}
+
+<TokenCounter 
+  currentTokens={tokens}
+  maxTokens={16000}
+/>
+```
+
+## Customization
+
+### Change Streaming Speed
+
+Adjust delay in API route:
+
+```typescript
+// Fast streaming (10ms per chunk)
+await new Promise(r => setTimeout(r, 10))
+
+// Slow streaming (100ms per chunk)
+await new Promise(r => setTimeout(r, 100))
+
+// Realistic (30-50ms per chunk)
+await new Promise(r => setTimeout(r, 30 + Math.random() * 20))
+```
+
+### Integrate Real AI API
+
+Replace simulated API with OpenAI:
 
 ```typescript
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-
-const stream = await openai.chat.completions.create({
-  model: 'gpt-4-turbo-preview',
-  messages,
-  stream: true,
-})
-
-for await (const chunk of stream) {
-  const content = chunk.choices[0]?.delta?.content
-  if (content) {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`))
-  }
+export async function POST(req: Request) {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  const { messages } = await req.json()
+  
+  const stream = await openai.chat.completions.create({
+    model: 'gpt-3.5-turbo',
+    messages,
+    stream: true,
+  })
+  
+  const encoder = new TextEncoder()
+  
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        for await (const chunk of stream) {
+          const content = chunk.choices[0]?.delta?.content || ''
+          
+          if (content) {
+            const data = `data: ${JSON.stringify({ content })}\n\n`
+            controller.enqueue(encoder.encode(data))
+          }
+        }
+        
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+        controller.close()
+      }
+    }),
+    {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+      }
+    }
+  )
 }
 ```
 
-### Anthropic Claude Integration
+### Add Markdown Rendering
+
+Use MarkdownRenderer for formatted responses:
 
 ```typescript
-import Anthropic from '@anthropic-ai/sdk'
+import { MarkdownRenderer } from '@clarity-chat/react'
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+// In Message component
+<MarkdownRenderer content={message.content} />
+```
 
-const stream = await anthropic.messages.stream({
-  model: 'claude-3-opus-20240229',
-  max_tokens: 1024,
-  messages,
-})
+### Error Recovery
 
-for await (const chunk of stream) {
-  if (chunk.type === 'content_block_delta') {
-    const content = chunk.delta.text
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`))
+Handle network errors gracefully:
+
+```typescript
+try {
+  // Streaming...
+} catch (error) {
+  if (error.name === 'AbortError') {
+    // User cancelled
+    setMessages(prev => 
+      prev.filter(msg => msg.id !== streamMsg.id)
+    )
+  } else {
+    // Network or other error
+    setMessages(prev => prev.map(msg =>
+      msg.id === streamMsg.id
+        ? { 
+            ...msg, 
+            content: 'Error: ' + error.message,
+            status: 'error'
+          }
+        : msg
+    ))
   }
 }
 ```
 
-## Deployment
+## Best Practices
 
-### Vercel
+1. **Always Clean Up** - Abort requests on unmount
+2. **Show Progress** - Visual indicator during streaming
+3. **Enable Cancellation** - Allow users to stop generation
+4. **Handle Errors** - Network issues, timeouts, etc.
+5. **Optimize Updates** - Don't re-render entire list
+6. **Track Tokens** - Monitor usage for cost control
+7. **Auto-Scroll** - Keep latest content visible
+8. **Type Everything** - Full TypeScript coverage
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
+## Troubleshooting
 
-# Deploy
-vercel
-```
+### Stream not working
+- Check Content-Type is `text/event-stream`
+- Ensure chunks are SSE formatted: `data: {...}\n\n`
+- Verify no buffering middleware
 
-### Cloudflare Pages
+### Auto-scroll issues
+- Confirm scrollRef attached to scrollable container
+- Ensure messages array in dependencies
+- Check overflow-auto on container
 
-```bash
-# Build
-npm run build
+### Cancellation not working
+- Verify AbortController passed to fetch
+- Check signal reference not lost
+- Ensure abort() called correctly
 
-# Deploy
-npx wrangler pages publish .next
-```
+### Type errors
+- Use Message type from @clarity-chat/types
+- Include all required fields (chatId, status, etc.)
+- Status must be 'sending' | 'sent' | 'error'
 
-## Environment Variables
+## Performance Tips
 
-Create `.env.local` for API keys:
+1. **Debounce Updates** - Update UI every N chunks, not every chunk
+2. **Virtual Scrolling** - Use VirtualizedMessageList for long chats
+3. **Memoization** - Memoize expensive computations
+4. **Lazy Loading** - Load old messages on demand
+5. **Web Workers** - Process chunks in background
 
-```env
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-```
+## Next Steps
 
-## Project Structure
-
-```
-streaming-chat/
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   │   └── chat/
-│   │   │       └── route.ts      # SSE streaming endpoint
-│   │   ├── layout.tsx             # Root layout
-│   │   ├── page.tsx               # Main chat page
-│   │   └── globals.css            # Global styles
-│   └── ...
-├── public/                        # Static assets
-├── next.config.js                 # Next.js configuration
-├── tailwind.config.ts             # Tailwind configuration
-├── tsconfig.json                  # TypeScript configuration
-└── package.json                   # Dependencies
-```
-
-## Key Features Demonstrated
-
-1. **Server-Sent Events (SSE)**: Real-time streaming from server to client
-2. **Abort Controller**: Cancel in-progress requests
-3. **Edge Runtime**: Fast, globally distributed responses
-4. **Error Handling**: Graceful degradation and error states
-5. **TypeScript**: Full type safety throughout
-6. **Modern React**: React 19 with Server Components
-
-## Learn More
-
-- [Next.js App Router](https://nextjs.org/docs/app)
-- [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
-- [OpenAI Streaming](https://platform.openai.com/docs/api-reference/streaming)
-- [Anthropic Streaming](https://docs.anthropic.com/claude/reference/streaming)
+To learn more:
+- Try [AI Assistant](../ai-assistant) for optimistic updates
+- Check [Enterprise Knowledge Hub](../enterprise-knowledge-hub) for RAG
+- Explore [Complete Features Demo](../complete-features-demo) for all features
 
 ## License
 
-MIT
+MIT - see repository root for details

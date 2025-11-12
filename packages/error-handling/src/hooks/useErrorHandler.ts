@@ -36,7 +36,7 @@ export interface UseErrorHandlerOptions {
  */
 export function useErrorHandler(options?: UseErrorHandlerOptions) {
   const {
-    logErrors = process.env.NODE_ENV === 'development',
+    logErrors = process.env['NODE_ENV'] === 'development',
     showToast = false,
     onError,
   } = options || {}

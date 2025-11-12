@@ -21,6 +21,8 @@ import {
 import { tools, handleToolCall } from './tools/index.js'
 import { resources, handleResourceRead } from './resources/index.js'
 import { prompts, handlePromptGet } from './prompts/index.js'
+import { logger } from './utils/logger.js'
+import { formatErrorResponse } from './utils/errors.js'
 
 /**
  * Create and configure MCP server
@@ -47,32 +49,35 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 })
 
 /**
- * Handle tool calls
+ * Handle tool calls with proper error handling
  */
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
-
+  const requestId = `tool-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  
+  logger.setRequestId(requestId)
+  
   try {
     const result = await handleToolCall(name, args || {})
+    logger.info('Tool call succeeded', { tool: name })
+    
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify(result, null, 2)
+          text: JSON.stringify({
+            success: true,
+            data: result,
+            metadata: { requestId, timestamp: new Date().toISOString() }
+          }, null, 2)
         }
       ]
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify({ error: errorMessage }, null, 2)
-        }
-      ],
-      isError: true
-    }
+    logger.error('Tool call failed', error instanceof Error ? error : undefined, { tool: name })
+    return formatErrorResponse(error)
+  } finally {
+    logger.clearRequestId()
   }
 })
 
@@ -84,25 +89,41 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
 })
 
 /**
- * Read resource content
+ * Read resource content with proper MIME type detection
  */
 server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   const { uri } = request.params
-
+  const requestId = `resource-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  
+  logger.setRequestId(requestId)
+  
   try {
     const content = await handleResourceRead(uri)
+    
+    // Determine MIME type based on URI
+    let mimeType = 'text/plain'
+    if (uri.includes('/docs/')) {
+      mimeType = 'text/markdown'
+    } else if (uri.includes('/examples/list') || uri.includes('/models/')) {
+      mimeType = 'application/json'
+    }
+    
+    logger.info('Resource read succeeded', { uri })
+    
     return {
       contents: [
         {
           uri,
-          mimeType: 'text/plain',
+          mimeType,
           text: content
         }
       ]
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    throw new Error(`Failed to read resource: ${errorMessage}`)
+    logger.error('Resource read failed', error instanceof Error ? error : undefined, { uri })
+    throw error
+  } finally {
+    logger.clearRequestId()
   }
 })
 
@@ -114,13 +135,18 @@ server.setRequestHandler(ListPromptsRequestSchema, async () => {
 })
 
 /**
- * Get prompt content
+ * Get prompt content with proper error handling
  */
 server.setRequestHandler(GetPromptRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
-
+  const requestId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  
+  logger.setRequestId(requestId)
+  
   try {
     const result = await handlePromptGet(name, args || {})
+    logger.info('Prompt generated successfully', { prompt: name })
+    
     return {
       messages: [
         {
@@ -133,8 +159,10 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
       ]
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    throw new Error(`Failed to get prompt: ${errorMessage}`)
+    logger.error('Prompt generation failed', error instanceof Error ? error : undefined, { prompt: name })
+    throw error
+  } finally {
+    logger.clearRequestId()
   }
 })
 
@@ -142,16 +170,23 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
  * Start server
  */
 async function main() {
-  const transport = new StdioServerTransport()
-  await server.connect(transport)
+  try {
+    const transport = new StdioServerTransport()
+    await server.connect(transport)
 
-  console.error('Clarity Chat MCP server running on stdio')
-  console.error('Available tools:', tools.length)
-  console.error('Available resources:', resources.length)
-  console.error('Available prompts:', prompts.length)
+    logger.info('Clarity Chat MCP server started', {
+      tools: tools.length,
+      resources: resources.length,
+      prompts: prompts.length,
+      version: '0.1.0'
+    })
+  } catch (error) {
+    logger.error('Fatal error starting server', error instanceof Error ? error : undefined)
+    process.exit(1)
+  }
 }
 
 main().catch((error) => {
-  console.error('Fatal error:', error)
+  logger.error('Unhandled error', error instanceof Error ? error : undefined)
   process.exit(1)
 })

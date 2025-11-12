@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animation 6: Theme Switching Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .demo-container {
+      width: 800px;
+      position: relative;
+    }
+
+    .theme-label {
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      z-index: 100;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    .chat-container {
+      background: var(--bg);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: var(--surface);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      transition: all 0.5s;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.5s;
+    }
+
+    .header-title {
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 600;
+      transition: color 0.5s;
+    }
+
+    .header-status {
+      color: var(--text-muted);
+      font-size: 12px;
+      transition: color 0.5s;
+    }
+
+    .messages {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .message {
+      padding: 14px 18px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 75%;
+      transition: all 0.5s;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: var(--primary);
+      color: white;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .chat-input-container {
+      display: flex;
+      gap: 12px;
+      padding: 14px 18px;
+      background: var(--surface);
+      border-radius: 12px;
+      transition: all 0.5s;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .chat-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .send-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--primary);
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    /* Theme variables */
+    .theme-ocean {
+      --bg: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      --surface: rgba(30, 58, 95, 0.5);
+      --primary: hsl(217, 91%, 60%);
+      --text: rgba(255, 255, 255, 0.95);
+      --text-muted: rgba(255, 255, 255, 0.6);
+    }
+
+    .theme-dark {
+      --bg: #000000;
+      --surface: #1a1a1a;
+      --primary: #ffffff;
+      --text: #ffffff;
+      --text-muted: #999999;
+    }
+
+    .theme-glass {
+      --bg: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      --surface: rgba(255, 255, 255, 0.1);
+      --primary: rgba(139, 92, 246, 0.8);
+      --text: rgba(255, 255, 255, 0.95);
+      --text-muted: rgba(255, 255, 255, 0.5);
+    }
+
+    .theme-glass .chat-container {
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .theme-neon {
+      --bg: #0a0a0a;
+      --surface: #1a1a2e;
+      --primary: #ff006e;
+      --text: #00f5ff;
+      --text-muted: #8b5cf6;
+    }
+
+    .theme-neon .chat-container {
+      box-shadow: 0 0 40px rgba(255, 0, 110, 0.3), 0 0 80px rgba(0, 245, 255, 0.2);
+    }
+
+    .theme-custom {
+      --bg: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 100%);
+      --surface: rgba(114, 63, 163, 0.3);
+      --primary: #a855f7;
+      --text: rgba(255, 255, 255, 0.95);
+      --text-muted: rgba(168, 85, 247, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <div class="theme-label" id="themeLabel">Ocean Theme</div>
+    <div class="chat-container theme-ocean" id="chatContainer">
+      <div class="chat-header">
+        <div class="header-left">
+          <div class="avatar">🤖</div>
+          <div>
+            <div class="header-title">AI Assistant</div>
+            <div class="header-status">● Online</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="messages">
+        <div class="message user">
+          How do I make my app look professional?
+        </div>
+        <div class="message assistant">
+          Great question! A professional look comes from consistency, good typography, thoughtful color schemes, and attention to detail. Using a well-designed component library can help ensure your UI looks polished from the start.
+        </div>
+        <div class="message user">
+          Can you show me some examples?
+        </div>
+        <div class="message assistant">
+          Absolutely! Notice how this chat interface changes appearance with different themes. Each theme maintains the same structure but with different colors, effects, and styling. This is what makes modern UI development powerful!
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <input type="text" class="chat-input" placeholder="Type your message..." />
+        <button class="send-button">→</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatContainer = document.getElementById('chatContainer');
+    const themeLabel = document.getElementById('themeLabel');
+
+    const themes = [
+      { name: 'Ocean Theme', class: 'theme-ocean', duration: 2000 },
+      { name: 'Dark Theme', class: 'theme-dark', duration: 2000 },
+      { name: 'Glassmorphism Theme', class: 'theme-glass', duration: 2000 },
+      { name: 'Neon Theme', class: 'theme-neon', duration: 2000 },
+      { name: 'Custom Brand Theme', class: 'theme-custom', duration: 2000 },
+    ];
+
+    let currentIndex = 0;
+
+    function switchTheme() {
+      const theme = themes[currentIndex];
+      
+      // Update theme label
+      themeLabel.textContent = theme.name;
+      themeLabel.style.animation = 'none';
+      setTimeout(() => {
+        themeLabel.style.animation = 'fadeIn 0.3s ease-out';
+      }, 10);
+      
+      // Remove all theme classes
+      themes.forEach(t => {
+        chatContainer.classList.remove(t.class);
+      });
+      
+      // Add new theme class
+      chatContainer.classList.add(theme.class);
+      
+      // Move to next theme
+      currentIndex = (currentIndex + 1) % themes.length;
+      
+      // Schedule next switch
+      setTimeout(switchTheme, theme.duration);
+    }
+
+    // Start theme switching after initial display
+    setTimeout(switchTheme, 2000);
+  </script>
+</body>
+</html>

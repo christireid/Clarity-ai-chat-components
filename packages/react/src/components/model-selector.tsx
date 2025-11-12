@@ -5,6 +5,8 @@
  */
 
 import * as React from 'react'
+import { motion } from 'framer-motion'
+import { Badge, Button, cn } from '@clarity-chat/primitives'
 import type { ModelConfig, ModelInfo } from '../adapters/types'
 
 export interface ModelSelectorProps {
@@ -34,81 +36,104 @@ export function ModelSelector({
   showDescription = true
 }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = React.useState(false)
-  const selectedModel = models.find(m => m.id === value)
+  const containerRef = React.useRef<HTMLDivElement>(null)
   
-  const handleSelect = (model: ModelInfo) => {
+  const handleToggle = React.useCallback(() => setIsOpen(!isOpen), [isOpen])
+  const handleBackdropClick = React.useCallback(() => setIsOpen(false), [])
+  
+  // Memoize selected model lookup
+  const selectedModel = React.useMemo(
+    () => models.find(m => m.id === value),
+    [models, value]
+  )
+  
+  // Memoize select handler
+  const handleSelect = React.useCallback((model: ModelInfo) => {
     onChange(model.id, {
       provider: model.provider,
       model: model.id
     })
     setIsOpen(false)
-  }
+  }, [onChange])
   
-  const getBadgeColor = (type: string, value: string) => {
-    const colors: Record<string, Record<string, string>> = {
-      speed: {
-        fast: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        slow: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-      },
-      cost: {
-        low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-      },
-      quality: {
-        good: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-        excellent: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-        best: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-      }
+  // Memoize badge props getter
+  const getBadgeProps = React.useCallback((type: 'speed' | 'cost' | 'quality', value: string): { variant: React.ComponentProps<typeof Badge>['variant']; label: string } => {
+    switch (type) {
+      case 'speed':
+        if (value === 'fast') return { variant: 'success', label: 'Fast' }
+        if (value === 'medium') return { variant: 'warning', label: 'Moderate' }
+        return { variant: 'destructive', label: 'Slow' }
+      case 'cost':
+        if (value === 'low') return { variant: 'success', label: 'Low cost' }
+        if (value === 'medium') return { variant: 'warning', label: 'Medium cost' }
+        return { variant: 'destructive', label: 'High cost' }
+      case 'quality':
+        if (value === 'best') return { variant: 'success', label: 'Best quality' }
+        if (value === 'excellent') return { variant: 'info', label: 'Excellent' }
+        return { variant: 'secondary', label: 'Good' }
+      default:
+        return { variant: 'secondary', label: value }
     }
-    return colors[type]?.[value] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-  }
-  
+  }, [])
+
   return (
-    <div className={`relative ${className}`}>
-      <button
+    <div ref={containerRef} className={cn('relative', className)}>
+      <Button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        variant="surface"
+        onClick={handleToggle}
         disabled={disabled}
-        className="w-full flex items-center justify-between gap-2 px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full justify-between rounded-xl border border-border/40 bg-card/95 backdrop-blur-sm px-4 py-3 text-left text-sm shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:border-border/60 transition-all duration-200 ease-out"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="font-medium truncate">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <span className="truncate text-foreground font-medium">
             {selectedModel?.name || 'Select model'}
           </span>
           {showMetrics && selectedModel && (
-            <div className="flex gap-1">
-              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('speed', selectedModel.speed)}`}>
-                {selectedModel.speed}
-              </span>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('cost', selectedModel.cost)}`}>
-                ${selectedModel.cost}
-              </span>
+            <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+              {(['speed', 'cost'] as const).map((type) => {
+                const { variant, label } = getBadgeProps(type, selectedModel[type])
+                const displayValue = type === 'cost' ? `$${selectedModel[type]}` : selectedModel[type]
+                return (
+                  <Badge
+                    key={type}
+                    variant={variant}
+                    className="rounded-full px-2 py-0.5 capitalize"
+                    title={label}
+                  >
+                    {displayValue}
+                  </Badge>
+                )
+              })}
             </div>
           )}
         </div>
         <svg
-          className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'transform rotate-180' : ''}`}
+          className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', isOpen && 'rotate-180')}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
-      </button>
+      </Button>
       
       {isOpen && (
         <>
           <div
             className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
+            onClick={handleBackdropClick}
+            aria-hidden="true"
           />
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             role="listbox"
-            className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-auto"
+            className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/40 bg-card/98 backdrop-blur-md shadow-[0_12px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)]"
           >
             {models.map((model) => (
               <button
@@ -117,33 +142,44 @@ export function ModelSelector({
                 role="option"
                 aria-selected={model.id === value}
                 onClick={() => handleSelect(model)}
-                className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors first:rounded-t-lg last:rounded-b-lg"
+                className={cn(
+                  'w-full px-4 py-3 text-left transition-colors duration-150 ease-out first:rounded-t-2xl last:rounded-b-2xl',
+                  model.id === value
+                    ? 'bg-muted/50 text-foreground'
+                    : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground'
+                )}
               >
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                    <span className="font-medium text-foreground">
                       {model.name}
                     </span>
                     {showMetrics && (
-                      <div className="flex gap-1 flex-shrink-0">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('speed', model.speed)}`}>
-                          {model.speed}
-                        </span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('quality', model.quality)}`}>
-                          {model.quality}
-                        </span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getBadgeColor('cost', model.cost)}`}>
-                          ${model.cost}
-                        </span>
+                      <div className="flex flex-wrap gap-1">
+                        {(['speed', 'quality', 'cost'] as const).map((type) => {
+                          const { variant, label } = getBadgeProps(type, model[type])
+                          const displayValue =
+                            type === 'cost' ? `$${model[type]}` : model[type]
+                          return (
+                            <Badge
+                              key={type}
+                              variant={variant}
+                              className="rounded-full px-2 py-0.5 capitalize"
+                              title={label}
+                            >
+                              {displayValue}
+                            </Badge>
+                          )
+                        })}
                       </div>
                     )}
                   </div>
                   {showDescription && model.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       {model.description}
                     </p>
                   )}
-                  <p className="text-xs text-gray-500 dark:text-gray-500">
+                  <p className="text-xs text-muted-foreground/80">
                     {(model.contextWindow / 1000).toFixed(0)}K context
                     {model.vision && ' · Vision'}
                     {model.toolCalling && ' · Tools'}
@@ -151,7 +187,7 @@ export function ModelSelector({
                 </div>
               </button>
             ))}
-          </div>
+          </motion.div>
         </>
       )}
     </div>

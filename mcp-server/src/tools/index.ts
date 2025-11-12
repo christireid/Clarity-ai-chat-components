@@ -7,10 +7,13 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js'
 import * as fs from 'fs/promises'
 import * as path from 'path'
-import { exec } from 'child_process'
-import { promisify } from 'util'
+import { logger } from '../utils/logger.js'
+import { NotFoundError, ValidationError } from '../utils/errors.js'
+import { validateRequired, validateEnum, validateString, validateNumber } from '../utils/validation.js'
+import { validateProjectPath } from '../utils/security.js'
 
-const execAsync = promisify(exec)
+type Provider = 'openai' | 'anthropic' | 'google' | 'all'
+type Framework = 'nextjs' | 'express' | 'hono' | 'standalone'
 
 /**
  * Available tools
@@ -130,69 +133,101 @@ export const tools: Tool[] = [
 ]
 
 /**
- * Handle tool calls
+ * Handle tool calls with proper validation and error handling
  */
 export async function handleToolCall(name: string, args: Record<string, any>): Promise<any> {
-  switch (name) {
-    case 'init_project':
-      return await initProject(args.provider, args.framework, args.projectPath)
-    
-    case 'list_examples':
-      return await listExamples()
-    
-    case 'get_example':
-      return await getExample(args.exampleName)
-    
-    case 'validate_config':
-      return await validateConfig(args.projectPath)
-    
-    case 'get_model_info':
-      return await getModelInfo(args.modelName)
-    
-    case 'calculate_cost':
-      return await calculateCost(args.modelName, args.promptTokens, args.completionTokens)
-    
-    case 'analyze_project':
-      return await analyzeProject(args.projectPath)
-    
-    default:
-      throw new Error(`Unknown tool: ${name}`)
+  logger.debug('Tool call received', { tool: name, args })
+  
+  try {
+    switch (name) {
+      case 'init_project':
+        validateRequired(args, ['provider', 'framework', 'projectPath'])
+        const provider = validateEnum(args.provider, ['openai', 'anthropic', 'google', 'all'] as const, 'provider')
+        const framework = validateEnum(args.framework, ['nextjs', 'express', 'hono', 'standalone'] as const, 'framework')
+        const projectPath = validateProjectPath(validateString(args.projectPath, 'projectPath'))
+        return await initProject(provider, framework, projectPath)
+      
+      case 'list_examples':
+        return await listExamples()
+      
+      case 'get_example':
+        validateRequired(args, ['exampleName'])
+        const exampleName = validateString(args.exampleName, 'exampleName')
+        return await getExample(exampleName)
+      
+      case 'validate_config':
+        validateRequired(args, ['projectPath'])
+        const configPath = validateProjectPath(validateString(args.projectPath, 'projectPath'))
+        return await validateConfig(configPath)
+      
+      case 'get_model_info':
+        validateRequired(args, ['modelName'])
+        const modelName = validateString(args.modelName, 'modelName')
+        return await getModelInfo(modelName)
+      
+      case 'calculate_cost':
+        validateRequired(args, ['modelName', 'promptTokens', 'completionTokens'])
+        const costModelName = validateString(args.modelName, 'modelName')
+        const promptTokens = validateNumber(args.promptTokens, 'promptTokens', 0)
+        const completionTokens = validateNumber(args.completionTokens, 'completionTokens', 0)
+        return await calculateCost(costModelName, promptTokens, completionTokens)
+      
+      case 'analyze_project':
+        validateRequired(args, ['projectPath'])
+        const analyzePath = validateProjectPath(validateString(args.projectPath, 'projectPath'))
+        return await analyzeProject(analyzePath)
+      
+      default:
+        throw new ValidationError(`Unknown tool: ${name}`, { tool: name })
+    }
+  } catch (error) {
+    logger.error(`Tool call failed: ${name}`, error instanceof Error ? error : undefined, { args })
+    throw error
   }
 }
 
 /**
  * Initialize a new project
  */
-async function initProject(provider: string, framework: string, projectPath: string) {
-  const envContent = generateEnvTemplate(provider)
-  const exampleCode = generateExampleCode(provider, framework)
+async function initProject(provider: Provider, framework: Framework, projectPath: string) {
+  logger.info('Initializing project', { provider, framework, projectPath })
+  
+  try {
+    const envContent = generateEnvTemplate(provider)
+    const exampleCode = generateExampleCode(provider, framework)
 
-  // Create project directory
-  await fs.mkdir(projectPath, { recursive: true })
+    // Create project directory
+    await fs.mkdir(projectPath, { recursive: true })
 
-  // Write .env.local
-  await fs.writeFile(path.join(projectPath, '.env.local'), envContent)
+    // Write .env.local
+    await fs.writeFile(path.join(projectPath, '.env.local'), envContent)
 
-  // Write example code
-  const fileName = framework === 'nextjs' ? 'app/api/chat/route.ts' : 'src/index.ts'
-  const filePath = path.join(projectPath, fileName)
-  await fs.mkdir(path.dirname(filePath), { recursive: true })
-  await fs.writeFile(filePath, exampleCode)
+    // Write example code
+    const fileName = framework === 'nextjs' ? 'app/api/chat/route.ts' : 'src/index.ts'
+    const filePath = path.join(projectPath, fileName)
+    await fs.mkdir(path.dirname(filePath), { recursive: true })
+    await fs.writeFile(filePath, exampleCode)
 
-  // Create package.json
-  const packageJson = generatePackageJson(provider, framework)
-  await fs.writeFile(path.join(projectPath, 'package.json'), JSON.stringify(packageJson, null, 2))
+    // Create package.json
+    const packageJson = generatePackageJson(provider, framework)
+    await fs.writeFile(path.join(projectPath, 'package.json'), JSON.stringify(packageJson, null, 2))
 
-  return {
-    success: true,
-    message: `Project initialized at ${projectPath}`,
-    files: ['.env.local', fileName, 'package.json'],
-    nextSteps: [
-      `cd ${projectPath}`,
-      'npm install',
-      'Add your API keys to .env.local',
-      framework === 'nextjs' ? 'npm run dev' : 'npm start'
-    ]
+    logger.info('Project initialized successfully', { projectPath })
+    
+    return {
+      success: true,
+      message: `Project initialized at ${projectPath}`,
+      files: ['.env.local', fileName, 'package.json'],
+      nextSteps: [
+        `cd ${projectPath}`,
+        'npm install',
+        'Add your API keys to .env.local',
+        framework === 'nextjs' ? 'npm run dev' : 'npm start'
+      ]
+    }
+  } catch (error) {
+    logger.error('Failed to initialize project', error instanceof Error ? error : undefined, { provider, framework, projectPath })
+    throw new Error(`Failed to initialize project: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 
@@ -218,6 +253,8 @@ async function listExamples() {
  * Get example code
  */
 async function getExample(exampleName: string) {
+  logger.debug('Getting example', { exampleName })
+  
   const examples: Record<string, string> = {
     'basic-chat': `import { OpenAI } from 'openai'
 
@@ -249,7 +286,7 @@ async function streamChat(message: string) {
 
   const code = examples[exampleName]
   if (!code) {
-    throw new Error(`Example not found: ${exampleName}`)
+    throw new NotFoundError('Example', exampleName)
   }
 
   return { name: exampleName, code }
@@ -308,7 +345,15 @@ async function validateConfig(projectPath: string) {
  * Get model information
  */
 async function getModelInfo(modelName: string) {
-  const modelInfo: Record<string, any> = {
+  logger.debug('Getting model info', { modelName })
+  
+  const modelInfo: Record<string, {
+    provider: string
+    contextWindow: number
+    pricing: { input: number; output: number }
+    capabilities: string[]
+    bestFor: string[]
+  }> = {
     'gpt-4-turbo': {
       provider: 'OpenAI',
       contextWindow: 128000,
@@ -341,7 +386,7 @@ async function getModelInfo(modelName: string) {
 
   const info = modelInfo[modelName]
   if (!info) {
-    throw new Error(`Model not found: ${modelName}`)
+    throw new NotFoundError('Model', modelName)
   }
 
   return info
@@ -372,7 +417,17 @@ async function calculateCost(modelName: string, promptTokens: number, completion
  * Analyze project
  */
 async function analyzeProject(projectPath: string) {
-  const analysis: any = {
+  logger.info('Analyzing project', { projectPath })
+  
+  const analysis: {
+    path: string
+    fileCount: number
+    hasPackageJson: boolean
+    hasEnvFile: boolean
+    hasTsConfig: boolean
+    providers: string[]
+    framework: string
+  } = {
     path: projectPath,
     fileCount: 0,
     hasPackageJson: false,
@@ -383,6 +438,13 @@ async function analyzeProject(projectPath: string) {
   }
 
   try {
+    // Check if directory exists
+    try {
+      await fs.access(projectPath)
+    } catch {
+      throw new NotFoundError('Project directory', projectPath)
+    }
+
     // Count files
     const files = await fs.readdir(projectPath, { recursive: true })
     analysis.fileCount = files.length
@@ -394,31 +456,39 @@ async function analyzeProject(projectPath: string) {
 
     // Detect providers from package.json
     if (analysis.hasPackageJson) {
-      const packageJson = JSON.parse(
-        await fs.readFile(path.join(projectPath, 'package.json'), 'utf-8')
-      )
-      const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
-      
-      if (deps['openai']) analysis.providers.push('OpenAI')
-      if (deps['@anthropic-ai/sdk']) analysis.providers.push('Anthropic')
-      if (deps['@google/generative-ai']) analysis.providers.push('Google AI')
+      try {
+        const packageJson = JSON.parse(
+          await fs.readFile(path.join(projectPath, 'package.json'), 'utf-8')
+        )
+        const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
+        
+        if (deps['openai']) analysis.providers.push('OpenAI')
+        if (deps['@anthropic-ai/sdk']) analysis.providers.push('Anthropic')
+        if (deps['@google/generative-ai']) analysis.providers.push('Google AI')
 
-      // Detect framework
-      if (deps['next']) analysis.framework = 'Next.js'
-      else if (deps['express']) analysis.framework = 'Express'
-      else if (deps['hono']) analysis.framework = 'Hono'
+        // Detect framework
+        if (deps['next']) analysis.framework = 'Next.js'
+        else if (deps['express']) analysis.framework = 'Express'
+        else if (deps['hono']) analysis.framework = 'Hono'
+      } catch (error) {
+        logger.warn('Failed to parse package.json', { error: error instanceof Error ? error.message : 'Unknown error' })
+      }
     }
 
     return analysis
   } catch (error) {
-    throw new Error(`Failed to analyze project: ${error}`)
+    if (error instanceof NotFoundError) {
+      throw error
+    }
+    logger.error('Failed to analyze project', error instanceof Error ? error : undefined, { projectPath })
+    throw new Error(`Failed to analyze project: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 
 /**
  * Helper functions
  */
-function generateEnvTemplate(provider: string): string {
+function generateEnvTemplate(provider: Provider): string {
   const lines = ['# Clarity Chat Environment Variables', '']
   
   if (provider === 'openai' || provider === 'all') {
@@ -434,7 +504,7 @@ function generateEnvTemplate(provider: string): string {
   return lines.join('\n')
 }
 
-function generateExampleCode(provider: string, framework: string): string {
+function generateExampleCode(provider: Provider, framework: Framework): string {
   if (framework === 'nextjs') {
     return `import { NextRequest, NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
@@ -466,7 +536,7 @@ async function main() {
 main()`
 }
 
-function generatePackageJson(provider: string, framework: string) {
+function generatePackageJson(provider: Provider, framework: Framework) {
   const deps: Record<string, string> = {}
   
   if (provider === 'openai' || provider === 'all') deps['openai'] = '^4.0.0'

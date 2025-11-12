@@ -211,7 +211,7 @@ export const FullSize: Story = {
       <DrawerTrigger asChild>
         <Button>Full Size Drawer</Button>
       </DrawerTrigger>
-      <DialogContent size="full" side="right">
+      <DrawerContent size="full" side="right">
         <DrawerHeader>
           <DrawerTitle>Full Size Drawer</DrawerTitle>
           <DrawerDescription>Takes full screen width/height</DrawerDescription>

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":preserveSemverRanges"
+  ],
+  "schedule": ["before 6am on monday"],
+  "timezone": "UTC",
+  "labels": ["dependencies"],
+  "assignees": ["@christireid"],
+  "prConcurrentLimit": 5,
+  "prCreation": "immediate",
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "groupName": "React ecosystem",
+      "matchPackagePatterns": ["^react", "^@types/react"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "groupName": "Testing libraries",
+      "matchPackagePatterns": ["vitest", "playwright", "@testing-library"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "groupName": "Build tools",
+      "matchPackagePatterns": ["^vite", "^tsup", "^turbo", "^typescript"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "groupName": "Storybook",
+      "matchPackagePatterns": ["^@storybook"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true,
+      "automergeType": "pr",
+      "requiredStatusChecks": null
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "minimumReleaseAge": "7 days",
+      "labels": ["major-update"]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"],
+    "assignees": ["@christireid"]
+  }
+}
+
