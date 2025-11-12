@@ -104,10 +104,10 @@ function validateLocally(
   return {
     valid: true,
     validatedAt,
-      license: {
-        key,
-        tier: tier as LicenseTier,
-        type: type as LicenseType,
+    license: {
+      key,
+      tier: tier as LicenseTier,
+      type: type as LicenseType,
       email: '',
       seats: tier === 'pro-team' ? 5 : tier === 'enterprise' ? 10 : 1,
       issuedAt: new Date(),
