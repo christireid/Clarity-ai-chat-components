@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 import { Avatar } from '../avatar'
 
 describe('Avatar Component', () => {
@@ -69,7 +69,10 @@ describe('Avatar Component', () => {
       
       const img = screen.getByAltText('User')
       const errorEvent = new Event('error')
-      img.dispatchEvent(errorEvent)
+      
+      act(() => {
+        img.dispatchEvent(errorEvent)
+      })
       
       // After error, should show fallback
       rerender(<Avatar src="/invalid.jpg" alt="User" fallback="JD" />)
@@ -82,10 +85,12 @@ describe('Avatar Component', () => {
       
       // Simulate image error by dispatching error event
       const errorEvent = new Event('error')
-      img.dispatchEvent(errorEvent)
       
-      // Wait for state update
-      await new Promise(resolve => setTimeout(resolve, 0))
+      await act(async () => {
+        img.dispatchEvent(errorEvent)
+        // Wait for state update
+        await new Promise(resolve => setTimeout(resolve, 0))
+      })
       
       // Fallback should be shown after error
       expect(screen.getByText('FB')).toBeInTheDocument()
