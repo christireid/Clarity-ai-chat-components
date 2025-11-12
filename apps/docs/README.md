@@ -18,7 +18,7 @@
 ## 📁 Structure
 
 ```
-apps/docs-site/
+apps/docs/
 ├── app/                    # Next.js app directory
 │   ├── layout.tsx          # Root layout with navigation
 │   ├── page.tsx            # Homepage
@@ -26,7 +26,11 @@ apps/docs-site/
 │   ├── learn/              # Tutorial-style content
 │   ├── reference/          # API documentation
 │   ├── examples/           # Code examples
-│   └── blog/               # Blog posts
+│   ├── blog/               # Blog posts (integrated)
+│   ├── commercial/         # Commercial documentation (integrated)
+│   ├── research/           # Research documentation (integrated)
+│   ├── enterprise-standalone/ # Enterprise docs (integrated)
+│   └── guides/             # All guides
 ├── components/
 │   ├── MDX/                # MDX custom components
 │   │   ├── CodeBlock.tsx   # Syntax-highlighted code
@@ -48,10 +52,10 @@ apps/docs-site/
 npm install
 
 # Run development server
-npm run dev --workspace=@clarity-chat/docs-site
+npm run dev --workspace=@clarity-chat/docs
 
 # Or from this directory
-cd apps/docs-site
+cd apps/docs
 npm run dev
 ```
 

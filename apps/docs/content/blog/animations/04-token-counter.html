@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Counter Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .token-counter {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            transition: border-color 0.3s;
+        }
+
+        .token-counter.warning {
+            border-color: #fbbf24;
+        }
+
+        .token-counter.critical {
+            border-color: #ef4444;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .token-count {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .token-counter.warning .token-count {
+            color: #f59e0b;
+        }
+
+        .token-counter.critical .token-count {
+            color: #ef4444;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 6px;
+            transition: width 0.5s ease, background 0.3s;
+            position: relative;
+        }
+
+        .token-counter.warning .progress-fill {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        }
+
+        .token-counter.critical .progress-fill {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .cost {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .warning-message {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #92400e;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .token-counter.warning .warning-message {
+            display: block;
+        }
+
+        .critical-message {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #991b1b;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .token-counter.critical .critical-message {
+            display: block;
+        }
+
+        .prune-suggestion {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #1e40af;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .token-counter.warning .prune-suggestion {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .threshold-markers {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="token-counter" id="tokenCounter">
+            <div class="header">
+                <div class="title">Token Usage</div>
+                <div class="token-count" id="tokenCount">0 / 8,000</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            
+            <div class="threshold-markers">
+                <span>0%</span>
+                <span>80%</span>
+                <span>95%</span>
+                <span>100%</span>
+            </div>
+            
+            <div class="info-row">
+                <span>Input tokens:</span>
+                <span id="inputTokens">0</span>
+            </div>
+            <div class="info-row">
+                <span>Output tokens:</span>
+                <span id="outputTokens">0</span>
+            </div>
+            <div class="info-row">
+                <span>Estimated cost:</span>
+                <span class="cost" id="cost">$0.00</span>
+            </div>
+            
+            <div class="warning-message">
+                ⚠️ You're approaching the token limit. Consider pruning older messages.
+            </div>
+            
+            <div class="critical-message">
+                🚨 Critical: Token limit nearly reached. Cannot send more messages.
+            </div>
+            
+            <div class="prune-suggestion">
+                💡 <strong>Suggestion:</strong> Remove messages older than 10 minutes to free up tokens.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tokenCounter = document.getElementById('tokenCounter');
+        const tokenCount = document.getElementById('tokenCount');
+        const progressFill = document.getElementById('progressFill');
+        const inputTokensEl = document.getElementById('inputTokens');
+        const outputTokensEl = document.getElementById('outputTokens');
+        const costEl = document.getElementById('cost');
+        
+        let currentTokens = 0;
+        let inputTokens = 0;
+        let outputTokens = 0;
+        const maxTokens = 8000;
+        const costPer1KTokens = 0.03; // $0.03 per 1K tokens (GPT-4 pricing)
+        
+        function updateTokens() {
+            // Simulate token usage
+            inputTokens += Math.floor(Math.random() * 100) + 50;
+            outputTokens += Math.floor(Math.random() * 200) + 100;
+            currentTokens = inputTokens + outputTokens;
+            
+            const percentage = (currentTokens / maxTokens) * 100;
+            const cost = (currentTokens / 1000) * costPer1KTokens;
+            
+            // Update UI
+            tokenCount.textContent = `${currentTokens.toLocaleString()} / ${maxTokens.toLocaleString()}`;
+            progressFill.style.width = `${Math.min(percentage, 100)}%`;
+            inputTokensEl.textContent = inputTokens.toLocaleString();
+            outputTokensEl.textContent = outputTokens.toLocaleString();
+            costEl.textContent = `$${cost.toFixed(2)}`;
+            
+            // Update state classes
+            tokenCounter.classList.remove('warning', 'critical');
+            
+            if (percentage >= 95) {
+                tokenCounter.classList.add('critical');
+            } else if (percentage >= 80) {
+                tokenCounter.classList.add('warning');
+            }
+            
+            // Reset if at limit
+            if (currentTokens >= maxTokens) {
+                setTimeout(() => {
+                    currentTokens = 0;
+                    inputTokens = 0;
+                    outputTokens = 0;
+                    tokenCounter.classList.remove('warning', 'critical');
+                    updateTokens();
+                }, 3000);
+            }
+        }
+        
+        // Start animation
+        const interval = setInterval(updateTokens, 800);
+        
+        // Reset after full cycle
+        setTimeout(() => {
+            clearInterval(interval);
+            currentTokens = 0;
+            inputTokens = 0;
+            outputTokens = 0;
+            tokenCounter.classList.remove('warning', 'critical');
+            progressFill.style.width = '0%';
+            tokenCount.textContent = `0 / ${maxTokens.toLocaleString()}`;
+            inputTokensEl.textContent = '0';
+            outputTokensEl.textContent = '0';
+            costEl.textContent = '$0.00';
+            
+            setTimeout(() => {
+                setInterval(updateTokens, 800);
+            }, 2000);
+        }, 15000);
+    </script>
+</body>
+</html>

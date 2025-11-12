@@ -1,66 +1,41 @@
-import React from 'react'
 import { Metadata } from 'next'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
-import { Callout } from '@/components/MDX/Callout'
+import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { readFile } from 'fs/promises'
+import { join } from 'path'
+import { serialize } from 'next-mdx-remote/serialize'
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import { mdxComponents } from '@/components/MDX/mdx-components'
 
 export const metadata: Metadata = {
   title: 'File Upload - Clarity Chat',
-  description: 'Support rich user attachments including documents, images, and structured data.',
+  description: 'Guide for file upload in Clarity Chat',
 }
 
-export default function FileUploadGuidePage() {
+export default async function FileUploadGuidePage() {
+  // Read markdown file
+  let content: string
+  try {
+    const filePath = join(process.cwd(), 'content', 'vitepress-migration', 'guide', 'file-upload.md')
+    content = await readFile(filePath, 'utf-8')
+  } catch (error) {
+    console.error('Failed to read file-upload guide', error)
+    content = '# File-upload\n\nContent not available.'
+  }
+
+  // Parse MDX
+  const mdxSource = await serialize(content, {
+    parseFrontmatter: true,
+  })
+
   return (
-    <div className="docs-content">
-      <div className="docs-header">
-        <span className="docs-badge">Guide</span>
-        <h1>File Upload</h1>
-        <p className="docs-lead">
-          Support rich user attachments including documents, images, and structured data.
-        </p>
+    <>
+      <Breadcrumbs />
+      
+      <div className="docs-content">
+        <div className="prose prose-lg max-w-none dark:prose-invert">
+          <MDXRemote {...mdxSource} components={mdxComponents} />
+        </div>
       </div>
-
-      <section className="docs-section">
-        <h2>Composer Configuration</h2>
-        <p>
-          Enable uploads via the <code>Composer</code> component or the <code>useComposer</code> hook.
-        </p>
-        <CodeBlock
-          language="tsx"
-          code={`import { ChatWindow } from '@clarity-chat/react'
-
-<ChatWindow
-  allowFileUploads
-  onUploadFiles={async files => {
-    // Perform validation and upload
-    return files.map(file => ({
-      id: crypto.randomUUID(),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      url: await uploadToS3(file),
-    }))
-  }}
-/>`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Validation</h2>
-        <ul>
-          <li>Restrict MIME types and maximum sizes with <code>uploadConfig</code>.</li>
-          <li>Provide descriptive error messages for rejected files.</li>
-        </ul>
-      </section>
-
-      <section className="docs-section">
-        <h2>Displaying Attachments</h2>
-        <p>
-          Use <code>AttachmentGallery</code> or <code>AttachmentList</code> to render previews inside the transcript or composer.
-        </p>
-        <p>
-          Next, explore <a href="/guides/message-operations">Message Operations</a> to manage edits, branches, and retries.
-        </p>
-      </section>
-    </div>
+    </>
   )
 }

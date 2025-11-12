@@ -103,7 +103,7 @@ jobs:
         <h2>Deployment</h2>
         <ul>
           <li>
-            <strong>Docs Site</strong>: <code>npm run docs:build</code> &gt; deploy via Vercel (`vercel deploy --prod apps/docs-site`)
+            <strong>Docs Site</strong>: <code>npm run docs:build</code> &gt; deploy via Vercel (`vercel deploy --prod apps/docs`)
           </li>
           <li>
             <strong>Marketing Site</strong>: same pipeline, different workspace

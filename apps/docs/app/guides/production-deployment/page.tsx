@@ -191,7 +191,7 @@ npm run release
 
 # Deploy docs + marketing site
 npm run docs:build
-vercel deploy --prod apps/docs-site`}
+vercel deploy --prod apps/docs`}
         />
         <Callout type="tip">
           Version locking and changelog generation are handled by Changesets.

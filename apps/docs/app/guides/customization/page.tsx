@@ -1,88 +1,41 @@
-import React from 'react'
 import { Metadata } from 'next'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
-import { Callout } from '@/components/MDX/Callout'
+import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { readFile } from 'fs/promises'
+import { join } from 'path'
+import { serialize } from 'next-mdx-remote/serialize'
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import { mdxComponents } from '@/components/MDX/mdx-components'
 
 export const metadata: Metadata = {
   title: 'Customization - Clarity Chat',
-  description: 'Tailor the Clarity Chat experience to match your product\'s voice, brand, and workflows.',
+  description: 'Guide for customization in Clarity Chat',
 }
 
-export default function CustomizationGuidePage() {
+export default async function CustomizationGuidePage() {
+  // Read markdown file
+  let content: string
+  try {
+    const filePath = join(process.cwd(), 'content', 'vitepress-migration', 'guide', 'customization.md')
+    content = await readFile(filePath, 'utf-8')
+  } catch (error) {
+    console.error('Failed to read customization guide', error)
+    content = '# Customization\n\nContent not available.'
+  }
+
+  // Parse MDX
+  const mdxSource = await serialize(content, {
+    parseFrontmatter: true,
+  })
+
   return (
-    <div className="docs-content">
-      <div className="docs-header">
-        <span className="docs-badge">Guide</span>
-        <h1>Customization</h1>
-        <p className="docs-lead">
-          Tailor the Clarity Chat experience to match your product&apos;s voice, brand, and workflows.
-        </p>
+    <>
+      <Breadcrumbs />
+      
+      <div className="docs-content">
+        <div className="prose prose-lg max-w-none dark:prose-invert">
+          <MDXRemote {...mdxSource} components={mdxComponents} />
+        </div>
       </div>
-
-      <section className="docs-section">
-        <h2>Theming via CSS Variables</h2>
-        <p>
-          All components expose design tokens under the <code>--clarity-*</code> namespace. Override them globally or per component.
-        </p>
-        <CodeBlock
-          language="css"
-          code={`:root {
-  --clarity-background: #050816;
-  --clarity-surface: #10122b;
-  --clarity-primary: #4b7cf5;
-  --clarity-success: #31c48d;
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Utility-First Styling</h2>
-        <p>
-          Pass a <code>className</code> or <code>slotClassNames</code> prop to inject Tailwind or utility classes without losing built-in accessibility attributes.
-        </p>
-        <CodeBlock
-          language="tsx"
-          code={`import { ChatWindow, Composer, Message } from '@clarity-chat/react'
-
-<ChatWindow
-  className="rounded-xl border border-slate-700"
-  headerClassName="bg-slate-900/80"
-  composerClassName="bg-slate-950"
-  messages={messages}
-/>`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Component Slots</h2>
-        <p>
-          Override individual sub-components via render props:
-        </p>
-        <CodeBlock
-          language="tsx"
-          code={`import { ChatWindow, Composer, Message } from '@clarity-chat/react'
-
-<ChatWindow
-  messages={messages}
-  renderMessage={props => (
-    <Message {...props} showAvatar={false} variant="compact" />
-  )}
-  renderComposer={props => (
-    <Composer {...props} placeholder="Ask our AI anything…" />
-  )}
-/>`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Localization</h2>
-        <p>
-          Translate labels via props like <code>composerLabels</code>, <code>attachmentLabels</code>, and <code>errorMessages</code>. Use the <code>useChat</code> hook to feed locale-specific prompts.
-        </p>
-        <p>
-          Continue with the <a href="/guides/theming">Theming</a> guide for advanced token maps and dark/light switching.
-        </p>
-      </section>
-    </div>
+    </>
   )
 }
