@@ -1,20 +1,43 @@
 {
   "name": "@clarity-chat/docs",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build",
-    "preview": "vitepress preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@clarity-chat/react": "workspace:*",
-    "@clarity-chat/primitives": "workspace:*",
-    "@clarity-chat/types": "workspace:*"
+    "@codesandbox/sandpack-react": "^2.14.0",
+    "@codesandbox/sandpack-themes": "^2.0.21",
+    "@heroicons/react": "^2.0.18",
+    "@mdx-js/loader": "^3.0.0",
+    "@mdx-js/react": "^3.0.0",
+    "@monaco-editor/react": "^4.6.0",
+    "@next/mdx": "^16.0.1",
+    "clsx": "^2.1.0",
+    "framer-motion": "^11.0.0",
+    "fuse.js": "^7.0.0",
+    "lucide-react": "^0.552.0",
+    "next": "^16.0.1",
+    "next-mdx-remote": "^4.4.1",
+    "next-themes": "^0.2.1",
+    "prism-react-renderer": "^2.3.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-live": "^4.1.5",
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
-    "vitepress": "^1.5.0",
-    "vue": "^3.5.13"
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/node": "^20.11.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.9.3"
   }
 }

@@ -7,7 +7,7 @@ examples/** linguist-documentation=true
 
 # Mark documentation directories
 docs/** linguist-documentation=true
-apps/docs-site/** linguist-documentation=true
+apps/docs/** linguist-documentation=true
 
 # Mark test files
 **/*.test.ts linguist-detectable=false

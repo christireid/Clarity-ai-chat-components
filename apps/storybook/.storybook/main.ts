@@ -5,6 +5,7 @@ const config: StorybookConfig = {
   stories: [
     '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     '../stories/**/!(GettingStarted|Introduction).mdx',
+    '../../../packages/error-handling/src/**/*.stories.@(js|jsx|ts|tsx|mdx)',
   ],
   
   addons: [
