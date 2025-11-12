@@ -2,7 +2,7 @@
  * Configuration and environment errors
  */
 
-import { ClarityError, ErrorSolution } from './base-error'
+import { ClarityError, ErrorSolution } from './base-error.js'
 
 export class EnvVarMissingError extends ClarityError {
   constructor(varName: string, originalError?: Error) {
