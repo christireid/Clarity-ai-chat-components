@@ -88,8 +88,8 @@ export class TokenBudgetManager {
   /**
    * Calculate token budgets based on allocation percentages
    */
-  private calculateBudgets(maxTokens: number): TokenAllocation {
-    const alloc = this.config.allocation
+  private calculateBudgets(maxTokens: number, allocation?: TokenOptimizationConfig['allocation']): TokenAllocation {
+    const alloc = allocation || this.config.allocation
     
     return {
       systemPrompt: Math.floor(maxTokens * alloc.systemPrompt),
@@ -137,7 +137,7 @@ export class TokenBudgetManager {
       adjusted.recentContext -= 0.05
     }
 
-    return this.calculateBudgets(this.config.maxContextWindow)
+    return this.calculateBudgets(this.config.maxContextWindow, adjusted)
   }
 
   /**
