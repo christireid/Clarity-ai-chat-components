@@ -97,9 +97,9 @@ export function useTrackVisibility<T extends HTMLElement = HTMLDivElement>(
   eventName: string,
   properties?: Record<string, any>,
   options?: IntersectionObserverInit
-): React.RefObject<T> {
+): React.RefObject<T | null> {
   const { track } = useAnalytics()
-  const ref = React.useRef<T>(null)
+  const ref = React.useRef<T | null>(null)
   const hasTracked = React.useRef(false)
   
   React.useEffect(() => {
@@ -107,8 +107,9 @@ export function useTrackVisibility<T extends HTMLElement = HTMLDivElement>(
     if (!element) return
     
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasTracked.current) {
+      (entries) => {
+        const entry = entries[0]
+        if (entry && entry.isIntersecting && !hasTracked.current) {
           track(eventName, properties)
           hasTracked.current = true
         }
@@ -291,7 +292,7 @@ export function useTrackTiming() {
  */
 export function useTrackFeature(eventName: string, debounceMs: number = 0) {
   const { track } = useAnalytics()
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
   
   return React.useCallback(
     (properties?: Record<string, any>) => {
