@@ -23,7 +23,7 @@ export default function App() {
       try {
         const prettierMod = await import('prettier/standalone')
         const parserBabel = await import('prettier/parser-babel')
-        const formatted = prettierMod.format(code, {
+        const formatted = await prettierMod.format(code, {
           parser: 'babel',
           plugins: [parserBabel.default],
           semi: false,
