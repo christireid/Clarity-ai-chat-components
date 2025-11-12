@@ -58,16 +58,25 @@ const renderPreview = (
       }
     } catch (error) {
       const errorDiv = document.createElement('div');
-      errorDiv.style.cssText = 'color: red; padding: 16px; font-family: monospace;';
+      errorDiv.style.cssText = 'color: red; padding: 16px; font-family: monospace; background: #fee; border: 1px solid #fcc; border-radius: 4px; margin: 16px; white-space: pre-wrap;';
       const strong = document.createElement('strong');
-      strong.textContent = 'Error:';
-      const br = document.createElement('br');
-      const message = document.createTextNode(error.message || 'Unknown error');
+      strong.textContent = 'Error: ';
+      const errorMessage = error?.message || error?.toString() || 'Unknown error';
+      const errorText = errorMessage + (error?.stack ? '\\n\\n' + error.stack : '');
+      const message = document.createTextNode(errorText);
+      
       errorDiv.appendChild(strong);
-      errorDiv.appendChild(br);
       errorDiv.appendChild(message);
-      document.body.innerHTML = '';
-      document.body.appendChild(errorDiv);
+      
+      // Clear body and add error
+      const root = document.getElementById('root');
+      if (root) {
+        root.innerHTML = '';
+        root.appendChild(errorDiv);
+      } else {
+        document.body.innerHTML = '';
+        document.body.appendChild(errorDiv);
+      }
     }
   </script>
 </body>
@@ -90,6 +99,7 @@ const renderPreview = (
 export function LivePreview({ code, theme, autoRun, onRunRef }: LivePreviewProps) {
   const [error, setError] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const runPreview = useCallback(() => {
     renderPreview(code, theme, iframeRef, setError)
@@ -102,8 +112,29 @@ export function LivePreview({ code, theme, autoRun, onRunRef }: LivePreviewProps
   }, [onRunRef, runPreview])
 
   useEffect(() => {
-    if (!autoRun) return
-    runPreview()
+    if (!autoRun) {
+      // Clear any pending timeout when auto-run is disabled
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      return
+    }
+
+    // Debounce auto-run to avoid excessive re-renders
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      runPreview()
+    }, 300) // 300ms debounce delay
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
   }, [autoRun, runPreview])
 
   return (

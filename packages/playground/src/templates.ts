@@ -753,6 +753,8 @@ function Component() {
     getWeather: (location) => \`The weather in \${location} is sunny, 72°F\`,
     calculate: (expression) => {
       try {
+        // Note: eval() is safe here as it runs in a sandboxed iframe
+        // In production, use a proper expression parser or math library
         return \`Result: \${eval(expression)}\`
       } catch {
         return 'Invalid expression'
