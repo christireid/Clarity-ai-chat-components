@@ -69,7 +69,7 @@ describe('ErrorBoundary', () => {
     )
 
     expect(onError).toHaveBeenCalled()
-    const [error, errorInfo] = onError.mock.calls[0] as [Error, any]
+    const [error, errorInfo] = onError.mock.calls[0] as [Error, React.ErrorInfo]
     expect(error.message).toBe('Test error')
     expect(errorInfo).toBeDefined()
   })
@@ -91,34 +91,33 @@ describe('ErrorBoundary', () => {
   })
 
   it('should reset error when resetError is called', async () => {
-    let shouldThrow = true
-
     const { rerender } = render(
       <ErrorBoundary>
-        <ConditionalError shouldThrow={shouldThrow} />
+        <ConditionalError shouldThrow={true} />
       </ErrorBoundary>
     )
 
     // Error should be caught
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
 
-    // Change condition
-    shouldThrow = false
-
-    // Click reset button
-    const resetButton = screen.getByText(/try again/i)
-    fireEvent.click(resetButton)
-
-    // Rerender with no error
+    // First, rerender with no error condition (but error boundary still has error state)
     rerender(
       <ErrorBoundary>
-        <ConditionalError shouldThrow={shouldThrow} />
+        <ConditionalError shouldThrow={false} />
       </ErrorBoundary>
     )
+
+    // Error boundary still shows error because state hasn't been reset
+    expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
+
+    // Now click reset button to clear error state
+    const resetButton = screen.getByText(/try again/i)
+    fireEvent.click(resetButton)
 
     // Should show content, not error
     await waitFor(() => {
       expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument()
+      expect(screen.getByText('No error')).toBeInTheDocument()
     })
   })
 

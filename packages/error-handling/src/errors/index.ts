@@ -6,7 +6,7 @@ export class ClarityChatError extends Error {
   public readonly code: string
   public readonly solution?: string
   public readonly docs?: string
-  public readonly context?: Record<string, any>
+  public readonly context?: Record<string, unknown>
 
   constructor(
     message: string,
@@ -14,7 +14,7 @@ export class ClarityChatError extends Error {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
     }
   ) {
     super(message)
@@ -71,7 +71,7 @@ export class ConfigurationError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
     }
   ) {
     super(message, options)
@@ -91,7 +91,7 @@ export class APIError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
       statusCode?: number
     }
   ) {
@@ -111,7 +111,7 @@ export class AuthenticationError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
     }
   ) {
     super(message, options)
@@ -133,7 +133,7 @@ export class RateLimitError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
       retryAfter?: number
       limit?: number
       remaining?: number
@@ -161,7 +161,7 @@ export class ValidationError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
       field?: string
       value?: any
       expected?: string
@@ -185,7 +185,7 @@ export class StreamError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
     }
   ) {
     super(message, options)
@@ -206,7 +206,7 @@ export class TokenLimitError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
       limit?: number
       actual?: number
     }
@@ -228,7 +228,7 @@ export class NetworkError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
     }
   ) {
     super(message, options)
@@ -248,7 +248,7 @@ export class TimeoutError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
       timeout?: number
     }
   ) {
@@ -270,7 +270,7 @@ export class ComponentError extends ClarityChatError {
       code?: string
       solution?: string
       docs?: string
-      context?: Record<string, any>
+      context?: Record<string, unknown>
       componentName?: string
     }
   ) {

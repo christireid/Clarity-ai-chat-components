@@ -132,7 +132,13 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryProps, ErrorState> {
 
   reset = () => {
     this.props.onReset?.()
-    this.setState({ error: null, errorInfo: null })
+    // Use functional setState to ensure we're working with latest state
+    this.setState((prevState) => {
+      if (prevState.error) {
+        return { error: null, errorInfo: null }
+      }
+      return prevState
+    })
   }
 
   override render() {
