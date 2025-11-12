@@ -321,7 +321,7 @@ export async function analyzeCommand(options: { report?: boolean; verbose?: bool
   try {
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
-      console.log(createBanner('Project Analysis', { gradient: 'atlas', border: true, borderColor: 'blue' }))
+      console.log(createBanner('Project Analysis', { gradient: 'atlas' }))
       console.log()
     }
 

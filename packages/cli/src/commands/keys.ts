@@ -53,7 +53,7 @@ const PROVIDERS = {
 export async function keysCommand(options: KeysOptions) {
   if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
     console.log('\n')
-    console.log(createBanner('API Key Manager', { gradient: 'retro', border: true, borderColor: 'yellow' }))
+    console.log(createBanner('API Key Manager', { gradient: 'retro' }))
     console.log()
   }
 
@@ -268,7 +268,12 @@ async function listKeys(envPath: string) {
       }
     })
     
-    console.log(createListTable(keyList))
+    const listItems = keyList.map(item => ({
+      label: item.key,
+      value: item.value,
+      color: item.color ? (text: string) => chalk[item.color as keyof typeof chalk](text) : undefined
+    }))
+    console.log(createListTable(listItems))
   } else {
     info('Configured API Keys:\n')
     Object.entries(PROVIDERS).forEach(([key, config]) => {

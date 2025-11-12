@@ -154,10 +154,9 @@ export async function browseCommand() {
   console.clear()
   
   // Beautiful banner
-  await createBanner('🎨 Component Browser', {
-    gradient: true,
-    style: 'bold',
-  })
+  console.log(createBanner('🎨 Component Browser', {
+    gradient: 'pastel',
+  }))
   
   console.log()
   infoMessage('Navigate with arrow keys, Enter to select, Q to quit')
@@ -272,10 +271,9 @@ export async function showComponentDetails(componentName: string) {
   }
 
   // Beautiful header
-  await createBanner(component.name, {
-    gradient: true,
-    style: 'bold',
-  })
+  console.log(createBanner(component.name, {
+    gradient: 'pastel',
+  }))
   console.log()
 
   // Category

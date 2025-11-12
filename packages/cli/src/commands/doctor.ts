@@ -35,7 +35,7 @@ export async function doctorCommand(options: DoctorOptions) {
   try {
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
-      console.log(createBanner('Health Check', { gradient: 'teen', border: true, borderColor: 'cyan' }))
+      console.log(createBanner('Health Check', { gradient: 'pastel' }))
       console.log()
     }
     
@@ -51,7 +51,7 @@ export async function doctorCommand(options: DoctorOptions) {
     }
 
     // Check 1: package.json exists
-    const spinner = createSpinner('Checking project structure...', { color: 'cyan' })
+    const spinner = createSpinner('Checking project structure...')
     spinner.start()
     
     const packageJsonPath = path.join(cwd, 'package.json')
@@ -285,7 +285,7 @@ GOOGLE_API_KEY=your_key_here
       checks.push({
         name: 'Config file',
         result: {
-          status: 'info',
+          status: 'pass',
           message: 'No config file (using defaults)',
           category: 'Configuration',
           severity: 'info'
@@ -298,14 +298,21 @@ GOOGLE_API_KEY=your_key_here
   if (await fs.pathExists(gitPath)) {
     checks.push({
       name: 'Git repository',
-      result: { status: 'pass', message: 'Initialized' }
+      result: { 
+        status: 'pass', 
+        message: 'Initialized',
+        category: 'Project Structure',
+        severity: 'info'
+      }
     })
   } else {
     checks.push({
       name: 'Git repository',
       result: { 
         status: 'warn', 
-        message: 'Not initialized - run: git init' 
+        message: 'Not initialized - run: git init',
+        category: 'Project Structure',
+        severity: 'warning'
       }
     })
   }
@@ -343,16 +350,17 @@ GOOGLE_API_KEY=your_key_here
       for (const [category, categoryChecks] of Object.entries(checksByCategory)) {
         console.log()
         console.log(chalk.bold.cyan(`  ${category}`))
-        console.log(createDivider(50, '─', 'gray'))
+        console.log(createDivider(undefined, 50))
         
-        const statusItems = categoryChecks.map(({ name, result }) => ({
-          name,
-          status: result.status === 'pass' ? 'success' as const : result.status === 'warn' ? 'warning' as const : 'error' as const,
-          message: result.message,
-        }))
-        
-        const statusTable = await createStatusTable(statusItems)
-        console.log(statusTable)
+        categoryChecks.forEach(({ name, result }) => {
+          if (result.status === 'pass') {
+            success(`${name}: ${result.message}`)
+          } else if (result.status === 'warn') {
+            warn(`${name}: ${result.message}`)
+          } else {
+            error(`${name}: ${result.message}`)
+          }
+        })
       }
     } else {
       // Simple output for quiet/JSON mode
@@ -376,19 +384,19 @@ GOOGLE_API_KEY=your_key_here
 
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
-      console.log(createDivider(60, '═', 'cyan'))
-      const summaryItems = [
-        { name: 'Passed', status: 'success' as const, message: `${passCount} checks` },
+      console.log(createDivider(undefined, 60))
+      const summaryItems: Array<{ check: string; status: 'pass' | 'warn' | 'fail'; message: string }> = [
+        { check: 'Passed', status: 'pass', message: `${passCount} checks` },
       ]
       if (warnCount > 0) {
-        summaryItems.push({ name: 'Warnings', status: 'warning' as const, message: `${warnCount} checks` })
+        summaryItems.push({ check: 'Warnings', status: 'warn', message: `${warnCount} checks` })
       }
       if (failCount > 0) {
-        summaryItems.push({ name: 'Failed', status: 'error' as const, message: `${failCount} checks` })
+        summaryItems.push({ check: 'Failed', status: 'fail', message: `${failCount} checks` })
       }
-      const summaryTable = await createStatusTable(summaryItems)
+      const summaryTable = createStatusTable(summaryItems)
       console.log(summaryTable)
-      console.log(createDivider(60, '═', 'cyan'))
+      console.log(createDivider(undefined, 60))
     } else {
       console.log('\n' + chalk.bold('Summary:'))
       success(`Passed: ${passCount}`)

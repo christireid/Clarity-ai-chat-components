@@ -280,7 +280,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
 
   } catch (error) {
     spinner.fail('Failed to generate code')
-    logger.error(error)
+    logger.error(error instanceof Error ? error : new Error(String(error)))
     console.log()
     console.log(errorBox('Failed to generate code. Check the error above.', '✗ Error'))
     console.log()

@@ -145,7 +145,7 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
         console.error(formatPrefix('✖', chalk.red), errorMessage, ...args)
         
         if (error?.stack && (process.env.DEBUG || process.env.VERBOSE)) {
-          console.error(chalk.gray(error.stack))
+          console.error(chalk.gray(String(error.stack)))
         }
       }
     },
@@ -157,7 +157,7 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
         timestamp: new Date().toISOString(),
         level: LogLevel.INFO,
         namespace,
-        message,
+        message: String(message),
         data: args.length > 0 ? args : undefined,
       }
 

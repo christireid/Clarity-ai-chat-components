@@ -318,10 +318,9 @@ export async function benchmarkCommand(options: {
   save?: boolean
   compare?: boolean
 }) {
-  await createBanner('⚡ Performance Benchmarks', {
-    gradient: true,
-    style: 'bold',
-  })
+  console.log(createBanner('⚡ Performance Benchmarks', {
+    gradient: 'pastel',
+  }))
   console.log()
 
   const iterations = options.iterations || 100

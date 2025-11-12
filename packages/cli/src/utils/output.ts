@@ -55,7 +55,7 @@ export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' = 'info'
 /**
  * Output formatted message
  */
-export function output(message: string, level: 'info' | 'warn' | 'error' | 'success' = 'info'): void {
+export function output(message: string, level: 'info' | 'warn' | 'error' | 'debug' = 'info'): void {
   if (!shouldOutput(level)) return
   
   if (isJson) {
@@ -68,18 +68,23 @@ export function output(message: string, level: 'info' | 'warn' | 'error' | 'succ
     return
   }
   
+  if (level === 'success') {
+    console.log(chalk.green(`✔ ${message}`))
+    return
+  }
+  
   const colors = {
     info: chalk.blue,
     warn: chalk.yellow,
     error: chalk.red,
-    success: chalk.green,
+    debug: chalk.magenta,
   }
   
   const icons = {
     info: 'ℹ',
     warn: '⚠',
     error: '✖',
-    success: '✔',
+    debug: '🐛',
   }
   
   const color = colors[level]
@@ -169,7 +174,17 @@ export function outputTable(
  * Output success message
  */
 export function success(message: string): void {
-  output(message, 'success')
+  if (!shouldOutput('info')) return
+  if (isJson) {
+    const json = {
+      level: 'success',
+      message,
+      timestamp: new Date().toISOString(),
+    }
+    console.log(JSON.stringify(json))
+    return
+  }
+  console.log(chalk.green(`✔ ${message}`))
 }
 
 /**

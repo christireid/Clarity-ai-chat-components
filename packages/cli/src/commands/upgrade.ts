@@ -123,7 +123,7 @@ async function displayUpdates(updates: PackageUpdate[]) {
   }
 
   console.log()
-  console.log(createBanner('Available Updates', { gradient: 'rainbow', border: true, borderColor: 'cyan' }))
+  console.log(createBanner('Available Updates', { gradient: 'rainbow' }))
   console.log()
 
   const majorUpdates = updates.filter(u => u.type === 'major')
