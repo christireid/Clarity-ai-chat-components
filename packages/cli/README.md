@@ -11,6 +11,12 @@
 - ⚡ **Code Generation** - Generate components, hooks, adapters, and tests
 - 📚 **Documentation** - Quick access to docs and examples
 - 🩺 **Health Check** - Diagnose and fix project issues
+- 🎯 **Enhanced Developer Experience** - Comprehensive error handling, validation, and helpful suggestions
+- 🔒 **Security** - Path validation, secure credential handling, and input sanitization
+- 📊 **Multiple Output Modes** - Human-readable, JSON, quiet, and verbose modes
+- ⌨️ **Shell Completion** - Bash, zsh, and fish completion support
+- ⚙️ **Configuration Management** - Flexible config file support with cosmiconfig
+- 🎨 **Beautiful UI/UX** - Eye-catching gradients, formatted tables, beautiful message boxes, and smooth animations
 
 ## Installation
 
@@ -51,6 +57,9 @@ Add a component to your project:
 ```bash
 clarity-chat add chat-interface
 clarity-chat add model-selector --path ./src/components
+
+# Add multiple components at once
+clarity-chat add chat-interface --batch "model-selector,token-counter"
 ```
 
 **Available Components:**
@@ -59,6 +68,11 @@ clarity-chat add model-selector --path ./src/components
 - `token-counter` - Token usage display
 - `cost-estimator` - API cost calculator
 - `streaming-handler` - SSE streaming utilities
+
+**Options:**
+- `-p, --path <path>` - Installation path (default: `./src/components`)
+- `--no-deps` - Skip dependency installation
+- `--batch <components>` - Add multiple components (comma-separated)
 
 ### `clarity-chat keys`
 
@@ -90,7 +104,20 @@ Start development server with hot reload:
 clarity-chat dev
 clarity-chat dev --port 3001
 clarity-chat dev --open  # Open browser automatically
+clarity-chat dev --watch  # Watch mode (auto-restart on changes)
 ```
+
+**Features:**
+- Automatic framework detection (Next.js, Remix, Vite, Astro)
+- Package manager detection (npm, yarn, pnpm, bun)
+- Port validation
+- Graceful shutdown handling
+- Browser auto-open option
+
+**Options:**
+- `-p, --port <port>` - Port number (default: `3000`)
+- `--open` - Open browser automatically
+- `--watch` - Watch mode (auto-restart on changes)
 
 ### `clarity-chat generate <type>`
 
@@ -129,23 +156,88 @@ clarity-chat doctor       # Run health check
 clarity-chat doctor --fix # Auto-fix common issues
 ```
 
+## Workflow Acceleration Features
+
+### Batch Operations
+
+Add multiple components at once:
+
+```bash
+clarity-chat add chat-interface --batch "model-selector,token-counter,cost-estimator"
+```
+
+### Watch Mode
+
+Automatically restart dev server on file changes:
+
+```bash
+clarity-chat dev --watch
+```
+
+### Update Notifications
+
+The CLI automatically checks for updates when running common commands (`init`, `add`, `dev`) and notifies you if a new version is available.
+
+## Beautiful UI Features
+
+The CLI features a stunning visual design with:
+
+- **🌈 Gradient Banners** - Eye-catching headers for each command
+- **📦 Message Boxes** - Beautiful success, error, warning, and info boxes
+- **📊 Formatted Tables** - Professional table layouts for structured data
+- **⚡ Smooth Spinners** - Color-coded loading indicators
+- **🎯 Visual Hierarchy** - Clear structure with dividers and spacing
+- **✨ Consistent Design** - Cohesive visual language throughout
+
+### Visual Examples
+
+**Init Command:**
+```
+┌─────────────────────────────────────┐
+│   Initialize Project (gradient)     │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ 🚀 Getting Started                  │
+│ Setting up your AI-powered app...   │
+└─────────────────────────────────────┘
+```
+
+**Success Messages:**
+```
+┌─────────────────────────────────────┐
+│ ✨ All Set!                         │
+│ Project initialized successfully!   │
+└─────────────────────────────────────┘
+```
+
+**Status Tables:**
+```
+┌─────────────┬──────────────────────┐
+│ Item        │ Status               │
+├─────────────┼──────────────────────┤
+│ ✅ package.json │ Found             │
+│ ⚠️  API keys    │ Not configured    │
+└─────────────┴──────────────────────┘
+```
+
 ## Examples
 
 ### Quick Start
 
 ```bash
-# Create new project
+# Create new project (beautiful interactive wizard)
 npx @clarity-chat/cli init
 
-# Add components
+# Add components (single or batch)
 clarity-chat add chat-interface
-clarity-chat add model-selector
+clarity-chat add chat-interface --batch "model-selector,token-counter"
 
-# Configure API keys
+# Configure API keys (beautiful prompts)
 clarity-chat keys add openai
 
-# Start development
-clarity-chat dev
+# Start development (eye-catching server start)
+clarity-chat dev --open
 ```
 
 ### Adding to Existing Project
@@ -196,6 +288,70 @@ GOOGLE_API_KEY=AIza...
 
 **Security Note**: `.env.local` is automatically added to `.gitignore`
 
+## Output Modes
+
+The CLI supports multiple output modes for different use cases:
+
+### Human-readable (default)
+```bash
+clarity-chat add chat-interface
+```
+
+### JSON mode (for scripts/automation)
+```bash
+clarity-chat add chat-interface --json
+```
+
+### Quiet mode (minimal output)
+```bash
+clarity-chat add chat-interface --quiet
+```
+
+### Verbose mode (detailed output)
+```bash
+clarity-chat add chat-interface --verbose
+```
+
+### Debug mode
+```bash
+clarity-chat add chat-interface --debug
+```
+
+## Shell Completion
+
+Install shell completion for better developer experience:
+
+### Bash
+```bash
+eval "$(clarity-chat completion bash)"
+# Add to ~/.bashrc or ~/.bash_profile
+```
+
+### Zsh
+```bash
+eval "$(clarity-chat completion zsh)"
+# Add to ~/.zshrc
+```
+
+### Fish
+```bash
+clarity-chat completion fish > ~/.config/fish/completions/clarity-chat.fish
+```
+
+## Error Handling
+
+The CLI provides comprehensive error handling with actionable suggestions:
+
+- **Validation Errors**: Clear messages with suggestions for fixing invalid inputs
+- **Not Found Errors**: Helpful hints when resources aren't found
+- **Permission Errors**: Guidance on fixing permission issues
+- **Config Errors**: Suggestions for configuration problems
+
+All errors include:
+- Clear error messages
+- Actionable suggestions
+- Links to documentation (when available)
+
 ## Development
 
 ```bash
@@ -210,6 +366,9 @@ npm run build
 
 # Test
 npm test
+
+# Type check
+npm run type-check
 ```
 
 ## License

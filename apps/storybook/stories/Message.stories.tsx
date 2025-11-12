@@ -1,18 +1,96 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import * as React from 'react'
-import { Message } from '../../../packages/react/src/components/message'
-import type { Message as MessageType } from '../../../packages/types/src/message'
+import { Message } from '@clarity-chat/react'
+import type { Message as MessageType } from '@clarity-chat/types'
 
+/**
+ * **Message Component**
+ * 
+ * Enhanced message component for displaying chat messages with animations,
+ * feedback, and interactive features.
+ * 
+ * **Key Features:**
+ * - Slide-in animations
+ * - Hover actions
+ * - Feedback buttons with confetti
+ * - Streaming cursor pulse
+ * - Avatar bounce animations
+ * - Copy functionality
+ * - Retry on error
+ * - Markdown rendering
+ * 
+ * **Use Cases:**
+ * - Chat interfaces
+ * - Messaging applications
+ * - AI assistants
+ * - Customer support
+ */
 const meta: Meta<typeof Message> = {
   title: 'Components/Message',
   component: Message,
   tags: ['autodocs'],
   parameters: {
+    layout: 'padded',
     docs: {
       description: {
-        component:
-          'Enhanced message component with slide-in animations, hover actions, feedback buttons with confetti, streaming cursor pulse, and avatar bounce.',
+        component: `
+Enhanced message component for displaying chat messages with animations,
+feedback, and interactive features.
+
+## Features
+
+- ✅ Slide-in animations
+- ✅ Hover actions
+- ✅ Feedback buttons with confetti
+- ✅ Streaming cursor pulse
+- ✅ Avatar bounce animations
+- ✅ Copy functionality
+- ✅ Retry on error
+- ✅ Markdown rendering
+- ✅ Accessible with ARIA attributes
+
+## Basic Usage
+
+\`\`\`tsx
+<Message
+  message={message}
+  onFeedback={(type) => console.log('Feedback:', type)}
+  onCopy={(id, content) => console.log('Copied:', content)}
+  onRetry={(id) => console.log('Retry:', id)}
+/>
+\`\`\`
+        `,
       },
+    },
+  },
+  argTypes: {
+    message: {
+      description: 'The message object to display',
+      control: { type: 'object' },
+    },
+    onFeedback: {
+      description: 'Callback when user gives feedback (up/down)',
+      action: 'feedback',
+    },
+    onCopy: {
+      description: 'Callback when message is copied',
+      action: 'copy',
+    },
+    onRetry: {
+      description: 'Callback when retry is requested',
+      action: 'retry',
+    },
+    showAvatar: {
+      description: 'Show avatar for the message',
+      control: 'boolean',
+    },
+    showTimestamp: {
+      description: 'Show timestamp',
+      control: 'boolean',
+    },
+    enableMarkdown: {
+      description: 'Enable markdown rendering',
+      control: 'boolean',
     },
   },
 }
@@ -25,7 +103,7 @@ type Story = StoryObj<typeof Message>
 // ============================================================================
 
 const createUserMessage = (content: string, overrides?: Partial<MessageType>): MessageType => ({
-  id: `msg-${Date.now()}`,
+  id: 'msg-' + Date.now(),
   role: 'user',
   content,
   createdAt: Date.now(),
@@ -34,7 +112,7 @@ const createUserMessage = (content: string, overrides?: Partial<MessageType>): M
 })
 
 const createAssistantMessage = (content: string, overrides?: Partial<MessageType>): MessageType => ({
-  id: `msg-${Date.now()}`,
+  id: 'msg-' + Date.now(),
   role: 'assistant',
   content,
   createdAt: Date.now(),
@@ -234,33 +312,27 @@ export const StreamingCursor: Story = {
 export const WithMarkdown: Story = {
   render: () => (
     <Message
-      message={createAssistantMessage(`
-Here's how to use **Framer Motion**:
-
-1. Install the package: \`npm install framer-motion\`
-2. Import motion: \`import { motion } from 'framer-motion'\`
-3. Use motion components: \`<motion.div animate={{ x: 100 }} />\`
-
-## Key Concepts
-
-- **Variants**: Define animation states
-- **Transitions**: Control timing
-- **Gestures**: Handle interactions
-
-### Example Code
-
-\`\`\`jsx
-<motion.div
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ duration: 0.5 }}
->
-  Hello World
-</motion.div>
-\`\`\`
-
-Pretty cool, right?
-      `)}
+      message={createAssistantMessage(
+        "Here's how to use **Framer Motion**:\n\n" +
+        "1. Install the package: `npm install framer-motion`\n" +
+        "2. Import motion: `import { motion } from 'framer-motion'`\n" +
+        "3. Use motion components: `<motion.div animate={{ x: 100 }} />`\n\n" +
+        "## Key Concepts\n\n" +
+        "- **Variants**: Define animation states\n" +
+        "- **Transitions**: Control timing\n" +
+        "- **Gestures**: Handle interactions\n\n" +
+        "### Example Code\n\n" +
+        "```jsx\n" +
+        "<motion.div\n" +
+        "  initial={{ opacity: 0 }}\n" +
+        "  animate={{ opacity: 1 }}\n" +
+        "  transition={{ duration: 0.5 }}\n" +
+        ">\n" +
+        "  Hello World\n" +
+        "</motion.div>\n" +
+        "```\n\n" +
+        "Pretty cool, right?"
+      )}
       onFeedback={(type) => console.log('Feedback:', type)}
     />
   ),
@@ -269,28 +341,25 @@ Pretty cool, right?
 export const WithCodeBlock: Story = {
   render: () => (
     <Message
-      message={createAssistantMessage(`
-Here's a React component example:
-
-\`\`\`tsx
-import React from 'react'
-import { motion } from 'framer-motion'
-
-export const AnimatedButton = () => {
-  return (
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-4 py-2 bg-blue-500 text-white rounded"
-    >
-      Click me!
-    </motion.button>
-  )
-}
-\`\`\`
-
-Hover over the code block to see the copy button!
-      `)}
+      message={createAssistantMessage(
+        "Here's a React component example:\n\n" +
+        "```tsx\n" +
+        "import React from 'react'\n" +
+        "import { motion } from 'framer-motion'\n\n" +
+        "export const AnimatedButton = () => {\n" +
+        "  return (\n" +
+        "    <motion.button\n" +
+        "      whileHover={{ scale: 1.05 }}\n" +
+        "      whileTap={{ scale: 0.95 }}\n" +
+        "      className=\"px-4 py-2 bg-blue-500 text-white rounded\"\n" +
+        "    >\n" +
+        "      Click me!\n" +
+        "    </motion.button>\n" +
+        "  )\n" +
+        "}\n" +
+        "```\n\n" +
+        "Hover over the code block to see the copy button!"
+      )}
       onFeedback={(type) => console.log('Feedback:', type)}
     />
   ),
@@ -362,23 +431,20 @@ export const Conversation: Story = {
         'React is a JavaScript library for building user interfaces. It allows you to create reusable UI components and manage application state efficiently.'
       ),
       createUserMessage('Can you show me an example?'),
-      createAssistantMessage(`
-Sure! Here's a simple React component:
-
-\`\`\`jsx
-function Welcome({ name }) {
-  return <h1>Hello, {name}!</h1>
-}
-
-// Usage
-<Welcome name="World" />
-\`\`\`
-
-This component accepts a \`name\` prop and renders a greeting.
-      `),
-      createUserMessage('Thanks! That's helpful.'),
       createAssistantMessage(
-        'You're welcome! Feel free to ask if you have more questions about React.'
+        "Sure! Here's a simple React component:\n\n" +
+        "```jsx\n" +
+        "function Welcome({ name }) {\n" +
+        "  return <h1>Hello, {name}!</h1>\n" +
+        "}\n\n" +
+        "// Usage\n" +
+        "<Welcome name=\"World\" />\n" +
+        "```\n\n" +
+        "This component accepts a `name` prop and renders a greeting."
+      ),
+      createUserMessage("Thanks! That's helpful."),
+      createAssistantMessage(
+        "You're welcome! Feel free to ask if you have more questions about React."
       ),
     ]
 
@@ -388,7 +454,7 @@ This component accepts a \`name\` prop and renders a greeting.
           <Message
             key={msg.id}
             message={msg}
-            onFeedback={(type) => console.log(`Feedback for ${msg.id}:`, type)}
+            onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
           />
         ))}
       </div>
@@ -402,9 +468,9 @@ This component accepts a \`name\` prop and renders a greeting.
 
 export const InteractiveDemo: Story = {
   render: () => {
-    const [messages, setMessages] = React.useState<MessageType[]>([
-      createAssistantMessage('Hello! I'm your AI assistant. How can I help you today?'),
-    ])
+    const [messages, setMessages] = React.useState([
+      createAssistantMessage("Hello! I'm your AI assistant. How can I help you today?"),
+    ] as MessageType[])
     const [input, setInput] = React.useState('')
 
     const sendMessage = () => {
@@ -418,9 +484,9 @@ export const InteractiveDemo: Story = {
       // Simulate AI response
       setTimeout(() => {
         const responses = [
-          'That's a great question! Let me help you with that.',
-          'I understand what you're asking. Here's what I think...',
-          'Interesting! Here's my perspective on this topic.',
+          "That's a great question! Let me help you with that.",
+          "I understand what you're asking. Here's what I think...",
+          "Interesting! Here's my perspective on this topic.",
           'Let me break that down for you step by step.',
         ]
         const randomResponse = responses[Math.floor(Math.random() * responses.length)]
@@ -436,7 +502,7 @@ export const InteractiveDemo: Story = {
             <Message
               key={msg.id}
               message={msg}
-              onFeedback={(type) => console.log(`Feedback for ${msg.id}:`, type)}
+              onFeedback={(type) => console.log('Feedback for ' + msg.id + ':', type)}
             />
           ))}
         </div>

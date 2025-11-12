@@ -20,7 +20,7 @@ describe('ThinkingIndicator Component', () => {
 
   describe('Status Stages', () => {
     it('should render thinking stage', () => {
-      const status: AIStatus = { stage: 'thinking' }
+      const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('🤔')).toBeInTheDocument()
@@ -28,7 +28,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should render researching stage', () => {
-      const status: AIStatus = { stage: 'researching' }
+      const status: AIStatus = { stage: 'researching', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('🔍')).toBeInTheDocument()
@@ -36,7 +36,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should render compiling stage', () => {
-      const status: AIStatus = { stage: 'compiling' }
+      const status: AIStatus = { stage: 'compiling', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('📝')).toBeInTheDocument()
@@ -44,7 +44,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should render generating stage', () => {
-      const status: AIStatus = { stage: 'generating' }
+      const status: AIStatus = { stage: 'generating', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('✨')).toBeInTheDocument()
@@ -52,7 +52,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should render finalizing stage', () => {
-      const status: AIStatus = { stage: 'finalizing' }
+      const status: AIStatus = { stage: 'finalizing', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
 
       expect(screen.getByText('🎯')).toBeInTheDocument()
@@ -65,17 +65,22 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'researching',
         topic: 'Searching for relevant information',
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
-      expect(screen.getByText('Searching for relevant information')).toBeInTheDocument()
+      expect(
+        screen.getByText('Searching for relevant information')
+      ).toBeInTheDocument()
     })
 
     it('should not display topic element when topic is not provided', () => {
-      const status: AIStatus = { stage: 'thinking' }
+      const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
-      const topicElements = container.querySelectorAll('.text-xs.text-muted-foreground.mt-1')
+      const topicElements = container.querySelectorAll(
+        '.text-xs.text-muted-foreground.mt-1'
+      )
       expect(topicElements).toHaveLength(0)
     })
 
@@ -83,6 +88,7 @@ describe('ThinkingIndicator Component', () => {
       const status1: AIStatus = {
         stage: 'thinking',
         topic: 'Analyzing your question',
+        startedAt: new Date(),
       }
       const { rerender } = render(<ThinkingIndicator status={status1} />)
 
@@ -91,11 +97,14 @@ describe('ThinkingIndicator Component', () => {
       const status2: AIStatus = {
         stage: 'generating',
         topic: 'Creating response',
+        startedAt: new Date(),
       }
       rerender(<ThinkingIndicator status={status2} />)
 
       expect(screen.getByText('Creating response')).toBeInTheDocument()
-      expect(screen.queryByText('Analyzing your question')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Analyzing your question')
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -104,6 +113,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         progress: 50,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -112,7 +122,7 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should not display progress bar when progress is undefined', () => {
-      const status: AIStatus = { stage: 'thinking' }
+      const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
       const progressBar = container.querySelector('.h-1.bg-background')
@@ -123,6 +133,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         progress: 75,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -135,6 +146,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'thinking',
         progress: 0,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -146,6 +158,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'finalizing',
         progress: 100,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -160,6 +173,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         estimatedCompletion: futureTime,
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -167,10 +181,12 @@ describe('ThinkingIndicator Component', () => {
     })
 
     it('should not display estimated time when not provided', () => {
-      const status: AIStatus = { stage: 'thinking' }
+      const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
-      const timeElements = container.querySelectorAll('span.text-xs.text-muted-foreground')
+      const timeElements = container.querySelectorAll(
+        'span.text-xs.text-muted-foreground'
+      )
       expect(timeElements).toHaveLength(0)
     })
 
@@ -179,6 +195,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         estimatedCompletion: futureTime,
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -191,6 +208,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         estimatedCompletion: futureTime,
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -215,6 +233,7 @@ describe('ThinkingIndicator Component', () => {
         topic: 'Creating detailed response',
         progress: 65,
         estimatedCompletion: new Date(Date.now() + 8000),
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -242,6 +261,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'thinking',
         topic: 'Processing your request',
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -252,14 +272,18 @@ describe('ThinkingIndicator Component', () => {
 
   describe('Custom className', () => {
     it('should apply custom className', () => {
-      const { container } = render(<ThinkingIndicator className="custom-thinking" />)
+      const { container } = render(
+        <ThinkingIndicator className="custom-thinking" />
+      )
 
       const indicator = container.querySelector('.custom-thinking')
       expect(indicator).toBeInTheDocument()
     })
 
     it('should combine custom className with default classes', () => {
-      const { container } = render(<ThinkingIndicator className="custom-class" />)
+      const { container } = render(
+        <ThinkingIndicator className="custom-class" />
+      )
 
       const indicator = container.querySelector('.custom-class')
       expect(indicator).toHaveClass('custom-class')
@@ -279,7 +303,9 @@ describe('ThinkingIndicator Component', () => {
 
   describe('Edge Cases', () => {
     it('should handle undefined status gracefully', () => {
-      expect(() => render(<ThinkingIndicator status={undefined} />)).not.toThrow()
+      expect(() =>
+        render(<ThinkingIndicator status={undefined} />)
+      ).not.toThrow()
     })
 
     it('should handle empty status object', () => {
@@ -292,6 +318,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'thinking',
         estimatedCompletion: pastTime,
+        startedAt: new Date(),
       }
       render(<ThinkingIndicator status={status} />)
 
@@ -304,6 +331,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'generating',
         progress: 150,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -314,6 +342,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = {
         stage: 'thinking',
         progress: -10,
+        startedAt: new Date(),
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
@@ -323,12 +352,12 @@ describe('ThinkingIndicator Component', () => {
 
   describe('Stage Transitions', () => {
     it('should smoothly transition between stages', () => {
-      const status1: AIStatus = { stage: 'thinking' }
+      const status1: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { rerender } = render(<ThinkingIndicator status={status1} />)
 
       expect(screen.getByText('Thinking')).toBeInTheDocument()
 
-      const status2: AIStatus = { stage: 'generating' }
+      const status2: AIStatus = { stage: 'generating', startedAt: new Date() }
       rerender(<ThinkingIndicator status={status2} />)
 
       expect(screen.getByText('Generating')).toBeInTheDocument()

@@ -1,289 +1,375 @@
 /**
  * Virtualized Message List
  * 
- * High-performance message list using virtual scrolling for large datasets.
- * Only renders visible messages to maintain performance with 1000+ messages.
+ * Efficient rendering for large conversations (1000+ messages) using
+ * react-window for virtual scrolling.
  * 
- * Note: This is an optimized version that manually implements virtualization
- * without external dependencies. For production use with react-window, see docs.
+ * @blueprint Feature 6.1 - Virtual Scrolling
+ * @priority HIGH
+ * @status NEW - Implementation based on blueprint analysis
  */
 
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import type { Message as MessageType } from '@clarity-chat/types'
-import { Message } from './message'
-import { ScrollArea, Button } from '@clarity-chat/primitives'
-import { useAutoScroll } from '../hooks/use-auto-scroll'
-import { ArrowDownIcon } from './icons'
-import { SkeletonMessage } from './skeleton'
-import { INTERACTION_VARIANTS } from '../animations/constants'
+import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
+import AutoSizer from 'react-virtualized-auto-sizer'
+import { Message } from '@clarity-chat/types'
+
+// Type assertions for React 18/19 compatibility
+const AutoSizerComponent = AutoSizer as any
+const ListComponent = List as any
+
+// ============================================================================
+// Types
+// ============================================================================
 
 export interface VirtualizedMessageListProps {
-  messages: MessageType[]
-  onMessageCopy?: (messageId: string, content: string) => void
-  onMessageFeedback?: (messageId: string, type: 'up' | 'down') => void
-  onMessageRetry?: (messageId: string) => void
-  /** Show loading skeleton while messages are being fetched */
-  isLoading?: boolean
-  /** Number of skeleton messages to show while loading */
-  loadingCount?: number
-  /** Empty state content */
-  emptyState?: React.ReactNode
-  /** Enable virtualization (only render visible items) */
-  enableVirtualization?: boolean
+  /** Messages to render */
+  messages: Message[]
+  
+  /** Render function for each message */
+  renderMessage: (message: Message, index: number) => React.ReactNode
+  
   /** Estimated height of each message in pixels */
-  estimatedMessageHeight?: number
-  /** Number of overscan items (render extra items above/below viewport) */
-  overscan?: number
+  estimatedItemSize?: number
+  
+  /** Number of items to render outside of the visible area */
+  overscanCount?: number
+  
+  /** Auto-scroll to bottom when new messages arrive */
+  autoScrollToBottom?: boolean
+  
+  /** Callback when scroll position changes */
+  onScroll?: (scrollOffset: number) => void
+  
+  /** Custom CSS class */
   className?: string
+  
+  /** Threshold for enabling virtualization (message count) */
+  threshold?: number
+  
+  /** Custom item key getter */
+  itemKey?: (index: number, data: Message[]) => string
 }
 
-/**
- * Custom hook for virtual scrolling
- */
-function useVirtualization(
-  itemCount: number,
-  containerRef: React.RefObject<HTMLDivElement>,
-  estimatedItemHeight: number,
-  overscan: number = 3
-) {
-  const [scrollTop, setScrollTop] = React.useState(0)
-  const [containerHeight, setContainerHeight] = React.useState(0)
+export interface MessageListProps extends Omit<VirtualizedMessageListProps, 'threshold'> {
+  /** Enable virtualization automatically at this threshold */
+  virtualizationThreshold?: number
+}
 
-  // Measure container height
+// ============================================================================
+// Message Height Cache
+// ============================================================================
+
+class MessageHeightCache {
+  private heights: Map<string, number> = new Map()
+  private defaultHeight: number
+
+  constructor(defaultHeight: number = 150) {
+    this.defaultHeight = defaultHeight
+  }
+
+  setHeight(key: string, height: number) {
+    this.heights.set(key, height)
+  }
+
+  getHeight(key: string): number {
+    return this.heights.get(key) || this.defaultHeight
+  }
+
+  hasHeight(key: string): boolean {
+    return this.heights.has(key)
+  }
+
+  clear() {
+    this.heights.clear()
+  }
+}
+
+// ============================================================================
+// Message Item Component
+// ============================================================================
+
+interface MessageItemProps extends ListChildComponentProps {
+  data: {
+    messages: Message[]
+    renderMessage: (message: Message, index: number) => React.ReactNode
+    heightCache: MessageHeightCache
+    setItemHeight: (index: number, height: number) => void
+  }
+}
+
+function MessageItem({ index, style, data }: MessageItemProps) {
+  const { messages, renderMessage, heightCache, setItemHeight } = data
+  const message = messages[index]
+  const itemRef = React.useRef<HTMLDivElement>(null)
+
   React.useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0]
-      if (entry) {
-        setContainerHeight(entry.contentRect.height)
+    if (itemRef.current) {
+      const height = itemRef.current.offsetHeight
+      const messageKey = message.id || `msg-${index}`
+      
+      if (!heightCache.hasHeight(messageKey) || heightCache.getHeight(messageKey) !== height) {
+        heightCache.setHeight(messageKey, height)
+        setItemHeight(index, height)
       }
-    })
-
-    observer.observe(container)
-    return () => observer.disconnect()
-  }, [containerRef])
-
-  // Track scroll position
-  React.useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    const handleScroll = () => {
-      setScrollTop(container.scrollTop)
     }
+  }, [message, index, heightCache, setItemHeight])
 
-    container.addEventListener('scroll', handleScroll, { passive: true })
-    return () => container.removeEventListener('scroll', handleScroll)
-  }, [containerRef])
-
-  // Calculate visible range
-  const startIndex = Math.max(0, Math.floor(scrollTop / estimatedItemHeight) - overscan)
-  const endIndex = Math.min(
-    itemCount,
-    Math.ceil((scrollTop + containerHeight) / estimatedItemHeight) + overscan
+  return (
+    <div style={style}>
+      <div ref={itemRef}>
+        {renderMessage(message, index)}
+      </div>
+    </div>
   )
+}
 
-  const visibleItems = Array.from(
-    { length: endIndex - startIndex },
-    (_, i) => startIndex + i
+// ============================================================================
+// Virtualized Message List Component
+// ============================================================================
+
+/**
+ * VirtualizedMessageList - Enhanced with React 19 features
+ * 
+ * React 19 Enhancements:
+ * - Keeps performance-critical useCallback (for react-window integration)
+ * - Compiler optimizes the rest automatically
+ * - Note: Some callbacks kept for stable refs required by react-window
+ */
+export function VirtualizedMessageList({
+  messages,
+  renderMessage,
+  estimatedItemSize = 150,
+  overscanCount = 3,
+  autoScrollToBottom = true,
+  onScroll,
+  className,
+  itemKey,
+}: VirtualizedMessageListProps) {
+  const listRef = React.useRef<List>(null)
+  const heightCacheRef = React.useRef(new MessageHeightCache(estimatedItemSize))
+  // Replace force update anti-pattern with useReducer
+  const [, forceRender] = React.useReducer((x: number) => x + 1, 0)
+  const previousMessagesLength = React.useRef(messages.length)
+  const isNearBottomRef = React.useRef(true)
+
+  // Track if user is near bottom
+  // React 19: Keep useCallback for stable ref (required by react-window)
+  const handleScroll = React.useCallback(({ scrollOffset, scrollUpdateWasRequested }: any) => {
+    if (!scrollUpdateWasRequested && listRef.current) {
+      const list = listRef.current
+      const scrollHeight = messages.reduce((sum, msg, i) => 
+        sum + heightCacheRef.current.getHeight(msg.id || `msg-${i}`), 0
+      )
+      const clientHeight = (list as any)._outerRef?.clientHeight || 600
+      const threshold = 100 // px from bottom
+      
+      isNearBottomRef.current = scrollHeight - (scrollOffset + clientHeight) < threshold
+    }
+    
+    onScroll?.(scrollOffset)
+  }, [messages, onScroll])
+
+  // Auto-scroll to bottom on new messages
+  React.useEffect(() => {
+    if (
+      autoScrollToBottom &&
+      messages.length > previousMessagesLength.current &&
+      isNearBottomRef.current &&
+      listRef.current
+    ) {
+      listRef.current.scrollToItem(messages.length - 1, 'end')
+    }
+    previousMessagesLength.current = messages.length
+  }, [messages.length, autoScrollToBottom])
+
+  // Get item height from cache
+  // React 19: Keep useCallback - passed to react-window, needs stable ref
+  const getItemSize = React.useCallback((index: number) => {
+    const message = messages[index]
+    const key = message.id || `msg-${index}`
+    return heightCacheRef.current.getHeight(key)
+  }, [messages])
+
+  // Update item height and trigger re-render
+  // React 19: Keep useCallback - passed to child components, needs stable ref
+  const setItemHeight = React.useCallback((index: number, height: number) => {
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(index, false)
+      forceRender()
+    }
+  }, [])
+
+  // Get item key
+  // React 19: Keep useCallback - passed to react-window, needs stable ref
+  const getItemKey = React.useCallback((index: number, data: Message[]) => {
+    return itemKey?.(index, data) || data[index].id || `msg-${index}`
+  }, [itemKey])
+
+  // Clear cache when messages change dramatically
+  React.useEffect(() => {
+    if (Math.abs(messages.length - previousMessagesLength.current) > 50) {
+      heightCacheRef.current.clear()
+    }
+  }, [messages.length])
+
+  return (
+    <div className={className} style={{ height: '100%', width: '100%' }}>
+      <AutoSizerComponent>
+        {({ height: _height, width }: { height: number; width: number }) => (
+          <ListComponent
+            ref={listRef}
+            height={_height}
+            width={width}
+            itemCount={messages.length}
+            itemSize={getItemSize}
+            itemData={{
+              messages,
+              renderMessage,
+              heightCache: heightCacheRef.current,
+              setItemHeight,
+            }}
+            itemKey={getItemKey}
+            overscanCount={overscanCount}
+            onScroll={handleScroll}
+          >
+            {MessageItem}
+          </ListComponent>
+        )}
+      </AutoSizerComponent>
+    </div>
   )
+}
 
-  const totalHeight = itemCount * estimatedItemHeight
-  const offsetY = startIndex * estimatedItemHeight
+// ============================================================================
+// Smart Message List (Auto-enables virtualization)
+// ============================================================================
+
+export function AutoVirtualizedMessageList({
+  messages,
+  renderMessage,
+  virtualizationThreshold = 100,
+  ...props
+}: MessageListProps) {
+  const shouldVirtualize = messages.length > virtualizationThreshold
+
+  if (shouldVirtualize) {
+    return (
+      <VirtualizedMessageList
+        messages={messages}
+        renderMessage={renderMessage}
+        {...props}
+      />
+    )
+  }
+
+  // Standard rendering for small lists
+  return (
+    <div className={props.className}>
+      {messages.map((message, index) => (
+        <div key={message.id || `msg-${index}`}>
+          {renderMessage(message, index)}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ============================================================================
+// Utility Hooks
+// ============================================================================
+
+/**
+ * Hook to manage scroll position and auto-scroll behavior
+ */
+export function useMessageListScroll(
+  messages: Message[],
+  options: {
+    autoScroll?: boolean
+    scrollThreshold?: number
+  } = {}
+) {
+  const { autoScroll = true, scrollThreshold = 100 } = options
+  const [isNearBottom, setIsNearBottom] = useState(true)
+  const [userHasScrolledUp, setUserHasScrolledUp] = useState(false)
+
+  const handleScroll = useCallback((_scrollOffset: number) => {
+    // This would need the total height to work properly
+    // Implementation depends on the container
+    setUserHasScrolledUp(!isNearBottom)
+  }, [isNearBottom])
+
+  const scrollToBottom = useCallback(() => {
+    // Implementation depends on ref to list component
+    setUserHasScrolledUp(false)
+    setIsNearBottom(true)
+  }, [])
 
   return {
-    visibleItems,
-    totalHeight,
-    offsetY,
-    startIndex,
-    endIndex,
+    isNearBottom,
+    userHasScrolledUp,
+    handleScroll,
+    scrollToBottom,
+    shouldAutoScroll: autoScroll && isNearBottom,
   }
 }
 
 /**
- * Virtualized message list component
+ * Hook to implement "Jump to bottom" button
  */
-export const VirtualizedMessageList: React.FC<VirtualizedMessageListProps> = ({
-  messages,
-  onMessageCopy,
-  onMessageFeedback,
-  onMessageRetry,
-  isLoading = false,
-  loadingCount = 3,
-  emptyState,
-  enableVirtualization = true,
-  estimatedMessageHeight = 120,
-  overscan = 3,
-  className,
-}) => {
-  const containerRef = React.useRef<HTMLDivElement>(null)
-  const contentRef = React.useRef<HTMLDivElement>(null)
+export function useJumpToBottom(isNearBottom: boolean) {
+  const [showButton, setShowButton] = useState(false)
+  const [newMessageCount, setNewMessageCount] = useState(0)
 
-  // Use auto-scroll hook
-  const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
-    dependencies: [messages],
-    behavior: 'smooth',
-    threshold: 100,
+  useEffect(() => {
+    setShowButton(!isNearBottom && newMessageCount > 0)
+  }, [isNearBottom, newMessageCount])
+
+  const incrementNewMessages = useCallback(() => {
+    if (!isNearBottom) {
+      setNewMessageCount(prev => prev + 1)
+    }
+  }, [isNearBottom])
+
+  const resetNewMessages = useCallback(() => {
+    setNewMessageCount(0)
+    setShowButton(false)
+  }, [])
+
+  return {
+    showButton,
+    newMessageCount,
+    incrementNewMessages,
+    resetNewMessages,
+  }
+}
+
+// ============================================================================
+// Performance Monitoring
+// ============================================================================
+
+export function useMessageListPerformance(messages: Message[]) {
+  const [metrics, setMetrics] = useState({
+    renderTime: 0,
+    messageCount: 0,
+    averageHeight: 0,
   })
 
-  // Virtual scrolling
-  const {
-    visibleItems,
-    totalHeight,
-    offsetY,
-  } = useVirtualization(
-    messages.length,
-    containerRef,
-    estimatedMessageHeight,
-    overscan
-  )
+  useEffect(() => {
+    const startTime = performance.now()
+    
+    // Measure after render
+    requestIdleCallback(() => {
+      const endTime = performance.now()
+      setMetrics({
+        renderTime: endTime - startTime,
+        messageCount: messages.length,
+        averageHeight: 150, // Would calculate from actual heights
+      })
+    })
+  }, [messages.length])
 
-  // Show empty state if no messages and not loading
-  const showEmptyState = messages.length === 0 && !isLoading && emptyState
-
-  // Use virtualization only for large lists
-  const shouldVirtualize = enableVirtualization && messages.length > 50
-
-  return (
-    <div className="relative h-full">
-      <ScrollArea 
-        ref={(node) => {
-          (scrollRef as React.MutableRefObject<HTMLDivElement | null>).current = node
-          ;(containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node
-        }} 
-        className={className}
-      >
-        {/* Loading skeletons */}
-        {isLoading && messages.length === 0 && (
-          <div className="space-y-4 p-4">
-            {Array.from({ length: loadingCount }).map((_, index) => (
-              <SkeletonMessage
-                key={`skeleton-${index}`}
-                role={index % 2 === 0 ? 'user' : 'assistant'}
-                lines={index % 2 === 0 ? 2 : 4}
-                variant="shimmer"
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Empty state */}
-        {showEmptyState && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-center h-full p-8"
-          >
-            {emptyState}
-          </motion.div>
-        )}
-
-        {/* Messages - Virtualized */}
-        {messages.length > 0 && shouldVirtualize && (
-          <div 
-            ref={contentRef}
-            className="relative"
-            style={{ height: totalHeight }}
-          >
-            <div
-              className="absolute top-0 left-0 right-0 space-y-4 p-4"
-              style={{ transform: `translateY(${offsetY}px)` }}
-            >
-              {visibleItems.map((index) => {
-                const message = messages[index]
-                if (!message) return null
-
-                return (
-                  <Message
-                    key={message.id}
-                    message={message}
-                    onCopy={(content) => onMessageCopy?.(message.id, content)}
-                    onFeedback={(type) => onMessageFeedback?.(message.id, type)}
-                    onRetry={() => onMessageRetry?.(message.id)}
-                  />
-                )
-              })}
-            </div>
-
-            {/* Loading indicator for new messages */}
-            {isLoading && (
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <SkeletonMessage role="assistant" lines={3} variant="shimmer" />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Messages - Non-virtualized (for small lists) */}
-        {messages.length > 0 && !shouldVirtualize && (
-          <div className="space-y-4 p-4">
-            {messages.map((message) => (
-              <Message
-                key={message.id}
-                message={message}
-                onCopy={(content) => onMessageCopy?.(message.id, content)}
-                onFeedback={(type) => onMessageFeedback?.(message.id, type)}
-                onRetry={() => onMessageRetry?.(message.id)}
-              />
-            ))}
-
-            {/* Loading indicator for new messages */}
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <SkeletonMessage role="assistant" lines={3} variant="shimmer" />
-              </motion.div>
-            )}
-          </div>
-        )}
-      </ScrollArea>
-      
-      {/* Scroll-to-bottom button */}
-      <AnimatePresence>
-        {!isNearBottom && messages.length > 0 && (
-          <motion.div
-            className="absolute bottom-4 right-4"
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-          >
-            <motion.div
-              whileHover={INTERACTION_VARIANTS.button.hover}
-              whileTap={INTERACTION_VARIANTS.button.tap}
-              transition={INTERACTION_VARIANTS.button.transition}
-            >
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={scrollToBottom}
-                className="shadow-lg gap-1.5"
-              >
-                <ArrowDownIcon size={16} />
-                Scroll to bottom
-              </Button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
+  return metrics
 }
 
-/**
- * Performance tip component for virtualization threshold
- */
-export const VirtualizationTip: React.FC<{ messageCount: number }> = ({ messageCount }) => {
-  if (messageCount < 50) return null
-
-  return (
-    <div className="text-xs text-muted-foreground p-2 border-t">
-      💡 Tip: Virtual scrolling is enabled for better performance with {messageCount} messages
-    </div>
-  )
-}
+export default VirtualizedMessageList

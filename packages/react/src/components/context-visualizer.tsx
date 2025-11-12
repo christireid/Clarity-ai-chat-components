@@ -3,7 +3,7 @@ import * as React from 'react'
 /**
  * Message for context visualization
  */
-export interface ContextMessage {
+export interface ContextVisualizerMessage {
   id: string
   role: 'user' | 'assistant' | 'system'
   content: string
@@ -20,7 +20,7 @@ export interface ContextMessage {
  */
 export interface ContextVisualizerProps {
   /** All messages in conversation */
-  messages: ContextMessage[]
+  messages: ContextVisualizerMessage[]
   
   /** Maximum tokens for context */
   maxTokens: number
@@ -174,7 +174,7 @@ export function ContextVisualizer({
 
   return (
     <div
-      className={`flex flex-col gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}
+      className={`flex flex-col gap-4 p-4 bg-card rounded-lg border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
       role="region"
       aria-label="Context window visualization"
     >
@@ -182,7 +182,7 @@ export function ContextVisualizer({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <svg
-            className="w-5 h-5 text-gray-600 dark:text-gray-400"
+            className="w-5 h-5 text-muted-foreground"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -200,12 +200,12 @@ export function ContextVisualizer({
               d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
             />
           </svg>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h3 className="text-lg font-semibold text-foreground">
             Context Window
           </h3>
         </div>
         
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="text-sm text-muted-foreground">
           {includedMessages.length} of {messages.length} messages
         </div>
       </div>
@@ -213,20 +213,20 @@ export function ContextVisualizer({
       {/* Token usage bar */}
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600 dark:text-gray-400">Token Usage</span>
-          <span className={`font-medium ${isNearLimit ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-900 dark:text-gray-100'}`}>
+          <span className="text-muted-foreground">Token Usage</span>
+          <span className={`font-medium ${isNearLimit ? 'text-[hsl(var(--warning))]' : 'text-foreground'}`}>
             {currentTokens.toLocaleString()} / {maxTokens.toLocaleString()}
           </span>
         </div>
         
-        <div className="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div className="relative w-full h-2 bg-muted rounded-full overflow-hidden">
           <div
-            className={`h-full transition-all duration-300 ${
+            className={`h-full transition-all duration-150 ease-out ${
               percentage >= 95
-                ? 'bg-red-500'
+                ? 'bg-destructive'
                 : percentage >= 80
-                ? 'bg-yellow-500'
-                : 'bg-green-500'
+                ? 'bg-[hsl(var(--warning))]'
+                : 'bg-[hsl(var(--success))]'
             }`}
             style={{ width: `${percentage}%` }}
             role="progressbar"
@@ -236,7 +236,7 @@ export function ContextVisualizer({
           />
         </div>
         
-        <div className="text-xs text-gray-500 dark:text-gray-500">
+        <div className="text-xs text-muted-foreground">
           {percentage.toFixed(1)}% of context window used
         </div>
       </div>
@@ -246,12 +246,12 @@ export function ContextVisualizer({
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`p-3 rounded-lg border transition-all ${
+            className={`p-3 rounded-lg border transition-all duration-150 ease-out ${
               message.isIncluded
                 ? highlightIncluded
-                  ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800'
-                  : 'bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700'
-                : 'bg-gray-50 dark:bg-gray-900/30 border-gray-200 dark:border-gray-700 opacity-60'
+                  ? 'bg-[hsl(var(--success))]/10 border-[hsl(var(--success))]/20'
+                  : 'bg-muted/50 border-border'
+                : 'bg-muted/30 border-border opacity-60'
             }`}
           >
             <div className="flex items-start justify-between gap-2">
@@ -262,10 +262,10 @@ export function ContextVisualizer({
                   <span
                     className={`px-2 py-0.5 text-xs font-medium rounded ${
                       message.role === 'user'
-                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                        ? 'bg-primary/10 text-primary'
                         : message.role === 'assistant'
-                        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                        : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'
+                        ? 'bg-secondary/10 text-secondary-foreground'
+                        : 'bg-muted text-muted-foreground'
                     }`}
                   >
                     {message.role}
@@ -273,21 +273,21 @@ export function ContextVisualizer({
 
                   {/* Token count */}
                   {showTokens && message.tokens && (
-                    <span className="text-xs text-gray-500 dark:text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       {message.tokens} tokens
                     </span>
                   )}
 
                   {/* Timestamp */}
                   {message.timestamp && (
-                    <span className="text-xs text-gray-400 dark:text-gray-600">
+                    <span className="text-xs text-muted-foreground/70">
                       {formatTimestamp(message.timestamp)}
                     </span>
                   )}
 
                   {/* Inclusion status */}
                   {message.isIncluded ? (
-                    <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                    <span className="text-xs text-[hsl(var(--success))] flex items-center gap-1">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
@@ -298,7 +298,7 @@ export function ContextVisualizer({
                       Included
                     </span>
                   ) : (
-                    <span className="text-xs text-gray-500 dark:text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       {getExclusionLabel(message.exclusionReason)}
                     </span>
                   )}
@@ -306,7 +306,7 @@ export function ContextVisualizer({
 
                 {/* Content preview */}
                 {viewMode === 'detailed' && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                  <p className="text-sm text-muted-foreground line-clamp-2">
                     {message.content}
                   </p>
                 )}
@@ -316,10 +316,10 @@ export function ContextVisualizer({
               {onToggleMessage && (
                 <button
                   onClick={() => onToggleMessage(message.id, !message.isIncluded)}
-                  className={`px-2 py-1 text-xs rounded transition-colors ${
+                  className={`px-2 py-1 text-xs rounded transition-colors duration-150 ease-out ${
                     message.isIncluded
-                      ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300'
-                      : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300'
+                      ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                      : 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] hover:bg-[hsl(var(--success))]/20'
                   }`}
                   aria-label={message.isIncluded ? 'Exclude message' : 'Include message'}
                 >
@@ -333,10 +333,10 @@ export function ContextVisualizer({
 
       {/* Prune suggestions */}
       {showPruneSuggestions && pruneSuggestions.length > 0 && onPrune && (
-        <div className="p-3 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+        <div className="p-3 bg-[hsl(var(--warning))]/10 border border-[hsl(var(--warning))]/20 rounded-lg">
           <div className="flex items-start gap-2">
             <svg
-              className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5"
+              className="w-5 h-5 text-[hsl(var(--warning))] flex-shrink-0 mt-0.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -349,16 +349,16 @@ export function ContextVisualizer({
               />
             </svg>
             <div className="flex-1">
-              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+              <p className="text-sm font-medium text-foreground">
                 Consider pruning old messages
               </p>
-              <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {pruneSuggestions.length} old messages are excluded from context. You can
                 permanently delete them to clean up.
               </p>
               <button
                 onClick={handlePruneAll}
-                className="mt-2 px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs rounded transition-colors"
+                className="mt-2 px-3 py-1 bg-[hsl(var(--warning))] hover:opacity-90 text-[hsl(var(--warning-foreground))] text-xs rounded transition-all duration-150 ease-out"
               >
                 Prune {pruneSuggestions.length} messages
               </button>
@@ -368,26 +368,26 @@ export function ContextVisualizer({
       )}
 
       {/* Summary stats */}
-      <div className="flex gap-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex gap-4 pt-3 border-t border-border">
         <div className="flex-1 text-center">
-          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+          <div className="text-2xl font-bold text-[hsl(var(--success))]">
             {includedMessages.length}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-500">Included</div>
+          <div className="text-xs text-muted-foreground">Included</div>
         </div>
         
         <div className="flex-1 text-center">
-          <div className="text-2xl font-bold text-gray-400 dark:text-gray-600">
+          <div className="text-2xl font-bold text-muted-foreground">
             {excludedMessages.length}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-500">Excluded</div>
+          <div className="text-xs text-muted-foreground">Excluded</div>
         </div>
         
         <div className="flex-1 text-center">
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          <div className="text-2xl font-bold text-primary">
             {currentTokens}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-500">Tokens</div>
+          <div className="text-xs text-muted-foreground">Tokens</div>
         </div>
       </div>
     </div>

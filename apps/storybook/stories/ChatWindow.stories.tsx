@@ -3,6 +3,26 @@ import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { useState } from 'react'
 
+/**
+ * **ChatWindow Component**
+ * 
+ * Complete chat window component that orchestrates MessageList and ChatInput
+ * to provide a full-featured chat interface.
+ * 
+ * **Key Features:**
+ * - Message display and management
+ * - Input handling with send functionality
+ * - Loading states
+ * - Empty state handling
+ * - Auto-scroll to latest message
+ * - Keyboard shortcuts (Enter to send, Shift+Enter for new line)
+ * 
+ * **Use Cases:**
+ * - AI chat interfaces
+ * - Customer support
+ * - Messaging applications
+ * - Conversational UIs
+ */
 const meta: Meta<typeof ChatWindow> = {
   title: 'Components/ChatWindow',
   component: ChatWindow,
@@ -10,11 +30,50 @@ const meta: Meta<typeof ChatWindow> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Complete chat window component orchestrating MessageList and ChatInput.',
+        component: `
+Complete chat window component that orchestrates MessageList and ChatInput
+to provide a full-featured chat interface.
+
+## Features
+
+- ✅ Message display and management
+- ✅ Input handling with send functionality
+- ✅ Loading states
+- ✅ Empty state handling
+- ✅ Auto-scroll to latest message
+- ✅ Keyboard shortcuts (Enter to send, Shift+Enter for new line)
+- ✅ Accessible with proper ARIA attributes
+
+## Basic Usage
+
+\`\`\`tsx
+<ChatWindow
+  messages={messages}
+  isLoading={isLoading}
+  onSendMessage={(content) => {
+    // Handle message sending
+  }}
+/>
+\`\`\`
+        `,
       },
     },
   },
   tags: ['autodocs'],
+  argTypes: {
+    messages: {
+      description: 'Array of messages to display',
+      control: { type: 'object' },
+    },
+    isLoading: {
+      description: 'Whether a message is currently being processed',
+      control: { type: 'boolean' },
+    },
+    onSendMessage: {
+      description: 'Callback function called when a message is sent',
+      action: 'message-sent',
+    },
+  },
   decorators: [
     (Story) => (
       <div style={{ width: '600px', height: '500px' }}>

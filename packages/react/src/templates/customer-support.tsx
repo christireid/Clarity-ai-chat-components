@@ -4,10 +4,11 @@
  * Pre-configured chat interface for customer support scenarios
  */
 
-import React, { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { ChatWindow } from '../components/chat-window'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { corporateTheme } from '../theme/presets'
+import { useMessageOperations } from '../hooks/use-message-operations'
 import type { Message } from '@clarity-chat/types'
 
 export interface CustomerSupportTemplateProps {
@@ -44,26 +45,76 @@ export function CustomerSupportTemplate({
   onEscalate,
   apiEndpoint = '/api/support',
 }: CustomerSupportTemplateProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: `Welcome to ${companyName} Support! How can I help you today?\n\nYou can ask me about:\n${supportCategories.map(cat => `• ${cat}`).join('\n')}`,
-      timestamp: new Date(),
+  const chatId = 'customer-support-chat'
+  const now = new Date()
+  
+  // Use message operations hook
+  const {
+    messages: operationMessages,
+    addMessage,
+    editMessage,
+    deleteMessage,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useMessageOperations({
+    initialMessages: [
+      {
+        id: '1',
+        chatId,
+        role: 'assistant',
+        content: `Welcome to ${companyName} Support! How can I help you today?\n\nYou can ask me about:\n${supportCategories.map(cat => `• ${cat}`).join('\n')}`,
+        timestamp: now.getTime(),
+      },
+    ],
+    onEdit: (messageId, newContent) => {
+      console.log('Message edited:', messageId, newContent)
     },
-  ])
+    onDelete: (messageId) => {
+      console.log('Message deleted:', messageId)
+    },
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId,
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+  
   const [isLoading, setIsLoading] = useState(false)
 
+  // Handle message operations
+  const handleEdit = useCallback((messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message) return
+
+    const newContent = prompt('Edit message:', message.content) || message.content
+    if (newContent !== message.content) {
+      editMessage(messageId, newContent)
+    }
+  }, [messages, editMessage])
+
+  const handleDelete = useCallback((messageId: string) => {
+    if (confirm('Delete this message?')) {
+      deleteMessage(messageId)
+    }
+  }, [deleteMessage])
+
   const handleSendMessage = async (content: string) => {
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
+    // Add user message using operations hook
+    addMessage({
+      chatId,
       role: 'user',
       content,
-      timestamp: new Date(),
-    }
+      timestamp: Date.now(),
+    })
     
-    setMessages(prev => [...prev, userMessage])
     setIsLoading(true)
 
     // Check for escalation keywords
@@ -73,15 +124,13 @@ export function CustomerSupportTemplate({
     )
 
     if (needsEscalation && onEscalate) {
-      const escalationMessage: Message = {
-        id: (Date.now() + 1).toString(),
+      addMessage({
+        chatId,
         role: 'assistant',
         content: 'I\'ll connect you with a human agent right away. Please wait a moment...',
-        timestamp: new Date(),
-        metadata: { type: 'escalation' },
-      }
-      setMessages(prev => [...prev, escalationMessage])
-      onEscalate([...messages, userMessage])
+        timestamp: Date.now(),
+      })
+      onEscalate(messages)
       setIsLoading(false)
       return
     }
@@ -92,14 +141,12 @@ export function CustomerSupportTemplate({
     )
 
     if (matchedFaq) {
-      const faqResponse: Message = {
-        id: (Date.now() + 1).toString(),
+      addMessage({
+        chatId,
         role: 'assistant',
         content: matchedFaq.answer,
-        timestamp: new Date(),
-        metadata: { type: 'faq' },
-      }
-      setMessages(prev => [...prev, faqResponse])
+        timestamp: Date.now(),
+      })
       setIsLoading(false)
       return
     }
@@ -120,36 +167,46 @@ export function CustomerSupportTemplate({
 
       const data = await response.json()
       
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+      addMessage({
+        chatId,
         role: 'assistant',
         content: data.response || 'I understand your concern. Let me help you with that.',
-        timestamp: new Date(),
-        metadata: data.metadata,
-      }
-      
-      setMessages(prev => [...prev, assistantMessage])
-    } catch (error) {
+        timestamp: Date.now(),
+      })
+    } catch (_error) {
       // Fallback response
-      const fallbackMessage: Message = {
-        id: (Date.now() + 1).toString(),
+      addMessage({
+        chatId,
         role: 'assistant',
         content: 'I appreciate your patience. Let me look into that for you. Meanwhile, you can always request to speak with a human agent.',
-        timestamp: new Date(),
-      }
-      setMessages(prev => [...prev, fallbackMessage])
+        timestamp: Date.now(),
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleExport = () => {
+    const text = messages.map(m => `${m.role === 'user' ? 'Customer' : 'Support'}: ${m.content}`).join('\n\n')
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `support-conversation-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
-    <ThemeProvider theme={corporateTheme}>
+    <ThemeProvider defaultTheme={corporateTheme}>
       <div className="customer-support-template" style={{ height: '100%', width: '100%' }}>
         <ChatWindow
           messages={messages}
           isLoading={isLoading}
           onSendMessage={handleSendMessage}
+          onEditMessage={handleEdit}
+          onDeleteMessage={handleDelete}
+          onExport={handleExport}
           emptyState={
             <div className="text-center space-y-4">
               <h3 className="text-xl font-semibold">How can we help?</h3>

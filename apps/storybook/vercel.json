@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "name": "clarity-chat-storybook",
+  "builds": [
+    {
+      "src": "storybook-static/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/storybook-static/$1"
+    }
+  ]
+}

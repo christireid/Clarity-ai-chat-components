@@ -22,7 +22,7 @@ export const openAIAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.apiKey || process.env.OPENAI_API_KEY}`
+          'Authorization': `Bearer ${config.apiKey || process.env['OPENAI_API_KEY']}`
         },
         body: JSON.stringify({
           model: config.model,
@@ -74,7 +74,7 @@ export const openAIAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.apiKey || process.env.OPENAI_API_KEY}`
+          'Authorization': `Bearer ${config.apiKey || process.env['OPENAI_API_KEY']}`
         },
         body: JSON.stringify({
           model: config.model,
@@ -195,6 +195,7 @@ export const openAIAdapter: ModelAdapter = {
     }
     
     const rate = rates[model] || rates['gpt-3.5-turbo']
+    if (!rate) return 0
     
     return (
       (usage.promptTokens / 1000) * rate.input +

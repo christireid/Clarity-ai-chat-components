@@ -249,25 +249,25 @@ export function createPIIDetector(): ModerationProvider {
     const emailMatches = content.match(emailPattern)
     if (emailMatches) {
       reasons.push('email_address')
-      details.emails = emailMatches.length
+      details['emails'] = emailMatches.length
     }
     
     const phoneMatches = content.match(phonePattern)
     if (phoneMatches) {
       reasons.push('phone_number')
-      details.phones = phoneMatches.length
+      details['phones'] = phoneMatches.length
     }
     
     const ssnMatches = content.match(ssnPattern)
     if (ssnMatches) {
       reasons.push('ssn')
-      details.ssns = ssnMatches.length
+      details['ssns'] = ssnMatches.length
     }
     
     const ccMatches = content.match(creditCardPattern)
     if (ccMatches) {
       reasons.push('credit_card')
-      details.credit_cards = ccMatches.length
+      details['credit_cards'] = ccMatches.length
     }
     
     const flagged = reasons.length > 0
