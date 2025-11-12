@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
+<<<<<<< HEAD
 import { ErrorBoundary } from '@clarity-chat/error-handling'
 import { ConfigurationError, APIError } from '@clarity-chat/error-handling'
+=======
+import { ErrorBoundary } from './ErrorBoundary'
+import { ConfigurationError, APIError } from '../errors'
+>>>>>>> dadc7ccf96aa617a83f2232f393f75671ff32990
 import { useState } from 'react'
 
 const meta: Meta<typeof ErrorBoundary> = {

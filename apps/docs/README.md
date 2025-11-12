@@ -26,7 +26,11 @@ apps/docs/
 │   ├── learn/              # Tutorial-style content
 │   ├── reference/          # API documentation
 │   ├── examples/           # Code examples
-│   └── blog/               # Blog posts
+│   ├── blog/               # Blog posts (integrated)
+│   ├── commercial/         # Commercial documentation (integrated)
+│   ├── research/           # Research documentation (integrated)
+│   ├── enterprise-standalone/ # Enterprise docs (integrated)
+│   └── guides/             # All guides
 ├── components/
 │   ├── MDX/                # MDX custom components
 │   │   ├── CodeBlock.tsx   # Syntax-highlighted code

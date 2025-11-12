@@ -22,6 +22,7 @@ const navigation = [
   { name: 'Reference', href: '/reference' },
   { name: 'Examples', href: '/examples' },
   { name: 'Blog', href: '/blog' },
+  { name: 'Commercial', href: '/commercial' },
 ]
 
 export function Navigation() {

@@ -7,8 +7,7 @@
   "packageManager": "pnpm@10.21.0",
   "workspaces": [
     "packages/*",
-    "apps/*",
-    "examples/*"
+    "apps/*"
   ],
   "scripts": {
     "dev": "npx turbo run dev",
@@ -21,8 +20,8 @@
     "clean": "npx turbo run clean && rm -rf node_modules",
     "storybook": "npm run dev --workspace=@clarity-chat/storybook",
     "storybook:build": "npm run build --workspace=@clarity-chat/storybook",
-    "docs": "npm run dev --workspace=@clarity-chat/docs",
-    "docs:build": "npm run build --workspace=@clarity-chat/docs",
+    "docs": "npm run dev --workspace=@clarity-chat/docs-site",
+    "docs:build": "npm run build --workspace=@clarity-chat/docs-site",
     "docs:generate": "typedoc",
     "typecheck": "npx turbo run typecheck",
     "changeset": "changeset",

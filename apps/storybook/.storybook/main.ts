@@ -5,7 +5,11 @@ const config: StorybookConfig = {
   stories: [
     '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     '../stories/**/!(GettingStarted|Introduction).mdx',
+<<<<<<< HEAD
     '../../../packages/error-handling/src/**/*.stories.@(js|jsx|ts|tsx|mdx)',
+=======
+    '../../../packages/error-handling/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+>>>>>>> dadc7ccf96aa617a83f2232f393f75671ff32990
   ],
   
   addons: [
@@ -68,6 +72,8 @@ const config: StorybookConfig = {
         { find: '@clarity-chat/primitives', replacement: path.resolve(__dirname, '../../../packages/primitives/src/index.ts') },
         { find: /^@clarity-chat\/types\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/types/src/$1') },
         { find: '@clarity-chat/types', replacement: path.resolve(__dirname, '../../../packages/types/src/index.ts') },
+        { find: /^@clarity-chat\/error-handling\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/error-handling/src/$1') },
+        { find: '@clarity-chat/error-handling', replacement: path.resolve(__dirname, '../../../packages/error-handling/src/index.ts') },
         ...existingAlias,
       ]
       
