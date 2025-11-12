@@ -42,7 +42,7 @@ interface HookUsage {
  * Analyze project for Clarity Chat usage
  */
 async function analyzeProject(): Promise<AnalysisResult> {
-  const spinner = createSpinner('Analyzing project...', { color: 'blue' })
+  const spinner = createSpinner('Analyzing project...')
   spinner.start()
 
   try {
@@ -174,17 +174,19 @@ async function displayResults(result: AnalysisResult) {
   console.log()
 
   // Summary table
-  const summaryTable = await createTable(
-    ['Metric', 'Value'],
+  const summaryTable = createTable(
     [
       ['Total files scanned', result.totalFiles.toString()],
       ['Total imports', result.totalImports.toString()],
       ['Components used', result.components.length.toString()],
       ['Hooks used', result.hooks.length.toString()],
     ],
+    [
+      { header: 'Metric', width: 25 },
+      { header: 'Value', width: 15 },
+    ],
     {
-      headerColor: 'blue',
-      align: 'left',
+      headerColor: chalk.blue,
     }
   )
   console.log(summaryTable)
@@ -198,9 +200,11 @@ async function displayResults(result: AnalysisResult) {
       `${index + 1}. ${component.name}`,
       `used in ${component.importCount} file(s)`,
     ])
-    const componentTable = await createTable(['Component', 'Usage'], componentRows, {
-      headerColor: 'cyan',
-      align: 'left',
+    const componentTable = createTable(componentRows, [
+      { header: 'Component', width: 30 },
+      { header: 'Usage', width: 20 },
+    ], {
+      headerColor: chalk.cyan,
       compact: true,
     })
     console.log(componentTable)
@@ -215,9 +219,11 @@ async function displayResults(result: AnalysisResult) {
       `${index + 1}. ${hook.name}`,
       `used in ${hook.importCount} file(s)`,
     ])
-    const hookTable = await createTable(['Hook', 'Usage'], hookRows, {
-      headerColor: 'cyan',
-      align: 'left',
+    const hookTable = createTable(hookRows, [
+      { header: 'Hook', width: 30 },
+      { header: 'Usage', width: 20 },
+    ], {
+      headerColor: chalk.cyan,
       compact: true,
     })
     console.log(hookTable)

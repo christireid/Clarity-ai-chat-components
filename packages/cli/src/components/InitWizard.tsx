@@ -76,9 +76,7 @@ export function InitWizard({ detectedFramework, packageManager, onComplete }: In
   return (
     <Box flexDirection="column" padding={1}>
       <Box marginBottom={1}>
-        <Gradient name="pastel">
-          <Text bold>✨ Clarity Chat Setup Wizard</Text>
-        </Gradient>
+        <Gradient name="pastel" children={<Text bold>✨ Clarity Chat Setup Wizard</Text>} />
       </Box>
 
       {step === 'framework' && (
@@ -97,7 +95,9 @@ export function InitWizard({ detectedFramework, packageManager, onComplete }: In
       {step === 'template' && (
         <Box flexDirection="column">
           <Text>✅ Framework: {config.framework}</Text>
-          <Text marginTop={1}>📦 Select a template:</Text>
+          <Box marginTop={1}>
+            <Text>📦 Select a template:</Text>
+          </Box>
           <Box marginTop={1}>
             <SelectInput items={templates} onSelect={handleTemplateSelect} />
           </Box>
@@ -108,7 +108,9 @@ export function InitWizard({ detectedFramework, packageManager, onComplete }: In
         <Box flexDirection="column">
           <Text>✅ Framework: {config.framework}</Text>
           <Text>✅ Template: {config.template}</Text>
-          <Text marginTop={1}>🎨 Select components (Space to toggle, Enter to continue):</Text>
+          <Box marginTop={1}>
+            <Text>🎨 Select components (Space to toggle, Enter to continue):</Text>
+          </Box>
           <Box marginTop={1}>
             <SelectInput 
               items={components.map(c => ({
@@ -120,13 +122,11 @@ export function InitWizard({ detectedFramework, packageManager, onComplete }: In
               onSelect={handleComponentsSelect}
             />
           </Box>
-          <Text marginTop={1} dimColor>
-            Press Enter when done selecting
-          </Text>
           <Box marginTop={1}>
-            <Text color="green" bold onPress={handleConfirm}>
-              → Continue
-            </Text>
+            <Text dimColor>Press Enter when done selecting</Text>
+          </Box>
+          <Box marginTop={1}>
+            <Text color="green" bold>→ Continue (Press Enter)</Text>
           </Box>
         </Box>
       )}

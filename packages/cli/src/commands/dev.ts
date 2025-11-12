@@ -64,7 +64,7 @@ export async function devCommand(options: DevOptions) {
 
   } catch (error) {
     spinner.fail('Failed to start development server')
-    logger.error(error)
+    logger.error(error instanceof Error ? error : new Error(String(error)))
     console.log()
     console.log(errorBox(
       'Failed to start development server. Check the error above.',

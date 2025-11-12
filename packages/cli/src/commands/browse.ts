@@ -154,10 +154,10 @@ export async function browseCommand() {
   console.clear()
   
   // Beautiful banner
-  await createBanner('🎨 Component Browser', {
-    gradient: true,
+  console.log(createBanner('🎨 Component Browser', {
+    gradient: 'pastel',
     style: 'bold',
-  })
+  }))
   
   console.log()
   infoMessage('Navigate with arrow keys, Enter to select, Q to quit')
@@ -196,7 +196,7 @@ export async function browseCommand() {
   }
 
   // Interactive menu
-  await createDivider()
+  console.log(createDivider(60))
   console.log()
   const quickActions = [
     'View all components by category',
@@ -272,10 +272,10 @@ export async function showComponentDetails(componentName: string) {
   }
 
   // Beautiful header
-  await createBanner(component.name, {
-    gradient: true,
+  console.log(createBanner(component.name, {
+    gradient: 'pastel',
     style: 'bold',
-  })
+  }))
   console.log()
 
   // Category
@@ -334,9 +334,7 @@ export async function showComponentDetails(componentName: string) {
  * Install component interactively
  */
 export async function installComponentInteractive(componentName: string) {
-  const spinner = await createSpinner(`Installing ${componentName}...`, {
-    color: 'cyan',
-  })
+  const spinner = createSpinner(`Installing ${componentName}...`)
   
   try {
     spinner.start()
@@ -349,10 +347,7 @@ export async function installComponentInteractive(componentName: string) {
     console.log()
     
     // Show next steps
-    infoMessage('Next steps:', [
-      `Import the component: import { ${componentName} } from '@clarity-chat/react'`,
-      `View docs: clarity-chat docs ${componentName.toLowerCase()}`,
-    ])
+    console.log(infoMessage(`Next steps:\n\n1. Import the component: import { ${componentName} } from '@clarity-chat/react'\n2. View docs: clarity-chat docs ${componentName.toLowerCase()}`))
     console.log()
   } catch (error) {
     spinner.fail()

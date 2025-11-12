@@ -5,7 +5,8 @@
 
 import chalk from 'chalk'
 import ora, { Ora } from 'ora'
-import { dim } from 'chalk'
+
+const dim = chalk.dim
 
 export interface ProgressBarOptions {
   total: number

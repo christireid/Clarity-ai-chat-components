@@ -169,7 +169,7 @@ async function benchmarkStringOperations(): Promise<BenchmarkResult> {
  * Display results
  */
 async function displayResults(suite: BenchmarkSuite) {
-  await createDivider()
+  console.log(createDivider(60))
   console.log()
   
   const tableData = suite.results.map((result, index) => ({
@@ -184,10 +184,20 @@ async function displayResults(suite: BenchmarkSuite) {
     'P99': formatDuration(result.p99),
   }))
 
-  await createTable(tableData, {
-    title: '⚡ Benchmark Results',
+  const columns = [
+    { header: '#', width: 5 },
+    { header: 'Benchmark', width: 25 },
+    { header: 'Iterations', width: 12 },
+    { header: 'Mean', width: 12 },
+    { header: 'Median', width: 12 },
+    { header: 'Min', width: 12 },
+    { header: 'Max', width: 12 },
+    { header: 'P95', width: 12 },
+    { header: 'P99', width: 12 },
+  ]
+  console.log(createTable(tableData, columns, {
     border: true,
-  })
+  }))
   console.log()
 }
 
@@ -195,7 +205,7 @@ async function displayResults(suite: BenchmarkSuite) {
  * Save results
  */
 async function saveResults(suite: BenchmarkSuite) {
-  const spinner = await createSpinner('Saving results...', { color: 'cyan' })
+  const spinner = createSpinner('Saving results...')
 
   try {
     spinner.start()
@@ -263,7 +273,7 @@ async function compareWithPrevious(current: BenchmarkSuite): Promise<void> {
 
     const previous: BenchmarkSuite = await fs.readJSON(previousPath)
 
-    await createDivider()
+    console.log(createDivider(60))
     console.log()
     infoMessage('📊 Comparison with Previous Run')
     console.log()
@@ -288,9 +298,14 @@ async function compareWithPrevious(current: BenchmarkSuite): Promise<void> {
       .filter(Boolean) as Array<{ Benchmark: string; Change: string; Difference: string }>
 
     if (comparisonData.length > 0) {
-      await createTable(comparisonData, {
+      const comparisonColumns = [
+        { header: 'Benchmark', width: 25 },
+        { header: 'Change', width: 15 },
+        { header: 'Difference', width: 15 },
+      ]
+      console.log(createTable(comparisonData, comparisonColumns, {
         border: true,
-      })
+      }))
       console.log()
     }
   } catch (error) {
@@ -318,10 +333,10 @@ export async function benchmarkCommand(options: {
   save?: boolean
   compare?: boolean
 }) {
-  await createBanner('⚡ Performance Benchmarks', {
-    gradient: true,
+  console.log(createBanner('⚡ Performance Benchmarks', {
+    gradient: 'pastel',
     style: 'bold',
-  })
+  }))
   console.log()
 
   const iterations = options.iterations || 100
@@ -333,7 +348,7 @@ export async function benchmarkCommand(options: {
     }
 
     // Run benchmarks
-    const spinner = await createSpinner('Running benchmarks...', { color: 'cyan' })
+    const spinner = createSpinner('Running benchmarks...')
     spinner.start()
 
     spinner.text = 'Benchmarking message processing...'

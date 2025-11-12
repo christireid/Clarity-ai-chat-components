@@ -128,7 +128,7 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
       if (!shouldLog(LogLevel.ERROR)) return
       
       const error = message instanceof Error ? message : undefined
-      const errorMessage = error ? error.message : message
+      const errorMessage = error ? error.message : (typeof message === 'string' ? message : String(message))
       
       const entry: LogEntry = {
         timestamp: new Date().toISOString(),

@@ -46,7 +46,7 @@ export function initOutputMode(options: {
 /**
  * Check if output should be suppressed
  */
-export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' = 'info'): boolean {
+export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' | 'success' = 'info'): boolean {
   if (isQuiet && level !== 'error') return false
   if (level === 'debug' && !isVerbose && !process.env.DEBUG) return false
   return true
@@ -55,8 +55,8 @@ export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' = 'info'
 /**
  * Output formatted message
  */
-export function output(message: string, level: 'info' | 'warn' | 'error' | 'success' = 'info'): void {
-  if (!shouldOutput(level)) return
+export function output(message: string, level: 'info' | 'warn' | 'error' | 'success' | 'debug' = 'info'): void {
+  if (!shouldOutput(level === 'success' ? 'info' : level)) return
   
   if (isJson) {
     const json = {
@@ -68,22 +68,24 @@ export function output(message: string, level: 'info' | 'warn' | 'error' | 'succ
     return
   }
   
-  const colors = {
+  const colors: Record<string, (text: string) => string> = {
     info: chalk.blue,
     warn: chalk.yellow,
     error: chalk.red,
     success: chalk.green,
+    debug: chalk.gray,
   }
   
-  const icons = {
+  const icons: Record<string, string> = {
     info: 'ℹ',
     warn: '⚠',
     error: '✖',
     success: '✔',
+    debug: '🔍',
   }
   
-  const color = colors[level]
-  const icon = icons[level]
+  const color = colors[level] || chalk.gray
+  const icon = icons[level] || '•'
   
   console.log(color(`${icon} ${message}`))
 }
