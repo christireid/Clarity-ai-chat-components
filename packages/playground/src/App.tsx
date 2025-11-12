@@ -23,7 +23,7 @@ export default function App() {
       try {
         const prettierMod = await import('prettier/standalone')
         const parserBabel = await import('prettier/parser-babel')
-        const formatted = prettierMod.format(code, {
+        const formatted = await prettierMod.format(code, {
           parser: 'babel',
           plugins: [parserBabel.default],
           semi: false,
@@ -61,11 +61,22 @@ export default function App() {
 
   const handleTemplateChange = (templateKey: string) => {
     setSelectedTemplate(templateKey)
-    setCode(templates[templateKey as keyof typeof templates])
+    const template = templates[templateKey as keyof typeof templates]
+    if (template) {
+      setCode(template)
+    } else {
+      console.warn(`Template "${templateKey}" not found`)
+      setCode(templates.basic)
+    }
   }
 
   const handleReset = () => {
-    setCode(templates[selectedTemplate as keyof typeof templates])
+    const template = templates[selectedTemplate as keyof typeof templates]
+    if (template) {
+      setCode(template)
+    } else {
+      setCode(templates.basic)
+    }
   }
 
   return (
