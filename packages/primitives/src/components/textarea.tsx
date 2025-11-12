@@ -22,41 +22,33 @@ const textareaVariants = cva(
 )
 
 export interface TextareaProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'minRows'>,
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement>,
     VariantProps<typeof textareaVariants> {
   error?: string
   autoResize?: boolean
   maxRows?: number
-  minRows?: number
   ref?: React.Ref<HTMLTextAreaElement>
 }
 
-const Textarea = ({ className, variant, error, autoResize = false, maxRows, minRows, onChange, ref, ...props }: TextareaProps) => {
+const Textarea = ({ className, variant, error, autoResize = false, maxRows, onChange, ref, ...props }: TextareaProps) => {
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null)
   const hasError = error || variant === 'error'
 
-  // React Compiler will optimize this automatically
   const adjustHeight = React.useCallback(() => {
     const textarea = textareaRef.current
     if (!textarea || !autoResize) return
 
     textarea.style.height = 'auto'
     const scrollHeight = textarea.scrollHeight
-    const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20
-    
-    if (minRows) {
-      const minHeight = lineHeight * minRows
-      textarea.style.height = `${Math.max(scrollHeight, minHeight)}px`
-    }
     
     if (maxRows) {
+      const lineHeight = parseInt(getComputedStyle(textarea).lineHeight)
       const maxHeight = lineHeight * maxRows
-      const currentHeight = minRows ? Math.max(scrollHeight, lineHeight * minRows) : scrollHeight
-      textarea.style.height = `${Math.min(currentHeight, maxHeight)}px`
-    } else if (!minRows) {
+      textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
+    } else {
       textarea.style.height = `${scrollHeight}px`
     }
-  }, [autoResize, maxRows, minRows])
+  }, [autoResize, maxRows])
 
   React.useEffect(() => {
     adjustHeight()
