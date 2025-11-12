@@ -21,6 +21,15 @@
     "dist"
   ],
   "sideEffects": false,
+  "keywords": [
+    "typescript",
+    "types",
+    "chat",
+    "ai",
+    "clarity-chat"
+  ],
+  "author": "Christi Reid <christi@codeclarity.ai>",
+  "license": "MIT",
   "publishConfig": {
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"
@@ -30,11 +39,16 @@
     "url": "git+https://github.com/christireid/Clarity-ai-chat-components.git",
     "directory": "packages/types"
   },
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
