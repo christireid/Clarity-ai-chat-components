@@ -39,7 +39,7 @@ export interface PopoverContentProps {
 interface PopoverContextValue {
   open: boolean
   setOpen: (open: boolean) => void
-  triggerRef: React.RefObject<HTMLElement>
+  triggerRef: React.RefObject<HTMLElement | null>
 }
 
 const PopoverContext = React.createContext<PopoverContextValue | null>(null)
@@ -63,7 +63,7 @@ export const Popover: React.FC<PopoverProps> = ({
   defaultOpen = false,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
-  const triggerRef = React.useRef<HTMLElement>(null)
+  const triggerRef = React.useRef<HTMLElement | null>(null)
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
 
   const setOpen = React.useCallback(

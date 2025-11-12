@@ -10,7 +10,7 @@ interface DropdownMenuContextValue {
   open: boolean
   setOpen: (open: boolean) => void
   close: (options?: CloseOptions) => void
-  triggerRef: React.RefObject<HTMLElement>
+  triggerRef: React.RefObject<HTMLElement | null>
   focusFirstRef: React.MutableRefObject<boolean>
 }
 
@@ -38,7 +38,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
   children,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
-  const triggerRef = React.useRef<HTMLElement>(null)
+  const triggerRef = React.useRef<HTMLElement | null>(null)
   const focusFirstRef = React.useRef(false)
 
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
@@ -124,8 +124,7 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
   if (asChild && React.isValidElement(children)) {
     const child = children as React.ReactElement<any>
     return React.cloneElement(child, {
-      ref: (node: HTMLElement) => {
-        // @ts-expect-error - need to assign to ref for proper DOM reference
+      ref: (node: HTMLElement | null) => {
         triggerRef.current = node
         const { ref } = child as any
         if (typeof ref === 'function') {
