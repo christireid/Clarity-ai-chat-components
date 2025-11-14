@@ -122,19 +122,13 @@ export {
   type UseChatReturn as UseChatReturnLegacy,
 } from './hooks/use-chat'
 export * from './hooks/use-chat-enhanced'
-<<<<<<< HEAD
 // Flagship hook - primary public API
-=======
->>>>>>> 4d7130e65f18a1bed25edcd49baf5d135103a292
 export {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
   type ClarityMemoryOptions,
-<<<<<<< HEAD
   type ClarityTransport,
-} from './hooks/use-clarity-chat'
-=======
 } from './hooks/use-clarity-chat'
 
 // Message conversion utilities
