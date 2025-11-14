@@ -9,5 +9,8 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   minify: false,
-  external: [],
+  external: ['react', 'react-dom'], // External peer dependencies
+  esbuildOptions(options) {
+    options.target = 'es2020'
+  },
 })

@@ -55,23 +55,52 @@ yarn add @clarity-chat/memory
 pnpm add @clarity-chat/memory
 ```
 
-## Development
+## Quick Setup (Development)
 
 ```bash
-# Install dependencies
+# 1. Install dependencies
 npm install
 
+# 2. Copy environment file (optional - only needed for embeddings)
+cp .env.example .env
+# Edit .env and add your OPENAI_API_KEY if using embeddings
+
+# 3. Build the package
+npm run build
+
+# 4. Run tests
+npm test
+```
+
+**That's it!** You're ready to develop. See [SETUP.md](./SETUP.md) for detailed setup instructions.
+
+## Development Commands
+
+```bash
 # Build
 npm run build
 
+# Watch mode (auto-rebuild on changes)
+npm run dev
+
 # Test
-npm test
+npm test              # Run once
+npm run test:watch    # Watch mode
+npm run test:coverage # With coverage
+npm run test:ui       # Interactive UI
 
-# Type check
-npm run typecheck
+# Code Quality
+npm run typecheck     # Type check
+npm run lint          # Lint
+npm run lint:fix      # Auto-fix linting
+npm run format        # Format code
+npm run format:check  # Check formatting
 
-# Lint
-npm run lint
+# Cleanup
+npm run clean         # Remove build artifacts
+
+# Quick setup (install + build)
+npm run setup
 ```
 
 ## License

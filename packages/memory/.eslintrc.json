@@ -1,0 +1,4 @@
+{
+  "extends": ["../../eslint.config.js"],
+  "ignorePatterns": ["dist/", "coverage/", "*.config.*"]
+}
