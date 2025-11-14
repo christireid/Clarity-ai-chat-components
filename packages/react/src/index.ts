@@ -55,6 +55,7 @@ export * from './components/model-selector'
 export * from './components/streaming-message'
 export * from './components/stream-block'
 export * from './components/tool-invocation-card'
+export * from './components/clarity-tool-result'
 export * from './components/citation-card'
 export * from './components/thinking-indicator'
 export * from './components/copy-button'
@@ -185,6 +186,13 @@ export {
   useClarityChatWithDebounce,
   useClarityChatWithAutoSave,
 } from './hooks/use-clarity-chat-helpers'
+
+// Structured object generation hook
+export {
+  useClarityObject,
+  type UseClarityObjectOptions,
+  type UseClarityObjectReturn,
+} from './hooks/use-clarity-object'
 
 // Testing utilities (for test files only)
 export {
