@@ -47,5 +47,8 @@ export { MemoryError, MemoryErrorCodes } from './types'
 // export { OpenAIEmbedder } from './embeddings/openai'
 // export { AnthropicEmbedder } from './embeddings/anthropic'
 
-// Version
-export const VERSION = '0.1.0'
+// Utilities
+export * from './utils'
+
+// Constants
+export { VERSION, DEFAULT_CONFIG } from './constants'
