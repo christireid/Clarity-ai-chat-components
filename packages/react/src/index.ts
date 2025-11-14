@@ -197,6 +197,9 @@ export {
   type ExtractedToolResult,
 } from './hooks/use-clarity-chat-with-tools'
 
+// Prompt & Token Optimization (optional addon layer)
+export * from './prompt'
+
 // Tool result types
 export type {
   WeatherToolResult,
