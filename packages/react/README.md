@@ -32,31 +32,43 @@ yarn add @clarity-chat/react
 
 > 📖 **New to Clarity?** Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or check the [Quick Reference](../../docs/QUICK_REFERENCE.md) for copy-paste snippets.
 
-### Basic Chat
+### Basic Chat (Simplest Way)
 
 ```tsx
-import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
-import { useMemo } from 'react'
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
 function MyChat() {
-  const { messages: coreMessages, append, isLoading } = useClarityChat({
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+**That's it!** One component, zero configuration, full-featured chat.
+
+### Basic Chat (With Hook - More Control)
+
+```tsx
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function MyChat() {
+  const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
   })
 
-  const messages = useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
-    [coreMessages]
-  )
-
   return (
     <ChatWindow
-      messages={messages}
+      messages={messages} // No conversion needed! ✨
       isLoading={isLoading}
       onSendMessage={(content) => append({ role: 'user', content })}
     />
   )
 }
 ```
+
+**What Changed:**
+- ✅ `ChatWindow` now accepts `CoreMessage[]` directly - no conversion needed
+- ✅ Simpler API - less boilerplate, same power
 
 ### With Memory
 
