@@ -122,6 +122,8 @@ export {
   type UseChatReturn as UseChatReturnLegacy,
 } from './hooks/use-chat'
 export * from './hooks/use-chat-enhanced'
+export * from './agents/tool-ui-registry'
+export * from './components/clarity-tool-result'
 export {
   useClarityChat,
   type UseClarityChatOptions,
@@ -131,6 +133,11 @@ export {
   type ClarityChatMemoryInfo,
   type ClarityChatErrorInfo,
 } from './hooks/use-clarity-chat'
+export {
+  useClarityObject,
+  type UseClarityObjectOptions,
+  type UseClarityObjectReturn,
+} from './hooks/use-clarity-object'
 
 // Message conversion utilities
 export {
