@@ -21,7 +21,17 @@ import {
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
 } from './use-chat-enhanced'
-import { useMemory } from '../memory/memory-provider'
+import { MemoryContext } from '../memory/memory-provider'
+import type { MemoryContextValue } from '../memory/memory-provider'
+
+/**
+ * Safe hook to get memory context without throwing
+ * Returns null if MemoryProvider is not available
+ * This satisfies React hooks rules by always calling useContext unconditionally
+ */
+function useMemorySafe(): MemoryContextValue | null {
+  return React.useContext(MemoryContext)
+}
 
 /**
  * Classify error type for better error handling
@@ -178,14 +188,9 @@ export function useClarityChat(
 ): UseClarityChatReturn {
   const { memory, transport, ...rest } = options
 
-  // Get memory context if available (optional - won't throw if not provided)
-  let memoryContext = null
-  try {
-    memoryContext = useMemory()
-  } catch {
-    // MemoryProvider not available - that's okay, memory is optional
-    memoryContext = null
-  }
+  // Get memory context safely (returns null if MemoryProvider is not available)
+  // This hook always runs unconditionally, satisfying React hooks rules
+  const memoryContext = useMemorySafe()
 
   // Configure transport protocol
   // For WebSocket, use 'data' protocol (useChatEnhanced will handle it)

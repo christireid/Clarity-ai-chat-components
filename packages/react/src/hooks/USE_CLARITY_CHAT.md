@@ -8,7 +8,7 @@
 
 ```tsx
 import { useClarityChat, ChatWindow } from '@clarity-chat/react'
-import { convertCoreMessagesToMessages } from '@clarity-chat/react'
+import { coreMessagesToMessages } from '@clarity-chat/react'
 
 function MyChat() {
   const { messages, append, isLoading, memoryInfo } = useClarityChat({
@@ -16,7 +16,7 @@ function MyChat() {
   })
 
   const chatMessages = React.useMemo(
-    () => convertCoreMessagesToMessages(messages),
+    () => coreMessagesToMessages(messages),
     [messages]
   )
 
