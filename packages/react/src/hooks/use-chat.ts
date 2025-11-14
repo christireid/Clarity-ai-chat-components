@@ -7,12 +7,31 @@ export interface UseChatOptions {
   onSendMessage?: (message: Message, options?: { signal?: AbortSignal }) => Promise<void>
 }
 
+/**
+ * Return type for useChat hook (low-level primitive)
+ * 
+ * Follows the standard hook return pattern:
+ * - Data: `messages` (array of messages)
+ * - State: `isLoading`, `error`
+ * - Actions: `sendMessage`, `retry`, `clear`
+ */
 export interface UseChatReturn {
+  /** Current messages (data) */
   messages: Message[]
+  
+  /** Whether currently loading (state) */
   isLoading: boolean
+  
+  /** Current error, if any (state) */
   error: Error | null
+  
+  /** Send a message (action) */
   sendMessage: (content: string, options?: { signal?: AbortSignal }) => Promise<void>
+  
+  /** Retry a failed message (action) */
   retry: (messageId: string, options?: { signal?: AbortSignal }) => Promise<void>
+  
+  /** Clear all messages (action) */
   clear: () => void
 }
 

@@ -234,19 +234,55 @@ export type UseClarityChatReturn = UseChatEnhancedReturn & {
 }
 
 /**
- * useClarityChat - Primary chat hook for Clarity AI
+ * useClarityChat - Top-Level Chat State Hook
+ * 
+ * **Architecture Layer**: Top-Level (Drop-in Ready)
+ * **Domain**: Chat State
  * 
  * Wraps useChatEnhanced with Clarity-specific features:
  * - Memory integration (optional)
  * - Transport selection (SSE/WebSocket)
+ * - Prompt optimization
  * - Better defaults for production use
  * 
  * @param options - Configuration options
- * @returns Chat state and methods
+ * @param options.api - API endpoint URL (required)
+ * @param options.memory - Memory configuration (optional)
+ * @param options.transport - Transport protocol: 'sse' (default) or 'websocket'
+ * @param options.promptOptimization - Prompt optimization configuration (optional)
+ * @returns Chat state and methods with memory info and token stats
+ * 
+ * @example
+ * ```tsx
+ * // Simple usage
+ * const chat = useClarityChat({ api: '/api/chat' })
+ * 
+ * // With memory
+ * const chat = useClarityChat({
+ *   api: '/api/chat',
+ *   memory: { enabled: true, strategy: 'vector-store' },
+ * })
+ * 
+ * // With handlers for easier integration
+ * const handlers = useChatHandlers({ chat })
+ * <ChatWindow messages={chat.messages} onSendMessage={handlers.onSendMessage} />
+ * ```
+ * 
+ * @throws {Error} If API endpoint is invalid or missing
  */
 export function useClarityChat(
   options: UseClarityChatOptions = {}
 ): UseClarityChatReturn {
+  // Validate API endpoint
+  if (!options.api || typeof options.api !== 'string' || options.api.trim().length === 0) {
+    throw new Error(
+      'useClarityChat: "api" option is required.\n' +
+      'Please provide your API endpoint URL.\n\n' +
+      'Example:\n' +
+      '  const chat = useClarityChat({ api: "/api/chat" })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/getting-started'
+    )
+  }
   const { memory, transport, promptOptimization, ...rest } = options
 
   // Get memory context safely (returns null if MemoryProvider is not available)

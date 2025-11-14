@@ -10,6 +10,11 @@
 
 import type { UseClarityChatOptions } from '../hooks/use-clarity-chat'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
+import {
+  createUserMessage as createUserMessageCanonical,
+  createAssistantMessage as createAssistantMessageCanonical,
+  createSystemMessage as createSystemMessageCanonical,
+} from './chat-helpers'
 
 /**
  * Create a basic chat configuration with sensible defaults
@@ -75,40 +80,52 @@ export function createEnterpriseChatConfig(api: string): UseClarityChatOptions {
 /**
  * Helper to create a user message
  * 
- * @deprecated Use the version from './chat-helpers' instead for consistency
- * This is kept for backward compatibility
+ * @deprecated Use the version from './chat-helpers' instead for consistency.
+ * This is kept for backward compatibility only.
+ * 
+ * @example
+ * ```tsx
+ * import { createUserMessage } from '@clarity-chat/react/utils/chat-helpers'
+ * const message = createUserMessage('Hello!', { id: 'msg-1' })
+ * ```
  */
 export function createUserMessage(content: string): CoreMessage {
-  return {
-    role: 'user',
-    content,
-  }
+  // Re-export from canonical implementation (backward compatibility)
+  return createUserMessageCanonical(content)
 }
 
 /**
  * Helper to create an assistant message
  * 
- * @deprecated Use the version from './chat-helpers' instead for consistency
- * This is kept for backward compatibility
+ * @deprecated Use the version from './chat-helpers' instead for consistency.
+ * This is kept for backward compatibility only.
+ * 
+ * @example
+ * ```tsx
+ * import { createAssistantMessage } from '@clarity-chat/react/utils/chat-helpers'
+ * const message = createAssistantMessage('Hi there!', { id: 'msg-2' })
+ * ```
  */
 export function createAssistantMessage(content: string): CoreMessage {
-  return {
-    role: 'assistant',
-    content,
-  }
+  // Re-export from canonical implementation (backward compatibility)
+  return createAssistantMessageCanonical(content)
 }
 
 /**
  * Helper to create a system message
  * 
- * @deprecated Use the version from './chat-helpers' instead for consistency
- * This is kept for backward compatibility
+ * @deprecated Use the version from './chat-helpers' instead for consistency.
+ * This is kept for backward compatibility only.
+ * 
+ * @example
+ * ```tsx
+ * import { createSystemMessage } from '@clarity-chat/react/utils/chat-helpers'
+ * const message = createSystemMessage('You are a helpful assistant.', { id: 'msg-3' })
+ * ```
  */
 export function createSystemMessage(content: string): CoreMessage {
-  return {
-    role: 'system',
-    content,
-  }
+  // Re-export from canonical implementation (backward compatibility)
+  return createSystemMessageCanonical(content)
 }
 
 /**
