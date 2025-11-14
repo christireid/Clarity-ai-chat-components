@@ -1,6 +1,6 @@
 # Getting Started with Clarity Chat
 
-Get from zero to a working AI chat interface in minutes with Clarity's React library.
+Get up and running with Clarity Chat in minutes. This guide assumes you're using React with Next.js, but Clarity works with any React setup.
 
 ## Installation
 
@@ -12,11 +12,13 @@ pnpm add @clarity-chat/react
 yarn add @clarity-chat/react
 ```
 
-## Minimal Example
+## Your First Chat
 
-Here's the simplest possible chat interface using `useClarityChat` and `ChatWindow`:
+Here's the simplest possible chat implementation:
 
 ```tsx
+'use client'
+
 import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
 import { useMemo } from 'react'
 
@@ -44,8 +46,14 @@ export default function ChatPage() {
         onSendMessage={async (content) => {
           await append({ role: 'user', content })
         }}
-        error={error}
       />
+      {error && (
+        <div className="fixed bottom-4 right-4 rounded-lg border border-red-200 bg-red-50 p-4 shadow-lg">
+          <p className="text-sm text-red-800">
+            <strong>Error:</strong> {error.message}
+          </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -56,35 +64,39 @@ That's it! You now have a fully functional chat interface with:
 - ✅ Loading states
 - ✅ Error handling
 - ✅ Production-ready UI
-- ✅ Auto-scrolling
-- ✅ Keyboard shortcuts (Enter to send, Shift+Enter for new line)
 
 ## What You Get Out of the Box
 
+Clarity Chat provides everything you need for a production-ready chat experience:
+
 ### Streaming Responses
-Clarity handles streaming automatically. Your chat responses stream in real-time without any additional configuration.
+Messages stream in real-time as the AI generates them. No configuration needed—it just works.
 
 ### Sensible Defaults
-- Automatic message formatting
-- Optimized re-renders
-- Built-in accessibility (WCAG compliant)
-- Mobile-responsive design
+- SSE (Server-Sent Events) transport for reliable streaming
+- Automatic error recovery
+- Optimized rendering for performance
+- Accessible UI components (WCAG compliant)
 
 ### Production-Ready UI
-- Virtualized message lists (handles 1000+ messages smoothly)
-- Thinking indicators during AI processing
-- Empty states and loading skeletons
-- Error boundaries and retry mechanisms
+The `<ChatWindow>` component includes:
+- Virtualized message list (handles 1000+ messages smoothly)
+- Animated thinking indicators
+- Empty states
+- Message actions (copy, retry, edit)
+- Responsive design (mobile-first)
 
 ## Add Memory in One Step
 
-Enable context-aware conversations by wrapping your app in `MemoryProvider` and enabling memory in `useClarityChat`:
+Enable context-aware conversations with Clarity's built-in memory system:
 
 ```tsx
-import { MemoryProvider, useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
+'use client'
+
+import { useClarityChat, ChatWindow, MemoryProvider, convertCoreMessagesToMessages } from '@clarity-chat/react'
 import { useMemo } from 'react'
 
-function App() {
+export default function ChatWithMemory() {
   return (
     <MemoryProvider config={{ maxTokens: 10000 }}>
       <ChatPage />
@@ -93,11 +105,17 @@ function App() {
 }
 
 function ChatPage() {
-  const { messages: coreMessages, append, isLoading } = useClarityChat({
+  const {
+    messages: coreMessages,
+    append,
+    isLoading,
+    memoryEnabled,
+    contextSummary,
+  } = useClarityChat({
     api: '/api/chat',
     memory: {
       enabled: true,
-      strategy: 'sliding-window', // or 'semantic-chunks' or 'vector-store'
+      strategy: 'semantic-chunks', // or 'sliding-window' or 'vector-store'
       maxTokens: 4000,
     },
   })
@@ -108,141 +126,39 @@ function ChatPage() {
   )
 
   return (
-    <ChatWindow
-      messages={messages}
-      isLoading={isLoading}
-      onSendMessage={async (content) => {
-        await append({ role: 'user', content })
-      }}
-    />
-  )
-}
-```
-
-### Memory Strategies
-
-- **`sliding-window`**: Keeps the most recent N tokens (fastest, best for short conversations)
-- **`semantic-chunks`**: Uses semantic search to find relevant context (balanced performance/quality)
-- **`vector-store`**: Full vector database integration (best for long-term memory and large contexts)
-
-## Next Steps
-
-- 📖 Read the [API Reference](../packages/react/README.md)
-- 🔄 See [Migrating from Vercel AI SDK](./migrating-from-vercel-ai-sdk.md)
-- 🆚 Compare [Clarity vs Vercel AI SDK UI](./clarity-vs-vercel-ai-sdk-ui.md)
-- 🎨 Explore [Structured Output](./getting-started-clarity-chat.md#structured-output) with `useClarityObject`
-- 🛠️ Learn about [Tool UI Registry](./getting-started-clarity-chat.md#tool-ui-registry) for generative UI
-
-## Structured Output
-
-Generate type-safe objects from AI models:
-
-```tsx
-import { useClarityObject } from '@clarity-chat/react'
-
-interface Product {
-  name: string
-  price: number
-  description: string
-}
-
-function ProductRecommendations() {
-  const { object, run, isLoading } = useClarityObject<Product[]>({
-    api: '/api/generate-products',
-    initialInput: { query: 'gaming laptops' },
-  })
-
-  return (
-    <div>
-      <button onClick={() => run({ query: 'gaming laptops' })} disabled={isLoading}>
-        Generate Recommendations
-      </button>
-      {object && (
-        <ul>
-          {object.map((product, idx) => (
-            <li key={idx}>
-              <h3>{product.name}</h3>
-              <p>${product.price}</p>
-              <p>{product.description}</p>
-            </li>
-          ))}
-        </ul>
+    <div className="h-screen">
+      <ChatWindow
+        messages={messages}
+        isLoading={isLoading}
+        onSendMessage={async (content) => {
+          await append({ role: 'user', content })
+        }}
+      />
+      {memoryEnabled && contextSummary && (
+        <div className="fixed bottom-4 left-4 rounded-lg border border-blue-200 bg-blue-50 p-2 text-xs">
+          Using {contextSummary.split(' ').length} words from memory
+        </div>
       )}
     </div>
   )
 }
 ```
 
-## Tool UI Registry
+With memory enabled, Clarity will:
+- Automatically store conversation context
+- Retrieve relevant past conversations
+- Enrich prompts with context
+- Optimize token usage
 
-Automatically render tool results with custom UI components:
+## Next Steps
 
-```tsx
-import { createToolUIRegistry, ClarityToolResult } from '@clarity-chat/react'
-
-// Define your tool UI components
-const WeatherResult = ({ data }) => (
-  <div>
-    <h3>Weather in {data.location}</h3>
-    <p>{data.temperature}°F - {data.condition}</p>
-  </div>
-)
-
-// Create registry
-const toolRegistry = createToolUIRegistry({
-  get_weather: WeatherResult,
-})
-
-// Use in your chat
-<ClarityToolResult
-  registry={toolRegistry}
-  toolCall={{ name: 'get_weather', args: { location: 'San Francisco' } }}
-  result={weatherData}
-  messages={messages}
-/>
-```
-
-## API Route Example (Next.js)
-
-Your API route should return streaming responses compatible with Vercel AI SDK format:
-
-```tsx
-// app/api/chat/route.ts
-import { streamText } from 'ai' // or your AI SDK
-import { openai } from '@ai-sdk/openai'
-
-export async function POST(req: Request) {
-  const { messages } = await req.json()
-
-  const result = streamText({
-    model: openai('gpt-4'),
-    messages,
-  })
-
-  return result.toDataStreamResponse()
-}
-```
-
-## TypeScript Support
-
-Clarity is built with TypeScript and provides full type safety:
-
-```tsx
-import type { UseClarityChatOptions, UseClarityChatReturn } from '@clarity-chat/react'
-
-const options: UseClarityChatOptions = {
-  api: '/api/chat',
-  memory: {
-    enabled: true,
-    strategy: 'sliding-window',
-  },
-}
-
-const chat: UseClarityChatReturn = useClarityChat(options)
-```
+- **[Compare with Vercel AI SDK](./clarity-vs-vercel-ai-sdk-ui.md)** - See how Clarity extends Vercel's API
+- **[Migration Guide](./migrating-from-vercel.md)** - Migrate from Vercel AI SDK
+- **[API Reference](../../packages/react/README.md)** - Complete API documentation
+- **[Examples](../../packages/react/src/examples/)** - More code examples
 
 ## Need Help?
 
-- 📚 Check the [full documentation](../packages/react/README.md)
-- 💬 Open an issue on GitHub
-- 🐛 Report bugs or request features
+- Check the [API Reference](../../packages/react/README.md)
+- Browse [examples](../../apps/examples/)
+- See [Storybook](../../apps/storybook/) for interactive component demos

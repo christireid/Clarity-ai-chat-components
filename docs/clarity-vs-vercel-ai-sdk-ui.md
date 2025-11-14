@@ -1,30 +1,27 @@
 # Clarity vs Vercel AI SDK UI
 
-Clarity is a React-first AI UI library that's API-compatible with key Vercel AI SDK UI hooks, but more opinionated around memory, agents, streaming, and production UX.
+**Clarity AI Chat Components** is a React-first AI UI library that's API-compatible with Vercel AI SDK UI while adding enterprise-grade features. If you're familiar with Vercel's `useChat`, `useCompletion`, and `useAssistant` hooks, you'll feel right at home—but with more power under the hood.
 
-## Introduction
+## What is Clarity?
 
-**Clarity AI Chat Components** extends Vercel AI SDK UI with:
-- **First-class memory management** - Built-in memory strategies for context retention
-- **Agent orchestration** - ReAct agents with tool composition
-- **Production UI components** - ChatWindow, VirtualizedMessageList, and 50+ components
-- **Advanced streaming** - SSE and WebSocket support with reconnection logic
-- **Enterprise features** - RBAC, quotas, audit logging, multi-tenancy scaffolding
+Clarity is:
+- **React-first**: Built specifically for React applications with React 19 optimizations
+- **API-compatible**: Drop-in replacement for Vercel AI SDK UI hooks
+- **More opinionated**: First-class support for memory, agents, streaming protocols, and production UX
+- **Enterprise-ready**: Built-in analytics, quotas, RBAC, and observability
 
-While maintaining **full API compatibility** with Vercel's `useChat`, `useCompletion`, and `useAssistant` hooks.
-
-## Feature Comparison Table
+## Feature Comparison
 
 | Area                    | Vercel AI SDK UI                               | Clarity AI Chat Components                                       |
 | ----------------------- | ---------------------------------------------- | ---------------------------------------------------------------- |
 | **Core chat hook**      | `useChat`                                      | `useClarityChat` (wraps enhanced `useChat`, adds memory/transport) |
 | **Completion**          | `useCompletion`                                | `useCompletion` (compatible, with extra DX options)              |
-| **Structured output**   | `useObject` (client) / `generateObject` (server) | `useClarityObject` (typed, composable, streaming support)        |
+| **Structured output**   | `useObject`                                    | `useClarityObject` (typed, composable)                           |
 | **Memory & context**    | Guide-level, DIY                               | First-class `MemoryProvider` + `@clarity-chat/memory` engine     |
 | **Tools & generative UI** | Docs + patterns; UI built manually             | Agents + tools + tool→UI registry + `<ClarityToolResult />`      |
 | **Streaming protocols** | UIMessage streams, stream helpers              | Hooks for SSE & WebSocket (`useStreamingSSE`, `useStreamingWebSocket`) |
-| **Chat UI components** | Examples, some primitives                      | Production-ready `<ChatWindow>`, message components, indicators  |
-| **Error handling**     | Basic examples                                 | `useErrorRecovery`, opinionated error components                  |
+| **Chat UI components**  | Examples, some primitives                      | Production-ready `<ChatWindow>`, message components, indicators  |
+| **Error handling**      | Basic examples                                 | `useErrorRecovery`, opinionated error components                  |
 | **Observability & quotas** | BYO infra                                      | Analytics / quotas / RBAC scaffolding (packages in repo)         |
 
 ## Detailed Comparison
@@ -33,262 +30,138 @@ While maintaining **full API compatibility** with Vercel's `useChat`, `useComple
 
 **Vercel:**
 ```tsx
-import { useChat } from 'ai/react'
-
-const { messages, input, handleInputChange, handleSubmit } = useChat({
+const { messages, append, isLoading } = useChat({
   api: '/api/chat',
 })
 ```
 
 **Clarity:**
 ```tsx
-import { useClarityChat } from '@clarity-chat/react'
-
-const { messages, input, setInput, append, isLoading } = useClarityChat({
+const { messages, append, isLoading, memoryEnabled, contextSummary } = useClarityChat({
   api: '/api/chat',
-  memory: { enabled: true, strategy: 'sliding-window' },
+  memory: { enabled: true, strategy: 'semantic-chunks' },
   transport: 'sse', // or 'websocket'
 })
 ```
 
-**Clarity Advantages:**
-- Memory integration (3 strategies)
-- Transport selection (SSE/WebSocket)
-- Context enrichment
-- Auto memory capture
-- Context summary generation
+**Difference:** Clarity adds memory integration and transport selection while maintaining full API compatibility. You can use `useClarityChat` exactly like `useChat` if you want.
 
 ### Memory & Context
 
-**Vercel:** No built-in memory management. Developers must implement their own context management, token counting, and summarization.
+**Vercel:** You manage context yourself—store messages, retrieve history, build context strings.
 
-**Clarity:** First-class memory system with three strategies:
+**Clarity:** Built-in memory system with three strategies:
+- **Sliding Window**: Fast, recent context (good for short conversations)
+- **Semantic Chunks**: Context-aware selection (good for medium conversations)
+- **Vector Store**: Long-term memory with embeddings (good for persistent context)
 
 ```tsx
-import { MemoryProvider } from '@clarity-chat/react'
-
 <MemoryProvider config={{ maxTokens: 10000 }}>
-  <App />
+  <YourApp />
 </MemoryProvider>
 
-// In your component
-useClarityChat({
+const chat = useClarityChat({
   memory: {
     enabled: true,
-    strategy: 'sliding-window', // or 'semantic-chunks', 'vector-store'
+    strategy: 'semantic-chunks',
     maxTokens: 4000,
   },
 })
 ```
 
-**Clarity Advantages:**
-- Built-in memory strategies
-- Automatic context management
-- Token optimization
-- Memory visualization
-- Long-term context retention
-
-### Structured Output
-
-**Vercel:** Server-side `generateObject` or client-side `useObject` hook.
-
-**Clarity:** Client-side `useClarityObject` with streaming support:
-
-```tsx
-import { useClarityObject } from '@clarity-chat/react'
-
-interface Product {
-  name: string
-  price: number
-}
-
-const { object, run, isLoading } = useClarityObject<Product[]>({
-  api: '/api/generate-products',
-  stream: true, // Streaming support
-})
-```
-
-**Clarity Advantages:**
-- Type-safe generics
-- Streaming support
-- Automatic JSON parsing
-- React integration
-
 ### Tools & Generative UI
 
-**Vercel:** Manual tool result rendering:
+**Vercel:** You define tools and manually render their results.
+
+**Clarity:** Tool → UI registry pattern for automatic rendering:
 
 ```tsx
-{toolInvocations.map(inv => {
-  if (inv.toolName === 'weather') {
-    return <WeatherDisplay data={inv.result} />
-  }
-  // Manual mapping for each tool
-})}
-```
+// Define tool result component
+function WeatherResult({ data }) {
+  return <Card>Temperature: {data.temp}°C</Card>
+}
 
-**Clarity:** Automatic tool UI registry:
-
-```tsx
-import { createToolUIRegistry, ClarityToolResult } from '@clarity-chat/react'
-
-const registry = createToolUIRegistry({
+// Create registry
+const toolRegistry = createToolUIRegistry({
   get_weather: WeatherResult,
-  search: SearchResult,
 })
 
+// Use in chat
 <ClarityToolResult
-  registry={registry}
+  registry={toolRegistry}
   toolCall={toolCall}
   result={result}
   messages={messages}
 />
 ```
 
-**Clarity Advantages:**
-- Type-safe registry
-- Automatic rendering
-- Fallback handling
-- Message context integration
-
 ### Streaming Protocols
 
-**Vercel:** SSE via fetch API (implicit).
+**Vercel:** Uses standard fetch with SSE support (implicit).
 
-**Clarity:** Explicit SSE and WebSocket hooks:
-
-```tsx
-// SSE with reconnection
-const { data, status } = useStreamingSSE({
-  url: '/api/stream',
-  onMessage: (event) => console.log(event.data),
-})
-
-// WebSocket with heartbeat
-const { send, status } = useStreamingWebSocket({
-  url: 'ws://api/chat',
-  onMessage: (message) => console.log(message),
-})
-```
-
-**Clarity Advantages:**
-- WebSocket support
-- Automatic reconnection
-- Heartbeat monitoring
-- Resume from last event ID
+**Clarity:** Explicit hooks for different protocols:
+- `useStreamingSSE`: Production-ready SSE with reconnection, resume, heartbeat
+- `useStreamingWebSocket`: WebSocket support with bidirectional communication
+- `useStreaming`: Generic streaming hook for custom protocols
 
 ### Chat UI Components
 
-**Vercel:** Basic examples and primitives. Developers build their own UI.
+**Vercel:** Provides examples and some primitive components. You build most UI yourself.
 
 **Clarity:** Production-ready components:
-
-```tsx
-import { ChatWindow, VirtualizedMessageList, ThinkingIndicator } from '@clarity-chat/react'
-
-<ChatWindow
-  messages={messages}
-  isLoading={isLoading}
-  onSendMessage={handleSend}
-  showHeader
-  sessionTitle="My Chat"
-/>
-```
-
-**Clarity Advantages:**
-- Virtualized lists (1000+ messages)
-- Thinking indicators
-- Tool invocation cards
-- Agent run feeds
-- Accessibility (WCAG compliant)
-- Responsive design
+- `<ChatWindow>`: Complete chat interface
+- `<VirtualizedMessageList>`: Handles 1000+ messages smoothly
+- `<ThinkingIndicator>`: Animated processing states
+- `<ToolInvocationCard>`: Rich tool execution display
+- `<AgentRunFeed>`: Agent step-by-step visualization
 
 ### Error Handling
 
 **Vercel:** Basic error states in hooks.
 
-**Clarity:** Dedicated error recovery:
+**Clarity:** Intelligent error recovery:
+- Automatic retry with exponential backoff
+- Error classification (network, rate limit, server, auth)
+- User-friendly error messages
+- `<ErrorBoundary>` components for graceful failures
 
-```tsx
-import { ErrorBoundary, RetryButton, useErrorRecovery } from '@clarity-chat/react'
+### Observability & Enterprise Features
 
-<ErrorBoundary fallback={<RetryButton />}>
-  <ChatWindow />
-</ErrorBoundary>
-```
+**Vercel:** Bring your own infrastructure for analytics, quotas, RBAC.
 
-**Clarity Advantages:**
-- Error boundaries
-- Retry mechanisms
-- Error classification
-- Network status tracking
-
-## Migration Path
-
-### From Vercel to Clarity
-
-1. **Replace `useChat` with `useClarityChat`**
-   ```tsx
-   // Before
-   import { useChat } from 'ai/react'
-   
-   // After
-   import { useClarityChat } from '@clarity-chat/react'
-   ```
-
-2. **Add Memory (Optional)**
-   ```tsx
-   useClarityChat({
-     api: '/api/chat',
-     memory: { enabled: true },
-   })
-   ```
-
-3. **Use Production Components**
-   ```tsx
-   import { ChatWindow } from '@clarity-chat/react'
-   ```
-
-4. **Add Tool UI Registry (Optional)**
-   ```tsx
-   import { createToolUIRegistry, ClarityToolResult } from '@clarity-chat/react'
-   ```
-
-See the [Migration Guide](./migrating-from-vercel-ai-sdk.md) for detailed instructions.
+**Clarity:** Built-in scaffolding:
+- Analytics system (`@clarity-chat/react/analytics`)
+- Usage quotas (`@clarity-chat/react/quotas`)
+- RBAC (`@clarity-chat/react/rbac`)
+- Multi-tenancy (`@clarity-chat/react/multi-tenancy`)
+- Audit logging (`@clarity-chat/react/audit`)
 
 ## When to Choose Clarity
 
-Choose Clarity when you need:
-- ✅ Memory management for long conversations
-- ✅ Production-ready UI components
-- ✅ Tool UI registry for generative UI
-- ✅ WebSocket support for real-time apps
-- ✅ Agent orchestration
-- ✅ Enterprise features (RBAC, quotas, audit)
-- ✅ Advanced error recovery
-- ✅ Full TypeScript support
+Choose Clarity if you need:
+- ✅ **Memory & context management** without building it yourself
+- ✅ **Production-ready UI components** out of the box
+- ✅ **Enterprise features** (analytics, quotas, RBAC)
+- ✅ **Advanced streaming** (WebSocket, SSE with reconnection)
+- ✅ **Tool UI registry** for generative UIs
+- ✅ **Agent orchestration** (ReAct pattern)
+- ✅ **Better DX** (error recovery, token optimization, caching)
 
-## When to Choose Vercel AI SDK UI
+Choose Vercel if you:
+- ✅ Want minimal, unopinionated hooks
+- ✅ Prefer building UI from scratch
+- ✅ Need server-side utilities (`generateObject`, etc.)
+- ✅ Want broader community adoption
 
-Choose Vercel AI SDK UI when you need:
-- ✅ Minimal dependencies
-- ✅ Simple chat without memory
-- ✅ Server-side structured output only
-- ✅ Basic UI (build your own)
-- ✅ SSE-only streaming
+## Migration Path
 
-## Summary
+Clarity is designed to be a drop-in replacement. See the [Migration Guide](./migrating-from-vercel.md) for step-by-step instructions.
 
-Clarity provides **full compatibility** with Vercel AI SDK UI while adding:
-- Memory management
-- Production UI components
-- Tool UI registry
-- WebSocket support
-- Agent orchestration
-- Enterprise features
+**TL;DR:** Replace `useChat` with `useClarityChat`, wrap your app in `<MemoryProvider>` if you want memory, and you're done.
 
-**Migration is straightforward** - see the [Migration Guide](./migrating-from-vercel-ai-sdk.md).
+## Learn More
 
----
-
-**Ready to get started?** See the [Getting Started Guide](./getting-started-clarity-chat.md)!
+- **[Getting Started](./getting-started-clarity-chat.md)** - Quick start guide
+- **[Migration Guide](./migrating-from-vercel.md)** - Migrate from Vercel
+- **[API Reference](../../packages/react/README.md)** - Complete documentation
+- **[Feature Audit](../../CLARITY_VS_VERCEL_AI_SDK_AUDIT.md)** - Detailed technical comparison
