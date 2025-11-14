@@ -158,7 +158,7 @@ export function usePromptDebugger(
           : false
 
         // Check for compression tags
-        const tags = (msg as any).tags || []
+        const tags = 'tags' in msg ? msg.tags || [] : []
         const isCompressed = tags.includes('compressed-context')
         const modificationDetails = isCompressed
           ? `Compressed (${tags.join(', ')})`

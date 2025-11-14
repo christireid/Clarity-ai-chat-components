@@ -14,7 +14,6 @@ import {
   usePromptOptimizer,
   useDynamicModelRouting,
   usePromptDebugger,
-  useClarityChat,
   createPromptRecipe,
   getModelProfile,
   MODEL_PROFILES,
