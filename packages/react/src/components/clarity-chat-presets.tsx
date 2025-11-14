@@ -1,8 +1,26 @@
 /**
- * ClarityChat Presets - Pre-configured chat setups
+ * ClarityChatPresets - Top-Level Preset Components
  * 
- * Common configurations for different use cases.
- * Use these to get started quickly with sensible defaults.
+ * Pre-configured chat components for common use cases, making it even easier
+ * to get started with Clarity Chat.
+ * 
+ * **Architecture Layer**: Top-Level (Drop-in Ready)
+ * **Domain**: Developer Experience
+ * 
+ * These presets wrap `ClarityChat` with sensible defaults for specific use cases.
+ * For more control, use `ClarityChat` directly or compose with mid-level APIs.
+ * 
+ * @example
+ * ```tsx
+ * // Simple chat
+ * <ClarityChatPresets.Simple api="/api/chat" />
+ * 
+ * // Chat with memory
+ * <ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="vector-store" />
+ * 
+ * // Enterprise chat with all features
+ * <ClarityChatPresets.Enterprise api="/api/chat" />
+ * ```
  */
 
 import type { UseClarityChatOptions } from '../hooks/use-clarity-chat'
