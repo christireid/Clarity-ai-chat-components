@@ -22,6 +22,11 @@ export { IndexedDBStore } from './stores/indexeddb'
 export { createStoreFromConfig } from './stores/factory'
 export type { VectorStore, SearchOptions } from './stores/base'
 
+// Utilities
+export * from './utils/token-counter'
+export * from './utils/validation'
+export * from './utils/vector'
+
 // Legacy exports (for backward compatibility)
 export { MemoryService } from './memory-service'
 export {

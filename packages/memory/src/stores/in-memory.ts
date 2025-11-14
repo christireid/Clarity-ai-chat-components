@@ -5,6 +5,7 @@
 
 import type { MemoryItem, MemoryType } from '../core/types'
 import type { VectorStore, SearchOptions } from './base'
+import { cosineSimilarity } from '../utils/vector'
 
 export class InMemoryStore implements VectorStore {
   private memories: Map<string, MemoryItem> = new Map()
@@ -125,24 +126,5 @@ export class InMemoryStore implements VectorStore {
     // Clear all data
     this.memories.clear()
     this.accessCounts.clear()
-  }
-
-  // Helper: Calculate cosine similarity
-  private cosineSimilarity(a: number[], b: number[]): number {
-    if (a.length !== b.length) return 0
-
-    let dotProduct = 0
-    let normA = 0
-    let normB = 0
-
-    for (let i = 0; i < a.length; i++) {
-      dotProduct += a[i]! * b[i]!
-      normA += a[i]! * a[i]!
-      normB += b[i]! * b[i]!
-    }
-
-    if (normA === 0 || normB === 0) return 0
-
-    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
   }
 }
