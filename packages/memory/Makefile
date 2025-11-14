@@ -1,4 +1,4 @@
-.PHONY: help install build test lint format clean setup dev
+.PHONY: help install build test lint format clean setup dev validate
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -15,6 +15,9 @@ setup: ## Quick setup (install + build)
 build: ## Build the package
 	npm run build
 
+build-watch: ## Build in watch mode
+	npm run build:watch
+
 dev: ## Start development mode (watch)
 	npm run dev
 
@@ -30,14 +33,23 @@ test-coverage: ## Run tests with coverage
 test-ui: ## Run tests with UI
 	npm run test:ui
 
+test-ci: ## Run tests for CI
+	npm run test:ci
+
 lint: ## Run linter
 	npm run lint
 
 lint-fix: ## Fix linting issues
 	npm run lint:fix
 
+lint-ci: ## Run linter for CI
+	npm run lint:ci
+
 typecheck: ## Type check
 	npm run typecheck
+
+typecheck-watch: ## Type check in watch mode
+	npm run typecheck:watch
 
 format: ## Format code
 	npm run format
@@ -48,7 +60,15 @@ format-check: ## Check code formatting
 clean: ## Clean build artifacts
 	npm run clean
 
-check: ## Run all checks (typecheck + lint + format + test)
-	npm run typecheck && npm run lint && npm run format:check && npm test
+clean-all: ## Clean everything including node_modules
+	npm run clean:all
+
+validate: ## Run all checks (typecheck + lint + format + test)
+	npm run validate
+
+precommit: ## Run pre-commit checks
+	npm run precommit
+
+check: validate ## Alias for validate
 
 all: clean install build test ## Clean, install, build, and test
