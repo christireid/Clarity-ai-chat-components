@@ -1,0 +1,258 @@
+import { Meta } from '@storybook/blocks'
+import { Canvas, Story } from '@storybook/blocks'
+
+<Meta title="Components/Message/Overview" />
+
+# Message Component
+
+The `Message` component is the foundation of any chat interface. It displays individual chat messages with animations, interactions, and rich content support.
+
+## When to Use
+
+Use the `Message` component when you need to:
+
+- Display chat messages (user or assistant)
+- Show markdown-formatted content
+- Collect user feedback (thumbs up/down)
+- Handle message actions (copy, retry, edit)
+- Display message metadata (timestamp, status)
+
+## Key Features
+
+### ✨ Animations
+
+- **Slide-in animations** - Messages animate in smoothly
+- **Avatar bounce** - Avatar animations on new messages
+- **Hover effects** - Action bar slides up on hover
+- **Feedback animations** - Confetti on positive feedback
+
+### 📝 Content Support
+
+- **Markdown rendering** - Full markdown support
+- **Code blocks** - Syntax-highlighted code
+- **LaTeX math** - Math equation rendering
+- **Links** - Automatic link detection and preview
+
+### 🎯 Interactions
+
+- **Copy to clipboard** - One-click copy
+- **Feedback buttons** - Thumbs up/down
+- **Retry** - Retry failed messages
+- **Edit** - Edit message content
+
+### ♿ Accessibility
+
+- **WCAG AAA compliant** - Highest accessibility standard
+- **Keyboard navigation** - Full keyboard support
+- **Screen reader support** - ARIA labels and descriptions
+- **Focus management** - Proper focus handling
+
+---
+
+## Basic Usage
+
+```tsx
+import { Message } from '@clarity-chat/react'
+import type { Message as MessageType } from '@clarity-chat/types'
+
+function App() {
+  const message: MessageType = {
+    id: '1',
+    role: 'user',
+    content: 'Hello!',
+    createdAt: Date.now(),
+    status: 'sent',
+  }
+
+  return <Message message={message} />
+}
+```
+
+---
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `message` | `Message` | **required** | The message object to display |
+| `onFeedback` | `(type: 'up' \| 'down') => void` | - | Callback when user gives feedback |
+| `onCopy` | `(id: string, content: string) => void` | - | Callback when message is copied |
+| `onRetry` | `(id: string) => void` | - | Callback when retry is requested |
+| `showAvatar` | `boolean` | `true` | Show avatar for the message |
+| `showTimestamp` | `boolean` | `false` | Show timestamp |
+| `enableMarkdown` | `boolean` | `true` | Enable markdown rendering |
+
+---
+
+## Message Object Structure
+
+```tsx
+type Message = {
+  id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  createdAt: number
+  status: 'sending' | 'sent' | 'streaming' | 'error'
+  metadata?: {
+    tokens?: number
+    processingTime?: number
+    model?: string
+  }
+  attachments?: Attachment[]
+}
+```
+
+---
+
+## Examples by Track
+
+### Essentials Track
+
+**Most common use cases** - Use these 90% of the time.
+
+- [Basic User Message](./MessageEssentials#usermessage)
+- [Basic Assistant Message](./MessageEssentials#assistantmessage)
+- [Conversation Flow](./MessageEssentials#conversation)
+- [Loading State](./MessageEssentials#loadingstate)
+- [Error State](./MessageEssentials#errorstate)
+
+**See:** [Message Essentials](./MessageEssentials)
+
+---
+
+### Enterprise Track
+
+**Advanced patterns** - For production applications.
+
+- Multi-user conversations
+- Message threading
+- Rich metadata display
+- Custom actions
+- Performance optimizations
+
+**See:** [Message Enterprise](./MessageEnterprise) (Coming Soon)
+
+---
+
+### Composability Track
+
+**Extending components** - Customization and composition.
+
+- Custom styling
+- Custom actions
+- Component composition
+- Advanced props
+
+**See:** [Message Composability](./MessageComposability) (Coming Soon)
+
+---
+
+### Performance Track
+
+**Optimization examples** - Handling scale and performance.
+
+- Virtual scrolling
+- Memoization
+- Lazy loading
+- Performance tips
+
+**See:** [Message Performance](./MessagePerformance) (Coming Soon)
+
+---
+
+## Common Patterns
+
+### Pattern 1: Basic Chat
+
+```tsx
+import { Message } from '@clarity-chat/react'
+
+function Chat({ messages }) {
+  return (
+    <div className="space-y-4">
+      {messages.map((msg) => (
+        <Message key={msg.id} message={msg} />
+      ))}
+    </div>
+  )
+}
+```
+
+### Pattern 2: With Feedback
+
+```tsx
+import { Message } from '@clarity-chat/react'
+
+function Chat({ messages, onFeedback }) {
+  return (
+    <div className="space-y-4">
+      {messages.map((msg) => (
+        <Message
+          key={msg.id}
+          message={msg}
+          onFeedback={(type) => onFeedback(msg.id, type)}
+        />
+      ))}
+    </div>
+  )
+}
+```
+
+### Pattern 3: With Timestamps
+
+```tsx
+import { Message } from '@clarity-chat/react'
+
+function Chat({ messages }) {
+  return (
+    <div className="space-y-4">
+      {messages.map((msg) => (
+        <Message
+          key={msg.id}
+          message={msg}
+          showTimestamp={true}
+        />
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+## Best Practices
+
+### ✅ Do
+
+- Use `Message` for all chat messages
+- Enable markdown for assistant messages
+- Show avatars for better UX
+- Handle feedback for assistant messages
+- Use timestamps for long conversations
+
+### ❌ Don't
+
+- Don't disable markdown unnecessarily
+- Don't show timestamps for every message (use sparingly)
+- Don't forget to handle errors
+- Don't skip accessibility features
+
+---
+
+## Related Components
+
+- **MessageList** - Virtualized list of messages
+- **StreamingMessage** - Real-time streaming messages
+- **ChatWindow** - Complete chat interface
+
+---
+
+## Next Steps
+
+- [View Essentials Examples](./MessageEssentials) - Most common patterns
+- [Read API Reference](../../api/components.md#message) - Full API docs
+- [See Design Principles](../DesignPrinciples) - Design system guide
+
+---
+
+**Questions?** Check the [FAQ](../FAQ) or ask in [Discord](https://discord.gg/clarity-chat).
