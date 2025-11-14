@@ -185,7 +185,7 @@ const { messages, append, isLoading, memoryInfo } = useClarityChat({
 ### Basic Chat
 
 ```tsx
-import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow, coreMessagesToMessages } from '@clarity-chat/react'
 
 function BasicChat() {
   const { messages, append, isLoading } = useClarityChat({
@@ -194,7 +194,7 @@ function BasicChat() {
 
   return (
     <ChatWindow
-      messages={convertCoreMessagesToMessages(messages)}
+      messages={coreMessagesToMessages(messages)}
       onSendMessage={(content) => append({ role: 'user', content })}
       isLoading={isLoading}
     />
@@ -209,7 +209,7 @@ import {
   useClarityChat,
   ChatWindow,
   MemoryProvider,
-  convertCoreMessagesToMessages,
+  coreMessagesToMessages,
 } from '@clarity-chat/react'
 
 function ChatWithMemory() {
@@ -225,7 +225,7 @@ function ChatWithMemory() {
     <>
       <div>Memories: {memoryInfo.memoryCount}</div>
       <ChatWindow
-        messages={convertCoreMessagesToMessages(messages)}
+        messages={coreMessagesToMessages(messages)}
         onSendMessage={(content) => append({ role: 'user', content })}
         isLoading={isLoading}
       />
@@ -304,7 +304,7 @@ import type {
 
 1. **Always convert messages** when using `ChatWindow`:
    ```tsx
-   const messages = convertCoreMessagesToMessages(coreMessages)
+   const messages = coreMessagesToMessages(coreMessages)
    ```
 
 2. **Enable memory for persistent conversations**:
@@ -394,7 +394,7 @@ function ErrorDisplay({ memoryErrorInfo }) {
 - Check `websocket.autoReconnect` settings
 
 ### Type errors?
-- Use `convertCoreMessagesToMessages()` for `ChatWindow`
+- Use `coreMessagesToMessages()` for `ChatWindow`
 - Import types from `@clarity-chat/react`
 
 ## See Also

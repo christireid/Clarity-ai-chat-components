@@ -17,7 +17,7 @@
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { ChatWindow } from '../components/chat-window'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { coreMessagesToMessages } from '../utils/message-converter'
 import { Badge } from '@clarity-chat/primitives'
 
 /**
@@ -48,7 +48,7 @@ export function ClarityChatWebSocketExample() {
 
   // Convert CoreMessage[] to Message[] for ChatWindow
   const messages = React.useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
+    () => coreMessagesToMessages(coreMessages),
     [coreMessages]
   )
 
