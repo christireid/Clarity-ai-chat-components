@@ -33,6 +33,7 @@
 </p>
 
 <p align="center">
+  <a href="./docs/choose-your-path.md">🚀 Choose Your Path</a> •
   <a href="#-quick-start">Quick Start</a> •
   <a href="#-documentation">Documentation</a> •
   <a href="#-examples">Examples</a> •
