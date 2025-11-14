@@ -29,6 +29,22 @@ export { ContextBuilder } from './context/context-builder'
 // Scoring
 export { ImportanceScorer } from './scoring/importance-scorer'
 
+// Compression
+export { CompressionEngine } from './compression/compression-engine'
+export { TruncateStrategy } from './compression/truncate-strategy'
+export { ExtractStrategy } from './compression/extract-strategy'
+export { SummarizeStrategy } from './compression/summarize-strategy'
+export { AdaptiveStrategy } from './compression/adaptive-strategy'
+export type { CompressionStrategy, CompressionResult } from './compression/compression-strategy'
+
+// Summarization
+export { SummarizationPipeline } from './summarization/summarization-pipeline'
+export { OpenAISummarizer } from './summarization/openai-summarizer'
+export type { Summarizer } from './summarization/summarizer'
+
+// React (optional)
+export * from './react'
+
 // Legacy exports (for backward compatibility)
 export { MemoryService } from './memory-service'
 export {
