@@ -116,7 +116,10 @@ export function useQuickOptimize(
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
       setError(error)
-      console.error('Quick optimization failed:', error)
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[useQuickOptimize] Optimization failed:', error)
+      }
       // Fallback to original messages
       setOptimizedMessages(messages)
       setWasOptimized(false)

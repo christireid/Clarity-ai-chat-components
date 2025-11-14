@@ -122,11 +122,14 @@ export function usePromptDebugger(
       }
 
       // Store debug info in result for access
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(result as any).debugInfo = debugInfo
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
       setError(error)
-      console.error('Debugging failed:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[usePromptDebugger] Debugging failed:', error)
+      }
     } finally {
       setIsDebugging(false)
     }
@@ -139,6 +142,7 @@ export function usePromptDebugger(
 
   const debugInfo = useMemo(() => {
     if (!optimizationResult) return null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (optimizationResult as any).debugInfo as PromptDebugInfo | null
   }, [optimizationResult])
 

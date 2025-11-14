@@ -4,7 +4,7 @@
  * Advanced hook that wraps the full optimization engine
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { CoreMessage } from '../../hooks/use-chat-enhanced'
 import {
   optimizePrompt,
@@ -12,6 +12,7 @@ import {
   type OptimizationEngineResult,
 } from '../core/engine'
 import type { ModelProfile } from '../core/model-profiles'
+import { hasChanged } from '../core/performance'
 
 export interface UsePromptOptimizerOptions {
   /** Messages to optimize */
@@ -60,8 +61,21 @@ export function usePromptOptimizer(
   const [result, setResult] = useState<OptimizationEngineResult | null>(null)
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [error, setError] = useState<Error | null>(null)
+  const prevMessagesRef = useRef<CoreMessage[]>([])
+  const prevModelRef = useRef<ModelProfile | null>(null)
+  const prevTargetTokensRef = useRef<number | null>(null)
 
   const optimize = useCallback(async () => {
+    // Skip if nothing changed
+    if (
+      !hasChanged(prevMessagesRef.current, messages) &&
+      !hasChanged(prevModelRef.current, model) &&
+      prevTargetTokensRef.current === targetTokens &&
+      result !== null
+    ) {
+      return
+    }
+
     setIsOptimizing(true)
     setError(null)
 
@@ -76,21 +90,26 @@ export function usePromptOptimizer(
       })
 
       setResult(optimizationResult)
+      prevMessagesRef.current = messages
+      prevModelRef.current = model
+      prevTargetTokensRef.current = targetTokens
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
       setError(error)
-      console.error('Optimization failed:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[usePromptOptimizer] Optimization failed:', error)
+      }
     } finally {
       setIsOptimizing(false)
     }
-  }, [messages, model, targetTokens, optimizationOptions])
+  }, [messages, model, targetTokens, optimizationOptions, result])
 
   // Auto-optimize when messages change
   useEffect(() => {
     if (autoOptimize && messages.length > 0) {
       optimize()
     }
-  }, [autoOptimize, messages, model, targetTokens, optimize])
+  }, [autoOptimize, optimize])
 
   // Return default values if no optimization has run
   const defaultResult: UsePromptOptimizerReturn = {

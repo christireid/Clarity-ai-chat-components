@@ -108,7 +108,11 @@ export function QuickStartWithPresetExample() {
           <h1 className="text-xl font-bold">Quick Start with Preset</h1>
           <select
             value={preset}
-            onChange={(e) => setPreset(e.target.value as any)}
+            onChange={(e) =>
+              setPreset(
+                e.target.value as 'balanced' | 'conservative' | 'aggressive'
+              )
+            }
             className="px-3 py-1 border rounded"
           >
             <option value="conservative">Conservative</option>
