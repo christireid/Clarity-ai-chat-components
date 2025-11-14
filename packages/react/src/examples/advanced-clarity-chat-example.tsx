@@ -35,7 +35,7 @@ export function AdvancedClarityChatExample() {
     append,
     isLoading,
     error,
-    memoryContext,
+    contextSummary,
     memoryEnabled,
   } = useClarityChat({
     api: '/api/chat',
@@ -112,13 +112,13 @@ export function AdvancedClarityChatExample() {
         </div>
 
         {/* Memory Context Preview */}
-        {memoryContext && (
+        {contextSummary && (
           <div className="mt-3 rounded-lg border bg-muted/50 p-3">
             <p className="text-xs font-medium text-muted-foreground mb-1">
               Memory Context:
             </p>
             <p className="text-xs text-foreground/80 line-clamp-2">
-              {memoryContext}
+              {contextSummary}
             </p>
           </div>
         )}
