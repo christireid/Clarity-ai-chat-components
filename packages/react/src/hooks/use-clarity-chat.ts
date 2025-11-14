@@ -30,7 +30,10 @@ import {
 import {
   optimizeMessagesForBudget,
 } from '../prompt/core/message-optimization'
-import type { ModelMetadata } from '../prompt/core/types'
+import type {
+  ModelMetadata,
+  OptimizationDiagnostics,
+} from '../prompt/core/types'
 
 /**
  * Safe hook to get memory context without throwing
@@ -251,7 +254,7 @@ export function useClarityChat(
   const lastQueryRef = React.useRef<string>('')
 
   // Store optimization state for token stats
-  const [optimizationDiagnostics, setOptimizationDiagnostics] = React.useState<import('../prompt/core/types').OptimizationDiagnostics | undefined>()
+  const [optimizationDiagnostics, setOptimizationDiagnostics] = React.useState<OptimizationDiagnostics | undefined>()
 
   // Enhanced transform function to enrich messages with memory context
   const originalTransform = rest.transform
