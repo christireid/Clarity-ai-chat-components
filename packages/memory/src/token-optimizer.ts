@@ -88,20 +88,8 @@ export class TokenBudgetManager {
   /**
    * Calculate token budgets based on allocation percentages
    */
-  private calculateBudgets(
-    maxTokens: number,
-    allocation?: TokenOptimizationConfig['allocation']
-  ): TokenAllocation {
-    const alloc = allocation ?? this.config.allocation
-    
-    return {
-      systemPrompt: Math.floor(maxTokens * alloc.systemPrompt),
-      userPreferences: Math.floor(maxTokens * alloc.userPreferences),
-      recentContext: Math.floor(maxTokens * alloc.recentContext),
-      semanticMemory: Math.floor(maxTokens * alloc.semanticMemory),
-      episodicMemory: Math.floor(maxTokens * alloc.episodicMemory),
-      responseReserve: Math.floor(maxTokens * alloc.responseReserve),
-    }
+  private calculateBudgets(maxTokens: number): TokenAllocation {
+    return this.calculateBudgetsFromAllocation(maxTokens, this.config.allocation)
   }
 
   /**
@@ -140,11 +128,28 @@ export class TokenBudgetManager {
       adjusted.recentContext -= 0.05
     }
 
-<<<<<<< HEAD
-    // Calculate budgets with adjusted allocation
-=======
->>>>>>> cursor/prepare-memory-package-for-release-7f3b
-    return this.calculateBudgets(this.config.maxContextWindow, adjusted)
+    return this.calculateBudgetsFromAllocation(
+      this.config.maxContextWindow,
+      adjusted
+    )
+  }
+
+  /**
+   * Calculate token budgets from allocation percentages
+   */
+  private calculateBudgetsFromAllocation(
+    maxTokens: number,
+    alloc: TokenOptimizationConfig['allocation']
+  ): TokenAllocation {
+    return {
+      systemPrompt: Math.floor(maxTokens * alloc.systemPrompt),
+      userPreferences: Math.floor(maxTokens * alloc.userPreferences),
+      recentContext: Math.floor(maxTokens * alloc.recentContext),
+      semanticMemory: Math.floor(maxTokens * alloc.semanticMemory),
+      episodicMemory: Math.floor(maxTokens * alloc.episodicMemory),
+      responseReserve: Math.floor(maxTokens * alloc.responseReserve),
+    }
+>>>>>>> cursor/prepare-memory-package-for-release-9d2d
   }
 
   /**
