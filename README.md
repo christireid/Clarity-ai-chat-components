@@ -78,8 +78,6 @@
 - [Animation System](#️-animation-system)
 - [Packages](#-packages)
 - [Documentation](#-documentation)
-  - [Getting Started](#getting-started)
-  - [Comparison & Migration](#comparison--migration)
 - [Performance Metrics](#-performance-metrics)
 - [Developer Experience](#️-developer-experience)
   - [Beautiful CLI Tool](#beautiful-cli-tool)
@@ -1132,23 +1130,15 @@ Pre-built prompt templates for common tasks:
 
 ## 📚 Documentation
 
-### Quick Start Guides
-- **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** ⭐ **START HERE** - Minimal example, get running in minutes
-- **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison and when to choose Clarity
-- **[Migrating from Vercel AI SDK](./docs/migrating-from-vercel-ai-sdk.md)** - Step-by-step migration guide
-- **[FAQ](./docs/FAQ.md)** - Frequently asked questions and quick answers
-- **[Troubleshooting Guide](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
+### Quick Start & Migration
+- **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** ⭐ - Quick start guide
+- **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
+- **[Migrating from Vercel](./docs/migrating-from-vercel.md)** - Migration guide
 
 ### Getting Started
-- **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** - Get from zero to working chat in minutes ⭐
-- [Quick Start Guide](./apps/docs/guide/quick-start.md) - Detailed quick start (5 minutes)
+- [Quick Start Guide](./apps/docs/guide/quick-start.md) - Get started in 5 minutes
 - [Installation Guide](./apps/docs/guide/installation.md)
 - [First Component Tutorial](./apps/docs/guide/getting-started.md)
-
-### Comparison & Migration
-- **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Detailed feature comparison ⭐
-- **[Migrating from Vercel](./docs/migrating-from-vercel.md)** - Step-by-step migration guide ⭐
-- **[Troubleshooting Guide](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
 ### Guides
 - [Theming System](./apps/docs/guide/theming.md)
