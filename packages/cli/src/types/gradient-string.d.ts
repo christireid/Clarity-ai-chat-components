@@ -3,7 +3,7 @@ declare module 'gradient-string' {
     multiline(text: string): string
   }
   
-  interface GradientObject {
+  interface Gradients {
     pastel: Gradient
     rainbow: Gradient
     cristal: Gradient
@@ -13,6 +13,9 @@ declare module 'gradient-string' {
     morning: Gradient
   }
   
-  const gradient: GradientObject
+  const gradient: Gradients & {
+    (preset: string): Gradient
+  }
+  
   export default gradient
 }

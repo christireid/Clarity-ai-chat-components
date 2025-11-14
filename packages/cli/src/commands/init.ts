@@ -38,8 +38,6 @@ export async function initCommand(options: InitOptions) {
       console.log('\n')
       const initBanner = createBanner('Initialize Project', {
         gradient: 'atlas',
-        border: true,
-        borderColor: 'cyan',
       })
       console.log(initBanner)
       console.log(infoMessage('Setting up your AI-powered application...', {
@@ -126,8 +124,8 @@ export async function initCommand(options: InitOptions) {
         apiKeys: config.apiKeys,
       }, cwd)
       logger.debug('Config file saved')
-    } catch (error) {
-      logger.warn('Failed to save config file', error)
+      } catch (error) {
+        logger.warn('Failed to save config file', error instanceof Error ? error : String(error))
     }
     
     spinner.succeed('Components installed')

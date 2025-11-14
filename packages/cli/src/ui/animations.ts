@@ -22,19 +22,25 @@ export async function typeText(text: string, delay: number = 50): Promise<void> 
  */
 export function createPulse(text: string, color: string = 'cyan'): string {
   // Simple pulsing effect using bold
-  const colorFn = chalk[color as keyof typeof chalk] as typeof chalk.cyan
-  return typeof colorFn === 'function' ? colorFn(text) : chalk.bold(text)
+  const colorFn = chalk[color as keyof typeof chalk]
+  if (typeof colorFn === 'function') {
+    return (colorFn as (text: string) => string)(text)
+  }
+  return text
 }
 
 /**
  * Create a rainbow text effect
  */
 export function createRainbowText(text: string): string {
-  const colors = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'] as const
+  const colors = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta']
   return text.split('').map((char, index) => {
-    const colorName = colors[index % colors.length]
-    const colorFn = chalk[colorName] as typeof chalk.cyan
-    return typeof colorFn === 'function' ? colorFn(char) : char
+    const color = colors[index % colors.length]
+    const colorFn = chalk[color as keyof typeof chalk]
+    if (typeof colorFn === 'function') {
+      return (colorFn as (text: string) => string)(char)
+    }
+    return char
   }).join('')
 }
 

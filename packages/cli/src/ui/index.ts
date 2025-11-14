@@ -4,21 +4,22 @@
  */
 
 export * from './banner.js'
-export * from './box.js'
-export * from './spinner.js'
-// Export table functions with explicit names to avoid conflicts
 export {
-  table,
-  listTable,
-  keyValueTable,
-  createTable,
-  createListTable,
-  createStatusTable,
-  type TableColumn,
-  type TableOptions,
-  type StatusTableRow,
-} from './table.js'
-// Export progress functions with explicit names to avoid conflicts
+  box,
+  panel,
+  successBox,
+  errorBox,
+  warningBox,
+  infoBox,
+  hr,
+  tree,
+  list,
+  numberedList,
+  type BoxOptions,
+  type TreeNode,
+} from './box.js'
+export * from './spinner.js'
+export * from './table.js'
 export {
   ProgressBar,
   createSpinner,

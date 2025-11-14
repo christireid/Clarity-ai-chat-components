@@ -188,7 +188,6 @@ program
       
       console.log(createBanner('🔧 Shell Completion', {
         gradient: 'pastel',
-        style: 'bold',
       }))
       console.log()
       

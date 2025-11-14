@@ -46,7 +46,7 @@ export function initOutputMode(options: {
 /**
  * Check if output should be suppressed
  */
-export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' | 'success' = 'info'): boolean {
+export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' = 'info'): boolean {
   if (isQuiet && level !== 'error') return false
   if (level === 'debug' && !isVerbose && !process.env.DEBUG) return false
   return true
@@ -55,8 +55,8 @@ export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' | 'succe
 /**
  * Output formatted message
  */
-export function output(message: string, level: 'info' | 'warn' | 'error' | 'success' | 'debug' = 'info'): void {
-  if (!shouldOutput(level === 'success' ? 'info' : level)) return
+export function output(message: string, level: 'info' | 'warn' | 'error' | 'debug' = 'info'): void {
+  if (!shouldOutput(level)) return
   
   if (isJson) {
     const json = {
@@ -72,19 +72,17 @@ export function output(message: string, level: 'info' | 'warn' | 'error' | 'succ
     info: chalk.blue,
     warn: chalk.yellow,
     error: chalk.red,
-    success: chalk.green,
-    debug: chalk.gray,
+    debug: chalk.magenta,
   }
   
   const icons: Record<string, string> = {
     info: 'ℹ',
     warn: '⚠',
     error: '✖',
-    success: '✔',
-    debug: '🔍',
+    debug: '🐛',
   }
   
-  const color = colors[level] || chalk.gray
+  const color = colors[level] || chalk.white
   const icon = icons[level] || '•'
   
   console.log(color(`${icon} ${message}`))
@@ -171,7 +169,17 @@ export function outputTable(
  * Output success message
  */
 export function success(message: string): void {
-  output(message, 'success')
+  if (!shouldOutput('info')) return
+  if (isJson) {
+    const json = {
+      level: 'success',
+      message,
+      timestamp: new Date().toISOString(),
+    }
+    console.log(JSON.stringify(json))
+    return
+  }
+  console.log(chalk.green(`✔ ${message}`))
 }
 
 /**

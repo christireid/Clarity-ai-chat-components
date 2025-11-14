@@ -170,40 +170,39 @@ async function displayResults(result: AnalysisResult) {
   }
 
   console.log()
-  console.log(createDivider(60, '═', 'blue'))
+  console.log(createDivider(undefined, 60))
   console.log()
 
   // Summary table
-  const summaryTable = createTable(
-    [
-      ['Total files scanned', result.totalFiles.toString()],
-      ['Total imports', result.totalImports.toString()],
-      ['Components used', result.components.length.toString()],
-      ['Hooks used', result.hooks.length.toString()],
-    ],
-    [
-      { header: 'Metric', width: 25 },
-      { header: 'Value', width: 15 },
-    ],
-    {
-      headerColor: chalk.blue,
-    }
-  )
+  const summaryData = [
+    { Metric: 'Total files scanned', Value: result.totalFiles.toString() },
+    { Metric: 'Total imports', Value: result.totalImports.toString() },
+    { Metric: 'Components used', Value: result.components.length.toString() },
+    { Metric: 'Hooks used', Value: result.hooks.length.toString() },
+  ]
+  const summaryColumns = [
+    { header: 'Metric', key: 'Metric', width: 25 },
+    { header: 'Value', key: 'Value' },
+  ]
+  const summaryTable = createTable(summaryData, summaryColumns, {
+    headerColor: chalk.blue,
+  })
   console.log(summaryTable)
   console.log()
 
   // Top components table
   if (result.components.length > 0) {
     console.log(chalk.bold.cyan('  Most Used Components'))
-    console.log(createDivider(50, '─', 'gray'))
-    const componentRows = result.components.slice(0, 10).map((component, index) => [
-      `${index + 1}. ${component.name}`,
-      `used in ${component.importCount} file(s)`,
-    ])
-    const componentTable = createTable(componentRows, [
-      { header: 'Component', width: 30 },
-      { header: 'Usage', width: 20 },
-    ], {
+    console.log(createDivider(undefined, 50))
+    const componentData = result.components.slice(0, 10).map((component, index) => ({
+      Component: `${index + 1}. ${component.name}`,
+      Usage: `used in ${component.importCount} file(s)`,
+    }))
+    const componentColumns = [
+      { header: 'Component', key: 'Component', width: 30 },
+      { header: 'Usage', key: 'Usage' },
+    ]
+    const componentTable = createTable(componentData, componentColumns, {
       headerColor: chalk.cyan,
       compact: true,
     })
@@ -214,15 +213,16 @@ async function displayResults(result: AnalysisResult) {
   // Top hooks table
   if (result.hooks.length > 0) {
     console.log(chalk.bold.cyan('  Most Used Hooks'))
-    console.log(createDivider(50, '─', 'gray'))
-    const hookRows = result.hooks.slice(0, 5).map((hook, index) => [
-      `${index + 1}. ${hook.name}`,
-      `used in ${hook.importCount} file(s)`,
-    ])
-    const hookTable = createTable(hookRows, [
-      { header: 'Hook', width: 30 },
-      { header: 'Usage', width: 20 },
-    ], {
+    console.log(createDivider(undefined, 50))
+    const hookData = result.hooks.slice(0, 5).map((hook, index) => ({
+      Hook: `${index + 1}. ${hook.name}`,
+      Usage: `used in ${hook.importCount} file(s)`,
+    }))
+    const hookColumns = [
+      { header: 'Hook', key: 'Hook', width: 30 },
+      { header: 'Usage', key: 'Usage' },
+    ]
+    const hookTable = createTable(hookData, hookColumns, {
       headerColor: chalk.cyan,
       compact: true,
     })
@@ -234,7 +234,7 @@ async function displayResults(result: AnalysisResult) {
   if (result.unusedComponents.length > 0) {
     console.log()
     console.log(chalk.yellow.bold('  ⚠️  Unused Components'))
-    console.log(createDivider(50, '─', 'yellow'))
+    console.log(createDivider(undefined, 50))
     result.unusedComponents.forEach(component => {
       console.log(chalk.gray(`    • ${component}`))
     })
@@ -246,14 +246,14 @@ async function displayResults(result: AnalysisResult) {
   if (result.recommendations.length > 0) {
     console.log()
     console.log(chalk.bold.cyan('  💡 Recommendations'))
-    console.log(createDivider(50, '─', 'cyan'))
+    console.log(createDivider(undefined, 50))
     result.recommendations.forEach(rec => {
       console.log(chalk.gray(`    • ${rec}`))
     })
     console.log()
   }
 
-  console.log(createDivider(60, '═', 'blue'))
+  console.log(createDivider(undefined, 60))
   console.log()
 }
 
@@ -327,7 +327,7 @@ export async function analyzeCommand(options: { report?: boolean; verbose?: bool
   try {
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
-      console.log(createBanner('Project Analysis', { gradient: 'atlas', border: true, borderColor: 'blue' }))
+      console.log(createBanner('Project Analysis', { gradient: 'atlas' }))
       console.log()
     }
 

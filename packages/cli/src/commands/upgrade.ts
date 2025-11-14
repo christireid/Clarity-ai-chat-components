@@ -123,7 +123,7 @@ async function displayUpdates(updates: PackageUpdate[]) {
   }
 
   console.log()
-  console.log(createBanner('Available Updates', { gradient: 'rainbow', border: true, borderColor: 'cyan' }))
+  console.log(createBanner('Available Updates', { gradient: 'rainbow' }))
   console.log()
 
   const majorUpdates = updates.filter(u => u.type === 'major')
@@ -132,15 +132,16 @@ async function displayUpdates(updates: PackageUpdate[]) {
 
   if (majorUpdates.length > 0) {
     console.log(chalk.bold.red('  🔴 Major Updates (Breaking Changes)'))
-    console.log(createDivider(50, '─', 'red'))
-    const majorRows = majorUpdates.map(update => [
-      update.name,
-      `${update.current} → ${update.latest}`,
-    ])
-    const majorTable = createTable(majorRows, [
-      { header: 'Package', width: 30 },
-      { header: 'Version', width: 25 },
-    ], {
+    console.log(createDivider(undefined, 50))
+    const majorData = majorUpdates.map(update => ({
+      Package: update.name,
+      Version: `${update.current} → ${update.latest}`,
+    }))
+    const majorColumns = [
+      { header: 'Package', key: 'Package', width: 30 },
+      { header: 'Version', key: 'Version' },
+    ]
+    const majorTable = createTable(majorData, majorColumns, {
       headerColor: chalk.red,
     })
     console.log(majorTable)
@@ -149,15 +150,16 @@ async function displayUpdates(updates: PackageUpdate[]) {
 
   if (minorUpdates.length > 0) {
     console.log(chalk.bold.yellow('  🟡 Minor Updates (New Features)'))
-    console.log(createDivider(50, '─', 'yellow'))
-    const minorRows = minorUpdates.map(update => [
-      update.name,
-      `${update.current} → ${update.latest}`,
-    ])
-    const minorTable = createTable(minorRows, [
-      { header: 'Package', width: 30 },
-      { header: 'Version', width: 25 },
-    ], {
+    console.log(createDivider(undefined, 50))
+    const minorData = minorUpdates.map(update => ({
+      Package: update.name,
+      Version: `${update.current} → ${update.latest}`,
+    }))
+    const minorColumns = [
+      { header: 'Package', key: 'Package', width: 30 },
+      { header: 'Version', key: 'Version' },
+    ]
+    const minorTable = createTable(minorData, minorColumns, {
       headerColor: chalk.yellow,
     })
     console.log(minorTable)
@@ -166,15 +168,16 @@ async function displayUpdates(updates: PackageUpdate[]) {
 
   if (patchUpdates.length > 0) {
     console.log(chalk.bold.green('  🟢 Patch Updates (Bug Fixes)'))
-    console.log(createDivider(50, '─', 'green'))
-    const patchRows = patchUpdates.map(update => [
-      update.name,
-      `${update.current} → ${update.latest}`,
-    ])
-    const patchTable = createTable(patchRows, [
-      { header: 'Package', width: 30 },
-      { header: 'Version', width: 25 },
-    ], {
+    console.log(createDivider(undefined, 50))
+    const patchData = patchUpdates.map(update => ({
+      Package: update.name,
+      Version: `${update.current} → ${update.latest}`,
+    }))
+    const patchColumns = [
+      { header: 'Package', key: 'Package', width: 30 },
+      { header: 'Version', key: 'Version' },
+    ]
+    const patchTable = createTable(patchData, patchColumns, {
       headerColor: chalk.green,
     })
     console.log(patchTable)

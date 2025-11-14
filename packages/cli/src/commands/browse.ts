@@ -156,7 +156,6 @@ export async function browseCommand() {
   // Beautiful banner
   console.log(createBanner('🎨 Component Browser', {
     gradient: 'pastel',
-    style: 'bold',
   }))
   
   console.log()
@@ -196,7 +195,7 @@ export async function browseCommand() {
   }
 
   // Interactive menu
-  console.log(createDivider(60))
+  await createDivider()
   console.log()
   const quickActions = [
     'View all components by category',
@@ -274,7 +273,6 @@ export async function showComponentDetails(componentName: string) {
   // Beautiful header
   console.log(createBanner(component.name, {
     gradient: 'pastel',
-    style: 'bold',
   }))
   console.log()
 
@@ -347,7 +345,7 @@ export async function installComponentInteractive(componentName: string) {
     console.log()
     
     // Show next steps
-    console.log(infoMessage(`Next steps:\n\n1. Import the component: import { ${componentName} } from '@clarity-chat/react'\n2. View docs: clarity-chat docs ${componentName.toLowerCase()}`))
+    infoMessage(`Next steps:\n\nImport the component: import { ${componentName} } from '@clarity-chat/react'\nView docs: clarity-chat docs ${componentName.toLowerCase()}`)
     console.log()
   } catch (error) {
     spinner.fail()

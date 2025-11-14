@@ -6,8 +6,6 @@
 import chalk from 'chalk'
 import ora, { Ora } from 'ora'
 
-const dim = chalk.dim
-
 export interface ProgressBarOptions {
   total: number
   width?: number
@@ -71,7 +69,7 @@ export class ProgressBar {
     const filled = Math.floor((this.width * this.current) / this.total)
     const empty = this.width - filled
 
-    const bar = this.color(this.completeChar.repeat(filled)) + dim(this.incompleteChar.repeat(empty))
+    const bar = this.color(this.completeChar.repeat(filled)) + chalk.dim(this.incompleteChar.repeat(empty))
 
     const parts: string[] = [bar]
 
@@ -80,7 +78,7 @@ export class ProgressBar {
     }
 
     if (this.showCount) {
-      parts.push(dim(`[${this.current}/${this.total}]`))
+      parts.push(chalk.dim(`[${this.current}/${this.total}]`))
     }
 
     if (this.text) {
@@ -162,7 +160,7 @@ export class StepProgress {
           ? chalk.red('✗')
           : step.status === 'active'
           ? chalk.cyan('→')
-          : dim('○')
+          : chalk.dim('○')
 
       const status =
         step.status === 'complete'
@@ -171,9 +169,9 @@ export class StepProgress {
           ? chalk.red('Failed')
           : step.status === 'active'
           ? chalk.cyan('Active')
-          : dim('Pending')
+          : chalk.dim('Pending')
 
-      console.log(`  ${icon} ${step.name} ${dim('—')} ${status}`)
+      console.log(`  ${icon} ${step.name} ${chalk.dim('—')} ${status}`)
     })
   }
 }
@@ -187,9 +185,9 @@ export function percentageProgress(current: number, total: number, label?: strin
   const filled = Math.floor((barWidth * current) / total)
   const empty = barWidth - filled
 
-  const bar = chalk.cyan('█'.repeat(filled)) + dim('░'.repeat(empty))
+  const bar = chalk.cyan('█'.repeat(filled)) + chalk.dim('░'.repeat(empty))
   const percentText = chalk.bold(`${percent}%`)
-  const countText = dim(`(${current}/${total})`)
+  const countText = chalk.dim(`(${current}/${total})`)
 
   return label
     ? `${bar} ${percentText} ${countText} ${label}`

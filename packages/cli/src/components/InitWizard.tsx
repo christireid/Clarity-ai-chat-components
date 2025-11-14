@@ -50,17 +50,17 @@ export function InitWizard({ detectedFramework, packageManager, onComplete }: In
     initGit: true,
   })
 
-  const handleFrameworkSelect = (item: any) => {
+  const handleFrameworkSelect = (item: { value: string; label: string }) => {
     setConfig({ ...config, framework: item.value })
     setStep('template')
   }
 
-  const handleTemplateSelect = (item: any) => {
+  const handleTemplateSelect = (item: { value: string; label: string }) => {
     setConfig({ ...config, template: item.value })
     setStep('components')
   }
 
-  const handleComponentsSelect = (item: any) => {
+  const handleComponentsSelect = (item: { value: string; label: string }) => {
     // Toggle component selection
     const components = config.components.includes(item.value)
       ? config.components.filter(c => c !== item.value)
@@ -76,7 +76,9 @@ export function InitWizard({ detectedFramework, packageManager, onComplete }: In
   return (
     <Box flexDirection="column" padding={1}>
       <Box marginBottom={1}>
-        <Gradient name="pastel" children={<Text bold>✨ Clarity Chat Setup Wizard</Text>} />
+        <Gradient name="pastel">
+          <Text bold>✨ Clarity Chat Setup Wizard</Text>
+        </Gradient>
       </Box>
 
       {step === 'framework' && (
@@ -95,10 +97,8 @@ export function InitWizard({ detectedFramework, packageManager, onComplete }: In
       {step === 'template' && (
         <Box flexDirection="column">
           <Text>✅ Framework: {config.framework}</Text>
-          <Box marginTop={1}>
-            <Text>📦 Select a template:</Text>
-          </Box>
-          <Box marginTop={1}>
+          <Text>📦 Select a template:</Text>
+          <Box>
             <SelectInput items={templates} onSelect={handleTemplateSelect} />
           </Box>
         </Box>
@@ -108,12 +108,10 @@ export function InitWizard({ detectedFramework, packageManager, onComplete }: In
         <Box flexDirection="column">
           <Text>✅ Framework: {config.framework}</Text>
           <Text>✅ Template: {config.template}</Text>
-          <Box marginTop={1}>
-            <Text>🎨 Select components (Space to toggle, Enter to continue):</Text>
-          </Box>
-          <Box marginTop={1}>
+          <Text>🎨 Select components (Space to toggle, Enter to continue):</Text>
+          <Box>
             <SelectInput 
-              items={components.map(c => ({
+              items={components.map((c: { label: string; value: string; selected?: boolean }) => ({
                 ...c,
                 label: config.components.includes(c.value) 
                   ? `✅ ${c.label}` 
@@ -122,11 +120,13 @@ export function InitWizard({ detectedFramework, packageManager, onComplete }: In
               onSelect={handleComponentsSelect}
             />
           </Box>
-          <Box marginTop={1}>
-            <Text dimColor>Press Enter when done selecting</Text>
-          </Box>
-          <Box marginTop={1}>
-            <Text color="green" bold>→ Continue (Press Enter)</Text>
+          <Text>
+            Press Enter when done selecting
+          </Text>
+          <Box>
+            <Text color="green" bold>
+              → Continue
+            </Text>
           </Box>
         </Box>
       )}

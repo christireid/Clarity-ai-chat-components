@@ -14,7 +14,7 @@ import { success, info, warn, error, outputJson, outputTable } from '../utils/ou
 import { ensureEnvInGitignore } from '../utils/security.js'
 import { createBanner, createDivider } from '../ui/banner.js'
 import { successMessage, errorMessage, warningMessage, infoMessage } from '../ui/messages.js'
-import { createStatusTable, type StatusTableRow } from '../ui/table.js'
+import { createStatusTable } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('doctor')
@@ -35,7 +35,7 @@ export async function doctorCommand(options: DoctorOptions) {
   try {
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
-      console.log(createBanner('Health Check', { gradient: 'pastel', border: true }))
+      console.log(createBanner('Health Check', { gradient: 'pastel' }))
       console.log()
     }
     
@@ -301,7 +301,7 @@ GOOGLE_API_KEY=your_key_here
       result: { 
         status: 'pass', 
         message: 'Initialized',
-        category: 'Version Control',
+        category: 'Project Structure',
         severity: 'info'
       }
     })
@@ -311,7 +311,7 @@ GOOGLE_API_KEY=your_key_here
       result: { 
         status: 'warn', 
         message: 'Not initialized - run: git init',
-        category: 'Version Control',
+        category: 'Project Structure',
         severity: 'warning'
       }
     })
@@ -350,21 +350,17 @@ GOOGLE_API_KEY=your_key_here
       for (const [category, categoryChecks] of Object.entries(checksByCategory)) {
         console.log()
         console.log(chalk.bold.cyan(`  ${category}`))
-        console.log(createDivider(50))
+        console.log(createDivider(undefined, 50))
         
-        const statusItems = categoryChecks.map(({ name, result }) => ({
-          name,
-          status: result.status === 'pass' ? 'success' as const : result.status === 'warn' ? 'warning' as const : 'error' as const,
-          message: result.message,
-        }))
-        
-        const statusTable = createStatusTable(statusItems.map(item => ({
-          status: item.status === 'success' ? 'pass' as const : item.status === 'warning' ? 'warn' as const : 'fail' as const,
-          message: item.message,
-          category: item.name,
-          severity: item.status === 'success' ? 'info' as const : item.status === 'warning' ? 'warning' as const : 'error' as const,
-        })))
-        console.log(statusTable)
+        categoryChecks.forEach(({ name, result }) => {
+          if (result.status === 'pass') {
+            success(`${name}: ${result.message}`)
+          } else if (result.status === 'warn') {
+            warn(`${name}: ${result.message}`)
+          } else {
+            error(`${name}: ${result.message}`)
+          }
+        })
       }
     } else {
       // Simple output for quiet/JSON mode
@@ -388,19 +384,19 @@ GOOGLE_API_KEY=your_key_here
 
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
-      console.log(createDivider(60, '═', 'cyan'))
-      const summaryItems: StatusTableRow[] = [
-        { status: 'pass', message: `${passCount} checks passed`, category: 'Summary', severity: 'info' },
+      console.log(createDivider(undefined, 60))
+      const summaryItems: Array<{ check: string; status: 'pass' | 'warn' | 'fail'; message: string }> = [
+        { check: 'Passed', status: 'pass', message: `${passCount} checks` },
       ]
       if (warnCount > 0) {
-        summaryItems.push({ status: 'warn', message: `${warnCount} checks with warnings`, category: 'Summary', severity: 'warning' })
+        summaryItems.push({ check: 'Warnings', status: 'warn', message: `${warnCount} checks` })
       }
       if (failCount > 0) {
-        summaryItems.push({ status: 'fail', message: `${failCount} checks failed`, category: 'Summary', severity: 'error' })
+        summaryItems.push({ check: 'Failed', status: 'fail', message: `${failCount} checks` })
       }
       const summaryTable = createStatusTable(summaryItems)
       console.log(summaryTable)
-      console.log(createDivider(60, '═', 'cyan'))
+      console.log(createDivider(undefined, 60))
     } else {
       console.log('\n' + chalk.bold('Summary:'))
       success(`Passed: ${passCount}`)

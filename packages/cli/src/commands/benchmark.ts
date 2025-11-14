@@ -169,7 +169,7 @@ async function benchmarkStringOperations(): Promise<BenchmarkResult> {
  * Display results
  */
 async function displayResults(suite: BenchmarkSuite) {
-  console.log(createDivider(60))
+  console.log(createDivider(undefined, 60))
   console.log()
   
   const tableData = suite.results.map((result, index) => ({
@@ -185,15 +185,15 @@ async function displayResults(suite: BenchmarkSuite) {
   }))
 
   const columns = [
-    { header: '#', width: 5 },
-    { header: 'Benchmark', width: 25 },
-    { header: 'Iterations', width: 12 },
-    { header: 'Mean', width: 12 },
-    { header: 'Median', width: 12 },
-    { header: 'Min', width: 12 },
-    { header: 'Max', width: 12 },
-    { header: 'P95', width: 12 },
-    { header: 'P99', width: 12 },
+    { header: '#', key: '#' },
+    { header: 'Benchmark', key: 'Benchmark' },
+    { header: 'Iterations', key: 'Iterations' },
+    { header: 'Mean', key: 'Mean' },
+    { header: 'Median', key: 'Median' },
+    { header: 'Min', key: 'Min' },
+    { header: 'Max', key: 'Max' },
+    { header: 'P95', key: 'P95' },
+    { header: 'P99', key: 'P99' },
   ]
   console.log(createTable(tableData, columns, {
     border: true,
@@ -273,7 +273,7 @@ async function compareWithPrevious(current: BenchmarkSuite): Promise<void> {
 
     const previous: BenchmarkSuite = await fs.readJSON(previousPath)
 
-    console.log(createDivider(60))
+    await createDivider()
     console.log()
     infoMessage('📊 Comparison with Previous Run')
     console.log()
@@ -299,9 +299,10 @@ async function compareWithPrevious(current: BenchmarkSuite): Promise<void> {
 
     if (comparisonData.length > 0) {
       const comparisonColumns = [
-        { header: 'Benchmark', width: 25 },
-        { header: 'Change', width: 15 },
-        { header: 'Difference', width: 15 },
+        { header: 'Benchmark', key: 'Benchmark' },
+        { header: 'Previous', key: 'Previous' },
+        { header: 'Current', key: 'Current' },
+        { header: 'Change', key: 'Change' },
       ]
       console.log(createTable(comparisonData, comparisonColumns, {
         border: true,
@@ -335,7 +336,6 @@ export async function benchmarkCommand(options: {
 }) {
   console.log(createBanner('⚡ Performance Benchmarks', {
     gradient: 'pastel',
-    style: 'bold',
   }))
   console.log()
 
