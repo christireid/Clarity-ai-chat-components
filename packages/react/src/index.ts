@@ -9,6 +9,12 @@ export * from './embeddings'
 
 // Agent Orchestration (Agentic AI)
 export * from './agents'
+// Tool UI Registry
+export {
+  createToolUIRegistry,
+  type ToolComponentProps,
+  type ToolComponentRegistry,
+} from './agents/tool-ui-registry'
 
 // Prompt Templates
 export * from './prompts'
@@ -55,6 +61,10 @@ export * from './components/model-selector'
 export * from './components/streaming-message'
 export * from './components/stream-block'
 export * from './components/tool-invocation-card'
+export {
+  ClarityToolResult,
+  type ClarityToolResultProps,
+} from './components/clarity-tool-result'
 export * from './components/citation-card'
 export * from './components/thinking-indicator'
 export * from './components/copy-button'
@@ -131,6 +141,12 @@ export {
   type ClarityChatMemoryInfo,
   type ClarityChatErrorInfo,
 } from './hooks/use-clarity-chat'
+// Structured object generation hook
+export {
+  useClarityObject,
+  type UseClarityObjectOptions,
+  type UseClarityObjectReturn,
+} from './hooks/use-clarity-object'
 
 // Message conversion utilities
 export {
