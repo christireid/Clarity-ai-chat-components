@@ -154,7 +154,7 @@ export async function addCommand(component: string, options: AddOptions) {
         spinner.succeed('Dependencies installed')
       } catch (error) {
         spinner.fail('Failed to install dependencies')
-        logger.error(error)
+        logger.error(error instanceof Error ? error : new Error(String(error)))
       }
     }
 
@@ -182,7 +182,7 @@ export async function addCommand(component: string, options: AddOptions) {
 
   } catch (error) {
     spinner.fail('Failed to add component')
-    logger.error(error)
+    logger.error(error instanceof Error ? error : new Error(String(error)))
     console.log()
     console.log(errorBox('Failed to add component. Check the error above.', '✗ Error'))
     console.log()

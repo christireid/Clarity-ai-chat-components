@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Avatar } from '../avatar'
 
@@ -65,7 +65,7 @@ describe('Avatar Component', () => {
 
   describe('Image Handling', () => {
     it('should handle image load error', () => {
-      const { container, rerender } = render(<Avatar src="/invalid.jpg" alt="User" fallback="JD" />)
+      const { rerender } = render(<Avatar src="/invalid.jpg" alt="User" fallback="JD" />)
       
       const img = screen.getByAltText('User')
       const errorEvent = new Event('error')
@@ -77,7 +77,7 @@ describe('Avatar Component', () => {
     })
 
     it('should show fallback when image fails to load', async () => {
-      const { container } = render(<Avatar src="/broken.jpg" alt="User" fallback="FB" />)
+      render(<Avatar src="/broken.jpg" alt="User" fallback="FB" />)
       const img = screen.getByAltText('User')
       
       // Simulate image error by dispatching error event

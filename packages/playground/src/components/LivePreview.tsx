@@ -3,28 +3,27 @@
  * Renders user code in real-time with error handling
  */
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { AlertCircle } from 'lucide-react'
 
 interface LivePreviewProps {
   code: string
   theme: 'light' | 'dark'
   autoRun: boolean
-  forceRun?: number
+  onRunRef?: React.MutableRefObject<(() => void) | null>
 }
 
-export function LivePreview({ code, theme, autoRun, forceRun }: LivePreviewProps) {
-  const [error, setError] = useState<string | null>(null)
-  const iframeRef = useRef<HTMLIFrameElement>(null)
+const renderPreview = (
+  code: string,
+  theme: 'light' | 'dark',
+  iframeRef: React.RefObject<HTMLIFrameElement | null>,
+  setError: (error: string | null) => void
+) => {
+  try {
+    setError(null)
 
-  useEffect(() => {
-    if (!autoRun && forceRun === undefined) return
-
-    try {
-      setError(null)
-
-      // Create the HTML content for the iframe
-      const html = `
+    // Create the HTML content for the iframe
+    const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -58,26 +57,85 @@ export function LivePreview({ code, theme, autoRun, forceRun }: LivePreviewProps
         root.render(<Component />);
       }
     } catch (error) {
-      document.body.innerHTML = '<div style="color: red; padding: 16px; font-family: monospace;">' + 
-        '<strong>Error:</strong><br>' + error.message + '</div>';
+      const errorDiv = document.createElement('div');
+      errorDiv.style.cssText = 'color: red; padding: 16px; font-family: monospace; background: #fee; border: 1px solid #fcc; border-radius: 4px; margin: 16px; white-space: pre-wrap;';
+      const strong = document.createElement('strong');
+      strong.textContent = 'Error: ';
+      const errorMessage = error?.message || error?.toString() || 'Unknown error';
+      const errorText = errorMessage + (error?.stack ? '\\n\\n' + error.stack : '');
+      const message = document.createTextNode(errorText);
+      
+      errorDiv.appendChild(strong);
+      errorDiv.appendChild(message);
+      
+      // Clear body and add error
+      const root = document.getElementById('root');
+      if (root) {
+        root.innerHTML = '';
+        root.appendChild(errorDiv);
+      } else {
+        document.body.innerHTML = '';
+        document.body.appendChild(errorDiv);
+      }
     }
   </script>
 </body>
 </html>
       `
 
-      if (iframeRef.current) {
-        const doc = iframeRef.current.contentDocument
-        if (doc) {
-          doc.open()
-          doc.write(html)
-          doc.close()
-        }
+    if (iframeRef.current) {
+      const doc = iframeRef.current.contentDocument
+      if (doc) {
+        doc.open()
+        doc.write(html)
+        doc.close()
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
     }
-  }, [code, theme, autoRun, forceRun])
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Unknown error')
+  }
+}
+
+export function LivePreview({ code, theme, autoRun, onRunRef }: LivePreviewProps) {
+  const [error, setError] = useState<string | null>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const runPreview = useCallback(() => {
+    renderPreview(code, theme, iframeRef, setError)
+  }, [code, theme])
+
+  useEffect(() => {
+    if (onRunRef) {
+      onRunRef.current = runPreview
+    }
+  }, [onRunRef, runPreview])
+
+  useEffect(() => {
+    if (!autoRun) {
+      // Clear any pending timeout when auto-run is disabled
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      return
+    }
+
+    // Debounce auto-run to avoid excessive re-renders
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      runPreview()
+    }, 300) // 300ms debounce delay
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [autoRun, runPreview])
 
   return (
     <div className="h-full">
@@ -100,9 +158,10 @@ export function LivePreview({ code, theme, autoRun, forceRun }: LivePreviewProps
       <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden h-[600px]">
         <iframe
           ref={iframeRef}
-          title="preview"
-          sandbox="allow-scripts"
+          title="Live code preview"
+          sandbox="allow-scripts allow-same-origin"
           className="w-full h-full"
+          aria-label="Live preview of the code"
         />
       </div>
     </div>

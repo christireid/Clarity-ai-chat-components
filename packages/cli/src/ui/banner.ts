@@ -12,6 +12,7 @@ export interface BannerOptions {
   padding?: number
   margin?: number
   border?: boolean
+  style?: 'bold'
 }
 
 const GRADIENTS = {
@@ -107,12 +108,11 @@ export function subsectionHeader(title: string): string {
 /**
  * Create a divider line
  */
-export function createDivider(
-  width: number = 60,
-  char: string = '─',
-  color: 'blue' | 'gray' | 'yellow' | 'cyan' | 'red' | 'green' = 'gray'
-): string {
-  const line = char.repeat(width)
-  const colorFn = COLORS[color] || chalk.gray
-  return colorFn(line)
+export function createDivider(text?: string, width: number = 60): string {
+  if (text) {
+    const padding = Math.max(0, Math.floor((width - text.length - 2) / 2))
+    const line = '─'.repeat(padding)
+    return chalk.gray(`${line} ${text} ${line}`)
+  }
+  return chalk.gray('─'.repeat(width))
 }

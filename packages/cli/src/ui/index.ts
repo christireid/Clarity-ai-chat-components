@@ -4,7 +4,26 @@
  */
 
 export * from './banner.js'
-export * from './box.js'
+export {
+  box,
+  panel,
+  successBox,
+  errorBox,
+  warningBox,
+  infoBox,
+  hr,
+  tree,
+  list,
+  numberedList,
+  type BoxOptions,
+  type TreeNode,
+} from './box.js'
 export * from './spinner.js'
 export * from './table.js'
-export * from './progress.js'
+export {
+  ProgressBar,
+  createSpinner,
+  StepProgress,
+  percentageProgress,
+  type ProgressBarOptions,
+} from './progress.js'

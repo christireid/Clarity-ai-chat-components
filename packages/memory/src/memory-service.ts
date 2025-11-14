@@ -739,14 +739,14 @@ export class MemoryService {
    * Utility methods
    */
   private generateId(): string {
-    return `mem_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `mem_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
   }
 
   private getHigherPriority(current: MemoryPriority): MemoryPriority {
     const priorities: MemoryPriority[] = ['low', 'medium', 'high', 'critical']
     const index = priorities.indexOf(current)
     const nextIndex = Math.min(index + 1, priorities.length - 1)
-    return priorities[nextIndex] ?? 'critical'
+    return priorities[nextIndex]!
   }
 
   private createMemoryFromMatch(match: VectorStoreMatch): MemoryItem {

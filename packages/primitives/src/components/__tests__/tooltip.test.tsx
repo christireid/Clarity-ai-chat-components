@@ -141,7 +141,7 @@ describe('Tooltip Component', () => {
   describe('Arrow', () => {
     it('should show arrow by default', async () => {
       const user = userEvent.setup()
-      const { container } = render(
+      render(
         <Tooltip content="With arrow">
           <button>Button</button>
         </Tooltip>

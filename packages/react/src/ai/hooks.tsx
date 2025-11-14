@@ -43,7 +43,7 @@ export function useSuggestions(
   const { getSuggestions, config } = useAI()
   const [suggestions, setSuggestions] = React.useState<Suggestion[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
   
   const debounceMs = options?.debounceMs ?? 300
   const minInputLength = options?.minInputLength ?? 0
@@ -181,7 +181,7 @@ export function useSentimentAnalysis(options?: { debounceMs?: number }) {
   const { analyzeSentiment, config } = useAI()
   const [sentiment, setSentiment] = React.useState<SentimentResult | null>(null)
   const [isAnalyzing, setIsAnalyzing] = React.useState(false)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
   
   const debounceMs = options?.debounceMs ?? 500
   

@@ -131,6 +131,6 @@ export default [
     },
   },
   {
-    ignores: ['dist/', 'node_modules/', 'coverage/', '.storybook/'],
+    ignores: ['dist/', 'node_modules/', 'coverage/', '.storybook/', '**/*.d.ts'],
   },
 ]

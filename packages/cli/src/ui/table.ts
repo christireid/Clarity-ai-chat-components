@@ -4,7 +4,6 @@
  */
 
 import chalk from 'chalk'
-import { dim, bold } from 'chalk'
 
 export interface TableColumn {
   header: string
@@ -76,7 +75,7 @@ export function table(
       BORDER_CHARS.topLeft +
       widths.map(w => BORDER_CHARS.horizontal.repeat(w)).join(BORDER_CHARS.topMiddle) +
       BORDER_CHARS.topRight
-    output.push(dim(topBorder))
+    output.push(chalk.dim(topBorder))
   }
 
   // Header
@@ -103,7 +102,7 @@ export function table(
 
   output.push(
     border
-      ? dim(BORDER_CHARS.vertical) + headerCells.join(dim(BORDER_CHARS.vertical)) + dim(BORDER_CHARS.vertical)
+      ? chalk.dim(BORDER_CHARS.vertical) + headerCells.join(chalk.dim(BORDER_CHARS.vertical)) + chalk.dim(BORDER_CHARS.vertical)
       : headerCells.join('  ')
   )
 
@@ -113,7 +112,7 @@ export function table(
       BORDER_CHARS.leftMiddle +
       widths.map(w => BORDER_CHARS.horizontal.repeat(w)).join(BORDER_CHARS.middle) +
       BORDER_CHARS.rightMiddle
-    output.push(dim(separator))
+    output.push(chalk.dim(separator))
   } else if (!compact) {
     output.push('')
   }
@@ -144,7 +143,7 @@ export function table(
 
     output.push(
       border
-        ? dim(BORDER_CHARS.vertical) + cells.join(dim(BORDER_CHARS.vertical)) + dim(BORDER_CHARS.vertical)
+        ? chalk.dim(BORDER_CHARS.vertical) + cells.join(chalk.dim(BORDER_CHARS.vertical)) + chalk.dim(BORDER_CHARS.vertical)
         : cells.join('  ')
     )
 
@@ -154,7 +153,7 @@ export function table(
         BORDER_CHARS.leftMiddle +
         widths.map(w => BORDER_CHARS.horizontal.repeat(w)).join(BORDER_CHARS.middle) +
         BORDER_CHARS.rightMiddle
-      output.push(dim(separator))
+      output.push(chalk.dim(separator))
     }
   })
 
@@ -164,10 +163,60 @@ export function table(
       BORDER_CHARS.bottomLeft +
       widths.map(w => BORDER_CHARS.horizontal.repeat(w)).join(BORDER_CHARS.bottomMiddle) +
       BORDER_CHARS.bottomRight
-    output.push(dim(bottomBorder))
+    output.push(chalk.dim(bottomBorder))
   }
 
   return output.join('\n')
+}
+
+/**
+ * Create a table (wrapper for table function)
+ */
+export function createTable(
+  data: Record<string, any>[] | string[][],
+  columns: TableColumn[],
+  options: TableOptions = {}
+): string {
+  return table(data, columns, options)
+}
+
+/**
+ * Create a list table (wrapper for listTable function)
+ */
+export function createListTable(
+  items: Array<{ label: string; value: string; color?: (text: string) => string }>
+): string {
+  return listTable(items)
+}
+
+/**
+ * Create a status table for doctor command
+ */
+export interface StatusTableRow {
+  check: string
+  status: 'pass' | 'warn' | 'fail'
+  message: string
+  category?: string
+  severity?: 'info' | 'warning' | 'error'
+}
+
+export function createStatusTable(rows: StatusTableRow[]): string {
+  const columns: TableColumn[] = [
+    { header: 'Check', key: 'check', width: 30 },
+    { header: 'Status', key: 'status', width: 10, align: 'center' },
+    { header: 'Message', key: 'message' },
+  ]
+
+  const data = rows.map(row => ({
+    check: row.check,
+    status: row.status === 'pass' ? '✓' : row.status === 'warn' ? '⚠' : '✗',
+    message: row.message,
+  }))
+
+  return table(data, columns, {
+    border: true,
+    headerColor: chalk.bold.cyan,
+  })
 }
 
 /**
@@ -182,7 +231,7 @@ export function listTable(
     .map(item => {
       const label = item.label.padEnd(maxLabelWidth)
       const colorFn = item.color || ((t: string) => t)
-      return `${dim(label)}  ${colorFn(item.value)}`
+      return `${chalk.dim(label)}  ${colorFn(item.value)}`
     })
     .join('\n')
 }
@@ -194,7 +243,7 @@ export function keyValueTable(
   data: Record<string, string | number | boolean>,
   options: { labelColor?: (text: string) => string; valueColor?: (text: string) => string } = {}
 ): string {
-  const { labelColor = dim, valueColor = (t: string) => t } = options
+  const { labelColor = chalk.dim, valueColor = (t: string) => t } = options
   const maxKeyWidth = Math.max(...Object.keys(data).map(key => key.length))
   
   return Object.entries(data)

@@ -138,7 +138,7 @@ describe('Dialog Component', () => {
     })
 
     it('should render with custom size', () => {
-      const { container } = render(
+      render(
         <Dialog open>
           <DialogContent size="lg">
             <DialogTitle>Large</DialogTitle>
@@ -150,7 +150,7 @@ describe('Dialog Component', () => {
     })
 
     it('should accept custom className', () => {
-      const { container } = render(
+      render(
         <Dialog open>
           <DialogContent className="custom-dialog">
             <DialogTitle>Custom</DialogTitle>

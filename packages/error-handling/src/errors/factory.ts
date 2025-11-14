@@ -47,7 +47,7 @@ export const createConfigError = {
       },
     }),
 
-  invalidConfiguration: (field: string, value: any, expected: string) =>
+  invalidConfiguration: (field: string, value: unknown, expected: string) =>
     new ConfigurationError(`Invalid configuration for ${field}`, {
       code: 'INVALID_CONFIGURATION',
       solution: `Expected ${expected}, received ${typeof value}`,
@@ -191,7 +191,7 @@ export const createNetworkError = {
  * Factory functions for validation errors
  */
 export const createValidationError = {
-  invalidInput: (field: string, value: any, expected: string) =>
+  invalidInput: (field: string, value: unknown, expected: string) =>
     new ValidationError(`Invalid input for ${field}`, {
       code: 'INVALID_INPUT',
       field,

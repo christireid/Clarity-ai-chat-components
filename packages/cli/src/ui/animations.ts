@@ -22,7 +22,11 @@ export async function typeText(text: string, delay: number = 50): Promise<void> 
  */
 export function createPulse(text: string, color: string = 'cyan'): string {
   // Simple pulsing effect using bold
-  return chalk[color as keyof typeof chalk].bold(text)
+  const colorFn = chalk[color as keyof typeof chalk]
+  if (typeof colorFn === 'function') {
+    return (colorFn as (text: string) => string)(text)
+  }
+  return text
 }
 
 /**
@@ -32,7 +36,11 @@ export function createRainbowText(text: string): string {
   const colors = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta']
   return text.split('').map((char, index) => {
     const color = colors[index % colors.length]
-    return chalk[color as keyof typeof chalk](char)
+    const colorFn = chalk[color as keyof typeof chalk]
+    if (typeof colorFn === 'function') {
+      return (colorFn as (text: string) => string)(char)
+    }
+    return char
   }).join('')
 }
 
@@ -53,7 +61,7 @@ export async function animateLoading(
   messages: string[],
   duration: number = 2000
 ): Promise<void> {
-  const spinner = createSpinner(messages[0], { color: 'cyan' })
+  const spinner = createSpinner(messages[0])
   spinner.start()
 
   let currentIndex = 0

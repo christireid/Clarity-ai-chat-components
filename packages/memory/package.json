@@ -39,6 +39,15 @@
   ],
   "author": "Christi Reid <christi@codeclarity.ai>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/christireid/Clarity-ai-chat-components.git",
+    "directory": "packages/memory"
+  },
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "peerDependencies": {},
   "dependencies": {},
   "devDependencies": {
