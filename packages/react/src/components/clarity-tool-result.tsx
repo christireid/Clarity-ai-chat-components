@@ -97,7 +97,7 @@ export function ClarityToolResult({
 
   if (!Component) {
     // No registered component, use fallback
-    const FallbackComponent = fallback
+    const FallbackComponent = fallback || DefaultToolResult
     return <FallbackComponent toolCall={toolCall} result={result} />
   }
 
