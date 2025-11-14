@@ -4,14 +4,14 @@
  * Advanced hook that wraps the full optimization engine
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { CoreMessage } from '../../hooks/use-chat-enhanced'
 import {
   optimizePrompt,
   type PromptOptimizationOptions,
   type OptimizationEngineResult,
-  type ModelProfile,
 } from '../core/engine'
+import type { ModelProfile } from '../core/model-profiles'
 
 export interface UsePromptOptimizerOptions {
   /** Messages to optimize */

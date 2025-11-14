@@ -14,9 +14,8 @@ import {
   usePromptOptimizer,
   useDynamicModelRouting,
   usePromptDebugger,
-  getModelProfile,
-} from '../core'
-import type { ModelProfile } from '../core/model-profiles'
+} from '../hooks'
+import { getModelProfile, type ModelProfile } from '../core/model-profiles'
 
 export function AdvancedOptimizationExample() {
   const [showDebugger, setShowDebugger] = React.useState(false)
