@@ -1,0 +1,264 @@
+import { Meta } from '@storybook/blocks'
+import { Canvas, Story } from '@storybook/blocks'
+
+<Meta title="Components/Overview" />
+
+# Components Overview
+
+Clarity Chat provides 70+ production-ready components for building AI chat interfaces. This guide helps you understand how components are organized and how to use them effectively.
+
+## Component Categories
+
+### 📨 Messaging Components
+
+Components for displaying and managing chat messages:
+
+- **Message** - Individual message display with animations and interactions
+- **MessageList** - Virtualized list of messages
+- **StreamingMessage** - Real-time streaming message display
+- **ChatWindow** - Complete chat interface container
+
+**When to use:**
+- Building chat interfaces
+- Displaying conversation history
+- Showing real-time updates
+
+**See:** [Messaging Components](./MessageEssentials)
+
+---
+
+### ⌨️ Input & Interaction
+
+Components for user input and interaction:
+
+- **ChatInput** - Text input with auto-resize and file upload
+- **VoiceInput** - Voice-to-text input with waveform
+- **CommandPalette** - Command palette with fuzzy search
+- **ContextMenu** - Right-click context menus
+
+**When to use:**
+- Collecting user input
+- Voice interactions
+- Power-user features
+- Contextual actions
+
+**See:** [Input Components](./ChatInputEssentials)
+
+---
+
+### 🎨 UI Primitives
+
+Foundation components for building custom interfaces:
+
+- **Button** - Accessible button component
+- **Card** - Container component
+- **Dialog** - Modal dialogs
+- **Tooltip** - Hover tooltips
+
+**When to use:**
+- Building custom UIs
+- Creating layouts
+- Adding interactions
+
+**See:** [UI Primitives](./ButtonEssentials)
+
+---
+
+### 📊 Data Display
+
+Components for showing data and analytics:
+
+- **TokenCounter** - Real-time token usage display
+- **AnalyticsDashboard** - Analytics visualization
+- **PerformanceDashboard** - Performance metrics
+- **UsageDashboard** - Usage statistics
+
+**When to use:**
+- Showing metrics
+- Analytics dashboards
+- Performance monitoring
+- Usage tracking
+
+**See:** [Data Display Components](./TokenCounterEssentials)
+
+---
+
+### 🤖 Enterprise AI
+
+Components for enterprise AI features:
+
+- **VectorStoreViewer** - Vector database visualization
+- **AgentRunFeed** - Agent execution feed
+- **RAGPipeline** - RAG pipeline visualization
+- **SafetyStatusCard** - AI safety monitoring
+
+**When to use:**
+- Enterprise applications
+- RAG implementations
+- Agent systems
+- Safety monitoring
+
+**See:** [Enterprise Components](./VectorStoreViewerEssentials)
+
+---
+
+## Storybook Tracks
+
+Each component category is organized into tracks:
+
+### Essentials Track
+
+**Most common use cases** - Use these 90% of the time.
+
+- Basic usage patterns
+- Common configurations
+- Production-ready examples
+- Copy-pasteable code
+
+**Example:** `Components/Message/Essentials`
+
+---
+
+### Enterprise Track
+
+**Advanced patterns** - For production applications.
+
+- Complex configurations
+- Multi-component flows
+- Performance optimizations
+- Security considerations
+
+**Example:** `Components/Message/Enterprise`
+
+---
+
+### Composability Track
+
+**Extending components** - Customization and composition.
+
+- Custom styling
+- Component composition
+- Advanced props
+- Extension patterns
+
+**Example:** `Components/Message/Composability`
+
+---
+
+### Performance Track
+
+**Optimization examples** - Handling scale and performance.
+
+- Virtual scrolling
+- Memoization patterns
+- Lazy loading
+- Performance tips
+
+**Example:** `Components/Message/Performance`
+
+---
+
+## Quick Start
+
+### 1. Choose Your Component
+
+Browse components by category or use the search.
+
+### 2. Start with Essentials
+
+Begin with the Essentials track for your component.
+
+### 3. Explore Examples
+
+Try different examples and configurations.
+
+### 4. Copy Code
+
+Copy the code that matches your use case.
+
+### 5. Customize
+
+Use the Enterprise and Composability tracks for advanced patterns.
+
+---
+
+## Best Practices
+
+### Component Selection
+
+1. **Start Simple** - Use basic components first
+2. **Progressive Enhancement** - Add features as needed
+3. **Check Examples** - Look at real-world examples
+4. **Read Docs** - Understand props and behavior
+
+### Performance
+
+1. **Use Virtualization** - For long lists (MessageList)
+2. **Memoize Props** - Prevent unnecessary re-renders
+3. **Lazy Load** - Load components on demand
+4. **Optimize Imports** - Import only what you need
+
+### Accessibility
+
+1. **Use Semantic HTML** - Components handle this automatically
+2. **Keyboard Navigation** - All components support keyboard
+3. **Screen Readers** - ARIA labels included
+4. **Focus Management** - Proper focus handling
+
+---
+
+## Component Patterns
+
+### Basic Pattern
+
+```tsx
+import { ComponentName } from '@clarity-chat/react'
+
+function App() {
+  return <ComponentName prop1="value" />
+}
+```
+
+### With State
+
+```tsx
+import { ComponentName } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function App() {
+  const [value, setValue] = useState('')
+  
+  return (
+    <ComponentName
+      value={value}
+      onChange={setValue}
+    />
+  )
+}
+```
+
+### With Hooks
+
+```tsx
+import { ComponentName } from '@clarity-chat/react'
+import { useClarityChat } from '@clarity-chat/react'
+
+function App() {
+  const { messages } = useClarityChat({ api: '/api/chat' })
+  
+  return <ComponentName messages={messages} />
+}
+```
+
+---
+
+## Next Steps
+
+- [Browse Components](./ComponentGallery) - See all components
+- [Design Principles](./DesignPrinciples) - Understand design system
+- [Composition Guide](./Composition) - Learn composition patterns
+- [Accessibility](./Accessibility) - Accessibility guidelines
+
+---
+
+**Need Help?** Check the [FAQ](./FAQ) or [Getting Started](./GettingStarted) guide.
