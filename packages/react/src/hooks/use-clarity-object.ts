@@ -1,8 +1,14 @@
 /**
- * useClarityObject - Structured Object Generation Hook
+ * useClarityObject - Top-Level Structured Output Hook
  * 
  * Hook for generating structured objects from AI models with type safety.
  * Supports both streaming and non-streaming object generation.
+ * 
+ * **Architecture Layer**: Top-Level (Drop-in Ready)
+ * **Domain**: Tools & Agents
+ * 
+ * This is the recommended way to generate type-safe structured data from AI.
+ * For tool calling, use mid-level `useClarityChatWithTools` instead.
  * 
  * @example
  * ```tsx
@@ -18,6 +24,16 @@
  * })
  * 
  * await run({ query: 'gaming laptops' })
+ * ```
+ * 
+ * @example
+ * ```tsx
+ * // With streaming
+ * const { object, run, isLoading, progress } = useClarityObject<Product>({
+ *   api: '/api/generate-object',
+ *   stream: true,
+ *   onProgress: (chunk) => console.log('Progress:', chunk),
+ * })
  * ```
  */
 

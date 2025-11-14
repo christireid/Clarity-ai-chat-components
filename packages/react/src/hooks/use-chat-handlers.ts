@@ -1,8 +1,40 @@
 /**
- * useChatHandlers - Simplified handlers for common chat patterns
+ * useChatHandlers - Mid-Level Handler Hook
  * 
- * Reduces boilerplate when using useClarityChat with ChatWindow.
- * Provides pre-configured handlers that follow best practices.
+ * Provides pre-configured handlers for common chat operations, eliminating
+ * boilerplate when using useClarityChat with ChatWindow.
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Chat State
+ * 
+ * This hook wraps common patterns like sending messages, clearing chat,
+ * retrying messages, and editing messages with proper error handling.
+ * 
+ * For drop-in usage, use top-level `ClarityChat` component instead.
+ * For custom handlers, use low-level `useClarityChat` directly.
+ * 
+ * @example
+ * ```tsx
+ * const chat = useClarityChat({ api: '/api/chat' })
+ * const handlers = useChatHandlers({ chat })
+ * 
+ * <ChatWindow
+ *   messages={chat.messages}
+ *   onSendMessage={handlers.onSendMessage}
+ *   onClear={handlers.onClear}
+ *   onMessageRetry={handlers.onRetry}
+ * />
+ * ```
+ * 
+ * @example
+ * ```tsx
+ * // With callbacks
+ * const handlers = useChatHandlers({
+ *   chat,
+ *   onMessageSent: (content) => console.log('Sent:', content),
+ *   onMessageError: (error) => console.error('Error:', error),
+ * })
+ * ```
  */
 
 import * as React from 'react'
