@@ -6,6 +6,7 @@
 
 import type { StorageAdapter } from './storage-adapter'
 import type { Memory, MemoryType, MemoryScope, SearchOptions } from '../core/types'
+import { countTokens } from '../utils/token-counter'
 
 const DB_NAME = 'clarity-memory'
 const STORE_NAME = 'memories'
@@ -328,6 +329,6 @@ export class IndexedDBStore implements StorageAdapter {
   }
 
   private countTokens(text: string): number {
-    return Math.ceil(text.length / 4)
+    return countTokens(text)
   }
 }

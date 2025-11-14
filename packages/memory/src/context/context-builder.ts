@@ -13,6 +13,7 @@ import type {
 import type { StorageAdapter } from '../stores/storage-adapter'
 import type { EmbeddingProvider } from '../embeddings/embedding-provider'
 import { TokenBudgetManager } from './token-budget'
+import { countTokens } from '../utils/token-counter'
 
 export class ContextBuilder {
   private budgetManager: TokenBudgetManager
@@ -286,8 +287,7 @@ export class ContextBuilder {
   }
 
   private countTokens(text: string): number {
-    // Simple approximation: ~4 characters per token
-    return Math.ceil(text.length / 4)
+    return countTokens(text)
   }
 
   private trimToTokens(text: string, maxTokens: number): string {

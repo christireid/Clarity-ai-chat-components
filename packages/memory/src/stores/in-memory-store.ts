@@ -189,7 +189,6 @@ export class InMemoryStore implements StorageAdapter {
   }
 
   private countTokens(text: string): number {
-    // Simple approximation: ~4 characters per token
-    return Math.ceil(text.length / 4)
+    return countTokens(text)
   }
 }

@@ -7,6 +7,7 @@
 import type { CompressionStrategy, CompressionResult } from './compression-strategy'
 import type { Memory } from '../core/types'
 import type { Summarizer } from '../summarization/summarizer'
+import { countTokens } from '../utils/token-counter'
 
 export interface LLMSummarizer {
   summarize(text: string, maxTokens: number): Promise<string>
@@ -48,6 +49,6 @@ export class SummarizeStrategy implements CompressionStrategy {
   }
 
   private countTokens(text: string): number {
-    return Math.ceil(text.length / 4)
+    return countTokens(text)
   }
 }

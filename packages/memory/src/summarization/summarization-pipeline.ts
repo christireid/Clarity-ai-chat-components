@@ -98,6 +98,6 @@ export class SummarizationPipeline {
   }
 
   private countTokens(text: string): number {
-    return Math.ceil(text.length / 4)
+    return countTokens(text)
   }
 }

@@ -6,6 +6,7 @@
 
 import type { CompressionStrategy, CompressionResult } from './compression-strategy'
 import type { Memory } from '../core/types'
+import { countTokens } from '../utils/token-counter'
 
 export class ExtractStrategy implements CompressionStrategy {
   canCompress(memory: Memory): boolean {
@@ -96,6 +97,6 @@ export class ExtractStrategy implements CompressionStrategy {
   }
 
   private countTokens(text: string): number {
-    return Math.ceil(text.length / 4)
+    return countTokens(text)
   }
 }
