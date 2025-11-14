@@ -33,7 +33,7 @@ export interface UseAsyncErrorOptions {
  * }
  * ```
  */
-export function useAsyncError<T = any>() {
+export function useAsyncError<T = unknown>() {
   const [error, setError] = useState<Error | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [retryCount, setRetryCount] = useState(0)

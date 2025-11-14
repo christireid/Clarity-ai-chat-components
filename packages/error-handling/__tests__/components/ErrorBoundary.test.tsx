@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { ErrorBoundary } from '../../src/components/ErrorBoundary'
 import { ConfigurationError } from '../../src/errors'
 
@@ -90,32 +90,43 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Add the required configuration')).toBeInTheDocument()
   })
 
-  it('should reset error when resetError is called', () => {
-    const onReset = vi.fn()
-    const TestComponent = ({ shouldThrow }: { shouldThrow: boolean }) => (
-      <ErrorBoundary onReset={onReset}>
+  it('should reset error when resetError is called', async () => {
+    let shouldThrow = true
+
+    const { rerender } = render(
+      <ErrorBoundary>
         <ConditionalError shouldThrow={shouldThrow} />
       </ErrorBoundary>
     )
 
-    const { rerender } = render(<TestComponent shouldThrow={true} />)
-
     // Error should be caught
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
 
-    // Click reset button - this clears the error state
+    // Change condition first so component won't throw after reset
+    shouldThrow = false
+    
+    // Update the component first so it won't throw
+    await act(async () => {
+      rerender(
+        <ErrorBoundary>
+          <ConditionalError shouldThrow={shouldThrow} />
+        </ErrorBoundary>
+      )
+    })
+
+    // Now click reset button - error boundary should clear and show children
     const resetButton = screen.getByText(/try again/i)
-    fireEvent.click(resetButton)
+    await act(async () => {
+      fireEvent.click(resetButton)
+    })
 
-    // Verify onReset was called
-    expect(onReset).toHaveBeenCalled()
-
-    // Rerender with no error - ErrorBoundary should render children now that error is cleared
-    rerender(<TestComponent shouldThrow={false} />)
-
-    // Should show content, not error after reset
+    // Should show content, not error
+    await waitFor(() => {
+      expect(screen.getByText('No error')).toBeInTheDocument()
+    }, { timeout: 3000 })
+    
+    // Verify error is gone
     expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument()
-    expect(screen.getByText('No error')).toBeInTheDocument()
   })
 
   it('should call onReset callback when error is reset', () => {

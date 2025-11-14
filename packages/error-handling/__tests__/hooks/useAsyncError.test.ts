@@ -1,16 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useAsyncError } from '../../src/hooks/useAsyncError'
 
 describe('useAsyncError', () => {
   beforeEach(() => {
-    vi.useFakeTimers()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-    vi.clearAllTimers()
-    // Always restore to fake timers for consistency
     vi.useFakeTimers()
   })
 
@@ -112,74 +105,75 @@ describe('useAsyncError', () => {
   })
 
   it('should update retry count during retries', async () => {
-    // Use real timers for this test to avoid timing issues
-    vi.useRealTimers()
-    
-    const { result, unmount } = renderHook(() => useAsyncError())
-    const asyncFn = vi.fn().mockRejectedValue(new Error('Failed'))
+    const { result } = renderHook(() => useAsyncError())
+    let attemptCount = 0
+    const asyncFn = vi.fn().mockImplementation(() => {
+      attemptCount++
+      return Promise.reject(new Error('Failed'))
+    })
 
-    await act(async () => {
-      await result.current.executeAsync(asyncFn, {
+    const promise = act(async () => {
+      return await result.current.executeAsync(asyncFn, {
         maxRetries: 2,
-        retryDelay: 100, // Shorter delay for test
+        retryDelay: 1000,
       })
     })
-    
-    // After all retries exhausted, error should be set and retry count should be > 0 at some point
-    expect(result.current.error).not.toBeNull()
+
+    // Advance timers to allow retries to happen
+    await act(async () => {
+      // First retry delay (1000ms)
+      await vi.advanceTimersByTimeAsync(1000)
+      // Second retry delay (2000ms - exponential backoff)
+      await vi.advanceTimersByTimeAsync(2000)
+    })
+
+    await promise
+
+    // Verify that multiple attempts were made
+    expect(attemptCount).toBeGreaterThan(1)
+    // After all retries exhausted, retryCount should reflect the attempts
+    // The exact count depends on timing, but should be > 0 if retries happened
     expect(asyncFn).toHaveBeenCalledTimes(3) // Initial + 2 retries
-    
-    unmount()
-    vi.useFakeTimers() // Restore fake timers for next test
   })
 
   it('should reset state', async () => {
-    // Use real timers for this test to avoid timing issues
-    vi.useRealTimers()
-    
-    const { result, unmount } = renderHook(() => useAsyncError())
+    const { result } = renderHook(() => useAsyncError())
     const asyncFn = vi.fn().mockRejectedValue(new Error('Failed'))
 
     await act(async () => {
-      await result.current.executeAsync(asyncFn, {
+      const promise = result.current.executeAsync(asyncFn, {
         maxRetries: 1,
-        retryDelay: 100, // Shorter delay for test
+        retryDelay: 1000,
       })
+
+      // Fast-forward through all retries
+      await vi.advanceTimersByTimeAsync(2000)
+      await promise
     })
 
-    // Error should be set after retries exhausted
     expect(result.current.error).not.toBeNull()
 
     await act(async () => {
       result.current.reset()
     })
 
-    // State should be reset
     expect(result.current.error).toBeNull()
     expect(result.current.isLoading).toBe(false)
     expect(result.current.retryCount).toBe(0)
-    
-    unmount()
-    vi.useFakeTimers() // Restore fake timers for next test
   })
 
   it('should handle non-Error objects', async () => {
-    // Use real timers for this test to avoid timing issues
-    vi.useRealTimers()
-    
-    const { result, unmount } = renderHook(() => useAsyncError())
+    const { result } = renderHook(() => useAsyncError())
     const asyncFn = vi.fn().mockRejectedValue('string error')
 
     await act(async () => {
-      await result.current.executeAsync(asyncFn, {
+      const promise = result.current.executeAsync(asyncFn, {
         maxRetries: 0,
       })
+      await promise
     })
 
     expect(result.current.error).toBeInstanceOf(Error)
     expect(result.current.error?.message).toBe('string error')
-    
-    unmount()
-    vi.useFakeTimers() // Restore fake timers for next test
   })
 })

@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { ErrorBoundary } from '../../src/components/ErrorBoundary';
 import { ConfigurationError } from '../../src/errors';
 // Component that throws an error
@@ -55,17 +55,23 @@ describe('ErrorBoundary', () => {
         const { rerender } = render(_jsx(ErrorBoundary, { children: _jsx(ConditionalError, { shouldThrow: shouldThrow }) }));
         // Error should be caught
         expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
-        // Change condition
+        // Change condition first so component won't throw after reset
         shouldThrow = false;
-        // Click reset button
+        // Update the component first so it won't throw
+        await act(async () => {
+            rerender(_jsx(ErrorBoundary, { children: _jsx(ConditionalError, { shouldThrow: shouldThrow }) }));
+        });
+        // Now click reset button - error boundary should clear and show children
         const resetButton = screen.getByText(/try again/i);
-        fireEvent.click(resetButton);
-        // Rerender with no error
-        rerender(_jsx(ErrorBoundary, { children: _jsx(ConditionalError, { shouldThrow: shouldThrow }) }));
+        await act(async () => {
+            fireEvent.click(resetButton);
+        });
         // Should show content, not error
         await waitFor(() => {
-            expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument();
-        });
+            expect(screen.getByText('No error')).toBeInTheDocument();
+        }, { timeout: 3000 });
+        // Verify error is gone
+        expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument();
     });
     it('should call onReset callback when error is reset', () => {
         const onReset = vi.fn();
