@@ -139,6 +139,36 @@ export {
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
 } from './utils/message-conversion'
+
+// Clarity Chat TypeScript utilities
+export type {
+  MessageContent,
+  MessageRole,
+  ClarityChatWithMemoryConfig,
+  ClarityChatWithoutMemoryConfig,
+  ClarityChatWithMemoryReturn,
+  ClarityChatWithoutMemoryReturn,
+  MemoryStrategy,
+  TransportType,
+  MessageWithMetadata,
+  ChatStateSnapshot,
+  ChatEventType,
+  ChatEvent,
+  ChatEventHandler,
+  ChatAnalyticsConfig,
+  ChatPerformanceMetrics,
+} from './types/clarity-chat-types'
+
+export {
+  isMemoryEnabled,
+  isUserMessage,
+  isAssistantMessage,
+  hasTextContent,
+  extractTextContent,
+  createUserMessage,
+  createAssistantMessage,
+  createSystemMessage,
+} from './types/clarity-chat-types'
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'
