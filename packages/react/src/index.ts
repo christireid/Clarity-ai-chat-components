@@ -194,6 +194,14 @@ export {
   type UseClarityObjectReturn,
 } from './hooks/use-clarity-object'
 
+// Tool integration hook
+export {
+  useClarityChatWithTools,
+  type UseClarityChatWithToolsOptions,
+  type UseClarityChatWithToolsReturn,
+  type ExtractedToolResult,
+} from './hooks/use-clarity-chat-with-tools'
+
 // Testing utilities (for test files only)
 export {
   createMockUseClarityChat,
