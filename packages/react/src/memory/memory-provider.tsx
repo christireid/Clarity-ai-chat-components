@@ -28,7 +28,7 @@ import { MemoryService } from '@clarity-chat/memory'
 /**
  * Memory Context
  */
-interface MemoryContextValue {
+export interface MemoryContextValue {
   service: MemoryService | null
   isInitialized: boolean
 
@@ -72,7 +72,7 @@ interface MemoryContextValue {
   ) => () => void
 }
 
-const MemoryContext = React.createContext<MemoryContextValue | null>(null)
+export const MemoryContext = React.createContext<MemoryContextValue | null>(null)
 
 /**
  * Memory Provider Props

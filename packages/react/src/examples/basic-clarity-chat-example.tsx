@@ -28,12 +28,8 @@ import { coreMessagesToMessages } from '../utils/message-converter'
 export function BasicClarityChatExample() {
   const {
     messages: coreMessages,
-    input,
-    setInput,
     append,
     isLoading,
-    error,
-    handleSubmit,
   } = useClarityChat({
     api: '/api/chat',
     // Optional: Enable memory for context-aware conversations
@@ -61,15 +57,6 @@ export function BasicClarityChatExample() {
       })
     },
     [append]
-  )
-
-  // Handle form submission (alternative to handleSendMessage)
-  const handleFormSubmit = React.useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      handleSubmit(e)
-    },
-    [handleSubmit]
   )
 
   return (

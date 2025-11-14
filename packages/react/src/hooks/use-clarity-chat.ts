@@ -23,8 +23,17 @@ import {
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
 } from './use-chat-enhanced'
-import { useMemory } from '../memory/memory-provider'
-import { generateId } from '@clarity-chat/primitives'
+import { MemoryContext } from '../memory/memory-provider'
+import type { MemoryContextValue } from '../memory/memory-provider'
+
+/**
+ * Safe hook to get memory context without throwing
+ * Returns null if MemoryProvider is not available
+ * This satisfies React hooks rules by always calling useContext unconditionally
+ */
+function useMemorySafe(): MemoryContextValue | null {
+  return React.useContext(MemoryContext)
+}
 
 /**
  * Memory configuration options
@@ -136,14 +145,9 @@ export function useClarityChat(
     ...restOptions
   } = options
 
-  // Try to get memory context (optional - won't throw if not available)
-  let memoryContext: ReturnType<typeof useMemory> | null = null
-  try {
-    memoryContext = useMemory()
-  } catch {
-    // Memory provider not available - that's okay
-    memoryContext = null
-  }
+  // Get memory context safely (returns null if MemoryProvider is not available)
+  // This hook always runs unconditionally, satisfying React hooks rules
+  const memoryContext = useMemorySafe()
 
   const memoryEnabled = memory?.enabled === true && memoryContext !== null
 
@@ -182,7 +186,7 @@ export function useClarityChat(
           }
         } catch (error) {
           // Silently fail memory capture - don't break chat flow
-          if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+          if (typeof process !== 'undefined' && process.env?.['NODE_ENV'] === 'development') {
             console.warn('[useClarityChat] Failed to capture message to memory:', error)
           }
         }
