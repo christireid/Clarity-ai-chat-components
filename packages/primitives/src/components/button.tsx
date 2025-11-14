@@ -99,7 +99,7 @@ const Button = ({
     const Comp = (asChild ? Slot : 'button') as 'button'
     const [internalState, setInternalState] =
       React.useState<ButtonState>('idle')
-    const stateTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+    const stateTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
     const currentState =
       controlledState || (loading ? 'loading' : internalState)
