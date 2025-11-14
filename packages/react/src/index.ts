@@ -1,87 +1,44 @@
-// Model Adapters
-export * from './adapters'
+/**
+ * Clarity Chat - Main Entry Point
+ * 
+ * Organized by domain with clear layering:
+ * - Top-level: Drop-in ready APIs
+ * - Mid-level: Composable building blocks  
+ * - Low-level: Primitives and utilities
+ * 
+ * All exports maintain backward compatibility.
+ * 
+ * Architecture: See DESIGN.md for domain organization and layering.
+ */
 
-// Vector Stores (Enterprise RAG)
-export * from './vector-stores'
+// ============================================================================
+// DOMAIN EXPORTS (Organized by Domain)
+// ============================================================================
 
-// Embeddings (Multi-Provider)
-export * from './embeddings'
+// Chat UI Domain (most common - exports first for better DX)
+export * from './exports/chat-ui'
 
-// Agent Orchestration (Agentic AI)
-export * from './agents'
+// Memory & Context Domain
+export * from './exports/memory-context'
 
-// Prompt Templates
-export * from './prompts'
+// AI Infrastructure Domain
+export * from './exports/ai-infrastructure'
 
-// Prompt & Token Optimization (Optional Addon Layer)
-export * from './prompt'
+// Enterprise Platform Domain
+export * from './exports/enterprise-platform'
 
-// Document Loaders & Text Splitting
-export * from './document-loaders'
+// Analytics & Observability Domain
+export * from './exports/analytics-observability'
 
-// AI Safety (PII Detection, Content Filtering, Guardrails)
-export * from './safety'
+// Developer Experience Domain
+export * from './exports/developer-experience'
 
-// Observability & Evaluation
-export * from './observability'
+// ============================================================================
+// CROSS-DOMAIN / SHARED EXPORTS
+// ============================================================================
 
-// Reranking (RAG Improvement)
-export * from './reranking'
-
-// Webhook System
-export * from './webhooks'
-
-// Plugin Architecture
-export * from './plugins'
-
-// Audit Logging
-export * from './audit'
-
-// Usage Quotas
-export * from './quotas'
-
-// Multi-Tenancy
-export * from './multi-tenancy'
-
-// RBAC (Role-Based Access Control)
-export * from './rbac'
-
-// Export all components
-export * from './components/message'
+// UI Primitives (used across domains)
 export * from './components/message-metadata'
-// Note: MessageList is exported from virtualized-message-list below (smarter auto-virtualizing version)
-// export * from './components/message-list'
-export * from './components/chat-input'
-export * from './components/advanced-chat-input'
-export * from './components/chat-window'
-// ⭐ Drop-in ready component - simplest way to use Clarity Chat
-export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
-// Chat with built-in error boundary
-export { ChatWithErrorBoundary, type ChatWithErrorBoundaryProps } from './components/chat-with-error-boundary'
-// Recipe components - pre-built combinations for common patterns
-export {
-  ChatWithMemory,
-  ChatWithAnalytics,
-  ChatWithPreset,
-  ChatWithPersistence,
-  ChatWithErrorHandling,
-  ChatComplete,
-  type ChatWithMemoryProps,
-  type ChatWithAnalyticsProps,
-  type ChatWithPresetProps,
-  type ChatWithPersistenceProps,
-  type ChatWithErrorHandlingProps,
-  type ChatCompleteProps,
-} from './components/chat-recipes'
-// Presets - pre-configured settings for common scenarios
-export {
-  chatPresets,
-  hookPresets,
-  applyChatPreset,
-  applyHookPreset,
-  type ChatPreset,
-  type HookPreset,
-} from './presets/chat-presets'
 export * from './components/model-selector'
 export * from './components/streaming-message'
 export * from './components/stream-block'
@@ -123,78 +80,71 @@ export * from './components/workflow-suggestion-list'
 export * from './components/ai-ops'
 export * from './components/enterprise'
 export * from './components/analytics-dashboard'
-
-// Phase 3 Enhancement - Error Handling & Recovery
 export * from './components/error-boundary'
 export * from './components/retry-button'
 export * from './components/network-status'
-
-// Phase 3 Enhancement - Token Management
 export * from './components/token-counter'
 export * from './components/token-optimization-panel'
 export * from './components/token-optimization-badge'
-
-// Phase 3 Enhancement - Context & Conversation Management
 export * from './components/context-visualizer'
 export * from './components/conversation-list'
-
-// v2.1 Blueprint Features - Conversation Branching
 export * from './components/conversation-branch-visualizer'
-
-// v2.1 Blueprint Features - Virtual Scrolling
-export * from './components/virtualized-message-list'
-
-// v2.1 Blueprint Features - Enhanced Markdown with LaTeX
 export * from './components/markdown-renderer-enhanced'
+export * from './components/skeleton'
+export * from './components/animated-list'
+export * from './components/toast'
+export * from './components/progress'
+export * from './components/feedback-animation'
+export * from './components/interactive-card'
+export * from './components/message-optimized'
+export * from './components/error-boundary-enhanced'
+export * from './components/empty-state'
+export * from './components/icons'
+export * from './components/theme-selector'
+export * from './components/theme-preview'
+export * from './components/performance-dashboard'
+export * from './components/voice-input'
+export * from './components/command-palette'
+export * from './components/keyboard-hint'
+export * from './components/draggable'
+export * from './components/context-menu'
+export * from './components/theme-switcher'
+export * from './components/token-optimization-dashboard'
 
-// Export hooks
-export {
-  useChat,
-  type UseChatOptions as UseChatOptionsLegacy,
-  type UseChatReturn as UseChatReturnLegacy,
-} from './hooks/use-chat'
-export * from './hooks/use-chat-enhanced'
-export * from './agents/tool-ui-registry'
-export * from './components/clarity-tool-result'
-export {
-  useClarityChat,
-  type UseClarityChatOptions,
-  type UseClarityChatReturn,
-  type ClarityMemoryOptions,
-  type ClarityWebSocketOptions,
-  type ClarityChatMemoryInfo,
-  type ClarityChatErrorInfo,
-  type ClarityPromptOptimizationOptions,
-  type ClarityChatTokenStats,
-} from './hooks/use-clarity-chat'
-// ⭐ Simplified unified hook - easier API than useClarityChat
-export { useChat, type UseChatOptions, type UseChatReturn } from './hooks/use-chat-unified'
-// Composable hooks - easy feature composition
-export {
-  useChatComposable,
-  useChatWithFeatures,
-  createChatHook,
-  ChatHookBuilder,
-  type ChatFeatures,
-} from './hooks/use-chat-composable'
-export {
-  useClarityObject,
-  type UseClarityObjectOptions,
-  type UseClarityObjectReturn,
-} from './hooks/use-clarity-object'
+// Utility Hooks (used across domains)
+export * from './hooks/use-auto-scroll'
+export * from './hooks/use-clipboard'
+export * from './hooks/use-debounce'
+export * from './hooks/use-throttle'
+export * from './hooks/use-event-listener'
+export * from './hooks/use-intersection-observer'
+export * from './hooks/use-local-storage'
+export * from './hooks/use-indexed-db'
+export * from './hooks/use-media-query'
+export * from './hooks/use-mounted'
+export * from './hooks/use-previous'
+export * from './hooks/use-toggle'
+export * from './hooks/use-window-size'
+export * from './hooks/use-error-recovery'
+export * from './hooks/use-token-tracker'
+export * from './hooks/use-token-optimization'
+export * from './hooks/use-message-operations'
+export * from './hooks/use-message-history'
+export * from './hooks/use-realistic-typing'
+export * from './hooks/use-command-palette-commands'
+export * from './hooks/use-optimistic-message'
+export * from './hooks/use-deferred-search'
+export * from './hooks/use-voice-input'
+export * from './hooks/use-mobile-keyboard'
+export * from './hooks/use-smart-cache'
+export * from './hooks/use-model-router'
+export * from './hooks/use-smart-throttle'
 
-// Message conversion utilities
-export {
-  convertCoreMessageToMessage,
-  convertMessageToCoreMessage,
-  convertCoreMessagesToMessages,
-  convertMessagesToCoreMessages,
-  // Deprecated but kept for backward compatibility
-  coreMessagesToMessages,
-  coreMessageToMessage,
-} from './utils/message-conversion'
+// Utilities
+export * from './utils'
 
-// Clarity Chat TypeScript utilities
+// Types
+export * from './types/chat-types'
 export type {
   MessageContent,
   MessageRole,
@@ -224,28 +174,6 @@ export {
   createSystemMessage,
 } from './types/clarity-chat-types'
 
-// Helper hooks for useClarityChat
-export {
-  useClarityChatWithWindow,
-  useClarityChatWithAnalytics,
-  useClarityChatWithPersistence,
-  useClarityChatWithDebounce,
-  useClarityChatWithAutoSave,
-} from './hooks/use-clarity-chat-helpers'
-
-// Note: useClarityObject already exported above with useClarityChat
-
-// Tool integration hook
-export {
-  useClarityChatWithTools,
-  type UseClarityChatWithToolsOptions,
-  type UseClarityChatWithToolsReturn,
-  type ExtractedToolResult,
-} from './hooks/use-clarity-chat-with-tools'
-
-// Prompt & Token Optimization (optional addon layer)
-export * from './prompt'
-
 // Tool result types
 export type {
   WeatherToolResult,
@@ -270,7 +198,6 @@ export {
   validateToolResult,
 } from './types/tool-result-types'
 
-// Tool result utilities
 export {
   groupToolResultsByToolName,
   groupToolResultsByMessage,
@@ -287,7 +214,7 @@ export {
   getToolResultSummary,
 } from './utils/tool-result-helpers'
 
-// Testing utilities (for test files only)
+// Testing utilities
 export {
   createMockUseClarityChat,
   createTestMessages,
@@ -300,170 +227,22 @@ export {
   assertMessageStructure,
   assertChatState,
 } from './test-utils/use-clarity-chat-test-utils'
-export * from './hooks/use-completion'
-export * from './hooks/use-assistant'
-export * from './hooks/use-streaming'
-export * from './hooks/use-streaming-sse'
-export * from './hooks/use-streaming-websocket'
-export * from './hooks/use-streamable-ui'
-export * from './hooks/use-auto-scroll'
-export * from './hooks/use-clipboard'
-export * from './hooks/use-debounce'
-export * from './hooks/use-throttle'
-export * from './hooks/use-event-listener'
-export * from './hooks/use-intersection-observer'
-// Note: use-keyboard-shortcuts not exported to avoid conflict with accessibility/keyboard-shortcuts
-// export * from './hooks/use-keyboard-shortcuts'
-export * from './hooks/use-local-storage'
-export * from './hooks/use-indexed-db'
-export * from './hooks/use-media-query'
-export * from './hooks/use-mounted'
-export * from './hooks/use-previous'
-export * from './hooks/use-toggle'
-export * from './hooks/use-window-size'
-// Phase 3 Enhancement - Error Recovery & Token Tracking
-export * from './hooks/use-error-recovery'
-export * from './hooks/use-token-tracker'
-export * from './hooks/use-token-optimization'
 
-// Phase 3 Enhancement - Message Operations & Typing
-export * from './hooks/use-message-operations'
-export * from './hooks/use-message-history'
-export * from './hooks/use-realistic-typing'
-export * from './hooks/use-command-palette-commands'
+// Object hook
+export {
+  useClarityObject,
+  type UseClarityObjectOptions,
+  type UseClarityObjectReturn,
+} from './hooks/use-clarity-object'
 
-// Optimistic Updates
-export * from './hooks/use-optimistic-message'
-
-// Performance Monitoring
-export * from './hooks/use-performance'
-
-// React Concurrent Features
-export * from './hooks/use-deferred-search'
-
-// Utility Functions (Model Fallback, Context Window, Rate Limiting, Hybrid Search, etc.)
-// Note: StreamChunk from './utils/streaming-helpers' conflicts with './adapters/types'
-// Export utils first, then explicitly export adapter StreamChunk
-export * from './utils'
-export type { StreamChunk } from './adapters/types'
-
-// Note: The following are already exported via './utils' above
-// Kept here as documentation of what's available:
-// - StreamableValue utilities (./utils/streamable-value)
-// - Chat helpers (./utils/chat-helpers)
-// - Streaming parser (./utils/streaming-parser)
-// - Performance utilities (./utils/performance, ./utils/performance-optimization)
-// - Export utilities (./utils/export-utils)
-
-// Enhanced TypeScript types
-export * from './types/chat-types'
-
-// Optimized hooks
 // Theme System
 export * from './theme'
 
 // Animation System
 export * from './animations'
 
-// Skeleton Loaders
-export * from './components/skeleton'
-
-// Animated Components
-export * from './components/animated-list'
-
-// Toast Notifications
-export * from './components/toast'
-
-// Progress Indicators
-export * from './components/progress'
-
-// Feedback Animations
-export * from './components/feedback-animation'
-
-// Interactive Components
-export * from './components/interactive-card'
-
-// Performance Optimized Components
-export * from './components/virtualized-message-list'
-export * from './components/message-optimized'
-
-// Error Handling
-export * from './components/error-boundary-enhanced'
-
-// Empty States
-export * from './components/empty-state'
-
-// Icons
-export * from './components/icons'
-
-// Theme Selector
-export * from './components/theme-selector'
-
-// Analytics System
-export * from './analytics'
-
-// AI Features
-export * from './ai'
-
-// Note: Memory system already exported via './utils' -> './utils/memory'
-// Kept here as documentation: AI Memory & Context System (./memory)
-
-// Error Tracking System
-export * from './error'
-
 // Accessibility System
 export * from './accessibility'
 
-// Theme Preview
-export * from './components/theme-preview'
-
-// Performance Dashboard
-export * from './components/performance-dashboard'
-
-// ============================================================================
-// PHASE 4 FEATURES
-// ============================================================================
-
-// Phase 4 - Voice Input
-export * from './components/voice-input'
-export * from './hooks/use-voice-input'
-
-// Phase 4 - Mobile Keyboard Handling
-export * from './hooks/use-mobile-keyboard'
-
-// Phase 4 - Pre-built Templates
-export * from './templates'
-
-// ============================================================================
-// PHASE 8 FEATURES - ADVANCED INTERACTIONS
-// ============================================================================
-
-// Phase 8 - Command Palette
-export * from './components/command-palette'
-
-// Phase 8 - Keyboard Hints
-export * from './components/keyboard-hint'
-
-// Phase 8 - Drag & Drop
-export * from './components/draggable'
-
-// Phase 8 - Context Menu
-export * from './components/context-menu'
-
-// Phase 8 - Theme Switcher
-export * from './components/theme-switcher'
-
-// Phase 8 - Undo/Redo Hook
-// Phase 8 - Haptic Feedback
-// ============================================================================
-// TOKEN OPTIMIZATION FEATURES
-// ============================================================================
-
-// Token Optimization Components
-export * from './components/token-optimization-dashboard'
-// token-optimization-badge already exported in Phase 3 section
-
-// Token Optimization Hooks
-export * from './hooks/use-smart-cache'
-export * from './hooks/use-model-router'
-export * from './hooks/use-smart-throttle'
+// AI Provider
+export * from './ai'
