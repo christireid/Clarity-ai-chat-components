@@ -75,7 +75,7 @@ function ErrorFallback({
         Try Again
       </button>
 
-      {process.env.NODE_ENV === 'development' && (
+      {process.env['NODE_ENV'] === 'development' && (
         <details style={{ marginTop: '1rem' }}>
           <summary style={{ cursor: 'pointer', color: '#666' }}>
             Stack trace
@@ -112,12 +112,12 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryProps, ErrorState> {
     return { error }
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     this.setState({ errorInfo })
     this.props.onError?.(error, errorInfo)
 
     // Log error details in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.group('🚨 Clarity Chat Error')
       console.error('Error:', error)
 
@@ -135,7 +135,7 @@ class ErrorBoundaryClass extends Component<ErrorBoundaryProps, ErrorState> {
     this.setState({ error: null, errorInfo: null })
   }
 
-  render() {
+  override render() {
     if (this.state.error) {
       if (this.props.fallback) {
         return this.props.fallback({

@@ -1,0 +1,80 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="SDKs & Adapters/Overview" />
+
+# SDKs and Model Adapters
+
+Clarity Chat provides model-agnostic adapters so you can swap between providers without changing your UI logic.
+
+## Supported Providers
+
+- OpenAI (`@clarity-chat/react/adapters/openai`)
+- Anthropic (`@clarity-chat/react/adapters/anthropic`)
+- Google (`@clarity-chat/react/adapters/google`)
+
+## Chat Completion (Unified API)
+
+```tsx
+import { adapters } from '@clarity-chat/react'
+
+const { openai, anthropic, google } = adapters
+
+const config = { provider: 'openai', model: 'gpt-4o', apiKey: process.env.OPENAI_API_KEY }
+
+const response = await openai.chat(messages, config)
+console.log(response.content)
+```
+
+## Streaming Responses
+
+```tsx
+import { adapters, StreamingMessage } from '@clarity-chat/react'
+
+function StreamingExample() {
+  const [content, setContent] = React.useState('')
+  const [isStreaming, setIsStreaming] = React.useState(false)
+
+  const start = async () => {
+    setIsStreaming(true)
+    setContent('')
+    const config = { provider: 'openai', model: 'gpt-4o-mini', apiKey: process.env.OPENAI_API_KEY }
+    try {
+      for await (const chunk of adapters.openai.stream(messages, config)) {
+        if (chunk.type === 'token') setContent((c) => c + chunk.content)
+      }
+    } finally {
+      setIsStreaming(false)
+    }
+  }
+
+  return (
+    <div>
+      <StreamingMessage content={content} isStreaming={isStreaming} />
+      <button onClick={start}>Start Streaming</button>
+    </div>
+  )
+}
+```
+
+## Cost Estimation
+
+```tsx
+import { adapters } from '@clarity-chat/react'
+
+const { usage } = await adapters.openai.chat(messages, config)
+const cost = adapters.openai.estimateCost(usage, config.model)
+console.log(`Estimated cost: $${cost.toFixed(4)}`)
+```
+
+## Switching Providers
+
+```tsx
+import { adapters } from '@clarity-chat/react'
+
+async function complete(messages, config) {
+  const client = adapters[config.provider]
+  return client.chat(messages, config)
+}
+```
+
+> See also: `Hooks/Overview` for `useStreaming`, `useChat`, and related hooks used with adapters.

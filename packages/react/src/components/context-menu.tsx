@@ -131,14 +131,14 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
               onClick={() => handleItemClick(item)}
               onMouseEnter={() => hasSubmenu && setSubmenuOpen(item.id)}
               disabled={item.disabled}
-              whileHover={!item.disabled ? { x: 4 } : {}}
+              whileHover={!item.disabled ? { x: 2 } : {}}
               whileTap={!item.disabled ? { scale: 0.98 } : {}}
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2 text-sm text-left',
-                'transition-colors rounded-md',
+                'transition-all duration-150 rounded-lg',
                 item.disabled && 'opacity-50 cursor-not-allowed',
-                !item.disabled && 'hover:bg-muted',
-                item.danger && !item.disabled && 'hover:bg-destructive hover:text-destructive-foreground'
+                !item.disabled && 'hover:bg-accent hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]',
+                item.danger && !item.disabled && 'text-destructive hover:bg-destructive/10 hover:text-destructive'
               )}
             >
               {/* Icon */}
@@ -156,7 +156,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
 
               {/* Shortcut or Submenu Arrow */}
               {item.shortcut && !hasSubmenu && (
-                <kbd className="text-xs text-muted-foreground font-mono">
+                    <kbd className="px-1.5 py-0.5 text-xs text-muted-foreground font-mono bg-muted border border-border/60 rounded shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
                   {item.shortcut}
                 </kbd>
               )}
@@ -178,7 +178,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                     fillRule="evenodd"
                     clipRule="evenodd"
                   />
-                </svg>
+                </motion.svg>
               )}
             </motion.button>
 
@@ -194,9 +194,9 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                     ease: ANIMATION_EASING.out,
                   }}
                   className={cn(
-                    'absolute left-full top-0 ml-1',
-                    'min-w-[180px] bg-background border rounded-lg shadow-lg',
-                    'p-1 z-10'
+                    'absolute left-full top-0 ml-2',
+                    'min-w-[180px] bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-lg',
+                    'p-2 z-10'
                   )}
                 >
                   {renderMenuItems(item.submenu!, level + 1)}
@@ -216,7 +216,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
           {isOpen && (
             <>
               {/* Invisible backdrop for detecting outside clicks */}
-              <div className="fixed inset-0 z-40" />
+              <div className="fixed inset-0 z-[var(--z-popover)]" />
 
               {/* Context Menu */}
               <motion.div
@@ -232,9 +232,9 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                   position: 'fixed',
                   left: position.x,
                   top: position.y,
-                  zIndex: 50,
+                  zIndex: 'var(--z-popover)',
                 }}
-                className="min-w-[200px] bg-background border rounded-lg shadow-xl p-1"
+                className="min-w-[200px] bg-card border border-border/50 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] rounded-lg p-2 backdrop-blur-sm"
               >
                 {renderMenuItems(items)}
               </motion.div>

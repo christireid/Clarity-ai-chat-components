@@ -3,19 +3,23 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: ['src/index.ts', 'src/styles/index.css'],
   format: ['cjs', 'esm'],
-  dts: {
-    // Don't resolve types from external dependencies - just generate for our code
-    resolve: false,
-    compilerOptions: {
-      skipLibCheck: true,
-    },
-  },
-  external: ['react', 'react-dom', 'framer-motion'],
+  dts: false, // Use tsc for declarations (see build script)
+  external: [
+    'react',
+    'react-dom',
+    'framer-motion',
+    '@clarity-chat/primitives',
+    '@clarity-chat/types',
+    '@clarity-chat/memory',
+    'mermaid',
+    'highlight.js/styles/github-dark.css',
+    'katex/dist/katex.min.css',
+  ],
   clean: true,
-  sourcemap: true,
-  minify: true,
-  splitting: true,
-  treeshake: true,
+  sourcemap: false,
+  minify: false,
+  splitting: false,
+  treeshake: false,
   // Handle CSS files
   loader: {
     '.css': 'copy',

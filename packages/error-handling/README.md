@@ -1,6 +1,6 @@
-# @claritychat/react
+# @clarity-chat/error-handling
 
-Modern React 19 chat component library with comprehensive error handling.
+Comprehensive error handling system for React 19 applications with specialized error classes, recovery hooks, and error boundaries.
 
 ## Features
 
@@ -8,19 +8,19 @@ Modern React 19 chat component library with comprehensive error handling.
 - 🛡️ **Comprehensive Error Handling** - 10 specialized error types
 - ♿ **Accessible** - WCAG 2.1 AA compliant
 - 📦 **Tree-shakeable** - < 50KB gzipped
-- 🧪 **Well Tested** - 85%+ test coverage
+- 🧪 **Well Tested** - Comprehensive test suite
 - 📘 **TypeScript** - Full type safety
 
 ## Installation
 
 ```bash
-npm install @claritychat/react
+npm install @clarity-chat/error-handling
 ```
 
 ## Quick Start
 
 ```tsx
-import { ErrorBoundary } from '@claritychat/react'
+import { ErrorBoundary } from '@clarity-chat/error-handling'
 
 function App() {
   return (
@@ -38,7 +38,7 @@ import {
   useErrorHandler, 
   useAsyncError,
   createConfigError 
-} from '@claritychat/react'
+} from '@clarity-chat/error-handling'
 
 function ChatComponent() {
   const { handleError } = useErrorHandler({ logErrors: true })

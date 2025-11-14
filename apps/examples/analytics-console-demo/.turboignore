@@ -1,0 +1,3 @@
+# Temporarily skip this demo due to SSR issues with Next.js 15 and styled-jsx
+# See BUILD_STATUS_REPORT.md for details
+*

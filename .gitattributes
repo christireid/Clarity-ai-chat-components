@@ -1,0 +1,17 @@
+# Mark commercial documentation directory
+commercial-docs/** linguist-documentation=true
+commercial-docs/** linguist-detectable=false
+
+# Mark example directories
+examples/** linguist-documentation=true
+
+# Mark documentation directories
+docs/** linguist-documentation=true
+apps/docs/** linguist-documentation=true
+
+# Mark test files
+**/*.test.ts linguist-detectable=false
+**/*.test.tsx linguist-detectable=false
+**/*.spec.ts linguist-detectable=false
+**/*.spec.tsx linguist-detectable=false
+

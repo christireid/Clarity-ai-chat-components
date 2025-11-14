@@ -1,13 +1,78 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ContextCard } from '@clarity-chat/react'
 
+/**
+ * **ContextCard Component**
+ * 
+ * Component for displaying context items (documents, images, links)
+ * used in chat conversations with preview and metadata.
+ * 
+ * **Key Features:**
+ * - Multiple context types (document, image, link)
+ * - Preview display
+ * - Metadata (size, timestamp)
+ * - Visual type indicators
+ * - Accessible with ARIA labels
+ * 
+ * **Use Cases:**
+ * - Document references in chat
+ * - Image attachments
+ * - Link previews
+ * - Context management
+ */
 const meta: Meta<typeof ContextCard> = {
   title: 'Components/ContextCard',
   component: ContextCard,
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component: `
+Component for displaying context items (documents, images, links)
+used in chat conversations with preview and metadata.
+
+## Features
+
+- ✅ Multiple context types (document, image, link)
+- ✅ Preview display
+- ✅ Metadata (size, timestamp)
+- ✅ Visual type indicators
+- ✅ Accessible with ARIA labels
+- ✅ Clickable links and previews
+
+## Basic Usage
+
+\`\`\`tsx
+<ContextCard
+  context={{
+    id: '1',
+    type: 'document',
+    title: 'Document.pdf',
+    preview: 'Document preview text...',
+    size: '2.5 MB',
+    timestamp: Date.now(),
+  }}
+/>
+\`\`\`
+        `,
+      },
+    },
   },
   tags: ['autodocs'],
+  argTypes: {
+    context: {
+      description: 'Context item data (document, image, or link)',
+      control: { type: 'object' },
+    },
+    onRemove: {
+      description: 'Callback when context is removed',
+      action: 'removed',
+    },
+    showRemove: {
+      description: 'Show remove button',
+      control: 'boolean',
+    },
+  },
 }
 
 export default meta

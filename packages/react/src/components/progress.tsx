@@ -71,7 +71,7 @@ export const Progress: React.FC<ProgressProps> = ({
       {/* Progress bar */}
       <div
         className={cn(
-          'relative w-full overflow-hidden rounded-full bg-muted',
+          'relative w-full overflow-hidden rounded-full bg-muted/50 shadow-inner',
           sizeClasses[size]
         )}
       >
