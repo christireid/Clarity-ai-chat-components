@@ -31,7 +31,7 @@ interface PackageUpdate {
  * Check for available updates
  */
 async function checkForUpdates(): Promise<PackageUpdate[]> {
-  const spinner = createSpinner('Checking for updates...', { color: 'cyan' })
+  const spinner = createSpinner('Checking for updates...')
   spinner.start()
   
   try {
@@ -137,9 +137,11 @@ async function displayUpdates(updates: PackageUpdate[]) {
       update.name,
       `${update.current} → ${update.latest}`,
     ])
-    const majorTable = await createTable(['Package', 'Version'], majorRows, {
-      headerColor: 'red',
-      align: 'left',
+    const majorTable = createTable(majorRows, [
+      { header: 'Package', width: 30 },
+      { header: 'Version', width: 25 },
+    ], {
+      headerColor: chalk.red,
     })
     console.log(majorTable)
     console.log()
@@ -152,9 +154,11 @@ async function displayUpdates(updates: PackageUpdate[]) {
       update.name,
       `${update.current} → ${update.latest}`,
     ])
-    const minorTable = await createTable(['Package', 'Version'], minorRows, {
-      headerColor: 'yellow',
-      align: 'left',
+    const minorTable = createTable(minorRows, [
+      { header: 'Package', width: 30 },
+      { header: 'Version', width: 25 },
+    ], {
+      headerColor: chalk.yellow,
     })
     console.log(minorTable)
     console.log()
@@ -167,9 +171,11 @@ async function displayUpdates(updates: PackageUpdate[]) {
       update.name,
       `${update.current} → ${update.latest}`,
     ])
-    const patchTable = await createTable(['Package', 'Version'], patchRows, {
-      headerColor: 'green',
-      align: 'left',
+    const patchTable = createTable(patchRows, [
+      { header: 'Package', width: 30 },
+      { header: 'Version', width: 25 },
+    ], {
+      headerColor: chalk.green,
     })
     console.log(patchTable)
     console.log()
@@ -180,7 +186,7 @@ async function displayUpdates(updates: PackageUpdate[]) {
  * Install updates
  */
 async function installUpdates(updates: PackageUpdate[]) {
-  const spinner = createSpinner('Installing updates...', { color: 'cyan' })
+  const spinner = createSpinner('Installing updates...')
   spinner.start()
 
   try {
@@ -206,7 +212,7 @@ async function installUpdates(updates: PackageUpdate[]) {
     success('Updates installed successfully!')
   } catch (err) {
     spinner.fail('Failed to install updates')
-    logger.error(err)
+    logger.error(err instanceof Error ? err : new Error(String(err)))
     throw new ValidationError(
       'Failed to install updates',
       [

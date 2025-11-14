@@ -11,6 +11,9 @@ export interface BannerOptions {
   color?: 'cyan' | 'green' | 'blue' | 'magenta' | 'yellow'
   padding?: number
   margin?: number
+  border?: boolean
+  style?: 'bold' | 'normal'
+  borderColor?: 'cyan' | 'green' | 'blue' | 'magenta' | 'yellow' | 'red'
 }
 
 const GRADIENTS = {
@@ -101,4 +104,23 @@ export function sectionHeader(title: string, icon?: string): string {
  */
 export function subsectionHeader(title: string): string {
   return chalk.bold(title)
+}
+
+/**
+ * Create a divider line
+ */
+export function createDivider(width: number = 60, char: string = '─', color?: 'gray' | 'cyan' | 'red' | 'yellow' | 'green' | 'blue'): string {
+  const charStr = char.repeat(width)
+  if (color) {
+    const colorFn = {
+      gray: chalk.gray,
+      cyan: chalk.cyan,
+      red: chalk.red,
+      yellow: chalk.yellow,
+      green: chalk.green,
+      blue: chalk.blue,
+    }[color]
+    return colorFn ? colorFn(charStr) : chalk.gray(charStr)
+  }
+  return chalk.gray(charStr)
 }

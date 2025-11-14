@@ -75,7 +75,7 @@ export async function initCommand(options: InitOptions) {
       const { waitUntilExit } = render(React.createElement(InitWizard, {
         detectedFramework,
         packageManager,
-        onComplete: (result) => {
+        onComplete: (result: any) => {
           config = result
         }
       }))
@@ -97,7 +97,7 @@ export async function initCommand(options: InitOptions) {
     }
 
     // Create project structure
-    const spinner = createSpinner('Creating project structure...', { color: 'cyan' })
+    const spinner = createSpinner('Creating project structure...')
     spinner.start()
     
     await fs.ensureDir(path.join(cwd, 'src', 'components', 'clarity-chat'))
@@ -145,7 +145,7 @@ export async function initCommand(options: InitOptions) {
         spinner.succeed('Dependencies installed')
       } catch (error) {
         spinner.fail('Failed to install dependencies')
-        logger.error(error)
+        logger.error(error instanceof Error ? error : new Error(String(error)))
         throw new ConfigError(
           'Failed to install dependencies',
           [

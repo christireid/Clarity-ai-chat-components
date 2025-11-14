@@ -14,7 +14,7 @@ import { success, info, warn, error, outputJson, outputTable } from '../utils/ou
 import { ensureEnvInGitignore } from '../utils/security.js'
 import { createBanner, createDivider } from '../ui/banner.js'
 import { successMessage, errorMessage, warningMessage, infoMessage } from '../ui/messages.js'
-import { createStatusTable } from '../ui/table.js'
+import { createStatusTable, type StatusTableRow } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('doctor')
@@ -35,7 +35,7 @@ export async function doctorCommand(options: DoctorOptions) {
   try {
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
-      console.log(createBanner('Health Check', { gradient: 'teen', border: true, borderColor: 'cyan' }))
+      console.log(createBanner('Health Check', { gradient: 'pastel', border: true }))
       console.log()
     }
     
@@ -51,7 +51,7 @@ export async function doctorCommand(options: DoctorOptions) {
     }
 
     // Check 1: package.json exists
-    const spinner = createSpinner('Checking project structure...', { color: 'cyan' })
+    const spinner = createSpinner('Checking project structure...')
     spinner.start()
     
     const packageJsonPath = path.join(cwd, 'package.json')
@@ -285,7 +285,7 @@ GOOGLE_API_KEY=your_key_here
       checks.push({
         name: 'Config file',
         result: {
-          status: 'info',
+          status: 'pass',
           message: 'No config file (using defaults)',
           category: 'Configuration',
           severity: 'info'
@@ -298,14 +298,21 @@ GOOGLE_API_KEY=your_key_here
   if (await fs.pathExists(gitPath)) {
     checks.push({
       name: 'Git repository',
-      result: { status: 'pass', message: 'Initialized' }
+      result: { 
+        status: 'pass', 
+        message: 'Initialized',
+        category: 'Version Control',
+        severity: 'info'
+      }
     })
   } else {
     checks.push({
       name: 'Git repository',
       result: { 
         status: 'warn', 
-        message: 'Not initialized - run: git init' 
+        message: 'Not initialized - run: git init',
+        category: 'Version Control',
+        severity: 'warning'
       }
     })
   }
@@ -343,7 +350,7 @@ GOOGLE_API_KEY=your_key_here
       for (const [category, categoryChecks] of Object.entries(checksByCategory)) {
         console.log()
         console.log(chalk.bold.cyan(`  ${category}`))
-        console.log(createDivider(50, '─', 'gray'))
+        console.log(createDivider(50))
         
         const statusItems = categoryChecks.map(({ name, result }) => ({
           name,
@@ -351,7 +358,12 @@ GOOGLE_API_KEY=your_key_here
           message: result.message,
         }))
         
-        const statusTable = await createStatusTable(statusItems)
+        const statusTable = createStatusTable(statusItems.map(item => ({
+          status: item.status === 'success' ? 'pass' as const : item.status === 'warning' ? 'warn' as const : 'fail' as const,
+          message: item.message,
+          category: item.name,
+          severity: item.status === 'success' ? 'info' as const : item.status === 'warning' ? 'warning' as const : 'error' as const,
+        })))
         console.log(statusTable)
       }
     } else {
@@ -377,16 +389,16 @@ GOOGLE_API_KEY=your_key_here
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
       console.log(createDivider(60, '═', 'cyan'))
-      const summaryItems = [
-        { name: 'Passed', status: 'success' as const, message: `${passCount} checks` },
+      const summaryItems: StatusTableRow[] = [
+        { status: 'pass', message: `${passCount} checks passed`, category: 'Summary', severity: 'info' },
       ]
       if (warnCount > 0) {
-        summaryItems.push({ name: 'Warnings', status: 'warning' as const, message: `${warnCount} checks` })
+        summaryItems.push({ status: 'warn', message: `${warnCount} checks with warnings`, category: 'Summary', severity: 'warning' })
       }
       if (failCount > 0) {
-        summaryItems.push({ name: 'Failed', status: 'error' as const, message: `${failCount} checks` })
+        summaryItems.push({ status: 'fail', message: `${failCount} checks failed`, category: 'Summary', severity: 'error' })
       }
-      const summaryTable = await createStatusTable(summaryItems)
+      const summaryTable = createStatusTable(summaryItems)
       console.log(summaryTable)
       console.log(createDivider(60, '═', 'cyan'))
     } else {
@@ -415,7 +427,7 @@ GOOGLE_API_KEY=your_key_here
             success(`Fixed: ${name}`)
           } catch (err) {
             fixSpinner.fail(`Failed to fix ${name}`)
-            logger.error(err)
+            logger.error(err instanceof Error ? err : new Error(String(err)))
             error(`Failed to fix: ${name}`)
           }
         }

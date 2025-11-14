@@ -4,7 +4,9 @@
  */
 
 import chalk from 'chalk'
-import { dim, bold } from 'chalk'
+
+const dim = chalk.dim
+const bold = chalk.bold
 
 export interface TableColumn {
   header: string
@@ -203,4 +205,50 @@ export function keyValueTable(
       return `${label}  ${val}`
     })
     .join('\n')
+}
+
+/**
+ * Create a table (alias for table function)
+ */
+export function createTable(
+  data: Record<string, any>[] | string[][],
+  columns: TableColumn[],
+  options: TableOptions = {}
+): string {
+  return table(data, columns, options)
+}
+
+/**
+ * Create a list table (alias for listTable function)
+ */
+export function createListTable(
+  items: Array<{ label: string; value: string; color?: (text: string) => string }>
+): string {
+  return listTable(items)
+}
+
+/**
+ * Create a status table for doctor command
+ */
+export interface StatusTableRow {
+  status: 'pass' | 'warn' | 'fail'
+  message: string
+  category?: string
+  severity?: 'info' | 'warning' | 'error'
+}
+
+export function createStatusTable(rows: StatusTableRow[]): string {
+  const columns: TableColumn[] = [
+    { header: 'Status', key: 'status', width: 10, align: 'center' },
+    { header: 'Category', key: 'category', width: 20 },
+    { header: 'Message', key: 'message', width: 50 },
+  ]
+
+  const data = rows.map(row => ({
+    status: row.status === 'pass' ? '✓' : row.status === 'warn' ? '⚠' : '✗',
+    category: row.category || '',
+    message: row.message,
+  }))
+
+  return table(data, columns, { border: true, compact: false })
 }

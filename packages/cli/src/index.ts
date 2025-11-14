@@ -186,10 +186,10 @@ program
       const { createBanner } = await import('./ui/banner.js')
       const { infoMessage, tipMessage, commandExample } = await import('./ui/messages.js')
       
-      await createBanner('🔧 Shell Completion', {
-        gradient: true,
+      console.log(createBanner('🔧 Shell Completion', {
+        gradient: 'pastel',
         style: 'bold',
-      })
+      }))
       console.log()
       
       switch (shell) {

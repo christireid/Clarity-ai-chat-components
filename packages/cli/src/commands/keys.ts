@@ -268,7 +268,11 @@ async function listKeys(envPath: string) {
       }
     })
     
-    console.log(createListTable(keyList))
+    console.log(createListTable(keyList.map(item => ({
+      label: item.key,
+      value: item.value,
+      color: item.color === 'green' ? chalk.green : item.color === 'yellow' ? chalk.yellow : undefined,
+    }))))
   } else {
     info('Configured API Keys:\n')
     Object.entries(PROVIDERS).forEach(([key, config]) => {
