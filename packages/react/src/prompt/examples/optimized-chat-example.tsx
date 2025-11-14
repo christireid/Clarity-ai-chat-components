@@ -6,9 +6,8 @@
  */
 
 import React, { useState } from 'react'
-import { useClarityChat } from '../../hooks/use-clarity-chat'
-import { usePromptInspector } from '../hooks/use-prompt-inspector'
-import { ChatWindow } from '../../components/chat-window'
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+import { usePromptInspector } from '@clarity-chat/react/prompt'
 // Note: In production, use the appropriate message conversion utility
 // import { convertCoreMessagesToMessages } from '../../hooks/use-clarity-chat'
 
