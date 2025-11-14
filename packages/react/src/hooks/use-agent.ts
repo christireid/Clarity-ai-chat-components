@@ -108,6 +108,10 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Agent execution failed')
         setError(error)
+        // Log error for debugging
+        if (process.env['NODE_ENV'] === 'development') {
+          console.error('[useAgent] Execution failed:', error)
+        }
         throw error
       } finally {
         setIsLoading(false)

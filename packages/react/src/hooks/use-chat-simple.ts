@@ -126,6 +126,10 @@ export function useChatSimple(
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to send message')
       onError?.(error)
+      // Log error for debugging
+      if (process.env['NODE_ENV'] === 'development') {
+        console.error('[useChatSimple] Send failed:', error)
+      }
       throw error
     }
   }, [chat.append, onMessageSent, onError])

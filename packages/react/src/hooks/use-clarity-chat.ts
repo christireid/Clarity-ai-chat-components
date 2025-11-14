@@ -36,33 +36,15 @@ function useMemorySafe(): MemoryContextValue | null {
   return React.useContext(MemoryContext)
 }
 
+// Import unified error handling
+import { classifyError as classifyErrorUtil, normalizeError } from '../utils/error-handling'
+
 /**
  * Classify error type for better error handling
+ * @deprecated Use classifyError from utils/error-handling instead
  */
 function classifyError(error: Error): 'network' | 'ratelimit' | 'server' | 'auth' | 'memory' | 'unknown' {
-  const message = error.message.toLowerCase()
-  
-  if (message.includes('memory') || message.includes('vector') || message.includes('embedding')) {
-    return 'memory'
-  }
-  
-  if (message.includes('network') || message.includes('fetch') || message.includes('connection')) {
-    return 'network'
-  }
-  
-  if (message.includes('rate limit') || message.includes('too many requests') || message.includes('429')) {
-    return 'ratelimit'
-  }
-  
-  if (message.includes('500') || message.includes('502') || message.includes('503') || message.includes('504')) {
-    return 'server'
-  }
-  
-  if (message.includes('401') || message.includes('403') || message.includes('unauthorized') || message.includes('forbidden')) {
-    return 'auth'
-  }
-  
-  return 'unknown'
+  return classifyErrorUtil(error) as 'network' | 'ratelimit' | 'server' | 'auth' | 'memory' | 'unknown'
 }
 
 /**

@@ -91,7 +91,9 @@ export function useRAGPipeline(
         setContext({ documents: results, query })
         return results
       } catch (err) {
-        console.error('RAG retrieval failed:', err)
+        const error = err instanceof Error ? err : new Error('RAG retrieval failed')
+        console.error('[useRAGPipeline] Retrieval failed:', error)
+        // Return empty array on error (fail gracefully)
         return []
       }
     },
