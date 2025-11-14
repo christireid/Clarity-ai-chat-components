@@ -122,6 +122,12 @@ export {
   type UseChatReturn as UseChatReturnLegacy,
 } from './hooks/use-chat'
 export * from './hooks/use-chat-enhanced'
+export {
+  useClarityChat,
+  type UseClarityChatOptions,
+  type UseClarityChatReturn,
+  type ClarityMemoryOptions,
+} from './hooks/use-clarity-chat'
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'
