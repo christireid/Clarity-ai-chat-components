@@ -2,7 +2,7 @@
  * Input validation errors
  */
 
-import { ClarityError, ErrorSolution } from './base-error'
+import { ClarityError, ErrorSolution } from './base-error.js'
 
 export class ValidationError extends ClarityError {
   constructor(message: string, errors: string[], originalError?: Error) {

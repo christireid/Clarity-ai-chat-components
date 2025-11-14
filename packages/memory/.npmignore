@@ -1,0 +1,39 @@
+# Source files
+src/
+examples/
+*.ts
+!*.d.ts
+
+# Config files
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
+
+# Documentation (keep README.md)
+*.md
+!README.md
+
+# Design docs
+MEMORY_DESIGN_*.md
+PHASE_*.md
+DESIGN_*.md
+IMPLEMENTATION_*.md
+SETUP.md
+GETTING_STARTED.md
+API.md
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+tests/
+__tests__/
+
+# Development
+.vscode/
+.idea/
+*.log
+.DS_Store
+
+# Build artifacts (keep dist/)
+*.map
+!dist/**/*.map

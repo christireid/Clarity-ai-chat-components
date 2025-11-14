@@ -1,6 +1,6 @@
 /**
  * Icon Components
- * 
+ *
  * Centralized SVG icons for Clarity Chat.
  * These will eventually be replaced with Lucide React icons,
  * but provide immediate improvement over emojis.
@@ -31,7 +31,12 @@ export const SendIcon: React.FC<IconProps> = (props) => (
 )
 
 export const LoadingIcon: React.FC<IconProps> = (props) => (
-  <svg {...defaultProps} {...props} viewBox="0 0 24 24" className="animate-spin">
+  <svg
+    {...defaultProps}
+    {...props}
+    viewBox="0 0 24 24"
+    className="animate-spin"
+  >
     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
   </svg>
 )
@@ -177,6 +182,21 @@ export const RefreshIcon: React.FC<IconProps> = (props) => (
   </svg>
 )
 
+export const EditIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+)
+
+export const TrashIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <path d="M3 6h18" />
+    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+  </svg>
+)
+
 export const SearchIcon: React.FC<IconProps> = (props) => (
   <svg {...defaultProps} {...props} viewBox="0 0 24 24">
     <circle cx="11" cy="11" r="8" />
@@ -223,5 +243,88 @@ export const SparklesIcon: React.FC<IconProps> = (props) => (
     <path d="M19 17v4" />
     <path d="M3 5h4" />
     <path d="M17 19h4" />
+  </svg>
+)
+
+// Aliases for common naming conventions
+export const XIcon = CloseIcon
+export const LoaderIcon = LoadingIcon
+
+// Alert and Shield Icons
+export const AlertTriangleIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+    <path d="M12 9v4" />
+    <path d="M12 17h.01" />
+  </svg>
+)
+
+export const ShieldCheckIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <path d="m9 12 2 2 4-4" />
+  </svg>
+)
+
+export const ShieldCloseIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <path d="m14.5 9-5 5" />
+    <path d="m9.5 9 5 5" />
+  </svg>
+)
+
+// Media Icons
+export const MicIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+    <line x1="12" x2="12" y1="19" y2="22" />
+  </svg>
+)
+
+export const LinkIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+  </svg>
+)
+
+export const ClockIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 6v6l4 2" />
+  </svg>
+)
+
+export const DollarSignIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <line x1="12" y1="1" x2="12" y2="23" />
+    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+  </svg>
+)
+
+export const TrendingUpIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+    <polyline points="16 7 22 7 22 13" />
+  </svg>
+)
+
+export const ShieldIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>
+)
+
+export const FilterIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+  </svg>
+)
+
+export const PlayIcon: React.FC<IconProps> = (props) => (
+  <svg {...defaultProps} {...props} viewBox="0 0 24 24">
+    <polygon points="5 3 19 12 5 21 5 3" />
   </svg>
 )

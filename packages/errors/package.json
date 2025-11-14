@@ -1,9 +1,21 @@
 {
   "name": "@clarity-chat/errors",
   "version": "1.0.0",
+  "type": "module",
   "description": "Enhanced error handling system with developer-friendly messages",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "publishConfig": {
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"
@@ -16,7 +28,13 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "echo \"No tests yet\" && exit 0"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/**/*.ts",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "errors",
@@ -24,16 +42,19 @@
     "developer-experience",
     "clarity-chat"
   ],
-  "author": "",
+  "author": "Christi Reid <christi@codeclarity.ai>",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
   "dependencies": {
     "chalk": "^5.3.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.0",
-    "typescript": "^5.7.2"
+    "@vitest/coverage-v8": "^3.2.4",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }

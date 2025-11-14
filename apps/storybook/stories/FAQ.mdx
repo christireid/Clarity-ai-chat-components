@@ -1,0 +1,619 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Getting Started/FAQ & Troubleshooting" />
+
+<div className="sb-container">
+  # FAQ & Troubleshooting
+  
+  <p className="sb-lead">
+    Common questions and solutions for working with Clarity Chat components.
+  </p>
+
+  ## 🚀 Getting Started
+
+  ### How do I install Clarity Chat?
+
+  ```bash
+  npm install @clarity-chat/react @clarity-chat/primitives
+  ```
+
+  For enterprise features:
+  ```bash
+  npm install @clarity-chat/enterprise
+  ```
+
+  ### What peer dependencies do I need?
+
+  ```json
+  {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+  ```
+
+  Optional but recommended:
+  ```bash
+  npm install tailwindcss class-variance-authority clsx
+  ```
+
+  ### How do I set up Tailwind CSS?
+
+  Add to your `tailwind.config.js`:
+
+  ```javascript
+  module.exports = {
+    content: [
+      './src/**/*.{js,jsx,ts,tsx}',
+      './node_modules/@clarity-chat/**/*.{js,jsx,ts,tsx}',
+    ],
+    theme: {
+      extend: {},
+    },
+  }
+  ```
+
+  ## 🎨 Styling
+
+  ### Can I customize the component styles?
+
+  **Yes!** Clarity Chat components are built with customization in mind:
+
+  1. **CSS Variables** - Override theme variables:
+     ```css
+     :root {
+       --color-primary: 220 90% 56%;
+       --radius-md: 0.5rem;
+     }
+     ```
+
+  2. **Tailwind Classes** - Pass custom classes:
+     ```tsx
+     <Button className="bg-purple-600 hover:bg-purple-700">
+       Custom Button
+     </Button>
+     ```
+
+  3. **Variants** - Use built-in variants:
+     ```tsx
+     <Button variant="outline" size="lg">
+       Large Outline
+     </Button>
+     ```
+
+  See the **Theming Guide** for complete customization options.
+
+  ### How do I implement dark mode?
+
+  Add the `dark` class to your root element:
+
+  ```tsx
+  // Toggle dark mode
+  document.documentElement.classList.toggle('dark')
+
+  // Or use a state manager
+  function App() {
+    const [isDark, setIsDark] = useState(false)
+
+    useEffect(() => {
+      document.documentElement.classList.toggle('dark', isDark)
+    }, [isDark])
+
+    return <ThemeSwitcher checked={isDark} onChange={setIsDark} />
+  }
+  ```
+
+  Components will automatically adapt to dark mode!
+
+  ### Why aren't my styles working?
+
+  Common issues:
+
+  1. **Tailwind not configured** - Make sure Clarity Chat paths are in `content`
+  2. **CSS not imported** - Import the component styles
+  3. **Specificity issues** - Use `!important` or increase selector specificity
+  4. **Build cache** - Clear your build cache and restart dev server
+
+  ## 🧩 Components
+
+  ### Which components should I use?
+
+  | Use Case | Recommended Components |
+  |----------|----------------------|
+  | Basic chat | `ChatWindow`, `MessageList`, `ChatInput` |
+  | Streaming AI | `StreamingMessage`, `ThinkingIndicator` |
+  | Voice input | `VoiceInput`, `useVoiceInput` |
+  | File uploads | `FileUpload`, `MultiModalPreview` |
+  | Search | `MessageSearch`, `CommandPalette` |
+  | Enterprise | `SSOConfigWizard`, `ApiTokenManager` |
+
+  ### How do I handle streaming responses?
+
+  Use the `useStreaming` or `useStreamingSSE` hook:
+
+  ```tsx
+  import { useStreamingSSE } from '@clarity-chat/react'
+
+  function Chat() {
+    const { messages, sendMessage, isStreaming } = useStreamingSSE({
+      endpoint: '/api/chat',
+    })
+
+    return (
+      <ChatWindow>
+        <MessageList messages={messages} />
+        {isStreaming && <ThinkingIndicator />}
+        <ChatInput onSend={sendMessage} />
+      </ChatWindow>
+    )
+  }
+  ```
+
+  ### How do I add custom message actions?
+
+  Pass a render function or use the actions prop:
+
+  ```tsx
+  <MessageList
+    messages={messages}
+    renderMessage={(message) => (
+      <Message
+        {...message}
+        actions={
+          <div className="flex gap-2">
+            <CopyButton text={message.content} />
+            <Button onClick={() => edit(message.id)}>Edit</Button>
+            <Button onClick={() => delete(message.id)}>Delete</Button>
+          </div>
+        }
+      />
+    )}
+  />
+  ```
+
+  ### Can I use custom AI models?
+
+  **Yes!** Clarity Chat is model-agnostic:
+
+  ```tsx
+  import { ChatWindow } from '@clarity-chat/react'
+  import { OpenAI } from 'openai'
+  import { Anthropic } from '@anthropic-ai/sdk'
+
+  function CustomModelChat() {
+    const handleSend = async (message) => {
+      // Use any AI provider
+      const response = await yourAIProvider.chat({
+        messages: [...history, { role: 'user', content: message }],
+      })
+
+      // Update UI with response
+      addMessage({ role: 'assistant', content: response })
+    }
+
+    return (
+      <ChatWindow>
+        <MessageList messages={messages} />
+        <ChatInput onSend={handleSend} />
+      </ChatWindow>
+    )
+  }
+  ```
+
+  ## 🐛 Common Issues
+
+  ### "Module not found" errors
+
+  **Problem**: Can't import components
+
+  **Solutions**:
+  1. Ensure package is installed: `npm install @clarity-chat/react`
+  2. Check import path: `import { Button } from '@clarity-chat/primitives'`
+  3. Restart dev server
+  4. Clear `node_modules` and reinstall
+
+  ### TypeScript errors
+
+  **Problem**: Type errors when using components
+
+  **Solutions**:
+  1. Update TypeScript to `^5.0.0`
+  2. Check prop types in component documentation
+  3. Enable `strict: true` in `tsconfig.json` for better type checking
+  4. Install type definitions: `npm install @types/react`
+
+  ### Styles not applying
+
+  **Problem**: Components look unstyled
+
+  **Solutions**:
+  1. Import CSS: `import '@clarity-chat/react/styles.css'`
+  2. Configure Tailwind (see "How do I set up Tailwind CSS?")
+  3. Check that parent container isn't restricting styles
+  4. Verify CSS variable fallbacks exist
+
+  ### Messages not scrolling
+
+  **Problem**: Message list doesn't auto-scroll
+
+  **Solutions**:
+  1. Use `useAutoScroll` hook:
+     ```tsx
+     import { useAutoScroll } from '@clarity-chat/react'
+
+     function MessageList({ messages }) {
+       const endRef = useRef(null)
+       useAutoScroll(endRef, messages)
+
+       return (
+         <div>
+           {messages.map(m => <Message key={m.id} {...m} />)}
+           <div ref={endRef} />
+         </div>
+       )
+     }
+     ```
+  2. Or use `MessageList` component which handles it automatically
+
+  ### Performance issues with many messages
+
+  **Problem**: Chat slows down with 1000+ messages
+
+  **Solutions**:
+  1. Use `VirtualizedMessageList`:
+     ```tsx
+     import { VirtualizedMessageList } from '@clarity-chat/react'
+
+     <VirtualizedMessageList
+       messages={messages}
+       height={600}
+       itemHeight={100}
+     />
+     ```
+  2. Paginate messages (load on scroll)
+  3. Use `React.memo` for message components
+  4. Debounce updates during streaming
+
+  ### Voice input not working
+
+  **Problem**: `VoiceInput` component doesn't record
+
+  **Solutions**:
+  1. Ensure HTTPS (required for Web Speech API)
+  2. Check browser support: Chrome, Edge, Safari only
+  3. Grant microphone permissions
+  4. Check browser console for errors
+  5. Use the `useVoiceInput` hook for debugging:
+     ```tsx
+     const { isSupported, error } = useVoiceInput()
+
+     if (!isSupported) {
+       return <div>Voice input not supported</div>
+     }
+
+     if (error) {
+       return <div>Error: {error.message}</div>
+     }
+     ```
+
+  ## ⚡ Performance
+
+  ### How can I optimize performance?
+
+  1. **Use virtualization** for long lists
+  2. **Memoize** expensive computations:
+     ```tsx
+     const processedMessages = useMemo(
+       () => messages.map(processMessage),
+       [messages]
+     )
+     ```
+  3. **Lazy load** components:
+     ```tsx
+     const VoiceInput = lazy(() => import('./VoiceInput'))
+     ```
+  4. **Debounce** inputs:
+     ```tsx
+     const debouncedSearch = useDebounce(searchTerm, 300)
+     ```
+  5. **Code split** by route:
+     ```tsx
+     const ChatPage = lazy(() => import('./pages/Chat'))
+     ```
+
+  ### Should I use SSR/Next.js?
+
+  **Yes!** Clarity Chat components are SSR-compatible:
+
+  ```tsx
+  // app/chat/page.tsx (Next.js 13+)
+  import { ChatWindow } from '@clarity-chat/react'
+
+  export default function ChatPage() {
+    return <ChatWindow />
+  }
+  ```
+
+  For client-only components:
+  ```tsx
+  'use client'
+
+  import { VoiceInput } from '@clarity-chat/react'
+  ```
+
+  ## 🔒 Security
+
+  ### How do I protect API keys?
+
+  **Never** expose API keys in client code:
+
+  ```tsx
+  // ❌ BAD - API key in client
+  const openai = new OpenAI({ apiKey: 'sk-...' })
+
+  // ✅ GOOD - API calls through your backend
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${userToken}` },
+    body: JSON.stringify({ message }),
+  })
+  ```
+
+  Use environment variables on the server:
+  ```javascript
+  // pages/api/chat.js
+  import { OpenAI } from 'openai'
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY, // Server-side only
+  })
+
+  export default async function handler(req, res) {
+    // Validate user authentication
+    // Make AI API call
+    // Return response
+  }
+  ```
+
+  ### How do I sanitize user input?
+
+  Always sanitize and validate:
+
+  ```tsx
+  import DOMPurify from 'dompurify'
+
+  function ChatInput({ onSend }) {
+    const handleSend = (message) => {
+      // Sanitize HTML
+      const clean = DOMPurify.sanitize(message)
+
+      // Validate length
+      if (clean.length > 10000) {
+        throw new Error('Message too long')
+      }
+
+      // Validate content
+      if (containsProfanity(clean)) {
+        throw new Error('Inappropriate content')
+      }
+
+      onSend(clean)
+    }
+
+    return <ChatInput onSend={handleSend} />
+  }
+  ```
+
+  ## ♿ Accessibility
+
+  ### Are components accessible?
+
+  **Yes!** All components follow WCAG 2.1 AA standards:
+
+  - ✅ Keyboard navigation
+  - ✅ Screen reader support
+  - ✅ ARIA attributes
+  - ✅ Focus management
+  - ✅ Color contrast
+
+  Use the **a11y addon** in Storybook to test accessibility.
+
+  ### How do I make my custom components accessible?
+
+  Follow these patterns:
+
+  ```tsx
+  // Semantic HTML
+  <button aria-label="Send message" onClick={handleSend}>
+    Send
+  </button>
+
+  // Keyboard support
+  <div
+    role="button"
+    tabIndex={0}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        handleClick()
+      }
+    }}
+  >
+    Click me
+  </div>
+
+  // Focus management
+  const inputRef = useRef()
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+  // Screen reader announcements
+  <div role="status" aria-live="polite">
+    {statusMessage}
+  </div>
+  ```
+
+  See the **Accessibility Guide** for complete details.
+
+  ## 📦 Deployment
+
+  ### How do I deploy my chat app?
+
+  Popular options:
+
+  1. **Vercel** (recommended for Next.js):
+     ```bash
+     npm run build
+     vercel
+     ```
+
+  2. **Netlify**:
+     ```bash
+     npm run build
+     netlify deploy
+     ```
+
+  3. **Docker**:
+     ```dockerfile
+     FROM node:18-alpine
+     WORKDIR /app
+     COPY package*.json ./
+     RUN npm ci --production
+     COPY . .
+     RUN npm run build
+     CMD ["npm", "start"]
+     ```
+
+  4. **AWS/GCP/Azure**: Use their respective Node.js deployment guides
+
+  ### What environment variables do I need?
+
+  Common variables:
+
+  ```bash
+  # AI Provider Keys (server-side only!)
+  OPENAI_API_KEY=sk-...
+  ANTHROPIC_API_KEY=sk-ant-...
+
+  # Database
+  DATABASE_URL=postgresql://...
+
+  # Authentication
+  NEXTAUTH_URL=https://your-domain.com
+  NEXTAUTH_SECRET=your-secret
+
+  # Optional
+  NEXT_PUBLIC_APP_URL=https://your-domain.com
+  ```
+
+  ## 🆘 Still Need Help?
+
+  ### Resources
+
+  - **Documentation**: Full API reference and guides
+  - **Examples**: Browse the `/examples` directory
+  - **GitHub Issues**: Report bugs or request features
+  - **Discord**: Join the community for support
+  - **Stack Overflow**: Tag questions with `clarity-chat`
+
+  ### How to Report Bugs
+
+  Include in your bug report:
+
+  1. **Description**: What happened vs. what you expected
+  2. **Reproduction**: Minimal code to reproduce the issue
+  3. **Environment**: React version, browser, OS
+  4. **Screenshots**: If applicable
+  5. **Error messages**: Full stack trace
+
+  ### Feature Requests
+
+  We love feedback! When requesting features:
+
+  1. **Describe the use case**: Why do you need this?
+  2. **Proposed API**: How would it work?
+  3. **Alternatives**: What workarounds have you tried?
+  4. **Willingness to contribute**: Can you help implement it?
+
+</div>
+
+<style>
+  {`
+    .sb-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    
+    .sb-lead {
+      font-size: 1.25rem;
+      line-height: 1.8;
+      color: #666;
+      margin: 1rem 0 3rem;
+    }
+    
+    h2 {
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      font-weight: 700;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+    }
+    
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    code {
+      background: #f3f4f6;
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-size: 0.875em;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+    
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 0.75rem;
+      text-align: left;
+    }
+    
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+    }
+    
+    ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+    
+    li {
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+  `}
+</style>

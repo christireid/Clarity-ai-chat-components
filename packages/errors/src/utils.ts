@@ -2,7 +2,7 @@
  * Utility functions for error handling
  */
 
-import { ClarityError } from './base-error'
+import { ClarityError } from './base-error.js'
 
 /**
  * Format error for display

@@ -5,7 +5,7 @@
  * These are small, subtle animations that provide feedback and delight.
  */
 
-import { type Variants, type Transition } from 'framer-motion'
+import { type Variants } from 'framer-motion'
 import { ANIMATION_DURATION, ANIMATION_EASING } from './constants'
 
 /**

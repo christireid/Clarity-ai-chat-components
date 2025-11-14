@@ -39,7 +39,7 @@ export interface PopoverContentProps {
 interface PopoverContextValue {
   open: boolean
   setOpen: (open: boolean) => void
-  triggerRef: React.RefObject<HTMLElement>
+  triggerRef: React.RefObject<HTMLElement | null>
 }
 
 const PopoverContext = React.createContext<PopoverContextValue | null>(null)
@@ -63,7 +63,7 @@ export const Popover: React.FC<PopoverProps> = ({
   defaultOpen = false,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
-  const triggerRef = React.useRef<HTMLElement>(null)
+  const triggerRef = React.useRef<HTMLElement | null>(null)
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
 
   const setOpen = React.useCallback(
@@ -104,7 +104,7 @@ export const PopoverTrigger: React.FC<PopoverTriggerProps> = ({
       onClick: handleClick,
       'aria-expanded': open,
       'aria-haspopup': 'dialog',
-    } as any)
+    } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (
@@ -246,7 +246,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
 
     setActualSide(finalSide)
     setPosition({ x, y })
-  }, [side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding])
+  }, [side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding, triggerRef])
 
   // Update position when open changes
   React.useEffect(() => {
@@ -280,8 +280,8 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
       if (
         contentRef.current &&
         triggerRef.current &&
-        !contentRef.current.contains(e.target as Node) &&
-        !triggerRef.current.contains(e.target as Node)
+        !contentRef.current.contains(e.target as Element | null) &&
+        !triggerRef.current.contains(e.target as Element | null)
       ) {
         setOpen(false)
       }
@@ -289,7 +289,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [open, closeOnClickOutside, setOpen])
+  }, [open, closeOnClickOutside, setOpen, triggerRef])
 
   // Escape key handler
   React.useEffect(() => {
@@ -345,7 +345,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
           <motion.div
             ref={contentRef}
             {...getAnimationVariants()}
-            transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             style={{
               position: 'fixed',
               left: position.x,
@@ -356,8 +356,8 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
             }}
             className={cn(
               'bg-popover text-popover-foreground',
-              'border rounded-lg shadow-lg',
-              'outline-none',
+              'border rounded-xl shadow-md',
+              'outline-none backdrop-blur-sm',
               className
             )}
             role="dialog"
@@ -369,7 +369,7 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
             {showArrow && (
               <div
                 className={cn(
-                  'absolute w-2 h-2 bg-popover border',
+                  'absolute w-3 h-3 bg-popover border-border/40',
                   getArrowClasses(actualSide, align)
                 )}
                 style={{ transform: 'rotate(45deg)' }}
@@ -480,7 +480,7 @@ export const PopoverClose: React.FC<{
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
       onClick: () => setOpen(false),
-    } as any)
+    } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (
