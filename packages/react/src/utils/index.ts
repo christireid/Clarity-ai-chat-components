@@ -45,3 +45,6 @@ export * from './streaming-helpers'
 // Message conversion utilities
 export * from './message-converter'
 
+// Tool result extraction utilities
+export * from './tool-result-extractor'
+
