@@ -100,7 +100,22 @@ export {
   convertMessagesToCoreMessages,
 } from './utils/message-conversion'
 
-// Legacy Chat Hook (Low-level)
+// Legacy Chat Hook (Deprecated - use useChatEnhanced or useClarityChat instead)
+/**
+ * @deprecated Use `useChatEnhanced` or `useClarityChat` instead.
+ * This hook is maintained for backward compatibility only.
+ * 
+ * Migration:
+ * ```tsx
+ * // Old
+ * const chat = useChat({ api: '/api/chat' })
+ * 
+ * // New (recommended)
+ * const chat = useClarityChat({ api: '/api/chat' })
+ * // or
+ * const chat = useChatEnhanced({ api: '/api/chat' })
+ * ```
+ */
 export {
   useChat,
   type UseChatOptions as UseChatOptionsLegacy,
@@ -300,14 +315,17 @@ export * from './hooks/use-submit-button-state'
 export * from './hooks/use-mobile-keyboard'
 export * from './hooks/use-design-tokens'
 
-// Helper hooks (legacy, consider deprecating)
-export {
-  useClarityChatWithWindow,
-  useClarityChatWithAnalytics,
-  useClarityChatWithPersistence,
-  useClarityChatWithDebounce,
-  useClarityChatWithAutoSave,
-} from './hooks/use-clarity-chat-helpers'
+// Helper hooks (internal - use top-level APIs instead)
+// These are implementation details and should not be used directly.
+// Use `useClarityChat` or `ClarityChat` component instead.
+// @internal
+// export {
+//   useClarityChatWithWindow,
+//   useClarityChatWithAnalytics,
+//   useClarityChatWithPersistence,
+//   useClarityChatWithDebounce,
+//   useClarityChatWithAutoSave,
+// } from './hooks/use-clarity-chat-helpers'
 
 // ============================================================================
 // UTILITIES & TYPES
@@ -358,18 +376,8 @@ export {
 export * from './utils/tool-result-helpers'
 
 // ============================================================================
-// TESTING UTILITIES (For test files only)
+// TESTING UTILITIES (Internal - Not exported publicly)
 // ============================================================================
-
-export {
-  createMockUseClarityChat,
-  createTestMessages,
-  createTestUserMessage,
-  createTestAssistantMessage,
-  waitForChatUpdate,
-  simulateStreamingResponse,
-  createMockFetch,
-  createMockStreamingResponse,
-  assertMessageStructure,
-  assertChatState,
-} from './test-utils/use-clarity-chat-test-utils'
+// Testing utilities are internal and should not be exported in the public API.
+// They are available for internal testing only.
+// If you need testing utilities, import them directly from the test-utils directory.

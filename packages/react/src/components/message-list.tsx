@@ -78,6 +78,15 @@ export function MessageList({
   emptyState,
   className,
 }: MessageListProps) {
+  // Runtime validation
+  if (!Array.isArray(messages)) {
+    throw new Error(
+      'MessageList: "messages" prop must be an array.\n\n' +
+      'Example:\n' +
+      '  <MessageList messages={[]} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
   // Use auto-scroll hook with smooth scrolling
   const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
     dependencies: [messages],
