@@ -7,41 +7,65 @@ import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from './thinking-indicator'
 import { BotIcon } from './icons'
 
-export interface ChatWindowProps {
-  messages: Message[]
-  isLoading?: boolean
-  /** AI processing status for thinking indicator */
-  aiStatus?: AIStatus
-  onSendMessage: (content: string) => void
+/**
+ * Advanced options grouped together for better DX
+ */
+export interface ChatWindowAdvancedOptions {
   /** Callback when message is copied */
   onMessageCopy?: (messageId: string, content: string) => void
   /** Callback when feedback is given */
   onMessageFeedback?: (messageId: string, type: 'up' | 'down') => void
   /** Callback when retry is requested */
   onMessageRetry?: (messageId: string) => void
+  /** Header actions */
+  headerActions?: React.ReactNode
+  /** Custom empty state */
+  emptyState?: React.ReactNode
+}
+
+/**
+ * Props for ChatWindow component
+ * 
+ * @example
+ * ```tsx
+ * <ChatWindow
+ *   messages={messages}
+ *   isLoading={isLoading}
+ *   onSendMessage={handleSend}
+ * />
+ * ```
+ */
+export interface ChatWindowProps {
+  /** Array of messages to display */
+  messages: Message[]
+  /** Whether a message is currently being sent/processed */
+  isLoading?: boolean
+  /** AI processing status for thinking indicator */
+  aiStatus?: AIStatus
+  /** Callback when user sends a message */
+  onSendMessage: (content: string) => void
   /** Callback when message is edited */
   onEditMessage?: (messageId: string) => void
   /** Callback when message is regenerated */
   onRegenerateMessage?: (messageId: string) => void
   /** Callback when message is deleted */
   onDeleteMessage?: (messageId: string) => void
-  /** Custom empty state */
-  emptyState?: React.ReactNode
   /** Show header with session info */
   showHeader?: boolean
   /** Session title */
   sessionTitle?: string
   /** Session subtitle or description */
   sessionSubtitle?: string
-  /** Header actions */
-  headerActions?: React.ReactNode
   /** Show message count badge */
   showMessageCount?: boolean
   /** Enable export functionality */
   onExport?: () => void
   /** Enable clear chat functionality */
   onClear?: () => void
+  /** Custom className for styling */
   className?: string
+  /** Advanced options - for power users */
+  advanced?: ChatWindowAdvancedOptions
 }
 
 // Default empty state component - extracted for better performance
@@ -90,22 +114,26 @@ export function ChatWindow({
   isLoading = false,
   aiStatus,
   onSendMessage,
-  onMessageCopy,
-  onMessageFeedback,
-  onMessageRetry,
   onEditMessage,
   onRegenerateMessage,
   onDeleteMessage,
-  emptyState,
   showHeader = false,
   sessionTitle = 'Chat Session',
   sessionSubtitle,
-  headerActions,
   showMessageCount = false,
   onExport,
   onClear,
   className,
+  advanced,
 }: ChatWindowProps) {
+  // Extract advanced options with defaults
+  const {
+    onMessageCopy,
+    onMessageFeedback,
+    onMessageRetry,
+    headerActions,
+    emptyState,
+  } = advanced || {}
   const [input, setInput] = React.useState('')
 
   // React 19: Compiler optimizes - no useCallback needed

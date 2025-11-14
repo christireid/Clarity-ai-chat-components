@@ -4,6 +4,27 @@ This directory contains example applications showcasing Clarity Chat Components.
 
 ## 📦 Examples
 
+### 🆕 **minimal-chat** (NEW!)
+The absolute simplest way to use Clarity Chat - just 5 lines of code!
+
+**Features:**
+- Simplest possible setup
+- Zero configuration
+- Copy-pasteable code
+
+**[→ View Minimal Example](./minimal-chat/)**
+
+### 🆕 **customized-chat** (NEW!)
+Shows how to customize ClarityChat with different options and callbacks.
+
+**Features:**
+- Theme customization
+- Memory integration
+- Event callbacks
+- Header customization
+
+**[→ View Customized Example](./customized-chat/)**
+
 ### 1. **basic-chat**
 Simple chat interface with message operations (edit, regenerate, delete) and undo/redo support.
 

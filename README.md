@@ -196,7 +196,7 @@ function App() {
 - ♿ WCAG AAA accessibility
 - 🔒 Production-ready security
 
-**[📖 View Full Quick Start Guide](./apps/docs-site/app/learn/quick-start)** • **[📚 Browse Examples](./apps/examples/README.md)**
+**[📖 View Full Quick Start Guide](./QUICK_START_GUIDE.md)** • **[📚 Browse Examples](./apps/examples/README.md)** • **[🍳 View Recipes](./packages/react/src/recipes.tsx)**
 
 ---
 

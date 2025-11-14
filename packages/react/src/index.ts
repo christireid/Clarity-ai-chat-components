@@ -54,8 +54,9 @@ export * from './components/message-metadata'
 export * from './components/chat-input'
 export * from './components/advanced-chat-input'
 export * from './components/chat-window'
-// High-level drop-in ready component
+// High-level drop-in ready components
 export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
+export { ClarityChatSimple, type ClarityChatSimpleProps } from './components/clarity-chat-simple'
 export * from './components/model-selector'
 export * from './components/streaming-message'
 export * from './components/stream-block'
