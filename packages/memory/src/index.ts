@@ -96,6 +96,36 @@ export {
   printSetupInfo,
 } from './utils/setup'
 
+// Cache utilities
+export {
+  LRUCache,
+  TTLCache,
+  debounce,
+  throttle,
+  memoize,
+} from './utils/cache'
+
+// Performance utilities
+export {
+  PerformanceTimer,
+  measureTime,
+  batch,
+  chunk,
+  deduplicate,
+  Lazy,
+  PerformanceStats,
+} from './utils/performance'
+
+// Cleanup utilities
+export {
+  cleanupExpired,
+  cleanupLowImportance,
+  cleanupOld,
+  cleanupByType,
+  applyCleanupStrategy,
+} from './utils/cleanup'
+export type { CleanupStrategy } from './utils/cleanup'
+
 // Stores
 export { InMemoryStore } from './stores/in-memory'
 export { IndexedDBStore } from './stores/indexeddb'

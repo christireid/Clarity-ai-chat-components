@@ -10,4 +10,11 @@ export default defineConfig({
   treeshake: true,
   minify: false,
   external: [],
+  // Optimize for tree-shaking
+  esbuildOptions(options) {
+    options.treeShaking = true
+    options.minifyIdentifiers = false
+    options.minifySyntax = false
+    options.minifyWhitespace = false
+  },
 })
