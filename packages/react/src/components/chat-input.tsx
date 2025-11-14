@@ -28,7 +28,31 @@ export interface ChatInputProps {
 }
 
 /**
- * ChatInput component - Enhanced with React 19 features
+ * ChatInput - Mid-Level Composable Component
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Chat UI
+ * 
+ * A composable input component for chat interfaces with character counting,
+ * validation, and smooth animations.
+ * 
+ * For drop-in usage, use top-level `ClarityChat` component instead.
+ * For custom input rendering, use low-level primitives.
+ * 
+ * @example
+ * ```tsx
+ * const [input, setInput] = useState('')
+ * 
+ * <ChatInput
+ *   value={input}
+ *   onChange={setInput}
+ *   onSubmit={async (value) => {
+ *     await sendMessage(value)
+ *     setInput('')
+ *   }}
+ *   maxLength={1000}
+ * />
+ * ```
  * 
  * React 19 Enhancements:
  * - Removed React.memo() - compiler handles optimization

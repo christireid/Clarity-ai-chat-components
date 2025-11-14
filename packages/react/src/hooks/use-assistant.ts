@@ -134,19 +134,27 @@ export interface UseAssistantOptions {
 }
 
 /**
- * Return type for useAssistant hook
+ * Return type for useAssistant hook (mid-level API)
+ * 
+ * Follows the standard hook return pattern:
+ * - Data: `messages`, `status`, `toolInvocations` (current state)
+ * - State: `isLoading`, `error`
+ * - Actions: `submit`, `stop`, `abort`, `setMessages`
+ * 
+ * This hook provides Vercel AI SDK compatible assistant functionality with
+ * tool calling support and multi-step workflows.
  */
 export interface UseAssistantReturn {
-  /** Current status */
+  /** Current status (data) */
   status: AssistantStatus
   
-  /** Current messages */
+  /** Current messages (data) */
   messages: CoreMessage[]
   
-  /** Set messages directly */
+  /** Set messages directly (action) */
   setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>
   
-  /** Submit a message to the assistant */
+  /** Submit a message to the assistant (action) */
   submitMessage: (
     message: string | CoreMessage,
     options?: { data?: Record<string, any> }
