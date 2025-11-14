@@ -23,6 +23,14 @@ import {
 } from './use-chat-enhanced'
 import { MemoryContext } from '../memory/memory-provider'
 import type { MemoryContextValue } from '../memory/memory-provider'
+import {
+  estimateMessageArrayTokens,
+  getModelMetadata,
+} from '../prompt/core/token-estimation'
+import {
+  optimizeMessagesForBudget,
+} from '../prompt/core/message-optimization'
+import type { ModelMetadata } from '../prompt/core/types'
 
 /**
  * Safe hook to get memory context without throwing
@@ -123,6 +131,25 @@ export interface ClarityWebSocketOptions {
 }
 
 /**
+ * Prompt optimization configuration
+ */
+export interface PromptOptimizationOptions {
+  /** Enable prompt optimization */
+  enabled?: boolean
+  /** Target token budget */
+  targetTokens?: number
+  /** Optimization strategy */
+  strategy?: 'sliding-window' | 'summarize-old' | 'drop-low-priority' | 'hybrid'
+  /** Model metadata for token estimation */
+  model?: {
+    id: string
+    maxTokens: number
+    inputPricePer1K?: number
+    outputPricePer1K?: number
+  }
+}
+
+/**
  * Options for useClarityChat hook
  */
 export interface UseClarityChatOptions
@@ -133,6 +160,8 @@ export interface UseClarityChatOptions
   transport?: 'sse' | 'websocket'
   /** WebSocket-specific options (only used when transport is 'websocket') */
   websocket?: ClarityWebSocketOptions
+  /** Prompt optimization configuration (optional) */
+  promptOptimization?: PromptOptimizationOptions
 }
 
 /**
@@ -162,6 +191,24 @@ export interface ClarityChatErrorInfo {
 }
 
 /**
+ * Token statistics from prompt optimization
+ */
+export interface ClarityChatTokenStats {
+  /** Current token count */
+  currentTokens: number
+  /** Target token budget */
+  targetTokens?: number
+  /** Remaining budget */
+  remainingTokens?: number
+  /** Budget exceeded flag */
+  isExceeded?: boolean
+  /** Budget usage percentage */
+  usagePercent?: number
+  /** Last optimization reason */
+  lastOptimizationReason?: string
+}
+
+/**
  * Return type for useClarityChat hook
  * Extends UseChatEnhancedReturn with Clarity-specific additions
  */
@@ -170,6 +217,8 @@ export type UseClarityChatReturn = UseChatEnhancedReturn & {
   memoryInfo: ClarityChatMemoryInfo
   /** Error information for memory operations */
   memoryErrorInfo: ClarityChatErrorInfo
+  /** Token statistics (if prompt optimization is enabled) */
+  tokenStats?: ClarityChatTokenStats
 }
 
 /**
@@ -186,7 +235,7 @@ export type UseClarityChatReturn = UseChatEnhancedReturn & {
 export function useClarityChat(
   options: UseClarityChatOptions = {}
 ): UseClarityChatReturn {
-  const { memory, transport, ...rest } = options
+  const { memory, transport, promptOptimization, ...rest } = options
 
   // Get memory context safely (returns null if MemoryProvider is not available)
   // This hook always runs unconditionally, satisfying React hooks rules
@@ -200,6 +249,9 @@ export function useClarityChat(
   // Store memory context in a ref for synchronous access in transform
   const memoryContextRef = React.useRef<string>('')
   const lastQueryRef = React.useRef<string>('')
+
+  // Store optimization state for token stats
+  const [optimizationDiagnostics, setOptimizationDiagnostics] = React.useState<import('../prompt/core/types').OptimizationDiagnostics | undefined>()
 
   // Enhanced transform function to enrich messages with memory context
   const originalTransform = rest.transform
@@ -223,9 +275,45 @@ export function useClarityChat(
         ]
       }
 
+      // Note: Full optimization happens asynchronously via useOptimizedChatContext hook
+      // For basic token-aware truncation in transform, we do a simple sliding window
+      if (promptOptimization?.enabled && promptOptimization.targetTokens) {
+        const currentTokens = estimateMessageArrayTokens(enrichedMessages, {
+          model: promptOptimization.model?.id,
+        })
+        
+        if (currentTokens > promptOptimization.targetTokens) {
+          // Simple synchronous sliding window: keep system messages + last N messages
+          const systemMessages = enrichedMessages.filter(m => m.role === 'system')
+          const otherMessages = enrichedMessages.filter(m => m.role !== 'system')
+          
+          // Keep last messages that fit
+          let tokens = estimateMessageArrayTokens(systemMessages, {
+            model: promptOptimization.model?.id,
+          })
+          const kept: CoreMessage[] = []
+          
+          for (let i = otherMessages.length - 1; i >= 0; i--) {
+            const msg = otherMessages[i]
+            if (!msg) continue
+            const msgTokens = estimateMessageArrayTokens([msg], {
+              model: promptOptimization.model?.id,
+            })
+            if (tokens + msgTokens <= promptOptimization.targetTokens) {
+              kept.unshift(msg)
+              tokens += msgTokens
+            } else {
+              break
+            }
+          }
+          
+          enrichedMessages = [...systemMessages, ...kept]
+        }
+      }
+
       return enrichedMessages
     },
-    [memory?.enabled, originalTransform]
+    [memory?.enabled, originalTransform, promptOptimization]
   )
 
   // Enhanced onFinish callback to store messages in memory
@@ -486,7 +574,47 @@ export function useClarityChat(
     [memoryError]
   )
 
-  // Return enhanced chat with wrapped append, memory info, and error info
+  // Calculate token stats if prompt optimization is enabled
+  const tokenStats: ClarityChatTokenStats | undefined = React.useMemo(() => {
+    if (!promptOptimization?.enabled) {
+      return undefined
+    }
+
+    const modelMetadata = promptOptimization.model
+      ? {
+          id: promptOptimization.model.id,
+          maxTokens: promptOptimization.model.maxTokens,
+          inputPricePer1K: promptOptimization.model.inputPricePer1K,
+          outputPricePer1K: promptOptimization.model.outputPricePer1K,
+        }
+      : promptOptimization.model?.id
+      ? getModelMetadata(promptOptimization.model.id)
+      : null
+
+    if (!modelMetadata) {
+      return undefined
+    }
+
+    const currentTokens = estimateMessageArrayTokens(chat.messages, {
+      model: modelMetadata.id,
+    })
+
+    const targetTokens = promptOptimization.targetTokens || modelMetadata.maxTokens
+    const remainingTokens = Math.max(0, targetTokens - currentTokens)
+    const isExceeded = currentTokens > targetTokens
+    const usagePercent = Math.min(100, (currentTokens / targetTokens) * 100)
+
+    return {
+      currentTokens,
+      targetTokens,
+      remainingTokens,
+      isExceeded,
+      usagePercent,
+      lastOptimizationReason: optimizationDiagnostics?.reason,
+    }
+  }, [promptOptimization, chat.messages, optimizationDiagnostics])
+
+  // Return enhanced chat with wrapped append, memory info, error info, and token stats
   return {
     ...chat,
     append: memory?.enabled && memoryContext?.service
@@ -494,5 +622,6 @@ export function useClarityChat(
       : chat.append,
     memoryInfo,
     memoryErrorInfo,
+    tokenStats,
   }
 }

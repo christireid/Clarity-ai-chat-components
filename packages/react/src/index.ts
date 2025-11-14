@@ -13,6 +13,9 @@ export * from './agents'
 // Prompt Templates
 export * from './prompts'
 
+// Prompt & Token Optimization (optional addon layer)
+export * from './prompt'
+
 // Document Loaders & Text Splitting
 export * from './document-loaders'
 
