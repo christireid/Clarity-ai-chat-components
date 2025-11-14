@@ -129,6 +129,7 @@ export {
   type ClarityMemoryOptions,
   type ClarityWebSocketOptions,
   type ClarityChatMemoryInfo,
+  type ClarityChatErrorInfo,
 } from './hooks/use-clarity-chat'
 
 // Message conversion utilities

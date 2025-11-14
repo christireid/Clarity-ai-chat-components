@@ -24,6 +24,63 @@ import {
 import { useMemory } from '../memory/memory-provider'
 
 /**
+ * Classify error type for better error handling
+ */
+function classifyError(error: Error): 'network' | 'ratelimit' | 'server' | 'auth' | 'memory' | 'unknown' {
+  const message = error.message.toLowerCase()
+  
+  if (message.includes('memory') || message.includes('vector') || message.includes('embedding')) {
+    return 'memory'
+  }
+  
+  if (message.includes('network') || message.includes('fetch') || message.includes('connection')) {
+    return 'network'
+  }
+  
+  if (message.includes('rate limit') || message.includes('too many requests') || message.includes('429')) {
+    return 'ratelimit'
+  }
+  
+  if (message.includes('500') || message.includes('502') || message.includes('503') || message.includes('504')) {
+    return 'server'
+  }
+  
+  if (message.includes('401') || message.includes('403') || message.includes('unauthorized') || message.includes('forbidden')) {
+    return 'auth'
+  }
+  
+  return 'unknown'
+}
+
+/**
+ * Retry an async operation with exponential backoff
+ */
+async function retryOperation<T>(
+  operation: () => Promise<T>,
+  maxAttempts: number = 2,
+  delayMs: number = 1000
+): Promise<T> {
+  let lastError: Error | null = null
+  
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await operation()
+    } catch (error) {
+      lastError = error as Error
+      
+      // Don't retry on last attempt
+      if (attempt < maxAttempts) {
+        // Exponential backoff: delayMs * 2^(attempt-1)
+        const delay = delayMs * Math.pow(2, attempt - 1)
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
+    }
+  }
+  
+  throw lastError || new Error('Operation failed after retries')
+}
+
+/**
  * Memory configuration options
  */
 export interface ClarityMemoryOptions {
@@ -33,6 +90,12 @@ export interface ClarityMemoryOptions {
   strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
   /** Maximum tokens for memory context */
   maxTokens?: number
+  /** Retry failed memory operations (default: true) */
+  retryOnError?: boolean
+  /** Maximum retry attempts for memory operations (default: 2) */
+  maxRetryAttempts?: number
+  /** Callback when memory operation fails */
+  onMemoryError?: (error: Error, operation: 'query' | 'store') => void
 }
 
 /**
@@ -77,12 +140,26 @@ export interface ClarityChatMemoryInfo {
 }
 
 /**
+ * Error information for Clarity Chat
+ */
+export interface ClarityChatErrorInfo {
+  /** Last memory operation error */
+  memoryError: Error | null
+  /** Last memory operation that failed */
+  memoryErrorOperation: 'query' | 'store' | null
+  /** Error type classification */
+  memoryErrorType: 'network' | 'ratelimit' | 'server' | 'auth' | 'memory' | 'unknown' | null
+}
+
+/**
  * Return type for useClarityChat hook
  * Extends UseChatEnhancedReturn with Clarity-specific additions
  */
 export type UseClarityChatReturn = UseChatEnhancedReturn & {
   /** Memory information and statistics */
   memoryInfo: ClarityChatMemoryInfo
+  /** Error information for memory operations */
+  memoryErrorInfo: ClarityChatErrorInfo
 }
 
 /**
@@ -167,23 +244,59 @@ export function useClarityChat(
               : JSON.stringify(message.content)
 
           if (content) {
-            await memoryContext.addMemory(
-              content,
-              'episodic',
-              'thread',
-              {
-                messageId: message.id,
-                role: message.role,
-                timestamp: new Date().toISOString(),
-              },
-              {
-                priority: message.role === 'assistant' ? 'high' : 'medium',
+            try {
+              const storeMemory = async () => {
+                return await memoryContext.addMemory(
+                  content,
+                  'episodic',
+                  'thread',
+                  {
+                    messageId: message.id,
+                    role: message.role,
+                    timestamp: new Date().toISOString(),
+                  },
+                  {
+                    priority: message.role === 'assistant' ? 'high' : 'medium',
+                  }
+                )
               }
-            )
+
+              // Store with retry logic if enabled
+              if (memory.retryOnError !== false) {
+                await retryOperation(
+                  storeMemory,
+                  memory.maxRetryAttempts || 2,
+                  500
+                )
+              } else {
+                await storeMemory()
+              }
+            } catch (error) {
+              const err = error as Error
+              const errorType = classifyError(err)
+              
+              // Update error state
+              setMemoryError({
+                error: err,
+                operation: 'store',
+                errorType,
+              })
+              
+              // Call error callback if provided
+              memory.onMemoryError?.(err, 'store')
+              
+              // Log error with classification
+              console.warn(`[Clarity Chat] Memory storage failed (${errorType}):`, err.message)
+              
+              // Memory storage failure is non-critical - don't throw
+            }
           }
         } catch (error) {
-          // Silently fail - memory storage is non-critical
-          console.warn('Failed to store message in memory:', error)
+          const err = error as Error
+          const errorType = classifyError(err)
+          
+          memory.onMemoryError?.(err, 'store')
+          console.warn(`[Clarity Chat] Memory operation failed (${errorType}):`, err.message)
         }
       }
     },
@@ -233,25 +346,64 @@ export function useClarityChat(
           if (queryText && queryText !== lastQueryRef.current) {
             lastQueryRef.current = queryText
 
-            // Query memory for relevant context
-            const memoryResults = await memoryContext.query({
-              query: queryText,
-              limit: memory.strategy === 'vector-store' ? 5 : 10,
-              scope: 'thread',
-            })
+            try {
+              // Query memory for relevant context with retry logic
+              const queryMemory = async () => {
+                return await memoryContext.query({
+                  query: queryText,
+                  limit: memory.strategy === 'vector-store' ? 5 : 10,
+                  scope: 'thread',
+                })
+              }
 
-            // Store context in ref for transform function
-            if (memoryResults.length > 0) {
-              memoryContextRef.current = memoryResults
-                .map((result) => result.content)
-                .join('\n\n')
-            } else {
-              memoryContextRef.current = ''
+              const memoryResults = memory.retryOnError !== false
+                ? await retryOperation(
+                    queryMemory,
+                    memory.maxRetryAttempts || 2,
+                    500
+                  )
+                : await queryMemory()
+
+              // Store context in ref for transform function
+              if (memoryResults.length > 0) {
+                memoryContextRef.current = memoryResults
+                  .map((result) => result.content)
+                  .join('\n\n')
+              } else {
+                memoryContextRef.current = ''
+              }
+            } catch (error) {
+              const err = error as Error
+              const errorType = classifyError(err)
+              
+              // Update error state
+              setMemoryError({
+                error: err,
+                operation: 'query',
+                errorType,
+              })
+              
+              // Call error callback if provided
+              memory.onMemoryError?.(err, 'query')
+              
+              // Log error with classification
+              console.warn(`[Clarity Chat] Memory query failed (${errorType}):`, err.message)
+              
+              // Only fail silently if it's a non-critical error
+              if (errorType === 'memory' || errorType === 'unknown') {
+                memoryContextRef.current = ''
+              } else {
+                // For network/server errors, keep previous context if available
+                // Don't clear memoryContextRef to avoid losing context
+              }
             }
           }
         } catch (error) {
-          // Silently fail - memory query is non-critical
-          console.warn('Failed to query memory context:', error)
+          const err = error as Error
+          const errorType = classifyError(err)
+          
+          memory.onMemoryError?.(err, 'query')
+          console.warn(`[Clarity Chat] Memory operation failed (${errorType}):`, err.message)
           memoryContextRef.current = ''
         }
       }
@@ -267,6 +419,17 @@ export function useClarityChat(
     count: number
     contextItems: number
   }>({ count: 0, contextItems: 0 })
+
+  // Track memory errors
+  const [memoryError, setMemoryError] = React.useState<{
+    error: Error | null
+    operation: 'query' | 'store' | null
+    errorType: 'network' | 'ratelimit' | 'server' | 'auth' | 'memory' | 'unknown' | null
+  }>({
+    error: null,
+    operation: null,
+    errorType: null,
+  })
 
   // Update memory stats when memory context changes
   React.useEffect(() => {
@@ -308,12 +471,23 @@ export function useClarityChat(
     }
   }, [memory?.enabled, memory?.strategy, memoryContext?.service, memoryStats])
 
-  // Return enhanced chat with wrapped append and memory info
+  // Memory error info
+  const memoryErrorInfo: ClarityChatErrorInfo = React.useMemo(
+    () => ({
+      memoryError: memoryError.error,
+      memoryErrorOperation: memoryError.operation,
+      memoryErrorType: memoryError.errorType,
+    }),
+    [memoryError]
+  )
+
+  // Return enhanced chat with wrapped append, memory info, and error info
   return {
     ...chat,
     append: memory?.enabled && memoryContext?.service
       ? enhancedAppend
       : chat.append,
     memoryInfo,
+    memoryErrorInfo,
   }
 }

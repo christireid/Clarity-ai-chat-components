@@ -318,12 +318,75 @@ import type {
 
 5. **Check memoryInfo** to display memory statistics to users
 
+## Error Handling
+
+### Memory Error Handling
+
+`useClarityChat` includes comprehensive error handling for memory operations:
+
+```tsx
+const { memoryErrorInfo } = useClarityChat({
+  memory: {
+    enabled: true,
+    retryOnError: true, // Enable automatic retry (default: true)
+    maxRetryAttempts: 3, // Max retries (default: 2)
+    onMemoryError: (error, operation) => {
+      // Handle memory errors
+      console.error(`Memory ${operation} failed:`, error)
+    },
+  },
+})
+
+// Access error information
+if (memoryErrorInfo.memoryError) {
+  console.log('Error type:', memoryErrorInfo.memoryErrorType)
+  console.log('Operation:', memoryErrorInfo.memoryErrorOperation)
+  console.log('Error:', memoryErrorInfo.memoryError)
+}
+```
+
+**Error Types:**
+- `network`: Network connectivity issues
+- `ratelimit`: Rate limiting errors
+- `server`: Server errors (5xx)
+- `auth`: Authentication errors (401, 403)
+- `memory`: Memory-specific errors
+- `unknown`: Unclassified errors
+
+**Retry Logic:**
+- Automatic retry with exponential backoff
+- Configurable max attempts
+- Retries only for retryable errors (network, server)
+- Non-critical errors don't block chat functionality
+
+### Error Display Example
+
+```tsx
+function ErrorDisplay({ memoryErrorInfo }) {
+  if (!memoryErrorInfo.memoryError) return null
+
+  return (
+    <Alert variant="warning">
+      Memory {memoryErrorInfo.memoryErrorOperation} failed: 
+      {memoryErrorInfo.memoryError.message}
+    </Alert>
+  )
+}
+```
+
 ## Troubleshooting
 
 ### Memory not working?
 - Ensure `MemoryProvider` wraps your component
 - Check that `memory.enabled` is `true`
 - Verify memory service is initialized
+- Check `memoryErrorInfo` for error details
+
+### Memory errors?
+- Check `memoryErrorInfo.memoryErrorType` for error classification
+- Enable `retryOnError: true` for automatic retries
+- Increase `maxRetryAttempts` for unreliable networks
+- Use `onMemoryError` callback for custom handling
 
 ### WebSocket connection issues?
 - Check WebSocket endpoint URL (use `ws://` or `wss://`)
