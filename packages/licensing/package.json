@@ -50,6 +50,10 @@
     "clarity-chat"
   ],
   "author": "Christi Reid <christi@codeclarity.ai>",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme"
 }
 

@@ -16,8 +16,9 @@ export interface TableColumn {
 export interface TableOptions {
   border?: boolean
   padding?: number
-  headerColor?: (text: string) => string
+  headerColor?: (text: string) => string | string
   compact?: boolean
+  align?: 'left' | 'center' | 'right'
 }
 
 const BORDER_CHARS = {
@@ -252,4 +253,60 @@ export function keyValueTable(
       return `${label}  ${val}`
     })
     .join('\n')
+}
+
+/**
+ * Create a table (alias for table function)
+ */
+export async function createTable(
+  columns: string[] | TableColumn[],
+  data: Record<string, any>[] | string[][],
+  options?: TableOptions & { headerColor?: string | ((text: string) => string) }
+): Promise<string> {
+  const normalizedColumns: TableColumn[] = Array.isArray(columns) && typeof columns[0] === 'string'
+    ? (columns as string[]).map(col => ({ 
+        header: col,
+        align: options?.align || 'left'
+      }))
+    : columns.map(col => ({
+        ...col,
+        align: col.align || options?.align || 'left'
+      }))
+  
+  const tableOptions: TableOptions = {
+    ...options,
+    headerColor: typeof options?.headerColor === 'string' 
+      ? (text: string) => chalk[options.headerColor as keyof typeof chalk](text) || text
+      : options?.headerColor
+  }
+  
+  return table(data, normalizedColumns, tableOptions)
+}
+
+/**
+ * Create a list table (alias for listTable)
+ */
+export function createListTable(
+  items: Array<{ label: string; value: string; color?: (text: string) => string }>
+): string {
+  return listTable(items)
+}
+
+/**
+ * Create a status table
+ */
+export async function createStatusTable(
+  items: Array<{ status: string; message: string; category?: string; severity?: string }>
+): Promise<string> {
+  const columns: TableColumn[] = [
+    { header: 'Status', key: 'status', width: 12 },
+    { header: 'Message', key: 'message' },
+  ]
+  
+  const data = items.map(item => ({
+    status: item.status,
+    message: item.message,
+  }))
+  
+  return table(data, columns, { border: true })
 }
