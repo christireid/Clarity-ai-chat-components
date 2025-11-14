@@ -10,7 +10,11 @@ export * from './core'
 // React hooks
 export * from './hooks'
 
-// Existing prompt template system
-export * from './types'
-export * from './template'
-export * from './library'
+// Re-export existing prompt template system for convenience
+// (These are also available via '../prompts' export from main index)
+export type {
+  PromptVariable,
+  SavedPrompt,
+  PromptTemplate,
+} from '../prompts'
+export { PromptTemplateEngine, renderPrompt } from '../prompts'

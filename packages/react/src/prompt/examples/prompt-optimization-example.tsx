@@ -5,7 +5,11 @@
  */
 
 import * as React from 'react'
-import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '../../index'
+import { 
+  useClarityChat, 
+  ChatWindow, 
+  convertCoreMessagesToMessages 
+} from '../../index'
 import { usePromptInspector } from '../hooks/use-prompt-inspector'
 
 export function PromptOptimizationExample() {
