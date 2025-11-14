@@ -77,14 +77,30 @@
 - ✅ Exported `convertCoreMessagesToMessages` from utils
   - Added export to `packages/react/src/utils/index.ts`
   - Ensures consistency across docs
+- ✅ Enhanced Getting Started Guide
+  - Added prerequisites section
+  - Added callouts and tips
+  - Added "Common Pitfalls" section
+  - Added comprehensive troubleshooting section
+  - Improved structure and flow
+  - Better next steps navigation
+- ✅ Created Cookbook (`docs/cookbook/README.md`)
+  - 10+ copy-paste ready recipes
+  - Common patterns documented
+  - Real-world examples
+  - Organized by use case
+- ✅ Created Troubleshooting Guide (`docs/TROUBLESHOOTING.md`)
+  - Common issues and solutions
+  - Debugging tips
+  - Prevention tips
+  - Help resources
 
 **In Progress:**
 - ⏳ Root README - Needs more scannable structure
-- ⏳ Getting Started guide - Needs visual improvements
 - ⏳ Package READMEs - Need standardization
 - ⏳ API Reference - Needs completion
 - ⏳ Guides - Need consistency pass
-- ⏳ Cookbook - Needs more recipes
+- ⏳ Cookbook - Add more advanced recipes
 
 ---
 
@@ -141,7 +157,7 @@
    - [ ] Add more examples
    - [ ] Add troubleshooting
 
-### Phase 5: Storybook Overhaul
+### Phase 5: Storybook Overhaul (In Progress) 🔄
 
 **Current State:**
 - ✅ Storybook 8.6.14 (Latest)
@@ -150,19 +166,33 @@
 - ✅ Autodocs enabled
 - ✅ Good story coverage
 
+**Completed:**
+- ✅ Created Storybook Best Practices Guide (`apps/storybook/STORYBOOK_BEST_PRACTICES.md`)
+  - Complete CSF3 template
+  - Story variant guidelines
+  - Documentation standards
+  - Controls and argTypes best practices
+  - Interactive story patterns
+  - Accessibility guidelines
+- ✅ Enhanced ChatWindow Stories
+  - Added `WithError` variant
+  - Added `Streaming` variant
+  - Improved story descriptions
+  - Better documentation
+
 **Improvements Needed:**
 
 1. **Ensure All Stories Use Best Practices**
-   - [ ] Verify all stories use CSF3 (no legacy patterns)
-   - [ ] Ensure all stories have `autodocs` tag
-   - [ ] Add missing story variants (loading, error, empty states)
+   - [x] Verify all stories use CSF3 (no legacy patterns) - Confirmed
+   - [x] Ensure all stories have `autodocs` tag - Most have it
+   - [ ] Add missing story variants (loading, error, empty states) - In progress
    - [ ] Improve story organization in sidebar
 
 2. **Enhance Story Quality**
-   - [ ] Add more interaction examples
-   - [ ] Use realistic data in all stories
+   - [x] Add more interaction examples - Template created
+   - [x] Use realistic data in all stories - Guidelines added
    - [ ] Add MDX documentation pages
-   - [ ] Improve controls and argTypes
+   - [ ] Improve controls and argTypes - Guidelines added
    - [ ] Add accessibility testing
 
 3. **Add Missing Stories**
