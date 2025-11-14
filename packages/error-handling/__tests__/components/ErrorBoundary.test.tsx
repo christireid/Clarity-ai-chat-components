@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { ErrorBoundary } from '../../src/components/ErrorBoundary'
 import { ConfigurationError } from '../../src/errors'
 
@@ -69,7 +69,7 @@ describe('ErrorBoundary', () => {
     )
 
     expect(onError).toHaveBeenCalled()
-    const [error, errorInfo] = onError.mock.calls[0] as [Error, any]
+    const [error, errorInfo] = onError.mock.calls[0] as [Error, React.ErrorInfo]
     expect(error.message).toBe('Test error')
     expect(errorInfo).toBeDefined()
   })
@@ -90,36 +90,32 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Add the required configuration')).toBeInTheDocument()
   })
 
-  it('should reset error when resetError is called', async () => {
-    let shouldThrow = true
-
-    const { rerender } = render(
-      <ErrorBoundary>
+  it('should reset error when resetError is called', () => {
+    const onReset = vi.fn()
+    const TestComponent = ({ shouldThrow }: { shouldThrow: boolean }) => (
+      <ErrorBoundary onReset={onReset}>
         <ConditionalError shouldThrow={shouldThrow} />
       </ErrorBoundary>
     )
+
+    const { rerender } = render(<TestComponent shouldThrow={true} />)
 
     // Error should be caught
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
 
-    // Change condition
-    shouldThrow = false
-
-    // Click reset button
+    // Click reset button - this clears the error state
     const resetButton = screen.getByText(/try again/i)
     fireEvent.click(resetButton)
 
-    // Rerender with no error
-    rerender(
-      <ErrorBoundary>
-        <ConditionalError shouldThrow={shouldThrow} />
-      </ErrorBoundary>
-    )
+    // Verify onReset was called
+    expect(onReset).toHaveBeenCalled()
 
-    // Should show content, not error
-    await waitFor(() => {
-      expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument()
-    })
+    // Rerender with no error - ErrorBoundary should render children now that error is cleared
+    rerender(<TestComponent shouldThrow={false} />)
+
+    // Should show content, not error after reset
+    expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument()
+    expect(screen.getByText('No error')).toBeInTheDocument()
   })
 
   it('should call onReset callback when error is reset', () => {
