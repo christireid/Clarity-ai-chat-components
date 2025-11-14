@@ -17,7 +17,6 @@ import * as React from 'react'
 import {
   ClarityChat,
   ChatLayout,
-  useChatWithOperations,
   useMemoryStore,
   MemoryProvider,
   AnalyticsProvider,
@@ -81,7 +80,7 @@ function ChatFooter() {
 
 // Main app component
 export default function App() {
-  // Setup analytics
+  // Setup analytics provider (optional - can use empty array for no tracking)
   const gaProvider = React.useMemo(
     () => createGoogleAnalyticsProvider('G-XXXXXXXXXX'),
     []
@@ -91,7 +90,7 @@ export default function App() {
     <AnalyticsProvider
       config={{
         enabled: true,
-        providers: [gaProvider],
+        providers: [gaProvider], // Add analytics providers here
         autoTrack: {
           pageViews: true,
           errors: true,
