@@ -141,7 +141,7 @@ export function useOptimizedChatContext(
         setLastOptimizationReason(undefined)
       }
     } catch (error) {
-      console.warn('[useOptimizedChatContext] Optimization failed:', error)
+      // Error is handled gracefully - optimization falls back to original messages
       setOptimizedMessages(messages)
       setWasOptimized(false)
     }

@@ -177,7 +177,7 @@ export function createSimpleSummarizer(
         const data = await response.json()
         return data.summary || 'Conversation summary'
       } catch (error) {
-        console.warn('Summarization API failed, using fallback', error)
+        // Summarization failed - fallback to simple truncation
       }
     }
 

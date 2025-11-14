@@ -21,7 +21,7 @@ export interface UsePromptRecipeOptions {
   /** Toon DSL nodes (alternative to recipe) */
   toonNodes?: ToonNode[]
   /** Variables for template substitution */
-  variables?: Record<string, any>
+  variables?: Record<string, unknown>
   /** Enable debug mode */
   debug?: boolean
 }
@@ -31,13 +31,13 @@ export interface UsePromptRecipeOptions {
  */
 export interface UsePromptRecipeReturn {
   /** Build prompt from current variables */
-  buildPrompt: (overrideVariables?: Record<string, any>) => CoreMessage[]
+  buildPrompt: (overrideVariables?: Record<string, unknown>) => CoreMessage[]
   /** Estimate tokens for current prompt */
-  estimateTokens: (overrideVariables?: Record<string, any>) => number
+  estimateTokens: (overrideVariables?: Record<string, unknown>) => number
   /** Debug view of composed prompt */
   debugView?: {
     rendered: string
-    variables: Record<string, any>
+    variables: Record<string, unknown>
     messages: CoreMessage[]
   }
 }
@@ -49,7 +49,7 @@ export function usePromptRecipe(options: UsePromptRecipeOptions = {}): UsePrompt
   const { recipe, toonNodes, variables = {}, debug = false } = options
 
   const buildPrompt = useCallback(
-    (overrideVariables: Record<string, any> = {}) => {
+    (overrideVariables: Record<string, unknown> = {}) => {
       const mergedVariables = { ...variables, ...overrideVariables }
 
       if (recipe) {
@@ -64,7 +64,7 @@ export function usePromptRecipe(options: UsePromptRecipeOptions = {}): UsePrompt
   )
 
   const estimateTokens = useCallback(
-    (overrideVariables: Record<string, any> = {}) => {
+    (overrideVariables: Record<string, unknown> = {}) => {
       const mergedVariables = { ...variables, ...overrideVariables }
 
       if (recipe) {

@@ -147,9 +147,8 @@ export function usePromptOptimizer(
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
       setError(error)
-      if (debug) {
-        console.error('[usePromptOptimizer] Optimization failed:', error)
-      }
+      // Error is stored in state and can be accessed by consumer
+      // Debug logging can be added by consumer if needed
     } finally {
       setIsOptimizing(false)
     }
