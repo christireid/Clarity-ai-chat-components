@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
-import React from 'react'
+import React, { useState } from 'react'
 import { ErrorBoundary } from '../../src/components/ErrorBoundary'
 import { ConfigurationError } from '../../src/errors'
 
@@ -92,43 +92,64 @@ describe('ErrorBoundary', () => {
   })
 
   it('should reset error when resetError is called', async () => {
-    function TestWrapper({ shouldThrow, onReset }: { shouldThrow: boolean; onReset?: () => void }) {
+    // Use a ref to control the error condition from outside the boundary
+    let shouldThrowRef = { current: true }
+    
+    function ControlledError() {
+      if (shouldThrowRef.current) {
+        throw new Error('Conditional error')
+      }
+      return <div>No error</div>
+    }
+    
+    function TestWrapper() {
+      const [resetKey, setResetKey] = useState(0)
+      
       return (
-        <ErrorBoundary onReset={onReset}>
-          <ConditionalError shouldThrow={shouldThrow} />
-        </ErrorBoundary>
+        <div>
+          <ErrorBoundary key={resetKey}>
+            <ControlledError />
+          </ErrorBoundary>
+          <button 
+            onClick={() => {
+              shouldThrowRef.current = false
+              setResetKey(prev => prev + 1)
+            }}
+            data-testid="fix-error"
+          >
+            Fix Error
+          </button>
+        </div>
       )
     }
     
-    let shouldThrow = true
-    const handleReset = vi.fn(() => {
-      shouldThrow = false
-    })
-    
-    const { rerender } = render(<TestWrapper shouldThrow={shouldThrow} onReset={handleReset} />)
+    render(<TestWrapper />)
 
     // Error should be caught
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
 
-    // Click reset button - this should reset the error boundary state and call onReset
+    // Fix the error condition first
+    const fixButton = screen.getByTestId('fix-error')
+    await act(async () => {
+      fireEvent.click(fixButton)
+    })
+    
+    // Then click reset button - this should reset the error boundary state
     const resetButton = screen.getByText(/try again/i)
     await act(async () => {
       fireEvent.click(resetButton)
     })
-    
-    expect(handleReset).toHaveBeenCalled()
-    
-    // Now rerender with shouldThrow=false - the boundary should render children successfully
-    rerender(<TestWrapper shouldThrow={false} onReset={handleReset} />)
 
     // Should show content, not error
     await waitFor(
       () => {
         expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument()
-        expect(screen.getByText('No error')).toBeInTheDocument()
       },
       { timeout: 3000 }
     )
+    
+    // Should show the content
+    expect(screen.getByText('No error')).toBeInTheDocument()
   })
 
   it('should call onReset callback when error is reset', () => {

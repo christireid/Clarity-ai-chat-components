@@ -116,21 +116,24 @@ describe('useAsyncError', () => {
       return Promise.reject(new Error(`Failed attempt ${attemptCount}`))
     })
 
-    const promise = act(async () => {
-      return await result.current.executeAsync(asyncFn, {
+    let promise: Promise<any>
+    await act(async () => {
+      promise = result.current.executeAsync(asyncFn, {
         maxRetries: 2,
         retryDelay: 1000,
       })
     })
 
     // Advance timers to complete all retries
+    // Exponential backoff: attempt 0 fails -> wait 1000ms, attempt 1 fails -> wait 2000ms
     await act(async () => {
-      // Advance through all retry delays: 1000ms (after attempt 0) + 2000ms (after attempt 1)
-      // Total: 3000ms (we don't wait after the final failure)
-      await vi.advanceTimersByTimeAsync(3000)
+      await vi.advanceTimersByTimeAsync(1000) // First retry delay
+      await vi.advanceTimersByTimeAsync(2000) // Second retry delay
     })
     
-    await promise
+    await act(async () => {
+      await promise!
+    })
     
     // After all retries exhausted, error should be set
     expect(result.current.error).not.toBeNull()
@@ -142,20 +145,25 @@ describe('useAsyncError', () => {
   })
 
   it('should reset state', async () => {
-    const { result, unmount } = renderHook(() => useAsyncError())
+    const { result } = renderHook(() => useAsyncError())
     const asyncFn = vi.fn().mockRejectedValue(new Error('Failed'))
 
+    let promise: Promise<any>
     await act(async () => {
-      const promise = result.current.executeAsync(asyncFn, {
+      promise = result.current.executeAsync(asyncFn, {
         maxRetries: 1,
         retryDelay: 1000,
       })
-      
-      // Advance timers to complete retries: 1000ms (after attempt 0)
+    })
+    
+    // Advance timers to complete retries: 1000ms (after attempt 0)
+    await act(async () => {
       await vi.advanceTimersByTimeAsync(1000)
-      
-      // Wait for promise to complete
-      await promise
+    })
+    
+    // Wait for promise to complete
+    await act(async () => {
+      await promise!
     })
 
     expect(result.current.error).not.toBeNull()
@@ -167,12 +175,10 @@ describe('useAsyncError', () => {
     expect(result.current.error).toBeNull()
     expect(result.current.isLoading).toBe(false)
     expect(result.current.retryCount).toBe(0)
-    
-    unmount()
   })
 
   it('should handle non-Error objects', async () => {
-    const { result, unmount } = renderHook(() => useAsyncError())
+    const { result } = renderHook(() => useAsyncError())
     const asyncFn = vi.fn().mockRejectedValue('string error')
 
     await act(async () => {
@@ -183,7 +189,5 @@ describe('useAsyncError', () => {
 
     expect(result.current.error).toBeInstanceOf(Error)
     expect(result.current.error?.message).toBe('string error')
-    
-    unmount()
   })
 })
