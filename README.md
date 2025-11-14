@@ -1130,6 +1130,11 @@ Pre-built prompt templates for common tasks:
 
 ## 📚 Documentation
 
+### Quick Start Guides
+- **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** ⭐ **START HERE** - Minimal example, get running in minutes
+- **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison and when to choose Clarity
+- **[Migrating from Vercel AI SDK](./docs/migrating-from-vercel-ai-sdk.md)** - Step-by-step migration guide
+
 ### Getting Started
 - [Quick Start Guide](./apps/docs/guide/quick-start.md) - Get started in 5 minutes
 - [Installation Guide](./apps/docs/guide/installation.md)
