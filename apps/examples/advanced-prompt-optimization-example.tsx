@@ -15,7 +15,7 @@ import {
   usePromptDebugger,
   toon,
 } from '@clarity-chat/react/prompt'
-import type { CoreMessage } from '@clarity-chat/react'
+import type { CoreMessage } from '@clarity-chat/react/hooks/use-chat-enhanced'
 
 /**
  * Example: Chat with Automatic Optimization
