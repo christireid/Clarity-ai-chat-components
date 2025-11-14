@@ -55,6 +55,28 @@ export interface UseAgentReturn {
  * 
  * Provides a simple API for agent orchestration with automatic
  * tool management and error handling.
+ * 
+ * @param options - Configuration options for the agent
+ * @param options.model - Model identifier (e.g., 'gpt-4', 'claude-3')
+ * @param options.tools - Array of tools the agent can use
+ * @param options.api - API endpoint for agent execution (optional)
+ * @param options.config - Additional configuration options (optional)
+ * 
+ * @returns Agent instance with run method, loading state, error state, and execution state
+ * 
+ * @throws {Error} If agent initialization fails or execution fails
+ * 
+ * @example
+ * ```tsx
+ * const agent = useAgent({
+ *   model: 'gpt-4',
+ *   tools: [webSearchTool, calculatorTool],
+ *   api: '/api/agent',
+ * })
+ * 
+ * const response = await agent.run({ query: 'What is 2+2?' })
+ * console.log(response) // "4"
+ * ```
  */
 export function useAgent(options: UseAgentOptions): UseAgentReturn {
   const { model, tools = [], api, config } = options

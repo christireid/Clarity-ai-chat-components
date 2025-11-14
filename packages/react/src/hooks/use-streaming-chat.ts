@@ -50,6 +50,26 @@ export interface UseStreamingChatReturn {
  * 
  * Provides a simple API for streaming chat with automatic
  * protocol selection and message conversion.
+ * 
+ * @param options - Configuration options for streaming chat
+ * @param options.api - API endpoint for streaming chat
+ * @param options.protocol - Streaming protocol ('sse' or 'websocket', default: 'sse')
+ * @param options.options - Additional chat options (optional)
+ * 
+ * @returns Streaming chat instance with messages, send method, streaming state, and error
+ * 
+ * @throws {Error} If streaming connection fails or message sending fails
+ * 
+ * @example
+ * ```tsx
+ * const chat = useStreamingChat({
+ *   api: '/api/chat/stream',
+ *   protocol: 'sse',
+ * })
+ * 
+ * await chat.send('Hello, world!')
+ * // Messages will stream in automatically
+ * ```
  */
 export function useStreamingChat(
   options: UseStreamingChatOptions

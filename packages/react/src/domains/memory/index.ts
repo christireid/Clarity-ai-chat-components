@@ -10,6 +10,11 @@ export {
   type UseMemoryStoreOptions,
   type UseMemoryStoreReturn,
 } from '../../hooks/use-memory-store'
+export {
+  createMemoryStore,
+  type CreateMemoryStoreOptions,
+  type MemoryStore,
+} from '../../memory/create-memory-store'
 
 // Mid-level: Building blocks
 export { MemoryProvider, useMemory } from '../../memory/memory-provider'

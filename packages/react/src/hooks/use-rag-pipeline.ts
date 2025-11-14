@@ -55,6 +55,30 @@ export interface UseRAGPipelineReturn {
  * 
  * Provides a simple API for RAG pipeline with automatic
  * vector store and embedding management.
+ * 
+ * @param options - Configuration options for the RAG pipeline
+ * @param options.vectorStore - Vector store provider ('pinecone', 'qdrant', 'weaviate', 'chroma')
+ * @param options.embeddingProvider - Embedding provider ('openai', 'cohere', 'custom')
+ * @param options.apiKeys - API keys for vector store and embeddings (optional)
+ * @param options.reranker - Reranker provider for result refinement (optional)
+ * 
+ * @returns RAG pipeline instance with retrieve, rerank methods and context
+ * 
+ * @throws {Error} If vector store or embedding initialization fails
+ * 
+ * @example
+ * ```tsx
+ * const rag = useRAGPipeline({
+ *   vectorStore: 'pinecone',
+ *   embeddingProvider: 'openai',
+ *   apiKeys: {
+ *     vectorStore: process.env.PINECONE_API_KEY,
+ *     embeddings: process.env.OPENAI_API_KEY,
+ *   },
+ * })
+ * 
+ * const results = await rag.retrieve('What is React?', 5)
+ * ```
  */
 export function useRAGPipeline(
   options: UseRAGPipelineOptions
