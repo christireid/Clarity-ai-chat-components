@@ -7,14 +7,14 @@
 ```tsx
 import { useClarityChat } from '@clarity-chat/react'
 import { ChatWindow } from '@clarity-chat/react'
-import { coreMessagesToMessages } from '@clarity-chat/react'
+import { convertCoreMessagesToMessages } from '@clarity-chat/react'
 
 function MyChat() {
   const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
   })
 
-  const convertedMessages = coreMessagesToMessages(messages)
+  const convertedMessages = convertCoreMessagesToMessages(messages, 'chat-id')
 
   return (
     <ChatWindow
@@ -187,7 +187,7 @@ See `MIGRATION_GUIDE.md` for detailed migration instructions.
 2. **Enable Memory for Context**: Wrap with `MemoryProvider` and enable memory for better context retention
 3. **Choose Transport Wisely**: Use SSE for simple streaming, WebSocket for bidirectional communication
 4. **Handle Errors**: Use `onError` callback for custom error handling
-5. **Convert Messages**: Use `coreMessagesToMessages()` when integrating with `ChatWindow`
+5. **Convert Messages**: Use `convertCoreMessagesToMessages()` when integrating with `ChatWindow`
 
 ## Troubleshooting
 
@@ -198,7 +198,7 @@ See `MIGRATION_GUIDE.md` for detailed migration instructions.
 
 ### Type errors?
 - Ensure you're importing from `@clarity-chat/react`
-- Use `coreMessagesToMessages()` for message type conversion
+- Use `convertCoreMessagesToMessages()` for message type conversion
 
 ### Transport issues?
 - SSE is default and works with most servers
