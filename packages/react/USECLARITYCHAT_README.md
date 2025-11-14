@@ -14,7 +14,7 @@ function MyChat() {
     api: '/api/chat',
   })
 
-  const convertedMessages = coreMessagesToMessages(messages)
+  const convertedMessages = convertCoreMessagesToMessages(messages, 'chat-id')
 
   return (
     <ChatWindow
