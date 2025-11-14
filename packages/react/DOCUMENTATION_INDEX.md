@@ -1,10 +1,11 @@
-# useClarityChat Documentation Index
+# Clarity React Library Documentation Index
 
-Complete documentation for Clarity's flagship chat hook.
+Complete documentation for Clarity's React library, including all phases and features.
 
 ## 📚 Documentation
 
 ### Getting Started
+- **[Getting Started Guide](./GETTING_STARTED.md)** - Complete guide covering all features ⭐ **START HERE**
 - **[Quick Start](./QUICK_START.md)** - Get up and running in 5 minutes
 - **[Migration Guide](./MIGRATION_GUIDE.md)** - Migrate from Vercel AI SDK
 - **[useClarityChat README](./USECLARITYCHAT_README.md)** - Comprehensive overview
@@ -13,6 +14,12 @@ Complete documentation for Clarity's flagship chat hook.
 - **[API Reference](./API_REFERENCE.md)** - Complete API documentation
 - **[TypeScript Guide](./TYPESCRIPT_GUIDE.md)** - Type definitions and patterns
 - **[Performance Guide](./PERFORMANCE_GUIDE.md)** - Optimization strategies
+
+### Phase-Specific Documentation
+- **[Phase 3 README](./README_PHASE_3.md)** - Structured output & tool UI registry
+- **[Phase 3 Examples](./PHASE_3_EXAMPLES.md)** - Usage patterns and examples
+- **[Phase 3 Summary](./PHASE_3_SUMMARY.md)** - Comparison to Vercel AI SDK
+- **[All Phases Summary](./ALL_PHASES_SUMMARY.md)** - Complete overview of all phases
 
 ### Implementation
 - **[Phase 2 Complete](./PHASE_2_COMPLETE.md)** - Initial implementation summary
@@ -23,7 +30,7 @@ Complete documentation for Clarity's flagship chat hook.
 ## 🚀 Quick Links
 
 ### For New Users
-1. Start with [Quick Start](./QUICK_START.md)
+1. Start with [Getting Started Guide](./GETTING_STARTED.md) ⭐
 2. Review [API Reference](./API_REFERENCE.md)
 3. Check [Examples](../../apps/examples/use-clarity-chat-showcase/)
 
@@ -35,29 +42,40 @@ Complete documentation for Clarity's flagship chat hook.
 ### For Advanced Users
 1. Review [Performance Guide](./PERFORMANCE_GUIDE.md)
 2. Study [TypeScript Guide](./TYPESCRIPT_GUIDE.md)
-3. Explore [Storybook Stories](../../apps/storybook/stories/UseClarityChat.stories.tsx)
+3. Explore [Phase 3 Features](./README_PHASE_3.md) - Structured output & tool UI
+4. Explore [Storybook Stories](../../apps/storybook/stories/UseClarityChat.stories.tsx)
 
 ## 📖 Documentation Structure
 
 ```
 packages/react/
-├── QUICK_START.md              # Quick start guide
-├── MIGRATION_GUIDE.md           # Vercel AI SDK migration
-├── USECLARITYCHAT_README.md     # Comprehensive overview
-├── API_REFERENCE.md              # Complete API docs
-├── TYPESCRIPT_GUIDE.md           # TypeScript patterns
-├── PERFORMANCE_GUIDE.md          # Performance optimization
-├── DOCUMENTATION_INDEX.md        # This file
+├── GETTING_STARTED.md            # Complete getting started guide ⭐
+├── QUICK_START.md                # Quick start guide
+├── MIGRATION_GUIDE.md             # Vercel AI SDK migration
+├── USECLARITYCHAT_README.md       # Comprehensive overview
+├── API_REFERENCE.md               # Complete API docs
+├── TYPESCRIPT_GUIDE.md            # TypeScript patterns
+├── PERFORMANCE_GUIDE.md           # Performance optimization
+├── README_PHASE_3.md              # Phase 3 features
+├── PHASE_3_EXAMPLES.md            # Phase 3 examples
+├── ALL_PHASES_SUMMARY.md          # All phases overview
+├── DOCUMENTATION_INDEX.md         # This file
 └── [Implementation docs]
 ```
 
 ## 🎯 Common Tasks
 
 ### Basic Chat Setup
-See [Quick Start](./QUICK_START.md#basic-example)
+See [Getting Started](./GETTING_STARTED.md#basic-chat) or [Quick Start](./QUICK_START.md#basic-example)
 
 ### Enable Memory
-See [Quick Start](./QUICK_START.md#with-memory)
+See [Getting Started](./GETTING_STARTED.md#memory-integration) or [Quick Start](./QUICK_START.md#with-memory)
+
+### Structured Output
+See [Getting Started](./GETTING_STARTED.md#structured-output) or [Phase 3 README](./README_PHASE_3.md)
+
+### Tool UI Registry
+See [Getting Started](./GETTING_STARTED.md#tool-ui-registry) or [Phase 3 Examples](./PHASE_3_EXAMPLES.md)
 
 ### Choose Transport
 See [API Reference](./API_REFERENCE.md#transport-protocols)
