@@ -23,7 +23,13 @@
     "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest --coverage",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "example:basic": "tsx examples/basic-usage.ts",
+    "example:quick": "tsx examples/quick-start.ts",
+    "example:file": "tsx examples/file-storage.ts",
+    "example:indexeddb": "echo 'IndexedDB example requires browser environment' && tsx examples/indexeddb-storage.ts",
+    "examples": "npm run example:basic",
+    "verify": "npm run build && npm run typecheck"
   },
   "keywords": [
     "ai",
@@ -53,6 +59,7 @@
   "devDependencies": {
     "@types/node": "^20.10.0",
     "tsup": "^8.0.1",
+    "tsx": "^4.7.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }
