@@ -178,6 +178,20 @@ export {
   useClarityChatWithDebounce,
   useClarityChatWithAutoSave,
 } from './hooks/use-clarity-chat-helpers'
+
+// Testing utilities (for test files only)
+export {
+  createMockUseClarityChat,
+  createTestMessages,
+  createTestUserMessage,
+  createTestAssistantMessage,
+  waitForChatUpdate,
+  simulateStreamingResponse,
+  createMockFetch,
+  createMockStreamingResponse,
+  assertMessageStructure,
+  assertChatState,
+} from './test-utils/use-clarity-chat-test-utils'
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'
