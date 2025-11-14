@@ -1136,6 +1136,7 @@ Pre-built prompt templates for common tasks:
 - **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** ⭐ **START HERE** - Minimal example, get running in minutes
 - **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison and when to choose Clarity
 - **[Migrating from Vercel AI SDK](./docs/migrating-from-vercel-ai-sdk.md)** - Step-by-step migration guide
+- **[Troubleshooting Guide](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
 ### Getting Started
 - **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** - Get from zero to working chat in minutes ⭐
@@ -1146,6 +1147,7 @@ Pre-built prompt templates for common tasks:
 ### Comparison & Migration
 - **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Detailed feature comparison ⭐
 - **[Migrating from Vercel](./docs/migrating-from-vercel.md)** - Step-by-step migration guide ⭐
+- **[Troubleshooting Guide](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
 ### Guides
 - [Theming System](./apps/docs/guide/theming.md)
