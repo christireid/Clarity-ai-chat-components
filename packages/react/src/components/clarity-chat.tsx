@@ -45,6 +45,7 @@ import { TokenCounter } from './token-counter'
 import { useAutoScroll } from '../hooks/use-auto-scroll'
 import { useTokenTracker } from '../hooks/use-token-tracker'
 import { useMediaQuery } from '../hooks/use-media-query'
+import { validateApiEndpoint, validateMemoryStrategy, validateMessages } from '../utils/runtime-validation'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -156,6 +157,29 @@ export function ClarityChat({
   className,
   advancedOptions,
 }: ClarityChatProps) {
+  // Runtime validation
+  React.useEffect(() => {
+    try {
+      validateApiEndpoint(api)
+      if (initialMessages.length > 0) {
+        validateMessages(initialMessages)
+      }
+      if (enableMemory) {
+        validateMemoryStrategy(memoryStrategy)
+      }
+    } catch (error) {
+      // Call error handler if provided, otherwise log
+      if (onError) {
+        onError(error instanceof Error ? error : new Error(String(error)))
+      } else if (process.env['NODE_ENV'] === 'development') {
+        console.error('[ClarityChat] Validation error:', error)
+      }
+      // Re-throw in development to help developers catch issues early
+      if (process.env['NODE_ENV'] === 'development') {
+        throw error
+      }
+    }
+  }, [api, initialMessages, enableMemory, memoryStrategy, onError])
   // Convert initial messages to CoreMessage format if needed
   const initialCoreMessages = React.useMemo(() => {
     if (initialMessages.length === 0) return []

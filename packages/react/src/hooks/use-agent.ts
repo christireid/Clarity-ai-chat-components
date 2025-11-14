@@ -17,6 +17,7 @@
 import * as React from 'react'
 import { ReactAgent } from '../agents/react-agent'
 import type { Tool, AgentConfig } from '../agents/types'
+import { validateModel, validateTools } from '../utils/runtime-validation'
 
 /**
  * Options for useAgent
@@ -80,6 +81,21 @@ export interface UseAgentReturn {
  */
 export function useAgent(options: UseAgentOptions): UseAgentReturn {
   const { model, tools = [], api, config } = options
+
+  // Runtime validation
+  React.useEffect(() => {
+    try {
+      validateModel(model)
+      if (tools.length > 0) {
+        validateTools(tools)
+      }
+    } catch (error) {
+      if (process.env['NODE_ENV'] === 'development') {
+        console.error('[useAgent] Validation error:', error)
+        throw error
+      }
+    }
+  }, [model, tools])
 
   const agentRef = React.useRef<ReactAgent | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)

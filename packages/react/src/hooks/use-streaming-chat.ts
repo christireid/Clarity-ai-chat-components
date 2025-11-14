@@ -17,6 +17,7 @@
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
+import { validateApiEndpoint, validateStreamingProtocol } from '../utils/runtime-validation'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -75,6 +76,19 @@ export function useStreamingChat(
   options: UseStreamingChatOptions
 ): UseStreamingChatReturn {
   const { api, protocol = 'sse', options: chatOptions } = options
+
+  // Runtime validation
+  React.useEffect(() => {
+    try {
+      validateApiEndpoint(api)
+      validateStreamingProtocol(protocol)
+    } catch (error) {
+      if (process.env['NODE_ENV'] === 'development') {
+        console.error('[useStreamingChat] Validation error:', error)
+        throw error
+      }
+    }
+  }, [api, protocol])
 
   const chat = useClarityChat({
     api,

@@ -17,6 +17,7 @@
 import * as React from 'react'
 import { useVectorStore } from '../vector-stores/use-vector-store'
 import { useEmbeddings } from '../embeddings/use-embeddings'
+import { validateVectorStoreProvider, validateEmbeddingProvider } from '../utils/runtime-validation'
 
 /**
  * Options for useRAGPipeline
@@ -84,6 +85,19 @@ export function useRAGPipeline(
   options: UseRAGPipelineOptions
 ): UseRAGPipelineReturn {
   const { vectorStore, embeddingProvider, apiKeys, reranker } = options
+
+  // Runtime validation
+  React.useEffect(() => {
+    try {
+      validateVectorStoreProvider(vectorStore)
+      validateEmbeddingProvider(embeddingProvider)
+    } catch (error) {
+      if (process.env['NODE_ENV'] === 'development') {
+        console.error('[useRAGPipeline] Validation error:', error)
+        throw error
+      }
+    }
+  }, [vectorStore, embeddingProvider])
 
   const vs = useVectorStore({
     provider: vectorStore,
