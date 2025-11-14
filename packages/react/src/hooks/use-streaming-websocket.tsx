@@ -83,7 +83,12 @@ export interface UseStreamingWebSocketOptions {
 }
 
 /**
- * Return type for useStreamingWebSocket hook
+ * Return type for useStreamingWebSocket hook (mid-level API)
+ * 
+ * Follows the standard hook return pattern:
+ * - Data: `messages`, `lastMessage` (received messages)
+ * - State: `status`, `readyState`, `error`
+ * - Actions: `connect`, `disconnect`, `send`, `sendJson`, `reconnect`
  */
 export interface UseStreamingWebSocketReturn {
   /** Current connection status */
@@ -127,8 +132,16 @@ export interface UseStreamingWebSocketReturn {
 }
 
 /**
+ * useStreamingWebSocket - Mid-Level WebSocket Streaming Hook
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Streaming & Transport
+ * 
  * Production-ready WebSocket streaming hook with automatic reconnection,
  * heartbeat/ping-pong, and lifecycle management.
+ * 
+ * For chat streaming, use top-level `useClarityChat` with transport: 'websocket'.
+ * For low-level streaming, use `useStreaming` primitive.
  *
  * **Features:**
  * - Automatic reconnection with exponential backoff
@@ -138,58 +151,42 @@ export interface UseStreamingWebSocketReturn {
  * - Connection lifecycle management
  * - Memory-efficient message buffering
  *
- * **Use Cases:**
- * - Real-time chat with bidirectional communication
- * - Live collaboration features
- * - Gaming and interactive applications
- * - WebSocket-based API streaming
+ * @param options - WebSocket configuration options
+ * @param options.url - WebSocket URL (ws:// or wss://) (required)
+ * @param options.autoReconnect - Enable automatic reconnection (default: true)
+ * @param options.onMessage - Callback for each message
+ * @param options.onError - Callback on error
+ * @returns WebSocket connection state and controls
  *
  * @example
  * ```tsx
- * const Chat = () => {
- *   const {
- *     status,
- *     messages,
- *     send,
- *     connect,
- *     disconnect,
- *   } = useStreamingWebSocket({
- *     url: 'wss://api.example.com/chat',
- *     autoReconnect: true,
- *     enableHeartbeat: true,
- *     onMessage: (msg) => console.log('Received:', msg.data),
- *     onError: (error) => console.error('WS Error:', error),
- *   })
+ * const { messages, status, connect, send } = useStreamingWebSocket({
+ *   url: 'wss://api.example.com/ws',
+ *   onMessage: (msg) => console.log('Message:', msg),
+ * })
  *
- *   const handleSend = () => {
- *     send({ type: 'chat', message: 'Hello!' })
- *   }
- *
- *   return (
- *     <div>
- *       <button onClick={connect} disabled={status !== 'idle'}>
- *         Connect
- *       </button>
- *       <button onClick={disconnect} disabled={status === 'idle'}>
- *         Disconnect
- *       </button>
- *       <button onClick={handleSend} disabled={status !== 'connected'}>
- *         Send Message
- *       </button>
- *
- *       <div>
- *         {messages.map((msg, i) => (
- *           <div key={i}>{JSON.stringify(msg.data)}</div>
- *         ))}
- *       </div>
- *     </div>
- *   )
- * }
+ * React.useEffect(() => {
+ *   connect()
+ *   return () => disconnect()
+ * }, [])
  * ```
+ *
+ * @throws {Error} If URL is invalid or missing
  */
 export function useStreamingWebSocket(
   options: UseStreamingWebSocketOptions
 ): UseStreamingWebSocketReturn {
+  // Validate URL
+  if (!options.url || typeof options.url !== 'string' || options.url.trim().length === 0) {
+    throw new Error(
+      'useStreamingWebSocket: "url" option is required.\n' +
+      'Please provide a valid WebSocket URL (ws:// or wss://).\n\n' +
+      'Example:\n' +
+      '  const ws = useStreamingWebSocket({ url: "wss://api.example.com/ws" })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/streaming'
+    )
+  }
+  
   const {
     url,
     protocols,

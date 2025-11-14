@@ -35,6 +35,7 @@ yarn add @clarity-chat/react
 > - Check the [Developer Guide](../../DEVELOPER_GUIDE.md) for architecture and patterns
 > - See the [Quick Reference](../../QUICK_REFERENCE_ARCHITECTURE.md) for copy-paste snippets
 > - Review the [Architecture Documentation](../../DESIGN.md) for deep dives
+> - Explore [Examples](../../packages/react/src/examples/) for minimal, mid-level, and complex use cases
 
 ### Basic Chat (Simplest Way - Top-Level API)
 
@@ -206,6 +207,30 @@ const toolRegistry = createToolUIRegistry({
   messages={messages}
 />
 ```
+
+## 📚 Examples
+
+### Minimal Examples (10-20 lines)
+See `packages/react/src/examples/minimal-examples.tsx` for:
+- Basic chat with `ClarityChat`
+- Chat with memory
+- Structured output generation
+- Tool-powered chat
+- Custom streaming
+
+### Mid-Level Examples (40-60 lines)
+See `packages/react/src/examples/mid-level-examples.tsx` for:
+- Composable chat with custom UI
+- Memory integration patterns
+- Tool registry setup
+- Advanced streaming configuration
+
+### Complex Examples (80-150 lines)
+See `packages/react/src/examples/complex-examples.tsx` for:
+- Enterprise chat with memory and advanced features
+- Agent-powered chat with tools
+- Multi-chat dashboard
+- Custom streaming implementation
 
 ## 📚 Documentation
 
