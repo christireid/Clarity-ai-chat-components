@@ -30,9 +30,13 @@ yarn add @clarity-chat/react
 
 ## 🚀 Quick Start
 
-> 📖 **New to Clarity?** Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or check the [Quick Reference](../../docs/QUICK_REFERENCE.md) for copy-paste snippets.
+> 📖 **New to Clarity?** 
+> - Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+> - Check the [Developer Guide](../../DEVELOPER_GUIDE.md) for architecture and patterns
+> - See the [Quick Reference](../../QUICK_REFERENCE_ARCHITECTURE.md) for copy-paste snippets
+> - Review the [Architecture Documentation](../../DESIGN.md) for deep dives
 
-### Basic Chat (Simplest Way)
+### Basic Chat (Simplest Way - Top-Level API)
 
 ```tsx
 import { ClarityChat } from '@clarity-chat/react'
@@ -45,7 +49,7 @@ function MyChat() {
 
 **That's it!** One component, zero configuration, full-featured chat.
 
-### Basic Chat (With Hook - More Control)
+### Basic Chat (With Hook - Mid-Level API)
 
 ```tsx
 import { useClarityChat, ChatWindow, useChatHandlers } from '@clarity-chat/react'
@@ -70,12 +74,16 @@ function MyChat() {
 }
 ```
 
+**Architecture**: This uses **Mid-Level APIs** for more control while maintaining ergonomics.
+
 **What Changed:**
 - ✅ `ChatWindow` now accepts `CoreMessage[]` directly - no conversion needed
 - ✅ `useChatHandlers` provides pre-configured handlers - less boilerplate
 - ✅ Simpler API - same power, easier to use
 
-### Using Presets (Even Easier!)
+**When to Use**: Use this pattern when you need custom UI or more control than `ClarityChat` provides.
+
+### Using Presets (Top-Level APIs - Even Easier!)
 
 ```tsx
 import { ClarityChatPresets } from '@clarity-chat/react'

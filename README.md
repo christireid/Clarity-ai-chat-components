@@ -118,6 +118,13 @@ bun add @clarity-chat/react
 
 ## ⚡ Quick Start
 
+> 📖 **Architecture**: Clarity Chat follows a **layered architecture** with **7 core domains**. 
+> - **Top-Level APIs**: Drop-in ready (`ClarityChat`, `useClarityChat`)
+> - **Mid-Level APIs**: Composable (`ChatWindow`, `useChatEnhanced`)
+> - **Low-Level Primitives**: Utilities (`normalizeMessages`, `createStreamReader`)
+> 
+> See [DESIGN.md](./DESIGN.md) for architecture details and [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) for patterns.
+
 Get a production-ready AI chat interface in **3 lines of code**:
 
 ```tsx
