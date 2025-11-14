@@ -37,18 +37,73 @@ export interface MessageProps {
 }
 
 /**
- * Message component - Enhanced with React 19 features and message operations
+ * Message - Individual message component for chat interfaces
  * 
- * React 19 Enhancements:
- * - Removed memo() wrapper - compiler handles optimization
- * - Ref as prop instead of forwardRef
- * - Removed simple useCallback/useMemo - compiler optimizes
- * - Cleaner component signature
+ * A low-level building block for rendering individual chat messages. Provides
+ * message display, markdown rendering, actions (copy, feedback, retry, edit, delete),
+ * and animations.
  * 
- * Message Operations:
- * - Edit user messages
- * - Regenerate assistant responses
- * - Delete any message
+ * **Features:**
+ * - Markdown rendering with syntax highlighting
+ * - Message actions (copy, feedback, retry, edit, regenerate, delete)
+ * - Avatar display
+ * - Timestamp display
+ * - Streaming indicator
+ * - Feedback animations (confetti on positive feedback)
+ * - Hover states
+ * 
+ * **When to use:**
+ * - Building custom message lists
+ * - Need fine-grained control over message rendering
+ * - Want to customize message appearance
+ * 
+ * **When NOT to use:**
+ * - For simplest setup, use `ClarityChat` component (includes messages)
+ * - For standard message lists, use `MessageList` component
+ * 
+ * @param props - Message configuration
+ * @param props.message - Message data to display
+ * @param props.onCopy - Optional callback when message is copied
+ * @param props.onFeedback - Optional callback for feedback (up/down)
+ * @param props.onRetry - Optional callback to retry a message
+ * @param props.onEdit - Optional callback to edit a message
+ * @param props.onRegenerate - Optional callback to regenerate a message
+ * @param props.onDelete - Optional callback to delete a message
+ * @param props.showAvatar - Show avatar (default: true)
+ * @param props.showTimestamp - Show timestamp (default: true)
+ * @param props.className - Optional CSS class name
+ * @param props.ref - Optional ref for the message container
+ * 
+ * @example Basic usage
+ * ```tsx
+ * <Message
+ *   message={message}
+ *   onCopy={(content) => navigator.clipboard.writeText(content)}
+ *   onFeedback={(type) => trackFeedback(message.id, type)}
+ * />
+ * ```
+ * 
+ * @example With all actions
+ * ```tsx
+ * <Message
+ *   message={message}
+ *   onCopy={handleCopy}
+ *   onFeedback={handleFeedback}
+ *   onRetry={handleRetry}
+ *   onEdit={handleEdit}
+ *   onRegenerate={handleRegenerate}
+ *   onDelete={handleDelete}
+ * />
+ * ```
+ * 
+ * @example Without avatar or timestamp
+ * ```tsx
+ * <Message
+ *   message={message}
+ *   showAvatar={false}
+ *   showTimestamp={false}
+ * />
+ * ```
  */
 export function Message({
   message,

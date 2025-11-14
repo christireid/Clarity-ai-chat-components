@@ -28,13 +28,80 @@ export interface ChatInputProps {
 }
 
 /**
- * ChatInput component - Enhanced with React 19 features
+ * ChatInput - Message input component for chat interfaces
  * 
- * React 19 Enhancements:
- * - Removed React.memo() - compiler handles optimization
- * - Removed simple useMemo/useCallback - compiler optimizes
- * - Uses useActionState for async submit handling
- * - Cleaner, more maintainable code
+ * A mid-level building block for chat input functionality. Provides a textarea
+ * with character counting, validation, animations, and submit handling.
+ * 
+ * **Features:**
+ * - Character counter with warning thresholds
+ * - Auto-resizing textarea
+ * - Smooth animations (height, focus glow)
+ * - Keyboard shortcuts (Enter to submit, Shift+Enter for newline)
+ * - Disabled state handling
+ * - Max length validation
+ * 
+ * **When to use:**
+ * - Building custom chat interfaces
+ * - Need input with character counting
+ * - Want smooth animations
+ * 
+ * **When NOT to use:**
+ * - For simplest setup, use `ClarityChat` component (includes input)
+ * - For basic text input without chat features, use standard HTML input
+ * 
+ * @param props - ChatInput configuration
+ * @param props.value - Current input value (controlled)
+ * @param props.onChange - Callback when value changes
+ * @param props.onSubmit - Callback when form is submitted (Enter key or button click)
+ * @param props.placeholder - Placeholder text (default: 'Type a message...')
+ * @param props.disabled - Disable input (default: false)
+ * @param props.maxLength - Maximum character length
+ * @param props.showCharCounter - Show character counter (default: true if maxLength is set)
+ * @param props.warningThreshold - Warning threshold percentage (default: 0.8 = 80%)
+ * @param props.animateHeight - Enable smooth expand/contract animation (default: true)
+ * @param props.glowOnFocus - Enable focus ring glow animation (default: true)
+ * @param props.className - Optional CSS class name
+ * 
+ * @example Basic usage
+ * ```tsx
+ * function MyChatInput() {
+ *   const [value, setValue] = useState('')
+ *   
+ *   return (
+ *     <ChatInput
+ *       value={value}
+ *       onChange={setValue}
+ *       onSubmit={(text) => {
+ *         sendMessage(text)
+ *         setValue('')
+ *       }}
+ *     />
+ *   )
+ * }
+ * ```
+ * 
+ * @example With character limit
+ * ```tsx
+ * <ChatInput
+ *   value={value}
+ *   onChange={setValue}
+ *   onSubmit={handleSubmit}
+ *   maxLength={500}
+ *   showCharCounter
+ *   warningThreshold={0.9} // Warn at 90%
+ * />
+ * ```
+ * 
+ * @example Disabled state
+ * ```tsx
+ * <ChatInput
+ *   value={value}
+ *   onChange={setValue}
+ *   onSubmit={handleSubmit}
+ *   disabled={isLoading}
+ * />
+ * ```
  */
 export function ChatInput({
   value,

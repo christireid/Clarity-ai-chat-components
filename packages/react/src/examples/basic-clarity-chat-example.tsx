@@ -11,7 +11,7 @@
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { ChatWindow } from '../components/chat-window'
-import { coreMessagesToMessages } from '../utils/message-converter'
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 
 /**
  * Basic Clarity Chat Example Component
@@ -44,7 +44,7 @@ export function BasicClarityChatExample() {
 
   // Convert CoreMessage[] to Message[] for ChatWindow
   const messages = React.useMemo(
-    () => coreMessagesToMessages(coreMessages),
+    () => convertCoreMessagesToMessages(coreMessages),
     [coreMessages]
   )
 
@@ -91,7 +91,7 @@ export function MinimalClarityChatExample() {
   })
 
   const messages = React.useMemo(
-    () => coreMessagesToMessages(chat.messages),
+    () => convertCoreMessagesToMessages(chat.messages),
     [chat.messages]
   )
 
