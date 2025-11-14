@@ -300,6 +300,37 @@ The optimization layer builds on Clarity's existing prompt template system (`pac
 4. **Set realistic budgets** - Leave room for responses (typically 20-30% of max tokens)
 5. **Use `usePromptInspector` in development** - Understand token usage before optimizing
 
+## Important Notes
+
+### Async Strategies in Transform Functions
+
+When using `promptOptimization` in `useClarityChat`, the optimization happens in a synchronous `transform` function. This means:
+
+- ✅ **Synchronous strategies work**: `sliding-window`, `drop-low-priority`
+- ⚠️ **Async strategies fall back**: `summarize-old` and `hybrid` with `summarizeFn` will fall back to `sliding-window` in transform functions
+- 💡 **For async strategies**: Use `useOptimizedChatContext` hook instead, which supports full async optimization
+
+### Example: Using Async Strategies
+
+```tsx
+// ❌ Won't work fully in transform (falls back to sliding-window)
+useClarityChat({
+  promptOptimization: {
+    enabled: true,
+    strategy: 'summarize-old', // Falls back to sliding-window
+    summarizeFn: async (msgs) => { /* ... */ },
+  },
+})
+
+// ✅ Use hook for async strategies
+const { messages } = useClarityChat({ api: '/api/chat' })
+const { optimizedMessages } = useOptimizedChatContext({
+  messages,
+  strategy: 'summarize-old',
+  summarizeFn: async (msgs) => { /* ... */ },
+})
+```
+
 ## Troubleshooting
 
 ### Optimization not working?
@@ -308,6 +339,7 @@ The optimization layer builds on Clarity's existing prompt template system (`pac
 - Check that `targetTokens` is set
 - Verify `model` metadata is provided
 - Check that messages exceed `targetTokens` (optimization only applies when needed)
+- For async strategies (`summarize-old`), use `useOptimizedChatContext` instead of `promptOptimization` config
 
 ### Token counts seem off?
 

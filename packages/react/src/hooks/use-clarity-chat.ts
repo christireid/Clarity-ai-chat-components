@@ -296,7 +296,8 @@ export function useClarityChat(
         promptOptimization.model
       ) {
         // Dynamic import to avoid circular dependencies
-        const { optimizeMessagesForBudget, estimatePromptTokens } = require('../prompt/core')
+        const { estimatePromptTokens } = require('../prompt/core')
+        const { optimizeMessagesForBudgetSync } = require('../prompt/core/optimizer-sync')
         
         const modelMetadata = {
           model: promptOptimization.model.model,
@@ -309,14 +310,18 @@ export function useClarityChat(
         const originalEstimate = estimatePromptTokens(transformed, modelMetadata)
 
         if (originalEstimate.tokens > promptOptimization.targetTokens) {
-          const optimizationResult = optimizeMessagesForBudget(
+          // Use synchronous optimization for transform function
+          // (async strategies like summarize-old won't work in transform)
+          const { optimizeMessagesForBudgetSync } = require('../prompt/core/optimizer-sync')
+          
+          const optimizationResult = optimizeMessagesForBudgetSync(
             transformed,
             {
               targetTokens: promptOptimization.targetTokens,
               strategy: promptOptimization.strategy || 'hybrid',
               preserveSystem: true,
               minMessages: 2,
-              summarizeFn: promptOptimization.summarizeFn,
+              // Note: summarizeFn is ignored in sync version
             },
             modelMetadata
           )
@@ -324,15 +329,13 @@ export function useClarityChat(
           transformed = optimizationResult.messages
 
           // Update token stats
-          const optimizedEstimate = estimatePromptTokens(transformed, modelMetadata)
-
           setTokenStats({
             original: originalEstimate.tokens,
-            optimized: optimizedEstimate.tokens,
-            saved: originalEstimate.tokens - optimizedEstimate.tokens,
+            optimized: optimizationResult.diagnostics.optimizedTokens,
+            saved: originalEstimate.tokens - optimizationResult.diagnostics.optimizedTokens,
             compressionRatio:
               originalEstimate.tokens > 0
-                ? optimizedEstimate.tokens / originalEstimate.tokens
+                ? optimizationResult.diagnostics.optimizedTokens / originalEstimate.tokens
                 : 1.0,
             wasOptimized: true,
             lastOptimizationReason: optimizationResult.diagnostics.details

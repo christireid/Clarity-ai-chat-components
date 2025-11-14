@@ -81,19 +81,23 @@ export function useOptimizedChatContext(
     summarizeFn,
   } = options
 
-  const optimizationResult = React.useMemo(() => {
+  const [optimizationResult, setOptimizationResult] = React.useState<OptimizationResult | null>(null)
+
+  React.useEffect(() => {
     if (!enabled || !targetTokens) {
-      return null
+      setOptimizationResult(null)
+      return
     }
 
     const originalEstimate = estimatePromptTokens(messages, model)
 
     // Only optimize if over budget
     if (originalEstimate.tokens <= targetTokens) {
-      return null
+      setOptimizationResult(null)
+      return
     }
 
-    return optimizeMessagesForBudget(
+    optimizeMessagesForBudget(
       messages,
       {
         targetTokens,
@@ -103,7 +107,7 @@ export function useOptimizedChatContext(
         summarizeFn,
       },
       model
-    )
+    ).then(setOptimizationResult)
   }, [messages, model, targetTokens, strategy, enabled, summarizeFn])
 
   const originalTokens = React.useMemo(

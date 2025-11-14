@@ -46,7 +46,7 @@ export interface UseTokenBudgetReturn {
   optimize: (
     messages: CoreMessage[],
     strategy?: OptimizationStrategy
-  ) => OptimizationResult
+  ) => Promise<OptimizationResult>
   /** Token breakdown by role */
   breakdown: {
     system?: number
@@ -105,11 +105,11 @@ export function useTokenBudget(
   const isExceeded = tokenEstimate.tokens > targetTokens
 
   const optimize = React.useCallback(
-    (
+    async (
       messagesToOptimize: CoreMessage[],
       optStrategy?: OptimizationStrategy
-    ): OptimizationResult => {
-      return optimizeMessagesForBudget(
+    ): Promise<OptimizationResult> => {
+      return await optimizeMessagesForBudget(
         messagesToOptimize,
         {
           targetTokens,
