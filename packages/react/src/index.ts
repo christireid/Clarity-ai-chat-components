@@ -202,6 +202,13 @@ export {
   type UseChatWithOperationsReturn,
 } from './hooks/use-chat-with-operations'
 
+// Simplified hook
+export {
+  useChatSimple,
+  type UseChatSimpleOptions,
+  type UseChatSimpleReturn,
+} from './hooks/use-chat-simple'
+
 // Note: useClarityObject already exported above with useClarityChat
 
 // Tool integration hook
