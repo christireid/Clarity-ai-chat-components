@@ -118,10 +118,25 @@ bun add @clarity-chat/react
 
 ## ⚡ Quick Start
 
-Get a production-ready AI chat interface in 60 seconds:
+Get a production-ready AI chat interface in **3 lines of code**:
 
 ```tsx
-import { useClarityChat, ChatWindow, coreMessagesToMessages } from '@clarity-chat/react'
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+**That's it!** ✨ You now have a production-ready AI chat interface with:
+
+### Need More Control?
+
+Use the hook directly - no conversion needed anymore:
+
+```tsx
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
@@ -129,22 +144,20 @@ function App() {
     api: '/api/chat',
   })
 
-  // Convert CoreMessage[] to Message[] for ChatWindow
-  const convertedMessages = coreMessagesToMessages(messages)
-
   return (
     <ChatWindow
-      messages={convertedMessages}
+      messages={messages} // Accepts CoreMessage[] directly! ✨
       isLoading={isLoading}
-      onSendMessage={async (content) => {
-        await append({ role: 'user', content })
-      }}
+      onSendMessage={(content) => append({ role: 'user', content })}
     />
   )
 }
 ```
 
-**That's it!** ✨ You now have a production-ready AI chat interface with:
+**What's New:**
+- ✅ **No more conversion** - `ChatWindow` accepts `CoreMessage[]` directly
+- ✅ **One-line setup** - `ClarityChat` component handles everything
+- ✅ **Same powerful features** - streaming, memory, error handling, all included
 
 - ✨ Beautiful animations and transitions
 - ⌨️ Full keyboard navigation
