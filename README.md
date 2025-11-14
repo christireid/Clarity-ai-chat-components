@@ -121,23 +121,25 @@ bun add @clarity-chat/react
 Get a production-ready AI chat interface in 60 seconds:
 
 ```tsx
-import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow, coreMessagesToMessages } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  // Convert CoreMessage[] to Message[] for ChatWindow
+  const convertedMessages = coreMessagesToMessages(messages)
+
   return (
-    <ThemeProvider theme={themes.ocean}>
-      <ChatWindow
-        messages={messages}
-        onSendMessage={async (content) => {
-          const response = await fetch('/api/chat', {
-            method: 'POST',
-            body: JSON.stringify({ message: content }),
-          })
-          return response.json()
-        }}
-      />
-    </ThemeProvider>
+    <ChatWindow
+      messages={convertedMessages}
+      isLoading={isLoading}
+      onSendMessage={async (content) => {
+        await append({ role: 'user', content })
+      }}
+    />
   )
 }
 ```
@@ -854,7 +856,8 @@ useMessageOperations()     // Edit, regenerate, branch, undo/redo
 useMessageHistory()        // Message history management
 useBranching()             // Conversation branching
 useOptimisticMessage()     // Optimistic UI updates
-useChat()                  // Core chat functionality
+useClarityChat()           // 🚀 Flagship hook - Recommended for all new projects
+useChat()                  // Core chat functionality (legacy)
 useChatEnhanced()          // Enhanced chat with advanced features
 useCompletion()             // Text completion
 ```
