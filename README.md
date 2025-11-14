@@ -133,24 +133,57 @@ function App() {
 
 ### Need More Control?
 
-Use the hook directly - no conversion needed anymore:
+Use the hook with pre-configured handlers - less boilerplate:
 
 ```tsx
-import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow, useChatHandlers } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
-  const { messages, append, isLoading } = useClarityChat({
+  const chat = useClarityChat({
     api: '/api/chat',
   })
 
+  // Pre-configured handlers - no boilerplate! ✨
+  const handlers = useChatHandlers({ chat })
+
   return (
     <ChatWindow
-      messages={messages} // Accepts CoreMessage[] directly! ✨
-      isLoading={isLoading}
-      onSendMessage={(content) => append({ role: 'user', content })}
+      messages={chat.messages} // Accepts CoreMessage[] directly! ✨
+      isLoading={chat.isLoading}
+      onSendMessage={handlers.onSendMessage}
+      onClear={handlers.onClear}
     />
   )
+}
+```
+
+### Using Presets
+
+For common use cases, use pre-configured presets:
+
+```tsx
+import { ClarityChatPresets } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+// Simple chat
+function SimpleChat() {
+  return <ClarityChatPresets.Simple api="/api/chat" />
+}
+
+// Chat with memory
+function MemoryChat() {
+  return (
+    <ClarityChatPresets.WithMemory 
+      api="/api/chat"
+      memoryStrategy="sliding-window"
+    />
+  )
+}
+
+// Enterprise chat with all features
+function EnterpriseChat() {
+  return <ClarityChatPresets.Enterprise api="/api/chat" />
 }
 ```
 

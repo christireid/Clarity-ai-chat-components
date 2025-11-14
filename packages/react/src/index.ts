@@ -55,6 +55,7 @@ export * from './components/chat-input'
 export * from './components/advanced-chat-input'
 export * from './components/chat-window'
 export * from './components/clarity-chat'
+export * from './components/clarity-chat-presets'
 export * from './components/model-selector'
 export * from './components/streaming-message'
 export * from './components/stream-block'
@@ -127,6 +128,7 @@ export {
   type UseChatReturn as UseChatReturnLegacy,
 } from './hooks/use-chat'
 export * from './hooks/use-chat-enhanced'
+export * from './hooks/use-chat-handlers'
 export * from './agents/tool-ui-registry'
 export * from './components/clarity-tool-result'
 export {
@@ -305,6 +307,7 @@ export * from './hooks/use-deferred-search'
 // Note: StreamChunk from './utils/streaming-helpers' conflicts with './adapters/types'
 // Export utils first, then explicitly export adapter StreamChunk
 export * from './utils'
+export * from './utils/clarity-chat-helpers'
 export type { StreamChunk } from './adapters/types'
 
 // Note: The following are already exported via './utils' above
