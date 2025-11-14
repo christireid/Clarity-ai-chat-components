@@ -23,6 +23,9 @@ import {
 } from './use-chat-enhanced'
 import { MemoryContext } from '../memory/memory-provider'
 import type { MemoryContextValue } from '../memory/memory-provider'
+import { buildModelPrompt } from '../prompt/core/builder'
+import { MODEL_PRESETS } from '../prompt/core/tokenizer'
+import type { ModelMetadata } from '../prompt/core/tokenizer'
 
 /**
  * Safe hook to get memory context without throwing
@@ -109,6 +112,26 @@ export interface ClarityMemoryOptions {
 }
 
 /**
+ * Prompt optimization configuration options
+ */
+export interface ClarityPromptOptimizationOptions {
+  /** Enable prompt optimization */
+  enabled?: boolean
+  /** Target token budget */
+  targetTokens?: number
+  /** Optimization strategy */
+  strategy?: 'sliding-window' | 'summarize-old' | 'drop-low-priority' | 'hybrid'
+  /** Model identifier for token counting */
+  model?: string
+  /** Message priorities for optimization */
+  priorities?: Array<{ messageId: string; priority: number; reason?: string }>
+  /** Summarization function for summarize-old strategy */
+  summarizeFn?: (messages: CoreMessage[]) => Promise<string> | string
+  /** Number of recent messages to always keep */
+  keepRecent?: number
+}
+
+/**
  * WebSocket configuration options (when transport is 'websocket')
  */
 export interface ClarityWebSocketOptions {
@@ -133,6 +156,8 @@ export interface UseClarityChatOptions
   transport?: 'sse' | 'websocket'
   /** WebSocket-specific options (only used when transport is 'websocket') */
   websocket?: ClarityWebSocketOptions
+  /** Prompt optimization configuration */
+  promptOptimization?: ClarityPromptOptimizationOptions
 }
 
 /**
@@ -147,6 +172,22 @@ export interface ClarityChatMemoryInfo {
   strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
   /** Last context that was added to messages */
   lastContextSummary?: string
+}
+
+/**
+ * Token statistics from prompt optimization
+ */
+export interface ClarityChatTokenStats {
+  /** Current input tokens */
+  inputTokens: number
+  /** Remaining budget */
+  remainingBudget: number
+  /** Budget utilization (0-1) */
+  utilization: number
+  /** Last optimization reason */
+  lastOptimizationReason?: string
+  /** Whether optimization was applied */
+  wasOptimized: boolean
 }
 
 /**
@@ -170,6 +211,8 @@ export type UseClarityChatReturn = UseChatEnhancedReturn & {
   memoryInfo: ClarityChatMemoryInfo
   /** Error information for memory operations */
   memoryErrorInfo: ClarityChatErrorInfo
+  /** Token statistics (if prompt optimization enabled) */
+  tokenStats?: ClarityChatTokenStats
 }
 
 /**
@@ -186,7 +229,7 @@ export type UseClarityChatReturn = UseChatEnhancedReturn & {
 export function useClarityChat(
   options: UseClarityChatOptions = {}
 ): UseClarityChatReturn {
-  const { memory, transport, ...rest } = options
+  const { memory, transport, promptOptimization, ...rest } = options
 
   // Get memory context safely (returns null if MemoryProvider is not available)
   // This hook always runs unconditionally, satisfying React hooks rules
@@ -201,10 +244,16 @@ export function useClarityChat(
   const memoryContextRef = React.useRef<string>('')
   const lastQueryRef = React.useRef<string>('')
 
-  // Enhanced transform function to enrich messages with memory context
+  // Track optimized messages and token stats for prompt optimization
+  const [optimizedMessagesState, setOptimizedMessagesState] = React.useState<{
+    messages: CoreMessage[]
+    tokenStats?: ClarityChatTokenStats
+  }>({ messages: [] })
+
+  // Enhanced transform function to enrich messages with memory context and optimize
   const originalTransform = rest.transform
   const enhancedTransform = React.useCallback(
-    (messages: CoreMessage[]): CoreMessage[] => {
+    async (messages: CoreMessage[]): Promise<CoreMessage[]> => {
       let enrichedMessages = messages
 
       // Apply original transform if provided
@@ -213,6 +262,90 @@ export function useClarityChat(
       }
 
       // Enrich with memory context if available (from ref)
+      if (memory?.enabled && memoryContextRef.current) {
+        enrichedMessages = [
+          {
+            role: 'system',
+            content: `Relevant context from memory:\n${memoryContextRef.current}`,
+          } as CoreMessage,
+          ...enrichedMessages,
+        ]
+      }
+
+      // Apply prompt optimization if enabled
+      if (promptOptimization?.enabled) {
+        try {
+          const modelMetadata: ModelMetadata | undefined = promptOptimization.model
+            ? (MODEL_PRESETS[promptOptimization.model] || {
+                model: promptOptimization.model,
+                maxTokens: promptOptimization.targetTokens || 8192,
+              })
+            : MODEL_PRESETS['gpt-4']
+
+          const result = await buildModelPrompt({
+            toonNodes: undefined,
+            variables: {},
+            memoryContext: memoryContextRef.current || undefined,
+            userInput: undefined,
+            modelMetadata,
+            targetTokens: promptOptimization.targetTokens,
+            optimization: {
+              enabled: true,
+              strategy: promptOptimization.strategy || 'hybrid',
+              priorities: promptOptimization.priorities,
+              summarizeFn: promptOptimization.summarizeFn,
+              keepRecent: promptOptimization.keepRecent || 2,
+            },
+          })
+
+          // Use optimized messages, but preserve the structure
+          enrichedMessages = result.messages.length > 0 ? result.messages : enrichedMessages
+
+          // Update token stats
+          setOptimizedMessagesState({
+            messages: enrichedMessages,
+            tokenStats: {
+              inputTokens: result.tokenStats.inputTokens,
+              remainingBudget: result.tokenStats.remainingBudget,
+              utilization: result.tokenStats.utilization,
+              lastOptimizationReason: result.optimizationDiagnostics
+                ? result.optimizationDiagnostics.details.join(', ')
+                : undefined,
+              wasOptimized: result.optimizationDiagnostics !== undefined,
+            },
+          })
+        } catch (error) {
+          console.warn('[useClarityChat] Prompt optimization failed:', error)
+          // Fall back to non-optimized messages
+        }
+      }
+
+      return enrichedMessages
+    },
+    [
+      memory?.enabled,
+      originalTransform,
+      promptOptimization?.enabled,
+      promptOptimization?.targetTokens,
+      promptOptimization?.strategy,
+      promptOptimization?.priorities,
+      promptOptimization?.summarizeFn,
+      promptOptimization?.keepRecent,
+      promptOptimization?.model,
+    ]
+  )
+
+  // Synchronous transform wrapper (for compatibility)
+  const syncTransform = React.useCallback(
+    (messages: CoreMessage[]): CoreMessage[] => {
+      // For prompt optimization, we need async, so we'll optimize in a separate effect
+      // For now, just apply original transform and memory enrichment
+      let enrichedMessages = messages
+
+      if (originalTransform) {
+        enrichedMessages = originalTransform(enrichedMessages)
+      }
+
       if (memory?.enabled && memoryContextRef.current) {
         enrichedMessages = [
           {
@@ -316,7 +449,7 @@ export function useClarityChat(
     ...rest,
     // Override transform if memory is enabled
     transform: memory?.enabled && memoryContext?.service
-      ? enhancedTransform
+      ? syncTransform
       : originalTransform,
     // Override onFinish if memory is enabled
     onFinish: memory?.enabled && memoryContext?.service
@@ -436,6 +569,61 @@ export function useClarityChat(
     errorType: null,
   })
 
+  // Optimize messages when prompt optimization is enabled
+  React.useEffect(() => {
+    if (promptOptimization?.enabled && chat.messages.length > 0) {
+      const optimizeMessages = async () => {
+        try {
+          const modelMetadata: ModelMetadata | undefined = promptOptimization.model
+            ? (MODEL_PRESETS[promptOptimization.model] || {
+                model: promptOptimization.model,
+                maxTokens: promptOptimization.targetTokens || 8192,
+              })
+            : MODEL_PRESETS['gpt-4']
+
+          const result = await buildModelPrompt({
+            toonNodes: undefined,
+            variables: {},
+            memoryContext: memoryContextRef.current || undefined,
+            userInput: undefined,
+            modelMetadata,
+            targetTokens: promptOptimization.targetTokens,
+            optimization: {
+              enabled: true,
+              strategy: promptOptimization.strategy || 'hybrid',
+              priorities: promptOptimization.priorities,
+              summarizeFn: promptOptimization.summarizeFn,
+              keepRecent: promptOptimization.keepRecent || 2,
+            },
+          })
+
+          setOptimizedMessagesState({
+            messages: result.messages,
+            tokenStats: {
+              inputTokens: result.tokenStats.inputTokens,
+              remainingBudget: result.tokenStats.remainingBudget,
+              utilization: result.tokenStats.utilization,
+              lastOptimizationReason: result.optimizationDiagnostics
+                ? result.optimizationDiagnostics.details.join(', ')
+                : undefined,
+              wasOptimized: result.optimizationDiagnostics !== undefined,
+            },
+          })
+        } catch (error) {
+          console.warn('[useClarityChat] Prompt optimization failed:', error)
+        }
+      }
+
+      optimizeMessages()
+    }
+  }, [
+    promptOptimization?.enabled,
+    chat.messages.length,
+    promptOptimization?.targetTokens,
+    promptOptimization?.strategy,
+    promptOptimization?.model,
+  ])
+
   // Update memory stats when memory context changes
   React.useEffect(() => {
     if (memory?.enabled && memoryContext?.service) {
@@ -486,7 +674,7 @@ export function useClarityChat(
     [memoryError]
   )
 
-  // Return enhanced chat with wrapped append, memory info, and error info
+  // Return enhanced chat with wrapped append, memory info, error info, and token stats
   return {
     ...chat,
     append: memory?.enabled && memoryContext?.service
@@ -494,5 +682,6 @@ export function useClarityChat(
       : chat.append,
     memoryInfo,
     memoryErrorInfo,
+    tokenStats: promptOptimization?.enabled ? optimizedMessagesState.tokenStats : undefined,
   }
 }

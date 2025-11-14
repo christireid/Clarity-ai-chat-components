@@ -13,6 +13,9 @@ export * from './agents'
 // Prompt Templates
 export * from './prompts'
 
+// Prompt & Token Optimization (Optional Addon Layer)
+export * from './prompt'
+
 // Document Loaders & Text Splitting
 export * from './document-loaders'
 
@@ -133,6 +136,8 @@ export {
   type ClarityWebSocketOptions,
   type ClarityChatMemoryInfo,
   type ClarityChatErrorInfo,
+  type ClarityPromptOptimizationOptions,
+  type ClarityChatTokenStats,
 } from './hooks/use-clarity-chat'
 export {
   useClarityObject,
@@ -196,6 +201,9 @@ export {
   type UseClarityChatWithToolsReturn,
   type ExtractedToolResult,
 } from './hooks/use-clarity-chat-with-tools'
+
+// Prompt & Token Optimization (optional addon layer)
+export * from './prompt'
 
 // Tool result types
 export type {

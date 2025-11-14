@@ -1,33 +1,55 @@
 import { defineConfig } from 'tsup'
 
-export default defineConfig({
-  entry: ['src/index.ts', 'src/styles/index.css'],
-  format: ['cjs', 'esm'],
-  dts: false, // Use tsc for declarations (see build script)
-  external: [
-    'react',
-    'react-dom',
-    'framer-motion',
-    '@clarity-chat/primitives',
-    '@clarity-chat/types',
-    '@clarity-chat/memory',
-    'mermaid',
-    'highlight.js/styles/github-dark.css',
-    'katex/dist/katex.min.css',
-  ],
-  clean: true,
-  sourcemap: false,
-  minify: false,
-  splitting: false,
-  treeshake: false,
-  // Handle CSS files
-  loader: {
-    '.css': 'copy',
+export default defineConfig([
+  // Main entry
+  {
+    entry: ['src/index.ts', 'src/styles/index.css'],
+    format: ['cjs', 'esm'],
+    dts: false, // Use tsc for declarations (see build script)
+    external: [
+      'react',
+      'react-dom',
+      'framer-motion',
+      '@clarity-chat/primitives',
+      '@clarity-chat/types',
+      '@clarity-chat/memory',
+      'mermaid',
+      'highlight.js/styles/github-dark.css',
+      'katex/dist/katex.min.css',
+    ],
+    clean: true,
+    sourcemap: false,
+    minify: false,
+    splitting: false,
+    treeshake: false,
+    loader: {
+      '.css': 'copy',
+    },
+    outExtension({ format }) {
+      return {
+        js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
+        css: '.css',
+      }
+    },
   },
-  outExtension({ format }) {
-    return {
-      js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
-      css: '.css',
-    }
+  // Prompt optimization subpath export
+  {
+    entry: ['src/prompt/index.ts'],
+    format: ['cjs', 'esm'],
+    dts: false,
+    external: [
+      'react',
+      'react-dom',
+    ],
+    outDir: 'dist/prompt',
+    sourcemap: false,
+    minify: false,
+    splitting: false,
+    treeshake: false,
+    outExtension({ format }) {
+      return {
+        js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
+      }
+    },
   },
-})
+])
