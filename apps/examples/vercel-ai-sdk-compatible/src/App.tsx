@@ -6,9 +6,11 @@
  */
 
 import * as React from 'react'
-import { useChat, useCompletion, useAssistant } from '@clarity-chat/react'
+import { useChat, useCompletion, useAssistant, useClarityChat } from '@clarity-chat/react'
 import { ChatWindow } from '@clarity-chat/react'
+import { MemoryProvider } from '@clarity-chat/react/memory'
 import { ThemeProvider, themes } from '@clarity-chat/react'
+import { convertCoreMessagesToMessages } from '@clarity-chat/react'
 import AdvancedExamples from './AdvancedExample'
 
 function ChatExample() {
@@ -212,12 +214,71 @@ function AssistantExample() {
 
 import PerformanceExample from './PerformanceExample'
 
-export default function App() {
-  const [activeTab, setActiveTab] = React.useState<'chat' | 'completion' | 'assistant' | 'advanced' | 'performance'>('chat')
+function ClarityChatExample() {
+  const {
+    messages: coreMessages,
+    append,
+    isLoading,
+    error,
+    memoryEnabled,
+    contextSummary,
+  } = useClarityChat({
+    api: '/api/chat',
+    memory: {
+      enabled: true,
+      strategy: 'sliding-window',
+      maxTokens: 4000,
+    },
+    transport: 'sse',
+  })
+
+  const messages = React.useMemo(
+    () => convertCoreMessagesToMessages(coreMessages),
+    [coreMessages]
+  )
 
   return (
-    <ThemeProvider theme={themes.ocean}>
-      <div className="min-h-screen bg-gray-50">
+    <div className="flex flex-col h-screen">
+      <div className="p-4 bg-blue-50 border-b">
+        <h2 className="text-xl font-bold mb-2">useClarityChat (Flagship Hook)</h2>
+        <p className="text-sm text-gray-600 mb-2">
+          Clarity's enhanced chat hook with memory integration and transport selection.
+        </p>
+        {memoryEnabled && (
+          <div className="text-xs text-green-700">
+            ✓ Memory Enabled {contextSummary && `- Context: ${contextSummary.substring(0, 50)}...`}
+          </div>
+        )}
+      </div>
+      <ChatWindow
+        messages={messages}
+        isLoading={isLoading}
+        onSendMessage={(content) => {
+          append({
+            role: 'user',
+            content,
+          })
+        }}
+        showHeader
+        sessionTitle="useClarityChat Example"
+        sessionSubtitle="Memory-enabled chat with SSE transport"
+      />
+      {error && (
+        <div className="p-4 bg-red-50 border-t text-red-600 text-sm">
+          Error: {error.message}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function App() {
+  const [activeTab, setActiveTab] = React.useState<'chat' | 'completion' | 'assistant' | 'clarity' | 'advanced' | 'performance'>('chat')
+
+  return (
+    <MemoryProvider config={{ maxTokens: 10000 }}>
+      <ThemeProvider theme={themes.ocean}>
+        <div className="min-h-screen bg-gray-50">
         <div className="bg-white border-b shadow-sm">
           <div className="max-w-7xl mx-auto px-4 py-4">
             <h1 className="text-3xl font-bold mb-4">Vercel AI SDK Compatible Examples</h1>
@@ -247,6 +308,14 @@ export default function App() {
                 useAssistant
               </button>
               <button
+                onClick={() => setActiveTab('clarity')}
+                className={`px-4 py-2 rounded-lg ${
+                  activeTab === 'clarity' ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                }`}
+              >
+                useClarityChat ⭐
+              </button>
+              <button
                 onClick={() => setActiveTab('advanced')}
                 className={`px-4 py-2 rounded-lg ${
                   activeTab === 'advanced' ? 'bg-blue-600 text-white' : 'bg-gray-200'
@@ -270,10 +339,12 @@ export default function App() {
           {activeTab === 'chat' && <ChatExample />}
           {activeTab === 'completion' && <CompletionExample />}
           {activeTab === 'assistant' && <AssistantExample />}
+          {activeTab === 'clarity' && <ClarityChatExample />}
           {activeTab === 'advanced' && <AdvancedExamples />}
           {activeTab === 'performance' && <PerformanceExample />}
         </div>
       </div>
     </ThemeProvider>
+    </MemoryProvider>
   )
 }

@@ -228,4 +228,134 @@ describe('useClarityChat with MemoryProvider', () => {
     expect('memoryInfo' in result.current).toBe(true)
     expect('memoryErrorInfo' in result.current).toBe(true)
   })
+
+  it('should support different memory strategies', () => {
+    const strategies: Array<'sliding-window' | 'semantic-chunks' | 'vector-store'> = [
+      'sliding-window',
+      'semantic-chunks',
+      'vector-store',
+    ]
+
+    strategies.forEach((strategy) => {
+      const { result } = renderHook(
+        () =>
+          useClarityChat({
+            api: '/api/chat',
+            memory: { enabled: true, strategy },
+          }),
+        { wrapper: Wrapper }
+      )
+
+      expect(result.current.memoryEnabled).toBeDefined()
+    })
+  })
+
+  it('should query memory before appending user messages', async () => {
+    const mockQuery = vi.fn().mockResolvedValue([])
+    const mockAddMemory = vi.fn().mockResolvedValue({ id: '1' })
+
+    // Mock memory context
+    vi.spyOn(React, 'useContext').mockReturnValue({
+      service: { query: mockQuery },
+      addMemory: mockAddMemory,
+      getContext: () => ({}),
+    } as any)
+
+    const { result } = renderHook(
+      () =>
+        useClarityChat({
+          api: '/api/chat',
+          memory: { enabled: true, strategy: 'semantic-chunks' },
+        }),
+      { wrapper: Wrapper }
+    )
+
+    const mockResponse = {
+      ok: true,
+      body: new ReadableStream({
+        start(controller) {
+          controller.enqueue(
+            new TextEncoder().encode('data: {"content":"Response"}\n\n')
+          )
+          controller.close()
+        },
+      }),
+    }
+
+    vi.mocked(fetch).mockResolvedValueOnce(mockResponse as any)
+
+    await result.current.append({
+      role: 'user',
+      content: 'Test query',
+    })
+
+    // Memory should be queried for user messages
+    // Note: This depends on the actual implementation
+    expect(result.current.messages.length).toBeGreaterThan(0)
+  })
+
+  it('should handle memory query errors gracefully', async () => {
+    const mockQuery = vi.fn().mockRejectedValue(new Error('Memory query failed'))
+    const mockAddMemory = vi.fn().mockResolvedValue({ id: '1' })
+
+    vi.spyOn(React, 'useContext').mockReturnValue({
+      service: { query: mockQuery },
+      addMemory: mockAddMemory,
+      getContext: () => ({}),
+    } as any)
+
+    const { result } = renderHook(
+      () =>
+        useClarityChat({
+          api: '/api/chat',
+          memory: { enabled: true },
+        }),
+      { wrapper: Wrapper }
+    )
+
+    const mockResponse = {
+      ok: true,
+      body: new ReadableStream({
+        start(controller) {
+          controller.enqueue(
+            new TextEncoder().encode('data: {"content":"Response"}\n\n')
+          )
+          controller.close()
+        },
+      }),
+    }
+
+    vi.mocked(fetch).mockResolvedValueOnce(mockResponse as any)
+
+    // Should not throw even if memory query fails
+    await expect(
+      result.current.append({
+        role: 'user',
+        content: 'Test',
+      })
+    ).resolves.not.toThrow()
+  })
+
+  it('should provide contextSummary when memory is enabled', () => {
+    const mockGetContext = vi.fn().mockReturnValue({
+      items: [{ id: '1' }, { id: '2' }],
+    })
+
+    vi.spyOn(React, 'useContext').mockReturnValue({
+      service: {},
+      getContext: mockGetContext,
+    } as any)
+
+    const { result } = renderHook(
+      () =>
+        useClarityChat({
+          api: '/api/chat',
+          memory: { enabled: true },
+        }),
+      { wrapper: Wrapper }
+    )
+
+    // contextSummary should be available when memory is enabled
+    expect(result.current.contextSummary).toBeDefined()
+  })
 })

@@ -149,7 +149,6 @@ export class TokenBudgetManager {
       episodicMemory: Math.floor(maxTokens * alloc.episodicMemory),
       responseReserve: Math.floor(maxTokens * alloc.responseReserve),
     }
->>>>>>> cursor/prepare-memory-package-for-release-9d2d
   }
 
   /**
