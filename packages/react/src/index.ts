@@ -186,6 +186,12 @@ export * from './hooks/use-deferred-search'
 export * from './utils'
 export type { StreamChunk } from './adapters/types'
 
+// Message conversion utilities
+export {
+  coreMessageToMessage,
+  coreMessagesToMessages,
+} from './utils/message-converter'
+
 // Note: The following are already exported via './utils' above
 // Kept here as documentation of what's available:
 // - StreamableValue utilities (./utils/streamable-value)
