@@ -26,12 +26,12 @@ pnpm add @clarity-chat/memory
 yarn add @clarity-chat/memory
 ```
 
-### Basic Usage
+### 30-Second Setup
 
 ```typescript
 import { clarityMemory } from '@clarity-chat/memory'
 
-// Create a memory instance (zero-config)
+// Zero-config - works out of the box!
 const memory = clarityMemory()
 
 // Add memories
@@ -59,6 +59,21 @@ const response = await openai.chat.completions.create({
   ]
 })
 ```
+
+### Even Simpler with Helpers
+
+```typescript
+import { clarityMemory, quickSetup, createSemanticMemory } from '@clarity-chat/memory'
+
+// Smart defaults based on environment
+const memory = quickSetup({ userId: 'user-123' })
+
+// Helper functions make it easier
+const mem = createSemanticMemory("User prefers TypeScript", 0.9)
+await memory.add(mem.content!, mem)
+```
+
+> 📖 **New to Clarity Memory?** Check out the [Quick Start Guide](./QUICK_START.md) for a step-by-step tutorial.
 
 ## Core Concepts
 
@@ -460,6 +475,58 @@ const results = await memory.searchBatch([
 ])
 ```
 
+## Helper Utilities
+
+Clarity Memory includes helpful utilities for common operations:
+
+```typescript
+import {
+  // Memory creation helpers
+  createSemanticMemory,
+  createEpisodicMemory,
+  createPersistentMemory,
+  
+  // Content utilities
+  extractTags,
+  estimateImportance,
+  sanitizeContent,
+  
+  // Memory manipulation
+  formatMemory,
+  groupByType,
+  groupByTag,
+  sortByImportance,
+  sortByRecency,
+  getTopMemories,
+  
+  // Setup utilities
+  quickSetup,
+  detectBestStore,
+  getRecommendedConfig,
+  validateSetup,
+  
+  // Validation
+  validateContent,
+  validateImportance,
+  checkEnvironmentSupport,
+} from '@clarity-chat/memory'
+
+// Quick setup with smart defaults
+const memory = quickSetup({ userId: 'user-123' })
+
+// Extract tags from content
+const tags = extractTags("User likes TypeScript and React")
+// ['typescript', 'react']
+
+// Estimate importance automatically
+const importance = estimateImportance("I really love TypeScript!")
+// ~0.8
+
+// Create memories easily
+const mem = createSemanticMemory("User prefers dark mode", 0.9)
+await memory.add(mem.content!, mem)
+```
+
 ## TypeScript Support
 
 Full TypeScript support with exported types:
@@ -472,6 +539,26 @@ import type {
   SearchOptions,
   RecallOptions,
 } from '@clarity-chat/memory'
+```
+
+## Input Validation
+
+Clarity Memory validates all inputs and provides helpful error messages:
+
+```typescript
+try {
+  await memory.add("") // Empty content
+} catch (error) {
+  console.error(error.message)
+  // "Memory content cannot be empty"
+}
+
+try {
+  await memory.add("content", { importance: 2.0 }) // Invalid
+} catch (error) {
+  console.error(error.message)
+  // "Importance must be between 0 and 1"
+}
 ```
 
 ## Migration from MemMachine

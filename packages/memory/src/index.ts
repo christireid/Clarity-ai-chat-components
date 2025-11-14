@@ -57,6 +57,45 @@ export {
   chunkByTokens,
 } from './utils/token-counter'
 
+// Validation utilities
+export {
+  validateContent,
+  validateId,
+  validateImportance,
+  validateConfig,
+  validateAddOptions,
+  sanitizeContent,
+  checkEnvironmentSupport,
+  getHelpfulErrorMessage,
+} from './utils/validation'
+
+// Helper utilities
+export {
+  createMemory,
+  createSemanticMemory,
+  createEpisodicMemory,
+  createPersistentMemory,
+  extractTags,
+  estimateImportance,
+  formatMemory,
+  groupByType,
+  groupByTag,
+  filterExpired,
+  sortByImportance,
+  sortByRecency,
+  getTopMemories,
+  matchesQuery,
+} from './utils/helpers'
+
+// Setup utilities
+export {
+  detectBestStore,
+  getRecommendedConfig,
+  quickSetup,
+  validateSetup,
+  printSetupInfo,
+} from './utils/setup'
+
 // Stores
 export { InMemoryStore } from './stores/in-memory'
 export { IndexedDBStore } from './stores/indexeddb'
