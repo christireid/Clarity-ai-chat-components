@@ -1,13 +1,15 @@
 /**
- * Clarity Memory - Utility Functions
- * 
- * Common utility functions used throughout the package.
+ * Utility exports
  */
 
-// Re-export all utilities
+export * from './environment'
 export * from './validation'
-export * from './errors'
+export * from './health-check'
+export * from './cache'
+export * from './retry'
+export * from './rate-limiter'
+export * from './batch'
+export * from './performance'
+export * from './token-counter'
+export * from './validation-helpers'
 export * from './logger'
-
-// Core utilities
-export * from './core'

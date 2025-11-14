@@ -1,134 +1,186 @@
 /**
- * Clarity Memory - Validation Utilities
- * 
- * Validation functions for configuration and data.
+ * Configuration Validation Utilities
  */
 
-import { MemoryError, MemoryErrorCodes } from '../types'
+import type { MemoryConfig } from '../core/types'
+import { detectEnvironment, getEnvironmentRecommendations } from './environment'
 
-/**
- * Validate memory content
- */
-export function validateMemoryContent(content: unknown): asserts content is string {
-  if (typeof content !== 'string') {
-    throw new MemoryError(
-      'Memory content must be a string',
-      MemoryErrorCodes.INVALID_CONFIG
-    )
-  }
-  
-  if (content.trim().length === 0) {
-    throw new MemoryError(
-      'Memory content cannot be empty',
-      MemoryErrorCodes.INVALID_CONFIG
-    )
-  }
+export interface ValidationResult {
+  valid: boolean
+  errors: string[]
+  warnings: string[]
+  suggestions: string[]
 }
 
 /**
- * Validate memory ID
+ * Validate memory configuration
  */
-export function validateMemoryId(id: unknown): asserts id is string {
-  if (typeof id !== 'string') {
-    throw new MemoryError(
-      'Memory ID must be a string',
-      MemoryErrorCodes.INVALID_CONFIG
+export function validateConfig(config?: MemoryConfig): ValidationResult {
+  const result: ValidationResult = {
+    valid: true,
+    errors: [],
+    warnings: [],
+    suggestions: [],
+  }
+
+  if (!config) {
+    return result // Empty config is valid (uses defaults)
+  }
+
+  // Validate storage config
+  if (config.storage) {
+    const env = detectEnvironment()
+    
+    if (config.storage.type === 'indexeddb' && env !== 'browser') {
+      result.errors.push(
+        'IndexedDB storage is only available in browser environments'
+      )
+      result.valid = false
+    }
+
+    if (config.storage.type === 'postgres' && !config.storage.url) {
+      result.errors.push(
+        'Postgres storage requires a connection URL'
+      )
+      result.valid = false
+    }
+
+    if (config.storage.type === 'redis' && !config.storage.url) {
+      result.errors.push(
+        'Redis storage requires a connection URL'
+      )
+      result.valid = false
+    }
+  }
+
+  // Validate embedding provider
+  if (config.embeddingProvider) {
+    if (config.embeddingProvider.provider === 'openai' && !config.embeddingProvider.apiKey) {
+      result.errors.push(
+        'OpenAI embedding provider requires an API key'
+      )
+      result.valid = false
+    }
+
+    if (config.embeddingProvider.provider === 'anthropic' && !config.embeddingProvider.apiKey) {
+      result.errors.push(
+        'Anthropic embedding provider requires an API key'
+      )
+      result.valid = false
+    }
+  }
+
+  // Validate token budget
+  if (config.tokenBudget) {
+    const allocation = config.tokenBudget.allocation
+    const total = 
+      allocation.systemPrompt +
+      allocation.userPreferences +
+      allocation.recentContext +
+      allocation.semanticMemory +
+      allocation.episodicMemory +
+      allocation.responseReserve
+
+    if (Math.abs(total - 1.0) > 0.01) {
+      result.errors.push(
+        `Token allocation percentages must sum to 1.0 (currently ${total.toFixed(2)})`
+      )
+      result.valid = false
+    }
+
+    if (config.tokenBudget.maxTokens < 100) {
+      result.warnings.push(
+        'Token budget is very low (< 100). Consider increasing for better context quality.'
+      )
+    }
+  }
+
+  // Validate compression config
+  if (config.compression) {
+    if (config.compression.strategy === 'summarize' && !config.summarization?.enabled) {
+      result.warnings.push(
+        'Summarize compression strategy requires summarization to be enabled'
+      )
+    }
+
+    if (config.compression.threshold < 0 || config.compression.threshold > 1) {
+      result.errors.push(
+        'Compression threshold must be between 0 and 1'
+      )
+      result.valid = false
+    }
+
+    if (config.compression.minQuality < 0 || config.compression.minQuality > 1) {
+      result.errors.push(
+        'Compression minQuality must be between 0 and 1'
+      )
+      result.valid = false
+    }
+  }
+
+  // Validate summarization config
+  if (config.summarization?.enabled) {
+    if (config.summarization.provider === 'openai' && !process.env.OPENAI_API_KEY && !config.summarization) {
+      result.warnings.push(
+        'OpenAI summarization requires OPENAI_API_KEY environment variable or API key in config'
+      )
+    }
+
+    if (config.summarization.interval < 1000) {
+      result.warnings.push(
+        'Summarization interval is very short (< 1 second). This may cause performance issues.'
+      )
+    }
+  }
+
+  // Environment-specific suggestions
+  const envRecs = getEnvironmentRecommendations()
+  if (envRecs.warnings.length > 0) {
+    result.warnings.push(...envRecs.warnings)
+  }
+
+  // General suggestions
+  if (!config.storage) {
+    result.suggestions.push(
+      `Consider configuring storage. Recommended for this environment: ${envRecs.storage}`
     )
   }
-  
-  if (id.trim().length === 0) {
-    throw new MemoryError(
-      'Memory ID cannot be empty',
-      MemoryErrorCodes.INVALID_CONFIG
+
+  if (!config.embeddingProvider && config.tokenBudget) {
+    result.suggestions.push(
+      'Consider adding an embedding provider for better semantic search'
     )
   }
+
+  if (config.debug && config.logLevel === 'silent') {
+    result.warnings.push(
+      'Debug mode is enabled but log level is silent. Enable logging to see debug output.'
+    )
+  }
+
+  return result
 }
 
 /**
- * Validate query string
+ * Format validation result as a user-friendly message
  */
-export function validateQuery(query: unknown): asserts query is string {
-  if (typeof query !== 'string') {
-    throw new MemoryError(
-      'Query must be a string',
-      MemoryErrorCodes.INVALID_CONFIG
-    )
-  }
-  
-  if (query.trim().length === 0) {
-    throw new MemoryError(
-      'Query cannot be empty',
-      MemoryErrorCodes.INVALID_CONFIG
-    )
-  }
-}
+export function formatValidationResult(result: ValidationResult): string {
+  const parts: string[] = []
 
-/**
- * Validate token budget
- */
-export function validateTokenBudget(
-  maxTokens: unknown,
-  reserveTokens: unknown = 0
-): void {
-  if (typeof maxTokens !== 'number' || maxTokens <= 0) {
-    throw new MemoryError(
-      'maxTokens must be a positive number',
-      MemoryErrorCodes.INVALID_CONFIG
-    )
+  if (result.errors.length > 0) {
+    parts.push('❌ Errors:')
+    result.errors.forEach(err => parts.push(`  - ${err}`))
   }
-  
-  if (typeof reserveTokens !== 'number' || reserveTokens < 0) {
-    throw new MemoryError(
-      'reserveTokens must be a non-negative number',
-      MemoryErrorCodes.INVALID_CONFIG
-    )
-  }
-  
-  if (reserveTokens >= maxTokens) {
-    throw new MemoryError(
-      'reserveTokens must be less than maxTokens',
-      MemoryErrorCodes.INVALID_CONFIG
-    )
-  }
-}
 
-/**
- * Validate embedding dimensions
- */
-export function validateEmbeddingDimensions(
-  embedding: number[],
-  expectedDimensions: number
-): void {
-  if (!Array.isArray(embedding)) {
-    throw new MemoryError(
-      'Embedding must be an array',
-      MemoryErrorCodes.INVALID_CONFIG
-    )
+  if (result.warnings.length > 0) {
+    parts.push('⚠️  Warnings:')
+    result.warnings.forEach(warn => parts.push(`  - ${warn}`))
   }
-  
-  if (embedding.length !== expectedDimensions) {
-    throw new MemoryError(
-      `Embedding must have ${expectedDimensions} dimensions, got ${embedding.length}`,
-      MemoryErrorCodes.INVALID_CONFIG
-    )
-  }
-}
 
-/**
- * Validate score (0-1 range)
- */
-export function validateScore(score: unknown, name = 'Score'): asserts score is number {
-  if (typeof score !== 'number') {
-    throw new MemoryError(
-      `${name} must be a number`,
-      MemoryErrorCodes.INVALID_CONFIG
-    )
+  if (result.suggestions.length > 0) {
+    parts.push('💡 Suggestions:')
+    result.suggestions.forEach(sugg => parts.push(`  - ${sugg}`))
   }
-  
-  if (score < 0 || score > 1) {
-    throw new MemoryError(
-      `${name} must be between 0 and 1`,
-      MemoryErrorCodes.INVALID_CONFIG
-    )
-  }
+
+  return parts.join('\n')
 }

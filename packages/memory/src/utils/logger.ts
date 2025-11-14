@@ -1,74 +1,56 @@
 /**
- * Clarity Memory - Logger Utility
+ * Logger Utility
  * 
- * Simple logging utility for development and debugging.
+ * Centralized logging with levels and formatting
  */
 
-type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug'
 
-interface Logger {
-  debug: (...args: unknown[]) => void
-  info: (...args: unknown[]) => void
-  warn: (...args: unknown[]) => void
-  error: (...args: unknown[]) => void
+export interface Logger {
+  error(message: string, ...args: any[]): void
+  warn(message: string, ...args: any[]): void
+  info(message: string, ...args: any[]): void
+  debug(message: string, ...args: any[]): void
 }
 
-class MemoryLogger implements Logger {
-  private enabled: boolean
+class ClarityLogger implements Logger {
   private level: LogLevel
+  private prefix: string
 
-  constructor(enabled = false, level: LogLevel = 'info') {
-    this.enabled = enabled
+  constructor(level: LogLevel = 'warn', prefix: string = '[ClarityMemory]') {
     this.level = level
+    this.prefix = prefix
   }
 
   private shouldLog(level: LogLevel): boolean {
-    if (!this.enabled) return false
-    
-    const levels: LogLevel[] = ['debug', 'info', 'warn', 'error']
-    return levels.indexOf(level) >= levels.indexOf(this.level)
+    const levels: LogLevel[] = ['silent', 'error', 'warn', 'info', 'debug']
+    const currentLevelIndex = levels.indexOf(this.level)
+    const messageLevelIndex = levels.indexOf(level)
+    return messageLevelIndex <= currentLevelIndex
   }
 
-  private formatMessage(level: LogLevel, ...args: unknown[]): void {
-    if (!this.shouldLog(level)) return
-
-    const prefix = `[Clarity Memory] [${level.toUpperCase()}]`
-    const timestamp = new Date().toISOString()
-    
-    switch (level) {
-      case 'debug':
-        console.debug(prefix, timestamp, ...args)
-        break
-      case 'info':
-        console.info(prefix, timestamp, ...args)
-        break
-      case 'warn':
-        console.warn(prefix, timestamp, ...args)
-        break
-      case 'error':
-        console.error(prefix, timestamp, ...args)
-        break
+  error(message: string, ...args: any[]): void {
+    if (this.shouldLog('error')) {
+      console.error(`${this.prefix} [ERROR] ${message}`, ...args)
     }
   }
 
-  debug(...args: unknown[]): void {
-    this.formatMessage('debug', ...args)
+  warn(message: string, ...args: any[]): void {
+    if (this.shouldLog('warn')) {
+      console.warn(`${this.prefix} [WARN] ${message}`, ...args)
+    }
   }
 
-  info(...args: unknown[]): void {
-    this.formatMessage('info', ...args)
+  info(message: string, ...args: any[]): void {
+    if (this.shouldLog('info')) {
+      console.info(`${this.prefix} [INFO] ${message}`, ...args)
+    }
   }
 
-  warn(...args: unknown[]): void {
-    this.formatMessage('warn', ...args)
-  }
-
-  error(...args: unknown[]): void {
-    this.formatMessage('error', ...args)
-  }
-
-  setEnabled(enabled: boolean): void {
-    this.enabled = enabled
+  debug(message: string, ...args: any[]): void {
+    if (this.shouldLog('debug')) {
+      console.debug(`${this.prefix} [DEBUG] ${message}`, ...args)
+    }
   }
 
   setLevel(level: LogLevel): void {
@@ -76,17 +58,12 @@ class MemoryLogger implements Logger {
   }
 }
 
+// Default logger instance
+export const logger = new ClarityLogger()
+
 /**
  * Create a logger instance
  */
-export function createLogger(enabled = false, level: LogLevel = 'info'): Logger {
-  return new MemoryLogger(enabled, level)
+export function createLogger(level: LogLevel = 'warn', prefix?: string): Logger {
+  return new ClarityLogger(level, prefix)
 }
-
-/**
- * Default logger instance
- */
-export const logger = createLogger(
-  process.env.DEBUG === 'true' || process.env.NODE_ENV === 'development',
-  (process.env.LOG_LEVEL as LogLevel) || 'info'
-)

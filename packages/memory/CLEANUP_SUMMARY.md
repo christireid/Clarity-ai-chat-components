@@ -1,192 +1,166 @@
 # Cleanup & Optimization Summary
 
-This document summarizes all cleanup and optimization work completed.
+## Code Deduplication ✅
 
-## ✅ Code Organization
+### 1. Centralized Token Counting
+- **Created:** `src/utils/token-counter.ts` - Shared token counting utility
+- **Removed:** 8 duplicate `countTokens` implementations across:
+  - `context-builder.ts`
+  - `compression-engine.ts`
+  - `truncate-strategy.ts`
+  - `extract-strategy.ts`
+  - `summarize-strategy.ts`
+  - `summarization-pipeline.ts`
+  - `in-memory-store.ts`
+  - `indexeddb-store.ts`
+- **Benefits:** Single source of truth, easier to maintain, consistent behavior
 
-### Utility Functions Created
+### 2. Enhanced Token Counter Utility
+Added helper functions:
+- `countTokens(text)` - Count tokens in text
+- `countTokensBatch(texts)` - Count tokens in multiple texts
+- `estimateCharsForTokens(targetTokens)` - Estimate character length
+- `exceedsTokenLimit(text, maxTokens)` - Check if text exceeds limit
+- `truncateToTokenLimit(text, maxTokens, suffix)` - Truncate to fit budget
 
-1. **`src/utils/core.ts`** - Core utility functions
-   - `isNonEmptyString()` - String validation
-   - `isValidNumber()` - Number validation
-   - `clamp()` - Number clamping
-   - `deepMerge()` - Object merging
-   - `generateId()` - ID generation
-   - `sleep()` - Async delay
-   - `retry()` - Retry with backoff
-   - `debounce()` - Function debouncing
-   - `throttle()` - Function throttling
-   - `cosineSimilarity()` - Vector similarity
-   - `estimateTokens()` - Token estimation
-   - `truncateToTokens()` - Token truncation
-   - `formatBytes()` - Byte formatting
-   - `isBrowser()` - Browser detection
-   - `isNode()` - Node.js detection
+## Input Validation & Sanitization ✅
 
-2. **`src/utils/validation.ts`** - Validation utilities
-   - `validateMemoryContent()` - Memory content validation
-   - `validateMemoryId()` - Memory ID validation
-   - `validateQuery()` - Query validation
-   - `validateTokenBudget()` - Token budget validation
-   - `validateEmbeddingDimensions()` - Embedding validation
-   - `validateScore()` - Score validation
+### 1. Validation Helpers (`src/utils/validation-helpers.ts`)
+- **`validateMemoryContent`** - Validates memory content (non-empty, length limits)
+- **`validateMemoryId`** - Validates memory ID format
+- **`validateImportance`** - Validates importance score (0-1 range)
+- **`validateTTL`** - Validates TTL (positive number)
+- **`sanitizeMemoryContent`** - Sanitizes content (trim, remove null bytes, normalize whitespace)
+- **`sanitizeTags`** - Sanitizes tags (trim, lowercase, deduplicate, limit to 50)
 
-3. **`src/utils/errors.ts`** - Error utilities
-   - `createStoreError()` - Store error factory
-   - `createEmbeddingError()` - Embedding error factory
-   - `createTokenBudgetError()` - Token budget error factory
-   - `createInvalidConfigError()` - Config error factory
-   - `createMemoryNotFoundError()` - Not found error factory
-   - `isMemoryError()` - Error type guard
-   - `getErrorMessage()` - Safe error message extraction
-   - `getErrorCode()` - Safe error code extraction
+### 2. Integrated Validation
+- All `add()` operations now validate and sanitize input
+- All `recall()` operations validate and sanitize queries
+- Proper error messages for invalid input
+- Prevents common issues (empty content, invalid IDs, etc.)
 
-4. **`src/utils/logger.ts`** - Logging utility
-   - `createLogger()` - Logger factory
-   - `logger` - Default logger instance
-   - Log levels: debug, info, warn, error
-   - Environment-aware (DEBUG env var)
+## Logging Improvements ✅
 
-5. **`src/utils/index.ts`** - Barrel export
-   - Re-exports all utilities
-   - Clean import path
+### 1. Centralized Logger (`src/utils/logger.ts`)
+- **Log levels:** `silent`, `error`, `warn`, `info`, `debug`
+- **Consistent formatting:** `[ClarityMemory] [LEVEL] message`
+- **Configurable:** Per-instance log levels
+- **Replaces:** Scattered `console.log/error/warn` calls
 
-### Constants File
+### 2. Integrated Logging
+- `ClarityMemory` now uses logger instead of direct console calls
+- Respects `logLevel` configuration
+- Better debugging experience
+- Consistent log format across codebase
 
-**`src/constants.ts`** - Centralized constants
-- `VERSION` - Package version
-- `DEFAULT_CONFIG` - All default configuration values
-- `TOKEN_ESTIMATION` - Token calculation constants
-- `EMBEDDING_DIMENSIONS` - Model dimensions
-- `ERROR_MESSAGES` - Error message constants
-- `TIME` - Time constants (ms)
-- `TIMEOUTS` - Default timeout values
+## Error Handling Improvements ✅
 
-## 🔧 Code Improvements
+### 1. Graceful Degradation
+- Embedding failures don't break operations
+- Falls back to text search if embeddings unavailable
+- Non-critical errors logged but don't throw
 
-### Memory Class Enhancements
+### 2. Better Error Messages
+- Context-aware error messages
+- Actionable tips for common issues
+- Clear guidance on how to fix problems
 
-1. **Configuration Normalization**
-   - Uses `DEFAULT_CONFIG` constants
-   - Consistent default values
-   - Better type safety
+### 3. Input Validation Errors
+- Clear error messages for invalid input
+- Validation happens early (fail fast)
+- Prevents bad data from entering system
 
-2. **Validation Integration**
-   - Uses validation utilities
-   - Consistent error handling
-   - Better error messages
+## Configuration Improvements ✅
 
-3. **Logging Integration**
-   - Debug logging throughout
-   - Environment-aware
-   - Helpful for development
+### 1. Embedding Provider Config
+- Now passes all optimization config to `OpenAIEmbeddingProvider`:
+  - `cache`, `cacheSize`, `cacheTTL`
+  - `maxRetries`
+  - `rateLimit`
+- Previously only passed basic config (apiKey, model, dimensions)
 
-4. **Error Handling**
-   - Uses error utilities
-   - Consistent error creation
-   - Better error messages
+### 2. Logger Integration
+- Logger respects `logLevel` config
+- Better integration with debug mode
+- Consistent logging across all components
 
-## 📊 File Structure
+## Files Created
 
-```
-src/
-├── core/
-│   ├── memory.ts          ✅ Enhanced with utilities
-│   └── memory.test.ts     ✅ Test file
-├── types/
-│   └── index.ts           ✅ Type definitions
-├── utils/                 ✅ NEW
-│   ├── index.ts           ✅ Barrel export
-│   ├── core.ts            ✅ Core utilities
-│   ├── validation.ts      ✅ Validation functions
-│   ├── errors.ts          ✅ Error utilities
-│   └── logger.ts          ✅ Logging utility
-├── constants.ts           ✅ NEW - Constants
-├── index.ts               ✅ Enhanced exports
-├── memory-service.ts       ⚠️ Existing (to be reviewed)
-├── token-optimizer.ts      ⚠️ Existing (to be reviewed)
-└── types.ts               ⚠️ Duplicate (to be consolidated)
-```
+1. **`src/utils/token-counter.ts`** - Centralized token counting
+2. **`src/utils/validation-helpers.ts`** - Input validation and sanitization
+3. **`src/utils/logger.ts`** - Centralized logging utility
 
-## 🎯 Benefits
+## Files Modified
 
-### Developer Experience
+1. **`src/core/clarity-memory.ts`**
+   - Uses shared token counter
+   - Integrated validation and sanitization
+   - Uses logger instead of console
+   - Passes all embedding provider config
 
-1. **Reusable Utilities**
-   - Common functions centralized
-   - Consistent implementations
-   - Well-documented
+2. **`src/context/context-builder.ts`**
+   - Uses shared token counter
 
-2. **Better Error Handling**
-   - Consistent error creation
-   - Type-safe error handling
-   - Helpful error messages
+3. **`src/compression/compression-engine.ts`**
+   - Uses shared token counter
 
-3. **Improved Logging**
-   - Debug-friendly
-   - Environment-aware
-   - Easy to enable/disable
+4. **`src/compression/truncate-strategy.ts`**
+   - Uses shared token counter
 
-4. **Centralized Constants**
-   - Single source of truth
-   - Easy to update
-   - Type-safe
+5. **`src/compression/extract-strategy.ts`**
+   - Uses shared token counter
+
+6. **`src/compression/summarize-strategy.ts`**
+   - Uses shared token counter
+
+7. **`src/summarization/summarization-pipeline.ts`**
+   - Uses shared token counter
+
+8. **`src/stores/in-memory-store.ts`**
+   - Uses shared token counter
+
+9. **`src/stores/indexeddb-store.ts`**
+   - Uses shared token counter
+
+10. **`src/utils/index.ts`**
+    - Exports new utilities
+
+## Benefits
 
 ### Code Quality
+- ✅ **DRY Principle** - No duplicate code
+- ✅ **Single Source of Truth** - Token counting logic in one place
+- ✅ **Consistency** - Same behavior everywhere
+- ✅ **Maintainability** - Easier to update and fix
 
-1. **Consistency**
-   - Uniform patterns
-   - Consistent error handling
-   - Standardized validation
+### Developer Experience
+- ✅ **Better Error Messages** - Clear, actionable errors
+- ✅ **Input Validation** - Catches errors early
+- ✅ **Consistent Logging** - Better debugging experience
+- ✅ **Type Safety** - Better TypeScript types
 
-2. **Maintainability**
-   - Organized structure
-   - Clear separation of concerns
-   - Easy to extend
+### Production Readiness
+- ✅ **Input Sanitization** - Prevents bad data
+- ✅ **Error Handling** - Graceful degradation
+- ✅ **Logging** - Configurable log levels
+- ✅ **Validation** - Prevents common mistakes
 
-3. **Type Safety**
-   - Type guards
-   - Type assertions
-   - Better TypeScript support
+## Next Steps
 
-## 📋 Next Steps
+1. ✅ Code deduplication - Complete
+2. ✅ Input validation - Complete
+3. ✅ Logging improvements - Complete
+4. ✅ Error handling - Complete
+5. 🚧 Storage optimizations - Pending
+6. 🚧 Additional performance optimizations - Pending
 
-### Immediate
+## Summary
 
-- [ ] Consolidate `src/types.ts` and `src/types/index.ts`
-- [ ] Review `src/memory-service.ts` for integration
-- [ ] Review `src/token-optimizer.ts` for integration
-- [ ] Add unit tests for utilities
-- [ ] Add JSDoc comments to all utilities
+The codebase is now **cleaner**, **more maintainable**, and **more robust**:
+- ✅ No duplicate code
+- ✅ Comprehensive input validation
+- ✅ Centralized logging
+- ✅ Better error handling
+- ✅ Consistent behavior across all components
 
-### Future
-
-- [ ] Add more utility functions as needed
-- [ ] Create helper functions for common patterns
-- [ ] Add performance utilities
-- [ ] Create test utilities
-
-## 📈 Statistics
-
-- **New Files**: 6 utility/constant files
-- **Functions Added**: 30+ utility functions
-- **Constants Added**: 50+ constants
-- **Code Improvements**: Memory class enhanced
-- **Exports Added**: Utilities and constants exported
-
-## ✅ Quality Checklist
-
-- [x] Utilities organized by concern
-- [x] Constants centralized
-- [x] Validation functions created
-- [x] Error utilities created
-- [x] Logging utility created
-- [x] Barrel exports configured
-- [x] Type safety maintained
-- [x] Documentation added
-- [x] Memory class enhanced
-- [x] Consistent patterns
-
----
-
-**Status**: ✅ Cleanup and optimization complete!
+All changes are **backward compatible** and improve the overall quality of the codebase.

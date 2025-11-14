@@ -1,54 +1,75 @@
 /**
- * Clarity Memory - Main Entry Point
+ * @clarity-chat/memory
  * 
- * A superior, developer-friendly memory system for AI applications.
+ * Framework-agnostic AI memory and context management utilities
+ * Works with any JavaScript/TypeScript application
  */
 
-// Core exports
-export { clarityMemory, Memory } from './core/memory'
+// Main factory function
+export { clarityMemory, clarityMemoryHelpers } from './factory'
 
-// Type exports
-export type {
-  MemoryItem,
-  MemoryConfig,
-  MemoryChunk,
-  Embedding,
-  MemoryScore,
-  SearchResult,
-  ContextBundle,
-  SummarizationResult,
-  CompressionResult,
-  EmbeddingConfig,
-  StoreConfig,
-  ShortTermConfig,
-  LongTermConfig,
-  ScoringConfig,
-  SummarizationConfig,
-  TokenBudgetConfig,
-  SearchOptions,
-  StoreStats,
-  MemoryStore,
-  Embedder,
-  Scorer,
-  MemoryErrorCode,
-} from './types'
+// Core classes
+export { ClarityMemory } from './core/clarity-memory'
 
-export { MemoryError, MemoryErrorCodes } from './types'
+// Types
+export * from './core/types'
 
-// React exports (will be added when React integration is implemented)
-// export { useMemory, MemoryProvider, MemoryInspector } from './react'
+// Storage adapters
+export { StorageAdapter } from './stores/storage-adapter'
+export { InMemoryStore } from './stores/in-memory-store'
 
-// Store adapters (will be added when implemented)
-// export { InMemoryStore } from './stores/in-memory'
-// export { FileStore } from './stores/file'
-// export { IndexedDBStore } from './stores/indexeddb'
+// Embedding providers
+export { EmbeddingProvider } from './embeddings/embedding-provider'
+export { OpenAIEmbeddingProvider } from './embeddings/openai-provider'
 
-// Embedding providers (will be added when implemented)
-// export { OpenAIEmbedder } from './embeddings/openai'
-// export { AnthropicEmbedder } from './embeddings/anthropic'
+// Context management
+export { TokenBudgetManager } from './context/token-budget'
+export { ContextBuilder } from './context/context-builder'
+
+// Scoring
+export { ImportanceScorer } from './scoring/importance-scorer'
+
+// Compression
+export { CompressionEngine } from './compression/compression-engine'
+export { TruncateStrategy } from './compression/truncate-strategy'
+export { ExtractStrategy } from './compression/extract-strategy'
+export { SummarizeStrategy } from './compression/summarize-strategy'
+export { AdaptiveStrategy } from './compression/adaptive-strategy'
+export type { CompressionStrategy, CompressionResult } from './compression/compression-strategy'
+
+// Summarization
+export { SummarizationPipeline } from './summarization/summarization-pipeline'
+export { OpenAISummarizer } from './summarization/openai-summarizer'
+export type { Summarizer } from './summarization/summarizer'
+
+// React (optional)
+export * from './react'
 
 // Utilities
 export * from './utils'
 
-// Constants
-export { VERSION, DEFAULT_CONFIG } from './constants'
+// Legacy exports (for backward compatibility)
+export { MemoryService } from './memory-service'
+export {
+  TokenCounter,
+  TokenBudgetManager as TokenBudgetManagerLegacy,
+  MemoryCompressor,
+  SemanticChunker,
+  ContextOptimizer,
+} from './token-optimizer'
+export type {
+  MemoryItem,
+  MemoryQuery,
+  MemorySearchResult,
+  MemoryServiceConfig,
+  MemoryStats,
+  MemoryType as LegacyMemoryType,
+  MemoryScope as LegacyMemoryScope,
+  MemoryPriority,
+  MemoryEvent,
+  MemoryContext,
+  TokenAllocation,
+  TokenOptimizationConfig,
+  CompressedMemory,
+  MemoryChunk,
+} from './types'
