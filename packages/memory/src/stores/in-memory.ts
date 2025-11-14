@@ -10,6 +10,7 @@ import type {
   SearchOptions,
   ListOptions,
 } from '../core/types'
+import { optimizedSearch } from '../utils/search-optimizer'
 
 /**
  * In-memory store implementation
@@ -41,14 +42,7 @@ export class InMemoryStore implements MemoryStore {
   async search(query: string, options: SearchOptions = {}): Promise<MemoryItem[]> {
     let results = Array.from(this.items.values())
     
-    // Filter by query (simple text matching)
-    if (query) {
-      const queryLower = query.toLowerCase()
-      results = results.filter(item => 
-        item.content.toLowerCase().includes(queryLower)
-      )
-    }
-    
+    // Apply filters first (more efficient)
     // Filter by type
     if (options.types && options.types.length > 0) {
       results = results.filter(item => options.types!.includes(item.type))
@@ -59,11 +53,6 @@ export class InMemoryStore implements MemoryStore {
       results = results.filter(item => 
         item.tags && options.tags!.some(tag => item.tags!.includes(tag))
       )
-    }
-    
-    // Filter by minimum importance
-    if (options.minImportance !== undefined) {
-      results = results.filter(item => item.importance >= options.minImportance!)
     }
     
     // Filter by user ID
@@ -95,12 +84,30 @@ export class InMemoryStore implements MemoryStore {
       })
     }
     
-    // Sort by importance (descending)
-    results.sort((a, b) => b.importance - a.importance)
-    
-    // Apply limit
-    if (options.limit) {
-      results = results.slice(0, options.limit)
+    // Use optimized search if query provided
+    if (query && query.trim()) {
+      // Filter by minImportance before optimized search
+      if (options.minImportance !== undefined) {
+        results = results.filter(item => item.importance >= options.minImportance!)
+      }
+      
+      results = optimizedSearch(results, query, {
+        limit: options.limit,
+        minScore: 0, // Already filtered by importance
+      })
+    } else {
+      // No query - sort by importance
+      results.sort((a, b) => b.importance - a.importance)
+      
+      // Filter by minImportance
+      if (options.minImportance !== undefined) {
+        results = results.filter(item => item.importance >= options.minImportance!)
+      }
+      
+      // Apply limit
+      if (options.limit) {
+        results = results.slice(0, options.limit)
+      }
     }
     
     return results

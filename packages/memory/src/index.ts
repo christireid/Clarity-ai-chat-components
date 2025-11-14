@@ -126,6 +126,43 @@ export {
 } from './utils/cleanup'
 export type { CleanupStrategy } from './utils/cleanup'
 
+// Search optimization
+export {
+  fastTextMatch,
+  calculateSimilarity,
+  calculateRelevanceScore,
+  optimizedSearch,
+  SearchIndex,
+} from './utils/search-optimizer'
+
+// Pagination utilities
+export {
+  paginate,
+  cursorPaginate,
+  streamResults,
+} from './utils/pagination'
+export type {
+  PaginatedResult,
+  CursorPaginationOptions,
+  CursorPaginatedResult,
+} from './utils/pagination'
+
+// Error handling
+export {
+  MemoryError,
+  ValidationError,
+  StorageError,
+  EmbeddingError,
+  retry,
+  safeAsync,
+  withRecovery,
+  ErrorBoundary,
+} from './utils/error-handling'
+export type {
+  RetryConfig,
+  ErrorRecoveryConfig,
+} from './utils/error-handling'
+
 // Stores
 export { InMemoryStore } from './stores/in-memory'
 export { IndexedDBStore } from './stores/indexeddb'
