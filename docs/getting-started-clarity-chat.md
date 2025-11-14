@@ -128,7 +128,7 @@ function ChatPage() {
 ## Next Steps
 
 - 📖 Read the [API Reference](../packages/react/README.md)
-- 🔄 See [Migrating from Vercel AI SDK](./migrating-from-vercel.md)
+- 🔄 See [Migrating from Vercel AI SDK](./migrating-from-vercel-ai-sdk.md)
 - 🆚 Compare [Clarity vs Vercel AI SDK UI](./clarity-vs-vercel-ai-sdk-ui.md)
 - 🎨 Explore [Structured Output](./getting-started-clarity-chat.md#structured-output) with `useClarityObject`
 - 🛠️ Learn about [Tool UI Registry](./getting-started-clarity-chat.md#tool-ui-registry) for generative UI

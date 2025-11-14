@@ -12,8 +12,12 @@ Welcome to the Clarity Chat Components documentation. This directory contains co
 - **[Clarity vs Vercel AI SDK UI](./clarity-vs-vercel-ai-sdk-ui.md)**  
   Detailed feature comparison between Clarity and Vercel AI SDK UI. Understand when to choose Clarity and what advantages it provides.
 
-- **[Migrating from Vercel](./migrating-from-vercel.md)**  
+- **[Migrating from Vercel](./migrating-from-vercel-ai-sdk.md)**  
   Step-by-step migration guide for moving from Vercel AI SDK UI to Clarity. Includes compatibility notes and common issues.
+
+### Quick Reference
+- **[Quick Reference](./QUICK_REFERENCE.md)** 📋  
+  Copy-paste code snippets for common patterns: basic chat, memory setup, structured output, tool registry, and more.
 
 ## 🚀 Quick Links
 
@@ -24,7 +28,7 @@ Welcome to the Clarity Chat Components documentation. This directory contains co
 
 ### For Vercel Users
 1. Read [Clarity vs Vercel](./clarity-vs-vercel-ai-sdk-ui.md) to understand differences
-2. Follow the [Migration Guide](./migrating-from-vercel.md) for step-by-step instructions
+2. Follow the [Migration Guide](./migrating-from-vercel-ai-sdk.md) for step-by-step instructions
 3. Review [Getting Started](./getting-started-clarity-chat.md) for Clarity-specific features
 
 ## 📦 Package Documentation
@@ -51,6 +55,6 @@ All documentation includes working code examples. For more examples, see:
 ## 🤝 Need Help?
 
 - 📖 Check the [Getting Started Guide](./getting-started-clarity-chat.md)
-- 🔄 Review the [Migration Guide](./migrating-from-vercel.md)
+- 🔄 Review the [Migration Guide](./migrating-from-vercel-ai-sdk.md)
 - 🆚 Compare [Clarity vs Vercel](./clarity-vs-vercel-ai-sdk-ui.md)
 - 📚 Read the [Full API Reference](../packages/react/README.md)
