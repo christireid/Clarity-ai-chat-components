@@ -2,6 +2,8 @@
 
 An optional addon layer for advanced prompt composition and token optimization, built around the **toon** prompt DSL.
 
+> 🚀 **Quick Start**: See [GETTING_STARTED.md](./GETTING_STARTED.md) for a 5-minute setup guide.
+
 ## Overview
 
 This layer provides:

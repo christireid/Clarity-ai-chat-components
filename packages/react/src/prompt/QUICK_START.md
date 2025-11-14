@@ -2,6 +2,8 @@
 
 Get started with prompt and token optimization in under 5 minutes.
 
+> 💡 **New to this?** Start with [GETTING_STARTED.md](./GETTING_STARTED.md) for a step-by-step guide.
+
 ## Enable in useClarityChat (Simplest)
 
 ```tsx

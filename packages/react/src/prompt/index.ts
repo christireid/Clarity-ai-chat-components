@@ -26,3 +26,8 @@ export * from './hooks'
 
 // Utilities
 export * from './utils'
+
+// Re-export commonly used constants for convenience
+export { MODEL_PRESETS } from './core/tokenizer'
+export { BUILT_IN_RECIPES } from './core/recipe'
+export { MODEL_PROFILES, getModelProfile, getModelProfileOrDefault } from './core/model-profiles'
