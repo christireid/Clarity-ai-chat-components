@@ -18,13 +18,14 @@ import {
   getModelProfile,
   MODEL_PROFILES,
 } from '../../index'
-import type { ModelMetadata } from '../core/types'
+import type { ModelMetadata, CoreMessage } from '../core/types'
+import type { CoreMessage as BaseCoreMessage } from '../../hooks/use-chat-enhanced'
 
 /**
  * Example component showing advanced prompt optimization
  */
 export function AdvancedOptimizationExample() {
-  const [messages, setMessages] = useState<any[]>([])
+  const [messages, setMessages] = useState<CoreMessage[]>([])
   const [currentModelId, setCurrentModelId] = useState<string>('gpt-4')
   const [targetTokens, setTargetTokens] = useState(4000)
   const [costBudget, setCostBudget] = useState(0.10)
@@ -68,7 +69,7 @@ export function AdvancedOptimizationExample() {
     optimize,
   } = usePromptOptimizer({
     toon: recipe,
-    messages: messages as any,
+    messages: messages as BaseCoreMessage[],
     model: currentModel,
     targetTokens,
     autoOptimize: true,
@@ -78,9 +79,13 @@ export function AdvancedOptimizationExample() {
 
   // Use dynamic model routing
   const { decision, getBestModel } = useDynamicModelRouting({
-    messages: optimizedMessages as any,
+    messages: optimizedMessages as BaseCoreMessage[],
     currentModel,
-    availableModels: availableModels as any,
+    availableModels: availableModels.map(m => ({
+      model: m.model as ModelMetadata,
+      priority: m.priority,
+      available: m.available,
+    })),
     targetTokens,
     costBudget,
   })
@@ -88,13 +93,13 @@ export function AdvancedOptimizationExample() {
   // Use prompt debugger
   const { debugInfo, enabled, toggle, exportDebugInfo } = usePromptDebugger({
     result: {
-      messages: optimizedMessages as any,
+      messages: optimizedMessages as BaseCoreMessage[],
       tokenStats,
       costEstimate,
-      diagnostics: diagnostics as any,
+      diagnostics,
       strategy,
-    } as any,
-    originalMessages: messages as any,
+    },
+    originalMessages: messages as BaseCoreMessage[],
     model: currentModel,
     enabled: true,
   })
@@ -386,7 +391,7 @@ export function StrategyComparisonExample() {
       <h1>Strategy Comparison</h1>
       {strategies.map(strategy => {
         const { tokenStats, diagnostics } = usePromptOptimizer({
-          messages: messages as any,
+          messages: messages as BaseCoreMessage[],
           model,
           targetTokens: 100,
           strategies: [strategy],

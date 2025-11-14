@@ -157,7 +157,11 @@ export function useOptimizedChatContext(
       setWasOptimized(true)
       onOptimize?.(result.diagnostics)
     } catch (error) {
-      console.error('[useOptimizedChatContext] Optimization failed:', error)
+      // Error is already set in state, no need to log unless debug is enabled
+      if (options.debug) {
+        // eslint-disable-next-line no-console
+        console.error('[useOptimizedChatContext] Optimization failed:', error)
+      }
       setCachedOptimizedMessages(messages)
       setWasOptimized(false)
     }

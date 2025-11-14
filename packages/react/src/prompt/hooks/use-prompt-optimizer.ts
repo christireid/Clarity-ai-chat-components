@@ -12,6 +12,7 @@ import {
   type OptimizedPromptResult,
   type PromptOptimizerOptions,
 } from '../core/prompt-optimizer'
+import { logger } from '../core/logger'
 
 /**
  * Hook options
@@ -124,7 +125,7 @@ export function usePromptOptimizer(
       const error = err instanceof Error ? err : new Error(String(err))
       setError(error)
       if (debug) {
-        console.error('[usePromptOptimizer] Optimization failed:', error)
+        logger.error('Optimization failed:', error)
       }
     } finally {
       setIsOptimizing(false)
