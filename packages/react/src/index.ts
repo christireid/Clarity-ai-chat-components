@@ -187,12 +187,7 @@ export {
   useClarityChatWithAutoSave,
 } from './hooks/use-clarity-chat-helpers'
 
-// Structured object generation hook
-export {
-  useClarityObject,
-  type UseClarityObjectOptions,
-  type UseClarityObjectReturn,
-} from './hooks/use-clarity-object'
+// Note: useClarityObject already exported above with useClarityChat
 
 // Tool integration hook
 export {
