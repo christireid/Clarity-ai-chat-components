@@ -2,7 +2,18 @@
 
 Advanced prompt composition and token optimization utilities for Clarity AI Chat Components.
 
-## Quick Start
+## 🚀 Quick Start (60 seconds)
+
+### Simplest Possible Usage
+
+```tsx
+import { useQuickOptimize } from '@clarity-chat/react'
+
+const { optimizedMessages } = useQuickOptimize({
+  messages: chatMessages,
+  model: 'gpt-4', // That's it!
+})
+```
 
 ### Enable in useClarityChat
 
@@ -21,6 +32,16 @@ const { messages, append, tokenStats } = useClarityChat({
       tokenizer: 'openai',
     },
   },
+})
+```
+
+### With Presets
+
+```tsx
+const { optimizedMessages } = useQuickOptimize({
+  messages: chatMessages,
+  model: 'gpt-4',
+  preset: 'balanced', // or 'conservative', 'aggressive', 'costOptimized', 'qualityFirst'
 })
 ```
 
