@@ -66,8 +66,10 @@ export abstract class ClarityError extends Error {
     this.timestamp = new Date()
     this.originalError = originalError
     
-    // Capture stack trace
-    Error.captureStackTrace(this, this.constructor)
+    // Capture stack trace (Node.js/V8 specific, but safe to call)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor)
+    }
     
     // Preserve original stack if available
     if (originalError?.stack) {

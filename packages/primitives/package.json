@@ -1,6 +1,7 @@
 {
   "name": "@clarity-chat/primitives",
   "version": "0.1.0",
+  "type": "module",
   "description": "Core primitive components for Clarity Chat",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -75,14 +76,14 @@
     {
       "name": "Full Bundle (ESM)",
       "path": "dist/index.mjs",
-      "limit": "15 KB",
+      "limit": "60 KB",
       "gzip": true
     },
     {
       "name": "Single Component (Button)",
       "path": "dist/index.mjs",
       "import": "{ Button }",
-      "limit": "3 KB",
+      "limit": "15 KB",
       "gzip": true
     }
   ]

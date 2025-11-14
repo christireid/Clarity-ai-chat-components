@@ -107,8 +107,8 @@ describe('Textarea Component', () => {
       expect(textarea).toHaveAttribute('rows', '5')
     })
 
-    it('should respect minRows prop', () => {
-      const { container } = render(<Textarea autoResize minRows={5} />)
+    it('should respect maxRows prop', () => {
+      const { container } = render(<Textarea autoResize maxRows={5} />)
       const textarea = container.querySelector('textarea')
       expect(textarea).toBeInTheDocument()
       // minRows is used internally for auto-resize calculation, not as DOM attribute

@@ -89,16 +89,7 @@ export class TokenBudgetManager {
    * Calculate token budgets based on allocation percentages
    */
   private calculateBudgets(maxTokens: number): TokenAllocation {
-    const alloc = this.config.allocation
-    
-    return {
-      systemPrompt: Math.floor(maxTokens * alloc.systemPrompt),
-      userPreferences: Math.floor(maxTokens * alloc.userPreferences),
-      recentContext: Math.floor(maxTokens * alloc.recentContext),
-      semanticMemory: Math.floor(maxTokens * alloc.semanticMemory),
-      episodicMemory: Math.floor(maxTokens * alloc.episodicMemory),
-      responseReserve: Math.floor(maxTokens * alloc.responseReserve),
-    }
+    return this.calculateBudgetsFromAllocation(maxTokens, this.config.allocation)
   }
 
   /**
@@ -137,7 +128,28 @@ export class TokenBudgetManager {
       adjusted.recentContext -= 0.05
     }
 
-    return this.calculateBudgets(this.config.maxContextWindow)
+    return this.calculateBudgetsFromAllocation(
+      this.config.maxContextWindow,
+      adjusted
+    )
+  }
+
+  /**
+   * Calculate token budgets from allocation percentages
+   */
+  private calculateBudgetsFromAllocation(
+    maxTokens: number,
+    alloc: TokenOptimizationConfig['allocation']
+  ): TokenAllocation {
+    return {
+      systemPrompt: Math.floor(maxTokens * alloc.systemPrompt),
+      userPreferences: Math.floor(maxTokens * alloc.userPreferences),
+      recentContext: Math.floor(maxTokens * alloc.recentContext),
+      semanticMemory: Math.floor(maxTokens * alloc.semanticMemory),
+      episodicMemory: Math.floor(maxTokens * alloc.episodicMemory),
+      responseReserve: Math.floor(maxTokens * alloc.responseReserve),
+    }
+>>>>>>> cursor/prepare-memory-package-for-release-9d2d
   }
 
   /**
