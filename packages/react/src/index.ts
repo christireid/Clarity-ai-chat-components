@@ -130,11 +130,8 @@ export {
   type ClarityMemoryOptions,
   type ClarityTransport,
 } from './hooks/use-clarity-chat'
-// Message conversion utilities
-export {
-  coreMessageToMessage,
-  coreMessagesToMessages,
-} from './utils/message-converter'
+// Note: Message conversion utilities (coreMessageToMessage, coreMessagesToMessages) 
+// are exported via './utils' below
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'
@@ -181,17 +178,6 @@ export * from './hooks/use-deferred-search'
 // Export utils first, then explicitly export adapter StreamChunk
 export * from './utils'
 export type { StreamChunk } from './adapters/types'
-// Message conversion utilities
-export {
-  coreMessageToMessage,
-  coreMessagesToMessages,
-} from './utils/message-converter'
-
-// Message conversion utilities
-export {
-  coreMessageToMessage,
-  coreMessagesToMessages,
-} from './utils/message-converter'
 
 // Note: The following are already exported via './utils' above
 // Kept here as documentation of what's available:
