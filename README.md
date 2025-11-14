@@ -118,19 +118,64 @@ bun add @clarity-chat/react
 
 ## ⚡ Quick Start
 
-Get a production-ready AI chat interface in 60 seconds:
+### Simplest Way (5 lines) - NEW! 🎉
+
+Get a production-ready AI chat interface in seconds:
 
 ```tsx
-import { useClarityChat, ChatWindow, coreMessagesToMessages } from '@clarity-chat/react'
-import '@clarity-chat/react/styles.css'
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/dist/styles/index.css'
+
+export default function App() {
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+**That's it!** ✨ You now have a production-ready AI chat interface with:
+
+- ✨ Beautiful animations and transitions
+- ⌨️ Full keyboard navigation
+- 📱 Mobile responsive design
+- ⚡ Optimized performance
+- ♿ WCAG AAA accessibility
+- 🔒 Production-ready security
+- 📊 Token tracking (built-in)
+- 🌐 Network status monitoring (built-in)
+- 🛡️ Error boundaries (built-in)
+
+### Customized Usage (10 lines)
+
+```tsx
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/dist/styles/index.css'
+
+export default function App() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      theme="dark"
+      enableMemory
+      showTokenCounter
+      onMessageSent={(msg) => console.log('Sent:', msg)}
+    />
+  )
+}
+```
+
+### Advanced Usage (Full Control)
+
+For more control, use the hook directly:
+
+```tsx
+import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
+import '@clarity-chat/react/dist/styles/index.css'
 
 function App() {
   const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
   })
 
-  // Convert CoreMessage[] to Message[] for ChatWindow
-  const convertedMessages = coreMessagesToMessages(messages)
+  const convertedMessages = convertCoreMessagesToMessages(messages)
 
   return (
     <ChatWindow
@@ -143,8 +188,6 @@ function App() {
   )
 }
 ```
-
-**That's it!** ✨ You now have a production-ready AI chat interface with:
 
 - ✨ Beautiful animations and transitions
 - ⌨️ Full keyboard navigation

@@ -54,6 +54,8 @@ export * from './components/message-metadata'
 export * from './components/chat-input'
 export * from './components/advanced-chat-input'
 export * from './components/chat-window'
+// High-level drop-in ready component
+export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
 export * from './components/model-selector'
 export * from './components/streaming-message'
 export * from './components/stream-block'
@@ -191,6 +193,13 @@ export {
   useClarityChatWithDebounce,
   useClarityChatWithAutoSave,
 } from './hooks/use-clarity-chat-helpers'
+
+// Composed hooks for common patterns
+export {
+  useChatWithOperations,
+  type UseChatWithOperationsOptions,
+  type UseChatWithOperationsReturn,
+} from './hooks/use-chat-with-operations'
 
 // Note: useClarityObject already exported above with useClarityChat
 
