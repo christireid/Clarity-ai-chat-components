@@ -130,6 +130,25 @@ export function ChatWindow({
   onClear,
   className,
 }: ChatWindowProps) {
+  // Runtime validation
+  if (!Array.isArray(messages)) {
+    throw new Error(
+      'ChatWindow: "messages" prop must be an array.\n\n' +
+      'Example:\n' +
+      '  <ChatWindow messages={[]} onSendMessage={handleSend} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
+
+  if (typeof onSendMessage !== 'function') {
+    throw new Error(
+      'ChatWindow: "onSendMessage" prop is required and must be a function.\n\n' +
+      'Example:\n' +
+      '  <ChatWindow messages={messages} onSendMessage={(msg) => sendMessage(msg)} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
+
   const [input, setInput] = React.useState('')
 
   // Convert CoreMessage[] to Message[] if needed

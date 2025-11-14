@@ -73,6 +73,33 @@ export function ChatInput({
   glowOnFocus = true,
   className,
 }: ChatInputProps) {
+  // Runtime validation
+  if (typeof value !== 'string') {
+    throw new Error(
+      'ChatInput: "value" prop must be a string.\n\n' +
+      'Example:\n' +
+      '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
+
+  if (typeof onChange !== 'function') {
+    throw new Error(
+      'ChatInput: "onChange" prop must be a function.\n\n' +
+      'Example:\n' +
+      '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
+
+  if (typeof onSubmit !== 'function') {
+    throw new Error(
+      'ChatInput: "onSubmit" prop is required and must be a function.\n\n' +
+      'Example:\n' +
+      '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
   const [isFocused, setIsFocused] = React.useState(false)
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
