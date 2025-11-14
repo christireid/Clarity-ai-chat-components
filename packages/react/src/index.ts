@@ -9,12 +9,7 @@ export * from './embeddings'
 
 // Agent Orchestration (Agentic AI)
 export * from './agents'
-// Tool UI Registry
-export {
-  createToolUIRegistry,
-  type ToolComponentProps,
-  type ToolComponentRegistry,
-} from './agents/tool-ui-registry'
+// Note: Tool UI Registry exported below with useClarityObject
 
 // Prompt Templates
 export * from './prompts'
