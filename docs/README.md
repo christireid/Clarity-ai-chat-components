@@ -10,6 +10,11 @@ Welcome to the Clarity Chat Components documentation. This directory contains co
   - Minimal working example
   - What you get out of the box
   - Adding memory in one step
+- **[Quick Reference](./QUICK_REFERENCE.md)** 📋
+  - Common patterns and code snippets
+  - API quick lookup
+  - Memory strategies comparison
+  - Transport protocols
 
 ### Comparisons & Migration
 - **[Clarity vs Vercel AI SDK UI](./clarity-vs-vercel-ai-sdk-ui.md)**
@@ -61,16 +66,19 @@ packages/react/
 ## 🎯 Common Tasks
 
 ### Set Up a Basic Chat
-See [Getting Started](./getting-started-clarity-chat.md#minimal-example)
+- [Quick Reference](./QUICK_REFERENCE.md#basic-chat-setup) - Copy-paste ready code
+- [Getting Started](./getting-started-clarity-chat.md#minimal-example) - Detailed guide
 
 ### Add Memory
-See [Getting Started](./getting-started-clarity-chat.md#add-memory-in-one-step)
+- [Quick Reference](./QUICK_REFERENCE.md#with-memory) - Memory setup snippet
+- [Getting Started](./getting-started-clarity-chat.md#add-memory-in-one-step) - Full explanation
 
 ### Migrate from Vercel
-See [Migration Guide](./migrating-from-vercel-ai-sdk.md)
+- [Migration Guide](./migrating-from-vercel-ai-sdk.md) - Step-by-step instructions
 
 ### Compare Features
-See [Feature Comparison](./clarity-vs-vercel-ai-sdk-ui.md)
+- [Feature Comparison](./clarity-vs-vercel-ai-sdk-ui.md) - Detailed comparison
+- [Quick Reference](./QUICK_REFERENCE.md) - Quick lookup
 
 ## 📝 Examples
 
