@@ -3,10 +3,30 @@
  * 
  * Utilities for converting between CoreMessage (Vercel AI SDK format)
  * and Message (Clarity internal format) types.
+ * 
+ * This is the canonical implementation. All message conversion should use these functions.
  */
 
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
+import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced'
 import type { Message, MessageRole } from '@clarity-chat/types'
+import { generateId } from '@clarity-chat/primitives'
+
+/**
+ * Extract text content from CoreMessageContent
+ * @internal
+ */
+function extractTextContent(content: CoreMessageContent): string {
+  if (typeof content === 'string') {
+    return content
+  }
+  if (Array.isArray(content)) {
+    return content
+      .filter((part) => part.type === 'text')
+      .map((part) => (part as { type: 'text'; text: string }).text)
+      .join('\n')
+  }
+  return ''
+}
 
 /**
  * Convert CoreMessage to Message format
@@ -19,15 +39,8 @@ export function convertCoreMessageToMessage(
   coreMessage: CoreMessage,
   chatId: string = 'default'
 ): Message {
-  // Extract text content from CoreMessage
-  const content = typeof coreMessage.content === 'string'
-    ? coreMessage.content
-    : Array.isArray(coreMessage.content)
-    ? coreMessage.content
-        .filter((part) => part.type === 'text')
-        .map((part) => (part as { type: 'text'; text: string }).text)
-        .join('')
-    : ''
+  const content = extractTextContent(coreMessage.content)
+  const now = new Date()
 
   // Map role types
   const role: MessageRole = 
@@ -36,13 +49,18 @@ export function convertCoreMessageToMessage(
       : (coreMessage.role as MessageRole)
 
   return {
-    id: coreMessage.id || `msg-${Date.now()}-${Math.random()}`,
+    id: coreMessage.id || generateId(),
     chatId,
     role,
     content,
     status: 'sent',
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: now,
+    updatedAt: now,
+    metadata: {
+      toolInvocations: coreMessage.toolInvocations,
+      toolCallId: coreMessage.toolCallId,
+      name: coreMessage.name,
+    },
   }
 }
 
@@ -87,3 +105,34 @@ export function convertMessagesToCoreMessages(
 ): CoreMessage[] {
   return messages.map(convertMessageToCoreMessage)
 }
+
+// ============================================================================
+// Backward Compatibility Aliases
+// ============================================================================
+// These aliases maintain backward compatibility with older code that used
+// the message-converter.ts file. New code should use the "convert" prefixed
+// versions above.
+
+/**
+ * @deprecated Use convertCoreMessageToMessage instead
+ * @alias convertCoreMessageToMessage
+ */
+export const coreMessageToMessage = convertCoreMessageToMessage
+
+/**
+ * @deprecated Use convertCoreMessagesToMessages instead
+ * @alias convertCoreMessagesToMessages
+ */
+export const coreMessagesToMessages = convertCoreMessagesToMessages
+
+/**
+ * @deprecated Use convertMessageToCoreMessage instead
+ * @alias convertMessageToCoreMessage
+ */
+export const messageToCoreMessage = convertMessageToCoreMessage
+
+/**
+ * @deprecated Use convertMessagesToCoreMessages instead
+ * @alias convertMessagesToCoreMessages
+ */
+export const messagesToCoreMessages = convertMessagesToCoreMessages
