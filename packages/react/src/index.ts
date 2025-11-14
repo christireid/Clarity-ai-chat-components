@@ -122,16 +122,22 @@ export {
   type UseChatReturn as UseChatReturnLegacy,
 } from './hooks/use-chat'
 export * from './hooks/use-chat-enhanced'
-// Flagship hook - primary public API
 export {
   useClarityChat,
   type UseClarityChatOptions,
   type UseClarityChatReturn,
   type ClarityMemoryOptions,
-  type ClarityTransport,
+  type ClarityWebSocketOptions,
+  type ClarityChatMemoryInfo,
 } from './hooks/use-clarity-chat'
-// Note: Message conversion utilities (coreMessageToMessage, coreMessagesToMessages) 
-// are exported via './utils' below
+
+// Message conversion utilities
+export {
+  convertCoreMessageToMessage,
+  convertMessageToCoreMessage,
+  convertCoreMessagesToMessages,
+  convertMessagesToCoreMessages,
+} from './utils/message-conversion'
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'
