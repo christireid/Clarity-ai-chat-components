@@ -30,6 +30,8 @@ yarn add @clarity-chat/react
 
 ## 🚀 Quick Start
 
+> 📖 **New to Clarity?** Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or check the [Quick Reference](../../docs/QUICK_REFERENCE.md) for copy-paste snippets.
+
 ### Basic Chat
 
 ```tsx
@@ -154,6 +156,11 @@ const toolRegistry = createToolUIRegistry({
 ```
 
 ## 📚 Documentation
+
+### Quick Start & Migration
+- **[Getting Started with Clarity Chat](../../docs/getting-started-clarity-chat.md)** ⭐ - Quick start guide
+- **[Clarity vs Vercel AI SDK UI](../../docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
+- **[Migrating from Vercel](../../docs/migrating-from-vercel.md)** - Migration guide
 
 ### Getting Started
 - **[Getting Started Guide](./GETTING_STARTED.md)** ⭐ - Complete guide covering all features
