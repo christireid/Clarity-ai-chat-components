@@ -26,7 +26,7 @@ export const anthropicAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': config.apiKey || process.env.ANTHROPIC_API_KEY || '',
+          'x-api-key': config.apiKey || process.env['ANTHROPIC_API_KEY'] || '',
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
@@ -67,7 +67,7 @@ export const anthropicAdapter: ModelAdapter = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': config.apiKey || process.env.ANTHROPIC_API_KEY || '',
+          'x-api-key': config.apiKey || process.env['ANTHROPIC_API_KEY'] || '',
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
@@ -169,6 +169,7 @@ export const anthropicAdapter: ModelAdapter = {
     }
     
     const rate = rates[model] || rates['claude-3-sonnet-20240229']
+    if (!rate) return 0
     
     return (
       (usage.promptTokens / 1000000) * rate.input +
