@@ -19,6 +19,13 @@ Welcome to the Clarity Chat Components documentation. This directory contains co
 - **[Quick Reference](./QUICK_REFERENCE.md)** 📋  
   Copy-paste code snippets for common patterns: basic chat, memory setup, structured output, tool registry, and more.
 
+### Troubleshooting & FAQ
+- **[Troubleshooting Guide](./TROUBLESHOOTING.md)** 🔧  
+  Common issues and solutions: installation problems, runtime errors, API issues, performance optimization, and more.
+
+- **[FAQ](./FAQ.md)** ❓  
+  Frequently asked questions: general questions, installation, usage patterns, memory, streaming, structured output, tools, error handling, migration, and advanced topics.
+
 ## 🚀 Quick Links
 
 ### For New Users
@@ -55,6 +62,8 @@ All documentation includes working code examples. For more examples, see:
 ## 🤝 Need Help?
 
 - 📖 Check the [Getting Started Guide](./getting-started-clarity-chat.md)
+- ❓ Read the [FAQ](./FAQ.md) for common questions
+- 🔧 Check the [Troubleshooting Guide](./TROUBLESHOOTING.md) for solutions
 - 🔄 Review the [Migration Guide](./migrating-from-vercel-ai-sdk.md)
 - 🆚 Compare [Clarity vs Vercel](./clarity-vs-vercel-ai-sdk-ui.md)
 - 📚 Read the [Full API Reference](../packages/react/README.md)
