@@ -177,7 +177,7 @@ export function PreBuiltRecipeExample() {
  * Composing multiple recipes
  */
 export function ComposedRecipeExample() {
-  const { composeRecipes } = require('../core/dsl')
+  const { composeRecipes } = require('../core')
   const chatbotRecipe = createPromptRecipe({
     id: 'base',
     system: 'You are a helpful assistant.',
