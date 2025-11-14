@@ -1,0 +1,56 @@
+# Clarity Chat Components Documentation
+
+Welcome to the Clarity Chat Components documentation. This directory contains comprehensive guides for using Clarity in your React applications.
+
+## 📚 Documentation Index
+
+### Getting Started
+- **[Getting Started with Clarity Chat](./getting-started-clarity-chat.md)**  
+  Get from zero to a working AI chat interface in minutes. Includes installation, minimal examples, and quick feature overview.
+
+### Comparison & Migration
+- **[Clarity vs Vercel AI SDK UI](./clarity-vs-vercel-ai-sdk-ui.md)**  
+  Detailed feature comparison between Clarity and Vercel AI SDK UI. Understand when to choose Clarity and what advantages it provides.
+
+- **[Migrating from Vercel](./migrating-from-vercel.md)**  
+  Step-by-step migration guide for moving from Vercel AI SDK UI to Clarity. Includes compatibility notes and common issues.
+
+## 🚀 Quick Links
+
+### For New Users
+1. Start with [Getting Started](./getting-started-clarity-chat.md)
+2. Review the [Comparison Guide](./clarity-vs-vercel-ai-sdk-ui.md) to understand Clarity's advantages
+3. Check the [package README](../packages/react/README.md) for detailed API reference
+
+### For Vercel Users
+1. Read [Clarity vs Vercel](./clarity-vs-vercel-ai-sdk-ui.md) to understand differences
+2. Follow the [Migration Guide](./migrating-from-vercel.md) for step-by-step instructions
+3. Review [Getting Started](./getting-started-clarity-chat.md) for Clarity-specific features
+
+## 📦 Package Documentation
+
+- **[React Package README](../packages/react/README.md)** - Full API reference, examples, and advanced usage
+- **[Audit Report](../CLARITY_VS_VERCEL_AI_SDK_AUDIT.md)** - Technical audit comparing Clarity to Vercel AI SDK UI
+
+## 🎯 Key Features
+
+- ✅ **API Compatible** - Drop-in replacement for Vercel AI SDK UI hooks
+- ✅ **Memory Management** - First-class memory system with 3 strategies
+- ✅ **Production UI** - Ready-to-use `ChatWindow` and components
+- ✅ **Structured Output** - Type-safe `useClarityObject<T>` hook
+- ✅ **Tool UI Registry** - Automatic tool result rendering
+- ✅ **Advanced Streaming** - SSE + WebSocket with reconnection
+- ✅ **Enterprise Features** - Analytics, quotas, RBAC scaffolding
+
+## 💡 Examples
+
+All documentation includes working code examples. For more examples, see:
+- [Package Examples](../packages/react/src/examples/)
+- [Storybook Stories](../apps/storybook/stories/)
+
+## 🤝 Need Help?
+
+- 📖 Check the [Getting Started Guide](./getting-started-clarity-chat.md)
+- 🔄 Review the [Migration Guide](./migrating-from-vercel.md)
+- 🆚 Compare [Clarity vs Vercel](./clarity-vs-vercel-ai-sdk-ui.md)
+- 📚 Read the [Full API Reference](../packages/react/README.md)

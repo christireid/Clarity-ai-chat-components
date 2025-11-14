@@ -78,6 +78,8 @@
 - [Animation System](#️-animation-system)
 - [Packages](#-packages)
 - [Documentation](#-documentation)
+  - [Getting Started](#getting-started)
+  - [Comparison & Migration](#comparison--migration)
 - [Performance Metrics](#-performance-metrics)
 - [Developer Experience](#️-developer-experience)
   - [Beautiful CLI Tool](#beautiful-cli-tool)
