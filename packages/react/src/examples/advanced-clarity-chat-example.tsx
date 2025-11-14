@@ -35,8 +35,8 @@ export function AdvancedClarityChatExample() {
     append,
     isLoading,
     error,
-    contextSummary,
-    memoryEnabled,
+    memoryInfo,
+    memoryErrorInfo,
   } = useClarityChat({
     api: '/api/chat',
     memory: {
@@ -103,22 +103,31 @@ export function AdvancedClarityChatExample() {
             </select>
           </div>
 
-          {memoryEnabled && (
+          {memoryInfo.enabled && (
             <Badge variant="success" className="gap-1">
               <span className="h-2 w-2 rounded-full bg-green-500" />
-              Memory Active
+              Memory Active ({memoryInfo.memoryCount} memories)
             </Badge>
           )}
         </div>
 
         {/* Memory Context Preview */}
-        {contextSummary && (
+        {memoryInfo.lastContextSummary && (
           <div className="mt-3 rounded-lg border bg-muted/50 p-3">
             <p className="text-xs font-medium text-muted-foreground mb-1">
               Memory Context:
             </p>
             <p className="text-xs text-foreground/80 line-clamp-2">
-              {contextSummary}
+              {memoryInfo.lastContextSummary}
+            </p>
+          </div>
+        )}
+        
+        {/* Memory Error Display */}
+        {memoryErrorInfo.memoryError && (
+          <div className="mt-2 rounded-lg border border-yellow-200 bg-yellow-50 p-2">
+            <p className="text-xs text-yellow-800">
+              Memory {memoryErrorInfo.memoryErrorOperation} error ({memoryErrorInfo.memoryErrorType}): {memoryErrorInfo.memoryError.message}
             </p>
           </div>
         )}
