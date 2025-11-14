@@ -6,7 +6,7 @@
  */
 
 // Main factory function
-export { clarityMemory } from './factory'
+export { clarityMemory, clarityMemoryHelpers } from './factory'
 
 // Core classes
 export { ClarityMemory } from './core/clarity-memory'
@@ -44,6 +44,9 @@ export type { Summarizer } from './summarization/summarizer'
 
 // React (optional)
 export * from './react'
+
+// Utilities
+export * from './utils'
 
 // Legacy exports (for backward compatibility)
 export { MemoryService } from './memory-service'

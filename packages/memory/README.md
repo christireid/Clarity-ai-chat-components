@@ -24,13 +24,50 @@ A drop-in, zero-config memory system that works everywhere: React, Vue, Node.js,
 npm install @clarity-chat/memory
 ```
 
-### Basic Usage
+### Zero-Config Usage (Recommended)
+
+Clarity Memory auto-detects your environment and configures itself:
 
 ```typescript
 import { clarityMemory } from '@clarity-chat/memory'
 
-// Zero-config usage
+// That's it! Works everywhere (browser, Node.js, serverless)
 const memory = clarityMemory()
+await memory.initialize()
+
+// Start using immediately
+await memory.add('User prefers dark mode')
+const results = await memory.recall('preferences')
+const context = await memory.context({ maxTokens: 2000 })
+```
+
+### Environment-Specific Setup
+
+```typescript
+import { clarityMemoryHelpers } from '@clarity-chat/memory'
+
+// Browser (auto-uses IndexedDB)
+const memory = clarityMemoryHelpers.browser()
+
+// Serverless (auto-uses in-memory)
+const memory = clarityMemoryHelpers.serverless()
+
+// Node.js (auto-uses in-memory)
+const memory = clarityMemoryHelpers.node()
+```
+
+### Basic Usage with Configuration
+
+```typescript
+import { clarityMemory } from '@clarity-chat/memory'
+
+const memory = clarityMemory({
+  embeddingProvider: {
+    provider: 'openai',
+    apiKey: process.env.OPENAI_API_KEY,
+  },
+})
+
 await memory.initialize()
 
 // Add memories
@@ -252,6 +289,23 @@ interface TokenBudgetConfig {
   dynamicAllocation: boolean
   strictMode: boolean
 }
+```
+
+## Health Checks & Validation
+
+Clarity Memory includes built-in validation and health checks:
+
+```typescript
+// Configuration validation happens automatically
+const memory = clarityMemory({
+  // Invalid config will show helpful errors
+  storage: { type: 'indexeddb' }, // ❌ Error if not in browser
+})
+
+// Health check
+const health = await memory.healthCheck()
+console.log(health.healthy) // true/false
+console.log(health.checks) // Detailed status of each component
 ```
 
 ## Examples
