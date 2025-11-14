@@ -123,6 +123,28 @@ export interface ClarityWebSocketOptions {
 }
 
 /**
+ * Prompt optimization configuration
+ */
+export interface ClarityPromptOptimizationOptions {
+  /** Enable prompt optimization */
+  enabled?: boolean
+  /** Target token budget */
+  targetTokens?: number
+  /** Optimization strategy */
+  strategy?: 'sliding-window' | 'summarize-old' | 'drop-low-priority' | 'hybrid'
+  /** Model metadata for token estimation */
+  model?: {
+    model: string
+    maxTokens: number
+    inputPricePer1K?: number
+    outputPricePer1K?: number
+    tokenizer?: 'openai' | 'anthropic' | 'approximate'
+  }
+  /** Summarization function (for summarize-old strategy) */
+  summarizeFn?: (messages: CoreMessage[]) => Promise<string>
+}
+
+/**
  * Options for useClarityChat hook
  */
 export interface UseClarityChatOptions
@@ -133,6 +155,8 @@ export interface UseClarityChatOptions
   transport?: 'sse' | 'websocket'
   /** WebSocket-specific options (only used when transport is 'websocket') */
   websocket?: ClarityWebSocketOptions
+  /** Prompt optimization configuration */
+  promptOptimization?: ClarityPromptOptimizationOptions
 }
 
 /**
@@ -147,6 +171,24 @@ export interface ClarityChatMemoryInfo {
   strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
   /** Last context that was added to messages */
   lastContextSummary?: string
+}
+
+/**
+ * Token statistics from prompt optimization
+ */
+export interface ClarityChatTokenStats {
+  /** Original token count */
+  original: number
+  /** Optimized token count */
+  optimized: number
+  /** Tokens saved */
+  saved: number
+  /** Compression ratio */
+  compressionRatio: number
+  /** Whether optimization was applied */
+  wasOptimized: boolean
+  /** Last optimization reason */
+  lastOptimizationReason?: string
 }
 
 /**
@@ -170,6 +212,8 @@ export type UseClarityChatReturn = UseChatEnhancedReturn & {
   memoryInfo: ClarityChatMemoryInfo
   /** Error information for memory operations */
   memoryErrorInfo: ClarityChatErrorInfo
+  /** Token statistics (if prompt optimization is enabled) */
+  tokenStats?: ClarityChatTokenStats
 }
 
 /**
@@ -186,7 +230,7 @@ export type UseClarityChatReturn = UseChatEnhancedReturn & {
 export function useClarityChat(
   options: UseClarityChatOptions = {}
 ): UseClarityChatReturn {
-  const { memory, transport, ...rest } = options
+  const { memory, transport, promptOptimization, ...rest } = options
 
   // Get memory context safely (returns null if MemoryProvider is not available)
   // This hook always runs unconditionally, satisfying React hooks rules
@@ -226,6 +270,99 @@ export function useClarityChat(
       return enrichedMessages
     },
     [memory?.enabled, originalTransform]
+  )
+
+  // Token stats state
+  const [tokenStats, setTokenStats] = React.useState<
+    ClarityChatTokenStats | undefined
+  >()
+
+  // Enhanced transform with prompt optimization
+  const optimizedTransform = React.useCallback(
+    (messages: CoreMessage[]): CoreMessage[] => {
+      let transformed = messages
+
+      // Apply memory transform first if enabled
+      if (memory?.enabled && memoryContext?.service) {
+        transformed = enhancedTransform(transformed)
+      } else if (originalTransform) {
+        transformed = originalTransform(transformed)
+      }
+
+      // Apply prompt optimization if enabled
+      if (
+        promptOptimization?.enabled &&
+        promptOptimization.targetTokens &&
+        promptOptimization.model
+      ) {
+        // Dynamic import to avoid circular dependencies
+        const { optimizeMessagesForBudget, estimatePromptTokens } = require('../prompt/core')
+        
+        const modelMetadata = {
+          model: promptOptimization.model.model,
+          maxTokens: promptOptimization.model.maxTokens,
+          inputPricePer1K: promptOptimization.model.inputPricePer1K,
+          outputPricePer1K: promptOptimization.model.outputPricePer1K,
+          tokenizer: promptOptimization.model.tokenizer || 'approximate',
+        }
+
+        const originalEstimate = estimatePromptTokens(transformed, modelMetadata)
+
+        if (originalEstimate.tokens > promptOptimization.targetTokens) {
+          const optimizationResult = optimizeMessagesForBudget(
+            transformed,
+            {
+              targetTokens: promptOptimization.targetTokens,
+              strategy: promptOptimization.strategy || 'hybrid',
+              preserveSystem: true,
+              minMessages: 2,
+              summarizeFn: promptOptimization.summarizeFn,
+            },
+            modelMetadata
+          )
+
+          transformed = optimizationResult.messages
+
+          // Update token stats
+          const optimizedEstimate = estimatePromptTokens(transformed, modelMetadata)
+
+          setTokenStats({
+            original: originalEstimate.tokens,
+            optimized: optimizedEstimate.tokens,
+            saved: originalEstimate.tokens - optimizedEstimate.tokens,
+            compressionRatio:
+              originalEstimate.tokens > 0
+                ? optimizedEstimate.tokens / originalEstimate.tokens
+                : 1.0,
+            wasOptimized: true,
+            lastOptimizationReason: optimizationResult.diagnostics.details
+              .map((d) => d.reason)
+              .join(', '),
+          })
+        } else {
+          setTokenStats({
+            original: originalEstimate.tokens,
+            optimized: originalEstimate.tokens,
+            saved: 0,
+            compressionRatio: 1.0,
+            wasOptimized: false,
+          })
+        }
+      }
+
+      return transformed
+    },
+    [
+      memory?.enabled,
+      memoryContext?.service,
+      enhancedTransform,
+      originalTransform,
+      promptOptimization?.enabled,
+      promptOptimization?.targetTokens,
+      promptOptimization?.strategy,
+      promptOptimization?.model,
+      promptOptimization?.summarizeFn,
+    ]
   )
 
   // Enhanced onFinish callback to store messages in memory
@@ -308,16 +445,30 @@ export function useClarityChat(
     [memory?.enabled, memoryContext?.service, originalOnFinish]
   )
 
+  // Determine final transform function
+  // Priority: prompt optimization (includes memory) > memory > original
+  const getFinalTransform = () => {
+    if (
+      promptOptimization?.enabled &&
+      promptOptimization.targetTokens &&
+      promptOptimization.model
+    ) {
+      return optimizedTransform
+    }
+    if (memory?.enabled && memoryContext?.service) {
+      return enhancedTransform
+    }
+    return originalTransform
+  }
+
   // Wrap useChatEnhanced with Clarity defaults
   const chat = useChatEnhanced({
     stream: true,
     streamProtocol,
     // Prefer SSE by default for parity with Vercel stream protocols
     ...rest,
-    // Override transform if memory is enabled
-    transform: memory?.enabled && memoryContext?.service
-      ? enhancedTransform
-      : originalTransform,
+    // Use final transform
+    transform: getFinalTransform(),
     // Override onFinish if memory is enabled
     onFinish: memory?.enabled && memoryContext?.service
       ? enhancedOnFinish
@@ -486,7 +637,7 @@ export function useClarityChat(
     [memoryError]
   )
 
-  // Return enhanced chat with wrapped append, memory info, and error info
+  // Return enhanced chat with wrapped append, memory info, error info, and token stats
   return {
     ...chat,
     append: memory?.enabled && memoryContext?.service
@@ -494,5 +645,6 @@ export function useClarityChat(
       : chat.append,
     memoryInfo,
     memoryErrorInfo,
+    tokenStats,
   }
 }

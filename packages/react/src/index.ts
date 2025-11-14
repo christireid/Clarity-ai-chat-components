@@ -133,6 +133,8 @@ export {
   type ClarityWebSocketOptions,
   type ClarityChatMemoryInfo,
   type ClarityChatErrorInfo,
+  type ClarityPromptOptimizationOptions,
+  type ClarityChatTokenStats,
 } from './hooks/use-clarity-chat'
 export {
   useClarityObject,
