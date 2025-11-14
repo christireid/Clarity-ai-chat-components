@@ -11,6 +11,11 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
+    "./prompt": {
+      "types": "./dist/prompt/index.d.ts",
+      "import": "./dist/prompt/index.mjs",
+      "require": "./dist/prompt/index.js"
+    },
     "./styles.css": "./dist/styles/index.css",
     "./dist/styles/index.css": "./dist/styles/index.css",
     "./components/icons": {
