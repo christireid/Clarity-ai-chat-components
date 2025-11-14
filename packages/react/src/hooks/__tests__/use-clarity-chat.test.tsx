@@ -27,7 +27,8 @@ describe('useClarityChat', () => {
     expect(result.current.messages).toEqual([])
     expect(result.current.isLoading).toBe(false)
     expect(result.current.error).toBeUndefined()
-    expect(result.current.memoryEnabled).toBe(false)
+    expect(result.current.memoryInfo.enabled).toBe(false)
+    expect(result.current.memoryInfo.memoryCount).toBe(0)
   })
 
   it('should initialize with api endpoint', () => {
@@ -36,7 +37,7 @@ describe('useClarityChat', () => {
     )
 
     expect(result.current.messages).toEqual([])
-    expect(result.current.memoryEnabled).toBe(false)
+    expect(result.current.memoryInfo.enabled).toBe(false)
   })
 
   it('should default to SSE transport', () => {
@@ -61,8 +62,9 @@ describe('useClarityChat', () => {
       useClarityChat({ api: '/api/chat' })
     )
 
-    expect(result.current.memoryEnabled).toBe(false)
-    expect(result.current.contextSummary).toBeUndefined()
+    expect(result.current.memoryInfo.enabled).toBe(false)
+    expect(result.current.memoryInfo.memoryCount).toBe(0)
+    expect(result.current.memoryErrorInfo.memoryError).toBeNull()
   })
 
   it('should handle memory when MemoryProvider is not available', () => {
@@ -74,7 +76,8 @@ describe('useClarityChat', () => {
     )
 
     // Memory should be disabled if provider is not available
-    expect(result.current.memoryEnabled).toBe(false)
+    expect(result.current.memoryInfo.enabled).toBe(false)
+    expect(result.current.memoryInfo.memoryCount).toBe(0)
   })
 
   it('should handle append for user messages', async () => {
@@ -120,15 +123,17 @@ describe('useClarityChat', () => {
     expect(typeof result.current.setMessages).toBe('function')
   })
 
-  it('should extend return type with memoryEnabled and contextSummary', () => {
+  it('should extend return type with memoryInfo and memoryErrorInfo', () => {
     const { result } = renderHook(() =>
       useClarityChat({ api: '/api/chat' })
     )
 
     // Verify Clarity-specific additions
-    expect('memoryEnabled' in result.current).toBe(true)
-    expect('contextSummary' in result.current).toBe(true)
-    expect(typeof result.current.memoryEnabled).toBe('boolean')
+    expect('memoryInfo' in result.current).toBe(true)
+    expect('memoryErrorInfo' in result.current).toBe(true)
+    expect(typeof result.current.memoryInfo.enabled).toBe('boolean')
+    expect(typeof result.current.memoryInfo.memoryCount).toBe('number')
+    expect(result.current.memoryErrorInfo.memoryError).toBeNull()
   })
 
   it('should handle onFinish callback', async () => {
@@ -185,13 +190,13 @@ describe('useClarityChat', () => {
           enabled: true,
           strategy: 'semantic-chunks',
           maxTokens: 4000,
-          autoCapture: true,
         },
       })
     )
 
     // Memory should be disabled if provider is not available
-    expect(result.current.memoryEnabled).toBe(false)
+    expect(result.current.memoryInfo.enabled).toBe(false)
+    expect(result.current.memoryInfo.strategy).toBe('semantic-chunks')
   })
 })
 
@@ -219,6 +224,8 @@ describe('useClarityChat with MemoryProvider', () => {
 
     // Note: Memory might still be disabled if service is not initialized
     // This depends on the MemoryProvider's internal state
-    expect(typeof result.current.memoryEnabled).toBe('boolean')
+    expect(typeof result.current.memoryInfo.enabled).toBe('boolean')
+    expect('memoryInfo' in result.current).toBe(true)
+    expect('memoryErrorInfo' in result.current).toBe(true)
   })
 })
