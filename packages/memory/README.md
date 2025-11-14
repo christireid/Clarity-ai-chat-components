@@ -1,34 +1,65 @@
 # @clarity-chat/memory
 
-> Framework-agnostic AI memory and context management utilities
+**Framework-agnostic AI memory and context management for TypeScript/JavaScript applications.**
 
-Production-ready utilities for managing AI conversation memory, reducing token costs by up to 90%. Works with **any JavaScript/TypeScript application** - Node.js, React, Vue, Svelte, vanilla JS, or any other framework.
+A drop-in, zero-config memory system that works everywhere: React, Vue, Node.js, serverless functions, and browser apps. Designed to be simpler, more powerful, and easier to use than alternatives like MemMachine.
 
 ## Features
 
-✅ **Framework Agnostic** - Use in any JS/TS application  
-✅ **Zero Dependencies** - Pure TypeScript with no runtime deps  
-✅ **Token Optimization** - 60-90% cost reduction  
-✅ **Semantic Search** - Vector store integrations  
-✅ **Auto-Management** - Cleanup, compression, summarization  
-✅ **Event System** - Monitor all memory operations  
-✅ **Production Ready** - Battle-tested, fully typed  
+- ✅ **Zero-config by default** - Works out of the box
+- ✅ **Framework-agnostic** - Use in React, Vue, Node.js, serverless, browser
+- ✅ **TypeScript-first** - Full type safety and excellent DX
+- ✅ **Built-in token budgeting** - Automatic context optimization (60-90% cost reduction)
+- ✅ **Multiple storage backends** - In-memory, IndexedDB, Redis, Postgres (coming soon)
+- ✅ **Embedding providers** - OpenAI, local, custom (Anthropic coming soon)
+- ✅ **Semantic search** - Vector-based memory retrieval
+- ✅ **Automatic compression** - Adaptive memory compression strategies
+- ✅ **Context bundling** - Optimized context for LLMs
 
-## Installation
+## Quick Start
+
+### Installation
 
 ```bash
 npm install @clarity-chat/memory
 ```
 
-## Quick Start (Any Framework)
+### Basic Usage
 
 ```typescript
-import { MemoryService } from '@clarity-chat/memory'
+import { clarityMemory } from '@clarity-chat/memory'
 
-// Create service
-const memory = new MemoryService({
-  tokenOptimization: {
-    maxContextWindow: 4096,
+// Zero-config usage
+const memory = clarityMemory()
+await memory.initialize()
+
+// Add memories
+await memory.add('User prefers dark mode', {
+  type: 'semantic',
+  scope: 'user',
+  importance: 0.8,
+})
+
+// Recall memories
+const results = await memory.recall('user preferences')
+console.log(results[0]?.memory.content) // "User prefers dark mode"
+
+// Get optimized context
+const context = await memory.context({ maxTokens: 2000 })
+console.log(context.formatted) // Ready-to-use context string
+```
+
+### With OpenAI Embeddings
+
+```typescript
+const memory = clarityMemory({
+  embeddingProvider: {
+    provider: 'openai',
+    apiKey: process.env.OPENAI_API_KEY,
+    model: 'text-embedding-3-small',
+  },
+  tokenBudget: {
+    maxTokens: 4096,
     allocation: {
       systemPrompt: 0.10,
       userPreferences: 0.15,
@@ -38,539 +69,295 @@ const memory = new MemoryService({
       responseReserve: 0.05,
     },
     dynamicAllocation: true,
-    enableCompression: true,
-    enableChunking: true,
-  },
-  persistence: {
-    useVectorStore: false,
-    useCache: true,
-    useDatabase: false,
-  },
-  enableAutoCleanup: true,
-  retentionPolicy: {
-    shortTerm: 3600,
-    session: 86400,
-    thread: 604800,
-    global: 0,
+    strictMode: false,
   },
 })
 
-// Add memories
-await memory.addMemory(
-  'User prefers TypeScript',
-  'semantic',
-  'user',
-  { userId: 'user-123' }
-)
+await memory.initialize()
 
-// Query memories
-const results = await memory.query({
-  query: 'programming preferences',
+// Add memories (embeddings generated automatically)
+await memory.add('I love TypeScript')
+await memory.add('I prefer functional programming')
+
+// Semantic search
+const results = await memory.recall('programming languages', {
   limit: 5,
-})
-
-// Optimize context for LLM
-const optimizer = memory.getOptimizer()
-const optimized = optimizer.optimizeContext({
-  systemPrompt: 'You are a helpful assistant.',
-  userPreferences: { language: 'TypeScript' },
-  recentMessages: ['Hello', 'How are you?'],
-  semanticMemories: [],
-  episodicMemories: [],
-})
-```
-
-## Framework Examples
-
-### Node.js / Express
-
-```typescript
-import express from 'express'
-import { MemoryService } from '@clarity-chat/memory'
-
-const app = express()
-const memory = new MemoryService(config)
-
-app.post('/chat', async (req, res) => {
-  const { userId, message } = req.body
-  
-  // Get relevant memories
-  const memories = await memory.query({
-    query: message,
-    userId,
-    limit: 5,
-  })
-  
-  // Build context
-  const context = memories.map(r => r.memory.content).join('\n')
-  
-  // Call LLM with context
-  const response = await callLLM(message, context)
-  
-  // Store interaction
-  await memory.addMemory(message, 'episodic', 'session', { userId })
-  await memory.addMemory(response, 'episodic', 'session', { userId })
-  
-  res.json({ response })
-})
-```
-
-### React
-
-```typescript
-import { MemoryService } from '@clarity-chat/memory'
-import { useState, useEffect } from 'react'
-
-function ChatApp() {
-  const [memory] = useState(() => new MemoryService(config))
-  const [messages, setMessages] = useState([])
-  
-  const handleSend = async (text) => {
-    // Get relevant context
-    const memories = await memory.query({
-      query: text,
-      limit: 5,
-    })
-    
-    // Call LLM
-    const response = await callLLM(text, memories)
-    
-    // Store
-    await memory.addMemory(text, 'episodic', 'session')
-    await memory.addMemory(response, 'episodic', 'session')
-    
-    setMessages(prev => [...prev, 
-      { role: 'user', content: text },
-      { role: 'assistant', content: response }
-    ])
-  }
-  
-  return <div>{/* Your UI */}</div>
-}
-```
-
-### Vue 3
-
-```typescript
-import { ref, onMounted } from 'vue'
-import { MemoryService } from '@clarity-chat/memory'
-
-export default {
-  setup() {
-    const memory = new MemoryService(config)
-    const messages = ref([])
-    
-    const sendMessage = async (text) => {
-      const memories = await memory.query({
-        query: text,
-        limit: 5,
-      })
-      
-      const context = memories.map(m => m.memory.content).join('\n')
-      const response = await callLLM(text, context)
-      
-      await memory.addMemory(text, 'episodic', 'session')
-      
-      messages.value.push(
-        { role: 'user', content: text },
-        { role: 'assistant', content: response }
-      )
-    }
-    
-    return { messages, sendMessage }
-  }
-}
-```
-
-### Svelte
-
-```typescript
-<script lang="ts">
-  import { MemoryService } from '@clarity-chat/memory'
-  import { onMount } from 'svelte'
-  
-  let memory: MemoryService
-  let messages = []
-  
-  onMount(() => {
-    memory = new MemoryService(config)
-  })
-  
-  async function sendMessage(text: string) {
-    const memories = await memory.query({ query: text, limit: 5 })
-    const response = await callLLM(text, memories)
-    
-    await memory.addMemory(text, 'episodic', 'session')
-    
-    messages = [...messages, 
-      { role: 'user', content: text },
-      { role: 'assistant', content: response }
-    ]
-  }
-</script>
-```
-
-### Vanilla JavaScript
-
-```javascript
-import { MemoryService } from '@clarity-chat/memory'
-
-const memory = new MemoryService(config)
-
-document.getElementById('send').addEventListener('click', async () => {
-  const input = document.getElementById('input').value
-  
-  // Get context
-  const memories = await memory.query({
-    query: input,
-    limit: 5,
-  })
-  
-  // Call LLM
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    body: JSON.stringify({ message: input, memories }),
-  }).then(r => r.json())
-  
-  // Store
-  await memory.addMemory(input, 'episodic', 'session')
-  
-  // Display
-  document.getElementById('messages').innerHTML += `
-    <div>${input}</div>
-    <div>${response}</div>
-  `
-})
-```
-
-## Core Utilities
-
-### MemoryService
-
-Main service for memory management:
-
-```typescript
-const memory = new MemoryService(config)
-
-// CRUD operations
-await memory.addMemory(content, type, scope, metadata, options)
-await memory.query({ query, limit, types, scopes })
-await memory.updateMemory(id, updates)
-await memory.deleteMemory(id)
-
-// Advanced operations
-await memory.promoteMemory(id, 'global')
-await memory.compressMemory(id, 0.5)
-await memory.flushBuffer()
-await memory.cleanup()
-
-// Statistics
-const stats = memory.getStats()
-const context = memory.getMemoryContext()
-
-// Events
-memory.on('memory:created', (event) => console.log(event))
-memory.on('memory:compressed', (event) => console.log(event))
-```
-
-### TokenCounter
-
-Token counting and text manipulation:
-
-```typescript
-import { TokenCounter } from '@clarity-chat/memory'
-
-// Count tokens
-const tokens = TokenCounter.count('Hello world')
-
-// Truncate to budget
-const truncated = TokenCounter.truncate(text, 100)
-
-// Split sentences
-const sentences = TokenCounter.splitSentences(text)
-
-// Count batch
-const total = TokenCounter.countBatch(['Hello', 'world'])
-```
-
-### TokenBudgetManager
-
-Manage token allocation:
-
-```typescript
-import { TokenBudgetManager } from '@clarity-chat/memory'
-
-const manager = new TokenBudgetManager(config)
-
-// Get allocation
-const allocation = manager.getAllocation()
-
-// Adjust dynamically
-const adjusted = manager.adjustAllocation(context)
-
-// Optimize memories
-const optimized = manager.optimizeMemories(memories, budget)
-
-// Check budget
-const exceeded = manager.isBudgetExceeded(usedTokens)
-```
-
-### MemoryCompressor
-
-Compress conversations and memories:
-
-```typescript
-import { MemoryCompressor } from '@clarity-chat/memory'
-
-const compressor = new MemoryCompressor()
-
-// Compress conversation
-const result = compressor.compressConversation(messages, budget)
-
-// Compress single memory
-const compressed = compressor.compressMemory(memory, 0.5)
-```
-
-### SemanticChunker
-
-Chunk text for better retrieval:
-
-```typescript
-import { SemanticChunker } from '@clarity-chat/memory'
-
-const chunker = new SemanticChunker(200, 50)
-
-// Chunk conversation
-const chunks = chunker.chunkConversation(text)
-
-// Retrieve optimal chunks
-const selected = chunker.retrieveOptimalChunks(chunks, budget)
-
-// Extract topic
-const topic = chunker.extractTopic(chunk)
-```
-
-### ContextOptimizer
-
-Complete context optimization:
-
-```typescript
-import { ContextOptimizer } from '@clarity-chat/memory'
-
-const optimizer = new ContextOptimizer(config)
-
-// Optimize entire context
-const result = optimizer.optimizeContext({
-  systemPrompt: 'You are helpful',
-  userPreferences: { theme: 'dark' },
-  recentMessages: ['Hello'],
-  semanticMemories: [],
-  episodicMemories: [],
-})
-
-// Access components
-const budgetManager = optimizer.getBudgetManager()
-const compressor = optimizer.getCompressor()
-const chunker = optimizer.getChunker()
-```
-
-## Configuration
-
-```typescript
-interface MemoryServiceConfig {
-  tokenOptimization: {
-    maxContextWindow: number
-    allocation: {
-      systemPrompt: number
-      userPreferences: number
-      recentContext: number
-      semanticMemory: number
-      episodicMemory: number
-      responseReserve: number
-    }
-    dynamicAllocation: boolean
-    enableCompression: boolean
-    compressionRatio?: number
-    enableChunking: boolean
-    chunkSize?: number
-    chunkOverlap?: number
-  }
-  persistence: {
-    useVectorStore: boolean
-    vectorStoreNamespace?: string
-    useCache: boolean
-    cacheTTL?: number
-    useDatabase: boolean
-    databaseUrl?: string
-    batchSize?: number
-  }
-  enableAutoSummarization: boolean
-  summarizationInterval?: number
-  enableAutoCleanup: boolean
-  cleanupInterval?: number
-  retentionPolicy: {
-    shortTerm: number
-    session: number
-    thread: number
-    global: number
-  }
-  debug?: boolean
-}
-```
-
-## Vector Store Integration
-
-Works with any vector store:
-
-```typescript
-import { MemoryService } from '@clarity-chat/memory'
-import { QdrantClient } from '@qdrant/js-client-rest'
-
-// Your vector store adapter
-const vectorStore = {
-  initialize: async () => { /* ... */ },
-  upsert: async (vectors) => { /* ... */ },
-  query: async (query) => { /* ... */ },
-  delete: async (ids) => { /* ... */ },
-  // ... other methods
-}
-
-const memory = new MemoryService(config, vectorStore, embeddings)
-```
-
-## Use Cases
-
-### 1. Chatbot with Persistent Memory
-
-```typescript
-const memory = new MemoryService(config)
-
-async function chat(userId: string, message: string) {
-  // Get relevant context
-  const memories = await memory.query({
-    query: message,
-    userId,
-    limit: 5,
-    minConfidence: 0.7,
-  })
-  
-  // Build context
-  const context = memories.map(m => m.memory.content).join('\n')
-  
-  // Call LLM
-  const response = await llm.complete({
-    prompt: `Context: ${context}\n\nUser: ${message}`,
-  })
-  
-  // Store interaction
-  await memory.addMemory(message, 'episodic', 'session', { userId })
-  
-  return response
-}
-```
-
-### 2. User Preference Management
-
-```typescript
-// Store preferences
-await memory.addMemory(
-  'User prefers dark theme',
-  'semantic',
-  'user',
-  { userId, category: 'ui' },
-  { priority: 'high', confidence: 0.9 }
-)
-
-// Retrieve preferences
-const prefs = await memory.query({
-  types: ['semantic'],
-  scopes: ['user', 'global'],
-  userId,
-})
-```
-
-### 3. Knowledge Base
-
-```typescript
-// Store knowledge
-await memory.addMemory(
-  'API endpoint: POST /api/v1/users',
-  'semantic',
-  'global',
-  { category: 'api-docs' },
-  { priority: 'high' }
-)
-
-// Query knowledge
-const docs = await memory.query({
-  query: 'how to create user',
-  types: ['semantic'],
-  scopes: ['global'],
-})
-```
-
-### 4. Token Cost Optimization
-
-```typescript
-const optimizer = memory.getOptimizer()
-
-// Before optimization: 5000 tokens
-const original = {
-  systemPrompt: longSystemPrompt,
-  recentMessages: last50Messages,
-  memories: allMemories,
-}
-
-// After optimization: 1500 tokens (70% reduction)
-const optimized = optimizer.optimizeContext({
-  systemPrompt: original.systemPrompt,
-  userPreferences: {},
-  recentMessages: original.recentMessages,
-  semanticMemories: [],
-  episodicMemories: [],
-})
-
-// Use optimized context in LLM call
-const response = await llm.complete({
-  messages: [
-    { role: 'system', content: optimized.optimized.systemPrompt },
-    { role: 'user', content: optimized.optimized.recentContext },
-  ],
+  minScore: 0.5,
 })
 ```
 
 ## API Reference
 
-See [API Documentation](./API.md) for complete reference.
+### `clarityMemory(config?)`
+
+Creates a new ClarityMemory instance.
+
+**Parameters:**
+- `config` (optional): `MemoryConfig` object
+
+**Returns:** `ClarityMemory` instance
+
+### `memory.add(content, options?)`
+
+Add a memory to the system.
+
+**Parameters:**
+- `content`: `string` - Memory content
+- `options` (optional):
+  - `type`: `'episodic' | 'semantic' | 'profile'` - Memory type
+  - `scope`: `'session' | 'thread' | 'user' | 'global'` - Memory scope
+  - `importance`: `number` (0-1) - Importance score
+  - `tags`: `string[]` - Tags for categorization
+  - `metadata`: `MemoryMetadata` - Custom metadata
+  - `ttl`: `number` - Time to live in seconds
+
+**Returns:** `Promise<Memory>`
+
+### `memory.recall(query, options?)`
+
+Search and recall memories.
+
+**Parameters:**
+- `query`: `string` - Search query
+- `options` (optional):
+  - `limit`: `number` - Max results (default: 10)
+  - `minScore`: `number` - Minimum relevance score
+  - `types`: `MemoryType[]` - Filter by types
+  - `scopes`: `MemoryScope[]` - Filter by scopes
+  - `tags`: `string[]` - Filter by tags
+  - `timeDecay`: `number` - Time decay factor
+
+**Returns:** `Promise<SearchResult[]>`
+
+### `memory.context(options?)`
+
+Get optimized context bundle for LLMs.
+
+**Parameters:**
+- `options` (optional):
+  - `maxTokens`: `number` - Maximum tokens (default: 4096)
+  - `includeSummary`: `boolean` - Include summary (default: true)
+  - `includePreferences`: `boolean` - Include user preferences (default: true)
+  - `includeRecent`: `boolean` - Include recent context (default: true)
+  - `minRelevance`: `number` - Minimum relevance threshold
+  - `userId`: `string` - User ID filter
+  - `sessionId`: `string` - Session ID filter
+
+**Returns:** `Promise<ContextBundle>`
+
+### `memory.get(id)`
+
+Get a memory by ID.
+
+**Returns:** `Promise<Memory | null>`
+
+### `memory.update(id, updates)`
+
+Update a memory.
+
+**Returns:** `Promise<Memory>`
+
+### `memory.promote(id, scope)`
+
+Promote a memory to a higher scope.
+
+**Returns:** `Promise<Memory>`
+
+### `memory.forget(id, soft?)`
+
+Delete a memory (soft or hard delete).
+
+**Returns:** `Promise<void>`
+
+### `memory.flush(options?)`
+
+Clear memories by scope/type.
+
+**Parameters:**
+- `options` (optional):
+  - `scope`: `MemoryScope`
+  - `type`: `MemoryType`
+
+**Returns:** `Promise<void>`
+
+### `memory.getStats()`
+
+Get memory statistics.
+
+**Returns:** `Promise<MemoryStats>`
+
+### `memory.inspect()`
+
+Inspect memory state (for debugging).
+
+**Returns:** `Promise<InspectionResult>`
+
+## Configuration
+
+### MemoryConfig
+
+```typescript
+interface MemoryConfig {
+  embeddingProvider?: EmbeddingProviderConfig
+  storage?: StorageConfig
+  tokenBudget?: TokenBudgetConfig
+  compression?: CompressionConfig
+  summarization?: SummarizationConfig
+  retention?: RetentionConfig
+  userId?: string
+  sessionId?: string
+  threadId?: string
+  debug?: boolean
+  logLevel?: 'silent' | 'error' | 'warn' | 'info' | 'debug'
+}
+```
+
+### Embedding Provider Config
+
+```typescript
+interface EmbeddingProviderConfig {
+  provider: 'openai' | 'local' | 'anthropic' | 'custom'
+  apiKey?: string
+  model?: string
+  dimensions?: number
+  cache?: boolean
+  cacheTTL?: number
+}
+```
+
+### Storage Config
+
+```typescript
+interface StorageConfig {
+  type: 'in-memory' | 'indexeddb' | 'redis' | 'postgres' | 'sqlite' | 'vector-db'
+  url?: string
+  namespace?: string
+  options?: Record<string, any>
+}
+```
+
+### Token Budget Config
+
+```typescript
+interface TokenBudgetConfig {
+  maxTokens: number
+  allocation: {
+    systemPrompt: number
+    userPreferences: number
+    recentContext: number
+    semanticMemory: number
+    episodicMemory: number
+    responseReserve: number
+  }
+  dynamicAllocation: boolean
+  strictMode: boolean
+}
+```
 
 ## Examples
 
-- [Node.js Express Server](../../examples/memory-nodejs-express.ts)
-- [React Application](../../examples/memory-react-app.tsx)
-- [Vue 3 Application](../../examples/memory-vue-app.vue)
-- [Svelte Application](../../examples/memory-svelte-app.svelte)
-- [Vanilla JavaScript](../../examples/memory-vanilla-js.html)
-- [Next.js API Route](../../examples/memory-nextjs-api.ts)
+### React Hook (Coming Soon)
 
-## Performance
+```typescript
+import { useMemory } from '@clarity-chat/memory/react'
 
-- **Token Reduction:** 60-90%
-- **Cost Savings:** $0.08 per 1K conversations (vs $2.40)
-- **Retrieval Latency:** <50ms p95
-- **Memory Overhead:** <10MB for 1000 memories
+function ChatComponent() {
+  const { memory, add, recall, context } = useMemory({
+    userId: 'user123',
+  })
 
-## Testing
-
-```bash
-npm test
+  // Use memory in your component
+}
 ```
+
+### Serverless Function (Vercel)
+
+```typescript
+import { clarityMemory } from '@clarity-chat/memory'
+
+export default async function handler(req, res) {
+  const memory = clarityMemory({
+    storage: { type: 'in-memory' },
+    userId: req.headers['user-id'],
+  })
+  
+  await memory.initialize()
+  
+  // Use memory...
+}
+```
+
+### Node.js Script
+
+```typescript
+import { clarityMemory } from '@clarity-chat/memory'
+
+const memory = clarityMemory({
+  storage: { type: 'postgres', url: process.env.DATABASE_URL },
+  embeddingProvider: {
+    provider: 'openai',
+    apiKey: process.env.OPENAI_API_KEY,
+  },
+})
+
+await memory.initialize()
+// Use memory...
+```
+
+## Architecture
+
+### Core Components
+
+- **ClarityMemory** - Main memory engine
+- **StorageAdapter** - Abstract storage interface
+- **EmbeddingProvider** - Embedding generation
+- **TokenBudgetManager** - Token allocation and budgeting
+- **ContextBuilder** - Context optimization and bundling
+- **ImportanceScorer** - Memory scoring and ranking
+
+### Storage Adapters
+
+- ✅ **InMemoryStore** - Fast, ephemeral storage
+- 🚧 **IndexedDBStore** - Browser persistence (coming soon)
+- 🚧 **RedisStore** - Server caching (coming soon)
+- 🚧 **PostgresStore** - Production persistence (coming soon)
+
+### Embedding Providers
+
+- ✅ **OpenAI** - text-embedding-3-small, text-embedding-3-large
+- 🚧 **Local** - Transformers.js (coming soon)
+- 🚧 **Anthropic** - Coming soon
+
+## Comparison with MemMachine
+
+| Feature | MemMachine | Clarity Memory |
+|---------|-----------|----------------|
+| Setup | Server + YAML config | Zero-config, import & use |
+| Language | Python only | TypeScript/JavaScript |
+| Deployment | Server required | Library (browser/serverless/Node) |
+| API Surface | Verbose, complex | Simple, intuitive |
+| Token Budgeting | Manual | Built-in, automatic |
+| Browser Support | ❌ | ✅ |
+| Serverless Support | ❌ | ✅ |
+| TypeScript | ❌ | ✅ |
+| DevTools | ❌ | ✅ (coming soon) |
+
+## Roadmap
+
+- [ ] IndexedDB storage adapter
+- [ ] Redis storage adapter
+- [ ] Postgres/pgvector storage adapter
+- [ ] Local embedding provider (Transformers.js)
+- [ ] Compression strategies
+- [ ] Summarization pipeline
+- [ ] React hooks and components
+- [ ] DevTools inspector
+- [ ] Vector DB adapters (Chroma, Qdrant, Pinecone, LanceDB)
 
 ## License
 
 MIT
 
-## Support
+## Contributing
 
-- [Memory Guide](../../apps/docs/guide/memory.md)
-- [GitHub Issues](https://github.com/your-repo/issues)
-- [Examples](../../examples/)
+Contributions welcome! Please see the main repository for contribution guidelines.

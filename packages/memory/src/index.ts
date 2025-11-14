@@ -5,30 +5,47 @@
  * Works with any JavaScript/TypeScript application
  */
 
-// Core types
-export * from './types'
+// Main factory function
+export { clarityMemory } from './factory'
 
-// Memory service (framework-agnostic)
+// Core classes
+export { ClarityMemory } from './core/clarity-memory'
+
+// Types
+export * from './core/types'
+
+// Storage adapters
+export { StorageAdapter } from './stores/storage-adapter'
+export { InMemoryStore } from './stores/in-memory-store'
+
+// Embedding providers
+export { EmbeddingProvider } from './embeddings/embedding-provider'
+export { OpenAIEmbeddingProvider } from './embeddings/openai-provider'
+
+// Context management
+export { TokenBudgetManager } from './context/token-budget'
+export { ContextBuilder } from './context/context-builder'
+
+// Scoring
+export { ImportanceScorer } from './scoring/importance-scorer'
+
+// Legacy exports (for backward compatibility)
 export { MemoryService } from './memory-service'
-
-// Token optimization utilities
 export {
   TokenCounter,
-  TokenBudgetManager,
+  TokenBudgetManager as TokenBudgetManagerLegacy,
   MemoryCompressor,
   SemanticChunker,
   ContextOptimizer,
 } from './token-optimizer'
-
-// Re-export key interfaces for convenience
 export type {
   MemoryItem,
   MemoryQuery,
   MemorySearchResult,
   MemoryServiceConfig,
   MemoryStats,
-  MemoryType,
-  MemoryScope,
+  MemoryType as LegacyMemoryType,
+  MemoryScope as LegacyMemoryScope,
   MemoryPriority,
   MemoryEvent,
   MemoryContext,
