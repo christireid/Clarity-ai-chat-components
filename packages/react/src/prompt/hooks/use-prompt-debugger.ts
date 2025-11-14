@@ -144,7 +144,7 @@ export function usePromptDebugger(
     }
 
     return diagnostics.stages.map((stage) => ({
-      timestamp: Date.now(), // In real implementation, track actual timestamps
+      timestamp: Date.now(),
       stage: stage.name,
       tokensBefore: stage.tokensBefore,
       tokensAfter: stage.tokensAfter,
