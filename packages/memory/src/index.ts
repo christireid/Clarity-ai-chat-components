@@ -59,6 +59,28 @@ export {
 
 // Stores
 export { InMemoryStore } from './stores/in-memory'
+export { IndexedDBStore } from './stores/indexeddb'
+export { FileSystemStore } from './stores/filesystem'
+
+// Embedding providers
+export {
+  OpenAIEmbedder,
+  MockEmbedder,
+  createEmbedder,
+} from './embeddings/providers'
+
+// Importance scoring
+export {
+  AutoImportanceScorer,
+  TimeWeightedScorer,
+  ManualImportanceScorer,
+  HybridImportanceScorer,
+  createImportanceScorer,
+} from './scoring/importance'
+
+// React hooks (only available if React is installed as peer dependency)
+// Export from separate module to avoid bundling React in non-React environments
+export * from './react'
 
 // Legacy exports (for backward compatibility)
 export * from './types'

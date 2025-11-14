@@ -48,7 +48,14 @@
     "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
   },
   "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
-  "peerDependencies": {},
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.10.0",
