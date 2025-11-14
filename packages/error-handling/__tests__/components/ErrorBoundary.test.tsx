@@ -103,17 +103,17 @@ describe('ErrorBoundary', () => {
     }
     
     function TestWrapper() {
-      const [resetKey, setResetKey] = useState(0)
+      const [shouldThrow, setShouldThrow] = useState(true)
       
       return (
         <div>
-          <ErrorBoundary key={resetKey}>
+          <ErrorBoundary>
             <ControlledError />
           </ErrorBoundary>
           <button 
             onClick={() => {
               shouldThrowRef.current = false
-              setResetKey(prev => prev + 1)
+              setShouldThrow(false)
             }}
             data-testid="fix-error"
           >
@@ -128,13 +128,15 @@ describe('ErrorBoundary', () => {
     // Error should be caught
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
 
-    // Fix the error condition first
+    // Fix the error condition first (so children won't throw after reset)
     const fixButton = screen.getByTestId('fix-error')
     await act(async () => {
       fireEvent.click(fixButton)
     })
     
     // Then click reset button - this should reset the error boundary state
+    // After reset, React will try to render children again, and since shouldThrowRef.current
+    // is now false, it should render successfully
     const resetButton = screen.getByText(/try again/i)
     await act(async () => {
       fireEvent.click(resetButton)
