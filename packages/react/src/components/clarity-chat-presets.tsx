@@ -28,10 +28,18 @@ import { ClarityChat, type ClarityChatProps } from './clarity-chat'
 
 /**
  * Preset configurations for common use cases
+ * 
+ * Each preset wraps ClarityChat with sensible defaults for specific use cases.
+ * All presets require an `api` prop and accept all other ClarityChat props.
  */
 export const ClarityChatPresets = {
   /**
    * Simple chat - minimal configuration
+   * 
+   * @example
+   * ```tsx
+   * <ClarityChatPresets.Simple api="/api/chat" />
+   * ```
    */
   Simple: (props: Omit<ClarityChatProps, 'api'> & { api: string }) => (
     <ClarityChat {...props} />
@@ -39,6 +47,20 @@ export const ClarityChatPresets = {
 
   /**
    * Chat with memory - context-aware conversations
+   * 
+   * Enables memory management with configurable strategy.
+   * 
+   * @param props - ClarityChat props with memory-specific additions
+   * @param props.api - API endpoint URL (required)
+   * @param props.memoryStrategy - Memory strategy: 'sliding-window' (default), 'semantic-chunks', or 'vector-store'
+   * 
+   * @example
+   * ```tsx
+   * <ClarityChatPresets.WithMemory 
+   *   api="/api/chat"
+   *   memoryStrategy="vector-store"
+   * />
+   * ```
    */
   WithMemory: (props: Omit<ClarityChatProps, 'api' | 'memory'> & { 
     api: string
@@ -56,6 +78,20 @@ export const ClarityChatPresets = {
 
   /**
    * Enterprise chat - full-featured with all options
+   * 
+   * Includes memory, prompt optimization, header, and message count.
+   * Optimized for production enterprise use cases.
+   * 
+   * @param props - ClarityChat props
+   * @param props.api - API endpoint URL (required)
+   * 
+   * @example
+   * ```tsx
+   * <ClarityChatPresets.Enterprise 
+   *   api="/api/chat"
+   *   sessionTitle="Enterprise Assistant"
+   * />
+   * ```
    */
   Enterprise: (props: Omit<ClarityChatProps, 'api'> & { api: string }) => (
     <ClarityChat
@@ -76,6 +112,21 @@ export const ClarityChatPresets = {
 
   /**
    * Streaming chat - optimized for real-time updates
+   * 
+   * Configured for optimal streaming performance with SSE (default) or WebSocket.
+   * 
+   * @param props - ClarityChat props with transport option
+   * @param props.api - API endpoint URL (required)
+   * @param props.useWebSocket - Use WebSocket instead of SSE (default: false)
+   * 
+   * @example
+   * ```tsx
+   * // SSE (default)
+   * <ClarityChatPresets.Streaming api="/api/chat" />
+   * 
+   * // WebSocket
+   * <ClarityChatPresets.Streaming api="/api/chat" useWebSocket />
+   * ```
    */
   Streaming: (props: Omit<ClarityChatProps, 'api' | 'transport'> & { 
     api: string

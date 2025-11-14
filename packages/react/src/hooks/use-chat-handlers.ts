@@ -55,15 +55,20 @@ export interface UseChatHandlersOptions {
 
 /**
  * Pre-configured handlers for ChatWindow
+ * 
+ * All handlers follow consistent patterns with built-in error handling.
  */
 export interface ChatHandlers {
-  /** Handler for sending messages - wraps chat.append with error handling */
+  /** Handler for sending messages - wraps chat.append with error handling (action) */
   onSendMessage: (content: string) => Promise<void>
-  /** Handler for clearing messages */
+  
+  /** Handler for clearing messages (action) */
   onClear: () => void
-  /** Handler for retrying a message */
+  
+  /** Handler for retrying a message (action) */
   onRetry: (messageId: string) => Promise<void>
-  /** Handler for editing a message */
+  
+  /** Handler for editing a message (action) */
   onEdit: (messageId: string, newContent: string) => Promise<void>
 }
 
