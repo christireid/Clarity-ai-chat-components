@@ -30,6 +30,8 @@ yarn add @clarity-chat/react
 
 ## 🚀 Quick Start
 
+> 📖 **New to Clarity?** Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or check the [Quick Reference](../../docs/QUICK_REFERENCE.md) for copy-paste snippets.
+
 ### Basic Chat
 
 ```tsx

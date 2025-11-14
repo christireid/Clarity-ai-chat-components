@@ -457,7 +457,7 @@ Common issues and solutions when using Clarity Chat Components.
 ### Check Documentation
 - [Getting Started](./getting-started-clarity-chat.md)
 - [Quick Reference](./QUICK_REFERENCE.md)
-- [API Reference](../packages/react/API_REFERENCE.md)
+- [API Reference](../packages/react/README.md)
 
 ### Debug Tips
 1. **Enable debug logging:**
@@ -481,7 +481,7 @@ Common issues and solutions when using Clarity Chat Components.
 
 ### Still Stuck?
 
-- 📚 Check [API Reference](../packages/react/API_REFERENCE.md)
+- 📚 Check [API Reference](../packages/react/README.md)
 - 💬 Open an issue on GitHub
 - 🐛 Report bugs with reproduction steps
 - 📧 Contact support

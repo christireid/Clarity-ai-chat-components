@@ -254,7 +254,7 @@ import { ErrorBoundary, RetryButton, useErrorRecovery } from '@clarity-chat/reac
    import { createToolUIRegistry, ClarityToolResult } from '@clarity-chat/react'
    ```
 
-See the [Migration Guide](../../packages/react/MIGRATION_GUIDE.md) for detailed instructions.
+See the [Migration Guide](./migrating-from-vercel-ai-sdk.md) for detailed instructions.
 
 ## When to Choose Clarity
 
@@ -287,7 +287,7 @@ Clarity provides **full compatibility** with Vercel AI SDK UI while adding:
 - Agent orchestration
 - Enterprise features
 
-**Migration is straightforward** - see the [Migration Guide](../../packages/react/MIGRATION_GUIDE.md).
+**Migration is straightforward** - see the [Migration Guide](./migrating-from-vercel-ai-sdk.md).
 
 ---
 
