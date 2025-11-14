@@ -30,7 +30,26 @@ export class ContextBuilder {
   }
 
   /**
-   * Build optimized context bundle
+   * Build optimized context bundle for LLM
+   * 
+   * Gathers and optimizes context components within token budget:
+   * - User preferences (profile memories)
+   * - Recent context (session memories)
+   * - Semantic memories (relevant long-term memories)
+   * - Episodic memories (recent events)
+   * - Summary (compressed long-term context)
+   * 
+   * @param options - Context building options
+   * @returns Optimized context bundle with token breakdown
+   * 
+   * @example
+   * ```typescript
+   * const bundle = await contextBuilder.build({
+   *   maxTokens: 4096,
+   *   includePreferences: true,
+   *   includeRecent: true,
+   * })
+   * ```
    */
   async build(options?: ContextOptions): Promise<ContextBundle> {
     const maxTokens = options?.maxTokens || 4096
