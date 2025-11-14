@@ -140,7 +140,10 @@ export class TokenBudgetManager {
       adjusted.recentContext -= 0.05
     }
 
+<<<<<<< HEAD
     // Calculate budgets with adjusted allocation
+=======
+>>>>>>> cursor/prepare-memory-package-for-release-7f3b
     return this.calculateBudgets(this.config.maxContextWindow, adjusted)
   }
 
