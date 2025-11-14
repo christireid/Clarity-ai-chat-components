@@ -48,19 +48,23 @@ function MyChat() {
 ### Basic Chat (With Hook - More Control)
 
 ```tsx
-import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow, useChatHandlers } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function MyChat() {
-  const { messages, append, isLoading } = useClarityChat({
+  const chat = useClarityChat({
     api: '/api/chat',
   })
 
+  // Pre-configured handlers - no boilerplate! ✨
+  const handlers = useChatHandlers({ chat })
+
   return (
     <ChatWindow
-      messages={messages} // No conversion needed! ✨
-      isLoading={isLoading}
-      onSendMessage={(content) => append({ role: 'user', content })}
+      messages={chat.messages} // No conversion needed! ✨
+      isLoading={chat.isLoading}
+      onSendMessage={handlers.onSendMessage}
+      onClear={handlers.onClear}
     />
   )
 }
@@ -68,7 +72,35 @@ function MyChat() {
 
 **What Changed:**
 - ✅ `ChatWindow` now accepts `CoreMessage[]` directly - no conversion needed
-- ✅ Simpler API - less boilerplate, same power
+- ✅ `useChatHandlers` provides pre-configured handlers - less boilerplate
+- ✅ Simpler API - same power, easier to use
+
+### Using Presets (Even Easier!)
+
+```tsx
+import { ClarityChatPresets } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+// Simple chat
+function SimpleChat() {
+  return <ClarityChatPresets.Simple api="/api/chat" />
+}
+
+// Chat with memory
+function MemoryChat() {
+  return (
+    <ClarityChatPresets.WithMemory 
+      api="/api/chat"
+      memoryStrategy="sliding-window"
+    />
+  )
+}
+
+// Enterprise chat with all features
+function EnterpriseChat() {
+  return <ClarityChatPresets.Enterprise api="/api/chat" />
+}
+```
 
 ### With Memory
 
