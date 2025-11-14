@@ -121,20 +121,24 @@ bun add @clarity-chat/react
 Get a production-ready AI chat interface in 60 seconds:
 
 ```tsx
-import { useClarityChat, ChatWindow, coreMessagesToMessages } from '@clarity-chat/react'
+import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
+import { useMemo } from 'react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
-  const { messages, append, isLoading } = useClarityChat({
+  const { messages: coreMessages, append, isLoading } = useClarityChat({
     api: '/api/chat',
   })
 
   // Convert CoreMessage[] to Message[] for ChatWindow
-  const convertedMessages = coreMessagesToMessages(messages)
+  const messages = useMemo(
+    () => convertCoreMessagesToMessages(coreMessages),
+    [coreMessages]
+  )
 
   return (
     <ChatWindow
-      messages={convertedMessages}
+      messages={messages}
       isLoading={isLoading}
       onSendMessage={async (content) => {
         await append({ role: 'user', content })
@@ -153,7 +157,7 @@ function App() {
 - ♿ WCAG AAA accessibility
 - 🔒 Production-ready security
 
-**[📖 View Full Quick Start Guide](./apps/docs-site/app/learn/quick-start)** • **[📚 Browse Examples](./apps/examples/README.md)**
+**[📖 View Full Quick Start Guide](./docs/getting-started-clarity-chat.md)** • **[📚 Browse Examples](./apps/examples/README.md)** • **[🎨 Storybook](http://localhost:6006)**
 
 ---
 
