@@ -24,6 +24,7 @@ import * as React from 'react'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
 import type { ToolComponentRegistry, ToolComponentProps } from '../agents/tool-ui-registry'
 import { Card, CardContent, CardHeader } from '@clarity-chat/primitives'
+import { ErrorBoundary } from './error-boundary'
 
 export interface ToolCall {
   /** Tool name */
@@ -60,6 +61,12 @@ export interface ClarityToolResultProps {
   
   /** Custom className */
   className?: string
+  
+  /** Enable error boundary for tool components (default: true) */
+  enableErrorBoundary?: boolean
+  
+  /** Custom error fallback component */
+  errorFallback?: React.ComponentType<{ error: Error; toolCall: ToolCall }>
 }
 
 /**
@@ -111,14 +118,52 @@ export function ClarityToolResult({
     ...componentProps,
   }
 
-  return (
-    <div className={className}>
+  const ToolComponentWrapper = () => (
+    <>
       {showHeader && (
         <div className="text-xs text-muted-foreground mb-2">
           Tool: {toolCall.name}
         </div>
       )}
       <Component {...props} />
+    </>
+  )
+
+  // Wrap in error boundary if enabled (default: true)
+  if (enableErrorBoundary !== false) {
+    const ErrorFallback = errorFallback || (({ error, toolCall }: { error: Error; toolCall: ToolCall }) => (
+      <Card className="mt-2 border-destructive/20 bg-destructive/5">
+        <CardHeader>
+          <div className="text-sm font-semibold text-destructive">
+            Error rendering tool: {toolCall.name}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-xs text-muted-foreground">{error.message}</p>
+          <pre className="text-xs overflow-auto max-h-32 bg-muted p-2 rounded mt-2">
+            {JSON.stringify(result, null, 2)}
+          </pre>
+        </CardContent>
+      </Card>
+    ))
+
+    return (
+      <div className={className}>
+        <ErrorBoundary
+          fallback={({ error, resetError }) => (
+            <ErrorFallback error={error} toolCall={toolCall} />
+          )}
+          resetKeys={[toolCall.id, toolCall.name]}
+        >
+          <ToolComponentWrapper />
+        </ErrorBoundary>
+      </div>
+    )
+  }
+
+  return (
+    <div className={className}>
+      <ToolComponentWrapper />
     </div>
   )
 }

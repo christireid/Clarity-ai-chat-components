@@ -78,3 +78,77 @@ export function hasToolComponent(
 ): boolean {
   return toolName in registry && registry[toolName] !== undefined
 }
+
+/**
+ * Validate registry components at runtime
+ * Checks that all registered components are valid React components
+ * 
+ * @param registry - Tool component registry to validate
+ * @returns Validation result with any errors found
+ */
+export function validateToolRegistry(
+  registry: ToolComponentRegistry
+): {
+  valid: boolean
+  errors: Array<{ toolName: string; error: string }>
+  warnings: Array<{ toolName: string; warning: string }>
+} {
+  const errors: Array<{ toolName: string; error: string }> = []
+  const warnings: Array<{ toolName: string; warning: string }> = []
+
+  for (const [toolName, Component] of Object.entries(registry)) {
+    if (!Component) {
+      errors.push({
+        toolName,
+        error: 'Component is null or undefined',
+      })
+      continue
+    }
+
+    if (typeof Component !== 'function' && typeof Component !== 'object') {
+      errors.push({
+        toolName,
+        error: `Component is not a valid React component (got ${typeof Component})`,
+      })
+      continue
+    }
+
+    // Check if it's a valid React component type
+    if (typeof Component === 'function') {
+      const componentName = Component.displayName || Component.name || toolName
+      if (!componentName || componentName === 'Anonymous') {
+        warnings.push({
+          toolName,
+          warning: 'Component has no display name (consider adding displayName)',
+        })
+      }
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    warnings,
+  }
+}
+
+/**
+ * Get registry statistics
+ * 
+ * @param registry - Tool component registry
+ * @returns Statistics about the registry
+ */
+export function getRegistryStats(
+  registry: ToolComponentRegistry
+): {
+  totalTools: number
+  toolNames: string[]
+  hasComponents: boolean
+} {
+  const toolNames = Object.keys(registry)
+  return {
+    totalTools: toolNames.length,
+    toolNames,
+    hasComponents: toolNames.length > 0,
+  }
+}
