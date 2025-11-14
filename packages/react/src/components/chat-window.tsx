@@ -82,7 +82,28 @@ const DefaultEmptyState = () => (
 )
 
 /**
- * ChatWindow component - Enhanced with React 19 features
+ * ChatWindow - Mid-Level Composable Component
+ * 
+ * A composable chat window component that accepts messages and handles
+ * rendering, input, and user interactions.
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Chat UI
+ * 
+ * For drop-in usage, use top-level `ClarityChat` instead.
+ * For custom rendering, use low-level `Message` components.
+ * 
+ * @example
+ * ```tsx
+ * const chat = useClarityChat({ api: '/api/chat' })
+ * const handlers = useChatHandlers({ chat })
+ * 
+ * <ChatWindow
+ *   messages={chat.messages}
+ *   isLoading={chat.isLoading}
+ *   onSendMessage={handlers.onSendMessage}
+ * />
+ * ```
  * 
  * React 19 Enhancements:
  * - Removed memo() wrapper - compiler handles optimization

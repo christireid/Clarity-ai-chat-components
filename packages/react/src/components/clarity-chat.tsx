@@ -1,16 +1,32 @@
 /**
- * ClarityChat - High-level drop-in component
+ * ClarityChat - Top-Level Drop-in Component
  * 
  * The simplest way to add AI chat to your app. Just provide an API endpoint
  * and you're done. All the complexity is handled internally.
  * 
+ * **Architecture Layer**: Top-Level (Drop-in Ready)
+ * **Domain**: Chat UI
+ * 
+ * This is the recommended entry point for most use cases. For more control,
+ * use mid-level APIs like `ChatWindow` + `useClarityChat` + `useChatHandlers`.
+ * 
  * @example
  * ```tsx
  * import { ClarityChat } from '@clarity-chat/react'
+ * import '@clarity-chat/react/styles.css'
  * 
  * function App() {
  *   return <ClarityChat api="/api/chat" />
  * }
+ * ```
+ * 
+ * @example
+ * ```tsx
+ * // With memory enabled
+ * <ClarityChat 
+ *   api="/api/chat"
+ *   memory={{ enabled: true, strategy: 'vector-store' }}
+ * />
  * ```
  */
 

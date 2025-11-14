@@ -1,16 +1,34 @@
 /**
- * useClarityChat - Flagship chat hook for Clarity AI
+ * useClarityChat - Top-Level Chat State Hook
  * 
  * This is the primary public API for chat functionality in Clarity.
  * It wraps useChatEnhanced with Clarity-specific enhancements including
  * memory integration and transport selection.
  * 
+ * **Architecture Layer**: Top-Level (Drop-in Ready)
+ * **Domain**: Chat State
+ * 
+ * For Vercel AI SDK compatibility, use mid-level `useChatEnhanced` instead.
+ * For raw state management, use low-level `useChat`.
+ * 
  * @example
  * ```tsx
- * const { messages, input, setInput, append, isLoading, error } = useClarityChat({
+ * const { messages, append, isLoading, error } = useClarityChat({
  *   api: '/api/chat',
  *   memory: { enabled: true, strategy: 'vector-store' },
  * })
+ * ```
+ * 
+ * @example
+ * ```tsx
+ * // With handlers for easier integration
+ * const chat = useClarityChat({ api: '/api/chat' })
+ * const handlers = useChatHandlers({ chat })
+ * 
+ * <ChatWindow
+ *   messages={chat.messages}
+ *   onSendMessage={handlers.onSendMessage}
+ * />
  * ```
  */
 
