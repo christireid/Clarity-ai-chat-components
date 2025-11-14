@@ -1,77 +1,85 @@
 /**
- * Clarity Memory - Basic Usage Example
+ * Basic Usage Example
+ * Demonstrates the zero-config clarityMemory() API
  * 
- * This example demonstrates basic usage of Clarity Memory.
- * Run with: npx tsx examples/basic-usage.ts
+ * Run: npm run example:basic
+ * or: npx tsx examples/basic-usage.ts
  */
 
 import { clarityMemory } from '../src/core/memory'
 
 async function main() {
-  console.log('🚀 Clarity Memory - Basic Usage Example\n')
+  // Zero-config usage - works out of the box!
+  const mem = clarityMemory()
 
-  // Create a memory instance (zero-config)
-  const memory = clarityMemory({
-    context: 'example-user',
+  console.log('✅ Memory instance created')
+
+  // Add some memories
+  console.log('\n📝 Adding memories...')
+  await mem.add("User prefers TypeScript over JavaScript", {
+    type: 'semantic',
+    importance: 0.9,
+    tags: ['preferences', 'programming'],
   })
 
-  // Initialize
-  await memory.init()
-  console.log('✅ Memory initialized\n')
+  await mem.add("User loves dark mode", {
+    type: 'semantic',
+    importance: 0.8,
+    tags: ['preferences', 'ui'],
+  })
 
-  // Add memories
-  console.log('1. Adding memories...')
-  try {
-    // TODO: Uncomment when add() is implemented
-    // await memory.add('User likes pizza')
-    // await memory.add('User works as a software engineer')
-    // await memory.add('User lives in San Francisco')
-    // console.log('✅ Added 3 memories\n')
-    console.log('⏳ add() method not yet implemented\n')
-  } catch (error) {
-    console.error('❌ Error adding memories:', error)
-  }
+  await mem.add("User asked about React hooks", {
+    type: 'episodic',
+    importance: 0.6,
+  })
 
-  // Recall memories
-  console.log('2. Recalling memories...')
-  try {
-    // TODO: Uncomment when recall() is implemented
-    // const result = await memory.recall('What does the user like?')
-    // console.log(`Found ${result.memories.length} relevant memories:`)
-    // result.memories.forEach((m, i) => {
-    //   console.log(`  ${i + 1}. ${m.content}`)
-    // })
-    // console.log(`Tokens used: ${result.tokens}\n`)
-    console.log('⏳ recall() method not yet implemented\n')
-  } catch (error) {
-    console.error('❌ Error recalling memories:', error)
-  }
+  console.log('✅ Memories added')
+
+  // Search for relevant memories
+  console.log('\n🔍 Searching memories...')
+  const results = await mem.search("What are the user's preferences?", {
+    limit: 5,
+    minScore: 0.5,
+  })
+
+  console.log(`Found ${results.length} relevant memories:`)
+  results.forEach((result, i) => {
+    console.log(`  ${i + 1}. [${result.score.toFixed(2)}] ${result.memory.content}`)
+  })
+
+  // Get optimized context for LLM
+  console.log('\n📦 Getting context bundle...')
+  const context = await mem.context({
+    maxTokens: 500,
+    query: "user preferences",
+    prioritizeRecent: true,
+  })
+
+  console.log(`Context bundle:`)
+  console.log(`  Total tokens: ${context.totalTokens}`)
+  console.log(`  Memories: ${context.memories.length}`)
+  console.log(`  Strategy: ${context.metadata.strategy}`)
+  console.log('\n  Memory contents:')
+  context.memories.forEach((memory, i) => {
+    console.log(`    ${i + 1}. ${memory.content}`)
+  })
 
   // Get statistics
-  console.log('3. Getting statistics...')
-  try {
-    // TODO: Uncomment when stats() is implemented
-    // const stats = await memory.stats()
-    // console.log(`Total memories: ${stats.totalMemories}`)
-    // console.log(`Total tokens: ${stats.totalTokens}`)
-    // console.log(`Average importance: ${stats.averageImportance.toFixed(2)}\n`)
-    console.log('⏳ stats() method not yet implemented\n')
-  } catch (error) {
-    console.error('❌ Error getting stats:', error)
-  }
+  console.log('\n📊 Statistics:')
+  const stats = await mem.getStats()
+  console.log(`  Total memories: ${stats.total}`)
+  console.log(`  By type:`, stats.byType)
+  console.log(`  Average importance: ${stats.averageImportance.toFixed(2)}`)
+  console.log(`  Average tokens: ${stats.averageTokens.toFixed(0)}`)
 
-  // Close
-  await memory.close()
-  console.log('✅ Memory closed\n')
-  console.log('✨ Example complete!')
+  // Inspect system state
+  console.log('\n🔍 System inspection:')
+  const state = await mem.inspect()
+  console.log(`  Total memories: ${state.totalMemories}`)
+  console.log(`  Total tokens: ${state.totalTokens}`)
+  console.log(`  Storage: ${state.storage.type} (${state.storage.size})`)
+
+  console.log('\n✅ Example complete!')
 }
 
-// Run if executed directly
-if (require.main === module) {
-  main().catch((error) => {
-    console.error('Fatal error:', error)
-    process.exit(1)
-  })
-}
-
-export { main }
+main().catch(console.error)

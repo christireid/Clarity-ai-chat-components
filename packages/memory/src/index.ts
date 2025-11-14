@@ -5,71 +5,52 @@
  * Works with any JavaScript/TypeScript application
  */
 
-// Main factory function
-export { clarityMemory, clarityMemoryHelpers } from './factory'
+// Main API - zero-config memory system
+export { clarityMemory } from './core/memory'
+export type { MemoryInstance } from './core/memory'
 
-// Core classes
-export { ClarityMemory } from './core/clarity-memory'
-
-// Types
+// Core types
 export * from './core/types'
 
+// Configuration
+export * from './core/config'
+
 // Storage adapters
-export { StorageAdapter } from './stores/storage-adapter'
-export { InMemoryStore } from './stores/in-memory-store'
-
-// Embedding providers
-export { EmbeddingProvider } from './embeddings/embedding-provider'
-export { OpenAIEmbeddingProvider } from './embeddings/openai-provider'
-
-// Context management
-export { TokenBudgetManager } from './context/token-budget'
-export { ContextBuilder } from './context/context-builder'
-
-// Scoring
-export { ImportanceScorer } from './scoring/importance-scorer'
-
-// Compression
-export { CompressionEngine } from './compression/compression-engine'
-export { TruncateStrategy } from './compression/truncate-strategy'
-export { ExtractStrategy } from './compression/extract-strategy'
-export { SummarizeStrategy } from './compression/summarize-strategy'
-export { AdaptiveStrategy } from './compression/adaptive-strategy'
-export type { CompressionStrategy, CompressionResult } from './compression/compression-strategy'
-
-// Summarization
-export { SummarizationPipeline } from './summarization/summarization-pipeline'
-export { OpenAISummarizer } from './summarization/openai-summarizer'
-export type { Summarizer } from './summarization/summarizer'
-
-// React (optional)
-export * from './react'
+export { InMemoryStore } from './stores/in-memory'
+export { FileStore } from './stores/file'
+export { IndexedDBStore } from './stores/indexeddb'
+export { createStoreFromConfig } from './stores/factory'
+export type { VectorStore, SearchOptions } from './stores/base'
 
 // Utilities
-export * from './utils'
+export * from './utils/token-counter'
+export * from './utils/validation'
+export * from './utils/vector'
 
 // Legacy exports (for backward compatibility)
 export { MemoryService } from './memory-service'
 export {
   TokenCounter,
-  TokenBudgetManager as TokenBudgetManagerLegacy,
+  TokenBudgetManager,
   MemoryCompressor,
   SemanticChunker,
   ContextOptimizer,
 } from './token-optimizer'
+
+// Re-export legacy types
 export type {
-  MemoryItem,
+  MemoryItem as LegacyMemoryItem,
   MemoryQuery,
   MemorySearchResult,
   MemoryServiceConfig,
-  MemoryStats,
+  MemoryStats as LegacyMemoryStats,
   MemoryType as LegacyMemoryType,
-  MemoryScope as LegacyMemoryScope,
+  MemoryScope,
   MemoryPriority,
   MemoryEvent,
   MemoryContext,
-  TokenAllocation,
+  TokenAllocation as LegacyTokenAllocation,
   TokenOptimizationConfig,
   CompressedMemory,
-  MemoryChunk,
+  MemoryChunk as LegacyMemoryChunk,
 } from './types'

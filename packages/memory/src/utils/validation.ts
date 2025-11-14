@@ -1,186 +1,145 @@
 /**
- * Configuration Validation Utilities
+ * Input validation utilities
  */
 
-import type { MemoryConfig } from '../core/types'
-import { detectEnvironment, getEnvironmentRecommendations } from './environment'
+import type { MemoryType, AddOptions, SearchOptions, ContextOptions } from '../core/types'
 
-export interface ValidationResult {
-  valid: boolean
-  errors: string[]
-  warnings: string[]
-  suggestions: string[]
+/**
+ * Validate memory content
+ */
+export function validateContent(content: unknown): asserts content is string {
+  if (typeof content !== 'string') {
+    throw new TypeError('Memory content must be a string')
+  }
+  if (content.trim().length === 0) {
+    throw new Error('Memory content cannot be empty')
+  }
+  if (content.length > 100000) {
+    throw new Error('Memory content exceeds maximum length of 100,000 characters')
+  }
 }
 
 /**
- * Validate memory configuration
+ * Validate memory ID
  */
-export function validateConfig(config?: MemoryConfig): ValidationResult {
-  const result: ValidationResult = {
-    valid: true,
-    errors: [],
-    warnings: [],
-    suggestions: [],
+export function validateMemoryId(id: unknown): asserts id is string {
+  if (typeof id !== 'string') {
+    throw new TypeError('Memory ID must be a string')
   }
-
-  if (!config) {
-    return result // Empty config is valid (uses defaults)
+  if (id.trim().length === 0) {
+    throw new Error('Memory ID cannot be empty')
   }
-
-  // Validate storage config
-  if (config.storage) {
-    const env = detectEnvironment()
-    
-    if (config.storage.type === 'indexeddb' && env !== 'browser') {
-      result.errors.push(
-        'IndexedDB storage is only available in browser environments'
-      )
-      result.valid = false
-    }
-
-    if (config.storage.type === 'postgres' && !config.storage.url) {
-      result.errors.push(
-        'Postgres storage requires a connection URL'
-      )
-      result.valid = false
-    }
-
-    if (config.storage.type === 'redis' && !config.storage.url) {
-      result.errors.push(
-        'Redis storage requires a connection URL'
-      )
-      result.valid = false
-    }
-  }
-
-  // Validate embedding provider
-  if (config.embeddingProvider) {
-    if (config.embeddingProvider.provider === 'openai' && !config.embeddingProvider.apiKey) {
-      result.errors.push(
-        'OpenAI embedding provider requires an API key'
-      )
-      result.valid = false
-    }
-
-    if (config.embeddingProvider.provider === 'anthropic' && !config.embeddingProvider.apiKey) {
-      result.errors.push(
-        'Anthropic embedding provider requires an API key'
-      )
-      result.valid = false
-    }
-  }
-
-  // Validate token budget
-  if (config.tokenBudget) {
-    const allocation = config.tokenBudget.allocation
-    const total = 
-      allocation.systemPrompt +
-      allocation.userPreferences +
-      allocation.recentContext +
-      allocation.semanticMemory +
-      allocation.episodicMemory +
-      allocation.responseReserve
-
-    if (Math.abs(total - 1.0) > 0.01) {
-      result.errors.push(
-        `Token allocation percentages must sum to 1.0 (currently ${total.toFixed(2)})`
-      )
-      result.valid = false
-    }
-
-    if (config.tokenBudget.maxTokens < 100) {
-      result.warnings.push(
-        'Token budget is very low (< 100). Consider increasing for better context quality.'
-      )
-    }
-  }
-
-  // Validate compression config
-  if (config.compression) {
-    if (config.compression.strategy === 'summarize' && !config.summarization?.enabled) {
-      result.warnings.push(
-        'Summarize compression strategy requires summarization to be enabled'
-      )
-    }
-
-    if (config.compression.threshold < 0 || config.compression.threshold > 1) {
-      result.errors.push(
-        'Compression threshold must be between 0 and 1'
-      )
-      result.valid = false
-    }
-
-    if (config.compression.minQuality < 0 || config.compression.minQuality > 1) {
-      result.errors.push(
-        'Compression minQuality must be between 0 and 1'
-      )
-      result.valid = false
-    }
-  }
-
-  // Validate summarization config
-  if (config.summarization?.enabled) {
-    if (config.summarization.provider === 'openai' && !process.env.OPENAI_API_KEY && !config.summarization) {
-      result.warnings.push(
-        'OpenAI summarization requires OPENAI_API_KEY environment variable or API key in config'
-      )
-    }
-
-    if (config.summarization.interval < 1000) {
-      result.warnings.push(
-        'Summarization interval is very short (< 1 second). This may cause performance issues.'
-      )
-    }
-  }
-
-  // Environment-specific suggestions
-  const envRecs = getEnvironmentRecommendations()
-  if (envRecs.warnings.length > 0) {
-    result.warnings.push(...envRecs.warnings)
-  }
-
-  // General suggestions
-  if (!config.storage) {
-    result.suggestions.push(
-      `Consider configuring storage. Recommended for this environment: ${envRecs.storage}`
-    )
-  }
-
-  if (!config.embeddingProvider && config.tokenBudget) {
-    result.suggestions.push(
-      'Consider adding an embedding provider for better semantic search'
-    )
-  }
-
-  if (config.debug && config.logLevel === 'silent') {
-    result.warnings.push(
-      'Debug mode is enabled but log level is silent. Enable logging to see debug output.'
-    )
-  }
-
-  return result
 }
 
 /**
- * Format validation result as a user-friendly message
+ * Validate memory type
  */
-export function formatValidationResult(result: ValidationResult): string {
-  const parts: string[] = []
+export function validateMemoryType(type: unknown): asserts type is MemoryType {
+  const validTypes: MemoryType[] = ['episodic', 'semantic', 'profile']
+  if (!validTypes.includes(type as MemoryType)) {
+    throw new TypeError(`Invalid memory type: ${type}. Must be one of: ${validTypes.join(', ')}`)
+  }
+}
 
-  if (result.errors.length > 0) {
-    parts.push('❌ Errors:')
-    result.errors.forEach(err => parts.push(`  - ${err}`))
+/**
+ * Validate importance score
+ */
+export function validateImportance(importance: unknown): asserts importance is number {
+  if (typeof importance !== 'number') {
+    throw new TypeError('Importance must be a number')
+  }
+  if (importance < 0 || importance > 1) {
+    throw new RangeError('Importance must be between 0 and 1')
+  }
+  if (!Number.isFinite(importance)) {
+    throw new RangeError('Importance must be a finite number')
+  }
+}
+
+/**
+ * Validate add options
+ */
+export function validateAddOptions(options?: AddOptions): void {
+  if (!options) return
+
+  if (options.type !== undefined) {
+    validateMemoryType(options.type)
   }
 
-  if (result.warnings.length > 0) {
-    parts.push('⚠️  Warnings:')
-    result.warnings.forEach(warn => parts.push(`  - ${warn}`))
+  if (options.importance !== undefined) {
+    validateImportance(options.importance)
   }
 
-  if (result.suggestions.length > 0) {
-    parts.push('💡 Suggestions:')
-    result.suggestions.forEach(sugg => parts.push(`  - ${sugg}`))
+  if (options.tags !== undefined) {
+    if (!Array.isArray(options.tags)) {
+      throw new TypeError('Tags must be an array')
+    }
+    if (options.tags.some((tag) => typeof tag !== 'string')) {
+      throw new TypeError('All tags must be strings')
+    }
   }
 
-  return parts.join('\n')
+  if (options.embedding !== undefined) {
+    if (!Array.isArray(options.embedding)) {
+      throw new TypeError('Embedding must be an array')
+    }
+    if (options.embedding.some((val) => typeof val !== 'number')) {
+      throw new TypeError('Embedding must be an array of numbers')
+    }
+  }
+}
+
+/**
+ * Validate search options
+ */
+export function validateSearchOptions(options?: SearchOptions): void {
+  if (!options) return
+
+  if (options.limit !== undefined) {
+    if (typeof options.limit !== 'number' || options.limit < 1) {
+      throw new RangeError('Search limit must be a positive number')
+    }
+  }
+
+  if (options.minScore !== undefined) {
+    if (typeof options.minScore !== 'number' || options.minScore < 0 || options.minScore > 1) {
+      throw new RangeError('minScore must be a number between 0 and 1')
+    }
+  }
+
+  if (options.types !== undefined) {
+    if (!Array.isArray(options.types)) {
+      throw new TypeError('Types must be an array')
+    }
+    options.types.forEach(validateMemoryType)
+  }
+}
+
+/**
+ * Validate context options
+ */
+export function validateContextOptions(options: ContextOptions): void {
+  if (typeof options.maxTokens !== 'number' || options.maxTokens < 1) {
+    throw new RangeError('maxTokens must be a positive number')
+  }
+
+  if (options.maxTokens > 1000000) {
+    throw new RangeError('maxTokens exceeds maximum of 1,000,000')
+  }
+
+  if (options.types !== undefined) {
+    if (!Array.isArray(options.types)) {
+      throw new TypeError('Types must be an array')
+    }
+    options.types.forEach(validateMemoryType)
+  }
+}
+
+/**
+ * Validate query string
+ */
+export function validateQuery(query: unknown): asserts query is string {
+  if (typeof query !== 'string') {
+    throw new TypeError('Query must be a string')
+  }
 }

@@ -1,56 +1,39 @@
 # Source files
 src/
 examples/
-*.config.*
-*.test.ts
-*.spec.ts
+*.ts
+!*.d.ts
 
-# Development files
-.vscode/
-.github/
-.husky/
-.editorconfig
-.env.example
-.nvmrc
-Makefile
+# Config files
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
 
 # Documentation (keep README.md)
-CONTRIBUTING.md
+*.md
+!README.md
+
+# Design docs
+MEMORY_DESIGN_*.md
+PHASE_*.md
+DESIGN_*.md
+IMPLEMENTATION_*.md
 SETUP.md
-SETUP_COMPLETE.md
-QUICK_REFERENCE.md
+GETTING_STARTED.md
 API.md
 
-# Build artifacts
-.tsbuildinfo
-.turbo/
-
 # Test files
-coverage/
-.nyc_output/
+**/*.test.ts
+**/*.spec.ts
+tests/
+__tests__/
 
-# Git
-.git/
-.gitignore
-
-# IDE
+# Development
+.vscode/
 .idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+.DS_Store
 
-# Environment
-.env
-.env.local
-.env*.local
+# Build artifacts (keep dist/)
+*.map
+!dist/**/*.map

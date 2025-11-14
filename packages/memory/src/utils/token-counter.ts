@@ -1,80 +1,65 @@
 /**
- * Token Counter Utility
- * 
- * Centralized token counting implementation
- * Uses simple approximation: ~4 characters per token (OpenAI standard)
+ * Token Counter Utilities
+ * Approximate token counting for common models
  */
 
-/**
- * Count tokens in text
- * 
- * Simple approximation: ~4 characters per token
- * For more accurate counting, use tiktoken or similar libraries
- * 
- * @param text - Text to count tokens for
- * @returns Approximate token count
- */
-export function countTokens(text: string): number {
-  if (!text || text.length === 0) return 0
-  
-  // Simple approximation: ~4 characters per token
-  // This is a rough estimate, but works well for most use cases
-  return Math.ceil(text.length / 4)
-}
+export class TokenCounter {
+  private static readonly AVG_CHARS_PER_TOKEN = 4
 
-/**
- * Count tokens in multiple texts
- * 
- * @param texts - Array of texts
- * @returns Total token count
- */
-export function countTokensBatch(texts: string[]): number {
-  return texts.reduce((sum, text) => sum + countTokens(text), 0)
-}
-
-/**
- * Estimate tokens for a target length
- * 
- * @param targetTokens - Target number of tokens
- * @returns Estimated character length
- */
-export function estimateCharsForTokens(targetTokens: number): number {
-  return targetTokens * 4
-}
-
-/**
- * Check if text exceeds token limit
- * 
- * @param text - Text to check
- * @param maxTokens - Maximum allowed tokens
- * @returns True if text exceeds limit
- */
-export function exceedsTokenLimit(text: string, maxTokens: number): boolean {
-  return countTokens(text) > maxTokens
-}
-
-/**
- * Truncate text to fit within token budget
- * 
- * @param text - Text to truncate
- * @param maxTokens - Maximum allowed tokens
- * @param suffix - Optional suffix to add when truncated (default: '...')
- * @returns Truncated text
- */
-export function truncateToTokenLimit(
-  text: string,
-  maxTokens: number,
-  suffix: string = '...'
-): string {
-  const currentTokens = countTokens(text)
-  
-  if (currentTokens <= maxTokens) {
-    return text
+  /**
+   * Count tokens in text (approximate)
+   * Uses ~4 characters per token as a rough estimate
+   */
+  static count(text: string): number {
+    if (!text) return 0
+    return Math.ceil(text.length / this.AVG_CHARS_PER_TOKEN)
   }
-  
-  // Calculate target character length
-  const targetChars = estimateCharsForTokens(maxTokens - countTokens(suffix))
-  
-  // Truncate and add suffix
-  return text.slice(0, Math.max(0, targetChars)) + suffix
+
+  /**
+   * Count tokens in multiple texts
+   */
+  static countBatch(texts: string[]): number {
+    return texts.reduce((sum, text) => sum + this.count(text), 0)
+  }
+
+  /**
+   * Truncate text to fit token budget
+   * Tries to break at sentence boundaries when possible
+   */
+  static truncate(text: string, maxTokens: number): string {
+    const tokens = this.count(text)
+    if (tokens <= maxTokens) return text
+
+    const ratio = maxTokens / tokens
+    const targetLength = Math.floor(text.length * ratio)
+
+    // Try to break at sentence boundary
+    const truncated = text.slice(0, targetLength)
+    const lastPeriod = truncated.lastIndexOf('.')
+    const lastNewline = truncated.lastIndexOf('\n')
+    const lastExclamation = truncated.lastIndexOf('!')
+    const lastQuestion = truncated.lastIndexOf('?')
+    const breakPoint = Math.max(
+      lastPeriod,
+      lastNewline,
+      lastExclamation,
+      lastQuestion
+    )
+
+    if (breakPoint > targetLength * 0.8) {
+      return text.slice(0, breakPoint + 1)
+    }
+
+    return truncated + '...'
+  }
+
+  /**
+   * Split text into sentences
+   */
+  static splitSentences(text: string): string[] {
+    return text
+      .split(/[.!?]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
+  }
 }

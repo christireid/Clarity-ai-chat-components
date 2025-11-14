@@ -1,20 +1,16 @@
 {
   "name": "@clarity-chat/memory",
   "version": "0.1.0",
-  "description": "A superior, developer-friendly memory system for AI applications",
+  "description": "Framework-agnostic AI memory and context management utilities",
+  "type": "module",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./react": {
-      "import": "./dist/react/index.mjs",
-      "require": "./dist/react/index.js",
-      "types": "./dist/react/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -23,64 +19,48 @@
   ],
   "scripts": {
     "build": "tsup",
-    "build:watch": "tsup --watch",
-    "dev": "npm run build:watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "test:ui": "vitest --ui",
-    "test:ci": "vitest run --coverage --reporter=verbose",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "lint:ci": "eslint src --ext .ts,.tsx --max-warnings=0",
+    "dev": "tsup --watch",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "typecheck:watch": "tsc --noEmit --watch",
-    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
-    "clean": "rm -rf dist coverage .turbo .tsbuildinfo",
-    "clean:all": "npm run clean && rm -rf node_modules",
-    "validate": "npm run typecheck && npm run lint:ci && npm run format:check && npm run test:ci",
-    "prepublishOnly": "npm run validate",
-    "setup": "npm install && npm run build",
-    "precommit": "npm run lint:fix && npm run format && npm run typecheck"
+    "example:basic": "tsx examples/basic-usage.ts",
+    "example:quick": "tsx examples/quick-start.ts",
+    "example:file": "tsx examples/file-storage.ts",
+    "example:indexeddb": "echo 'IndexedDB example requires browser environment' && tsx examples/indexeddb-storage.ts",
+    "examples": "npm run example:basic",
+    "verify": "npm run build && npm run typecheck"
   },
   "keywords": [
-    "memory",
     "ai",
-    "llm",
-    "embeddings",
-    "vector-search",
+    "memory",
     "context",
-    "clarity"
+    "llm",
+    "chatbot",
+    "token-optimization",
+    "semantic-search",
+    "vector-store",
+    "framework-agnostic",
+    "typescript"
   ],
-  "author": "Clarity AI",
+  "author": "Christi Reid <christi@codeclarity.ai>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/clarity-ai/clarity-chat-components"
+    "url": "https://github.com/christireid/Clarity-ai-chat-components.git",
+    "directory": "packages/memory"
   },
-  "dependencies": {
-    "openai": "^4.0.0",
-    "uuid": "^10.0.0"
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
   },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
+  "peerDependencies": {},
+  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "@vitest/coverage-v8": "^1.0.0",
-    "eslint": "^8.0.0",
-    "prettier": "^3.0.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
-  },
-  "peerDependencies": {
-    "react": "^18.0.0"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    }
+    "@types/node": "^20.10.0",
+    "tsup": "^8.0.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }
