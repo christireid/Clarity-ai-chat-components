@@ -90,33 +90,38 @@ export interface UseCompletionOptions {
 
 /**
  * Return type for useCompletion hook
+ * 
+ * Follows the standard hook return pattern:
+ * - Data: `completion` (current state)
+ * - State: `isLoading`, `error`
+ * - Actions: `complete`, `stop`, `abort`, `clearCache`
  */
 export interface UseCompletionReturn {
-  /** Current completion text */
+  /** Current completion text (data) */
   completion: string
   
   /** Set completion text directly */
   setCompletion: React.Dispatch<React.SetStateAction<string>>
   
-  /** Complete the given prompt */
+  /** Complete the given prompt (action) */
   complete: (prompt: string, options?: { body?: Record<string, any> }) => Promise<string | null>
   
-  /** Stop the current completion */
+  /** Stop the current completion (action) */
   stop: () => void
   
-  /** Whether currently loading */
+  /** Whether currently loading (state) */
   isLoading: boolean
   
-  /** Current error */
+  /** Current error (state) */
   error: Error | undefined
   
-  /** Abort controller for current request */
+  /** Abort controller for current request (action) */
   abort: () => void
 
-  /** Clear the deduplication cache */
+  /** Clear the deduplication cache (action) */
   clearCache: () => void
 
-  /** Get cache statistics */
+  /** Get cache statistics (utility) */
   getCacheStats: () => { enabled: boolean; size: number; maxSize: number }
 }
 

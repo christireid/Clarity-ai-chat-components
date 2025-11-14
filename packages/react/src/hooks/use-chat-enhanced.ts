@@ -116,43 +116,50 @@ export interface UseChatOptions {
 }
 
 /**
- * Return type for useChat hook
+ * Return type for useChat hook (mid-level API)
+ * 
+ * Follows the standard hook return pattern:
+ * - Data: `messages`, `input`, `data` (current state)
+ * - State: `isLoading`, `error`
+ * - Actions: `append`, `reload`, `stop`, `handleSubmit`, `abort`, `setMessages`, `setInput`
+ * 
+ * This is Vercel AI SDK compatible and provides enhanced features.
  */
 export interface UseChatReturn {
-  /** Current messages */
+  /** Current messages (data) */
   messages: CoreMessage[]
   
-  /** Set messages directly */
+  /** Set messages directly (action) */
   setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>
   
-  /** Append a message */
+  /** Append a message (action) */
   append: (message: CoreMessage | Pick<CoreMessage, 'role' | 'content'>, options?: { data?: Record<string, any> }) => Promise<string | null>
   
-  /** Reload/retry the last assistant message */
+  /** Reload/retry the last assistant message (action) */
   reload: (options?: { data?: Record<string, any> }) => Promise<string | null>
   
-  /** Stop the current stream */
+  /** Stop the current stream (action) */
   stop: () => void
   
-  /** Submit a user message (creates user message and triggers assistant response) */
+  /** Submit a user message (creates user message and triggers assistant response) (action) */
   handleSubmit: (event?: React.FormEvent<HTMLFormElement>, options?: { data?: Record<string, any> }) => void
   
-  /** Input value */
+  /** Input value (data) */
   input: string
   
-  /** Set input value */
+  /** Set input value (action) */
   setInput: React.Dispatch<React.SetStateAction<string>>
   
-  /** Whether currently loading */
+  /** Whether currently loading (state) */
   isLoading: boolean
   
-  /** Current error */
+  /** Current error (state) */
   error: Error | undefined
   
-  /** Current assistant message being streamed */
+  /** Current assistant message being streamed (data) */
   data: CoreMessage | undefined
   
-  /** Abort controller for current request */
+  /** Abort controller for current request (action) */
   abort: () => void
 }
 

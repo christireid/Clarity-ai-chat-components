@@ -109,11 +109,16 @@ export function ClarityChat({
   onClear,
   ...hookOptions
 }: ClarityChatProps) {
-  // Validate required prop
-  if (!api) {
+  // Validate required prop with helpful error message
+  if (!api || typeof api !== 'string' || api.trim().length === 0) {
     throw new Error(
-      'ClarityChat: "api" prop is required. ' +
-      'Please provide your API endpoint URL, e.g., <ClarityChat api="/api/chat" />'
+      'ClarityChat: "api" prop is required.\n' +
+      'Please provide your API endpoint URL.\n\n' +
+      'Example:\n' +
+      '  <ClarityChat api="/api/chat" />\n\n' +
+      'Or use environment variable:\n' +
+      '  CLARITY_CHAT_API=/api/chat\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/getting-started'
     )
   }
 
