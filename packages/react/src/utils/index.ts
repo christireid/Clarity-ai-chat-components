@@ -42,3 +42,6 @@ export * from './chat-config-builder'
 // Streaming utilities (shared across hooks)
 export * from './streaming-helpers'
 
+// Message conversion utilities
+export * from './message-converter'
+
