@@ -242,7 +242,14 @@ export function useMemory(): MemoryContextValue {
   const context = React.useContext(MemoryContext)
 
   if (!context) {
-    throw new Error('useMemory must be used within a MemoryProvider')
+    throw new Error(
+      '[useMemory] MemoryProvider is not available. ' +
+      'Please wrap your component with <MemoryProvider> to use this hook.\n\n' +
+      'Example:\n' +
+      '  <MemoryProvider config={{ maxTokens: 10000 }}>\n' +
+      '    <YourComponent />\n' +
+      '  </MemoryProvider>'
+    )
   }
 
   return context

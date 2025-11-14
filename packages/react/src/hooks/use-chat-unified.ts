@@ -27,6 +27,7 @@ import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import type { Message } from '@clarity-chat/types'
+import { validateApiEndpoint, validateStorageKey } from '../utils/runtime-validation'
 
 export interface UseChatOptions extends UseClarityChatOptions {
   /** Enable automatic message persistence to localStorage (default: false) */
@@ -68,6 +69,14 @@ export interface UseChatReturn {
  * @returns Simplified chat interface + full chat object
  */
 export function useChat(options: UseChatOptions = {}): UseChatReturn {
+  // Runtime validation with developer-friendly errors
+  validateApiEndpoint(options.api, 'useChat')
+
+  // Validate storageKey if persistence is enabled
+  if (options.persistMessages) {
+    validateStorageKey(options.storageKey, 'useChat')
+  }
+
   const {
     persistMessages = false,
     storageKey = 'clarity-chat',

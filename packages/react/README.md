@@ -1,22 +1,23 @@
 # @clarity-chat/react
 
-> Enterprise-grade React components and hooks for building AI chat applications with Clarity.
+> **The Most Complete AI Chat Component Library for React** — Enterprise-grade, stupid-simple, drop-in ready.
 
 [![npm version](https://img.shields.io/npm/v/@clarity-chat/react)](https://www.npmjs.com/package/@clarity-chat/react)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## ✨ Features
+## 🎯 Value Proposition
 
-- 🚀 **Flagship Chat Hook** - `useClarityChat` with full Vercel AI SDK compatibility
-- 💾 **Memory Management** - Three strategies: sliding-window, semantic-chunks, vector-store
-- 🎯 **Structured Output** - Type-safe object generation with `useClarityObject<T>`
-- 🛠️ **Tool UI Registry** - Automatic rendering of tool results with custom components
-- 📡 **Dual Transport** - SSE and WebSocket streaming support
-- 🎨 **Production UI Components** - ChatWindow, ChatInput, VirtualizedMessageList, and more
-- 🤖 **Agent Orchestration** - ReAct agent integration with tool support
-- 🔄 **Error Recovery** - Built-in error handling and retry mechanisms
-- ♿ **Accessible** - WCAG compliant components
-- 📱 **Responsive** - Mobile-first design
+Clarity Chat is the most complete AI chat component library for React. Get a production-ready chat interface in **one line**, or compose powerful features with our layered API architecture. Built for developers who want enterprise-grade capabilities without the complexity.
+
+**Key Differentiators**:
+- ⚡ **One-line setup** - `<ClarityChat api="/api/chat" />` and you're done
+- 🏗️ **Layered architecture** - Start simple, scale to enterprise
+- 🎨 **Production-ready UI** - Beautiful, accessible, responsive components
+- 💾 **Built-in memory** - Three strategies for context retention
+- 🛠️ **Tool UI registry** - Automatic rendering of tool results
+- 📡 **Dual transport** - SSE and WebSocket support
+- 🔒 **Enterprise features** - RBAC, audit, multi-tenancy ready
+- 🛡️ **Runtime validation** - Developer-friendly error messages
 
 ## 📦 Installation
 

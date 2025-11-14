@@ -9,6 +9,7 @@ import * as React from 'react'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'
 import { ErrorBoundary } from './error-boundary'
 import { applyChatPreset, type ChatPreset } from '../presets/chat-presets'
+import { validateApiEndpoint, validateEnum } from '../utils/runtime-validation'
 
 /**
  * ChatWithMemory - Chat component with memory enabled
@@ -32,12 +33,25 @@ export function ChatWithMemory({
   maxTokens,
   ...props
 }: ChatWithMemoryProps) {
+  // Runtime validation with developer-friendly errors
+  validateApiEndpoint(props.api, 'ChatWithMemory')
+  
+  // Validate strategy
+  const validStrategies = ['sliding-window', 'semantic-chunks', 'vector-store'] as const
+  const validatedStrategy = validateEnum(
+    strategy,
+    'strategy',
+    'ChatWithMemory',
+    validStrategies,
+    'vector-store'
+  )
+
   return (
     <ClarityChat
       {...props}
       memory={{
         enabled: true,
-        strategy,
+        strategy: validatedStrategy,
         maxTokens,
         retryOnError: true,
       }}

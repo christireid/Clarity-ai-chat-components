@@ -23,6 +23,7 @@ import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from '../hooks/use-clarity-chat'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import { ChatWindow, type ChatWindowProps } from './chat-window'
+import { validateApiEndpoint } from '../utils/runtime-validation'
 
 // Props that should go to ChatWindow, not useClarityChat
 const CHAT_WINDOW_ONLY_PROPS = [
@@ -93,6 +94,9 @@ export interface ClarityChatProps extends UseClarityChatOptions, ChatWindowOnlyP
  * ```
  */
 export function ClarityChat(props: ClarityChatProps) {
+  // Runtime validation with developer-friendly errors
+  validateApiEndpoint(props.api, 'ClarityChat')
+
   const {
     api,
     chatId = 'default',

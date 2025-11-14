@@ -196,6 +196,34 @@ export function ChatWindow({
   onClear,
   className,
 }: ChatWindowProps) {
+  // Runtime validation with developer-friendly errors
+  if (!messages) {
+    throw new Error(
+      '[ChatWindow] Missing required prop "messages". ' +
+      'Please provide an array of messages: <ChatWindow messages={messages} />'
+    )
+  }
+
+  if (!Array.isArray(messages)) {
+    throw new Error(
+      '[ChatWindow] Invalid "messages" prop. ' +
+      `Expected an array, got: ${typeof messages}`
+    )
+  }
+
+  if (!onSendMessage) {
+    throw new Error(
+      '[ChatWindow] Missing required prop "onSendMessage". ' +
+      'Please provide a callback function: <ChatWindow onSendMessage={handleSend} />'
+    )
+  }
+
+  if (typeof onSendMessage !== 'function') {
+    throw new Error(
+      '[ChatWindow] Invalid "onSendMessage" prop. ' +
+      `Expected a function, got: ${typeof onSendMessage}`
+    )
+  }
   const [input, setInput] = React.useState('')
 
   // React 19: Compiler optimizes - no useCallback needed

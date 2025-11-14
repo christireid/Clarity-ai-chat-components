@@ -1,44 +1,229 @@
-# Migration Guide: Vercel AI SDK → Clarity `useClarityChat`
+# Migration Guide
 
-This guide helps you migrate from Vercel AI SDK's `useChat` to Clarity's flagship `useClarityChat` hook.
+## Overview
 
-## Quick Start
+This guide helps you migrate from older versions of Clarity Chat or from similar libraries (like Vercel AI SDK UI) to the latest Clarity Chat architecture.
 
-### Before (Vercel AI SDK)
+**Last Updated**: Phase 4 Migration Guide
+
+---
+
+## Migrating to Clarity Chat 1.0
+
+### What Changed
+
+**Architecture**:
+- ✅ Layered architecture (top/mid/low)
+- ✅ Domain-organized exports
+- ✅ Consistent API shapes
+- ✅ Runtime validation
+
+**APIs**:
+- ✅ New top-level components (`ClarityChat`, `ChatWithMemory`)
+- ✅ Simplified hooks (`useChat`)
+- ✅ Improved error messages
+- ✅ Better TypeScript types
+
+**Breaking Changes**:
+- ⚠️ None! 100% backward compatible
+
+---
+
+## From Vercel AI SDK UI
+
+### Before (Vercel AI SDK UI)
 
 ```tsx
 import { useChat } from 'ai/react'
 
-function ChatComponent() {
-  const { messages, append, isLoading, input, setInput } = useChat({
-    api: '/api/chat',
-  })
-
+function Chat() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat()
+  
   return (
     <div>
-      {messages.map((msg) => (
-        <div key={msg.id}>{msg.content}</div>
+      {messages.map(m => (
+        <div key={m.id}>{m.role}: {m.content}</div>
       ))}
-      <input value={input} onChange={(e) => setInput(e.target.value)} />
-      <button onClick={() => append({ role: 'user', content: input })}>
-        Send
-      </button>
+      <form onSubmit={handleSubmit}>
+        <input value={input} onChange={handleInputChange} />
+        <button>Send</button>
+      </form>
     </div>
   )
 }
 ```
 
-### After (Clarity)
+### After (Clarity Chat - Simplest)
 
 ```tsx
-import { useClarityChat } from '@clarity-chat/react'
-import { ChatWindow } from '@clarity-chat/react'
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
-function ChatComponent() {
-  const { messages, append, isLoading, input, setInput } = useClarityChat({
+function Chat() {
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+### After (Clarity Chat - More Control)
+
+```tsx
+import { useChat, ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function Chat() {
+  const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+  
+  return (
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={sendMessage}
+    />
+  )
+}
+```
+
+### Key Differences
+
+| Feature | Vercel AI SDK UI | Clarity Chat |
+|---------|-----------------|--------------|
+| **Setup** | Hook + manual UI | One component |
+| **Message Format** | `CoreMessage[]` | `Message[]` (auto-converted) |
+| **Input Handling** | Manual form | Built-in |
+| **Loading States** | Manual | Automatic |
+| **Error Handling** | Manual | Built-in |
+| **Memory** | Not included | Built-in (3 strategies) |
+| **Analytics** | Not included | Built-in |
+
+---
+
+## From Old Clarity Chat Versions
+
+### Before (Old API)
+
+```tsx
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+
+function Chat() {
+  const { messages, append, isLoading } = useClarityChat({
     api: '/api/chat',
   })
+  
+  // Manual message conversion
+  const convertedMessages = messages.map(m => ({
+    id: m.id,
+    role: m.role,
+    content: m.content,
+    // ... manual conversion
+  }))
+  
+  return (
+    <ChatWindow
+      messages={convertedMessages}
+      isLoading={isLoading}
+      onSendMessage={(content) => append({ role: 'user', content })}
+    />
+  )
+}
+```
 
+### After (New API - Simplest)
+
+```tsx
+import { ClarityChat } from '@clarity-chat/react'
+
+function Chat() {
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+### After (New API - More Control)
+
+```tsx
+import { useChat, ChatWindow } from '@clarity-chat/react'
+
+function Chat() {
+  const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+  
+  // Automatic message conversion - no manual work needed!
+  return (
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={sendMessage}
+    />
+  )
+}
+```
+
+### Key Improvements
+
+1. **Automatic Message Conversion**: No more manual `convertCoreMessagesToMessages`
+2. **Simplified API**: `sendMessage` instead of `append({ role: 'user', content })`
+3. **Better Errors**: Runtime validation with helpful messages
+4. **Memory Built-in**: Use `ChatWithMemory` for instant memory support
+
+---
+
+## API Mapping
+
+### Hooks
+
+| Old API | New API | Notes |
+|---------|---------|-------|
+| `useClarityChat` | `useClarityChat` | Still available, enhanced |
+| `useClarityChat` | `useChat` | Simplified version |
+| `useChatLegacy` | `useChatLegacy` | Still available (backward compat) |
+| `useChatEnhanced` | `useChatEnhanced` | Still available (advanced) |
+
+### Components
+
+| Old API | New API | Notes |
+|---------|---------|-------|
+| `ChatWindow` | `ChatWindow` | Enhanced with validation |
+| `ChatWindow` | `ClarityChat` | Drop-in component |
+| N/A | `ChatWithMemory` | New - pre-configured memory |
+| N/A | `ChatComplete` | New - full stack |
+
+### Utilities
+
+| Old API | New API | Notes |
+|---------|---------|-------|
+| `coreMessagesToMessages` | `convertCoreMessagesToMessages` | Renamed (old still works) |
+| `coreMessageToMessage` | `convertCoreMessageToMessage` | Renamed (old still works) |
+
+---
+
+## Step-by-Step Migration
+
+### Step 1: Update Imports
+
+**Before**:
+```tsx
+import { useClarityChat, ChatWindow, coreMessagesToMessages } from '@clarity-chat/react'
+```
+
+**After**:
+```tsx
+import { ClarityChat } from '@clarity-chat/react'
+// Or for more control:
+import { useChat, ChatWindow } from '@clarity-chat/react'
+```
+
+### Step 2: Simplify Component
+
+**Before**:
+```tsx
+function Chat() {
+  const { messages: coreMessages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+  
+  const messages = useMemo(
+    () => coreMessagesToMessages(coreMessages),
+    [coreMessages]
+  )
+  
   return (
     <ChatWindow
       messages={messages}
@@ -49,175 +234,147 @@ function ChatComponent() {
 }
 ```
 
-## API Compatibility
+**After**:
+```tsx
+function Chat() {
+  return <ClarityChat api="/api/chat" />
+}
+```
 
-`useClarityChat` maintains **100% API compatibility** with Vercel's `useChat`. All existing code will work without changes.
-
-### Identical APIs
-
-- ✅ `messages` - Array of chat messages
-- ✅ `append` - Append a message
-- ✅ `reload` - Reload/retry last message
-- ✅ `stop` - Stop current stream
-- ✅ `handleSubmit` - Handle form submission
-- ✅ `input` / `setInput` - Input value state
-- ✅ `isLoading` - Loading state
-- ✅ `error` - Error state
-- ✅ `data` - Current streaming message
-
-### Enhanced Options
-
-Clarity adds optional enhancements:
+### Step 3: Add Customization (If Needed)
 
 ```tsx
-const chat = useClarityChat({
-  api: '/api/chat',
-  
-  // Clarity-specific enhancements
-  memory: {
-    enabled: true,
-    strategy: 'sliding-window', // or 'semantic-chunks', 'vector-store'
-    maxTokens: 4000,
-  },
-  transport: 'sse', // or 'websocket'
-  
-  // All Vercel options still work
-  initialMessages: [],
-  onFinish: (message) => console.log('Done:', message),
-  // ... etc
-})
-```
-
-## Step-by-Step Migration
-
-### Step 1: Update Imports
-
-```diff
-- import { useChat } from 'ai/react'
-+ import { useClarityChat } from '@clarity-chat/react'
-```
-
-### Step 2: Rename Hook
-
-```diff
-- const { messages, append, ... } = useChat({
-+ const { messages, append, ... } = useClarityChat({
-    api: '/api/chat',
-  })
-```
-
-### Step 3: (Optional) Add Clarity Features
-
-```tsx
-const chat = useClarityChat({
-  api: '/api/chat',
-  memory: { enabled: true }, // Enable memory for context retention
-  transport: 'sse', // Choose transport protocol
-})
-```
-
-### Step 4: (Optional) Use Clarity Components
-
-```tsx
-import { ChatWindow } from '@clarity-chat/react'
-
-<ChatWindow
-  messages={messages}
-  isLoading={isLoading}
-  onSendMessage={(content) => append({ role: 'user', content })}
-/>
-```
-
-## Memory Integration
-
-To enable memory features, wrap your app with `MemoryProvider`:
-
-```tsx
-import { MemoryProvider } from '@clarity-chat/react/memory'
-
-function App() {
+function Chat() {
   return (
-    <MemoryProvider config={{ /* memory config */ }}>
-      <ChatComponent />
-    </MemoryProvider>
+    <ClarityChat
+      api="/api/chat"
+      showHeader
+      sessionTitle="My Chat"
+      onMessageFeedback={(id, type) => {
+        // Custom feedback handling
+      }}
+    />
   )
 }
 ```
 
-Then enable memory in `useClarityChat`:
+### Step 4: Add Memory (Optional)
 
 ```tsx
-const chat = useClarityChat({
-  api: '/api/chat',
-  memory: {
-    enabled: true,
-    strategy: 'sliding-window',
-  },
-})
+import { ChatWithMemory } from '@clarity-chat/react'
+
+function Chat() {
+  return (
+    <ChatWithMemory
+      api="/api/chat"
+      strategy="vector-store"
+    />
+  )
+}
 ```
 
-## Transport Options
+---
 
-Clarity supports multiple transport protocols:
+## Common Migration Patterns
 
-- **SSE (default)**: Server-Sent Events, unidirectional streaming
-- **WebSocket**: Bidirectional real-time communication
+### Pattern 1: Simple Chat
 
+**Before**:
 ```tsx
-// SSE (default)
-const chat = useClarityChat({
-  api: '/api/chat',
-  transport: 'sse',
-})
-
-// WebSocket
-const chat = useClarityChat({
-  api: '/api/chat',
-  transport: 'websocket',
-})
+const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
 ```
 
-## Benefits of Migration
-
-1. **Same API** - Drop-in replacement, no code changes needed
-2. **Enhanced Features** - Memory, multiple transports, better error handling
-3. **Production Ready** - Built-in error recovery, token optimization, analytics
-4. **Enterprise Features** - RBAC, quotas, multi-tenancy, audit logging
-5. **Better DX** - Rich UI components, virtualized lists, thinking indicators
-
-## Troubleshooting
-
-### Memory not working?
-
-Ensure `MemoryProvider` wraps your component tree:
-
+**After**:
 ```tsx
-<MemoryProvider config={memoryConfig}>
-  <YourChatComponent />
+const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+```
+
+**Change**: `append` → `sendMessage`, automatic conversion
+
+---
+
+### Pattern 2: Chat with Memory
+
+**Before**:
+```tsx
+<MemoryProvider config={...}>
+  <ClarityChat api="/api/chat" memory={{ enabled: true }} />
 </MemoryProvider>
 ```
 
-### Type errors?
-
-All types are compatible. If you see errors, ensure you're importing from `@clarity-chat/react`:
-
+**After**:
 ```tsx
-import { useClarityChat, type UseClarityChatOptions } from '@clarity-chat/react'
+<ChatWithMemory api="/api/chat" strategy="vector-store" />
 ```
 
-### Need advanced features?
+**Change**: Pre-configured component, no provider needed
 
-`useChatEnhanced` is still available for advanced use cases:
+---
 
+### Pattern 3: Custom UI
+
+**Before**:
 ```tsx
-import { useChat } from '@clarity-chat/react'
-// This is useChatEnhanced, fully compatible with Vercel
+const { messages, append } = useClarityChat({ api: '/api/chat' })
+const converted = convertCoreMessagesToMessages(messages)
+// Custom UI with converted messages
 ```
 
-## Examples
+**After**:
+```tsx
+const { messages, sendMessage } = useChat({ api: '/api/chat' })
+// Use messages directly - already converted!
+```
 
-See `packages/react/src/examples/basic-clarity-chat-example.tsx` for a complete example.
+**Change**: No manual conversion needed
 
-## Support
+---
 
-For issues or questions, see the [Clarity documentation](../../README.md) or open an issue.
+## Deprecated APIs
+
+These APIs still work but are deprecated:
+
+- `coreMessagesToMessages` → Use `convertCoreMessagesToMessages`
+- `coreMessageToMessage` → Use `convertCoreMessageToMessage`
+- `useClarityChatWithWindow` → Use `ClarityChat` component
+
+**Migration**: Update imports and function calls. Old APIs will be removed in v2.0.
+
+---
+
+## Troubleshooting
+
+### Error: "Missing required prop 'api'"
+
+**Solution**: Add `api` prop:
+```tsx
+<ClarityChat api="/api/chat" />
+```
+
+### Error: "MemoryProvider is not available"
+
+**Solution**: Wrap with `MemoryProvider` or use `ChatWithMemory`:
+```tsx
+<ChatWithMemory api="/api/chat" />
+```
+
+### Error: "Invalid 'strategy' prop"
+
+**Solution**: Use valid strategy:
+```tsx
+strategy="vector-store" // or "sliding-window" or "semantic-chunks"
+```
+
+---
+
+## Need Help?
+
+- Check [API Reference](./API_REFERENCE.md)
+- See [Examples](./src/examples/)
+- Read [Architecture Guide](./ARCHITECTURE_REFERENCE.md)
+- Open an issue
+
+---
+
+**Last Updated**: Phase 4 Migration Guide  
+**Status**: ✅ Complete
