@@ -33,7 +33,7 @@ export interface UseAsyncErrorOptions {
  * }
  * ```
  */
-export function useAsyncError<T = any>() {
+export function useAsyncError<T = unknown>() {
   const [error, setError] = useState<Error | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [retryCount, setRetryCount] = useState(0)
@@ -72,10 +72,9 @@ export function useAsyncError<T = any>() {
 
           // If we haven't exhausted retries, wait and try again
           if (attempt < maxRetries) {
-            // Exponential backoff: 1s, 2s, 3s, etc.
-            await new Promise((resolve) =>
-              setTimeout(resolve, retryDelay * (attempt + 1))
-            )
+            // Exponential backoff: 1s, 2s, 4s, etc. (proper exponential)
+            const backoffDelay = retryDelay * Math.pow(2, attempt)
+            await new Promise((resolve) => setTimeout(resolve, backoffDelay))
           } else {
             // Final failure after all retries
             setError(error)
@@ -90,7 +89,7 @@ export function useAsyncError<T = any>() {
       setIsLoading(false)
       return null
     },
-    []
+    [] // Options are passed per call, so no deps needed
   )
 
   return {

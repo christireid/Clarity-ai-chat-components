@@ -127,10 +127,10 @@ clarity-chat/
 │   └── cli/              # CLI tools
 ├── apps/
 │   ├── storybook/        # Component documentation
-│   └── docs/             # Documentation site
-├── examples/             # Example applications
+│   ├── docs-site/        # Documentation site
+│   └── examples/         # Example applications
 ├── docs/                 # Markdown documentation
-└── .archive/             # Archived files
+└── archive/              # Archived files
 ```
 
 ### Key Files
@@ -575,7 +575,7 @@ npm run test -- --verbose
 
 ### Resources
 
-- **[Documentation](./docs/README.md)** - Full docs
+- **[Documentation](https://docs.clarity-chat.dev)** - Full docs
 - **[Discord](https://discord.gg/clarity-chat)** - Community chat
 - **[GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)** - Q&A
 - **[GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** - Bug reports

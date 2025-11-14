@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { ChatWindow } from '../components/chat-window'
+import { useMessageOperations } from '../hooks/use-message-operations'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -163,37 +164,76 @@ export function SupportBot({
   onEscalate,
   className = '',
 }: SupportBotConfig) {
-  const [messages, setMessages] = React.useState<Message[]>([
-    {
-      id: '1',
-      chatId: 'support-bot',
-      role: 'assistant',
-      content: welcomeMessage,
-      status: 'sent' as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  const chatId = 'support-bot'
+  
+  // Use message operations hook
+  const {
+    messages: operationMessages,
+    addMessage,
+    editMessage,
+    deleteMessage,
+  } = useMessageOperations({
+    initialMessages: [
+      {
+        id: '1',
+        chatId,
+        role: 'assistant',
+        content: welcomeMessage,
+        timestamp: Date.now(),
+      },
+    ],
+    onEdit: (messageId, newContent) => {
+      console.log('Message edited:', messageId, newContent)
     },
-  ])
+    onDelete: (messageId) => {
+      console.log('Message deleted:', messageId)
+    },
+  })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId,
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
   
   const [messageCount, setMessageCount] = React.useState(0)
   const [showQuickReplies, setShowQuickReplies] = React.useState(true)
+
+  // Handle message operations
+  const handleEdit = React.useCallback((messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message) return
+
+    const newContent = prompt('Edit message:', message.content) || message.content
+    if (newContent !== message.content) {
+      editMessage(messageId, newContent)
+    }
+  }, [messages, editMessage])
+
+  const handleDelete = React.useCallback((messageId: string) => {
+    if (confirm('Delete this message?')) {
+      deleteMessage(messageId)
+      setMessageCount((prev) => Math.max(0, prev - 1))
+    }
+  }, [deleteMessage])
 
   /**
    * Handle user message
    */
   const handleSendMessage = (content: string) => {
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      chatId: 'support-bot',
+    // Add user message using operations hook
+    addMessage({
+      chatId,
       role: 'user',
       content,
-      status: 'sent' as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+      timestamp: Date.now(),
+    })
     
-    setMessages((prev) => [...prev, userMessage])
     setMessageCount((prev) => prev + 1)
     setShowQuickReplies(false)
 
@@ -214,17 +254,12 @@ export function SupportBot({
       content.toLowerCase().includes('agent') ||
       content.toLowerCase().includes('person')
     ) {
-      const escalateMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        chatId: 'support-bot',
+      addMessage({
+        chatId,
         role: 'assistant',
         content: "I understand you'd like to speak with a human agent. Let me connect you now...",
-        status: 'sent' as const,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
-      
-      setMessages((prev) => [...prev, escalateMessage])
+        timestamp: Date.now(),
+      })
       
       if (onEscalate) {
         setTimeout(() => onEscalate(), 1000)
@@ -245,34 +280,24 @@ export function SupportBot({
       botResponse = "I'm not sure I understand. Can you please provide more details? Or would you like to speak with a human agent?"
     }
 
-    // Add bot response
-    const botMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      chatId: 'support-bot',
+    // Add bot response using operations hook
+    addMessage({
+      chatId,
       role: 'assistant',
       content: botResponse,
-      status: 'sent' as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    
-    setMessages((prev) => [...prev, botMessage])
+      timestamp: Date.now(),
+    })
 
     // Check if we should offer escalation
     if (messageCount >= escalationThreshold && !answer) {
       await new Promise((resolve) => setTimeout(resolve, 500))
       
-      const escalationOffer: Message = {
-        id: (Date.now() + 2).toString(),
-        chatId: 'support-bot',
+      addMessage({
+        chatId,
         role: 'assistant',
         content: "It seems like you might benefit from speaking with one of our specialists. Would you like me to connect you with a human agent?",
-        status: 'sent' as const,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
-      
-      setMessages((prev) => [...prev, escalationOffer])
+        timestamp: Date.now(),
+      })
     }
 
     // Show quick replies after bot response
@@ -294,11 +319,25 @@ export function SupportBot({
     }
   }
 
+  const handleExport = () => {
+    const text = messages.map(m => `${m.role === 'user' ? 'Customer' : 'Support Bot'}: ${m.content}`).join('\n\n')
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `support-conversation-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className={`support-bot-container ${className}`}>
       <ChatWindow
         messages={messages}
         onSendMessage={handleSendMessage}
+        onEditMessage={handleEdit}
+        onDeleteMessage={handleDelete}
+        onExport={handleExport}
       />
       
       {/* Quick reply buttons */}

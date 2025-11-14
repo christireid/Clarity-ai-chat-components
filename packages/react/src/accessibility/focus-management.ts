@@ -13,7 +13,7 @@ import * as React from 'react'
  */
 export function useFocusTrap<T extends HTMLElement = HTMLDivElement>(
   active: boolean = true
-): React.RefObject<T> {
+): React.RefObject<T | null> {
   const ref = React.useRef<T>(null)
   
   React.useEffect(() => {
@@ -232,7 +232,7 @@ export function useAutoFocus<T extends HTMLElement = HTMLElement>(
     delay?: number
     preventScroll?: boolean
   }
-): React.RefObject<T> {
+): React.RefObject<T | null> {
   const ref = React.useRef<T>(null)
   
   React.useEffect(() => {
@@ -261,7 +261,7 @@ export function useAutoFocus<T extends HTMLElement = HTMLElement>(
  * Detect if focus is within an element
  */
 export function useFocusWithin<T extends HTMLElement = HTMLElement>(): {
-  ref: React.RefObject<T>
+  ref: React.RefObject<T | null>
   isFocusWithin: boolean
 } {
   const ref = React.useRef<T>(null)

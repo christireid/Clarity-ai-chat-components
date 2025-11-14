@@ -171,6 +171,7 @@ export function ThemeProvider({
     }
   }, [theme, storageKey])
 
+  // Memoize theme manipulation callbacks (already using useCallback - good!)
   const setTheme = React.useCallback((newTheme: Partial<ThemeConfig>) => {
     setThemeState((prev) => ({ ...prev, ...newTheme }))
   }, [])

@@ -1,33 +1,34 @@
 /**
  * Toast Notification System
- * 
+ *
  * Provides toast notifications for success, error, info, and warning messages.
  * Supports auto-dismiss, queue management, and custom durations.
  */
 
-import * as React from 'react'
+import React, { useState, useCallback, useRef, useEffect, memo, createContext, useContext, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { 
-  CheckCircleIcon, 
-  XCircleIcon, 
-  InfoIcon, 
-  AlertCircleIcon, 
-  CloseIcon 
+import {
+  CheckCircleIcon,
+  XCircleIcon,
+  InfoIcon,
+  AlertCircleIcon,
+  CloseIcon,
 } from './icons'
-import { 
-  ANIMATION_DURATION, 
+import {
+  ANIMATION_DURATION,
   ANIMATION_EASING,
   // createSlideVariant, // Reserved for future use
 } from '../animations'
+import type { ReactNode } from 'react'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
-export type ToastPosition = 
-  | 'top-left' 
-  | 'top-center' 
-  | 'top-right' 
-  | 'bottom-left' 
-  | 'bottom-center' 
+export type ToastPosition =
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
   | 'bottom-right'
 
 export interface Toast {
@@ -46,37 +47,71 @@ export interface ToastProps extends Toast {
   onClose: (id: string) => void
 }
 
+// Icon mapping - reserved for future use
+// const TOAST_ICONS = {
+//   success: CheckCircleIcon,
+//   error: XCircleIcon,
+//   info: InfoIcon,
+//   warning: AlertCircleIcon,
+// } as const
+
+// Color classes - reserved for future use
+// const TOAST_COLOR_CLASSES = {
+//   success: 'bg-success/10 border-success/20 text-success-foreground',
+//   error: 'bg-destructive/10 border-destructive/20 text-destructive-foreground',
+//   info: 'bg-info/10 border-info/20 text-info-foreground',
+//   warning: 'bg-warning/10 border-warning/20 text-warning-foreground',
+// } as const
+
+// const TOAST_ICON_COLOR_CLASSES = {
+//   success: 'text-success',
+//   error: 'text-destructive',
+//   info: 'text-info',
+//   warning: 'text-warning',
+// } as const
+
 /**
  * Individual toast component
  */
-export const ToastItem: React.FC<ToastProps> = ({
+export function ToastItem({
   id,
   type,
   title,
   description,
   action,
   onClose,
-}) => {
-  const Icon = {
-    success: CheckCircleIcon,
-    error: XCircleIcon,
-    info: InfoIcon,
-    warning: AlertCircleIcon,
-  }[type]
+}: ToastProps) {
+  // Memoize icon selection
+  const Icon = React.useMemo(
+    () =>
+      ({
+        success: CheckCircleIcon,
+        error: XCircleIcon,
+        info: InfoIcon,
+        warning: AlertCircleIcon,
+      }[type]),
+    [type]
+  )
 
-  const colorClasses = {
+  // Memoize color classes
+  const colorClasses = React.useMemo(() => ({
     success: 'bg-success/10 border-success/20 text-success-foreground',
-    error: 'bg-destructive/10 border-destructive/20 text-destructive-foreground',
+    error:
+      'bg-destructive/10 border-destructive/20 text-destructive-foreground',
     info: 'bg-info/10 border-info/20 text-info-foreground',
     warning: 'bg-warning/10 border-warning/20 text-warning-foreground',
-  }
+  }[type]), [type])
 
-  const iconColorClasses = {
+  // Memoize icon color classes
+  const iconColorClasses = React.useMemo(() => ({
     success: 'text-success',
     error: 'text-destructive',
     info: 'text-info',
     warning: 'text-warning',
-  }
+  }[type]), [type])
+
+  // Memoize close handler
+  const handleClose = React.useCallback(() => onClose(id), [onClose, id])
 
   return (
     <motion.div
@@ -89,30 +124,27 @@ export const ToastItem: React.FC<ToastProps> = ({
         ease: ANIMATION_EASING.spring,
       }}
       className={cn(
-        'relative flex gap-3 p-4 rounded-lg border shadow-lg backdrop-blur-sm',
-        'min-w-[300px] max-w-[420px]',
-        colorClasses[type]
+        'relative flex gap-3 p-4 rounded-xl border-2 border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] backdrop-blur-md',
+        'min-w-[320px] max-w-[420px]',
+        colorClasses
       )}
     >
       {/* Icon */}
-      <div className={cn('flex-shrink-0 mt-0.5', iconColorClasses[type])}>
+      <div className={cn('flex-shrink-0 mt-0.5', iconColorClasses)}>
         <Icon size={20} />
       </div>
 
       {/* Content */}
       <div className="flex-1 space-y-1">
         {title && (
-          <div className="font-semibold text-sm leading-none">
-            {title}
-          </div>
+          <div className="font-semibold text-sm leading-none">{title}</div>
         )}
-        <div className="text-sm opacity-90">
-          {description}
-        </div>
+        <div className="text-sm opacity-90">{description}</div>
         {action && (
           <button
             onClick={action.onClick}
             className="text-sm font-medium underline hover:no-underline mt-2"
+            aria-label={action.label}
           >
             {action.label}
           </button>
@@ -123,8 +155,8 @@ export const ToastItem: React.FC<ToastProps> = ({
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        onClick={() => onClose(id)}
-        className="flex-shrink-0 p-1 rounded hover:bg-background/20 transition-colors"
+        onClick={handleClose}
+        className="flex-shrink-0 p-1 rounded-md hover:bg-background/20 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08)] transition-all duration-200"
         aria-label="Close notification"
       >
         <CloseIcon size={16} />
@@ -132,6 +164,8 @@ export const ToastItem: React.FC<ToastProps> = ({
     </motion.div>
   )
 }
+
+ToastItem.displayName = 'ToastItem'
 
 /**
  * Toast container component
@@ -142,25 +176,28 @@ export interface ToastContainerProps {
   onClose: (id: string) => void
 }
 
-export const ToastContainer: React.FC<ToastContainerProps> = ({
+// Position classes - extracted as constant
+const POSITION_CLASSES = {
+  'top-left': 'top-4 left-4 items-start',
+  'top-center': 'top-4 left-1/2 -translate-x-1/2 items-center',
+  'top-right': 'top-4 right-4 items-end',
+  'bottom-left': 'bottom-4 left-4 items-start',
+  'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2 items-center',
+  'bottom-right': 'bottom-4 right-4 items-end',
+} as const
+
+export function ToastContainer({
   toasts,
   position = 'top-right',
   onClose,
-}) => {
-  const positionClasses = {
-    'top-left': 'top-4 left-4 items-start',
-    'top-center': 'top-4 left-1/2 -translate-x-1/2 items-center',
-    'top-right': 'top-4 right-4 items-end',
-    'bottom-left': 'bottom-4 left-4 items-start',
-    'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2 items-center',
-    'bottom-right': 'bottom-4 right-4 items-end',
-  }
+}: ToastContainerProps) {
+  const positionClass = useMemo(() => POSITION_CLASSES[position], [position])
 
   return (
     <div
       className={cn(
         'fixed z-50 flex flex-col gap-2 pointer-events-none',
-        positionClasses[position]
+        positionClass
       )}
     >
       <AnimatePresence mode="popLayout">
@@ -173,6 +210,8 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
     </div>
   )
 }
+
+ToastContainer.displayName = 'ToastContainer'
 
 /**
  * Toast Context
@@ -187,28 +226,48 @@ interface ToastContextValue {
   warning: (description: string, title?: string, duration?: number) => string
 }
 
-const ToastContext = React.createContext<ToastContextValue | undefined>(undefined)
+const ToastContext = createContext<ToastContextValue | undefined>(undefined)
 
 /**
  * Toast Provider
  */
 export interface ToastProviderProps {
-  children: React.ReactNode
+  children: ReactNode
   position?: ToastPosition
   defaultDuration?: number
   maxToasts?: number
 }
 
-export const ToastProvider: React.FC<ToastProviderProps> = ({
+export function ToastProvider({
   children,
   position = 'top-right',
   defaultDuration = 5000,
   maxToasts = 5,
-}) => {
-  const [toasts, setToasts] = React.useState<Toast[]>([])
+}: ToastProviderProps) {
+  const [toasts, setToasts] = useState<Toast[]>([])
+  const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map())
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      timeoutRefs.current.forEach((timeout) => clearTimeout(timeout))
+      timeoutRefs.current.clear()
+    }
+  }, [])
+
+  // Remove toast
+  const removeToast = useCallback((id: string) => {
+    // Clear timeout if exists
+    const timeout = timeoutRefs.current.get(id)
+    if (timeout) {
+      clearTimeout(timeout)
+      timeoutRefs.current.delete(id)
+    }
+    setToasts((prev) => prev.filter((toast) => toast.id !== id))
+  }, [])
 
   // Add toast
-  const addToast = React.useCallback(
+  const addToast = useCallback(
     (toast: Omit<Toast, 'id'>): string => {
       const id = Math.random().toString(36).substring(2, 9)
       const newToast: Toast = { ...toast, id }
@@ -225,51 +284,47 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
       // Auto-dismiss
       const duration = toast.duration ?? defaultDuration
       if (duration > 0) {
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
           removeToast(id)
         }, duration)
+        timeoutRefs.current.set(id, timeout)
       }
 
       return id
     },
-    [defaultDuration, maxToasts]
+    [defaultDuration, maxToasts, removeToast]
   )
 
-  // Remove toast
-  const removeToast = React.useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id))
-  }, [])
-
   // Convenience methods
-  const success = React.useCallback(
+  const success = useCallback(
     (description: string, title?: string, duration?: number) => {
       return addToast({ type: 'success', description, title, duration })
     },
     [addToast]
   )
 
-  const error = React.useCallback(
+  const error = useCallback(
     (description: string, title?: string, duration?: number) => {
       return addToast({ type: 'error', description, title, duration })
     },
     [addToast]
   )
 
-  const info = React.useCallback(
+  const info = useCallback(
     (description: string, title?: string, duration?: number) => {
       return addToast({ type: 'info', description, title, duration })
     },
     [addToast]
   )
 
-  const warning = React.useCallback(
+  const warning = useCallback(
     (description: string, title?: string, duration?: number) => {
       return addToast({ type: 'warning', description, title, duration })
     },
     [addToast]
   )
 
-  const value: ToastContextValue = {
+  const value: ToastContextValue = useMemo(() => ({
     toasts,
     addToast,
     removeToast,
@@ -277,12 +332,16 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
     error,
     info,
     warning,
-  }
+  }), [toasts, addToast, removeToast, success, error, info, warning])
 
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <ToastContainer toasts={toasts} position={position} onClose={removeToast} />
+      <ToastContainer
+        toasts={toasts}
+        position={position}
+        onClose={removeToast}
+      />
     </ToastContext.Provider>
   )
 }
@@ -291,7 +350,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({
  * useToast hook
  */
 export function useToast(): ToastContextValue {
-  const context = React.useContext(ToastContext)
+  const context = useContext(ToastContext)
   if (!context) {
     throw new Error('useToast must be used within ToastProvider')
   }

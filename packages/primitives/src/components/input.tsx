@@ -1,20 +1,23 @@
+'use client'
+
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
+import { ErrorMessage } from './error-message'
 
 const inputVariants = cva(
-  'flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all',
+  'flex w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:border-primary focus-visible:shadow-xs hover:border-accent-foreground/20 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200',
   {
     variants: {
       variant: {
         default: '',
-        error: 'border-destructive focus-visible:ring-destructive',
-        success: 'border-green-500 focus-visible:ring-green-500',
+        error: 'ring-destructive focus-visible:ring-destructive focus-visible:ring-destructive/20',
+        success: 'ring-green-500 focus-visible:ring-green-500 focus-visible:ring-green-500/20',
       },
       inputSize: {
         default: 'h-10',
-        sm: 'h-9 text-xs',
-        lg: 'h-11',
+        sm: 'h-8 text-xs px-2',
+        lg: 'h-12 text-base px-4',
       },
     },
     defaultVariants: {
@@ -30,10 +33,10 @@ export interface InputProps
   error?: string
   icon?: React.ReactNode
   iconPosition?: 'left' | 'right'
+  ref?: React.Ref<HTMLInputElement>
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, variant, inputSize, type, error, icon, iconPosition = 'left', ...props }, ref) => {
+const Input = ({ className, variant, inputSize, type, error, icon, iconPosition = 'left', ref, ...props }: InputProps) => {
     const hasError = error || variant === 'error'
 
     if (icon) {
@@ -60,9 +63,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               {icon}
             </div>
           )}
-          {error && (
-            <p className="mt-1 text-xs text-destructive">{error}</p>
-          )}
+          <ErrorMessage error={error} />
         </div>
       )
     }
@@ -79,12 +80,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <p className="mt-1 text-xs text-destructive">{error}</p>
+          <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+            <svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {error}
+          </p>
         )}
       </div>
     )
-  }
-)
+}
+
 Input.displayName = 'Input'
 
 export { Input, inputVariants }

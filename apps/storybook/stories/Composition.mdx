@@ -1,0 +1,573 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Getting Started/Composition Patterns" />
+
+<div className="sb-container">
+  # Composition Patterns
+  
+  <p className="sb-lead">
+    Learn how to compose Clarity Chat components to build complex, production-ready interfaces.
+  </p>
+
+  ## 🎯 Why Composition?
+
+  Clarity Chat components are designed to be **composed together** rather than configured through props. This approach:
+
+  - ✅ **Flexibility** - Build exactly what you need
+  - ✅ **Simplicity** - Easy to understand and modify
+  - ✅ **Type Safety** - Full TypeScript support
+  - ✅ **Performance** - Only render what you use
+  - ✅ **Maintainability** - Clear component relationships
+
+  ## 🧩 Basic Composition
+
+  ### Pattern 1: Container + Content
+
+  Most complex components follow a container/content pattern:
+
+  ```tsx
+  import { ChatWindow, MessageList, ChatInput } from '@clarity-chat/react'
+
+  function MyChat() {
+    return (
+      <ChatWindow>
+        <MessageList messages={messages} />
+        <ChatInput onSend={handleSend} />
+      </ChatWindow>
+    )
+  }
+  ```
+
+  ### Pattern 2: Compound Components
+
+  Related components that work together:
+
+  ```tsx
+  import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@clarity-chat/primitives'
+
+  function FeatureCard() {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>AI Assistant</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Get instant help with coding questions.</p>
+        </CardContent>
+        <CardFooter>
+          <Button>Try Now</Button>
+        </CardFooter>
+      </Card>
+    )
+  }
+  ```
+
+  ### Pattern 3: Render Props
+
+  Pass rendering logic to components:
+
+  ```tsx
+  <MessageList
+    messages={messages}
+    renderMessage={(message) => (
+      <CustomMessage
+        key={message.id}
+        message={message}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+    )}
+  />
+  ```
+
+  ## 🚀 Advanced Patterns
+
+  ### Custom Chat Window
+
+  Build a fully customized chat interface:
+
+  ```tsx
+  import {
+    ChatWindow,
+    MessageList,
+    ChatInput,
+    ThinkingIndicator,
+    FollowUpSuggestions,
+    PersonaPanel,
+  } from '@clarity-chat/react'
+  import { Button, Avatar, DropdownMenu } from '@clarity-chat/primitives'
+
+  function AdvancedChat() {
+    const [messages, setMessages] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [persona, setPersona] = useState('assistant')
+
+    return (
+      <div className="flex h-screen">
+        {/* Sidebar with persona selection */}
+        <aside className="w-64 border-r">
+          <PersonaPanel
+            personas={personas}
+            selected={persona}
+            onSelect={setPersona}
+          />
+        </aside>
+
+        {/* Main chat area */}
+        <ChatWindow className="flex-1">
+          {/* Custom header */}
+          <header className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center gap-3">
+              <Avatar src={currentPersona.avatar} />
+              <div>
+                <h2 className="font-semibold">{currentPersona.name}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {currentPersona.description}
+                </p>
+              </div>
+            </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">⋮</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>Export Chat</DropdownMenuItem>
+                <DropdownMenuItem>Clear History</DropdownMenuItem>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </header>
+
+          {/* Message area */}
+          <MessageList
+            messages={messages}
+            className="flex-1"
+            renderMessage={(message) => (
+              <Message
+                key={message.id}
+                {...message}
+                avatar={message.role === 'assistant' 
+                  ? currentPersona.avatar 
+                  : userAvatar
+                }
+              />
+            )}
+          />
+
+          {/* Loading state */}
+          {isLoading && (
+            <ThinkingIndicator message="Thinking..." />
+          )}
+
+          {/* Follow-up suggestions */}
+          {messages.length > 0 && !isLoading && (
+            <FollowUpSuggestions
+              suggestions={generateSuggestions(messages)}
+              onSelect={handleSuggestion}
+            />
+          )}
+
+          {/* Input area */}
+          <ChatInput
+            onSend={handleSend}
+            placeholder={`Ask ${currentPersona.name} anything...`}
+            multiline
+            enableVoice
+            enableFileUpload
+          />
+        </ChatWindow>
+      </div>
+    )
+  }
+  ```
+
+  ### Smart Message List
+
+  Add advanced features to the message list:
+
+  ```tsx
+  import {
+    MessageList,
+    Message,
+    StreamingMessage,
+    CopyButton,
+    VirtualizedMessageList,
+  } from '@clarity-chat/react'
+  import { useAutoScroll, useIntersectionObserver } from '@clarity-chat/react'
+
+  function SmartMessageList({ messages }) {
+    const messagesEndRef = useRef(null)
+    
+    // Auto-scroll to new messages
+    useAutoScroll(messagesEndRef, messages)
+
+    // Lazy load old messages
+    const { ref: loadMoreRef, isIntersecting } = useIntersectionObserver()
+    
+    useEffect(() => {
+      if (isIntersecting) {
+        loadMoreMessages()
+      }
+    }, [isIntersecting])
+
+    return (
+      <VirtualizedMessageList
+        messages={messages}
+        height={600}
+        itemHeight={100}
+        renderMessage={(message, index) => {
+          // Load more trigger at top
+          if (index === 0) {
+            return <div ref={loadMoreRef}>Loading...</div>
+          }
+
+          // Streaming message
+          if (message.isStreaming) {
+            return (
+              <StreamingMessage
+                key={message.id}
+                content={message.content}
+              />
+            )
+          }
+
+          // Regular message with actions
+          return (
+            <Message
+              key={message.id}
+              {...message}
+              actions={
+                <div className="flex gap-2">
+                  <CopyButton text={message.content} />
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => regenerate(message.id)}
+                  >
+                    🔄
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => edit(message.id)}
+                  >
+                    ✏️
+                  </Button>
+                </div>
+              }
+            />
+          )
+        }}
+      />
+    )
+  }
+  ```
+
+  ### Enterprise Dashboard
+
+  Combine enterprise components:
+
+  ```tsx
+  import {
+    AuthTenantDashboard,
+    ApiTokenManager,
+    UsageDashboard,
+    AuditLog,
+  } from '@clarity-chat/react'
+  import { Tabs, TabsList, TabsTrigger, TabsContent } from '@clarity-chat/primitives'
+
+  function EnterpriseDashboard() {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold">Organization Dashboard</h1>
+          <p className="text-muted-foreground">
+            Manage your team, API keys, and usage
+          </p>
+        </header>
+
+        <Tabs defaultValue="overview">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="team">Team</TabsTrigger>
+            <TabsTrigger value="api">API Keys</TabsTrigger>
+            <TabsTrigger value="usage">Usage</TabsTrigger>
+            <TabsTrigger value="audit">Audit Log</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview">
+            <div className="grid grid-cols-3 gap-6">
+              <StatCard title="Active Users" value="24" />
+              <StatCard title="API Calls" value="1.2M" />
+              <StatCard title="Success Rate" value="99.8%" />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="team">
+            <AuthTenantDashboard />
+          </TabsContent>
+
+          <TabsContent value="api">
+            <ApiTokenManager />
+          </TabsContent>
+
+          <TabsContent value="usage">
+            <UsageDashboard />
+          </TabsContent>
+
+          <TabsContent value="audit">
+            <AuditLog />
+          </TabsContent>
+        </Tabs>
+      </div>
+    )
+  }
+  ```
+
+  ## 💡 Best Practices
+
+  ### Do's ✅
+
+  **Compose Small, Focused Components**
+  ```tsx
+  // Good
+  <ChatWindow>
+    <MessageList messages={messages} />
+    <ChatInput onSend={handleSend} />
+  </ChatWindow>
+
+  // Avoid
+  <ChatWindow
+    messages={messages}
+    onSend={handleSend}
+    showHeader={true}
+    showFooter={true}
+    headerContent={...}
+    footerContent={...}
+    // Too many props!
+  />
+  ```
+
+  **Use Custom Wrappers**
+  ```tsx
+  // Create your own composed components
+  function CustomerSupportChat() {
+    return (
+      <ChatWindow>
+        <SupportHeader />
+        <MessageList {...supportConfig} />
+        <SupportInput />
+      </ChatWindow>
+    )
+  }
+  ```
+
+  **Leverage TypeScript**
+  ```tsx
+  // Types help ensure correct composition
+  interface ChatProps {
+    messages: Message[]
+    onSend: (message: string) => Promise<void>
+    children?: React.ReactNode
+  }
+
+  function Chat({ messages, onSend, children }: ChatProps) {
+    return (
+      <ChatWindow>
+        <MessageList messages={messages} />
+        {children}
+        <ChatInput onSend={onSend} />
+      </ChatWindow>
+    )
+  }
+  ```
+
+  ### Don'ts ❌
+
+  **Don't Fight the Composition Model**
+  ```tsx
+  // Bad - trying to configure everything via props
+  <ChatWindow
+    customHeader={<MyHeader />}
+    customMessageRenderer={renderMessage}
+    customInput={<MyInput />}
+  />
+
+  // Good - compose directly
+  <ChatWindow>
+    <MyHeader />
+    <MessageList renderMessage={renderMessage} />
+    <MyInput />
+  </ChatWindow>
+  ```
+
+  **Don't Nest Too Deeply**
+  ```tsx
+  // Bad - hard to follow
+  <Container>
+    <Wrapper>
+      <Box>
+        <Inner>
+          <Content>
+            <Item />
+          </Content>
+        </Inner>
+      </Box>
+    </Wrapper>
+  </Container>
+
+  // Good - flat and clear
+  <ChatWindow>
+    <MessageList />
+    <ChatInput />
+  </ChatWindow>
+  ```
+
+  ## 🎓 Real-World Examples
+
+  ### Customer Support Bot
+
+  ```tsx
+  import { SupportBot } from '@clarity-chat/react/templates'
+
+  function SupportPage() {
+    return (
+      <SupportBot
+        businessContext="online shopping"
+        supportedTopics={['orders', 'returns', 'shipping']}
+        onEscalate={handleEscalation}
+      />
+    )
+  }
+  ```
+
+  ### Code Assistant
+
+  ```tsx
+  import { CodeAssistant } from '@clarity-chat/react/templates'
+
+  function IDEChat() {
+    return (
+      <CodeAssistant
+        language="typescript"
+        context={currentFile}
+        onCodeInsert={insertCode}
+      />
+    )
+  }
+  ```
+
+  ### Multi-Modal Chat
+
+  ```tsx
+  function MultiModalChat() {
+    return (
+      <ChatWindow>
+        <MessageList
+          renderMessage={(message) => (
+            <div>
+              {message.type === 'image' && (
+                <Image src={message.url} alt={message.alt} />
+              )}
+              {message.type === 'text' && (
+                <Message {...message} />
+              )}
+              {message.type === 'code' && (
+                <CodeBlock code={message.code} language={message.language} />
+              )}
+            </div>
+          )}
+        />
+        <ChatInput
+          enableFileUpload
+          acceptedFileTypes={['image/*', 'text/*']}
+        />
+      </ChatWindow>
+    )
+  }
+  ```
+
+  ## 📚 Resources
+
+  - **Component Library** - Browse all available components
+  - **Templates** - See pre-built compositions
+  - **Design Principles** - Understand the design philosophy
+  - **Accessibility** - Ensure your compositions are accessible
+
+  ## 🤝 Tips
+
+  1. **Start Simple** - Begin with basic compositions and add complexity as needed
+  2. **Extract Patterns** - Turn repeated compositions into reusable components
+  3. **Use Templates** - Check if a pre-built template fits your use case
+  4. **Think in Components** - Break UI into small, composable pieces
+  5. **Leverage Hooks** - Use provided hooks for common functionality
+  6. **Test Compositions** - Ensure your composed components work together
+  7. **Document Intent** - Add comments explaining why components are composed a certain way
+
+</div>
+
+<style>
+  {`
+    .sb-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    
+    .sb-lead {
+      font-size: 1.25rem;
+      line-height: 1.8;
+      color: #666;
+      margin: 1rem 0 3rem;
+    }
+    
+    h2 {
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      font-weight: 700;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+    }
+    
+    h3 {
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    code {
+      background: #f3f4f6;
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-size: 0.875em;
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    
+    ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+    
+    li {
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+  `}
+</style>

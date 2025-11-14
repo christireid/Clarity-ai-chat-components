@@ -1,20 +1,20 @@
 /**
  * AI Assistant Template
- * 
+ *
  * General-purpose AI assistant with rich features
  */
 
-import React, { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { ChatWindow } from '../components/chat-window'
 import { ContextManager } from '../components/context-manager'
 import { ModelSelector } from '../components/model-selector'
 import { ThemeProvider } from '../theme/ThemeProvider'
 import { oceanTheme } from '../theme/presets'
-import { OpenAIAdapter } from '../adapters/openai'
-import { AnthropicAdapter } from '../adapters/anthropic'
-import { GoogleAdapter } from '../adapters/google'
+import { openAIAdapter } from '../adapters/openai'
+import { anthropicAdapter } from '../adapters/anthropic'
+import { googleAdapter } from '../adapters/google'
 import { useLocalStorage } from '../hooks/use-local-storage'
-import { useStreaming } from '../hooks/use-streaming'
+import { useMessageOperations } from '../hooks/use-message-operations'
 import type { Message, Context } from '@clarity-chat/types'
 
 export interface AIAssistantTemplateProps {
@@ -33,7 +33,7 @@ export interface AIAssistantTemplateProps {
 
 /**
  * AI Assistant Template
- * 
+ *
  * Features:
  * - Multiple AI model support
  * - Streaming responses
@@ -41,7 +41,7 @@ export interface AIAssistantTemplateProps {
  * - File uploads
  * - Voice input
  * - Conversation history
- * 
+ *
  * @example
  * ```tsx
  * <AIAssistantTemplate
@@ -58,65 +58,265 @@ export interface AIAssistantTemplateProps {
 export function AIAssistantTemplate({
   apiKeys = {},
   defaultModel = 'gpt-4-turbo-preview',
-  enableFileUpload = true,
-  enableVoiceInput = true,
   enableContextManagement = true,
   systemPrompt = 'You are a helpful AI assistant. Be concise, accurate, and friendly.',
   maxTokens = 4096,
 }: AIAssistantTemplateProps) {
-  const [messages, setMessages] = useLocalStorage<Message[]>('ai-assistant-messages', [])
-  const [context, setContext] = useLocalStorage<Context[]>('ai-assistant-context', [])
+  // Use message operations hook for edit/regenerate/delete
+  const {
+    messages: operationMessages,
+    addMessage: addOperationMessage,
+    editMessage,
+    regenerateMessage,
+    deleteMessage,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useMessageOperations({
+    initialMessages: [],
+    onEdit: (messageId, newContent) => {
+      console.log('Message edited:', messageId, newContent)
+    },
+    onRegenerate: (messageId) => {
+      console.log('Regenerating:', messageId)
+      // Will be handled by handleRegenerate below
+    },
+    onDelete: (messageId) => {
+      console.log('Message deleted:', messageId)
+    },
+  })
+
+  // Convert operation messages to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId: 'ai-assistant-chat',
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
+
+  const [context, setContext] = useLocalStorage<Context[]>(
+    'ai-assistant-context',
+    []
+  )
   const [selectedModel, setSelectedModel] = useState(defaultModel)
   const [isLoading, setIsLoading] = useState(false)
-  const { streamMessage, isStreaming } = useStreaming()
 
   // Initialize adapters
   const adapters = {
-    openai: apiKeys.openai ? new OpenAIAdapter({ apiKey: apiKeys.openai }) : null,
-    anthropic: apiKeys.anthropic ? new AnthropicAdapter({ apiKey: apiKeys.anthropic }) : null,
-    google: apiKeys.google ? new GoogleAdapter({ apiKey: apiKeys.google }) : null,
+    openai: apiKeys.openai ? openAIAdapter : null,
+    anthropic: apiKeys.anthropic ? anthropicAdapter : null,
+    google: apiKeys.google ? googleAdapter : null,
   }
 
   const availableModels = [
-    ...(adapters.openai ? [
-      { id: 'gpt-4-turbo-preview', name: 'GPT-4 Turbo', provider: 'openai' },
-      { id: 'gpt-4', name: 'GPT-4', provider: 'openai' },
-      { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'openai' },
-    ] : []),
-    ...(adapters.anthropic ? [
-      { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'anthropic' },
-      { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'anthropic' },
-    ] : []),
-    ...(adapters.google ? [
-      { id: 'gemini-pro', name: 'Gemini Pro', provider: 'google' },
-    ] : []),
+    ...(adapters.openai
+      ? [
+          {
+            id: 'gpt-4-turbo-preview',
+            name: 'GPT-4 Turbo',
+            provider: 'openai' as const,
+            speed: 'medium' as const,
+            cost: 'high' as const,
+            quality: 'best' as const,
+            contextWindow: 128000,
+          },
+          { 
+            id: 'gpt-4', 
+            name: 'GPT-4', 
+            provider: 'openai' as const,
+            speed: 'medium' as const,
+            cost: 'high' as const,
+            quality: 'excellent' as const,
+            contextWindow: 8192,
+          },
+          { 
+            id: 'gpt-3.5-turbo', 
+            name: 'GPT-3.5 Turbo', 
+            provider: 'openai' as const,
+            speed: 'fast' as const,
+            cost: 'low' as const,
+            quality: 'good' as const,
+            contextWindow: 16384,
+          },
+        ]
+      : []),
+    ...(adapters.anthropic
+      ? [
+          { 
+            id: 'claude-3-opus', 
+            name: 'Claude 3 Opus', 
+            provider: 'anthropic' as const,
+            speed: 'medium' as const,
+            cost: 'high' as const,
+            quality: 'best' as const,
+            contextWindow: 200000,
+          },
+          {
+            id: 'claude-3-sonnet',
+            name: 'Claude 3 Sonnet',
+            provider: 'anthropic' as const,
+            speed: 'fast' as const,
+            cost: 'medium' as const,
+            quality: 'excellent' as const,
+            contextWindow: 200000,
+          },
+        ]
+      : []),
+    ...(adapters.google
+      ? [{ 
+          id: 'gemini-pro', 
+          name: 'Gemini Pro', 
+          provider: 'google' as const,
+          speed: 'fast' as const,
+          cost: 'low' as const,
+          quality: 'excellent' as const,
+          contextWindow: 32768,
+        }]
+      : []),
   ]
 
-  const handleSendMessage = async (content: string) => {
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-      timestamp: new Date(),
+  // Handle message edit
+  const handleEdit = useCallback((messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message) return
+
+    const newContent = prompt('Edit message:', message.content) || message.content
+    if (newContent !== message.content) {
+      editMessage(messageId, newContent)
+      // Optionally re-send from this point
     }
-    
-    setMessages(prev => [...prev, userMessage])
+  }, [messages, editMessage])
+
+  // Handle message regenerate - defined after handleSendMessage
+  const handleRegenerate = useCallback(async (messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message || message.role !== 'assistant') return
+
+    setIsLoading(true)
+    try {
+      const index = messages.findIndex(m => m.id === messageId)
+      const userMessage = messages[index - 1]
+
+      if (userMessage && userMessage.role === 'user') {
+        deleteMessage(messageId)
+        // Re-send the user message to regenerate response
+        // We'll call handleSendMessage directly, but need to ensure it's defined
+        const now = new Date()
+        const chatId = 'ai-assistant-chat'
+        
+        // Determine which adapter to use
+        const model = availableModels.find((m) => m.id === selectedModel)
+        const adapter = model
+          ? adapters[model.provider as keyof typeof adapters]
+          : null
+
+        if (!adapter || !model) {
+          addOperationMessage({
+            chatId,
+            role: 'assistant',
+            content: 'No AI model available. Please configure API keys.',
+            timestamp: Date.now(),
+          })
+          setIsLoading(false)
+          return
+        }
+
+        try {
+          const response = await adapter.chat(
+            [
+              { role: 'system', content: systemPrompt },
+              ...(context.length > 0
+                ? [
+                    {
+                      role: 'system' as const,
+                      content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
+                    },
+                  ]
+                : []),
+              ...messages.slice(0, index - 1).map((m) => ({
+                role: m.role,
+                content: m.content,
+              })),
+              { role: 'user' as const, content: userMessage.content },
+            ],
+            {
+              provider: model.provider,
+              model: selectedModel,
+              maxTokens,
+              temperature: 0.7,
+            }
+          )
+
+          const responseContent = typeof response.content === 'string' 
+            ? response.content 
+            : response.content.map(p => p.type === 'text' ? p.text : '').join('')
+
+          addOperationMessage({
+            chatId,
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().getTime(),
+          })
+        } catch (error) {
+          console.error('AI Assistant error:', error)
+          addOperationMessage({
+            chatId,
+            role: 'assistant',
+            content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            timestamp: new Date().getTime(),
+          })
+        }
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages, deleteMessage, addOperationMessage, selectedModel, availableModels, adapters, systemPrompt, context, maxTokens])
+
+  // Handle message delete
+  const handleDelete = useCallback((messageId: string) => {
+    if (confirm('Delete this message?')) {
+      deleteMessage(messageId)
+    }
+  }, [deleteMessage])
+
+  const handleSendMessage = useCallback(async (content: string, isRegenerate = false) => {
+    const now = new Date()
+    const chatId = 'ai-assistant-chat'
+
+    // Add user message (unless regenerating)
+    if (!isRegenerate) {
+      addOperationMessage({
+        chatId,
+        role: 'user',
+        content,
+        timestamp: now.getTime(),
+      })
+    }
+
     setIsLoading(true)
 
     // Determine which adapter to use
-    const model = availableModels.find(m => m.id === selectedModel)
-    const adapter = model ? adapters[model.provider as keyof typeof adapters] : null
+    const model = availableModels.find((m) => m.id === selectedModel)
+    const adapter = model
+      ? adapters[model.provider as keyof typeof adapters]
+      : null
 
-    if (!adapter) {
+    if (!adapter || !model) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: 'No AI model available. Please configure API keys.',
-        timestamp: new Date(),
+        status: 'error',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         metadata: { error: true },
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages((prev) => [...prev, errorMessage])
       setIsLoading(false)
       return
     }
@@ -125,111 +325,168 @@ export function AIAssistantTemplate({
       // Create assistant message for streaming
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
+        chatId,
         role: 'assistant',
         content: '',
-        timestamp: new Date(),
-        isStreaming: true,
+        status: 'streaming',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
-      
-      setMessages(prev => [...prev, assistantMessage])
 
-      // Prepare messages with system prompt and context
-      const chatMessages = [
-        { role: 'system' as const, content: systemPrompt },
-        ...(context.length > 0 ? [{
-          role: 'system' as const,
-          content: `Context:\n${context.map(c => `- ${c.name}: ${c.content}`).join('\n')}`,
-        }] : []),
-        ...messages.map(m => ({
-          role: m.role,
-          content: m.content,
-        })),
-        { role: 'user' as const, content },
-      ]
+      setMessages((prev) => [...prev, assistantMessage])
 
-      // Stream the response
-      await adapter.streamChat({
-        messages: chatMessages,
-        model: selectedModel,
-        maxTokens,
-        onChunk: (chunk) => {
-          setMessages(prev =>
-            prev.map(msg =>
-              msg.id === assistantMessage.id
-                ? { ...msg, content: msg.content + chunk }
-                : msg
-            )
-          )
-        },
-      })
-
-      // Mark streaming as complete
-      setMessages(prev =>
-        prev.map(msg =>
-          msg.id === assistantMessage.id
-            ? { ...msg, isStreaming: false }
-            : msg
-        )
+      // Note: streamChat is not part of ModelAdapter interface
+      // This template demonstrates concept but needs proper adapter implementation
+      // For now, use the chat method for non-streaming responses
+      const response = await adapter.chat(
+        [
+          { role: 'system', content: systemPrompt },
+          ...(context.length > 0
+            ? [
+                {
+                  role: 'system' as const,
+                  content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
+                },
+              ]
+            : []),
+          ...messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          { role: 'user' as const, content },
+        ],
+        {
+          provider: model.provider,
+          model: selectedModel,
+          maxTokens,
+          temperature: 0.7,
+        }
       )
+
+      // Update message with response
+      const responseContent = typeof response.content === 'string' 
+        ? response.content 
+        : response.content.map(p => p.type === 'text' ? p.text : '').join('')
+
+      // Add assistant message using operations hook
+      addOperationMessage({
+        chatId,
+        role: 'assistant',
+        content: responseContent,
+        timestamp: new Date().getTime(),
+      })
     } catch (error) {
       console.error('AI Assistant error:', error)
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
+      addOperationMessage({
+        chatId,
         role: 'assistant',
         content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date(),
-        metadata: { error: true },
-      }
-      setMessages(prev => [...prev, errorMessage])
+        timestamp: new Date().getTime(),
+      })
     } finally {
       setIsLoading(false)
     }
+  }, [messages, addOperationMessage, selectedModel, availableModels, adapters, systemPrompt, context, maxTokens])
+
+  const handleContextAdd = (newContexts: Context[]) => {
+    setContext((prev) => [...prev, ...newContexts])
   }
 
-  const handleFileUpload = async (files: File[]) => {
-    // Add files to context
-    for (const file of files) {
-      const content = await file.text()
-      const contextItem: Context = {
-        id: Date.now().toString(),
-        name: file.name,
-        content: content.substring(0, 1000), // Limit context size
-        type: file.type.startsWith('image/') ? 'image' : 'document',
-      }
-      setContext(prev => [...prev, contextItem])
+  const handleContextRemove = (id: string) => {
+    setContext((prev) => prev.filter((c) => c.id !== id))
+  }
+
+  const handleContextToggle = (id: string) => {
+    setContext((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, isActive: !c.isActive } : c))
+    )
+  }
+
+  const handleExport = () => {
+    const text = messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n\n')
+    const blob = new Blob([text], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `conversation-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleClear = () => {
+    if (confirm('Clear all messages? This cannot be undone.')) {
+      // Clear all messages using operations hook
+      operationMessages.forEach(msg => deleteMessage(msg.id))
     }
   }
 
   return (
-    <ThemeProvider theme={oceanTheme}>
-      <div className="ai-assistant-template" style={{ display: 'flex', height: '100%', width: '100%' }}>
+    <ThemeProvider defaultTheme={oceanTheme}>
+      <div className="ai-assistant-template flex h-full w-full bg-background">
+        {/* Context Sidebar */}
         {enableContextManagement && (
-          <div style={{ width: '300px', borderRight: '1px solid var(--border)' }}>
+          <div className="w-80 border-r bg-card/50 backdrop-blur-sm">
             <ContextManager
-              items={context}
-              onAddItem={(item) => setContext(prev => [...prev, item])}
-              onRemoveItem={(id) => setContext(prev => prev.filter(c => c.id !== id))}
-              onClear={() => setContext([])}
+              contexts={context}
+              onAdd={handleContextAdd}
+              onRemove={handleContextRemove}
+              onToggle={handleContextToggle}
             />
           </div>
         )}
-        
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '1rem', borderBottom: '1px solid var(--border)' }}>
-            <ModelSelector
-              models={availableModels}
-              selectedModel={selectedModel}
-              onSelectModel={setSelectedModel}
-            />
+
+        {/* Main Chat Area */}
+        <div className="flex flex-1 flex-col">
+          {/* Model Selector Header */}
+          <div className="flex items-center justify-between gap-4 border-b bg-card/80 backdrop-blur-sm px-4 py-3 sm:px-6">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <ModelSelector
+                models={availableModels}
+                value={selectedModel}
+                onChange={(modelId) => setSelectedModel(modelId)}
+              />
+            </div>
+            {/* Undo/Redo Controls */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={undo}
+                disabled={!canUndo}
+                className="px-2 py-1 text-sm rounded hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Undo (Ctrl+Z)"
+              >
+                ↶ Undo
+              </button>
+              <button
+                onClick={redo}
+                disabled={!canRedo}
+                className="px-2 py-1 text-sm rounded hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Redo (Ctrl+Y)"
+              >
+                ↷ Redo
+              </button>
+            </div>
           </div>
-          
-          <div style={{ flex: 1 }}>
+
+          {/* Chat Window */}
+          <div className="flex-1 overflow-hidden">
             <ChatWindow
               messages={messages}
-              isLoading={isLoading || isStreaming}
+              isLoading={isLoading}
               onSendMessage={handleSendMessage}
-              onFileUpload={enableFileUpload ? handleFileUpload : undefined}
-              enableVoiceInput={enableVoiceInput}
+              onEditMessage={handleEdit}
+              onRegenerateMessage={handleRegenerate}
+              onDeleteMessage={handleDelete}
+              showHeader
+              sessionTitle="AI Assistant"
+              sessionSubtitle={`Using ${availableModels.find(m => m.id === selectedModel)?.name || 'AI Model'}`}
+              showMessageCount
+              onExport={handleExport}
+              onClear={handleClear}
             />
           </div>
         </div>

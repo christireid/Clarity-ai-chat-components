@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animation 7: Loading States Comparison</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 800px;
+      height: 450px;
+      display: flex;
+      gap: 2px;
+      background: #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .side {
+      flex: 1;
+      background: #1e293b;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .side.bad .header {
+      color: #ef4444;
+    }
+
+    .side.good .header {
+      color: #10b981;
+    }
+
+    .icon {
+      font-size: 16px;
+    }
+
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 85%;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: hsl(217, 91%, 60%);
+      color: white;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Generic loading (bad) */
+    .generic-loading {
+      align-self: center;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .generic-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .generic-text {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+
+    /* Contextual loading (good) */
+    .contextual-loading {
+      align-self: flex-start;
+      width: 100%;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .loading-phase {
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      animation: phaseIn 0.3s ease-out;
+    }
+
+    @keyframes phaseIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .phase-icon {
+      font-size: 18px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.7;
+        transform: scale(1.15);
+      }
+    }
+
+    .phase-text {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .phase-substatus {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      margin-left: 28px;
+      margin-top: 4px;
+    }
+
+    .progress-section {
+      margin-left: 28px;
+      margin-top: 8px;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, hsl(217, 91%, 60%), hsl(217, 91%, 70%));
+      border-radius: 2px;
+      transition: width 0.3s ease-out;
+    }
+
+    .progress-details {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      animation: popIn 0.5s ease-out;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: translateY(-50%) scale(0) rotate(-180deg);
+      }
+      to {
+        transform: translateY(-50%) scale(1) rotate(0deg);
+      }
+    }
+
+    .side.bad .status-badge {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .side.good .status-badge {
+      background: rgba(16, 185, 129, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- BAD SIDE -->
+    <div class="side bad">
+      <div class="header">
+        <span class="icon">❌</span>
+        <span>GENERIC LOADING</span>
+      </div>
+      <div class="chat-area" id="badChat"></div>
+    </div>
+
+    <!-- GOOD SIDE -->
+    <div class="side good">
+      <div class="header">
+        <span class="icon">✅</span>
+        <span>CONTEXTUAL LOADING</span>
+      </div>
+      <div class="chat-area" id="goodChat"></div>
+    </div>
+  </div>
+
+  <script>
+    const badChat = document.getElementById('badChat');
+    const goodChat = document.getElementById('goodChat');
+
+    function addMessage(container, text, type) {
+      const msg = document.createElement('div');
+      msg.className = `message ${type}`;
+      msg.textContent = text;
+      container.appendChild(msg);
+    }
+
+    function showGenericLoading(container) {
+      const loading = document.createElement('div');
+      loading.className = 'generic-loading';
+      loading.innerHTML = `
+        <div class="generic-spinner"></div>
+        <div class="generic-text">⏳ Loading...</div>
+      `;
+      container.appendChild(loading);
+      return loading;
+    }
+
+    function showContextualPhase(container, icon, text, substatus, progress) {
+      const phase = document.createElement('div');
+      phase.className = 'loading-phase';
+      phase.innerHTML = `
+        <div class="phase-header">
+          <div class="phase-icon">${icon}</div>
+          <div class="phase-text">${text}</div>
+        </div>
+        ${substatus ? `<div class="phase-substatus">${substatus}</div>` : ''}
+        ${progress !== undefined ? `
+          <div class="progress-section">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${progress}%"></div>
+            </div>
+            <div class="progress-details">
+              <span>${progress}% complete</span>
+              <span>~${((100 - progress) / 20).toFixed(1)}s remaining</span>
+            </div>
+          </div>
+        ` : ''}
+      `;
+      container.appendChild(phase);
+      return phase;
+    }
+
+    function showStatusBadge(container, icon) {
+      const badge = document.createElement('div');
+      badge.className = 'status-badge';
+      badge.textContent = icon;
+      container.appendChild(badge);
+      return badge;
+    }
+
+    async function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function runBadSequence() {
+      badChat.innerHTML = '';
+      addMessage(badChat, "How do I optimize React performance?", 'user');
+      await wait(500);
+      
+      const loading = showGenericLoading(badChat);
+      await wait(8000);
+      
+      loading.remove();
+      addMessage(badChat, "To optimize React performance, use React.memo, useMemo, useCallback, virtualization for lists, code splitting, and lazy loading.", 'assistant');
+      
+      const badge = showStatusBadge(badChat.parentElement, '❌');
+      await wait(2000);
+      badge.remove();
+    }
+
+    async function runGoodSequence() {
+      goodChat.innerHTML = '';
+      addMessage(goodChat, "How do I optimize React performance?", 'user');
+      await wait(500);
+      
+      // Phase 1: Connecting
+      const phase1 = showContextualPhase(goodChat, '🔗', 'Connecting to AI...', null);
+      await wait(2000);
+      phase1.remove();
+      
+      // Phase 2: Analyzing
+      const phase2 = showContextualPhase(goodChat, '🔍', 'Analyzing your question...', 'Reading context from conversation history', 35);
+      await wait(2000);
+      
+      // Update progress
+      const progressFill2 = phase2.querySelector('.progress-fill');
+      const progressDetails2 = phase2.querySelector('.progress-details');
+      progressFill2.style.width = '70%';
+      progressDetails2.innerHTML = `
+        <span>70% complete</span>
+        <span>~1.5s remaining</span>
+      `;
+      await wait(2000);
+      phase2.remove();
+      
+      // Phase 3: Generating
+      const phase3 = showContextualPhase(goodChat, '✨', 'Crafting response...', 'Token 234/estimated 450', 45);
+      await wait(2000);
+      
+      // Update progress
+      const progressFill3 = phase3.querySelector('.progress-fill');
+      const progressDetails3 = phase3.querySelector('.progress-details');
+      const substatus3 = phase3.querySelector('.phase-substatus');
+      progressFill3.style.width = '85%';
+      substatus3.textContent = 'Token 380/estimated 450';
+      progressDetails3.innerHTML = `
+        <span>85% complete</span>
+        <span>~0.8s remaining</span>
+      `;
+      await wait(2000);
+      phase3.remove();
+      
+      // Show response
+      addMessage(goodChat, "To optimize React performance, use React.memo, useMemo, useCallback, virtualization for lists, code splitting, and lazy loading.", 'assistant');
+      
+      const badge = showStatusBadge(goodChat.parentElement, '✅');
+      await wait(2000);
+      badge.remove();
+    }
+
+    async function runAnimation() {
+      await Promise.all([
+        runBadSequence(),
+        runGoodSequence()
+      ]);
+      
+      await wait(2000);
+      runAnimation();
+    }
+
+    runAnimation();
+  </script>
+</body>
+</html>

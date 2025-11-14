@@ -1,7 +1,6 @@
-import { renderHook, act, waitFor } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { renderHook, act } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
 import { useAutoScroll } from '../use-auto-scroll'
-import { useRef } from 'react'
 
 describe('useAutoScroll', () => {
   it('should return scrollRef, isNearBottom, scrollToBottom, and setEnabled', () => {
@@ -15,7 +14,7 @@ describe('useAutoScroll', () => {
 
   it('should initialize with enabled=true by default', () => {
     const { result } = renderHook(() => useAutoScroll())
-    
+
     // Should be enabled by default
     expect(result.current).toBeDefined()
   })

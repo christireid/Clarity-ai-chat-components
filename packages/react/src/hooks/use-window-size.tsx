@@ -6,8 +6,21 @@ export interface WindowSize {
 }
 
 /**
- * Track window dimensions with throttled updates
+ * Track window dimensions with throttled updates to prevent performance issues
+ * during window resize events.
  * 
+ * **Features:**
+ * - Automatic throttling (150ms default)
+ * - SSR-safe (returns 0x0 on server)
+ * - Automatic cleanup on unmount
+ * - Memory efficient
+ * 
+ * **Use Cases:**
+ * - Responsive component rendering
+ * - Conditional layout switching
+ * - Dynamic sizing calculations
+ * 
+ * @returns {WindowSize} Object containing current window width and height
  * @example
  * ```tsx
  * const { width, height } = useWindowSize()
@@ -31,18 +44,21 @@ export function useWindowSize(): WindowSize {
     }
   })
 
+  const timeoutRef = React.useRef<NodeJS.Timeout>()
+
   React.useEffect(() => {
     if (typeof window === 'undefined') return
 
-    let timeoutId: NodeJS.Timeout
-
     const handleResize = () => {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      timeoutRef.current = setTimeout(() => {
         setWindowSize({
           width: window.innerWidth,
           height: window.innerHeight,
         })
+        timeoutRef.current = undefined
       }, 150) // Throttle resize events
     }
 
@@ -53,7 +69,9 @@ export function useWindowSize(): WindowSize {
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      clearTimeout(timeoutId)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
     }
   }, [])
 
