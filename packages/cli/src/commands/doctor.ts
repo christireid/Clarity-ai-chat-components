@@ -423,7 +423,7 @@ GOOGLE_API_KEY=your_key_here
             success(`Fixed: ${name}`)
           } catch (err) {
             fixSpinner.fail(`Failed to fix ${name}`)
-            logger.error(err)
+            logger.error(err instanceof Error ? err : new Error(String(err)))
             error(`Failed to fix: ${name}`)
           }
         }

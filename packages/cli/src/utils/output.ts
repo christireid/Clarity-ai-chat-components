@@ -68,27 +68,22 @@ export function output(message: string, level: 'info' | 'warn' | 'error' | 'debu
     return
   }
   
-  if (level === 'success') {
-    console.log(chalk.green(`✔ ${message}`))
-    return
-  }
-  
-  const colors = {
+  const colors: Record<string, (text: string) => string> = {
     info: chalk.blue,
     warn: chalk.yellow,
     error: chalk.red,
     debug: chalk.magenta,
   }
   
-  const icons = {
+  const icons: Record<string, string> = {
     info: 'ℹ',
     warn: '⚠',
     error: '✖',
     debug: '🐛',
   }
   
-  const color = colors[level]
-  const icon = icons[level]
+  const color = colors[level] || chalk.white
+  const icon = icons[level] || '•'
   
   console.log(color(`${icon} ${message}`))
 }

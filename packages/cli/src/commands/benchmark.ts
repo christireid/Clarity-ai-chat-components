@@ -169,7 +169,7 @@ async function benchmarkStringOperations(): Promise<BenchmarkResult> {
  * Display results
  */
 async function displayResults(suite: BenchmarkSuite) {
-  await createDivider()
+  console.log(createDivider(undefined, 60))
   console.log()
   
   const tableData = suite.results.map((result, index) => ({
@@ -184,10 +184,20 @@ async function displayResults(suite: BenchmarkSuite) {
     'P99': formatDuration(result.p99),
   }))
 
-  await createTable(tableData, {
-    title: '⚡ Benchmark Results',
+  const columns = [
+    { header: '#', key: '#' },
+    { header: 'Benchmark', key: 'Benchmark' },
+    { header: 'Iterations', key: 'Iterations' },
+    { header: 'Mean', key: 'Mean' },
+    { header: 'Median', key: 'Median' },
+    { header: 'Min', key: 'Min' },
+    { header: 'Max', key: 'Max' },
+    { header: 'P95', key: 'P95' },
+    { header: 'P99', key: 'P99' },
+  ]
+  console.log(createTable(tableData, columns, {
     border: true,
-  })
+  }))
   console.log()
 }
 
@@ -195,7 +205,7 @@ async function displayResults(suite: BenchmarkSuite) {
  * Save results
  */
 async function saveResults(suite: BenchmarkSuite) {
-  const spinner = await createSpinner('Saving results...', { color: 'cyan' })
+  const spinner = createSpinner('Saving results...')
 
   try {
     spinner.start()
@@ -288,9 +298,15 @@ async function compareWithPrevious(current: BenchmarkSuite): Promise<void> {
       .filter(Boolean) as Array<{ Benchmark: string; Change: string; Difference: string }>
 
     if (comparisonData.length > 0) {
-      await createTable(comparisonData, {
+      const comparisonColumns = [
+        { header: 'Benchmark', key: 'Benchmark' },
+        { header: 'Previous', key: 'Previous' },
+        { header: 'Current', key: 'Current' },
+        { header: 'Change', key: 'Change' },
+      ]
+      console.log(createTable(comparisonData, comparisonColumns, {
         border: true,
-      })
+      }))
       console.log()
     }
   } catch (error) {
@@ -332,7 +348,7 @@ export async function benchmarkCommand(options: {
     }
 
     // Run benchmarks
-    const spinner = await createSpinner('Running benchmarks...', { color: 'cyan' })
+    const spinner = createSpinner('Running benchmarks...')
     spinner.start()
 
     spinner.text = 'Benchmarking message processing...'

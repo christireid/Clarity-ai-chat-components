@@ -268,11 +268,16 @@ async function listKeys(envPath: string) {
       }
     })
     
-    const listItems = keyList.map(item => ({
-      label: item.key,
-      value: item.value,
-      color: item.color ? (text: string) => chalk[item.color as keyof typeof chalk](text) : undefined
-    }))
+    const listItems = keyList.map(item => {
+      const colorFn = item.color && typeof chalk[item.color as keyof typeof chalk] === 'function'
+        ? (chalk[item.color as keyof typeof chalk] as (text: string) => string)
+        : undefined
+      return {
+        label: item.key,
+        value: item.value,
+        color: colorFn,
+      }
+    })
     console.log(createListTable(listItems))
   } else {
     info('Configured API Keys:\n')

@@ -128,7 +128,7 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
       if (!shouldLog(LogLevel.ERROR)) return
       
       const error = message instanceof Error ? message : undefined
-      const errorMessage = error ? error.message : message
+      const errorMessage: string = error ? error.message : (typeof message === 'string' ? message : String(message))
       
       const entry: LogEntry = {
         timestamp: new Date().toISOString(),
@@ -144,7 +144,7 @@ export function getLogger(namespace: string, level: LogLevel = globalLogLevel): 
       } else {
         console.error(formatPrefix('✖', chalk.red), errorMessage, ...args)
         
-        if (error?.stack && (process.env.DEBUG || process.env.VERBOSE)) {
+        if (error && 'stack' in error && error.stack && (process.env.DEBUG || process.env.VERBOSE)) {
           console.error(chalk.gray(String(error.stack)))
         }
       }

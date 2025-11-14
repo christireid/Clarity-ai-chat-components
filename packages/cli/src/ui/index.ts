@@ -20,4 +20,10 @@ export {
 } from './box.js'
 export * from './spinner.js'
 export * from './table.js'
-export * from './progress.js'
+export {
+  ProgressBar,
+  createSpinner,
+  StepProgress,
+  percentageProgress,
+  type ProgressBarOptions,
+} from './progress.js'

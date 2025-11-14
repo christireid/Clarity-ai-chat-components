@@ -332,9 +332,7 @@ export async function showComponentDetails(componentName: string) {
  * Install component interactively
  */
 export async function installComponentInteractive(componentName: string) {
-  const spinner = await createSpinner(`Installing ${componentName}...`, {
-    color: 'cyan',
-  })
+  const spinner = createSpinner(`Installing ${componentName}...`)
   
   try {
     spinner.start()
@@ -347,10 +345,7 @@ export async function installComponentInteractive(componentName: string) {
     console.log()
     
     // Show next steps
-    infoMessage('Next steps:', [
-      `Import the component: import { ${componentName} } from '@clarity-chat/react'`,
-      `View docs: clarity-chat docs ${componentName.toLowerCase()}`,
-    ])
+    infoMessage(`Next steps:\n\nImport the component: import { ${componentName} } from '@clarity-chat/react'\nView docs: clarity-chat docs ${componentName.toLowerCase()}`)
     console.log()
   } catch (error) {
     spinner.fail()
