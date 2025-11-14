@@ -91,6 +91,35 @@ import {
 } from '@clarity-chat/react/prompt'
 ```
 
+## Utility Functions
+
+### Formatting & Display
+```tsx
+import {
+  formatTokenCount,
+  formatCost,
+  calculateUtilization,
+  getUtilizationColor,
+} from '@clarity-chat/react/prompt'
+```
+
+### Token Analysis
+```tsx
+import {
+  estimateConversationTokens,
+  exceedsTokenBudget,
+  getTokenBreakdownByRole,
+} from '@clarity-chat/react/prompt'
+```
+
+### Recommendations & Summarization
+```tsx
+import {
+  getOptimizationRecommendation,
+  createSimpleSummarizer,
+} from '@clarity-chat/react/prompt'
+```
+
 ## useClarityChat Integration
 
 ```tsx

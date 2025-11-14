@@ -23,3 +23,6 @@ export * from './core'
 
 // React hooks
 export * from './hooks'
+
+// Utilities
+export * from './utils'

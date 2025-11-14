@@ -6,8 +6,15 @@
  */
 
 import * as React from 'react'
-import { useClarityChat, usePromptInspector, useTokenBudget } from '@clarity-chat/react'
-import { toon, createPromptRecipe, BUILT_IN_RECIPES } from '@clarity-chat/react/prompt'
+import { useClarityChat } from '@clarity-chat/react'
+import {
+  usePromptInspector,
+  useTokenBudget,
+  usePromptRecipe,
+  toon,
+  createPromptRecipe,
+  BUILT_IN_RECIPES,
+} from '@clarity-chat/react/prompt'
 
 /**
  * Example 1: Basic useClarityChat with prompt optimization
