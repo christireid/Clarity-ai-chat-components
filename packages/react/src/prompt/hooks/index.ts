@@ -41,3 +41,34 @@ export type {
   PromptInspection,
   MessageTokenBreakdown,
 } from './use-prompt-inspector'
+
+export {
+  usePromptOptimizer,
+} from './use-prompt-optimizer'
+
+export type {
+  UsePromptOptimizerOptions,
+  UsePromptOptimizerReturn,
+} from './use-prompt-optimizer'
+
+export {
+  useDynamicModelRouting,
+} from './use-dynamic-model-routing'
+
+export type {
+  UseDynamicModelRoutingOptions,
+  UseDynamicModelRoutingReturn,
+  AvailableModel,
+  ModelRoutingDecision,
+} from './use-dynamic-model-routing'
+
+export {
+  usePromptDebugger,
+} from './use-prompt-debugger'
+
+export type {
+  UsePromptDebuggerOptions,
+  UsePromptDebuggerReturn,
+  PromptDebugInfo,
+  MessageTokenBreakdown as DebugMessageTokenBreakdown,
+} from './use-prompt-debugger'
