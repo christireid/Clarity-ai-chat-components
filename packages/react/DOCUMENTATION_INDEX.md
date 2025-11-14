@@ -14,6 +14,8 @@ Complete documentation for Clarity's React library, including all phases and fea
 - **[API Reference](./API_REFERENCE.md)** - Complete API documentation
 - **[TypeScript Guide](./TYPESCRIPT_GUIDE.md)** - Type definitions and patterns
 - **[Performance Guide](./PERFORMANCE_GUIDE.md)** - Optimization strategies
+- **[Feature Comparison](./FEATURE_COMPARISON.md)** - Clarity vs Vercel AI SDK comparison
+- **[Best Practices](./BEST_PRACTICES.md)** - Usage guidelines and patterns
 
 ### Phase-Specific Documentation
 - **[Phase 3 README](./README_PHASE_3.md)** - Structured output & tool UI registry
@@ -42,8 +44,10 @@ Complete documentation for Clarity's React library, including all phases and fea
 ### For Advanced Users
 1. Review [Performance Guide](./PERFORMANCE_GUIDE.md)
 2. Study [TypeScript Guide](./TYPESCRIPT_GUIDE.md)
-3. Explore [Phase 3 Features](./README_PHASE_3.md) - Structured output & tool UI
-4. Explore [Storybook Stories](../../apps/storybook/stories/UseClarityChat.stories.tsx)
+3. Read [Best Practices](./BEST_PRACTICES.md) - Usage guidelines
+4. Compare [Feature Comparison](./FEATURE_COMPARISON.md) - Clarity vs Vercel
+5. Explore [Phase 3 Features](./README_PHASE_3.md) - Structured output & tool UI
+6. Explore [Storybook Stories](../../apps/storybook/stories/UseClarityChat.stories.tsx)
 
 ## 📖 Documentation Structure
 
