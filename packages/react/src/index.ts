@@ -202,6 +202,47 @@ export {
   type ExtractedToolResult,
 } from './hooks/use-clarity-chat-with-tools'
 
+// Tool result types
+export type {
+  WeatherToolResult,
+  SearchToolResult,
+  CalculatorToolResult,
+  DatabaseQueryToolResult,
+  APICallToolResult,
+  CodeExecutionToolResult,
+  PriceComparisonToolResult,
+  ReviewSummaryToolResult,
+  FAQSearchToolResult,
+  FileReadToolResult,
+  GenericToolResult,
+} from './types/tool-result-types'
+
+export {
+  isWeatherToolResult,
+  isSearchToolResult,
+  isCalculatorToolResult,
+  getToolName,
+  parseToolArguments as parseToolArgumentsType,
+  validateToolResult,
+} from './types/tool-result-types'
+
+// Tool result utilities
+export {
+  groupToolResultsByToolName,
+  groupToolResultsByMessage,
+  getLatestToolResult,
+  getToolResultsForTool,
+  hasToolBeenCalled,
+  getUniqueToolNames,
+  countToolCallsByTool,
+  filterToolResultsByMessage,
+  hasToolError,
+  getToolError,
+  parseToolArguments,
+  formatToolCall,
+  getToolResultSummary,
+} from './utils/tool-result-helpers'
+
 // Testing utilities (for test files only)
 export {
   createMockUseClarityChat,
