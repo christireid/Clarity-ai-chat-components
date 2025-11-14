@@ -26,14 +26,12 @@ export {
   useEmbeddings,
   type UseEmbeddingsOptions,
 } from '../../embeddings/react'
-export {
-  useReactAgent,
-} from '../../agents/react-agent'
+export { ReactAgent } from '../../agents/react-agent'
 
 // Low-level: Primitives
 export { createAdapter } from '../../adapters/create-adapter'
 export { buildPrompt } from '../../prompt/core/builder'
-export { parseToolCall } from '../../agents/parse-tool-call'
+// parseToolCall is available via AgentUtils.parseToolCall from agents/index
 
 // Re-export adapters, vector stores, embeddings, agents
 export * from '../../adapters'

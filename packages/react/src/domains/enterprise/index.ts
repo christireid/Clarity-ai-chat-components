@@ -13,25 +13,14 @@ export {
 export {
   useEnterpriseAuth,
   type UseEnterpriseAuthOptions,
+  type UseEnterpriseAuthReturn,
 } from '../../enterprise/use-enterprise-auth'
 
 // Mid-level: Building blocks
-export {
-  useMultiTenancy,
-  type UseMultiTenancyOptions,
-} from '../../multi-tenancy/use-multi-tenancy'
-export {
-  useRBAC,
-  type UseRBACOptions,
-} from '../../rbac/use-rbac'
-export {
-  useAudit,
-  type UseAuditOptions,
-} from '../../audit/use-audit'
-export {
-  useSafety,
-  type UseSafetyOptions,
-} from '../../safety/use-safety'
+export { MultiTenancyProvider, useMultiTenancy } from '../../multi-tenancy/react'
+export { RBACProvider, useRBAC } from '../../rbac/react'
+export { AuditLogger } from '../../audit/audit-logger'
+export { SafetyChecker } from '../../safety/safety-checker'
 
 // Low-level: Primitives
 export { createTenant } from '../../multi-tenancy/create-tenant'

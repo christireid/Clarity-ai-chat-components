@@ -46,6 +46,9 @@ export * from './multi-tenancy'
 // RBAC (Role-Based Access Control)
 export * from './rbac'
 
+// Export domain-based APIs (recommended)
+export * from './domains'
+
 // Export all components
 export * from './components/message'
 export * from './components/message-metadata'

@@ -15,8 +15,8 @@
  */
 
 import * as React from 'react'
-import { useReactAgent } from '../agents/react-agent'
-import type { Tool } from '../agents/types'
+import { ReactAgent } from '../agents/react-agent'
+import type { Tool, AgentConfig } from '../agents/types'
 
 /**
  * Options for useAgent
@@ -58,28 +58,68 @@ export interface UseAgentReturn {
  */
 export function useAgent(options: UseAgentOptions): UseAgentReturn {
   const { model, tools = [], api, config } = options
-  const agent = useReactAgent({ model, tools, api, ...config })
+
+  const agentRef = React.useRef<ReactAgent | null>(null)
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState<Error | null>(null)
+  const [state, setState] = React.useState({
+    currentStep: 0,
+    totalSteps: 1,
+    toolCalls: [] as any[],
+  })
+
+  // Initialize agent
+  React.useEffect(() => {
+    const agentConfig: AgentConfig = {
+      name: 'agent',
+      description: 'AI Agent',
+      model,
+      tools,
+      api,
+      maxIterations: config?.maxIterations || 10,
+      ...config,
+    }
+    agentRef.current = new ReactAgent(agentConfig)
+  }, [model, tools, api, config])
 
   const run = React.useCallback(
     async (input: { query: string; context?: any }) => {
+      if (!agentRef.current) {
+        throw new Error('Agent not initialized')
+      }
+
+      setIsLoading(true)
+      setError(null)
+      setState({ currentStep: 0, totalSteps: 1, toolCalls: [] })
+
       try {
-        const result = await agent.run(input.query, { context: input.context })
-        return typeof result === 'string' ? result : JSON.stringify(result)
+        const execution = await agentRef.current.execute(input.query)
+        
+        // Update state from execution
+        setState({
+          currentStep: execution.steps.length,
+          totalSteps: execution.steps.length,
+          toolCalls: execution.steps
+            .filter((s) => s.type === 'action')
+            .map((s) => ({ tool: s.tool, args: s.args, result: s.result })),
+        })
+
+        return execution.answer || 'No answer generated'
       } catch (err) {
-        throw err instanceof Error ? err : new Error('Agent execution failed')
+        const error = err instanceof Error ? err : new Error('Agent execution failed')
+        setError(error)
+        throw error
+      } finally {
+        setIsLoading(false)
       }
     },
-    [agent]
+    []
   )
 
   return {
     run,
-    isLoading: agent.isRunning || false,
-    error: agent.error || null,
-    state: {
-      currentStep: agent.currentStep || 0,
-      totalSteps: agent.maxSteps || 1,
-      toolCalls: agent.toolCalls || [],
-    },
+    isLoading,
+    error,
+    state,
   }
 }

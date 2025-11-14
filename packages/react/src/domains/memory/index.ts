@@ -23,9 +23,7 @@ export {
 } from '../../memory/use-sliding-context-manager'
 
 // Low-level: Primitives
-export { buildContextBundle } from '../../utils/memory/build-context-bundle'
-export { compressContext } from '../../utils/memory/compress-context'
-export { retrieveMemories } from '../../utils/memory/retrieve-memories'
+export * from '../../utils/memory'
 
 // Re-export from memory package
 export * from '@clarity-chat/memory'
