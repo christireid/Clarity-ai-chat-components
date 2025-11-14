@@ -1,0 +1,50 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "packages/react/src/index.tsx",
+    "packages/primitives/src/index.ts",
+    "packages/types/src/index.ts",
+    "packages/error-handling/src/index.ts",
+    "packages/dev-tools/src/index.ts",
+    "packages/cli/src/index.ts"
+  ],
+  "entryPointStrategy": "packages",
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "theme": "default",
+  "name": "Clarity Chat Component Library",
+  "includeVersion": true,
+  "readme": "README.md",
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Components",
+    "Hooks",
+    "Utilities",
+    "Types",
+    "Error Handling",
+    "Dev Tools",
+    "*"
+  ],
+  "sort": ["source-order"],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/node_modules/**",
+    "**/dist/**"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": false,
+  "hideGenerator": false,
+  "searchInComments": true,
+  "cleanOutputDir": true,
+  "gitRevision": "main",
+  "githubPages": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/christireid/Clarity-ai-chat-components",
+    "Documentation": "https://clarity-chat-docs.vercel.app"
+  }
+}
+

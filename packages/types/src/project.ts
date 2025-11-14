@@ -3,7 +3,7 @@
  */
 
 import type { Chat } from './chat'
-import type { Context } from './context'
+import type { Context, ContextType } from './context'
 import type { KnowledgeBase } from './knowledge-base'
 
 export interface Project {
@@ -38,5 +38,3 @@ export interface ProjectSettings {
   maxContextSize: number
   retentionDays?: number
 }
-
-export type ContextType = 'document' | 'image' | 'link' | 'text' | 'video' | 'audio'

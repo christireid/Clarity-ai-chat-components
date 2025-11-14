@@ -2,7 +2,7 @@
  * Context-related type definitions
  */
 
-import type { ContextType } from './project'
+export type ContextType = 'document' | 'image' | 'link' | 'text' | 'video' | 'audio'
 
 export interface ContextMetadata {
   fileSize?: number

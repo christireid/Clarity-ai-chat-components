@@ -2,7 +2,7 @@
  * API-related errors with helpful solutions
  */
 
-import { ClarityError, ErrorSolution } from './base-error'
+import { ClarityError, ErrorSolution } from './base-error.js'
 
 export class APIKeyMissingError extends ClarityError {
   constructor(provider: 'openai' | 'anthropic' | 'google', originalError?: Error) {

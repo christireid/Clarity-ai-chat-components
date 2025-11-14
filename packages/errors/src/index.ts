@@ -19,7 +19,7 @@
  */
 
 // Base error class
-export { ClarityError, ErrorContext, ErrorSolution } from './base-error'
+export { ClarityError, ErrorContext, ErrorSolution } from './base-error.js'
 
 // API errors
 export {
@@ -28,7 +28,7 @@ export {
   APIAuthenticationError,
   APINetworkError,
   APIResponseError
-} from './api-errors'
+} from './api-errors.js'
 
 // Configuration errors
 export {
@@ -37,7 +37,7 @@ export {
   PortAlreadyInUseError,
   FileNotFoundError,
   DependencyMissingError
-} from './config-errors'
+} from './config-errors.js'
 
 // Validation errors
 export {
@@ -45,7 +45,15 @@ export {
   InvalidInputError,
   MissingFieldError,
   TypeMismatchError
-} from './validation-errors'
+} from './validation-errors.js'
 
 // Helper functions
-export { formatError, logError, handleError } from './utils'
+export {
+  formatError,
+  logError,
+  handleError,
+  createErrorHandler,
+  withErrorHandling,
+  assert,
+  tryCatch
+} from './utils.js'

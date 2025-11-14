@@ -11,7 +11,18 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./styles.css": "./dist/styles.css"
+    "./prompt": {
+      "types": "./dist/prompt/index.d.ts",
+      "import": "./dist/prompt/index.mjs",
+      "require": "./dist/prompt/index.js"
+    },
+    "./styles.css": "./dist/styles/index.css",
+    "./dist/styles/index.css": "./dist/styles/index.css",
+    "./components/icons": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
   },
   "files": [
     "dist"
@@ -29,47 +40,59 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/update-types.js",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext ts,tsx",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
+    "test": "NODE_OPTIONS='--max-old-space-size=4096' vitest run",
+    "test:watch": "NODE_OPTIONS='--max-old-space-size=4096' vitest",
+    "test:ui": "NODE_OPTIONS='--max-old-space-size=4096' vitest --ui",
+    "test:coverage": "NODE_OPTIONS='--max-old-space-size=4096' vitest run --coverage",
     "size": "size-limit",
     "size:why": "size-limit --why"
   },
   "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
   },
   "dependencies": {
+    "@clarity-chat/memory": "workspace:*",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.0",
-    "lucide-react": "^0.263.1",
+    "jszip": "^3.10.1",
+    "katex": "^0.16.25",
+    "mermaid": "^10.9.1",
+    "lucide-react": "^0.552.0",
     "react-markdown": "^9.0.0",
+    "react-virtualized-auto-sizer": "^1.0.26",
+    "react-window": "^1.8.11",
     "rehype-highlight": "^7.0.0",
+    "rehype-katex": "^7.0.1",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0",
+    "remark-math": "^6.0.0",
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
+    "@csstools/css-syntax-patches-for-csstree": "^1.0.15",
+    "@size-limit/preset-small-lib": "^11.0.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^5.0.4",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "happy-dom": "^20.0.7",
     "jsdom": "^27.0.1",
-    "@size-limit/preset-small-lib": "^11.0.0",
     "size-limit": "^11.0.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.3.3",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "size-limit": [

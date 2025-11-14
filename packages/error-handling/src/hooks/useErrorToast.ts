@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 
 /**
  * Toast notification configuration
@@ -34,6 +34,9 @@ export interface ErrorToast {
 export function useErrorToast() {
   const [toasts, setToasts] = useState<ErrorToast[]>([])
 
+  // Track timeouts for cleanup
+  const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map())
+
   const showToast = useCallback(
     (
       message: string,
@@ -47,9 +50,11 @@ export function useErrorToast() {
 
       // Auto-dismiss after duration
       if (duration > 0) {
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           setToasts((prev) => prev.filter((t) => t.id !== id))
+          timeoutRefs.current.delete(id)
         }, duration)
+        timeoutRefs.current.set(id, timeoutId)
       }
 
       return id
@@ -57,11 +62,29 @@ export function useErrorToast() {
     []
   )
 
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    const timeouts = timeoutRefs.current
+    return () => {
+      timeouts.forEach((timeout) => clearTimeout(timeout))
+      timeouts.clear()
+    }
+  }, [])
+
   const hideToast = useCallback((id: string) => {
+    // Clear timeout if exists
+    const timeout = timeoutRefs.current.get(id)
+    if (timeout) {
+      clearTimeout(timeout)
+      timeoutRefs.current.delete(id)
+    }
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }, [])
 
   const clearAll = useCallback(() => {
+    // Clear all timeouts
+    timeoutRefs.current.forEach((timeout) => clearTimeout(timeout))
+    timeoutRefs.current.clear()
     setToasts([])
   }, [])
 
