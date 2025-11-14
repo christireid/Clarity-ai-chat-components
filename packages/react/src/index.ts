@@ -58,6 +58,30 @@ export * from './components/chat-window'
 export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
 // Chat with built-in error boundary
 export { ChatWithErrorBoundary, type ChatWithErrorBoundaryProps } from './components/chat-with-error-boundary'
+// Recipe components - pre-built combinations for common patterns
+export {
+  ChatWithMemory,
+  ChatWithAnalytics,
+  ChatWithPreset,
+  ChatWithPersistence,
+  ChatWithErrorHandling,
+  ChatComplete,
+  type ChatWithMemoryProps,
+  type ChatWithAnalyticsProps,
+  type ChatWithPresetProps,
+  type ChatWithPersistenceProps,
+  type ChatWithErrorHandlingProps,
+  type ChatCompleteProps,
+} from './components/chat-recipes'
+// Presets - pre-configured settings for common scenarios
+export {
+  chatPresets,
+  hookPresets,
+  applyChatPreset,
+  applyHookPreset,
+  type ChatPreset,
+  type HookPreset,
+} from './presets/chat-presets'
 export * from './components/model-selector'
 export * from './components/streaming-message'
 export * from './components/stream-block'
@@ -145,6 +169,14 @@ export {
 } from './hooks/use-clarity-chat'
 // ⭐ Simplified unified hook - easier API than useClarityChat
 export { useChat, type UseChatOptions, type UseChatReturn } from './hooks/use-chat-unified'
+// Composable hooks - easy feature composition
+export {
+  useChatComposable,
+  useChatWithFeatures,
+  createChatHook,
+  ChatHookBuilder,
+  type ChatFeatures,
+} from './hooks/use-chat-composable'
 export {
   useClarityObject,
   type UseClarityObjectOptions,
