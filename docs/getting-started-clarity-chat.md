@@ -43,6 +43,8 @@ export default function Page() {
 }
 ```
 
+> **Note:** `ChatWindow` manages input state internally. If you need to control input externally, use `ChatInput` component separately.
+
 ## What You Get Out of the Box
 
 With just the code above, you get:
