@@ -118,6 +118,8 @@ bun add @clarity-chat/react
 
 ## ⚡ Quick Start
 
+### Option 1: ClarityChat Component (Recommended) ⭐
+
 Get a production-ready AI chat interface in **one line**:
 
 ```tsx
@@ -129,22 +131,39 @@ function App() {
 }
 ```
 
-**That's it!** ✨ You now have a production-ready AI chat interface with:
+**That's it!** ✨ Zero boilerplate, automatic message conversion, built-in features.
 
-### Advanced Usage
+### Option 2: useChat Hook (Simplified)
 
-For more control, you can still use the hook + component pattern:
+For more control with a simpler API:
+
+```tsx
+import { useChat, ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+  
+  return (
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={sendMessage}
+    />
+  )
+}
+```
+
+### Option 3: useClarityChat Hook (Full Control)
+
+For maximum control and advanced features:
 
 ```tsx
 import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
-  const { messages, append, isLoading } = useClarityChat({
-    api: '/api/chat',
-  })
-
-  // Convert CoreMessage[] to Message[] for ChatWindow
+  const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
   const convertedMessages = convertCoreMessagesToMessages(messages)
 
   return (
@@ -158,6 +177,8 @@ function App() {
   )
 }
 ```
+
+**[📖 View Complete Quickstart Guide](./packages/react/QUICKSTART.md)** • **[📚 Browse Examples](./apps/examples/README.md)**
 
 **Features included:**
 

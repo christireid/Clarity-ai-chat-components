@@ -56,6 +56,8 @@ export * from './components/advanced-chat-input'
 export * from './components/chat-window'
 // ⭐ Drop-in ready component - simplest way to use Clarity Chat
 export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
+// Chat with built-in error boundary
+export { ChatWithErrorBoundary, type ChatWithErrorBoundaryProps } from './components/chat-with-error-boundary'
 export * from './components/model-selector'
 export * from './components/streaming-message'
 export * from './components/stream-block'
@@ -141,6 +143,8 @@ export {
   type ClarityPromptOptimizationOptions,
   type ClarityChatTokenStats,
 } from './hooks/use-clarity-chat'
+// ⭐ Simplified unified hook - easier API than useClarityChat
+export { useChat, type UseChatOptions, type UseChatReturn } from './hooks/use-chat-unified'
 export {
   useClarityObject,
   type UseClarityObjectOptions,
