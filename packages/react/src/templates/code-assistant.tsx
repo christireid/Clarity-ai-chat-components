@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { ChatWindow } from '../components/chat-window'
+import { useMessageOperations } from '../hooks/use-message-operations'
 import type { Message } from '@clarity-chat/types'
 
 /**
@@ -140,55 +141,91 @@ export function CodeAssistant({
   onCopyCode: _onCopyCode, // Reserved for future use
   className = '',
 }: CodeAssistantConfig) {
-  const [messages, setMessages] = React.useState<Message[]>(() => {
-    const welcomeMessage: Message = {
-      id: '1',
-      chatId: 'code-assistant',
-      role: 'assistant',
-      content: `Hi! I'm ${assistantName}, your AI coding assistant. I can help you with:\n\n- 📝 Writing code\n- 🐛 Debugging\n- 📖 Explaining code\n- ⚡ Optimizing performance\n- 🧪 Writing tests\n\nWhat would you like help with today?`,
-      status: 'sent' as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-    
-    // If there's initial code context, add it as a message
-    if (codeContext) {
-      return [
-        welcomeMessage,
-        {
-          id: '2',
-          chatId: 'code-assistant',
-          role: 'user',
-          content: `Here's my code:\n\n\`\`\`\n${codeContext}\n\`\`\``,
-          status: 'sent' as const,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]
-    }
-    
-    return [welcomeMessage]
+  const chatId = 'code-assistant'
+  
+  // Use message operations hook
+  const {
+    messages: operationMessages,
+    addMessage,
+    editMessage,
+    deleteMessage,
+  } = useMessageOperations({
+    initialMessages: (() => {
+      const welcomeMessage = {
+        id: '1',
+        chatId,
+        role: 'assistant' as const,
+        content: `Hi! I'm ${assistantName}, your AI coding assistant. I can help you with:\n\n- 📝 Writing code\n- 🐛 Debugging\n- 📖 Explaining code\n- ⚡ Optimizing performance\n- 🧪 Writing tests\n\nWhat would you like help with today?`,
+        timestamp: Date.now(),
+      }
+      
+      // If there's initial code context, add it as a message
+      if (codeContext) {
+        return [
+          welcomeMessage,
+          {
+            id: '2',
+            chatId,
+            role: 'user' as const,
+            content: `Here's my code:\n\n\`\`\`\n${codeContext}\n\`\`\``,
+            timestamp: Date.now(),
+          },
+        ]
+      }
+      
+      return [welcomeMessage]
+    })(),
+    onEdit: (messageId, newContent) => {
+      console.log('Message edited:', messageId, newContent)
+    },
+    onDelete: (messageId) => {
+      console.log('Message deleted:', messageId)
+    },
   })
+
+  // Convert to Message format
+  const messages: Message[] = operationMessages.map(msg => ({
+    id: msg.id,
+    chatId,
+    role: msg.role,
+    content: msg.content,
+    createdAt: new Date(msg.timestamp),
+    updatedAt: new Date(msg.timestamp),
+    status: 'sent' as const,
+  }))
   
   const [showActions, setShowActions] = React.useState(true)
+
+  // Handle message operations
+  const handleEdit = React.useCallback((messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message) return
+
+    const newContent = prompt('Edit message:', message.content) || message.content
+    if (newContent !== message.content) {
+      editMessage(messageId, newContent)
+    }
+  }, [messages, editMessage])
+
+  const handleDelete = React.useCallback((messageId: string) => {
+    if (confirm('Delete this message?')) {
+      deleteMessage(messageId)
+    }
+  }, [deleteMessage])
   // const _currentCodeContext = codeContext || '' // Reserved for future use
 
   /**
    * Handle user message
    */
   const handleSendMessage = (content: string) => {
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      chatId: 'code-assistant',
+    // Add user message using operations hook
+    addMessage({
+      chatId,
       role: 'user',
       content,
-      status: 'sent' as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+      timestamp: Date.now(),
+    })
     
-    setMessages((prev) => [...prev, userMessage])
     setShowActions(false)
 
     // Process message asynchronously
@@ -225,18 +262,14 @@ export function CodeAssistant({
       botResponse = "I can help you with that! Could you provide more details or share the specific code you're working with? You can use the quick action buttons below, or just describe what you need help with."
     }
 
-    // Add bot response
-    const botMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      chatId: 'code-assistant',
+    // Add bot response using operations hook
+    addMessage({
+      chatId,
       role: 'assistant',
       content: botResponse,
-      status: 'sent' as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+      timestamp: Date.now(),
+    })
     
-    setMessages((prev) => [...prev, botMessage])
     setShowActions(true)
   }
 
@@ -291,6 +324,8 @@ export function CodeAssistant({
       <ChatWindow
         messages={messages}
         onSendMessage={handleSendMessage}
+        onEditMessage={handleEdit}
+        onDeleteMessage={handleDelete}
       />
       
       {/* Quick action buttons */}

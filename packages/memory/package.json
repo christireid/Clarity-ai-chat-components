@@ -1,0 +1,59 @@
+{
+  "name": "@clarity-chat/memory",
+  "version": "0.1.0",
+  "description": "Framework-agnostic AI memory and context management utilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "ai",
+    "memory",
+    "context",
+    "llm",
+    "chatbot",
+    "token-optimization",
+    "semantic-search",
+    "vector-store",
+    "framework-agnostic",
+    "typescript"
+  ],
+  "author": "Christi Reid <christi@codeclarity.ai>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/christireid/Clarity-ai-chat-components.git",
+    "directory": "packages/memory"
+  },
+  "bugs": {
+    "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
+  },
+  "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
+  "peerDependencies": {},
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

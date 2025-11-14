@@ -1,0 +1,295 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-geist-sans: 'Geist Sans', system-ui, sans-serif;
+  --font-geist-mono: 'Geist Mono', monospace;
+
+  /* Light mode colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #9ca3af;
+  --color-border: #e5e7eb;
+  --color-brand: #3b82f6;
+  --color-brand-hover: #2563eb;
+
+  /* Code block colors */
+  --tw-prose-body: #374151;
+  --tw-prose-headings: #111827;
+  --tw-prose-links: #2563eb;
+  --tw-prose-links-hover: #1d4ed8;
+  --tw-prose-code: #111827;
+  --tw-prose-code-bg: #f3f4f6;
+}
+
+.dark {
+  /* Dark mode colors */
+  --color-bg-primary: #030712;
+  --color-bg-secondary: #111827;
+  --color-bg-tertiary: #1f2937;
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-text-tertiary: #6b7280;
+  --color-border: #374151;
+  --color-brand: #60a5fa;
+  --color-brand-hover: #3b82f6;
+
+  /* Code block colors */
+  --tw-prose-body: #d1d5db;
+  --tw-prose-headings: #f9fafb;
+  --tw-prose-links: #60a5fa;
+  --tw-prose-links-hover: #93c5fd;
+  --tw-prose-code: #f9fafb;
+  --tw-prose-code-bg: #1f2937;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-geist-sans);
+}
+
+body {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-brand);
+  color: white;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-tertiary);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Code block styling - Ant Design inspired */
+pre {
+  @apply rounded-xl overflow-x-auto p-4 my-6 border-2 shadow-sm;
+  background-color: var(--color-bg-tertiary) !important;
+  transition: all 0.2s ease;
+}
+
+pre:hover {
+  @apply shadow-md;
+}
+
+code {
+  @apply font-mono text-sm;
+}
+
+/* Inline code - Ant Design inspired */
+:not(pre) > code {
+  @apply px-2 py-1 rounded-lg border;
+  background-color: var(--tw-prose-code-bg);
+  color: var(--tw-prose-code);
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+/* Headings with anchor links */
+.heading-anchor {
+  @apply opacity-0 transition-opacity duration-200;
+  margin-left: -1.5rem;
+  padding-right: 0.5rem;
+}
+
+h1:hover .heading-anchor,
+h2:hover .heading-anchor,
+h3:hover .heading-anchor,
+h4:hover .heading-anchor,
+h5:hover .heading-anchor,
+h6:hover .heading-anchor {
+  @apply opacity-100;
+}
+
+/* Focus visible styles */
+a:focus-visible,
+button:focus-visible {
+  @apply outline-2 outline-offset-2 outline-brand-500 rounded;
+}
+
+/* Animation utilities */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
+
+/* Typography utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Container utilities */
+.container-docs {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Skip to content link */
+.skip-to-content {
+  @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50;
+  @apply px-4 py-2 bg-brand-500 text-white rounded-lg;
+}
+
+/* Documentation Components - Ant Design Aesthetic */
+.docs-content {
+  @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12;
+}
+
+.docs-header {
+  @apply mb-12 space-y-4;
+}
+
+.docs-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  @apply bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300 border-2 border-brand-200 dark:border-brand-800 shadow-sm;
+}
+
+.docs-lead {
+  @apply text-xl text-gray-600 dark:text-gray-400 leading-relaxed;
+}
+
+.docs-section {
+  @apply mb-12 space-y-4;
+}
+
+.docs-section h2 {
+  @apply text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-50;
+  @apply border-b-2 border-gray-200 dark:border-gray-700 pb-3;
+}
+
+.docs-section h3 {
+  @apply text-xl font-semibold mb-3 mt-8 text-gray-900 dark:text-gray-50;
+}
+
+.docs-card {
+  @apply block p-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-brand-400;
+  @apply bg-white dark:bg-gray-900 hover:shadow-lg hover:-translate-y-0.5;
+  @apply transition-all duration-200;
+}
+
+.docs-card h3 {
+  @apply text-lg font-semibold mb-2 text-gray-900 dark:text-gray-50 border-0 pb-0 mt-0;
+}
+
+.docs-card p {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+/* Table styling */
+table {
+  @apply w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden my-6 shadow-sm;
+}
+
+thead {
+  @apply bg-gray-50 dark:bg-gray-800;
+}
+
+th {
+  @apply px-4 py-3 text-left text-sm font-semibold border-b-2;
+}
+
+td {
+  @apply px-4 py-3 text-sm border-b;
+}
+
+tbody tr:hover {
+  @apply bg-gray-50 dark:bg-gray-800/50;
+}
+
+/* Callout styling */
+.callout {
+  @apply p-4 rounded-xl border-2 my-6 shadow-sm;
+}
+
+.callout-info {
+  @apply bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800;
+}
+
+.callout-warning {
+  @apply bg-yellow-50 border-yellow-200 dark:bg-yellow-950/30 dark:border-yellow-800;
+}
+
+.callout-tip {
+  @apply bg-green-50 border-green-200 dark:bg-green-950/30 dark:border-green-800;
+}
+
+.callout-danger {
+  @apply bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800;
+}
+
+/* List styling */
+.docs-section ul,
+.docs-section ol {
+  @apply space-y-2 ml-6;
+}
+
+.docs-section li {
+  @apply text-base leading-relaxed;
+}
+
+/* Links */
+.docs-content a:not(.docs-card) {
+  @apply text-brand-600 dark:text-brand-400 hover:underline underline-offset-4;
+  @apply transition-colors duration-200;
+}
+
+/* Responsive images */
+.docs-content img {
+  @apply rounded-xl shadow-md my-6;
+}

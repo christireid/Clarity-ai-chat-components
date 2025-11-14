@@ -1,13 +1,17 @@
 /**
  * generate command - Generate code (component, hook, adapter, test)
+ * Enhanced with beautiful UI components
  */
 
 import chalk from 'chalk'
 import prompts from 'prompts'
-import ora from 'ora'
 import path from 'path'
 import fs from 'fs-extra'
 import { getLogger } from '../utils/logger.js'
+import { sectionHeader } from '../ui/banner.js'
+import { table, TableColumn } from '../ui/table.js'
+import { createSpinner } from '../ui/progress.js'
+import { successBox, errorBox, infoBox } from '../ui/box.js'
 
 const logger = getLogger('generate')
 
@@ -145,16 +149,31 @@ describe('${name}', () => {
 }
 
 export async function generateCommand(type: string, options: GenerateOptions) {
-  console.log('\n' + chalk.bold.cyan('⚡ Code Generator\n'))
+  console.log()
+  console.log(sectionHeader('⚡ Code Generator'))
+  console.log()
 
   const generator = GENERATORS[type as keyof typeof GENERATORS]
   
   if (!generator) {
     logger.error(`Unknown generator type: ${type}`)
-    console.log(chalk.yellow('\nAvailable generators:'))
-    Object.entries(GENERATORS).forEach(([key, value]) => {
-      console.log(chalk.cyan(`  ${value.icon} ${key}`) + chalk.gray(` - ${value.name}`))
-    })
+    
+    // Display available generators in a beautiful table
+    const columns: TableColumn[] = [
+      { header: 'Type', width: 15, color: chalk.yellow },
+      { header: 'Name', width: 30 },
+    ]
+
+    const generatorData = Object.entries(GENERATORS).map(([key, value]) => [
+      `${value.icon} ${key}`,
+      value.name,
+    ])
+
+    console.log()
+    console.log(sectionHeader('📦 Available Generators'))
+    console.log(table(generatorData, columns))
+    console.log()
+    
     process.exit(1)
   }
 
@@ -191,11 +210,16 @@ export async function generateCommand(type: string, options: GenerateOptions) {
 
   const fullPath = path.join(cwd, outputPath)
   
-  // Confirm generation
-  console.log(chalk.gray('\nGenerating:'))
-  console.log(chalk.cyan(`  Type: ${generator.name}`))
-  console.log(chalk.cyan(`  Name: ${name}`))
-  console.log(chalk.cyan(`  Path: ${fullPath}\n`))
+  // Display generation info
+  const infoContent = [
+    `${generator.icon} ${generator.name}`,
+    '',
+    `Name: ${chalk.cyan(name)}`,
+    `Path: ${chalk.cyan(fullPath)}`,
+  ].join('\n')
+
+  console.log(infoBox(infoContent, 'Generation Info'))
+  console.log()
 
   const { confirm } = await prompts({
     type: 'confirm',
@@ -205,11 +229,12 @@ export async function generateCommand(type: string, options: GenerateOptions) {
   })
 
   if (!confirm) {
-    console.log(chalk.gray('Cancelled'))
+    console.log(chalk.gray('\nCancelled'))
     return
   }
 
-  const spinner = ora('Generating code...').start()
+  const spinner = createSpinner('Generating code...')
+  spinner.start()
 
   try {
     // Ensure directory exists
@@ -230,7 +255,7 @@ export async function generateCommand(type: string, options: GenerateOptions) {
       })
       
       if (!overwrite) {
-        console.log(chalk.gray('Cancelled'))
+        console.log(chalk.gray('\nCancelled'))
         return
       }
     }
@@ -240,13 +265,25 @@ export async function generateCommand(type: string, options: GenerateOptions) {
 
     spinner.succeed('Code generated')
 
-    console.log('\n' + chalk.green('✅ File created:\n'))
-    console.log(chalk.cyan(`  ${filePath}\n`))
-    console.log(chalk.gray('Open it in your editor and start coding!'))
+    console.log()
+    const successContent = [
+      chalk.bold('File created successfully!'),
+      '',
+      chalk.white('File:'),
+      chalk.cyan(`  ${filePath}`),
+      '',
+      chalk.gray('Open it in your editor and start coding!'),
+    ].join('\n')
+
+    console.log(successBox(successContent, '✓ Success'))
+    console.log()
 
   } catch (error) {
     spinner.fail('Failed to generate code')
     logger.error(error)
+    console.log()
+    console.log(errorBox('Failed to generate code. Check the error above.', '✗ Error'))
+    console.log()
     process.exit(1)
   }
 }

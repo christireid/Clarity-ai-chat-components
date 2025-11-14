@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useRef, useState, useCallback, useEffect, useLayoutEffect, type RefObject, type DependencyList } from 'react'
 
 export interface UseAutoScrollOptions {
   /**
@@ -19,14 +19,14 @@ export interface UseAutoScrollOptions {
   /**
    * Dependencies that trigger scroll check
    */
-  dependencies?: React.DependencyList
+  dependencies?: DependencyList
 }
 
 export interface UseAutoScrollReturn {
   /**
    * Ref to attach to scrollable container
    */
-  scrollRef: React.RefObject<HTMLElement>
+  scrollRef: RefObject<HTMLElement>
   /**
    * Whether user is near bottom
    */
@@ -70,57 +70,85 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScroll
     dependencies = [],
   } = options
 
-  const scrollRef = React.useRef<HTMLElement>(null)
-  const [enabled, setEnabled] = React.useState(initialEnabled)
-  const [isNearBottom, setIsNearBottom] = React.useState(true)
+  const scrollRef = useRef<HTMLElement>(null)
+  const [enabled, setEnabled] = useState(initialEnabled)
+  const [isNearBottom, setIsNearBottom] = useState(true)
 
-  // Check if user is near bottom
-  const checkIfNearBottom = React.useCallback(() => {
+  // Check if user is near bottom (store in ref to avoid dependency issues)
+  const checkIfNearBottomRef = useRef(() => {
     const element = scrollRef.current
     if (!element) return false
-
     const { scrollTop, scrollHeight, clientHeight } = element
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight
     return distanceFromBottom <= threshold
+  })
+  
+  useLayoutEffect(() => {
+    checkIfNearBottomRef.current = () => {
+      const element = scrollRef.current
+      if (!element) return false
+      const { scrollTop, scrollHeight, clientHeight } = element
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight
+      return distanceFromBottom <= threshold
+    }
   }, [threshold])
 
-  // Scroll to bottom
-  const scrollToBottom = React.useCallback(() => {
+  // Scroll to bottom (store in ref to avoid dependency issues)
+  const scrollToBottomRef = useRef(() => {
     const element = scrollRef.current
     if (!element) return
-
     element.scrollTo({
       top: element.scrollHeight,
       behavior,
     })
+  })
+  
+  useLayoutEffect(() => {
+    scrollToBottomRef.current = () => {
+      const element = scrollRef.current
+      if (!element) return
+      element.scrollTo({
+        top: element.scrollHeight,
+        behavior,
+      })
+    }
   }, [behavior])
 
+  // Public API functions
+  const checkIfNearBottom = useCallback(() => {
+    return checkIfNearBottomRef.current()
+  }, [])
+
+  const scrollToBottom = useCallback(() => {
+    scrollToBottomRef.current()
+  }, [])
+
   // Update isNearBottom on scroll
-  React.useEffect(() => {
+  useEffect(() => {
     const element = scrollRef.current
     if (!element) return
 
     const handleScroll = () => {
-      setIsNearBottom(checkIfNearBottom())
+      setIsNearBottom(checkIfNearBottomRef.current())
     }
 
     element.addEventListener('scroll', handleScroll, { passive: true })
     return () => element.removeEventListener('scroll', handleScroll)
-  }, [checkIfNearBottom])
+  }, []) // Function accessed via ref
 
   // Auto-scroll when dependencies change
-  React.useEffect(() => {
+  useEffect(() => {
     if (!enabled) return
 
-    const wasNearBottom = checkIfNearBottom()
+    const wasNearBottom = checkIfNearBottomRef.current()
     if (wasNearBottom) {
       // Use requestAnimationFrame to ensure DOM has updated
       requestAnimationFrame(() => {
-        scrollToBottom()
+        scrollToBottomRef.current()
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, scrollToBottom, checkIfNearBottom, ...dependencies])
+  }, [enabled, ...dependencies]) // Functions accessed via refs
 
   return {
     scrollRef,

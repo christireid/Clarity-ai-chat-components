@@ -1,0 +1,6 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+export const metadata = { title: 'Prompt Library | Clarity Chat', description: 'Manage and organize reusable prompts with categories and favorites.' };
+export default function PromptLibraryPage() {
+    return (_jsxs("div", { className: "max-w-5xl mx-auto px-4 py-8", children: [_jsx("h1", { className: "text-4xl font-bold mb-4", children: "Prompt Library" }), _jsx("p", { className: "text-xl text-muted-foreground mb-8", children: "Save, organize, and reuse prompts with categories, tags, and favorites." }), _jsxs("section", { className: "mb-12", children: [_jsx("h2", { className: "text-3xl font-semibold mb-4", children: "Features" }), _jsxs("ul", { className: "list-disc list-inside space-y-2 text-muted-foreground", children: [_jsx("li", { children: "Save/edit/delete prompts" }), _jsx("li", { children: "Category organization" }), _jsx("li", { children: "Tag system" }), _jsx("li", { children: "Favorites" }), _jsx("li", { children: "Usage tracking" }), _jsx("li", { children: "Search and filter" })] })] })] }));
+}
+//# sourceMappingURL=page.js.map
