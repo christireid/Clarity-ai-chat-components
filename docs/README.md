@@ -15,6 +15,14 @@ Welcome to the Clarity Chat Components documentation. This directory contains co
 - **[Migrating from Vercel](./migrating-from-vercel.md)**  
   Step-by-step migration guide for moving from Vercel AI SDK UI to Clarity. Includes compatibility notes and common issues.
 
+### Troubleshooting
+- **[Troubleshooting Guide](./TROUBLESHOOTING.md)**
+  - Common issues and solutions
+  - Installation problems
+  - Runtime errors
+  - API issues
+  - Performance optimization
+
 ## 🚀 Quick Links
 
 ### For New Users
