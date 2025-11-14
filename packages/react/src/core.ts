@@ -53,3 +53,10 @@ export {
   type UseChatSimpleOptions,
   type UseChatSimpleReturn,
 } from './hooks/use-chat-simple'
+
+// Memory store factory
+export {
+  createMemoryStore,
+  type CreateMemoryStoreOptions,
+  type MemoryStore,
+} from './memory/create-memory-store'
