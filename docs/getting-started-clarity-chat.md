@@ -150,6 +150,35 @@ With memory enabled, Clarity will:
 - Enrich prompts with context
 - Optimize token usage
 
+## Building Custom UI
+
+If you prefer to build your own UI instead of using `<ChatWindow>`, `useClarityChat` provides `input` and `setInput` just like Vercel's `useChat`:
+
+```tsx
+const {
+  messages: coreMessages,
+  input,
+  setInput,
+  append,
+  isLoading,
+  handleSubmit,
+} = useClarityChat({
+  api: '/api/chat',
+})
+
+// Build your own UI
+<form onSubmit={handleSubmit}>
+  <input
+    value={input}
+    onChange={(e) => setInput(e.target.value)}
+    placeholder="Type a message..."
+  />
+  <button disabled={isLoading}>Send</button>
+</form>
+```
+
+**Note:** `<ChatWindow>` manages its own input state internally, so you don't need `input`/`setInput` when using it.
+
 ## Next Steps
 
 - **[Compare with Vercel AI SDK](./clarity-vs-vercel-ai-sdk-ui.md)** - See how Clarity extends Vercel's API
