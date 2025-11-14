@@ -1,0 +1,43 @@
+export const meta = {
+  title: 'Guides/Storybook Playbook',
+}
+
+# Component Experience Playbook
+
+> Research synthesized from Atlassian Design System, Shopify Polaris, Stripe Interface Guidelines, and the official Storybook Design System. Use it as a checklist when introducing new surfaces.
+
+## Foundations We Adopted
+
+- **Unified theming toolbar** – mirrors Atlassian and GitHub’s storybooks where designers can toggle tokens globally without duplicating decorators. Implemented through `themeMode` + `themePreset` globals.
+- **Coverage heatmap** – every exported component, template, and demo now renders in Storybook. We mirror the “no dark corners” rule highlighted in Shopify Polaris audits.
+- **Experience-first docs** – stories lead with usage context, not just props. Each new story adds copy describing when to use the component and how it behaves (inspired by Stripe’s doc tone).
+- **Operational quality gates** – error handling, performance monitors, and streaming demos surface alongside UI components so reliability patterns are discoverable (a lesson from Atlassian Reliability Guidelines).
+
+## Authoring Checklist
+
+1. **Design intent first**: Start every story with a summary (`parameters.docs.description.component`) that explains the job-to-be-done.
+2. **Minimum states**: Capture default, loading, error, and interaction states. Reference GitHub Primer’s “Four States” guidance.
+3. **Args over bespoke props**: Prefer `args`/`argTypes` for configurability so teams can explore guardrails without editing code.
+4. **A11y ready**: Run the accessibility addon for every new story and document deviations. Accessibility checklists should live next to the story.
+5. **Source-of-truth links**: Link to design specs, production screenshots, or GitHub issues in MDX notes.
+6. **Deterministic data**: Seed stories with deterministic sample data—no random IDs unless you memoize—to keep visual regression tests stable.
+
+## Layout & Navigation
+
+- Group stories by **capability** instead of package name (e.g., `Messaging/Rendering` vs. `Message Components`). This mirrors the way Notion and Linear structure their design systems.
+- Keep docs-only MDX pages under `Guides/` so stakeholders can find rationale without sifting through component code.
+- Use **comparative stories** (e.g., SSE vs WebSocket) when teams must choose between patterns.
+
+## Testing & Governance
+
+- Add a quick “Smoke Test” using Storybook’s `play` function when the component has critical interactions (copy to clipboard, streaming updates, etc.).
+- Snapshot heavy controls using Chromatic or Loki—schedule weekly audits similar to how Storybook DS maintains regression coverage.
+- Track coverage in CI by diffing exported symbols vs. stories to prevent regressions.
+
+## Next Enhancements
+
+- Integrate Storybook test runner (Jest/Testing Library) for smoke tests on mission-critical stories.
+- Layer in design token documentation (light/dark matrices) similar to Adobe Spectrum to help theming decisions.
+- Add per-story analytics (storybook-addon-measure/outline) for perf-sensitive surfaces, following Vercel’s approach.
+
+Use this playbook as the default PR checklist. When a story misses one of these items, call it out explicitly in review.

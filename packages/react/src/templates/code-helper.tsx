@@ -4,7 +4,6 @@
  * AI assistant specialized for programming help
  */
 
-import React from 'react'
 import { AIAssistantTemplate } from './ai-assistant'
 import { minimalDarkTheme } from '../theme/presets'
 import { ThemeProvider } from '../theme/ThemeProvider'
@@ -53,7 +52,7 @@ Always provide code examples with proper syntax highlighting using markdown code
 Explain your reasoning and suggest improvements when relevant.`
 
   return (
-    <ThemeProvider theme={minimalDarkTheme}>
+    <ThemeProvider defaultTheme={minimalDarkTheme}>
       <AIAssistantTemplate
         apiKeys={apiKeys}
         systemPrompt={systemPrompt}

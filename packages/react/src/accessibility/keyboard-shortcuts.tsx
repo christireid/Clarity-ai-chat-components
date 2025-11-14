@@ -226,7 +226,7 @@ function KeyboardShortcutsHelp({ shortcuts, onClose }: KeyboardShortcutsHelpProp
         aria-modal="true"
         aria-labelledby="shortcuts-title"
       >
-        <div className="bg-background rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+        <div className="bg-background rounded-lg border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] max-w-2xl w-full max-h-[80vh] overflow-hidden backdrop-blur-sm">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-border">
             <h2 id="shortcuts-title" className="text-2xl font-bold">

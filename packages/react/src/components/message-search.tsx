@@ -15,10 +15,10 @@ export interface MessageSearchProps {
 
 /**
  * Message Search Component with React Concurrent Features
- * 
+ *
  * Uses useDeferredValue to keep the search input responsive
  * even when filtering large message lists.
- * 
+ *
  * @example
  * ```tsx
  * <MessageSearch
@@ -28,20 +28,23 @@ export interface MessageSearchProps {
  * />
  * ```
  */
-export const MessageSearch: React.FC<MessageSearchProps> = ({
+export function MessageSearch({
   messages,
   onResultsChange,
   placeholder = 'Search messages...',
   className,
-}) => {
+}: MessageSearchProps) {
   const [searchQuery, setSearchQuery] = React.useState('')
-  const { filteredMessages, isPending } = useDeferredSearch(messages, searchQuery)
-  
+  const { filteredMessages, isPending } = useDeferredSearch(
+    messages,
+    searchQuery
+  )
+
   // Notify parent of filtered results
   React.useEffect(() => {
     onResultsChange?.(filteredMessages)
   }, [filteredMessages, onResultsChange])
-  
+
   return (
     <div className={className}>
       <div className="relative">
@@ -59,7 +62,7 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
           </div>
         )}
       </div>
-      
+
       {searchQuery && (
         <div className="mt-2 flex items-center justify-between text-sm text-muted-foreground">
           <span>
@@ -76,23 +79,29 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
   )
 }
 
+MessageSearch.displayName = 'MessageSearch'
+
 /**
  * Message Search with Suspense Boundary
- * 
+ *
  * Wraps MessageSearch in a Suspense boundary for lazy loading.
  * Shows a loading skeleton while the component is being loaded.
  */
-export const MessageSearchWithSuspense: React.FC<MessageSearchProps> = (props) => {
-  return (
-    <Suspense
-      fallback={
-        <div className="space-y-2 animate-pulse">
-          <div className="h-10 bg-muted rounded-md" />
-          <div className="h-4 w-32 bg-muted rounded-md" />
-        </div>
-      }
-    >
-      <MessageSearch {...props} />
-    </Suspense>
-  )
-}
+export const MessageSearchWithSuspense = React.memo(
+  function MessageSearchWithSuspense(props: MessageSearchProps) {
+    return (
+      <Suspense
+        fallback={
+          <div className="space-y-2 animate-pulse">
+            <div className="h-10 bg-muted rounded-md" />
+            <div className="h-4 w-32 bg-muted rounded-md" />
+          </div>
+        }
+      >
+        <MessageSearch {...props} />
+      </Suspense>
+    )
+  }
+)
+
+MessageSearchWithSuspense.displayName = 'MessageSearchWithSuspense'

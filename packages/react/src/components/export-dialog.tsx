@@ -24,14 +24,14 @@ export interface ExportDialogProps {
   className?: string
 }
 
-export const ExportDialog: React.FC<ExportDialogProps> = ({
+export function ExportDialog({
   open,
   onOpenChange,
   onExport,
   resourceType,
   resourceName,
   className,
-}) => {
+}: ExportDialogProps) {
   const [format, setFormat] = React.useState<ExportFormat>('pdf')
   const [options, setOptions] = React.useState<Partial<ExportOptions>>({
     includeMetadata: true,
@@ -41,12 +41,42 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
   const [exporting, setExporting] = React.useState(false)
   const [progress, setProgress] = React.useState(0)
 
-  const formats: Array<{ value: ExportFormat; label: string; icon: string; description: string }> = [
-    { value: 'pdf', label: 'PDF', icon: '📕', description: 'Portable document format' },
-    { value: 'docx', label: 'Word', icon: '📄', description: 'Microsoft Word document' },
-    { value: 'markdown', label: 'Markdown', icon: '📝', description: 'Plain text with formatting' },
-    { value: 'json', label: 'JSON', icon: '📊', description: 'Raw data format' },
-    { value: 'html', label: 'HTML', icon: '🌐', description: 'Web page format' },
+  const formats: Array<{
+    value: ExportFormat
+    label: string
+    icon: string
+    description: string
+  }> = [
+    {
+      value: 'pdf',
+      label: 'PDF',
+      icon: '📕',
+      description: 'Portable document format',
+    },
+    {
+      value: 'docx',
+      label: 'Word',
+      icon: '📄',
+      description: 'Microsoft Word document',
+    },
+    {
+      value: 'markdown',
+      label: 'Markdown',
+      icon: '📝',
+      description: 'Plain text with formatting',
+    },
+    {
+      value: 'json',
+      label: 'JSON',
+      icon: '📊',
+      description: 'Raw data format',
+    },
+    {
+      value: 'html',
+      label: 'HTML',
+      icon: '🌐',
+      description: 'Web page format',
+    },
   ]
 
   const handleExport = async () => {
@@ -82,11 +112,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
-        size="xl" 
-        animation="scale"
-        className={className}
-      >
+      <DialogContent size="xl" animation="scale" className={className}>
         <DialogHeader>
           <DialogTitle>Export {resourceType}</DialogTitle>
           <DialogDescription>
@@ -109,13 +135,13 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setFormat(fmt.value)}
                   className={cn(
-                    'flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all',
+                    'flex flex-col items-center gap-2 p-4 rounded-lg border transition-all duration-150 ease-out',
                     format === fmt.value
-                      ? 'border-primary bg-primary/5 shadow-md'
-                      : 'border-border hover:border-primary/50'
+                      ? 'border-primary bg-primary/5 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)]'
+                      : 'border-border/50 hover:border-primary/50'
                   )}
                 >
-                  <motion.span 
+                  <motion.span
                     className="text-3xl"
                     animate={format === fmt.value ? { scale: [1, 1.2, 1] } : {}}
                     transition={{ duration: 0.3 }}
@@ -141,9 +167,21 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
             <h3 className="text-sm font-semibold mb-3">Export Options</h3>
             <div className="space-y-2">
               {[
-                { key: 'includeMetadata', label: 'Include Metadata', description: 'Timestamps, authors, etc.' },
-                { key: 'includeImages', label: 'Include Images', description: 'Embed images in export' },
-                { key: 'includeAttachments', label: 'Include Attachments', description: 'Separate attachment files' },
+                {
+                  key: 'includeMetadata',
+                  label: 'Include Metadata',
+                  description: 'Timestamps, authors, etc.',
+                },
+                {
+                  key: 'includeImages',
+                  label: 'Include Images',
+                  description: 'Embed images in export',
+                },
+                {
+                  key: 'includeAttachments',
+                  label: 'Include Attachments',
+                  description: 'Separate attachment files',
+                },
               ].map(({ key, label, description }, index) => (
                 <motion.label
                   key={key}
@@ -162,7 +200,9 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
                   />
                   <div className="flex-1">
                     <p className="text-sm font-medium">{label}</p>
-                    <p className="text-xs text-muted-foreground">{description}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {description}
+                    </p>
                   </div>
                 </motion.label>
               ))}
@@ -176,14 +216,20 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.5 }}
             >
-              <h3 className="text-sm font-semibold mb-3">Date Range (Optional)</h3>
+              <h3 className="text-sm font-semibold mb-3">
+                Date Range (Optional)
+              </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">From</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    From
+                  </label>
                   <Input type="date" />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">To</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    To
+                  </label>
                   <Input type="date" />
                 </div>
               </div>
@@ -253,11 +299,11 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: 0.7 }}
-            className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg"
+            className="p-3 bg-[hsl(var(--info))]/10 border border-[hsl(var(--info))]/20 rounded-lg shadow-[0_1px_3px_rgba(15,23,42,0.1)]"
           >
             <p className="text-xs text-muted-foreground">
-              💡 <strong>Tip:</strong> PDF and DOCX formats preserve formatting best.
-              Markdown is great for editing later.
+              💡 <strong>Tip:</strong> PDF and DOCX formats preserve formatting
+              best. Markdown is great for editing later.
             </p>
           </motion.div>
         </DialogBody>
@@ -283,3 +329,5 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
     </Dialog>
   )
 }
+
+ExportDialog.displayName = 'ExportDialog'

@@ -87,7 +87,7 @@ export function ThemeSelector({
             className={`
               theme-option
               flex items-center gap-3 p-3 rounded-lg
-              border-2 transition-all
+              border transition-all duration-150 ease-out
               ${isActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
               ${isHorizontal ? 'flex-col min-w-[120px]' : 'flex-row'}
             `}
@@ -95,19 +95,19 @@ export function ThemeSelector({
             {showPreview && metadata.preview && (
               <div className="theme-preview flex gap-1 items-center">
                 <div
-                  className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+                  className="w-8 h-8 rounded-full border border-white shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
                   style={{ backgroundColor: metadata.preview.primaryColor }}
                   aria-hidden="true"
                 />
                 {!isHorizontal && (
                   <>
                     <div
-                      className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                      className="w-6 h-6 rounded-full border border-white shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
                       style={{ backgroundColor: metadata.preview.secondaryColor }}
                       aria-hidden="true"
                     />
                     <div
-                      className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                      className="w-6 h-6 rounded-full border border-white shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
                       style={{ backgroundColor: metadata.preview.backgroundColor }}
                       aria-hidden="true"
                     />
@@ -222,7 +222,7 @@ export function ThemeSelectorDropdown({
           <div
             className="
               absolute top-full left-0 right-0 mt-2 z-50
-              bg-popover border border-border rounded-lg shadow-lg
+              bg-popover border border-border/60 rounded-lg shadow-[0_24px_48px_rgba(15,23,42,0.32)] backdrop-blur-sm
               max-h-96 overflow-y-auto
             "
             role="listbox"
@@ -246,7 +246,7 @@ export function ThemeSelectorDropdown({
                   <div className="flex items-center gap-3 flex-1">
                     {metadata.preview && (
                       <div
-                        className="w-6 h-6 rounded-full border-2 border-white shadow-sm flex-shrink-0"
+                        className="w-6 h-6 rounded-full border-2 border-white shadow-[0_1px_2px_rgba(15,23,42,0.08)] flex-shrink-0"
                         style={{ backgroundColor: metadata.preview.primaryColor }}
                         aria-hidden="true"
                       />

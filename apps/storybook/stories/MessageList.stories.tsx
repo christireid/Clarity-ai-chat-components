@@ -1,7 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { MessageList } from '@clarity-chat/react'
+import { VirtualizedMessageList as MessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
+/**
+ * **MessageList Component**
+ * 
+ * Message list component with auto-scroll, scroll-to-bottom button,
+ * and comprehensive message management features.
+ * 
+ * **Key Features:**
+ * - Auto-scroll to latest message
+ * - Scroll-to-bottom button
+ * - Message rendering with animations
+ * - Copy, feedback, and retry actions
+ * - Empty state handling
+ * - Virtual scrolling support
+ * 
+ * **Use Cases:**
+ * - Chat interfaces
+ * - Messaging applications
+ * - AI assistants
+ * - Conversation views
+ */
 const meta: Meta<typeof MessageList> = {
   title: 'Components/MessageList',
   component: MessageList,
@@ -9,11 +29,65 @@ const meta: Meta<typeof MessageList> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Message list component with auto-scroll and scroll-to-bottom button.',
+        component: `
+Message list component with auto-scroll, scroll-to-bottom button,
+and comprehensive message management features.
+
+## Features
+
+- ✅ Auto-scroll to latest message
+- ✅ Scroll-to-bottom button
+- ✅ Message rendering with animations
+- ✅ Copy, feedback, and retry actions
+- ✅ Empty state handling
+- ✅ Virtual scrolling support
+- ✅ Accessible with proper ARIA attributes
+
+## Basic Usage
+
+\`\`\`tsx
+<MessageList
+  messages={messages}
+  onMessageCopy={(id, content) => console.log('Copied:', content)}
+  onMessageFeedback={(id, type) => console.log('Feedback:', type)}
+  onMessageRetry={(id) => console.log('Retry:', id)}
+/>
+\`\`\`
+        `,
       },
     },
   },
   tags: ['autodocs'],
+  argTypes: {
+    messages: {
+      description: 'Array of messages to display',
+      control: { type: 'object' },
+    },
+    onMessageCopy: {
+      description: 'Callback when a message is copied',
+      action: 'message-copied',
+    },
+    onMessageFeedback: {
+      description: 'Callback when feedback is given (up/down)',
+      action: 'message-feedback',
+    },
+    onMessageRetry: {
+      description: 'Callback when retry is requested',
+      action: 'message-retry',
+    },
+    autoScroll: {
+      description: 'Automatically scroll to bottom on new messages',
+      control: 'boolean',
+    },
+    showScrollButton: {
+      description: 'Show scroll-to-bottom button',
+      control: 'boolean',
+    },
+    emptyState: {
+      description: 'Custom empty state component',
+      control: { type: 'object' },
+    },
+  },
   decorators: [
     (Story) => (
       <div style={{ width: '600px', height: '400px' }}>
