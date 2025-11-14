@@ -128,6 +128,14 @@ export {
   type UseClarityChatReturn,
   type ClarityMemoryOptions,
 } from './hooks/use-clarity-chat'
+
+// Message conversion utilities
+export {
+  convertCoreMessageToMessage,
+  convertMessageToCoreMessage,
+  convertCoreMessagesToMessages,
+  convertMessagesToCoreMessages,
+} from './utils/message-conversion'
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'

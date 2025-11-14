@@ -17,37 +17,7 @@
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { ChatWindow } from '../components/chat-window'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import type { Message } from '@clarity-chat/types'
-
-/**
- * Convert CoreMessage to Message format for ChatWindow
- */
-function convertCoreMessageToMessage(
-  coreMessage: CoreMessage,
-  chatId: string = 'default'
-): Message {
-  const content = typeof coreMessage.content === 'string'
-    ? coreMessage.content
-    : Array.isArray(coreMessage.content)
-    ? coreMessage.content
-        .filter((part) => part.type === 'text')
-        .map((part) => (part as { type: 'text'; text: string }).text)
-        .join('')
-    : ''
-
-  return {
-    id: coreMessage.id || `msg-${Date.now()}-${Math.random()}`,
-    chatId,
-    role: coreMessage.role === 'function' || coreMessage.role === 'tool'
-      ? 'assistant'
-      : coreMessage.role,
-    content,
-    status: 'sent',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  }
-}
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 
 /**
  * Basic Clarity Chat Example Component
@@ -65,8 +35,8 @@ export function BasicClarityChatExample() {
   })
 
   // Convert CoreMessage[] to Message[] for ChatWindow
-  const messages: Message[] = React.useMemo(
-    () => coreMessages.map((msg) => convertCoreMessageToMessage(msg)),
+  const messages = React.useMemo(
+    () => convertCoreMessagesToMessages(coreMessages),
     [coreMessages]
   )
 
