@@ -60,9 +60,10 @@ export function useRippleEffect({ enabled, onRipple }: UseRippleEffectOptions = 
 
   // Cleanup all timeouts on unmount
   React.useEffect(() => {
+    const timeoutRefs = timeoutRefsRef.current
     return () => {
-      timeoutRefsRef.current.forEach((timeout) => clearTimeout(timeout))
-      timeoutRefsRef.current.clear()
+      timeoutRefs.forEach((timeout) => clearTimeout(timeout))
+      timeoutRefs.clear()
     }
   }, [])
 

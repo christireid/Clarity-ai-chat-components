@@ -62,7 +62,7 @@ export const webSearchTool: Tool = {
   async execute(args) {
     // Mock implementation - in production, integrate with real search API
     return {
-      query: args.query,
+      query: args['query'],
       results: [
         {
           title: 'Example Result 1',
@@ -105,7 +105,7 @@ export const databaseQueryTool: Tool = {
   async execute(args) {
     // Mock implementation
     return {
-      query: args.query,
+      query: args['query'],
       rows: [
         { id: 1, name: 'Example' },
         { id: 2, name: 'Another' },
@@ -177,10 +177,10 @@ export const apiCallTool: Tool = {
   },
   requiresApproval: true,
   async execute(args) {
-    const response = await fetch(args.url, {
-      method: args.method,
-      headers: args.headers,
-      body: args.body ? JSON.stringify(args.body) : undefined,
+    const response = await fetch(args['url'], {
+      method: args['method'],
+      headers: args['headers'],
+      body: args['body'] ? JSON.stringify(args['body']) : undefined,
     })
     
     const data = await response.json()
