@@ -54,6 +54,8 @@ export * from './components/message-metadata'
 export * from './components/chat-input'
 export * from './components/advanced-chat-input'
 export * from './components/chat-window'
+// ⭐ Drop-in ready component - simplest way to use Clarity Chat
+export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
 export * from './components/model-selector'
 export * from './components/streaming-message'
 export * from './components/stream-block'
@@ -151,6 +153,9 @@ export {
   convertMessageToCoreMessage,
   convertCoreMessagesToMessages,
   convertMessagesToCoreMessages,
+  // Deprecated but kept for backward compatibility
+  coreMessagesToMessages,
+  coreMessageToMessage,
 } from './utils/message-conversion'
 
 // Clarity Chat TypeScript utilities

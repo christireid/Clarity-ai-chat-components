@@ -43,7 +43,14 @@ export * from './chat-config-builder'
 export * from './streaming-helpers'
 
 // Message conversion utilities
-export * from './message-converter'
+// Message conversion utilities - consolidated in message-conversion.ts
+export * from './message-conversion'
+// Deprecated: message-converter.ts exports are now in message-conversion.ts
+// Keeping this for backward compatibility
+export {
+  coreMessagesToMessages,
+  coreMessageToMessage,
+} from './message-conversion'
 
 // Tool result extraction utilities
 export * from './tool-result-extractor'
