@@ -31,11 +31,39 @@ export interface MessageListProps {
 }
 
 /**
- * MessageList component - Enhanced with React 19 features
+ * MessageList - Mid-Level Composable Component
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Chat UI
+ * 
+ * A composable message list component with auto-scrolling, animations, and
+ * message interaction handlers.
+ * 
+ * For drop-in usage, use top-level `ClarityChat` component instead.
+ * For custom message rendering, use low-level `Message` component.
  * 
  * React 19 Enhancements:
  * - Removed memo() wrapper - compiler handles optimization
  * - Removed simple useMemo - compiler optimizes static values
+ * 
+ * @param props - MessageList configuration
+ * @param props.messages - Array of messages to display (required)
+ * @param props.onMessageCopy - Callback when message is copied
+ * @param props.onMessageFeedback - Callback for message feedback (up/down)
+ * @param props.onMessageRetry - Callback to retry a message
+ * @param props.isLoading - Show loading skeleton (default: false)
+ * @param props.emptyState - Custom empty state content
+ * @returns Message list component
+ * 
+ * @example
+ * ```tsx
+ * <MessageList
+ *   messages={messages}
+ *   onMessageCopy={(id, content) => navigator.clipboard.writeText(content)}
+ *   onMessageRetry={(id) => retryMessage(id)}
+ *   isLoading={isLoading}
+ * />
+ * ```
  */
 export function MessageList({
   messages,
@@ -50,6 +78,15 @@ export function MessageList({
   emptyState,
   className,
 }: MessageListProps) {
+  // Runtime validation
+  if (!Array.isArray(messages)) {
+    throw new Error(
+      'MessageList: "messages" prop must be an array.\n\n' +
+      'Example:\n' +
+      '  <MessageList messages={[]} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
   // Use auto-scroll hook with smooth scrolling
   const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
     dependencies: [messages],

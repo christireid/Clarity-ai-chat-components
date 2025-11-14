@@ -1,8 +1,14 @@
 /**
- * useClarityObject - Structured Object Generation Hook
+ * useClarityObject - Top-Level Structured Output Hook
  * 
  * Hook for generating structured objects from AI models with type safety.
  * Supports both streaming and non-streaming object generation.
+ * 
+ * **Architecture Layer**: Top-Level (Drop-in Ready)
+ * **Domain**: Tools & Agents
+ * 
+ * This is the recommended way to generate type-safe structured data from AI.
+ * For tool calling, use mid-level `useClarityChatWithTools` instead.
  * 
  * @example
  * ```tsx
@@ -18,6 +24,16 @@
  * })
  * 
  * await run({ query: 'gaming laptops' })
+ * ```
+ * 
+ * @example
+ * ```tsx
+ * // With streaming
+ * const { object, run, isLoading, progress } = useClarityObject<Product>({
+ *   api: '/api/generate-object',
+ *   stream: true,
+ *   onProgress: (chunk) => console.log('Progress:', chunk),
+ * })
  * ```
  */
 
@@ -59,26 +75,36 @@ export interface UseClarityObjectOptions<TInput = any> {
   onProgress?: (chunk: string) => void
 }
 
+/**
+ * Return type for useClarityObject hook (top-level API)
+ * 
+ * Follows the standard hook return pattern:
+ * - Data: `object`, `input` (current state)
+ * - State: `isLoading`, `error`
+ * - Actions: `run`, `reset`, `setInput`
+ * 
+ * This hook provides type-safe structured object generation from AI models.
+ */
 export interface UseClarityObjectReturn<TObject, TInput = any> {
-  /** Current input value */
+  /** Current input value (data) */
   input: TInput
   
-  /** Set input value */
+  /** Set input value (action) */
   setInput: (value: TInput) => void
   
-  /** Generated object (null if not yet generated) */
+  /** Generated object, null if not yet generated (data) */
   object: TObject | null
   
-  /** Loading state */
+  /** Loading state (state) */
   isLoading: boolean
   
-  /** Error state */
+  /** Error state (state) */
   error: Error | null
   
-  /** Run generation with optional input override */
+  /** Run generation with optional input override (action) */
   run: (overrideInput?: TInput) => Promise<void>
   
-  /** Reset state */
+  /** Reset state (action) */
   reset: () => void
 }
 
@@ -117,8 +143,19 @@ function parseJSONChunks(chunks: string[]): any | null {
  * Structured object generation hook
  */
 export function useClarityObject<TObject = any, TInput = any>(
-  options: UseClarityObjectOptions<TInput>
+  options: UseClarityObjectOptions<TInput> = {}
 ): UseClarityObjectReturn<TObject, TInput> {
+  // Validate API endpoint
+  if (!options.api || typeof options.api !== 'string' || options.api.trim().length === 0) {
+    throw new Error(
+      'useClarityObject: "api" option is required.\n' +
+      'Please provide your API endpoint URL.\n\n' +
+      'Example:\n' +
+      '  const { object, run } = useClarityObject<Product>({ api: "/api/generate-object" })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/getting-started'
+    )
+  }
+
   const {
     api,
     initialInput,

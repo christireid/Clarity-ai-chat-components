@@ -118,6 +118,7 @@ bun add @clarity-chat/react
 
 ## ⚡ Quick Start
 
+<<<<<<< HEAD
 ### Simplest Way (5 lines) - NEW! 🎉
 
 Get a production-ready AI chat interface in seconds:
@@ -169,26 +170,96 @@ For more control, use the hook directly:
 ```tsx
 import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
+=======
+> 📖 **Architecture**: Clarity Chat follows a **layered architecture** with **7 core domains**. 
+> - **Top-Level APIs**: Drop-in ready (`ClarityChat`, `useClarityChat`)
+> - **Mid-Level APIs**: Composable (`ChatWindow`, `useChatEnhanced`)
+> - **Low-Level Primitives**: Utilities (`normalizeMessages`, `createStreamReader`)
+> 
+> See [DESIGN.md](./DESIGN.md) for architecture details and [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) for patterns.
+
+Get a production-ready AI chat interface in **3 lines of code**:
+
+```tsx
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+>>>>>>> 35e277aaf5bac860785007d4ddd7fbd8582edbe5
 
 function App() {
-  const { messages, append, isLoading } = useClarityChat({
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+**That's it!** ✨ You now have a production-ready AI chat interface with:
+
+### Need More Control?
+
+Use the hook with pre-configured handlers - less boilerplate:
+
+```tsx
+import { useClarityChat, ChatWindow, useChatHandlers } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  const chat = useClarityChat({
     api: '/api/chat',
   })
 
+<<<<<<< HEAD
   const convertedMessages = convertCoreMessagesToMessages(messages)
+=======
+  // Pre-configured handlers - no boilerplate! ✨
+  const handlers = useChatHandlers({ chat })
+>>>>>>> 35e277aaf5bac860785007d4ddd7fbd8582edbe5
 
   return (
     <ChatWindow
-      messages={convertedMessages}
-      isLoading={isLoading}
-      onSendMessage={async (content) => {
-        await append({ role: 'user', content })
-      }}
+      messages={chat.messages} // Accepts CoreMessage[] directly! ✨
+      isLoading={chat.isLoading}
+      onSendMessage={handlers.onSendMessage}
+      onClear={handlers.onClear}
     />
   )
 }
 ```
 
+<<<<<<< HEAD
+=======
+### Using Presets
+
+For common use cases, use pre-configured presets:
+
+```tsx
+import { ClarityChatPresets } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+// Simple chat
+function SimpleChat() {
+  return <ClarityChatPresets.Simple api="/api/chat" />
+}
+
+// Chat with memory
+function MemoryChat() {
+  return (
+    <ClarityChatPresets.WithMemory 
+      api="/api/chat"
+      memoryStrategy="sliding-window"
+    />
+  )
+}
+
+// Enterprise chat with all features
+function EnterpriseChat() {
+  return <ClarityChatPresets.Enterprise api="/api/chat" />
+}
+```
+
+**What's New:**
+- ✅ **No more conversion** - `ChatWindow` accepts `CoreMessage[]` directly
+- ✅ **One-line setup** - `ClarityChat` component handles everything
+- ✅ **Same powerful features** - streaming, memory, error handling, all included
+
+>>>>>>> 35e277aaf5bac860785007d4ddd7fbd8582edbe5
 - ✨ Beautiful animations and transitions
 - ⌨️ Full keyboard navigation
 - 📱 Mobile responsive design

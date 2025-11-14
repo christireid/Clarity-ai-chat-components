@@ -6,17 +6,42 @@ export interface UseStreamingOptions {
   onError?: (error: Error) => void
 }
 
+/**
+ * Return type for useStreaming hook (low-level primitive)
+ * 
+ * Follows the standard hook return pattern:
+ * - Data: `content` (accumulated stream content)
+ * - State: `isStreaming` (streaming status)
+ * - Actions: `startStreaming`, `stopStreaming`, `reset`
+ */
 export interface UseStreamingReturn {
+  /** Accumulated stream content (data) */
   content: string
+  
+  /** Whether currently streaming (state) */
   isStreaming: boolean
+  
+  /** Start streaming from a ReadableStream (action) */
   startStreaming: (stream: ReadableStream<Uint8Array>, options?: { signal?: AbortSignal }) => Promise<void>
+  
+  /** Stop streaming (action) */
   stopStreaming: () => void
+  
+  /** Reset content and state (action) */
   reset: () => void
 }
 
 /**
+ * useStreaming - Low-Level Streaming Primitive
+ * 
+ * **Architecture Layer**: Low-Level (Primitives)
+ * **Domain**: Streaming & Transport
+ * 
  * Generic streaming hook for handling ReadableStream data with automatic
  * text decoding and state management.
+ * 
+ * For higher-level streaming, use mid-level `useStreamingSSE` or `useStreamingWebSocket`.
+ * For chat streaming, use top-level `useClarityChat` with streaming enabled.
  * 
  * **Features:**
  * - Automatic text decoding from Uint8Array
@@ -25,17 +50,12 @@ export interface UseStreamingReturn {
  * - Complete content accumulation
  * - Error handling
  * 
- * **Use Cases:**
- * - Streaming API responses (OpenAI, Anthropic, etc.)
- * - Large file processing
- * - Real-time data feeds
- * - Progressive content rendering
+ * @param options - Configuration options
+ * @param options.onChunk - Called for each chunk received
+ * @param options.onComplete - Called when streaming completes
+ * @param options.onError - Called on error
+ * @returns Streaming state and controls
  * 
- * @param {UseStreamingOptions} [options] - Configuration options
- * @param {Function} [options.onChunk] - Called for each chunk received
- * @param {Function} [options.onComplete] - Called when streaming completes
- * @param {Function} [options.onError] - Called on error
- * @returns {UseStreamingReturn} Streaming state and controls
  * @example
  * ```tsx
  * const { content, isStreaming, startStreaming, stopStreaming } = useStreaming({
