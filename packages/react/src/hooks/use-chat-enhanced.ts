@@ -1,9 +1,35 @@
 /**
- * Enhanced useChat hook with Vercel AI SDK compatibility
+ * useChatEnhanced - Mid-Level Enhanced Chat Hook
  * 
- * This hook provides a complete chat interface with streaming support,
- * message management, and all features found in Vercel AI SDK's useChat,
- * plus additional enterprise features.
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Chat & Completions
+ * 
+ * Enhanced chat hook with Vercel AI SDK compatibility.
+ * Provides a complete chat interface with streaming support, message management,
+ * and all features found in Vercel AI SDK's useChat, plus additional enterprise features.
+ * 
+ * For simpler use cases, use top-level `useClarityChat` instead.
+ * For basic chat, use `useChat` (low-level) instead.
+ * 
+ * @param options - Chat configuration options
+ * @param options.api - API endpoint URL (required)
+ * @param options.initialMessages - Initial messages array
+ * @param options.onFinish - Callback when stream finishes
+ * @param options.onError - Callback on error
+ * @returns Chat state and controls
+ * 
+ * @example
+ * ```tsx
+ * const { messages, append, isLoading } = useChatEnhanced({
+ *   api: '/api/chat',
+ *   initialMessages: [{ role: 'user', content: 'Hello' }],
+ *   onFinish: (message) => console.log('Finished:', message),
+ * })
+ * 
+ * await append({ role: 'user', content: 'Tell me a joke' })
+ * ```
+ * 
+ * @throws {Error} If API endpoint is invalid or missing
  */
 
 import * as React from 'react'

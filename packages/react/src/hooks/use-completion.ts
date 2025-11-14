@@ -1,8 +1,14 @@
 /**
- * useCompletion hook - Vercel AI SDK compatible
+ * useCompletion - Mid-Level Completion Hook
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Chat & Completions
  * 
  * Hook for managing text completion state with streaming support.
  * Ideal for single-turn completions, autocomplete, and text generation.
+ * 
+ * For chat interfaces, use top-level `useClarityChat` instead.
+ * For structured output, use top-level `useClarityObject` instead.
  * 
  * **2025 Improvements**:
  * - Uses shared streaming-helpers for consistent behavior
@@ -11,6 +17,25 @@
  * - Better error handling with type guards
  * - Progress tracking support
  * - Cache configuration options
+ * 
+ * @param options - Completion configuration options
+ * @param options.api - API endpoint URL (required)
+ * @param options.stream - Enable streaming (default: true)
+ * @param options.onFinish - Callback when completion finishes
+ * @param options.onError - Callback on error
+ * @returns Completion state and controls
+ * 
+ * @example
+ * ```tsx
+ * const { completion, complete, isLoading } = useCompletion({
+ *   api: '/api/completion',
+ *   onFinish: (prompt, completion) => console.log('Done:', completion),
+ * })
+ * 
+ * await complete('Write a story about')
+ * ```
+ * 
+ * @throws {Error} If API endpoint is invalid or missing
  */
 
 import * as React from 'react'
@@ -89,11 +114,11 @@ export interface UseCompletionOptions {
 }
 
 /**
- * Return type for useCompletion hook
+ * Return type for useCompletion hook (mid-level API)
  * 
  * Follows the standard hook return pattern:
- * - Data: `completion` (current state)
- * - State: `isLoading`, `error`
+ * - Data: `completion` (current completion text)
+ * - State: `isLoading`, `error`, `progress`
  * - Actions: `complete`, `stop`, `abort`, `clearCache`
  */
 export interface UseCompletionReturn {
@@ -220,8 +245,20 @@ class CompletionCache {
  * ```
  */
 export function useCompletion(options: UseCompletionOptions = {}): UseCompletionReturn {
+  // Validate API endpoint
+  const apiOption = options.api || '/api/completion'
+  if (!apiOption || typeof apiOption !== 'string' || apiOption.trim().length === 0) {
+    throw new Error(
+      'useCompletion: "api" option is required.\n' +
+      'Please provide a valid API endpoint URL.\n\n' +
+      'Example:\n' +
+      '  const { completion, complete } = useCompletion({ api: "/api/completion" })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/completions'
+    )
+  }
+
   const {
-    api = '/api/completion',
+    api = apiOption,
     initialCompletion = '',
     body,
     headers = {},
