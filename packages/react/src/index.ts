@@ -169,6 +169,15 @@ export {
   createAssistantMessage,
   createSystemMessage,
 } from './types/clarity-chat-types'
+
+// Helper hooks for useClarityChat
+export {
+  useClarityChatWithWindow,
+  useClarityChatWithAnalytics,
+  useClarityChatWithPersistence,
+  useClarityChatWithDebounce,
+  useClarityChatWithAutoSave,
+} from './hooks/use-clarity-chat-helpers'
 export * from './hooks/use-completion'
 export * from './hooks/use-assistant'
 export * from './hooks/use-streaming'
