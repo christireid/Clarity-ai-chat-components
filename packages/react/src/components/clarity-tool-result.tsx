@@ -53,7 +53,7 @@ export function ClarityToolResult({
   className,
 }: ClarityToolResultProps) {
   // Extract tool name from tool call
-  const toolName = toolCall.function?.name || toolCall.function?.name || ''
+  const toolName = toolCall.function?.name || ''
   
   // Get component from registry
   const Component = registry[toolName]
