@@ -31,7 +31,7 @@ export interface ToolCall {
   name: string
   
   /** Tool arguments */
-  args?: Record<string, any>
+  args?: Record<string, unknown>
   
   /** Tool call ID */
   id?: string
@@ -45,16 +45,16 @@ export interface ClarityToolResultProps {
   toolCall: ToolCall
   
   /** Tool execution result */
-  result: any
+  result: unknown
   
   /** All messages in conversation */
   messages: CoreMessage[]
   
   /** Fallback component if no registry match */
-  fallback?: React.ComponentType<{ toolCall: ToolCall; result: any }>
+  fallback?: React.ComponentType<{ toolCall: ToolCall; result: unknown }>
   
   /** Additional props to pass to tool component */
-  componentProps?: Record<string, any>
+  componentProps?: Record<string, unknown>
   
   /** Show tool name header */
   showHeader?: boolean
@@ -72,7 +72,7 @@ export interface ClarityToolResultProps {
 /**
  * Default fallback component for unregistered tools
  */
-function DefaultToolResult({ toolCall, result }: { toolCall: ToolCall; result: any }) {
+function DefaultToolResult({ toolCall, result }: { toolCall: ToolCall; result: unknown }) {
   return (
     <Card className="mt-2">
       <CardHeader>
