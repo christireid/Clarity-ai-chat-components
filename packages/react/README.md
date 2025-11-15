@@ -32,6 +32,8 @@ yarn add @clarity-chat/react
 
 > 📖 **New to Clarity?** Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or check the [Quick Reference](../../docs/QUICK_REFERENCE.md) for copy-paste snippets.
 
+> 🍳 **Looking for patterns?** Check the [Cookbook](../../docs/cookbook/) for 15+ copy-paste ready recipes.
+
 ### Basic Chat
 
 ```tsx
@@ -61,7 +63,13 @@ function MyChat() {
 ### With Memory
 
 ```tsx
-import { useClarityChat, MemoryProvider } from '@clarity-chat/react'
+import { 
+  useClarityChat, 
+  MemoryProvider, 
+  ChatWindow,
+  convertCoreMessagesToMessages 
+} from '@clarity-chat/react'
+import { useMemo } from 'react'
 
 function App() {
   return (
@@ -72,7 +80,7 @@ function App() {
 }
 
 function MyChat() {
-  const { messages, append, memoryEnabled } = useClarityChat({
+  const { messages: coreMessages, append, isLoading, memoryEnabled } = useClarityChat({
     api: '/api/chat',
     memory: {
       enabled: true,
@@ -81,7 +89,18 @@ function MyChat() {
     },
   })
 
-  return <ChatWindow messages={messages} onSendMessage={append} />
+  const messages = useMemo(
+    () => convertCoreMessagesToMessages(coreMessages),
+    [coreMessages]
+  )
+
+  return (
+    <ChatWindow 
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={(content) => append({ role: 'user', content })} 
+    />
+  )
 }
 ```
 

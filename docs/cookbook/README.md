@@ -630,7 +630,7 @@ function VoiceChat() {
 
 ---
 
-## More Recipes
+## Advanced Recipes
 
 - [RAG-Enabled Chat](./rag-chat.md) - Document Q&A with RAG
 - [Multi-Tenant Chat](./multi-tenant.md) - Enterprise multi-tenancy

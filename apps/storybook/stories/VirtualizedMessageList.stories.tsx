@@ -80,4 +80,72 @@ export const NonVirtualized: Story = {
     messages: baseMessages.slice(0, 40),
     enableVirtualization: false,
   },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Disable virtualization for shorter conversations (< 50 messages). Virtualization adds overhead that may not be needed for small lists.',
+      },
+    },
+  },
+}
+
+export const EmptyState: Story = {
+  args: {
+    messages: [],
+    isLoading: false,
+    emptyState: (
+      <div className="flex flex-col items-center justify-center h-full py-12 text-center">
+        <div className="text-4xl mb-4">💬</div>
+        <h3 className="text-lg font-semibold mb-2">No messages yet</h3>
+        <p className="text-sm text-muted-foreground">
+          Start a conversation to see messages here
+        </p>
+      </div>
+    ),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Empty state when no messages are present. Customize the emptyState prop to match your app\'s design.',
+      },
+    },
+  },
+}
+
+export const WithError: Story = {
+  args: {
+    messages: baseMessages.slice(0, 10),
+    error: 'Failed to load messages. Please try again.',
+    onRetry: () => console.info('[Storybook] Retry clicked'),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Error state with retry functionality. The error prop displays a user-friendly error message.',
+      },
+    },
+  },
+}
+
+export const StreamingMessage: Story = {
+  args: {
+    messages: [
+      ...baseMessages.slice(0, 5),
+      {
+        id: 'streaming-msg',
+        chatId: 'virtualized-demo',
+        role: 'assistant',
+        content: 'This is a streaming message that is currently being generated...',
+        createdAt: Date.now(),
+        status: 'streaming',
+      },
+    ],
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Handles streaming messages gracefully. Messages with status "streaming" show a loading indicator.',
+      },
+    },
+  },
 }

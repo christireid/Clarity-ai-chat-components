@@ -24,6 +24,11 @@
    - ✅ Organized by use case (Basics, Advanced, Enterprise, UI)
    - ✅ Real-world examples (not contrived)
    - ✅ Key points highlighted for each recipe
+   - ✅ Added advanced recipes:
+     - ✅ RAG-Enabled Chat (`docs/cookbook/rag-chat.md`)
+     - ✅ Multi-Tenant Chat (`docs/cookbook/multi-tenant.md`)
+     - ✅ Agent Orchestration (`docs/cookbook/agents.md`)
+     - ✅ Custom Tool UI (`docs/cookbook/custom-tools.md`)
 
 3. **Troubleshooting Guide** (`docs/TROUBLESHOOTING.md`)
    - ✅ Common issues and solutions
@@ -49,6 +54,11 @@
    - ✅ Added `Streaming` variant
    - ✅ Improved story descriptions
    - ✅ Better documentation
+   - ✅ Enhanced VirtualizedMessageList stories
+     - ✅ Added `EmptyState` variant
+     - ✅ Added `WithError` variant
+     - ✅ Added `StreamingMessage` variant
+     - ✅ Improved story documentation with descriptions
 
 ---
 
@@ -99,11 +109,12 @@
    - [ ] Add agent orchestration recipe
    - [ ] Add custom tool UI recipe
 
-3. **Improve Root README**
-   - [ ] Make more scannable
-   - [ ] Add visual diagrams
-   - [ ] Improve navigation
-   - [ ] Add "choose your path" section
+3. **Package README Improvements**
+   - ✅ Updated `packages/react/README.md`
+     - ✅ Added cookbook link
+     - ✅ Fixed memory example to use `convertCoreMessagesToMessages`
+     - ✅ Added `useMemo` import
+     - ✅ Improved code example consistency
 
 ### Medium Priority
 
@@ -124,8 +135,12 @@
 ## 📚 New Documents Created
 
 1. `docs/cookbook/README.md` - Comprehensive cookbook
-2. `docs/TROUBLESHOOTING.md` - Troubleshooting guide
-3. `apps/storybook/STORYBOOK_BEST_PRACTICES.md` - Storybook guidelines
+2. `docs/cookbook/rag-chat.md` - RAG-enabled chat recipe
+3. `docs/cookbook/multi-tenant.md` - Multi-tenant chat recipe
+4. `docs/cookbook/agents.md` - Agent orchestration recipe
+5. `docs/cookbook/custom-tools.md` - Custom tool UI recipe
+6. `docs/TROUBLESHOOTING.md` - Troubleshooting guide
+7. `apps/storybook/STORYBOOK_BEST_PRACTICES.md` - Storybook guidelines
 
 ---
 
@@ -164,8 +179,9 @@
 
 **Documentation Coverage:**
 - Getting Started: ✅ Enhanced
-- Cookbook: ✅ Created (10+ recipes)
+- Cookbook: ✅ Created (15+ recipes including advanced patterns)
 - Troubleshooting: ✅ Created
+- Package READMEs: ✅ Improved (`packages/react/README.md`)
 - API Reference: ⏳ In progress
 
 **Storybook Coverage:**
