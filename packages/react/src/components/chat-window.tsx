@@ -9,20 +9,10 @@ import { BotIcon } from './icons'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 
-<<<<<<< HEAD
 /**
  * Advanced options grouped together for better DX
  */
 export interface ChatWindowAdvancedOptions {
-=======
-export interface ChatWindowProps {
-  /** Messages in either Message[] or CoreMessage[] format */
-  messages: Message[] | CoreMessage[]
-  isLoading?: boolean
-  /** AI processing status for thinking indicator */
-  aiStatus?: AIStatus
-  onSendMessage: (content: string) => void
->>>>>>> 35e277aaf5bac860785007d4ddd7fbd8582edbe5
   /** Callback when message is copied */
   onMessageCopy?: (messageId: string, content: string) => void
   /** Callback when feedback is given */
@@ -159,7 +149,6 @@ export function ChatWindow({
   className,
   advanced,
 }: ChatWindowProps) {
-<<<<<<< HEAD
   // Extract advanced options with defaults
   const {
     onMessageCopy,
@@ -168,27 +157,6 @@ export function ChatWindow({
     headerActions,
     emptyState,
   } = advanced || {}
-=======
-  // Runtime validation
-  if (!Array.isArray(messages)) {
-    throw new Error(
-      'ChatWindow: "messages" prop must be an array.\n\n' +
-      'Example:\n' +
-      '  <ChatWindow messages={[]} onSendMessage={handleSend} />\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/components'
-    )
-  }
-
-  if (typeof onSendMessage !== 'function') {
-    throw new Error(
-      'ChatWindow: "onSendMessage" prop is required and must be a function.\n\n' +
-      'Example:\n' +
-      '  <ChatWindow messages={messages} onSendMessage={(msg) => sendMessage(msg)} />\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/components'
-    )
-  }
-
->>>>>>> 35e277aaf5bac860785007d4ddd7fbd8582edbe5
   const [input, setInput] = React.useState('')
 
   // Convert CoreMessage[] to Message[] if needed
