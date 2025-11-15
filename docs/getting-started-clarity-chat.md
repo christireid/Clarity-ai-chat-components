@@ -1,6 +1,16 @@
 # Getting Started with Clarity Chat
 
-Get up and running with Clarity Chat in minutes. This guide assumes you're using React with Next.js, but Clarity works with any React setup.
+> **Learn how to build production-ready AI chat interfaces in minutes.**
+
+Clarity Chat provides everything you need to build ChatGPT-like interfaces: streaming, error handling, token management, accessibility, and more. This guide will get you up and running in under 5 minutes.
+
+## Prerequisites
+
+- React 19+ (or React 18 with compatibility mode)
+- Node.js 18+ or Bun
+- Basic knowledge of React hooks
+
+> **Note**: Clarity works with any React setup (Next.js, Vite, Remix, etc.). Examples here use Next.js, but the concepts apply everywhere.
 
 ## Installation
 
@@ -59,11 +69,14 @@ export default function ChatPage() {
 }
 ```
 
-That's it! You now have a fully functional chat interface with:
-- ✅ Streaming responses
-- ✅ Loading states
-- ✅ Error handling
-- ✅ Production-ready UI
+**That's it!** ✨ You now have a fully functional chat interface with:
+
+- ✅ **Streaming responses** - Messages appear in real-time as the AI generates them
+- ✅ **Loading states** - Visual feedback during message processing
+- ✅ **Error handling** - Automatic error recovery and user-friendly error messages
+- ✅ **Production-ready UI** - Beautiful, accessible, responsive interface
+
+> **Tip**: The `useMemo` hook ensures efficient message conversion. This is important for performance when messages update frequently.
 
 ## What You Get Out of the Box
 
@@ -150,6 +163,16 @@ With memory enabled, Clarity will:
 - Enrich prompts with context
 - Optimize token usage
 
+## Common Pitfalls
+
+> **Warning**: Don't forget to convert messages! `useClarityChat` returns `CoreMessage[]` (Vercel-compatible format), but `ChatWindow` expects `Message[]`. Always use `convertCoreMessagesToMessages()`.
+
+**Common Issues:**
+
+1. **Messages not displaying** - Forgot to convert messages with `convertCoreMessagesToMessages`
+2. **Type errors** - Make sure you're using the correct message types
+3. **Streaming not working** - Check your API endpoint returns SSE format
+
 ## Building Custom UI
 
 If you prefer to build your own UI instead of using `<ChatWindow>`, `useClarityChat` provides `input` and `setInput` just like Vercel's `useChat`:
@@ -181,13 +204,40 @@ const {
 
 ## Next Steps
 
+Now that you have a basic chat working, explore more features:
+
+### Learn More
+- **[API Reference](../../packages/react/README.md)** - Complete API documentation
+- **[Guides](./)** - Theming, token optimization, error handling, and more
+- **[Cookbook](./cookbook/)** - Common patterns and recipes
+
+### See It In Action
+- **[Examples](../../apps/examples/)** - 30+ production-ready examples
+- **[Storybook](http://localhost:6006)** - Interactive component demos
+
+### Migration
 - **[Compare with Vercel AI SDK](./clarity-vs-vercel-ai-sdk-ui.md)** - See how Clarity extends Vercel's API
 - **[Migration Guide](./migrating-from-vercel.md)** - Migrate from Vercel AI SDK
-- **[API Reference](../../packages/react/README.md)** - Complete API documentation
-- **[Examples](../../packages/react/src/examples/)** - More code examples
 
-## Need Help?
+## Troubleshooting
 
-- Check the [API Reference](../../packages/react/README.md)
+### Messages not appearing?
+- Ensure you're converting messages: `convertCoreMessagesToMessages(coreMessages)`
+- Check that `messages` prop is an array
+- Verify your API is returning messages correctly
+
+### Streaming not working?
+- Verify your API endpoint supports SSE (Server-Sent Events)
+- Check network tab for connection issues
+- Ensure `isLoading` state is being managed correctly
+
+### Type errors?
+- Make sure you're importing types from `@clarity-chat/react`
+- Check that you're using React 19+ (or compatibility mode)
+- Verify all imports are correct
+
+### Need more help?
+- Check the [FAQ](./FAQ.md)
 - Browse [examples](../../apps/examples/)
-- See [Storybook](../../apps/storybook/) for interactive component demos
+- See [Storybook](http://localhost:6006) for interactive demos
+- Open an issue on [GitHub](https://github.com/christireid/Clarity-ai-chat-components/issues)

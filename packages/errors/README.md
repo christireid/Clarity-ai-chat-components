@@ -1,8 +1,10 @@
 # @clarity-chat/errors
 
+> **Enhanced Error Handling** - Developer-friendly error messages with actionable solutions
+
 Enhanced error handling system with developer-friendly error messages, actionable solutions, and helpful debugging context.
 
-## Features
+## ✨ Features
 
 - 🎯 **Clear Error Messages**: User-friendly descriptions of what went wrong
 - 💡 **Actionable Solutions**: Step-by-step instructions to fix the problem
@@ -11,13 +13,38 @@ Enhanced error handling system with developer-friendly error messages, actionabl
 - 🐛 **Debug Context**: Capture location, action, and relevant data
 - 📊 **Multiple Formats**: Terminal, JSON API, and logging formats
 
-## Installation
+## 📦 Installation
 
 ```bash
 npm install @clarity-chat/errors
+# or
+pnpm add @clarity-chat/errors
+# or
+yarn add @clarity-chat/errors
 ```
 
-## Usage
+## 🚀 Quick Start
+
+> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
+
+### Basic Example
+
+```typescript
+import { APIKeyMissingError } from '@clarity-chat/errors'
+
+// Check for API key
+if (!process.env.OPENAI_API_KEY) {
+  throw new APIKeyMissingError('openai')
+}
+
+// Error output includes:
+// - Clear message: "OPENAI API key is not configured"
+// - Solutions with steps
+// - Code examples
+// - Links to docs
+```
+
+## 📖 Usage
 
 ### Basic Example
 
@@ -458,6 +485,24 @@ export const POST = withError(async (req, res) => {
 })
 ```
 
-## License
+## 📚 Documentation
+
+- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
+- [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [Error Handling Guide](../../docs/guides/error-handling.md) - Complete guide
+
+## 📄 License
 
 MIT
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/christireid/Clarity-ai-chat-components)
+- [Documentation](../../apps/docs/)
+- [Examples](../../examples/)
+- [Storybook](http://localhost:6006)
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](../../CONTRIBUTING.md)

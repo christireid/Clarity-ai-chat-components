@@ -1,8 +1,10 @@
 # @clarity-chat/cli
 
-🎨 Beautiful CLI for Clarity Chat - Developer productivity toolkit
+> **Beautiful CLI** - Developer productivity toolkit for Clarity Chat
 
-## Features
+🎨 Beautiful CLI for Clarity Chat - Developer productivity toolkit with interactive wizards, code generation, and comprehensive project management.
+
+## ✨ Features
 
 - 🚀 **Project Initialization** - Interactive setup wizard with framework detection
 - ➕ **Component Management** - Add components with automatic dependency installation
@@ -30,7 +32,25 @@ Or use without installation:
 npx @clarity-chat/cli init
 ```
 
-## Commands
+## 🚀 Quick Start
+
+> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
+
+### Install CLI
+
+```bash
+npm install -g @clarity-chat/cli
+```
+
+### Initialize Project
+
+```bash
+clarity-chat init
+```
+
+That's it! The CLI will guide you through setup interactively.
+
+## 📖 Commands
 
 ### `clarity-chat init`
 
@@ -352,7 +372,14 @@ All errors include:
 - Actionable suggestions
 - Links to documentation (when available)
 
-## Development
+## 📚 Documentation
+
+- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
+- [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [CLI Examples](./examples/) - Usage examples
+
+## 🧪 Development
 
 ```bash
 # Install dependencies
@@ -371,6 +398,17 @@ npm test
 npm run type-check
 ```
 
-## License
+## 📄 License
 
 MIT
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/christireid/Clarity-ai-chat-components)
+- [Documentation](../../apps/docs/)
+- [Examples](../../examples/)
+- [Storybook](http://localhost:6006)
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](../../CONTRIBUTING.md)

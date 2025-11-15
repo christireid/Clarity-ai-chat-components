@@ -207,4 +207,55 @@ const InteractiveTemplate = () => {
 
 export const Interactive: Story = {
   render: () => <InteractiveTemplate />,
+  parameters: {
+    docs: {
+      description: {
+        story: 'Interactive example showing real message sending and receiving. Try sending a message!',
+      },
+    },
+  },
+}
+
+export const WithError: Story = {
+  args: {
+    messages: mockMessages,
+    isLoading: false,
+    error: 'Failed to send message. Please try again.',
+    onSendMessage: (content: string) => {
+      console.log('Message sent:', content)
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'ChatWindow with error state displayed. Errors are shown prominently to users.',
+      },
+    },
+  },
+}
+
+export const Streaming: Story = {
+  args: {
+    messages: [
+      ...mockMessages,
+      {
+        id: 'streaming',
+        role: 'assistant',
+        content: 'This is a streaming message that appears word by word...',
+        timestamp: Date.now(),
+        isStreaming: true,
+      },
+    ],
+    isLoading: true,
+    onSendMessage: (content: string) => {
+      console.log('Message sent:', content)
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'ChatWindow showing a streaming message. Messages appear in real-time as the AI generates them.',
+      },
+    },
+  },
 }

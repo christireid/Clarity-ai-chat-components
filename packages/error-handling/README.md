@@ -1,8 +1,10 @@
 # @clarity-chat/error-handling
 
+> **React 19 Error Handling** - Comprehensive error handling with recovery hooks and boundaries
+
 Comprehensive error handling system for React 19 applications with specialized error classes, recovery hooks, and error boundaries.
 
-## Features
+## ✨ Features
 
 - 🚀 **React 19 Native** - Built specifically for React 19
 - 🛡️ **Comprehensive Error Handling** - 10 specialized error types
@@ -11,13 +13,19 @@ Comprehensive error handling system for React 19 applications with specialized e
 - 🧪 **Well Tested** - Comprehensive test suite
 - 📘 **TypeScript** - Full type safety
 
-## Installation
+## 📦 Installation
 
 ```bash
 npm install @clarity-chat/error-handling
+# or
+pnpm add @clarity-chat/error-handling
+# or
+yarn add @clarity-chat/error-handling
 ```
 
-## Quick Start
+## 🚀 Quick Start
+
+> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
 
 ```tsx
 import { ErrorBoundary } from '@clarity-chat/error-handling'
@@ -77,12 +85,24 @@ function ChatComponent() {
 }
 ```
 
-## Documentation
+## 📚 Documentation
 
-- [Error Handling Guide](./docs/ERROR_HANDLING.md)
-- [Troubleshooting](./docs/TROUBLESHOOTING.md)
-- [API Reference](https://docs.claritychat.dev)
-- [Storybook](https://storybook.claritychat.dev)
+- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
+- [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [Error Handling Guide](./docs/ERROR_HANDLING.md) - Complete guide
+- [API Reference](../../docs/api-reference.md) - Complete API documentation
+- [Storybook](http://localhost:6006) - Interactive examples
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/christireid/Clarity-ai-chat-components)
+- [Documentation](../../apps/docs/)
+- [Examples](../../examples/)
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](../../CONTRIBUTING.md)
 
 ## Error Classes
 
