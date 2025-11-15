@@ -68,7 +68,7 @@ export interface APICallToolResult {
   method: string
   status: number
   statusText: string
-  data: any
+  data: unknown
   headers?: Record<string, string>
   responseTime?: number
 }
@@ -141,12 +141,18 @@ export interface FileReadToolResult {
  * 
  * Use this for tools that don't have a specific type defined.
  */
-export type GenericToolResult = Record<string, any>
+export interface GenericToolResult {
+  toolName: string
+  data: unknown
+  success: boolean
+  error?: string
+  metadata?: Record<string, unknown>
+}
 
 /**
  * Type guard to check if result matches a specific tool result type
  */
-export function isWeatherToolResult(result: any): result is WeatherToolResult {
+export function isWeatherToolResult(result: unknown): result is WeatherToolResult {
   return (
     typeof result === 'object' &&
     result !== null &&
@@ -156,7 +162,7 @@ export function isWeatherToolResult(result: any): result is WeatherToolResult {
   )
 }
 
-export function isSearchToolResult(result: any): result is SearchToolResult {
+export function isSearchToolResult(result: unknown): result is SearchToolResult {
   return (
     typeof result === 'object' &&
     result !== null &&
@@ -165,7 +171,7 @@ export function isSearchToolResult(result: any): result is SearchToolResult {
   )
 }
 
-export function isCalculatorToolResult(result: any): result is CalculatorToolResult {
+export function isCalculatorToolResult(result: unknown): result is CalculatorToolResult {
   return (
     typeof result === 'object' &&
     result !== null &&
@@ -184,9 +190,12 @@ export function getToolName(toolCall: { function: { name: string } }): string {
 /**
  * Parse tool arguments safely
  */
-export function parseToolArguments(toolCall: { function: { arguments: string } }): Record<string, any> {
+export function parseToolArguments(toolCall: { function: { arguments: string } }): Record<string, unknown> {
   try {
-    return JSON.parse(toolCall.function.arguments)
+    const parsed = JSON.parse(toolCall.function.arguments)
+    return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : {}
   } catch {
     return {}
   }
@@ -196,7 +205,7 @@ export function parseToolArguments(toolCall: { function: { arguments: string } }
  * Validate tool result structure
  */
 export function validateToolResult(
-  result: any,
+  result: unknown,
   requiredFields: string[]
 ): { valid: boolean; missingFields?: string[] } {
   if (typeof result !== 'object' || result === null) {

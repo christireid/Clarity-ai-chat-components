@@ -6,68 +6,42 @@ import { MessageList } from './message-list'
 import { ChatInput } from './chat-input'
 import { ThinkingIndicator } from './thinking-indicator'
 import { BotIcon } from './icons'
-import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 
-/**
- * Advanced options grouped together for better DX
- */
-export interface ChatWindowAdvancedOptions {
+export interface ChatWindowProps {
+  messages: Message[]
+  isLoading?: boolean
+  /** AI processing status for thinking indicator */
+  aiStatus?: AIStatus
+  onSendMessage: (content: string) => void
   /** Callback when message is copied */
   onMessageCopy?: (messageId: string, content: string) => void
   /** Callback when feedback is given */
   onMessageFeedback?: (messageId: string, type: 'up' | 'down') => void
   /** Callback when retry is requested */
   onMessageRetry?: (messageId: string) => void
-  /** Header actions */
-  headerActions?: React.ReactNode
-  /** Custom empty state */
-  emptyState?: React.ReactNode
-}
-
-/**
- * Props for ChatWindow component
- * 
- * @example
- * ```tsx
- * <ChatWindow
- *   messages={messages}
- *   isLoading={isLoading}
- *   onSendMessage={handleSend}
- * />
- * ```
- */
-export interface ChatWindowProps {
-  /** Array of messages to display */
-  messages: Message[]
-  /** Whether a message is currently being sent/processed */
-  isLoading?: boolean
-  /** AI processing status for thinking indicator */
-  aiStatus?: AIStatus
-  /** Callback when user sends a message */
-  onSendMessage: (content: string) => void
   /** Callback when message is edited */
   onEditMessage?: (messageId: string) => void
   /** Callback when message is regenerated */
   onRegenerateMessage?: (messageId: string) => void
   /** Callback when message is deleted */
   onDeleteMessage?: (messageId: string) => void
+  /** Custom empty state */
+  emptyState?: React.ReactNode
   /** Show header with session info */
   showHeader?: boolean
   /** Session title */
   sessionTitle?: string
   /** Session subtitle or description */
   sessionSubtitle?: string
+  /** Header actions */
+  headerActions?: React.ReactNode
   /** Show message count badge */
   showMessageCount?: boolean
   /** Enable export functionality */
   onExport?: () => void
   /** Enable clear chat functionality */
   onClear?: () => void
-  /** Custom className for styling */
   className?: string
-  /** Advanced options - for power users */
-  advanced?: ChatWindowAdvancedOptions
 }
 
 // Default empty state component - extracted for better performance
@@ -105,79 +79,152 @@ const DefaultEmptyState = () => (
 )
 
 /**
- * ChatWindow - Mid-Level Composable Component
+ * ChatWindow - Composable chat interface component
  * 
- * A composable chat window component that accepts messages and handles
- * rendering, input, and user interactions.
+ * A mid-level building block for rendering chat interfaces. Provides full control
+ * over message rendering, input handling, and UI customization.
  * 
- * **Architecture Layer**: Mid-Level (Composable Building Blocks)
- * **Domain**: Chat UI
+ * **Features:**
+ * - Message list rendering with animations
+ * - Chat input with send functionality
+ * - Loading states and thinking indicators
+ * - Message actions (copy, feedback, retry, edit, delete)
+ * - Customizable empty state
+ * - Optional header with session info
+ * - Export and clear functionality
  * 
- * For drop-in usage, use top-level `ClarityChat` instead.
- * For custom rendering, use low-level `Message` components.
+ * **When to use:**
+ * - You need full control over the chat UI
+ * - You're using `useChat` or `useClarityChat` hooks
+ * - You want to customize message rendering
  * 
- * @example
+ * **When NOT to use:**
+ * - For simplest setup, use `ClarityChat` component instead
+ * - For pre-configured setups, use recipe components (`ChatWithMemory`, etc.)
+ * 
+ * @param props - ChatWindow configuration
+ * @param props.messages - Array of messages to display
+ * @param props.isLoading - Whether a request is in progress
+ * @param props.onSendMessage - Callback when user sends a message
+ * @param props.onMessageCopy - Optional callback when message is copied
+ * @param props.onMessageFeedback - Optional callback for message feedback (up/down)
+ * @param props.onMessageRetry - Optional callback to retry a message
+ * @param props.onEditMessage - Optional callback to edit a message
+ * @param props.onRegenerateMessage - Optional callback to regenerate a message
+ * @param props.onDeleteMessage - Optional callback to delete a message
+ * @param props.emptyState - Optional custom empty state component
+ * @param props.showHeader - Show header with session info (default: false)
+ * @param props.sessionTitle - Session title displayed in header
+ * @param props.sessionSubtitle - Session subtitle/description
+ * @param props.headerActions - Custom actions in header
+ * @param props.showMessageCount - Show message count badge (default: false)
+ * @param props.onExport - Optional callback for export functionality
+ * @param props.onClear - Optional callback for clear chat functionality
+ * @param props.className - Optional CSS class name
+ * @param props.aiStatus - Optional AI processing status for thinking indicator
+ * 
+ * @example Basic usage with useChat hook
  * ```tsx
- * const chat = useClarityChat({ api: '/api/chat' })
- * const handlers = useChatHandlers({ chat })
+ * import { useChat, ChatWindow } from '@clarity-chat/react'
  * 
+ * function MyChat() {
+ *   const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+ *   
+ *   return (
+ *     <ChatWindow
+ *       messages={messages}
+ *       isLoading={isLoading}
+ *       onSendMessage={sendMessage}
+ *     />
+ *   )
+ * }
+ * ```
+ * 
+ * @example With custom header and actions
+ * ```tsx
  * <ChatWindow
- *   messages={chat.messages}
- *   isLoading={chat.isLoading}
- *   onSendMessage={handlers.onSendMessage}
+ *   messages={messages}
+ *   isLoading={isLoading}
+ *   onSendMessage={sendMessage}
+ *   showHeader
+ *   sessionTitle="Customer Support"
+ *   sessionSubtitle="We're here to help"
+ *   headerActions={<Button>Settings</Button>}
+ *   showMessageCount
+ *   onExport={() => exportMessages(messages)}
+ *   onClear={() => clearMessages()}
  * />
  * ```
  * 
- * React 19 Enhancements:
- * - Removed memo() wrapper - compiler handles optimization
- * - Removed simple useCallback/useMemo - compiler optimizes
+ * @example With message callbacks
+ * ```tsx
+ * <ChatWindow
+ *   messages={messages}
+ *   isLoading={isLoading}
+ *   onSendMessage={sendMessage}
+ *   onMessageCopy={(id, content) => {
+ *     navigator.clipboard.writeText(content)
+ *     toast.success('Copied!')
+ *   }}
+ *   onMessageFeedback={(id, type) => {
+ *     analytics.track('message_feedback', { id, type })
+ *   }}
+ *   onMessageRetry={(id) => {
+ *     retryMessage(id)
+ *   }}
+ * />
+ * ```
  */
 export function ChatWindow({
   messages,
   isLoading = false,
   aiStatus,
   onSendMessage,
+  onMessageCopy,
+  onMessageFeedback,
+  onMessageRetry,
   onEditMessage,
   onRegenerateMessage,
   onDeleteMessage,
+  emptyState,
   showHeader = false,
   sessionTitle = 'Chat Session',
   sessionSubtitle,
+  headerActions,
   showMessageCount = false,
   onExport,
   onClear,
   className,
-  advanced,
 }: ChatWindowProps) {
-  // Extract advanced options with defaults
-  const {
-    onMessageCopy,
-    onMessageFeedback,
-    onMessageRetry,
-    headerActions,
-    emptyState,
-  } = advanced || {}
-  const [input, setInput] = React.useState('')
+  // Runtime validation with developer-friendly errors
+  if (!messages) {
+    throw new Error(
+      '[ChatWindow] Missing required prop "messages". ' +
+      'Please provide an array of messages: <ChatWindow messages={messages} />'
+    )
+  }
 
-  // Convert CoreMessage[] to Message[] if needed
-  // Check if first message has 'content' property that could be string or array
-  // CoreMessage has content: string | Array<...>, Message has content: string
-  const normalizedMessages = React.useMemo(() => {
-    if (messages.length === 0) return []
-    
-    // Check if it's CoreMessage[] format by checking first message structure
-    const firstMessage = messages[0]
-    const isCoreMessage = 
-      'content' in firstMessage && 
-      (typeof firstMessage.content === 'string' || Array.isArray(firstMessage.content)) &&
-      !('status' in firstMessage) // Message has 'status', CoreMessage doesn't
-    
-    if (isCoreMessage) {
-      return convertCoreMessagesToMessages(messages as CoreMessage[])
-    }
-    
-    return messages as Message[]
-  }, [messages])
+  if (!Array.isArray(messages)) {
+    throw new Error(
+      '[ChatWindow] Invalid "messages" prop. ' +
+      `Expected an array, got: ${typeof messages}`
+    )
+  }
+
+  if (!onSendMessage) {
+    throw new Error(
+      '[ChatWindow] Missing required prop "onSendMessage". ' +
+      'Please provide a callback function: <ChatWindow onSendMessage={handleSend} />'
+    )
+  }
+
+  if (typeof onSendMessage !== 'function') {
+    throw new Error(
+      '[ChatWindow] Invalid "onSendMessage" prop. ' +
+      `Expected a function, got: ${typeof onSendMessage}`
+    )
+  }
+  const [input, setInput] = React.useState('')
 
   // React 19: Compiler optimizes - no useCallback needed
   const handleSubmit = (content: string) => {
@@ -190,9 +237,9 @@ export function ChatWindow({
 
   // React 19: Simple string derivation - compiler optimizes
   const messageCountText =
-    normalizedMessages.length === 0
+    messages.length === 0
       ? null
-      : `${normalizedMessages.length} ${normalizedMessages.length === 1 ? 'message' : 'messages'}`
+      : `${messages.length} ${messages.length === 1 ? 'message' : 'messages'}`
 
   return (
     <Card
@@ -234,7 +281,7 @@ export function ChatWindow({
           <div className="flex items-center gap-2 shrink-0">
             {headerActions}
 
-            {onExport && normalizedMessages.length > 0 && (
+            {onExport && messages.length > 0 && (
               <Button
                 size="sm"
                 variant="ghost"
@@ -259,7 +306,7 @@ export function ChatWindow({
               </Button>
             )}
 
-            {onClear && normalizedMessages.length > 0 && (
+            {onClear && messages.length > 0 && (
               <Button
                 size="sm"
                 variant="ghost"
@@ -289,7 +336,7 @@ export function ChatWindow({
 
       <div className="flex flex-col h-full">
         <MessageList
-          messages={normalizedMessages}
+          messages={messages}
           isLoading={isLoading}
           onMessageCopy={onMessageCopy}
           onMessageFeedback={onMessageFeedback}

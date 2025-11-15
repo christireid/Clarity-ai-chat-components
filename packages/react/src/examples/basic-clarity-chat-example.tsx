@@ -6,14 +6,12 @@
  * - ChatWindow component (production-ready UI)
  * 
  * This example shows the recommended way to use Clarity for most use cases.
- * 
- * Note: ChatWindow now accepts CoreMessage[] directly - no conversion needed!
  */
 
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { ChatWindow } from '../components/chat-window'
-// Note: No conversion needed! ChatWindow accepts CoreMessage[] directly
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 
 /**
  * Basic Clarity Chat Example Component
@@ -29,7 +27,7 @@ import { ChatWindow } from '../components/chat-window'
  */
 export function BasicClarityChatExample() {
   const {
-    messages,
+    messages: coreMessages,
     append,
     isLoading,
   } = useClarityChat({
@@ -44,7 +42,11 @@ export function BasicClarityChatExample() {
     // transport: 'websocket',
   })
 
-  // No conversion needed! ChatWindow accepts CoreMessage[] directly ✨
+  // Convert CoreMessage[] to Message[] for ChatWindow
+  const messages = React.useMemo(
+    () => convertCoreMessagesToMessages(coreMessages),
+    [coreMessages]
+  )
 
   // Handle sending messages
   const handleSendMessage = React.useCallback(
@@ -88,12 +90,15 @@ export function MinimalClarityChatExample() {
     api: '/api/chat',
   })
 
-  // No conversion needed! ChatWindow accepts CoreMessage[] directly ✨
+  const messages = React.useMemo(
+    () => convertCoreMessagesToMessages(chat.messages),
+    [chat.messages]
+  )
 
   return (
     <div className="h-screen">
       <ChatWindow
-        messages={chat.messages}
+        messages={messages}
         isLoading={chat.isLoading}
         onSendMessage={async (content) => {
           await chat.append({ role: 'user', content })

@@ -1,117 +1,89 @@
 /**
- * Hello World Examples - Simplest Possible Usage
+ * Hello World Examples - The Simplest Possible Usage
  * 
- * These examples demonstrate the absolute simplest way to use each major API.
- * Each example is 10-20 lines of code and requires minimal configuration.
+ * These examples demonstrate the absolute minimum code needed to get
+ * Clarity Chat working. Each example is 10-20 lines of code.
  */
 
 import * as React from 'react'
-import '@clarity-chat/react/styles.css'
-import { ClarityChat, ClarityChatPresets } from '../components/clarity-chat'
-import { useClarityChat } from '../hooks/use-clarity-chat'
-import { useClarityObject } from '../hooks/use-clarity-object'
-import { useChatHandlers } from '../hooks/use-chat-handlers'
-import { ChatWindow } from '../components/chat-window'
-import { MemoryProvider } from '../memory/memory-provider'
-
-// ============================================================================
-// Example 1: Basic Chat (Simplest - 5 lines)
-// ============================================================================
+import { ClarityChat, useChat, ChatWindow, ChatWithMemory } from '../index'
 
 /**
- * The simplest possible chat implementation.
- * Zero configuration, works out of the box.
+ * Example 1: ClarityChat Component (1 line)
+ * 
+ * The absolute simplest way to add AI chat to your app.
+ * Zero configuration, automatic everything.
+ * 
+ * LOC: 1 (component) + 2 (imports) = 3 total
  */
-export function HelloWorldChat() {
+export function HelloWorld_ClarityChat() {
   return <ClarityChat api="/api/chat" />
 }
 
-// ============================================================================
-// Example 2: Chat with Memory (10 lines)
-// ============================================================================
-
 /**
- * Chat with memory enabled - just wrap with MemoryProvider.
+ * Example 2: ClarityChat with Styling (3 lines)
+ * 
+ * Add basic styling with minimal code.
+ * 
+ * LOC: 3
  */
-export function HelloWorldChatWithMemory() {
+export function HelloWorld_ClarityChatStyled() {
   return (
-    <MemoryProvider config={{ maxTokens: 4000 }}>
+    <div className="h-screen">
       <ClarityChat api="/api/chat" />
-    </MemoryProvider>
-  )
-}
-
-// ============================================================================
-// Example 3: Structured Output (15 lines)
-// ============================================================================
-
-/**
- * Generate structured data - simplest form.
- */
-interface Product {
-  name: string
-  price: number
-  description: string
-}
-
-export function HelloWorldStructuredOutput() {
-  const { object, run, isLoading } = useClarityObject<Product[]>({
-    api: '/api/generate-products',
-  })
-
-  return (
-    <div>
-      <button onClick={() => run({ query: 'laptops' })} disabled={isLoading}>
-        Generate Products
-      </button>
-      {object && <pre>{JSON.stringify(object, null, 2)}</pre>}
     </div>
   )
 }
 
-// ============================================================================
-// Example 4: Chat with Hook (20 lines)
-// ============================================================================
-
 /**
- * Using the hook directly for more control.
+ * Example 3: useChat Hook (10 lines)
+ * 
+ * Using the simplified hook for more control.
+ * 
+ * LOC: 10
  */
-export function HelloWorldChatWithHook() {
-  const chat = useClarityChat({ api: '/api/chat' })
-  const handlers = useChatHandlers({ chat })
-
+export function HelloWorld_UseChat() {
+  const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+  
   return (
     <ChatWindow
-      messages={chat.messages}
-      isLoading={chat.isLoading}
-      onSendMessage={handlers.onSendMessage}
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={sendMessage}
     />
   )
 }
 
-// ============================================================================
-// Example 5: Using Presets (10 lines)
-// ============================================================================
-
 /**
- * Using pre-configured presets for common scenarios.
+ * Example 4: ChatWithMemory (1 line)
+ * 
+ * Chat with memory pre-configured.
+ * 
+ * LOC: 1 (component) + 2 (imports) = 3 total
  */
-export function HelloWorldPresets() {
-  return (
-    <div>
-      {/* Simple chat */}
-      <ClarityChatPresets.Simple api="/api/chat" />
-      
-      {/* Chat with memory */}
-      <ClarityChatPresets.WithMemory api="/api/chat" />
-    </div>
-  )
+export function HelloWorld_ChatWithMemory() {
+  return <ChatWithMemory api="/api/chat" strategy="vector-store" />
 }
 
-// ============================================================================
-// Imports (for reference - these would be at the top)
-// ============================================================================
-// import { ClarityChat, ClarityChatPresets } from '@clarity-chat/react'
-// import { useClarityChat, useChatHandlers, ChatWindow } from '@clarity-chat/react'
-// import { useClarityObject } from '@clarity-chat/react'
-// import { MemoryProvider } from '@clarity-chat/react'
+/**
+ * Example 5: useChat with Persistence (12 lines)
+ * 
+ * Chat with localStorage persistence.
+ * 
+ * LOC: 12
+ */
+export function HelloWorld_UseChatPersistent() {
+  const { messages, sendMessage, isLoading, clearMessages } = useChat({
+    api: '/api/chat',
+    persistMessages: true,
+  })
+  
+  return (
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={sendMessage}
+      onClear={clearMessages}
+    />
+  )
+}

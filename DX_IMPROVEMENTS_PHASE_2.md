@@ -1,181 +1,181 @@
-# DX Improvements - Phase 2
+# DX Improvements Phase 2 - Unified APIs & Simplified Hooks
 
-## Summary
+## Overview
 
-This document outlines the second phase of Developer Experience improvements, focusing on reducing boilerplate, adding helper utilities, and creating preset configurations for common use cases.
+This phase focuses on creating unified, simplified APIs that reduce cognitive load and make the library easier to use.
 
-## New Features
+## New APIs Added
 
-### 1. `useChatHandlers` Hook
+### 1. `useChat` Hook - Simplified Unified Hook ⭐
 
-A new hook that provides pre-configured handlers for common chat operations, eliminating boilerplate when using `useClarityChat` with `ChatWindow`.
+**Location**: `packages/react/src/hooks/use-chat-unified.ts`
 
-**Before:**
+**Purpose**: Provides a simpler API than `useClarityChat` while maintaining access to all features.
+
+**Key Features**:
+- ✅ Automatic message conversion (`CoreMessage[]` → `Message[]`)
+- ✅ Built-in persistence (optional)
+- ✅ Auto-scroll support
+- ✅ Simplified `sendMessage` function
+- ✅ Access to full `chat` object for advanced features
+
+**Example**:
 ```tsx
-const chat = useClarityChat({ api: '/api/chat' })
-const handleSendMessage = React.useCallback(
-  async (content: string) => {
-    await chat.append({ role: 'user', content })
-  },
-  [chat]
-)
+// Simple usage
+const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+
+// With persistence
+const chat = useChat({
+  api: '/api/chat',
+  persistMessages: true,
+  storageKey: 'my-chat',
+})
 ```
 
-**After:**
+**Benefits**:
+- Fewer lines of code than `useClarityChat`
+- No manual message conversion needed
+- Built-in common patterns (persistence, auto-scroll)
+- Still has access to full API via `chat` property
+
+### 2. `ChatWithErrorBoundary` Component
+
+**Location**: `packages/react/src/components/chat-with-error-boundary.tsx`
+
+**Purpose**: Wraps `ClarityChat` with automatic error boundary for production-ready error handling.
+
+**Example**:
 ```tsx
-const chat = useClarityChat({ api: '/api/chat' })
-const handlers = useChatHandlers({ chat })
-// Use handlers.onSendMessage, handlers.onClear, etc.
+<ChatWithErrorBoundary
+  api="/api/chat"
+  onError={(error) => {
+    // Send to error tracking service
+    trackError(error)
+  }}
+/>
 ```
 
-**Benefits:**
-- ✅ Eliminates repetitive handler code
-- ✅ Built-in error handling
-- ✅ Consistent patterns across the codebase
-- ✅ Type-safe handlers
+**Benefits**:
+- Production-ready error handling out of the box
+- No need to manually wrap with ErrorBoundary
+- Customizable error fallback UI
+- Automatic error recovery
 
-### 2. `ClarityChatPresets` Component
+## Improved Helper Hooks
 
-Pre-configured chat components for common use cases, making it even easier to get started.
+### `useClarityChatWithWindow` - Updated Documentation
 
-**Available Presets:**
-- `Simple` - Minimal configuration
-- `WithMemory` - Context-aware conversations
-- `Enterprise` - Full-featured with all options
-- `Streaming` - Optimized for real-time updates
+**Changes**:
+- Added deprecation notice pointing to `ClarityChat` component
+- Improved JSDoc with migration examples
+- Better chatId handling
 
-**Example:**
+**Migration Path**:
 ```tsx
-import { ClarityChatPresets } from '@clarity-chat/react'
+// Old (still works)
+const { messages, handleSendMessage } = useClarityChatWithWindow({ api: '/api/chat' })
 
-function MyChat() {
-  return <ClarityChatPresets.WithMemory api="/api/chat" />
-}
+// New (recommended)
+<ClarityChat api="/api/chat" />
 ```
 
-### 3. Helper Utilities (`clarity-chat-helpers.ts`)
+## API Comparison
 
-New utility functions for common patterns:
+| API | Complexity | Use Case | Lines of Code |
+|-----|-----------|----------|---------------|
+| `ClarityChat` | ⭐ Simplest | Standard chat UI | 1 |
+| `useChat` | ⭐⭐ Simple | Custom UI, persistence | ~10 |
+| `useClarityChat` | ⭐⭐⭐ Advanced | Maximum control | ~15 |
 
-**Configuration Helpers:**
-- `createBasicChatConfig(api)` - Basic chat with sensible defaults
-- `createMemoryChatConfig(api, strategy, maxTokens)` - Chat with memory
-- `createStreamingChatConfig(api, useWebSocket)` - Optimized for streaming
-- `createEnterpriseChatConfig(api)` - Full-featured configuration
+## Examples Created
 
-**Validation Helpers:**
-- `isValidApiEndpoint(api)` - Type guard for API endpoints
-- `getApiEndpoint(api, envVar)` - Get API from prop or environment variable
+1. **Unified Chat Examples** (`unified-chat-examples.tsx`)
+   - Basic usage
+   - With persistence
+   - With memory
+   - Full control examples
 
-**Example:**
-```tsx
-import { createMemoryChatConfig } from '@clarity-chat/react'
+2. **Quickstart Guide** (`QUICKSTART.md`)
+   - Three ways to use the library
+   - When to use what
+   - Common patterns
+   - Migration guide
 
-const config = createMemoryChatConfig('/api/chat', 'semantic-chunks', 6000)
-const chat = useClarityChat(config)
-```
+## Documentation Updates
 
-### 4. Enhanced Error Messages
+1. **Main README** - Updated quickstart section with all three options
+2. **QUICKSTART.md** - Comprehensive guide for new users
+3. **Helper hooks** - Improved JSDoc and deprecation notices
 
-Added helpful error messages when required props are missing:
+## Benefits Summary
 
-```tsx
-// ClarityChat now throws a helpful error if api is missing
-<ClarityChat /> // Error: "ClarityChat: 'api' prop is required..."
-```
+### For New Users
+- ✅ Clear migration path from simplest to most advanced
+- ✅ Multiple entry points based on needs
+- ✅ Comprehensive examples and guides
 
-## Files Changed
+### For Existing Users
+- ✅ Backward compatible (no breaking changes)
+- ✅ Can gradually migrate to simpler APIs
+- ✅ All existing code continues to work
 
-### New Files
-- `packages/react/src/hooks/use-chat-handlers.ts` - New hook for pre-configured handlers
-- `packages/react/src/components/clarity-chat-presets.tsx` - Preset components
-- `packages/react/src/utils/clarity-chat-helpers.ts` - Helper utilities
-- `packages/react/src/examples/simple-chat-with-handlers.tsx` - Example using handlers
-- `packages/react/src/examples/clarity-chat-presets-example.tsx` - Example using presets
-
-### Modified Files
-- `packages/react/src/components/clarity-chat.tsx` - Added API validation
-- `packages/react/src/index.ts` - Exported new hooks and utilities
-- `packages/react/README.md` - Updated with new patterns
-- `README.md` - Updated with new patterns
-
-## Impact
-
-### Developer Experience Improvements
-
-1. **Reduced Boilerplate**: Common patterns now require less code
-2. **Better Error Messages**: Clear, actionable error messages when things go wrong
-3. **Preset Configurations**: Quick start for common use cases
-4. **Type Safety**: All helpers are fully typed with TypeScript
-
-### Code Quality
-
-- ✅ Consistent patterns across examples
-- ✅ Better separation of concerns
-- ✅ Reusable utilities for common operations
-- ✅ Improved maintainability
+### For the Library
+- ✅ Better developer experience
+- ✅ Reduced support burden (fewer "how do I..." questions)
+- ✅ Clearer mental model (simple → advanced)
 
 ## Migration Guide
 
-### For Existing Code
+### From `useClarityChat` to `useChat`
 
-**Option 1: Use Presets (Easiest)**
+**Before**:
 ```tsx
-// Before
-<ClarityChat api="/api/chat" memory={{ enabled: true }} />
-
-// After
-<ClarityChatPresets.WithMemory api="/api/chat" />
+const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
+const converted = convertCoreMessagesToMessages(messages)
 ```
 
-**Option 2: Use Handlers (More Control)**
+**After**:
 ```tsx
-// Before
-const handleSendMessage = React.useCallback(
-  async (content: string) => {
-    await chat.append({ role: 'user', content })
-  },
-  [chat]
-)
-
-// After
-const handlers = useChatHandlers({ chat })
-// Use handlers.onSendMessage
+const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+// messages already converted, sendMessage is simpler
 ```
 
-**Option 3: Use Helper Functions (Custom Config)**
-```tsx
-// Before
-const chat = useClarityChat({
-  api: '/api/chat',
-  memory: {
-    enabled: true,
-    strategy: 'sliding-window',
-    maxTokens: 4000,
-  },
-})
+### From `useClarityChatWithWindow` to `ClarityChat`
 
-// After
-import { createMemoryChatConfig } from '@clarity-chat/react'
-const chat = useClarityChat(createMemoryChatConfig('/api/chat'))
+**Before**:
+```tsx
+const { messages, handleSendMessage, isLoading } = useClarityChatWithWindow({ api: '/api/chat' })
+return <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={handleSendMessage} />
+```
+
+**After**:
+```tsx
+return <ClarityChat api="/api/chat" />
 ```
 
 ## Next Steps
 
-1. ✅ Add more preset configurations based on common patterns
-2. ✅ Create Storybook stories for new components
-3. ✅ Add tests for new hooks and utilities
-4. ✅ Update all examples to use new patterns
-5. ✅ Create migration guide for existing codebases
+1. ✅ Create unified hook (`useChat`)
+2. ✅ Add error boundary wrapper
+3. ✅ Improve helper hooks documentation
+4. ✅ Create comprehensive examples
+5. ✅ Update main documentation
+6. ⏳ Add Storybook stories for new APIs
+7. ⏳ Create migration codemods
+8. ⏳ Add more examples for edge cases
 
-## Validation
+## Files Changed
 
-- ✅ No linter errors
-- ✅ TypeScript types are correct
-- ✅ Exports are properly configured
-- ✅ Documentation updated
+1. **New**: `packages/react/src/hooks/use-chat-unified.ts` - Unified hook
+2. **New**: `packages/react/src/components/chat-with-error-boundary.tsx` - Error boundary wrapper
+3. **New**: `packages/react/src/examples/unified-chat-examples.tsx` - Examples
+4. **New**: `packages/react/QUICKSTART.md` - Quickstart guide
+5. **Updated**: `packages/react/src/hooks/use-clarity-chat-helpers.ts` - Improved docs
+6. **Updated**: `packages/react/src/index.ts` - Export new APIs
+7. **Updated**: `README.md` - Updated quickstart section
 
-## Related
+---
 
-- See `DX_OPTIMIZATION_COMPLETE.md` for Phase 1 improvements
-- See `DX_QUICK_REFERENCE.md` for quick copy-paste snippets
+**Status**: ✅ Phase 2 Complete
+**Breaking Changes**: None (fully backward compatible)
+**Migration Effort**: Optional (existing code still works)

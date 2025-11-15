@@ -1,337 +1,260 @@
 /**
- * Happy Path Workflows - Real-World Usage Examples
+ * Happy Path Workflows
  * 
- * These examples demonstrate the primary workflows that real users
- * of this library care about, using the layered architecture.
+ * These examples demonstrate the primary workflows that real users care about.
+ * Each workflow uses primarily top-level + mid-level APIs with minimal boilerplate.
  */
 
-import * as React from 'react'
+import {
+  // Top-level APIs
+  ClarityChat,
+  ChatWithMemory,
+  ChatComplete,
+  useChat,
+  useMemory,
+  createAgent,
+  useAnalytics,
+  // Mid-level APIs
+  ChatWindow,
+  useClarityChat,
+  MemoryProvider,
+  AnalyticsProvider,
+  createGoogleAnalyticsProvider,
+} from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 // ============================================================================
-// WORKFLOW 1: Simple Chat UI (3 lines)
+// WORKFLOW 1: Spin Up a Full Chat UI with Memory
 // ============================================================================
 
 /**
- * Goal: Add a production-ready chat interface in 3 lines
- * APIs Used: ClarityChat (Top-level)
- * Lines of Code: 3
- * Why Enterprise-Grade: Includes error handling, loading states, accessibility,
- * responsive design, streaming support, and more out of the box.
+ * Goal: Get a production-ready chat interface with memory in minimal code
+ * Primary APIs: ClarityChat (top-level), ChatWithMemory (top-level)
+ * Lines of code: 1-3
+ * Why enterprise-grade: Memory enables context retention, better UX
  */
-export function SimpleChatWorkflow() {
-  return <ClarityChat api="/api/chat" />
+export function Workflow1_ChatWithMemory() {
+  // Option 1: Simplest (1 line)
+  return <ChatWithMemory api="/api/chat" strategy="vector-store" />
+
+  // Option 2: With customization (3 lines)
+  // return (
+  //   <ChatWithMemory
+  //     api="/api/chat"
+  //     strategy="vector-store"
+  //     showHeader
+  //     sessionTitle="AI Assistant"
+  //   />
+  // )
 }
 
 // ============================================================================
-// WORKFLOW 2: Chat with Memory (5-10 lines)
+// WORKFLOW 2: Create an AI-Powered Dashboard View
 // ============================================================================
 
 /**
- * Goal: Add context-aware chat with memory management
- * APIs Used: ClarityChatPresets.WithMemory (Top-level)
- * Lines of Code: 5-10
- * Why Enterprise-Grade: Includes memory management, context window optimization,
- * semantic search, and vector store integration.
+ * Goal: Build a custom dashboard with chat, analytics, and monitoring
+ * Primary APIs: useChat (mid-level), useAnalytics (top-level), ChatWindow (mid-level)
+ * Lines of code: ~15
+ * Why enterprise-grade: Composable, observable, production-ready
  */
-export function ChatWithMemoryWorkflow() {
+export function Workflow2_AIPoweredDashboard() {
+  const chat = useChat({ api: '/api/chat' })
+  const { track } = useAnalytics()
+
+  const handleSend = async (content: string) => {
+    track('message_sent', { content })
+    await chat.sendMessage(content)
+  }
+
   return (
-    <ClarityChatPresets.WithMemory 
-      api="/api/chat"
-      memoryStrategy="vector-store"
-    />
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '1rem', height: '100vh' }}>
+      {/* Main Chat Area */}
+      <ChatWindow
+        messages={chat.messages}
+        isLoading={chat.isLoading}
+        onSendMessage={handleSend}
+        showHeader
+        sessionTitle="AI Dashboard"
+      />
+
+      {/* Sidebar with Analytics */}
+      <div style={{ border: '1px solid #e5e7eb', padding: '1rem' }}>
+        <h3>Analytics</h3>
+        <p>Messages: {chat.messages.length}</p>
+        <p>Status: {chat.isLoading ? 'Loading...' : 'Ready'}</p>
+      </div>
+    </div>
   )
 }
 
-// Alternative: Using hook + provider for more control
-export function ChatWithMemoryWorkflowAdvanced() {
-  const { MemoryProvider } = require('@clarity-chat/react')
-  const { ClarityChat } = require('@clarity-chat/react')
-  
+// ============================================================================
+// WORKFLOW 3: Wire Memory Store + Chat Together
+// ============================================================================
+
+/**
+ * Goal: Set up memory system with chat for long-term context
+ * Primary APIs: MemoryProvider (top-level), useClarityChat (mid-level), ChatWindow (mid-level)
+ * Lines of code: ~20
+ * Why enterprise-grade: Proper separation of concerns, composable, testable
+ */
+export function Workflow3_MemoryAndChat() {
   return (
-    <MemoryProvider config={{ maxTokens: 10000 }}>
-      <ClarityChat 
-        api="/api/chat"
-        memory={{
-          enabled: true,
-          strategy: 'vector-store',
-          maxTokens: 10000,
-        }}
-      />
+    <MemoryProvider
+      config={{
+        strategy: 'vector-store',
+        vectorStore: {
+          type: 'qdrant',
+          url: process.env.VECTOR_STORE_URL || '',
+          apiKey: process.env.VECTOR_STORE_API_KEY || '',
+        },
+      }}
+    >
+      <MemoryChatApp />
     </MemoryProvider>
   )
 }
 
-// ============================================================================
-// WORKFLOW 3: Custom Chat with Tools (20-30 lines)
-// ============================================================================
-
-/**
- * Goal: Build a custom chat interface with tool calling
- * APIs Used: useClarityChat (Top-level), useChatHandlers (Mid-level),
- * ChatWindow (Mid-level), useClarityChatWithTools (Mid-level)
- * Lines of Code: 20-30
- * Why Enterprise-Grade: Full control over UI, tool integration, error handling,
- * and extensibility while maintaining type safety.
- */
-export function CustomChatWithToolsWorkflow() {
-  const { useClarityChat, useChatHandlers, ChatWindow, useClarityChatWithTools } = require('@clarity-chat/react')
-  
-  // Define tools
-  const searchTool = {
-    name: 'web_search',
-    description: 'Search the web for information',
-    parameters: {
-      type: 'object',
-      properties: {
-        query: { type: 'string', description: 'Search query' },
-      },
-      required: ['query'],
-    },
-    execute: async (args: { query: string }) => {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(args.query)}`)
-      return await response.json()
-    },
-  }
-
-  const calculatorTool = {
-    name: 'calculator',
-    description: 'Perform mathematical calculations',
-    parameters: {
-      type: 'object',
-      properties: {
-        expression: { type: 'string', description: 'Mathematical expression' },
-      },
-      required: ['expression'],
-    },
-    execute: async (args: { expression: string }) => {
-      // In production, this would be a safe math evaluator
-      return { result: eval(args.expression) }
-    },
-  }
-
-  // Top-level hook for chat state
+function MemoryChatApp() {
   const chat = useClarityChat({
     api: '/api/chat',
-  })
-
-  // Mid-level hook for handlers
-  const handlers = useChatHandlers({
-    chat,
-    onMessageSent: (content) => {
-      console.log('Message sent:', content)
-    },
-    onMessageError: (error) => {
-      console.error('Failed to send message:', error)
+    memory: {
+      enabled: true,
+      strategy: 'vector-store',
     },
   })
 
-  // Mid-level hook for tool integration
-  const tools = useClarityChatWithTools({
-    tools: [searchTool, calculatorTool],
-  })
+  const messages = chat.messages.map((msg) => ({
+    id: msg.id || '',
+    chatId: 'default',
+    role: msg.role,
+    content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content),
+    status: 'sent' as const,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }))
 
-  // Mid-level component for UI
   return (
     <ChatWindow
-      messages={chat.messages}
+      messages={messages}
       isLoading={chat.isLoading}
-      onSendMessage={handlers.onSendMessage}
-      onClear={handlers.onClear}
-      onMessageRetry={handlers.onRetry}
+      onSendMessage={async (content) => {
+        await chat.append({ role: 'user', content })
+      }}
+      showHeader
+      sessionTitle="Memory-Enabled Chat"
     />
   )
 }
 
 // ============================================================================
-// WORKFLOW 4: Enterprise Application (15-25 lines)
+// WORKFLOW 4: Enterprise Chat with Analytics, Memory, and Error Handling
 // ============================================================================
 
 /**
- * Goal: Full-featured enterprise chat with analytics, quotas, and RBAC
- * APIs Used: ClarityChatPresets.Enterprise (Top-level), AnalyticsProvider,
- * QuotaProvider, RBACProvider (Top-level)
- * Lines of Code: 15-25
- * Why Enterprise-Grade: Complete observability, usage tracking, access control,
- * and audit logging built-in.
+ * Goal: Production-ready chat with all enterprise features
+ * Primary APIs: ChatComplete (top-level), AnalyticsProvider (top-level)
+ * Lines of code: ~10
+ * Why enterprise-grade: Everything enabled, error handling, observability
  */
-export function EnterpriseApplicationWorkflow() {
-  const {
-    ClarityChatPresets,
-    AnalyticsProvider,
-    QuotaProvider,
-    RBACProvider,
-  } = require('@clarity-chat/react')
-
-  const analyticsConfig = {
-    provider: 'console', // or 'google-analytics', 'mixpanel', etc.
-    enabled: true,
-  }
-
-  const quotaConfig = {
-    limits: {
-      messagesPerDay: 1000,
-      tokensPerMonth: 1000000,
-    },
-  }
-
-  const rbacConfig = {
-    roles: ['user', 'admin'],
-    permissions: {
-      user: ['chat:send', 'chat:view'],
-      admin: ['chat:*', 'admin:*'],
-    },
-  }
+export function Workflow4_EnterpriseChat() {
+  const gaProvider = createGoogleAnalyticsProvider('G-XXXXXXXXXX')
 
   return (
-    <AnalyticsProvider config={analyticsConfig}>
-      <QuotaProvider config={quotaConfig}>
-        <RBACProvider config={rbacConfig}>
-          <ClarityChatPresets.Enterprise 
-            api="/api/chat"
-            sessionTitle="Enterprise Assistant"
-            showHeader
-          />
-        </RBACProvider>
-      </QuotaProvider>
+    <AnalyticsProvider
+      config={{
+        enabled: true,
+        providers: [gaProvider],
+        autoTrackPageViews: true,
+        autoTrackErrors: true,
+      }}
+    >
+      <ChatComplete
+        api="/api/chat"
+        memoryStrategy="vector-store"
+        storageKey="enterprise-chat"
+        onMessageSent={(content) => {
+          console.log('Message sent:', content)
+        }}
+        onMessageReceived={(id) => {
+          console.log('Message received:', id)
+        }}
+        onError={(error) => {
+          console.error('Chat error:', error)
+        }}
+      />
     </AnalyticsProvider>
   )
 }
 
 // ============================================================================
-// WORKFLOW 5: Structured Output (10-15 lines)
+// WORKFLOW 5: Custom Chat Flow with Agent Integration
 // ============================================================================
 
 /**
- * Goal: Generate type-safe structured data from chat
- * APIs Used: useClarityObject<T> (Top-level)
- * Lines of Code: 10-15
- * Why Enterprise-Grade: Type-safe object generation with validation,
- * error handling, and streaming support.
+ * Goal: Build a custom chat that uses AI agents for complex tasks
+ * Primary APIs: createAgent (top-level), useChat (mid-level), ChatWindow (mid-level)
+ * Lines of code: ~25
+ * Why enterprise-grade: Agent orchestration, tool calling, composable
  */
-interface UserProfile {
-  name: string
-  email: string
-  age: number
-  interests: string[]
-}
+export function Workflow5_AgentChat() {
+  const chat = useChat({ api: '/api/chat' })
 
-export function StructuredOutputWorkflow() {
-  const { useClarityObject } = require('@clarity-chat/react')
-  
-  const { data, isLoading, error, generate } = useClarityObject<UserProfile>({
-    api: '/api/chat',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string' },
-        email: { type: 'string', format: 'email' },
-        age: { type: 'number' },
-        interests: {
-          type: 'array',
-          items: { type: 'string' },
-        },
-      },
-      required: ['name', 'email', 'age'],
-    },
-  })
-
-  const handleGenerate = async () => {
-    await generate({
-      prompt: 'Create a user profile for a software engineer interested in AI',
-    })
-  }
-
-  return (
-    <div>
-      <button onClick={handleGenerate} disabled={isLoading}>
-        Generate Profile
-      </button>
-      {isLoading && <p>Generating...</p>}
-      {error && <p>Error: {error.message}</p>}
-      {data && (
-        <div>
-          <h3>{data.name}</h3>
-          <p>{data.email}</p>
-          <p>Age: {data.age}</p>
-          <p>Interests: {data.interests.join(', ')}</p>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ============================================================================
-// WORKFLOW 6: Custom Composition (30-50 lines)
-// ============================================================================
-
-/**
- * Goal: Build a completely custom chat experience using mid-level APIs
- * APIs Used: useChatEnhanced (Mid-level), ChatWindow (Mid-level),
- * useMemoryContext (Mid-level), various low-level utilities
- * Lines of Code: 30-50
- * Why Enterprise-Grade: Full control while leveraging battle-tested components
- * and hooks, maintaining type safety and best practices.
- */
-export function CustomCompositionWorkflow() {
-  const {
-    useChatEnhanced,
-    ChatWindow,
-    useMemoryContext,
-    createUserMessage,
-    normalizeMessages,
-  } = require('@clarity-chat/react')
-
-  // Mid-level hook for chat state (Vercel-compatible)
-  const chat = useChatEnhanced({
-    api: '/api/chat',
-    initialMessages: [
-      createUserMessage('Hello!'),
+  // Create an agent with tools
+  const agent = createAgent({
+    name: 'AssistantAgent',
+    description: 'Helpful assistant with tool access',
+    tools: [
+      // Add your tools here
     ],
+    maxIterations: 10,
   })
-
-  // Mid-level hook for memory
-  const memory = useMemoryContext()
-
-  // Custom logic using low-level utilities
-  const normalizedMessages = React.useMemo(
-    () => normalizeMessages(chat.messages),
-    [chat.messages]
-  )
 
   const handleSend = async (content: string) => {
-    // Add to memory before sending
-    if (memory?.addMemory) {
-      await memory.addMemory(
-        content,
-        'conversation',
-        'session',
-        { timestamp: Date.now() }
-      )
-    }
+    await chat.sendMessage(content)
 
-    // Send message
-    await chat.append(createUserMessage(content))
+    // Use agent for complex queries
+    if (content.includes('research') || content.includes('calculate')) {
+      const result = await agent.execute(content)
+      await chat.sendMessage(result.answer)
+    }
   }
 
   return (
-    <div className="custom-chat-container">
-      <ChatWindow
-        messages={normalizedMessages}
-        isLoading={chat.isLoading}
-        onSendMessage={handleSend}
-        showHeader
-        sessionTitle="Custom Chat"
-      />
-      {memory && (
-        <div className="memory-info">
-          <p>Memory: {memory.stats?.totalItems || 0} items</p>
-        </div>
-      )}
-    </div>
+    <ChatWindow
+      messages={chat.messages}
+      isLoading={chat.isLoading}
+      onSendMessage={handleSend}
+      showHeader
+      sessionTitle="Agent-Powered Chat"
+    />
   )
 }
 
-// Type imports (for reference)
-import type { ClarityChat } from '../components/clarity-chat'
-import type { ClarityChatPresets } from '../components/clarity-chat-presets'
+// ============================================================================
+// WORKFLOW SUMMARY
+// ============================================================================
+
+/**
+ * Workflow Summary:
+ * 
+ * 1. Chat with Memory (1-3 lines)
+ *    - Use: ChatWithMemory
+ *    - Enterprise-grade: Context retention, better UX
+ * 
+ * 2. AI-Powered Dashboard (~15 lines)
+ *    - Use: useChat + ChatWindow + useAnalytics
+ *    - Enterprise-grade: Composable, observable
+ * 
+ * 3. Memory + Chat Integration (~20 lines)
+ *    - Use: MemoryProvider + useClarityChat + ChatWindow
+ *    - Enterprise-grade: Proper separation, testable
+ * 
+ * 4. Enterprise Chat (~10 lines)
+ *    - Use: ChatComplete + AnalyticsProvider
+ *    - Enterprise-grade: Everything enabled, production-ready
+ * 
+ * 5. Agent Chat (~25 lines)
+ *    - Use: createAgent + useChat + ChatWindow
+ *    - Enterprise-grade: Agent orchestration, tool calling
+ */

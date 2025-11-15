@@ -1,22 +1,23 @@
 # @clarity-chat/react
 
-> Enterprise-grade React components and hooks for building AI chat applications with Clarity.
+> **The Most Complete AI Chat Component Library for React** — Enterprise-grade, stupid-simple, drop-in ready.
 
 [![npm version](https://img.shields.io/npm/v/@clarity-chat/react)](https://www.npmjs.com/package/@clarity-chat/react)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## ✨ Features
+## 🎯 Value Proposition
 
-- 🚀 **Flagship Chat Hook** - `useClarityChat` with full Vercel AI SDK compatibility
-- 💾 **Memory Management** - Three strategies: sliding-window, semantic-chunks, vector-store
-- 🎯 **Structured Output** - Type-safe object generation with `useClarityObject<T>`
-- 🛠️ **Tool UI Registry** - Automatic rendering of tool results with custom components
-- 📡 **Dual Transport** - SSE and WebSocket streaming support
-- 🎨 **Production UI Components** - ChatWindow, ChatInput, VirtualizedMessageList, and more
-- 🤖 **Agent Orchestration** - ReAct agent integration with tool support
-- 🔄 **Error Recovery** - Built-in error handling and retry mechanisms
-- ♿ **Accessible** - WCAG compliant components
-- 📱 **Responsive** - Mobile-first design
+Clarity Chat is the most complete AI chat component library for React. Get a production-ready chat interface in **one line**, or compose powerful features with our layered API architecture. Built for developers who want enterprise-grade capabilities without the complexity.
+
+**Key Differentiators**:
+- ⚡ **One-line setup** - `<ClarityChat api="/api/chat" />` and you're done
+- 🏗️ **Layered architecture** - Start simple, scale to enterprise
+- 🎨 **Production-ready UI** - Beautiful, accessible, responsive components
+- 💾 **Built-in memory** - Three strategies for context retention
+- 🛠️ **Tool UI registry** - Automatic rendering of tool results
+- 📡 **Dual transport** - SSE and WebSocket support
+- 🔒 **Enterprise features** - RBAC, audit, multi-tenancy ready
+- 🛡️ **Runtime validation** - Developer-friendly error messages
 
 ## 📦 Installation
 
@@ -30,11 +31,47 @@ yarn add @clarity-chat/react
 
 ## 🚀 Quick Start
 
-> 📖 **New to Clarity?** Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or check the [Quick Reference](../../docs/QUICK_REFERENCE.md) for copy-paste snippets.
+> 📖 **New to Clarity?** Start with the [Quick Start Guide](./QUICKSTART.md) or check the [Quick Reference](../../docs/QUICK_REFERENCE.md) for copy-paste snippets.
 
-> 🍳 **Looking for patterns?** Check the [Cookbook](../../docs/cookbook/) for 15+ copy-paste ready recipes.
+### Option 1: ClarityChat Component (Recommended) ⭐
 
-### Basic Chat
+**The simplest way to get started** - one line, zero boilerplate:
+
+```tsx
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+**That's it!** ✨ Automatic message conversion, built-in features, production-ready.
+
+### Option 2: useChat Hook (Simplified)
+
+For more control with a simpler API:
+
+```tsx
+import { useChat, ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+  
+  return (
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={sendMessage}
+    />
+  )
+}
+```
+
+### Option 3: useClarityChat Hook (Full Control)
+
+For maximum control and advanced features:
 
 ```tsx
 import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
@@ -63,13 +100,7 @@ function MyChat() {
 ### With Memory
 
 ```tsx
-import { 
-  useClarityChat, 
-  MemoryProvider, 
-  ChatWindow,
-  convertCoreMessagesToMessages 
-} from '@clarity-chat/react'
-import { useMemo } from 'react'
+import { useClarityChat, MemoryProvider } from '@clarity-chat/react'
 
 function App() {
   return (
@@ -80,7 +111,7 @@ function App() {
 }
 
 function MyChat() {
-  const { messages: coreMessages, append, isLoading, memoryEnabled } = useClarityChat({
+  const { messages, append, memoryEnabled } = useClarityChat({
     api: '/api/chat',
     memory: {
       enabled: true,
@@ -89,18 +120,7 @@ function MyChat() {
     },
   })
 
-  const messages = useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
-    [coreMessages]
-  )
-
-  return (
-    <ChatWindow 
-      messages={messages}
-      isLoading={isLoading}
-      onSendMessage={(content) => append({ role: 'user', content })} 
-    />
-  )
+  return <ChatWindow messages={messages} onSendMessage={append} />
 }
 ```
 
@@ -199,9 +219,41 @@ const toolRegistry = createToolUIRegistry({
 ### Documentation Index
 - **[Documentation Index](./DOCUMENTATION_INDEX.md)** - Complete documentation navigation
 
-## 🎯 Core Hooks
+## 🎯 Core APIs
 
-### `useClarityChat`
+### Top-Level: Drop-In Components
+
+#### `ClarityChat`
+**The simplest way to add AI chat** - zero config, automatic everything.
+
+```tsx
+<ClarityChat api="/api/chat" />
+```
+
+#### `ChatWithMemory`
+Chat component with memory pre-configured.
+
+```tsx
+<ChatWithMemory api="/api/chat" strategy="vector-store" />
+```
+
+#### `ChatComplete`
+Full-featured chat with memory, analytics, and error handling.
+
+```tsx
+<ChatComplete api="/api/chat" memoryStrategy="vector-store" />
+```
+
+### Mid-Level: Composable Hooks
+
+#### `useChat`
+Simplified chat hook with automatic message conversion.
+
+```tsx
+const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+```
+
+#### `useClarityChat`
 Flagship chat hook with memory integration and transport selection.
 
 ```tsx

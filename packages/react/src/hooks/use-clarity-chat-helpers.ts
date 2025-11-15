@@ -13,7 +13,18 @@ import type { Message } from '@clarity-chat/types'
 /**
  * useClarityChatWithWindow - Pre-configured hook for ChatWindow component
  * 
- * Automatically converts messages and provides ChatWindow-compatible interface
+ * Automatically converts messages and provides ChatWindow-compatible interface.
+ * This is now mainly for backward compatibility - consider using ClarityChat component instead.
+ * 
+ * @deprecated Consider using the ClarityChat component for a simpler API
+ * @example
+ * ```tsx
+ * // Old way (still works)
+ * const { messages, handleSendMessage, isLoading } = useClarityChatWithWindow({ api: '/api/chat' })
+ * 
+ * // New way (recommended)
+ * <ClarityChat api="/api/chat" />
+ * ```
  */
 export function useClarityChatWithWindow(
   options: UseClarityChatOptions = {}
@@ -21,8 +32,8 @@ export function useClarityChatWithWindow(
   const chat = useClarityChat(options)
 
   const messages = React.useMemo(
-    () => convertCoreMessagesToMessages(chat.messages),
-    [chat.messages]
+    () => convertCoreMessagesToMessages(chat.messages, options.id || 'default'),
+    [chat.messages, options.id]
   )
 
   const handleSendMessage = React.useCallback(
@@ -32,7 +43,7 @@ export function useClarityChatWithWindow(
         content,
       })
     },
-    [chat.append]
+    [chat]
   )
 
   return {

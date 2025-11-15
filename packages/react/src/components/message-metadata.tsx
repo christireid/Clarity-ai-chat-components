@@ -64,7 +64,7 @@ export function MessageMetadata({
   compact = false,
   className,
 }: MessageMetadataProps) {
-  const metadata = (message as any).metadata || {}
+  const metadata = (message as Message & { metadata?: Record<string, unknown> }).metadata || {}
   const [expanded, setExpanded] = React.useState(!compact)
 
   // Extract metadata values

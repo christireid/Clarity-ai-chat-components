@@ -44,7 +44,7 @@ export const Draggable = React.forwardRef<HTMLDivElement, DraggableProps>(
       onDragStart?.()
     }
 
-    const handleDragEnd = (_: any, info: DragInfo) => {
+    const handleDragEnd = (_event: unknown, info: DragInfo) => {
       setIsDragging(false)
       onDragEnd?.(info)
 
@@ -69,7 +69,7 @@ export const Draggable = React.forwardRef<HTMLDivElement, DraggableProps>(
         dragElastic={0.1}
         dragMomentum={false}
         onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd as any}
+        onDragEnd={handleDragEnd}
         whileDrag={{
           scale: 1.05,
           opacity: showGhost ? 0.7 : 1,

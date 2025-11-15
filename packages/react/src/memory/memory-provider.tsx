@@ -1,25 +1,11 @@
 /**
  * Memory Provider & Hooks
  *
- * **Architecture Layer**: Top-Level (Drop-in Ready)
- * **Domain**: Memory & Context
+ * React integration for AI Memory & Context system
  *
- * React integration for AI Memory & Context system.
- * This is a React wrapper around the framework-agnostic @clarity-chat/memory package.
- *
- * For non-React usage, import directly from @clarity-chat/memory.
- *
- * @example
- * ```tsx
- * // Wrap your app with MemoryProvider
- * <MemoryProvider config={{ maxTokens: 10000 }}>
- *   <YourChat />
- * </MemoryProvider>
- *
- * // Use memory in components
- * const memory = useMemoryContext()
- * await memory?.addMemory('User prefers dark mode', 'preference', 'user')
- * ```
+ * Note: This is a React wrapper around the framework-agnostic
+ * @clarity-chat/memory package. For non-React usage, import
+ * directly from @clarity-chat/memory
  */
 
 import * as React from 'react'
@@ -90,57 +76,17 @@ export const MemoryContext = React.createContext<MemoryContextValue | null>(null
 
 /**
  * Memory Provider Props
- * 
- * @param children - React children to wrap with memory context
- * @param config - Memory service configuration (required)
- * @param config.maxTokens - Maximum tokens for memory context
- * @param vectorStore - Optional vector store for semantic search
- * @param embeddings - Optional embedding provider
- * @param autoStart - Whether to auto-start the service (default: true)
  */
 export interface MemoryProviderProps {
-  /** React children to wrap with memory context */
   children: React.ReactNode
-  
-  /** Memory service configuration (required) */
   config: MemoryServiceConfig
-  
-  /** Optional vector store for semantic search */
   vectorStore?: VectorStore
-  
-  /** Optional embedding provider */
   embeddings?: EmbeddingProvider
-  
-  /** Whether to auto-start the service (default: true) */
   autoStart?: boolean
 }
 
 /**
- * MemoryProvider - Top-Level Memory Context Provider
- * 
- * **Architecture Layer**: Top-Level (Drop-in Ready)
- * **Domain**: Memory & Context
- * 
- * Provides memory context to all child components. Wrap your app or chat
- * component with this provider to enable memory functionality.
- * 
- * @example
- * ```tsx
- * <MemoryProvider config={{ maxTokens: 10000 }}>
- *   <ClarityChat api="/api/chat" memory={{ enabled: true }} />
- * </MemoryProvider>
- * ```
- * 
- * @example
- * ```tsx
- * // With vector store
- * <MemoryProvider 
- *   config={{ maxTokens: 10000 }}
- *   vectorStore={myVectorStore}
- * >
- *   <YourApp />
- * </MemoryProvider>
- * ```
+ * Memory Provider
  */
 export const MemoryProvider: React.FC<MemoryProviderProps> = ({
   children,
@@ -290,45 +236,19 @@ export const MemoryProvider: React.FC<MemoryProviderProps> = ({
 }
 
 /**
- * useMemory - Mid-Level Memory Hook
- * 
- * **Architecture Layer**: Mid-Level (Composable Building Blocks)
- * **Domain**: Memory & Context
- * 
- * Hook to access memory context. Must be used within a MemoryProvider.
- * 
- * For top-level usage, use MemoryProvider directly.
- * For query-specific hooks, use `useMemoryQuery` instead.
- * 
- * @returns Memory context value with all memory operations
- * 
- * @example
- * ```tsx
- * const memory = useMemory()
- * 
- * // Add memory
- * await memory.addMemory('User prefers dark mode', 'preference', 'user')
- * 
- * // Query memory
- * const results = await memory.query({ text: 'user preferences' })
- * 
- * // Get stats
- * const stats = memory.getStats()
- * ```
- * 
- * @throws {Error} If used outside MemoryProvider
+ * Use Memory Hook
  */
 export function useMemory(): MemoryContextValue {
   const context = React.useContext(MemoryContext)
 
   if (!context) {
     throw new Error(
-      'useMemory must be used within a MemoryProvider.\n\n' +
-      'Wrap your component tree with MemoryProvider:\n' +
+      '[useMemory] MemoryProvider is not available. ' +
+      'Please wrap your component with <MemoryProvider> to use this hook.\n\n' +
+      'Example:\n' +
       '  <MemoryProvider config={{ maxTokens: 10000 }}>\n' +
       '    <YourComponent />\n' +
-      '  </MemoryProvider>\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/memory'
+      '  </MemoryProvider>'
     )
   }
 
@@ -336,32 +256,7 @@ export function useMemory(): MemoryContextValue {
 }
 
 /**
- * useMemoryQuery - Mid-Level Memory Query Hook
- * 
- * **Architecture Layer**: Mid-Level (Composable Building Blocks)
- * **Domain**: Memory & Context
- * 
- * Hook for querying memory with automatic refetching and loading states.
- * Must be used within a MemoryProvider.
- * 
- * @param query - Memory query object
- * @param options - Query options
- * @param options.enabled - Whether query is enabled (default: true)
- * @param options.refetchInterval - Auto-refetch interval in ms (optional)
- * @returns Query state with data, loading, error, and refetch function
- * 
- * @example
- * ```tsx
- * const { data, isLoading, refetch } = useMemoryQuery(
- *   { text: 'user preferences' },
- *   { refetchInterval: 5000 }
- * )
- * 
- * if (isLoading) return <div>Loading...</div>
- * return <div>{data.length} memories found</div>
- * ```
- * 
- * @throws {Error} If used outside MemoryProvider
+ * Use Memory Query Hook
  */
 export function useMemoryQuery(
   query: MemoryQuery,
@@ -370,16 +265,9 @@ export function useMemoryQuery(
     refetchInterval?: number
   } = {}
 ): {
-  /** Query results (data) */
   data: MemorySearchResult[]
-  
-  /** Loading state (state) */
   isLoading: boolean
-  
-  /** Error state (state) */
   error: Error | null
-  
-  /** Refetch function (action) */
   refetch: () => Promise<void>
 } {
   const { query: queryMemory } = useMemory()
@@ -416,35 +304,6 @@ export function useMemoryQuery(
 
   return { data, isLoading, error, refetch }
 }
-
-/**
- * useMemoryContext - Mid-Level Memory Context Hook (Alias)
- * 
- * **Architecture Layer**: Mid-Level (Composable Building Blocks)
- * **Domain**: Memory & Context
- * 
- * Alias for `useMemory()` that returns null if MemoryProvider is not available.
- * Use this when you want to safely access memory without throwing errors.
- * 
- * @returns Memory context value or null if not available
- * 
- * @example
- * ```tsx
- * const memory = useMemoryContext()
- * 
- * if (memory) {
- *   await memory.addMemory('User preference', 'preference', 'user')
- * }
- * ```
- */
-export function useMemoryContext(): MemoryContextValue | null {
-  return React.useContext(MemoryContext)
-}
-
-/**
- * Return type for useMemoryContext hook
- */
-export type UseMemoryContextReturn = MemoryContextValue | null
 
 /**
  * Use Memory Stats Hook

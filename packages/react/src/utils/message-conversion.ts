@@ -1,10 +1,10 @@
 /**
  * Message Conversion Utilities
  * 
- * Utilities for converting between CoreMessage (Vercel AI SDK format)
+ * Unified utilities for converting between CoreMessage (Vercel AI SDK format)
  * and Message (Clarity internal format) types.
  * 
- * This is the canonical implementation. All message conversion should use these functions.
+ * This is the canonical implementation - use these functions for all conversions.
  */
 
 import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced'
@@ -13,7 +13,6 @@ import { generateId } from '@clarity-chat/primitives'
 
 /**
  * Extract text content from CoreMessageContent
- * @internal
  */
 function extractTextContent(content: CoreMessageContent): string {
   if (typeof content === 'string') {
@@ -95,6 +94,18 @@ export function convertCoreMessagesToMessages(
 }
 
 /**
+ * @deprecated Use convertCoreMessagesToMessages instead
+ * This function is kept for backward compatibility but will be removed in a future version.
+ */
+export const coreMessagesToMessages = convertCoreMessagesToMessages
+
+/**
+ * @deprecated Use convertCoreMessageToMessage instead
+ * This function is kept for backward compatibility but will be removed in a future version.
+ */
+export const coreMessageToMessage = convertCoreMessageToMessage
+
+/**
  * Convert array of Messages to CoreMessages
  * 
  * @param messages - Array of Messages
@@ -105,34 +116,3 @@ export function convertMessagesToCoreMessages(
 ): CoreMessage[] {
   return messages.map(convertMessageToCoreMessage)
 }
-
-// ============================================================================
-// Backward Compatibility Aliases
-// ============================================================================
-// These aliases maintain backward compatibility with older code that used
-// the message-converter.ts file. New code should use the "convert" prefixed
-// versions above.
-
-/**
- * @deprecated Use convertCoreMessageToMessage instead
- * @alias convertCoreMessageToMessage
- */
-export const coreMessageToMessage = convertCoreMessageToMessage
-
-/**
- * @deprecated Use convertCoreMessagesToMessages instead
- * @alias convertCoreMessagesToMessages
- */
-export const coreMessagesToMessages = convertCoreMessagesToMessages
-
-/**
- * @deprecated Use convertMessageToCoreMessage instead
- * @alias convertMessageToCoreMessage
- */
-export const messageToCoreMessage = convertMessageToCoreMessage
-
-/**
- * @deprecated Use convertMessagesToCoreMessages instead
- * @alias convertMessagesToCoreMessages
- */
-export const messagesToCoreMessages = convertMessagesToCoreMessages

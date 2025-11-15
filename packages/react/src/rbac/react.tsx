@@ -70,11 +70,13 @@ export function RBACProvider({
 
   const ensureRole = React.useCallback(
     (role: Role) => {
+      // Type guard to check if storage has addRole method
       if (
         storageInstance &&
-        typeof (storageInstance as any).addRole === 'function'
+        'addRole' in storageInstance &&
+        typeof (storageInstance as { addRole?: (role: Role) => void }).addRole === 'function'
       ) {
-        ;(storageInstance as any).addRole(role)
+        (storageInstance as { addRole: (role: Role) => void }).addRole(role)
         manager.clearCache()
       }
     },

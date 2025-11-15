@@ -118,27 +118,57 @@ bun add @clarity-chat/react
 
 ## ⚡ Quick Start
 
-Get a production-ready AI chat interface in 60 seconds:
+### Option 1: ClarityChat Component (Recommended) ⭐
+
+Get a production-ready AI chat interface in **one line**:
 
 ```tsx
-import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
-import { useMemo } from 'react'
+import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
-  const { messages: coreMessages, append, isLoading } = useClarityChat({
-    api: '/api/chat',
-  })
+  return <ClarityChat api="/api/chat" />
+}
+```
 
-  // Convert CoreMessage[] to Message[] for ChatWindow
-  const messages = useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
-    [coreMessages]
-  )
+**That's it!** ✨ Zero boilerplate, automatic message conversion, built-in features.
 
+### Option 2: useChat Hook (Simplified)
+
+For more control with a simpler API:
+
+```tsx
+import { useChat, ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
+  
   return (
     <ChatWindow
       messages={messages}
+      isLoading={isLoading}
+      onSendMessage={sendMessage}
+    />
+  )
+}
+```
+
+### Option 3: useClarityChat Hook (Full Control)
+
+For maximum control and advanced features:
+
+```tsx
+import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  const { messages, append, isLoading } = useClarityChat({ api: '/api/chat' })
+  const convertedMessages = convertCoreMessagesToMessages(messages)
+
+  return (
+    <ChatWindow
+      messages={convertedMessages}
       isLoading={isLoading}
       onSendMessage={async (content) => {
         await append({ role: 'user', content })
@@ -148,7 +178,9 @@ function App() {
 }
 ```
 
-**That's it!** ✨ You now have a production-ready AI chat interface with:
+**[📖 View Complete Quickstart Guide](./packages/react/QUICKSTART.md)** • **[📚 Browse Examples](./apps/examples/README.md)**
+
+**Features included:**
 
 - ✨ Beautiful animations and transitions
 - ⌨️ Full keyboard navigation
@@ -157,7 +189,7 @@ function App() {
 - ♿ WCAG AAA accessibility
 - 🔒 Production-ready security
 
-**[📖 View Full Quick Start Guide](./docs/getting-started-clarity-chat.md)** • **[📚 Browse Examples](./apps/examples/README.md)** • **[🎨 Storybook](http://localhost:6006)**
+**[📖 View Full Quick Start Guide](./apps/docs-site/app/learn/quick-start)** • **[📚 Browse Examples](./apps/examples/README.md)**
 
 ---
 

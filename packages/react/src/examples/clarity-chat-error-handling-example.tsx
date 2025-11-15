@@ -17,7 +17,7 @@
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { ChatWindow } from '../components/chat-window'
-import { coreMessagesToMessages } from '../utils/message-converter'
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import { ErrorBoundary } from '../components/error-boundary'
 import { Badge, Alert, Button } from '@clarity-chat/primitives'
 
@@ -135,7 +135,7 @@ export function ClarityChatErrorHandlingExample() {
 
   // Convert CoreMessage[] to Message[] for ChatWindow
   const messages = React.useMemo(
-    () => coreMessagesToMessages(coreMessages),
+    () => convertCoreMessagesToMessages(coreMessages),
     [coreMessages]
   )
 

@@ -24,7 +24,7 @@
 import * as React from 'react'
 import { useClarityChat } from '../hooks/use-clarity-chat'
 import { ChatWindow } from '../components/chat-window'
-import { coreMessagesToMessages } from '../utils/message-converter'
+import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import { MemoryProvider } from '../memory/memory-provider'
 import type { MemoryServiceConfig } from '@clarity-chat/memory'
 
@@ -50,7 +50,7 @@ export function ClarityChatWithMemoryExample() {
 
   // Convert CoreMessage[] to Message[] for ChatWindow
   const messages = React.useMemo(
-    () => coreMessagesToMessages(coreMessages),
+    () => convertCoreMessagesToMessages(coreMessages),
     [coreMessages]
   )
 
