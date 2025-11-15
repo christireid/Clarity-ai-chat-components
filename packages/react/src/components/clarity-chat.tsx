@@ -19,13 +19,11 @@
  *     />
  *   )
  * }
-=======
  * // With memory enabled
  * <ClarityChat 
  *   api="/api/chat"
  *   memory={{ enabled: true, strategy: 'vector-store' }}
  * />
->>>>>>> 35e277aaf5bac860785007d4ddd7fbd8582edbe5
  * ```
  */
 
