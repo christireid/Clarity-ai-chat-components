@@ -102,7 +102,7 @@
 
 **In Progress:**
 - ⏳ Root README - Needs more scannable structure
-- ⏳ Package READMEs - Need standardization (1/10+ done)
+- ⏳ Package READMEs - Need standardization (4/10+ done: react, memory, types, cli)
 - ⏳ API Reference - Needs completion
 - ⏳ Guides - Need consistency pass
 - ✅ Cookbook - Advanced recipes added (15+ total)
@@ -194,6 +194,9 @@
   - Updated `packages/react/README.md` with cookbook link
   - Fixed memory example consistency
   - Improved code examples
+  - Enhanced `packages/memory/README.md` with documentation links
+  - Completely rewrote `packages/types/README.md` with examples and better structure
+  - Enhanced `packages/cli/README.md` with Quick Start and documentation links
 
 **Improvements Needed:**
 

@@ -115,6 +115,19 @@
      - ✅ Fixed memory example to use `convertCoreMessagesToMessages`
      - ✅ Added `useMemo` import
      - ✅ Improved code example consistency
+   - ✅ Enhanced `packages/memory/README.md`
+     - ✅ Added Quick Start callout with documentation links
+     - ✅ Improved documentation section with links to cookbook and troubleshooting
+   - ✅ Completely rewrote `packages/types/README.md`
+     - ✅ Added features section
+     - ✅ Added Quick Start with example code
+     - ✅ Enhanced type categories with code examples
+     - ✅ Added documentation links
+     - ✅ Improved structure and consistency
+   - ✅ Enhanced `packages/cli/README.md`
+     - ✅ Added Quick Start section
+     - ✅ Added documentation links
+     - ✅ Improved structure
 
 ### Medium Priority
 
@@ -181,7 +194,7 @@
 - Getting Started: ✅ Enhanced
 - Cookbook: ✅ Created (15+ recipes including advanced patterns)
 - Troubleshooting: ✅ Created
-- Package READMEs: ✅ Improved (`packages/react/README.md`)
+- Package READMEs: ✅ Improved (4 packages: react, memory, types, cli)
 - API Reference: ⏳ In progress
 
 **Storybook Coverage:**

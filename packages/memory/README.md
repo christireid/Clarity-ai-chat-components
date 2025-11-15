@@ -26,6 +26,8 @@ yarn add @clarity-chat/memory
 
 ## 🚀 Quick Start
 
+> 📖 **New to Clarity Memory?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
+
 ### Zero-Config (In-Memory)
 
 ```typescript
@@ -389,11 +391,13 @@ async function chat(message: string) {
 
 ## 📖 Documentation
 
-- [Getting Started Guide](./GETTING_STARTED.md)
-- [API Reference](./API.md)
-- [Storage Backends](./docs/storage.md)
-- [Memory Types](./docs/memory-types.md)
-- [Token Optimization](./docs/token-optimization.md)
+- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
+- [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [API Reference](./API.md) - Complete API documentation
+- [Storage Backends](./docs/storage.md) - Storage configuration
+- [Memory Types](./docs/memory-types.md) - Understanding memory types
+- [Token Optimization](./docs/token-optimization.md) - Cost optimization strategies
 
 ## 🧪 Development
 

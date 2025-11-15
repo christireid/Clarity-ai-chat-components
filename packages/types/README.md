@@ -1,8 +1,18 @@
 # @clarity-chat/types
 
-TypeScript type definitions for Clarity Chat - a comprehensive AI chat component library.
+> **TypeScript type definitions** - Comprehensive, type-safe types for Clarity Chat
 
-## Installation
+TypeScript type definitions for Clarity Chat - a comprehensive AI chat component library. Provides **89+ types** with full TypeScript support and strict type safety.
+
+## ✨ Features
+
+- 🎯 **89+ Types** - Comprehensive type coverage
+- 🔒 **Strict Type Safety** - No implicit `any`, strict null checks
+- 📦 **Framework Agnostic** - Works with any TypeScript project
+- 🚀 **Tree Shakeable** - Import only what you need
+- 📚 **Well Documented** - JSDoc comments on all types
+
+## 📦 Installation
 
 ```bash
 npm install @clarity-chat/types
@@ -12,35 +22,112 @@ pnpm add @clarity-chat/types
 yarn add @clarity-chat/types
 ```
 
-## Usage
+## 🚀 Quick Start
+
+> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
+
+### Basic Usage
 
 ```typescript
-import type { Message, Chat, User, Context, Project } from '@clarity-chat/types';
-import type { MemoryItem, ContextType } from '@clarity-chat/types';
+import type { Message, Chat, User, Context, Project } from '@clarity-chat/types'
+import type { MemoryItem, ContextType } from '@clarity-chat/types'
+
+// Use in your components
+function ChatComponent({ messages }: { messages: Message[] }) {
+  // TypeScript knows the structure of Message
+  return (
+    <div>
+      {messages.map((msg) => (
+        <div key={msg.id}>{msg.content}</div>
+      ))}
+    </div>
+  )
+}
 ```
 
-## Type Categories
+## 📖 Type Categories
 
 ### Core Types
-- **Message** - Chat message types with attachments, metadata, and feedback
-- **Chat** - Chat conversation types with history and filtering
-- **User** - User authentication and profile types
-- **Project** - Project management types with context and knowledge bases
+
+**Message** - Chat message types with attachments, metadata, and feedback
+```typescript
+import type { Message, MessageRole, MessageStatus } from '@clarity-chat/types'
+
+const message: Message = {
+  id: 'msg-123',
+  chatId: 'chat-456',
+  role: 'user',
+  content: 'Hello!',
+  createdAt: Date.now(),
+  status: 'sent',
+}
+```
+
+**Chat** - Chat conversation types with history and filtering
+```typescript
+import type { Chat, ChatStatus } from '@clarity-chat/types'
+```
+
+**User** - User authentication and profile types
+```typescript
+import type { User, UserRole } from '@clarity-chat/types'
+```
+
+**Project** - Project management types with context and knowledge bases
+```typescript
+import type { Project, ProjectSettings } from '@clarity-chat/types'
+```
 
 ### Advanced Features
-- **Memory** - Hybrid memory architecture types (episodic, semantic, short-term, long-term)
-- **Context** - Context management types for documents, images, links, etc.
-- **Knowledge Base** - Knowledge base types with sections and references
-- **Prompt** - Prompt library types with variables and templates
+
+**Memory** - Hybrid memory architecture types (episodic, semantic, short-term, long-term)
+```typescript
+import type { MemoryItem, MemoryType, MemoryStrategy } from '@clarity-chat/types'
+```
+
+**Context** - Context management types for documents, images, links, etc.
+```typescript
+import type { Context, ContextType, ContextItem } from '@clarity-chat/types'
+```
+
+**Knowledge Base** - Knowledge base types with sections and references
+```typescript
+import type { KnowledgeBase, KnowledgeSection } from '@clarity-chat/types'
+```
+
+**Prompt** - Prompt library types with variables and templates
+```typescript
+import type { Prompt, PromptVariable } from '@clarity-chat/types'
+```
 
 ### UI & Settings
-- **Theme** - Theme customization types with colors, spacing, typography
-- **Settings** - User settings types for AI personality, UI preferences, privacy
-- **Export** - Export functionality types for PDF, DOCX, Markdown, etc.
+
+**Theme** - Theme customization types with colors, spacing, typography
+```typescript
+import type { Theme, ThemeColors, ThemeConfig } from '@clarity-chat/types'
+```
+
+**Settings** - User settings types for AI personality, UI preferences, privacy
+```typescript
+import type { UserSettings, AIPersonality } from '@clarity-chat/types'
+```
+
+**Export** - Export functionality types for PDF, DOCX, Markdown, etc.
+```typescript
+import type { ExportFormat, ExportOptions } from '@clarity-chat/types'
+```
 
 ### Status & Usage
-- **AI Status** - AI processing status and capabilities types
-- **Usage** - Usage metrics, billing, and limits types
+
+**AI Status** - AI processing status and capabilities types
+```typescript
+import type { AIStatus, AICapabilities } from '@clarity-chat/types'
+```
+
+**Usage** - Usage metrics, billing, and limits types
+```typescript
+import type { UsageMetrics, BillingInfo, UsageLimits } from '@clarity-chat/types'
+```
 
 ## Type Safety
 
@@ -83,19 +170,31 @@ This package exports **89 types** including:
 - 15+ union/string literal types
 - 50+ supporting interfaces and types
 
-## Requirements
+## 📚 Documentation
+
+- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
+- [API Reference](../../docs/api-reference.md) - Complete API documentation
+- [Type Examples](./examples/) - Usage examples
+
+## 🔧 Requirements
 
 - TypeScript 5.0+
 - Node.js 20.0+
 
-## License
+## 📄 License
 
 MIT
 
-## Repository
+## 🔗 Links
 
-[GitHub Repository](https://github.com/christireid/Clarity-ai-chat-components)
+- [GitHub Repository](https://github.com/christireid/Clarity-ai-chat-components)
+- [Documentation](../../apps/docs/)
+- [Examples](../../examples/)
+- [Storybook](http://localhost:6006)
 
-## Support
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](../../CONTRIBUTING.md)
 
 [Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
