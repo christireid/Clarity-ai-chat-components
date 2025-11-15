@@ -161,9 +161,8 @@ export {
 export * from './hooks/use-chat-enhanced'
 export * from './agents/tool-ui-registry'
 export * from './components/clarity-tool-result'
-=======
+
 // Chat State - Primary hook
->>>>>>> 35e277aaf5bac860785007d4ddd7fbd8582edbe5
 export {
   useClarityChat,
   type UseClarityChatOptions,
@@ -538,9 +537,6 @@ export {
 export * from './prompt'
 
 // Tool result types
-=======
-// Tool Result Types
->>>>>>> 35e277aaf5bac860785007d4ddd7fbd8582edbe5
 export type {
   WeatherToolResult,
   SearchToolResult,
