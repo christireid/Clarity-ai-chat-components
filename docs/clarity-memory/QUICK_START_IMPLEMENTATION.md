@@ -108,7 +108,7 @@ export class InMemoryStore implements MemoryStore {
     const memories = Array.from(this.memories.values())
     return {
       totalMemories: memories.length,
-      totalTokens: 0, // TODO: Calculate tokens
+      totalTokens: memories.reduce((sum, m) => sum + (m.tokens || 0), 0),
       oldestMemory: memories.length > 0 
         ? memories.reduce((oldest, m) => m.timestamp < oldest.timestamp ? m : oldest).timestamp
         : undefined,
