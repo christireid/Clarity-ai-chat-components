@@ -4,7 +4,7 @@
  * Unified utilities for converting between CoreMessage (Vercel AI SDK format)
  * and Message (Clarity internal format) types.
  * 
- * This is the canonical implementation - use these functions for all conversions.
+ * This is the canonical implementation. All message conversion should use these functions.
  */
 
 import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced'
@@ -13,6 +13,7 @@ import { generateId } from '@clarity-chat/primitives'
 
 /**
  * Extract text content from CoreMessageContent
+ * @internal
  */
 function extractTextContent(content: CoreMessageContent): string {
   if (typeof content === 'string') {
@@ -116,3 +117,34 @@ export function convertMessagesToCoreMessages(
 ): CoreMessage[] {
   return messages.map(convertMessageToCoreMessage)
 }
+
+// ============================================================================
+// Backward Compatibility Aliases
+// ============================================================================
+// These aliases maintain backward compatibility with older code that used
+// the message-converter.ts file. New code should use the "convert" prefixed
+// versions above.
+
+/**
+ * @deprecated Use convertCoreMessageToMessage instead
+ * @alias convertCoreMessageToMessage
+ */
+export const coreMessageToMessage = convertCoreMessageToMessage
+
+/**
+ * @deprecated Use convertCoreMessagesToMessages instead
+ * @alias convertCoreMessagesToMessages
+ */
+export const coreMessagesToMessages = convertCoreMessagesToMessages
+
+/**
+ * @deprecated Use convertMessageToCoreMessage instead
+ * @alias convertMessageToCoreMessage
+ */
+export const messageToCoreMessage = convertMessageToCoreMessage
+
+/**
+ * @deprecated Use convertMessagesToCoreMessages instead
+ * @alias convertMessagesToCoreMessages
+ */
+export const messagesToCoreMessages = convertMessagesToCoreMessages

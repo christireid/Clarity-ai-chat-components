@@ -28,7 +28,31 @@ export interface ChatInputProps {
 }
 
 /**
- * ChatInput - Message input component for chat interfaces
+ * ChatInput - Mid-Level Composable Component
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Chat UI
+ * 
+ * A composable input component for chat interfaces with character counting,
+ * validation, and smooth animations.
+ * 
+ * For drop-in usage, use top-level `ClarityChat` component instead.
+ * For custom input rendering, use low-level primitives.
+ * 
+ * @example
+ * ```tsx
+ * const [input, setInput] = useState('')
+ * 
+ * <ChatInput
+ *   value={input}
+ *   onChange={setInput}
+ *   onSubmit={async (value) => {
+ *     await sendMessage(value)
+ *     setInput('')
+ *   }}
+ *   maxLength={1000}
+ * />
+ * ```
  * 
  * A mid-level building block for chat input functionality. Provides a textarea
  * with character counting, validation, animations, and submit handling.
@@ -116,6 +140,33 @@ export function ChatInput({
   glowOnFocus = true,
   className,
 }: ChatInputProps) {
+  // Runtime validation
+  if (typeof value !== 'string') {
+    throw new Error(
+      'ChatInput: "value" prop must be a string.\n\n' +
+      'Example:\n' +
+      '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
+
+  if (typeof onChange !== 'function') {
+    throw new Error(
+      'ChatInput: "onChange" prop must be a function.\n\n' +
+      'Example:\n' +
+      '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
+
+  if (typeof onSubmit !== 'function') {
+    throw new Error(
+      'ChatInput: "onSubmit" prop is required and must be a function.\n\n' +
+      'Example:\n' +
+      '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
   const [isFocused, setIsFocused] = React.useState(false)
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
