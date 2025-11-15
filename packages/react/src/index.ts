@@ -25,7 +25,15 @@
 export { ClarityChat } from './components/clarity-chat'
 export { ClarityChatPresets } from './components/clarity-chat-presets'
 
-<<<<<<< HEAD
+// Model Adapters
+export * from './adapters'
+
+// Vector Stores (Enterprise RAG)
+export * from './vector-stores'
+
+// Embeddings (Multi-Provider)
+export * from './embeddings'
+
 // Agent Orchestration (Agentic AI)
 export * from './agents'
 
