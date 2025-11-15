@@ -7,7 +7,7 @@ Welcome to Clarity Chat! This guide helps you find the right starting point base
 ## 🆕 New to Clarity Chat?
 
 ### I want to build a simple chat interface
-**→ [5-Minute Quick Start](./getting-started-clarity-chat.md)**
+**→ [Getting Started](./getting-started.md)**
 
 Get a working chat interface in 5 minutes with minimal setup.
 
