@@ -1,0 +1,240 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Components/TokenCounter/Overview" />
+
+# TokenCounter Component
+
+The `TokenCounter` component displays token usage with cost tracking and limit warnings.
+
+## When to Use
+
+Use `TokenCounter` when you need:
+
+- Track API token usage
+- Monitor costs in real-time
+- Enforce token limits
+- Budget management
+- Visual feedback on usage
+
+---
+
+## Key Features
+
+### 📊 Usage Tracking
+
+- **Token Count** - Current and maximum tokens
+- **Cost Display** - Real-time cost calculation
+- **Progress Indicator** - Visual progress bar
+- **Status Colors** - Normal/warning/error states
+
+### 🎨 Visual Feedback
+
+- **Color Coding** - Green (normal), Yellow (warning), Red (error)
+- **Progress Bar** - Visual representation of usage
+- **Compact Display** - Minimal space usage
+- **Responsive** - Works on all screen sizes
+
+### ♿ Accessibility
+
+- **WCAG AAA** - Highest accessibility standard
+- **Screen Readers** - ARIA labels and descriptions
+- **Keyboard Navigation** - Full keyboard support
+
+---
+
+## Basic Usage
+
+```tsx
+import { TokenCounter } from '@clarity-chat/react/components/token-counter'
+
+function App() {
+  return (
+    <TokenCounter
+      tokens={1250}
+      maxTokens={4000}
+      cost={0.0025}
+      showCost={true}
+      showProgress={true}
+    />
+  )
+}
+```
+
+---
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `tokens` | `number` | **required** | Current number of tokens used |
+| `maxTokens` | `number` | **required** | Maximum allowed tokens |
+| `cost` | `number` | - | Cost in dollars for current token usage |
+| `showCost` | `boolean` | `true` | Show cost information |
+| `showProgress` | `boolean` | `true` | Show progress bar |
+| `className` | `string` | - | Additional CSS classes |
+
+---
+
+## Examples by Track
+
+### Essentials Track
+
+**Most common use cases** - Use these 90% of the time.
+
+- [Basic Counter](./TokenCounterEssentials#basiccounter)
+- [Low Usage](./TokenCounterEssentials#lowusage)
+- [Near Limit](./TokenCounterEssentials#nearlimit)
+- [Over Limit](./TokenCounterEssentials#overlimit)
+
+**See:** [TokenCounter Essentials](./TokenCounterEssentials)
+
+---
+
+## Common Patterns
+
+### Pattern 1: Basic Counter
+
+```tsx
+import { TokenCounter } from '@clarity-chat/react/components/token-counter'
+
+function App() {
+  const { tokens, maxTokens, cost } = useTokenTracking()
+
+  return (
+    <TokenCounter
+      tokens={tokens}
+      maxTokens={maxTokens}
+      cost={cost}
+      showCost={true}
+      showProgress={true}
+    />
+  )
+}
+```
+
+### Pattern 2: In ChatWindow
+
+```tsx
+import { ChatWindow } from '@clarity-chat/react'
+import { TokenCounter } from '@clarity-chat/react/components/token-counter'
+
+function App() {
+  const { tokens, maxTokens, cost } = useTokenTracking()
+
+  return (
+    <div>
+      <ChatWindow {...props} />
+      <TokenCounter
+        tokens={tokens}
+        maxTokens={maxTokens}
+        cost={cost}
+      />
+    </div>
+  )
+}
+```
+
+### Pattern 3: Without Cost
+
+```tsx
+<TokenCounter
+  tokens={tokens}
+  maxTokens={maxTokens}
+  showCost={false}
+  showProgress={true}
+/>
+```
+
+---
+
+## Status States
+
+### Normal (Green)
+
+Usage is well below limit (< 80%).
+
+```tsx
+<TokenCounter tokens={500} maxTokens={4000} />
+```
+
+### Warning (Yellow)
+
+Usage is approaching limit (80-100%).
+
+```tsx
+<TokenCounter tokens={3500} maxTokens={4000} />
+```
+
+### Error (Red)
+
+Usage exceeds limit (> 100%).
+
+```tsx
+<TokenCounter tokens={4500} maxTokens={4000} />
+```
+
+---
+
+## Best Practices
+
+### ✅ Do
+
+- Show token counter in production apps
+- Update in real-time as tokens are used
+- Use cost tracking for budget management
+- Show warnings before hitting limits
+- Use progress bar for visual feedback
+
+### ❌ Don't
+
+- Don't show in development (unless needed)
+- Don't update too frequently (throttle updates)
+- Don't hide when near limit (important feedback)
+- Don't forget to handle over-limit state
+
+---
+
+## Integration with useClarityChat
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+import { TokenCounter } from '@clarity-chat/react/components/token-counter'
+
+function App() {
+  const { messages, append, tokenUsage } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div>
+      <ChatWindow messages={messages} onSendMessage={append} />
+      <TokenCounter
+        tokens={tokenUsage.tokens}
+        maxTokens={tokenUsage.maxTokens}
+        cost={tokenUsage.cost}
+      />
+    </div>
+  )
+}
+```
+
+---
+
+## Related Components
+
+- **ChatWindow** - Complete chat interface (can include TokenCounter)
+- **MemoryInspector** - Debug memory system
+- **PerformanceDashboard** - Monitor performance
+
+---
+
+## Next Steps
+
+- [View Essentials Examples](./TokenCounterEssentials) - Most common patterns
+- [Read API Reference](../../api/components.md#tokencounter) - Full API docs
+- [See Design Principles](../DesignPrinciples) - Design system guide
+- [Check Examples](../../../examples) - Real-world examples
+
+---
+
+**Questions?** Check the [FAQ](../FAQ) or ask in [Discord](https://discord.gg/clarity-chat).
