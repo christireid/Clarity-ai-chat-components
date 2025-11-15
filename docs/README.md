@@ -23,6 +23,12 @@ Welcome to the Clarity Chat Components documentation. This directory contains co
   - Error handling
   - Security best practices
 
+- **[Cookbook](./cookbook.md)** 🍳 Common patterns & recipes
+  - Copy-pasteable examples
+  - Real-world patterns
+  - Quick solutions
+  - Production-ready code
+
 - **[Architecture](./architecture.md)** 🏗️ System overview
   - Component architecture
   - Data flow
@@ -67,6 +73,7 @@ docs/
 ├── getting-started.md                # Quick start guide ⭐
 ├── choose-your-path.md               # Guided paths
 ├── best-practices.md                  # Production patterns
+├── cookbook.md                        # Common patterns & recipes
 ├── architecture.md                    # System architecture
 ├── troubleshooting.md                 # Common issues
 ├── migration/
