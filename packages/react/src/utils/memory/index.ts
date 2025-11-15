@@ -1,21 +1,22 @@
 /**
- * Memory & Context Management Utilities
+ * Memory Utilities - Low-level primitives
  * 
- * Production-ready memory system for AI chat applications with:
- * - 4-layer hybrid memory architecture
- * - Sliding context windows with RAG
- * - Memory buffering and summarization
- * - Prompt compression
+ * Low-level utilities for memory and context management.
+ * These are primitives used internally and available for custom implementations.
  */
 
-export * from './types'
-export * from './memory-buffer'
-export * from './memory-service'
-export * from './sliding-context-manager'
-// Note: prompt-compression exports are available but not re-exported to avoid duplicates
-// (estimateTokens, CompressionOptions, CompressionResult conflict with parent utils)
-export { PromptCompressor } from './prompt-compression'
-export * from './vector-store-adapter'
-export * from './semantic-chunker'
-export * from './token-optimized-context'
-export * from './hooks'
+export {
+  buildContextBundle,
+  type ContextBundle,
+  type BuildContextBundleOptions,
+} from './build-context-bundle'
+
+export {
+  compressContext,
+  type CompressContextOptions,
+} from './compress-context'
+
+export {
+  retrieveMemories,
+  type RetrieveMemoriesOptions,
+} from './retrieve-memories'

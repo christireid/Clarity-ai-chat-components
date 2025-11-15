@@ -2,6 +2,8 @@ import * as React from 'react'
 
 /**
  * SSE connection status
+ * 
+ * Tracks the current state of the SSE connection for monitoring and UI updates.
  */
 export type SSEStatus = 'idle' | 'connecting' | 'connected' | 'streaming' | 'error' | 'closed'
 
@@ -78,7 +80,12 @@ export interface UseStreamingSSEOptions {
 }
 
 /**
- * Return type for useStreamingSSE hook
+ * Return type for useStreamingSSE hook (mid-level API)
+ * 
+ * Follows the standard hook return pattern:
+ * - Data: `events`, `lastEvent` (streamed events)
+ * - State: `status`, `isConnected`, `error`
+ * - Actions: `connect`, `disconnect`, `send`, `reconnect`
  */
 export interface UseStreamingSSEReturn {
   /** Current connection status */
@@ -172,7 +179,51 @@ export interface UseStreamingSSEReturn {
  * }
  * ```
  */
+/**
+ * useStreamingSSE - Mid-Level SSE Streaming Hook
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Streaming & Transport
+ * 
+ * Hook for managing Server-Sent Events (SSE) connections with automatic
+ * reconnection, heartbeat, and event handling.
+ * 
+ * For chat streaming, use top-level `useClarityChat` with transport: 'sse'.
+ * For low-level streaming, use `useStreaming` primitive.
+ * 
+ * @param options - SSE configuration options
+ * @param options.url - Base URL for SSE endpoint (required)
+ * @param options.autoReconnect - Enable automatic reconnection (default: true)
+ * @param options.onMessage - Callback for each SSE event
+ * @param options.onError - Callback on error
+ * @returns SSE connection state and controls
+ * 
+ * @example
+ * ```tsx
+ * const { events, status, connect, disconnect } = useStreamingSSE({
+ *   url: '/api/stream',
+ *   onMessage: (event) => console.log('Event:', event),
+ * })
+ * 
+ * React.useEffect(() => {
+ *   connect()
+ *   return () => disconnect()
+ * }, [])
+ * ```
+ * 
+ * @throws {Error} If URL is invalid or missing
+ */
 export function useStreamingSSE(options: UseStreamingSSEOptions): UseStreamingSSEReturn {
+  // Validate URL
+  if (!options.url || typeof options.url !== 'string' || options.url.trim().length === 0) {
+    throw new Error(
+      'useStreamingSSE: "url" option is required.\n' +
+      'Please provide a valid SSE endpoint URL.\n\n' +
+      'Example:\n' +
+      '  const stream = useStreamingSSE({ url: "/api/stream" })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/streaming'
+    )
+  }
   const {
     url,
     method = 'GET',

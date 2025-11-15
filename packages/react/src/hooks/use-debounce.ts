@@ -1,6 +1,11 @@
 import * as React from 'react'
 
 /**
+ * useDebounce - Low-Level Utility Hook
+ * 
+ * **Architecture Layer**: Low-Level (Primitives)
+ * **Domain**: Utilities
+ * 
  * Debounce a value - only updates after delay has passed since last change.
  * Useful for reducing the frequency of expensive operations like API calls or
  * heavy computations during rapid user input.
@@ -12,9 +17,10 @@ import * as React from 'react'
  * - Filtering large lists
  * 
  * @template T - The type of value to debounce
- * @param {T} value - The value to debounce
- * @param {number} [delay=500] - Delay in milliseconds (default: 500ms)
- * @returns {T} The debounced value
+ * @param value - The value to debounce
+ * @param delay - Delay in milliseconds (default: 500ms)
+ * @returns The debounced value
+ * 
  * @example
  * ```tsx
  * const [searchTerm, setSearchTerm] = useState('')

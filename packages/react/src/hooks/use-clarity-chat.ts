@@ -1,16 +1,34 @@
 /**
- * useClarityChat - Flagship chat hook for Clarity AI
+ * useClarityChat - Top-Level Chat State Hook
  * 
  * This is the primary public API for chat functionality in Clarity.
  * It wraps useChatEnhanced with Clarity-specific enhancements including
  * memory integration and transport selection.
  * 
+ * **Architecture Layer**: Top-Level (Drop-in Ready)
+ * **Domain**: Chat State
+ * 
+ * For Vercel AI SDK compatibility, use mid-level `useChatEnhanced` instead.
+ * For raw state management, use low-level `useChat`.
+ * 
  * @example
  * ```tsx
- * const { messages, input, setInput, append, isLoading, error } = useClarityChat({
+ * const { messages, append, isLoading, error } = useClarityChat({
  *   api: '/api/chat',
  *   memory: { enabled: true, strategy: 'vector-store' },
  * })
+ * ```
+ * 
+ * @example
+ * ```tsx
+ * // With handlers for easier integration
+ * const chat = useClarityChat({ api: '/api/chat' })
+ * const handlers = useChatHandlers({ chat })
+ * 
+ * <ChatWindow
+ *   messages={chat.messages}
+ *   onSendMessage={handlers.onSendMessage}
+ * />
  * ```
  */
 
@@ -36,33 +54,15 @@ function useMemorySafe(): MemoryContextValue | null {
   return React.useContext(MemoryContext)
 }
 
+// Import unified error handling
+import { classifyError as classifyErrorUtil, normalizeError } from '../utils/error-handling'
+
 /**
  * Classify error type for better error handling
+ * @deprecated Use classifyError from utils/error-handling instead
  */
 function classifyError(error: Error): 'network' | 'ratelimit' | 'server' | 'auth' | 'memory' | 'unknown' {
-  const message = error.message.toLowerCase()
-  
-  if (message.includes('memory') || message.includes('vector') || message.includes('embedding')) {
-    return 'memory'
-  }
-  
-  if (message.includes('network') || message.includes('fetch') || message.includes('connection')) {
-    return 'network'
-  }
-  
-  if (message.includes('rate limit') || message.includes('too many requests') || message.includes('429')) {
-    return 'ratelimit'
-  }
-  
-  if (message.includes('500') || message.includes('502') || message.includes('503') || message.includes('504')) {
-    return 'server'
-  }
-  
-  if (message.includes('401') || message.includes('403') || message.includes('unauthorized') || message.includes('forbidden')) {
-    return 'auth'
-  }
-  
-  return 'unknown'
+  return classifyErrorUtil(error) as 'network' | 'ratelimit' | 'server' | 'auth' | 'memory' | 'unknown'
 }
 
 /**
@@ -216,19 +216,55 @@ export type UseClarityChatReturn = UseChatEnhancedReturn & {
 }
 
 /**
- * useClarityChat - Primary chat hook for Clarity AI
+ * useClarityChat - Top-Level Chat State Hook
+ * 
+ * **Architecture Layer**: Top-Level (Drop-in Ready)
+ * **Domain**: Chat State
  * 
  * Wraps useChatEnhanced with Clarity-specific features:
  * - Memory integration (optional)
  * - Transport selection (SSE/WebSocket)
+ * - Prompt optimization
  * - Better defaults for production use
  * 
  * @param options - Configuration options
- * @returns Chat state and methods
+ * @param options.api - API endpoint URL (required)
+ * @param options.memory - Memory configuration (optional)
+ * @param options.transport - Transport protocol: 'sse' (default) or 'websocket'
+ * @param options.promptOptimization - Prompt optimization configuration (optional)
+ * @returns Chat state and methods with memory info and token stats
+ * 
+ * @example
+ * ```tsx
+ * // Simple usage
+ * const chat = useClarityChat({ api: '/api/chat' })
+ * 
+ * // With memory
+ * const chat = useClarityChat({
+ *   api: '/api/chat',
+ *   memory: { enabled: true, strategy: 'vector-store' },
+ * })
+ * 
+ * // With handlers for easier integration
+ * const handlers = useChatHandlers({ chat })
+ * <ChatWindow messages={chat.messages} onSendMessage={handlers.onSendMessage} />
+ * ```
+ * 
+ * @throws {Error} If API endpoint is invalid or missing
  */
 export function useClarityChat(
   options: UseClarityChatOptions = {}
 ): UseClarityChatReturn {
+  // Validate API endpoint
+  if (!options.api || typeof options.api !== 'string' || options.api.trim().length === 0) {
+    throw new Error(
+      'useClarityChat: "api" option is required.\n' +
+      'Please provide your API endpoint URL.\n\n' +
+      'Example:\n' +
+      '  const chat = useClarityChat({ api: "/api/chat" })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/getting-started'
+    )
+  }
   const { memory, transport, promptOptimization, ...rest } = options
 
   // Get memory context safely (returns null if MemoryProvider is not available)

@@ -33,3 +33,10 @@ export {
 } from './memory-provider'
 
 export type { MemoryProviderProps } from './memory-provider'
+
+// Top-level factory
+export {
+  createMemoryStore,
+  type CreateMemoryStoreOptions,
+  type MemoryStore,
+} from './create-memory-store'

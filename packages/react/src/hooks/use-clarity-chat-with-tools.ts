@@ -1,21 +1,43 @@
 /**
- * useClarityChatWithTools Hook
+ * useClarityChatWithTools - Mid-Level Tool Integration Hook
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Tools & Agents
  * 
  * Combines useClarityChat with tool UI registry for seamless tool result rendering.
  * Automatically extracts tool calls from messages and renders them using registered components.
  * 
+ * For structured output without chat, use top-level `useClarityObject` instead.
+ * For raw tool handling, use low-level tool utilities.
+ * 
+ * @param options - Configuration options
+ * @param options.api - API endpoint URL (required, passed to useClarityChat)
+ * @param options.toolRegistry - Tool UI registry for rendering tool results (required)
+ * @param options.autoExtractTools - Whether to automatically extract tool results (default: true)
+ * @returns Chat state with tool results and helper methods
+ * 
  * @example
  * ```tsx
+ * import { createToolUIRegistry } from '@clarity-chat/react'
+ * 
  * const registry = createToolUIRegistry({
  *   weather: WeatherComponent,
  *   search: SearchComponent,
  * })
  * 
- * const { chat, toolResults } = useClarityChatWithTools({
+ * const { messages, toolResults, isLoading } = useClarityChatWithTools({
  *   api: '/api/chat',
  *   toolRegistry: registry,
  * })
+ * 
+ * // Render tool results
+ * {toolResults.map((result) => {
+ *   const Component = registry.get(result.toolCall.function.name)
+ *   return Component ? <Component result={result.result} /> : null
+ * })}
  * ```
+ * 
+ * @throws {Error} If API endpoint or toolRegistry is invalid or missing
  */
 
 import * as React from 'react'
@@ -49,12 +71,17 @@ export interface UseClarityChatWithToolsOptions extends UseClarityChatOptions {
 }
 
 /**
- * Return type for useClarityChatWithTools
+ * Return type for useClarityChatWithTools (mid-level API)
+ * 
+ * Extends UseClarityChatReturn with tool-specific additions:
+ * - Data: `toolResults` (extracted tool results)
+ * - Actions: `getToolResultsForMessage` (utility method)
  */
 export interface UseClarityChatWithToolsReturn extends UseClarityChatReturn {
-  /** Extracted tool results from messages */
+  /** Extracted tool results from messages (data) */
   toolResults: ExtractedToolResult[]
-  /** Get tool results for a specific message */
+  
+  /** Get tool results for a specific message (action) */
   getToolResultsForMessage: (messageId: string) => ExtractedToolResult[]
 }
 
@@ -123,6 +150,19 @@ function extractToolResults(messages: CoreMessage[]): ExtractedToolResult[] {
 export function useClarityChatWithTools(
   options: UseClarityChatWithToolsOptions
 ): UseClarityChatWithToolsReturn {
+  // Validate required options
+  if (!options.toolRegistry) {
+    throw new Error(
+      'useClarityChatWithTools: "toolRegistry" option is required.\n' +
+      'Please provide a tool UI registry.\n\n' +
+      'Example:\n' +
+      '  import { createToolUIRegistry } from "@clarity-chat/react"\n' +
+      '  const registry = createToolUIRegistry({ weather: WeatherComponent })\n' +
+      '  const { toolResults } = useClarityChatWithTools({ api: "/api/chat", toolRegistry: registry })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/tools'
+    )
+  }
+
   const { toolRegistry, autoExtractTools = true, ...chatOptions } = options
   
   const chat = useClarityChat(chatOptions)

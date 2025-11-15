@@ -30,31 +30,84 @@ yarn add @clarity-chat/react
 
 ## 🚀 Quick Start
 
-> 📖 **New to Clarity?** Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or check the [Quick Reference](../../docs/QUICK_REFERENCE.md) for copy-paste snippets.
+> 📖 **New to Clarity?** 
+> - Start with the [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+> - Check the [Developer Guide](../../DEVELOPER_GUIDE.md) for architecture and patterns
+> - See the [Quick Reference](../../QUICK_REFERENCE_ARCHITECTURE.md) for copy-paste snippets
+> - Review the [Architecture Documentation](../../DESIGN.md) for deep dives
+> - Explore [Examples](../../packages/react/src/examples/) for minimal, mid-level, and complex use cases
 
-### Basic Chat
+### Basic Chat (Simplest Way - Top-Level API)
 
 ```tsx
-import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
-import { useMemo } from 'react'
+import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
 function MyChat() {
-  const { messages: coreMessages, append, isLoading } = useClarityChat({
+  return <ClarityChat api="/api/chat" />
+}
+```
+
+**That's it!** One component, zero configuration, full-featured chat.
+
+### Basic Chat (With Hook - Mid-Level API)
+
+```tsx
+import { useClarityChat, ChatWindow, useChatHandlers } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function MyChat() {
+  const chat = useClarityChat({
     api: '/api/chat',
   })
 
-  const messages = useMemo(
-    () => convertCoreMessagesToMessages(coreMessages),
-    [coreMessages]
-  )
+  // Pre-configured handlers - no boilerplate! ✨
+  const handlers = useChatHandlers({ chat })
 
   return (
     <ChatWindow
-      messages={messages}
-      isLoading={isLoading}
-      onSendMessage={(content) => append({ role: 'user', content })}
+      messages={chat.messages} // No conversion needed! ✨
+      isLoading={chat.isLoading}
+      onSendMessage={handlers.onSendMessage}
+      onClear={handlers.onClear}
     />
   )
+}
+```
+
+**Architecture**: This uses **Mid-Level APIs** for more control while maintaining ergonomics.
+
+**What Changed:**
+- ✅ `ChatWindow` now accepts `CoreMessage[]` directly - no conversion needed
+- ✅ `useChatHandlers` provides pre-configured handlers - less boilerplate
+- ✅ Simpler API - same power, easier to use
+
+**When to Use**: Use this pattern when you need custom UI or more control than `ClarityChat` provides.
+
+### Using Presets (Top-Level APIs - Even Easier!)
+
+```tsx
+import { ClarityChatPresets } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+// Simple chat
+function SimpleChat() {
+  return <ClarityChatPresets.Simple api="/api/chat" />
+}
+
+// Chat with memory
+function MemoryChat() {
+  return (
+    <ClarityChatPresets.WithMemory 
+      api="/api/chat"
+      memoryStrategy="sliding-window"
+    />
+  )
+}
+
+// Enterprise chat with all features
+function EnterpriseChat() {
+  return <ClarityChatPresets.Enterprise api="/api/chat" />
 }
 ```
 
@@ -154,6 +207,30 @@ const toolRegistry = createToolUIRegistry({
   messages={messages}
 />
 ```
+
+## 📚 Examples
+
+### Minimal Examples (10-20 lines)
+See `packages/react/src/examples/minimal-examples.tsx` for:
+- Basic chat with `ClarityChat`
+- Chat with memory
+- Structured output generation
+- Tool-powered chat
+- Custom streaming
+
+### Mid-Level Examples (40-60 lines)
+See `packages/react/src/examples/mid-level-examples.tsx` for:
+- Composable chat with custom UI
+- Memory integration patterns
+- Tool registry setup
+- Advanced streaming configuration
+
+### Complex Examples (80-150 lines)
+See `packages/react/src/examples/complex-examples.tsx` for:
+- Enterprise chat with memory and advanced features
+- Agent-powered chat with tools
+- Multi-chat dashboard
+- Custom streaming implementation
 
 ## 📚 Documentation
 

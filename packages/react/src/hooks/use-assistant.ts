@@ -1,8 +1,14 @@
 /**
- * useAssistant hook - Vercel AI SDK compatible
+ * useAssistant - Mid-Level Assistant Hook
+ * 
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Tools & Agents
  * 
  * Hook for managing AI assistant interactions with tool calling support,
  * multi-step workflows, and thread/run management.
+ * 
+ * For chat with tools, use top-level `useClarityChatWithTools` instead.
+ * For standalone agents, use top-level `createAgent` instead.
  * 
  * **2025 Improvements**:
  * - Uses shared streaming-helpers for consistent behavior
@@ -13,6 +19,27 @@
  * - Removed deprecated mountedRef pattern
  * - Better error handling with type guards
  * - Progress tracking support
+ * 
+ * @param options - Assistant configuration options
+ * @param options.api - API endpoint URL (required)
+ * @param options.assistantId - Assistant ID for OpenAI-compatible APIs
+ * @param options.threadId - Thread ID for multi-turn conversations
+ * @param options.onToolCall - Callback when tool is invoked
+ * @param options.onFinish - Callback when assistant finishes
+ * @returns Assistant state and controls
+ * 
+ * @example
+ * ```tsx
+ * const { messages, append, status, toolInvocations } = useAssistant({
+ *   api: '/api/assistant',
+ *   assistantId: 'asst_123',
+ *   onToolCall: (invocation) => console.log('Tool called:', invocation),
+ * })
+ * 
+ * await append({ role: 'user', content: 'What is the weather?' })
+ * ```
+ * 
+ * @throws {Error} If API endpoint is invalid or missing
  */
 
 import * as React from 'react'
@@ -134,19 +161,27 @@ export interface UseAssistantOptions {
 }
 
 /**
- * Return type for useAssistant hook
+ * Return type for useAssistant hook (mid-level API)
+ * 
+ * Follows the standard hook return pattern:
+ * - Data: `messages`, `status`, `toolInvocations` (current state)
+ * - State: `isLoading`, `error`
+ * - Actions: `submit`, `stop`, `abort`, `setMessages`
+ * 
+ * This hook provides Vercel AI SDK compatible assistant functionality with
+ * tool calling support and multi-step workflows.
  */
 export interface UseAssistantReturn {
-  /** Current status */
+  /** Current status (data) */
   status: AssistantStatus
   
-  /** Current messages */
+  /** Current messages (data) */
   messages: CoreMessage[]
   
-  /** Set messages directly */
+  /** Set messages directly (action) */
   setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>
   
-  /** Submit a message to the assistant */
+  /** Submit a message to the assistant (action) */
   submitMessage: (
     message: string | CoreMessage,
     options?: { data?: Record<string, any> }
@@ -341,8 +376,20 @@ class ToolCache {
  * ```
  */
 export function useAssistant(options: UseAssistantOptions = {}): UseAssistantReturn {
+  // Validate API endpoint
+  const apiOption = options.api || '/api/assistant'
+  if (!apiOption || typeof apiOption !== 'string' || apiOption.trim().length === 0) {
+    throw new Error(
+      'useAssistant: "api" option is required.\n' +
+      'Please provide a valid API endpoint URL.\n\n' +
+      'Example:\n' +
+      '  const { messages, append } = useAssistant({ api: "/api/assistant" })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/assistants'
+    )
+  }
+
   const {
-    api = '/api/assistant',
+    api = apiOption,
     assistantId,
     threadId,
     initialMessages = [],
