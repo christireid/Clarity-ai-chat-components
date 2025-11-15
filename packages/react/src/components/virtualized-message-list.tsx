@@ -15,8 +15,9 @@ import AutoSizer from 'react-virtualized-auto-sizer'
 import { Message } from '@clarity-chat/types'
 
 // Type assertions for React 18/19 compatibility
-const AutoSizerComponent = AutoSizer as any
-const ListComponent = List as any
+// These are needed because react-window and react-virtualized-auto-sizer may have type incompatibilities
+const AutoSizerComponent = AutoSizer as React.ComponentType<React.ComponentProps<typeof AutoSizer>>
+const ListComponent = List as React.ComponentType<React.ComponentProps<typeof List>>
 
 // ============================================================================
 // Types
@@ -155,13 +156,13 @@ export function VirtualizedMessageList({
 
   // Track if user is near bottom
   // React 19: Keep useCallback for stable ref (required by react-window)
-  const handleScroll = React.useCallback(({ scrollOffset, scrollUpdateWasRequested }: any) => {
+  const handleScroll = React.useCallback(({ scrollOffset, scrollUpdateWasRequested }: { scrollOffset: number; scrollUpdateWasRequested: boolean }) => {
     if (!scrollUpdateWasRequested && listRef.current) {
       const list = listRef.current
       const scrollHeight = messages.reduce((sum, msg, i) => 
         sum + heightCacheRef.current.getHeight(msg.id || `msg-${i}`), 0
       )
-      const clientHeight = (list as any)._outerRef?.clientHeight || 600
+      const clientHeight = (list as { _outerRef?: { clientHeight?: number } })._outerRef?.clientHeight || 600
       const threshold = 100 // px from bottom
       
       isNearBottomRef.current = scrollHeight - (scrollOffset + clientHeight) < threshold

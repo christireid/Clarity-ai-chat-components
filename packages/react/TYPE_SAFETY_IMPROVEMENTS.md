@@ -74,17 +74,17 @@ Improvements to type safety by replacing `any` types with more specific types.
 2. ✅ `src/components/message-metadata.tsx` - **FIXED** - Replaced `any` with proper type assertion
 3. ✅ `src/components/draggable.tsx` - **FIXED** - Replaced `any` with `unknown`
 4. ✅ `src/components/network-status.tsx` - **FIXED** - Added proper `NetworkInformation` interface
-5. `src/components/virtualized-message-list.tsx` - Some `any` types (to be reviewed)
-6. `src/components/tool-invocation-card.tsx` - Some `any` types (to be reviewed)
-7. `src/components/settings-panel.tsx` - Some `any` types (to be reviewed)
-8. `src/components/message-optimized.tsx` - Some `any` types (to be reviewed)
-9. `src/components/markdown-renderer-enhanced.tsx` - Some `any` types (to be reviewed)
-10. `src/rbac/react.tsx` - Some `any` types (to be reviewed)
-11. `src/rbac/rbac-manager.ts` - Some `any` types (to be reviewed)
-12. `src/components/interactive-card.tsx` - Some `any` types (to be reviewed)
-13. `src/components/advanced-message-search.tsx` - Some `any` types (to be reviewed)
+5. ✅ `src/components/virtualized-message-list.tsx` - **FIXED** - Replaced `any` with proper types for AutoSizer, List, and scroll handlers
+6. ✅ `src/components/interactive-card.tsx` - **FIXED** - Replaced `any` with proper type assertions for drag event handlers
+7. ✅ `src/components/advanced-message-search.tsx` - **FIXED** - Replaced `any` with proper type assertions for message metadata
+8. ✅ `src/rbac/react.tsx` - **FIXED** - Replaced `any` with proper type guard for storage instance
+9. `src/components/tool-invocation-card.tsx` - Some `any` types (to be reviewed)
+10. `src/components/settings-panel.tsx` - Some `any` types (to be reviewed)
+11. `src/components/message-optimized.tsx` - Some `any` types (to be reviewed)
+12. `src/components/markdown-renderer-enhanced.tsx` - Some `any` types (to be reviewed)
+13. `src/rbac/rbac-manager.ts` - Some `any` types (to be reviewed)
 
-**Status**: ⏳ 4 files fixed, ~9 files remaining (to be reviewed in future cleanup phase)
+**Status**: ⏳ 10 files fixed, ~4-5 files remaining (to be reviewed in future cleanup phase)
 
 ---
 
@@ -150,6 +150,10 @@ if (isWeatherToolResult(result)) {
 - ✅ `message-metadata.tsx` - Replaced `any` with proper type assertion
 - ✅ `draggable.tsx` - Replaced `any` with `unknown` for event handler
 - ✅ `network-status.tsx` - Added proper `NetworkInformation` interface instead of `any`
+- ✅ `virtualized-message-list.tsx` - Replaced `any` with proper types for AutoSizer, List, scroll handlers
+- ✅ `interactive-card.tsx` - Replaced `any` with proper type assertions for drag event handlers
+- ✅ `advanced-message-search.tsx` - Replaced `any` with proper type assertions for message metadata
+- ✅ `rbac/react.tsx` - Replaced `any` with proper type guard for storage instance
 
 ### In Progress ⏳
 
