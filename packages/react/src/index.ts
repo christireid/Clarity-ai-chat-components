@@ -22,7 +22,7 @@
 // ============================================================================
 
 // Chat UI - Drop-in components
-export { ClarityChat } from './components/clarity-chat'
+export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
 export { ClarityChatPresets } from './components/clarity-chat-presets'
 
 // Model Adapters
@@ -84,8 +84,8 @@ export * from './components/message-metadata'
 export * from './components/chat-input'
 export * from './components/advanced-chat-input'
 export * from './components/chat-window'
-// High-level drop-in ready components
-export { ClarityChat, type ClarityChatProps } from './components/clarity-chat'
+// High-level drop-in ready components (already exported above, but keeping for clarity)
+// export { ClarityChat, type ClarityChatProps } from './components/clarity-chat' // Already exported above
 export { ClarityChatSimple, type ClarityChatSimpleProps } from './components/clarity-chat-simple'
 export * from './components/model-selector'
 export * from './components/streaming-message'

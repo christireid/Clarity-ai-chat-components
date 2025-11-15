@@ -37,7 +37,6 @@
  * 
  * @example
  * ```tsx
-<<<<<<< HEAD
  * // Customized usage
  * import { ClarityChat } from '@clarity-chat/react'
  * 
