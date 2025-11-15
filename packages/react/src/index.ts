@@ -143,8 +143,8 @@ export * from './hooks/use-smart-throttle'
 // Utilities
 export * from './utils'
 
-// Types
-export * from './types/chat-types'
+// Types (type-only exports for better tree-shaking)
+export type * from './types/chat-types'
 export type {
   MessageContent,
   MessageRole,
@@ -174,7 +174,7 @@ export {
   createSystemMessage,
 } from './types/clarity-chat-types'
 
-// Tool result types
+// Tool result types (type-only exports)
 export type {
   WeatherToolResult,
   SearchToolResult,
@@ -231,8 +231,10 @@ export {
 // Object hook
 export {
   useClarityObject,
-  type UseClarityObjectOptions,
-  type UseClarityObjectReturn,
+} from './hooks/use-clarity-object'
+export type {
+  UseClarityObjectOptions,
+  UseClarityObjectReturn,
 } from './hooks/use-clarity-object'
 
 // Theme System
