@@ -1,17 +1,46 @@
 # Clarity Chat Components Documentation
 
-Welcome to the Clarity Chat Components documentation. This directory contains guides for getting started, comparing Clarity to Vercel AI SDK UI, and migrating from Vercel.
+Welcome to the Clarity Chat Components documentation. This directory contains comprehensive guides for getting started, building production applications, and understanding the system architecture.
 
 ## 📚 Documentation Index
 
-### Getting Started
-- **[Getting Started with Clarity Chat](./getting-started-clarity-chat.md)** ⭐ Start here
-  - Installation instructions
-  - Your first chat in minutes
-  - Memory integration
-  - Custom UI patterns
+### 🚀 Getting Started
+- **[Getting Started](./getting-started.md)** ⭐ Start here
+  - Quick start (5 minutes)
+  - Installation and setup
+  - Your first chat interface
+  - Common patterns
 
-### Comparisons & Migration
+- **[Choose Your Path](./choose-your-path.md)** 🎯 Find your starting point
+  - Guided paths for different user types
+  - Learning paths (Beginner → Advanced)
+  - Quick links to relevant docs
+
+### 📖 Core Guides
+- **[Best Practices](./best-practices.md)** ✨ Production-ready patterns
+  - Component usage patterns
+  - Performance optimization
+  - Error handling
+  - Security best practices
+
+- **[Architecture](./architecture.md)** 🏗️ System overview
+  - Component architecture
+  - Data flow
+  - Hook relationships
+  - Extension points
+
+- **[Troubleshooting](./troubleshooting.md)** 🔧 Common issues and solutions
+  - Quick diagnosis
+  - Common errors
+  - Performance issues
+  - Integration problems
+
+### 🔄 Migration & Comparisons
+- **[Migration Guide (v1 to v2)](./migration/v1-to-v2.md)**
+  - Step-by-step migration
+  - Breaking changes
+  - Common patterns
+
 - **[Clarity vs Vercel AI SDK UI](./clarity-vs-vercel-ai-sdk-ui.md)**
   - Feature-by-feature comparison
   - When to choose Clarity vs Vercel
@@ -35,7 +64,13 @@ Welcome to the Clarity Chat Components documentation. This directory contains gu
 ```
 docs/
 ├── README.md (this file)
-├── getting-started-clarity-chat.md    # Quick start guide
+├── getting-started.md                # Quick start guide ⭐
+├── choose-your-path.md               # Guided paths
+├── best-practices.md                  # Production patterns
+├── architecture.md                    # System architecture
+├── troubleshooting.md                 # Common issues
+├── migration/
+│   └── v1-to-v2.md                   # Version migration
 ├── clarity-vs-vercel-ai-sdk-ui.md    # Feature comparison
 └── migrating-from-vercel.md          # Migration guide
 ```

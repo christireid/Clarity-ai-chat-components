@@ -1,0 +1,227 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Components/ChatInput/Overview" />
+
+# ChatInput Component
+
+The `ChatInput` component provides a complete input interface for chat applications with auto-resize, file upload, and keyboard shortcuts.
+
+## When to Use
+
+Use `ChatInput` when you need:
+
+- A complete input solution for chat
+- Auto-resizing textarea
+- File upload support
+- Keyboard shortcuts (Enter to send, Shift+Enter for new line)
+- Custom layouts (not using ChatWindow)
+
+**For complete interfaces**, consider using `ChatWindow` instead.
+
+---
+
+## Key Features
+
+### ✨ Input Features
+
+- **Auto-Resize** - Textarea grows with content
+- **File Upload** - Drag & drop or click to upload
+- **Keyboard Shortcuts** - Enter to send, Shift+Enter for new line
+- **Placeholder** - Customizable placeholder text
+- **Disabled State** - Disable during loading
+
+### 🎨 Customization
+
+- **Styling** - CSS variables and Tailwind classes
+- **Icons** - Customizable send/upload icons
+- **Layout** - Flexible layout options
+- **Validation** - Built-in input validation
+
+### ♿ Accessibility
+
+- **WCAG AAA** - Highest accessibility standard
+- **Keyboard Navigation** - Full keyboard support
+- **Screen Readers** - ARIA labels and descriptions
+- **Focus Management** - Proper focus handling
+
+---
+
+## Basic Usage
+
+```tsx
+import { ChatInput } from '@clarity-chat/react'
+
+function App() {
+  const handleSend = async (content: string) => {
+    console.log('Sending:', content)
+  }
+
+  return (
+    <ChatInput
+      onSend={handleSend}
+      placeholder="Type a message..."
+    />
+  )
+}
+```
+
+---
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `onSend` | `(content: string) => Promise<void>` | **required** | Callback when user sends a message |
+| `placeholder` | `string` | `"Type a message..."` | Placeholder text |
+| `disabled` | `boolean` | `false` | Disable input |
+| `maxLength` | `number` | - | Maximum message length |
+| `allowFileUpload` | `boolean` | `true` | Enable file upload |
+| `onFileUpload` | `(file: File) => void` | - | Callback for file uploads |
+| `className` | `string` | - | Additional CSS classes |
+| `showSendButton` | `boolean` | `true` | Show send button |
+| `autoFocus` | `boolean` | `false` | Auto-focus on mount |
+
+---
+
+## Examples by Track
+
+### Essentials Track
+
+**Most common use cases** - Use these 90% of the time.
+
+- [Basic Input](./ChatInputEssentials#basicinput)
+- [With File Upload](./ChatInputEssentials#withfileupload)
+- [Disabled State](./ChatInputEssentials#disabledstate)
+
+**See:** [ChatInput Essentials](./ChatInputEssentials) (Coming Soon)
+
+---
+
+## Common Patterns
+
+### Pattern 1: Basic Input
+
+```tsx
+import { ChatInput } from '@clarity-chat/react'
+
+function App() {
+  const handleSend = async (content: string) => {
+    await sendMessage(content)
+  }
+
+  return (
+    <ChatInput
+      onSend={handleSend}
+      placeholder="Type a message..."
+    />
+  )
+}
+```
+
+### Pattern 2: With File Upload
+
+```tsx
+import { ChatInput } from '@clarity-chat/react'
+
+function App() {
+  const handleSend = async (content: string) => {
+    await sendMessage(content)
+  }
+
+  const handleFileUpload = (file: File) => {
+    console.log('File uploaded:', file.name)
+    // Handle file upload
+  }
+
+  return (
+    <ChatInput
+      onSend={handleSend}
+      onFileUpload={handleFileUpload}
+      allowFileUpload={true}
+    />
+  )
+}
+```
+
+### Pattern 3: Disabled During Loading
+
+```tsx
+import { ChatInput } from '@clarity-chat/react'
+
+function App() {
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSend = async (content: string) => {
+    setIsLoading(true)
+    await sendMessage(content)
+    setIsLoading(false)
+  }
+
+  return (
+    <ChatInput
+      onSend={handleSend}
+      disabled={isLoading}
+      placeholder={isLoading ? "Sending..." : "Type a message..."}
+    />
+  )
+}
+```
+
+### Pattern 4: With Max Length
+
+```tsx
+<ChatInput
+  onSend={handleSend}
+  maxLength={1000}
+  placeholder="Type a message (max 1000 chars)..."
+/>
+```
+
+---
+
+## Best Practices
+
+### ✅ Do
+
+- Use `ChatInput` for custom layouts
+- Handle file uploads properly
+- Disable during loading states
+- Set appropriate max length
+- Provide clear placeholder text
+
+### ❌ Don't
+
+- Don't use for complete interfaces (use `ChatWindow`)
+- Don't forget error handling
+- Don't skip accessibility features
+- Don't ignore file size limits
+
+---
+
+## Keyboard Shortcuts
+
+- **Enter** - Send message
+- **Shift+Enter** - New line
+- **Escape** - Clear input (optional)
+- **Tab** - Navigate to send button
+
+---
+
+## Related Components
+
+- **ChatWindow** - Complete chat interface (includes ChatInput)
+- **MessageList** - Display messages
+- **Message** - Individual message component
+
+---
+
+## Next Steps
+
+- [View Essentials Examples](./ChatInputEssentials) - Most common patterns
+- [Read API Reference](../../api/components.md#chatinput) - Full API docs
+- [See Design Principles](../DesignPrinciples) - Design system guide
+- [Check Examples](../../../examples) - Real-world examples
+
+---
+
+**Questions?** Check the [FAQ](../FAQ) or ask in [Discord](https://discord.gg/clarity-chat).

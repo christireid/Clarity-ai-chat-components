@@ -1,0 +1,237 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Components/MessageList/Overview" />
+
+# MessageList Component
+
+The `MessageList` component displays a virtualized list of chat messages with smooth scrolling and performance optimizations.
+
+## When to Use
+
+Use `MessageList` when you need:
+
+- Display messages in a custom layout
+- Virtualized list for performance (100+ messages)
+- Custom message rendering
+- Fine-grained control over message display
+
+**For complete interfaces**, consider using `ChatWindow` instead.
+
+---
+
+## Key Features
+
+### ✨ Performance
+
+- **Virtualization** - Only renders visible messages
+- **Smooth Scrolling** - Optimized scroll performance
+- **Auto-Scroll** - Automatically scrolls to latest message
+- **Lazy Loading** - Loads messages on demand
+
+### 🎨 Customization
+
+- **Custom Rendering** - Render custom message components
+- **Styling** - CSS variables and Tailwind classes
+- **Layout** - Flexible layout options
+- **Empty States** - Customizable empty state
+
+### ♿ Accessibility
+
+- **WCAG AAA** - Highest accessibility standard
+- **Keyboard Navigation** - Full keyboard support
+- **Screen Readers** - ARIA labels and descriptions
+- **Focus Management** - Proper focus handling
+
+---
+
+## Basic Usage
+
+```tsx
+import { MessageList } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
+
+function App() {
+  const messages: Message[] = [
+    {
+      id: '1',
+      role: 'user',
+      content: 'Hello!',
+      createdAt: Date.now(),
+      status: 'sent',
+    },
+    {
+      id: '2',
+      role: 'assistant',
+      content: 'Hi there!',
+      createdAt: Date.now(),
+      status: 'sent',
+    },
+  ]
+
+  return (
+    <MessageList messages={messages} />
+  )
+}
+```
+
+---
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `messages` | `Message[]` | **required** | Array of messages to display |
+| `renderMessage` | `(message: Message) => ReactNode` | - | Custom message renderer |
+| `showAvatar` | `boolean` | `true` | Show avatars for messages |
+| `showTimestamp` | `boolean` | `false` | Show timestamps |
+| `enableMarkdown` | `boolean` | `true` | Enable markdown rendering |
+| `onMessageClick` | `(message: Message) => void` | - | Callback when message is clicked |
+| `onFeedback` | `(messageId: string, type: 'up' \| 'down') => void` | - | Callback for message feedback |
+| `onCopy` | `(messageId: string, content: string) => void` | - | Callback when message is copied |
+| `className` | `string` | - | Additional CSS classes |
+| `emptyState` | `ReactNode` | - | Custom empty state component |
+
+---
+
+## Examples by Track
+
+### Essentials Track
+
+**Most common use cases** - Use these 90% of the time.
+
+- [Basic List](./MessageListEssentials#basiclist)
+- [With Timestamps](./MessageListEssentials#withtimestamps)
+- [Empty State](./MessageListEssentials#emptystate)
+
+**See:** [MessageList Essentials](./MessageListEssentials) (Coming Soon)
+
+---
+
+## Common Patterns
+
+### Pattern 1: Basic List
+
+```tsx
+import { MessageList } from '@clarity-chat/react'
+
+function App() {
+  const { messages } = useClarityChat({ api: '/api/chat' })
+
+  return (
+    <MessageList messages={messages} />
+  )
+}
+```
+
+### Pattern 2: With Custom Rendering
+
+```tsx
+import { MessageList } from '@clarity-chat/react'
+
+function App() {
+  const { messages } = useClarityChat({ api: '/api/chat' })
+
+  const renderMessage = (message: Message) => {
+    return (
+      <div className="custom-message">
+        <CustomMessageComponent message={message} />
+      </div>
+    )
+  }
+
+  return (
+    <MessageList
+      messages={messages}
+      renderMessage={renderMessage}
+    />
+  )
+}
+```
+
+### Pattern 3: With Timestamps
+
+```tsx
+<MessageList
+  messages={messages}
+  showTimestamp={true}
+/>
+```
+
+### Pattern 4: Custom Empty State
+
+```tsx
+<MessageList
+  messages={messages}
+  emptyState={
+    <div className="empty-chat">
+      <p>No messages yet. Start a conversation!</p>
+    </div>
+  }
+/>
+```
+
+---
+
+## Performance Tips
+
+### Virtualization
+
+MessageList automatically virtualizes when you have 100+ messages. For best performance:
+
+```tsx
+// ✅ Good: Let MessageList handle virtualization
+<MessageList messages={messages} />
+
+// ❌ Bad: Manual virtualization
+{messages.map(msg => <Message key={msg.id} message={msg} />)}
+```
+
+### Memoization
+
+For custom renderers, memoize callbacks:
+
+```tsx
+const renderMessage = useCallback((message: Message) => {
+  return <CustomMessage message={message} />
+}, [])
+```
+
+---
+
+## Best Practices
+
+### ✅ Do
+
+- Use `MessageList` for custom layouts
+- Let it handle virtualization automatically
+- Use custom renderers for advanced cases
+- Provide empty states
+- Handle long conversations efficiently
+
+### ❌ Don't
+
+- Don't use for complete interfaces (use `ChatWindow`)
+- Don't manually virtualize
+- Don't render all messages at once
+- Don't skip empty states
+
+---
+
+## Related Components
+
+- **ChatWindow** - Complete chat interface (includes MessageList)
+- **Message** - Individual message component
+- **ChatInput** - Input component
+
+---
+
+## Next Steps
+
+- [View Essentials Examples](./MessageListEssentials) - Most common patterns
+- [Read API Reference](../../api/components.md#messagelist) - Full API docs
+- [See Design Principles](../DesignPrinciples) - Design system guide
+- [Check Examples](../../../examples) - Real-world examples
+
+---
+
+**Questions?** Check the [FAQ](../FAQ) or ask in [Discord](https://discord.gg/clarity-chat).
