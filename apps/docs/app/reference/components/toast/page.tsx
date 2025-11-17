@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { LiveDemo } from '@/components/Demo/LiveDemo';
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
+import { Badge } from '@clarity-chat/primitives';
 
 export const metadata: Metadata = {
   title: 'Toast Component - Clarity Chat Components',
@@ -14,6 +15,11 @@ export default function ToastPage() {
     <div className="docs-content">
       <header className="docs-header">
         <div>
+          <div className="flex gap-2 mb-3">
+            <Badge variant="subtle" size="sm">Component</Badge>
+            <Badge variant="success" size="sm">Stable</Badge>
+            <Badge variant="info" size="sm" dot>In Use</Badge>
+          </div>
           <h1>Toast</h1>
           <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
             A temporary notification component that displays brief messages about app processes without interrupting the user experience.

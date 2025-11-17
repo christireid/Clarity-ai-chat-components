@@ -5,6 +5,7 @@ import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { Badge } from '@clarity-chat/primitives'
 import { buttonPresets, buttonControls } from './presets'
 
 export const metadata: Metadata = {
@@ -16,7 +17,10 @@ export default function ButtonPage() {
   return (
     <div className="docs-content">
       <div className="docs-header">
-        <span className="docs-badge">Component</span>
+        <div className="flex gap-2 mb-2">
+          <Badge variant="subtle" size="sm">Component</Badge>
+          <Badge variant="success" size="sm">Stable</Badge>
+        </div>
         <h1>Button</h1>
         <p className="docs-lead">
           Versatile button component with multiple variants, sizes, icons, loading states, and full accessibility support.

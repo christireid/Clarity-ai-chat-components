@@ -5,6 +5,7 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { Badge } from '@clarity-chat/primitives'
 
 export const metadata: Metadata = {
   title: 'CommandPalette',
@@ -81,9 +82,14 @@ export default function CommandPalettePage() {
   return (
     <>
       <Breadcrumbs />
-      
+
+      <div className="flex gap-2 mb-3">
+        <Badge variant="subtle" size="sm">Component</Badge>
+        <Badge variant="info" size="sm">New</Badge>
+      </div>
+
       <h1>CommandPalette</h1>
-      
+
       <p className="lead">
         A keyboard-driven command palette interface, inspired by Spotlight and VS Code's command palette.
         Trigger with Cmd+K (or Ctrl+K) for quick access to actions and navigation.
