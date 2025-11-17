@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BookOpen, Code2, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
 import { ChatWindow, FollowUpSuggestions, type FollowUpSuggestion } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
+import { FeedbackButtons } from './FeedbackButtons'
 import { cn } from '@/lib/utils'
 
 interface DocsAssistantProps {
@@ -272,6 +273,56 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
   const handleSelectSuggestion = (suggestion: FollowUpSuggestion) => {
     handleSendMessage(suggestion.title)
   }
+
+  const handleFeedback = useCallback(async (
+    messageId: string,
+    type: 'positive' | 'negative',
+    comment?: string
+  ) => {
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messageId,
+          type,
+          comment,
+          sessionId: sessionIdRef.current,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Feedback submission failed: ${response.status}`)
+      }
+
+      console.log(`✅ Feedback submitted: ${type} for message ${messageId}`)
+    } catch (error) {
+      console.error('Failed to submit feedback:', error)
+    }
+  }, [])
+
+  // Custom message renderer with feedback buttons
+  const renderMessageWithFeedback = useCallback((message: Message) => {
+    const isAssistant = message.role === 'assistant'
+    const isComplete = message.status === 'sent'
+
+    return (
+      <div className="space-y-2">
+        {/* Message content is rendered by ChatWindow */}
+
+        {/* Add feedback buttons for completed assistant messages */}
+        {isAssistant && isComplete && (
+          <FeedbackButtons
+            messageId={message.id}
+            onFeedback={handleFeedback}
+            className="mt-2"
+          />
+        )}
+      </div>
+    )
+  }, [handleFeedback])
 
   return (
     <>
