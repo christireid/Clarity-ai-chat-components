@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ChatInput } from '@clarity-chat/react'
 import { useState } from 'react'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 /**
  * Enhanced ChatInput component with delightful microanimations and state management.
@@ -72,7 +73,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   render: () => {
     const [value, setValue] = useState('')
-    
+
     return (
       <div className="max-w-2xl">
         <ChatInput
@@ -85,6 +86,20 @@ export const Default: Story = {
         />
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Find the textarea
+    const textarea = canvas.getByRole('textbox')
+    await expect(textarea).toBeInTheDocument()
+
+    // Test typing
+    await userEvent.type(textarea, 'Hello, this is a test message!')
+    await expect(textarea).toHaveValue('Hello, this is a test message!')
+
+    // Clear for next test
+    await userEvent.clear(textarea)
   },
 }
 
@@ -543,7 +558,7 @@ export const CommentSystem: Story = {
 export const Disabled: Story = {
   render: () => {
     const [value, setValue] = useState('This input is disabled')
-    
+
     return (
       <div className="max-w-2xl">
         <ChatInput
@@ -554,6 +569,18 @@ export const Disabled: Story = {
         />
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const textarea = canvas.getByRole('textbox')
+
+    // Test textarea is disabled
+    await expect(textarea).toBeDisabled()
+
+    // Attempting to type should not work
+    const initialValue = textarea.value
+    await userEvent.type(textarea, 'This should not appear')
+    await expect(textarea).toHaveValue(initialValue)
   },
 }
 

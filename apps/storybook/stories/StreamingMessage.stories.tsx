@@ -26,8 +26,12 @@ Perfect for displaying AI responses from ChatGPT, Claude, Gemini, or custom mode
         `,
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     content: {
       control: 'text',

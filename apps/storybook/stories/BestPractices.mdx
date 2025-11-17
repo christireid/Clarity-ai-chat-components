@@ -1,0 +1,472 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Documentation/Best Practices" />
+
+# Best Practices
+
+Guidelines and recommendations for building production-ready chat interfaces with Clarity Chat Components.
+
+---
+
+## 🏗️ Architecture
+
+### Component Composition
+
+**DO:** Compose small, focused components
+
+```tsx
+<ChatWindow>
+  <MessageList messages={messages} />
+  <ChatInput onSend={handleSend} />
+</ChatWindow>
+```
+
+**DON'T:** Build monolithic components
+
+```tsx
+// ❌ Avoid
+<MassiveChatComponent
+  messages={messages}
+  onSend={handleSend}
+  showTyping={true}
+  enableVoice={true}
+  // ... 50 more props
+/>
+```
+
+### State Management
+
+**DO:** Use hooks for state management
+
+```tsx
+import { useChat } from '@clarity-chat/react'
+
+function ChatApp() {
+  const { messages, sendMessage, isStreaming } = useChat({
+    apiEndpoint: '/api/chat',
+  })
+
+  return <ChatWindow messages={messages} onSend={sendMessage} />
+}
+```
+
+**DON'T:** Pass callbacks through many layers
+
+```tsx
+// ❌ Avoid deep prop drilling
+<Parent onSend={handleSend}>
+  <Child onSend={handleSend}>
+    <GrandChild onSend={handleSend}>
+      <Input onSend={handleSend} />
+    </GrandChild>
+  </Child>
+</Parent>
+```
+
+---
+
+## ⚡ Performance
+
+### Message Virtualization
+
+**DO:** Use virtualization for long conversations
+
+```tsx
+import { MessageList } from '@clarity-chat/react'
+
+<MessageList
+  messages={messages}
+  virtualized={true}
+  estimatedItemSize={80}
+/>
+```
+
+**Benefits:**
+- Render only visible messages
+- Smooth scrolling even with 10,000+ messages
+- Lower memory usage
+
+### Memoization
+
+**DO:** Memoize expensive components
+
+```tsx
+import { memo } from 'react'
+
+const Message = memo(({ content, role }) => (
+  <div className={role === 'user' ? 'user-msg' : 'assistant-msg'}>
+    {content}
+  </div>
+))
+```
+
+**DO:** Use useMemo for expensive calculations
+
+```tsx
+const processedMessages = useMemo(
+  () => messages.map(msg => enhanceMessage(msg)),
+  [messages]
+)
+```
+
+---
+
+## ♿ Accessibility
+
+### Keyboard Navigation
+
+**DO:** Ensure full keyboard accessibility
+
+```tsx
+<ChatInput
+  placeholder="Type a message..."
+  aria-label="Chat message input"
+  onSubmit={handleSend}
+  shortcuts={{
+    'Ctrl+Enter': handleSend,
+    'Esc': handleClear,
+  }}
+/>
+```
+
+### Screen Readers
+
+**DO:** Add proper ARIA labels
+
+```tsx
+<button
+  onClick={handleSend}
+  aria-label="Send message"
+  aria-disabled={!canSend}
+>
+  <SendIcon />
+</button>
+```
+
+### Color Contrast
+
+**DO:** Ensure WCAG AAA compliance
+
+- Minimum contrast ratio: 7:1 for normal text
+- Minimum contrast ratio: 4.5:1 for large text
+- Use both color AND icons for status
+
+```tsx
+// ✅ Good - Color + Icon
+<div className="text-red-600">
+  <AlertIcon /> Error occurred
+</div>
+
+// ❌ Bad - Color only
+<div className="text-red-600">
+  Error occurred
+</div>
+```
+
+---
+
+## 🔒 Security
+
+### Input Sanitization
+
+**DO:** Sanitize user input
+
+```tsx
+import DOMPurify from 'dompurify'
+
+const sanitizedContent = DOMPurify.sanitize(userInput)
+```
+
+### XSS Prevention
+
+**DO:** Use React's built-in escaping
+
+```tsx
+// ✅ Safe - React automatically escapes
+<div>{userInput}</div>
+
+// ❌ Dangerous
+<div dangerouslySetInnerHTML={{ __html: userInput }} />
+```
+
+### API Keys
+
+**DO:** Keep API keys on the server
+
+```tsx
+// ✅ Server-side
+// api/chat/route.ts
+const response = await openai.chat.completions.create({
+  messages: req.body.messages,
+  api_key: process.env.OPENAI_API_KEY, // Server-only
+})
+
+// ❌ Client-side
+const response = await fetch('https://api.openai.com/v1/chat', {
+  headers: {
+    'Authorization': `Bearer ${API_KEY}`, // Exposed to client!
+  },
+})
+```
+
+---
+
+## 🎨 Styling
+
+### Theming
+
+**DO:** Use the theme provider
+
+```tsx
+import { ThemeProvider } from '@clarity-chat/react'
+
+<ThemeProvider defaultTheme={{ mode: 'dark', preset: 'professional' }}>
+  <App />
+</ThemeProvider>
+```
+
+### Custom Styles
+
+**DO:** Use className for customization
+
+```tsx
+<ChatInput
+  className="rounded-xl border-2 border-blue-500"
+  placeholder="Ask me anything..."
+/>
+```
+
+**DO:** Extend themes
+
+```tsx
+const customTheme = {
+  ...defaultTheme,
+  colors: {
+    ...defaultTheme.colors,
+    primary: '#your-brand-color',
+  },
+}
+```
+
+---
+
+## 📊 Data Management
+
+### Message Storage
+
+**DO:** Persist conversation history
+
+```tsx
+import { useEffect } from 'react'
+
+function ChatApp() {
+  const { messages, setMessages } = useChat()
+
+  // Save to localStorage
+  useEffect(() => {
+    localStorage.setItem('chat-history', JSON.stringify(messages))
+  }, [messages])
+
+  // Load from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('chat-history')
+    if (saved) {
+      setMessages(JSON.parse(saved))
+    }
+  }, [])
+}
+```
+
+### Streaming Responses
+
+**DO:** Handle streaming properly
+
+```tsx
+async function handleSend(message: string) {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    body: JSON.stringify({ message }),
+  })
+
+  const reader = response.body?.getReader()
+  const decoder = new TextDecoder()
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+
+    const chunk = decoder.decode(value)
+    appendToLastMessage(chunk)
+  }
+}
+```
+
+---
+
+## 🧪 Testing
+
+### Component Testing
+
+**DO:** Write comprehensive tests
+
+```tsx
+import { render, screen, userEvent } from '@testing-library/react'
+import { ChatInput } from '@clarity-chat/react'
+
+test('sends message on submit', async () => {
+  const handleSend = jest.fn()
+
+  render(<ChatInput onSend={handleSend} />)
+
+  const input = screen.getByRole('textbox')
+  await userEvent.type(input, 'Hello!')
+  await userEvent.keyboard('{Enter}')
+
+  expect(handleSend).toHaveBeenCalledWith('Hello!')
+})
+```
+
+### Storybook Testing
+
+**DO:** Use play functions for interaction testing
+
+```tsx
+export const UserTyping: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const input = canvas.getByRole('textbox')
+
+    await userEvent.type(input, 'Test message')
+    await expect(input).toHaveValue('Test message')
+  },
+}
+```
+
+---
+
+## 🚀 Deployment
+
+### Environment Variables
+
+**DO:** Use environment variables properly
+
+```bash
+# .env.local
+NEXT_PUBLIC_APP_URL=https://yourapp.com
+OPENAI_API_KEY=sk-...              # Server-only
+ANTHROPIC_API_KEY=sk-...           # Server-only
+```
+
+### Performance Monitoring
+
+**DO:** Track key metrics
+
+```tsx
+import { useEffect } from 'react'
+
+function ChatApp() {
+  useEffect(() => {
+    // Track response time
+    const start = performance.now()
+
+    sendMessage(query).then(() => {
+      const duration = performance.now() - start
+      analytics.track('chat.response_time', { duration })
+    })
+  }, [])
+}
+```
+
+### Error Tracking
+
+**DO:** Implement error boundaries
+
+```tsx
+import { ErrorBoundary } from '@clarity-chat/error-handling'
+
+<ErrorBoundary
+  fallback={<ChatErrorFallback />}
+  onError={(error) => {
+    console.error('Chat error:', error)
+    // Send to error tracking service
+  }}
+>
+  <ChatApp />
+</ErrorBoundary>
+```
+
+---
+
+## 📱 Mobile Optimization
+
+### Responsive Design
+
+**DO:** Test on real devices
+
+```tsx
+<ChatWindow className="h-screen">
+  <MessageList className="flex-1 overflow-y-auto px-4" />
+  <ChatInput
+    className="sticky bottom-0 px-4 py-2 bg-white"
+    placeholder="Type a message..."
+  />
+</ChatWindow>
+```
+
+### Touch Interactions
+
+**DO:** Add touch-friendly targets
+
+```css
+/* Minimum touch target: 44x44px */
+.button {
+  min-width: 44px;
+  min-height: 44px;
+}
+```
+
+---
+
+## 🔧 Debugging
+
+### Development Tools
+
+**DO:** Use React DevTools and Storybook
+
+- React DevTools: Inspect component state
+- Storybook: Test components in isolation
+- Network tab: Monitor API calls
+- Console: Check for warnings
+
+### Error Messages
+
+**DO:** Provide helpful error messages
+
+```tsx
+if (!apiKey) {
+  throw new Error(
+    'Missing API key. Please set OPENAI_API_KEY in your environment variables.'
+  )
+}
+```
+
+---
+
+## ✅ Checklist
+
+Before deploying to production:
+
+- [ ] All components have proper TypeScript types
+- [ ] Accessibility tested with keyboard and screen reader
+- [ ] Error boundaries implemented
+- [ ] API keys secured (server-side only)
+- [ ] Long conversations use virtualization
+- [ ] Responsive design tested on mobile
+- [ ] Loading states handled
+- [ ] Error states handled
+- [ ] Analytics tracking implemented
+- [ ] Performance metrics monitored
+
+---
+
+**Following these best practices ensures your chat application is fast, secure, accessible, and maintainable.**

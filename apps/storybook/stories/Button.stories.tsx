@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Enhanced Button component with ripple effect, loading states, and success/error feedback.
@@ -29,8 +30,12 @@ const meta = {
         component: 'A versatile button component with enhanced UX through microanimations and state management.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     variant: {
       control: 'select',
@@ -68,6 +73,17 @@ export const Default: Story = {
   args: {
     children: 'Default Button',
     variant: 'default',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /default button/i })
+
+    // Test button is clickable
+    await expect(button).toBeInTheDocument()
+    await expect(button).not.toBeDisabled()
+
+    // Test click interaction
+    await userEvent.click(button)
   },
 }
 
@@ -151,12 +167,29 @@ export const Loading: Story = {
     children: 'Loading...',
     loading: true,
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /loading/i })
+
+    // Test loading state prevents interaction
+    await expect(button).toBeInTheDocument()
+    // Button should be disabled when loading
+    await expect(button).toBeDisabled()
+  },
 }
 
 export const Disabled: Story = {
   args: {
     children: 'Disabled Button',
     disabled: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const button = canvas.getByRole('button', { name: /disabled button/i })
+
+    // Test button is disabled and cannot be clicked
+    await expect(button).toBeDisabled()
+    await expect(button).toHaveAttribute('disabled')
   },
 }
 
@@ -562,19 +595,37 @@ export const Accessibility: Story = {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
         </svg>
       </Button>
-      
+
       <Button disabled aria-label="This action is currently unavailable">
         Disabled with aria-label
       </Button>
-      
+
       <Button loading aria-label="Loading content, please wait">
         Loading with aria-label
       </Button>
-      
+
       <p className="text-sm text-gray-600 max-w-md">
-        All buttons have proper focus states (try pressing Tab), 
+        All buttons have proper focus states (try pressing Tab),
         ARIA labels for screen readers, and keyboard navigation support (Enter/Space to activate).
       </p>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test aria-label is present
+    const saveButton = canvas.getByRole('button', { name: /save document/i })
+    await expect(saveButton).toBeInTheDocument()
+
+    // Test disabled button has aria-label
+    const disabledButton = canvas.getByRole('button', { name: /currently unavailable/i })
+    await expect(disabledButton).toBeDisabled()
+
+    // Test keyboard navigation
+    await userEvent.tab()
+    await expect(saveButton).toHaveFocus()
+
+    // Test keyboard activation
+    await userEvent.keyboard('{Enter}')
+  },
 }
