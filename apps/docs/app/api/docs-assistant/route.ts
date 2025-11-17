@@ -21,6 +21,7 @@ import {
   updateSessionWithMessages,
   type SessionMessage,
 } from '@/lib/ai/sessionStore'
+import { getResponseCache, generateContextHash } from '@/lib/ai/responseCache'
 
 export const runtime = 'edge' // Use Edge runtime for better performance
 export const dynamic = 'force-dynamic'
@@ -181,6 +182,70 @@ async function* streamWithRAG(
       }
     )
 
+    // Generate context hash for cache key
+    const contextHash = generateContextHash(ragContext.sources)
+
+    // Check cache first
+    const cache = getResponseCache()
+    const cachedResponse = await cache.get(userMessage, contextHash)
+
+    if (cachedResponse) {
+      // Cache hit! Send sources from cache
+      if (cachedResponse.sources && cachedResponse.sources.length > 0) {
+        yield {
+          type: 'sources',
+          data: {
+            sources: cachedResponse.sources.map(s => ({
+              url: s.url,
+              title: s.title,
+              score: s.confidence,
+            })),
+            count: cachedResponse.sources.length,
+          },
+        }
+      }
+
+      // Stream cached response (simulate streaming for UX consistency)
+      // Split by sentences for natural chunking
+      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [cachedResponse.response]
+
+      for (const sentence of sentences) {
+        yield {
+          type: 'text',
+          content: sentence,
+        }
+        assistantResponse += sentence
+
+        // Small delay to simulate streaming (optional, can be removed)
+        await new Promise(resolve => setTimeout(resolve, 10))
+      }
+
+      // Save to session
+      if (sessionId && assistantResponse) {
+        try {
+          await updateSessionWithMessages(sessionId, [
+            {
+              role: 'user',
+              content: userMessage,
+              timestamp: new Date().toISOString(),
+            },
+            {
+              role: 'assistant',
+              content: assistantResponse,
+              timestamp: new Date().toISOString(),
+            },
+          ])
+        } catch (error) {
+          console.error('Failed to save session:', error)
+        }
+      }
+
+      return // Exit early with cached response
+    }
+
+    // Cache miss - proceed with normal RAG flow
+    console.log(`Cache miss - generating new response for: "${userMessage.substring(0, 50)}..."`)
+
     // Send sources first (if any)
     if (ragContext.sources.length > 0) {
       const citations = formatCitations(ragContext.sources)
@@ -216,6 +281,24 @@ async function* streamWithRAG(
         assistantResponse += chunk.content
       }
       yield chunk
+    }
+
+    // Cache the response after streaming completes
+    if (assistantResponse) {
+      try {
+        await cache.set(userMessage, assistantResponse, {
+          sources: ragContext.sources.map(s => ({
+            url: s.url,
+            title: s.title,
+            confidence: s.score,
+          })),
+          model: process.env.AI_MODEL || 'unknown',
+          contextHash,
+        })
+      } catch (error) {
+        console.error('Failed to cache response:', error)
+        // Don't fail the request if caching fails
+      }
     }
 
     // Save messages to session after streaming completes
@@ -255,6 +338,51 @@ async function* streamWithoutRAG(
   let assistantResponse = ''
 
   try {
+    // Check cache first (no context hash for non-RAG queries)
+    const cache = getResponseCache()
+    const cachedResponse = await cache.get(userMessage)
+
+    if (cachedResponse) {
+      // Cache hit! Stream cached response
+      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [cachedResponse.response]
+
+      for (const sentence of sentences) {
+        yield {
+          type: 'text',
+          content: sentence,
+        }
+        assistantResponse += sentence
+
+        // Small delay to simulate streaming
+        await new Promise(resolve => setTimeout(resolve, 10))
+      }
+
+      // Save to session
+      if (sessionId && assistantResponse) {
+        try {
+          await updateSessionWithMessages(sessionId, [
+            {
+              role: 'user',
+              content: userMessage,
+              timestamp: new Date().toISOString(),
+            },
+            {
+              role: 'assistant',
+              content: assistantResponse,
+              timestamp: new Date().toISOString(),
+            },
+          ])
+        } catch (error) {
+          console.error('Failed to save session:', error)
+        }
+      }
+
+      return // Exit early with cached response
+    }
+
+    // Cache miss - proceed with normal flow
+    console.log(`Cache miss (non-RAG) - generating new response for: "${userMessage.substring(0, 50)}..."`)
+
     // Add user message
     const updatedMessages = [...messages, { role: 'user', content: userMessage }]
 
@@ -267,6 +395,18 @@ async function* streamWithoutRAG(
         assistantResponse += chunk.content
       }
       yield chunk
+    }
+
+    // Cache the response after streaming completes
+    if (assistantResponse) {
+      try {
+        await cache.set(userMessage, assistantResponse, {
+          model: process.env.AI_MODEL || 'unknown',
+        })
+      } catch (error) {
+        console.error('Failed to cache response:', error)
+        // Don't fail the request if caching fails
+      }
     }
 
     // Save messages to session after streaming completes
@@ -301,6 +441,15 @@ async function* streamWithoutRAG(
  * Health check endpoint
  */
 export async function GET() {
+  const cache = getResponseCache()
+  let cacheStats = null
+
+  try {
+    cacheStats = await cache.getStats()
+  } catch (error) {
+    console.error('Failed to get cache stats:', error)
+  }
+
   return NextResponse.json({
     status: 'ok',
     service: 'Clarity Chat Documentation Assistant',
@@ -309,11 +458,14 @@ export async function GET() {
       rag: !!process.env.OPENAI_API_KEY || !!process.env.ANTHROPIC_API_KEY,
       streaming: true,
       rateLimit: true,
+      caching: true,
+      feedback: true,
     },
     models: {
       configured: process.env.AI_MODEL || 'gpt-4-turbo-preview',
       available: ['gpt-4-turbo-preview', 'gpt-4', 'claude-3-5-sonnet-20241022'],
     },
+    cache: cacheStats,
   })
 }
 
