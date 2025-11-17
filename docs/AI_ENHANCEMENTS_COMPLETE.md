@@ -4,9 +4,9 @@ This document summarizes the comprehensive enhancements made to the Clarity Chat
 
 ## Overview
 
-**Status:** 8 Major Enhancements Completed ✨
-**Files Created:** 20 new components and utilities
-**Lines of Code:** ~6,000+ lines
+**Status:** 9 Major Enhancements Completed ✨
+**Files Created:** 22 new components and utilities
+**Lines of Code:** ~7,000+ lines
 **Technologies:** React 19, TypeScript, Framer Motion, Redis, Next.js 15
 
 ---
@@ -517,6 +517,202 @@ Popular Queries:
 - Detect performance issues
 - Data-driven decision making
 - ROI tracking
+
+---
+
+## Enhancement #9: Smart Suggestions
+
+**Status:** ✅ Complete
+
+### Features
+- Context-aware follow-up question generation
+- Category-specific suggestions (exploration, clarification, practical, related)
+- Relevance scoring and deduplication
+- Multiple UI variants (default, compact, inline, chips, floating)
+- Component and hook-aware suggestions
+- Related topic recommendations
+- Adaptive suggestions based on conversation depth
+
+### Files Created
+- `apps/docs/lib/ai/suggestions.ts` (464 lines)
+- `apps/docs/components/AI/SuggestionsPanel.tsx` (364 lines)
+
+### Suggestion Categories
+
+#### Exploration
+Discover features and capabilities:
+- "What components are available?"
+- "What are the available props for ChatWindow?"
+- "Show me advanced usage patterns"
+
+#### Clarification
+Understand concepts better:
+- "What are the best practices for this?"
+- "What are common pitfalls to avoid?"
+- "Can you explain how this example works?"
+
+#### Practical
+Actionable next steps:
+- "How do I get started?"
+- "Show me a complete example"
+- "How do I test this?"
+
+#### Related
+Connected topics and components:
+- "How does MessageList work?" (after ChatWindow)
+- "What else should I know?"
+
+### Context-Aware Generation
+
+**Component Detection:**
+```typescript
+// After discussing ChatWindow
+Suggestions:
+- "What are the available props for ChatWindow?"
+- "How do I customize the styling of ChatWindow?"
+- "Show me a complete example using ChatWindow"
+- "What events does ChatWindow emit?"
+```
+
+**Hook Detection:**
+```typescript
+// After discussing useChat
+Suggestions:
+- "How do I use useChat with other hooks?"
+- "What parameters does useChat accept?"
+- "What does useChat return?"
+- "What are the performance considerations?"
+```
+
+**Conversation Depth Awareness:**
+- Early conversation: Basic setup, quickstart, installation
+- Later conversation: Testing, TypeScript types, troubleshooting
+
+### UI Components
+
+#### SuggestionsPanel (Default)
+- Rich cards with icons and categories
+- Relevance indicators for high-value suggestions
+- Category badges (color-coded)
+- Animated entrance with stagger effect
+
+#### SuggestionsPanel (Compact)
+- Chip-style buttons in horizontal flow
+- Minimal space usage
+- Quick access format
+
+#### SuggestionsPanel (Inline)
+- Inline suggestion buttons
+- Hover effects and scale animations
+- Chevron indicators
+
+#### SuggestionChips
+- Lightweight quick-access chips
+- Configurable max visible count
+- "Try:" prefix for discoverability
+
+#### FloatingSuggestions
+- Fixed position bubble (bottom-right)
+- Dismissible interface
+- Top 3 most relevant suggestions
+
+### Smart Features
+
+**Topic Extraction:**
+- Identifies mentioned components, hooks, concepts
+- Tracks from cited sources
+- Maintains conversation history
+
+**Related Components:**
+```typescript
+// Component relationships
+ChatWindow → MessageList, StreamingMessage, TypingIndicator
+StreamingMessage → ChatWindow, useChat, useChatStream
+useChat → ChatWindow, StreamingMessage, useChatStream
+```
+
+**Relevance Scoring:**
+- Base relevance from suggestion type
+- Boost for current topic relevance
+- Boost practical suggestions in deep conversations
+- Boost exploration for new conversations
+- Cap at 1.0 maximum
+
+**Deduplication:**
+- Removes duplicate questions
+- Preserves unique suggestions only
+- Sorts by relevance score
+
+### Example Flow
+
+```
+User: "How do I use ChatWindow?"
+Assistant: [Provides answer with ChatWindow examples]
+
+Smart Suggestions Generated:
+1. 🎨 "How do I customize the styling of ChatWindow?" (Practical, 0.85)
+2. ⚙️ "What are the available props for ChatWindow?" (Exploration, 0.9)
+3. 💡 "Show me a complete example using ChatWindow" (Practical, 0.8)
+4. 🔗 "How does MessageList work?" (Related, 0.65)
+5. ⚡ "What events does ChatWindow emit?" (Exploration, 0.75)
+
+User clicks: "What are the available props?"
+→ Conversation continues with context
+→ New suggestions generated based on props discussion
+```
+
+### Default Suggestions
+
+For new conversations with no context:
+1. 🚀 "How do I get started with Clarity Chat?" (1.0)
+2. 🧩 "What components are available?" (0.95)
+3. 💡 "Show me example implementations" (0.9)
+4. ⚡ "How do I add streaming messages?" (0.85)
+5. 🎨 "How do I customize the styling?" (0.8)
+
+### Benefits
+- Helps users discover relevant features
+- Reduces friction in documentation exploration
+- Contextual and intelligent recommendations
+- Improves documentation discovery rate
+- Encourages deeper engagement with features
+- Natural conversation flow
+- Reduces "what to ask next" friction
+- Surfaces related capabilities
+
+### Integration Example
+
+```tsx
+import { generateSuggestions, getDefaultSuggestions } from '@/lib/ai/suggestions'
+import { SuggestionsPanel } from '@/components/AI/SuggestionsPanel'
+
+function ChatInterface() {
+  const [suggestions, setSuggestions] = useState(getDefaultSuggestions())
+
+  // After AI response
+  const handleResponse = (response, sources) => {
+    const newSuggestions = generateSuggestions({
+      recentMessages: conversationHistory,
+      lastSources: sources,
+      currentTopic: extractTopic(sources),
+      lastQuery: userQuery,
+    })
+    setSuggestions(newSuggestions)
+  }
+
+  return (
+    <>
+      <ChatWindow messages={messages} />
+      <SuggestionsPanel
+        suggestions={suggestions}
+        onSelectSuggestion={(suggestion) => {
+          sendMessage(suggestion.question)
+        }}
+      />
+    </>
+  )
+}
+```
 
 ---
 
