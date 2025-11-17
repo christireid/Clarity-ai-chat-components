@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'Badge - Clarity Chat Components',
@@ -19,6 +20,8 @@ export default function BadgePage() {
           Display notification counts, status indicators, labels, and tags with customizable colors, sizes, and positions.
         </p>
       </div>
+
+      <ViewInStorybook component="Badge" />
 
       <section className="docs-section">
         <h2>Overview</h2>

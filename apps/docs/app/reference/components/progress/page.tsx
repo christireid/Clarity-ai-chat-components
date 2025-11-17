@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { LiveDemo } from '@/components/Demo/LiveDemo';
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
+import { ViewInStorybook } from '@/components/Links/StorybookLink';
 
 export const metadata: Metadata = {
   title: 'Progress Component - Clarity Chat Components',
@@ -20,6 +21,8 @@ export default function ProgressPage() {
           </p>
         </div>
       </header>
+
+      <ViewInStorybook component="Progress" />
 
       <section className="docs-section">
         <h2>Overview</h2>

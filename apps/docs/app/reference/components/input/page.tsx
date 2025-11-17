@@ -4,6 +4,7 @@ import { LiveDemo } from '@/components/Demo/LiveDemo';
 import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground';
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
+import { ViewInStorybook } from '@/components/Links/StorybookLink';
 import { inputPresets, inputControls } from './presets';
 
 export const metadata: Metadata = {
@@ -22,6 +23,8 @@ export default function InputPage() {
           </p>
         </div>
       </header>
+
+      <ViewInStorybook component="Input" />
 
       <section className="docs-section">
         <h2>Overview</h2>
