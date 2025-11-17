@@ -18,11 +18,11 @@ import { SearchDialog } from './SearchDialog'
 import clsx from 'clsx'
 
 const navigation = [
-  { name: 'Learn', href: '/learn' },
-  { name: 'Reference', href: '/reference' },
+  { name: 'Learn', href: '/learn/quick-start' },
+  { name: 'Docs', href: '/guides' },
+  { name: 'Reference', href: '/reference/components' },
+  { name: 'Cookbook', href: '/cookbook' },
   { name: 'Examples', href: '/examples' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Commercial', href: '/commercial' },
 ]
 
 export function Navigation() {
@@ -128,7 +128,7 @@ export function Navigation() {
 
               {/* GitHub */}
               <a
-                href="https://github.com/clarity-chat/ui"
+                href="https://github.com/christireid/Clarity-ai-chat-components"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg hover:bg-bg-secondary transition-colors"

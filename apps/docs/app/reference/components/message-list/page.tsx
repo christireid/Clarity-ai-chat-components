@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'Message List - Clarity Chat',
@@ -15,6 +16,9 @@ export default function MessageListClarityChatPage() {
           A container component for displaying chat messages with auto-scroll, loading states, empty states, and smooth animations.
         </p>
       </div>
+
+      <ViewInStorybook component="MessageList" />
+
       <section className="docs-section">
         <p className="text-sm text-muted-foreground">
           Note: Full documentation for this component is being migrated. Please refer to the storybook for interactive examples.

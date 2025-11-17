@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'Streaming Message - Clarity Chat',
@@ -15,6 +16,9 @@ export default function StreamingMessageClarityChatPage() {
           Display AI responses with token-by-token streaming, tool calls, thinking steps, citations, and error handling.
         </p>
       </div>
+
+      <ViewInStorybook component="StreamingMessage" />
+
       <section className="docs-section">
         <p className="text-sm text-muted-foreground">
           Note: Full documentation for this component is being migrated. Please refer to the storybook for interactive examples.

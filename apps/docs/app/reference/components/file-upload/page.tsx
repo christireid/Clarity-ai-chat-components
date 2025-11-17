@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'File Upload | Clarity Chat',
@@ -12,6 +13,8 @@ export default function FileUploadPage() {
       <p className="text-xl text-muted-foreground mb-8">
         Feature-rich file upload component with drag-and-drop, file validation, size limits, and upload progress tracking.
       </p>
+
+      <ViewInStorybook component="FileUpload" />
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Features</h2>

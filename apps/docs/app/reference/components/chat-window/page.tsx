@@ -7,6 +7,7 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground'
 import { ChatWindowAnatomy } from '@/components/Diagrams/ChatWindowAnatomy'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { chatWindowPresets, chatWindowControls } from './presets'
 
 export const metadata: Metadata = {
@@ -116,6 +117,8 @@ export default function ChatWindowPage() {
           reactions, typing indicators, and more.
         </p>
       </Callout>
+
+      <ViewInStorybook component="ChatWindow" />
 
       <section className="my-12">
         <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>

@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'Tooltip - Clarity Chat Components',
@@ -19,6 +20,8 @@ export default function TooltipPage() {
           Display contextual information on hover or focus with customizable positioning, delays, and styling.
         </p>
       </div>
+
+      <ViewInStorybook component="Tooltip" />
 
       <section className="docs-section">
         <h2>Overview</h2>

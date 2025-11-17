@@ -1,65 +1,77 @@
 import { MetadataRoute } from 'next'
+import { searchData } from '@/lib/search-data'
 
+/**
+ * Dynamic sitemap generation
+ *
+ * Automatically includes all pages from the search index.
+ * Regenerate search index to update sitemap: `node scripts/generate-search-index.mjs`
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://clarity-chat.dev'
   const currentDate = new Date()
 
-  // Define all routes with their priorities and change frequencies
-  const routes = [
-    // Core pages
-    { url: '', priority: 1.0, changeFrequency: 'weekly' as const },
-    { url: '/getting-started', priority: 0.9, changeFrequency: 'monthly' as const },
-    { url: '/installation', priority: 0.9, changeFrequency: 'monthly' as const },
-    { url: '/components', priority: 0.9, changeFrequency: 'weekly' as const },
-    { url: '/hooks', priority: 0.8, changeFrequency: 'weekly' as const },
-    { url: '/examples', priority: 0.8, changeFrequency: 'weekly' as const },
-    
-    // Components
-    { url: '/reference/components/button', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/card', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/modal', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/tabs', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/accordion', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/badge', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/avatar', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/tooltip', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/dropdown', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/pagination', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/breadcrumb', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/table', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/dialog', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/popover', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/drawer', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/spinner', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/progress', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/skeleton', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/alert', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/toast', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/input', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/select', priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/textarea', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/checkbox', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/components/switch', priority: 0.7, changeFrequency: 'monthly' as const },
-    
-    // Hooks
-    { url: '/reference/hooks/use-disclosure', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/hooks/use-debounce', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/hooks/use-local-storage', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/hooks/use-click-outside', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/hooks/use-clipboard', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/reference/hooks/use-media-query', priority: 0.7, changeFrequency: 'monthly' as const },
-    
-    // Examples
-    { url: '/examples/auth-flow', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/examples/dashboard', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/examples/ecommerce', priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: '/examples/data-table', priority: 0.7, changeFrequency: 'monthly' as const },
-  ]
+  // Helper function to determine priority and change frequency by type
+  function getPageConfig(type: string, href: string) {
+    // Homepage gets highest priority
+    if (href === '/') {
+      return { priority: 1.0, changeFrequency: 'weekly' as const }
+    }
 
-  return routes.map((route) => ({
-    url: `${baseUrl}${route.url}`,
-    lastModified: currentDate,
-    changeFrequency: route.changeFrequency,
-    priority: route.priority,
-  }))
+    // Quick start and installation pages
+    if (href.includes('quick-start') || href.includes('installation')) {
+      return { priority: 0.9, changeFrequency: 'monthly' as const }
+    }
+
+    // Priority and change frequency by content type
+    switch (type) {
+      case 'component':
+        return { priority: 0.8, changeFrequency: 'monthly' as const }
+      case 'hook':
+        return { priority: 0.8, changeFrequency: 'monthly' as const }
+      case 'guide':
+        return { priority: 0.8, changeFrequency: 'monthly' as const }
+      case 'example':
+        return { priority: 0.7, changeFrequency: 'monthly' as const }
+      case 'cookbook':
+        return { priority: 0.7, changeFrequency: 'monthly' as const }
+      case 'concept':
+        return { priority: 0.8, changeFrequency: 'monthly' as const }
+      case 'deployment':
+        return { priority: 0.7, changeFrequency: 'monthly' as const }
+      case 'integration':
+        return { priority: 0.7, changeFrequency: 'monthly' as const }
+      default:
+        return { priority: 0.6, changeFrequency: 'monthly' as const }
+    }
+  }
+
+  // Generate sitemap entries from search data
+  const pages = searchData
+    .filter(item => {
+      // Filter out template pages and invalid hrefs
+      return !item.href.includes('[') && !item.href.includes('{') && item.href.startsWith('/')
+    })
+    .map((item) => {
+      const config = getPageConfig(item.type, item.href)
+      return {
+        url: `${baseUrl}${item.href}`,
+        lastModified: currentDate,
+        changeFrequency: config.changeFrequency,
+        priority: config.priority,
+      }
+    })
+
+  // Add homepage explicitly if not in search data
+  const hasHomepage = pages.some(p => p.url === baseUrl || p.url === `${baseUrl}/`)
+  if (!hasHomepage) {
+    pages.unshift({
+      url: baseUrl,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 1.0,
+    })
+  }
+
+  return pages
 }

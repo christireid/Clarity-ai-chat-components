@@ -2,33 +2,10 @@
 
 import { useState, useEffect, useRef, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, ArrowRight, Hash, FileText } from 'lucide-react'
+import { Search, ArrowRight, Hash, FileText, Book, Wrench, Code2, Sparkles } from 'lucide-react'
 import Fuse from 'fuse.js'
 import clsx from 'clsx'
-
-// This will be populated from your content structure
-// For now, using a sample dataset
-const searchData = [
-  // Components
-  { title: 'ChatWindow', type: 'component', href: '/reference/components/chat-window', description: 'Main chat interface container' },
-  { title: 'Message', type: 'component', href: '/reference/components/message', description: 'Display individual messages' },
-  { title: 'CommandPalette', type: 'component', href: '/reference/components/command-palette', description: 'Keyboard-driven command interface' },
-  { title: 'Draggable', type: 'component', href: '/reference/components/draggable', description: 'Drag and drop system' },
-  
-  // Hooks
-  { title: 'useChat', type: 'hook', href: '/reference/hooks/use-chat', description: 'Manage chat state and messages' },
-  { title: 'useKeyboardShortcuts', type: 'hook', href: '/reference/hooks/use-keyboard-shortcuts', description: 'Register keyboard shortcuts' },
-  { title: 'useUndoRedo', type: 'hook', href: '/reference/hooks/use-undo-redo', description: 'History management with undo/redo' },
-  
-  // Learn
-  { title: 'Quick Start', type: 'guide', href: '/learn/quick-start', description: 'Get started in 5 minutes' },
-  { title: 'Installation', type: 'guide', href: '/learn/installation', description: 'Install Clarity Chat' },
-  { title: 'Tutorial', type: 'guide', href: '/learn/tutorial', description: 'Build your first chat app' },
-  
-  // Examples
-  { title: 'Basic Chat', type: 'example', href: '/examples/basic-chat', description: 'Simple chat interface' },
-  { title: 'Themed Chat', type: 'example', href: '/examples/themed-chat', description: 'Chat with custom theme' },
-]
+import { searchData, type SearchItem } from '@/lib/search-data'
 
 interface SearchDialogProps {
   open: boolean
@@ -97,11 +74,19 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
       case 'component':
         return <Hash className="w-4 h-4 text-brand-500" />
       case 'hook':
-        return <Hash className="w-4 h-4 text-purple-500" />
+        return <Wrench className="w-4 h-4 text-purple-500" />
       case 'guide':
         return <FileText className="w-4 h-4 text-green-500" />
       case 'example':
-        return <FileText className="w-4 h-4 text-orange-500" />
+        return <Code2 className="w-4 h-4 text-orange-500" />
+      case 'cookbook':
+        return <Book className="w-4 h-4 text-amber-500" />
+      case 'concept':
+        return <Sparkles className="w-4 h-4 text-blue-500" />
+      case 'deployment':
+        return <FileText className="w-4 h-4 text-indigo-500" />
+      case 'integration':
+        return <FileText className="w-4 h-4 text-teal-500" />
       default:
         return <FileText className="w-4 h-4" />
     }
@@ -113,8 +98,12 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
       hook: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
       guide: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
       example: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
+      cookbook: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300',
+      concept: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
+      deployment: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300',
+      integration: 'bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300',
     }
-    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-700'
+    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300'
   }
 
   if (!open) return null

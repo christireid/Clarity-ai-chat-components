@@ -4,6 +4,7 @@ import '@/styles/globals.css'
 import { Providers } from './providers'
 import { Navigation } from '@/components/Navigation/Navigation'
 import { Footer } from '@/components/Layout/Footer'
+import { StructuredData, OrganizationStructuredData } from '@/components/SEO/StructuredData'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -73,6 +74,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <StructuredData type="software" />
+        <OrganizationStructuredData />
+      </head>
       <body className={inter.className}>
         <Providers>
           <a href="#main-content" className="skip-to-content">

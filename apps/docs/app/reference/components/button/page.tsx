@@ -4,6 +4,7 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground'
 import { Callout } from '@/components/MDX/Callout'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { buttonPresets, buttonControls } from './presets'
 
 export const metadata: Metadata = {
@@ -21,6 +22,8 @@ export default function ButtonPage() {
           Versatile button component with multiple variants, sizes, icons, loading states, and full accessibility support.
         </p>
       </div>
+
+      <ViewInStorybook component="Button" />
 
       <section className="docs-section">
         <h2>Overview</h2>

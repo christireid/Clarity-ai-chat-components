@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'Chat Input | Clarity Chat',
@@ -12,6 +13,8 @@ export default function ChatInputPage() {
       <p className="text-xl text-muted-foreground mb-8">
         Feature-rich chat input component with character counting, validation, smooth animations, and keyboard shortcuts.
       </p>
+
+      <ViewInStorybook component="ChatInput" />
 
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Features</h2>

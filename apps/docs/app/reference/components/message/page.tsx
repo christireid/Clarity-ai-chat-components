@@ -4,6 +4,7 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'Message',
@@ -121,9 +122,11 @@ export default function MessagePage() {
       <h1>Message</h1>
       
       <p className="lead">
-        The Message component displays individual chat messages with support for avatars, 
+        The Message component displays individual chat messages with support for avatars,
         timestamps, reactions, attachments, and more. It's highly customizable and accessible.
       </p>
+
+      <ViewInStorybook component="Message" />
 
       <h2 id="import">Import</h2>
 

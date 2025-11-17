@@ -4,6 +4,7 @@ import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'CommandPalette',
@@ -87,6 +88,8 @@ export default function CommandPalettePage() {
         A keyboard-driven command palette interface, inspired by Spotlight and VS Code's command palette.
         Trigger with Cmd+K (or Ctrl+K) for quick access to actions and navigation.
       </p>
+
+      <ViewInStorybook component="CommandPalette" />
 
       <Callout type="tip">
         <p>

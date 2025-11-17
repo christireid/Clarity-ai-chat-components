@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { HeroSection } from '@/components/Layout/HeroSection'
 import { FeaturesGrid } from '@/components/Layout/FeaturesGrid'
+import { Testimonials } from '@/components/Layout/Testimonials'
+import { LiveChatDemo } from '@/components/Layout/LiveChatDemo'
 import { CodeExample } from '@/components/Demo/CodeExample'
 import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
 import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
@@ -11,6 +13,9 @@ import {
   Accessibility,
   Code,
   Rocket,
+  Heart,
+  Layers,
+  Smartphone,
 } from 'lucide-react'
 
 export default function HomePage() {
@@ -20,34 +25,47 @@ export default function HomePage() {
       <HeroSection
         title={
           <>
-            Build Beautiful Chat UIs
+            Beautiful AI Chat UIs
             <br />
-            <span className="text-brand-500">Lightning Fast</span>
+            <span className="text-brand-500">Built for React</span>
           </>
         }
-        description="A comprehensive React UI library with 70+ components, 35+ hooks, and 150+ animations. Built with TypeScript, Tailwind CSS, and Framer Motion."
+        description="Production-ready React components for building stunning chat interfaces. Type-safe, accessible, and ridiculously customizable."
         primaryCta={{
           text: 'Get Started',
           href: '/learn/quick-start',
         }}
         secondaryCta={{
-          text: 'View Components',
-          href: '/reference/components',
+          text: 'Live Demo',
+          href: '#demo',
         }}
       />
 
-      {/* Quick Example */}
-      <section className="container-docs py-24">
+      {/* Live Demo Section */}
+      <section id="demo" className="container-docs py-24 scroll-mt-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Start Building in Seconds</h2>
+          <h2 className="text-4xl font-bold mb-4">See It In Action</h2>
           <p className="text-xl text-text-secondary">
-            Copy, paste, and customize. It's that simple.
+            Experience the power of Clarity Chat. Try the interactive demo below.
           </p>
         </div>
 
-        <CodeExample
-          title="Your First Chat Window"
-          code={`import { ChatWindow, Message } from '@clarity-chat/react'
+        <LiveChatDemo />
+      </section>
+
+      {/* Quick Example */}
+      <section className="bg-bg-secondary py-24">
+        <div className="container-docs">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Start Building in Seconds</h2>
+            <p className="text-xl text-text-secondary">
+              Copy, paste, and customize. It's that simple.
+            </p>
+          </div>
+
+          <CodeExample
+            title="Your First Chat Window"
+            code={`import { ChatWindow, Message } from '@clarity-chat/react'
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([])
@@ -68,62 +86,61 @@ function App() {
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
-        />
+            language="tsx"
+            showLineNumbers
+          />
+        </div>
       </section>
 
       {/* Features Grid */}
-      <section className="bg-bg-secondary py-24">
-        <div className="container-docs">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Why Clarity Chat?</h2>
-            <p className="text-xl text-text-secondary">
-              Everything you need to build production-ready chat interfaces
-            </p>
-          </div>
-
-          <FeaturesGrid
-            features={[
-              {
-                icon: <Sparkles className="w-8 h-8" />,
-                title: '70+ Components',
-                description:
-                  'From basic messages to advanced patterns like command palettes, drag & drop, and context menus.',
-              },
-              {
-                icon: <Zap className="w-8 h-8" />,
-                title: '150+ Animations',
-                description:
-                  'Smooth, performant animations powered by Framer Motion. Spring physics, stagger effects, and more.',
-              },
-              {
-                icon: <Palette className="w-8 h-8" />,
-                title: 'Fully Customizable',
-                description:
-                  'Built with Tailwind CSS. Override any style with your design tokens. Dark mode included.',
-              },
-              {
-                icon: <Accessibility className="w-8 h-8" />,
-                title: 'Accessible by Default',
-                description:
-                  'WCAG AAA compliant. Full keyboard navigation, screen reader support, and ARIA attributes.',
-              },
-              {
-                icon: <Code className="w-8 h-8" />,
-                title: 'TypeScript First',
-                description:
-                  'Comprehensive type definitions. IntelliSense for every prop. Catch errors at compile time.',
-              },
-              {
-                icon: <Rocket className="w-8 h-8" />,
-                title: 'Production Ready',
-                description:
-                  'Tree-shakeable, performant, and battle-tested. Used in production by teams worldwide.',
-              },
-            ]}
-          />
+      <section className="container-docs py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold mb-4">Why Clarity Chat?</h2>
+          <p className="text-xl text-text-secondary">
+            Everything you need to build production-ready chat interfaces
+          </p>
         </div>
+
+        <FeaturesGrid
+          features={[
+            {
+              icon: <Layers className="w-8 h-8" />,
+              title: '70+ Components',
+              description:
+                'From basic messages to advanced patterns like command palettes, drag & drop, and context menus.',
+            },
+            {
+              icon: <Zap className="w-8 h-8" />,
+              title: 'Lightning Fast',
+              description:
+                'Virtual scrolling for 1000+ messages. Tree-shakeable. Optimized with React.memo. Instant performance.',
+            },
+            {
+              icon: <Palette className="w-8 h-8" />,
+              title: 'Fully Customizable',
+              description:
+                'Built with Tailwind CSS. 11 themes included. Override any style. Dark mode by default.',
+            },
+            {
+              icon: <Accessibility className="w-8 h-8" />,
+              title: 'Accessible by Default',
+              description:
+                'WCAG AAA compliant. Full keyboard navigation, screen reader support, and ARIA attributes.',
+            },
+            {
+              icon: <Code className="w-8 h-8" />,
+              title: 'TypeScript First',
+              description:
+                'Comprehensive type definitions. IntelliSense for every prop. Catch errors at compile time.',
+            },
+            {
+              icon: <Smartphone className="w-8 h-8" />,
+              title: 'Mobile Optimized',
+              description:
+                'Touch gestures. Virtual keyboard handling. Responsive design. Perfect on any device.',
+            },
+          ]}
+        />
 
         {/* Performance Comparison */}
         <div className="mt-24">
@@ -150,26 +167,39 @@ function App() {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section className="bg-bg-secondary">
+        <Testimonials />
+      </section>
+
       {/* CTA Section */}
       <section className="container-docs py-24">
-        <div className="bg-gradient-to-r from-brand-500 to-brand-600 rounded-2xl p-12 text-center text-white">
-          <h2 className="text-4xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-xl mb-8 opacity-90">
-            Install Clarity Chat and build your first chat interface in minutes.
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Link
-              href="/learn/installation"
-              className="px-8 py-3 bg-white text-brand-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Installation Guide
-            </Link>
-            <Link
-              href="/examples"
-              className="px-8 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-brand-800 transition-colors"
-            >
-              View Examples
-            </Link>
+        <div className="bg-gradient-to-r from-brand-500 to-brand-600 rounded-2xl p-12 text-center text-white relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:24px_24px]" />
+          </div>
+
+          <div className="relative">
+            <Heart className="w-12 h-12 mx-auto mb-4 fill-current" />
+            <h2 className="text-4xl font-bold mb-4">Ready to Get Started?</h2>
+            <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+              Install Clarity Chat and build your first chat interface in minutes. Join thousands of developers building beautiful experiences.
+            </p>
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Link
+                href="/learn/quick-start"
+                className="px-8 py-3 bg-white text-brand-600 rounded-lg font-semibold hover:bg-gray-100 transition-all hover:scale-105 shadow-lg"
+              >
+                Quick Start →
+              </Link>
+              <Link
+                href="/reference/components"
+                className="px-8 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-brand-800 transition-colors border border-white/20"
+              >
+                Browse Components
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -183,25 +213,28 @@ function App() {
               <li>
                 <Link
                   href="/learn/quick-start"
-                  className="text-brand-500 hover:text-brand-600"
+                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
-                  Quick Start →
+                  <span>Quick Start</span>
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </li>
               <li>
                 <Link
                   href="/learn/tutorial"
-                  className="text-brand-500 hover:text-brand-600"
+                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
-                  Tutorial →
+                  <span>Tutorial</span>
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </li>
               <li>
                 <Link
                   href="/learn/concepts"
-                  className="text-brand-500 hover:text-brand-600"
+                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
-                  Core Concepts →
+                  <span>Core Concepts</span>
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </li>
             </ul>
@@ -212,25 +245,28 @@ function App() {
               <li>
                 <Link
                   href="/reference/components"
-                  className="text-brand-500 hover:text-brand-600"
+                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
-                  Components →
+                  <span>Components</span>
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </li>
               <li>
                 <Link
                   href="/reference/hooks"
-                  className="text-brand-500 hover:text-brand-600"
+                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
-                  Hooks →
+                  <span>Hooks</span>
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </li>
               <li>
                 <Link
                   href="/reference/api"
-                  className="text-brand-500 hover:text-brand-600"
+                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
-                  API Reference →
+                  <span>API Reference</span>
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </li>
             </ul>
@@ -240,26 +276,29 @@ function App() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="https://github.com/clarity-chat/ui"
-                  className="text-brand-500 hover:text-brand-600"
+                  href="https://github.com/christireid/Clarity-ai-chat-components"
+                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
-                  GitHub →
+                  <span>GitHub</span>
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </li>
               <li>
                 <Link
-                  href="https://storybook.clarity-chat.dev"
-                  className="text-brand-500 hover:text-brand-600"
+                  href="/cookbook"
+                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
-                  Storybook →
+                  <span>Cookbook</span>
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </li>
               <li>
                 <Link
                   href="/examples"
-                  className="text-brand-500 hover:text-brand-600"
+                  className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
-                  Examples →
+                  <span>Examples</span>
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
                 </Link>
               </li>
             </ul>

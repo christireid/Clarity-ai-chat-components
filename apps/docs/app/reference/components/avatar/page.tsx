@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
 import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 export const metadata: Metadata = {
   title: 'Avatar - Clarity Chat Components',
@@ -19,6 +20,8 @@ export default function AvatarPage() {
           Display user profile pictures with automatic fallbacks, status indicators, sizes, and group avatars.
         </p>
       </div>
+
+      <ViewInStorybook component="Avatar" />
 
       <section className="docs-section">
         <h2>Overview</h2>
