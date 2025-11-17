@@ -5,6 +5,7 @@ import { Providers } from './providers'
 import { Navigation } from '@/components/Navigation/Navigation'
 import { Footer } from '@/components/Layout/Footer'
 import { StructuredData, OrganizationStructuredData } from '@/components/SEO/StructuredData'
+import { DocsAssistant } from '@/components/AI/DocsAssistant'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -89,6 +90,7 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            <DocsAssistant />
           </div>
         </Providers>
       </body>
