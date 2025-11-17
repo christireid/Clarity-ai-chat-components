@@ -124,28 +124,109 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
     setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
 
-    // TODO: Phase 2.3 - Connect to API endpoint
-    // For now, show a placeholder response
-    setTimeout(() => {
+    try {
+      // Call API endpoint with streaming
+      const response = await fetch('/api/docs-assistant', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: content,
+          currentPath: typeof window !== 'undefined' ? window.location.pathname : '/',
+          messages: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      // Handle streaming response
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+
+      if (!reader) {
+        throw new Error('No response body')
+      }
+
+      // Create assistant message with streaming status
       const assistantMessage: Message = {
         id: `assistant-${Date.now()}`,
         role: 'assistant',
-        content: `Thank you for your question! The AI assistant is currently being set up.
-
-This is Phase 2.1 - UI Foundation. In the next phases, I'll be connected to:
-- **Phase 2.2**: Documentation indexing with vector search
-- **Phase 2.3**: RAG-powered API endpoint
-- **Phase 2.4**: Real-time streaming responses
-- **Phase 2.5**: Session memory and persistence
-
-For now, you can explore the [documentation](/docs) or try the [interactive examples](/examples).`,
+        content: '',
         createdAt: new Date(),
-        status: 'sent',
+        status: 'streaming',
       }
 
       setMessages((prev) => [...prev, assistantMessage])
+
+      let accumulatedContent = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6))
+
+              if (data.type === 'text' && data.content) {
+                accumulatedContent += data.content
+
+                // Update the assistant message
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantMessage.id
+                      ? { ...m, content: accumulatedContent }
+                      : m
+                  )
+                )
+              } else if (data.type === 'error') {
+                throw new Error(data.content || 'Stream error')
+              } else if (data.type === 'done') {
+                // Mark as sent
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantMessage.id
+                      ? { ...m, status: 'sent' as const }
+                      : m
+                  )
+                )
+              }
+            } catch (parseError) {
+              // Ignore parse errors for incomplete JSON
+            }
+          }
+        }
+      }
+
       setIsLoading(false)
-    }, 1000)
+    } catch (error) {
+      console.error('Chat error:', error)
+
+      // Add error message
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
+        role: 'assistant',
+        content: `I encountered an error while processing your request. ${
+          error instanceof Error ? error.message : 'Please try again.'
+        }`,
+        createdAt: new Date(),
+        status: 'error',
+      }
+
+      setMessages((prev) => [...prev, errorMessage])
+      setIsLoading(false)
+    }
   }
 
   const handleSelectSuggestion = (suggestion: FollowUpSuggestion) => {
