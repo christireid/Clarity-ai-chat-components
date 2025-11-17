@@ -5,6 +5,7 @@ import { Highlight, themes } from 'prism-react-renderer'
 import { useTheme } from 'next-themes'
 import { Check, Copy, Terminal } from 'lucide-react'
 import clsx from 'clsx'
+import { useToast } from '@clarity-chat/react'
 
 interface CodeBlockProps {
   code: string
@@ -26,19 +27,21 @@ export function CodeBlock({
   const [copied, setCopied] = useState(false)
   const { theme } = useTheme()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const { success } = useToast()
 
   // Wrapped in useCallback to prevent recreation
   const copyToClipboard = useCallback(async () => {
     await navigator.clipboard.writeText(code)
     setCopied(true)
-    
+    success('Code copied to clipboard')
+
     // Clear existing timeout if any
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
-    
+
     timeoutRef.current = setTimeout(() => setCopied(false), 2000)
-  }, [code])
+  }, [code, success])
 
   // Cleanup timeout on unmount
   useEffect(() => {

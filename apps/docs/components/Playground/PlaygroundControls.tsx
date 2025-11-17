@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
-import { 
-  ShareIcon, 
-  DocumentArrowDownIcon, 
+import {
+  ShareIcon,
+  DocumentArrowDownIcon,
   CodeBracketIcon,
-  ArrowTopRightOnSquareIcon 
+  ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/outline'
+import { useToast } from '@clarity-chat/react'
 
 interface PlaygroundControlsProps {
   code: string
@@ -14,17 +15,19 @@ interface PlaygroundControlsProps {
   templateName: string
 }
 
-export function PlaygroundControls({ 
-  code, 
+export function PlaygroundControls({
+  code,
   dependencies = {},
-  templateName 
+  templateName
 }: PlaygroundControlsProps) {
   const [showShareModal, setShowShareModal] = useState(false)
   const [copied, setCopied] = useState(false)
+  const { success } = useToast()
 
   const handleCopyCode = async () => {
     await navigator.clipboard.writeText(code)
     setCopied(true)
+    success('Code copied to clipboard')
     setTimeout(() => setCopied(false), 2000)
   }
 
@@ -169,6 +172,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 onClick={async () => {
                   await navigator.clipboard.writeText(shareUrl)
                   setCopied(true)
+                  success('Share link copied to clipboard')
                   setTimeout(() => setCopied(false), 2000)
                 }}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"

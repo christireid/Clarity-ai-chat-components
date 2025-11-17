@@ -6,6 +6,7 @@ import { nightOwl } from '@codesandbox/sandpack-themes'
 import { useTheme } from 'next-themes'
 import { Play, RefreshCw, Maximize2, Minimize2, Copy, Check, ExternalLink } from 'lucide-react'
 import clsx from 'clsx'
+import { useToast } from '@clarity-chat/react'
 
 interface LiveDemoProps extends Partial<SandpackProps> {
   title?: string
@@ -31,10 +32,12 @@ export function LiveDemo({
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [key, setKey] = useState(0)
   const [copied, setCopied] = useState(false)
+  const { success } = useToast()
 
   const handleCopyCode = async () => {
     await navigator.clipboard.writeText(code)
     setCopied(true)
+    success('Code copied to clipboard')
     setTimeout(() => setCopied(false), 2000)
   }
 
