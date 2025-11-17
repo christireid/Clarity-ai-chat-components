@@ -188,6 +188,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       setMessages((prev) => [...prev, assistantMessage])
 
       let accumulatedContent = ''
+      let sources: Array<{ id: string; source: string; url: string; confidence: number }> = []
 
       while (true) {
         const { done, value } = await reader.read()
@@ -213,14 +214,30 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
                       : m
                   )
                 )
+              } else if (data.type === 'sources' && data.data?.sources) {
+                // Store sources for potential display
+                sources = data.data.sources
+
+                // Optionally, append sources as a footnote to the message
+                // This can be customized based on UX preferences
+                console.log('📚 Sources retrieved:', sources)
               } else if (data.type === 'error') {
                 throw new Error(data.content || 'Stream error')
               } else if (data.type === 'done') {
-                // Mark as sent
+                // Append sources to the message content if available
+                let finalContent = accumulatedContent
+                if (sources.length > 0) {
+                  finalContent += '\n\n---\n\n**📚 Sources:**\n'
+                  sources.forEach((source) => {
+                    finalContent += `- [${source.source}](${source.url}) (${Math.round(source.confidence * 100)}% relevance)\n`
+                  })
+                }
+
+                // Mark as sent with sources
                 setMessages((prev) =>
                   prev.map((m) =>
                     m.id === assistantMessage.id
-                      ? { ...m, status: 'sent' as const }
+                      ? { ...m, content: finalContent, status: 'sent' as const }
                       : m
                   )
                 )
