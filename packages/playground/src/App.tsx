@@ -3,7 +3,7 @@
  * Interactive component testing and experimentation environment
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Editor from '@monaco-editor/react'
 import { Play, Copy, Download, Share2, RefreshCw, Settings } from 'lucide-react'
 import { LivePreview } from './components/LivePreview'
@@ -16,14 +16,37 @@ export default function App() {
   const [selectedTemplate, setSelectedTemplate] = useState('basic')
   const [autoRun, setAutoRun] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
+  const runPreviewRef = useRef<(() => void) | null>(null)
+  const hasLoadedFromUrl = useRef(false)
 
-  // Auto-format code on load
+  // Load code from URL parameters on mount (before formatting)
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const codeParam = params.get('code')
+    if (codeParam) {
+      try {
+        const decoded = decodeURIComponent(codeParam)
+        const codeFromUrl = atob(decoded)
+        setCode(codeFromUrl)
+        hasLoadedFromUrl.current = true
+        // Clear URL parameter after loading
+        window.history.replaceState({}, '', window.location.pathname)
+      } catch (error) {
+        console.error('Failed to load code from URL:', error)
+        // Silently fail - use default template
+      }
+    }
+  }, [])
+
+  // Auto-format code on initial load only (skip if loaded from URL)
+  useEffect(() => {
+    if (hasLoadedFromUrl.current) return
+
     const format = async () => {
       try {
         const prettierMod = await import('prettier/standalone')
         const parserBabel = await import('prettier/parser-babel')
-        const formatted = prettierMod.format(code, {
+        const formatted = await prettierMod.default.format(code, {
           parser: 'babel',
           plugins: [parserBabel.default],
           semi: false,
@@ -32,40 +55,80 @@ export default function App() {
         setCode(formatted)
       } catch (error) {
         console.error('Failed to format code:', error)
+        // Silently fail - code will remain unformatted
       }
     }
     void format()
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run on mount
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code)
-    alert('Code copied to clipboard!')
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      // Could use a toast notification here instead of alert
+      alert('Code copied to clipboard!')
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error)
+      alert('Failed to copy code. Please try selecting and copying manually.')
+    }
   }
 
   const handleDownload = () => {
-    const blob = new Blob([code], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'clarity-chat-component.tsx'
-    a.click()
-    URL.revokeObjectURL(url)
+    try {
+      const blob = new Blob([code], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'clarity-chat-component.tsx'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Failed to download file:', error)
+      alert('Failed to download file. Please try again.')
+    }
   }
 
-  const handleShare = () => {
-    const encoded = btoa(code)
-    const url = `${window.location.origin}?code=${encoded}`
-    navigator.clipboard.writeText(url)
-    alert('Share link copied to clipboard!')
+  const handleShare = async () => {
+    try {
+      // Encode code to base64, then URL encode
+      const base64 = btoa(unescape(encodeURIComponent(code)))
+      const encoded = encodeURIComponent(base64)
+      const url = `${window.location.origin}${window.location.pathname}?code=${encoded}`
+
+      // Check URL length (browsers have limits around 2000-8000 chars)
+      if (url.length > 2000) {
+        alert('Code is too long to share via URL. Please use the download feature instead.')
+        return
+      }
+
+      await navigator.clipboard.writeText(url)
+      alert('Share link copied to clipboard!')
+    } catch (error) {
+      console.error('Failed to share:', error)
+      alert('Failed to create share link. Please try again.')
+    }
   }
 
   const handleTemplateChange = (templateKey: string) => {
     setSelectedTemplate(templateKey)
-    setCode(templates[templateKey as keyof typeof templates])
+    const template = templates[templateKey as keyof typeof templates]
+    if (template) {
+      setCode(template)
+    } else {
+      console.warn(`Template "${templateKey}" not found`)
+      setCode(templates.basic)
+    }
   }
 
   const handleReset = () => {
-    setCode(templates[selectedTemplate as keyof typeof templates])
+    const template = templates[selectedTemplate as keyof typeof templates]
+    if (template) {
+      setCode(template)
+    } else {
+      setCode(templates.basic)
+    }
   }
 
   return (
@@ -85,44 +148,51 @@ export default function App() {
           <div className="flex items-center gap-2">
             <button
               onClick={handleReset}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               title="Reset to template"
+              aria-label="Reset code to selected template"
             >
-              <RefreshCw className="w-5 h-5" />
+              <RefreshCw className="w-5 h-5" aria-hidden="true" />
             </button>
             <button
               onClick={handleCopy}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               title="Copy code"
+              aria-label="Copy code to clipboard"
             >
-              <Copy className="w-5 h-5" />
+              <Copy className="w-5 h-5" aria-hidden="true" />
             </button>
             <button
               onClick={handleDownload}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               title="Download"
+              aria-label="Download code as file"
             >
-              <Download className="w-5 h-5" />
+              <Download className="w-5 h-5" aria-hidden="true" />
             </button>
             <button
               onClick={handleShare}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               title="Share"
+              aria-label="Share code via URL"
             >
-              <Share2 className="w-5 h-5" />
+              <Share2 className="w-5 h-5" aria-hidden="true" />
             </button>
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               title="Settings"
+              aria-label="Toggle settings panel"
+              aria-expanded={showSettings}
             >
-              <Settings className="w-5 h-5" />
+              <Settings className="w-5 h-5" aria-hidden="true" />
             </button>
             <button
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-              className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
-              {theme === 'light' ? '🌙' : '☀️'}
+              <span aria-hidden="true">{theme === 'light' ? '🌙' : '☀️'}</span>
             </button>
           </div>
         </div>
@@ -189,12 +259,16 @@ export default function App() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Preview
               </h2>
-              <button className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <button
+                onClick={() => runPreviewRef.current?.()}
+                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                title="Run preview manually"
+              >
                 <Play className="w-4 h-4" />
                 Run
               </button>
             </div>
-            <LivePreview code={code} theme={theme} autoRun={autoRun} />
+            <LivePreview code={code} theme={theme} autoRun={autoRun} onRunRef={runPreviewRef} />
           </div>
         </div>
       </div>

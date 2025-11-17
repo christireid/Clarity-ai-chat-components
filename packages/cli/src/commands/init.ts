@@ -38,8 +38,6 @@ export async function initCommand(options: InitOptions) {
       console.log('\n')
       const initBanner = createBanner('Initialize Project', {
         gradient: 'atlas',
-        border: true,
-        borderColor: 'cyan',
       })
       console.log(initBanner)
       console.log(infoMessage('Setting up your AI-powered application...', {
@@ -75,7 +73,7 @@ export async function initCommand(options: InitOptions) {
       const { waitUntilExit } = render(React.createElement(InitWizard, {
         detectedFramework,
         packageManager,
-        onComplete: (result) => {
+        onComplete: (result: any) => {
           config = result
         }
       }))
@@ -97,7 +95,7 @@ export async function initCommand(options: InitOptions) {
     }
 
     // Create project structure
-    const spinner = createSpinner('Creating project structure...', { color: 'cyan' })
+    const spinner = createSpinner('Creating project structure...')
     spinner.start()
     
     await fs.ensureDir(path.join(cwd, 'src', 'components', 'clarity-chat'))
@@ -126,8 +124,8 @@ export async function initCommand(options: InitOptions) {
         apiKeys: config.apiKeys,
       }, cwd)
       logger.debug('Config file saved')
-    } catch (error) {
-      logger.warn('Failed to save config file', error)
+      } catch (error) {
+        logger.warn('Failed to save config file', error instanceof Error ? error : String(error))
     }
     
     spinner.succeed('Components installed')
@@ -145,7 +143,7 @@ export async function initCommand(options: InitOptions) {
         spinner.succeed('Dependencies installed')
       } catch (error) {
         spinner.fail('Failed to install dependencies')
-        logger.error(error)
+        logger.error(error instanceof Error ? error : new Error(String(error)))
         throw new ConfigError(
           'Failed to install dependencies',
           [

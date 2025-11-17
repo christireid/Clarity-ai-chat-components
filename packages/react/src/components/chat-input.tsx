@@ -28,13 +28,104 @@ export interface ChatInputProps {
 }
 
 /**
- * ChatInput component - Enhanced with React 19 features
+ * ChatInput - Mid-Level Composable Component
  * 
- * React 19 Enhancements:
- * - Removed React.memo() - compiler handles optimization
- * - Removed simple useMemo/useCallback - compiler optimizes
- * - Uses useActionState for async submit handling
- * - Cleaner, more maintainable code
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Chat UI
+ * 
+ * A composable input component for chat interfaces with character counting,
+ * validation, and smooth animations.
+ * 
+ * For drop-in usage, use top-level `ClarityChat` component instead.
+ * For custom input rendering, use low-level primitives.
+ * 
+ * @example
+ * ```tsx
+ * const [input, setInput] = useState('')
+ * 
+ * <ChatInput
+ *   value={input}
+ *   onChange={setInput}
+ *   onSubmit={async (value) => {
+ *     await sendMessage(value)
+ *     setInput('')
+ *   }}
+ *   maxLength={1000}
+ * />
+ * ```
+ * 
+ * A mid-level building block for chat input functionality. Provides a textarea
+ * with character counting, validation, animations, and submit handling.
+ * 
+ * **Features:**
+ * - Character counter with warning thresholds
+ * - Auto-resizing textarea
+ * - Smooth animations (height, focus glow)
+ * - Keyboard shortcuts (Enter to submit, Shift+Enter for newline)
+ * - Disabled state handling
+ * - Max length validation
+ * 
+ * **When to use:**
+ * - Building custom chat interfaces
+ * - Need input with character counting
+ * - Want smooth animations
+ * 
+ * **When NOT to use:**
+ * - For simplest setup, use `ClarityChat` component (includes input)
+ * - For basic text input without chat features, use standard HTML input
+ * 
+ * @param props - ChatInput configuration
+ * @param props.value - Current input value (controlled)
+ * @param props.onChange - Callback when value changes
+ * @param props.onSubmit - Callback when form is submitted (Enter key or button click)
+ * @param props.placeholder - Placeholder text (default: 'Type a message...')
+ * @param props.disabled - Disable input (default: false)
+ * @param props.maxLength - Maximum character length
+ * @param props.showCharCounter - Show character counter (default: true if maxLength is set)
+ * @param props.warningThreshold - Warning threshold percentage (default: 0.8 = 80%)
+ * @param props.animateHeight - Enable smooth expand/contract animation (default: true)
+ * @param props.glowOnFocus - Enable focus ring glow animation (default: true)
+ * @param props.className - Optional CSS class name
+ * 
+ * @example Basic usage
+ * ```tsx
+ * function MyChatInput() {
+ *   const [value, setValue] = useState('')
+ *   
+ *   return (
+ *     <ChatInput
+ *       value={value}
+ *       onChange={setValue}
+ *       onSubmit={(text) => {
+ *         sendMessage(text)
+ *         setValue('')
+ *       }}
+ *     />
+ *   )
+ * }
+ * ```
+ * 
+ * @example With character limit
+ * ```tsx
+ * <ChatInput
+ *   value={value}
+ *   onChange={setValue}
+ *   onSubmit={handleSubmit}
+ *   maxLength={500}
+ *   showCharCounter
+ *   warningThreshold={0.9} // Warn at 90%
+ * />
+ * ```
+ * 
+ * @example Disabled state
+ * ```tsx
+ * <ChatInput
+ *   value={value}
+ *   onChange={setValue}
+ *   onSubmit={handleSubmit}
+ *   disabled={isLoading}
+ * />
+ * ```
  */
 export function ChatInput({
   value,
@@ -49,6 +140,33 @@ export function ChatInput({
   glowOnFocus = true,
   className,
 }: ChatInputProps) {
+  // Runtime validation
+  if (typeof value !== 'string') {
+    throw new Error(
+      'ChatInput: "value" prop must be a string.\n\n' +
+      'Example:\n' +
+      '  <ChatInput value={input} onChange={setInput} onSubmit={handleSubmit} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
+
+  if (typeof onChange !== 'function') {
+    throw new Error(
+      'ChatInput: "onChange" prop must be a function.\n\n' +
+      'Example:\n' +
+      '  <ChatInput value={input} onChange={(val) => setInput(val)} onSubmit={handleSubmit} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
+
+  if (typeof onSubmit !== 'function') {
+    throw new Error(
+      'ChatInput: "onSubmit" prop is required and must be a function.\n\n' +
+      'Example:\n' +
+      '  <ChatInput value={input} onChange={setInput} onSubmit={async (val) => await sendMessage(val)} />\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/components'
+    )
+  }
   const [isFocused, setIsFocused] = React.useState(false)
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)

@@ -55,7 +55,7 @@ export function shouldOutput(level: 'info' | 'warn' | 'error' | 'debug' = 'info'
 /**
  * Output formatted message
  */
-export function output(message: string, level: 'info' | 'warn' | 'error' | 'success' = 'info'): void {
+export function output(message: string, level: 'info' | 'warn' | 'error' | 'debug' = 'info'): void {
   if (!shouldOutput(level)) return
   
   if (isJson) {
@@ -68,22 +68,22 @@ export function output(message: string, level: 'info' | 'warn' | 'error' | 'succ
     return
   }
   
-  const colors = {
+  const colors: Record<string, (text: string) => string> = {
     info: chalk.blue,
     warn: chalk.yellow,
     error: chalk.red,
-    success: chalk.green,
+    debug: chalk.magenta,
   }
   
-  const icons = {
+  const icons: Record<string, string> = {
     info: 'ℹ',
     warn: '⚠',
     error: '✖',
-    success: '✔',
+    debug: '🐛',
   }
   
-  const color = colors[level]
-  const icon = icons[level]
+  const color = colors[level] || chalk.white
+  const icon = icons[level] || '•'
   
   console.log(color(`${icon} ${message}`))
 }
@@ -169,7 +169,17 @@ export function outputTable(
  * Output success message
  */
 export function success(message: string): void {
-  output(message, 'success')
+  if (!shouldOutput('info')) return
+  if (isJson) {
+    const json = {
+      level: 'success',
+      message,
+      timestamp: new Date().toISOString(),
+    }
+    console.log(JSON.stringify(json))
+    return
+  }
+  console.log(chalk.green(`✔ ${message}`))
 }
 
 /**

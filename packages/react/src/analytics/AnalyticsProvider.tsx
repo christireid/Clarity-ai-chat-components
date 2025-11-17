@@ -332,7 +332,14 @@ export function useAnalytics() {
   const context = React.useContext(AnalyticsContext)
   
   if (!context) {
-    throw new Error('useAnalytics must be used within an AnalyticsProvider')
+    throw new Error(
+      '[useAnalytics] AnalyticsProvider is not available. ' +
+      'Please wrap your component with <AnalyticsProvider> to use this hook.\n\n' +
+      'Example:\n' +
+      '  <AnalyticsProvider config={{ endpoint: "/api/analytics" }}>\n' +
+      '    <YourComponent />\n' +
+      '  </AnalyticsProvider>'
+    )
   }
   
   return context

@@ -42,7 +42,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   const [_position, _setPosition] = React.useState({ x: 0, y: 0 })
   const triggerRef = React.useRef<HTMLDivElement>(null)
   const tooltipRef = React.useRef<HTMLDivElement>(null)
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
 

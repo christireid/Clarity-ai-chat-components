@@ -1,12 +1,14 @@
 # @clarity-chat/dev-tools
 
+> **Developer Tools** - Debugging, testing, validation, and performance profiling
+
 Comprehensive developer tools for debugging, testing, validation, and performance profiling of AI chat applications.
 
 **Now with React 19 components and hooks!** 🎉
 
 This package now includes React 19 components and hooks that leverage new React 19 features like `useOptimistic` for optimistic UI updates and client-side form state management.
 
-## Features
+## ✨ Features
 
 - 🔍 **API Inspector** - Deep inspection of AI provider API calls with timing and token tracking
 - 📝 **Enhanced Logger** - Multi-level logging with colors, timestamps, and structured context
@@ -15,13 +17,19 @@ This package now includes React 19 components and hooks that leverage new React 
 - 🔐 **Config Validator** - Validate environment variables, API keys, and configurations
 - ⚡ **Performance Profiler** - Track latency, throughput, memory usage, and streaming performance
 
-## Installation
+## 📦 Installation
 
 ```bash
 npm install @clarity-chat/dev-tools
+# or
+pnpm add @clarity-chat/dev-tools
+# or
+yarn add @clarity-chat/dev-tools
 ```
 
-## Quick Start
+## 🚀 Quick Start
+
+> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
 
 ### TypeScript Utilities
 
@@ -733,11 +741,32 @@ import type {
 } from '@clarity-chat/dev-tools'
 ```
 
-## Requirements
+## 📚 Documentation
+
+- [Getting Started Guide](../../docs/getting-started-clarity-chat.md)
+- [Cookbook](../../docs/cookbook/) - Copy-paste ready patterns
+- [Troubleshooting](../../docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [Quick Start](./QUICK_START.md) - 5-minute quick start guide
+- [React 19 Migration](./REACT_19_MIGRATION.md) - Complete migration guide
+- [Integration Guide](./INTEGRATION_GUIDE.md) - Complete integration guide
+- [API Reference](../../docs/api-reference.md) - Complete API documentation
+- [Storybook](http://localhost:6006) - Interactive examples
+
+## 🔧 Requirements
 
 - Node.js 18.0.0 or higher
 - For React components: React 19.0.0 or higher, React DOM 19.0.0 or higher
 
-## License
+## 📄 License
 
 MIT
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/christireid/Clarity-ai-chat-components)
+- [Documentation](../../apps/docs/)
+- [Examples](../../examples/)
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](../../CONTRIBUTING.md)

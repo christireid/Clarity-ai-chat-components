@@ -1,0 +1,182 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Hooks/Overview" />
+
+# Hooks Overview
+
+Clarity Chat provides powerful React hooks for building AI chat interfaces.
+
+---
+
+## Available Hooks
+
+### useClarityChat
+
+**The flagship hook** for building chat interfaces.
+
+- Message management
+- API integration
+- Memory support
+- Streaming support
+- Error handling
+
+**See:** [useClarityChat Essentials](./useClarityChat/Essentials)
+
+---
+
+### useMemory
+
+Manage conversation memory and context.
+
+- Sliding window strategy
+- Semantic chunks
+- Vector store integration
+- Token management
+
+**See:** [useMemory](./useMemory) (Coming Soon)
+
+---
+
+### useStreaming
+
+Handle streaming responses from AI APIs.
+
+- Real-time updates
+- SSE support
+- Chunk processing
+- Progress tracking
+
+**See:** [useStreaming](./useStreaming) (Coming Soon)
+
+---
+
+## Quick Start
+
+### Basic Chat
+
+```tsx
+import { useClarityChat } from '@clarity-chat/react'
+
+function App() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div>
+      {messages.map(msg => (
+        <div key={msg.id}>{msg.content}</div>
+      ))}
+      <button onClick={() => append({ role: 'user', content: 'Hello' })}>
+        Send
+      </button>
+    </div>
+  )
+}
+```
+
+---
+
+## Hook Patterns
+
+### Pattern 1: Basic Chat
+
+```tsx
+const { messages, append, isLoading } = useClarityChat({
+  api: '/api/chat',
+})
+```
+
+### Pattern 2: With Memory
+
+```tsx
+const { messages, append } = useClarityChat({
+  api: '/api/chat',
+  memory: {
+    enabled: true,
+    strategy: 'sliding-window',
+    maxTokens: 4000,
+  },
+})
+```
+
+### Pattern 3: With Streaming
+
+```tsx
+const { messages, append, isStreaming } = useClarityChat({
+  api: '/api/chat',
+  stream: true,
+})
+```
+
+---
+
+## Storybook Tracks
+
+### Essentials Track
+
+**Most common patterns** - Use these 90% of the time.
+
+- Basic chat setup
+- With ChatWindow component
+- With memory enabled
+- Error handling
+
+**See:** [useClarityChat Essentials](./useClarityChat/Essentials)
+
+---
+
+### Enterprise Track
+
+**Advanced patterns** - For production applications.
+
+- Custom memory strategies
+- Multi-model routing
+- Advanced error handling
+- Performance optimization
+
+**See:** [useClarityChat Enterprise](./useClarityChat/Enterprise) (Coming Soon)
+
+---
+
+### Composability Track
+
+**Extending hooks** - Customization and composition.
+
+- Custom hooks based on useClarityChat
+- Hook composition patterns
+- Advanced state management
+- Custom integrations
+
+**See:** [useClarityChat Composability](./useClarityChat/Composability) (Coming Soon)
+
+---
+
+## Best Practices
+
+### ✅ Do
+
+- Use `useClarityChat` for most cases
+- Enable memory for multi-turn conversations
+- Handle errors properly
+- Use TypeScript for type safety
+
+### ❌ Don't
+
+- Don't duplicate hook state
+- Don't ignore error states
+- Don't skip memory for context-heavy chats
+- Don't forget to handle loading states
+
+---
+
+## Related Resources
+
+- [Components Overview](../Components/Overview) - UI components
+- [API Reference](../../api/hooks.md) - Full API docs
+- [Examples](../../../examples) - Real-world examples
+- [Best Practices](../../../docs/best-practices.md) - Production patterns
+
+---
+
+**Questions?** Check the [FAQ](../FAQ) or ask in [Discord](https://discord.gg/clarity-chat).

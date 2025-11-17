@@ -1,0 +1,262 @@
+import { Meta } from '@storybook/blocks'
+import { Canvas, Story } from '@storybook/blocks'
+
+<Meta title="Components/ChatWindow/Overview" />
+
+# ChatWindow Component
+
+The `ChatWindow` component is a complete, production-ready chat interface that combines message display, input, and interactions into a single component.
+
+## When to Use
+
+Use `ChatWindow` when you need:
+
+- A complete chat interface out of the box
+- Quick prototyping
+- Standard chat functionality
+- Production-ready UI with all features
+
+**For custom layouts**, consider using `MessageList` and `ChatInput` separately.
+
+---
+
+## Key Features
+
+### ✨ Complete Interface
+
+- **Message Display** - Virtualized message list
+- **Input Area** - Auto-resizing textarea with file upload
+- **Actions** - Copy, feedback, retry built-in
+- **Loading States** - Streaming indicators
+- **Error Handling** - Error states and retry
+
+### 🎨 Customization
+
+- **Themes** - 11 built-in themes or custom
+- **Styling** - CSS variables and Tailwind classes
+- **Layout** - Flexible layout options
+- **Components** - Replace individual parts
+
+### ♿ Accessibility
+
+- **WCAG AAA** - Highest accessibility standard
+- **Keyboard Navigation** - Full keyboard support
+- **Screen Readers** - ARIA labels and descriptions
+- **Focus Management** - Proper focus handling
+
+---
+
+## Basic Usage
+
+```tsx
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={async (content) => {
+        await append({ role: 'user', content })
+      }}
+    />
+  )
+}
+```
+
+---
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `messages` | `Message[]` | **required** | Array of messages to display |
+| `onSendMessage` | `(content: string) => Promise<void>` | **required** | Callback when user sends a message |
+| `isLoading` | `boolean` | `false` | Whether a message is being generated |
+| `theme` | `Theme` | - | Custom theme configuration |
+| `className` | `string` | - | Additional CSS classes |
+| `showTokenCounter` | `boolean` | `false` | Show token usage counter |
+| `showAvatar` | `boolean` | `true` | Show avatars for messages |
+| `enableMarkdown` | `boolean` | `true` | Enable markdown rendering |
+| `onFeedback` | `(messageId: string, type: 'up' \| 'down') => void` | - | Callback for message feedback |
+| `onCopy` | `(messageId: string, content: string) => void` | - | Callback when message is copied |
+
+---
+
+## Examples by Track
+
+### Essentials Track
+
+**Most common use cases** - Use these 90% of the time.
+
+- [Basic Chat](./ChatWindowEssentials#basicchat)
+- [With Memory](./ChatWindowEssentials#withmemory)
+- [With Custom Theme](./ChatWindowEssentials#withtheme)
+
+**See:** [ChatWindow Essentials](./ChatWindowEssentials) (Coming Soon)
+
+---
+
+### Enterprise Track
+
+**Advanced patterns** - For production applications.
+
+- Multi-user conversations
+- Custom message rendering
+- Advanced error handling
+- Performance optimizations
+
+**See:** [ChatWindow Enterprise](./ChatWindowEnterprise) (Coming Soon)
+
+---
+
+### Composability Track
+
+**Extending components** - Customization and composition.
+
+- Custom message components
+- Custom input components
+- Custom layouts
+- Advanced styling
+
+**See:** [ChatWindow Composability](./ChatWindowComposability) (Coming Soon)
+
+---
+
+## Common Patterns
+
+### Pattern 1: Basic Chat
+
+```tsx
+import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+
+function App() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={async (content) => {
+        await append({ role: 'user', content })
+      }}
+    />
+  )
+}
+```
+
+### Pattern 2: With Memory
+
+```tsx
+import { useClarityChat, ChatWindow, MemoryProvider } from '@clarity-chat/react'
+
+function App() {
+  return (
+    <MemoryProvider config={{ maxTokens: 10000 }}>
+      <ChatWithMemory />
+    </MemoryProvider>
+  )
+}
+
+function ChatWithMemory() {
+  const { messages, append, isLoading } = useClarityChat({
+    api: '/api/chat',
+    memory: {
+      enabled: true,
+      strategy: 'sliding-window',
+      maxTokens: 4000,
+    },
+  })
+
+  return (
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={async (content) => {
+        await append({ role: 'user', content })
+      }}
+    />
+  )
+}
+```
+
+### Pattern 3: With Custom Theme
+
+```tsx
+import { ChatWindow, ThemeProvider } from '@clarity-chat/react'
+
+const customTheme = {
+  colors: {
+    primary: '#3b82f6',
+    background: '#ffffff',
+    foreground: '#000000',
+  },
+}
+
+function App() {
+  return (
+    <ThemeProvider theme={customTheme}>
+      <ChatWindow {...props} />
+    </ThemeProvider>
+  )
+}
+```
+
+### Pattern 4: With Token Counter
+
+```tsx
+<ChatWindow
+  messages={messages}
+  isLoading={isLoading}
+  onSendMessage={handleSend}
+  showTokenCounter={true}
+/>
+```
+
+---
+
+## Best Practices
+
+### ✅ Do
+
+- Use `ChatWindow` for quick development
+- Enable memory for multi-turn conversations
+- Use custom themes for branding
+- Handle errors gracefully
+- Show token counter for cost tracking
+
+### ❌ Don't
+
+- Don't use for highly custom layouts (use `MessageList` + `ChatInput`)
+- Don't disable markdown unnecessarily
+- Don't forget error handling
+- Don't skip accessibility features
+
+---
+
+## Related Components
+
+- **MessageList** - Just the message list (for custom layouts)
+- **ChatInput** - Just the input (for custom layouts)
+- **Message** - Individual message component
+- **TokenCounter** - Token usage display
+
+---
+
+## Next Steps
+
+- [View Essentials Examples](./ChatWindowEssentials) - Most common patterns
+- [Read API Reference](../../api/components.md#chatwindow) - Full API docs
+- [See Design Principles](../DesignPrinciples) - Design system guide
+- [Check Examples](../../../examples) - Real-world examples
+
+---
+
+**Questions?** Check the [FAQ](../FAQ) or ask in [Discord](https://discord.gg/clarity-chat).

@@ -118,31 +118,86 @@ bun add @clarity-chat/react
 
 ## ⚡ Quick Start
 
-Get a production-ready AI chat interface in 60 seconds:
+> 📖 **Architecture**: Clarity Chat follows a **layered architecture** with **7 core domains**. 
+> - **Top-Level APIs**: Drop-in ready (`ClarityChat`, `useClarityChat`)
+> - **Mid-Level APIs**: Composable (`ChatWindow`, `useChatEnhanced`)
+> - **Low-Level Primitives**: Utilities (`normalizeMessages`, `createStreamReader`)
+> 
+> See [DESIGN.md](./DESIGN.md) for architecture details and [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) for patterns.
+
+Get a production-ready AI chat interface in **3 lines of code**:
 
 ```tsx
-import { ChatWindow, ThemeProvider, themes } from '@clarity-chat/react'
+import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
-  return (
-    <ThemeProvider theme={themes.ocean}>
-      <ChatWindow
-        messages={messages}
-        onSendMessage={async (content) => {
-          const response = await fetch('/api/chat', {
-            method: 'POST',
-            body: JSON.stringify({ message: content }),
-          })
-          return response.json()
-        }}
-      />
-    </ThemeProvider>
-  )
+  return <ClarityChat api="/api/chat" />
 }
 ```
 
 **That's it!** ✨ You now have a production-ready AI chat interface with:
+
+### Need More Control?
+
+Use the hook with pre-configured handlers - less boilerplate:
+
+```tsx
+import { useClarityChat, ChatWindow, useChatHandlers } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+function App() {
+  const chat = useClarityChat({
+    api: '/api/chat',
+  })
+
+  // Pre-configured handlers - no boilerplate! ✨
+  const handlers = useChatHandlers({ chat })
+
+  return (
+    <ChatWindow
+      messages={chat.messages} // Accepts CoreMessage[] directly! ✨
+      isLoading={chat.isLoading}
+      onSendMessage={handlers.onSendMessage}
+      onClear={handlers.onClear}
+    />
+  )
+}
+```
+
+### Using Presets
+
+For common use cases, use pre-configured presets:
+
+```tsx
+import { ClarityChatPresets } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
+
+// Simple chat
+function SimpleChat() {
+  return <ClarityChatPresets.Simple api="/api/chat" />
+}
+
+// Chat with memory
+function MemoryChat() {
+  return (
+    <ClarityChatPresets.WithMemory 
+      api="/api/chat"
+      memoryStrategy="sliding-window"
+    />
+  )
+}
+
+// Enterprise chat with all features
+function EnterpriseChat() {
+  return <ClarityChatPresets.Enterprise api="/api/chat" />
+}
+```
+
+**What's New:**
+- ✅ **No more conversion** - `ChatWindow` accepts `CoreMessage[]` directly
+- ✅ **One-line setup** - `ClarityChat` component handles everything
+- ✅ **Same powerful features** - streaming, memory, error handling, all included
 
 - ✨ Beautiful animations and transitions
 - ⌨️ Full keyboard navigation
@@ -151,7 +206,7 @@ function App() {
 - ♿ WCAG AAA accessibility
 - 🔒 Production-ready security
 
-**[📖 View Full Quick Start Guide](./apps/docs/guide/quick-start.md)** • **[📚 Browse Examples](./examples/README.md)**
+**[📖 View Full Quick Start Guide](./apps/docs-site/app/learn/quick-start)** • **[📚 Browse Examples](./apps/examples/README.md)**
 
 ---
 
@@ -854,7 +909,8 @@ useMessageOperations()     // Edit, regenerate, branch, undo/redo
 useMessageHistory()        // Message history management
 useBranching()             // Conversation branching
 useOptimisticMessage()     // Optimistic UI updates
-useChat()                  // Core chat functionality
+useClarityChat()           // 🚀 Flagship hook - Recommended for all new projects
+useChat()                  // Core chat functionality (legacy)
 useChatEnhanced()          // Enhanced chat with advanced features
 useCompletion()             // Text completion
 ```
@@ -1127,6 +1183,11 @@ Pre-built prompt templates for common tasks:
 
 ## 📚 Documentation
 
+### Quick Start & Migration
+- **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** ⭐ - Quick start guide
+- **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
+- **[Migrating from Vercel](./docs/migrating-from-vercel.md)** - Migration guide
+
 ### Getting Started
 - [Quick Start Guide](./apps/docs/guide/quick-start.md) - Get started in 5 minutes
 - [Installation Guide](./apps/docs/guide/installation.md)
@@ -1149,7 +1210,7 @@ Pre-built prompt templates for common tasks:
 ### Examples Gallery (30+ Production-Ready Examples)
 
 ```
-📁 examples/
+📁 apps/examples/
 ├── 🆕 token-optimization-demo/    # Complete optimization showcase
 ├── 🆕 ecommerce-assistant/        # Shopping chatbot
 ├── 🆕 code-assistant/              # AI coding companion
@@ -1183,7 +1244,7 @@ Pre-built prompt templates for common tasks:
 └── integration-examples/           # Integration patterns
 ```
 
-**[→ View All Examples](./examples/README.md)**
+**[→ View All Examples](./apps/examples/README.md)**
 
 ---
 
@@ -1531,7 +1592,7 @@ Built with amazing open-source tools:
 <p align="center">
   <a href="https://github.com/christireid/Clarity-ai-chat-components">⭐ Star on GitHub</a> •
   <a href="https://docs.clarity-chat.dev">📖 Read the Docs</a> •
-  <a href="./examples/README.md">🚀 Try Examples</a> •
+  <a href="./apps/examples/README.md">🚀 Try Examples</a> •
   <a href="https://discord.gg/clarity-chat">💬 Join Discord</a>
 </p>
 

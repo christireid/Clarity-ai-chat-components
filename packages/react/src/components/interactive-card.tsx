@@ -95,7 +95,24 @@ export const InteractiveCard = React.memo(
     }
 
     // Extract HTML drag event handlers to avoid conflicts with Framer Motion
-    const { onDrag: _onDrag, onDragStart: _onDragStart, onDragEnd: _onDragEnd, onDragOver: _onDragOver, onDragEnter: _onDragEnter, onDragLeave: _onDragLeave, onDrop: _onDrop, ...motionProps } = props as any
+    const { 
+      onDrag: _onDrag, 
+      onDragStart: _onDragStart, 
+      onDragEnd: _onDragEnd, 
+      onDragOver: _onDragOver, 
+      onDragEnter: _onDragEnter, 
+      onDragLeave: _onDragLeave, 
+      onDrop: _onDrop, 
+      ...motionProps 
+    } = props as InteractiveCardProps & {
+      onDrag?: React.DragEventHandler<HTMLDivElement>
+      onDragStart?: React.DragEventHandler<HTMLDivElement>
+      onDragEnd?: React.DragEventHandler<HTMLDivElement>
+      onDragOver?: React.DragEventHandler<HTMLDivElement>
+      onDragEnter?: React.DragEventHandler<HTMLDivElement>
+      onDragLeave?: React.DragEventHandler<HTMLDivElement>
+      onDrop?: React.DragEventHandler<HTMLDivElement>
+    }
 
     return (
       <motion.div
@@ -228,7 +245,24 @@ export const InteractiveButton = React.forwardRef<
     }
 
     // Extract HTML drag event handlers to avoid conflicts with Framer Motion
-    const { onDrag: _onDrag, onDragStart: _onDragStart, onDragEnd: _onDragEnd, onDragOver: _onDragOver, onDragEnter: _onDragEnter, onDragLeave: _onDragLeave, onDrop: _onDrop, ...motionButtonProps } = props as any
+    const { 
+      onDrag: _onDrag, 
+      onDragStart: _onDragStart, 
+      onDragEnd: _onDragEnd, 
+      onDragOver: _onDragOver, 
+      onDragEnter: _onDragEnter, 
+      onDragLeave: _onDragLeave, 
+      onDrop: _onDrop, 
+      ...motionButtonProps 
+    } = props as React.ButtonHTMLAttributes<HTMLButtonElement> & {
+      onDrag?: React.DragEventHandler<HTMLButtonElement>
+      onDragStart?: React.DragEventHandler<HTMLButtonElement>
+      onDragEnd?: React.DragEventHandler<HTMLButtonElement>
+      onDragOver?: React.DragEventHandler<HTMLButtonElement>
+      onDragEnter?: React.DragEventHandler<HTMLButtonElement>
+      onDragLeave?: React.DragEventHandler<HTMLButtonElement>
+      onDrop?: React.DragEventHandler<HTMLButtonElement>
+    }
 
     return (
       <motion.button

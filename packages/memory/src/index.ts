@@ -5,13 +5,30 @@
  * Works with any JavaScript/TypeScript application
  */
 
+// Main API - zero-config memory system
+export { clarityMemory } from './core/memory'
+export type { MemoryInstance } from './core/memory'
+
 // Core types
-export * from './types'
+export * from './core/types'
 
-// Memory service (framework-agnostic)
+// Configuration
+export * from './core/config'
+
+// Storage adapters
+export { InMemoryStore } from './stores/in-memory'
+export { FileStore } from './stores/file'
+export { IndexedDBStore } from './stores/indexeddb'
+export { createStoreFromConfig } from './stores/factory'
+export type { VectorStore, SearchOptions } from './stores/base'
+
+// Utilities
+export * from './utils/token-counter'
+export * from './utils/validation'
+export * from './utils/vector'
+
+// Legacy exports (for backward compatibility)
 export { MemoryService } from './memory-service'
-
-// Token optimization utilities
 export {
   TokenCounter,
   TokenBudgetManager,
@@ -20,20 +37,20 @@ export {
   ContextOptimizer,
 } from './token-optimizer'
 
-// Re-export key interfaces for convenience
+// Re-export legacy types
 export type {
-  MemoryItem,
+  MemoryItem as LegacyMemoryItem,
   MemoryQuery,
   MemorySearchResult,
   MemoryServiceConfig,
-  MemoryStats,
-  MemoryType,
+  MemoryStats as LegacyMemoryStats,
+  MemoryType as LegacyMemoryType,
   MemoryScope,
   MemoryPriority,
   MemoryEvent,
   MemoryContext,
-  TokenAllocation,
+  TokenAllocation as LegacyTokenAllocation,
   TokenOptimizationConfig,
   CompressedMemory,
-  MemoryChunk,
+  MemoryChunk as LegacyMemoryChunk,
 } from './types'

@@ -1,6 +1,16 @@
 import * as React from 'react'
 
 /**
+ * Network Information API type (not available in all browsers)
+ */
+interface NetworkInformation {
+  effectiveType?: '2g' | '3g' | '4g'
+  downlink?: number
+  rtt?: number
+  saveData?: boolean
+}
+
+/**
  * Network connection status
  */
 export type NetworkConnectionStatus = 'online' | 'offline' | 'slow' | 'unstable'
@@ -187,7 +197,7 @@ export function NetworkStatus({
    */
   const updateConnectionInfo = React.useCallback(() => {
     if ('connection' in navigator) {
-      const connection = (navigator as any).connection
+      const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection
       if (connection) {
         setDownlinkSpeed(connection.downlink)
 
@@ -218,7 +228,7 @@ export function NetworkStatus({
 
     // Listen to connection changes (if supported)
     if ('connection' in navigator) {
-      const connection = (navigator as any).connection
+      const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection
       if (connection) {
         connection.addEventListener('change', updateConnectionInfo)
       }
@@ -232,7 +242,7 @@ export function NetworkStatus({
       window.removeEventListener('offline', handleOffline)
 
       if ('connection' in navigator) {
-        const connection = (navigator as any).connection
+        const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection
         if (connection) {
           connection.removeEventListener('change', updateConnectionInfo)
         }

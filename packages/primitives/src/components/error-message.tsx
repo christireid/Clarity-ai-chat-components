@@ -1,11 +1,11 @@
 'use client'
 
-import * as React from 'react'
 import { cn } from '../lib/utils'
 
 export interface ErrorMessageProps {
   error?: string
   className?: string
+  id?: string
 }
 
 /**
@@ -16,11 +16,12 @@ export interface ErrorMessageProps {
  * <ErrorMessage error="This field is required" />
  * ```
  */
-export const ErrorMessage = ({ error, className }: ErrorMessageProps) => {
+export const ErrorMessage = ({ error, className, id }: ErrorMessageProps) => {
   if (!error) return null
 
   return (
     <p
+      id={id}
       className={cn(
         'mt-1.5 text-xs text-destructive flex items-center gap-1.5 animate-in fade-in-0 slide-in-from-top-1 duration-150 font-medium',
         className

@@ -1,8 +1,12 @@
 /**
- * Utility Functions
+ * Utility Functions Export
  * 
- * Optional utilities for building AI applications.
- * Use what you need, extend as needed.
+ * Re-export commonly used utilities for convenience.
+ * Note: Most utilities are domain-specific and exported from their respective domains.
+ * 
+ * @internal
+ * These utilities are primarily for internal use. Public APIs should use
+ * domain-specific exports from their respective domains.
  */
 
 // Class name utility
@@ -42,3 +46,14 @@ export * from './chat-config-builder'
 // Streaming utilities (shared across hooks)
 export * from './streaming-helpers'
 
+// Message conversion utilities (canonical implementation)
+export * from './message-conversion'
+// Legacy exports for backward compatibility
+export * from './message-converter'
+
+// Tool result extraction utilities
+export * from './tool-result-extractor'
+
+// Message conversion utilities are exported from chat-ui domain
+// See: src/exports/chat-ui.ts
+// These are re-exported here for backward compatibility only

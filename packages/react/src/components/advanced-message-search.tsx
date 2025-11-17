@@ -141,7 +141,7 @@ export const AdvancedMessageSearch = React.memo(
       // Filter by model (if metadata available)
       if (filters.model) {
         results = results.filter((msg) => {
-          const metadata = (msg as any).metadata
+          const metadata = (msg as Message & { metadata?: Record<string, unknown> }).metadata
           return metadata?.model === filters.model
         })
       }
@@ -149,7 +149,7 @@ export const AdvancedMessageSearch = React.memo(
       // Filter by tokens
       if (filters.minTokens || filters.maxTokens) {
         results = results.filter((msg) => {
-          const tokenCount = (msg as any).tokenCount || 0
+          const tokenCount = (msg as Message & { tokenCount?: number }).tokenCount || 0
           if (filters.minTokens && tokenCount < filters.minTokens) return false
           if (filters.maxTokens && tokenCount > filters.maxTokens) return false
           return true
@@ -159,7 +159,7 @@ export const AdvancedMessageSearch = React.memo(
       // Filter by attachments
       if (filters.hasAttachments) {
         results = results.filter((msg) => {
-          return (msg as any).attachments && (msg as any).attachments.length > 0
+          return (msg as Message & { attachments?: unknown[] }).attachments && (msg as Message & { attachments?: unknown[] }).attachments!.length > 0
         })
       }
 
@@ -261,7 +261,7 @@ export const AdvancedMessageSearch = React.memo(
                         onChange={(e) =>
                           setFilters((prev) => ({
                             ...prev,
-                            role: e.target.value === 'all' ? undefined : (e.target.value as any),
+                            role: e.target.value === 'all' ? undefined : (e.target.value as 'user' | 'assistant' | 'system'),
                           }))
                         }
                         className="w-full px-3 py-2 text-sm border rounded-md bg-background"

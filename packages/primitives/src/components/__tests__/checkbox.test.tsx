@@ -126,7 +126,7 @@ describe('Checkbox Component', () => {
 
     it('should be focusable', () => {
       const { container } = render(<Checkbox />)
-      const checkbox = container.querySelector('input[type="checkbox"]')
+      const checkbox = container.querySelector('input[type="checkbox"]') as HTMLElement | null
       checkbox?.focus()
       expect(document.activeElement).toBe(checkbox)
     })

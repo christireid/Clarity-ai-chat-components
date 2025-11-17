@@ -51,19 +51,69 @@
 export * from './types'
 export * from './react-agent'
 export * from './tools'
+export * from './tool-ui-registry'
 
 import type { Agent, AgentConfig, AgentCallbacks } from './types'
 import { ReactAgent } from './react-agent'
 
 /**
- * Create an agent
+ * createAgent - Top-Level Agent Factory
+ * 
+ * **Architecture Layer**: Top-Level (Drop-in Ready)
+ * **Domain**: Tools & Agents
  * 
  * Factory function that creates an agent with the specified configuration.
+ * Currently supports ReAct agent type. Future versions may support additional
+ * agent types (plan-and-execute, tree-of-thought, etc.).
+ * 
+ * For tool integration with chat, use mid-level `useClarityChatWithTools` instead.
+ * 
+ * @param config - Agent configuration
+ * @param config.name - Agent name
+ * @param config.description - Agent description
+ * @param config.tools - Array of tools the agent can use
+ * @param config.maxIterations - Maximum iterations (default: 10)
+ * @param callbacks - Optional callbacks for agent events
+ * @returns Configured agent instance
+ * 
+ * @example
+ * ```tsx
+ * const agent = createAgent({
+ *   name: 'ResearchAgent',
+ *   description: 'An agent that can research topics',
+ *   tools: [webSearchTool, calculatorTool],
+ *   maxIterations: 10,
+ * })
+ * 
+ * const execution = await agent.execute('What is the population of Tokyo?')
+ * console.log(execution.answer)
+ * ```
+ * 
+ * @throws {Error} If agent configuration is invalid
  */
 export function createAgent(
   config: AgentConfig,
   callbacks?: AgentCallbacks
 ): Agent {
+  // Validate required config
+  if (!config.name || typeof config.name !== 'string' || config.name.trim().length === 0) {
+    throw new Error(
+      'createAgent: "name" is required in agent configuration.\n\n' +
+      'Example:\n' +
+      '  const agent = createAgent({ name: "MyAgent", description: "...", tools: [...] })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/agents'
+    )
+  }
+
+  if (!config.description || typeof config.description !== 'string' || config.description.trim().length === 0) {
+    throw new Error(
+      'createAgent: "description" is required in agent configuration.\n\n' +
+      'Example:\n' +
+      '  const agent = createAgent({ name: "MyAgent", description: "Agent description", tools: [...] })\n\n' +
+      'For more help, see: https://clarity-chat.dev/docs/agents'
+    )
+  }
+
   // For now, only ReAct agent is implemented
   // In the future, support other agent types (plan-and-execute, tree-of-thought, etc.)
   return new ReactAgent(config, callbacks)

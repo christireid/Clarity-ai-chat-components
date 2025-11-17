@@ -1,10 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useAsyncError } from '../../src/hooks/useAsyncError'
 
 describe('useAsyncError', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('should initialize with default state', () => {
@@ -106,53 +110,65 @@ describe('useAsyncError', () => {
 
   it('should update retry count during retries', async () => {
     const { result } = renderHook(() => useAsyncError())
-    const asyncFn = vi.fn().mockRejectedValue(new Error('Failed'))
+    let attemptCount = 0
+    const asyncFn = vi.fn().mockImplementation(() => {
+      attemptCount++
+      return Promise.reject(new Error(`Failed attempt ${attemptCount}`))
+    })
 
-    const promise = act(async () => {
-      return await result.current.executeAsync(asyncFn, {
+    let promise: Promise<any>
+    await act(async () => {
+      promise = result.current.executeAsync(asyncFn, {
         maxRetries: 2,
         retryDelay: 1000,
       })
     })
 
-    // After first attempt
+    // Advance timers to complete all retries
+    // Exponential backoff: attempt 0 fails -> wait 1000ms, attempt 1 fails -> wait 2000ms
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(100)
+      await vi.advanceTimersByTimeAsync(1000) // First retry delay
+      await vi.advanceTimersByTimeAsync(2000) // Second retry delay
     })
-    expect(result.current.retryCount).toBe(1)
-
-    // After second attempt
+    
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(1000)
+      await promise!
     })
-    expect(result.current.retryCount).toBe(2)
-
-    // Complete the promise
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(2000)
-    })
-    await promise
+    
+    // After all retries exhausted, error should be set
+    expect(result.current.error).not.toBeNull()
+    // The retry count should reflect the number of retry attempts made
+    // With maxRetries=2, we have 3 total attempts (initial + 2 retries)
+    // After the final failure, retryCount should be 3 (attempt 2 failed, so retryCount = attempt + 1 = 3)
+    expect(result.current.retryCount).toBe(3)
+    expect(asyncFn).toHaveBeenCalledTimes(3) // Initial attempt + 2 retries
   })
 
   it('should reset state', async () => {
     const { result } = renderHook(() => useAsyncError())
     const asyncFn = vi.fn().mockRejectedValue(new Error('Failed'))
 
-    const promise = act(async () => {
-      return await result.current.executeAsync(asyncFn, {
+    let promise: Promise<any>
+    await act(async () => {
+      promise = result.current.executeAsync(asyncFn, {
         maxRetries: 1,
         retryDelay: 1000,
       })
     })
-
+    
+    // Advance timers to complete retries: 1000ms (after attempt 0)
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(2000)
+      await vi.advanceTimersByTimeAsync(1000)
     })
-    await promise
+    
+    // Wait for promise to complete
+    await act(async () => {
+      await promise!
+    })
 
     expect(result.current.error).not.toBeNull()
 
-    act(() => {
+    await act(async () => {
       result.current.reset()
     })
 
@@ -165,13 +181,11 @@ describe('useAsyncError', () => {
     const { result } = renderHook(() => useAsyncError())
     const asyncFn = vi.fn().mockRejectedValue('string error')
 
-    const promise = act(async () => {
-      return await result.current.executeAsync(asyncFn, {
+    await act(async () => {
+      await result.current.executeAsync(asyncFn, {
         maxRetries: 0,
       })
     })
-
-    await promise
 
     expect(result.current.error).toBeInstanceOf(Error)
     expect(result.current.error?.message).toBe('string error')

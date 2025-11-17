@@ -60,23 +60,38 @@ export class PermissionError extends CLIError {
 }
 
 /**
+ * Normalize error to Error instance
+ */
+function normalizeError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error
+  }
+  if (typeof error === 'string') {
+    return new Error(error)
+  }
+  return new Error(String(error))
+}
+
+/**
  * Format and display error with suggestions
  */
-export function handleError(error: unknown): never {
+export function handleError(error: string | Error | unknown): never {
+  const normalizedError = normalizeError(error)
+  
   // Don't show beautiful error UI in JSON mode
   const isJsonMode = process.argv.includes('--json')
   
-  if (error instanceof CLIError) {
+  if (normalizedError instanceof CLIError) {
     if (!isJsonMode) {
       console.error('\n')
       const errorBox = boxen(
-        chalk.red.bold(error.message) +
-        (error.suggestions.length > 0 
+        chalk.red.bold(normalizedError.message) +
+        (normalizedError.suggestions.length > 0 
           ? '\n\n' + chalk.yellow.bold('💡 Suggestions:\n') +
-            error.suggestions.map(s => chalk.gray('  • ') + s).join('\n')
+            normalizedError.suggestions.map(s => chalk.gray('  • ') + s).join('\n')
           : '') +
-        (error.docs 
-          ? '\n\n' + chalk.blue.bold('📚 Documentation: ') + chalk.cyan.underline(error.docs)
+        (normalizedError.docs 
+          ? '\n\n' + chalk.blue.bold('📚 Documentation: ') + chalk.cyan.underline(normalizedError.docs)
           : ''),
         {
           padding: 1,
@@ -90,24 +105,24 @@ export function handleError(error: unknown): never {
       console.error(errorBox)
     } else {
       console.error(JSON.stringify({
-        error: error.message,
-        code: error.code,
-        suggestions: error.suggestions,
-        docs: error.docs,
+        error: normalizedError.message,
+        code: normalizedError.code,
+        suggestions: normalizedError.suggestions,
+        docs: normalizedError.docs,
       }))
     }
     
-    logger.error(error)
-    process.exit(error.code)
+    logger.error(normalizedError)
+    process.exit(normalizedError.code)
   }
   
-  if (error instanceof Error) {
+  if (normalizedError instanceof Error) {
     if (!isJsonMode) {
       console.error('\n')
       const errorBox = boxen(
-        chalk.red.bold('Unexpected Error:') + '\n\n' + chalk.red(error.message) +
-        (process.env.DEBUG || process.env.VERBOSE && error.stack
-          ? '\n\n' + chalk.gray(error.stack)
+        chalk.red.bold('Unexpected Error:') + '\n\n' + chalk.red(normalizedError.message) +
+        (process.env.DEBUG || process.env.VERBOSE && normalizedError.stack
+          ? '\n\n' + chalk.gray(normalizedError.stack)
           : '\n\n' + chalk.gray('Run with --debug for more details')),
         {
           padding: 1,
@@ -121,12 +136,12 @@ export function handleError(error: unknown): never {
       console.error(errorBox)
     } else {
       console.error(JSON.stringify({
-        error: error.message,
-        stack: error.stack,
+        error: normalizedError.message,
+        stack: normalizedError.stack,
       }))
     }
     
-    logger.error(error)
+    logger.error(normalizedError)
     process.exit(ExitCode.GENERAL_ERROR)
   }
   
@@ -145,7 +160,7 @@ export function handleError(error: unknown): never {
     ))
   }
   
-  logger.error('Unknown error', error)
+  logger.error('Unknown error', normalizedError)
   process.exit(ExitCode.GENERAL_ERROR)
 }
 

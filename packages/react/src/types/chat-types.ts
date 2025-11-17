@@ -20,7 +20,7 @@ export function isStringContent(
  */
 export function isArrayContent(
   content: CoreMessageContent
-): content is Extract<CoreMessageContent, Array<any>> {
+): content is Extract<CoreMessageContent, Array<unknown>> {
   return Array.isArray(content)
 }
 
@@ -30,8 +30,8 @@ export function isArrayContent(
 type ContentPart = 
   | { type: 'text'; text: string }
   | { type: 'image'; image: string | ArrayBuffer }
-  | { type: 'tool-call'; toolCallId: string; toolName: string; args: Record<string, any> }
-  | { type: 'tool-result'; toolCallId: string; toolName: string; result: any }
+  | { type: 'tool-call'; toolCallId: string; toolName: string; args: Record<string, unknown> }
+  | { type: 'tool-result'; toolCallId: string; toolName: string; result: unknown }
 
 /**
  * Type guard for text content part
@@ -60,7 +60,7 @@ export function isToolCallContentPart(
   type: 'tool-call'
   toolCallId: string
   toolName: string
-  args: Record<string, any>
+  args: Record<string, unknown>
 } {
   return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'tool-call'
 }
@@ -74,7 +74,7 @@ export function isToolResultContentPart(
   type: 'tool-result'
   toolCallId: string
   toolName: string
-  result: any
+  result: unknown
 } {
   return typeof part === 'object' && part !== null && 'type' in part && (part as { type: string }).type === 'tool-result'
 }
@@ -117,7 +117,7 @@ export class TypedMessageBuilder {
   static tool(
     toolCallId: string,
     toolName: string,
-    result: any
+    result: unknown
   ): CoreMessage {
     return {
       role: 'tool',
