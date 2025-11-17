@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BookOpen, Code2, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
 import { ChatWindow, FollowUpSuggestions, type FollowUpSuggestion } from '@clarity-chat/react'
@@ -10,6 +10,22 @@ import { cn } from '@/lib/utils'
 
 interface DocsAssistantProps {
   className?: string
+}
+
+// Session ID management
+function getOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return ''
+
+  const key = 'clarity-docs-assistant-session-id'
+  let sessionId = localStorage.getItem(key)
+
+  if (!sessionId) {
+    // Generate simple session ID
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    localStorage.setItem(key, sessionId)
+  }
+
+  return sessionId
 }
 
 // Suggested questions to help users get started
@@ -98,6 +114,12 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const sessionIdRef = useRef<string>('')
+
+  // Initialize session ID on mount
+  useEffect(() => {
+    sessionIdRef.current = getOrCreateSessionId()
+  }, [])
 
   // Handle escape key to close
   useEffect(() => {
@@ -133,6 +155,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         },
         body: JSON.stringify({
           message: content,
+          sessionId: sessionIdRef.current,
           currentPath: typeof window !== 'undefined' ? window.location.pathname : '/',
           messages: messages.map((m) => ({
             role: m.role,

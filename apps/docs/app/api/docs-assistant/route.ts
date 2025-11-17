@@ -16,6 +16,11 @@ import {
   type StreamChunk,
 } from '@/lib/ai/streaming'
 import { SYSTEM_PROMPT, ERROR_PROMPT, RATE_LIMIT_PROMPT } from '@/lib/ai/prompts'
+import {
+  getOrCreateSessionForRequest,
+  updateSessionWithMessages,
+  type SessionMessage,
+} from '@/lib/ai/sessionStore'
 
 export const runtime = 'edge' // Use Edge runtime for better performance
 export const dynamic = 'force-dynamic'
@@ -27,7 +32,8 @@ interface ChatMessage {
 
 interface RequestBody {
   message: string
-  conversationId?: string
+  sessionId?: string // Session ID for persistence
+  conversationId?: string // Legacy, maps to sessionId
   userId?: string
   currentPath?: string
   messages?: ChatMessage[] // Full conversation history
@@ -80,8 +86,31 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Build messages array
-    const messages: ChatMessage[] = body.messages || []
+    // Session management
+    const sessionId = body.sessionId || body.conversationId
+    let session = null
+
+    if (sessionId) {
+      try {
+        // Get or create session
+        session = await getOrCreateSessionForRequest(
+          sessionId,
+          body.userId,
+          request.headers.get('user-agent') || undefined
+        )
+      } catch (error) {
+        console.error('Session error:', error)
+        // Continue without session if it fails
+      }
+    }
+
+    // Build messages array from session or request
+    const messages: ChatMessage[] = session?.messages.length
+      ? session.messages.map((m: SessionMessage) => ({
+          role: m.role,
+          content: m.content,
+        }))
+      : body.messages || []
 
     // Add system prompt if not present
     if (messages.length === 0 || messages[0].role !== 'system') {
@@ -105,8 +134,8 @@ export async function POST(request: NextRequest) {
 
     // Create streaming response
     const generator = useRAG
-      ? streamWithRAG(body.message, messages, body.currentPath)
-      : streamWithoutRAG(body.message, messages)
+      ? streamWithRAG(body.message, messages, body.currentPath, sessionId)
+      : streamWithoutRAG(body.message, messages, sessionId)
 
     return new Response(createSSEStream(generator), {
       headers: {
@@ -136,8 +165,11 @@ export async function POST(request: NextRequest) {
 async function* streamWithRAG(
   userMessage: string,
   messages: ChatMessage[],
-  currentPath?: string
+  currentPath?: string,
+  sessionId?: string
 ): AsyncGenerator<StreamChunk> {
+  let assistantResponse = ''
+
   try {
     // Enhance message with RAG context
     const { enhancedMessage, ragContext } = await enhanceMessageWithRAG(
@@ -180,7 +212,31 @@ async function* streamWithRAG(
     const stream = streamingFn(updatedMessages)
 
     for await (const chunk of stream) {
+      if (chunk.type === 'text' && chunk.content) {
+        assistantResponse += chunk.content
+      }
       yield chunk
+    }
+
+    // Save messages to session after streaming completes
+    if (sessionId && assistantResponse) {
+      try {
+        await updateSessionWithMessages(sessionId, [
+          {
+            role: 'user',
+            content: userMessage,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            role: 'assistant',
+            content: assistantResponse,
+            timestamp: new Date().toISOString(),
+          },
+        ])
+      } catch (error) {
+        console.error('Failed to save session:', error)
+        // Don't fail the request if session save fails
+      }
     }
   } catch (error) {
     console.error('RAG streaming error:', error)
@@ -193,8 +249,11 @@ async function* streamWithRAG(
  */
 async function* streamWithoutRAG(
   userMessage: string,
-  messages: ChatMessage[]
+  messages: ChatMessage[],
+  sessionId?: string
 ): AsyncGenerator<StreamChunk> {
+  let assistantResponse = ''
+
   try {
     // Add user message
     const updatedMessages = [...messages, { role: 'user', content: userMessage }]
@@ -204,7 +263,31 @@ async function* streamWithoutRAG(
     const stream = streamingFn(updatedMessages)
 
     for await (const chunk of stream) {
+      if (chunk.type === 'text' && chunk.content) {
+        assistantResponse += chunk.content
+      }
       yield chunk
+    }
+
+    // Save messages to session after streaming completes
+    if (sessionId && assistantResponse) {
+      try {
+        await updateSessionWithMessages(sessionId, [
+          {
+            role: 'user',
+            content: userMessage,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            role: 'assistant',
+            content: assistantResponse,
+            timestamp: new Date().toISOString(),
+          },
+        ])
+      } catch (error) {
+        console.error('Failed to save session:', error)
+        // Don't fail the request if session save fails
+      }
     }
   } catch (error) {
     console.error('Streaming error:', error)
