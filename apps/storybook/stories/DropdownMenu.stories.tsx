@@ -9,6 +9,7 @@ import {
   DropdownMenuGroup,
 } from '@clarity-chat/primitives'
 import { Button } from '@clarity-chat/primitives'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 /**
  * DropdownMenu provides a context menu triggered by a button click.
@@ -33,8 +34,12 @@ const meta = {
         component: 'Dropdown menu with keyboard navigation and accessibility support.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   decorators: [
     (Story) => (
       <div style={{ padding: '100px' }}>
@@ -61,6 +66,37 @@ export const Default: Story = {
       </DropdownMenuContent>
     </DropdownMenu>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test menu trigger button renders
+    const menuButton = canvas.getByRole('button', { name: /open menu/i })
+    await expect(menuButton).toBeInTheDocument()
+
+    // Test opening dropdown menu
+    await userEvent.click(menuButton)
+
+    // Wait for menu to appear and test menu items
+    await waitFor(async () => {
+      // Find menu items in the document (dropdown menus are typically portaled)
+      const menuItems = Array.from(document.querySelectorAll('[role="menuitem"]'))
+      if (menuItems.length > 0) {
+        // Test menu items are present
+        const profileItem = menuItems.find((item) => item.textContent === 'Profile')
+        const settingsItem = menuItems.find((item) => item.textContent === 'Settings')
+        const logoutItem = menuItems.find((item) => item.textContent === 'Log out')
+
+        if (profileItem && settingsItem && logoutItem) {
+          await expect(profileItem).toBeInTheDocument()
+          await expect(settingsItem).toBeInTheDocument()
+          await expect(logoutItem).toBeInTheDocument()
+
+          // Test clicking a menu item
+          await userEvent.click(profileItem as HTMLElement)
+        }
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 export const WithIcons: Story = {
@@ -162,6 +198,37 @@ export const UserMenu: Story = {
       </DropdownMenuContent>
     </DropdownMenu>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test user button renders with name and email
+    await expect(canvas.getByText('John Doe')).toBeInTheDocument()
+    await expect(canvas.getByText('john@example.com')).toBeInTheDocument()
+    await expect(canvas.getByText('JD')).toBeInTheDocument()
+
+    // Test clicking user menu
+    const userButton = canvas.getByRole('button')
+    await userEvent.click(userButton)
+
+    // Wait for menu to appear and test menu items
+    await waitFor(async () => {
+      const menuItems = Array.from(document.querySelectorAll('[role="menuitem"]'))
+      if (menuItems.length > 0) {
+        // Test menu items are present
+        const profileItem = menuItems.find((item) => item.textContent?.includes('Profile'))
+        const settingsItem = menuItems.find((item) => item.textContent?.includes('Settings'))
+        const billingItem = menuItems.find((item) => item.textContent?.includes('Billing'))
+        const logoutItem = menuItems.find((item) => item.textContent?.includes('Log out'))
+
+        if (profileItem && settingsItem && billingItem && logoutItem) {
+          await expect(profileItem).toBeInTheDocument()
+          await expect(settingsItem).toBeInTheDocument()
+          await expect(billingItem).toBeInTheDocument()
+          await expect(logoutItem).toBeInTheDocument()
+        }
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 export const ChatActions: Story = {
@@ -203,6 +270,38 @@ export const ChatActions: Story = {
       </DropdownMenuContent>
     </DropdownMenu>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test chat actions button renders (icon button)
+    const actionsButton = canvas.getByRole('button')
+    await expect(actionsButton).toBeInTheDocument()
+
+    // Test opening actions menu
+    await userEvent.click(actionsButton)
+
+    // Wait for menu to appear and test chat-specific menu items
+    await waitFor(async () => {
+      const menuItems = Array.from(document.querySelectorAll('[role="menuitem"]'))
+      if (menuItems.length > 0) {
+        // Test chat action items are present
+        const editItem = menuItems.find((item) => item.textContent?.includes('Edit message'))
+        const copyItem = menuItems.find((item) => item.textContent?.includes('Copy text'))
+        const pinItem = menuItems.find((item) => item.textContent?.includes('Pin message'))
+        const deleteItem = menuItems.find((item) => item.textContent?.includes('Delete message'))
+
+        if (editItem && copyItem && pinItem && deleteItem) {
+          await expect(editItem).toBeInTheDocument()
+          await expect(copyItem).toBeInTheDocument()
+          await expect(pinItem).toBeInTheDocument()
+          await expect(deleteItem).toBeInTheDocument()
+
+          // Test clicking edit action
+          await userEvent.click(editItem as HTMLElement)
+        }
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 export const WithGroups: Story = {

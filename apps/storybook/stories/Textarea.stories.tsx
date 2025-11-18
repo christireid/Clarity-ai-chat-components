@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Textarea } from '@clarity-chat/primitives'
 import { useState } from 'react'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Textarea component for multi-line text input.
@@ -27,8 +28,12 @@ const meta = {
         component: 'Multi-line text input component for longer content.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   decorators: [
     (Story) => (
       <div style={{ width: '500px' }}>
@@ -44,6 +49,18 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     placeholder: 'Type your message...',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test textarea renders
+    const textarea = canvas.getByPlaceholderText('Type your message...')
+    await expect(textarea).toBeInTheDocument()
+    await expect(textarea).not.toBeDisabled()
+
+    // Test typing into textarea
+    await userEvent.type(textarea, 'This is a test message\nwith multiple lines')
+    await expect(textarea).toHaveValue('This is a test message\nwith multiple lines')
   },
 }
 
@@ -113,18 +130,34 @@ export const States: Story = {
         <label className="text-sm font-medium">Default</label>
         <Textarea placeholder="Default state" />
       </div>
-      
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Disabled</label>
         <Textarea placeholder="Disabled state" disabled />
       </div>
-      
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Readonly</label>
         <Textarea value="This is read-only content that cannot be edited." readOnly />
       </div>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test default state
+    const defaultTextarea = canvas.getByPlaceholderText('Default state')
+    await expect(defaultTextarea).toBeInTheDocument()
+    await expect(defaultTextarea).not.toBeDisabled()
+
+    // Test disabled state
+    const disabledTextarea = canvas.getByPlaceholderText('Disabled state')
+    await expect(disabledTextarea).toBeDisabled()
+
+    // Test readonly state
+    const readonlyTextarea = canvas.getByDisplayValue('This is read-only content that cannot be edited.')
+    await expect(readonlyTextarea).toHaveAttribute('readonly')
+  },
 }
 
 export const WithValidation: Story = {
