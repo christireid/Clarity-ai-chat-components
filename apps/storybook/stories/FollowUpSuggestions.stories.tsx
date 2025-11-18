@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { FollowUpSuggestions } from '@clarity-chat/react'
 import type { FollowUpSuggestion } from '@clarity-chat/react'
+import { expect, within } from '@storybook/test'
 
 /**
  * **FollowUpSuggestions Component**
@@ -25,7 +26,7 @@ import type { FollowUpSuggestion } from '@clarity-chat/react'
 const meta: Meta<typeof FollowUpSuggestions> = {
   title: 'Components/FollowUpSuggestions',
   component: FollowUpSuggestions,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   parameters: {
     docs: {
       description: {
@@ -58,6 +59,10 @@ Supports grid and list layouts with loading states.
       },
     },
     layout: 'padded',
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
   argTypes: {
     suggestions: {
@@ -126,6 +131,17 @@ export const Default: Story = {
       alert(`Selected: ${suggestion.title}`)
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test suggestions render
+    await expect(canvas.getByText('How do I use React hooks?')).toBeInTheDocument()
+    await expect(canvas.getByText('Show me code examples')).toBeInTheDocument()
+    await expect(canvas.getByText('Explain TypeScript types')).toBeInTheDocument()
+
+    // Test descriptions render
+    await expect(canvas.getByText(/Learn about useState/)).toBeInTheDocument()
+  },
 }
 
 export const GridLayout: Story = {
@@ -133,6 +149,17 @@ export const GridLayout: Story = {
     suggestions: mockSuggestions,
     layout: 'grid',
     onSelect: (suggestion) => console.log('Selected:', suggestion),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test suggestions render in grid layout
+    await expect(canvas.getByText('How do I use React hooks?')).toBeInTheDocument()
+    await expect(canvas.getByText('Best practices guide')).toBeInTheDocument()
+
+    // Test all 4 suggestions are visible
+    const suggestions = canvas.getAllByRole('button')
+    await expect(suggestions.length).toBeGreaterThanOrEqual(4)
   },
 }
 

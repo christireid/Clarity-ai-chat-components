@@ -1,17 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { VoiceInput, InlineVoiceInput } from '@clarity-chat/react'
 import { useState } from 'react'
+import { expect, within } from '@storybook/test'
 
 const meta: Meta<typeof VoiceInput> = {
   title: 'Phase 4/Voice Input',
   component: VoiceInput,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   parameters: {
     docs: {
       description: {
         component: 'Voice input component with Web Speech API support. Enables voice-to-text functionality with real-time transcription.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
 }
 
@@ -25,6 +30,16 @@ export const Default: Story = {
       alert(`You said: ${transcript}`)
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test voice input button renders
+    const voiceButton = canvas.getByRole('button')
+    await expect(voiceButton).toBeInTheDocument()
+
+    // Test button has microphone icon or aria label
+    await expect(voiceButton).toHaveAccessibleName(/voice|microphone|speak/i)
+  },
 }
 
 export const WithInterimResults: Story = {
@@ -34,6 +49,13 @@ export const WithInterimResults: Story = {
     },
     showInterim: true,
     autoSubmit: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test voice button renders with interim results enabled
+    const voiceButton = canvas.getByRole('button')
+    await expect(voiceButton).toBeInTheDocument()
   },
 }
 
