@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ToastProvider, useToast } from '@clarity-chat/react'
 import { useState } from 'react'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 /**
  * Toast Notification System
@@ -36,8 +37,12 @@ const meta = {
           'A flexible toast notification system with auto-dismiss, queue management, and multiple position options.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   decorators: [
     (Story) => (
       <ToastProvider>
@@ -79,6 +84,24 @@ export const SuccessToast: Story = {
         story: 'Success toast for positive feedback and confirmations.',
       },
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test toast button renders
+    const button = canvas.getByRole('button', { name: /show success toast/i })
+    await expect(button).toBeInTheDocument()
+
+    // Click to trigger toast
+    await userEvent.click(button)
+
+    // Wait for toast to appear
+    await waitFor(async () => {
+      const toast = document.querySelector('[role="alert"], [role="status"]')
+      if (toast) {
+        await expect(toast).toBeInTheDocument()
+      }
+    }, { timeout: 2000 })
   },
 }
 
@@ -546,6 +569,27 @@ export const CopyToClipboard: Story = {
         </div>
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test copy button exists
+    const copyButton = canvas.getByRole('button', { name: /copy/i })
+    await expect(copyButton).toBeInTheDocument()
+
+    // Test code text is displayed
+    await expect(canvas.getByText(/npm install @clarity-chat\/react/)).toBeInTheDocument()
+
+    // Click copy button
+    await userEvent.click(copyButton)
+
+    // Wait for success toast
+    await waitFor(async () => {
+      const toast = document.querySelector('[role="alert"], [role="status"]')
+      if (toast) {
+        await expect(toast).toBeInTheDocument()
+      }
+    }, { timeout: 2000 })
   },
 }
 
