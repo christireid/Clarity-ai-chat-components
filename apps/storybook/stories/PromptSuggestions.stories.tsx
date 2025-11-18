@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { PromptSuggestions, type PromptSuggestion } from '@clarity-chat/react'
 import { SparklesIcon, CodeIcon, FileTextIcon, MessageSquareIcon } from 'lucide-react'
+import { expect, within } from '@storybook/test'
 
 /**
  * **PromptSuggestions Component**
@@ -56,8 +57,12 @@ Supports starter prompts and follow-up prompts with icons and categories.
         `,
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     suggestions: {
       description: 'Array of prompt suggestions',
@@ -170,6 +175,18 @@ export const StarterPrompts: Story = {
     layout: 'chips',
     showCategories: true,
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test starter prompt labels render
+    await expect(canvas.getByText('Get Started')).toBeInTheDocument()
+    await expect(canvas.getByText('Code Helper')).toBeInTheDocument()
+    await expect(canvas.getByText('Document Summarizer')).toBeInTheDocument()
+
+    // Test categories display
+    await expect(canvas.getByText('General')).toBeInTheDocument()
+    await expect(canvas.getByText('Development')).toBeInTheDocument()
+  },
 }
 
 export const FollowUpPrompts: Story = {
@@ -180,6 +197,18 @@ export const FollowUpPrompts: Story = {
     },
     suggestionType: 'follow-up',
     layout: 'chips',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test follow-up prompt labels render
+    await expect(canvas.getByText('Explain More')).toBeInTheDocument()
+    await expect(canvas.getByText('Show Example')).toBeInTheDocument()
+    await expect(canvas.getByText('Alternatives')).toBeInTheDocument()
+
+    // Test multiple prompts are clickable
+    const buttons = canvas.getAllByRole('button')
+    await expect(buttons.length).toBeGreaterThanOrEqual(3)
   },
 }
 

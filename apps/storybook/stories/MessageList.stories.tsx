@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { VirtualizedMessageList as MessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
+import { expect, within } from '@storybook/test'
 
 /**
  * **MessageList Component**
@@ -56,8 +57,12 @@ and comprehensive message management features.
         `,
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     messages: {
       description: 'Array of messages to display',
@@ -146,11 +151,28 @@ export const Default: Story = {
     onMessageFeedback: (id, type) => console.log('Feedback:', id, type),
     onMessageRetry: (id) => console.log('Retry:', id),
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test messages render
+    await expect(canvas.getByText('Hello! Can you help me?')).toBeInTheDocument()
+    await expect(canvas.getByText(/Of course! I'd be happy to help/)).toBeInTheDocument()
+
+    // Test user and assistant messages display
+    await expect(canvas.getByText('I need help with React hooks')).toBeInTheDocument()
+    await expect(canvas.getByText(/useState for state management/)).toBeInTheDocument()
+  },
 }
 
 export const EmptyList: Story = {
   args: {
     messages: [],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test empty state renders
+    await expect(canvas.getByText(/no messages|empty|start/i)).toBeInTheDocument()
   },
 }
 
