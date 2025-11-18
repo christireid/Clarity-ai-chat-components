@@ -1,292 +1,417 @@
-# Troubleshooting Guide
+# 🔧 Troubleshooting Guide
 
-Common issues and solutions when using Clarity Chat.
+> **Common issues and solutions for Clarity Chat**
+
+This guide helps you resolve common issues quickly. If you don't find your issue here, check the [FAQ](./FAQ.md) or open an issue on [GitHub](https://github.com/christireid/Clarity-ai-chat-components/issues).
 
 ---
 
-## Quick Diagnosis
+## 🚨 Common Issues
 
-### Issue: Component not rendering
+### Messages Not Displaying
 
-**Check:**
-1. ✅ Imports are correct
-2. ✅ CSS is imported (`import '@clarity-chat/react/styles.css'`)
-3. ✅ No console errors
-4. ✅ React version is compatible (React 18+)
+**Symptoms:**
+- Chat window appears empty
+- Messages sent but not shown
+- Type errors related to messages
 
-**Solution:**
+**Solutions:**
+
+1. **Check Message Conversion**
+   ```tsx
+   // ❌ Wrong - missing conversion
+   <ChatWindow messages={coreMessages} />
+   
+   // ✅ Correct - convert messages
+   const messages = useMemo(
+     () => convertCoreMessagesToMessages(coreMessages),
+     [coreMessages]
+   )
+   <ChatWindow messages={messages} />
+   ```
+
+2. **Verify Message Format**
+   ```tsx
+   // Messages must be Message[] type
+   const messages: Message[] = [
+     {
+       id: '1',
+       role: 'user',
+       content: 'Hello',
+       createdAt: new Date(),
+       updatedAt: new Date(),
+     },
+   ]
+   ```
+
+3. **Check Array is Not Empty**
+   ```tsx
+   console.log('Messages:', messages) // Should show array
+   console.log('Messages length:', messages.length) // Should be > 0
+   ```
+
+---
+
+### Streaming Not Working
+
+**Symptoms:**
+- Messages don't stream in real-time
+- Messages appear all at once
+- Connection errors
+
+**Solutions:**
+
+1. **Verify API Endpoint**
+   ```tsx
+   // Ensure your API endpoint supports SSE
+   const response = await fetch('/api/chat', {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json',
+     },
+     body: JSON.stringify({ messages }),
+   })
+   
+   // Response should be a stream
+   const reader = response.body?.getReader()
+   ```
+
+2. **Check Transport Type**
+   ```tsx
+   // Default is SSE, but you can specify
+   const { messages } = useClarityChat({
+     api: '/api/chat',
+     transport: 'sse', // or 'websocket'
+   })
+   ```
+
+3. **Verify Network Connection**
+   - Check browser console for errors
+   - Verify API endpoint is accessible
+   - Check CORS settings if needed
+
+---
+
+### Type Errors
+
+**Symptoms:**
+- TypeScript errors
+- Import errors
+- Type mismatches
+
+**Solutions:**
+
+1. **Check React Version**
+   ```json
+   // package.json
+   {
+     "dependencies": {
+       "react": "^19.2.0", // or ^18.0.0 with compatibility
+       "react-dom": "^19.2.0"
+     }
+   }
+   ```
+
+2. **Verify Imports**
+   ```tsx
+   // ✅ Correct imports
+   import { useClarityChat, ChatWindow, convertCoreMessagesToMessages } from '@clarity-chat/react'
+   import type { Message } from '@clarity-chat/types'
+   ```
+
+3. **Check Type Definitions**
+   ```bash
+   # Reinstall types if needed
+   npm install --save-dev @types/react @types/react-dom
+   ```
+
+---
+
+### Memory Not Working
+
+**Symptoms:**
+- Memory not enabled
+- Context not persisting
+- Memory errors
+
+**Solutions:**
+
+1. **Wrap with MemoryProvider**
+   ```tsx
+   // ❌ Wrong - missing provider
+   function App() {
+     return <ChatPage />
+   }
+   
+   // ✅ Correct - wrap with provider
+   function App() {
+     return (
+       <MemoryProvider config={{ maxTokens: 10000 }}>
+         <ChatPage />
+       </MemoryProvider>
+     )
+   }
+   ```
+
+2. **Check Memory Configuration**
+   ```tsx
+   const { memoryEnabled } = useClarityChat({
+     api: '/api/chat',
+     memory: {
+       enabled: true, // Must be true
+       strategy: 'sliding-window',
+       maxTokens: 4000,
+     },
+   })
+   
+   console.log('Memory enabled:', memoryEnabled) // Should be true
+   ```
+
+3. **Verify Strategy Setup**
+   - `sliding-window`: No setup needed
+   - `semantic-chunks`: Requires configuration
+   - `vector-store`: Requires vector store setup
+
+---
+
+### Performance Issues
+
+**Symptoms:**
+- Slow rendering
+- Laggy scrolling
+- High memory usage
+
+**Solutions:**
+
+1. **Use VirtualizedMessageList**
+   ```tsx
+   // For many messages, use virtualized list
+   import { VirtualizedMessageList } from '@clarity-chat/react'
+   
+   <VirtualizedMessageList
+     messages={messages}
+     height={600}
+   />
+   ```
+
+2. **Memoize Messages**
+   ```tsx
+   // Always memoize message conversion
+   const messages = useMemo(
+     () => convertCoreMessagesToMessages(coreMessages),
+     [coreMessages]
+   )
+   ```
+
+3. **Optimize Re-renders**
+   ```tsx
+   // Use React.memo for custom components
+   const MessageComponent = React.memo(({ message }) => {
+     return <div>{message.content}</div>
+   })
+   ```
+
+---
+
+### Theme Not Applying
+
+**Symptoms:**
+- Theme changes not visible
+- Styles not updating
+- Colors incorrect
+
+**Solutions:**
+
+1. **Wrap with ThemeProvider**
+   ```tsx
+   // ❌ Wrong - no theme provider
+   <ChatWindow messages={messages} />
+   
+   // ✅ Correct - wrap with provider
+   <ThemeProvider theme={customTheme}>
+     <ChatWindow messages={messages} />
+   </ThemeProvider>
+   ```
+
+2. **Import Styles**
+   ```tsx
+   // Don't forget to import styles
+   import '@clarity-chat/react/styles.css'
+   ```
+
+3. **Check Theme Object**
+   ```tsx
+   const theme = {
+     colors: {
+       primary: '#4A90E2',
+       // ... other colors
+     },
+   }
+   ```
+
+---
+
+### Error Handling Issues
+
+**Symptoms:**
+- Errors not displayed
+- Error recovery not working
+- Crashes on errors
+
+**Solutions:**
+
+1. **Check Error State**
+   ```tsx
+   const { error } = useClarityChat({
+     api: '/api/chat',
+   })
+   
+   {error && (
+     <div className="error">
+       <p>Error: {error.message}</p>
+     </div>
+   )}
+   ```
+
+2. **Use Error Boundary**
+   ```tsx
+   import { ErrorBoundary } from '@clarity-chat/react'
+   
+   <ErrorBoundary fallback={<ErrorFallback />}>
+     <ChatWindow messages={messages} />
+   </ErrorBoundary>
+   ```
+
+3. **Handle API Errors**
+   ```tsx
+   const handleSend = async (content: string) => {
+     try {
+       await append({ role: 'user', content })
+     } catch (err) {
+       console.error('Failed to send:', err)
+       // Show user-friendly error
+     }
+   }
+   ```
+
+---
+
+## 🐛 Debugging Tips
+
+### Enable Debug Logging
+
 ```tsx
-// ✅ Correct imports
-import { ChatWindow } from '@clarity-chat/react'
-import '@clarity-chat/react/styles.css'
-
-// ❌ Missing CSS import
-import { ChatWindow } from '@clarity-chat/react'
+const { messages, isLoading, error } = useClarityChat({
+  api: '/api/chat',
+  debug: true, // Enable debug logging
+})
 ```
 
----
+### Check Hook State
 
-### Issue: Messages not appearing
-
-**Check:**
-1. ✅ Messages array is not empty
-2. ✅ Message format is correct
-3. ✅ Component is receiving messages prop
-
-**Solution:**
 ```tsx
-// ✅ Correct message format
-const messages = [
-  {
-    id: '1',
-    role: 'user',
-    content: 'Hello!',
-    createdAt: Date.now(),
-    status: 'sent',
-  }
-]
-
-// ❌ Missing required fields
-const messages = [
-  { content: 'Hello!' } // Missing id, role, createdAt, status
-]
-```
-
----
-
-### Issue: Streaming not working
-
-**Check:**
-1. ✅ API endpoint returns SSE stream
-2. ✅ Content-Type header is correct
-3. ✅ Stream format matches expected format
-
-**Solution:**
-```tsx
-// ✅ Correct SSE format
-const response = await fetch('/api/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ messages }),
+const chatState = useClarityChat({
+  api: '/api/chat',
 })
 
-// Response should be ReadableStream with SSE format:
-// data: {"content": "chunk"}\n\n
+console.log('Chat state:', {
+  messages: chatState.messages,
+  isLoading: chatState.isLoading,
+  error: chatState.error,
+  memoryEnabled: chatState.memoryEnabled,
+})
 ```
 
----
+### Inspect Network Requests
 
-### Issue: Memory not working
+1. Open browser DevTools
+2. Go to Network tab
+3. Filter by "Fetch/XHR"
+4. Check API requests and responses
 
-**Check:**
-1. ✅ MemoryProvider is wrapping your app
-2. ✅ Memory config is correct
-3. ✅ Vector store is configured (if using vector-store strategy)
+### Verify Component Props
 
-**Solution:**
 ```tsx
-// ✅ Correct setup
-import { MemoryProvider } from '@clarity-chat/react'
-
-function App() {
-  return (
-    <MemoryProvider config={{ maxTokens: 10000 }}>
-      <YourChatComponent />
-    </MemoryProvider>
-  )
-}
-```
-
----
-
-### Issue: TypeScript errors
-
-**Check:**
-1. ✅ TypeScript version is 5.0+
-2. ✅ Types are imported correctly
-3. ✅ Strict mode is enabled
-
-**Solution:**
-```tsx
-// ✅ Correct type imports
-import type { Message } from '@clarity-chat/types'
-
-const message: Message = {
-  id: '1',
-  role: 'user',
-  content: 'Hello!',
-  createdAt: Date.now(),
-  status: 'sent',
-}
-```
-
----
-
-## Common Errors
-
-### Error: "Cannot read property 'map' of undefined"
-
-**Cause:** Messages array is undefined
-
-**Solution:**
-```tsx
-// ✅ Provide default empty array
-const messages = useClarityChat({ api: '/api/chat' })
-const safeMessages = messages.messages || []
-
-// Or use optional chaining
-{messages?.map(msg => ...)}
-```
-
----
-
-### Error: "useClarityChat must be used within MemoryProvider"
-
-**Cause:** Using memory features without MemoryProvider
-
-**Solution:**
-```tsx
-// ✅ Wrap with MemoryProvider
-<MemoryProvider config={{ maxTokens: 10000 }}>
-  <YourComponent />
-</MemoryProvider>
-```
-
----
-
-### Error: "Stream parsing failed"
-
-**Cause:** API response format doesn't match expected SSE format
-
-**Solution:**
-```tsx
-// ✅ Ensure correct SSE format
-// Each chunk should be: data: {"content": "text"}\n\n
-
-// Server-side example:
-res.write(`data: ${JSON.stringify({ content: chunk })}\n\n`)
-```
-
----
-
-## Performance Issues
-
-### Issue: Slow rendering with many messages
-
-**Solution:**
-```tsx
-// ✅ Use virtualized MessageList
-import { VirtualizedMessageList } from '@clarity-chat/react'
-
-<VirtualizedMessageList
+// Add logging to see what props are passed
+<ChatWindow
   messages={messages}
-  // Only renders visible messages
+  isLoading={isLoading}
+  onSendMessage={(content) => {
+    console.log('Sending message:', content)
+    handleSend(content)
+  }}
 />
 ```
 
 ---
 
-### Issue: High memory usage
+## 📋 Checklist
 
-**Solution:**
-```tsx
-// ✅ Enable memory optimization
-const { messages } = useClarityChat({
-  api: '/api/chat',
-  memory: {
-    enabled: true,
-    strategy: 'sliding-window', // Limits context window
-    maxTokens: 4000,
-  },
-})
-```
+Before asking for help, check:
 
----
-
-## Integration Issues
-
-### Issue: Next.js App Router
-
-**Solution:**
-```tsx
-// ✅ Use 'use client' directive
-'use client'
-
-import { ChatWindow } from '@clarity-chat/react'
-
-export default function Page() {
-  return <ChatWindow {...props} />
-}
-```
+- [ ] Messages are converted with `convertCoreMessagesToMessages`
+- [ ] `MemoryProvider` wraps app if using memory
+- [ ] `ThemeProvider` wraps app if using custom theme
+- [ ] Styles are imported: `import '@clarity-chat/react/styles.css'`
+- [ ] React version is 19+ (or 18 with compatibility)
+- [ ] API endpoint is correct and accessible
+- [ ] Network requests are successful
+- [ ] No console errors
+- [ ] TypeScript types are correct
 
 ---
 
-### Issue: SSR hydration mismatch
+## 🆘 Getting More Help
 
-**Solution:**
-```tsx
-// ✅ Use client-side only rendering
-import { useEffect, useState } from 'react'
+### Resources
 
-function ClientOnlyChat() {
-  const [mounted, setMounted] = useState(false)
-  
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-  
-  if (!mounted) return null
-  
-  return <ChatWindow {...props} />
-}
-```
+1. **Documentation**
+   - [Getting Started](./getting-started-clarity-chat.md)
+   - [API Reference](../../packages/react/README.md)
+   - [Cookbook](./cookbook/)
 
----
+2. **Examples**
+   - [Example Apps](../../apps/examples/)
+   - [Storybook](http://localhost:6006)
 
-## Getting Help
-
-### Still stuck?
-
-1. **Check Documentation**
-   - [API Reference](./apps/docs/app/api/)
-   - [Guides](./apps/docs/app/guides/)
-   - [Examples](./apps/examples/)
-
-2. **Search Issues**
+3. **Community**
    - [GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)
-
-3. **Ask Community**
    - [Discord](https://discord.gg/clarity-chat)
 
-4. **Report Bug**
-   - [Create Issue](https://github.com/christireid/Clarity-ai-chat-components/issues/new)
+### When Opening an Issue
+
+Include:
+- Clarity Chat version
+- React version
+- Error messages (full stack trace)
+- Code example (minimal reproduction)
+- Steps to reproduce
+- Expected vs actual behavior
 
 ---
 
-## Debugging Tips
+## 💡 Prevention Tips
 
-### Enable Debug Logging
+1. **Follow Getting Started Guide**
+   - Use the official guide for setup
+   - Copy examples exactly
+   - Test incrementally
 
-```tsx
-// Enable debug mode
-const { messages } = useClarityChat({
-  api: '/api/chat',
-  debug: true, // Logs all operations
-})
-```
+2. **Read Documentation**
+   - Check API reference
+   - Review examples
+   - Read migration guides
 
-### Check Network Tab
+3. **Test Early**
+   - Test with simple examples first
+   - Add complexity gradually
+   - Verify each step works
 
-- Verify API requests are being made
-- Check response format
-- Look for CORS errors
-
-### Use React DevTools
-
-- Inspect component props
-- Check state updates
-- Profile performance
+4. **Use TypeScript**
+   - Catch errors early
+   - Get better IDE support
+   - Understand types better
 
 ---
 
-**Last Updated:** [Date]
+**Remember**: Most issues are simple configuration problems. Double-check your setup before diving deep into debugging!
