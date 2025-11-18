@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Checkbox } from '@clarity-chat/primitives'
 import { useState } from 'react'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Checkbox component for binary selection.
@@ -26,8 +27,12 @@ const meta = {
         component: 'Checkbox input component for binary selection with accessible focus states.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   decorators: [
     (Story) => (
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -55,6 +60,22 @@ export const Default: Story = {
         </label>
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test checkbox renders unchecked initially
+    const checkbox = canvas.getByRole('checkbox')
+    await expect(checkbox).toBeInTheDocument()
+    await expect(checkbox).not.toBeChecked()
+
+    // Test clicking checkbox toggles it
+    await userEvent.click(checkbox)
+    await expect(checkbox).toBeChecked()
+
+    // Test clicking again unchecks it
+    await userEvent.click(checkbox)
+    await expect(checkbox).not.toBeChecked()
   },
 }
 
@@ -93,6 +114,20 @@ export const Disabled: Story = {
       </div>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test disabled checkboxes
+    const checkboxes = canvas.getAllByRole('checkbox')
+
+    // First checkbox should be disabled and unchecked
+    await expect(checkboxes[0]).toBeDisabled()
+    await expect(checkboxes[0]).not.toBeChecked()
+
+    // Second checkbox should be disabled and checked
+    await expect(checkboxes[1]).toBeDisabled()
+    await expect(checkboxes[1]).toBeChecked()
+  },
 }
 
 export const WithLabel: Story = {

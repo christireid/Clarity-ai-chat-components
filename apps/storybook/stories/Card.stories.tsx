@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@clarity-chat/primitives'
 import { Button } from '@clarity-chat/primitives'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Card component provides a flexible container for content sections.
@@ -26,8 +27,12 @@ const meta = {
         component: 'Flexible container component for grouping related content.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   decorators: [
     (Story) => (
       <div style={{ width: '400px' }}>
@@ -52,6 +57,14 @@ export const Default: Story = {
       </CardContent>
     </Card>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test card structure renders correctly
+    await expect(canvas.getByText('Card Title')).toBeInTheDocument()
+    await expect(canvas.getByText('Card description goes here')).toBeInTheDocument()
+    await expect(canvas.getByText(/Card content with some example text/)).toBeInTheDocument()
+  },
 }
 
 export const WithFooter: Story = {
@@ -64,8 +77,8 @@ export const WithFooter: Story = {
       <CardContent>
         <div className="space-y-2">
           <label className="text-sm font-medium">Project Name</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="My Awesome Project"
             className="w-full px-3 py-2 border rounded-md"
           />
@@ -77,6 +90,22 @@ export const WithFooter: Story = {
       </CardFooter>
     </Card>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test card with footer and buttons
+    await expect(canvas.getByText('Create Project')).toBeInTheDocument()
+    await expect(canvas.getByRole('textbox')).toBeInTheDocument()
+
+    const cancelButton = canvas.getByRole('button', { name: /cancel/i })
+    const deployButton = canvas.getByRole('button', { name: /deploy/i })
+
+    await expect(cancelButton).toBeInTheDocument()
+    await expect(deployButton).toBeInTheDocument()
+
+    // Test button click
+    await userEvent.click(deployButton)
+  },
 }
 
 export const FeatureCard: Story = {
@@ -118,7 +147,7 @@ export const StatsCard: Story = {
           <p className="text-xs text-gray-500">+12% from last month</p>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Active Users</CardTitle>
@@ -133,6 +162,18 @@ export const StatsCard: Story = {
       </Card>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test stats cards render with correct data
+    await expect(canvas.getByText('Total Messages')).toBeInTheDocument()
+    await expect(canvas.getByText('2,345')).toBeInTheDocument()
+    await expect(canvas.getByText('+12% from last month')).toBeInTheDocument()
+
+    await expect(canvas.getByText('Active Users')).toBeInTheDocument()
+    await expect(canvas.getByText('573')).toBeInTheDocument()
+    await expect(canvas.getByText('+8% from last month')).toBeInTheDocument()
+  },
 }
 
 export const ChatPreviewCard: Story = {

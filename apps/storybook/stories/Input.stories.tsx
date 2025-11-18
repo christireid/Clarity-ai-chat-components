@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Input } from '@clarity-chat/primitives'
 import { useState } from 'react'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Input component for text entry with various states and types.
@@ -28,8 +29,12 @@ const meta = {
         component: 'Text input component with support for various types and states.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   decorators: [
     (Story) => (
       <div style={{ width: '400px' }}>
@@ -45,6 +50,18 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     placeholder: 'Enter text...',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test input renders and accepts text
+    const input = canvas.getByPlaceholderText('Enter text...')
+    await expect(input).toBeInTheDocument()
+    await expect(input).not.toBeDisabled()
+
+    // Test typing into input
+    await userEvent.type(input, 'Hello World')
+    await expect(input).toHaveValue('Hello World')
   },
 }
 
@@ -95,18 +112,33 @@ export const States: Story = {
         <label className="text-sm font-medium">Default</label>
         <Input placeholder="Default state" />
       </div>
-      
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Disabled</label>
         <Input placeholder="Disabled" disabled />
       </div>
-      
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Readonly</label>
         <Input value="Read-only value" readOnly />
       </div>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test default input is not disabled
+    const defaultInput = canvas.getByPlaceholderText('Default state')
+    await expect(defaultInput).not.toBeDisabled()
+
+    // Test disabled input
+    const disabledInput = canvas.getByPlaceholderText('Disabled')
+    await expect(disabledInput).toBeDisabled()
+
+    // Test readonly input
+    const readonlyInput = canvas.getByDisplayValue('Read-only value')
+    await expect(readonlyInput).toHaveAttribute('readonly')
+  },
 }
 
 export const WithValidation: Story = {
@@ -236,7 +268,7 @@ export const FormExample: Story = {
 export const SearchInput: Story = {
   render: () => {
     const [query, setQuery] = useState('')
-    
+
     return (
       <div className="space-y-2">
         <div className="relative">
@@ -253,6 +285,7 @@ export const SearchInput: Story = {
             <button
               onClick={() => setQuery('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              aria-label="Clear search"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -265,5 +298,27 @@ export const SearchInput: Story = {
         )}
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test search input functionality
+    const searchInput = canvas.getByPlaceholderText('Search conversations...')
+    await expect(searchInput).toBeInTheDocument()
+
+    // Type search query
+    await userEvent.type(searchInput, 'React')
+    await expect(searchInput).toHaveValue('React')
+
+    // Check search indicator appears
+    await expect(canvas.getByText('Searching for "React"...')).toBeInTheDocument()
+
+    // Test clear button
+    const clearButton = canvas.getByRole('button', { name: /clear search/i })
+    await expect(clearButton).toBeInTheDocument()
+    await userEvent.click(clearButton)
+
+    // Verify input is cleared
+    await expect(searchInput).toHaveValue('')
   },
 }
