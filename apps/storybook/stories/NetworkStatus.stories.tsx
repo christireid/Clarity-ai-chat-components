@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { NetworkStatus } from '@clarity-chat/react'
+import { expect, within } from '@storybook/test'
 
 /**
  * **NetworkStatus Component**
@@ -54,8 +55,12 @@ with latency tracking and reconnection attempts.
         `,
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     status: {
       description: 'Network connection status',
@@ -76,7 +81,64 @@ with latency tracking and reconnection attempts.
 export default meta
 type Story = StoryObj<typeof NetworkStatus>
 
-export const Online: Story = { args: { status: 'online' } }
-export const Offline: Story = { args: { status: 'offline' } }
-export const Slow: Story = { args: { status: 'slow', latency: 2500 } }
-export const Reconnecting: Story = { args: { status: 'reconnecting', attempt: 2 } }
+export const Online: Story = {
+  args: { status: 'online' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test online status displays
+    await expect(canvas.getByText(/online/i)).toBeInTheDocument()
+
+    // Test status has proper role for accessibility
+    const statusElement = canvas.getByRole('status')
+    await expect(statusElement).toBeInTheDocument()
+  },
+}
+
+export const Offline: Story = {
+  args: { status: 'offline' },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test offline status displays
+    await expect(canvas.getByText(/offline/i)).toBeInTheDocument()
+
+    // Test status role for accessibility
+    const statusElement = canvas.getByRole('status')
+    await expect(statusElement).toBeInTheDocument()
+  },
+}
+
+export const Slow: Story = {
+  args: { status: 'slow', latency: 2500 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test slow status displays
+    await expect(canvas.getByText(/slow/i)).toBeInTheDocument()
+
+    // Test latency value displays
+    await expect(canvas.getByText(/2500/)).toBeInTheDocument()
+
+    // Test status role for accessibility
+    const statusElement = canvas.getByRole('status')
+    await expect(statusElement).toBeInTheDocument()
+  },
+}
+
+export const Reconnecting: Story = {
+  args: { status: 'reconnecting', attempt: 2 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test reconnecting status displays
+    await expect(canvas.getByText(/reconnecting/i)).toBeInTheDocument()
+
+    // Test attempt number displays
+    await expect(canvas.getByText(/2/)).toBeInTheDocument()
+
+    // Test status role for accessibility
+    const statusElement = canvas.getByRole('status')
+    await expect(statusElement).toBeInTheDocument()
+  },
+}

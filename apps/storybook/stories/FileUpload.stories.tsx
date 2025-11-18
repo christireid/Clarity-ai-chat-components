@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { FileUpload } from '@clarity-chat/react'
+import { expect, within } from '@storybook/test'
 
 /**
  * **FileUpload Component**
@@ -62,8 +63,12 @@ file validation, and multiple file support.
         `,
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     onFilesSelected: {
       description: 'Callback when files are selected',
@@ -110,6 +115,21 @@ export const Default: Story = {
     maxFiles: 5,
     maxSize: 10 * 1024 * 1024, // 10MB
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test file upload area renders
+    await expect(canvas.getByText(/drag.*drop/i)).toBeInTheDocument()
+
+    // Test browse button displays
+    await expect(canvas.getByText(/browse/i)).toBeInTheDocument()
+
+    // Test file size limit displays
+    await expect(canvas.getByText(/10.*MB/i)).toBeInTheDocument()
+
+    // Test max files limit displays
+    await expect(canvas.getByText(/5.*files/i)).toBeInTheDocument()
+  },
 }
 
 export const ImageOnly: Story = {
@@ -120,6 +140,18 @@ export const ImageOnly: Story = {
     accept: 'image/*',
     maxFiles: 3,
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test file upload area renders
+    await expect(canvas.getByText(/drag.*drop/i)).toBeInTheDocument()
+
+    // Test image restriction displays
+    await expect(canvas.getByText(/image/i)).toBeInTheDocument()
+
+    // Test max files for images
+    await expect(canvas.getByText(/3.*files/i)).toBeInTheDocument()
+  },
 }
 
 export const SingleFile: Story = {
@@ -128,6 +160,15 @@ export const SingleFile: Story = {
       console.log('File selected:', files)
     },
     maxFiles: 1,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test file upload area renders
+    await expect(canvas.getByText(/drag.*drop/i)).toBeInTheDocument()
+
+    // Test single file mode displays
+    await expect(canvas.getByText(/1.*file/i)).toBeInTheDocument()
   },
 }
 
@@ -139,5 +180,20 @@ export const WithValidation: Story = {
     maxSize: 5 * 1024 * 1024, // 5MB
     accept: '.pdf,.doc,.docx',
     maxFiles: 2,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test file upload area renders
+    await expect(canvas.getByText(/drag.*drop/i)).toBeInTheDocument()
+
+    // Test file type restrictions display
+    await expect(canvas.getByText(/pdf.*doc/i)).toBeInTheDocument()
+
+    // Test file size limit displays
+    await expect(canvas.getByText(/5.*MB/i)).toBeInTheDocument()
+
+    // Test max files limit displays
+    await expect(canvas.getByText(/2.*files/i)).toBeInTheDocument()
   },
 }
