@@ -10,7 +10,7 @@ interface DropdownMenuContextValue {
   open: boolean
   setOpen: (open: boolean) => void
   close: (options?: CloseOptions) => void
-  triggerRef: React.RefObject<HTMLElement | null>
+  triggerRef: React.MutableRefObject<HTMLElement | null>
   focusFirstRef: React.MutableRefObject<boolean>
 }
 
@@ -129,8 +129,9 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({
         const { ref } = child.props
         if (typeof ref === 'function') {
           ref(node)
-        } else if (ref && typeof ref === 'object') {
-          ref.current = node
+        } else if (ref && typeof ref === 'object' && 'current' in ref) {
+          // Only assign if it's a mutable ref
+          (ref as React.MutableRefObject<HTMLElement | null>).current = node
         }
       },
       onClick: composeEventHandlers(child.props.onClick, () => toggle()),

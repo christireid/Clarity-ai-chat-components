@@ -53,7 +53,7 @@ export function AdvancedOptimizationExample() {
   })
 
   // Debugger
-  const debugger = usePromptDebugger({
+  const promptDebugger = usePromptDebugger({
     messages: chat.messages,
     model: selectedModel,
     targetTokens,
@@ -63,7 +63,7 @@ export function AdvancedOptimizationExample() {
   // Trigger debug when enabled
   React.useEffect(() => {
     if (showDebugger && chat.messages.length > 0) {
-      debugger.debug()
+      promptDebugger.debug()
     }
   }, [showDebugger, chat.messages.length])
 
@@ -228,7 +228,7 @@ export function AdvancedOptimizationExample() {
       </div>
 
       {/* Debugger Panel */}
-      {showDebugger && debugger.debugInfo && (
+      {showDebugger && promptDebugger.debugInfo && (
         <div className="w-96 border-l bg-white p-4 overflow-auto">
           <h2 className="text-lg font-bold mb-4">Optimization Debugger</h2>
 
@@ -236,7 +236,7 @@ export function AdvancedOptimizationExample() {
           <div className="mb-6">
             <h3 className="font-medium mb-2">Optimization History</h3>
             <div className="space-y-2">
-              {debugger.debugInfo.history.map((entry, i) => (
+              {promptDebugger.debugInfo.history.map((entry, i) => (
                 <div
                   key={i}
                   className="p-2 bg-gray-50 rounded text-xs border"
@@ -260,7 +260,7 @@ export function AdvancedOptimizationExample() {
           <div className="mb-6">
             <h3 className="font-medium mb-2">Token Counts by Stage</h3>
             <div className="space-y-1">
-              {debugger.debugInfo.tokenCounts.map((count, i) => (
+              {promptDebugger.debugInfo.tokenCounts.map((count, i) => (
                 <div
                   key={i}
                   className="flex justify-between text-sm p-1 bg-gray-50 rounded"
@@ -273,11 +273,11 @@ export function AdvancedOptimizationExample() {
           </div>
 
           {/* Compression Logs */}
-          {debugger.debugInfo.compressionLogs.length > 0 && (
+          {promptDebugger.debugInfo.compressionLogs.length > 0 && (
             <div className="mb-6">
               <h3 className="font-medium mb-2">Compression Logs</h3>
               <div className="space-y-2">
-                {debugger.debugInfo.compressionLogs.map((log, i) => (
+                {promptDebugger.debugInfo.compressionLogs.map((log, i) => (
                   <div
                     key={i}
                     className="p-2 bg-blue-50 rounded text-xs"
@@ -296,12 +296,12 @@ export function AdvancedOptimizationExample() {
           )}
 
           {/* Routing Decisions */}
-          {debugger.debugInfo.routingDecisions &&
-            debugger.debugInfo.routingDecisions.length > 0 && (
+          {promptDebugger.debugInfo.routingDecisions &&
+            promptDebugger.debugInfo.routingDecisions.length > 0 && (
               <div className="mb-6">
                 <h3 className="font-medium mb-2">Routing Decisions</h3>
                 <div className="space-y-2">
-                  {debugger.debugInfo.routingDecisions.map((decision, i) => (
+                  {promptDebugger.debugInfo.routingDecisions.map((decision, i) => (
                     <div
                       key={i}
                       className="p-2 bg-purple-50 rounded text-xs"

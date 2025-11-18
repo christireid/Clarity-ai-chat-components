@@ -1,19 +1,20 @@
 /**
  * @clarity-chat/memory
- * 
+ *
  * Framework-agnostic AI memory and context management utilities
  * Works with any JavaScript/TypeScript application
  */
 
-// Main API - zero-config memory system
-export { clarityMemory } from './core/memory'
-export type { MemoryInstance } from './core/memory'
+// Main API - Legacy memory service (core/memory not yet implemented)
+// TODO: Implement clarityMemory when core/ directory is created
+// export { clarityMemory } from './core/memory'
+// export type { MemoryInstance } from './core/memory'
 
-// Core types
-export * from './core/types'
+// Core types from types.ts
+// export * from './core/types'
 
-// Configuration
-export * from './core/config'
+// Configuration (not yet implemented)
+// export * from './core/config'
 
 // Storage adapters
 export { InMemoryStore } from './stores/in-memory'

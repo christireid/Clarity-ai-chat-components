@@ -30,16 +30,6 @@
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"
   },
-  "keywords": [
-    "typescript",
-    "types",
-    "chat",
-    "ai",
-    "chatbot",
-    "clarity-chat"
-  ],
-  "author": "Christi Reid <christi@codeclarity.ai>",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/christireid/Clarity-ai-chat-components.git",

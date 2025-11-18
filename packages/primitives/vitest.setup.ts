@@ -1,12 +1,14 @@
 import { expect, afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as matchers from '@testing-library/jest-dom/matchers'
-import * as axeMatchers from 'vitest-axe/matchers'
+// TODO: Re-enable when vitest-axe is properly installed via pnpm
+// import * as axeMatchers from 'vitest-axe/matchers'
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers)
 // Extend Vitest's expect with vitest-axe matchers
-expect.extend(axeMatchers)
+// TODO: Re-enable when vitest-axe is properly installed via pnpm
+// expect.extend(axeMatchers)
 
 // Cleanup after each test
 afterEach(() => {
