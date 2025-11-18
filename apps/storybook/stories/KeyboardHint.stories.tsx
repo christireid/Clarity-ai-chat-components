@@ -2,11 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { KeyboardHint } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { KeyboardHintShortcut } from '@clarity-chat/react'
+import { expect, userEvent, within } from '@storybook/test'
 
 const meta: Meta<typeof KeyboardHint> = {
   title: 'Components/KeyboardHint',
   component: KeyboardHint,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   parameters: {
     docs: {
       description: {
@@ -15,6 +16,10 @@ const meta: Meta<typeof KeyboardHint> = {
       },
     },
     layout: 'fullscreen',
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
 }
 
@@ -82,6 +87,17 @@ export const TopRight: Story = {
       />
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test keyboard hint shortcuts render
+    await expect(canvas.getByText('Open command palette')).toBeInTheDocument()
+    await expect(canvas.getByText('Send message')).toBeInTheDocument()
+
+    // Test keyboard key displays
+    await expect(canvas.getByText('Ctrl')).toBeInTheDocument()
+    await expect(canvas.getByText('Enter')).toBeInTheDocument()
+  },
 }
 
 export const TopLeft: Story = {
@@ -164,7 +180,7 @@ export const WithoutCategories: Story = {
       { keys: ['Ctrl', 'Enter'], description: 'Send message' },
       { keys: ['Esc'], description: 'Close dialog' },
     ]
-    
+
     return (
       <div className="relative h-screen">
         <KeyboardHint
@@ -173,5 +189,17 @@ export const WithoutCategories: Story = {
         />
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test shortcuts without categories render
+    await expect(canvas.getByText('Open command palette')).toBeInTheDocument()
+    await expect(canvas.getByText('Send message')).toBeInTheDocument()
+    await expect(canvas.getByText('Close dialog')).toBeInTheDocument()
+
+    // Test all keyboard keys render
+    await expect(canvas.getByText('Ctrl')).toBeInTheDocument()
+    await expect(canvas.getByText('Esc')).toBeInTheDocument()
   },
 }

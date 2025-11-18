@@ -1,14 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { LinkPreview, InlineLink } from '@clarity-chat/react'
 import type { LinkMetadata } from '@clarity-chat/types'
+import { expect, userEvent, within } from '@storybook/test'
 
 const linkPreviewMeta = {
   title: 'Components/LinkPreview/Preview',
   component: LinkPreview,
   parameters: {
     layout: 'padded',
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     onRemove: { action: 'removed' },
   },
@@ -29,6 +34,21 @@ const defaultMetadata: LinkMetadata = {
 export const Default: PreviewStory = {
   args: {
     metadata: defaultMetadata,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test link preview renders
+    await expect(canvas.getByText('Understanding React Hooks')).toBeInTheDocument()
+
+    // Test description renders
+    await expect(canvas.getByText(/comprehensive guide to React Hooks/)).toBeInTheDocument()
+
+    // Test URL displays
+    await expect(canvas.getByText(/example.com/)).toBeInTheDocument()
+
+    // Test site name renders
+    await expect(canvas.getByText('Dev Blog')).toBeInTheDocument()
   },
 }
 
@@ -89,6 +109,19 @@ export const WithRemoveButton: PreviewStory = {
   args: {
     metadata: defaultMetadata,
     onRemove: () => console.log('Remove clicked'),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test link preview renders
+    await expect(canvas.getByText('Understanding React Hooks')).toBeInTheDocument()
+
+    // Test remove button renders
+    const removeButton = canvas.getByRole('button', { name: /remove/i })
+    await expect(removeButton).toBeInTheDocument()
+
+    // Test clicking remove button
+    await userEvent.click(removeButton)
   },
 }
 
