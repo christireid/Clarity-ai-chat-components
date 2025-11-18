@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Progress } from '@clarity-chat/react'
 import { useState, useEffect } from 'react'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Progress Indicators
@@ -36,8 +37,12 @@ const meta = {
           'Progress indicators that provide visual feedback for tasks, uploads, and loading states with smooth animations.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     value: {
       control: { type: 'range', min: 0, max: 100, step: 1 },
@@ -65,11 +70,29 @@ export const Default: Story = {
   args: {
     value: 45,
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test progress bar renders with correct role and value
+    const progressBar = canvas.getByRole('progressbar')
+    await expect(progressBar).toBeInTheDocument()
+    await expect(progressBar).toHaveAttribute('aria-valuenow', '45')
+    await expect(progressBar).toHaveAttribute('aria-valuemin', '0')
+    await expect(progressBar).toHaveAttribute('aria-valuemax', '100')
+  },
 }
 
 export const Empty: Story = {
   args: {
     value: 0,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test empty progress bar (0%)
+    const progressBar = canvas.getByRole('progressbar')
+    await expect(progressBar).toBeInTheDocument()
+    await expect(progressBar).toHaveAttribute('aria-valuenow', '0')
   },
 }
 
@@ -88,6 +111,14 @@ export const AlmostComplete: Story = {
 export const Complete: Story = {
   args: {
     value: 100,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test complete progress bar (100%)
+    const progressBar = canvas.getByRole('progressbar')
+    await expect(progressBar).toBeInTheDocument()
+    await expect(progressBar).toHaveAttribute('aria-valuenow', '100')
   },
 }
 
@@ -562,6 +593,30 @@ export const InteractiveDemo: Story = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test initial state (50%)
+    const progressBar = canvas.getByRole('progressbar')
+    await expect(progressBar).toHaveAttribute('aria-valuenow', '50')
+
+    // Test +10% button
+    const increaseButton = canvas.getByRole('button', { name: '+10%' })
+    await userEvent.click(increaseButton)
+    await expect(progressBar).toHaveAttribute('aria-valuenow', '60')
+
+    // Test -10% button
+    const decreaseButton = canvas.getByRole('button', { name: '-10%' })
+    await userEvent.click(decreaseButton)
+    await expect(progressBar).toHaveAttribute('aria-valuenow', '50')
+
+    // Test Reset button
+    await userEvent.click(increaseButton)
+    await userEvent.click(increaseButton)
+    const resetButton = canvas.getByRole('button', { name: /reset/i })
+    await userEvent.click(resetButton)
+    await expect(progressBar).toHaveAttribute('aria-valuenow', '50')
+  },
 }
 
 // ============================================================================
@@ -590,4 +645,15 @@ export const Accessibility: Story = {
       </div>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test progress bar has accessibility label
+    const progressBar = canvas.getByRole('progressbar', {
+      name: /task completion progress/i,
+    })
+    await expect(progressBar).toBeInTheDocument()
+    await expect(progressBar).toHaveAttribute('aria-valuenow', '65')
+    await expect(progressBar).toHaveAttribute('aria-label', 'Task completion progress')
+  },
 }

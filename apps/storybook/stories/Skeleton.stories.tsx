@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import * as React from 'react'
 import {
   Skeleton,
   SkeletonText,
@@ -6,6 +7,7 @@ import {
   SkeletonAvatar,
   SkeletonButton,
 } from '@clarity-chat/react'
+import { expect, within } from '@storybook/test'
 
 /**
  * Skeleton Loaders
@@ -41,8 +43,12 @@ const meta = {
           'Skeleton loading components that provide visual placeholders while content loads, improving perceived performance.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     className: {
       control: 'text',
@@ -60,6 +66,13 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   render: () => <Skeleton className="h-4 w-full" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test skeleton element renders
+    const skeleton = canvasElement.querySelector('.h-4')
+    await expect(skeleton).toBeInTheDocument()
+  },
 }
 
 export const CustomSize: Story = {
@@ -104,6 +117,17 @@ export const TextSkeleton: Story = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test skeleton text components render
+    const skeletonContainer = canvasElement.querySelector('.space-y-2')
+    await expect(skeletonContainer).toBeInTheDocument()
+
+    // Check that multiple skeleton text components are rendered
+    const skeletons = canvasElement.querySelectorAll('[class*="h-"]')
+    await expect(skeletons.length).toBeGreaterThan(0)
+  },
 }
 
 export const CardSkeleton: Story = {
@@ -137,6 +161,17 @@ export const AvatarSkeleton: Story = {
         story: 'Preset skeleton for user avatars in various sizes.',
       },
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test multiple avatar skeletons render
+    const avatarContainer = canvasElement.querySelector('.flex.gap-4')
+    await expect(avatarContainer).toBeInTheDocument()
+
+    // Check that multiple avatar skeletons exist (rounded elements)
+    const skeletons = canvasElement.querySelectorAll('[class*="rounded"]')
+    await expect(skeletons.length).toBeGreaterThanOrEqual(4)
   },
 }
 
@@ -188,6 +223,21 @@ export const UserProfile: Story = {
         story: 'Complex user profile layout with avatar, text, and buttons.',
       },
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test user profile skeleton structure renders
+    const profileContainer = canvasElement.querySelector('.max-w-md')
+    await expect(profileContainer).toBeInTheDocument()
+
+    // Test avatar skeleton exists
+    const avatarArea = canvasElement.querySelector('.flex.items-center.gap-4')
+    await expect(avatarArea).toBeInTheDocument()
+
+    // Test skeleton elements are present
+    const skeletons = canvasElement.querySelectorAll('[class*="h-"]')
+    await expect(skeletons.length).toBeGreaterThan(0)
   },
 }
 

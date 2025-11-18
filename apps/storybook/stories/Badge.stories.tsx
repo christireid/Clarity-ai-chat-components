@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Badge } from '@clarity-chat/primitives'
+import { expect, within } from '@storybook/test'
 
 /**
  * Badge component for displaying small count indicators, status labels, and tags.
@@ -25,8 +26,12 @@ const meta = {
         component: 'Small count and label indicators for status, categories, and notifications.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     variant: {
       control: 'select',
@@ -43,6 +48,12 @@ export const Default: Story = {
   args: {
     children: 'Badge',
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test badge renders with correct text
+    await expect(canvas.getByText('Badge')).toBeInTheDocument()
+  },
 }
 
 export const Variants: Story = {
@@ -54,6 +65,15 @@ export const Variants: Story = {
       <Badge variant="outline">Outline</Badge>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test all badge variants are rendered
+    await expect(canvas.getByText('Default')).toBeInTheDocument()
+    await expect(canvas.getByText('Secondary')).toBeInTheDocument()
+    await expect(canvas.getByText('Destructive')).toBeInTheDocument()
+    await expect(canvas.getByText('Outline')).toBeInTheDocument()
+  },
 }
 
 export const StatusIndicators: Story = {
@@ -89,18 +109,26 @@ export const WithCounts: Story = {
         <span className="text-sm">Unread Messages</span>
         <Badge className="bg-red-500">12</Badge>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <span className="text-sm">Active Chats</span>
         <Badge className="bg-green-500">3</Badge>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <span className="text-sm">Notifications</span>
         <Badge className="bg-blue-500">99+</Badge>
       </div>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test count badges display correct numbers
+    await expect(canvas.getByText('12')).toBeInTheDocument()
+    await expect(canvas.getByText('3')).toBeInTheDocument()
+    await expect(canvas.getByText('99+')).toBeInTheDocument()
+  },
 }
 
 export const Tags: Story = {
@@ -113,6 +141,16 @@ export const Tags: Story = {
       <Badge variant="outline">Components</Badge>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test tag badges are rendered
+    await expect(canvas.getByText('React')).toBeInTheDocument()
+    await expect(canvas.getByText('TypeScript')).toBeInTheDocument()
+    await expect(canvas.getByText('AI')).toBeInTheDocument()
+    await expect(canvas.getByText('Chat')).toBeInTheDocument()
+    await expect(canvas.getByText('Components')).toBeInTheDocument()
+  },
 }
 
 export const WithIcons: Story = {
