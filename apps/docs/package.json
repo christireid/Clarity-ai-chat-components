@@ -20,7 +20,7 @@
     "openai": "^4.77.3",
     "@anthropic-ai/sdk": "^0.32.1",
     "@pinecone-database/pinecone": "^4.0.0",
-    "@upstash/redis": "^1.37.0",
+    "@upstash/redis": "^1.35.6",
     "gray-matter": "^4.0.3",
     "uuid": "^11.0.3"
   },
