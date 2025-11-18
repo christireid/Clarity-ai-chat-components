@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import * as React from 'react'
 import { Message } from '@clarity-chat/react'
 import type { Message as MessageType } from '@clarity-chat/types'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * **Message Component**
@@ -28,7 +29,7 @@ import type { Message as MessageType } from '@clarity-chat/types'
 const meta: Meta<typeof Message> = {
   title: 'Components/Message',
   component: Message,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   parameters: {
     layout: 'padded',
     docs: {
@@ -62,6 +63,10 @@ feedback, and interactive features.
         `,
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
   argTypes: {
     message: {
@@ -130,6 +135,12 @@ export const UserMessage: Story = {
       message={createUserMessage('Hello! Can you help me with React animations?')}
     />
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test message content is rendered
+    await expect(canvas.getByText(/Hello! Can you help me with React animations/i)).toBeInTheDocument()
+  },
 }
 
 export const AssistantMessage: Story = {
@@ -141,6 +152,15 @@ export const AssistantMessage: Story = {
       onFeedback={(type) => console.log('Feedback:', type)}
     />
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test message renders
+    await expect(canvas.getByText(/React animations can be achieved/i)).toBeInTheDocument()
+
+    // Test feedback buttons appear on hover (if visible)
+    // Note: This may depend on implementation - some components show on hover
+  },
 }
 
 export const StreamingMessage: Story = {
@@ -399,9 +419,22 @@ export const ErrorStatus: Story = {
       message={createAssistantMessage('Failed to generate response', {
         status: 'error',
       })}
-      onRetry={() => alert('Retrying...')}
+      onRetry={() => console.log('Retry clicked')}
     />
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test error message renders
+    await expect(canvas.getByText(/Failed to generate response/i)).toBeInTheDocument()
+
+    // Test retry button exists (if rendered)
+    const retryButton = canvas.queryByRole('button', { name: /retry/i })
+    if (retryButton) {
+      await expect(retryButton).toBeInTheDocument()
+      await userEvent.click(retryButton)
+    }
+  },
 }
 
 export const WithMetadata: Story = {

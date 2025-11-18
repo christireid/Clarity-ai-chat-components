@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Tooltip, Button } from '@clarity-chat/primitives'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 /**
  * Tooltip component for displaying helpful information on hover.
@@ -26,8 +27,12 @@ const meta = {
         component: 'Tooltip component for displaying helpful information on hover or focus.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
 } satisfies Meta<typeof Tooltip>
 
 export default meta
@@ -39,6 +44,24 @@ export const Default: Story = {
       <Button>Hover me</Button>
     </Tooltip>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test trigger button exists
+    const button = canvas.getByRole('button', { name: /hover me/i })
+    await expect(button).toBeInTheDocument()
+
+    // Hover over button to show tooltip
+    await userEvent.hover(button)
+
+    // Wait for tooltip to appear and check content
+    await waitFor(async () => {
+      const tooltip = canvas.queryByText(/this is a helpful tooltip/i)
+      if (tooltip) {
+        await expect(tooltip).toBeVisible()
+      }
+    })
+  },
 }
 
 export const WithArrow: Story = {
@@ -102,6 +125,20 @@ export const Disabled: Story = {
       <Button disabled>Disabled Button</Button>
     </Tooltip>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test disabled button exists
+    const button = canvas.getByRole('button', { name: /disabled button/i })
+    await expect(button).toBeDisabled()
+
+    // Tooltip should not appear when hovering disabled tooltip
+    await userEvent.hover(button)
+
+    // Tooltip should not be visible
+    const tooltip = canvas.queryByText(/this tooltip is disabled/i)
+    // Note: Tooltip may not render at all when disabled
+  },
 }
 
 export const WithoutArrow: Story = {

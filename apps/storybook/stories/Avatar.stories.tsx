@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Avatar } from '@clarity-chat/primitives'
+import { expect, within } from '@storybook/test'
 
 /**
  * Avatar component displays user profile pictures with fallback support.
@@ -25,8 +26,12 @@ const meta = {
         component: 'Display user or bot avatars with automatic fallbacks and status indicators.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
 } satisfies Meta<typeof Avatar>
 
 export default meta
@@ -37,6 +42,14 @@ export const Default: Story = {
     src: 'https://github.com/shadcn.png',
     alt: 'User avatar',
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test avatar image renders with correct alt text
+    const avatar = canvas.getByRole('img', { name: /user avatar/i })
+    await expect(avatar).toBeInTheDocument()
+    await expect(avatar).toHaveAttribute('alt', 'User avatar')
+  },
 }
 
 export const WithFallback: Story = {
@@ -44,6 +57,12 @@ export const WithFallback: Story = {
     src: 'invalid-url',
     alt: 'John Doe',
     fallback: 'JD',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test fallback text displays when image fails to load
+    await expect(canvas.getByText(/JD/i)).toBeInTheDocument()
   },
 }
 
@@ -136,5 +155,11 @@ export const OnlyFallback: Story = {
   args: {
     fallback: 'AB',
     alt: 'Alice Brown',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test avatar displays fallback text
+    await expect(canvas.getByText(/AB/i)).toBeInTheDocument()
   },
 }
