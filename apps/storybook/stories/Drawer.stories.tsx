@@ -13,11 +13,12 @@ import {
   Button,
   Badge,
 } from '@clarity-chat/primitives'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 const meta: Meta<typeof Drawer> = {
   title: 'Primitives/Drawer',
   component: Drawer,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   parameters: {
     docs: {
       description: {
@@ -25,6 +26,10 @@ const meta: Meta<typeof Drawer> = {
           'A drawer component that slides in from the edge of the screen. Supports left, right, top, and bottom positions with smooth animations, focus trap, and keyboard navigation.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
 }
 
@@ -60,6 +65,35 @@ export const RightSide: Story = {
       </DrawerContent>
     </Drawer>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test drawer trigger button renders
+    const openButton = canvas.getByRole('button', { name: /open right drawer/i })
+    await expect(openButton).toBeInTheDocument()
+
+    // Test opening drawer
+    await userEvent.click(openButton)
+
+    // Wait for drawer to appear and test content
+    await waitFor(async () => {
+      const drawer = document.querySelector('[role="dialog"]')
+      if (drawer) {
+        const drawerCanvas = within(drawer as HTMLElement)
+        await expect(drawerCanvas.getByText('Right Drawer')).toBeInTheDocument()
+        await expect(drawerCanvas.getByText(/Slides in from the right side/i)).toBeInTheDocument()
+
+        // Test action buttons
+        const closeButton = drawerCanvas.getByRole('button', { name: /close/i })
+        const saveButton = drawerCanvas.getByRole('button', { name: /save/i })
+        await expect(closeButton).toBeInTheDocument()
+        await expect(saveButton).toBeInTheDocument()
+
+        // Test closing drawer
+        await userEvent.click(closeButton)
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 export const LeftSide: Story = {
@@ -254,6 +288,38 @@ export const NavigationDrawer: Story = {
       </DrawerContent>
     </Drawer>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test navigation menu button renders
+    const menuButton = canvas.getByRole('button', { name: /navigation menu/i })
+    await expect(menuButton).toBeInTheDocument()
+
+    // Test opening navigation drawer
+    await userEvent.click(menuButton)
+
+    // Wait for drawer and test navigation items
+    await waitFor(async () => {
+      const drawer = document.querySelector('[role="dialog"]')
+      if (drawer) {
+        const drawerCanvas = within(drawer as HTMLElement)
+
+        // Test navigation header
+        await expect(drawerCanvas.getByText('Navigation')).toBeInTheDocument()
+        await expect(drawerCanvas.getByText('Browse sections')).toBeInTheDocument()
+
+        // Test all navigation items are present
+        const navItems = ['Dashboard', 'Projects', 'Tasks', 'Calendar', 'Settings', 'Help']
+        for (const item of navItems) {
+          await expect(drawerCanvas.getByRole('button', { name: item })).toBeInTheDocument()
+        }
+
+        // Test clicking a navigation item
+        const dashboardButton = drawerCanvas.getByRole('button', { name: 'Dashboard' })
+        await userEvent.click(dashboardButton)
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 export const SettingsDrawer: Story = {
@@ -304,6 +370,46 @@ export const SettingsDrawer: Story = {
       </DrawerContent>
     </Drawer>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test settings button renders
+    const settingsButton = canvas.getByRole('button', { name: /settings/i })
+    await expect(settingsButton).toBeInTheDocument()
+
+    // Test opening settings drawer
+    await userEvent.click(settingsButton)
+
+    // Wait for drawer and test settings content
+    await waitFor(async () => {
+      const drawer = document.querySelector('[role="dialog"]')
+      if (drawer) {
+        const drawerCanvas = within(drawer as HTMLElement)
+
+        // Test settings header
+        await expect(drawerCanvas.getByText('Settings')).toBeInTheDocument()
+        await expect(drawerCanvas.getByText('Manage your preferences')).toBeInTheDocument()
+
+        // Test section headers
+        await expect(drawerCanvas.getByText('Appearance')).toBeInTheDocument()
+        await expect(drawerCanvas.getByText('Notifications')).toBeInTheDocument()
+
+        // Test checkboxes are present
+        const checkboxes = drawerCanvas.getAllByRole('checkbox')
+        await expect(checkboxes.length).toBe(4)
+
+        // Test specific checkbox labels
+        await expect(drawerCanvas.getByText('Dark mode')).toBeInTheDocument()
+        await expect(drawerCanvas.getByText('Email notifications')).toBeInTheDocument()
+
+        // Test action buttons
+        const saveButton = drawerCanvas.getByRole('button', { name: /save changes/i })
+        const cancelButton = drawerCanvas.getByRole('button', { name: /cancel/i })
+        await expect(saveButton).toBeInTheDocument()
+        await expect(cancelButton).toBeInTheDocument()
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 export const FilterDrawer: Story = {
@@ -499,6 +605,35 @@ export const ControlledDrawer: Story = {
         </Drawer>
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test controlled state indicator shows closed initially
+    await expect(canvas.getByText('Drawer is closed')).toBeInTheDocument()
+
+    // Test opening with external button
+    const openButton = canvas.getByRole('button', { name: /^open$/i })
+    await userEvent.click(openButton)
+
+    // Wait for drawer to appear
+    await waitFor(async () => {
+      const drawer = document.querySelector('[role="dialog"]')
+      if (drawer) {
+        const drawerCanvas = within(drawer as HTMLElement)
+        await expect(drawerCanvas.getByText('Controlled Drawer')).toBeInTheDocument()
+        await expect(drawerCanvas.getByText(/State managed externally/i)).toBeInTheDocument()
+      }
+    }, { timeout: 2000 })
+
+    // Test programmatic close button
+    const closeProgrammatically = canvas.getByRole('button', { name: /close programmatically/i })
+    await userEvent.click(closeProgrammatically)
+
+    // Verify state indicator updates
+    await waitFor(async () => {
+      await expect(canvas.getByText('Drawer is closed')).toBeInTheDocument()
+    }, { timeout: 1000 })
   },
 }
 

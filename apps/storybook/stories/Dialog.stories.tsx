@@ -13,11 +13,12 @@ import {
   Button,
   Input,
 } from '@clarity-chat/primitives'
+import { expect, userEvent, within, waitFor } from '@storybook/test'
 
 const meta: Meta<typeof Dialog> = {
   title: 'Primitives/Dialog (Modal)',
   component: Dialog,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   parameters: {
     docs: {
       description: {
@@ -25,6 +26,10 @@ const meta: Meta<typeof Dialog> = {
           'A modal dialog component with backdrop blur, smooth animations, focus trap, and keyboard navigation. Supports multiple sizes and animation variants.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
 }
 
@@ -64,6 +69,35 @@ export const Default: Story = {
       </Dialog>
     )
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test dialog trigger button renders
+    const openButton = canvas.getByRole('button', { name: /open dialog/i })
+    await expect(openButton).toBeInTheDocument()
+
+    // Test opening dialog
+    await userEvent.click(openButton)
+
+    // Wait for dialog to appear and test content
+    await waitFor(async () => {
+      const dialog = document.querySelector('[role="dialog"]')
+      if (dialog) {
+        const dialogCanvas = within(dialog as HTMLElement)
+        await expect(dialogCanvas.getByText('Dialog Title')).toBeInTheDocument()
+        await expect(dialogCanvas.getByText(/This is a basic dialog/i)).toBeInTheDocument()
+
+        // Test action buttons are present
+        const confirmButton = dialogCanvas.getByRole('button', { name: /confirm/i })
+        const cancelButton = dialogCanvas.getByRole('button', { name: /cancel/i })
+        await expect(confirmButton).toBeInTheDocument()
+        await expect(cancelButton).toBeInTheDocument()
+
+        // Test confirm button closes dialog
+        await userEvent.click(confirmButton)
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 export const WithTrigger: Story = {
@@ -87,6 +121,26 @@ export const WithTrigger: Story = {
       </DialogContent>
     </Dialog>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test DialogTrigger button renders
+    const triggerButton = canvas.getByRole('button', { name: /open with trigger/i })
+    await expect(triggerButton).toBeInTheDocument()
+
+    // Test clicking trigger opens dialog
+    await userEvent.click(triggerButton)
+
+    // Wait for dialog to appear
+    await waitFor(async () => {
+      const dialog = document.querySelector('[role="dialog"]')
+      if (dialog) {
+        const dialogCanvas = within(dialog as HTMLElement)
+        await expect(dialogCanvas.getByText('Using DialogTrigger')).toBeInTheDocument()
+        await expect(dialogCanvas.getByText(/The trigger component handles/i)).toBeInTheDocument()
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 // ============================================================================
@@ -397,6 +451,37 @@ export const ConfirmationDialog: Story = {
       </DialogContent>
     </Dialog>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test destructive trigger button renders
+    const deleteButton = canvas.getByRole('button', { name: /delete account/i })
+    await expect(deleteButton).toBeInTheDocument()
+
+    // Test opening confirmation dialog
+    await userEvent.click(deleteButton)
+
+    // Wait for dialog and test confirmation UI
+    await waitFor(async () => {
+      const dialog = document.querySelector('[role="dialog"]')
+      if (dialog) {
+        const dialogCanvas = within(dialog as HTMLElement)
+
+        // Test warning message
+        await expect(dialogCanvas.getByText('Are you absolutely sure?')).toBeInTheDocument()
+        await expect(dialogCanvas.getByText(/This action cannot be undone/i)).toBeInTheDocument()
+
+        // Test both action buttons present
+        const cancelButton = dialogCanvas.getByRole('button', { name: /cancel/i })
+        const confirmDeleteButton = dialogCanvas.getAllByRole('button', { name: /delete account/i })[0]
+        await expect(cancelButton).toBeInTheDocument()
+        await expect(confirmDeleteButton).toBeInTheDocument()
+
+        // Test cancel button
+        await userEvent.click(cancelButton)
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 export const FormDialog: Story = {
@@ -439,6 +524,42 @@ export const FormDialog: Story = {
       </DialogContent>
     </Dialog>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test edit button renders
+    const editButton = canvas.getByRole('button', { name: /edit profile/i })
+    await expect(editButton).toBeInTheDocument()
+
+    // Test opening form dialog
+    await userEvent.click(editButton)
+
+    // Wait for dialog and test form elements
+    await waitFor(async () => {
+      const dialog = document.querySelector('[role="dialog"]')
+      if (dialog) {
+        const dialogCanvas = within(dialog as HTMLElement)
+
+        // Test form labels and inputs
+        await expect(dialogCanvas.getByText('Edit Profile')).toBeInTheDocument()
+        await expect(dialogCanvas.getByText('Name')).toBeInTheDocument()
+        await expect(dialogCanvas.getByText('Email')).toBeInTheDocument()
+        await expect(dialogCanvas.getByText('Bio')).toBeInTheDocument()
+
+        // Test input fields have default values
+        const nameInput = dialogCanvas.getByPlaceholderText('Enter your name')
+        const emailInput = dialogCanvas.getByPlaceholderText('Enter your email')
+        await expect(nameInput).toHaveValue('John Doe')
+        await expect(emailInput).toHaveValue('john@example.com')
+
+        // Test form buttons
+        const saveButton = dialogCanvas.getByRole('button', { name: /save changes/i })
+        const cancelButton = dialogCanvas.getByRole('button', { name: /cancel/i })
+        await expect(saveButton).toBeInTheDocument()
+        await expect(cancelButton).toBeInTheDocument()
+      }
+    }, { timeout: 2000 })
+  },
 }
 
 export const NestedDialog: Story = {
@@ -508,6 +629,35 @@ export const ControlledDialog: Story = {
         </Dialog>
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test controlled state indicator shows closed initially
+    await expect(canvas.getByText('Dialog is closed')).toBeInTheDocument()
+
+    // Test opening with external button
+    const openButton = canvas.getByRole('button', { name: /^open$/i })
+    await userEvent.click(openButton)
+
+    // Wait for dialog to appear
+    await waitFor(async () => {
+      const dialog = document.querySelector('[role="dialog"]')
+      if (dialog) {
+        const dialogCanvas = within(dialog as HTMLElement)
+        await expect(dialogCanvas.getByText('Controlled Dialog')).toBeInTheDocument()
+        await expect(dialogCanvas.getByText(/State is managed externally/i)).toBeInTheDocument()
+      }
+    }, { timeout: 2000 })
+
+    // Test programmatic close button
+    const closeProgrammatically = canvas.getByRole('button', { name: /close programmatically/i })
+    await userEvent.click(closeProgrammatically)
+
+    // Verify state indicator updates
+    await waitFor(async () => {
+      await expect(canvas.getByText('Dialog is closed')).toBeInTheDocument()
+    }, { timeout: 1000 })
   },
 }
 
