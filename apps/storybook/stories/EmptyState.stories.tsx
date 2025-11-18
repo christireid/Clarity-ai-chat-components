@@ -8,6 +8,7 @@ import {
   SuccessState,
 } from '@clarity-chat/react'
 import { Database, FileQuestion } from 'lucide-react'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Empty State Components
@@ -36,8 +37,12 @@ const meta = {
           'Empty state components that gracefully handle no-data scenarios with clear messaging and actionable next steps.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     title: {
       control: 'text',
@@ -78,6 +83,20 @@ export const Default: Story = {
       onClick: () => alert('Create clicked!'),
       variant: 'default',
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test empty state title renders
+    await expect(canvas.getByText('No items found')).toBeInTheDocument()
+
+    // Test description renders
+    await expect(canvas.getByText('Get started by creating your first item.')).toBeInTheDocument()
+
+    // Test action button renders and is clickable
+    const createButton = canvas.getByRole('button', { name: /create item/i })
+    await expect(createButton).toBeInTheDocument()
+    await userEvent.click(createButton)
   },
 }
 
@@ -121,6 +140,20 @@ export const NoSearchResults: Story = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test no results message renders
+    await expect(canvas.getByText(/no results found/i)).toBeInTheDocument()
+
+    // Test search query is displayed
+    await expect(canvas.getByText(/artificial intelligence/i)).toBeInTheDocument()
+
+    // Test clear search button renders and is clickable
+    const clearButton = canvas.getByRole('button', { name: /clear search/i })
+    await expect(clearButton).toBeInTheDocument()
+    await userEvent.click(clearButton)
+  },
 }
 
 export const NoConversations: Story = {
@@ -153,6 +186,25 @@ export const ErrorIllustration: Story = {
         story: 'Error state with retry and navigation options.',
       },
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test error title renders
+    await expect(canvas.getByText('Failed to load data')).toBeInTheDocument()
+
+    // Test error description renders
+    await expect(canvas.getByText(/couldn't load the requested content/i)).toBeInTheDocument()
+
+    // Test retry button renders and is clickable
+    const retryButton = canvas.getByRole('button', { name: /retry/i })
+    await expect(retryButton).toBeInTheDocument()
+    await userEvent.click(retryButton)
+
+    // Test go back button renders and is clickable
+    const goBackButton = canvas.getByRole('button', { name: /go back/i })
+    await expect(goBackButton).toBeInTheDocument()
+    await userEvent.click(goBackButton)
   },
 }
 
@@ -207,6 +259,19 @@ export const WithSecondaryAction: Story = {
       label: 'Learn More',
       onClick: () => alert('Learn more clicked!'),
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test primary action button renders
+    const uploadButton = canvas.getByRole('button', { name: /upload file/i })
+    await expect(uploadButton).toBeInTheDocument()
+    await userEvent.click(uploadButton)
+
+    // Test secondary action button renders
+    const learnMoreButton = canvas.getByRole('button', { name: /learn more/i })
+    await expect(learnMoreButton).toBeInTheDocument()
+    await userEvent.click(learnMoreButton)
   },
 }
 

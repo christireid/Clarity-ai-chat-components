@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ThinkingIndicator } from '@clarity-chat/react'
 import type { ThinkingStage } from '@clarity-chat/types'
+import { expect, within } from '@storybook/test'
 
 /**
  * **ThinkingIndicator Component**
@@ -57,8 +58,12 @@ with progress tracking and estimated time.
         `,
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     stage: {
       description: 'Current thinking stage',
@@ -91,6 +96,16 @@ export const Thinking: Story = {
   args: {
     stage: 'thinking',
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test thinking indicator renders
+    const indicator = canvas.getByRole('status')
+    await expect(indicator).toBeInTheDocument()
+
+    // Test thinking stage is displayed
+    await expect(canvas.getByText(/thinking/i)).toBeInTheDocument()
+  },
 }
 
 export const Researching: Story = {
@@ -112,6 +127,15 @@ export const Generating: Story = {
     stage: 'generating',
     progress: 65,
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test generating stage is displayed
+    await expect(canvas.getByText(/generating/i)).toBeInTheDocument()
+
+    // Test progress percentage is displayed
+    await expect(canvas.getByText(/65%/)).toBeInTheDocument()
+  },
 }
 
 export const Finalizing: Story = {
@@ -129,5 +153,23 @@ export const WithAllDetails: Story = {
     detail: 'Creating detailed examples with code',
     progress: 50,
     estimatedTime: 15,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test stage is displayed
+    await expect(canvas.getByText(/generating/i)).toBeInTheDocument()
+
+    // Test topic is displayed
+    await expect(canvas.getByText('Comprehensive React Tutorial')).toBeInTheDocument()
+
+    // Test detail is displayed
+    await expect(canvas.getByText('Creating detailed examples with code')).toBeInTheDocument()
+
+    // Test progress percentage is displayed
+    await expect(canvas.getByText(/50%/)).toBeInTheDocument()
+
+    // Test estimated time is displayed (15 seconds)
+    await expect(canvas.getByText(/15/)).toBeInTheDocument()
   },
 }
