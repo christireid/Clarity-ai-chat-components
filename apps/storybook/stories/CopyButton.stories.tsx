@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { CopyButton } from '@clarity-chat/react'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * Enhanced CopyButton component with success state animation and ripple effect.
@@ -28,8 +29,12 @@ const meta = {
         component: 'A button that copies text to clipboard with visual feedback. Perfect for code snippets, sharing links, and any content users might want to copy.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     text: {
       control: 'text',
@@ -71,12 +76,39 @@ export const Default: Story = {
   args: {
     text: 'Hello, World!',
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test copy button renders
+    const copyButton = canvas.getByRole('button')
+    await expect(copyButton).toBeInTheDocument()
+    await expect(copyButton).not.toBeDisabled()
+
+    // Test button contains copy text
+    await expect(copyButton).toHaveTextContent(/copy/i)
+
+    // Test clicking copy button
+    await userEvent.click(copyButton)
+
+    // Note: Actual clipboard testing is limited in test environment
+    // but we can verify the button interaction works
+  },
 }
 
 export const IconOnly: Story = {
   args: {
     text: 'This is the text that will be copied',
     iconOnly: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test icon-only copy button renders
+    const copyButton = canvas.getByRole('button')
+    await expect(copyButton).toBeInTheDocument()
+
+    // Test clicking icon-only button
+    await userEvent.click(copyButton)
   },
 }
 

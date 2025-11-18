@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { RetryButton } from '@clarity-chat/react'
+import { expect, userEvent, within } from '@storybook/test'
 
 /**
  * **RetryButton Component**
@@ -57,8 +58,12 @@ with attempt tracking and loading states.
         `,
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     onRetry: {
       description: 'Callback when retry button is clicked',
@@ -88,12 +93,45 @@ type Story = StoryObj<typeof RetryButton>
 
 export const Default: Story = {
   args: { onRetry: () => console.log('Retry clicked') },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test retry button renders
+    const retryButton = canvas.getByRole('button')
+    await expect(retryButton).toBeInTheDocument()
+    await expect(retryButton).not.toBeDisabled()
+
+    // Test button text contains "Retry"
+    await expect(retryButton).toHaveTextContent(/retry/i)
+
+    // Test clicking retry button
+    await userEvent.click(retryButton)
+  },
 }
 
 export const WithAttempts: Story = {
   args: { onRetry: () => {}, attempt: 2, maxAttempts: 3 },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test retry button with attempt counter renders
+    const retryButton = canvas.getByRole('button')
+    await expect(retryButton).toBeInTheDocument()
+
+    // Test attempt counter is displayed (2/3)
+    await expect(retryButton).toHaveTextContent(/2/)
+    await expect(retryButton).toHaveTextContent(/3/)
+  },
 }
 
 export const Loading: Story = {
   args: { onRetry: () => {}, isRetrying: true },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test retry button in loading state
+    const retryButton = canvas.getByRole('button')
+    await expect(retryButton).toBeInTheDocument()
+    await expect(retryButton).toBeDisabled()
+  },
 }
