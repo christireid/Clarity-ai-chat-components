@@ -5,8 +5,10 @@ const config: StorybookConfig = {
   stories: [
     '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     '../stories/**/!(GettingStarted|Introduction).mdx',
-    '../../../packages/error-handling/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-    '../../../packages/react/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    // TODO: Re-enable package stories once duplicates are resolved
+    // Temporarily disabled to fix duplicate story IDs error
+    // '../../../packages/error-handling/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    // '../../../packages/react/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
   
   addons: [

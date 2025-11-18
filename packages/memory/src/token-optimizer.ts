@@ -385,11 +385,10 @@ export class MemoryCompressor {
  */
 export class SemanticChunker {
   private chunkSize: number
-  private overlap: number
 
-  constructor(chunkSize: number = 200, overlap: number = 50) {
+  constructor(chunkSize: number = 200, _overlap: number = 50) {
     this.chunkSize = chunkSize
-    this.overlap = overlap
+    // overlap parameter reserved for future semantic overlap calculation
   }
 
   /**

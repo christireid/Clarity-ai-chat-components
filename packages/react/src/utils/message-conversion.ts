@@ -82,7 +82,7 @@ export function convertMessageToCoreMessage(
 
 /**
  * Convert array of CoreMessages to Messages
- * 
+ *
  * @param coreMessages - Array of CoreMessages
  * @param chatId - Chat ID for all messages
  * @returns Array of Messages
@@ -95,20 +95,8 @@ export function convertCoreMessagesToMessages(
 }
 
 /**
- * @deprecated Use convertCoreMessagesToMessages instead
- * This function is kept for backward compatibility but will be removed in a future version.
- */
-export const coreMessagesToMessages = convertCoreMessagesToMessages
-
-/**
- * @deprecated Use convertCoreMessageToMessage instead
- * This function is kept for backward compatibility but will be removed in a future version.
- */
-export const coreMessageToMessage = convertCoreMessageToMessage
-
-/**
  * Convert array of Messages to CoreMessages
- * 
+ *
  * @param messages - Array of Messages
  * @returns Array of CoreMessages
  */

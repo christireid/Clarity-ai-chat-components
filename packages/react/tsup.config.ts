@@ -32,24 +32,25 @@ export default defineConfig([
       }
     },
   },
+  // TODO: Re-enable once prompt system core/ directory is implemented
   // Prompt optimization subpath export
-  {
-    entry: ['src/prompt/index.ts'],
-    format: ['cjs', 'esm'],
-    dts: false,
-    external: [
-      'react',
-      'react-dom',
-    ],
-    outDir: 'dist/prompt',
-    sourcemap: false,
-    minify: false,
-    splitting: false,
-    treeshake: false,
-    outExtension({ format }) {
-      return {
-        js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
-      }
-    },
-  },
+  // {
+  //   entry: ['src/prompt/index.ts'],
+  //   format: ['cjs', 'esm'],
+  //   dts: false,
+  //   external: [
+  //     'react',
+  //     'react-dom',
+  //   ],
+  //   outDir: 'dist/prompt',
+  //   sourcemap: false,
+  //   minify: false,
+  //   splitting: false,
+  //   treeshake: false,
+  //   outExtension({ format }) {
+  //     return {
+  //       js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
+  //     }
+  //   },
+  // },
 ])

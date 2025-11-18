@@ -24,5 +24,5 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/utils/memory/examples/**", "src/**/*.example.tsx", "src/**/*.example.ts"]
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/utils/memory/examples/**", "src/**/*.example.tsx", "src/**/*.example.ts", "src/prompt/**/*"]
 }
