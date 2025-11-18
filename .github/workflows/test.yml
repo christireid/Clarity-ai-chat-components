@@ -29,26 +29,31 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       - name: Verify turbo installation
         run: npx turbo --version
 
       - name: Type check
-        run: npm run typecheck
+        run: pnpm typecheck
 
       - name: Lint
-        run: npm run lint
+        run: pnpm lint
 
       - name: Run tests
-        run: npm run test -- --coverage --run
+        run: pnpm test -- --coverage --run
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -94,7 +99,7 @@ jobs:
         run: npx turbo --version
 
       - name: Build all packages
-        run: npm run build
+        run: pnpm build
 
       - name: Check bundle sizes
         run: npx size-limit
@@ -129,11 +134,11 @@ jobs:
         run: npm install --legacy-peer-deps --workspaces
 
       - name: Build Storybook
-        run: npm run build --workspace=@clarity-chat/storybook
+        run: pnpm build --workspace=@clarity-chat/storybook
         continue-on-error: true
 
       - name: Run accessibility tests
-        run: npm run test:a11y --workspace=@clarity-chat/storybook
+        run: pnpm test:a11y --workspace=@clarity-chat/storybook
         continue-on-error: true
 
       - name: Upload a11y report
