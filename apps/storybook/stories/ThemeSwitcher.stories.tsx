@@ -2,11 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { ThemeSwitcher } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { Theme } from '@clarity-chat/react'
+import { expect, userEvent, within } from '@storybook/test'
 
 const meta: Meta<typeof ThemeSwitcher> = {
   title: 'Components/ThemeSwitcher',
   component: ThemeSwitcher,
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   parameters: {
     docs: {
       description: {
@@ -15,6 +16,10 @@ const meta: Meta<typeof ThemeSwitcher> = {
       },
     },
     layout: 'centered',
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
 }
 
@@ -30,6 +35,23 @@ export const Default: Story = {
         onThemeChange={setTheme}
       />
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test theme switcher renders
+    const themeSwitcher = canvas.getByRole('radiogroup')
+    await expect(themeSwitcher).toBeInTheDocument()
+
+    // Test light theme button is selected
+    const lightButton = canvas.getByRole('radio', { name: /light/i })
+    await expect(lightButton).toBeInTheDocument()
+    await expect(lightButton).toBeChecked()
+
+    // Test dark theme button
+    const darkButton = canvas.getByRole('radio', { name: /dark/i })
+    await expect(darkButton).toBeInTheDocument()
+    await userEvent.click(darkButton)
   },
 }
 
@@ -56,6 +78,21 @@ export const Compact: Story = {
         compact={true}
       />
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test compact theme switcher renders
+    const themeSwitcher = canvas.getByRole('radiogroup')
+    await expect(themeSwitcher).toBeInTheDocument()
+
+    // Test dark theme button is selected in compact mode
+    const darkButton = canvas.getByRole('radio', { name: /dark/i })
+    await expect(darkButton).toBeChecked()
+
+    // Test switching to system theme
+    const systemButton = canvas.getByRole('radio', { name: /system/i })
+    await userEvent.click(systemButton)
   },
 }
 

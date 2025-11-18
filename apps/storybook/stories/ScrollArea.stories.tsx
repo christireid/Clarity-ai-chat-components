@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ScrollArea } from '@clarity-chat/primitives'
+import { expect, within } from '@storybook/test'
 
 /**
  * ScrollArea component provides a styled scrollable container.
@@ -26,8 +27,12 @@ const meta = {
         component: 'A styled scrollable container with custom scrollbars.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
 } satisfies Meta<typeof ScrollArea>
 
 export default meta
@@ -46,6 +51,20 @@ export const Default: Story = {
       </div>
     </ScrollArea>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test scroll area renders
+    const scrollArea = canvas.getByText(/Line 1:/)
+    await expect(scrollArea).toBeInTheDocument()
+
+    // Test scrollable content renders (first and last visible lines)
+    await expect(canvas.getByText(/Line 1:/)).toBeInTheDocument()
+    await expect(canvas.getByText(/Line 20:/)).toBeInTheDocument()
+
+    // Test content contains expected text
+    await expect(canvas.getByText(/This is a scrollable/)).toBeInTheDocument()
+  },
 }
 
 export const MessageList: Story = {
@@ -54,7 +73,7 @@ export const MessageList: Story = {
       <div className="bg-gray-100 px-4 py-3 border-b">
         <h3 className="font-semibold">Chat Messages</h3>
       </div>
-      
+
       <ScrollArea className="h-96 p-4">
         <div className="space-y-4">
           {Array.from({ length: 15 }, (_, i) => (
@@ -81,6 +100,16 @@ export const MessageList: Story = {
       </ScrollArea>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test header renders
+    await expect(canvas.getByText('Chat Messages')).toBeInTheDocument()
+
+    // Test user and AI messages render
+    await expect(canvas.getByText('Hello! This is a user message.')).toBeInTheDocument()
+    await expect(canvas.getByText('Hi there! This is an AI response message.')).toBeInTheDocument()
+  },
 }
 
 export const TagList: Story = {
