@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { ModelSelector } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { ModelInfo, ModelConfig } from '@clarity-chat/types'
+import { expect, within } from '@storybook/test'
 
 const meta: Meta<typeof ModelSelector> = {
   title: 'Components/ModelSelector',
@@ -27,8 +28,12 @@ Perfect for multi-model AI applications where users need to choose the best mode
         `,
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     showMetrics: {
       control: 'boolean',
@@ -175,6 +180,17 @@ export const Default: Story = {
     value: 'gpt-4-turbo',
     onChange: (modelId, config) => console.log('Selected:', modelId, config),
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test model selector button renders with selected model
+    await expect(canvas.getByText('GPT-4 Turbo')).toBeInTheDocument()
+
+    // Test model metrics badges render
+    await expect(canvas.getByText(/fast/i)).toBeInTheDocument()
+    await expect(canvas.getByText(/high/i)).toBeInTheDocument()
+    await expect(canvas.getByText(/best/i)).toBeInTheDocument()
+  },
 }
 
 export const OpenAIModels: Story = {
@@ -182,6 +198,15 @@ export const OpenAIModels: Story = {
     models: openAIModels,
     value: 'gpt-4-turbo',
     onChange: (modelId, config) => console.log('Selected:', modelId, config),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test OpenAI model displays
+    await expect(canvas.getByText('GPT-4 Turbo')).toBeInTheDocument()
+
+    // Test provider-specific model name
+    await expect(canvas.getByText(/openai/i)).toBeInTheDocument()
   },
 }
 

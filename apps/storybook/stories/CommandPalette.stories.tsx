@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { CommandPalette, CommandItem } from '@clarity-chat/react'
 import { useState } from 'react'
+import { expect, within } from '@storybook/test'
 
 /**
  * Command Palette
@@ -37,8 +38,12 @@ const meta = {
           'A keyboard-first command palette for quick actions, search, and navigation with fuzzy matching and category grouping.',
       },
     },
+    status: {
+      type: 'stable',
+    },
+    badges: ['stable', 'tested', 'accessible'],
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'stable'],
   argTypes: {
     open: {
       control: 'boolean',
@@ -121,6 +126,21 @@ export const Default: Story = {
       </div>
     )
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test command items render
+    await expect(canvas.getByText('New Chat')).toBeInTheDocument()
+    await expect(canvas.getByText('Search Messages')).toBeInTheDocument()
+    await expect(canvas.getByText('Open Settings')).toBeInTheDocument()
+
+    // Test descriptions render
+    await expect(canvas.getByText(/Start a new conversation/)).toBeInTheDocument()
+
+    // Test keyboard shortcuts display
+    await expect(canvas.getByText('⌘')).toBeInTheDocument()
+    await expect(canvas.getByText('N')).toBeInTheDocument()
+  },
 }
 
 // ============================================================================
@@ -129,7 +149,7 @@ export const Default: Story = {
 
 export const WithCategories: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
 
     const categorizedCommands: CommandItem[] = [
       // File Operations
@@ -225,6 +245,21 @@ export const WithCategories: Story = {
         />
       </div>
     )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    // Test category headers render
+    await expect(canvas.getByText('File')).toBeInTheDocument()
+    await expect(canvas.getByText('Edit')).toBeInTheDocument()
+    await expect(canvas.getByText('View')).toBeInTheDocument()
+    await expect(canvas.getByText('Help')).toBeInTheDocument()
+
+    // Test commands from different categories
+    await expect(canvas.getByText('New File')).toBeInTheDocument()
+    await expect(canvas.getByText('Copy')).toBeInTheDocument()
+    await expect(canvas.getByText('Zoom In')).toBeInTheDocument()
+    await expect(canvas.getByText('Documentation')).toBeInTheDocument()
   },
   parameters: {
     docs: {
