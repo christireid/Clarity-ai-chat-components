@@ -18,7 +18,7 @@ import { countTokens } from '../utils/token-counter'
 export class ContextBuilder {
   private budgetManager: TokenBudgetManager
   private storage: StorageAdapter
-  private _embeddingProvider?: EmbeddingProvider
+  private embeddingProvider?: EmbeddingProvider
 
   constructor(
     budgetManager: TokenBudgetManager,
@@ -27,7 +27,7 @@ export class ContextBuilder {
   ) {
     this.budgetManager = budgetManager
     this.storage = storage
-    this._embeddingProvider = embeddingProvider
+    this.embeddingProvider = embeddingProvider
   }
 
   /**
@@ -81,7 +81,7 @@ export class ContextBuilder {
 
     // Build summary if enabled
     const summary = options?.includeSummary
-      ? await this.buildSummary([...semanticMemories, ...episodicMemories], allocation.summary)
+      ? await this.buildSummary([...semanticMemories, ...episodicMemories], allocation.summary ?? 0)
       : ''
 
     // Calculate actual token usage
@@ -113,12 +113,11 @@ export class ContextBuilder {
     })
 
     return {
+      memories: [...semanticMemories, ...episodicMemories],
+      totalTokens: tokenBreakdown.total,
       systemPrompt: '',
-      userPreferences,
-      recentContext,
       semanticMemories,
       episodicMemories,
-      summary,
       tokenBreakdown,
       metadata: {
         compressionRatio: 0,
@@ -196,7 +195,7 @@ export class ContextBuilder {
 
     for (const memory of sorted) {
       const tokens = this.countTokens(memory.content)
-      if (usedTokens + tokens <= tokenBudget || 0) {
+      if (usedTokens + tokens <= (tokenBudget ?? 0)) {
         selected.push(memory)
         usedTokens += tokens
       } else {
@@ -227,7 +226,7 @@ export class ContextBuilder {
 
     for (const memory of sorted) {
       const tokens = this.countTokens(memory.content)
-      if (usedTokens + tokens <= tokenBudget || 0) {
+      if (usedTokens + tokens <= (tokenBudget ?? 0)) {
         selected.push(memory)
         usedTokens += tokens
       } else {
