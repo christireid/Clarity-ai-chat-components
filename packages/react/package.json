@@ -45,7 +45,7 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "build": "tsup && node scripts/update-types.js",
+    "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",

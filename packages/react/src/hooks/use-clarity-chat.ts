@@ -535,7 +535,7 @@ export function useClarityChat(
                 return await memoryContext.query({
                   query: queryText,
                   limit: memory.strategy === 'vector-store' ? 5 : 10,
-                  scope: 'thread',
+                  scopes: ['thread'],
                 })
               }
 
@@ -550,7 +550,7 @@ export function useClarityChat(
               // Store context in ref for transform function
               if (memoryResults.length > 0) {
                 memoryContextRef.current = memoryResults
-                  .map((result) => result.content)
+                  .map((result) => result.memory.content)
                   .join('\n\n')
               } else {
                 memoryContextRef.current = ''
@@ -679,7 +679,7 @@ export function useClarityChat(
           ? memoryContextRef.current.split('\n\n').length
           : 0
         setMemoryStats({
-          count: stats.totalMemories,
+          count: stats.totalMemories ?? 0,
           contextItems,
         })
       } catch {

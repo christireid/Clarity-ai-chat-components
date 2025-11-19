@@ -191,7 +191,10 @@ export const AdvancedChatInput = forwardRef<HTMLTextAreaElement, AdvancedChatInp
           } else if (e.key === 'Tab' || e.key === 'Enter') {
             if (showSuggestions) {
               e.preventDefault()
-              selectSuggestion(suggestions[selectedIndex])
+              const selectedSuggestion = suggestions[selectedIndex]
+              if (selectedSuggestion) {
+                selectSuggestion(selectedSuggestion)
+              }
               return
             }
           } else if (e.key === 'Escape') {

@@ -9,7 +9,7 @@
  * @status NEW - Implementation based on blueprint analysis
  */
 
-import * as React from 'react'
+import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { Message } from '@clarity-chat/types'
@@ -328,7 +328,7 @@ export function useJumpToBottom(isNearBottom: boolean) {
 
   const incrementNewMessages = useCallback(() => {
     if (!isNearBottom) {
-      setNewMessageCount(prev => prev + 1)
+      setNewMessageCount((prev: number) => prev + 1)
     }
   }, [isNearBottom])
 

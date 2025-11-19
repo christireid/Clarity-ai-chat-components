@@ -249,8 +249,9 @@ export function ChatWindow({
     
     // Check if it's CoreMessage[] format by checking first message structure
     const firstMessage = messages[0]
-    const isCoreMessage = 
-      'content' in firstMessage && 
+    const isCoreMessage =
+      firstMessage &&
+      'content' in firstMessage &&
       (typeof firstMessage.content === 'string' || Array.isArray(firstMessage.content)) &&
       !('status' in firstMessage) // Message has 'status', CoreMessage doesn't
     

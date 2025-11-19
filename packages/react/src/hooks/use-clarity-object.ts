@@ -143,7 +143,7 @@ function parseJSONChunks(chunks: string[]): any | null {
  * Structured object generation hook
  */
 export function useClarityObject<TObject = any, TInput = any>(
-  options: UseClarityObjectOptions<TInput> = {}
+  options: UseClarityObjectOptions<TInput>
 ): UseClarityObjectReturn<TObject, TInput> {
   // Validate API endpoint
   if (!options.api || typeof options.api !== 'string' || options.api.trim().length === 0) {
@@ -235,12 +235,13 @@ export function useClarityObject<TObject = any, TInput = any>(
           
           await processStream(
             response.body,
-            streamFormat,
             {
+              format: streamFormat,
+              signal: controller.signal,
               onChunk: (chunk: string) => {
                 chunks.push(chunk)
                 onProgress?.(chunk)
-                
+
                 // Try to parse JSON incrementally
                 const parsed = parseJSONChunks(chunks)
                 if (parsed) {
@@ -258,13 +259,12 @@ export function useClarityObject<TObject = any, TInput = any>(
                 }
                 setIsLoading(false)
               },
-              onError: (err) => {
+              onError: (err: Error) => {
                 setError(err)
                 setIsLoading(false)
                 onError?.(err)
               },
-            },
-            controller.signal
+            }
           )
         } else {
           // Non-streaming mode: parse JSON directly

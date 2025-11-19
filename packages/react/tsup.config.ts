@@ -5,7 +5,7 @@ export default defineConfig([
   {
     entry: ['src/index.ts', 'src/styles/index.css'],
     format: ['cjs', 'esm'],
-    dts: false, // Use tsc for declarations (see build script)
+    dts: true, // Generate type declarations automatically
     external: [
       'react',
       'react-dom',

@@ -56,13 +56,13 @@ export { MemoryProvider, type MemoryProviderProps } from './memory/memory-provid
 export { ChatWindow } from './components/chat-window'
 export { ChatInput } from './components/chat-input'
 export { AdvancedChatInput } from './components/advanced-chat-input'
-export { MessageList } from './components/virtualized-message-list'
+export { default as MessageList } from './components/virtualized-message-list'
 export { StreamingMessage } from './components/streaming-message'
 export { ThinkingIndicator } from './components/thinking-indicator'
 
 // Chat State Hooks
 export {
-  useChatEnhanced,
+  useChat as useChatEnhanced,
   type UseChatOptions as UseChatEnhancedOptions,
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
@@ -251,8 +251,7 @@ export { MultiModalPreview } from './components/multi-modal-preview'
 export { AgentRunFeed } from './components/agent-run-feed'
 export { SessionSummaryCard } from './components/session-summary-card'
 export { WorkflowSuggestionList } from './components/workflow-suggestion-list'
-export { AIOps } from './components/ai-ops'
-export { Enterprise } from './components/enterprise'
+// Note: AIOps and Enterprise components are exported individually via their respective directories
 export { AnalyticsDashboard } from './components/analytics-dashboard'
 
 // Error Handling Components
@@ -317,7 +316,8 @@ export * from './hooks/use-smart-cache'
 export * from './hooks/use-character-counter'
 export * from './hooks/use-submit-button-state'
 export * from './hooks/use-mobile-keyboard'
-export * from './hooks/use-design-tokens'
+// Note: DesignTokens type is exported from './theme', only export the hook here
+export { useDesignTokens } from './hooks/use-design-tokens'
 
 // Helper hooks (internal - use top-level APIs instead)
 // These are implementation details and should not be used directly.
@@ -377,7 +377,18 @@ export {
   parseToolArguments as parseToolArgumentsType,
   validateToolResult,
 } from './types/tool-result-types'
-export * from './utils/tool-result-helpers'
+// Note: getLatestToolResult is already exported from './utils', export other helpers explicitly
+export {
+  groupToolResultsByToolName,
+  groupToolResultsByMessage,
+  getToolResultsForTool,
+  hasToolBeenCalled,
+  getUniqueToolNames,
+  countToolCallsByTool,
+  filterToolResultsByMessage,
+  hasToolError,
+  getToolError,
+} from './utils/tool-result-helpers'
 
 // ============================================================================
 // TESTING UTILITIES (Internal - Not exported publicly)
