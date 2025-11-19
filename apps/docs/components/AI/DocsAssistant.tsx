@@ -138,9 +138,11 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
     // Add user message
     const userMessage: Message = {
       id: `user-${Date.now()}`,
+      chatId: 'docs-assistant',
       role: 'user',
       content,
       createdAt: new Date(),
+      updatedAt: new Date(),
       status: 'sent',
     }
 
@@ -180,9 +182,11 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       // Create assistant message with streaming status
       const assistantMessage: Message = {
         id: `assistant-${Date.now()}`,
+        chatId: 'docs-assistant',
         role: 'assistant',
         content: '',
         createdAt: new Date(),
+        updatedAt: new Date(),
         status: 'streaming',
       }
 
@@ -257,11 +261,13 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       // Add error message
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
+        chatId: 'docs-assistant',
         role: 'assistant',
         content: `I encountered an error while processing your request. ${
           error instanceof Error ? error.message : 'Please try again.'
         }`,
         createdAt: new Date(),
+        updatedAt: new Date(),
         status: 'error',
       }
 

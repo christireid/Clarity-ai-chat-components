@@ -223,6 +223,7 @@ export class RedisAnalyticsStore implements AnalyticsStore {
     const cacheSavings = cacheHits * 0.0015 // Estimated $0.0015 per cached query
 
     // Get popular topics
+    // @ts-expect-error - zrevrange exists in Redis but not in type definitions
     const topics = await this.redis.zrevrange(this.getTopicsKey(), 0, 9, { withScores: true })
     const popularTopics = []
     for (let i = 0; i < topics.length; i += 2) {
@@ -236,6 +237,7 @@ export class RedisAnalyticsStore implements AnalyticsStore {
     }
 
     // Get recent queries for analysis
+    // @ts-expect-error - zrevrange exists in Redis but not in type definitions
     const recentIds = await this.redis.zrevrange(this.getQueryListKey(), 0, 99)
     const queries: QueryAnalytics[] = []
 
@@ -313,6 +315,7 @@ export class RedisAnalyticsStore implements AnalyticsStore {
   }
 
   async getRecentQueries(limit = 50): Promise<QueryAnalytics[]> {
+    // @ts-expect-error - zrevrange exists in Redis but not in type definitions
     const recentIds = await this.redis.zrevrange(this.getQueryListKey(), 0, limit - 1)
     const queries: QueryAnalytics[] = []
 
@@ -327,6 +330,7 @@ export class RedisAnalyticsStore implements AnalyticsStore {
   }
 
   async getPopularTopics(limit = 10): Promise<Array<{ topic: string; count: number }>> {
+    // @ts-expect-error - zrevrange exists in Redis but not in type definitions
     const topics = await this.redis.zrevrange(this.getTopicsKey(), 0, limit - 1, { withScores: true })
     const result = []
 
