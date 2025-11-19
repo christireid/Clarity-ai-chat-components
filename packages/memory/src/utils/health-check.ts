@@ -104,15 +104,15 @@ export async function healthCheck(memory: ClarityMemory): Promise<HealthCheckRes
 
     // Check compression
     try {
-      const testMemory = await memory.add('Test memory for compression check')
+      const testMemoryId = await memory.add('Test memory for compression check')
       try {
-        await memory.compress(testMemory.id, 0.5)
+        await memory.compress(testMemoryId)
         result.checks.compression = {
           status: 'ok',
           message: 'Compression engine operational.',
         }
         // Clean up test memory
-        await memory.forget(testMemory.id)
+        await memory.forget(testMemoryId)
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error)
         if (errorMsg.includes('not configured') || errorMsg.includes('not available')) {
@@ -128,7 +128,7 @@ export async function healthCheck(memory: ClarityMemory): Promise<HealthCheckRes
           }
         }
         // Clean up test memory
-        await memory.forget(testMemory.id).catch(() => {})
+        await memory.forget(testMemoryId).catch(() => {})
       }
     } catch (error) {
       result.checks.compression = {
