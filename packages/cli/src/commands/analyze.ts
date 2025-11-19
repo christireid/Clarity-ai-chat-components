@@ -6,7 +6,7 @@ import chalk from 'chalk'
 import ora from 'ora'
 import fs from 'fs-extra'
 import path from 'path'
-import { glob } from 'fast-glob'
+import fastGlob from 'fast-glob'
 import { getLogger } from '../utils/logger.js'
 import { handleError } from '../utils/errors.js'
 import { success, info, warn, outputJson, outputTable } from '../utils/output.js'
@@ -56,7 +56,7 @@ async function analyzeProject(): Promise<AnalysisResult> {
     }
 
     // Find all source files
-    const files = await glob(['src/**/*.{ts,tsx,js,jsx}'], {
+    const files = await fastGlob(['src/**/*.{ts,tsx,js,jsx}'], {
       cwd: process.cwd(),
       ignore: ['**/node_modules/**', '**/dist/**', '**/*.test.*', '**/*.spec.*'],
     })

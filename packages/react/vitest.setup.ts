@@ -1,6 +1,7 @@
 import { expect, afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as matchers from '@testing-library/jest-dom/matchers'
+import React from 'react'
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers)
@@ -28,7 +29,7 @@ vi.mock('framer-motion', async () => {
           return ({ children, ...props }: any) => {
             // Remove animation props
             const { animate, initial, exit, transition, whileHover, whileTap, ...restProps } = props
-            return actual.createElement(prop, restProps, children)
+            return React.createElement(prop, restProps, children)
           }
         }
         return target[prop as keyof typeof target]
