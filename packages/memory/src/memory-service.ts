@@ -599,6 +599,7 @@ export class MemoryService {
       semantic: 0,
       procedural: 0,
       'short-term': 0,
+      profile: 0,
     }
     const byScope: Record<MemoryScope, number> = {
       session: 0,
@@ -867,7 +868,7 @@ export class MemoryService {
     })
 
     // Get token breakdown
-    const breakdown = this.optimizer.getBudgetManager().getAllocation(options)
+    const allocation = this.optimizer.getBudgetManager().getAllocation()
 
     // Build formatted context
     const semanticMems = allMemories.filter(r => r.memory.type === 'semantic').map(r => r.memory)
@@ -879,9 +880,21 @@ export class MemoryService {
       episodicMems.length > 0 ? `\n## Recent Events\n${episodicMems.map(m => m.content).join('\n')}` : '',
     ].filter(Boolean).join('\n')
 
+    const totalTokens = TokenCounter.count(formatted)
+
+    const breakdown: TokenBreakdown = {
+      systemPrompt: allocation.systemPrompt,
+      userPreferences: allocation.userPreferences,
+      recentContext: allocation.recentContext,
+      semanticMemory: allocation.semanticMemory,
+      episodicMemory: allocation.episodicMemory,
+      responseReserve: allocation.responseReserve,
+      total: totalTokens,
+    }
+
     return {
       memories: allMemories.map(r => r.memory),
-      totalTokens: TokenCounter.count(formatted),
+      totalTokens,
       tokenBreakdown: breakdown,
       formatted,
       semanticMemories: semanticMems,
@@ -899,13 +912,13 @@ export class MemoryService {
       return cached
     }
 
-    // Query vector store if available
-    if (this.vectorStore) {
-      const result = await this.vectorStore.get(id)
-      if (result) {
-        this.cache.set(id, result)
-        return result
-      }
+    // Query storage adapter if available
+    const memories = await this.storage.getAll()
+    const memory = memories.find(m => m.id === id)
+
+    if (memory) {
+      this.cache.set(id, memory)
+      return memory
     }
 
     return null
@@ -915,21 +928,21 @@ export class MemoryService {
    * Update a memory (alias for updateMemory)
    */
   async update(id: string, updates: Partial<MemoryItem>): Promise<void> {
-    return this.updateMemory(id, updates)
+    await this.updateMemory(id, updates)
   }
 
   /**
    * Promote a memory (alias for promoteMemory)
    */
   async promote(id: string): Promise<void> {
-    return this.promoteMemory(id)
+    await this.promoteMemory(id, 'global')
   }
 
   /**
    * Compress a memory (alias for compressMemory)
    */
   async compress(id: string): Promise<void> {
-    return this.compressMemory(id)
+    await this.compressMemory(id)
   }
 
   /**
@@ -953,7 +966,7 @@ export class MemoryService {
     if (!this.embeddings) {
       throw new Error('Embedding provider not configured')
     }
-    return this.embeddings.embed(text)
+    return this.embeddings.embedText(text)
   }
 
   /**
