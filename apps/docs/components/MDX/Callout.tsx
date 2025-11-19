@@ -13,6 +13,8 @@ interface CalloutProps {
   type?: CalloutType
   title?: string
   children: React.ReactNode
+  className?: string
+  icon?: React.ReactNode
 }
 
 const calloutConfig = {
@@ -53,9 +55,9 @@ const calloutConfig = {
   },
 }
 
-export function Callout({ type = 'info', title, children }: CalloutProps) {
+export function Callout({ type = 'info', title, children, className, icon }: CalloutProps) {
   const config = calloutConfig[type]
-  const Icon = config.icon
+  const DefaultIcon = config.icon
 
   const defaultTitles = {
     info: 'Info',
@@ -70,7 +72,8 @@ export function Callout({ type = 'info', title, children }: CalloutProps) {
       className={clsx(
         'not-prose my-6 p-5 rounded-xl border-2 shadow-sm transition-all duration-200 hover:shadow-md',
         config.bgColor,
-        config.borderColor
+        config.borderColor,
+        className
       )}
       role="note"
       aria-label={`${type} callout`}
@@ -83,7 +86,7 @@ export function Callout({ type = 'info', title, children }: CalloutProps) {
             config.iconColor
           )}
         >
-          <Icon className="w-5 h-5" />
+          {icon || <DefaultIcon className="w-5 h-5" />}
         </div>
         <div className="flex-1 min-w-0">
           {(title || defaultTitles[type]) && (
