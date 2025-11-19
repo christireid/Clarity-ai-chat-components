@@ -84,6 +84,15 @@ export interface MemoryItem {
   /** Updated timestamp */
   updatedAt: Date
 
+  /** Timestamp (alias for createdAt) */
+  timestamp?: Date
+
+  /** Importance score (0-1) */
+  importance?: number
+
+  /** Tags for categorization */
+  tags?: string[]
+
   /** Expiry time (optional) */
   expiresAt?: Date
 
@@ -570,6 +579,12 @@ export interface CompressionConfig {
 
   /** Minimum tokens before compression */
   minTokens?: number
+
+  /** Compression threshold */
+  threshold?: number
+
+  /** Minimum quality score (0-1) */
+  minQuality?: number
 }
 
 /**
@@ -588,6 +603,9 @@ export interface ContextBundle {
   /** Compressed content (if applicable) */
   compressed?: string
 
+  /** System prompt */
+  systemPrompt?: string
+
   /** Metadata */
   metadata?: Record<string, any>
 }
@@ -598,6 +616,9 @@ export interface ContextBundle {
 export interface ContextOptions {
   /** Maximum token budget */
   tokenBudget?: number
+
+  /** Maximum tokens (alias for tokenBudget) */
+  maxTokens?: number
 
   /** Token allocation strategy */
   allocation?: Partial<TokenAllocation>
@@ -610,6 +631,24 @@ export interface ContextOptions {
 
   /** Include embeddings */
   includeEmbeddings?: boolean
+
+  /** Include user preferences */
+  includePreferences?: boolean
+
+  /** Include recent context */
+  includeRecent?: boolean
+
+  /** Include summary */
+  includeSummary?: boolean
+
+  /** User ID filter */
+  userId?: string
+
+  /** Session ID filter */
+  sessionId?: string
+
+  /** Minimum relevance score (0-1) */
+  minRelevance?: number
 }
 
 /**
@@ -633,6 +672,9 @@ export interface TokenBreakdown {
 
   /** Response reserve tokens */
   responseReserve: number
+
+  /** Summary tokens */
+  summary?: number
 
   /** Total tokens used */
   total: number
