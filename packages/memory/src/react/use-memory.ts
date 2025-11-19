@@ -15,21 +15,21 @@ export interface UseMemoryReturn {
   initialized: boolean
   loading: boolean
   error: Error | null
-  
+
   // Memory operations
-  add: (content: string, options?: Parameters<ClarityMemory['add']>[1]) => Promise<Memory>
+  add: (content: string, options?: Parameters<ClarityMemory['add']>[1]) => Promise<string>
   recall: (query: string, options?: Parameters<ClarityMemory['recall']>[1]) => Promise<SearchResult[]>
   context: (options?: Parameters<ClarityMemory['context']>[0]) => Promise<ContextBundle>
   get: (id: string) => Promise<Memory | null>
-  update: (id: string, updates: Partial<Memory>) => Promise<Memory>
-  promote: (id: string, scope: Parameters<ClarityMemory['promote']>[1]) => Promise<Memory>
-  compress: (id: string, ratio?: number) => Promise<Memory>
-  forget: (id: string, soft?: boolean) => Promise<void>
-  flush: (options?: Parameters<ClarityMemory['flush']>[0]) => Promise<void>
-  
+  update: (id: string, updates: Partial<Memory>) => Promise<void>
+  promote: (id: string) => Promise<void>
+  compress: (id: string) => Promise<void>
+  forget: (id: string) => Promise<boolean>
+  flush: () => Promise<void>
+
   // Stats
   stats: Awaited<ReturnType<ClarityMemory['getStats']>> | null
-  
+
   // Utilities
   initialize: () => Promise<void>
   close: () => Promise<void>
@@ -71,6 +71,7 @@ export function useMemory(options?: UseMemoryOptions): UseMemoryReturn {
   // Initialize memory instance
   useEffect(() => {
     if (!memoryRef.current) {
+      // @ts-expect-error - UseMemoryOptions extends MemoryConfig with smart defaults
       const mem = new ClarityMemory(options)
       memoryRef.current = mem
       setMemory(mem)
@@ -150,40 +151,34 @@ export function useMemory(options?: UseMemoryOptions): UseMemoryReturn {
     return result
   }, [memory])
 
-  const promote = useCallback(async (
-    id: string,
-    scope: Parameters<ClarityMemory['promote']>[1]
-  ) => {
+  const promote = useCallback(async (id: string) => {
     if (!memory) throw new Error('Memory not initialized')
-    const result = await memory.promote(id, scope)
+    await memory.promote(id)
+    // Refresh stats
+    const newStats = await memory.getStats()
+    setStats(newStats)
+  }, [memory])
+
+  const compress = useCallback(async (id: string) => {
+    if (!memory) throw new Error('Memory not initialized')
+    await memory.compress(id)
+    // Refresh stats
+    const newStats = await memory.getStats()
+    setStats(newStats)
+  }, [memory])
+
+  const forget = useCallback(async (id: string) => {
+    if (!memory) throw new Error('Memory not initialized')
+    const result = await memory.forget(id)
     // Refresh stats
     const newStats = await memory.getStats()
     setStats(newStats)
     return result
   }, [memory])
 
-  const compress = useCallback(async (id: string, ratio?: number) => {
+  const flush = useCallback(async () => {
     if (!memory) throw new Error('Memory not initialized')
-    const result = await memory.compress(id, ratio)
-    // Refresh stats
-    const newStats = await memory.getStats()
-    setStats(newStats)
-    return result
-  }, [memory])
-
-  const forget = useCallback(async (id: string, soft?: boolean) => {
-    if (!memory) throw new Error('Memory not initialized')
-    await memory.forget(id, soft)
-    // Refresh stats
-    const newStats = await memory.getStats()
-    setStats(newStats)
-  }, [memory])
-
-  const flush = useCallback(async (
-    opts?: Parameters<ClarityMemory['flush']>[0]
-  ) => {
-    if (!memory) throw new Error('Memory not initialized')
-    await memory.flush(opts)
+    await memory.flush()
     // Refresh stats
     const newStats = await memory.getStats()
     setStats(newStats)
