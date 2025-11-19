@@ -165,7 +165,7 @@ export class ContextBuilder {
 
     // Sort by timestamp, get most recent
     const sorted = recent
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+      .sort((a, b) => (b.timestamp ?? b.createdAt).getTime() - (a.timestamp ?? a.createdAt).getTime())
       .slice(0, 10)
 
     const formatted = sorted.map(m => m.content).join('\n\n')
@@ -184,11 +184,11 @@ export class ContextBuilder {
 
     // Filter by relevance if provided
     const filtered = minRelevance
-      ? memories.filter(m => m.importance >= minRelevance)
+      ? memories.filter(m => (m.importance ?? 0.5) >= minRelevance)
       : memories
 
     // Sort by importance
-    const sorted = filtered.sort((a, b) => b.importance - a.importance)
+    const sorted = filtered.sort((a, b) => (b.importance ?? 0.5) - (a.importance ?? 0.5))
 
     // Select memories within token budget
     const selected: Memory[] = []
@@ -218,7 +218,7 @@ export class ContextBuilder {
 
     // Sort by timestamp (most recent first)
     const sorted = memories.sort(
-      (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+      (a, b) => (b.timestamp ?? b.createdAt).getTime() - (a.timestamp ?? a.createdAt).getTime()
     )
 
     // Select memories within token budget

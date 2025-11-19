@@ -4,7 +4,7 @@
  * React component for inspecting and debugging memory state
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import type { Memory, MemoryType, MemoryScope } from '../types'
 import type { ClarityMemory } from '../memory-service'
 
@@ -135,7 +135,7 @@ export function MemoryInspector({
                       {mem.type} / {mem.scope}
                     </span>
                     <span style={{ fontSize: '11px', color: '#666' }}>
-                      {mem.importance.toFixed(2)} • {new Date(mem.timestamp).toLocaleTimeString()}
+                      {(mem.importance ?? 0.5).toFixed(2)} • {new Date(mem.timestamp ?? mem.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div style={{ fontSize: '12px', color: '#333' }}>
@@ -183,8 +183,8 @@ export function MemoryInspector({
             <div><strong>ID:</strong> {selectedMemory.id}</div>
             <div><strong>Type:</strong> {selectedMemory.type}</div>
             <div><strong>Scope:</strong> {selectedMemory.scope}</div>
-            <div><strong>Importance:</strong> {selectedMemory.importance.toFixed(2)}</div>
-            <div><strong>Created:</strong> {new Date(selectedMemory.timestamp).toLocaleString()}</div>
+            <div><strong>Importance:</strong> {(selectedMemory.importance ?? 0.5).toFixed(2)}</div>
+            <div><strong>Created:</strong> {new Date(selectedMemory.timestamp ?? selectedMemory.createdAt).toLocaleString()}</div>
             <div><strong>Access Count:</strong> {selectedMemory.accessCount}</div>
             {selectedMemory.compressed && <div><strong>Compressed:</strong> Yes</div>}
             <div style={{ marginTop: '8px' }}>

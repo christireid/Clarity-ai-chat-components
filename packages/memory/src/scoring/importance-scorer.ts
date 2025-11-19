@@ -11,7 +11,7 @@ export class ImportanceScorer {
    * Score a memory
    */
   score(memory: Memory, query?: string): MemoryScore {
-    const base = memory.importance
+    const base = memory.importance ?? 0.5
     const recency = this.calculateRecency(memory)
     const frequency = this.calculateFrequency(memory)
     const userBoost = memory.scope === 'user' ? 0.1 : 0
@@ -42,9 +42,9 @@ export class ImportanceScorer {
   }
 
   private calculateRecency(memory: Memory): number {
-    const ageMs = Date.now() - memory.timestamp.getTime()
+    const ageMs = Date.now() - (memory.timestamp ?? memory.createdAt).getTime()
     const ageDays = ageMs / (1000 * 60 * 60 * 24)
-    
+
     // Exponential decay: newer memories score higher
     return Math.exp(-ageDays / 7) // Half-life of 7 days
   }

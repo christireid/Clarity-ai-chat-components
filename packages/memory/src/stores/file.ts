@@ -145,7 +145,7 @@ export class FileStore implements VectorStore {
       }
 
       // Boost by importance
-      score = score * (0.7 + memory.importance * 0.3)
+      score = score * (0.7 + (memory.importance ?? 0.5) * 0.3)
 
       if (score >= (options.minScore || 0)) {
         results.push({ memory, score })
@@ -200,6 +200,23 @@ export class FileStore implements VectorStore {
       console.error('Failed to persist memories:', error)
       throw error
     }
+  }
+
+  private cosineSimilarity(a: number[], b: number[]): number {
+    if (a.length !== b.length) return 0
+
+    let dotProduct = 0
+    let normA = 0
+    let normB = 0
+
+    for (let i = 0; i < a.length; i++) {
+      dotProduct += a[i]! * b[i]!
+      normA += a[i]! * a[i]!
+      normB += b[i]! * b[i]!
+    }
+
+    if (normA === 0 || normB === 0) return 0
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
   }
 
 }

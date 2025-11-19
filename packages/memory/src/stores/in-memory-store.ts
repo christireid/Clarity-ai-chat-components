@@ -6,6 +6,7 @@
 
 import type { StorageAdapter } from './storage-adapter'
 import type { Memory, MemoryType, MemoryScope, SearchOptions } from '../types'
+import { countTokens } from '../utils/token-counter'
 
 export class InMemoryStore implements StorageAdapter {
   private memories: Map<string, Memory> = new Map()
@@ -63,12 +64,12 @@ export class InMemoryStore implements StorageAdapter {
       }
 
       // Boost by importance
-      score = score * (0.5 + memory.importance * 0.5)
+      score = score * (0.5 + (memory.importance ?? 0.5) * 0.5)
 
       // Vector similarity if embeddings available
       if (options?.embedding && memory.embedding) {
         const similarity = this.cosineSimilarity(options.embedding, memory.embedding)
-        score = Math.max(score, similarity * 0.8 + memory.importance * 0.2)
+        score = Math.max(score, similarity * 0.8 + (memory.importance ?? 0.5) * 0.2)
       }
 
       if (score > 0 && (!options?.minScore || score >= options.minScore)) {
@@ -134,6 +135,8 @@ export class InMemoryStore implements StorageAdapter {
       episodic: 0,
       semantic: 0,
       profile: 0,
+      procedural: 0,
+      'short-term': 0,
     }
     const byScope: Record<MemoryScope, number> = {
       session: 0,
@@ -150,7 +153,7 @@ export class InMemoryStore implements StorageAdapter {
       byType[memory.type]++
       byScope[memory.scope]++
       tokenUsage += this.countTokens(memory.content)
-      totalImportance += memory.importance
+      totalImportance += (memory.importance ?? 0.5)
       if (memory.compressed) compressedCount++
     }
 
@@ -166,7 +169,6 @@ export class InMemoryStore implements StorageAdapter {
 
   async close(): Promise<void> {
     this.memories.clear()
-    this.initialized = false
   }
 
   private cosineSimilarity(a: number[], b: number[]): number {
