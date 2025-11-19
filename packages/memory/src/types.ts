@@ -682,6 +682,9 @@ export interface ContextOptions {
 
   /** Minimum relevance score (0-1) */
   minRelevance?: number
+
+  /** Filter by memory types */
+  types?: MemoryType[]
 }
 
 /**
