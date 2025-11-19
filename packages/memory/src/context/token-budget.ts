@@ -17,15 +17,16 @@ export class TokenBudgetManager {
    * Get token allocation breakdown
    */
   getAllocation(options?: { maxTokens?: number }): TokenBreakdown {
-    const maxTokens = options?.maxTokens || this.config.maxTokens
+    const maxTokens = options?.maxTokens || this.config.maxContextWindow
     const allocation = this.config.allocation
 
     return {
       systemPrompt: Math.floor(maxTokens * allocation.systemPrompt),
       userPreferences: Math.floor(maxTokens * allocation.userPreferences),
       recentContext: Math.floor(maxTokens * allocation.recentContext),
-      semanticMemories: Math.floor(maxTokens * allocation.semanticMemory),
-      episodicMemories: Math.floor(maxTokens * allocation.episodicMemory),
+      semanticMemory: Math.floor(maxTokens * allocation.semanticMemory),
+      episodicMemory: Math.floor(maxTokens * allocation.episodicMemory),
+      responseReserve: Math.floor(maxTokens * allocation.responseReserve),
       summary: Math.floor(maxTokens * 0.05), // Fixed 5% for summary
       total: maxTokens,
     }
@@ -53,29 +54,29 @@ export class TokenBudgetManager {
     if (!context.hasPreferences) {
       const freed = adjusted.userPreferences
       adjusted.userPreferences = 0
-      adjusted.semanticMemories += Math.floor(freed * 0.6)
-      adjusted.episodicMemories += Math.floor(freed * 0.4)
+      adjusted.semanticMemory += Math.floor(freed * 0.6)
+      adjusted.episodicMemory += Math.floor(freed * 0.4)
     }
 
     // If no recent context, redistribute
     if (!context.hasRecent) {
       const freed = adjusted.recentContext
       adjusted.recentContext = 0
-      adjusted.semanticMemories += Math.floor(freed * 0.7)
-      adjusted.episodicMemories += Math.floor(freed * 0.3)
+      adjusted.semanticMemory += Math.floor(freed * 0.7)
+      adjusted.episodicMemory += Math.floor(freed * 0.3)
     }
 
     // Adjust based on memory richness
     if (context.memoryRichness < 0.3) {
       // Low memory richness, reduce memory allocation
-      const reduction = Math.floor(adjusted.semanticMemories * 0.2)
-      adjusted.semanticMemories -= reduction
+      const reduction = Math.floor(adjusted.semanticMemory * 0.2)
+      adjusted.semanticMemory -= reduction
       adjusted.recentContext += reduction
     } else if (context.memoryRichness > 0.7) {
       // High memory richness, increase memory allocation
       const increase = Math.floor(adjusted.recentContext * 0.2)
       adjusted.recentContext -= increase
-      adjusted.semanticMemories += increase
+      adjusted.semanticMemory += increase
     }
 
     // Ensure we don't exceed total
@@ -83,20 +84,20 @@ export class TokenBudgetManager {
       adjusted.systemPrompt +
       adjusted.userPreferences +
       adjusted.recentContext +
-      adjusted.semanticMemories +
-      adjusted.episodicMemories +
-      adjusted.summary
+      adjusted.semanticMemory +
+      adjusted.episodicMemory +
+      (adjusted.summary ?? 0)
 
     if (currentTotal > maxTokens) {
       const excess = currentTotal - maxTokens
       // Reduce from largest allocations
-      if (adjusted.semanticMemories > excess) {
-        adjusted.semanticMemories -= excess
+      if (adjusted.semanticMemory > excess) {
+        adjusted.semanticMemory -= excess
       } else {
-        adjusted.semanticMemories = 0
-        const remaining = excess - adjusted.semanticMemories
-        if (adjusted.episodicMemories > remaining) {
-          adjusted.episodicMemories -= remaining
+        adjusted.semanticMemory = 0
+        const remaining = excess - adjusted.semanticMemory
+        if (adjusted.episodicMemory > remaining) {
+          adjusted.episodicMemory -= remaining
         }
       }
     }
@@ -112,9 +113,9 @@ export class TokenBudgetManager {
       breakdown.systemPrompt +
       breakdown.userPreferences +
       breakdown.recentContext +
-      breakdown.semanticMemories +
-      breakdown.episodicMemories +
-      breakdown.summary
+      breakdown.semanticMemory +
+      breakdown.episodicMemory +
+      (breakdown.summary ?? 0)
 
     return total <= breakdown.total
   }

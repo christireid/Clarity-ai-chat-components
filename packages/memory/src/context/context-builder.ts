@@ -71,12 +71,12 @@ export class ContextBuilder {
       : ''
     const semanticMemories = await this.getSemanticMemories(
       options?.userId,
-      allocation.semanticMemories,
+      allocation.semanticMemory,
       options?.minRelevance
     )
     const episodicMemories = await this.getEpisodicMemories(
       options?.sessionId,
-      allocation.episodicMemories
+      allocation.episodicMemory
     )
 
     // Build summary if enabled
@@ -89,8 +89,9 @@ export class ContextBuilder {
       systemPrompt: this.countTokens(''),
       userPreferences: this.countTokens(userPreferences),
       recentContext: this.countTokens(recentContext),
-      semanticMemories: semanticMemories.reduce((sum, m) => sum + this.countTokens(m.content), 0),
-      episodicMemories: episodicMemories.reduce((sum, m) => sum + this.countTokens(m.content), 0),
+      semanticMemory: semanticMemories.reduce((sum, m) => sum + this.countTokens(m.content), 0),
+      episodicMemory: episodicMemories.reduce((sum, m) => sum + this.countTokens(m.content), 0),
+      responseReserve: 0,
       summary: this.countTokens(summary),
       total: 0,
     }
@@ -98,9 +99,9 @@ export class ContextBuilder {
       tokenBreakdown.systemPrompt +
       tokenBreakdown.userPreferences +
       tokenBreakdown.recentContext +
-      tokenBreakdown.semanticMemories +
-      tokenBreakdown.episodicMemories +
-      tokenBreakdown.summary
+      tokenBreakdown.semanticMemory +
+      tokenBreakdown.episodicMemory +
+      (tokenBreakdown.summary ?? 0)
 
     // Format context
     const formatted = this.formatContext({

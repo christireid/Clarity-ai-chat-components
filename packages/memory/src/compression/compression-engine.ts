@@ -11,7 +11,7 @@ import { ExtractStrategy } from './extract-strategy'
 import { SummarizeStrategy, type LLMSummarizer } from './summarize-strategy'
 import { AdaptiveStrategy } from './adaptive-strategy'
 import type { Summarizer } from '../summarization/summarizer'
-import type { SummarizationPipeline } from '../summarization/summarization-pipeline'
+import { SummarizationPipeline } from '../summarization/summarization-pipeline'
 import { countTokens } from '../utils/token-counter'
 
 export class CompressionEngine {

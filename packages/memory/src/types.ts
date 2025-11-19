@@ -703,6 +703,12 @@ export interface SearchOptions extends MemoryQuery {
 
   /** Diversify results */
   diversify?: boolean
+
+  /** Filter by tags */
+  tags?: string[]
+
+  /** Minimum relevance score (0-1) */
+  minScore?: number
 }
 
 /**
