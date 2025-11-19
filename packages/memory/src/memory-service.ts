@@ -31,6 +31,7 @@ import type {
   AddOptions,
   ContextOptions,
   ContextBundle,
+  TokenBreakdown,
 } from './types'
 import { TokenCounter, ContextOptimizer } from './token-optimizer'
 
@@ -912,13 +913,11 @@ export class MemoryService {
       return cached
     }
 
-    // Query storage adapter if available
-    const memories = await this.storage.getAll()
-    const memory = memories.find(m => m.id === id)
-
-    if (memory) {
-      this.cache.set(id, memory)
-      return memory
+    // Search through all cached memories
+    for (const [, memory] of this.cache) {
+      if (memory.id === id) {
+        return memory
+      }
     }
 
     return null
