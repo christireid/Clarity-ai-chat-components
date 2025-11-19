@@ -401,7 +401,7 @@ function App() {
 
       <h2 id="props">Props</h2>
 
-      <PropsTable props={commandPaletteProps} data={commandPaletteProps} />
+      <PropsTable props={commandPaletteProps} />
 
       <h2 id="types">Type Definitions</h2>
 

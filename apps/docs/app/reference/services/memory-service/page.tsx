@@ -60,7 +60,7 @@ const memory = new MemoryService({
           <code>addMemory(content, type, scope, metadata?)</code> – Store semantic, episodic, or session memories.
         </li>
         <li>
-          <code>query({ query, limit, userId })</code> – Retrieve relevant memories using semantic scoring.
+          <code>query({'{'} query, limit, userId {'}'})</code> – Retrieve relevant memories using semantic scoring.
         </li>
         <li>
           <code>getOptimizer()</code> – Access context optimizer for building prompts with token budgets.

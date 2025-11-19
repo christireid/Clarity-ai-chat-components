@@ -359,7 +359,7 @@ const message = {
 
       <h2 id="props">Props</h2>
 
-      <PropsTable props={messageProps} data={messageProps} />
+      <PropsTable props={messageProps} />
 
       <h2 id="types">Type Definitions</h2>
 
