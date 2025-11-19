@@ -767,7 +767,7 @@ export interface SummarizationConfig {
   maxTokens?: number
 
   /** LLM provider for summarization */
-  provider?: 'openai' | 'anthropic' | 'custom'
+  provider?: 'openai' | 'anthropic' | 'local' | 'custom'
 
   /** Model name */
   model?: string
