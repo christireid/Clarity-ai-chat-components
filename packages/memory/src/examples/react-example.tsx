@@ -1,9 +1,10 @@
 /**
  * React Example
- * 
+ *
  * Example usage of Clarity Memory in a React component
  */
 
+// @ts-expect-error - React is used in JSX
 import React, { useState } from 'react'
 import { useMemory } from '../react/use-memory'
 import { MemoryInspector } from '../react/memory-inspector'
@@ -11,12 +12,9 @@ import { MemoryInspector } from '../react/memory-inspector'
 export function ChatApp() {
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
-  
+
   const memoryHook = useMemory({
-    userId: 'user123',
-    sessionId: 'session456',
     storage: { type: 'indexeddb' },
-    autoInitialize: true,
   })
   
   const { add, recall, context, initialized, loading, error, memory } = memoryHook
@@ -32,8 +30,8 @@ export function ChatApp() {
         importance: 0.7,
       })
 
-      // Recall relevant memories
-      const relevant = await recall(message, { limit: 5 })
+      // Recall relevant memories (for context building)
+      await recall(message, { limit: 5 })
 
       // Get optimized context
       const ctx = await context({ maxTokens: 2000 })

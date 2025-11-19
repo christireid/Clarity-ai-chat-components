@@ -29,15 +29,15 @@ async function basicExample() {
   const results = await memory.recall('user preferences')
   console.log('Found memories:', results.length)
   results.forEach(result => {
-    console.log(`- ${result.memory.content} (score: ${result.score.toFixed(2)})`)
+    console.log(`- ${result.memory.content} (score: ${(result.score ?? result.relevance).toFixed(2)})`)
   })
 
   // Get optimized context
   const context = await memory.context({ maxTokens: 1000 })
   console.log('\nContext bundle:')
   console.log(`Total tokens: ${context.tokenBreakdown.total}`)
-  console.log(`Semantic memories: ${context.semanticMemories.length}`)
-  console.log(`Episodic memories: ${context.episodicMemories.length}`)
+  console.log(`Semantic memories: ${context.semanticMemories?.length ?? 0}`)
+  console.log(`Episodic memories: ${context.episodicMemories?.length ?? 0}`)
   console.log('\nFormatted context:')
   console.log(context.formatted)
 
@@ -57,20 +57,17 @@ async function withEmbeddingsExample() {
       model: 'text-embedding-3-small',
     },
     tokenBudget: {
-      maxTokens: 4096,
+      maxContextWindow: 4096,
       allocation: {
-        systemPrompt: 0.10,
-        userPreferences: 0.15,
-        recentContext: 0.30,
-        semanticMemory: 0.25,
-        episodicMemory: 0.15,
-        responseReserve: 0.05,
+        systemPrompt: 512,
+        userPreferences: 614,
+        recentContext: 1229,
+        semanticMemory: 1024,
+        episodicMemory: 614,
+        responseReserve: 205,
       },
       dynamicAllocation: true,
-      strictMode: false,
     },
-    userId: 'user123',
-    sessionId: 'session456',
   })
 
   await memory.initialize()
@@ -83,7 +80,7 @@ async function withEmbeddingsExample() {
   // Semantic search with embeddings
   const results = await memory.recall('programming languages', {
     limit: 5,
-    minScore: 0.5,
+    minConfidence: 0.5,
   })
 
   console.log('Semantic search results:', results.map(r => ({
@@ -98,5 +95,5 @@ async function withEmbeddingsExample() {
 // Run examples if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   basicExample().catch(console.error)
-  // withEmbeddingsExample().catch(console.error)
+  void withEmbeddingsExample().catch(console.error)
 }
