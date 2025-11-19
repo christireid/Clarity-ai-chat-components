@@ -13,6 +13,7 @@ export function ChatApp() {
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
 
+  // @ts-expect-error - Example code uses partial config for demonstration
   const memoryHook = useMemory({
     storage: { type: 'indexeddb' },
   })

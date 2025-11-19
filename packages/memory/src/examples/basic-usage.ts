@@ -50,6 +50,7 @@ async function basicExample() {
 
 // Example with OpenAI embeddings
 async function withEmbeddingsExample() {
+  // @ts-expect-error - Example code uses partial config for demonstration
   const memory = clarityMemory({
     embeddingProvider: {
       provider: 'openai',
