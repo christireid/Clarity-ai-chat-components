@@ -63,3 +63,11 @@ export class TokenCounter {
       .filter((s) => s.length > 0)
   }
 }
+
+/**
+ * Convenience function for counting tokens
+ * Alias for TokenCounter.count()
+ */
+export function countTokens(text: string): number {
+  return TokenCounter.count(text)
+}

@@ -531,3 +531,151 @@ export interface MemoryEvent {
  * Memory event listener
  */
 export type MemoryEventListener = (event: MemoryEvent) => void | Promise<void>
+
+// ============================================================================
+// Type Aliases for Backward Compatibility
+// ============================================================================
+
+/**
+ * Alias for MemoryItem (backward compatibility)
+ */
+export type Memory = MemoryItem
+
+/**
+ * Alias for MemoryServiceConfig (backward compatibility)
+ */
+export type MemoryConfig = MemoryServiceConfig
+
+/**
+ * Alias for MemorySearchResult (backward compatibility)
+ */
+export type SearchResult = MemorySearchResult
+
+// ============================================================================
+// Additional Type Definitions
+// ============================================================================
+
+/**
+ * Compression configuration
+ */
+export interface CompressionConfig {
+  /** Enable compression */
+  enabled: boolean
+
+  /** Target compression ratio (0-1) */
+  targetRatio?: number
+
+  /** Compression strategy */
+  strategy?: 'truncate' | 'summarize' | 'extract' | 'adaptive'
+
+  /** Minimum tokens before compression */
+  minTokens?: number
+}
+
+/**
+ * Context bundle containing selected memories and metadata
+ */
+export interface ContextBundle {
+  /** Selected memories */
+  memories: MemoryItem[]
+
+  /** Total token count */
+  totalTokens: number
+
+  /** Token breakdown by category */
+  tokenBreakdown: TokenBreakdown
+
+  /** Compressed content (if applicable) */
+  compressed?: string
+
+  /** Metadata */
+  metadata?: Record<string, any>
+}
+
+/**
+ * Options for context building
+ */
+export interface ContextOptions {
+  /** Maximum token budget */
+  tokenBudget?: number
+
+  /** Token allocation strategy */
+  allocation?: Partial<TokenAllocation>
+
+  /** Enable compression */
+  enableCompression?: boolean
+
+  /** Compression configuration */
+  compressionConfig?: CompressionConfig
+
+  /** Include embeddings */
+  includeEmbeddings?: boolean
+}
+
+/**
+ * Token breakdown by memory category
+ */
+export interface TokenBreakdown {
+  /** System prompt tokens */
+  systemPrompt: number
+
+  /** User preferences tokens */
+  userPreferences: number
+
+  /** Recent context tokens */
+  recentContext: number
+
+  /** Semantic memory tokens */
+  semanticMemory: number
+
+  /** Episodic memory tokens */
+  episodicMemory: number
+
+  /** Response reserve tokens */
+  responseReserve: number
+
+  /** Total tokens used */
+  total: number
+}
+
+/**
+ * Token budget configuration
+ */
+export interface TokenBudgetConfig {
+  /** Maximum context window size */
+  maxContextWindow: number
+
+  /** Token allocation */
+  allocation: TokenAllocation
+
+  /** Enable dynamic allocation */
+  dynamicAllocation?: boolean
+}
+
+/**
+ * Search options for memory queries
+ */
+export interface SearchOptions extends MemoryQuery {
+  /** Rerank results */
+  rerank?: boolean
+
+  /** Diversify results */
+  diversify?: boolean
+}
+
+/**
+ * Summarization configuration
+ */
+export interface SummarizationConfig {
+  /** Enable auto-summarization */
+  enabled: boolean
+
+  /** Summarization interval (ms) */
+  interval?: number
+
+  /** Target summary length */
+  targetLength?: number
+
+  /** Minimum content length for summarization */
+  minLength?: number
+}

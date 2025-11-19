@@ -818,3 +818,8 @@ export class MemoryService {
     return this.optimizer
   }
 }
+
+/**
+ * Alias for MemoryService (backward compatibility)
+ */
+export { MemoryService as ClarityMemory }
