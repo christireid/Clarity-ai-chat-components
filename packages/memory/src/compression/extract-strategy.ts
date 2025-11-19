@@ -5,7 +5,7 @@
  */
 
 import type { CompressionStrategy, CompressionResult } from './compression-strategy'
-import type { Memory } from '../core/types'
+import type { Memory } from '../types'
 import { countTokens } from '../utils/token-counter'
 
 export class ExtractStrategy implements CompressionStrategy {

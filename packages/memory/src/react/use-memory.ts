@@ -3,8 +3,8 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { ClarityMemory } from '../core/clarity-memory'
-import type { MemoryConfig, Memory, SearchResult, ContextBundle } from '../core/types'
+import { ClarityMemory } from '../memory-service'
+import type { MemoryConfig, Memory, SearchResult, ContextBundle } from '../types'
 
 export interface UseMemoryOptions extends MemoryConfig {
   autoInitialize?: boolean

@@ -5,7 +5,7 @@
  */
 
 import type { CompressionStrategy, CompressionResult } from './compression-strategy'
-import type { Memory } from '../core/types'
+import type { Memory } from '../types'
 import { TruncateStrategy } from './truncate-strategy'
 import { ExtractStrategy } from './extract-strategy'
 import { SummarizeStrategy, type LLMSummarizer } from './summarize-strategy'

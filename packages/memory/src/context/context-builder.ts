@@ -9,7 +9,7 @@ import type {
   ContextOptions,
   Memory,
   TokenBreakdown,
-} from '../core/types'
+} from '../types'
 import type { StorageAdapter } from '../stores/storage-adapter'
 import type { EmbeddingProvider } from '../embeddings/embedding-provider'
 import { TokenBudgetManager } from './token-budget'

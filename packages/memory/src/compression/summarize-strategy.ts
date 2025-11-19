@@ -5,7 +5,7 @@
  */
 
 import type { CompressionStrategy, CompressionResult } from './compression-strategy'
-import type { Memory } from '../core/types'
+import type { Memory } from '../types'
 import type { Summarizer } from '../summarization/summarizer'
 import { countTokens } from '../utils/token-counter'
 

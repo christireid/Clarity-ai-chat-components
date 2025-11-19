@@ -3,7 +3,7 @@
  * Simple implementation for development and testing
  */
 
-import type { MemoryItem, MemoryType } from '../core/types'
+import type { MemoryItem, MemoryType } from '../types'
 import type { VectorStore, SearchOptions } from './base'
 import { cosineSimilarity } from '../utils/vector'
 

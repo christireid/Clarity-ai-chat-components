@@ -4,7 +4,7 @@
  * Abstract interface for all storage backends
  */
 
-import type { Memory, MemoryType, MemoryScope, SearchOptions } from '../core/types'
+import type { Memory, MemoryType, MemoryScope, SearchOptions } from '../types'
 
 export interface StorageAdapter {
   initialize(): Promise<void>

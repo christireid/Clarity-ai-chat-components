@@ -4,7 +4,7 @@
  * Calculates memory importance scores based on multiple factors
  */
 
-import type { Memory, MemoryScore } from '../core/types'
+import type { Memory, MemoryScore } from '../types'
 
 export class ImportanceScorer {
   /**

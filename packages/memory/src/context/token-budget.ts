@@ -4,7 +4,7 @@
  * Manages token allocation and budgeting for context building
  */
 
-import type { TokenBudgetConfig, TokenBreakdown, ContextOptions } from '../core/types'
+import type { TokenBudgetConfig, TokenBreakdown, ContextOptions } from '../types'
 
 export class TokenBudgetManager {
   private config: TokenBudgetConfig

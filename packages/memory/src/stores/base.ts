@@ -2,7 +2,7 @@
  * Base Vector Store Interface
  */
 
-import type { MemoryItem, MemoryType } from '../core/types'
+import type { MemoryItem, MemoryType } from '../types'
 
 export interface SearchOptions {
   embedding?: number[]

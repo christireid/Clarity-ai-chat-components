@@ -5,7 +5,7 @@
  */
 
 import type { StorageAdapter } from './storage-adapter'
-import type { Memory, MemoryType, MemoryScope, SearchOptions } from '../core/types'
+import type { Memory, MemoryType, MemoryScope, SearchOptions } from '../types'
 
 export class InMemoryStore implements StorageAdapter {
   private memories: Map<string, Memory> = new Map()

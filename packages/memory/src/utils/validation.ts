@@ -2,7 +2,7 @@
  * Input validation utilities
  */
 
-import type { MemoryType, AddOptions, SearchOptions, ContextOptions } from '../core/types'
+import type { MemoryType, AddOptions, SearchOptions, ContextOptions } from '../types'
 
 /**
  * Validate memory content

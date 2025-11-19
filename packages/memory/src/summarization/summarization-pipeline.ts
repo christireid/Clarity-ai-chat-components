@@ -4,7 +4,7 @@
  * Handles automatic summarization of memories
  */
 
-import type { Memory, SummarizationConfig } from '../core/types'
+import type { Memory, SummarizationConfig } from '../types'
 import type { Summarizer } from './summarizer'
 import { OpenAISummarizer } from './openai-summarizer'
 

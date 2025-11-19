@@ -2,7 +2,7 @@
  * Compression Strategy Interface
  */
 
-import type { Memory } from '../core/types'
+import type { Memory } from '../types'
 
 export interface CompressionResult {
   compressed: string

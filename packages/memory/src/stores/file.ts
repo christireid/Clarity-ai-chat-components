@@ -5,7 +5,7 @@
 
 import { promises as fs } from 'fs'
 import { join, dirname } from 'path'
-import type { MemoryItem, MemoryType } from '../core/types'
+import type { MemoryItem, MemoryType } from '../types'
 import type { VectorStore, SearchOptions } from './base'
 import { cosineSimilarity } from '../utils/vector'
 

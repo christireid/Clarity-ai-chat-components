@@ -4,7 +4,7 @@
  * Orchestrates compression strategies
  */
 
-import type { Memory, CompressionConfig } from '../core/types'
+import type { Memory, CompressionConfig } from '../types'
 import type { CompressionStrategy, CompressionResult } from './compression-strategy'
 import { TruncateStrategy } from './truncate-strategy'
 import { ExtractStrategy } from './extract-strategy'
