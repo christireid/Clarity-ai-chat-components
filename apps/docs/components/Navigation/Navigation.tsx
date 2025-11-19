@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { 
-  Menu, 
-  X, 
-  Sun, 
-  Moon, 
+import {
+  Menu,
+  X,
+  Sun,
+  Moon,
   Monitor,
   Search,
-  Github,
+  ExternalLink,
   BookOpen
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
@@ -134,7 +134,7 @@ export function Navigation() {
                 className="p-2 rounded-lg hover:bg-bg-secondary transition-colors"
                 aria-label="View on GitHub"
               >
-                <Github className="w-5 h-5" />
+                <ExternalLink className="w-5 h-5" />
               </a>
 
               {/* Mobile Menu Toggle */}

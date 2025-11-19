@@ -8,7 +8,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { Play, Pause, RotateCcw } from 'lucide-react'
+import { Play, Pause, RefreshCw } from 'lucide-react'
 
 interface CodeFlowAnimationProps {
   steps: Array<{
@@ -87,7 +87,7 @@ export function CodeFlowAnimation({ steps, title = 'Code Execution Flow' }: Code
               onClick={handleReset}
               className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-semibold transition-colors flex items-center gap-2"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RefreshCw className="w-4 h-4" />
               Reset
             </button>
           </div>

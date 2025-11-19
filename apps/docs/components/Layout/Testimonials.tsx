@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Quote } from 'lucide-react'
+import { MessageSquareQuote } from 'lucide-react'
 import Image from 'next/image'
 
 interface Testimonial {
@@ -74,10 +74,10 @@ export function Testimonials() {
               variants={item}
               className="relative p-6 rounded-xl border border-border bg-bg-primary hover:border-brand-500/50 transition-all hover:shadow-lg"
             >
-              {/* Quote Icon */}
-              <Quote className="w-8 h-8 text-brand-500/20 mb-4" />
+              {/* MessageSquareQuote Icon */}
+              <MessageSquareQuote className="w-8 h-8 text-brand-500/20 mb-4" />
 
-              {/* Quote */}
+              {/* MessageSquareQuote */}
               <p className="text-text-secondary mb-6 leading-relaxed">
                 "{testimonial.quote}"
               </p>

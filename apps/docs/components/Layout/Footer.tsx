@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Github, Twitter, Youtube, BookOpen } from 'lucide-react'
+import { ExternalLink, BookOpen } from 'lucide-react'
 
 const footerNavigation = {
   learn: [
@@ -29,9 +29,9 @@ const footerNavigation = {
 }
 
 const socialLinks = [
-  { name: 'GitHub', href: 'https://github.com/clarity-chat/ui', icon: Github },
-  { name: 'Twitter', href: 'https://twitter.com/claritychat', icon: Twitter },
-  { name: 'YouTube', href: 'https://youtube.com/@claritychat', icon: Youtube },
+  { name: 'GitHub', href: 'https://github.com/clarity-chat/ui', icon: ExternalLink },
+  { name: 'Twitter', href: 'https://twitter.com/claritychat', icon: ExternalLink },
+  { name: 'YouTube', href: 'https://youtube.com/@claritychat', icon: ExternalLink },
 ]
 
 export function Footer() {

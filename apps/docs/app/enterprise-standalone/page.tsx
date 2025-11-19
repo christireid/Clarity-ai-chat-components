@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Shield, Building2, FileText, CheckCircle } from 'lucide-react'
+import { Shield, Building, FileText, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Enterprise Features',
@@ -12,7 +12,7 @@ const enterpriseDocs = [
     title: 'Enterprise Features',
     href: '/enterprise-standalone/enterprise-features',
     description: 'Complete overview of enterprise features including SSO, audit logs, advanced security, and compliance',
-    icon: Building2,
+    icon: Building,
   },
   {
     title: 'Quick Reference',

@@ -7,7 +7,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrendingDown, Zap, MemoryStick, Activity } from 'lucide-react'
+import { ArrowDown, Zap, Database, Activity } from 'lucide-react'
 
 export function PerformanceComparison() {
   const metrics = [
@@ -30,7 +30,7 @@ export function PerformanceComparison() {
       color: 'purple',
     },
     {
-      icon: <MemoryStick className="w-5 h-5" />,
+      icon: <Database className="w-5 h-5" />,
       label: 'Memory Leaks',
       before: 'Unknown',
       after: 0,
@@ -39,7 +39,7 @@ export function PerformanceComparison() {
       color: 'green',
     },
     {
-      icon: <TrendingDown className="w-5 h-5" />,
+      icon: <ArrowDown className="w-5 h-5" />,
       label: 'Bundle Impact',
       before: '+12KB',
       after: '+8KB',

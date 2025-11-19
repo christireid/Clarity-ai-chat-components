@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Hash, FileText, Book, Wrench, Code2, Sparkles, Rocket, Link2 } from 'lucide-react'
+import { Hash, FileText, BookOpenOpen, Wrench, Code2, Sparkles, Rocket, Link2 } from 'lucide-react'
 import { CommandPalette, type CommandItem } from '@clarity-chat/react'
 import { searchData } from '@/lib/search-data'
 
@@ -52,7 +52,7 @@ function getTypeIcon(type: string) {
     case 'example':
       return <Code2 className={`${iconClass} text-orange-500`} />
     case 'cookbook':
-      return <Book className={`${iconClass} text-amber-500`} />
+      return <BookOpen className={`${iconClass} text-amber-500`} />
     case 'concept':
       return <Sparkles className={`${iconClass} text-blue-500`} />
     case 'deployment':

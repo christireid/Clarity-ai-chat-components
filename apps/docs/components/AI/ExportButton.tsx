@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Download, Copy, FileText, FileJson, File, Check } from 'lucide-react'
+import { Download, Copy, FileText, FileCode, File, Check } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import {
@@ -163,7 +163,7 @@ export function ExportButton({
             'transition-colors text-sm'
           )}
         >
-          <FileJson className="w-4 h-4" />
+          <FileCode className="w-4 h-4" />
           JSON
         </button>
 
@@ -281,7 +281,7 @@ function ExportMenu({
           'transition-colors text-sm'
         )}
       >
-        <FileJson className="w-4 h-4" />
+        <FileCode className="w-4 h-4" />
         JSON (.json)
       </button>
 

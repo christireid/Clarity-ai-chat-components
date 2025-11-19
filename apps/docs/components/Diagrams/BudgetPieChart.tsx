@@ -8,7 +8,7 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { DollarSign, Home, ShoppingCart, PiggyBank } from 'lucide-react'
+import { DollarSign, Home, ShoppingCart, Wallet } from 'lucide-react'
 
 export function BudgetPieChart({ monthlyIncome = 5000 }: { monthlyIncome?: number }) {
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null)
@@ -38,7 +38,7 @@ export function BudgetPieChart({ monthlyIncome = 5000 }: { monthlyIncome?: numbe
       percentage: 20,
       amount: monthlyIncome * 0.2,
       color: '#10b981',
-      icon: <PiggyBank className="w-5 h-5" />,
+      icon: <Wallet className="w-5 h-5" />,
       examples: ['Emergency Fund', 'Retirement', 'Investments'],
     },
   ]

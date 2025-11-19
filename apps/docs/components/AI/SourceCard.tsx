@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ExternalLink, ChevronDown, ChevronUp, Book, FileText, Link as LinkIcon } from 'lucide-react'
+import { ExternalLink, ChevronDown, ChevronUp, BookOpen, FileText, Link as LinkIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
@@ -197,7 +197,7 @@ export function SourceCard({
 function getSourceIcon(type?: string) {
   switch (type) {
     case 'documentation':
-      return Book
+      return BookOpen
     case 'guide':
       return FileText
     case 'api':
