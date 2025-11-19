@@ -37,9 +37,9 @@ export class CompressionEngine {
     }
     
     this.strategies.set('adaptive', new AdaptiveStrategy(effectiveSummarizer))
-    
+
     // Set default strategy
-    this.defaultStrategy = this.strategies.get(config.strategy) || this.strategies.get('adaptive')!
+    this.defaultStrategy = this.strategies.get(config.strategy ?? 'adaptive') || this.strategies.get('adaptive')!
   }
 
   /**
@@ -56,7 +56,7 @@ export class CompressionEngine {
       }
     }
 
-    const ratio = targetRatio ?? (1 - this.config.threshold)
+    const ratio = targetRatio ?? (1 - (this.config.threshold ?? 0.5))
     
     // Check if compression is needed
     const currentTokens = this.countTokens(memory.content)
@@ -87,9 +87,9 @@ export class CompressionEngine {
 
     // Compress
     const result = await strategy.compress(memory, ratio)
-    
+
     // Validate quality
-    if (result.compressionRatio < this.config.minQuality) {
+    if (result.compressionRatio < (this.config.minQuality ?? 0)) {
       // Compression too aggressive, return original
       return {
         compressed: memory.content,
@@ -114,7 +114,7 @@ export class CompressionEngine {
   }
 
   private selectStrategy(_memory: Memory): CompressionStrategy {
-    const strategyName = this.config.strategy
+    const strategyName = this.config.strategy ?? 'adaptive'
 
     if (strategyName === 'adaptive') {
       return this.defaultStrategy
