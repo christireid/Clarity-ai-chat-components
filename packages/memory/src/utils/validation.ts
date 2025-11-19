@@ -143,3 +143,73 @@ export function validateQuery(query: unknown): asserts query is string {
     throw new TypeError('Query must be a string')
   }
 }
+
+/**
+ * Validation result interface
+ */
+export interface ValidationResult {
+  valid: boolean
+  warnings: string[]
+  suggestions: string[]
+  errors?: string[]
+}
+
+/**
+ * Validate memory service configuration
+ */
+export function validateConfig(config?: any): ValidationResult {
+  const warnings: string[] = []
+  const suggestions: string[] = []
+  const errors: string[] = []
+
+  if (!config) {
+    suggestions.push('Consider providing a configuration object for better control')
+    return { valid: true, warnings, suggestions }
+  }
+
+  // Check for embedding provider
+  if (!config.embeddingProvider) {
+    suggestions.push('Add an embedding provider for semantic search capabilities')
+  }
+
+  // Check for token budget
+  if (!config.tokenBudget) {
+    suggestions.push('Configure token budget for better context management')
+  }
+
+  // Check storage configuration
+  if (config.storage?.type && !['memory', 'file', 'indexeddb'].includes(config.storage.type)) {
+    errors.push(`Invalid storage type: ${config.storage.type}. Must be 'memory', 'file', or 'indexeddb'`)
+  }
+
+  return {
+    valid: errors.length === 0,
+    warnings,
+    suggestions,
+    errors,
+  }
+}
+
+/**
+ * Format validation result for display
+ */
+export function formatValidationResult(result: ValidationResult): string {
+  const lines: string[] = []
+
+  if (result.errors && result.errors.length > 0) {
+    lines.push('Errors:')
+    result.errors.forEach((error) => lines.push(`  ❌ ${error}`))
+  }
+
+  if (result.warnings.length > 0) {
+    lines.push('Warnings:')
+    result.warnings.forEach((warning) => lines.push(`  ⚠️  ${warning}`))
+  }
+
+  if (result.suggestions.length > 0) {
+    lines.push('Suggestions:')
+    result.suggestions.forEach((suggestion) => lines.push(`  💡 ${suggestion}`))
+  }
+
+  return lines.join('\n')
+}
