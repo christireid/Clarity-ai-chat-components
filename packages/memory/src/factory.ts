@@ -148,7 +148,7 @@ export const clarityMemoryHelpers = {
   serverless: (config?: Omit<MemoryConfig, 'storage'>): ClarityMemory => {
     return clarityMemory({
       ...config,
-      storage: { type: 'in-memory' },
+      storage: { type: 'memory' },
     })
   },
 
@@ -171,7 +171,7 @@ export const clarityMemoryHelpers = {
   node: (config?: Omit<MemoryConfig, 'storage'>): ClarityMemory => {
     return clarityMemory({
       ...config,
-      storage: { type: 'in-memory' },
+      storage: { type: 'memory' },
     })
   },
 }
