@@ -3,7 +3,7 @@
  * Creates vector stores from configuration
  */
 
-import type { VectorStoreConfig } from '../core/config'
+import type { VectorStoreConfig } from '../types'
 import type { VectorStore } from './base'
 import { InMemoryStore } from './in-memory'
 import { FileStore } from './file'

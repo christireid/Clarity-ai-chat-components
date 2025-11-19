@@ -435,6 +435,9 @@ export interface MemoryStats {
   /** Total memories */
   total: number
 
+  /** Alias for total (backward compatibility) */
+  totalMemories?: number
+
   /** By type */
   byType: Record<MemoryType, number>
 
@@ -504,6 +507,21 @@ export interface MemoryServiceConfig {
 
   /** Enable debug logging */
   debug?: boolean
+
+  /** Log level for debugging */
+  logLevel?: 'error' | 'warn' | 'info' | 'debug'
+
+  /** Storage adapter configuration */
+  storage?: {
+    type: 'memory' | 'file' | 'indexeddb'
+    options?: Record<string, any>
+  }
+
+  /** Embedding provider */
+  embeddingProvider?: any
+
+  /** Token budget configuration */
+  tokenBudget?: TokenBudgetConfig
 }
 
 /**
@@ -605,6 +623,9 @@ export interface ContextBundle {
 
   /** System prompt */
   systemPrompt?: string
+
+  /** Formatted context string ready for LLM */
+  formatted?: string
 
   /** Metadata */
   metadata?: Record<string, any>
@@ -726,4 +747,104 @@ export interface SummarizationConfig {
 
   /** Minimum content length for summarization */
   minLength?: number
+
+  /** Maximum tokens for summary */
+  maxTokens?: number
+
+  /** LLM provider for summarization */
+  provider?: 'openai' | 'anthropic' | 'custom'
+
+  /** Model name */
+  model?: string
+}
+
+/**
+ * Options for adding memories
+ */
+export interface AddOptions {
+  /** Memory type override */
+  type?: MemoryType
+
+  /** Importance score (0-1) */
+  importance?: number
+
+  /** Tags for categorization */
+  tags?: string[]
+
+  /** Vector embedding */
+  embedding?: number[]
+}
+
+/**
+ * Memory score with breakdown
+ */
+export interface MemoryScore {
+  /** Base importance score */
+  base: number
+
+  /** Recency score component */
+  recency: number
+
+  /** Access frequency score component */
+  frequency: number
+
+  /** User scope boost */
+  userBoost: number
+
+  /** Semantic relevance score */
+  semanticRelevance: number
+
+  /** Final computed score */
+  final: number
+
+  /** Score breakdown weights */
+  breakdown: {
+    recencyWeight: number
+    frequencyWeight: number
+    relevanceWeight: number
+  }
+}
+
+/**
+ * Memory error class
+ */
+export class MemoryError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public cause?: Error
+  ) {
+    super(message)
+    this.name = 'MemoryError'
+  }
+}
+
+/**
+ * Memory error codes
+ */
+export const MemoryErrorCodes = {
+  STORE_ERROR: 'STORE_ERROR',
+  EMBEDDING_ERROR: 'EMBEDDING_ERROR',
+  TOKEN_BUDGET_EXCEEDED: 'TOKEN_BUDGET_EXCEEDED',
+  INVALID_CONFIG: 'INVALID_CONFIG',
+  MEMORY_NOT_FOUND: 'MEMORY_NOT_FOUND',
+} as const
+
+export type MemoryErrorCode = typeof MemoryErrorCodes[keyof typeof MemoryErrorCodes]
+
+/**
+ * Vector store configuration
+ */
+export interface VectorStoreConfig {
+  /** Store type */
+  type: 'in-memory' | 'file' | 'indexeddb' | 'redis' | 'postgres' | 'sqlite' | 'chroma' | 'qdrant' | 'pinecone' | 'lancedb'
+
+  /** File path (for file store) */
+  path?: string
+
+  /** Database name (for indexeddb store) */
+  dbName?: string
+
+  /** Additional store-specific options */
+  options?: Record<string, any>
 }
