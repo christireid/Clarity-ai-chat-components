@@ -53,6 +53,11 @@ ecosystem.config.cjs
 *.tsbuildinfo
 .eslintcache
 
+# TypeScript declaration files in src (generated during build)
+packages/*/src/**/*.d.ts
+!packages/*/src/**/*.d.cts
+!packages/*/src/**/*.d.mts
+
 # Backup files
 *.backup
 *.bak
