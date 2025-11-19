@@ -301,7 +301,7 @@ export class MemoryService {
         }
       }
 
-      results.push({ memory, relevance })
+      results.push({ memory, relevance, score: relevance })
     }
 
     // Sort by relevance and confidence
@@ -870,13 +870,13 @@ export class MemoryService {
     const breakdown = this.optimizer.getBudgetManager().getAllocation(options)
 
     // Build formatted context
-    const semanticMems = allMemories.filter(r => r.memory.type === 'semantic')
-    const episodicMems = allMemories.filter(r => r.memory.type === 'episodic')
+    const semanticMems = allMemories.filter(r => r.memory.type === 'semantic').map(r => r.memory)
+    const episodicMems = allMemories.filter(r => r.memory.type === 'episodic').map(r => r.memory)
 
     const formatted = [
       options?.includeSummary ? '# Context Summary' : '',
-      semanticMems.length > 0 ? `\n## Semantic Memories\n${semanticMems.map(r => r.memory.content).join('\n')}` : '',
-      episodicMems.length > 0 ? `\n## Recent Events\n${episodicMems.map(r => r.memory.content).join('\n')}` : '',
+      semanticMems.length > 0 ? `\n## Semantic Memories\n${semanticMems.map(m => m.content).join('\n')}` : '',
+      episodicMems.length > 0 ? `\n## Recent Events\n${episodicMems.map(m => m.content).join('\n')}` : '',
     ].filter(Boolean).join('\n')
 
     return {
@@ -884,6 +884,8 @@ export class MemoryService {
       totalTokens: TokenCounter.count(formatted),
       tokenBreakdown: breakdown,
       formatted,
+      semanticMemories: semanticMems,
+      episodicMemories: episodicMems,
     }
   }
 

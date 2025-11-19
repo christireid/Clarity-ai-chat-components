@@ -630,6 +630,15 @@ export interface ContextBundle {
   /** Formatted context string ready for LLM */
   formatted?: string
 
+  /** Semantic memories (filtered) */
+  semanticMemories?: MemoryItem[]
+
+  /** Episodic memories (filtered) */
+  episodicMemories?: MemoryItem[]
+
+  /** User preferences */
+  userPreferences?: Record<string, any>
+
   /** Metadata */
   metadata?: Record<string, any>
 }
