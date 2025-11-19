@@ -119,8 +119,8 @@ export function Response() {
       <ApiTable data={props} />
 
       <Pagination
-        prev={{ href: '/reference/components/conversation-branch-visualizer', label: 'ConversationBranchVisualizer' }}
-        next={{ href: '/reference/components/export-dialog', label: 'ExportDialog' }}
+        prev={{ href: '/reference/components/conversation-branch-visualizer', title: 'ConversationBranchVisualizer' }}
+        next={{ href: '/reference/components/export-dialog', title: 'ExportDialog' }}
       />
     </>
   )

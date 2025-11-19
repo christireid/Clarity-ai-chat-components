@@ -101,8 +101,8 @@ console.log(sanitized[0].content) // Emails/phones redacted`}
       <ApiTable data={options} />
 
       <Pagination
-        prev={{ href: '/reference/utilities/theme-builder', label: 'ThemeBuilder' }}
-        next={{ href: '/reference/utilities/token-counter-util', label: 'TokenCounter' }}
+        prev={{ href: '/reference/utilities/theme-builder', title: 'ThemeBuilder' }}
+        next={{ href: '/reference/utilities/token-counter-util', title: 'TokenCounter' }}
       />
     </>
   )

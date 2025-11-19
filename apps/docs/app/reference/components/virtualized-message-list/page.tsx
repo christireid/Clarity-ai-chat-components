@@ -180,8 +180,8 @@ return (
       <ApiTable data={hookProps} />
 
       <Pagination
-        prev={{ href: '/reference/components/message-list', label: 'MessageList' }}
-        next={{ href: '/reference/components/conversation-branch-visualizer', label: 'ConversationBranchVisualizer' }}
+        prev={{ href: '/reference/components/message-list', title: 'MessageList' }}
+        next={{ href: '/reference/components/conversation-branch-visualizer', title: 'ConversationBranchVisualizer' }}
       />
     </>
   )

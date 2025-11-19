@@ -168,8 +168,8 @@ return (
       <ApiTable data={hookReturn} />
 
       <Pagination
-        prev={{ href: '/reference/components/message-timeline', label: 'MessageTimeline' }}
-        next={{ href: '/reference/components/markdown-renderer-enhanced', label: 'MarkdownRendererEnhanced' }}
+        prev={{ href: '/reference/components/message-timeline', title: 'MessageTimeline' }}
+        next={{ href: '/reference/components/markdown-renderer-enhanced', title: 'MarkdownRendererEnhanced' }}
       />
     </>
   )

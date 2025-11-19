@@ -4,10 +4,11 @@ import {
   AlertCircle,
   CheckCircle,
   Lightbulb,
+  MessageSquareQuote,
 } from 'lucide-react'
 import clsx from 'clsx'
 
-type CalloutType = 'info' | 'warning' | 'error' | 'success' | 'tip'
+type CalloutType = 'info' | 'warning' | 'error' | 'success' | 'tip' | 'quote'
 
 interface CalloutProps {
   type?: CalloutType
@@ -53,6 +54,13 @@ const calloutConfig = {
     iconColor: 'text-purple-600 dark:text-purple-400',
     titleColor: 'text-purple-900 dark:text-purple-100',
   },
+  quote: {
+    icon: MessageSquareQuote,
+    bgColor: 'bg-gray-50 dark:bg-gray-950/30',
+    borderColor: 'border-gray-200 dark:border-gray-800',
+    iconColor: 'text-gray-600 dark:text-gray-400',
+    titleColor: 'text-gray-900 dark:text-gray-100',
+  },
 }
 
 export function Callout({ type = 'info', title, children, className, icon }: CalloutProps) {
@@ -65,6 +73,7 @@ export function Callout({ type = 'info', title, children, className, icon }: Cal
     error: 'Error',
     success: 'Success',
     tip: 'Tip',
+    quote: 'Quote',
   }
 
   return (
