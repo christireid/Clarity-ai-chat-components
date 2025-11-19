@@ -197,6 +197,7 @@ export default App`}
       <Callout type="success">
         <p><strong>You did it!</strong> You now have a working chat interface. Let's add more features.</p>
       </Callout>
+      </TutorialStep>
 
       <h2 id="avatars">Step 3: Add Avatars</h2>
       
