@@ -139,7 +139,7 @@ The component supports multiple variants (dots, pulse, ellipsis) and can show mu
 
 📚 [TypingIndicator API](/reference/components/typing-indicator)
 
-Need help integrating this with your chat?"`
+Need help integrating this with your chat?"
 
 **Bad Response (Don't do this):**
 User: "How do I show a typing indicator?"

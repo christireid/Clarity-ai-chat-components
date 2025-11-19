@@ -348,6 +348,7 @@ export default function CookbookPage() {
           </div>
         </a>
       </div>
+      </section>
     </div>
   )
 }

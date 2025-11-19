@@ -150,27 +150,27 @@ function ChatComponent() {
                   <tbody>
                     <tr className="border-b border-border">
                       <td className="p-4"><code className="text-sm font-mono">editMessage</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">(id: string, content: string) => void</code></td>
+                      <td className="p-4"><code className="text-sm font-mono text-brand-500">(id: string, content: string) {'=>'} void</code></td>
                       <td className="p-4 text-sm text-text-secondary">Edit a message by ID</td>
                     </tr>
                     <tr className="border-b border-border">
                       <td className="p-4"><code className="text-sm font-mono">regenerateMessage</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">(id: string) => void</code></td>
+                      <td className="p-4"><code className="text-sm font-mono text-brand-500">(id: string) {'=>'} void</code></td>
                       <td className="p-4 text-sm text-text-secondary">Regenerate a message</td>
                     </tr>
                     <tr className="border-b border-border">
                       <td className="p-4"><code className="text-sm font-mono">deleteMessage</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">(id: string) => void</code></td>
+                      <td className="p-4"><code className="text-sm font-mono text-brand-500">(id: string) {'=>'} void</code></td>
                       <td className="p-4 text-sm text-text-secondary">Delete a message</td>
                     </tr>
                     <tr className="border-b border-border">
                       <td className="p-4"><code className="text-sm font-mono">undo</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">() => void</code></td>
+                      <td className="p-4"><code className="text-sm font-mono text-brand-500">() {'=>'} void</code></td>
                       <td className="p-4 text-sm text-text-secondary">Undo last operation</td>
                     </tr>
                     <tr className="border-b border-border">
                       <td className="p-4"><code className="text-sm font-mono">redo</code></td>
-                      <td className="p-4"><code className="text-sm font-mono text-brand-500">() => void</code></td>
+                      <td className="p-4"><code className="text-sm font-mono text-brand-500">() {'=>'} void</code></td>
                       <td className="p-4 text-sm text-text-secondary">Redo last undone operation</td>
                     </tr>
                     <tr className="border-b border-border">
