@@ -186,7 +186,7 @@ export function mergeStreamingChunks(
   const content =
     typeof chunk === 'string'
       ? chunk
-      : chunk.content || chunk.text || chunk.delta || ''
+      : chunk['content'] || chunk['text'] || chunk['delta'] || ''
 
   if (typeof existing.content === 'string') {
     return {
@@ -381,6 +381,8 @@ export function truncateMessagesToTokenLimit(
   // Start from the end and work backwards
   for (let i = messages.length - 1; i >= 0; i--) {
     const message = messages[i]
+    if (!message) continue
+
     const messageTokens = estimateTokenCount(message)
 
     if (totalTokens + messageTokens <= maxTokens) {

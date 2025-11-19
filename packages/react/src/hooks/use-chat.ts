@@ -92,9 +92,12 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
       const userMessage: Message = {
         id: generateId(),
+        chatId: 'default',
         role: 'user',
         content,
-        timestamp: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent' as const,
       }
 
       setMessages((prev) => [...prev, userMessage])

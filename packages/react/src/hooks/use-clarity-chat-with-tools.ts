@@ -93,12 +93,14 @@ function extractToolResults(messages: CoreMessage[]): ExtractedToolResult[] {
   
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i]
-    
+    if (!message) continue
+
     // Check if message has tool calls
     if (message.role === 'assistant' && message.toolInvocations) {
       for (let j = 0; j < message.toolInvocations.length; j++) {
         const invocation = message.toolInvocations[j]
-        
+        if (!invocation) continue
+
         // Look for tool result in subsequent messages
         if (invocation.state === 'result' && invocation.result !== undefined) {
           // Convert tool invocation to ToolCall format
@@ -110,7 +112,7 @@ function extractToolResults(messages: CoreMessage[]): ExtractedToolResult[] {
               arguments: JSON.stringify(invocation.args),
             },
           }
-          
+
           results.push({
             toolCall,
             result: invocation.result,
@@ -120,12 +122,12 @@ function extractToolResults(messages: CoreMessage[]): ExtractedToolResult[] {
         }
       }
     }
-    
+
     // Also check for toolCalls property (alternative format)
     if (message.role === 'assistant' && (message as any).toolCalls) {
       const toolCalls = (message as any).toolCalls as ToolCall[]
       const nextMessage = messages[i + 1]
-      
+
       if (nextMessage && nextMessage.role === 'function') {
         toolCalls.forEach((toolCall, idx) => {
           results.push({

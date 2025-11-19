@@ -330,7 +330,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
           }
 
           if (maxSteps !== undefined) {
-            requestBody.maxSteps = maxSteps
+            requestBody['maxSteps'] = maxSteps
           }
 
           // Make request
@@ -548,8 +548,14 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
    */
   const reload = React.useCallback(
     async (options?: { data?: Record<string, any> }): Promise<string | null> => {
-      // Find last user message
-      const lastUserMessageIndex = messages.findLastIndex((msg: CoreMessage) => msg.role === 'user')
+      // Find last user message (manual implementation for ES2022 compatibility)
+      let lastUserMessageIndex = -1
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i]?.role === 'user') {
+          lastUserMessageIndex = i
+          break
+        }
+      }
       if (lastUserMessageIndex === -1) return null
 
       // Remove messages after last user message
@@ -558,6 +564,7 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
 
       // Trigger new assistant response
       const lastUserMessage = messagesUpToUser[lastUserMessageIndex]
+      if (!lastUserMessage) return null
       return append(lastUserMessage, options)
     },
     [messages, append]

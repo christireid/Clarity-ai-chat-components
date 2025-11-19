@@ -17,7 +17,14 @@ import { Message } from '@clarity-chat/types'
 // Type assertions for React 18/19 compatibility
 // These are needed because react-window and react-virtualized-auto-sizer may have type incompatibilities
 const AutoSizerComponent = AutoSizer as React.ComponentType<React.ComponentProps<typeof AutoSizer>>
-const ListComponent = List as React.ComponentType<React.ComponentProps<typeof List>>
+// Use any casting for react-window List to avoid ref type issues with strict generics
+type MessageListData = {
+  messages: Message[]
+  renderMessage: (message: Message, index: number) => React.ReactNode
+  heightCache: MessageHeightCache
+  setItemHeight: (index: number, height: number) => void
+}
+const ListComponent = List as any
 
 // ============================================================================
 // Types
@@ -90,13 +97,8 @@ class MessageHeightCache {
 // Message Item Component
 // ============================================================================
 
-interface MessageItemProps extends ListChildComponentProps {
-  data: {
-    messages: Message[]
-    renderMessage: (message: Message, index: number) => React.ReactNode
-    heightCache: MessageHeightCache
-    setItemHeight: (index: number, height: number) => void
-  }
+interface MessageItemProps extends ListChildComponentProps<MessageListData> {
+  data: MessageListData
 }
 
 function MessageItem({ index, style, data }: MessageItemProps) {
@@ -105,16 +107,20 @@ function MessageItem({ index, style, data }: MessageItemProps) {
   const itemRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
-    if (itemRef.current) {
+    if (itemRef.current && message) {
       const height = itemRef.current.offsetHeight
       const messageKey = message.id || `msg-${index}`
-      
+
       if (!heightCache.hasHeight(messageKey) || heightCache.getHeight(messageKey) !== height) {
         heightCache.setHeight(messageKey, height)
         setItemHeight(index, height)
       }
     }
   }, [message, index, heightCache, setItemHeight])
+
+  if (!message) {
+    return <div style={style} />
+  }
 
   return (
     <div style={style}>
@@ -188,7 +194,7 @@ export function VirtualizedMessageList({
   // React 19: Keep useCallback - passed to react-window, needs stable ref
   const getItemSize = React.useCallback((index: number) => {
     const message = messages[index]
-    const key = message.id || `msg-${index}`
+    const key = message?.id || `msg-${index}`
     return heightCacheRef.current.getHeight(key)
   }, [messages])
 
@@ -203,8 +209,8 @@ export function VirtualizedMessageList({
 
   // Get item key
   // React 19: Keep useCallback - passed to react-window, needs stable ref
-  const getItemKey = React.useCallback((index: number, data: Message[]) => {
-    return itemKey?.(index, data) || data[index].id || `msg-${index}`
+  const getItemKey = React.useCallback((index: number, data: MessageListData) => {
+    return itemKey?.(index, data.messages) || data.messages[index]?.id || `msg-${index}`
   }, [itemKey])
 
   // Clear cache when messages change dramatically
