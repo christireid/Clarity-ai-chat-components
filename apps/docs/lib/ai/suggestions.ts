@@ -102,7 +102,7 @@ function getComponentSuggestions(context: SuggestionContext): Suggestion[] {
       relevance: 0.75,
       icon: '⚡',
     },
-  ].filter(s => componentName !== 'this component') // Only if we found a component name
+  ].filter(s => componentName !== 'this component') as Suggestion[] // Only if we found a component name
 }
 
 /**
@@ -140,7 +140,7 @@ function getHookSuggestions(context: SuggestionContext): Suggestion[] {
       relevance: 0.7,
       icon: '⚡',
     },
-  ].filter(s => hookName !== 'this hook')
+  ].filter(s => hookName !== 'this hook') as Suggestion[]
 }
 
 /**
