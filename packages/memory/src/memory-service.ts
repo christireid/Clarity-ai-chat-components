@@ -28,6 +28,9 @@ import type {
   VectorStoreVector,
   VectorStoreQuery,
   EmbeddingProvider,
+  AddOptions,
+  ContextOptions,
+  ContextBundle,
 } from './types'
 import { TokenCounter, ContextOptimizer } from './token-optimizer'
 
@@ -64,7 +67,7 @@ export class MemoryService {
   /**
    * Initialize service
    */
-  private async initialize(): Promise<void> {
+  async initialize(): Promise<void> {
     // Initialize vector store if configured
     if (this.config.persistence.useVectorStore && this.vectorStore) {
       await this.vectorStore.initialize()
@@ -816,6 +819,180 @@ export class MemoryService {
    */
   getOptimizer(): ContextOptimizer {
     return this.optimizer
+  }
+
+  /**
+   * Convenience methods (aliases and simplified API)
+   */
+
+  /**
+   * Add a memory (simplified API)
+   */
+  async add(content: string, options?: AddOptions): Promise<string> {
+    const memory = await this.addMemory(
+      content,
+      options?.type || 'episodic',
+      options?.scope || 'session',
+      {},
+      {
+        embedding: options?.embedding,
+      }
+    )
+
+    // Update importance and tags if provided
+    if (options?.importance !== undefined || options?.tags !== undefined) {
+      await this.updateMemory(memory.id, {
+        importance: options?.importance,
+        tags: options?.tags,
+      })
+    }
+
+    return memory.id
+  }
+
+  /**
+   * Recall memories matching a query (alias for query)
+   */
+  async recall(queryText: string, options?: Partial<MemoryQuery>): Promise<MemorySearchResult[]> {
+    return this.query({ query: queryText, ...options })
+  }
+
+  /**
+   * Get optimized context bundle
+   */
+  async context(options?: ContextOptions): Promise<ContextBundle> {
+    // Query memories
+    const allMemories = await this.query({
+      limit: options?.maxTokens ? Math.floor(options.maxTokens / 100) : 50,
+    })
+
+    // Get token breakdown
+    const breakdown = this.optimizer.getBudgetManager().getAllocation(options)
+
+    // Build formatted context
+    const semanticMems = allMemories.filter(r => r.memory.type === 'semantic')
+    const episodicMems = allMemories.filter(r => r.memory.type === 'episodic')
+
+    const formatted = [
+      options?.includeSummary ? '# Context Summary' : '',
+      semanticMems.length > 0 ? `\n## Semantic Memories\n${semanticMems.map(r => r.memory.content).join('\n')}` : '',
+      episodicMems.length > 0 ? `\n## Recent Events\n${episodicMems.map(r => r.memory.content).join('\n')}` : '',
+    ].filter(Boolean).join('\n')
+
+    return {
+      memories: allMemories.map(r => r.memory),
+      totalTokens: TokenCounter.count(formatted),
+      tokenBreakdown: breakdown,
+      formatted,
+    }
+  }
+
+  /**
+   * Get a memory by ID
+   */
+  async get(id: string): Promise<MemoryItem | null> {
+    // Check cache first
+    const cached = this.cache.get(id)
+    if (cached) {
+      return cached
+    }
+
+    // Query vector store if available
+    if (this.vectorStore) {
+      const result = await this.vectorStore.get(id)
+      if (result) {
+        this.cache.set(id, result)
+        return result
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * Update a memory (alias for updateMemory)
+   */
+  async update(id: string, updates: Partial<MemoryItem>): Promise<void> {
+    return this.updateMemory(id, updates)
+  }
+
+  /**
+   * Promote a memory (alias for promoteMemory)
+   */
+  async promote(id: string): Promise<void> {
+    return this.promoteMemory(id)
+  }
+
+  /**
+   * Compress a memory (alias for compressMemory)
+   */
+  async compress(id: string): Promise<void> {
+    return this.compressMemory(id)
+  }
+
+  /**
+   * Flush buffer (alias for flushBuffer)
+   */
+  async flush(): Promise<void> {
+    return this.flushBuffer()
+  }
+
+  /**
+   * Forget a memory (alias for deleteMemory)
+   */
+  async forget(id: string): Promise<boolean> {
+    return this.deleteMemory(id)
+  }
+
+  /**
+   * Generate embedding for text
+   */
+  async embed(text: string): Promise<number[]> {
+    if (!this.embeddings) {
+      throw new Error('Embedding provider not configured')
+    }
+    return this.embeddings.embed(text)
+  }
+
+  /**
+   * Inspect memory state for debugging
+   */
+  async inspect(): Promise<{
+    memories: MemoryItem[]
+    stats: MemoryStats
+    buffer: MemoryBuffer
+  }> {
+    const memories = Array.from(this.cache.values())
+    const stats = await this.getStats()
+    return {
+      memories,
+      stats,
+      buffer: this.buffer,
+    }
+  }
+
+  /**
+   * Close and cleanup
+   */
+  async close(): Promise<void> {
+    // Clear intervals
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval)
+    }
+    if (this.summarizationInterval) {
+      clearInterval(this.summarizationInterval)
+    }
+
+    // Flush buffer
+    await this.flushBuffer()
+
+    // Close vector store if applicable
+    if (this.vectorStore && 'close' in this.vectorStore) {
+      await (this.vectorStore as any).close()
+    }
+
+    // Clear cache
+    this.cache.clear()
   }
 }
 

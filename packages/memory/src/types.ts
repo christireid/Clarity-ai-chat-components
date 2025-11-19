@@ -163,6 +163,9 @@ export interface MemorySearchResult {
   /** Relevance score (0-1) */
   relevance: number
 
+  /** Score alias for relevance (backward compatibility) */
+  score?: number
+
   /** Distance metric (for vector search) */
   distance?: number
 
@@ -764,6 +767,9 @@ export interface SummarizationConfig {
 export interface AddOptions {
   /** Memory type override */
   type?: MemoryType
+
+  /** Memory scope */
+  scope?: MemoryScope
 
   /** Importance score (0-1) */
   importance?: number
