@@ -9,11 +9,9 @@ import type { Memory, MemoryType, MemoryScope, SearchOptions } from '../types'
 
 export class InMemoryStore implements StorageAdapter {
   private memories: Map<string, Memory> = new Map()
-  private initialized: boolean = false
 
   async initialize(): Promise<void> {
     this.memories = new Map()
-    this.initialized = true
   }
 
   async save(memory: Memory): Promise<void> {

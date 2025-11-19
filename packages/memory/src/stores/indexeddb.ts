@@ -5,11 +5,6 @@
 
 import type { MemoryItem, MemoryType } from '../types'
 import type { VectorStore, SearchOptions } from './base'
-import { cosineSimilarity } from '../utils/vector'
-
-interface IDBStore {
-  memories: MemoryItem[]
-}
 
 export class IndexedDBStore implements VectorStore {
   private dbName: string
@@ -91,7 +86,7 @@ export class IndexedDBStore implements VectorStore {
     return this.put(memory)
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(_id: string): Promise<void> {
     await this.ensureInitialized()
 
     return new Promise((resolve, reject) => {

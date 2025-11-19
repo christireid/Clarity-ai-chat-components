@@ -57,7 +57,7 @@ export class SummarizationPipeline {
   /**
    * Start automatic summarization
    */
-  start(callback: (memoryId: string, summary: string) => Promise<void>): void {
+  start(_callback: (memoryId: string, summary: string) => Promise<void>): void {
     if (!this.config.enabled || !this.intervalId) {
       this.intervalId = setInterval(async () => {
         // This would be called periodically to summarize old memories

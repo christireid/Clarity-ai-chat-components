@@ -113,13 +113,13 @@ export class CompressionEngine {
     return Promise.all(memories.map(m => this.compress(m, targetRatio)))
   }
 
-  private selectStrategy(memory: Memory): CompressionStrategy {
+  private selectStrategy(_memory: Memory): CompressionStrategy {
     const strategyName = this.config.strategy
-    
+
     if (strategyName === 'adaptive') {
       return this.defaultStrategy
     }
-    
+
     return this.strategies.get(strategyName) || this.defaultStrategy
   }
 

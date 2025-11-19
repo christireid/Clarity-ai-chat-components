@@ -18,7 +18,7 @@ import { countTokens } from '../utils/token-counter'
 export class ContextBuilder {
   private budgetManager: TokenBudgetManager
   private storage: StorageAdapter
-  private embeddingProvider?: EmbeddingProvider
+  private _embeddingProvider?: EmbeddingProvider
 
   constructor(
     budgetManager: TokenBudgetManager,
@@ -27,7 +27,7 @@ export class ContextBuilder {
   ) {
     this.budgetManager = budgetManager
     this.storage = storage
-    this.embeddingProvider = embeddingProvider
+    this._embeddingProvider = embeddingProvider
   }
 
   /**

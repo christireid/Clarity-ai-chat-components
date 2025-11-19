@@ -17,7 +17,7 @@ export type MemoryScope = 'session' | 'thread' | 'global' | 'user'
 /**
  * Memory type determines how the memory is processed and retrieved
  */
-export type MemoryType = 'episodic' | 'semantic' | 'procedural' | 'short-term'
+export type MemoryType = 'episodic' | 'semantic' | 'procedural' | 'short-term' | 'profile'
 
 /**
  * Priority levels for memory retrieval and token allocation

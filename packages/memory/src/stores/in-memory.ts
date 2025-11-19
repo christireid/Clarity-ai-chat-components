@@ -5,7 +5,6 @@
 
 import type { MemoryItem, MemoryType } from '../types'
 import type { VectorStore, SearchOptions } from './base'
-import { cosineSimilarity } from '../utils/vector'
 
 export class InMemoryStore implements VectorStore {
   private memories: Map<string, MemoryItem> = new Map()
