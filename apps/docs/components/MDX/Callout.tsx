@@ -4,7 +4,7 @@ import {
   AlertCircle,
   CheckCircle,
   Lightbulb,
-  MessageSquareQuote,
+  MessageSquare,
 } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -55,7 +55,7 @@ const calloutConfig = {
     titleColor: 'text-purple-900 dark:text-purple-100',
   },
   quote: {
-    icon: MessageSquareQuote,
+    icon: MessageSquare,
     bgColor: 'bg-gray-50 dark:bg-gray-950/30',
     borderColor: 'border-gray-200 dark:border-gray-800',
     iconColor: 'text-gray-600 dark:text-gray-400',

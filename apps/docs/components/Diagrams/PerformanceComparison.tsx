@@ -7,7 +7,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowDown, Zap, Database, Activity } from 'lucide-react'
+import { ChevronDown, Zap, Database, Activity } from 'lucide-react'
 
 export function PerformanceComparison() {
   const metrics = [
@@ -39,7 +39,7 @@ export function PerformanceComparison() {
       color: 'green',
     },
     {
-      icon: <ArrowDown className="w-5 h-5" />,
+      icon: <ChevronDown className="w-5 h-5" />,
       label: 'Bundle Impact',
       before: '+12KB',
       after: '+8KB',

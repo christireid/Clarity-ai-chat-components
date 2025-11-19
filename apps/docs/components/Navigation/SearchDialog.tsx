@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Hash, FileText, BookOpenOpen, Wrench, Code2, Sparkles, Rocket, Link2 } from 'lucide-react'
+import { Hash, FileText, BookOpen, Wrench, Code2, Sparkles, Rocket, Link2 } from 'lucide-react'
 import { CommandPalette, type CommandItem } from '@clarity-chat/react'
 import { searchData } from '@/lib/search-data'
 
