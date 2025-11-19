@@ -93,6 +93,7 @@ export function clarityMemory(config?: MemoryConfig): ClarityMemory {
     }
   }
 
+  // @ts-expect-error - Factory provides smart defaults for optional config
   return new ClarityMemory(config)
 }
 
@@ -120,6 +121,7 @@ export const clarityMemoryHelpers = {
    * ```
    */
   browser: (config?: Omit<MemoryConfig, 'storage'>): ClarityMemory => {
+    // @ts-expect-error - Helper provides partial config with smart defaults
     return clarityMemory({
       ...config,
       storage: { type: 'indexeddb' },
@@ -146,6 +148,7 @@ export const clarityMemoryHelpers = {
    * ```
    */
   serverless: (config?: Omit<MemoryConfig, 'storage'>): ClarityMemory => {
+    // @ts-expect-error - Helper provides partial config with smart defaults
     return clarityMemory({
       ...config,
       storage: { type: 'memory' },
@@ -169,6 +172,7 @@ export const clarityMemoryHelpers = {
    * ```
    */
   node: (config?: Omit<MemoryConfig, 'storage'>): ClarityMemory => {
+    // @ts-expect-error - Helper provides partial config with smart defaults
     return clarityMemory({
       ...config,
       storage: { type: 'memory' },
