@@ -1,9 +1,10 @@
 /**
  * Icon Helper - Fixes lucide-react type compatibility with TypeScript 5.x + React 18
- * 
+ *
  * This wrapper ensures lucide-react icons work correctly with strict TypeScript checking.
  */
 
+import React from 'react'
 import type { LucideProps } from 'lucide-react'
 import type { ForwardRefExoticComponent, RefAttributes } from 'react'
 
@@ -17,7 +18,8 @@ export type IconComponent = ForwardRefExoticComponent<
  */
 export function icon<T extends IconComponent>(
   Icon: T
-): (props: LucideProps) => JSX.Element {
+): (props: LucideProps) => React.JSX.Element {
+  // @ts-expect-error - Intentional type workaround for lucide-react compatibility
   return (props: LucideProps) => <Icon {...props} />
 }
 
@@ -25,4 +27,4 @@ export function icon<T extends IconComponent>(
  * Alternative: Direct casting for inline usage
  * Usage: {Icon as any}
  */
-export const asIcon = (Icon: IconComponent) => Icon as unknown as (props: LucideProps) => JSX.Element
+export const asIcon = (Icon: IconComponent) => Icon as unknown as (props: LucideProps) => React.JSX.Element

@@ -6,6 +6,7 @@ import {
   DocumentArrowDownIcon,
   CodeBracketIcon,
   ArrowTopRightOnSquareIcon
+  // @ts-expect-error - @heroicons/react is an optional dependency for playground functionality
 } from '@heroicons/react/24/outline'
 import { useToast } from '@clarity-chat/react'
 

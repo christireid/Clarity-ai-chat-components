@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
+// @ts-expect-error - react-live is an optional dependency for playground functionality
 import { LiveProvider, LivePreview, LiveError } from 'react-live'
 import * as ClarityChat from '@clarity-chat/react'
 

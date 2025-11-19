@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user identifier for rate limiting (IP or userId)
+    // @ts-expect-error - request.ip exists in Next.js runtime but not in type definitions
     const identifier = body.userId || request.ip || 'anonymous'
 
     // Check rate limit

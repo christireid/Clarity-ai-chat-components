@@ -131,7 +131,7 @@ export function CustomerSuccessWorkspace() {
           Components expose granular props, slot-like overrides, and render props
           so you can adjust copy, icons, and layouts without forking.
         </p>
-        <CodeBlock
+        <EnhancedCodeBlock
           language="tsx"
           code={`<ChatWindow
   messages={messages}
