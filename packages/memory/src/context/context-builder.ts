@@ -18,6 +18,8 @@ import { countTokens } from '../utils/token-counter'
 export class ContextBuilder {
   private budgetManager: TokenBudgetManager
   private storage: StorageAdapter
+  // Reserved for future semantic search enhancements
+  // @ts-expect-error - Stored for future use
   private embeddingProvider?: EmbeddingProvider
 
   constructor(
