@@ -45,6 +45,22 @@ export function CodePlayground({
     ToastProvider: ClarityChat.ToastProvider,
   }
 
+  // Transform code to work with react-live (remove imports, handle exports)
+  const transformCode = (code: string) => {
+    // Remove all import statements
+    let transformed = code.replace(/import\s+.*?from\s+['"].*?['"]\s*;?\n?/g, '')
+
+    // Replace export default function with just function and render it
+    transformed = transformed.replace(/export\s+default\s+function\s+(\w+)\s*\(/g, 'function $1(')
+
+    // If there's a function definition, add a render call at the end
+    if (transformed.includes('function App(')) {
+      transformed += '\n\nrender(<App />)'
+    }
+
+    return transformed.trim()
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
       {/* Toolbar */}
@@ -83,7 +99,11 @@ export function CodePlayground({
       </div>
 
       {/* Editor and Preview */}
-      <LiveProvider code={code} scope={scope} noInline={false}>
+      <LiveProvider
+        code={transformCode(code)}
+        scope={scope}
+        noInline={true}
+      >
         <div 
           className={`flex ${
             layout === 'horizontal' ? 'flex-row' : 'flex-col'
