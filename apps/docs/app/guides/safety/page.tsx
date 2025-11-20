@@ -3,10 +3,6 @@ import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import matter from 'gray-matter'
-import { MDXRemote } from 'next-mdx-remote/rsc'
-import { mdxComponents } from '@/components/MDX/mdx-components'
-
-export const dynamic = 'force-dynamic' // Avoid React version conflicts during static generation
 
 export const metadata: Metadata = {
   title: 'Safety - Clarity Chat',
@@ -31,10 +27,10 @@ export default async function SafetyGuidePage() {
   return (
     <>
       <Breadcrumbs />
-      
+
       <div className="docs-content">
         <div className="prose prose-lg max-w-none dark:prose-invert">
-          <MDXRemote source={mdxContent} components={mdxComponents} />
+          <pre className="whitespace-pre-wrap">{mdxContent}</pre>
         </div>
       </div>
     </>

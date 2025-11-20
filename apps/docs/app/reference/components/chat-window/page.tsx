@@ -1,6 +1,5 @@
 'use client'
 
-import { Metadata } from 'next'
 import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -486,5 +485,6 @@ return (
         }}
       />
     </>
+    </ToastProvider>
   )
 }

@@ -121,7 +121,8 @@ export function Navigation() {
               <button
                 onClick={cycleTheme}
                 className="p-2 rounded-lg hover:bg-bg-secondary transition-colors"
-                aria-label={`Current theme: ${theme}. Click to cycle through themes.`}
+                aria-label={mounted ? `Current theme: ${theme}. Click to cycle through themes.` : 'Toggle theme'}
+                suppressHydrationWarning
               >
                 {getThemeIcon()}
               </button>

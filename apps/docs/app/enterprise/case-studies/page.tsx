@@ -1,13 +1,6 @@
+'use client'
+
 import React from 'react'
-import { Metadata } from 'next'
-import { Callout } from '@/components/MDX/Callout'
-
-export const dynamic = 'force-dynamic' // Avoid serialization errors during static generation
-
-export const metadata: Metadata = {
-  title: 'Case Studies - Clarity Chat Enterprise',
-  description: 'Real companies, real results',
-}
 
 export default function CaseStudiesPage() {
   return (
@@ -62,11 +55,10 @@ export default function CaseStudiesPage() {
           <li>✅ <strong>3,000+ consultations/month</strong> within first quarter</li>
         </ul>
 
-        <Callout type="quote">
-          "Clarity Chat was a game-changer. We passed our HIPAA audit with flying colors, and patients love the accessibility features. The money we saved on development went straight into improving our AI models."
-          <br />
-          <strong>— Dr. Michael Rodriguez, CTO at HealthAI</strong>
-        </Callout>
+        <blockquote className="border-l-4 border-gray-300 dark:border-gray-700 pl-4 italic my-4">
+          <p>"Clarity Chat was a game-changer. We passed our HIPAA audit with flying colors, and patients love the accessibility features. The money we saved on development went straight into improving our AI models."</p>
+          <p><strong>— Dr. Michael Rodriguez, CTO at HealthAI</strong></p>
+        </blockquote>
       </section>
 
       <section className="docs-section">

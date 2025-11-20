@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Toast Notification System
  *

@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { Button, cn } from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'

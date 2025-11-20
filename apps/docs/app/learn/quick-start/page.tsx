@@ -236,7 +236,6 @@ export default App`}
     <div className="text-center">
       <p>No messages yet. Start a conversation!</p>
     </div>
-    </ToastProvider>
   }
   onEditMessage={handleEdit}
   onRegenerateMessage={handleRegenerate}
@@ -360,5 +359,6 @@ export default App`}
         }}
       />
     </>
+    </ToastProvider>
   )
 }

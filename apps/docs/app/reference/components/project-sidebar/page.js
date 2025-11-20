@@ -1,6 +1,0 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-export const metadata = { title: 'Project Sidebar | Clarity Chat', description: 'Project and chat navigation sidebar with search and organization.' };
-export default function ProjectSidebarPage() {
-    return (_jsxs("div", { className: "max-w-5xl mx-auto px-4 py-8", children: [_jsx("h1", { className: "text-4xl font-bold mb-4", children: "Project Sidebar" }), _jsx("p", { className: "text-xl text-muted-foreground mb-8", children: "Hierarchical navigation for projects and chats with search and management." }), _jsxs("section", { className: "mb-12", children: [_jsx("h2", { className: "text-3xl font-semibold mb-4", children: "Features" }), _jsxs("ul", { className: "list-disc list-inside space-y-2 text-muted-foreground", children: [_jsx("li", { children: "Project/chat hierarchy" }), _jsx("li", { children: "Search across projects" }), _jsx("li", { children: "Expand/collapse projects" }), _jsx("li", { children: "Create/edit/delete actions" }), _jsx("li", { children: "Active item highlighting" })] })] })] }));
-}
-//# sourceMappingURL=page.js.map
