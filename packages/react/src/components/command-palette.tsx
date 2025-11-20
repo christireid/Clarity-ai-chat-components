@@ -1,3 +1,5 @@
+'use client'
+
 import { forwardRef, useState, useRef, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
@@ -32,6 +34,7 @@ export const CommandPalette = forwardRef<
     const [search, setSearch] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(0)
     const inputRef = useRef<HTMLInputElement>(null)
+    const selectedItemRef = useRef<HTMLButtonElement>(null)
 
     // Filter items based on search
     const filteredItems = useMemo(() => {
@@ -108,6 +111,17 @@ export const CommandPalette = forwardRef<
       document.addEventListener('keydown', handleKeyDown)
       return () => document.removeEventListener('keydown', handleKeyDown)
     }, [open, filteredItems, selectedIndex, onClose])
+
+    // Scroll selected item into view
+    useEffect(() => {
+      if (selectedItemRef.current) {
+        selectedItemRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest',
+        })
+      }
+    }, [selectedIndex])
 
     // Calculate flat index for keyboard navigation
     const flatItems = useMemo(() => {
@@ -218,6 +232,7 @@ export const CommandPalette = forwardRef<
                               return (
                                 <motion.button
                                   key={item.id}
+                                  ref={isSelected ? selectedItemRef : null}
                                   onClick={() => {
                                     item.onSelect()
                                     onClose()

@@ -23,9 +23,10 @@ export {
   useMemoryStats,
   useConversationMemory,
 } from '../../memory/memory-provider'
-export {
-  useSlidingContextManager as useSlidingWindow,
-} from '../../memory/use-sliding-context-manager'
+// TODO: Re-enable once useSlidingContextManager is implemented
+// export {
+//   useSlidingContextManager as useSlidingWindow,
+// } from '../../memory/use-sliding-context-manager'
 
 // Low-level: Primitives
 export * from '../../utils/memory'

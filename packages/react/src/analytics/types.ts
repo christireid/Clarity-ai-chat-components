@@ -97,37 +97,47 @@ export interface AnalyticsConfig {
    * Enable/disable analytics
    */
   enabled?: boolean
-  
+
   /**
    * Enable debug logging
    */
   debug?: boolean
-  
+
   /**
    * Providers to use
    */
   providers?: AnalyticsProvider[]
-  
+
+  /**
+   * Analytics endpoint URL
+   */
+  endpoint?: string
+
+  /**
+   * Auto-track all events
+   */
+  autoTrack?: boolean
+
   /**
    * Auto-track page views
    */
   autoTrackPageViews?: boolean
-  
+
   /**
    * Auto-track performance metrics
    */
   autoTrackPerformance?: boolean
-  
+
   /**
    * Auto-track errors
    */
   autoTrackErrors?: boolean
-  
+
   /**
    * Event name prefix
    */
   eventPrefix?: string
-  
+
   /**
    * Respect "Do Not Track" browser setting
    */

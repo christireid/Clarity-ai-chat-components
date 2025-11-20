@@ -39,5 +39,7 @@ export {
 // Low-level: Primitives
 export { Message } from '../../components/message'
 export { StreamingMessage } from '../../components/streaming-message'
-export { MessageBubble } from '../../components/message'
-export { normalizeMessages } from '../../utils/message-conversion'
+// TODO: Re-enable once MessageBubble is implemented
+// export { MessageBubble } from '../../components/message'
+// TODO: Re-enable once normalizeMessages is implemented
+// export { normalizeMessages } from '../../utils/message-conversion'

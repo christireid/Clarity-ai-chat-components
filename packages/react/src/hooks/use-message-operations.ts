@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 
 /**
@@ -8,6 +10,8 @@ export interface MessageWithOperations {
   role: 'user' | 'assistant' | 'system'
   content: string
   timestamp: number
+  /** Chat/conversation ID */
+  chatId?: string
   /** Parent message ID for branching */
   parentId?: string
   /** Branch ID for conversation forking */

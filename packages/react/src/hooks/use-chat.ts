@@ -25,6 +25,8 @@
  * @deprecated Use `useClarityChat` instead. This will be removed in v3.0.
  */
 
+'use client'
+
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
 import { generateId } from '@clarity-chat/primitives'
@@ -32,6 +34,10 @@ import { generateId } from '@clarity-chat/primitives'
 export interface UseChatOptions {
   initialMessages?: Message[]
   onSendMessage?: (message: Message, options?: { signal?: AbortSignal }) => Promise<void>
+  api?: string
+  persistMessages?: boolean
+  memory?: boolean | Record<string, any>
+  autoScroll?: boolean
 }
 
 /**

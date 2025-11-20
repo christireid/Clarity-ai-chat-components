@@ -385,22 +385,22 @@ export interface MemoryStats {
 export interface MemoryServiceConfig {
   /** Token optimization config */
   tokenOptimization: TokenOptimizationConfig
-  
+
   /** Persistence options */
   persistence: MemoryPersistenceOptions
-  
+
   /** Enable automatic summarization */
   enableAutoSummarization: boolean
-  
+
   /** Summarization interval (ms) */
   summarizationInterval?: number
-  
+
   /** Enable automatic cleanup */
   enableAutoCleanup: boolean
-  
+
   /** Cleanup interval (ms) */
   cleanupInterval?: number
-  
+
   /** Memory retention policy */
   retentionPolicy: {
     /** Short-term memory TTL (seconds) */
@@ -412,7 +412,16 @@ export interface MemoryServiceConfig {
     /** Global memory TTL (seconds, 0 = never expires) */
     global: number
   }
-  
+
+  /** Maximum tokens across all memories */
+  maxTokens?: number
+
+  /** Maximum number of memory items to store */
+  maxMemories?: number
+
+  /** Memory management strategy */
+  strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
+
   /** Enable debug logging */
   debug?: boolean
 }

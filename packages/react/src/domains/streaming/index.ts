@@ -23,6 +23,7 @@ export {
 export { StreamingMessage } from '../../components/streaming-message'
 
 // Low-level: Primitives
-export { parseStreamChunk } from '../../utils/streaming/parse-stream-chunk'
-export { createStreamParser } from '../../utils/streaming/create-stream-parser'
-export { handleReconnect } from '../../utils/streaming/handle-reconnect'
+// TODO: Re-enable once streaming utilities are implemented
+// export { parseStreamChunk } from '../../utils/streaming/parse-stream-chunk'
+// export { createStreamParser } from '../../utils/streaming/create-stream-parser'
+// export { handleReconnect } from '../../utils/streaming/handle-reconnect'

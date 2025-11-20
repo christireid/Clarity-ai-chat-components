@@ -29,7 +29,8 @@ export {
 export { ReactAgent } from '../../agents/react-agent'
 
 // Low-level: Primitives
-export { createAdapter } from '../../adapters/create-adapter'
+// TODO: Re-enable once createAdapter is implemented
+// export { createAdapter } from '../../adapters/create-adapter'
 // TODO: Re-enable once prompt system core/ directory is implemented
 // export { buildPrompt } from '../../prompt/core/builder'
 // parseToolCall is available via AgentUtils.parseToolCall from agents/index

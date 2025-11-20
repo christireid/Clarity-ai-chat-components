@@ -30,6 +30,8 @@
  * ```
  */
 
+'use client'
+
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from '../hooks/use-clarity-chat'
 import { ChatWindow } from './chat-window'
@@ -57,6 +59,8 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   onExport?: () => void
   /** Enable clear chat functionality */
   onClear?: () => void
+  /** Auto-scroll to bottom on new messages */
+  autoScroll?: boolean
 }
 
 /**

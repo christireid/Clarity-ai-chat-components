@@ -42,6 +42,8 @@
  * @throws {Error} If API endpoint is invalid or missing
  */
 
+'use client'
+
 import * as React from 'react'
 import { generateId } from '@clarity-chat/primitives'
 import { processStream, type StreamFormat } from '../utils/streaming-helpers'
@@ -153,7 +155,10 @@ export interface UseAssistantOptions {
   
   /** Maximum cache size (default: 100 entries) */
   maxCacheSize?: number
-  
+
+  /** Tool definitions for function calling */
+  tools?: Record<string, any>[]
+
   /** Experimental features */
   experimental?: {
     [key: string]: any

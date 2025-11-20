@@ -20,12 +20,14 @@ export {
 export { MultiTenancyProvider, useMultiTenancy } from '../../multi-tenancy/react'
 export { RBACProvider, useRBAC } from '../../rbac/react'
 export { AuditLogger } from '../../audit/audit-logger'
-export { SafetyChecker } from '../../safety/safety-checker'
+// TODO: Re-enable once SafetyChecker is implemented
+// export { SafetyChecker } from '../../safety/safety-checker'
 
 // Low-level: Primitives
-export { createTenant } from '../../multi-tenancy/create-tenant'
-export { checkPermission } from '../../rbac/check-permission'
-export { logAuditEvent } from '../../audit/log-audit-event'
+// TODO: Re-enable once enterprise utilities are implemented
+// export { createTenant } from '../../multi-tenancy/create-tenant'
+// export { checkPermission } from '../../rbac/check-permission'
+// export { logAuditEvent } from '../../audit/log-audit-event'
 
 // Re-export enterprise modules
 export * from '../../multi-tenancy'
