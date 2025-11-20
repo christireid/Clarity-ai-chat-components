@@ -41,6 +41,8 @@ export function CodePlayground({
     useCallback: React.useCallback,
     useMemo: React.useMemo,
     useRef: React.useRef,
+    // Ensure ToastProvider is explicitly available
+    ToastProvider: ClarityChat.ToastProvider,
   }
 
   return (
