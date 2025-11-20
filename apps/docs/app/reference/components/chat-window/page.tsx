@@ -1,6 +1,8 @@
 'use client'
 
-import { ToastProvider } from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import { ToastProvider, ChatWindow } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -12,6 +14,57 @@ import { ChatWindowAnatomy } from '@/components/Diagrams/ChatWindowAnatomy'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { chatWindowPresets, chatWindowControls } from './presets'
 
+// Basic chat demo component
+function BasicChatDemo() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      chatId: 'demo-chat',
+      role: 'assistant',
+      content: 'Hello! Welcome to the chat. How can I help you today?',
+      status: 'sent',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ])
+
+  const handleSend = useCallback((content: string) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      chatId: 'demo-chat',
+      role: 'user',
+      content,
+      status: 'sent',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    setMessages(prev => [...prev, newMessage])
+
+    // Simulate AI response after a delay
+    setTimeout(() => {
+      const aiResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        chatId: 'demo-chat',
+        role: 'assistant',
+        content: `You said: "${content}". This is a demo response!`,
+        status: 'sent',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      setMessages(prev => [...prev, aiResponse])
+    }, 1000)
+  }, [])
+
+  return (
+    <div className="w-full max-w-2xl" style={{ height: '400px' }}>
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSend}
+        className="border border-border rounded-lg"
+      />
+    </div>
+  )
+}
 
 const chatWindowProps: Prop[] = [
   {
@@ -208,13 +261,7 @@ function BasicChat() {
   )
 }`}
       >
-        <div className="w-full max-w-2xl">
-          <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-            <p className="text-sm text-text-secondary text-center">
-              💬 Interactive preview would render here
-            </p>
-          </div>
-        </div>
+        <BasicChatDemo />
       </ComponentPreview>
 
       <h2 id="with-avatars">With Avatars</h2>
