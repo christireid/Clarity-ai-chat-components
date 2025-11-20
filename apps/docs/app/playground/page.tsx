@@ -5,6 +5,7 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { TemplateSelector } from '@/components/Playground/TemplateSelector'
 import { PlaygroundControls } from '@/components/Playground/PlaygroundControls'
 import { playgroundTemplates } from '@/lib/playground-templates'
+import { ToastProvider } from '@clarity-chat/react'
 
 export default function PlaygroundPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(playgroundTemplates[0])
@@ -21,7 +22,8 @@ export default function PlaygroundPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <ToastProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <div className="border-b bg-white dark:bg-gray-800">
         <div className="max-w-[1920px] mx-auto px-6 py-4">
@@ -65,6 +67,7 @@ export default function PlaygroundPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </ToastProvider>
   )
 }
