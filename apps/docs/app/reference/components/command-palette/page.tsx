@@ -169,6 +169,7 @@ function App() {
         }}
       />
     </>
+    </ToastProvider>
   )
 }`}
         language="tsx"
@@ -601,5 +602,6 @@ function App() {
         }}
       />
     </>
+    </ToastProvider>
   )
 }

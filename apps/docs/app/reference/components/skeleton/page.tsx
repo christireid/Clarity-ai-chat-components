@@ -1,6 +1,5 @@
 'use client'
 
-import { Metadata } from 'next'
 import { useState } from 'react'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { Badge } from '@clarity-chat/primitives'
@@ -13,11 +12,6 @@ import {
   SkeletonButton,
 } from '@clarity-chat/react'
 import { PageSkeleton, ComponentPageSkeleton, SearchResultsSkeleton } from '@/components/Loading/PageSkeleton'
-
-export const metadata: Metadata = {
-  title: 'Skeleton Loaders',
-  description: 'Loading placeholder components with shimmer and pulse animations for displaying content structure while data loads.',
-}
 
 export default function SkeletonLoadersPage() {
   const [showPageSkeleton, setShowPageSkeleton] = useState(false)
