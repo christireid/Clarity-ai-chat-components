@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BookOpen, Code2, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
-import { ChatWindow, FollowUpSuggestions, type FollowUpSuggestion } from '@clarity-chat/react'
+import { ChatWindow, FollowUpSuggestions, useToast, type FollowUpSuggestion } from '@clarity-chat/react'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
 import { FeedbackButtons } from './FeedbackButtons'
@@ -117,6 +117,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [aiStatus, setAiStatus] = useState<AIStatus | undefined>(undefined)
   const sessionIdRef = useRef<string>('')
+  const toast = useToast()
 
   // Initialize session ID on mount
   useEffect(() => {

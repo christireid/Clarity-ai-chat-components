@@ -90,9 +90,11 @@ export abstract class BaseVectorStoreAdapter implements VectorStoreAdapter {
     let normB = 0
 
     for (let i = 0; i < a.length; i++) {
-      dotProduct += a[i] * b[i]
-      normA += a[i] * a[i]
-      normB += b[i] * b[i]
+      const aVal = a[i] ?? 0
+      const bVal = b[i] ?? 0
+      dotProduct += aVal * bVal
+      normA += aVal * aVal
+      normB += bVal * bVal
     }
 
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
@@ -117,8 +119,8 @@ export abstract class BaseVectorStoreAdapter implements VectorStoreAdapter {
       chunkIndex: 0,
       totalChunks: 1,
       memoryType: memory.type,
-      topic: memory.metadata?.topic,
-      sentiment: memory.metadata?.sentiment,
+      topic: memory.metadata?.['topic'],
+      sentiment: memory.metadata?.['sentiment'],
       importanceScore: memory.importanceScore ?? 0,
       scope: memory.scope,
       layer: memory.layer,
@@ -158,8 +160,8 @@ export class InMemoryVectorStore extends BaseVectorStoreAdapter {
       if (memory.userId !== userId) continue
       
       if (filter) {
-        if (filter.scope && !filter.scope.includes(memory.scope)) continue
-        if (filter.type && !filter.type.includes(memory.type)) continue
+        if (filter['scope'] && !filter['scope'].includes(memory.scope)) continue
+        if (filter['type'] && !filter['type'].includes(memory.type)) continue
       }
 
       // Calculate similarity
