@@ -24,7 +24,7 @@ export default async function SafetyGuidePage() {
 
   // Parse MDX
   const { content: mdxContent } = matter(content)
-  )
+
 
   return (
     <>

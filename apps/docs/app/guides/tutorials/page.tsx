@@ -24,7 +24,7 @@ export default async function TutorialsGuidePage() {
 
   // Parse MDX
   const { content: mdxContent } = matter(content)
-  )
+
 
   return (
     <>

@@ -24,7 +24,7 @@ export default async function UsageQuotasGuidePage() {
 
   // Parse MDX
   const { content: mdxContent } = matter(content)
-  )
+
 
   return (
     <>
