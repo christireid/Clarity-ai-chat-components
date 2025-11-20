@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@clarity-chat/react": "workspace:*",
-    "lucide-react": "^0.552.0",
     "framer-motion": "^11.0.0",
+    "lucide-react": "^0.552.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
@@ -21,6 +21,7 @@
     "@storybook/addon-links": "^8.6.14",
     "@storybook/addon-measure": "^8.6.14",
     "@storybook/addon-outline": "^8.6.14",
+    "@storybook/addon-viewport": "^8.6.14",
     "@storybook/blocks": "^8.6.14",
     "@storybook/react": "^8.6.14",
     "@storybook/react-vite": "^8.6.14",

@@ -1,4 +1,7 @@
+'use client'
+
 import { Metadata } from 'next'
+import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -9,13 +12,10 @@ import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { LibraryStats } from '@/components/Diagrams/StatisticsShowcase'
 import { ChatWindowComposition } from '@/components/Diagrams/ComponentCompositionDiagram'
 
-export const metadata: Metadata = {
-  title: 'Quick Start',
-  description: 'Get started with Clarity Chat UI in 5 minutes',
-}
 
 export default function QuickStartPage() {
   return (
+    <ToastProvider>
     <>
       <Breadcrumbs />
       
@@ -143,6 +143,7 @@ function App() {
   }
 
   return (
+    <ToastProvider>
     <div style={{ height: '100vh' }}>
       <ChatWindow
         messages={messages}
@@ -154,6 +155,7 @@ function App() {
         }
       />
     </div>
+    </ToastProvider>
   )
 }
 
@@ -234,6 +236,7 @@ export default App`}
     <div className="text-center">
       <p>No messages yet. Start a conversation!</p>
     </div>
+    </ToastProvider>
   }
   onEditMessage={handleEdit}
   onRegenerateMessage={handleRegenerate}

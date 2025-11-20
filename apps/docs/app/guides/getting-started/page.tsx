@@ -6,6 +6,8 @@ import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
+export const dynamic = 'force-dynamic' // Avoid React version conflicts during static generation
+
 export const metadata: Metadata = {
   title: 'Getting Started - Clarity Chat',
   description: 'Get started with Clarity Chat - installation, setup, and your first chat interface.',
@@ -29,7 +31,6 @@ export default async function GettingStartedGuidePage() {
 
   // Parse MDX
   const { content: mdxContent } = matter(content)
-  )
 
   return (
     <>

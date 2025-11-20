@@ -1,4 +1,7 @@
+'use client'
+
 import { Metadata } from 'next'
+import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -6,10 +9,6 @@ import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-export const metadata: Metadata = {
-  title: 'Message',
-  description: 'Display individual chat messages with rich content',
-}
 
 const messageProps: Prop[] = [
   {
@@ -116,6 +115,7 @@ const messageProps: Prop[] = [
 
 export default function MessagePage() {
   return (
+    <ToastProvider>
     <>
       <Breadcrumbs />
       
@@ -333,6 +333,7 @@ import ReactMarkdown from 'react-markdown'
 
 function MarkdownMessage({ message }) {
   return (
+    <ToastProvider>
     <Message {...message}>
       <ReactMarkdown>{message.text}</ReactMarkdown>
     </Message>
@@ -451,11 +452,13 @@ const message = {
   ]
 
   return (
+    <ToastProvider>
     <div className="space-y-4 p-4">
       {messages.map((message) => (
         <Message key={message.id} {...message} />
       ))}
     </div>
+    </ToastProvider>
   )
 }`}
         language="tsx"

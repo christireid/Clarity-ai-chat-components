@@ -9,6 +9,8 @@ import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
+export const dynamic = 'force-dynamic' // Avoid React version conflicts during static generation
+
 interface CommercialPageProps {
   params: Promise<{ slug: string }>
 }
@@ -47,7 +49,7 @@ const slugToFile: Record<string, string> = {
 }
 
 export async function generateStaticParams() {
-  return Object.keys(commercialPages).map((slug) => ({ slug ))
+  return Object.keys(commercialPages).map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: CommercialPageProps): Promise<Metadata> {
@@ -95,7 +97,6 @@ export default async function CommercialPage({ params }: CommercialPageProps) {
 
   // Parse MDX
   const { content: mdxContent } = matter(content)
-  )
 
   return (
     <>

@@ -1,4 +1,7 @@
+'use client'
+
 import { Metadata } from 'next'
+import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -7,10 +10,6 @@ import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { Badge } from '@clarity-chat/primitives'
 
-export const metadata: Metadata = {
-  title: 'CommandPalette',
-  description: 'Keyboard-driven command interface (Cmd+K)',
-}
 
 const commandPaletteProps: Prop[] = [
   {
@@ -80,6 +79,7 @@ const commandPaletteProps: Prop[] = [
 
 export default function CommandPalettePage() {
   return (
+    <ToastProvider>
     <>
       <Breadcrumbs />
 
@@ -130,7 +130,8 @@ function App() {
     }
 
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    return (
+    <ToastProvider>) => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   const commands: CommandItem[] = [
@@ -152,6 +153,7 @@ function App() {
   ]
 
   return (
+    <ToastProvider>
     <>
       <button onClick={() => setOpen(true)}>
         Open Command Palette (⌘K)
@@ -388,6 +390,7 @@ function App() {
   const commands = useCommands()
   
   return (
+    <ToastProvider>
     <CommandPalette
       items={commands}
       open={open}
@@ -464,7 +467,8 @@ function App() {
     }
 
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    return (
+    <ToastProvider>) => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   const commands: CommandItem[] = useMemo(() => [
@@ -514,6 +518,7 @@ function App() {
   ], [theme])
 
   return (
+    <ToastProvider>
     <div>
       <button 
         onClick={() => setOpen(true)}
@@ -535,6 +540,7 @@ function App() {
         showShortcuts
       />
     </div>
+    </ToastProvider>
   )
 }`}
         language="tsx"

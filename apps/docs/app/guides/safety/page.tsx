@@ -6,6 +6,8 @@ import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
+export const dynamic = 'force-dynamic' // Avoid React version conflicts during static generation
+
 export const metadata: Metadata = {
   title: 'Safety - Clarity Chat',
   description: 'Guide for safety in Clarity Chat',

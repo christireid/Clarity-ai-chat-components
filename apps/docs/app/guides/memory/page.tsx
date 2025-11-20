@@ -6,6 +6,8 @@ import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
+export const dynamic = 'force-dynamic' // Avoid React version conflicts during static generation
+
 export const metadata: Metadata = {
   title: 'Memory System - Clarity Chat',
   description: 'Clarity Chat\'s memory system allows your AI assistant to remember information across conversations.',
@@ -24,7 +26,7 @@ export default async function MemoryGuidePage() {
 
   // Parse MDX
   const { content: mdxContent } = matter(content)
-  )
+
 
   return (
     <>

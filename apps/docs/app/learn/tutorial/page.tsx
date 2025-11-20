@@ -1,4 +1,7 @@
+'use client'
+
 import { Metadata } from 'next'
+import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -8,13 +11,10 @@ import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
 
-export const metadata: Metadata = {
-  title: 'Tutorial',
-  description: 'Build a complete chat application with Clarity Chat UI',
-}
 
 export default function TutorialPage() {
   return (
+    <ToastProvider>
     <>
       <Breadcrumbs />
       
@@ -170,6 +170,7 @@ function App() {
   }
 
   return (
+    <ToastProvider>
     <div className="app">
       <ChatWindow
         messages={messages}
@@ -178,6 +179,7 @@ function App() {
         height="100vh"
       />
     </div>
+    </ToastProvider>
   )
 }
 
@@ -285,6 +287,7 @@ function App() {
   }
 
   return (
+    <ToastProvider>
     <ChatWindow
       messages={messages}
       onSendMessage={handleSendMessage}
@@ -318,6 +321,7 @@ function App() {
 }
 
 return (
+    <ToastProvider>
   <ChatWindow
     messages={messages}
     onSendMessage={handleSendMessage}
@@ -340,6 +344,7 @@ function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
 
   return (
+    <ToastProvider>
     <ThemeProvider theme={theme}>
       <div className="app">
         <header>
@@ -458,6 +463,7 @@ function App() {
   }
 
   return (
+    <ToastProvider>
     <ThemeProvider theme={theme}>
       <div className="app" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <header style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>

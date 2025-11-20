@@ -6,6 +6,8 @@ import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
+export const dynamic = 'force-dynamic' // Avoid React version conflicts during static generation
+
 export const metadata: Metadata = {
   title: 'Messages - Clarity Chat',
   description: 'Guide for messages in Clarity Chat',
@@ -24,7 +26,7 @@ export default async function MessagesGuidePage() {
 
   // Parse MDX
   const { content: mdxContent } = matter(content)
-  )
+
 
   return (
     <>

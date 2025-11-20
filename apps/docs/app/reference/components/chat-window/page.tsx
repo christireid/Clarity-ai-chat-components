@@ -1,4 +1,7 @@
+'use client'
+
 import { Metadata } from 'next'
+import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -10,10 +13,6 @@ import { ChatWindowAnatomy } from '@/components/Diagrams/ChatWindowAnatomy'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { chatWindowPresets, chatWindowControls } from './presets'
 
-export const metadata: Metadata = {
-  title: 'ChatWindow',
-  description: 'The main container component for chat interfaces',
-}
 
 const chatWindowProps: Prop[] = [
   {
@@ -99,6 +98,7 @@ const chatWindowProps: Prop[] = [
 
 export default function ChatWindowPage() {
   return (
+    <ToastProvider>
     <>
       <Breadcrumbs />
 
@@ -149,9 +149,11 @@ export default function Example() {
   ]
 
   return (
+    <ToastProvider>
     <div className="h-96 border rounded-lg">
       <ChatWindow messages={messages} showAvatars />
     </div>
+    </ToastProvider>
   )
 }`}
           presets={chatWindowPresets}
@@ -198,6 +200,7 @@ function BasicChat() {
   }
 
   return (
+    <ToastProvider>
     <ChatWindow
       messages={messages}
       onSendMessage={handleSend}
@@ -234,6 +237,7 @@ function BasicChat() {
 ])
 
 return (
+    <ToastProvider>
   <ChatWindow
     messages={messages}
     onSendMessage={handleSend}
@@ -254,6 +258,7 @@ return (
 ])
 
 return (
+    <ToastProvider>
   <ChatWindow
     messages={messages}
     onSendMessage={handleSend}
@@ -283,6 +288,7 @@ return (
 }
 
 return (
+    <ToastProvider>
   <ChatWindow
     messages={messages}
     onSendMessage={handleSend}
@@ -394,6 +400,7 @@ const [messages, setMessages] = useState([
 ])
 
 return (
+    <ToastProvider>
   <ChatWindow
     messages={messages}
     onSendMessage={handleSend}
@@ -427,6 +434,7 @@ return (
 ])
 
 return (
+    <ToastProvider>
   <ChatWindow
     messages={messages}
     onSendMessage={handleSend}

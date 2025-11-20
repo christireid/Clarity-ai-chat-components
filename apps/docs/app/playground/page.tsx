@@ -1,11 +1,24 @@
 'use client'
 
 import React, { useState } from 'react'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
+import dynamic from 'next/dynamic'
 import { TemplateSelector } from '@/components/Playground/TemplateSelector'
 import { PlaygroundControls } from '@/components/Playground/PlaygroundControls'
 import { playgroundTemplates } from '@/lib/playground-templates'
 import { ToastProvider } from '@clarity-chat/react'
+
+// Dynamic import to avoid React version conflicts during static generation
+const CodePlayground = dynamic(
+  () => import('@/components/Playground/CodePlayground').then(mod => ({ default: mod.CodePlayground })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden h-[600px] flex items-center justify-center">
+        <div className="text-gray-500 dark:text-gray-400">Loading playground...</div>
+      </div>
+    )
+  }
+)
 
 export default function PlaygroundPage() {
   const [selectedTemplate, setSelectedTemplate] = useState(playgroundTemplates[0])

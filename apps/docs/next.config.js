@@ -7,7 +7,7 @@ const nextConfig = {
     // Enable Turbopack for faster builds (Next.js 16)
     turbo: {},
   },
-  transpilePackages: ['@clarity-chat/react'],
+  // transpilePackages: ['@clarity-chat/react'],
   typescript: {
     ignoreBuildErrors: true,
   },

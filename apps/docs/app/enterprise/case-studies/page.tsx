@@ -2,6 +2,8 @@ import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic' // Avoid serialization errors during static generation
+
 export const metadata: Metadata = {
   title: 'Case Studies - Clarity Chat Enterprise',
   description: 'Real companies, real results',

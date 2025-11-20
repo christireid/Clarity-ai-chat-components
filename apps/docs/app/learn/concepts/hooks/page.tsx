@@ -1,17 +1,16 @@
+'use client'
+
 import { Metadata } from 'next'
+import { ToastProvider } from '@clarity-chat/react'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 
-export const metadata: Metadata = {
-  title: 'Hooks Overview - Learn Clarity Chat',
-  description:
-    'Understand the React hooks available in Clarity Chat and how to use them effectively.',
-}
 
 export default function HooksConceptPage() {
   return (
+    <ToastProvider>
     <div className="docs-content">
       <div className="mb-8">
         <div className="inline-block px-3 py-1 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 text-sm font-semibold mb-4">
@@ -63,6 +62,7 @@ function ChatComponent() {
   } = useMessageOperations(messages, setMessages)
 
   return (
+    <ToastProvider>
     <ChatWindow
       messages={messages}
       onSendMessage={handleSend}
@@ -103,6 +103,7 @@ function StreamingChat() {
   })
 
   return (
+    <ToastProvider>
     <ChatWindow
       messages={messages}
       onSendMessage={sendMessage}
@@ -135,6 +136,7 @@ function ChatWithTracking() {
   })
 
   return (
+    <ToastProvider>
     <div>
       <TokenCounter
         inputTokens={tokenStats.inputTokens}
@@ -147,6 +149,7 @@ function ChatWithTracking() {
         onSendMessage={handleSend}
       />
     </div>
+    </ToastProvider>
   )
 }`}
               language="tsx"
@@ -256,6 +259,7 @@ function AdvancedChat() {
   const scrollRef = useAutoScroll(messages)
   
   return (
+    <ToastProvider>
     <div ref={scrollRef}>
       <TokenCounter {...tokenStats} />
       <ChatWindow
@@ -267,6 +271,7 @@ function AdvancedChat() {
         isLoading={isLoading}
       />
     </div>
+    </ToastProvider>
   )
 }`}
           language="tsx"
@@ -290,5 +295,6 @@ function AdvancedChat() {
         </p>
       </Callout>
     </div>
+    </ToastProvider>
   )
 }

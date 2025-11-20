@@ -1,14 +1,11 @@
-import { Metadata } from 'next'
+'use client'
+
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
-
-export const metadata: Metadata = {
-  title: 'Hooks API Reference - Clarity Chat',
-  description: 'Complete API reference for all React hooks in Clarity Chat',
-}
+import { ToastProvider } from '@clarity-chat/react'
 
 const useMessageOperationsProps: Prop[] = [
   {
@@ -60,7 +57,7 @@ const useTokenTrackerProps: Prop[] = [
 
 export default function HooksPage() {
   return (
-    <>
+    <ToastProvider>
       <Breadcrumbs />
       
       <div className="mb-8">
@@ -334,6 +331,6 @@ function ChatWithTracking() {
           detailed explanations and composition patterns.
         </p>
       </Callout>
-    </>
+    </ToastProvider>
   )
 }
