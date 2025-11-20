@@ -608,9 +608,9 @@ export function useAssistant(options: UseAssistantOptions = {}): UseAssistantRet
           messages: [...messages, userMessage],
         }
 
-        if (assistantId) requestBody.assistantId = assistantId
-        if (threadId) requestBody.threadId = threadId
-        if (maxSteps !== undefined) requestBody.maxSteps = maxSteps
+        if (assistantId) requestBody['assistantId'] = assistantId
+        if (threadId) requestBody['threadId'] = threadId
+        if (maxSteps !== undefined) requestBody['maxSteps'] = maxSteps
 
         const response = await customFetch(api, {
           method: 'POST',

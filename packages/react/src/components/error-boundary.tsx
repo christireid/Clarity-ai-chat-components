@@ -73,7 +73,7 @@ const DefaultFallback: React.FC<{ error: Error; resetError: () => void }> = ({
         Try Again
       </button>
       
-      {process.env.NODE_ENV === 'development' && (
+      {process.env['NODE_ENV'] === 'development' && (
         <details className="mt-4 text-left w-full max-w-2xl">
           <summary className="text-sm text-muted-foreground cursor-pointer hover:underline hover:text-foreground transition-colors">
             Error Details (Development Only)
@@ -171,7 +171,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     }
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Log error to console
     console.error('[ErrorBoundary] Error caught:', error, errorInfo)
 
@@ -186,7 +186,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     }
   }
 
-  componentDidUpdate(prevProps: ErrorBoundaryProps): void {
+  override componentDidUpdate(prevProps: ErrorBoundaryProps): void {
     const { resetKeys } = this.props
     const { hasError } = this.state
 
@@ -215,7 +215,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     })
   }
 
-  render(): React.ReactNode {
+  override render(): React.ReactNode {
     const { hasError, error } = this.state
     const { children, fallback } = this.props
 

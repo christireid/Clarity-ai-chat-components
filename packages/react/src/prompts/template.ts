@@ -49,9 +49,10 @@ export class PromptTemplateEngine {
     
     const foundVariablesSet = new Set<string>()
     let match: RegExpExecArray | null
-    
+
     while ((match = variablePattern.exec(templateStr)) !== null) {
-      foundVariablesSet.add(match[1])
+      const varName = match[1]
+      if (varName) foundVariablesSet.add(varName)
     }
     
     const foundVariables = Array.from(foundVariablesSet)
@@ -126,9 +127,10 @@ export class PromptTemplateEngine {
     
     const variablesSet = new Set<string>()
     let match: RegExpExecArray | null
-    
+
     while ((match = pattern.exec(template)) !== null) {
-      variablesSet.add(match[1])
+      const varName = match[1]
+      if (varName) variablesSet.add(varName)
     }
     
     return Array.from(variablesSet)

@@ -173,7 +173,7 @@ export function RetryButton({
    */
   const getDelay = (attempt: number): number => {
     const index = Math.min(attempt, backoffMs.length - 1)
-    return backoffMs[index]
+    return backoffMs[index] ?? 1000
   }
 
   /**

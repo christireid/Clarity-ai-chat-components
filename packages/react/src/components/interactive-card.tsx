@@ -115,6 +115,7 @@ export const InteractiveCard = React.memo(
     }
 
     return (
+      // @ts-ignore - framer-motion HTMLMotionProps type complexity issue
       <motion.div
         ref={ref}
         className={cn(
@@ -265,6 +266,7 @@ export const InteractiveButton = React.forwardRef<
     }
 
     return (
+      // @ts-ignore - framer-motion HTMLMotionProps type complexity issue
       <motion.button
         ref={ref}
         whileHover={

@@ -36,7 +36,7 @@ export function useSubmitButtonState({
   isOverLimit = false,
 }: UseSubmitButtonStateOptions): SubmitButtonStateResult {
   const [buttonState, setButtonState] = React.useState<ButtonState>('idle')
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   const resetState = React.useCallback(() => {
     if (timeoutRef.current) {

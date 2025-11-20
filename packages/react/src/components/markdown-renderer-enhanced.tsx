@@ -300,7 +300,6 @@ export function MarkdownRendererEnhanced({
 
   return (
     <div className={cn('markdown-content prose dark:prose-invert max-w-none', className)}>
-      {/* @ts-expect-error - ReactMarkdown v9 has type compatibility issues */}
       <ReactMarkdown
         remarkPlugins={remarkPlugins}
         rehypePlugins={rehypePlugins}
@@ -356,13 +355,15 @@ export function extractMathExpressions(content: string): {
   const inlineRegex = /\$(?!\$)(.*?)\$/g
   let match
   while ((match = inlineRegex.exec(content)) !== null) {
-    inline.push(match[1])
+    const mathContent = match[1]
+    if (mathContent) inline.push(mathContent)
   }
 
   // Extract block math ($$...$$)
   const blockRegex = /\$\$(.*?)\$\$/gs
   while ((match = blockRegex.exec(content)) !== null) {
-    block.push(match[1])
+    const mathContent = match[1]
+    if (mathContent) block.push(mathContent)
   }
 
   return { inline, block }

@@ -68,14 +68,14 @@ export function MessageMetadata({
   const [expanded, setExpanded] = React.useState(!compact)
 
   // Extract metadata values
-  const tokens = metadata.tokens || metadata.tokenCount
-  const inputTokens = metadata.inputTokens
-  const outputTokens = metadata.outputTokens
-  const cost = metadata.cost || metadata.estimatedCost
-  const responseTime = metadata.responseTime || metadata.processingTime
-  const model = metadata.model
-  const confidence = metadata.confidence || metadata.confidenceScore
-  const sources = metadata.sources || metadata.attributions
+  const tokens = metadata['tokens'] || metadata['tokenCount']
+  const inputTokens = metadata['inputTokens']
+  const outputTokens = metadata['outputTokens']
+  const cost = metadata['cost'] || metadata['estimatedCost']
+  const responseTime = metadata['responseTime'] || metadata['processingTime']
+  const model = metadata['model']
+  const confidence = metadata['confidence'] || metadata['confidenceScore']
+  const sources = metadata['sources'] || metadata['attributions']
 
   // Calculate cost if we have tokens and model
   const calculatedCost = React.useMemo(() => {

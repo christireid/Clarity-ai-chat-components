@@ -145,7 +145,6 @@ export const EnhancedMarkdownRenderer = React.memo(
           className
         )}
       >
-        {/* @ts-expect-error - ReactMarkdown v9 has type compatibility issues */}
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={rehypePlugins}

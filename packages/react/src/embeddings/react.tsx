@@ -50,7 +50,8 @@ export function useEmbeddings(
       if (!embeddingProvider) {
         throw new Error('Embedding provider not initialized')
       }
-      return embeddingProvider.embed(text)
+      const response = await embeddingProvider.embed({ input: text })
+      return Array.isArray(text) ? response.embeddings : response.embeddings[0] ?? []
     },
     [embeddingProvider]
   )

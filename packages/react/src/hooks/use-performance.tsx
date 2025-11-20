@@ -65,7 +65,7 @@ export function useRenderPerformance(componentName: string): PerformanceMetrics 
  * Hook to track why component re-rendered
  */
 export function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
-  const previousProps = React.useRef<Record<string, any>>()
+  const previousProps = React.useRef<Record<string, any> | undefined>(undefined)
 
   React.useEffect(() => {
     if (previousProps.current) {
@@ -242,7 +242,7 @@ export function useThrottlePerformance<T>(
 ): T {
   const [throttledValue, setThrottledValue] = React.useState<T>(value)
   const lastRan = React.useRef<number>(Date.now())
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   React.useEffect(() => {
     const now = Date.now()

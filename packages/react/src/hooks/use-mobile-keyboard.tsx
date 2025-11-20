@@ -122,7 +122,7 @@ export function useMobileKeyboard(
     originalViewportHeight: typeof window !== 'undefined' ? window.innerHeight : 0,
   }))
 
-  const debounceTimerRef = React.useRef<NodeJS.Timeout>()
+  const debounceTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
   const previousHeightRef = React.useRef<number>(
     typeof window !== 'undefined' ? window.innerHeight : 0
   )

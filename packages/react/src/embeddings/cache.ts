@@ -230,11 +230,13 @@ export class SemanticEmbeddingCache implements EmbeddingCache {
     let dotProduct = 0
     let normA = 0
     let normB = 0
-    
+
     for (let i = 0; i < a.length; i++) {
-      dotProduct += a[i] * b[i]
-      normA += a[i] * a[i]
-      normB += b[i] * b[i]
+      const aVal = a[i] ?? 0
+      const bVal = b[i] ?? 0
+      dotProduct += aVal * bVal
+      normA += aVal * aVal
+      normB += bVal * bVal
     }
     
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))

@@ -72,8 +72,9 @@ export function ProjectSidebar({
     setExpandedProjects((prev) => new Set(prev).add(project.id))
 
     // Auto-select first chat if none selected
-    if (!selectedChatId && project.chats.length > 0) {
-      onChatSelect(project.chats[0].id)
+    const firstChat = project.chats[0]
+    if (!selectedChatId && firstChat) {
+      onChatSelect(firstChat.id)
     }
   }
 

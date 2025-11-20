@@ -174,7 +174,7 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}) {
   })
 
   const recognitionRef = React.useRef<any>(null)
-  const autoStopTimeoutRef = React.useRef<NodeJS.Timeout>()
+  const autoStopTimeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   /**
    * Initialize speech recognition

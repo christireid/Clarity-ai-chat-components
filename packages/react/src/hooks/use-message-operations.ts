@@ -281,6 +281,8 @@ export function useMessageOperations(
         if (index === -1) return prev
 
         const oldMessage = prev[index]
+        if (!oldMessage) return prev
+
         const updatedMessage: MessageWithOperations = {
           ...oldMessage,
           content: newContent,
@@ -449,7 +451,8 @@ export function useMessageOperations(
     if (history.length === 0) return
 
     const lastOperation = history[history.length - 1]
-    
+    if (!lastOperation) return
+
     setHistory((prev) => prev.slice(0, -1))
     setRedoStack((prev) => [...prev, lastOperation])
 
@@ -483,7 +486,8 @@ export function useMessageOperations(
     if (redoStack.length === 0) return
 
     const operation = redoStack[redoStack.length - 1]
-    
+    if (!operation) return
+
     setRedoStack((prev) => prev.slice(0, -1))
     setHistory((prev) => [...prev, operation])
 

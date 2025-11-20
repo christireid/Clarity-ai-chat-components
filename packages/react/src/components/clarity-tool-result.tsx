@@ -99,6 +99,8 @@ export function ClarityToolResult({
   componentProps = {},
   showHeader = false,
   className,
+  enableErrorBoundary,
+  errorFallback,
 }: ClarityToolResultProps) {
   const Component = registry[toolCall.name]
 
@@ -150,10 +152,10 @@ export function ClarityToolResult({
     return (
       <div className={className}>
         <ErrorBoundary
-          fallback={({ error, resetError }) => (
+          fallback={(error, resetError) => (
             <ErrorFallback error={error} toolCall={toolCall} />
           )}
-          resetKeys={[toolCall.id, toolCall.name]}
+          resetKeys={[toolCall.id ?? toolCall.name, toolCall.name]}
         >
           <ToolComponentWrapper />
         </ErrorBoundary>

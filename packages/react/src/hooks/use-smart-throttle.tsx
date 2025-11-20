@@ -95,7 +95,7 @@ export function useSmartThrottle<T = any>(
     totalInputs: 0,
   })
 
-  const timerRef = React.useRef<NodeJS.Timeout>()
+  const timerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
   const lastExecutionRef = React.useRef<number>(0)
 
   const execute = React.useCallback(() => {
@@ -219,7 +219,7 @@ export function useSmartThrottle<T = any>(
  */
 export function useStreamThrottle(delay: number = 300) {
   const [isReady, setIsReady] = React.useState(true)
-  const timerRef = React.useRef<NodeJS.Timeout>()
+  const timerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   const throttle = React.useCallback(() => {
     setIsReady(false)

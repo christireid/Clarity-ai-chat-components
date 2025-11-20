@@ -49,7 +49,8 @@ export * from './streaming-helpers'
 // Message conversion utilities (canonical implementation)
 export * from './message-conversion'
 // Legacy exports for backward compatibility
-export * from './message-converter'
+// Note: Commented out to avoid duplicate exports - message-converter re-exports from message-conversion
+// export * from './message-converter'
 
 // Tool result extraction utilities
 export * from './tool-result-extractor'

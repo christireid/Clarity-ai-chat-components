@@ -34,6 +34,7 @@ export class RecursiveTextSplitter implements ITextSplitter {
           const split = chunk.split(separator)
           for (let i = 0; i < split.length; i++) {
             const part = split[i]
+            if (!part) continue
             if (opts.keepSeparator && i < split.length - 1) {
               nextChunks.push(part + separator)
             } else {
@@ -53,9 +54,10 @@ export class RecursiveTextSplitter implements ITextSplitter {
     let position = 0
     for (let i = 0; i < mergedChunks.length; i++) {
       const content = mergedChunks[i]
+      if (!content) continue
       const start = position
       const end = position + content.length
-      
+
       chunks.push({
         id: `chunk-${i}`,
         content,
@@ -130,14 +132,17 @@ export class RecursiveTextSplitter implements ITextSplitter {
     
     for (let i = 0; i < chunks.length; i++) {
       let chunk = chunks[i]
-      
+      if (!chunk) continue
+
       // Add overlap from previous chunk
       if (i > 0) {
         const prevChunk = chunks[i - 1]
-        const overlapText = this.getLastNChars(prevChunk, overlapSize, options)
-        chunk = overlapText + chunk
+        if (prevChunk) {
+          const overlapText = this.getLastNChars(prevChunk, overlapSize, options)
+          chunk = overlapText + chunk
+        }
       }
-      
+
       withOverlap.push(chunk)
     }
     

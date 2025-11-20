@@ -156,9 +156,9 @@ export function isWeatherToolResult(result: unknown): result is WeatherToolResul
   return (
     typeof result === 'object' &&
     result !== null &&
-    typeof result.location === 'string' &&
-    typeof result.temperature === 'number' &&
-    typeof result.condition === 'string'
+    typeof (result as any).location === 'string' &&
+    typeof (result as any).temperature === 'number' &&
+    typeof (result as any).condition === 'string'
   )
 }
 
@@ -166,8 +166,8 @@ export function isSearchToolResult(result: unknown): result is SearchToolResult 
   return (
     typeof result === 'object' &&
     result !== null &&
-    typeof result.query === 'string' &&
-    Array.isArray(result.results)
+    typeof (result as any).query === 'string' &&
+    Array.isArray((result as any).results)
   )
 }
 
@@ -175,8 +175,8 @@ export function isCalculatorToolResult(result: unknown): result is CalculatorToo
   return (
     typeof result === 'object' &&
     result !== null &&
-    typeof result.expression === 'string' &&
-    typeof result.result === 'number'
+    typeof (result as any).expression === 'string' &&
+    typeof (result as any).result === 'number'
   )
 }
 

@@ -90,9 +90,9 @@ export function ContextCard({
                 getTypeColor()
               )}
             >
-              {context.metadata.thumbnail ? (
+              {context.metadata['thumbnail'] ? (
                 <img
-                  src={context.metadata.thumbnail}
+                  src={context.metadata['thumbnail'] as string}
                   alt={context.name}
                   className="w-full h-full object-cover rounded-lg"
                 />

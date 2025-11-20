@@ -104,7 +104,9 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
       input: text,
       model,
     })
-    return response.embeddings[0]
+    const embedding = response.embeddings[0]
+    if (!embedding) throw new Error('No embedding returned')
+    return embedding
   }
   
   async embedBatch(texts: string[], model?: string): Promise<number[][]> {

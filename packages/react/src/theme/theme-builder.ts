@@ -50,16 +50,19 @@ export function createTheme(
  * Convert HSL string to RGB object
  */
 function hslToRgb(hsl: string): { r: number; g: number; b: number } {
-  const [h, s, l] = hsl.split(' ').map(v => parseFloat(v))
+  const [hVal, sVal, lVal] = hsl.split(' ').map(v => parseFloat(v))
+  const h = hVal ?? 0
+  const s = sVal ?? 0
+  const l = lVal ?? 0
   const sNorm = s / 100
   const lNorm = l / 100
-  
+
   const c = (1 - Math.abs(2 * lNorm - 1)) * sNorm
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
   const m = lNorm - c / 2
-  
+
   let r = 0, g = 0, b = 0
-  
+
   if (h >= 0 && h < 60) {
     r = c; g = x; b = 0
   } else if (h >= 60 && h < 120) {
@@ -142,8 +145,8 @@ export function hslToHex(hsl: string): string {
  */
 export function adjustLightness(hsl: string, amount: number): string {
   const [h, s, l] = hsl.split(' ').map(v => parseFloat(v))
-  const newL = Math.max(0, Math.min(100, l + amount))
-  return `${h} ${s}% ${newL}%`
+  const newL = Math.max(0, Math.min(100, (l ?? 0) + amount))
+  return `${h ?? 0} ${s ?? 0}% ${newL}%`
 }
 
 /**
@@ -158,7 +161,7 @@ export function getContrastRatio(hsl1: string, hsl2: string): number {
       v /= 255
       return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
     })
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return 0.2126 * (r ?? 0) + 0.7152 * (g ?? 0) + 0.0722 * (b ?? 0)
   }
   
   const l1 = luminance(rgb1)

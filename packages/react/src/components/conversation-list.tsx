@@ -232,7 +232,10 @@ export function ConversationList({
         if (!grouped[conv.folderId]) {
           grouped[conv.folderId] = []
         }
-        grouped[conv.folderId].push(conv)
+        const folderConversations = grouped[conv.folderId]
+        if (folderConversations) {
+          folderConversations.push(conv)
+        }
       } else {
         uncategorized.push(conv)
       }

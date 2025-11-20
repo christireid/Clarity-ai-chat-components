@@ -44,7 +44,7 @@ export function useWindowSize(): WindowSize {
     }
   })
 
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return

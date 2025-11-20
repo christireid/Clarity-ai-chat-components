@@ -26,7 +26,7 @@ export interface UseAutoScrollReturn {
   /**
    * Ref to attach to scrollable container
    */
-  scrollRef: RefObject<HTMLElement>
+  scrollRef: RefObject<HTMLElement | null>
   /**
    * Whether user is near bottom
    */

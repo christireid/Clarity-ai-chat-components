@@ -248,6 +248,8 @@ export function useRealisticTyping(
         }
 
         const stage = stages[currentStageIndex]
+        if (!stage) return
+
         setCurrentStage(stage)
         setStageProgress(0)
         onStageChange?.(stage)

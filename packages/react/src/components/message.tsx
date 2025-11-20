@@ -245,7 +245,6 @@ export function Message({
             {isUser ? (
               <p className="m-0 whitespace-pre-wrap text-foreground">{message.content}</p>
             ) : (
-              // @ts-expect-error - ReactMarkdown v9 has type compatibility issues
               <ReactMarkdown
                 remarkPlugins={remarkPlugins}
                 rehypePlugins={rehypePlugins}

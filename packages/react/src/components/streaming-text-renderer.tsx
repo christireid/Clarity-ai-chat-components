@@ -59,7 +59,7 @@ export function StreamingTextRenderer({
 }: StreamingTextRendererProps) {
   const [displayedText, setDisplayedText] = React.useState('')
   const [isAnimating, setIsAnimating] = React.useState(false)
-  const animationRef = React.useRef<number>()
+  const animationRef = React.useRef<number | undefined>(undefined)
   const previousTextRef = React.useRef('')
 
   // Handle streaming updates
@@ -97,9 +97,12 @@ export function StreamingTextRenderer({
       let chunkIndex = 0
       const displayChunk = () => {
         if (chunkIndex < chunks.length) {
+          const chunk = chunks[chunkIndex]
+          if (!chunk) return
+
           setDisplayedText((prev) => {
-            const updated = prev + chunks[chunkIndex]
-            chunks[chunkIndex].split('').forEach((char: string, idx: number) => {
+            const updated = prev + chunk
+            chunk.split('').forEach((char: string, idx: number) => {
               onCharacterDisplayed?.(char, prev.length + idx)
             })
             return updated
@@ -118,6 +121,8 @@ export function StreamingTextRenderer({
       const displayChar = () => {
         if (charIndex < newContent.length && text.length > displayedText.length + charIndex) {
           const char = newContent[charIndex]
+          if (!char) return
+
           setDisplayedText((prev) => {
             const updated = prev + char
             onCharacterDisplayed?.(char, prev.length)

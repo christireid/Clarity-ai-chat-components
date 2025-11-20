@@ -96,11 +96,14 @@ export class CachedEmbeddingProvider implements EmbeddingProvider {
     const uncachedIndices: number[] = []
 
     for (let i = 0; i < texts.length; i++) {
-      const cached = await this.cache.get(texts[i], model)
+      const text = texts[i]
+      if (!text) continue
+
+      const cached = await this.cache.get(text, model)
       if (cached) {
         embeddings[i] = cached
       } else {
-        uncachedTexts.push(texts[i])
+        uncachedTexts.push(text)
         uncachedIndices.push(i)
       }
     }
@@ -118,6 +121,8 @@ export class CachedEmbeddingProvider implements EmbeddingProvider {
         const text = uncachedTexts[i]
         const index = uncachedIndices[i]
 
+        if (!embedding || !text || index === undefined) continue
+
         await this.cache.set(text, model, embedding)
         embeddings[index] = embedding
       }
@@ -129,10 +134,11 @@ export class CachedEmbeddingProvider implements EmbeddingProvider {
     }
 
     // All were cached
+    const firstEmbedding = embeddings[0]
     return {
       embeddings,
       model,
-      dimension: embeddings[0].length,
+      dimension: firstEmbedding?.length ?? 0,
     }
   }
 
@@ -203,9 +209,11 @@ export const EmbeddingUtils = {
     let normB = 0
 
     for (let i = 0; i < a.length; i++) {
-      dotProduct += a[i] * b[i]
-      normA += a[i] * a[i]
-      normB += b[i] * b[i]
+      const aVal = a[i] ?? 0
+      const bVal = b[i] ?? 0
+      dotProduct += aVal * bVal
+      normA += aVal * aVal
+      normB += bVal * bVal
     }
 
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))

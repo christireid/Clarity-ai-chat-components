@@ -199,15 +199,16 @@ export function NetworkStatus({
     if ('connection' in navigator) {
       const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection
       if (connection) {
-        setDownlinkSpeed(connection.downlink)
+        setDownlinkSpeed(connection.downlink ?? null)
 
         // Check effective connection type
+        const effectiveType = connection.effectiveType as '2g' | '3g' | '4g' | 'slow-2g' | undefined
         if (
-          connection.effectiveType === 'slow-2g' ||
-          connection.effectiveType === '2g'
+          effectiveType === 'slow-2g' ||
+          effectiveType === '2g'
         ) {
           setInternalStatus('slow')
-        } else if (connection.effectiveType === '3g') {
+        } else if (effectiveType === '3g') {
           setInternalStatus('unstable')
         }
       }
@@ -229,8 +230,8 @@ export function NetworkStatus({
     // Listen to connection changes (if supported)
     if ('connection' in navigator) {
       const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection
-      if (connection) {
-        connection.addEventListener('change', updateConnectionInfo)
+      if (connection && 'addEventListener' in connection) {
+        (connection as any).addEventListener('change', updateConnectionInfo)
       }
     }
 
@@ -243,8 +244,8 @@ export function NetworkStatus({
 
       if ('connection' in navigator) {
         const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection
-        if (connection) {
-          connection.removeEventListener('change', updateConnectionInfo)
+        if (connection && 'removeEventListener' in connection) {
+          (connection as any).removeEventListener('change', updateConnectionInfo)
         }
       }
 

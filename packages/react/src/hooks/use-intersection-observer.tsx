@@ -12,7 +12,7 @@ export interface UseIntersectionObserverReturn {
   /**
    * Ref to attach to element
    */
-  ref: React.RefObject<HTMLElement>
+  ref: React.RefObject<HTMLElement | null>
   /**
    * IntersectionObserver entry
    */

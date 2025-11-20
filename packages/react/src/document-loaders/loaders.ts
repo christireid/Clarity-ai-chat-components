@@ -138,9 +138,10 @@ export class CSVLoader implements DocumentLoader {
     
     const separator = options?.separator || ','
     const hasHeader = options?.hasHeader !== false
-    
+
     const lines = content.trim().split('\n')
-    const headers = hasHeader ? lines[0].split(separator) : null
+    const firstLine = lines[0]
+    const headers = hasHeader && firstLine ? firstLine.split(separator) : null
     const dataLines = hasHeader ? lines.slice(1) : lines
     
     // Convert to readable text

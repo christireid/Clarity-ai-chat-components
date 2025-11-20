@@ -247,7 +247,7 @@ export function useErrorRecovery<T = any>(
   const getDelay = React.useCallback(
     (attempt: number): number => {
       const index = Math.min(attempt - 1, backoffMs.length - 1)
-      return backoffMs[index]
+      return backoffMs[index] ?? 1000
     },
     [backoffMs]
   )

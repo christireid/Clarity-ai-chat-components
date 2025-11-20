@@ -112,7 +112,7 @@ export function CitationCard({
               {citation.source}
             </CardTitle>
             {(() => {
-              const author = citation.metadata?.author
+              const author = citation.metadata?.['author']
               if (!author) return null
               const authorText = renderMetadataValue(author)
               if (!authorText) return null
@@ -207,21 +207,21 @@ export function CitationCard({
               </span>
               <div className="flex flex-wrap gap-2">
                 {(() => {
-                  const date = citation.metadata?.date
+                  const date = citation.metadata?.['date']
                   if (!date) return null
                   const dateText = renderMetadataValue(date)
                   if (!dateText) return null
                   return <Badge variant="outline">{dateText}</Badge>
                 })()}
                 {(() => {
-                  const page = citation.metadata?.page
+                  const page = citation.metadata?.['page']
                   if (!page) return null
                   const pageText = renderMetadataValue(page)
                   if (!pageText) return null
                   return <Badge variant="outline">Page {pageText}</Badge>
                 })()}
                 {(() => {
-                  const section = citation.metadata?.section
+                  const section = citation.metadata?.['section']
                   if (!section) return null
                   const sectionText = renderMetadataValue(section)
                   if (!sectionText) return null
