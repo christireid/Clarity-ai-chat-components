@@ -245,8 +245,10 @@ export class SlidingContextManager {
     // Keep messages from newest, fitting as many as possible
     for (let i = messages.length - 1; i >= 0; i--) {
       const msg = messages[i]
+      if (!msg) continue
+
       const msgTokens = this.config.countTokens(msg.content)
-      
+
       if (tokens + msgTokens <= maxTokens) {
         kept.unshift(msg)
         tokens += msgTokens
@@ -289,27 +291,29 @@ export class SlidingContextManager {
 
     // Keep first and last sentences, plus key middle ones
     const keySentences: string[] = []
-    
-    if (sentences.length > 0) {
+
+    if (sentences.length > 0 && sentences[0]) {
       keySentences.push(sentences[0])
     }
-    
-    if (sentences.length > 1) {
+
+    if (sentences.length > 1 && sentences[sentences.length - 1]) {
       keySentences.push(sentences[sentences.length - 1])
     }
-    
+
     // Add middle sentences if space allows
     const middleStart = Math.floor(sentences.length / 3)
     const middleEnd = Math.floor((sentences.length * 2) / 3)
-    
+
     for (let i = middleStart; i < middleEnd && i < sentences.length; i++) {
       const sentence = sentences[i]
+      if (!sentence) continue
+
       const sentenceTokens = this.config.countTokens(sentence)
       const currentTokens = keySentences.reduce(
         (sum, s) => sum + this.config.countTokens(s),
         0
       )
-      
+
       if (currentTokens + sentenceTokens <= maxTokens) {
         keySentences.push(sentence)
       } else {

@@ -13,7 +13,6 @@
     "@anthropic-ai/sdk": "^0.32.1",
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/types": "workspace:*",
-    "@heroicons/react": "^2.2.0",
     "@pinecone-database/pinecone": "^4.0.0",
     "@types/prismjs": "^1.26.5",
     "@upstash/redis": "^1.35.6",

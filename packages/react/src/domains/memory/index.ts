@@ -29,7 +29,8 @@ export {
 // } from '../../memory/use-sliding-context-manager'
 
 // Low-level: Primitives
-export * from '../../utils/memory'
+// TODO: Re-enable once utils/memory is implemented
+// export * from '../../utils/memory'
 
 // Re-export from memory package
 export * from '@clarity-chat/memory'

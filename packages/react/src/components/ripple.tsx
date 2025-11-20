@@ -49,11 +49,11 @@ export function useRipple({
       const rect = target.getBoundingClientRect()
 
       // Get click/touch position
-      const x = 'touches' in event 
-        ? event.touches[0].clientX - rect.left
+      const x = 'touches' in event
+        ? (event.touches[0]?.clientX ?? 0) - rect.left
         : event.clientX - rect.left
       const y = 'touches' in event
-        ? event.touches[0].clientY - rect.top
+        ? (event.touches[0]?.clientY ?? 0) - rect.top
         : event.clientY - rect.top
 
       // Calculate size (diameter to cover the entire element)

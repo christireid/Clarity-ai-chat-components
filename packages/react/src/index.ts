@@ -282,6 +282,18 @@ export * from './document-loaders'
 // AI Safety
 export * from './safety'
 
+// ✨ ENHANCED (2025): Comprehensive Security System
+export * from './security'
+export {
+  useSecurity,
+  useSecurityMonitor,
+  useSecureInput,
+  useSecureChat,
+  useSecurityEvents,
+  useSecurityStats,
+  useRateLimitStatus,
+} from './hooks/use-security'
+
 // Reranking
 export * from './reranking'
 

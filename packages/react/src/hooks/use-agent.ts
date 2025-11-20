@@ -116,7 +116,7 @@ export function useAgent(options: UseAgentOptions): UseAgentReturn {
       model,
       tools,
       api,
-      maxIterations: config?.maxIterations || 10,
+      maxIterations: config?.['maxIterations'] || 10,
       ...config,
     }
     agentRef.current = new ReactAgent(agentConfig)

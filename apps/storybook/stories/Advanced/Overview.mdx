@@ -1,0 +1,285 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid, StatusBadge } from '../../.storybook/blocks'
+
+<Meta title="Advanced/Overview" />
+
+# Advanced Features
+
+Enterprise-grade components and features for production AI applications. These components handle complex scenarios like AI agents, memory management, streaming, analytics, and enterprise requirements.
+
+## Categories
+
+### 🤖 AI & Agents
+
+Components for AI agent orchestration, tool invocations, and workflow management.
+
+**Components:**
+- AgentRunFeed - Agent execution feed and logs
+- ToolInvocationCard - Tool call visualization
+- PromptLibrary - Prompt management and templates
+- FollowUpSuggestions - AI-generated suggestions
+- WorkflowSuggestionList - Workflow recommendations
+
+**Use cases:**
+- Multi-agent systems
+- Tool-using AI
+- Workflow automation
+- Agent monitoring
+
+[Browse AI Components →](?path=/docs/advanced-ai-agentrunfeed--docs)
+
+---
+
+### 🧠 Memory & Context
+
+Components for managing conversation memory, context, and knowledge bases.
+
+**Components:**
+- MemoryInspector - Visualize conversation memory
+- ContextManager - Context window management
+- ContextVisualizer - Context visualization
+- KnowledgeBaseViewer - KB browsing and search
+- DocumentViewer - Document preview and annotation
+
+**Use cases:**
+- RAG applications
+- Context-aware chat
+- Knowledge management
+- Document Q&A
+
+[Browse Memory Components →](?path=/docs/advanced-memory-memoryinspector--docs)
+
+---
+
+### 🌊 Streaming & Real-time
+
+Components for handling streaming responses and real-time updates.
+
+**Components:**
+- StreamBlock - Streaming content block
+- StreamCancellation - Cancel streaming operations
+- StreamingTextRenderer - Real-time text rendering
+- StreamingExamples - Streaming patterns
+
+**Use cases:**
+- LLM streaming responses
+- Real-time collaboration
+- Live updates
+- WebSocket connections
+
+[Browse Streaming Components →](?path=/docs/advanced-streaming-streamblock--docs)
+
+---
+
+### 📊 Analytics & Monitoring
+
+Components for tracking usage, performance, and optimization.
+
+**Components:**
+- PerformanceDashboard - Performance metrics
+- AnalyticsDashboard - Usage analytics
+- UsageDashboard - API usage tracking
+- TokenOptimizationDashboard - Token optimization
+- TokenOptimizationPanel - Token management
+- TokenOptimizationBadge - Token indicators
+
+**Use cases:**
+- Performance monitoring
+- Cost tracking
+- Usage analytics
+- Optimization insights
+
+[Browse Analytics Components →](?path=/docs/advanced-analytics-performancedashboard--docs)
+
+---
+
+### 🏢 Enterprise
+
+Enterprise features for authentication, multi-tenancy, security, and compliance.
+
+**Components:**
+- AuthTenantDashboard - Multi-tenant management
+- SSOConfigWizard - SSO configuration
+- SeatInviteDialog - Team invitations
+- ApiTokenManager - API token management
+- AuditLogViewer - Audit log viewing
+- SafetyReviewConsole - AI safety review
+- EvaluationDashboard - Model evaluation
+- BatchExportDialog - Bulk data export
+
+**Use cases:**
+- Enterprise deployments
+- Multi-tenant SaaS
+- Security compliance
+- Team collaboration
+
+[Browse Enterprise Components →](?path=/docs/advanced-enterprise-authtenantdashboard--docs)
+
+---
+
+## When to Use Advanced Features
+
+### Production Applications ✅
+- Multi-user systems
+- Enterprise requirements
+- Advanced AI features
+- Performance at scale
+
+### Simple Prototypes ❌
+- Basic chat demos
+- Personal projects
+- Simple use cases
+- MVP development
+
+---
+
+## Key Features
+
+<FeatureGrid
+  features={[
+    {
+      title: 'Enterprise Ready',
+      description: 'SSO, multi-tenancy, audit logs, and compliance features built-in.',
+      icon: <span className="text-2xl">🏢</span>,
+    },
+    {
+      title: 'AI-Powered',
+      description: 'Agent orchestration, tool invocations, and advanced AI workflows.',
+      icon: <span className="text-2xl">🤖</span>,
+    },
+    {
+      title: 'Performance',
+      description: 'Monitoring dashboards, token optimization, and analytics.',
+      icon: <span className="text-2xl">⚡</span>,
+    },
+    {
+      title: 'Real-time',
+      description: 'Streaming responses, WebSocket support, live updates.',
+      icon: <span className="text-2xl">🌊</span>,
+    },
+    {
+      title: 'Memory Management',
+      description: 'Context windows, RAG pipelines, knowledge base integration.',
+      icon: <span className="text-2xl">🧠</span>,
+    },
+    {
+      title: 'Security',
+      description: 'Authentication, authorization, audit logs, safety reviews.',
+      icon: <span className="text-2xl">🔒</span>,
+    },
+  ]}
+/>
+
+---
+
+## Component Status
+
+Most advanced features are marked as:
+- <StatusBadge status="stable" /> Production-ready, fully supported
+- <StatusBadge status="beta" /> In beta, API may change
+- <StatusBadge status="experimental" /> Early preview, use with caution
+
+Check each component's documentation for its current status.
+
+---
+
+## Common Patterns
+
+### Agent with Tools
+
+```tsx
+import { AgentRunFeed, ToolInvocationCard } from '@clarity-chat/react'
+
+function AgentInterface({ runs }) {
+  return (
+    <div>
+      <AgentRunFeed runs={runs} showTools />
+      {runs.map((run) =>
+        run.tools.map((tool) => (
+          <ToolInvocationCard
+            key={tool.id}
+            tool={tool}
+            showResult
+          />
+        ))
+      )}
+    </div>
+  )
+}
+```
+
+### RAG with Memory
+
+```tsx
+import { MemoryInspector, KnowledgeBaseViewer } from '@clarity-chat/react'
+
+function RAGChat({ memory, knowledgeBase }) {
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        {/* Chat interface */}
+      </div>
+      <div>
+        <MemoryInspector memory={memory} />
+        <KnowledgeBaseViewer kb={knowledgeBase} />
+      </div>
+    </div>
+  )
+}
+```
+
+### Streaming with Analytics
+
+```tsx
+import { StreamBlock, TokenOptimizationDashboard } from '@clarity-chat/react'
+
+function MonitoredChat({ content, isStreaming, tokens }) {
+  return (
+    <>
+      <TokenOptimizationDashboard tokens={tokens} />
+      <StreamBlock
+        content={content}
+        isStreaming={isStreaming}
+        onComplete={() => console.log('Stream complete')}
+      />
+    </>
+  )
+}
+```
+
+---
+
+## Best Practices
+
+### Security
+- Always validate user permissions
+- Use API tokens securely
+- Enable audit logging
+- Review AI safety guidelines
+
+### Performance
+- Monitor token usage
+- Optimize context windows
+- Use streaming for long responses
+- Cache frequently accessed data
+
+### Scalability
+- Design for multi-tenancy
+- Plan for data growth
+- Monitor performance metrics
+- Implement rate limiting
+
+### Compliance
+- Enable audit logs
+- Review data retention policies
+- Implement access controls
+- Follow security best practices
+
+---
+
+## Next Steps
+
+- **Browse by Category** - Explore AI, Memory, Streaming, Analytics, or Enterprise
+- **View Examples** - See complete application examples
+- **Read Patterns** - Learn composition patterns
+- **Check Best Practices** - Security and performance guidelines

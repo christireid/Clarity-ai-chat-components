@@ -177,7 +177,7 @@ export interface ChatWithErrorHandlingProps extends ClarityChatProps {
   /** Custom error fallback UI */
   errorFallback?: React.ReactNode | ((error: Error, reset: () => void) => React.ReactNode)
   /** Callback when error occurs */
-  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
+  onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
 }
 
 export function ChatWithErrorHandling({

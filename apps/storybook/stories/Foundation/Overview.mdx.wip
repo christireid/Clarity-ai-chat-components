@@ -1,0 +1,94 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Foundation/Overview" />
+
+# Foundation
+
+The Foundation layer defines the core design system primitives that power all Clarity Chat components. These are the building blocks that ensure consistency, accessibility, and visual excellence across the entire library.
+
+## Design Philosophy
+
+Clarity Chat's design system is built on these core principles:
+
+1. **Consistency** - Predictable patterns and behaviors across all components
+2. **Accessibility** - WCAG 2.1 AA compliance as a minimum standard
+3. **Flexibility** - Customizable through design tokens and theming
+4. **Performance** - Optimized for speed and efficiency
+5. **Modern** - Clean, professional aesthetic for enterprise applications
+
+## Foundation Elements
+
+### 🎨 Colors & Themes
+11+ pre-built themes with full dark mode support. Semantic color system with HSL variables for maximum flexibility.
+
+### 📝 Typography
+Carefully crafted type scale with Inter and JetBrains Mono. Optimized for readability and hierarchy.
+
+### 📐 Spacing & Layout
+Consistent spacing scale based on Tailwind CSS. Grid system and layout primitives for responsive design.
+
+### ✨ Motion & Animation
+Purposeful animations that enhance UX without distracting. Respects prefers-reduced-motion.
+
+### 🎯 Iconography
+Lucide React icons throughout. Consistent sizing and visual weight for a cohesive experience.
+
+### ♿ Accessibility
+Built-in accessibility features including keyboard navigation, ARIA labels, and screen reader support.
+
+## Using Foundation Elements
+
+All foundation elements are exposed through design tokens that can be customized:
+
+\`\`\`tsx
+import { ThemeProvider } from '@clarity-chat/react'
+
+function App() {
+  return (
+    <ThemeProvider
+      defaultTheme={{
+        mode: 'light', // or 'dark' or 'system'
+        preset: 'clarity-light', // or any other theme
+      }}
+    >
+      <YourApp />
+    </ThemeProvider>
+  )
+}
+\`\`\`
+
+## Design Tokens
+
+Foundation elements are implemented as CSS custom properties (variables) that can be overridden:
+
+\`\`\`css
+:root {
+  /* Colors */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 221.2 83.2% 53.3%;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Spacing */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-4: 1rem;
+
+  /* Border Radius */
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+\`\`\`
+
+## Next Steps
+
+Explore each foundation element in detail:
+
+- **Colors & Themes** - Complete color palette and theme system
+- **Typography** - Type scale, weights, and usage guidelines
+- **Spacing & Layout** - Spacing scale and layout patterns
+- **Motion & Animation** - Animation principles and transitions
+- **Iconography** - Icon library and usage guidelines

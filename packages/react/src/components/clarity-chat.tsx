@@ -65,8 +65,18 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   autoScroll?: boolean
   /** Callback when a message is copied */
   onMessageCopy?: (id: string, content: string) => void
+  /** Callback when message feedback is provided */
+  onMessageFeedback?: (messageId: string, feedbackType: 'positive' | 'negative') => void
   /** Theme for the chat interface */
   theme?: string
+  /** Show token counter in input */
+  showTokenCounter?: boolean
+  /** Show network status indicator */
+  showNetworkStatus?: boolean
+  /** Enable message operations (edit, delete, branch) */
+  enableMessageOperations?: boolean
+  /** Memory strategy for conversation context */
+  memoryStrategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
   /** Error handler with error info */
   onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
 }

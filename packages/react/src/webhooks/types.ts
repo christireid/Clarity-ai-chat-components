@@ -81,7 +81,13 @@ export interface WebhookHandler {
 
   /**
    * Verify webhook signature
+   * Can be sync or async to support both simple and cryptographic implementations
    */
-  verifySignature?(payload: string, signature: string, secret: string): boolean
+  verifySignature?(
+    payload: string,
+    signature: string,
+    secret: string,
+    timestamp?: number
+  ): boolean | Promise<boolean>
 }
 

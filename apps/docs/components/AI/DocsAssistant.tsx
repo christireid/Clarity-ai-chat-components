@@ -7,6 +7,7 @@ import { ChatWindow, FollowUpSuggestions, useToast, type FollowUpSuggestion } fr
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
 import { FeedbackButtons } from './FeedbackButtons'
+import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { cn } from '@/lib/utils'
 
 interface DocsAssistantProps {
@@ -65,40 +66,77 @@ const SUGGESTED_QUESTIONS: FollowUpSuggestion[] = [
 function DocsAssistantEmptyState({ onSelectSuggestion }: { onSelectSuggestion: (suggestion: FollowUpSuggestion) => void }) {
   return (
     <motion.div
-      className="flex flex-col items-center justify-center h-full p-6 space-y-6"
+      className="flex flex-col items-center justify-center h-full p-6 space-y-8 relative overflow-hidden"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      {/* Icon */}
+      {/* Animated Background Gradient */}
       <motion.div
-        className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-600/10 shadow-lg ring-1 ring-brand-500/30"
+        className="absolute inset-0 bg-gradient-to-br from-brand-500/5 via-transparent to-brand-600/5"
         animate={{
-          scale: [1, 1.05, 1],
-          rotate: [0, 2, -2, 0],
+          opacity: [0.3, 0.5, 0.3],
         }}
         transition={{
-          duration: 3,
+          duration: 4,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
+      />
+
+      {/* Icon */}
+      <motion.div
+        className="relative inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-brand-500/20 to-brand-600/10 shadow-xl ring-1 ring-brand-500/30"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{
+          scale: [0.8, 1, 1.05, 1],
+          opacity: 1,
+        }}
+        transition={{
+          duration: 0.6,
+          times: [0, 0.5, 0.7, 1],
+          ease: [0.25, 0.1, 0.25, 1],
+        }}
       >
-        <BookOpen className="w-10 h-10 text-brand-600" />
+        {/* Glow effect */}
+        <motion.div
+          className="absolute inset-0 rounded-3xl bg-brand-500/20 blur-xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.5, 0.8, 0.5],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        <BookOpen className="w-12 h-12 text-brand-600 relative z-10" />
       </motion.div>
 
       {/* Content */}
-      <div className="space-y-2 text-center max-w-md">
-        <h3 className="text-xl font-semibold text-foreground">
+      <motion.div
+        className="space-y-3 text-center max-w-md relative z-10"
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+      >
+        <h3 className="text-2xl font-bold text-foreground">
           Clarity Chat Documentation Assistant
         </h3>
         <p className="text-sm text-muted-foreground leading-relaxed">
           I'm here to help you navigate the documentation and answer questions about Clarity Chat.
           Ask me anything about components, hooks, examples, or best practices.
         </p>
-      </div>
+      </motion.div>
 
       {/* Suggestions */}
-      <div className="w-full max-w-2xl">
+      <motion.div
+        className="w-full max-w-2xl relative z-10"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
         <FollowUpSuggestions
           suggestions={SUGGESTED_QUESTIONS}
           onSelect={onSelectSuggestion}
@@ -106,7 +144,7 @@ function DocsAssistantEmptyState({ onSelectSuggestion }: { onSelectSuggestion: (
           subtitle="Try asking about these topics"
           layout="grid"
         />
-      </div>
+      </motion.div>
     </motion.div>
   )
 }
@@ -116,21 +154,67 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [aiStatus, setAiStatus] = useState<AIStatus | undefined>(undefined)
+  const [showShortcuts, setShowShortcuts] = useState(false)
   const sessionIdRef = useRef<string>('')
+  const dialogRef = useRef<HTMLDivElement>(null)
   const toast = useToast()
 
-  // Initialize session ID on mount
+  // Initialize session ID and restore conversation history
   useEffect(() => {
     sessionIdRef.current = getOrCreateSessionId()
+
+    // Restore conversation history from localStorage
+    try {
+      const savedMessages = localStorage.getItem('clarity-docs-assistant-messages')
+      if (savedMessages) {
+        const parsed = JSON.parse(savedMessages)
+        // Only restore if messages were saved in the last 24 hours
+        if (parsed.timestamp && Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+          setMessages(parsed.messages || [])
+        }
+      }
+    } catch (error) {
+      console.error('Failed to restore conversation history:', error)
+    }
   }, [])
+
+  // Save conversation history to localStorage
+  useEffect(() => {
+    if (messages.length > 0) {
+      try {
+        localStorage.setItem(
+          'clarity-docs-assistant-messages',
+          JSON.stringify({
+            messages,
+            timestamp: Date.now(),
+          })
+        )
+      } catch (error) {
+        console.error('Failed to save conversation history:', error)
+      }
+    }
+  }, [messages])
 
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyboard = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      const target = e.target as HTMLElement
+      const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'
+
       // Cmd/Ctrl+K to toggle chat
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
-        setIsOpen((prev) => !prev)
+        const willOpen = !isOpen
+        setIsOpen(willOpen)
+        if (willOpen) {
+          toast.info('Press Escape or Cmd+K to close', 'Documentation Assistant', 3000)
+        }
+      }
+      // ? to show shortcuts help (only when not typing)
+      else if (e.key === '?' && !isTyping && isOpen) {
+        e.preventDefault()
+        setShowShortcuts(true)
       }
       // Escape to close
       else if (e.key === 'Escape' && isOpen) {
@@ -140,6 +224,53 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
 
     window.addEventListener('keydown', handleKeyboard)
     return () => window.removeEventListener('keydown', handleKeyboard)
+  }, [isOpen, toast])
+
+  // Focus management: Focus first input when dialog opens
+  useEffect(() => {
+    if (isOpen && dialogRef.current) {
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        const textarea = dialogRef.current?.querySelector('textarea')
+        if (textarea) {
+          textarea.focus()
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen])
+
+  // Focus trap: Keep focus within dialog when open
+  useEffect(() => {
+    if (!isOpen || !dialogRef.current) return
+
+    const dialog = dialogRef.current
+    const focusableElements = dialog.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    const firstFocusable = focusableElements[0] as HTMLElement
+    const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement
+
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstFocusable) {
+          e.preventDefault()
+          lastFocusable?.focus()
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastFocusable) {
+          e.preventDefault()
+          firstFocusable?.focus()
+        }
+      }
+    }
+
+    dialog.addEventListener('keydown', handleTabKey as EventListener)
+    return () => dialog.removeEventListener('keydown', handleTabKey as EventListener)
   }, [isOpen])
 
   const handleSendMessage = async (content: string) => {
@@ -285,14 +416,17 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
     } catch (error) {
       console.error('Chat error:', error)
 
+      const errorMsg = error instanceof Error ? error.message : 'Please try again.'
+
+      // Show error toast
+      toast.error(errorMsg, 'Failed to get response')
+
       // Add error message
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
         chatId: 'docs-assistant',
         role: 'assistant',
-        content: `I encountered an error while processing your request. ${
-          error instanceof Error ? error.message : 'Please try again.'
-        }`,
+        content: `I encountered an error while processing your request. ${errorMsg}`,
         createdAt: new Date(),
         updatedAt: new Date(),
         status: 'error',
@@ -303,6 +437,64 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       setAiStatus(undefined)
     }
   }
+
+  // Handle message copy
+  const handleMessageCopy = useCallback(async (messageId: string, content: string) => {
+    try {
+      await navigator.clipboard.writeText(content)
+      toast.success('Message copied to clipboard')
+    } catch (error) {
+      console.error('Failed to copy message:', error)
+      toast.error('Failed to copy message')
+    }
+  }, [toast])
+
+  // Handle message retry
+  const handleMessageRetry = useCallback((messageId: string) => {
+    // Find the user message before the failed message
+    const messageIndex = messages.findIndex((m) => m.id === messageId)
+    if (messageIndex > 0) {
+      const previousMessage = messages[messageIndex - 1]
+      if (previousMessage.role === 'user') {
+        // Remove the error message and retry
+        setMessages((prev) => prev.filter((m) => m.id !== messageId))
+        handleSendMessage(previousMessage.content)
+        toast.info('Retrying message...')
+      }
+    }
+  }, [messages, toast])
+
+  // Handle export conversation
+  const handleExport = useCallback(() => {
+    try {
+      // Format conversation as markdown
+      let markdown = '# Clarity Chat Documentation Assistant\n\n'
+      markdown += `Exported: ${new Date().toLocaleString()}\n\n`
+      markdown += '---\n\n'
+
+      messages.forEach((message) => {
+        const role = message.role === 'user' ? 'You' : 'Assistant'
+        const timestamp = new Date(message.createdAt).toLocaleTimeString()
+        markdown += `## ${role} (${timestamp})\n\n${message.content}\n\n`
+      })
+
+      // Create blob and download
+      const blob = new Blob([markdown], { type: 'text/markdown' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `clarity-chat-${Date.now()}.md`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      toast.success('Conversation exported')
+    } catch (error) {
+      console.error('Failed to export conversation:', error)
+      toast.error('Failed to export conversation')
+    }
+  }, [messages, toast])
 
   const handleSelectSuggestion = (suggestion: FollowUpSuggestion) => {
     handleSendMessage(suggestion.title)
@@ -331,11 +523,16 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         throw new Error(`Feedback submission failed: ${response.status}`)
       }
 
-      console.log(`✅ Feedback submitted: ${type} for message ${messageId}`)
+      toast.success(
+        type === 'positive'
+          ? 'Thanks for your feedback!'
+          : 'Feedback received. We\'ll work on improving.'
+      )
     } catch (error) {
       console.error('Failed to submit feedback:', error)
+      toast.error('Failed to submit feedback. Please try again.')
     }
-  }, [])
+  }, [toast])
 
   // Custom message renderer with feedback buttons
   const renderMessageWithFeedback = useCallback((message: Message) => {
@@ -367,29 +564,54 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            ref={dialogRef}
+            initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            exit={{ opacity: 0, scale: 0.96, y: 20 }}
+            transition={{
+              duration: 0.25,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
             className={cn(
-              'fixed inset-4 md:inset-8 lg:right-8 lg:left-auto lg:w-[600px] xl:w-[700px] z-[70]',
+              // Mobile: Full screen with small padding
+              'fixed inset-2 sm:inset-4 md:inset-6',
+              // Desktop: Positioned right with fixed width
+              'lg:right-6 lg:left-auto lg:top-6 lg:bottom-6 lg:w-[640px] xl:w-[720px]',
+              'z-[70]',
               'flex flex-col',
-              'rounded-2xl shadow-2xl overflow-hidden',
+              'rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden',
               'bg-white dark:bg-gray-900',
-              'border border-gray-200 dark:border-gray-800',
+              'border border-gray-200/80 dark:border-gray-800',
+              // Improve touch interactions on mobile
+              'touch-manipulation',
               className
             )}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="docs-assistant-title"
+            aria-describedby="docs-assistant-description"
           >
             <ChatWindow
               messages={messages}
               isLoading={isLoading}
               aiStatus={aiStatus}
               onSendMessage={handleSendMessage}
+              onMessageCopy={handleMessageCopy}
+              onMessageRetry={handleMessageRetry}
               showHeader
               sessionTitle="Documentation Assistant"
               sessionSubtitle="Powered by Clarity Chat"
               showMessageCount
-              onClear={messages.length > 0 ? () => setMessages([]) : undefined}
+              onExport={messages.length > 0 ? handleExport : undefined}
+              onClear={
+                messages.length > 0
+                  ? () => {
+                      setMessages([])
+                      localStorage.removeItem('clarity-docs-assistant-messages')
+                      toast.info('Conversation cleared')
+                    }
+                  : undefined
+              }
               emptyState={<DocsAssistantEmptyState onSelectSuggestion={handleSelectSuggestion} />}
               className="h-full flex flex-col"
             />
@@ -404,13 +626,20 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/30 backdrop-blur-md z-[60]"
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 bg-black/40 sm:bg-black/30 backdrop-blur-sm sm:backdrop-blur-md z-[60]"
             onClick={() => setIsOpen(false)}
             style={{ backdropFilter: 'blur(8px)' }}
+            aria-hidden="true"
           />
         )}
       </AnimatePresence>
+
+      {/* Keyboard Shortcuts Help */}
+      <KeyboardShortcutsHelp
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
+      />
     </>
   )
 }

@@ -332,6 +332,6 @@ export function CustomCompositionWorkflow() {
   )
 }
 
-// Type imports (for reference)
-import type { ClarityChat } from '../components/clarity-chat'
-import type { ClarityChatPresets } from '../components/clarity-chat-presets'
+// Component imports (used as values)
+import { ClarityChat } from '../components/clarity-chat'
+import { ClarityChatPresets } from '../components/clarity-chat-presets'

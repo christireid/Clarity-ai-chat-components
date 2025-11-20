@@ -157,7 +157,7 @@ export function ChatWithTools() {
       {/* Render tool results */}
       <div className="tool-results">
         {toolResults.map((result, idx) => {
-          const Component = toolRegistry.get(result.toolCall.function.name)
+          const Component = toolRegistry['get'](result.toolCall.function.name)
           return Component ? (
             <Component key={idx} result={result.result} />
           ) : null

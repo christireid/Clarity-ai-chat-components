@@ -269,7 +269,7 @@ export function createBugsnagProvider(config: BugsnagConfig): ErrorProvider {
 
     setUser: (userId: string, email?: string, userData?: Record<string, any>) => {
       if (!Bugsnag) return
-      Bugsnag.setUser(userId, email, userData?.name)
+      Bugsnag.setUser(userId, email, userData?.['name'])
       if (userData) {
         Bugsnag.addMetadata('user', userData)
       }

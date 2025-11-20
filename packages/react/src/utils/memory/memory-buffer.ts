@@ -66,11 +66,14 @@ export class MemoryBuffer {
     const tokens = this.estimateTokens(summary)
 
     // Store compressed version
+    const firstMessage = messagesToCompress[0]
+    const lastMessage = messagesToCompress[messagesToCompress.length - 1]
+
     this.compressedHistory.push({
       summary,
       timestampRange: {
-        start: messagesToCompress[0].timestamp,
-        end: messagesToCompress[messagesToCompress.length - 1].timestamp,
+        start: firstMessage?.timestamp ?? Date.now(),
+        end: lastMessage?.timestamp ?? Date.now(),
       },
       messageCount: messagesToCompress.length,
       topics: this.extractTopics(messagesToCompress),
@@ -152,10 +155,10 @@ export class MemoryBuffer {
     // Simple extraction: first sentence or key phrases
     const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 10)
     if (sentences.length === 0) return ''
-    
+
     // Return first meaningful sentence, truncated
-    const firstSentence = sentences[0].trim()
-    return firstSentence.length > 100 
+    const firstSentence = sentences[0]?.trim() ?? ''
+    return firstSentence.length > 100
       ? firstSentence.substring(0, 100) + '...'
       : firstSentence
   }
@@ -192,10 +195,11 @@ export class MemoryBuffer {
       const now = new Date()
       return { start: now, end: now }
     }
-    
+
+    const now = new Date()
     return {
-      start: messages[0].timestamp,
-      end: messages[messages.length - 1].timestamp,
+      start: messages[0]?.timestamp ?? now,
+      end: messages[messages.length - 1]?.timestamp ?? now,
     }
   }
 

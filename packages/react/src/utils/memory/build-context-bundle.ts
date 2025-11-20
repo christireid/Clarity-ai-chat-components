@@ -59,7 +59,7 @@ export function buildContextBundle(
 
   // Filter memories by threshold
   const relevantMemories = memories.filter(
-    (mem) => (mem.metadata?.relevance || 0) >= memoryThreshold
+    (mem) => (mem.metadata?.['relevance'] || 0) >= memoryThreshold
   )
 
   // Build combined text

@@ -205,12 +205,12 @@ export class TokenBudgetManager {
    */
   distributeTokens(totalMemories: number, byType: Record<string, number>): Record<string, number> {
     const distribution: Record<string, number> = {}
-    
+
     // Base allocation
-    distribution.episodic = this.allocation.episodicMemory
-    distribution.semantic = this.allocation.semanticMemory
-    distribution.shortTerm = this.allocation.recentContext
-    distribution.procedural = Math.floor(this.allocation.semanticMemory * 0.2)
+    distribution['episodic'] = this.allocation.episodicMemory
+    distribution['semantic'] = this.allocation.semanticMemory
+    distribution['shortTerm'] = this.allocation.recentContext
+    distribution['procedural'] = Math.floor(this.allocation.semanticMemory * 0.2)
 
     return distribution
   }

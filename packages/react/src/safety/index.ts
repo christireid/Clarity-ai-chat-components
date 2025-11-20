@@ -41,6 +41,10 @@ export * from './pii-detection'
 export * from './content-filter'
 export * from './prompt-injection'
 
+// ✨ ENHANCED (2025): Advanced security features
+export * from './prompt-injection-enhanced'
+export * from './jailbreak-prevention'
+
 import type { SafetyResult, SafetyGuardrail, SafetyCheck } from './types'
 
 /**

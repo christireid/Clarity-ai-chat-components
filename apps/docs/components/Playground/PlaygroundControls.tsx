@@ -1,14 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
-import {
-  ShareIcon,
-  DocumentArrowDownIcon,
-  CodeBracketIcon,
-  ArrowTopRightOnSquareIcon
-  // @ts-expect-error - @heroicons/react is an optional dependency for playground functionality
-} from '@heroicons/react/24/outline'
+import React, { useState, useEffect } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Share2, Download, Code2, ExternalLink, Check, X } from 'lucide-react'
 import { useToast } from '@clarity-chat/react'
+import { cn } from '@/lib/utils'
 
 interface PlaygroundControlsProps {
   code: string
@@ -23,36 +19,62 @@ export function PlaygroundControls({
 }: PlaygroundControlsProps) {
   const [showShareModal, setShowShareModal] = useState(false)
   const [copied, setCopied] = useState(false)
-  const { success } = useToast()
+  const [isExporting, setIsExporting] = useState(false)
+  const toast = useToast()
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyboard = (e: KeyboardEvent) => {
+      // Cmd/Ctrl+S to download
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault()
+        handleDownload()
+      }
+      // Escape to close modal
+      else if (e.key === 'Escape' && showShareModal) {
+        setShowShareModal(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyboard)
+    return () => window.removeEventListener('keydown', handleKeyboard)
+  }, [showShareModal])
 
   const handleCopyCode = async () => {
-    await navigator.clipboard.writeText(code)
-    setCopied(true)
-    success('Code copied to clipboard')
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      toast.success('Code copied to clipboard')
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      toast.error('Failed to copy code')
+    }
   }
 
   const handleShare = () => {
     setShowShareModal(true)
   }
 
-  const handleExportCodeSandbox = () => {
-    const parameters = {
-      files: {
-        'package.json': {
-          content: JSON.stringify({
-            name: templateName.toLowerCase().replace(/\s+/g, '-'),
-            version: '1.0.0',
-            dependencies: {
-              'react': '^18.2.0',
-              'react-dom': '^18.2.0',
-              '@clarity-chat/react': 'latest',
-              ...dependencies
-            }
-          }, null, 2)
-        },
-        'index.html': {
-          content: `<!DOCTYPE html>
+  const handleExportCodeSandbox = async () => {
+    try {
+      setIsExporting(true)
+
+      const parameters = {
+        files: {
+          'package.json': {
+            content: JSON.stringify({
+              name: templateName.toLowerCase().replace(/\s+/g, '-'),
+              version: '1.0.0',
+              dependencies: {
+                'react': '^18.2.0',
+                'react-dom': '^18.2.0',
+                '@clarity-chat/react': 'latest',
+                ...dependencies
+              }
+            }, null, 2)
+          },
+          'index.html': {
+            content: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -63,9 +85,9 @@ export function PlaygroundControls({
   <div id="root"></div>
 </body>
 </html>`
-        },
-        'index.tsx': {
-          content: `import React from 'react'
+          },
+          'index.tsx': {
+            content: `import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import '@clarity-chat/react/styles.css'
@@ -75,27 +97,34 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <App />
   </React.StrictMode>
 )`
-        },
-        'App.tsx': {
-          content: code
+          },
+          'App.tsx': {
+            content: code
+          }
         }
       }
+
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = 'https://codesandbox.io/api/v1/sandboxes/define'
+      form.target = '_blank'
+
+      const input = document.createElement('input')
+      input.type = 'hidden'
+      input.name = 'parameters'
+      input.value = JSON.stringify(parameters)
+
+      form.appendChild(input)
+      document.body.appendChild(form)
+      form.submit()
+      document.body.removeChild(form)
+
+      toast.success('Opening in CodeSandbox...')
+    } catch (error) {
+      toast.error('Failed to export to CodeSandbox')
+    } finally {
+      setTimeout(() => setIsExporting(false), 1000)
     }
-
-    const form = document.createElement('form')
-    form.method = 'POST'
-    form.action = 'https://codesandbox.io/api/v1/sandboxes/define'
-    form.target = '_blank'
-
-    const input = document.createElement('input')
-    input.type = 'hidden'
-    input.name = 'parameters'
-    input.value = JSON.stringify(parameters)
-
-    form.appendChild(input)
-    document.body.appendChild(form)
-    form.submit()
-    document.body.removeChild(form)
   }
 
   const handleDownload = () => {
@@ -121,7 +150,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           onClick={handleCopyCode}
           className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
         >
-          <CodeBracketIcon className="w-4 h-4" />
+          <Code2 className="w-4 h-4" />
           {copied ? 'Copied!' : 'Copy Code'}
         </button>
 
@@ -129,7 +158,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           onClick={handleDownload}
           className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
         >
-          <DocumentArrowDownIcon className="w-4 h-4" />
+          <Download className="w-4 h-4" />
           Download
         </button>
 
@@ -137,16 +166,29 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           onClick={handleShare}
           className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
         >
-          <ShareIcon className="w-4 h-4" />
+          <Share2 className="w-4 h-4" />
           Share
         </button>
 
         <button
           onClick={handleExportCodeSandbox}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+          disabled={isExporting}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-medium",
+            isExporting && "opacity-75 cursor-wait"
+          )}
         >
-          <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-          Open in CodeSandbox
+          {isExporting ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Exporting...
+            </>
+          ) : (
+            <>
+              <ExternalLink className="w-4 h-4" />
+              Open in CodeSandbox
+            </>
+          )}
         </button>
       </div>
 
@@ -171,10 +213,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               />
               <button
                 onClick={async () => {
-                  await navigator.clipboard.writeText(shareUrl)
-                  setCopied(true)
-                  success('Share link copied to clipboard')
-                  setTimeout(() => setCopied(false), 2000)
+                  try {
+                    await navigator.clipboard.writeText(shareUrl)
+                    setCopied(true)
+                    toast.success('Share link copied to clipboard')
+                    setTimeout(() => setCopied(false), 2000)
+                  } catch (error) {
+                    toast.error('Failed to copy share link')
+                  }
                 }}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
               >

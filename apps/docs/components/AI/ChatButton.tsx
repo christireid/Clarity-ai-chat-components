@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MessageSquare, X, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -11,25 +11,49 @@ interface ChatButtonProps {
 
 export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const [isMac, setIsMac] = useState(false)
+
+  // Detect if user is on Mac for keyboard shortcut display
+  useEffect(() => {
+    setIsMac(navigator.platform.toLowerCase().includes('mac'))
+  }, [])
 
   return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={cn(
-        'fixed bottom-6 right-6 z-50',
-        'flex items-center gap-2 px-4 py-3 rounded-full',
-        'bg-gradient-to-r from-brand-500 to-brand-600',
-        'text-white font-medium text-sm',
-        'shadow-lg hover:shadow-xl',
-        'transition-all duration-300 ease-out',
-        'hover:scale-105 active:scale-95',
-        'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2',
-        'group'
+    <div className="fixed bottom-6 right-6 z-50 group/container">
+      {/* Keyboard Shortcut Tooltip - Desktop only */}
+      {!isOpen && isHovered && (
+        <div
+          className={cn(
+            'hidden lg:block',
+            'absolute bottom-full right-0 mb-2',
+            'px-3 py-1.5 rounded-lg',
+            'bg-gray-900 dark:bg-gray-800 text-white text-xs font-medium',
+            'shadow-lg border border-gray-700',
+            'whitespace-nowrap',
+            'animate-in fade-in slide-in-from-bottom-2 duration-200'
+          )}
+        >
+          Press {isMac ? '⌘' : 'Ctrl'}+K
+          <div className="absolute bottom-0 right-4 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-gray-800 border-r border-b border-gray-700" />
+        </div>
       )}
-      aria-label={isOpen ? 'Close AI Assistant' : 'Open AI Assistant'}
-    >
+
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={cn(
+          'flex items-center gap-2 px-4 py-3 rounded-full',
+          'bg-gradient-to-r from-brand-500 to-brand-600',
+          'text-white font-medium text-sm',
+          'shadow-lg hover:shadow-xl',
+          'transition-all duration-300 ease-out',
+          'hover:scale-105 active:scale-95',
+          'focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2',
+          'group'
+        )}
+        aria-label={isOpen ? 'Close AI Assistant (Esc)' : `Open AI Assistant (${isMac ? 'Cmd' : 'Ctrl'}+K)`}
+      >
       {/* Icon Container */}
       <div className="relative">
         {isOpen ? (
@@ -67,6 +91,7 @@ export function ChatButton({ onClick, isOpen }: ChatButtonProps) {
           <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
         </span>
       )}
-    </button>
+      </button>
+    </div>
   )
 }

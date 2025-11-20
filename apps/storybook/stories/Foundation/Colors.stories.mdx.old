@@ -1,0 +1,203 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/blocks';
+
+<Meta title="Foundation/Colors & Themes" />
+
+# Colors & Themes
+
+Clarity Chat uses a comprehensive color system built on CSS variables, supporting 11+ pre-built themes with automatic dark mode.
+
+## Design Tokens
+
+Our color system is based on semantic tokens that adapt to different themes:
+
+### Base Colors
+
+<ColorPalette>
+  <ColorItem
+    title="Background"
+    subtitle="--background"
+    colors={{
+      'Light': 'hsl(0 0% 100%)',
+      'Dark': 'hsl(222.2 84% 4.9%)',
+    }}
+  />
+  <ColorItem
+    title="Foreground"
+    subtitle="--foreground"
+    colors={{
+      'Light': 'hsl(222.2 84% 4.9%)',
+      'Dark': 'hsl(210 40% 98%)',
+    }}
+  />
+</ColorPalette>
+
+### Semantic Colors
+
+<ColorPalette>
+  <ColorItem
+    title="Primary"
+    subtitle="--primary / --primary-foreground"
+    colors={{
+      'Primary': 'hsl(222.2 47.4% 11.2%)',
+      'Primary Foreground': 'hsl(210 40% 98%)',
+    }}
+  />
+  <ColorItem
+    title="Secondary"
+    subtitle="--secondary / --secondary-foreground"
+    colors={{
+      'Secondary': 'hsl(210 40% 96.1%)',
+      'Secondary Foreground': 'hsl(222.2 47.4% 11.2%)',
+    }}
+  />
+  <ColorItem
+    title="Destructive"
+    subtitle="--destructive / --destructive-foreground"
+    colors={{
+      'Destructive': 'hsl(0 84.2% 60.2%)',
+      'Destructive Foreground': 'hsl(210 40% 98%)',
+    }}
+  />
+  <ColorItem
+    title="Muted"
+    subtitle="--muted / --muted-foreground"
+    colors={{
+      'Muted': 'hsl(210 40% 96.1%)',
+      'Muted Foreground': 'hsl(215.4 16.3% 46.9%)',
+    }}
+  />
+  <ColorItem
+    title="Accent"
+    subtitle="--accent / --accent-foreground"
+    colors={{
+      'Accent': 'hsl(210 40% 96.1%)',
+      'Accent Foreground': 'hsl(222.2 47.4% 11.2%)',
+    }}
+  />
+</ColorPalette>
+
+### Component Colors
+
+<ColorPalette>
+  <ColorItem
+    title="Card"
+    subtitle="--card / --card-foreground"
+    colors={{
+      'Card': 'hsl(0 0% 100%)',
+      'Card Foreground': 'hsl(222.2 84% 4.9%)',
+    }}
+  />
+  <ColorItem
+    title="Popover"
+    subtitle="--popover / --popover-foreground"
+    colors={{
+      'Popover': 'hsl(0 0% 100%)',
+      'Popover Foreground': 'hsl(222.2 84% 4.9%)',
+    }}
+  />
+</ColorPalette>
+
+### Border & Input
+
+<ColorPalette>
+  <ColorItem
+    title="Border"
+    subtitle="--border"
+    colors={{ Border: 'hsl(214.3 31.8% 91.4%)' }}
+  />
+  <ColorItem
+    title="Input"
+    subtitle="--input"
+    colors={{ Input: 'hsl(214.3 31.8% 91.4%)' }}
+  />
+  <ColorItem
+    title="Ring"
+    subtitle="--ring (focus indicator)"
+    colors={{ Ring: 'hsl(222.2 84% 4.9%)' }}
+  />
+</ColorPalette>
+
+## Pre-built Themes
+
+Clarity Chat includes 11 professionally designed themes:
+
+1. **Default** - Clean, professional design
+2. **Ocean Blue** - Calm, trustworthy blue palette
+3. **Forest Green** - Natural, balanced green tones
+4. **Sunset Orange** - Warm, energetic orange hues
+5. **Royal Purple** - Elegant, sophisticated purple
+6. **Cherry Red** - Bold, attention-grabbing red
+7. **Midnight** - Dark, modern aesthetic
+8. **Pastel** - Soft, gentle pastel colors
+9. **High Contrast** - Maximum accessibility
+10. **Corporate** - Professional, business-focused
+11. **Minimalist** - Clean, distraction-free
+
+## Using Colors in Code
+
+### CSS Variables
+
+```css
+.my-component {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+.my-component:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+```
+
+### Tailwind Classes
+
+```tsx
+<div className="bg-background text-foreground border-border">
+  <button className="bg-primary text-primary-foreground hover:bg-primary/90">
+    Primary Button
+  </button>
+  <button className="bg-secondary text-secondary-foreground hover:bg-secondary/80">
+    Secondary Button
+  </button>
+</div>
+```
+
+## Dark Mode
+
+All themes automatically support dark mode. The color system switches based on the `.dark` class:
+
+```tsx
+// Theme switcher will toggle this class
+<html className="dark">
+  {/* All colors automatically adapt */}
+</html>
+```
+
+## Accessibility
+
+- All color combinations meet WCAG 2.1 Level AA contrast ratios (4.5:1 for normal text, 3:1 for large text)
+- High Contrast theme meets WCAG AAA standards (7:1 ratio)
+- Focus indicators use the `--ring` color for consistent visibility
+- Colors are semantic, not hardcoded, allowing full customization
+
+## Customizing Colors
+
+Override CSS variables in your global styles:
+
+```css
+:root {
+  --primary: 200 100% 50%; /* Your brand color */
+  --primary-foreground: 0 0% 100%;
+}
+
+.dark {
+  --primary: 200 100% 40%; /* Darker for dark mode */
+}
+```
+
+## Resources
+
+- [Tailwind CSS Colors](https://tailwindcss.com/docs/customizing-colors)
+- [HSL Color Picker](https://hslpicker.com/)
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)

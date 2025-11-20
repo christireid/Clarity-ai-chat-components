@@ -1,0 +1,214 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Welcome/Introduction" />
+
+<div className="max-w-6xl mx-auto">
+  <div className="text-center py-12 mb-12 bg-gradient-to-br from-brand-50 via-purple-50 to-pink-50 dark:from-brand-950 dark:via-purple-950 dark:to-pink-950 rounded-2xl border-2 border-brand-200 dark:border-brand-800">
+    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 text-sm font-semibold mb-6">
+      <span className="text-xl">✨</span>
+      v1.0 - Production Ready
+    </div>
+
+    <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-brand-600 to-purple-600 bg-clip-text text-transparent">
+      Clarity Chat
+    </h1>
+
+    <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8 px-4">
+      The ultimate AI chat component library for React.
+      <br />
+      Beautiful, accessible, and production-ready.
+    </p>
+
+    <div className="flex flex-wrap gap-4 justify-center px-4">
+      <a
+        href="?path=/docs/welcome-getting-started--docs"
+        className="inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-brand-500 to-brand-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+      >
+        Get Started →
+      </a>
+      <a
+        href="?path=/docs/components-inputs-button--docs"
+        className="inline-flex items-center px-6 py-3 rounded-lg border-2 border-brand-500 text-brand-600 dark:text-brand-400 font-semibold hover:bg-brand-50 dark:hover:bg-brand-950 transition-colors duration-200"
+      >
+        View Components
+      </a>
+    </div>
+  </div>
+
+  {/* Stats */}
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+    <div className="text-center p-6 rounded-xl bg-white dark:bg-gray-900 border-2 border-border">
+      <div className="text-4xl font-bold text-brand-600 mb-2">100+</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">Components & Hooks</div>
+    </div>
+    <div className="text-center p-6 rounded-xl bg-white dark:bg-gray-900 border-2 border-border">
+      <div className="text-4xl font-bold text-brand-600 mb-2">11+</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">Theme Presets</div>
+    </div>
+    <div className="text-center p-6 rounded-xl bg-white dark:bg-gray-900 border-2 border-border">
+      <div className="text-4xl font-bold text-brand-600 mb-2">100%</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">TypeScript</div>
+    </div>
+    <div className="text-center p-6 rounded-xl bg-white dark:bg-gray-900 border-2 border-border">
+      <div className="text-4xl font-bold text-brand-600 mb-2">WCAG AA</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">Accessible</div>
+    </div>
+  </div>
+
+  {/* Features */}
+  <div className="mb-16">
+    <h2 className="text-3xl font-bold text-center mb-8">Why Clarity Chat?</h2>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="p-6 rounded-xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg transition-all">
+        <div className="text-3xl mb-3">🤖</div>
+        <h3 className="font-semibold text-lg mb-2">AI-First Design</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Built specifically for AI chat interfaces with streaming, tool invocations, and context management out of the box.
+        </p>
+      </div>
+
+      <div className="p-6 rounded-xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg transition-all">
+        <div className="text-3xl mb-3">✨</div>
+        <h3 className="font-semibold text-lg mb-2">Beautiful Components</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Professionally designed, modern UI components that make your chat interfaces stand out.
+        </p>
+      </div>
+
+      <div className="p-6 rounded-xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg transition-all">
+        <div className="text-3xl mb-3">♿</div>
+        <h3 className="font-semibold text-lg mb-2">Fully Accessible</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          WCAG 2.1 AA compliant with keyboard navigation, screen reader support, and semantic HTML.
+        </p>
+      </div>
+
+      <div className="p-6 rounded-xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg transition-all">
+        <div className="text-3xl mb-3">🎨</div>
+        <h3 className="font-semibold text-lg mb-2">Highly Themeable</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          11+ pre-built themes with full dark mode support. Customize every color, spacing, and animation.
+        </p>
+      </div>
+
+      <div className="p-6 rounded-xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg transition-all">
+        <div className="text-3xl mb-3">🔒</div>
+        <h3 className="font-semibold text-lg mb-2">Type-Safe</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          100% TypeScript with comprehensive type definitions. Excellent IntelliSense support.
+        </p>
+      </div>
+
+      <div className="p-6 rounded-xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg transition-all">
+        <div className="text-3xl mb-3">⚡</div>
+        <h3 className="font-semibold text-lg mb-2">Performance Optimized</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Virtualized lists, optimistic updates, and smart caching for smooth 60fps experiences.
+        </p>
+      </div>
+
+      <div className="p-6 rounded-xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg transition-all">
+        <div className="text-3xl mb-3">🧩</div>
+        <h3 className="font-semibold text-lg mb-2">Composable</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Mix and match components to build exactly what you need. No bloat, maximum flexibility.
+        </p>
+      </div>
+
+      <div className="p-6 rounded-xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg transition-all">
+        <div className="text-3xl mb-3">🏢</div>
+        <h3 className="font-semibold text-lg mb-2">Enterprise Ready</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          SSO, multi-tenancy, audit logs, and enterprise features built-in.
+        </p>
+      </div>
+
+      <div className="p-6 rounded-xl border-2 border-border bg-white dark:bg-gray-900 hover:shadow-lg transition-all">
+        <div className="text-3xl mb-3">💝</div>
+        <h3 className="font-semibold text-lg mb-2">Developer Experience</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Intuitive APIs, comprehensive docs, and patterns that make development a joy.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {/* Quick Start */}
+  <div className="mb-16">
+    <h2 className="text-3xl font-bold text-center mb-8">Quick Start</h2>
+
+    <div className="space-y-6">
+      {/* Install */}
+      <div>
+        <h3 className="text-xl font-semibold mb-3">1. Install</h3>
+        <pre className="bg-gray-900 text-gray-100 p-6 rounded-xl overflow-x-auto">
+          <code>npm install @clarity-chat/react</code>
+        </pre>
+      </div>
+
+      {/* Setup */}
+      <div>
+        <h3 className="text-xl font-semibold mb-3">2. Add ThemeProvider</h3>
+        <pre className="bg-gray-900 text-gray-100 p-6 rounded-xl overflow-x-auto">
+          <code>{`import { ThemeProvider } from '@clarity-chat/react'
+
+function App() {
+  return (
+    <ThemeProvider>
+      <YourApp />
+    </ThemeProvider>
+  )
+}`}</code>
+        </pre>
+      </div>
+
+      {/* Use */}
+      <div>
+        <h3 className="text-xl font-semibold mb-3">3. Use Components</h3>
+        <pre className="bg-gray-900 text-gray-100 p-6 rounded-xl overflow-x-auto">
+          <code>{`import { ChatWindow, useChat } from '@clarity-chat/react'
+
+function MyChat() {
+  const { messages, sendMessage } = useChat()
+
+  return (
+    <ChatWindow
+      messages={messages}
+      onSendMessage={sendMessage}
+    />
+  )
+}`}</code>
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  {/* What's Next */}
+  <div className="bg-gradient-to-r from-brand-500 to-purple-600 rounded-2xl p-12 text-white text-center">
+    <h2 className="text-3xl font-bold mb-4">Ready to Build?</h2>
+    <p className="text-xl mb-8 opacity-90">
+      Explore our components, patterns, and examples to start building amazing AI chat experiences.
+    </p>
+    <div className="flex flex-wrap gap-4 justify-center">
+      <a
+        href="?path=/docs/components-inputs-button--docs"
+        className="inline-flex items-center px-6 py-3 rounded-lg bg-white text-brand-600 font-semibold hover:bg-gray-100 transition-colors duration-200"
+      >
+        Browse Components
+      </a>
+      <a
+        href="?path=/docs/patterns-chat-patterns--docs"
+        className="inline-flex items-center px-6 py-3 rounded-lg border-2 border-white text-white font-semibold hover:bg-white/10 transition-colors duration-200"
+      >
+        View Patterns
+      </a>
+      <a
+        href="?path=/docs/examples-complete-applications--docs"
+        className="inline-flex items-center px-6 py-3 rounded-lg border-2 border-white text-white font-semibold hover:bg-white/10 transition-colors duration-200"
+      >
+        See Examples
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,271 @@
+import { Meta } from '@storybook/blocks'
+
+<Meta title="Welcome/Getting Started" />
+
+# Getting Started
+
+Get up and running with Clarity Chat in under 5 minutes.
+
+## Installation
+
+Install the package using your preferred package manager:
+
+```bash
+# npm
+npm install @clarity-chat/react
+
+# pnpm
+pnpm add @clarity-chat/react
+
+# yarn
+yarn add @clarity-chat/react
+```
+
+## Basic Setup
+
+### 1. Add ThemeProvider
+
+Wrap your app with the `ThemeProvider` to enable theming and styling:
+
+```tsx
+import { ThemeProvider } from '@clarity-chat/react'
+
+function App() {
+  return (
+    <ThemeProvider
+      defaultTheme={{
+        mode: 'system', // 'light' | 'dark' | 'system'
+        preset: 'clarity-light', // optional theme preset
+      }}
+    >
+      <YourApp />
+    </ThemeProvider>
+  )
+}
+```
+
+### 2. Import Styles
+
+Make sure to import the CSS file in your root component or `index.tsx`:
+
+```tsx
+import '@clarity-chat/react/dist/index.css'
+```
+
+## Your First Chat Component
+
+Here's a simple example to get you started:
+
+```tsx
+import { ChatWindow, useChat } from '@clarity-chat/react'
+
+function MyChat() {
+  const { messages, isLoading, sendMessage } = useChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={sendMessage}
+      placeholder="Ask me anything..."
+    />
+  )
+}
+```
+
+## Framework-Specific Setup
+
+### Next.js
+
+For Next.js, you'll need to configure your `next.config.js`:
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  transpilePackages: ['@clarity-chat/react'],
+}
+
+module.exports = nextConfig
+```
+
+And in your root layout:
+
+```tsx
+// app/layout.tsx
+import { ThemeProvider } from '@clarity-chat/react'
+import '@clarity-chat/react/dist/index.css'
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+### Vite
+
+For Vite, no special configuration is needed. Just import and use:
+
+```tsx
+// main.tsx
+import { ThemeProvider } from '@clarity-chat/react'
+import '@clarity-chat/react/dist/index.css'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <ThemeProvider>
+    <App />
+  </ThemeProvider>
+)
+```
+
+### Remix
+
+In Remix, add the styles to your root route:
+
+```tsx
+// app/root.tsx
+import styles from '@clarity-chat/react/dist/index.css'
+
+export function links() {
+  return [{ rel: 'stylesheet', href: styles }]
+}
+
+export default function App() {
+  return (
+    <html>
+      <head>
+        <Links />
+      </head>
+      <body>
+        <ThemeProvider>
+          <Outlet />
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+## TypeScript Configuration
+
+Clarity Chat is built with TypeScript and includes full type definitions. For the best experience, make sure your `tsconfig.json` includes:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "node"
+  }
+}
+```
+
+## API Configuration
+
+### Basic API Route (Next.js)
+
+```tsx
+// app/api/chat/route.ts
+import { OpenAI } from 'openai'
+import { StreamingTextResponse, OpenAIStream } from '@clarity-chat/react/stream'
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    stream: true,
+    messages,
+  })
+
+  const stream = OpenAIStream(response)
+  return new StreamingTextResponse(stream)
+}
+```
+
+### Using With Custom Backend
+
+```tsx
+import { useChat } from '@clarity-chat/react'
+
+function MyChat() {
+  const { messages, sendMessage } = useChat({
+    api: 'https://your-api.com/chat',
+    headers: {
+      'Authorization': 'Bearer YOUR_TOKEN',
+    },
+    onError: (error) => {
+      console.error('Chat error:', error)
+    },
+  })
+
+  return <ChatWindow messages={messages} onSendMessage={sendMessage} />
+}
+```
+
+## Customization
+
+### Custom Theme
+
+```tsx
+import { ThemeProvider } from '@clarity-chat/react'
+
+const customTheme = {
+  colors: {
+    primary: '#3b82f6',
+    background: '#ffffff',
+    foreground: '#111827',
+  },
+  borderRadius: {
+    sm: '0.25rem',
+    md: '0.5rem',
+    lg: '0.75rem',
+  },
+}
+
+function App() {
+  return (
+    <ThemeProvider theme={customTheme}>
+      <YourApp />
+    </ThemeProvider>
+  )
+}
+```
+
+### Component Styling
+
+All components accept a `className` prop for custom styling:
+
+```tsx
+<ChatWindow
+  className="max-w-4xl mx-auto shadow-2xl"
+  messages={messages}
+  onSendMessage={sendMessage}
+/>
+```
+
+## Next Steps
+
+Now that you're set up, explore:
+
+- **[Components](/docs/components-inputs-button--docs)** - Browse all available components
+- **[Patterns](/docs/patterns-chat-patterns--docs)** - Learn common usage patterns
+- **[Hooks](/docs/hooks-chat-hooks-usechat--docs)** - Discover powerful hooks
+- **[Examples](/docs/examples-complete-applications--docs)** - See complete applications
+
+## Need Help?
+
+- 📖 [Documentation](https://clarity.chat/docs)
+- 💬 [Discord Community](https://discord.gg/clarity)
+- 🐛 [Report Issues](https://github.com/clarity-chat/clarity/issues)
+- 📧 [Email Support](mailto:support@clarity.chat)

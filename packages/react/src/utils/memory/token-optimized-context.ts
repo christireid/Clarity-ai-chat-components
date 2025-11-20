@@ -171,6 +171,8 @@ export class TokenOptimizedContextManager {
 
     for (let i = middle.length - 1; i >= 0; i--) {
       const msg = middle[i]
+      if (!msg) continue
+
       const msgTokens = this.countTokens(msg.content)
       if (msgTokens <= remainingBudget) {
         selected.unshift(msg)
@@ -240,7 +242,7 @@ export class TokenOptimizedContextManager {
    */
   private extractKeyPoints(text: string): string {
     const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 10)
-    if (sentences.length === 0) return ''
+    if (sentences.length === 0 || !sentences[0]) return ''
 
     const firstSentence = sentences[0].trim()
     return firstSentence.length > 100 ? firstSentence.substring(0, 100) + '...' : firstSentence

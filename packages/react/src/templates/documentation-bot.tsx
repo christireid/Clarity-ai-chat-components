@@ -70,7 +70,7 @@ export function createDocumentationBot(_config: {
   // INTENTIONAL PLACEHOLDER - Extensibility point for custom implementations
   // Recommended approach: Use ChatWindow + RAG + ContextManager (see JSDoc above)
 
-  if (process.env.NODE_ENV === 'development' && _config) {
+  if (process.env['NODE_ENV'] === 'development' && _config) {
     console.info(
       'createDocumentationBot: Template function called. ' +
         'For full documentation bot features, use ChatWindow with useRAG hook. ' +

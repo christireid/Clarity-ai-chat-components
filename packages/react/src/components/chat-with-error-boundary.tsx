@@ -27,7 +27,7 @@ export interface ChatWithErrorBoundaryProps extends ClarityChatProps {
   /** Error boundary fallback UI */
   errorFallback?: ErrorBoundaryProps['fallback']
   /** Callback when error occurs */
-  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
+  onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
   /** Reset keys for error boundary */
   resetKeys?: ErrorBoundaryProps['resetKeys']
 }

@@ -38,6 +38,8 @@ export interface UseChatOptions {
   persistMessages?: boolean
   memory?: boolean | Record<string, any>
   autoScroll?: boolean
+  /** Local storage key for persisting messages */
+  storageKey?: string
 }
 
 /**
