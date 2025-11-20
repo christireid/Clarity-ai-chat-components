@@ -139,6 +139,7 @@ export function useSwipe(
     () => ({
       onTouchStart: (e: React.TouchEvent) => {
         const touch = e.touches[0]
+        if (!touch) return
         touchStart.current = {
           x: touch.clientX,
           y: touch.clientY,
@@ -150,6 +151,7 @@ export function useSwipe(
         if (!touchStart.current) return
 
         const touch = e.changedTouches[0]
+        if (!touch) return
         const deltaX = touch.clientX - touchStart.current.x
         const deltaY = touch.clientY - touchStart.current.y
         const duration = Date.now() - touchStart.current.time
@@ -193,7 +195,7 @@ export function useSwipe(
  * Hook for long press detection
  */
 export function useLongPress(onLongPress: () => void, duration: number = 500) {
-  const timerRef = React.useRef<NodeJS.Timeout>()
+  const timerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
   const isLongPress = React.useRef(false)
 
   const start = React.useCallback(() => {
@@ -243,8 +245,9 @@ export function usePullToRefresh(
   const handlers = React.useMemo(
     () => ({
       onTouchStart: (e: React.TouchEvent) => {
-        if (window.scrollY === 0) {
-          startY.current = e.touches[0].clientY
+        const touch = e.touches[0]
+        if (window.scrollY === 0 && touch) {
+          startY.current = touch.clientY
           setIsPulling(true)
         }
       },
@@ -252,7 +255,9 @@ export function usePullToRefresh(
       onTouchMove: (e: React.TouchEvent) => {
         if (!isPulling || isRefreshing.current) return
 
-        const currentY = e.touches[0].clientY
+        const touch = e.touches[0]
+        if (!touch) return
+        const currentY = touch.clientY
         const distance = Math.max(0, currentY - startY.current)
         setPullDistance(distance)
       },

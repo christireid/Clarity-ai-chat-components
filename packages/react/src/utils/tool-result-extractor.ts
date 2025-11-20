@@ -40,8 +40,8 @@ export function extractToolResults(messages: Message[]): Array<{
   
   for (const message of messages) {
     // Check for tool invocations in metadata (from CoreMessage.toolInvocations)
-    if (message.metadata?.toolInvocations) {
-      const invocations = message.metadata.toolInvocations
+    if (message.metadata?.['toolInvocations']) {
+      const invocations = message.metadata['toolInvocations']
       
       if (Array.isArray(invocations)) {
         for (const invocation of invocations) {
@@ -66,18 +66,18 @@ export function extractToolResults(messages: Message[]): Array<{
     }
     
     // Also check for tool calls in message metadata (direct tool call)
-    if (message.metadata?.toolCallId && message.metadata?.name) {
+    if (message.metadata?.['toolCallId'] && message.metadata?.['name']) {
       const toolCall: ToolCall = {
-        id: message.metadata.toolCallId,
+        id: message.metadata['toolCallId'],
         type: 'function',
         function: {
-          name: message.metadata.name,
-          arguments: JSON.stringify(message.metadata.args || {}),
+          name: message.metadata['name'],
+          arguments: JSON.stringify(message.metadata['args'] || {}),
         },
       }
-      
+
       // Try to extract result from metadata or content
-      let result = message.metadata.result
+      let result = message.metadata['result']
       if (!result && message.content) {
         try {
           result = JSON.parse(message.content)
@@ -124,5 +124,6 @@ export function getLatestToolResult(
   toolName: string
 ): { toolCall: ToolCall; result: any } | null {
   const results = extractToolResultsByName(messages, toolName)
-  return results.length > 0 ? results[results.length - 1] : null
+  const lastResult = results[results.length - 1]
+  return lastResult ?? null
 }

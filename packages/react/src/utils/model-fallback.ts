@@ -115,13 +115,19 @@ export async function withModelFallback<T>(
     
     // Try next model
     const nextModel = models[models.indexOf(model) + 1]
-    if (nextModel && options.onFallback) {
-      options.onFallback(model, nextModel, errors[errors.length - 1].error)
+    const lastError = errors[errors.length - 1]
+    if (nextModel && options.onFallback && lastError) {
+      options.onFallback(model, nextModel, lastError.error)
     }
   }
-  
+
+  const lastModel = models[models.length - 1]
+  if (!lastModel) {
+    throw new Error('No models available in fallback chain')
+  }
+
   return {
-    model: models[models.length - 1],
+    model: lastModel,
     attempts: totalAttempts,
     errors,
     success: false,
@@ -269,7 +275,11 @@ export class ModelFallbackManager {
    * Get current model
    */
   getCurrentModel(): FallbackModelConfig {
-    return this.models[this.currentIndex]
+    const currentModel = this.models[this.currentIndex]
+    if (!currentModel) {
+      throw new Error(`No model found at index ${this.currentIndex}`)
+    }
+    return currentModel
   }
   
   /**
@@ -278,7 +288,7 @@ export class ModelFallbackManager {
   getNextModel(): FallbackModelConfig | null {
     if (this.currentIndex < this.models.length - 1) {
       this.currentIndex++
-      return this.models[this.currentIndex]
+      return this.models[this.currentIndex] ?? null
     }
     return null
   }

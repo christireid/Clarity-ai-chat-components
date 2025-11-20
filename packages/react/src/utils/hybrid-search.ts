@@ -257,6 +257,7 @@ export class SimpleBM25Searcher implements KeywordSearcher {
       
       docIndices.forEach(docIdx => {
         const doc = this.documents[docIdx]
+        if (!doc) return
         const termFreq = this.getTermFrequency(term, doc.content)
         const docLength = this.tokenize(doc.content).length
         const avgDocLength = this.documents.reduce((sum, d) =>
@@ -276,12 +277,18 @@ export class SimpleBM25Searcher implements KeywordSearcher {
     return Array.from(scores.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, topK)
-      .map(([docIdx, score]) => ({
-        id: this.documents[docIdx].id,
-        score,
-        content: this.documents[docIdx].content,
-        metadata: this.documents[docIdx].metadata,
-      }))
+      .map(([docIdx, score]) => {
+        const doc = this.documents[docIdx]
+        if (!doc) {
+          return { id: '', score, content: '', metadata: {} }
+        }
+        return {
+          id: doc.id,
+          score,
+          content: doc.content,
+          metadata: doc.metadata,
+        }
+      })
   }
   
   private tokenize(text: string): string[] {

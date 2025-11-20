@@ -64,6 +64,7 @@ export class FIFOTruncation implements TruncationStrategy {
 
     for (let i = otherMessages.length - 1; i >= 0; i--) {
       const message = otherMessages[i]
+      if (!message) continue
       const messageTokens = options.countTokens(message.content)
 
       if (currentTokens + messageTokens <= maxTokens) {
@@ -159,6 +160,7 @@ export class SmartTruncation implements TruncationStrategy {
     // Add turns from newest, keeping pairs together
     for (let i = turns.length - 1; i >= 0; i--) {
       const turn = turns[i]
+      if (!turn) continue
       const turnTokens = turn.reduce(
         (sum, msg) => sum + options.countTokens(msg.content),
         0
