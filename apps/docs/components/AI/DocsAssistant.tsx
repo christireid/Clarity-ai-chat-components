@@ -344,9 +344,11 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             className={cn(
-              'fixed bottom-24 right-6 z-40',
-              'w-[90vw] max-w-2xl h-[600px] max-h-[80vh]',
-              'shadow-2xl',
+              'fixed inset-4 md:inset-8 lg:right-8 lg:left-auto lg:w-[600px] xl:w-[700px] z-40',
+              'flex flex-col',
+              'rounded-2xl shadow-2xl overflow-hidden',
+              'bg-white dark:bg-gray-900',
+              'border border-gray-200 dark:border-gray-800',
               className
             )}
           >
@@ -360,6 +362,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
               showMessageCount
               onClear={messages.length > 0 ? () => setMessages([]) : undefined}
               emptyState={<DocsAssistantEmptyState onSelectSuggestion={handleSelectSuggestion} />}
+              className="h-full flex flex-col"
             />
           </motion.div>
         )}

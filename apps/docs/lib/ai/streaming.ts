@@ -168,16 +168,79 @@ export async function* streamFromClaude(
 }
 
 /**
+ * Demo/fallback streaming function when no API keys are configured
+ */
+export async function* streamFromDemo(
+  messages: { role: string; content: string }[]
+): AsyncGenerator<StreamChunk> {
+  const lastMessage = messages[messages.length - 1]
+
+  // Simulated responses based on common queries
+  const responses: Record<string, string> = {
+    'getting started': 'To get started with Clarity Chat, first install it via npm:\n\n```bash\nnpm install @clarity-chat/react\n```\n\nThen import and use the components:\n\n```tsx\nimport { ChatWindow } from "@clarity-chat/react"\nimport "@clarity-chat/react/styles.css"\n```\n\nCheck out our [Quick Start Guide](/guides/quick-start) for a complete walkthrough!',
+    'streaming': 'Clarity Chat has built-in streaming support! Use the `useStreaming` hook to implement real-time message streaming:\n\n```tsx\nimport { useStreaming } from "@clarity-chat/react"\n\nconst { startStreaming, stopStreaming } = useStreaming()\n```\n\nSee our [Streaming Guide](/guides/streaming) for more details.',
+    'components': 'Clarity Chat provides many pre-built components:\n\n- **ChatWindow**: Main chat interface\n- **Message**: Individual message display\n- **ChatInput**: Message input field\n- **MessageList**: Scrollable message container\n- **ThinkingIndicator**: Loading state\n\nExplore all components in our [Component Reference](/reference/components).',
+    'theme': 'You can customize the theme using CSS variables or the ThemeProvider:\n\n```tsx\nimport { ThemeProvider } from "@clarity-chat/react"\n\n<ThemeProvider theme={customTheme}>\n  <ChatWindow />\n</ThemeProvider>\n```\n\nSee our [Theming Guide](/guides/theming) for more options.',
+    default: `I'm a demo assistant (no API key configured). I can help you navigate the Clarity Chat documentation!\n\nTry asking about:\n- Getting started with Clarity Chat\n- How to implement streaming\n- Available components\n- Customizing themes\n\nOr explore the documentation directly:\n- [Quick Start](/guides/quick-start)\n- [Component Reference](/reference/components)\n- [Examples](/examples)`
+  }
+
+  // Find matching response
+  let response = responses.default
+  for (const [key, value] of Object.entries(responses)) {
+    if (lastMessage.content.toLowerCase().includes(key)) {
+      response = value
+      break
+    }
+  }
+
+  // Stream the response character by character
+  const words = response.split(' ')
+  let buffer = ''
+
+  for (let i = 0; i < words.length; i++) {
+    buffer += words[i] + (i < words.length - 1 ? ' ' : '')
+
+    // Yield chunks of ~5-10 words for natural streaming
+    if (buffer.split(' ').length >= 7 || i === words.length - 1) {
+      yield {
+        type: 'text',
+        content: buffer,
+      }
+      buffer = ''
+
+      // Small delay to simulate network latency
+      await new Promise(resolve => setTimeout(resolve, 30))
+    }
+  }
+}
+
+/**
  * Get the appropriate streaming function based on configured model
  */
-export function getStreamingFunction(): typeof streamFromOpenAI | typeof streamFromClaude {
+export function getStreamingFunction(): typeof streamFromOpenAI | typeof streamFromClaude | typeof streamFromDemo {
+  // Check if any API key is configured
+  const hasOpenAI = !!process.env.OPENAI_API_KEY
+  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY
+
+  // If no API keys, use demo mode
+  if (!hasOpenAI && !hasAnthropic) {
+    console.warn('⚠️  No API keys configured - using demo mode')
+    return streamFromDemo
+  }
+
   const model = process.env.AI_MODEL || 'gpt-4-turbo-preview'
 
-  if (model.startsWith('claude')) {
+  if (model.startsWith('claude') && hasAnthropic) {
     return streamFromClaude
   }
 
-  return streamFromOpenAI
+  if (hasOpenAI) {
+    return streamFromOpenAI
+  }
+
+  // Fallback to demo if configured model doesn't have a key
+  console.warn('⚠️  Configured model has no API key - using demo mode')
+  return streamFromDemo
 }
 
 /**
