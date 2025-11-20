@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'Example: Token Optimization',
   description: 'End-to-end example combining retrieval, compression, and reranking.',
@@ -18,11 +16,8 @@ export default function TokenOptimizationExample() {
 
       <section className="docs-section">
         <h2>Live Demo</h2>
-        <LiveDemo
-          title="RAG with Optimization"
-          code={`import { ChatWindow, TokenOptimizationPanel, TokenOptimizationBadge } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="grid md:grid-cols-3 gap-4">
       <div className="md:col-span-2 border rounded">
@@ -36,8 +31,9 @@ export default function Example() {
       </div>
     </div>
   )
-}`} 
-          height="520px"
+}
+
+render(<Example />)`}
         />
       </section>
     </div>

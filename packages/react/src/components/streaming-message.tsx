@@ -10,6 +10,8 @@
  * - Error states
  */
 
+'use client'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Badge, cn } from '@clarity-chat/primitives'

@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'StreamBlock - Clarity Chat Components',
   description: 'Render a block of streaming content with partial updates.',
@@ -18,18 +16,16 @@ export default function StreamBlockPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { StreamBlock } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-4">
       <StreamBlock content="Streaming..." />
     </div>
   )
-}`} 
-          height="160px"
+}
+
+render(<Example />)`}
         />
       </section>
     </div>

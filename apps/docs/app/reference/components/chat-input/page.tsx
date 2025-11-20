@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Chat Input | Clarity Chat',
   description: 'Basic chat input component with character counting, validation, and smooth animations.'

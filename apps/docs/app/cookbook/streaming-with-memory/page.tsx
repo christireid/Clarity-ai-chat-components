@@ -1,8 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Streaming Chat with Memory - Cookbook',
   description: 'Build a streaming chat with semantic memory and context management.',
@@ -35,12 +35,8 @@ export default function StreamingWithMemoryCookbook() {
 
       <section className="docs-section">
         <h2>Complete Example</h2>
-        <LiveDemo
-          title="Streaming Chat with Memory"
-          code={`import { ChatWindow, MemoryProvider } from '@clarity-chat/react'
-import { useChat } from '@clarity-chat/react/hooks'
-
-export default function StreamingMemoryChat() {
+        <CodePlayground
+          initialCode={`function StreamingMemoryChat() {
   const { messages, sendMessage, isStreaming } = useChat({
     endpoint: '/api/chat',
     enableMemory: true,
@@ -65,8 +61,9 @@ export default function StreamingMemoryChat() {
       />
     </MemoryProvider>
   )
-}`}
-          height="420px"
+}
+
+render(<StreamingMemoryChat />)`}
         />
       </section>
 

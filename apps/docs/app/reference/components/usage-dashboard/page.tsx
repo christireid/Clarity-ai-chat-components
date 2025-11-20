@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { ApiTable } from '@/components/Demo/ApiTable'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -34,45 +34,38 @@ export default function UsageDashboardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Example"
-          code={`import { UsageDashboard } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-6">
       <UsageDashboard />
     </div>
   )
-}`} 
-          height="220px"
+}
+
+render(<Example />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>With Custom Refresh Rate</h2>
-        <LiveDemo
-          title="Custom Refresh Interval"
-          code={`import { UsageDashboard } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-6">
       <UsageDashboard refreshIntervalMs={5000} />
     </div>
   )
-}`} 
-          height="220px"
+}
+
+render(<Example />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>With Quota Limits</h2>
-        <LiveDemo
-          title="Show Quota Warnings"
-          code={`import { UsageDashboard } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   const quotas = {
     tokensPerDay: 100000,
     requestsPerMinute: 50,
@@ -87,8 +80,9 @@ export default function Example() {
       />
     </div>
   )
-}`} 
-          height="280px"
+}
+
+render(<Example />)`}
         />
       </section>
 

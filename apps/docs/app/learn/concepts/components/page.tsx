@@ -3,6 +3,7 @@
 import { Metadata } from 'next'
 import { ToastProvider } from '@clarity-chat/react'
 import { Callout } from '@/components/MDX/Callout'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 

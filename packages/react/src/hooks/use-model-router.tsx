@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { ModelRouter, RouteModelConfig, RoutingDecision, COMMON_MODELS } from '../utils/model-router'
 

@@ -38,7 +38,7 @@ export const SeatInviteDialog: React.FC<SeatInviteDialogProps> = ({
   }, [defaultRole, roles])
 
   const handleInvite = () => {
-    if (!email.trim()) return
+    if (!email.trim() || !role) return
     onInvite?.({ email: email.trim(), role, sendWelcome })
     resetState()
     setOpen(false)

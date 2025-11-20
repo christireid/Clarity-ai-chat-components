@@ -51,6 +51,15 @@
 export * from './types'
 export * from './webhook-manager'
 
+// ✨ ENHANCED: Secure webhook manager with HMAC-SHA256
+export {
+  EnhancedWebhookManager,
+  MemoryWebhookDeliveryStorage,
+  type EnhancedWebhookConfig,
+  type WebhookDeliveryStorage,
+  type EndpointHealth,
+} from './webhook-manager-enhanced'
+
 /**
  * Common webhook event types for AI applications
  */

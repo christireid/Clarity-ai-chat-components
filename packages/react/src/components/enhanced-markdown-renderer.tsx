@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -181,6 +183,42 @@ export const EnhancedMarkdownRenderer = React.memo(
               }
               return <p {...props}>{children}</p>
             },
+            // Table styling
+            table: ({ children, ...props }: any) => (
+              <div className="overflow-x-auto my-4 w-full">
+                <table className="min-w-full table-auto border-collapse divide-y divide-border" {...props}>
+                  {children}
+                </table>
+              </div>
+            ),
+            thead: ({ children, ...props }: any) => (
+              <thead className="bg-muted" {...props}>
+                {children}
+              </thead>
+            ),
+            tbody: ({ children, ...props }: any) => (
+              <tbody className="bg-background divide-y divide-border" {...props}>
+                {children}
+              </tbody>
+            ),
+            th: ({ children, ...props }: any) => (
+              <th
+                className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
+                {...props}
+              >
+                {children}
+              </th>
+            ),
+            td: ({ children, ...props }: any) => (
+              <td className="px-6 py-4 text-sm border border-border" {...props}>
+                {children}
+              </td>
+            ),
+            tr: ({ children, ...props }: any) => (
+              <tr className="hover:bg-muted/50 transition-colors" {...props}>
+                {children}
+              </tr>
+            ),
           }}
         >
           {content}

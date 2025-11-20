@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useCallback, type Dispatch, type SetStateAction } from 'react'
 
 export interface UseToggleReturn {

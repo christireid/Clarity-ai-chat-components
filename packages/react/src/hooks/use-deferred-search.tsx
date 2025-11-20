@@ -1,3 +1,5 @@
+'use client'
+
 import { useDeferredValue, useMemo } from 'react'
 import type { Message } from '@clarity-chat/types'
 

@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
 import { useStreamableUI, type StreamableValueLike, type UseStreamableUIOptions } from '../hooks/use-streamable-ui'

@@ -1,3 +1,5 @@
+'use client'
+
 import React, { memo } from 'react'
 import { Button, type ButtonProps } from '@clarity-chat/primitives'
 import { useClipboard } from '../hooks/use-clipboard'

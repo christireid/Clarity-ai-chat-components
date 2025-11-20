@@ -1,8 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { ApiTable } from '@/components/Demo/ApiTable'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'useModelRouter - Clarity Chat Hooks',
   description: 'Intelligently route requests to different models based on cost, latency, and quality.',
@@ -29,11 +29,8 @@ export default function UseModelRouterPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Routing"
-          code={`import { useModelRouter } from '@clarity-chat/react/hooks'
-
-function Chat() {
+        <CodePlayground
+          initialCode={`function Chat() {
   const { route, currentModel } = useModelRouter({
     models: [
       { name: 'gpt-4', cost: 0.03, maxTokens: 8192, quality: 'high' },
@@ -50,18 +47,16 @@ function Chat() {
   }
 
   return <div>Current: {currentModel}</div>
-}`}
-          height="300px"
+}
+
+render(<Chat />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Complexity-Based Routing</h2>
-        <LiveDemo
-          title="Route by Complexity"
-          code={`import { useModelRouter } from '@clarity-chat/react/hooks'
-
-function SmartChat() {
+        <CodePlayground
+          initialCode={`function SmartChat() {
   const { route } = useModelRouter({
     models: [
       { name: 'gpt-4', quality: 'high', cost: 0.03 },
@@ -78,8 +73,9 @@ function SmartChat() {
   })
 
   return <ChatWindow onRoute={route} />
-}`}
-          height="320px"
+}
+
+render(<SmartChat />)`}
         />
       </section>
 

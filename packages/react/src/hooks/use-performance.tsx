@@ -4,6 +4,8 @@
  * Hooks and utilities for monitoring and optimizing component performance.
  */
 
+'use client'
+
 import * as React from 'react'
 
 /**

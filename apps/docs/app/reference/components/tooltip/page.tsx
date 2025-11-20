@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
@@ -33,11 +33,8 @@ export default function TooltipPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Basic Tooltips"
-          code={`import { Tooltip, Button } from '@clarity-chat/react'
-
-function BasicTooltips() {
+        <CodePlayground
+          initialCode={`function BasicTooltips() {
   return (
     <div className="flex items-center gap-4">
       <Tooltip content="This is a tooltip">
@@ -55,8 +52,7 @@ function BasicTooltips() {
   )
 }
 
-export default BasicTooltips`}
-          height="150px"
+render(<BasicTooltips />)`}
         />
       </section>
 
@@ -73,11 +69,8 @@ export default BasicTooltips`}
         <p>
           Tooltips can be positioned in 12 different locations around the trigger element.
         </p>
-        <LiveDemo
-          title="Tooltip Positions"
-          code={`import { Tooltip, Button } from '@clarity-chat/react'
-
-function TooltipPositions() {
+        <CodePlayground
+          initialCode={`function TooltipPositions() {
   return (
     <div className="space-y-8">
       <div className="flex justify-center gap-2">
@@ -137,8 +130,7 @@ function TooltipPositions() {
   )
 }
 
-export default TooltipPositions`}
-          height="400px"
+render(<TooltipPositions />)`}
         />
       </section>
 
@@ -147,11 +139,8 @@ export default TooltipPositions`}
         <p>
           Control when tooltips appear and disappear with custom delays.
         </p>
-        <LiveDemo
-          title="Tooltip Delays"
-          code={`import { Tooltip, Button } from '@clarity-chat/react'
-
-function TooltipDelays() {
+        <CodePlayground
+          initialCode={`function TooltipDelays() {
   return (
     <div className="flex flex-wrap items-center gap-4">
       <Tooltip content="No delay" delay={0}>
@@ -173,8 +162,7 @@ function TooltipDelays() {
   )
 }
 
-export default TooltipDelays`}
-          height="150px"
+render(<TooltipDelays />)`}
         />
       </section>
 
@@ -183,11 +171,8 @@ export default TooltipDelays`}
         <p>
           Tooltips can contain rich HTML content, not just plain text.
         </p>
-        <LiveDemo
-          title="Rich Content Tooltips"
-          code={`import { Tooltip, Button, Avatar, Badge } from '@clarity-chat/react'
-
-function RichContentTooltips() {
+        <CodePlayground
+          initialCode={`function RichContentTooltips() {
   const userTooltip = (
     <div className="p-2">
       <div className="flex items-center gap-3 mb-2">
@@ -259,8 +244,7 @@ function RichContentTooltips() {
   )
 }
 
-export default RichContentTooltips`}
-          height="200px"
+render(<RichContentTooltips />)`}
         />
       </section>
 
@@ -269,11 +253,8 @@ export default RichContentTooltips`}
         <p>
           Use different color variants to convey semantic meaning.
         </p>
-        <LiveDemo
-          title="Tooltip Variants"
-          code={`import { Tooltip, Button } from '@clarity-chat/react'
-
-function TooltipVariants() {
+        <CodePlayground
+          initialCode={`function TooltipVariants() {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Tooltip content="Default tooltip" variant="default">
@@ -303,8 +284,7 @@ function TooltipVariants() {
   )
 }
 
-export default TooltipVariants`}
-          height="200px"
+render(<TooltipVariants />)`}
         />
       </section>
 
@@ -313,11 +293,8 @@ export default TooltipVariants`}
         <p>
           Choose between arrow, no arrow, or custom arrow styles.
         </p>
-        <LiveDemo
-          title="Arrow Styles"
-          code={`import { Tooltip, Button } from '@clarity-chat/react'
-
-function ArrowStyles() {
+        <CodePlayground
+          initialCode={`function ArrowStyles() {
   return (
     <div className="space-y-4">
       <div>
@@ -359,8 +336,7 @@ function ArrowStyles() {
   )
 }
 
-export default ArrowStyles`}
-          height="300px"
+render(<ArrowStyles />)`}
         />
       </section>
 
@@ -369,11 +345,8 @@ export default ArrowStyles`}
         <p>
           Show tooltips even on disabled elements using a wrapper approach.
         </p>
-        <LiveDemo
-          title="Disabled Elements"
-          code={`import { Tooltip, Button } from '@clarity-chat/react'
-
-function DisabledTooltips() {
+        <CodePlayground
+          initialCode={`function DisabledTooltips() {
   return (
     <div className="space-y-4">
       <div>
@@ -402,8 +375,7 @@ function DisabledTooltips() {
   )
 }
 
-export default DisabledTooltips`}
-          height="350px"
+render(<DisabledTooltips />)`}
         />
       </section>
 
@@ -412,11 +384,8 @@ export default DisabledTooltips`}
         <p>
           Allow users to interact with tooltip content (e.g., clicking links).
         </p>
-        <LiveDemo
-          title="Interactive Tooltips"
-          code={`import { Tooltip, Button } from '@clarity-chat/react'
-
-function InteractiveTooltips() {
+        <CodePlayground
+          initialCode={`function InteractiveTooltips() {
   const [copied, setCopied] = React.useState(false)
 
   const interactiveContent = (
@@ -472,8 +441,7 @@ function InteractiveTooltips() {
   )
 }
 
-export default InteractiveTooltips`}
-          height="200px"
+render(<InteractiveTooltips />)`}
         />
       </section>
 
@@ -482,11 +450,8 @@ export default InteractiveTooltips`}
         <p>
           Show tooltips on click instead of hover.
         </p>
-        <LiveDemo
-          title="Click Tooltips"
-          code={`import { Tooltip, Button } from '@clarity-chat/react'
-
-function ClickTooltips() {
+        <CodePlayground
+          initialCode={`function ClickTooltips() {
   return (
     <div className="flex flex-wrap gap-4">
       <Tooltip
@@ -529,8 +494,7 @@ function ClickTooltips() {
   )
 }
 
-export default ClickTooltips`}
-          height="200px"
+render(<ClickTooltips />)`}
         />
       </section>
 
@@ -539,11 +503,8 @@ export default ClickTooltips`}
         <p>
           Show tooltips only when certain conditions are met.
         </p>
-        <LiveDemo
-          title="Conditional Tooltips"
-          code={`import { Tooltip, Button } from '@clarity-chat/react'
-
-function ConditionalTooltips() {
+        <CodePlayground
+          initialCode={`function ConditionalTooltips() {
   const [showTooltip, setShowTooltip] = React.useState(true)
   const [count, setCount] = React.useState(0)
 
@@ -584,8 +545,7 @@ function ConditionalTooltips() {
   )
 }
 
-export default ConditionalTooltips`}
-          height="250px"
+render(<ConditionalTooltips />)`}
         />
       </section>
 

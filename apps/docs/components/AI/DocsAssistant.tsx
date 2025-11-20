@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BookOpen, Code2, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
 import { ChatWindow, FollowUpSuggestions, type FollowUpSuggestion } from '@clarity-chat/react'
-import type { Message } from '@clarity-chat/types'
+import type { Message, AIStatus } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
 import { FeedbackButtons } from './FeedbackButtons'
 import { cn } from '@/lib/utils'
@@ -115,6 +115,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [aiStatus, setAiStatus] = useState<AIStatus | undefined>(undefined)
   const sessionIdRef = useRef<string>('')
 
   // Initialize session ID on mount
@@ -122,16 +123,22 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
     sessionIdRef.current = getOrCreateSessionId()
   }, [])
 
-  // Handle escape key to close
+  // Handle keyboard shortcuts
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+    const handleKeyboard = (e: KeyboardEvent) => {
+      // Cmd/Ctrl+K to toggle chat
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsOpen((prev) => !prev)
+      }
+      // Escape to close
+      else if (e.key === 'Escape' && isOpen) {
         setIsOpen(false)
       }
     }
 
-    window.addEventListener('keydown', handleEscape)
-    return () => window.removeEventListener('keydown', handleEscape)
+    window.addEventListener('keydown', handleKeyboard)
+    return () => window.removeEventListener('keydown', handleKeyboard)
   }, [isOpen])
 
   const handleSendMessage = async (content: string) => {
@@ -148,6 +155,11 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
 
     setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
+    setAiStatus({
+      stage: 'researching',
+      topic: 'Searching documentation',
+      startedAt: new Date(),
+    })
 
     try {
       // Call API endpoint with streaming
@@ -192,6 +204,14 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
 
       setMessages((prev) => [...prev, assistantMessage])
 
+      // Hide skeleton and show thinking indicator as we start generating
+      setIsLoading(false)
+      setAiStatus({
+        stage: 'generating',
+        topic: 'Generating response',
+        startedAt: new Date(),
+      })
+
       let accumulatedContent = ''
       let sources: Array<{ id: string; source: string; url: string; confidence: number }> = []
 
@@ -234,7 +254,8 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
                 if (sources.length > 0) {
                   finalContent += '\n\n---\n\n**📚 Sources:**\n'
                   sources.forEach((source) => {
-                    finalContent += `- [${source.source}](${source.url}) (${Math.round(source.confidence * 100)}% relevance)\n`
+                    const confidence = source.confidence ?? 0
+                    finalContent += `- [${source.source}](${source.url}) (${Math.round(confidence * 100)}% relevance)\n`
                   })
                 }
 
@@ -246,6 +267,9 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
                       : m
                   )
                 )
+
+                // Clear AI status when complete
+                setAiStatus(undefined)
               }
             } catch (parseError) {
               // Ignore parse errors for incomplete JSON
@@ -254,7 +278,9 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         }
       }
 
+      // Clear loading and AI status when streaming completes
       setIsLoading(false)
+      setAiStatus(undefined)
     } catch (error) {
       console.error('Chat error:', error)
 
@@ -273,6 +299,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
 
       setMessages((prev) => [...prev, errorMessage])
       setIsLoading(false)
+      setAiStatus(undefined)
     }
   }
 
@@ -344,7 +371,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             className={cn(
-              'fixed inset-4 md:inset-8 lg:right-8 lg:left-auto lg:w-[600px] xl:w-[700px] z-40',
+              'fixed inset-4 md:inset-8 lg:right-8 lg:left-auto lg:w-[600px] xl:w-[700px] z-[70]',
               'flex flex-col',
               'rounded-2xl shadow-2xl overflow-hidden',
               'bg-white dark:bg-gray-900',
@@ -355,6 +382,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             <ChatWindow
               messages={messages}
               isLoading={isLoading}
+              aiStatus={aiStatus}
               onSendMessage={handleSendMessage}
               showHeader
               sessionTitle="Documentation Assistant"
@@ -368,7 +396,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         )}
       </AnimatePresence>
 
-      {/* Backdrop */}
+      {/* Backdrop - covers everything including sidebar */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -376,8 +404,9 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
+            className="fixed inset-0 bg-black/30 backdrop-blur-md z-[60]"
             onClick={() => setIsOpen(false)}
+            style={{ backdropFilter: 'blur(8px)' }}
           />
         )}
       </AnimatePresence>

@@ -1,11 +1,17 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
+import dynamic from 'next/dynamic'
 import '@/styles/globals.css'
+import '@/styles/syntax-highlighting.css'
 import { Providers } from './providers'
 import { Navigation } from '@/components/Navigation/Navigation'
 import { Footer } from '@/components/Layout/Footer'
 import { StructuredData, OrganizationStructuredData } from '@/components/SEO/StructuredData'
-import { DocsAssistant } from '@/components/AI/DocsAssistant'
+
+// Lazy load the AI assistant to reduce initial bundle size
+const DocsAssistant = dynamic(
+  () => import('@/components/AI/DocsAssistant').then((mod) => ({ default: mod.DocsAssistant }))
+)
 
 const inter = Inter({
   subsets: ['latin'],

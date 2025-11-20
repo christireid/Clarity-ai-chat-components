@@ -4,16 +4,14 @@ import { useState, useCallback } from 'react'
 import { ToastProvider, ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground'
 import { ChatWindowAnatomy } from '@/components/Diagrams/ChatWindowAnatomy'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
-import { chatWindowPresets, chatWindowControls } from './presets'
-
 // Basic chat demo component
 function BasicChatDemo() {
   const [messages, setMessages] = useState<Message[]>([
@@ -178,13 +176,8 @@ export default function ChatWindowPage() {
           Experiment with the ChatWindow component! Try different configurations including
           avatars, timestamps, and loading states to see how they enhance the chat experience.
         </p>
-        <EnhancedPlayground
-          title="ChatWindow Component Playground"
-          description="Build and customize your perfect chat interface"
-          component="ChatWindow"
-          initialCode={`import { ChatWindow } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   const messages = [
     {
       id: '1',
@@ -207,12 +200,9 @@ export default function Example() {
     </div>
     </ToastProvider>
   )
-}`}
-          presets={chatWindowPresets}
-          controls={chatWindowControls}
-          showResponsiveControls
-          showQuickActions
-          height="600px"
+}
+
+render(<Example />)`}
         />
       </section>
 

@@ -5,6 +5,8 @@
  * without boilerplate.
  */
 
+'use client'
+
 import * as React from 'react'
 import { useChat, type UseChatOptions, type UseChatReturn } from './use-chat-unified'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'

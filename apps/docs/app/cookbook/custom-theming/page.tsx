@@ -1,9 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'Custom Theming - Cookbook - Clarity Chat',
   description: 'Create custom themes and implement dark mode for your chat interface.',
@@ -246,10 +245,8 @@ module.exports = {
 
       <section className="docs-section">
         <h2>Dynamic Theme Switching</h2>
-        <LiveDemo
-          title="Live Theme Switcher"
-          code={`import { ThemeProvider, ChatWindow, ThemeSwitcher } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 const themes = {
   ocean: {
@@ -309,8 +306,7 @@ function ThemeDemo() {
   )
 }
 
-export default ThemeDemo`}
-          height="450px"
+render(<ThemeDemo />)`}
         />
       </section>
 

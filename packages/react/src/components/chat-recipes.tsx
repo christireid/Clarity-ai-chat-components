@@ -5,6 +5,8 @@
  * making it even easier to get started.
  */
 
+'use client'
+
 import * as React from 'react'
 import { ClarityChat, type ClarityChatProps } from './clarity-chat'
 import { ErrorBoundary } from './error-boundary'

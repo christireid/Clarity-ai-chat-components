@@ -1,8 +1,7 @@
-'use client'
-
+import React from 'react'
 import { Metadata } from 'next'
-import { ToastProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
@@ -11,11 +10,14 @@ import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
 
+export const metadata: Metadata = {
+  title: 'Tutorial: Build a Complete Chat App',
+  description: 'In this hands-on tutorial, you\'ll build a fully-featured chat application from scratch with real-time messaging, user avatars, typing indicators, and more.',
+}
 
 export default function TutorialPage() {
   return (
-    <ToastProvider>
-    <>
+    <div className="docs-content">
       <Breadcrumbs />
       
       <div className="mb-8">
@@ -504,7 +506,6 @@ export default App`}
           href: '/learn/concepts/components',
         }}
       />
-    </>
-    </ToastProvider>
+    </div>
   )
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -34,11 +34,8 @@ export default function SessionSummaryCardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Summary"
-          code={`import { SessionSummaryCard } from '@clarity-chat/react'
-
-function SimpleSummary() {
+        <CodePlayground
+          initialCode={`function SimpleSummary() {
   const summary = {
     title: 'Conversation Summary',
     highlights: [
@@ -67,18 +64,14 @@ function SimpleSummary() {
   )
 }
 
-export default SimpleSummary`}
-          height="400px"
+render(<SimpleSummary />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>With Metrics and Trends</h2>
-        <LiveDemo
-          title="Summary with Trends"
-          code={`import { SessionSummaryCard } from '@clarity-chat/react'
-
-function TrendingSummary() {
+        <CodePlayground
+          initialCode={`function TrendingSummary() {
   const summary = {
     title: 'Support Session Recap',
     highlights: [
@@ -110,8 +103,7 @@ function TrendingSummary() {
   )
 }
 
-export default TrendingSummary`}
-          height="500px"
+render(<TrendingSummary />)`}
         />
       </section>
 

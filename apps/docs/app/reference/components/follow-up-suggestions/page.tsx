@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -34,11 +34,8 @@ export default function FollowUpSuggestionsPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Suggestions"
-          code={`import { FollowUpSuggestions } from '@clarity-chat/react'
-
-function SimpleSuggestions() {
+        <CodePlayground
+          initialCode={`function SimpleSuggestions() {
   const suggestions = [
     {
       id: '1',
@@ -70,8 +67,7 @@ function SimpleSuggestions() {
   )
 }
 
-export default SimpleSuggestions`}
-          height="350px"
+render(<SimpleSuggestions />)`}
         />
       </section>
 
@@ -80,11 +76,8 @@ export default SimpleSuggestions`}
         <p>
           Add visual icons to make suggestions more scannable.
         </p>
-        <LiveDemo
-          title="Suggestions with Icons"
-          code={`import { FollowUpSuggestions } from '@clarity-chat/react'
-
-function IconSuggestions() {
+        <CodePlayground
+          initialCode={`function IconSuggestions() {
   const suggestions = [
     {
       id: '1',
@@ -120,8 +113,7 @@ function IconSuggestions() {
   )
 }
 
-export default IconSuggestions`}
-          height="400px"
+render(<IconSuggestions />)`}
         />
       </section>
 
@@ -130,11 +122,8 @@ export default IconSuggestions`}
         <p>
           Show how relevant each suggestion is (useful for AI-generated suggestions).
         </p>
-        <LiveDemo
-          title="AI-Ranked Suggestions"
-          code={`import { FollowUpSuggestions } from '@clarity-chat/react'
-
-function RankedSuggestions() {
+        <CodePlayground
+          initialCode={`function RankedSuggestions() {
   const suggestions = [
     {
       id: '1',
@@ -176,8 +165,7 @@ function RankedSuggestions() {
   )
 }
 
-export default RankedSuggestions`}
-          height="450px"
+render(<RankedSuggestions />)`}
         />
       </section>
 
@@ -186,10 +174,8 @@ export default RankedSuggestions`}
         <p>
           Choose between grid (default) or list layout.
         </p>
-        <LiveDemo
-          title="List vs Grid Layout"
-          code={`import { FollowUpSuggestions } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function LayoutOptions() {
   const [layout, setLayout] = useState('grid')
@@ -229,8 +215,7 @@ function LayoutOptions() {
   )
 }
 
-export default LayoutOptions`}
-          height="450px"
+render(<LayoutOptions />)`}
         />
       </section>
 
@@ -239,10 +224,8 @@ export default LayoutOptions`}
         <p>
           Show skeleton placeholders while AI generates suggestions.
         </p>
-        <LiveDemo
-          title="Loading Suggestions"
-          code={`import { FollowUpSuggestions } from '@clarity-chat/react'
-import { useState, useEffect } from 'react'
+        <CodePlayground
+          initialCode={`import { useState, useEffect } from 'react'
 
 function LoadingSuggestions() {
   const [isLoading, setIsLoading] = useState(true)
@@ -270,17 +253,14 @@ function LoadingSuggestions() {
   )
 }
 
-export default LoadingSuggestions`}
-          height="350px"
+render(<LoadingSuggestions />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Real-World Example: AI Chat with Smart Suggestions</h2>
-        <LiveDemo
-          title="Complete Chat Flow"
-          code={`import { FollowUpSuggestions } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function SmartChatSuggestions() {
   const [messages, setMessages] = useState([
@@ -366,8 +346,7 @@ function SmartChatSuggestions() {
   )
 }
 
-export default SmartChatSuggestions`}
-          height="600px"
+render(<SmartChatSuggestions />)`}
         />
       </section>
 

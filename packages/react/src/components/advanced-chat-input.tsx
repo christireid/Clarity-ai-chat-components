@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useRef, useEffect, useTransition, useImperativeHandle, forwardRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Textarea, Button, Badge, cn } from '@clarity-chat/primitives'

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { LiveDemo } from '@/components/Demo/LiveDemo';
-import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground';
+;
+;
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
 import { ViewInStorybook } from '@/components/Links/StorybookLink';
-import { inputPresets, inputControls } from './presets';
+;
 
 export const metadata: Metadata = {
   title: 'Input Component - Clarity Chat Components',
@@ -41,13 +41,8 @@ export default function InputPage() {
           Experiment with the Input component! Try different types, placeholders,
           and states to build the perfect input experience.
         </p>
-        <EnhancedPlayground
-          title="Input Component Playground"
-          description="Customize and experiment with input configurations"
-          component="Input"
-          initialCode={`import { Input } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-8 max-w-md mx-auto space-y-4">
       <Input placeholder="Type something..." />
@@ -55,19 +50,16 @@ export default function Example() {
       <Input type="password" placeholder="Password" />
     </div>
   )
-}`}
-          presets={inputPresets}
-          controls={inputControls}
-          showResponsiveControls
-          showQuickActions
-          height="550px"
+}
+
+render(<Example />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          code={`import { Input } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Input } from '@clarity/chat-components';
 
 export default function BasicInput() {
   return (
@@ -77,7 +69,9 @@ export default function BasicInput() {
       <Input placeholder="With helper text" helperText="Enter your email address" />
     </div>
   );
-}`}
+}
+
+render(<BasicInput />)`}
         />
       </section>
 
@@ -110,8 +104,8 @@ export default function BasicInput() {
 
       <section className="docs-section">
         <h2>Sizes</h2>
-        <LiveDemo
-          code={`import { Input } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Input } from '@clarity/chat-components';
 
 export default function InputSizes() {
   return (
@@ -121,14 +115,16 @@ export default function InputSizes() {
       <Input size="lg" placeholder="Large input" />
     </div>
   );
-}`}
+}
+
+render(<InputSizes />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>With Icons</h2>
-        <LiveDemo
-          code={`import { Input } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Input } from '@clarity/chat-components';
 
 export default function InputWithIcons() {
   return (
@@ -138,14 +134,16 @@ export default function InputWithIcons() {
       <Input placeholder="Password" type="password" rightIcon={<span>👁️</span>} />
     </div>
   );
-}`}
+}
+
+render(<InputWithIcons />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Validation States</h2>
-        <LiveDemo
-          code={`import { Input } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Input } from '@clarity/chat-components';
 
 export default function InputValidation() {
   return (
@@ -155,14 +153,16 @@ export default function InputValidation() {
       <Input placeholder="With warning" helperText="Please check your input" />
     </div>
   );
-}`}
+}
+
+render(<InputValidation />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Controlled Input</h2>
-        <LiveDemo
-          code={`import { useState } from 'react';
+        <CodePlayground
+          initialCode={`import { useState } from 'react';
 import { Input } from '@clarity/chat-components';
 
 export default function ControlledInput() {
@@ -179,7 +179,9 @@ export default function ControlledInput() {
       <p className="text-sm text-gray-600">Value: {value}</p>
     </div>
   );
-}`}
+}
+
+render(<ControlledInput />)`}
         />
       </section>
 

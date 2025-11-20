@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Conversation Branching Example - Clarity Chat Components',
   description: 'Implement Claude-style speculative branches with ConversationBranchVisualizer and useBranchManagement.',
@@ -36,9 +36,8 @@ export default function ConversationBranchingExamplePage() {
 
       <section className="docs-section">
         <h2>Live Demo</h2>
-        <LiveDemo
-          title="Conversation Branching Playground"
-          code={`import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 import {
   ChatWindow,
   ConversationBranchVisualizer,
@@ -91,7 +90,9 @@ export default function ConversationBranchingDemo() {
       </div>
     </div>
   )
-}`}
+}
+
+render(<ConversationBranchingDemo />)`}
         />
       </section>
 

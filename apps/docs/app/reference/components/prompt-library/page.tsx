@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'PromptLibrary - Clarity Chat Components',
   description: 'Manage reusable prompts and insert them into chats.',
@@ -18,11 +16,8 @@ export default function PromptLibraryPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { PromptLibrary } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   const items = [
     { id: 'summarize', label: 'Summarize Selection' },
     { id: 'rewrite', label: 'Rewrite for Tone' },
@@ -32,8 +27,9 @@ export default function Example() {
       <PromptLibrary items={items} onApply={(id) => console.log(id)} />
     </div>
   )
-}`} 
-          height="200px"
+}
+
+render(<Example />)`}
         />
       </section>
     </div>

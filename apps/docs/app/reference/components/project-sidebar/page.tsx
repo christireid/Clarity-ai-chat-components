@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'ProjectSidebar - Clarity Chat Components',
   description: 'Sidebar for navigating conversations, documents, and tools.',
@@ -20,18 +18,16 @@ export default function ProjectSidebarPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { ProjectSidebar } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="h-[420px] border rounded overflow-hidden">
       <ProjectSidebar />
     </div>
   )
-}`} 
-          height="460px"
+}
+
+render(<Example />)`}
         />
       </section>
     </div>

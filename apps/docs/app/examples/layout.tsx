@@ -1,4 +1,5 @@
 import { DocsLayout } from '@/components/Layout/DocsLayout'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { examplesNavigation } from '@/lib/navigation'
 
 export default function ExamplesLayout({

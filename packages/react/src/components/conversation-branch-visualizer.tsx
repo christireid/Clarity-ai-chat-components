@@ -1,13 +1,15 @@
 /**
  * Conversation Branch Visualizer
- * 
+ *
  * Provides a tree-based visualization for conversation branching,
  * similar to Claude's conversation branches feature.
- * 
+ *
  * @blueprint Feature 2.3 - Conversation Branching
  * @priority HIGH
  * @status NEW - Implementation based on blueprint analysis
  */
+
+'use client'
 
 import React, { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -29,11 +29,8 @@ export default function WorkflowSuggestionListPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Workflows"
-          code={`import { WorkflowSuggestionList } from '@clarity-chat/react'
-
-function SimpleWorkflows() {
+        <CodePlayground
+          initialCode={`function SimpleWorkflows() {
   const workflows = [
     {
       id: '1',
@@ -71,8 +68,7 @@ function SimpleWorkflows() {
   )
 }
 
-export default SimpleWorkflows`}
-          height="450px"
+render(<SimpleWorkflows />)`}
         />
       </section>
 

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-// @ts-expect-error - react-live is an optional dependency for playground functionality
 import { LiveProvider, LivePreview, LiveError } from 'react-live'
 import * as ClarityChat from '@clarity-chat/react'
 
@@ -41,8 +40,12 @@ export function CodePlayground({
     useCallback: React.useCallback,
     useMemo: React.useMemo,
     useRef: React.useRef,
+    useContext: React.useContext,
+    createContext: React.createContext,
     // Ensure ToastProvider is explicitly available
     ToastProvider: ClarityChat.ToastProvider,
+    // Add render function for react-live
+    render: (component: React.ReactElement) => component,
   }
 
   // Transform code to work with react-live (remove imports, handle exports)
@@ -172,9 +175,11 @@ export function CodePlayground({
               </div>
               
               <LiveError className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4 text-red-800 dark:text-red-200 text-sm font-mono" />
-              
+
               <div className="playground-preview">
-                <LivePreview />
+                <ClarityChat.ToastProvider>
+                  <LivePreview />
+                </ClarityChat.ToastProvider>
               </div>
             </div>
           </div>

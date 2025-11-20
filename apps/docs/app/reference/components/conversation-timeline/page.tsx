@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -34,11 +34,8 @@ export default function ConversationTimelinePage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Timeline"
-          code={`import { ConversationTimeline } from '@clarity-chat/react'
-
-function SimpleTimeline() {
+        <CodePlayground
+          initialCode={`function SimpleTimeline() {
   const events = [
     {
       id: '1',
@@ -73,8 +70,7 @@ function SimpleTimeline() {
   )
 }
 
-export default SimpleTimeline`}
-          height="400px"
+render(<SimpleTimeline />)`}
         />
       </section>
 
@@ -83,11 +79,8 @@ export default SimpleTimeline`}
         <p>
           Different event types are color-coded to make it easy to scan the timeline.
         </p>
-        <LiveDemo
-          title="All Event Types"
-          code={`import { ConversationTimeline } from '@clarity-chat/react'
-
-function EventTypes() {
+        <CodePlayground
+          initialCode={`function EventTypes() {
   const events = [
     {
       id: '1',
@@ -141,8 +134,7 @@ function EventTypes() {
   )
 }
 
-export default EventTypes`}
-          height="500px"
+render(<EventTypes />)`}
         />
       </section>
 
@@ -151,11 +143,8 @@ export default EventTypes`}
         <p>
           Add extra details like tokens used, model name, or any custom data.
         </p>
-        <LiveDemo
-          title="Timeline with Metadata"
-          code={`import { ConversationTimeline } from '@clarity-chat/react'
-
-function MetadataTimeline() {
+        <CodePlayground
+          initialCode={`function MetadataTimeline() {
   const events = [
     {
       id: '1',
@@ -192,8 +181,7 @@ function MetadataTimeline() {
   )
 }
 
-export default MetadataTimeline`}
-          height="400px"
+render(<MetadataTimeline />)`}
         />
       </section>
 
@@ -202,10 +190,8 @@ export default MetadataTimeline`}
         <p>
           Click events to jump to that point in the conversation, or retry failed steps.
         </p>
-        <LiveDemo
-          title="Interactive Timeline Example"
-          code={`import { ConversationTimeline } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function InteractiveTimeline() {
   const [events, setEvents] = useState([
@@ -278,8 +264,7 @@ function InteractiveTimeline() {
   )
 }
 
-export default InteractiveTimeline`}
-          height="550px"
+render(<InteractiveTimeline />)`}
         />
       </section>
 
@@ -288,10 +273,8 @@ export default InteractiveTimeline`}
         <p>
           Build a debugging interface to see exactly what your AI agent did.
         </p>
-        <LiveDemo
-          title="Agent Debug Dashboard"
-          code={`import { ConversationTimeline } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function AgentDebugDashboard() {
   // Simulate a complex agent workflow
@@ -392,8 +375,7 @@ function AgentDebugDashboard() {
   )
 }
 
-export default AgentDebugDashboard`}
-          height="700px"
+render(<AgentDebugDashboard />)`}
         />
       </section>
 

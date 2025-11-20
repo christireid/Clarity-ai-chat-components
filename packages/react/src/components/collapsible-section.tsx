@@ -5,6 +5,8 @@
  * Perfect for accordions, FAQ sections, and expandable list items.
  */
 
+'use client'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'

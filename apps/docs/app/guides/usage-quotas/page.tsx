@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import matter from 'gray-matter'

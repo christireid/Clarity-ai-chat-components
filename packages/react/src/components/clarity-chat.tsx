@@ -41,6 +41,8 @@ import type { CoreMessage } from '../hooks/use-chat-enhanced'
 export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   /** API endpoint URL - the only required prop */
   api: string
+  /** Optional chat ID for persistence */
+  chatId?: string
   /** Optional className for the chat container */
   className?: string
   /** Custom empty state */
@@ -61,6 +63,12 @@ export interface ClarityChatProps extends Omit<UseClarityChatOptions, 'api'> {
   onClear?: () => void
   /** Auto-scroll to bottom on new messages */
   autoScroll?: boolean
+  /** Callback when a message is copied */
+  onMessageCopy?: (id: string, content: string) => void
+  /** Theme for the chat interface */
+  theme?: string
+  /** Error handler with error info */
+  onError?: (error: Error, errorInfo?: React.ErrorInfo) => void
 }
 
 /**

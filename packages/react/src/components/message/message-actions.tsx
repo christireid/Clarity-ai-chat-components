@@ -91,7 +91,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 )}
                 aria-label="Good response"
               >
-                <ThumbsUpIcon size={16} />
+                <ThumbsUpIcon size={12} />
               </Button>
             </motion.div>
 
@@ -126,7 +126,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
               )}
               aria-label="Poor response"
             >
-              <ThumbsDownIcon size={16} />
+              <ThumbsDownIcon size={12} />
             </Button>
           </motion.div>
 
@@ -137,7 +137,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
               transition={INTERACTION_VARIANTS.button.transition}
             >
               <Button variant="ghost" size="sm" onClick={onRetry} className="gap-1.5">
-                <RefreshIcon size={16} />
+                <RefreshIcon size={12} />
                 Retry
               </Button>
             </motion.div>
@@ -157,7 +157,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 className="gap-1.5"
                 aria-label="Edit message"
               >
-                <EditIcon size={16} />
+                <EditIcon size={12} />
                 Edit
               </Button>
             </motion.div>
@@ -177,7 +177,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 className="gap-1.5"
                 aria-label="Regenerate response"
               >
-                <RefreshIcon size={16} />
+                <RefreshIcon size={12} />
                 Regenerate
               </Button>
             </motion.div>
@@ -197,7 +197,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
                 aria-label="Delete message"
               >
-                <TrashIcon size={16} />
+                <TrashIcon size={12} />
                 Delete
               </Button>
             </motion.div>

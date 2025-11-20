@@ -2,6 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Enterprise SSO Setup - Cookbook',
   description: 'Configure SAML/OIDC authentication with role-based access control.',

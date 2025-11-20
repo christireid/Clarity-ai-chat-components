@@ -5,6 +5,8 @@
  * consistent styling across components.
  */
 
+'use client'
+
 import { useMemo } from 'react'
 
 export interface DesignTokens {

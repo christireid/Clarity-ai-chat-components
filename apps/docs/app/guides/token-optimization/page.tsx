@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'Token Optimization Guide',
   description: 'Reduce tokens with compression, chunking, reranking, and memory policies.',
@@ -26,11 +24,8 @@ export default function TokenOptimizationGuide() {
 
       <section className="docs-section">
         <h2>Quick Start</h2>
-        <LiveDemo
-          title="Enable Token Optimization"
-          code={`import { TokenOptimizerProvider } from '@clarity-chat/react'
-
-export default function App({ children }) {
+        <CodePlayground
+          initialCode={`function App({ children }) {
   return (
     <TokenOptimizerProvider
       compression={{ algorithm: 'llmlingua', targetRatio: 0.6 }}
@@ -41,8 +36,9 @@ export default function App({ children }) {
       {children}
     </TokenOptimizerProvider>
   )
-}`}
-          height="260px"
+}
+
+render(<App />)`}
         />
       </section>
 

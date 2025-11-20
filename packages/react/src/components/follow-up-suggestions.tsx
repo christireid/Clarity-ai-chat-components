@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -78,17 +80,17 @@ export function FollowUpSuggestions({
         aria-label={`Follow up with ${suggestion.title}`}
       >
         <div className="flex w-full items-center justify-between gap-3">
-          <div className="flex items-center gap-3 text-sm font-semibold text-foreground">
+          <div className="flex items-center gap-3 text-sm font-semibold text-foreground flex-1 min-w-0">
             {suggestion.icon && (
               <motion.span
-                className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-primary/20 group-hover:bg-primary/20 transition-all duration-200"
+                className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-primary/20 group-hover:bg-primary/20 transition-all duration-200 shrink-0"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               >
                 {suggestion.icon}
               </motion.span>
             )}
-            <span className="group-hover:text-primary transition-colors duration-200">
+            <span className="group-hover:text-primary transition-colors duration-200 line-clamp-1">
               {suggestion.title}
             </span>
           </div>
@@ -109,7 +111,7 @@ export function FollowUpSuggestions({
         </div>
 
         {suggestion.description && (
-          <p className="text-sm text-muted-foreground/80">
+          <p className="text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed">
             {suggestion.description}
           </p>
         )}

@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Message List - Clarity Chat',
   description: 'A container component for displaying chat messages with auto-scroll, loading states, empty states, and smooth animations.',

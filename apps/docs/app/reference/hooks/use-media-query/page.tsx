@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { LiveDemo } from '@/components/Demo/LiveDemo';
+;
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
 
@@ -36,8 +36,8 @@ export default function UseMediaQueryPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function ResponsiveComponent() {
   const isMobile = useMediaQuery('(max-width: 768px)');
@@ -55,7 +55,9 @@ export default function ResponsiveComponent() {
       </p>
     </div>
   );
-}`}
+}
+
+render(<ResponsiveComponent />)`}
         />
       </section>
 
@@ -109,8 +111,8 @@ export default function ResponsiveComponent() {
         <p>
           Detect common responsive breakpoints for mobile, tablet, and desktop.
         </p>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function ResponsiveBreakpoints() {
   const isMobile = useMediaQuery('(max-width: 639px)');
@@ -153,7 +155,9 @@ export default function ResponsiveBreakpoints() {
       </div>
     </div>
   );
-}`}
+}
+
+render(<ResponsiveBreakpoints />)`}
         />
       </section>
 
@@ -162,8 +166,8 @@ export default function ResponsiveBreakpoints() {
         <p>
           Detect device orientation for tailored layouts.
         </p>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function OrientationDetection() {
   const isPortrait = useMediaQuery('(orientation: portrait)');
@@ -184,7 +188,9 @@ export default function OrientationDetection() {
       </p>
     </div>
   );
-}`}
+}
+
+render(<OrientationDetection />)`}
         />
       </section>
 
@@ -193,8 +199,8 @@ export default function OrientationDetection() {
         <p>
           Detect user's color scheme preference (light or dark mode).
         </p>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function ColorSchemeDetection() {
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
@@ -221,7 +227,9 @@ export default function ColorSchemeDetection() {
       </div>
     </div>
   );
-}`}
+}
+
+render(<ColorSchemeDetection />)`}
         />
       </section>
 
@@ -230,8 +238,8 @@ export default function ColorSchemeDetection() {
         <p>
           Respect user's motion preferences for better accessibility.
         </p>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function MotionDetection() {
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
@@ -258,7 +266,9 @@ export default function MotionDetection() {
         <div
           className={\`w-16 h-16 bg-blue-500 rounded-lg \${
             prefersReducedMotion ? '' : 'animate-bounce'
-          }\`}
+          }\
+
+render(<MotionDetection />)`}
         />
       </div>
 
@@ -276,8 +286,8 @@ export default function MotionDetection() {
         <p>
           Use multiple media queries for complex responsive logic.
         </p>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function MultipleQueries() {
   const isSmall = useMediaQuery('(max-width: 640px)');
@@ -321,7 +331,9 @@ export default function MultipleQueries() {
       </div>
     </div>
   );
-}`}
+}
+
+render(<MultipleQueries />)`}
         />
       </section>
 
@@ -330,8 +342,8 @@ export default function MultipleQueries() {
         <p>
           Render different components based on media query matches.
         </p>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 function MobileNav() {
   return (
@@ -367,7 +379,9 @@ export default function ConditionalRendering() {
       </div>
     </div>
   );
-}`}
+}
+
+render(<MobileNav />)`}
         />
       </section>
 
@@ -376,8 +390,8 @@ export default function ConditionalRendering() {
         <p>
           Create reusable breakpoint hooks for your design system.
         </p>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 // Custom hooks for your breakpoints
 function useBreakpoint() {
@@ -434,7 +448,9 @@ export default function CustomBreakpoints() {
       </div>
     </div>
   );
-}`}
+}
+
+render(<useBreakpoint />)`}
         />
       </section>
 
@@ -445,8 +461,8 @@ export default function CustomBreakpoints() {
         <p>
           Adjust component behavior dynamically based on screen size.
         </p>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function ResponsiveTable() {
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -499,15 +515,17 @@ export default function ResponsiveTable() {
       )}
     </div>
   );
-}`}
+}
+
+render(<ResponsiveTable />)`}
         />
 
         <h3>Performance Optimization</h3>
         <p>
           Conditionally load heavy components only when needed.
         </p>
-        <LiveDemo
-          code={`import { useMediaQuery } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { useMediaQuery } from '@clarity/chat-components';
 
 export default function LazyLoadByBreakpoint() {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
@@ -540,7 +558,9 @@ export default function LazyLoadByBreakpoint() {
       </div>
     </div>
   );
-}`}
+}
+
+render(<LazyLoadByBreakpoint />)`}
         />
       </section>
 

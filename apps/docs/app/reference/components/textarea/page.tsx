@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { LiveDemo } from '@/components/Demo/LiveDemo';
+;
 import { ApiTable } from '@/components/Demo/ApiTable';
 
 export const metadata: Metadata = {
@@ -22,8 +22,8 @@ export default function TextareaPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          code={`import { Textarea } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Textarea } from '@clarity/chat-components';
 
 export default function BasicTextarea() {
   return (
@@ -32,7 +32,9 @@ export default function BasicTextarea() {
       rows={4}
     />
   );
-}`}
+}
+
+render(<BasicTextarea />)`}
         />
       </section>
 

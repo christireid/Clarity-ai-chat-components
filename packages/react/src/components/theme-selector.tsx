@@ -4,6 +4,8 @@
  * UI component for selecting and switching between theme presets
  */
 
+'use client'
+
 import * as React from 'react'
 import { useTheme } from '../theme/ThemeProvider'
 import { getAllThemes } from '../theme/theme-builder'

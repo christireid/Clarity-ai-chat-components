@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
@@ -34,11 +34,8 @@ export default function AvatarPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Basic Avatar"
-          code={`import { Avatar } from '@clarity-chat/react'
-
-function BasicAvatar() {
+        <CodePlayground
+          initialCode={`function BasicAvatar() {
   return (
     <div className="flex items-center gap-4">
       <Avatar
@@ -64,8 +61,7 @@ function BasicAvatar() {
   )
 }
 
-export default BasicAvatar`}
-          height="200px"
+render(<BasicAvatar />)`}
         />
       </section>
 
@@ -82,11 +78,8 @@ export default BasicAvatar`}
         <p>
           Avatars come in multiple predefined sizes from extra small to extra large.
         </p>
-        <LiveDemo
-          title="Avatar Sizes"
-          code={`import { Avatar } from '@clarity-chat/react'
-
-function AvatarSizes() {
+        <CodePlayground
+          initialCode={`function AvatarSizes() {
   return (
     <div className="flex items-end gap-4">
       <div className="text-center">
@@ -146,8 +139,7 @@ function AvatarSizes() {
   )
 }
 
-export default AvatarSizes`}
-          height="250px"
+render(<AvatarSizes />)`}
         />
       </section>
 
@@ -157,11 +149,8 @@ export default AvatarSizes`}
           When an image fails to load, the Avatar displays initials derived from the user's name
           with a generated background color.
         </p>
-        <LiveDemo
-          title="Fallback Avatars"
-          code={`import { Avatar } from '@clarity-chat/react'
-
-function FallbackAvatars() {
+        <CodePlayground
+          initialCode={`function FallbackAvatars() {
   return (
     <div className="space-y-6">
       <div>
@@ -235,8 +224,7 @@ function FallbackAvatars() {
   )
 }
 
-export default FallbackAvatars`}
-          height="450px"
+render(<FallbackAvatars />)`}
         />
       </section>
 
@@ -245,11 +233,8 @@ export default FallbackAvatars`}
         <p>
           Show user presence status with a colored indicator.
         </p>
-        <LiveDemo
-          title="Status Indicators"
-          code={`import { Avatar } from '@clarity-chat/react'
-
-function StatusAvatars() {
+        <CodePlayground
+          initialCode={`function StatusAvatars() {
   return (
     <div className="space-y-6">
       <div>
@@ -331,8 +316,7 @@ function StatusAvatars() {
   )
 }
 
-export default StatusAvatars`}
-          height="400px"
+render(<StatusAvatars />)`}
         />
       </section>
 
@@ -341,11 +325,8 @@ export default StatusAvatars`}
         <p>
           Avatars can be circular (default), rounded square, or square.
         </p>
-        <LiveDemo
-          title="Avatar Shapes"
-          code={`import { Avatar } from '@clarity-chat/react'
-
-function AvatarShapes() {
+        <CodePlayground
+          initialCode={`function AvatarShapes() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
@@ -412,8 +393,7 @@ function AvatarShapes() {
   )
 }
 
-export default AvatarShapes`}
-          height="350px"
+render(<AvatarShapes />)`}
         />
       </section>
 
@@ -422,11 +402,8 @@ export default AvatarShapes`}
         <p>
           Display multiple avatars in a compact, overlapping group.
         </p>
-        <LiveDemo
-          title="Avatar Groups"
-          code={`import { Avatar, AvatarGroup } from '@clarity-chat/react'
-
-function AvatarGroups() {
+        <CodePlayground
+          initialCode={`function AvatarGroups() {
   const users = [
     { id: '1', name: 'Alice', src: 'https://i.pravatar.cc/150?img=1' },
     { id: '2', name: 'Bob', src: 'https://i.pravatar.cc/150?img=2' },
@@ -506,8 +483,7 @@ function AvatarGroups() {
   )
 }
 
-export default AvatarGroups`}
-          height="500px"
+render(<AvatarGroups />)`}
         />
       </section>
 
@@ -516,11 +492,8 @@ export default AvatarGroups`}
         <p>
           Add notification badges or counts to avatars.
         </p>
-        <LiveDemo
-          title="Avatar with Badge"
-          code={`import { Avatar } from '@clarity-chat/react'
-
-function AvatarWithBadge() {
+        <CodePlayground
+          initialCode={`function AvatarWithBadge() {
   return (
     <div className="flex items-center gap-8">
       <div className="text-center">
@@ -569,8 +542,7 @@ function AvatarWithBadge() {
   )
 }
 
-export default AvatarWithBadge`}
-          height="250px"
+render(<AvatarWithBadge />)`}
         />
       </section>
 
@@ -579,11 +551,8 @@ export default AvatarWithBadge`}
         <p>
           Make avatars clickable for profile views or actions.
         </p>
-        <LiveDemo
-          title="Interactive Avatars"
-          code={`import { Avatar } from '@clarity-chat/react'
-
-function InteractiveAvatars() {
+        <CodePlayground
+          initialCode={`function InteractiveAvatars() {
   const [clicked, setClicked] = React.useState(null)
 
   const users = [
@@ -627,8 +596,7 @@ function InteractiveAvatars() {
   )
 }
 
-export default InteractiveAvatars`}
-          height="300px"
+render(<InteractiveAvatars />)`}
         />
       </section>
 
@@ -637,11 +605,8 @@ export default InteractiveAvatars`}
         <p>
           Override the default color scheme for fallback avatars.
         </p>
-        <LiveDemo
-          title="Custom Avatar Colors"
-          code={`import { Avatar } from '@clarity-chat/react'
-
-function CustomColorAvatars() {
+        <CodePlayground
+          initialCode={`function CustomColorAvatars() {
   return (
     <div className="space-y-6">
       <div>
@@ -707,8 +672,7 @@ function CustomColorAvatars() {
   )
 }
 
-export default CustomColorAvatars`}
-          height="400px"
+render(<CustomColorAvatars />)`}
         />
       </section>
 
@@ -717,11 +681,8 @@ export default CustomColorAvatars`}
         <p>
           Show a skeleton loader while the avatar image is loading.
         </p>
-        <LiveDemo
-          title="Loading Avatars"
-          code={`import { Avatar } from '@clarity-chat/react'
-
-function LoadingAvatars() {
+        <CodePlayground
+          initialCode={`function LoadingAvatars() {
   const [isLoading, setIsLoading] = React.useState(true)
 
   React.useEffect(() => {
@@ -762,8 +723,7 @@ function LoadingAvatars() {
   )
 }
 
-export default LoadingAvatars`}
-          height="250px"
+render(<LoadingAvatars />)`}
         />
       </section>
 

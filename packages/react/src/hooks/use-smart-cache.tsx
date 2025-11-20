@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { SmartCache, CacheOptions, CacheStats } from '../utils/smart-cache'
 

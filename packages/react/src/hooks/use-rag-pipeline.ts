@@ -14,6 +14,8 @@
  * ```
  */
 
+'use client'
+
 import * as React from 'react'
 import { useVectorStore } from '../vector-stores/use-vector-store'
 import { useEmbeddings } from '../embeddings/use-embeddings'

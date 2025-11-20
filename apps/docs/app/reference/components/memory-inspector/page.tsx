@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -35,11 +35,8 @@ export default function MemoryInspectorPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Memory Inspector"
-          code={`import { MemoryInspector } from '@clarity-chat/react'
-
-function SimpleMemory() {
+        <CodePlayground
+          initialCode={`function SimpleMemory() {
   const memories = [
     {
       id: '1',
@@ -70,8 +67,7 @@ function SimpleMemory() {
   return <MemoryInspector memories={memories} />
 }
 
-export default SimpleMemory`}
-          height="350px"
+render(<SimpleMemory />)`}
         />
       </section>
 
@@ -86,11 +82,8 @@ export default SimpleMemory`}
           <li><strong>Global</strong> 🌍 - Permanent user memory (never forgotten)</li>
         </ul>
 
-        <LiveDemo
-          title="Different Memory Scopes"
-          code={`import { MemoryInspector } from '@clarity-chat/react'
-
-function MemoryScopes() {
+        <CodePlayground
+          initialCode={`function MemoryScopes() {
   const memories = [
     {
       id: '1',
@@ -127,8 +120,7 @@ function MemoryScopes() {
   )
 }
 
-export default MemoryScopes`}
-          height="400px"
+render(<MemoryScopes />)`}
         />
       </section>
 
@@ -137,10 +129,8 @@ export default MemoryScopes`}
         <p>
           Add remove and promote actions to let users control what the AI remembers.
         </p>
-        <LiveDemo
-          title="Interactive Memory Management"
-          code={`import { MemoryInspector } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function ManageableMemory() {
   const [memories, setMemories] = useState([
@@ -216,8 +206,7 @@ function ManageableMemory() {
   )
 }
 
-export default ManageableMemory`}
-          height="500px"
+render(<ManageableMemory />)`}
         />
       </section>
 

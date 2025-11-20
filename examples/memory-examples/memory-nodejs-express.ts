@@ -1,13 +1,17 @@
 /**
- * Node.js Express Example - Framework-Agnostic Memory Usage
- * 
- * This example shows how to use @clarity-chat/memory in a Node.js backend
+ * Node.js Express Example - Modern Clarity Memory API
+ *
+ * This example shows how to use @clarity-chat/memory in an Express.js backend
+ * with the modern clarityMemory() factory function.
+ *
+ * Install dependencies: npm install express
+ * Run: npx tsx examples/memory-examples/memory-nodejs-express.ts
  */
 
-import express from 'express'
-import { MemoryService, type MemoryServiceConfig } from '@clarity-chat/memory'
+import express, { type Request, type Response } from 'express'
+import { MemoryService, type MemoryServiceConfig } from '../../packages/memory/src/index'
 
-// Initialize memory service
+// Initialize memory service with complete configuration
 const memoryConfig: MemoryServiceConfig = {
   tokenOptimization: {
     maxContextWindow: 4096,
@@ -17,88 +21,88 @@ const memoryConfig: MemoryServiceConfig = {
       recentContext: 0.30,
       semanticMemory: 0.25,
       episodicMemory: 0.15,
-      responseReserve: 0.05,
+      responseReserve: 0.05
     },
     dynamicAllocation: true,
     enableCompression: true,
-    enableChunking: true,
+    enableChunking: true
   },
   persistence: {
     useVectorStore: false,
     useCache: true,
-    useDatabase: false,
+    useDatabase: false
   },
+  enableAutoSummarization: false,
   enableAutoCleanup: true,
+  cleanupInterval: 3600000, // 1 hour
   retentionPolicy: {
-    shortTerm: 3600,
-    session: 86400,
-    thread: 604800,
-    global: 0,
+    shortTerm: 3600,    // 1 hour
+    session: 86400,     // 24 hours
+    thread: 604800,     // 7 days
+    global: 0           // Never expires
   },
+  debug: true
 }
 
-const memoryService = new MemoryService(memoryConfig)
+const memory = new MemoryService(memoryConfig)
+
+// Initialize memory service
+await memory.initialize()
 
 // Create Express app
 const app = express()
 app.use(express.json())
 
-// Chat endpoint
-app.post('/api/chat', async (req, res) => {
+/**
+ * POST /api/chat
+ * Chat endpoint with memory-enhanced context
+ */
+app.post('/api/chat', async (req: Request, res: Response) => {
   try {
     const { userId, message, sessionId } = req.body
 
     if (!userId || !message) {
-      return res.status(400).json({ error: 'userId and message required' })
+      res.status(400).json({ error: 'userId and message required' })
+      return
     }
 
-    // Get relevant memories
-    const memories = await memoryService.query({
+    // Search for relevant memories
+    const relevantMemories = await memory.query({
       query: message,
       limit: 5,
       minConfidence: 0.7,
-      sessionId,
-      metadata: { userId },
+      metadata: { userId, sessionId }
     })
 
-    // Build context for LLM
-    const context = memories.map(r => r.memory.content).join('\n\n')
+    // Get optimized context bundle for LLM
+    const contextBundle = await memory.context({
+      maxTokens: 1000
+    })
 
-    // Call your LLM (OpenAI, Anthropic, etc.)
-    const llmResponse = await callLLM(message, context)
+    // Call your LLM with the context
+    const llmResponse = await callLLM(message, contextBundle.formatted || '')
 
-    // Store user message
-    await memoryService.addMemory(
-      message,
-      'episodic',
-      'session',
-      {
-        userId,
-        sessionId,
-        role: 'user',
-        timestamp: new Date().toISOString(),
-      },
-      { priority: 'medium', confidence: 0.8 }
-    )
+    // Store the user message as episodic memory
+    await memory.add(message, {
+      type: 'episodic',
+      scope: 'session',
+      importance: 0.5,
+      tags: ['user-message', userId, sessionId].filter(Boolean)
+    })
 
     // Store assistant response
-    await memoryService.addMemory(
-      llmResponse,
-      'episodic',
-      'session',
-      {
-        userId,
-        sessionId,
-        role: 'assistant',
-        timestamp: new Date().toISOString(),
-      },
-      { priority: 'medium', confidence: 0.9 }
-    )
+    await memory.add(llmResponse, {
+      type: 'episodic',
+      scope: 'session',
+      importance: 0.6,
+      tags: ['assistant-response', userId, sessionId].filter(Boolean)
+    })
 
     res.json({
       response: llmResponse,
-      memoriesUsed: memories.length,
-      tokensUsed: memories.reduce((sum, m) => sum + m.memory.tokens, 0),
+      memoriesUsed: relevantMemories.length,
+      tokensUsed: contextBundle.tokenBreakdown.total,
+      context: (contextBundle.formatted || '').substring(0, 200) + '...'
     })
   } catch (error) {
     console.error('Chat error:', error)
@@ -106,24 +110,28 @@ app.post('/api/chat', async (req, res) => {
   }
 })
 
-// Get user preferences
-app.get('/api/preferences/:userId', async (req, res) => {
+/**
+ * GET /api/preferences/:userId
+ * Get user preferences from semantic memory
+ */
+app.get('/api/preferences/:userId', async (req: Request, res: Response) => {
   try {
     const { userId } = req.params
 
-    const preferences = await memoryService.query({
+    const preferences = await memory.query({
       types: ['semantic'],
       scopes: ['user', 'global'],
-      metadata: { userId },
-      limit: 20,
+      metadata: { userId, category: 'preference' },
+      limit: 20
     })
 
     res.json({
-      preferences: preferences.map(r => ({
-        key: r.memory.metadata.preferenceKey,
-        value: r.memory.metadata.preferenceValue,
-        confidence: r.memory.confidence,
-      })),
+      preferences: preferences.map(result => ({
+        content: result.memory.content,
+        score: result.score ?? result.relevance,
+        tags: result.memory.tags,
+        createdAt: result.memory.createdAt
+      }))
     })
   } catch (error) {
     console.error('Preferences error:', error)
@@ -131,35 +139,41 @@ app.get('/api/preferences/:userId', async (req, res) => {
   }
 })
 
-// Set user preference
-app.post('/api/preferences/:userId', async (req, res) => {
+/**
+ * POST /api/preferences/:userId
+ * Set user preference as semantic memory
+ */
+app.post('/api/preferences/:userId', async (req: Request, res: Response) => {
   try {
     const { userId } = req.params
     const { key, value } = req.body
 
-    await memoryService.addMemory(
-      `User preference: ${key} = ${value}`,
-      'semantic',
-      'user',
-      {
-        userId,
-        preferenceKey: key,
-        preferenceValue: value,
-      },
-      { priority: 'high', confidence: 0.95 }
-    )
+    if (!key || !value) {
+      res.status(400).json({ error: 'key and value required' })
+      return
+    }
 
-    res.json({ success: true })
+    const memoryId = await memory.add(`User preference: ${key} = ${value}`, {
+      type: 'semantic',
+      scope: 'user',
+      importance: 0.9,
+      tags: ['preference', key, userId]
+    })
+
+    res.json({ success: true, memoryId })
   } catch (error) {
     console.error('Set preference error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
 
-// Get memory statistics
-app.get('/api/stats', async (req, res) => {
+/**
+ * GET /api/stats
+ * Get memory statistics
+ */
+app.get('/api/stats', async (_req: Request, res: Response) => {
   try {
-    const stats = memoryService.getStats()
+    const stats = memory.getStats()
     res.json(stats)
   } catch (error) {
     console.error('Stats error:', error)
@@ -167,38 +181,111 @@ app.get('/api/stats', async (req, res) => {
   }
 })
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' })
+/**
+ * GET /api/memories/:userId
+ * Get all memories for a user
+ */
+app.get('/api/memories/:userId', async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params
+    const { type, limit = '50' } = req.query
+
+    const query: any = {
+      metadata: { userId },
+      limit: Number(limit)
+    }
+
+    if (type) {
+      query.types = [String(type)]
+    }
+
+    const memories = await memory.query(query)
+
+    res.json({
+      memories: memories.map(r => ({
+        id: r.memory.id,
+        content: r.memory.content,
+        type: r.memory.type,
+        importance: r.memory.importance,
+        timestamp: r.memory.timestamp,
+        tags: r.memory.tags
+      }))
+    })
+  } catch (error) {
+    console.error('Memories error:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
 })
 
-// Mock LLM function (replace with your actual LLM call)
-async function callLLM(message: string, context: string): Promise<string> {
-  // Example with OpenAI
-  // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  // const response = await openai.chat.completions.create({
-  //   model: 'gpt-4o-mini',
-  //   messages: [
-  //     {
-  //       role: 'system',
-  //       content: `You are a helpful assistant.\n\nContext:\n${context}`
-  //     },
-  //     {
-  //       role: 'user',
-  //       content: message
-  //     }
-  //   ]
-  // })
-  // return response.choices[0].message.content
+/**
+ * DELETE /api/memories/:memoryId
+ * Delete a specific memory
+ */
+app.delete('/api/memories/:memoryId', async (req: Request, res: Response) => {
+  try {
+    const { memoryId } = req.params
+    if (!memoryId) {
+      res.status(400).json({ error: 'memoryId required' })
+      return
+    }
+    const success = await memory.forget(memoryId)
+    res.json({ success })
+  } catch (error) {
+    console.error('Delete memory error:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
 
-  return `Echo: ${message} (with ${context ? 'context' : 'no context'})`
+/**
+ * GET /health
+ * Health check endpoint
+ */
+app.get('/health', (_req: Request, res: Response) => {
+  res.json({ status: 'ok', service: 'clarity-memory-api' })
+})
+
+/**
+ * Mock LLM function - Replace with your actual LLM integration
+ *
+ * Example with OpenAI:
+ * ```typescript
+ * import OpenAI from 'openai'
+ * const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+ *
+ * async function callLLM(message: string, context: string): Promise<string> {
+ *   const response = await openai.chat.completions.create({
+ *     model: 'gpt-4o-mini',
+ *     messages: [
+ *       {
+ *         role: 'system',
+ *         content: `You are a helpful assistant.\n\nRelevant context:\n${context}`
+ *       },
+ *       { role: 'user', content: message }
+ *     ]
+ *   })
+ *   return response.choices[0].message.content || 'No response'
+ * }
+ * ```
+ */
+async function callLLM(message: string, context: string): Promise<string> {
+  // Mock response for demonstration
+  const contextPreview = context ? context.substring(0, 50) + '...' : 'no context'
+  return `Echo: ${message} (with context: ${contextPreview})`
 }
 
 // Start server
-const PORT = process.env.PORT || 3000
+const PORT = process.env['PORT'] || 3000
 app.listen(PORT, () => {
-  console.log(`Memory-enabled API server listening on port ${PORT}`)
-  console.log(`Try: POST http://localhost:${PORT}/api/chat`)
+  console.log(`\n✨ Clarity Memory API Server`)
+  console.log(`📡 Listening on port ${PORT}`)
+  console.log(`\nAvailable endpoints:`)
+  console.log(`  POST   http://localhost:${PORT}/api/chat`)
+  console.log(`  GET    http://localhost:${PORT}/api/preferences/:userId`)
+  console.log(`  POST   http://localhost:${PORT}/api/preferences/:userId`)
+  console.log(`  GET    http://localhost:${PORT}/api/memories/:userId`)
+  console.log(`  DELETE http://localhost:${PORT}/api/memories/:memoryId`)
+  console.log(`  GET    http://localhost:${PORT}/api/stats`)
+  console.log(`  GET    http://localhost:${PORT}/health\n`)
 })
 
 export default app

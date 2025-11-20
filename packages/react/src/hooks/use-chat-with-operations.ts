@@ -21,6 +21,8 @@
  * ```
  */
 
+'use client'
+
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
 import { useMessageOperations } from './use-message-operations'

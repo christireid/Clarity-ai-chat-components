@@ -4,6 +4,8 @@
  * Visual dashboard for performance metrics
  */
 
+'use client'
+
 import * as React from 'react'
 import { useRenderPerformance } from '../hooks/use-performance'
 

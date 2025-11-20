@@ -57,6 +57,7 @@ export { ChatWindow } from './components/chat-window'
 export { ChatInput } from './components/chat-input'
 export { AdvancedChatInput } from './components/advanced-chat-input'
 export { default as MessageList } from './components/virtualized-message-list'
+export { default as VirtualizedMessageList } from './components/virtualized-message-list'
 export { StreamingMessage } from './components/streaming-message'
 export { ThinkingIndicator } from './components/thinking-indicator'
 
@@ -153,6 +154,99 @@ export {
   hasTextContent,
   extractTextContent,
 } from './types/clarity-chat-types'
+
+// ============================================================================
+// TOKEN OPTIMIZATION (Enhanced 2025)
+// ============================================================================
+
+// Enhanced Token Optimization Hook
+export {
+  useTokenOptimizationEnhanced,
+  type EnhancedTokenOptimizationOptions,
+  type EnhancedOptimizationStats,
+  type EnhancedOptimizationResult,
+} from './hooks/use-token-optimization-enhanced'
+
+// Original Token Optimization Hook
+export {
+  useTokenOptimization,
+  type UseTokenOptimizationOptions,
+  type UseTokenOptimizationReturn,
+  type TokenOptimizationStats,
+} from './hooks/use-token-optimization'
+
+// TOON (Token-Oriented Object Notation) - 30-60% savings
+export {
+  jsonToToon,
+  toonToJson,
+  autoOptimize,
+  formatForLLM,
+  parseFlexible,
+  estimateToonSavings,
+  isSuitableForToon,
+  type ToonOptions,
+  type ToonFormat,
+  type ToonMetadata,
+  type ToonStats,
+  type ToonOptimizationResult,
+  type AutoToonOptions,
+} from './utils/toon'
+
+// Accurate Tokenization
+export {
+  countTokens,
+  countConversationTokens,
+  truncateToTokenBudget,
+  chunkByTokens,
+  getTokenizerStats,
+  clearTokenCache,
+  type TokenCount,
+  type ModelName,
+  type TokenizerOptions,
+} from './utils/tokenization'
+
+// Model Pricing & Cost Calculation
+export {
+  calculateCost,
+  calculateCacheSavings,
+  estimateConversationCost,
+  compareModelCosts,
+  recommendModel,
+  MODEL_PRICING,
+  type ModelPricing,
+  type CostCalculation,
+} from './utils/tokenization/model-pricing'
+
+// Prompt Caching - 50-90% savings
+export {
+  PromptCacheManager,
+  createAnthropicCachedMessages,
+  estimateCacheSavings,
+  type CacheProvider,
+  type CacheableContent,
+  type CacheStats,
+  type PromptCacheOptions,
+} from './utils/prompt-caching'
+
+// Prompt Compression - 20-35% savings
+export {
+  compressPrompt,
+  aggressiveCompress,
+  conservativeCompress,
+  balancedCompress,
+  compressConversation,
+  type CompressionOptions,
+  type CompressionResult,
+} from './utils/prompt-compression'
+
+// Smart Caching with Semantic Similarity
+export {
+  SmartCache,
+  SimpleCache,
+  type CacheEntry,
+  type CacheOptions as SmartCacheOptions,
+  type CacheStats as SmartCacheStats,
+} from './utils/smart-cache'
 
 // ============================================================================
 // ENTERPRISE INFRASTRUCTURE (Top-level Providers)
@@ -254,6 +348,12 @@ export { WorkflowSuggestionList } from './components/workflow-suggestion-list'
 // Note: AIOps and Enterprise components are exported individually via their respective directories
 export { AnalyticsDashboard } from './components/analytics-dashboard'
 
+// AIOps Components
+export * from './components/ai-ops'
+
+// Enterprise Components
+export * from './components/enterprise'
+
 // Error Handling Components
 export { ErrorBoundary } from './components/error-boundary'
 export { RetryButton } from './components/retry-button'
@@ -279,6 +379,25 @@ export * from './components/toast'
 export * from './components/progress'
 export * from './components/feedback-animation'
 export * from './components/interactive-card'
+
+// Interactive Components
+export { CommandPalette, type CommandItem } from './components/command-palette'
+export { ContextMenu } from './components/context-menu'
+export { Draggable } from './components/draggable'
+export { VoiceInput, InlineVoiceInput } from './components/voice-input'
+
+// Empty States
+export {
+  EmptyState,
+  NoSearchResultsState,
+  NoConversationsState,
+  ErrorState,
+  SuccessState,
+} from './components/empty-state'
+
+// Theme Components
+export { ThemePreview } from './components/theme-preview'
+export { ThemeSelector, ThemeSelectorDropdown } from './components/theme-selector'
 
 // ============================================================================
 // ADDITIONAL HOOKS (Utility & Feature Hooks)

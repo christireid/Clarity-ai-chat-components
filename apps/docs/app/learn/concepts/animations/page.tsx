@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 
 export const metadata: Metadata = {

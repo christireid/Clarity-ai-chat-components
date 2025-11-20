@@ -1,8 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Tutorial: Building Your First Chatbot',
   description: 'Step-by-step guide to building a production-ready chatbot in 30 minutes.',
@@ -85,10 +85,8 @@ export async function POST(req: Request) {
       <section className="docs-section">
         <h2>Step 4: Create Chat Component</h2>
         <p>Update <code>app/page.tsx</code>:</p>
-        <LiveDemo
-          title="Complete Chatbot"
-          code={`'use client'
-import { ChatWindow } from '@clarity-chat/react'
+        <CodePlayground
+          initialCode={`'use client'
 import { useChat } from 'ai/react'
 
 export default function Home() {
@@ -110,8 +108,9 @@ export default function Home() {
       </div>
     </main>
   )
-}`}
-          height="600px"
+}
+
+render(<Home />)`}
         />
       </section>
 

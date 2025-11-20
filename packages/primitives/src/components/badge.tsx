@@ -5,33 +5,33 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium tracking-[0.13px] transition-all duration-200 focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1 ring-1',
+  'inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-ring/50 focus:ring-offset-2',
   {
     variants: {
       variant: {
         default:
-          'ring-primary/20 bg-primary/90 text-primary-foreground hover:bg-primary shadow-xs',
+          'border border-primary/20 bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:shadow hover:scale-105',
         secondary:
-          'ring-border/20 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-xs',
+          'border border-border/70 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/70 hover:border-border hover:scale-105',
         destructive:
-          'ring-destructive/20 bg-destructive/90 text-destructive-foreground hover:bg-destructive shadow-xs',
-        outline: 
-          'ring-border bg-transparent text-foreground hover:bg-accent hover:ring-border/70',
+          'border border-destructive/20 bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 hover:shadow hover:scale-105',
+        outline:
+          'border-[1.5px] border-border/70 bg-background text-foreground hover:bg-accent/60 hover:border-border/90 hover:scale-105',
         success:
-          'ring-green-500/20 bg-green-500 text-white hover:bg-green-600 shadow-xs',
+          'border border-green-600/20 bg-green-500 text-white shadow-sm hover:bg-green-600 hover:shadow hover:scale-105',
         warning:
-          'ring-yellow-500/20 bg-yellow-500 text-white hover:bg-yellow-600 shadow-xs',
-        info: 
-          'ring-blue-500/20 bg-blue-500 text-white hover:bg-blue-600 shadow-xs',
+          'border border-yellow-600/20 bg-yellow-500 text-white shadow-sm hover:bg-yellow-600 hover:shadow hover:scale-105',
+        info:
+          'border border-blue-600/20 bg-blue-500 text-white shadow-sm hover:bg-blue-600 hover:shadow hover:scale-105',
         subtle:
-          'ring-border/20 bg-muted text-muted-foreground hover:bg-muted/80',
+          'border border-border/40 bg-muted text-muted-foreground hover:bg-muted/60 hover:border-border/60 hover:scale-105',
         ghost:
-          'ring-transparent hover:bg-accent hover:text-accent-foreground hover:ring-border/20',
+          'border border-transparent hover:bg-accent hover:text-accent-foreground hover:border-border/20 hover:scale-105',
       },
       size: {
-        sm: 'px-2 py-0.5 text-[10px]',
-        default: 'px-2.5 py-0.5 text-xs',
-        lg: 'px-3 py-1 text-sm',
+        sm: 'px-2 py-0.5 text-[10px] tracking-wide',
+        default: 'px-3 py-1 text-xs',
+        lg: 'px-4 py-1.5 text-sm tracking-normal',
       },
     },
     defaultVariants: {

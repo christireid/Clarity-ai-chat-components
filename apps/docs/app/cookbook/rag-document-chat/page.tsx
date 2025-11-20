@@ -1,9 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'RAG Document Chat - Cookbook - Clarity Chat',
   description: 'Build a chat app that can answer questions about your documents using RAG and vector search.',

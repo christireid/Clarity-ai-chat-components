@@ -1,12 +1,10 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-import { EnhancedPlayground } from '@/components/Demo/EnhancedPlayground'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import { Badge } from '@clarity-chat/primitives'
-import { buttonPresets, buttonControls } from './presets'
 
 export const metadata: Metadata = {
   title: 'Button - Clarity Chat Components',
@@ -41,16 +39,9 @@ export default function ButtonPage() {
         <h2>Interactive Playground</h2>
         <p className="mb-6">
           Experiment with the Button component! Try different variants, sizes, and states.
-          Use the controls panel to customize props in real-time, or switch between presets
-          to see common use cases.
         </p>
-        <EnhancedPlayground
-          title="Button Component Playground"
-          description="Explore all button variants, sizes, and states with live controls"
-          component="Button"
-          initialCode={`import { Button } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="flex items-center justify-center gap-3 p-8">
       <Button variant="primary">Primary Button</Button>
@@ -58,22 +49,16 @@ export default function Example() {
       <Button variant="success">Success</Button>
     </div>
   )
-}`}
-          presets={buttonPresets}
-          controls={buttonControls}
-          showResponsiveControls
-          showQuickActions
-          height="550px"
+}
+
+render(<Example />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Example"
-          code={`import { Button } from '@clarity-chat/react'
-
-function BasicButtons() {
+        <CodePlayground
+          initialCode={`function BasicButtons() {
   return (
     <div className="flex items-center gap-3">
       <Button>Default Button</Button>
@@ -84,8 +69,7 @@ function BasicButtons() {
   )
 }
 
-export default BasicButtons`}
-          height="150px"
+render(<BasicButtons />)`}
         />
       </section>
 
@@ -102,11 +86,8 @@ export default BasicButtons`}
         <p>
           Choose from multiple semantic variants to convey different actions.
         </p>
-        <LiveDemo
-          title="Button Variants"
-          code={`import { Button } from '@clarity-chat/react'
-
-function ButtonVariants() {
+        <CodePlayground
+          initialCode={`function ButtonVariants() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -130,8 +111,7 @@ function ButtonVariants() {
   )
 }
 
-export default ButtonVariants`}
-          height="250px"
+render(<ButtonVariants />)`}
         />
       </section>
 
@@ -140,11 +120,8 @@ export default ButtonVariants`}
         <p>
           Buttons come in four sizes to fit different contexts.
         </p>
-        <LiveDemo
-          title="Button Sizes"
-          code={`import { Button } from '@clarity-chat/react'
-
-function ButtonSizes() {
+        <CodePlayground
+          initialCode={`function ButtonSizes() {
   return (
     <div className="flex flex-wrap items-end gap-3">
       <Button size="xs" variant="primary">Extra Small</Button>
@@ -155,8 +132,7 @@ function ButtonSizes() {
   )
 }
 
-export default ButtonSizes`}
-          height="150px"
+render(<ButtonSizes />)`}
         />
       </section>
 
@@ -165,11 +141,8 @@ export default ButtonSizes`}
         <p>
           Add icons before or after button text, or use icon-only buttons.
         </p>
-        <LiveDemo
-          title="Buttons with Icons"
-          code={`import { Button } from '@clarity-chat/react'
-
-function IconButtons() {
+        <CodePlayground
+          initialCode={`function IconButtons() {
   return (
     <div className="space-y-4">
       <div>
@@ -225,8 +198,7 @@ function IconButtons() {
   )
 }
 
-export default IconButtons`}
-          height="450px"
+render(<IconButtons />)`}
         />
       </section>
 
@@ -235,11 +207,8 @@ export default IconButtons`}
         <p>
           Show loading spinner while an action is in progress.
         </p>
-        <LiveDemo
-          title="Loading Buttons"
-          code={`import { Button } from '@clarity-chat/react'
-
-function LoadingButtons() {
+        <CodePlayground
+          initialCode={`function LoadingButtons() {
   const [isLoading, setIsLoading] = React.useState(false)
 
   const handleClick = () => {
@@ -294,8 +263,7 @@ function LoadingButtons() {
   )
 }
 
-export default LoadingButtons`}
-          height="250px"
+render(<LoadingButtons />)`}
         />
       </section>
 
@@ -304,11 +272,8 @@ export default LoadingButtons`}
         <p>
           Disable buttons to prevent interaction.
         </p>
-        <LiveDemo
-          title="Disabled Buttons"
-          code={`import { Button } from '@clarity-chat/react'
-
-function DisabledButtons() {
+        <CodePlayground
+          initialCode={`function DisabledButtons() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -327,8 +292,7 @@ function DisabledButtons() {
   )
 }
 
-export default DisabledButtons`}
-          height="250px"
+render(<DisabledButtons />)`}
         />
       </section>
 
@@ -337,11 +301,8 @@ export default DisabledButtons`}
         <p>
           Make buttons span the full width of their container.
         </p>
-        <LiveDemo
-          title="Full Width Buttons"
-          code={`import { Button } from '@clarity-chat/react'
-
-function FullWidthButtons() {
+        <CodePlayground
+          initialCode={`function FullWidthButtons() {
   return (
     <div className="space-y-3 max-w-md">
       <Button variant="primary" fullWidth>
@@ -357,8 +318,7 @@ function FullWidthButtons() {
   )
 }
 
-export default FullWidthButtons`}
-          height="250px"
+render(<FullWidthButtons />)`}
         />
       </section>
 
@@ -367,11 +327,8 @@ export default FullWidthButtons`}
         <p>
           Group related buttons together for better visual hierarchy.
         </p>
-        <LiveDemo
-          title="Button Groups"
-          code={`import { Button } from '@clarity-chat/react'
-
-function ButtonGroups() {
+        <CodePlayground
+          initialCode={`function ButtonGroups() {
   const [selected, setSelected] = React.useState('day')
   const [alignment, setAlignment] = React.useState('left')
 
@@ -442,8 +399,7 @@ function ButtonGroups() {
   )
 }
 
-export default ButtonGroups`}
-          height="450px"
+render(<ButtonGroups />)`}
         />
       </section>
 
@@ -452,11 +408,8 @@ export default ButtonGroups`}
         <p>
           Render buttons as links for navigation while maintaining button styling.
         </p>
-        <LiveDemo
-          title="Button Links"
-          code={`import { Button } from '@clarity-chat/react'
-
-function ButtonLinks() {
+        <CodePlayground
+          initialCode={`function ButtonLinks() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -503,8 +456,7 @@ function ButtonLinks() {
   )
 }
 
-export default ButtonLinks`}
-          height="250px"
+render(<ButtonLinks />)`}
         />
       </section>
 
@@ -513,11 +465,8 @@ export default ButtonLinks`}
         <p>
           Display keyboard shortcuts alongside button labels.
         </p>
-        <LiveDemo
-          title="Buttons with Shortcuts"
-          code={`import { Button } from '@clarity-chat/react'
-
-function ShortcutButtons() {
+        <CodePlayground
+          initialCode={`function ShortcutButtons() {
   return (
     <div className="space-y-3 max-w-md">
       <Button variant="primary" fullWidth>
@@ -544,8 +493,7 @@ function ShortcutButtons() {
   )
 }
 
-export default ShortcutButtons`}
-          height="250px"
+render(<ShortcutButtons />)`}
         />
       </section>
 
@@ -554,11 +502,8 @@ export default ShortcutButtons`}
         <p>
           Implement confirmation flows with button states.
         </p>
-        <LiveDemo
-          title="Confirmation Pattern"
-          code={`import { Button } from '@clarity-chat/react'
-
-function ConfirmationButtons() {
+        <CodePlayground
+          initialCode={`function ConfirmationButtons() {
   const [isConfirming, setIsConfirming] = React.useState(false)
   const [deleted, setDeleted] = React.useState(false)
 
@@ -613,8 +558,7 @@ function ConfirmationButtons() {
   )
 }
 
-export default ConfirmationButtons`}
-          height="300px"
+render(<ConfirmationButtons />)`}
         />
       </section>
 

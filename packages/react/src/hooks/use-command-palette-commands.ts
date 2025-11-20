@@ -6,6 +6,8 @@
  * proper integration with useMessageOperations.
  */
 
+'use client'
+
 import { useMemo } from 'react'
 import type { CommandItem } from '../components/command-palette'
 

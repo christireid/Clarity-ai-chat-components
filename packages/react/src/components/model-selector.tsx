@@ -4,6 +4,8 @@
  * Dropdown to switch between AI models with metrics (speed, cost, quality)
  */
 
+'use client'
+
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Badge, Button, cn } from '@clarity-chat/primitives'

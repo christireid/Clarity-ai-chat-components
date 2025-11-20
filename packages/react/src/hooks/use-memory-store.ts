@@ -13,6 +13,8 @@
  * ```
  */
 
+'use client'
+
 import * as React from 'react'
 import { useMemory, type MemoryContextValue } from '../memory/memory-provider'
 import type { MemoryType, MemoryScope } from '@clarity-chat/memory'

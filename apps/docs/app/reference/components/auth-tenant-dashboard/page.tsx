@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'AuthTenantDashboard - Clarity Chat Components',
   description: 'Enterprise: manage tenants, roles, and SSO mappings.',
@@ -18,18 +16,16 @@ export default function AuthTenantDashboardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { AuthTenantDashboard } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-4">
       <AuthTenantDashboard />
     </div>
   )
-}`} 
-          height="280px"
+}
+
+render(<Example />)`}
         />
       </section>
     </div>

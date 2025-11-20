@@ -1,9 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'OpenAI Streaming Chat - Cookbook - Clarity Chat',
   description:
@@ -240,10 +239,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
       <section className="docs-section">
         <h2>Complete Working Example</h2>
-        <LiveDemo
-          title="Full Streaming Chat"
-          code={`import { ChatWindow, Message } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function StreamingChatDemo() {
   const [messages, setMessages] = useState<Message[]>([
@@ -315,8 +312,7 @@ function StreamingChatDemo() {
   )
 }
 
-export default StreamingChatDemo`}
-          height="550px"
+render(<StreamingChatDemo />)`}
         />
       </section>
 

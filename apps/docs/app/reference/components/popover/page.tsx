@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { LiveDemo } from '@/components/Demo/LiveDemo';
+;
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
 
@@ -37,8 +37,8 @@ export default function PopoverPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          code={`import { useState } from 'react';
+        <CodePlayground
+          initialCode={`import { useState } from 'react';
 import { Popover, Button } from '@clarity/chat-components';
 
 export default function BasicPopover() {
@@ -64,7 +64,9 @@ export default function BasicPopover() {
       }
     />
   );
-}`}
+}
+
+render(<BasicPopover />)`}
         />
       </section>
 
@@ -190,8 +192,8 @@ export default function BasicPopover() {
         <p>
           Position the popover in 12 different locations relative to the trigger element.
         </p>
-        <LiveDemo
-          code={`import { Popover, Button } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function PopoverPlacement() {
   const placements = [
@@ -221,7 +223,9 @@ export default function PopoverPlacement() {
       ))}
     </div>
   );
-}`}
+}
+
+render(<PopoverPlacement />)`}
         />
       </section>
 
@@ -230,8 +234,8 @@ export default function PopoverPlacement() {
         <p>
           Open popovers on click, hover, or focus events.
         </p>
-        <LiveDemo
-          code={`import { Popover, Button } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function PopoverTriggers() {
   return (
@@ -271,7 +275,9 @@ export default function PopoverTriggers() {
       />
     </div>
   );
-}`}
+}
+
+render(<PopoverTriggers />)`}
         />
       </section>
 
@@ -280,8 +286,8 @@ export default function PopoverTriggers() {
         <p>
           Popovers can contain complex content including images, forms, and interactive elements.
         </p>
-        <LiveDemo
-          code={`import { Popover, Button } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function RichPopover() {
   return (
@@ -327,7 +333,9 @@ export default function RichPopover() {
       }
     />
   );
-}`}
+}
+
+render(<RichPopover />)`}
         />
       </section>
 
@@ -336,8 +344,8 @@ export default function RichPopover() {
         <p>
           Use popovers for inline forms and input collection.
         </p>
-        <LiveDemo
-          code={`import { useState } from 'react';
+        <CodePlayground
+          initialCode={`import { useState } from 'react';
 import { Popover, Button } from '@clarity/chat-components';
 
 export default function FormPopover() {
@@ -406,7 +414,9 @@ export default function FormPopover() {
       }
     />
   );
-}`}
+}
+
+render(<FormPopover />)`}
         />
       </section>
 
@@ -415,8 +425,8 @@ export default function FormPopover() {
         <p>
           Add an arrow indicator pointing from the popover to the trigger element.
         </p>
-        <LiveDemo
-          code={`import { Popover, Button } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function PopoverWithArrow() {
   return (
@@ -442,7 +452,9 @@ export default function PopoverWithArrow() {
       />
     </div>
   );
-}`}
+}
+
+render(<PopoverWithArrow />)`}
         />
       </section>
 
@@ -451,8 +463,8 @@ export default function PopoverWithArrow() {
         <p>
           Use controlled mode for programmatic control or uncontrolled for simpler usage.
         </p>
-        <LiveDemo
-          code={`import { useState } from 'react';
+        <CodePlayground
+          initialCode={`import { useState } from 'react';
 import { Popover, Button } from '@clarity/chat-components';
 
 export default function ControlledPopover() {
@@ -495,7 +507,9 @@ export default function ControlledPopover() {
       </p>
     </div>
   );
-}`}
+}
+
+render(<ControlledPopover />)`}
         />
       </section>
 
@@ -504,8 +518,8 @@ export default function ControlledPopover() {
         <p>
           Open popovers from within other popovers for hierarchical content.
         </p>
-        <LiveDemo
-          code={`import { Popover, Button } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function NestedPopovers() {
   return (
@@ -533,7 +547,9 @@ export default function NestedPopovers() {
       }
     />
   );
-}`}
+}
+
+render(<NestedPopovers />)`}
         />
       </section>
 
@@ -544,8 +560,8 @@ export default function NestedPopovers() {
         <p>
           Display detailed information cards on hover or click.
         </p>
-        <LiveDemo
-          code={`import { Popover } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Popover } from '@clarity/chat-components';
 
 export default function InfoCardPopover() {
   return (
@@ -576,15 +592,17 @@ export default function InfoCardPopover() {
       </p>
     </div>
   );
-}`}
+}
+
+render(<InfoCardPopover />)`}
         />
 
         <h3>Share Popover</h3>
         <p>
           Create social sharing popovers with multiple options.
         </p>
-        <LiveDemo
-          code={`import { Popover, Button } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Popover, Button } from '@clarity/chat-components';
 
 export default function SharePopover() {
   const shareOptions = [
@@ -633,15 +651,17 @@ export default function SharePopover() {
       }
     />
   );
-}`}
+}
+
+render(<SharePopover />)`}
         />
 
         <h3>Color Picker Popover</h3>
         <p>
           Use popovers for inline selectors and pickers.
         </p>
-        <LiveDemo
-          code={`import { useState } from 'react';
+        <CodePlayground
+          initialCode={`import { useState } from 'react';
 import { Popover } from '@clarity/chat-components';
 
 export default function ColorPickerPopover() {
@@ -673,9 +693,10 @@ export default function ColorPickerPopover() {
                   onClick={() => setColor(c)}
                   className={\`w-8 h-8 rounded hover:scale-110 transition-transform \${
                     color === c ? 'ring-2 ring-gray-400 ring-offset-2' : ''
-                  }\`}
-                  style={{ backgroundColor: c }}
-                />
+                  }\
+
+render(<ColorPickerPopover />)`}
+        />
               ))}
             </div>
           </div>

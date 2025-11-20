@@ -8,6 +8,8 @@
  * - Lazy loading for syntax highlighting
  */
 
+'use client'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
@@ -51,6 +53,60 @@ const markdownComponents: Components = {
           className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
         />
       </div>
+    )
+  },
+  // Table styling
+  table(props: any) {
+    const { children, ...rest } = props
+    return (
+      <div className="overflow-x-auto my-4 w-full">
+        <table className="min-w-full table-auto border-collapse divide-y divide-border" {...rest}>
+          {children}
+        </table>
+      </div>
+    )
+  },
+  thead(props: any) {
+    const { children, ...rest } = props
+    return (
+      <thead className="bg-muted" {...rest}>
+        {children}
+      </thead>
+    )
+  },
+  tbody(props: any) {
+    const { children, ...rest } = props
+    return (
+      <tbody className="bg-background divide-y divide-border" {...rest}>
+        {children}
+      </tbody>
+    )
+  },
+  th(props: any) {
+    const { children, ...rest } = props
+    return (
+      <th
+        className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
+        {...rest}
+      >
+        {children}
+      </th>
+    )
+  },
+  td(props: any) {
+    const { children, ...rest } = props
+    return (
+      <td className="px-6 py-4 text-sm border border-border" {...rest}>
+        {children}
+      </td>
+    )
+  },
+  tr(props: any) {
+    const { children, ...rest } = props
+    return (
+      <tr className="hover:bg-muted/50 transition-colors" {...rest}>
+        {children}
+      </tr>
     )
   },
 }
@@ -175,13 +231,13 @@ export const MessageOptimized = React.memo(
             {/* Content */}
             <div
               className={cn(
-                'prose prose-sm dark:prose-invert max-w-none',
+                !isUser && 'prose prose-sm dark:prose-invert max-w-none',
                 isUser &&
                   'bg-primary text-primary-foreground px-4 py-2 rounded-lg inline-block'
               )}
             >
               {isUser ? (
-                <p className="m-0 whitespace-pre-wrap">{message.content}</p>
+                <p className="m-0 whitespace-pre-wrap text-primary-foreground">{message.content}</p>
               ) : (
                 markdownContent
               )}

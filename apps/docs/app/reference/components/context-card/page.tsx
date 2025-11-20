@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -35,11 +35,8 @@ export default function ContextCardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Context Card"
-          code={`import { ContextCard } from '@clarity-chat/react'
-
-function SimpleContext() {
+        <CodePlayground
+          initialCode={`function SimpleContext() {
   const context = {
     id: '1',
     type: 'document',
@@ -58,8 +55,7 @@ function SimpleContext() {
   )
 }
 
-export default SimpleContext`}
-          height="200px"
+render(<SimpleContext />)`}
         />
       </section>
 
@@ -68,11 +64,8 @@ export default SimpleContext`}
         <p>
           Context cards automatically show appropriate icons and colors based on the content type.
         </p>
-        <LiveDemo
-          title="Different Context Types"
-          code={`import { ContextCard } from '@clarity-chat/react'
-
-function ContextTypes() {
+        <CodePlayground
+          initialCode={`function ContextTypes() {
   const contexts = [
     {
       id: '1',
@@ -117,8 +110,7 @@ function ContextTypes() {
   )
 }
 
-export default ContextTypes`}
-          height="500px"
+render(<ContextTypes />)`}
         />
       </section>
 
@@ -127,10 +119,8 @@ export default ContextTypes`}
         <p>
           Add management actions like toggle, preview, and remove.
         </p>
-        <LiveDemo
-          title="Interactive Context Card"
-          code={`import { ContextCard } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function InteractiveContext() {
   const [contexts, setContexts] = useState([
@@ -184,8 +174,7 @@ function InteractiveContext() {
   )
 }
 
-export default InteractiveContext`}
-          height="350px"
+render(<InteractiveContext />)`}
         />
       </section>
 
@@ -194,11 +183,8 @@ export default InteractiveContext`}
         <p>
           Show visual previews for images and videos.
         </p>
-        <LiveDemo
-          title="Context Cards with Thumbnails"
-          code={`import { ContextCard } from '@clarity-chat/react'
-
-function ThumbnailContexts() {
+        <CodePlayground
+          initialCode={`function ThumbnailContexts() {
   const contexts = [
     {
       id: '1',
@@ -234,8 +220,7 @@ function ThumbnailContexts() {
   )
 }
 
-export default ThumbnailContexts`}
-          height="300px"
+render(<ThumbnailContexts />)`}
         />
       </section>
 
@@ -244,10 +229,8 @@ export default ThumbnailContexts`}
         <p>
           Build a complete document management interface for RAG applications.
         </p>
-        <LiveDemo
-          title="RAG Document Manager"
-          code={`import { ContextCard } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function RAGDocumentManager() {
   const [documents, setDocuments] = useState([
@@ -344,8 +327,7 @@ function RAGDocumentManager() {
   )
 }
 
-export default RAGDocumentManager`}
-          height="600px"
+render(<RAGDocumentManager />)`}
         />
       </section>
 

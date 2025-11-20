@@ -8,6 +8,7 @@
 import { generateEmbedding } from './embeddings'
 import { getVectorStore, type SearchResult } from './vectorStore'
 import { SYSTEM_PROMPT, getContextualPrompt, formatSources } from './prompts'
+import { searchDocumentation, formatSearchResultsForRAG } from './keywordSearch'
 
 export interface RAGContext {
   /** The user's question */
@@ -34,7 +35,7 @@ export interface RAGOptions {
 }
 
 /**
- * Retrieve relevant documentation for a query using semantic search
+ * Retrieve relevant documentation for a query using semantic search or keyword search
  */
 export async function retrieveRelevantDocs(
   query: string,
@@ -43,21 +44,70 @@ export async function retrieveRelevantDocs(
   const {
     topK = 5,
     minScore = 0.7,
+    currentPath,
   } = options
 
-  // Generate embedding for the query
-  const queryEmbedding = await generateEmbedding(query)
+  try {
+    // First, try keyword search (fast and doesn't require API calls)
+    const keywordResults = searchDocumentation(query, {
+      topK,
+      minScore: 0.1, // Use lower threshold for keyword search
+      currentPath,
+    })
 
-  // Search vector store
-  const vectorStore = getVectorStore()
-  await vectorStore.initialize()
+    if (keywordResults.length > 0) {
+      console.log(`Found ${keywordResults.length} results using keyword search`)
 
-  const results = await vectorStore.search(queryEmbedding, topK)
+      // Convert keyword search results to SearchResult format
+      const searchResults: SearchResult[] = keywordResults.map((result) => ({
+        id: result.chunk.id,
+        title: result.chunk.title,
+        content: result.chunk.content,
+        url: result.chunk.url,
+        category: result.chunk.category,
+        score: Math.min(result.score / 10, 1), // Normalize score to 0-1 range
+        metadata: result.chunk.metadata,
+      }))
 
-  // Filter by minimum score
-  const filteredResults = results.filter((result) => result.score >= minScore)
+      return searchResults
+    }
 
-  return filteredResults
+    // Fallback to embeddings-based search if keyword search returns no results
+    console.log('Keyword search returned no results, trying embeddings search...')
+
+    // Generate embedding for the query
+    const queryEmbedding = await generateEmbedding(query)
+
+    // Search vector store
+    const vectorStore = getVectorStore()
+    await vectorStore.initialize()
+
+    const results = await vectorStore.search(queryEmbedding, topK)
+
+    // Filter by minimum score
+    const filteredResults = results.filter((result) => result.score >= minScore)
+
+    return filteredResults
+  } catch (error) {
+    console.error('Error in retrieveRelevantDocs:', error)
+
+    // Last resort: try keyword search with very low threshold
+    const keywordResults = searchDocumentation(query, {
+      topK,
+      minScore: 0.01,
+      currentPath,
+    })
+
+    return keywordResults.map((result) => ({
+      id: result.chunk.id,
+      title: result.chunk.title,
+      content: result.chunk.content,
+      url: result.chunk.url,
+      category: result.chunk.category,
+      score: Math.min(result.score / 10, 1),
+      metadata: result.chunk.metadata,
+    }))
+  }
 }
 
 /**

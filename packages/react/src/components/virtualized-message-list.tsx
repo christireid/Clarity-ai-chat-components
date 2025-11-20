@@ -9,6 +9,8 @@
  * @status NEW - Implementation based on blueprint analysis
  */
 
+'use client'
+
 import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'

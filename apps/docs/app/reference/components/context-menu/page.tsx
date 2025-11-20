@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -31,11 +31,8 @@ export default function ContextMenuPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Basic Context Menu"
-          code={`import { ContextMenu } from '@clarity-chat/react'
-
-function BasicContextMenu() {
+        <CodePlayground
+          initialCode={`function BasicContextMenu() {
   const [action, setAction] = React.useState('None')
 
   const menuItems = [
@@ -81,8 +78,7 @@ function BasicContextMenu() {
   )
 }
 
-export default BasicContextMenu`}
-          height="400px"
+render(<BasicContextMenu />)`}
         />
       </section>
 
@@ -104,11 +100,8 @@ export default BasicContextMenu`}
 
       <section className="docs-section">
         <h2>With Icons and Shortcuts</h2>
-        <LiveDemo
-          title="Icons and Keyboard Shortcuts"
-          code={`import { ContextMenu } from '@clarity-chat/react'
-
-function ContextMenuWithShortcuts() {
+        <CodePlayground
+          initialCode={`function ContextMenuWithShortcuts() {
   const [action, setAction] = React.useState('None')
 
   const menuItems = [
@@ -190,18 +183,14 @@ function ContextMenuWithShortcuts() {
   )
 }
 
-export default ContextMenuWithShortcuts`}
-          height="450px"
+render(<ContextMenuWithShortcuts />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Nested Submenus</h2>
-        <LiveDemo
-          title="Nested Submenus"
-          code={`import { ContextMenu } from '@clarity-chat/react'
-
-function NestedContextMenu() {
+        <CodePlayground
+          initialCode={`function NestedContextMenu() {
   const [action, setAction] = React.useState('None')
 
   const menuItems = [
@@ -319,18 +308,14 @@ function NestedContextMenu() {
   )
 }
 
-export default NestedContextMenu`}
-          height="500px"
+render(<NestedContextMenu />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Disabled and Conditional Items</h2>
-        <LiveDemo
-          title="Disabled Items"
-          code={`import { ContextMenu } from '@clarity-chat/react'
-
-function ConditionalContextMenu() {
+        <CodePlayground
+          initialCode={`function ConditionalContextMenu() {
   const [hasSelection, setHasSelection] = React.useState(false)
   const [clipboardEmpty, setClipboardEmpty] = React.useState(true)
   const [action, setAction] = React.useState('None')
@@ -428,18 +413,14 @@ function ConditionalContextMenu() {
   )
 }
 
-export default ConditionalContextMenu`}
-          height="550px"
+render(<ConditionalContextMenu />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Custom Trigger Position</h2>
-        <LiveDemo
-          title="Custom Positioning"
-          code={`import { ContextMenu } from '@clarity-chat/react'
-
-function CustomPositionMenu() {
+        <CodePlayground
+          initialCode={`function CustomPositionMenu() {
   const [action, setAction] = React.useState('None')
   const [position, setPosition] = React.useState('auto')
 
@@ -512,18 +493,14 @@ function CustomPositionMenu() {
   )
 }
 
-export default CustomPositionMenu`}
-          height="450px"
+render(<CustomPositionMenu />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>With Checkboxes and Radio</h2>
-        <LiveDemo
-          title="Checkboxes and Radio Items"
-          code={`import { ContextMenu } from '@clarity-chat/react'
-
-function SelectableContextMenu() {
+        <CodePlayground
+          initialCode={`function SelectableContextMenu() {
   const [showImages, setShowImages] = React.useState(true)
   const [showVideos, setShowVideos] = React.useState(false)
   const [showFiles, setShowFiles] = React.useState(true)
@@ -630,8 +607,7 @@ function SelectableContextMenu() {
   )
 }
 
-export default SelectableContextMenu`}
-          height="550px"
+render(<SelectableContextMenu />)`}
         />
       </section>
 
@@ -640,11 +616,8 @@ export default SelectableContextMenu`}
         <p>
           A complete example of a context menu for chat messages with all features.
         </p>
-        <LiveDemo
-          title="Chat Message Menu"
-          code={`import { ContextMenu } from '@clarity-chat/react'
-
-function ChatMessageContextMenu() {
+        <CodePlayground
+          initialCode={`function ChatMessageContextMenu() {
   const [action, setAction] = React.useState('None')
   const [isStarred, setIsStarred] = React.useState(false)
   const [isPinned, setIsPinned] = React.useState(false)
@@ -784,8 +757,7 @@ function ChatMessageContextMenu() {
   )
 }
 
-export default ChatMessageContextMenu`}
-          height="650px"
+render(<ChatMessageContextMenu />)`}
         />
       </section>
 

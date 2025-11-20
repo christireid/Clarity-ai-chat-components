@@ -40,6 +40,8 @@
  * @throws {Error} If API endpoint or toolRegistry is invalid or missing
  */
 
+'use client'
+
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions, type UseClarityChatReturn } from './use-clarity-chat'
 import type { ToolComponentRegistry } from '../agents/tool-ui-registry'

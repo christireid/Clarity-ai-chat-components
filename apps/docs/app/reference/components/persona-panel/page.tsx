@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -29,11 +29,8 @@ export default function PersonaPanelPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Basic Personas"
-          code={`import { PersonaPanel } from '@clarity-chat/react'
-
-function BasicPersonas() {
+        <CodePlayground
+          initialCode={`function BasicPersonas() {
   const personas = [
     {
       id: '1',
@@ -66,17 +63,14 @@ function BasicPersonas() {
   )
 }
 
-export default BasicPersonas`}
-          height="400px"
+render(<BasicPersonas />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>All Persona Types</h2>
-        <LiveDemo
-          title="Complete Persona Set"
-          code={`import { PersonaPanel } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function AllPersonas() {
   const [active, setActive] = useState('1')
@@ -142,8 +136,7 @@ function AllPersonas() {
   )
 }
 
-export default AllPersonas`}
-          height="600px"
+render(<AllPersonas />)`}
         />
       </section>
 

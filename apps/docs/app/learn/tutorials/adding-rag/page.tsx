@@ -1,8 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Tutorial: Adding RAG to Your Chatbot',
   description: 'Add retrieval-augmented generation to chat over your documents.',
@@ -242,10 +242,8 @@ Instructions:
 
       <section className="docs-section">
         <h2>Step 5: Add Document Upload UI</h2>
-        <LiveDemo
-          title="RAG-Enabled Chat"
-          code={`'use client'
-import { ChatWindow, FileUpload } from '@clarity-chat/react'
+        <CodePlayground
+          initialCode={`'use client'
 import { useChat } from 'ai/react'
 import { useState } from 'react'
 
@@ -299,8 +297,9 @@ export default function RAGChat() {
       </div>
     </div>
   )
-}`}
-          height="600px"
+}
+
+render(<RAGChat />)`}
         />
       </section>
 

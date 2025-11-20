@@ -1,9 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Check, Copy, Terminal } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import Prism from 'prismjs'
+
+// Import language support
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-jsx'
+import 'prismjs/components/prism-tsx'
+import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-css'
+import 'prismjs/components/prism-markdown'
+import 'prismjs/components/prism-python'
 
 export interface CodeBlockProps {
   code: string
@@ -23,6 +35,20 @@ export function CodeBlock({
   className,
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false)
+  const [highlightedCode, setHighlightedCode] = useState('')
+  const codeRef = useRef<HTMLElement>(null)
+
+  // Highlight code with Prism
+  useEffect(() => {
+    try {
+      const grammar = Prism.languages[language] || Prism.languages.typescript
+      const highlighted = Prism.highlight(code, grammar, language)
+      setHighlightedCode(highlighted)
+    } catch (error) {
+      console.error('Prism highlighting error:', error)
+      setHighlightedCode(code)
+    }
+  }, [code, language])
 
   const handleCopy = async () => {
     try {
@@ -35,6 +61,7 @@ export function CodeBlock({
   }
 
   const lines = code.split('\n')
+  const highlightedLines = highlightedCode.split('\n')
 
   return (
     <div
@@ -96,12 +123,16 @@ export function CodeBlock({
       {/* Code */}
       <div className="relative overflow-x-auto">
         <pre className="p-4 text-sm leading-relaxed">
-          <code className={cn('block', `language-${language}`)}>
+          <code
+            ref={codeRef}
+            className={cn('block', `language-${language}`)}
+          >
             {showLineNumbers ? (
               <div className="grid" style={{ gridTemplateColumns: 'auto 1fr' }}>
                 {lines.map((line, index) => {
                   const lineNumber = index + 1
                   const isHighlighted = highlightLines.includes(lineNumber)
+                  const highlightedLine = highlightedLines[index] || line
 
                   return (
                     <div
@@ -122,21 +153,20 @@ export function CodeBlock({
                         {lineNumber}
                       </span>
 
-                      {/* Code line */}
+                      {/* Code line with syntax highlighting */}
                       <span
                         className={cn(
                           isHighlighted &&
                             'bg-primary/5 border-l-2 border-primary pl-2 -ml-2'
                         )}
-                      >
-                        {line || '\n'}
-                      </span>
+                        dangerouslySetInnerHTML={{ __html: highlightedLine || '\n' }}
+                      />
                     </div>
                   )
                 })}
               </div>
             ) : (
-              code
+              <span dangerouslySetInnerHTML={{ __html: highlightedCode || code }} />
             )}
           </code>
         </pre>

@@ -1,8 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Advanced Agent Workflow - Cookbook',
   description: 'Build multi-step agent workflows with tool calling and decision trees.',
@@ -29,12 +29,8 @@ export default function AdvancedAgentWorkflowCookbook() {
 
       <section className="docs-section">
         <h2>Complete Example</h2>
-        <LiveDemo
-          title="Research Agent"
-          code={`import { ChatWindow, AgentRunFeed } from '@clarity-chat/react'
-import { useAgent } from '@clarity-chat/react/hooks'
-
-export default function ResearchAgent() {
+        <CodePlayground
+          initialCode={`function ResearchAgent() {
   const tools = [
     {
       name: 'web_search',
@@ -85,8 +81,9 @@ export default function ResearchAgent() {
       </div>
     </div>
   )
-}`}
-          height="520px"
+}
+
+render(<ResearchAgent />)`}
         />
       </section>
 

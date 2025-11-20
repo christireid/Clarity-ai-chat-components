@@ -1,8 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Custom Styling Example - Clarity Chat Components',
   description: 'Learn how to style Clarity Chat components with custom CSS, Tailwind classes, and CSS-in-JS.',
@@ -44,11 +44,8 @@ export default function CustomStylingExamplePage() {
           respect a comprehensive set of CSS custom properties.
         </p>
         
-        <LiveDemo
-          title="CSS Variables Theming"
-          code={`import { ChatWindow, Message } from '@clarity-chat/react'
-
-function CSSVariablesExample() {
+        <CodePlayground
+          initialCode={`function CSSVariablesExample() {
   const messages = [
     {
       id: '1',
@@ -94,8 +91,7 @@ function CSSVariablesExample() {
   )
 }
 
-export default CSSVariablesExample`}
-          height="600px"
+render(<CSSVariablesExample />)`}
         />
 
         <Callout type="tip" title="Available CSS Variables">
@@ -119,11 +115,8 @@ export default CSSVariablesExample`}
           Components accept <code>className</code> props for easy Tailwind customization.
         </p>
 
-        <LiveDemo
-          title="Tailwind Utility Classes"
-          code={`import { ChatWindow, Message } from '@clarity-chat/react'
-
-function TailwindExample() {
+        <CodePlayground
+          initialCode={`function TailwindExample() {
   const messages = [
     {
       id: '1',
@@ -157,8 +150,7 @@ function TailwindExample() {
   )
 }
 
-export default TailwindExample`}
-          height="600px"
+render(<TailwindExample />)`}
         />
       </section>
 
@@ -168,10 +160,8 @@ export default TailwindExample`}
           For more complex styling, use custom CSS classes with full control.
         </p>
 
-        <LiveDemo
-          title="Custom CSS Classes"
-          code={`import { ChatWindow, Message } from '@clarity-chat/react'
-import './custom-chat.css' // Your custom styles
+        <CodePlayground
+          initialCode={`import './custom-chat.css' // Your custom styles
 
 function CustomCSSExample() {
   const messages = [
@@ -266,8 +256,7 @@ function CustomCSSExample() {
   )
 }
 
-export default CustomCSSExample`}
-          height="600px"
+render(<CustomCSSExample />)`}
         />
       </section>
 
@@ -277,10 +266,8 @@ export default CustomCSSExample`}
           Create pre-defined brand themes for consistent styling across your app.
         </p>
 
-        <LiveDemo
-          title="Brand Theme System"
-          code={`import { ChatWindow } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 const themes = {
   twitter: {
@@ -402,7 +389,9 @@ function BrandThemesExample() {
         <ChatWindow
           messages={messages}
           onSendMessage={(text) => console.log(text)}
-          placeholder={\`Message in \${themes[selectedTheme].name} style...\`}
+          placeholder={\`Message in \${themes[selectedTheme].name} style...\
+
+render(<BrandThemesExample />)`}
         />
       </div>
     </div>
@@ -420,10 +409,8 @@ export default BrandThemesExample`}
           Implement dark mode with automatic system preference detection.
         </p>
 
-        <LiveDemo
-          title="Dark Mode Support"
-          code={`import { ChatWindow } from '@clarity-chat/react'
-import { useState, useEffect } from 'react'
+        <CodePlayground
+          initialCode={`import { useState, useEffect } from 'react'
 
 function DarkModeExample() {
   const [isDark, setIsDark] = useState(false)
@@ -507,8 +494,7 @@ function DarkModeExample() {
   )
 }
 
-export default DarkModeExample`}
-          height="700px"
+render(<DarkModeExample />)`}
         />
       </section>
 
@@ -518,11 +504,8 @@ export default DarkModeExample`}
           Create stunning gradient-based themes for modern, vibrant UIs.
         </p>
 
-        <LiveDemo
-          title="Gradient Themes"
-          code={`import { ChatWindow } from '@clarity-chat/react'
-
-function GradientThemeExample() {
+        <CodePlayground
+          initialCode={`function GradientThemeExample() {
   const messages = [
     {
       id: '1',
@@ -616,8 +599,7 @@ function GradientThemeExample() {
   )
 }
 
-export default GradientThemeExample`}
-          height="700px"
+render(<GradientThemeExample />)`}
         />
       </section>
 
@@ -627,11 +609,8 @@ export default GradientThemeExample`}
           Style individual message components with custom renderers.
         </p>
 
-        <LiveDemo
-          title="Custom Message Styling"
-          code={`import { ChatWindow, Message } from '@clarity-chat/react'
-
-function CustomMessageStyling() {
+        <CodePlayground
+          initialCode={`function CustomMessageStyling() {
   const messages = [
     {
       id: '1',
@@ -710,8 +689,7 @@ function CustomMessageStyling() {
   )
 }
 
-export default CustomMessageStyling`}
-          height="700px"
+render(<CustomMessageStyling />)`}
         />
       </section>
 

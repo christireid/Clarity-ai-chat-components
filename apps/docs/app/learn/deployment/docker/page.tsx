@@ -2,6 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Docker Deployment - Clarity Chat',
   description: 'Self-host Clarity Chat with Docker and Docker Compose.',

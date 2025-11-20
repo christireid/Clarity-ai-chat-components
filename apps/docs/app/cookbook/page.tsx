@@ -1,6 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {

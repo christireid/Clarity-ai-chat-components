@@ -5,6 +5,8 @@
  * Provides instant feedback before server confirmation.
  */
 
+'use client'
+
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
 

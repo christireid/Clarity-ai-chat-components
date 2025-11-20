@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
 import { useConversationStorage } from './use-indexed-db'

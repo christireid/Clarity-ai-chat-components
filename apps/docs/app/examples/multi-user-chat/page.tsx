@@ -1,8 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Multi-user Chat Example - Clarity Chat Components',
   description: 'Complete multi-user chat application with typing indicators, presence, reactions, and real-time updates.',
@@ -42,10 +42,8 @@ export default function MultiUserChatExamplePage() {
 
       <section className="docs-section">
         <h2>Complete Implementation</h2>
-        <LiveDemo
-          title="Multi-user Chat Application"
-          code={`import { ChatWindow, Message, MessageInput, TypingIndicator } from '@clarity-chat/react'
-import { useState, useEffect, useRef } from 'react'
+        <CodePlayground
+          initialCode={`import { useState, useEffect, useRef } from 'react'
 
 function MultiUserChat() {
   const [messages, setMessages] = useState([])
@@ -179,8 +177,10 @@ function MultiUserChat() {
                   <div
                     className={\`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-900 \${
                       isOnline ? 'bg-green-500' : 'bg-gray-400'
-                    }\`}
-                  />
+                    }\
+
+render(<MultiUserChat />)`}
+        />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm truncate">

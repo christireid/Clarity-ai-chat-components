@@ -32,6 +32,8 @@
  * @throws {Error} If API endpoint is invalid or missing
  */
 
+'use client'
+
 import * as React from 'react'
 import type { MessageRole } from '@clarity-chat/types'
 import { generateId } from '@clarity-chat/primitives'

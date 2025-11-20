@@ -120,7 +120,7 @@ export function CodeBlock({
           <pre
             className={clsx(
               highlightClassName,
-              'overflow-x-auto p-4 text-sm leading-relaxed border-2 border-border',
+              'overflow-x-auto p-8 text-sm leading-loose border-2 border-border',
               !title && !language && 'rounded-xl',
               (title || language) && 'rounded-b-xl border-t-0'
             )}
@@ -157,8 +157,8 @@ export function CodeBlock({
                     className={clsx(
                       lineProps.className,
                       isHighlighted &&
-                        'bg-brand-500/10 border-l-2 border-brand-500 -ml-4 pl-3',
-                      'px-1'
+                        'bg-brand-500/10 border-l-2 border-brand-500 -ml-8 pl-6',
+                      'px-3 py-0.5'
                     )}
                   >
                     {showLineNumbers && (

@@ -2,6 +2,8 @@ import type { Decorator, Preview } from '@storybook/react'
 import React from 'react'
 import { ThemeProvider } from '@clarity-chat/react'
 import { getAllThemes } from '@clarity-chat/react/theme'
+import { clarityTheme, clarityDarkTheme } from './manager'
+import './globals.css'
 
 const themePresets = getAllThemes()
   .map(({ name, metadata }) => ({
@@ -34,18 +36,39 @@ const withTheme: Decorator = (Story, context) => {
 
 const preview: Preview = {
   parameters: {
+    // Dark mode configuration
+    darkMode: {
+      dark: { ...clarityDarkTheme },
+      light: { ...clarityTheme },
+      stylePreview: true,
+    },
     options: {
       storySort: {
+        method: 'alphabetical',
         order: [
+          'Welcome',
+          ['Introduction', 'Getting Started', 'Playground', "What's New"],
+          'Foundation',
+          ['Overview', 'Colors & Themes', 'Typography', 'Spacing & Layout', 'Motion & Animation', 'Iconography'],
+          'Components',
+          ['Inputs', 'Data Display', 'Feedback', 'Layout', 'Navigation'],
+          'Advanced Features',
+          ['AI & Agents', 'Memory & Context', 'Streaming & Real-time', 'Analytics & Monitoring', 'Enterprise'],
+          'Hooks',
+          ['Chat Hooks', 'Streaming', 'State Management', 'Performance', 'Utilities'],
+          'Patterns',
+          ['Chat Patterns', 'Form Patterns', 'Layout Patterns', 'AI Patterns'],
+          'Examples',
+          ['Complete Applications', 'Integration Examples', 'Use Cases'],
+          'Resources',
+          ['Accessibility', 'Best Practices', 'Migration Guides', 'API Reference'],
+          // Legacy categories (backward compatibility during transition)
           'Getting Started',
           'Design Principles',
           'Component Gallery',
           ['Components', 'Primitives'],
-          'Hooks',
           'SDKs & Adapters',
           'Utilities',
-          'Accessibility',
-          'Examples',
         ],
       },
     },

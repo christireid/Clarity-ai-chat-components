@@ -63,7 +63,7 @@ export const PromptTestHarness: React.FC<PromptTestHarnessProps> = ({
   const [selectedDataset, setSelectedDataset] = React.useState<string | undefined>(() => datasets[0]?.id)
 
   React.useEffect(() => {
-    if (datasets.length > 0 && !selectedDataset) {
+    if (datasets.length > 0 && !selectedDataset && datasets[0]) {
       setSelectedDataset(datasets[0].id)
     }
   }, [datasets, selectedDataset])

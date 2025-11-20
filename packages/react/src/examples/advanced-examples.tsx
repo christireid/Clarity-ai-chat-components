@@ -8,14 +8,18 @@
 
 import * as React from 'react'
 import {
-  ChatComplete,
+  // TODO: Re-enable once ChatComplete is implemented
+  // ChatComplete,
+  ClarityChat,
   useChat,
   ChatWindow,
   MemoryProvider,
   AnalyticsProvider,
-  useAnalytics,
-  useMemory,
-  type MemoryServiceConfig,
+  // TODO: Re-enable once useAnalytics is implemented
+  // useAnalytics,
+  // TODO: Re-enable once useMemory is implemented
+  // useMemory,
+  // type MemoryServiceConfig,
 } from '../index'
 
 /**
@@ -26,15 +30,16 @@ import {
  * LOC: 70
  */
 export function Advanced_EnterpriseChatStack() {
-  const memoryConfig: MemoryServiceConfig = {
-    maxTokens: 10000,
-    strategy: 'vector-store',
-  }
-  
+  // TODO: Re-enable once MemoryServiceConfig is implemented
+  // const memoryConfig: MemoryServiceConfig = {
+  //   maxTokens: 10000,
+  //   strategy: 'vector-store',
+  // }
+
   return (
     <AnalyticsProvider config={{ endpoint: '/api/analytics' }}>
-      <MemoryProvider config={memoryConfig}>
-        <ChatComplete
+      <MemoryProvider>
+        <ClarityChat
           api="/api/chat"
           memoryStrategy="vector-store"
           showHeader

@@ -2,6 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Deploy to AWS - Clarity Chat',
   description: 'Deploy Clarity Chat on AWS with Lambda, API Gateway, and CloudFront.',

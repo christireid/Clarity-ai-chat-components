@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { ApiTable } from '@/components/Demo/ApiTable'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -34,28 +34,23 @@ export default function PerformanceDashboardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Example"
-          code={`import { PerformanceDashboard } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-6">
       <PerformanceDashboard />
     </div>
   )
-}`} 
-          height="220px"
+}
+
+render(<Example />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Compact Mode</h2>
-        <LiveDemo
-          title="Without Charts"
-          code={`import { PerformanceDashboard } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-6">
       <PerformanceDashboard 
@@ -64,18 +59,16 @@ export default function Example() {
       />
     </div>
   )
-}`} 
-          height="180px"
+}
+
+render(<Example />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>With Thresholds</h2>
-        <LiveDemo
-          title="Performance Alerts"
-          code={`import { PerformanceDashboard } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   const thresholds = {
     maxLatencyMs: 2000,
     minTokensPerSecond: 10,
@@ -92,8 +85,9 @@ export default function Example() {
       />
     </div>
   )
-}`} 
-          height="280px"
+}
+
+render(<Example />)`}
         />
       </section>
 

@@ -1,3 +1,5 @@
+'use client'
+
 import { useRef, useState, useCallback, useEffect, useLayoutEffect, type RefObject, type DependencyList } from 'react'
 
 export interface UseAutoScrollOptions {

@@ -4,10 +4,12 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   experimental: {
     mdxRs: true,
-    // Enable Turbopack for faster builds (Next.js 16)
-    turbo: {},
   },
-  transpilePackages: ['@clarity-chat/react', '@clarity-chat/primitives', 'framer-motion'],
+
+  // Turbopack configuration (Next.js 15.5+)
+  turbopack: {},
+
+  transpilePackages: ['@clarity-chat/react', '@clarity-chat/primitives'],
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -54,21 +56,18 @@ const nextConfig = {
   },
   
   webpack: (config) => {
-    const path = require('path')
-    
-    // Alias @clarity-chat/react to source to ensure 'use client' directives are preserved
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@clarity-chat/react': path.resolve(__dirname, '../../packages/react/src/index.ts'),
-      '@clarity-chat/primitives': path.resolve(__dirname, '../../packages/primitives/src/index.ts'),
-    }
-    
     // Handle SVG imports
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     })
-    
+
+    // Optimize module resolution
+    config.resolve.extensionAlias = {
+      '.js': ['.js', '.ts', '.tsx'],
+      '.jsx': ['.jsx', '.tsx'],
+    }
+
     return config
   },
 }

@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'ToolInvocationCard - Clarity Chat Components',
   description: 'Visualize tool calls, inputs, and results inside conversations.',
@@ -18,11 +16,8 @@ export default function ToolInvocationCardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { ToolInvocationCard } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   const run = {
     id: 'run_123',
     name: 'web.search',
@@ -35,8 +30,9 @@ export default function Example() {
       <ToolInvocationCard run={run} />
     </div>
   )
-}`} 
-          height="220px"
+}
+
+render(<Example />)`}
         />
       </section>
     </div>

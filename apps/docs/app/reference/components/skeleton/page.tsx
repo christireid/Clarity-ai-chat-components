@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Badge } from '@clarity-chat/primitives'
 import {
   Skeleton,

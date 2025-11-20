@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 
 export interface UseClipboardOptions {

@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Badge, Tooltip, cn } from '@clarity-chat/primitives'

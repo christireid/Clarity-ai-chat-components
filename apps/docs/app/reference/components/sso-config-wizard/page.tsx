@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'SSOConfigWizard - Clarity Chat Components',
   description: 'Enterprise: guided setup for SSO providers and metadata.',
@@ -18,18 +16,16 @@ export default function SSOConfigWizardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { SSOConfigWizard } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-4">
       <SSOConfigWizard />
     </div>
   )
-}`} 
-          height="300px"
+}
+
+render(<Example />)`}
         />
       </section>
     </div>

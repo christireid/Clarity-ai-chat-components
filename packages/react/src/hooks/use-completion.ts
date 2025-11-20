@@ -38,6 +38,8 @@
  * @throws {Error} If API endpoint is invalid or missing
  */
 
+'use client'
+
 import * as React from 'react'
 import { generateId } from '@clarity-chat/primitives'
 import { processStream, type StreamFormat } from '../utils/streaming-helpers'

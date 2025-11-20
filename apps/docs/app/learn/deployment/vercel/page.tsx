@@ -2,6 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Deploy to Vercel - Clarity Chat',
   description: 'Step-by-step guide to deploying Clarity Chat applications on Vercel.',

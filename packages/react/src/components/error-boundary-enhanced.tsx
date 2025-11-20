@@ -5,6 +5,8 @@
  * It automatically reports errors to configured providers and allows user feedback collection.
  */
 
+'use client'
+
 import React from 'react'
 import { ErrorBoundary, ErrorBoundaryProps } from './error-boundary'
 import { ErrorFeedback } from '../error/ErrorFeedback'
@@ -98,7 +100,7 @@ const DefaultEnhancedFallback = React.memo(function DefaultEnhancedFallback({
         )}
       </div>
 
-      {process.env.NODE_ENV === 'development' && (
+      {process.env['NODE_ENV'] === 'development' && (
         <details className="mt-4 w-full max-w-2xl text-left">
           <summary className="cursor-pointer text-sm text-muted-foreground hover:underline hover:text-foreground transition-colors">
             Error Details (Development Only)

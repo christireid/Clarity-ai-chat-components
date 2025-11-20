@@ -37,6 +37,8 @@
  * ```
  */
 
+'use client'
+
 import * as React from 'react'
 import type { UseClarityChatReturn } from './use-clarity-chat'
 import type { CoreMessage } from './use-chat-enhanced'

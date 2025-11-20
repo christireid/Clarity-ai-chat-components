@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'TokenOptimizationPanel - Clarity Chat Components',
   description: 'Interactive panel to configure and visualize token optimization.',
@@ -20,18 +18,16 @@ export default function TokenOptimizationPanelPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { TokenOptimizationPanel } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-6">
       <TokenOptimizationPanel />
     </div>
   )
-}`} 
-          height="260px"
+}
+
+render(<Example />)`}
         />
       </section>
 

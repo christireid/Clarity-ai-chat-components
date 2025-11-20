@@ -18,6 +18,8 @@ const config: StorybookConfig = {
     '@storybook/addon-a11y',
     '@storybook/addon-measure',
     '@storybook/addon-outline',
+    'storybook-dark-mode',
+    // '@storybook/addon-designs', // Commented out - requires Storybook 10
   ],
   
   framework: {
@@ -80,14 +82,18 @@ const config: StorybookConfig = {
       config.build = config.build || {}
       config.build.rollupOptions = config.build.rollupOptions || {}
       config.build.rollupOptions.external = config.build.rollupOptions.external || []
-      
+
       if (Array.isArray(config.build.rollupOptions.external)) {
         config.build.rollupOptions.external.push(
           'highlight.js/styles/github-dark.css',
           'katex/dist/katex.min.css'
         )
       }
-      
+
+      // Add process polyfill for browser compatibility
+      config.define = config.define || {}
+      config.define['process.env'] = JSON.stringify({})
+
       return config
     },
 

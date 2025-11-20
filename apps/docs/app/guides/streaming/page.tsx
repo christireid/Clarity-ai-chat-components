@@ -1,8 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { StreamingAnimation } from '@/components/Diagrams/StreamingAnimation'
 
 export const metadata: Metadata = {
@@ -75,10 +75,8 @@ User asks → "The" → "The answer" → "The answer is" → "The answer is 42"`
 
       <section className="docs-section">
         <h2>Visual Comparison</h2>
-        <LiveDemo
-          title="Streaming vs Non-Streaming"
-          code={`import { ChatWindow } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function StreamingComparison() {
   const [streamingMessages, setStreamingMessages] = useState([])
@@ -155,8 +153,7 @@ function StreamingComparison() {
   )
 }
 
-export default StreamingComparison`}
-          height="500px"
+render(<StreamingComparison />)`}
         />
       </section>
 

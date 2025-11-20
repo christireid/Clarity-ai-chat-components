@@ -2,6 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Architecture & Design Patterns - Clarity Chat',
   description: 'System architecture, design patterns, and best practices for Clarity Chat applications.',

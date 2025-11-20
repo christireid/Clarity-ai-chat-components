@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import Link from 'next/link'
 
@@ -54,27 +55,27 @@ export default function PlaygroundToolsPage() {
         <h2>Embedding Custom Components</h2>
         <p>
           Expose the playground in your own docs or admin tools by importing the
-          <code>EnhancedPlayground</code> component.
+          <code>CodePlayground</code> component.
         </p>
         <CodeBlock
           language="tsx"
-          code={`import {
-  EnhancedPlayground,
-  playgroundControls,
-  playgroundPresets,
-} from '@clarity-chat/react/playground'
+          code={`import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export default function ButtonPlayground() {
+  const initialCode = \`function Example() {
   return (
-    <EnhancedPlayground
-      title="Chat Window"
-      component="ChatWindow"
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+    />
+  )
+}
+
+render(<Example />)\`
+
+  return (
+    <CodePlayground
       initialCode={initialCode}
-      presets={playgroundPresets.chatWindow}
-      controls={playgroundControls.chatWindow}
-      showResponsiveControls
-      showAccessibility
-      showStateInspector
     />
   )
 }

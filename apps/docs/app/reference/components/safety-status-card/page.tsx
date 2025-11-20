@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -34,11 +34,8 @@ export default function SafetyStatusCardPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Safety Checks"
-          code={`import { SafetyStatusCard } from '@clarity-chat/react'
-
-function BasicSafety() {
+        <CodePlayground
+          initialCode={`function BasicSafety() {
   const checks = [
     {
       id: '1',
@@ -68,18 +65,14 @@ function BasicSafety() {
   )
 }
 
-export default BasicSafety`}
-          height="350px"
+render(<BasicSafety />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>With Warnings and Failures</h2>
-        <LiveDemo
-          title="Safety Issues Detected"
-          code={`import { SafetyStatusCard } from '@clarity-chat/react'
-
-function SafetyIssues() {
+        <CodePlayground
+          initialCode={`function SafetyIssues() {
   const checks = [
     {
       id: '1',
@@ -121,8 +114,7 @@ function SafetyIssues() {
   )
 }
 
-export default SafetyIssues`}
-          height="500px"
+render(<SafetyIssues />)`}
         />
       </section>
 

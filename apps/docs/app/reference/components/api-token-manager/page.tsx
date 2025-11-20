@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'ApiTokenManager - Clarity Chat Components',
   description: 'Enterprise: manage API tokens, rotation, and access policies.',
@@ -18,18 +16,16 @@ export default function ApiTokenManagerPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { ApiTokenManager } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-4">
       <ApiTokenManager />
     </div>
   )
-}`} 
-          height="260px"
+}
+
+render(<Example />)`}
         />
       </section>
     </div>

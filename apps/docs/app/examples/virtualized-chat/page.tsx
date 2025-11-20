@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
 import { Callout } from '@/components/MDX/Callout'
 
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Virtualized Chat Example - Clarity Chat Components',
   description: 'Render 10k+ messages smoothly with VirtualizedMessageList and MessageList smart threshold.',
@@ -35,9 +35,8 @@ export default function VirtualizedChatExamplePage() {
 
       <section className="docs-section">
         <h2>Live Demo</h2>
-        <LiveDemo
-          title="Virtualized Transcript"
-          code={`import { useMemo, useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useMemo, useState } from 'react'
 import {
   MessageList,
   useMessageListScroll,
@@ -108,7 +107,9 @@ export default function VirtualizedChat() {
       </div>
     </div>
   )
-}`}
+}
+
+render(<generateMessages />)`}
         />
       </section>
 

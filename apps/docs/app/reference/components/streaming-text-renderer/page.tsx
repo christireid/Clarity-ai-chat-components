@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'StreamingTextRenderer - Clarity Chat Components',
   description: 'Render token streams with partial updates and cursor control.',
@@ -18,11 +16,8 @@ export default function StreamingTextRendererPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { StreamingTextRenderer } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   const [text, setText] = React.useState('')
 
   React.useEffect(() => {
@@ -39,8 +34,9 @@ export default function Example() {
       <StreamingTextRenderer text={text} />
     </div>
   )
-}`} 
-          height="220px"
+}
+
+render(<Example />)`}
         />
       </section>
     </div>

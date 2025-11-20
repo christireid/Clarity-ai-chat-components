@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { LiveDemo } from '@/components/Demo/LiveDemo';
+;
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
 import { Badge } from '@clarity-chat/primitives';
@@ -43,8 +43,8 @@ export default function ToastPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          code={`import { useState } from 'react';
+        <CodePlayground
+          initialCode={`import { useState } from 'react';
 import { Button, useToast } from '@clarity/chat-components';
 
 export default function BasicToast() {
@@ -55,7 +55,9 @@ export default function BasicToast() {
       Show Toast
     </Button>
   );
-}`}
+}
+
+render(<BasicToast />)`}
         />
       </section>
 
@@ -127,8 +129,8 @@ export default function BasicToast() {
         <p>
           Use semantic variants to communicate different types of notifications.
         </p>
-        <LiveDemo
-          code={`import { Button, useToast } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
 export default function ToastVariants() {
   const { showToast } = useToast();
@@ -179,7 +181,9 @@ export default function ToastVariants() {
       </Button>
     </div>
   );
-}`}
+}
+
+render(<ToastVariants />)`}
         />
       </section>
 
@@ -188,8 +192,8 @@ export default function ToastVariants() {
         <p>
           Add a title for more structured notifications.
         </p>
-        <LiveDemo
-          code={`import { Button, useToast } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
 export default function ToastWithTitle() {
   const { showToast } = useToast();
@@ -232,7 +236,9 @@ export default function ToastWithTitle() {
       </Button>
     </div>
   );
-}`}
+}
+
+render(<ToastWithTitle />)`}
         />
       </section>
 
@@ -241,8 +247,8 @@ export default function ToastWithTitle() {
         <p>
           Display toasts at different screen positions.
         </p>
-        <LiveDemo
-          code={`import { Button, useToast } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
 export default function ToastPositions() {
   const { showToast } = useToast();
@@ -273,7 +279,9 @@ export default function ToastPositions() {
       ))}
     </div>
   );
-}`}
+}
+
+render(<ToastPositions />)`}
         />
       </section>
 
@@ -282,8 +290,8 @@ export default function ToastPositions() {
         <p>
           Control how long toasts remain visible before auto-dismissing.
         </p>
-        <LiveDemo
-          code={`import { Button, useToast } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
 export default function ToastDuration() {
   const { showToast } = useToast();
@@ -332,7 +340,9 @@ export default function ToastDuration() {
       </Button>
     </div>
   );
-}`}
+}
+
+render(<ToastDuration />)`}
         />
       </section>
 
@@ -341,8 +351,8 @@ export default function ToastDuration() {
         <p>
           Include action buttons for users to respond to toasts.
         </p>
-        <LiveDemo
-          code={`import { Button, useToast } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
 export default function ToastWithActions() {
   const { showToast } = useToast();
@@ -397,7 +407,9 @@ export default function ToastWithActions() {
       </Button>
     </div>
   );
-}`}
+}
+
+render(<ToastWithActions />)`}
         />
       </section>
 
@@ -406,8 +418,8 @@ export default function ToastWithActions() {
         <p>
           Multiple toasts are automatically queued and displayed sequentially.
         </p>
-        <LiveDemo
-          code={`import { Button, useToast } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
 export default function ToastQueue() {
   const { showToast } = useToast();
@@ -424,7 +436,9 @@ export default function ToastQueue() {
       Show Multiple Toasts
     </Button>
   );
-}`}
+}
+
+render(<ToastQueue />)`}
         />
       </section>
 
@@ -433,8 +447,8 @@ export default function ToastQueue() {
         <p>
           Customize or remove icons to match your needs.
         </p>
-        <LiveDemo
-          code={`import { Button, useToast } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
 export default function CustomIconToast() {
   const { showToast } = useToast();
@@ -473,7 +487,9 @@ export default function CustomIconToast() {
       </Button>
     </div>
   );
-}`}
+}
+
+render(<CustomIconToast />)`}
         />
       </section>
 
@@ -484,8 +500,8 @@ export default function CustomIconToast() {
         <p>
           Show progress within a toast notification.
         </p>
-        <LiveDemo
-          code={`import { useState, useEffect } from 'react';
+        <CodePlayground
+          initialCode={`import { useState, useEffect } from 'react';
 import { Button, useToast, Progress } from '@clarity/chat-components';
 
 export default function ProgressToast() {
@@ -529,15 +545,17 @@ export default function ProgressToast() {
       Upload File
     </Button>
   );
-}`}
+}
+
+render(<ProgressToast />)`}
         />
 
         <h3>Rich Content Toast</h3>
         <p>
           Display complex content in toast notifications.
         </p>
-        <LiveDemo
-          code={`import { Button, useToast } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
 export default function RichContentToast() {
   const { showToast } = useToast();
@@ -567,15 +585,17 @@ export default function RichContentToast() {
       Show Rich Toast
     </Button>
   );
-}`}
+}
+
+render(<RichContentToast />)`}
         />
 
         <h3>Promise Toast</h3>
         <p>
           Automatically show success/error toasts based on promise resolution.
         </p>
-        <LiveDemo
-          code={`import { Button, useToast } from '@clarity/chat-components';
+        <CodePlayground
+          initialCode={`import { Button, useToast } from '@clarity/chat-components';
 
 export default function PromiseToast() {
   const { showPromiseToast } = useToast();
@@ -599,7 +619,9 @@ export default function PromiseToast() {
       Save (Random Result)
     </Button>
   );
-}`}
+}
+
+render(<PromiseToast />)`}
         />
       </section>
 

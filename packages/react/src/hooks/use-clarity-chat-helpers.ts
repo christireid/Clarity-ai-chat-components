@@ -4,6 +4,8 @@
  * Common patterns and utilities built on top of useClarityChat
  */
 
+'use client'
+
 import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
 import type { CoreMessage } from './use-chat-enhanced'

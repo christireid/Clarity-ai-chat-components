@@ -122,6 +122,12 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Add current user message to messages array
+    messages.push({
+      role: 'user',
+      content: body.message,
+    })
+
     // Validate request
     const validation = validateRequest(messages)
     if (!validation.valid) {
@@ -254,23 +260,27 @@ async function* streamWithRAG(
       yield {
         type: 'sources',
         data: {
-          sources: citations,
+          sources: citations.map(c => ({
+            url: c.url,
+            title: c.source, // formatCitations returns 'source', but frontend expects 'title'
+            score: c.confidence,
+          })),
           count: citations.length,
         },
       }
     }
 
     // Update system message with RAG context
-    const updatedMessages = messages.map((msg) =>
-      msg.role === 'system'
-        ? { ...msg, content: ragContext.systemPrompt }
-        : msg
-    )
-
-    // Add the enhanced user message
-    updatedMessages.push({
-      role: 'user',
-      content: enhancedMessage,
+    // Replace the last user message with the enhanced version
+    const updatedMessages = messages.map((msg, idx) => {
+      if (msg.role === 'system') {
+        return { ...msg, content: ragContext.systemPrompt }
+      }
+      // Replace the last user message with enhanced version
+      if (idx === messages.length - 1 && msg.role === 'user') {
+        return { ...msg, content: enhancedMessage }
+      }
+      return msg
     })
 
     // Stream response from LLM
@@ -384,12 +394,11 @@ async function* streamWithoutRAG(
     // Cache miss - proceed with normal flow
     console.log(`Cache miss (non-RAG) - generating new response for: "${userMessage.substring(0, 50)}..."`)
 
-    // Add user message
-    const updatedMessages = [...messages, { role: 'user', content: userMessage }]
+    // Use messages as-is (user message already added in main route)
 
     // Stream response from LLM
     const streamingFn = getStreamingFunction()
-    const stream = streamingFn(updatedMessages)
+    const stream = streamingFn(messages)
 
     for await (const chunk of stream) {
       if (chunk.type === 'text' && chunk.content) {

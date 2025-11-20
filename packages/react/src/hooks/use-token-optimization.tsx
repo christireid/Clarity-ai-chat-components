@@ -5,6 +5,8 @@
  * Provides easy-to-use access to all token optimization features.
  */
 
+'use client'
+
 import * as React from 'react'
 import type {
   TokenOptimizationConfig,

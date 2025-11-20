@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
@@ -33,11 +33,8 @@ export default function BadgePage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Basic Badges"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function BasicBadges() {
+        <CodePlayground
+          initialCode={`function BasicBadges() {
   return (
     <div className="flex items-center gap-4">
       <Badge>New</Badge>
@@ -48,8 +45,7 @@ function BasicBadges() {
   )
 }
 
-export default BasicBadges`}
-          height="150px"
+render(<BasicBadges />)`}
         />
       </section>
 
@@ -66,11 +62,8 @@ export default BasicBadges`}
         <p>
           Badges come in multiple semantic variants for different use cases.
         </p>
-        <LiveDemo
-          title="Badge Variants"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function BadgeVariants() {
+        <CodePlayground
+          initialCode={`function BadgeVariants() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
@@ -96,8 +89,7 @@ function BadgeVariants() {
   )
 }
 
-export default BadgeVariants`}
-          height="250px"
+render(<BadgeVariants />)`}
         />
       </section>
 
@@ -106,11 +98,8 @@ export default BadgeVariants`}
         <p>
           Choose from small, medium, or large sizes to fit your design.
         </p>
-        <LiveDemo
-          title="Badge Sizes"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function BadgeSizes() {
+        <CodePlayground
+          initialCode={`function BadgeSizes() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
@@ -128,8 +117,7 @@ function BadgeSizes() {
   )
 }
 
-export default BadgeSizes`}
-          height="250px"
+render(<BadgeSizes />)`}
         />
       </section>
 
@@ -138,11 +126,8 @@ export default BadgeSizes`}
         <p>
           Add icons to badges for better visual communication.
         </p>
-        <LiveDemo
-          title="Badges with Icons"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function IconBadges() {
+        <CodePlayground
+          initialCode={`function IconBadges() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
@@ -182,8 +167,7 @@ function IconBadges() {
   )
 }
 
-export default IconBadges`}
-          height="250px"
+render(<IconBadges />)`}
         />
       </section>
 
@@ -192,11 +176,8 @@ export default IconBadges`}
         <p>
           Use minimal dot indicators for subtle notifications.
         </p>
-        <LiveDemo
-          title="Dot Badges"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function DotBadges() {
+        <CodePlayground
+          initialCode={`function DotBadges() {
   return (
     <div className="space-y-6">
       <div>
@@ -244,8 +225,7 @@ function DotBadges() {
   )
 }
 
-export default DotBadges`}
-          height="450px"
+render(<DotBadges />)`}
         />
       </section>
 
@@ -254,11 +234,8 @@ export default DotBadges`}
         <p>
           Overlay badges on other elements like avatars, icons, or buttons.
         </p>
-        <LiveDemo
-          title="Positioned Badges"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function PositionedBadges() {
+        <CodePlayground
+          initialCode={`function PositionedBadges() {
   return (
     <div className="flex items-center gap-8">
       <div className="text-center">
@@ -327,8 +304,7 @@ function PositionedBadges() {
   )
 }
 
-export default PositionedBadges`}
-          height="250px"
+render(<PositionedBadges />)`}
         />
       </section>
 
@@ -337,11 +313,8 @@ export default PositionedBadges`}
         <p>
           Automatically format large numbers with a maximum display value.
         </p>
-        <LiveDemo
-          title="Max Count Badges"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function MaxCountBadges() {
+        <CodePlayground
+          initialCode={`function MaxCountBadges() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
@@ -367,8 +340,7 @@ function MaxCountBadges() {
   )
 }
 
-export default MaxCountBadges`}
-          height="300px"
+render(<MaxCountBadges />)`}
         />
       </section>
 
@@ -377,11 +349,8 @@ export default MaxCountBadges`}
         <p>
           Use outlined badges for a lighter visual weight.
         </p>
-        <LiveDemo
-          title="Outline Badges"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function OutlineBadges() {
+        <CodePlayground
+          initialCode={`function OutlineBadges() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
@@ -404,8 +373,7 @@ function OutlineBadges() {
   )
 }
 
-export default OutlineBadges`}
-          height="250px"
+render(<OutlineBadges />)`}
         />
       </section>
 
@@ -414,11 +382,8 @@ export default OutlineBadges`}
         <p>
           Make badges removable with an onRemove handler, useful for tags and filters.
         </p>
-        <LiveDemo
-          title="Removable Badges"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function RemovableBadges() {
+        <CodePlayground
+          initialCode={`function RemovableBadges() {
   const [tags, setTags] = React.useState([
     { id: '1', label: 'React', variant: 'primary' },
     { id: '2', label: 'TypeScript', variant: 'info' },
@@ -463,8 +428,7 @@ function RemovableBadges() {
   )
 }
 
-export default RemovableBadges`}
-          height="250px"
+render(<RemovableBadges />)`}
         />
       </section>
 
@@ -473,11 +437,8 @@ export default RemovableBadges`}
         <p>
           Add a pulsing animation to draw attention to live or important badges.
         </p>
-        <LiveDemo
-          title="Pulsing Badges"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function PulsingBadges() {
+        <CodePlayground
+          initialCode={`function PulsingBadges() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -517,8 +478,7 @@ function PulsingBadges() {
   )
 }
 
-export default PulsingBadges`}
-          height="300px"
+render(<PulsingBadges />)`}
         />
       </section>
 
@@ -527,11 +487,8 @@ export default PulsingBadges`}
         <p>
           Make badges clickable for filtering, navigation, or actions.
         </p>
-        <LiveDemo
-          title="Interactive Badges"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function InteractiveBadges() {
+        <CodePlayground
+          initialCode={`function InteractiveBadges() {
   const [selected, setSelected] = React.useState('all')
   const [count, setCount] = React.useState(5)
 
@@ -587,8 +544,7 @@ function InteractiveBadges() {
   )
 }
 
-export default InteractiveBadges`}
-          height="350px"
+render(<InteractiveBadges />)`}
         />
       </section>
 
@@ -596,11 +552,8 @@ export default InteractiveBadges`}
         <h2>Real-world Examples</h2>
 
         <h3>Chat Application Badges</h3>
-        <LiveDemo
-          title="Chat Badges"
-          code={`import { Badge } from '@clarity-chat/react'
-
-function ChatBadges() {
+        <CodePlayground
+          initialCode={`function ChatBadges() {
   return (
     <div className="space-y-6 max-w-md">
       <div className="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors cursor-pointer">
@@ -677,8 +630,7 @@ function ChatBadges() {
   )
 }
 
-export default ChatBadges`}
-          height="550px"
+render(<ChatBadges />)`}
         />
       </section>
 

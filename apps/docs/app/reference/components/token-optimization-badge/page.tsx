@@ -1,7 +1,5 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'TokenOptimizationBadge - Clarity Chat Components',
   description: 'Compact indicator for token optimization status and savings.',
@@ -20,18 +18,16 @@ export default function TokenOptimizationBadgePage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Example"
-          code={`import { TokenOptimizationBadge } from '@clarity-chat/react'
-
-export default function Example() {
+        <CodePlayground
+          initialCode={`function Example() {
   return (
     <div className="p-6">
       <TokenOptimizationBadge savingsPercent={37} />
     </div>
   )
-}`} 
-          height="160px"
+}
+
+render(<Example />)`}
         />
       </section>
 

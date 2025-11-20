@@ -1,3 +1,5 @@
+'use client'
+
 import { memo, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import type { AIStatus } from '@clarity-chat/types'

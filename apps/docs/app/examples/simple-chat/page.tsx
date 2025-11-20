@@ -1,19 +1,15 @@
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'Simple Chat Example',
   description: 'Build a basic chat interface in minutes',
 }
 
-const simpleChatCode = `import { useState } from 'react'
-import { ChatWindow, Message } from '@clarity-chat/react'
-
-export default function App() {
+const simpleChatCode = `function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -78,7 +74,9 @@ export default function App() {
       />
     </div>
   )
-}`
+}
+
+render(<App />)`
 
 export default function SimpleChatExample() {
   return (
@@ -103,10 +101,8 @@ export default function SimpleChatExample() {
 
       <p>Try out the chat interface below. Type a message and see it appear instantly!</p>
 
-      <LiveDemo
-        title="Simple Chat Interface"
-        code={simpleChatCode}
-        height="650px"
+      <CodePlayground
+        initialCode={simpleChatCode}
       />
 
       <h2 id="how-it-works">How It Works</h2>

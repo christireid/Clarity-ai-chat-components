@@ -4,6 +4,8 @@
  * Interactive theme preview and live editor
  */
 
+'use client'
+
 import * as React from 'react'
 import { useTheme } from '../theme/ThemeProvider'
 import { 

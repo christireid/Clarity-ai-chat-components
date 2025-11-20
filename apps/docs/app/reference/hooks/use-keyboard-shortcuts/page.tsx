@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -31,11 +31,8 @@ export default function UseKeyboardShortcutsPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Basic Keyboard Shortcuts"
-          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-function ChatWithShortcuts() {
+        <CodePlayground
+          initialCode={`function ChatWithShortcuts() {
   const [messages, setMessages] = React.useState([])
   const [status, setStatus] = React.useState('Ready')
 
@@ -70,8 +67,7 @@ function ChatWithShortcuts() {
   )
 }
 
-export default ChatWithShortcuts`}
-          height="400px"
+render(<ChatWithShortcuts />)`}
         />
       </section>
 
@@ -96,11 +92,8 @@ export default ChatWithShortcuts`}
         <p>
           Support for multi-key sequences like Vim or Gmail shortcuts. Define sequences with the <code>then</code> keyword.
         </p>
-        <LiveDemo
-          title="Key Sequences"
-          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-function ChatWithSequences() {
+        <CodePlayground
+          initialCode={`function ChatWithSequences() {
   const [action, setAction] = React.useState('None')
 
   useKeyboardShortcuts({
@@ -136,8 +129,7 @@ function ChatWithSequences() {
   )
 }
 
-export default ChatWithSequences`}
-          height="400px"
+render(<ChatWithSequences />)`}
         />
       </section>
 
@@ -147,11 +139,8 @@ export default ChatWithSequences`}
           Use scopes to enable/disable shortcuts based on context. This prevents conflicts when the same
           key has different meanings in different parts of your app.
         </p>
-        <LiveDemo
-          title="Scoped Shortcuts"
-          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-function ChatWithScopes() {
+        <CodePlayground
+          initialCode={`function ChatWithScopes() {
   const [mode, setMode] = React.useState('normal')
   const [status, setStatus] = React.useState('Normal mode')
 
@@ -241,8 +230,7 @@ function ChatWithScopes() {
   )
 }
 
-export default ChatWithScopes`}
-          height="600px"
+render(<ChatWithScopes />)`}
         />
       </section>
 
@@ -251,11 +239,8 @@ export default ChatWithScopes`}
         <p>
           Control whether the browser's default behavior should be prevented for each shortcut.
         </p>
-        <LiveDemo
-          title="Prevent Default"
-          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-function ChatWithPreventDefault() {
+        <CodePlayground
+          initialCode={`function ChatWithPreventDefault() {
   const [log, setLog] = React.useState([])
 
   const addLog = (msg) => {
@@ -310,8 +295,7 @@ function ChatWithPreventDefault() {
   )
 }
 
-export default ChatWithPreventDefault`}
-          height="450px"
+render(<ChatWithPreventDefault />)`}
         />
       </section>
 
@@ -320,11 +304,8 @@ export default ChatWithPreventDefault`}
         <p>
           Enable or disable shortcuts dynamically based on application state.
         </p>
-        <LiveDemo
-          title="Dynamic Shortcuts"
-          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-function ChatWithDynamicShortcuts() {
+        <CodePlayground
+          initialCode={`function ChatWithDynamicShortcuts() {
   const [isEditing, setIsEditing] = React.useState(false)
   const [isFocused, setIsFocused] = React.useState(false)
   const [message, setMessage] = React.useState('')
@@ -396,8 +377,7 @@ function ChatWithDynamicShortcuts() {
   )
 }
 
-export default ChatWithDynamicShortcuts`}
-          height="500px"
+render(<ChatWithDynamicShortcuts />)`}
         />
       </section>
 
@@ -406,11 +386,8 @@ export default ChatWithDynamicShortcuts`}
         <p>
           By default, shortcuts are disabled when typing in input fields. You can customize this behavior.
         </p>
-        <LiveDemo
-          title="Input Field Handling"
-          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-function ChatWithInputHandling() {
+        <CodePlayground
+          initialCode={`function ChatWithInputHandling() {
   const [message, setMessage] = React.useState('')
   const [log, setLog] = React.useState([])
 
@@ -486,8 +463,7 @@ function ChatWithInputHandling() {
   )
 }
 
-export default ChatWithInputHandling`}
-          height="550px"
+render(<ChatWithInputHandling />)`}
         />
       </section>
 
@@ -496,11 +472,8 @@ export default ChatWithInputHandling`}
         <p>
           Build an interactive help panel that displays all available shortcuts.
         </p>
-        <LiveDemo
-          title="Shortcut Help Panel"
-          code={`import { useKeyboardShortcuts } from '@clarity-chat/react'
-
-function ChatWithHelpPanel() {
+        <CodePlayground
+          initialCode={`function ChatWithHelpPanel() {
   const [showHelp, setShowHelp] = React.useState(false)
   const [action, setAction] = React.useState('None')
 
@@ -596,8 +569,7 @@ function ChatWithHelpPanel() {
   )
 }
 
-export default ChatWithHelpPanel`}
-          height="700px"
+render(<ChatWithHelpPanel />)`}
         />
       </section>
 

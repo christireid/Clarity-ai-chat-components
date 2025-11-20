@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -34,11 +34,8 @@ export default function AgentRunFeedPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Agent Steps"
-          code={`import { AgentRunFeed } from '@clarity-chat/react'
-
-function SimpleAgentFeed() {
+        <CodePlayground
+          initialCode={`function SimpleAgentFeed() {
   const steps = [
     {
       id: '1',
@@ -72,17 +69,14 @@ function SimpleAgentFeed() {
   )
 }
 
-export default SimpleAgentFeed`}
-          height="450px"
+render(<SimpleAgentFeed />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Live Agent Execution</h2>
-        <LiveDemo
-          title="Agent Running in Real-Time"
-          code={`import { AgentRunFeed } from '@clarity-chat/react'
-import { useState, useEffect } from 'react'
+        <CodePlayground
+          initialCode={`import { useState, useEffect } from 'react'
 
 function LiveAgentExecution() {
   const [steps, setSteps] = useState([])
@@ -164,17 +158,14 @@ function LiveAgentExecution() {
   )
 }
 
-export default LiveAgentExecution`}
-          height="600px"
+render(<LiveAgentExecution />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>With Failed Steps and Retry</h2>
-        <LiveDemo
-          title="Handling Failures"
-          code={`import { AgentRunFeed } from '@clarity-chat/react'
-import { useState } from 'react'
+        <CodePlayground
+          initialCode={`import { useState } from 'react'
 
 function FailureHandling() {
   const [steps, setSteps] = useState([
@@ -233,8 +224,7 @@ function FailureHandling() {
   )
 }
 
-export default FailureHandling`}
-          height="450px"
+render(<FailureHandling />)`}
         />
       </section>
 

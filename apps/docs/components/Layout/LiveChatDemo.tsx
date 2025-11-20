@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { Send, Bot, User, Sparkles } from 'lucide-react'
 
 interface Message {
@@ -65,13 +64,7 @@ export function LiveChatDemo() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className="max-w-2xl mx-auto"
-    >
+    <div className="max-w-2xl mx-auto">
       {/* Demo Label */}
       <div className="flex items-center justify-center gap-2 mb-4">
         <Sparkles className="w-4 h-4 text-brand-500" />
@@ -97,12 +90,9 @@ export function LiveChatDemo() {
 
         {/* Messages */}
         <div className="h-[400px] overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-bg-secondary/50 to-bg-primary">
-          {messages.map((message, index) => (
-            <motion.div
+          {messages.map((message) => (
+            <div
               key={message.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
               className={`flex items-start gap-3 ${
                 message.sender === 'user' ? 'flex-row-reverse' : ''
               }`}
@@ -128,16 +118,12 @@ export function LiveChatDemo() {
               }`}>
                 <p className="text-sm leading-relaxed">{message.text}</p>
               </div>
-            </motion.div>
+            </div>
           ))}
 
           {/* Typing Indicator */}
           {isTyping && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-start gap-3"
-            >
+            <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400 flex items-center justify-center">
                 <Bot className="w-5 h-5" />
               </div>
@@ -148,7 +134,7 @@ export function LiveChatDemo() {
                   <div className="w-2 h-2 rounded-full bg-text-secondary animate-bounce" />
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
 
@@ -181,6 +167,6 @@ export function LiveChatDemo() {
           </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

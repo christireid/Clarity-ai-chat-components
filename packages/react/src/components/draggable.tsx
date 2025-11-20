@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
@@ -221,9 +223,10 @@ export const useDragDrop = <T extends { id: string }>({
 
       const newItems = [...items]
       const [removed] = newItems.splice(sourceIndex, 1)
-      newItems.splice(targetIndex, 0, removed)
-
-      onReorder?.(newItems)
+      if (removed !== undefined) {
+        newItems.splice(targetIndex, 0, removed)
+        onReorder?.(newItems)
+      }
 
       // Clear dropped indicator after animation
       setTimeout(() => setDroppedOn(null), 500)

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
 export const metadata: Metadata = {
@@ -34,11 +34,8 @@ export default function ResponseQualityMeterPage() {
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <LiveDemo
-          title="Simple Quality Metrics"
-          code={`import { ResponseQualityMeter } from '@clarity-chat/react'
-
-function SimpleQuality() {
+        <CodePlayground
+          initialCode={`function SimpleQuality() {
   const metrics = [
     {
       id: '1',
@@ -68,8 +65,7 @@ function SimpleQuality() {
   )
 }
 
-export default SimpleQuality`}
-          height="350px"
+render(<SimpleQuality />)`}
         />
       </section>
 
@@ -78,11 +74,8 @@ export default SimpleQuality`}
         <p>
           Show target thresholds to highlight metrics that need improvement.
         </p>
-        <LiveDemo
-          title="Metrics with Targets"
-          code={`import { ResponseQualityMeter } from '@clarity-chat/react'
-
-function MetricsWithTargets() {
+        <CodePlayground
+          initialCode={`function MetricsWithTargets() {
   const metrics = [
     {
       id: '1',
@@ -124,17 +117,14 @@ function MetricsWithTargets() {
   )
 }
 
-export default MetricsWithTargets`}
-          height="450px"
+render(<MetricsWithTargets />)`}
         />
       </section>
 
       <section className="docs-section">
         <h2>Real-World: RAG Quality Dashboard</h2>
-        <LiveDemo
-          title="RAG Quality Monitoring"
-          code={`import { ResponseQualityMeter } from '@clarity-chat/react'
-import { useState, useEffect } from 'react'
+        <CodePlayground
+          initialCode={`import { useState, useEffect } from 'react'
 
 function RAGQualityDashboard() {
   const [metrics, setMetrics] = useState([])
@@ -208,8 +198,7 @@ function RAGQualityDashboard() {
   )
 }
 
-export default RAGQualityDashboard`}
-          height="600px"
+render(<RAGQualityDashboard />)`}
         />
       </section>
 

@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message, AIStatus } from '@clarity-chat/types'

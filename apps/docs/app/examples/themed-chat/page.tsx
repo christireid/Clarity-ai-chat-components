@@ -1,19 +1,15 @@
 import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { LiveDemo } from '@/components/Demo/LiveDemo'
-
 export const metadata: Metadata = {
   title: 'Themed Chat Example',
   description: 'Customize chat appearance with themes and dark mode',
 }
 
-const themedChatCode = `import { useState } from 'react'
-import { ChatWindow, Message, ThemeProvider } from '@clarity-chat/react'
-
-export default function App() {
+const themedChatCode = `function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -108,7 +104,9 @@ export default function App() {
       </div>
     </ThemeProvider>
   )
-}`
+}
+
+render(<App />)`
 
 export default function ThemedChatExample() {
   return (
@@ -133,10 +131,8 @@ export default function ThemedChatExample() {
 
       <p>Click the theme toggle button to switch between light and dark modes!</p>
 
-      <LiveDemo
-        title="Themed Chat Interface"
-        code={themedChatCode}
-        height="700px"
+      <CodePlayground
+        initialCode={themedChatCode}
       />
 
       <h2 id="how-it-works">How It Works</h2>
