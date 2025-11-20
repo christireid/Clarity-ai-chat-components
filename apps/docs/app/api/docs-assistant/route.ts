@@ -23,7 +23,7 @@ import {
 } from '@/lib/ai/sessionStore'
 import { getResponseCache, generateContextHash } from '@/lib/ai/responseCache'
 
-export const runtime = 'edge' // Use Edge runtime for better performance
+export const runtime = 'nodejs' // Use Node.js runtime for fs/crypto access
 export const dynamic = 'force-dynamic'
 
 interface ChatMessage {

@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import { serialize } from 'next-mdx-remote/serialize'
+import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
@@ -47,7 +47,7 @@ const slugToFile: Record<string, string> = {
 }
 
 export async function generateStaticParams() {
-  return Object.keys(commercialPages).map((slug) => ({ slug }))
+  return Object.keys(commercialPages).map((slug) => ({ slug ))
 }
 
 export async function generateMetadata({ params }: CommercialPageProps): Promise<Metadata> {
@@ -94,9 +94,8 @@ export default async function CommercialPage({ params }: CommercialPageProps) {
   }
 
   // Parse MDX
-  const mdxSource = await serialize(content, {
-    parseFrontmatter: true,
-  })
+  const { content: mdxContent } = matter(content)
+  )
 
   return (
     <>
@@ -113,7 +112,7 @@ export default async function CommercialPage({ params }: CommercialPageProps) {
 
         <article>
           <div className="prose prose-lg max-w-none dark:prose-invert">
-            <MDXRemote {...mdxSource} components={mdxComponents} />
+            <MDXRemote source={mdxContent} components={mdxComponents} />
           </div>
         </article>
       </div>

@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import { serialize } from 'next-mdx-remote/serialize'
+import matter from 'gray-matter'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
 
@@ -23,9 +23,8 @@ export default async function SafetyGuidePage() {
   }
 
   // Parse MDX
-  const mdxSource = await serialize(content, {
-    parseFrontmatter: true,
-  })
+  const { content: mdxContent } = matter(content)
+  )
 
   return (
     <>
@@ -33,7 +32,7 @@ export default async function SafetyGuidePage() {
       
       <div className="docs-content">
         <div className="prose prose-lg max-w-none dark:prose-invert">
-          <MDXRemote {...mdxSource} components={mdxComponents} />
+          <MDXRemote source={mdxContent} components={mdxComponents} />
         </div>
       </div>
     </>

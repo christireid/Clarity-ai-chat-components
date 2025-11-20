@@ -10,18 +10,20 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/types": "workspace:*",
-    "next": "^15.1.6",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "framer-motion": "^12.0.3",
-    "lucide-react": "^0.469.0",
-    "openai": "^4.77.3",
-    "@anthropic-ai/sdk": "^0.32.1",
+    "@heroicons/react": "^2.2.0",
     "@pinecone-database/pinecone": "^4.0.0",
     "@upstash/redis": "^1.35.6",
+    "framer-motion": "^12.0.3",
     "gray-matter": "^4.0.3",
+    "lucide-react": "^0.469.0",
+    "next": "^15.1.6",
+    "openai": "^4.77.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-live": "^4.1.8",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
@@ -29,9 +31,9 @@
     "@types/react": "^19.0.6",
     "@types/react-dom": "^19.0.2",
     "@types/uuid": "^10.0.0",
-    "tsx": "^4.19.2",
-    "typescript": "^5.9.3",
     "eslint": "^9.39.1",
-    "eslint-config-next": "^15.1.6"
+    "eslint-config-next": "^15.1.6",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.3"
   }
 }

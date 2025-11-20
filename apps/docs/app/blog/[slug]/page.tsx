@@ -5,9 +5,9 @@ import { Calendar, Clock, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { mdxComponents } from '@/components/MDX/mdx-components'
+import matter from 'gray-matter'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -81,10 +81,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound()
   }
 
-  // Parse MDX
-  const mdxSource = await serialize(content, {
-    parseFrontmatter: true,
-  })
+  // Parse frontmatter if present
+  const { content: mdxContent } = matter(content)
 
   return (
     <>
@@ -123,7 +121,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </header>
 
           <div className="prose prose-lg max-w-none dark:prose-invert">
-            <MDXRemote {...mdxSource} components={mdxComponents} />
+            <MDXRemote source={mdxContent} components={mdxComponents} />
           </div>
         </article>
       </div>
