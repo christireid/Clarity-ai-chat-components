@@ -136,7 +136,8 @@ export async function healthCheck(memory: ClarityMemory): Promise<HealthCheckRes
         message: `Compression check failed: ${error instanceof Error ? error.message : String(error)}`,
       }
     }
-  } catch (error) {
+  } catch {
+    // Unexpected error during health check
     result.healthy = false
   }
 
