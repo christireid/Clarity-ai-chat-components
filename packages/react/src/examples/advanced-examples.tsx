@@ -73,10 +73,14 @@ export function Advanced_CustomDashboard() {
     persistMessages: true,
     storageKey: 'dashboard-chat',
   })
-  
-  const { track } = useAnalytics()
-  const memory = useMemory()
-  
+
+  // TODO: Re-enable once useAnalytics is implemented
+  // const { track } = useAnalytics()
+  const track = (event: string, props?: any) => console.log(event, props)
+
+  // TODO: Re-enable once useMemory is implemented
+  // const memory = useMemory()
+
   React.useEffect(() => {
     track('dashboard_viewed', { timestamp: Date.now() })
   }, [track])
@@ -91,14 +95,15 @@ export function Advanced_CustomDashboard() {
             <p className="text-sm text-muted-foreground">Messages</p>
             <p className="text-2xl font-bold">{messages.length}</p>
           </div>
-          {memory && (
+          {/* TODO: Re-enable once useMemory is implemented */}
+          {/* {memory && (
             <div>
               <p className="text-sm text-muted-foreground">Memory Items</p>
               <p className="text-2xl font-bold">
                 {memory.getStats().total}
               </p>
             </div>
-          )}
+          )} */}
         </div>
       </div>
       

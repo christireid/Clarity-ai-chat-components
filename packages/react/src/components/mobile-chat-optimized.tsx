@@ -85,7 +85,7 @@ export function MobileOptimizedMessage({
   const x = useMotionValue(0)
   const [isLongPressing, setIsLongPressing] = React.useState(false)
   const [showActions, setShowActions] = React.useState(false)
-  const longPressTimer = React.useRef<NodeJS.Timeout>()
+  const longPressTimer = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Default swipe actions
   const defaultSwipeActions: SwipeAction[] = [
@@ -131,7 +131,7 @@ export function MobileOptimizedMessage({
     if (typeof window === 'undefined') return
 
     try {
-      // @ts-ignore - Haptic API
+      // Haptic API
       if (navigator.vibrate) {
         const pattern = {
           light: [10],
@@ -253,7 +253,7 @@ export function MobileOptimizedMessage({
                 </div>
                 <div className="text-sm">{message.content}</div>
                 <div className="text-xs text-muted-foreground mt-2">
-                  {new Date(message.timestamp).toLocaleTimeString()}
+                  {(message as any).timestamp && new Date((message as any).timestamp).toLocaleTimeString()}
                 </div>
               </div>
             </div>
@@ -356,12 +356,12 @@ export function MobileChatWindow({
 
   // Pull-to-refresh handling
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (!config.enablePullToRefresh || !isAtTop.current) return
+    if (!config.enablePullToRefresh || !isAtTop.current || !e.touches[0]) return
     touchStartY.current = e.touches[0].clientY
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!config.enablePullToRefresh || !isAtTop.current) return
+    if (!config.enablePullToRefresh || !isAtTop.current || !e.touches[0]) return
 
     const currentY = e.touches[0].clientY
     const distance = currentY - touchStartY.current
@@ -503,7 +503,7 @@ export function useMobileOptimization() {
     if (typeof window === 'undefined') return
 
     try {
-      // @ts-ignore
+      // Haptic API
       if (navigator.vibrate) {
         const pattern = {
           light: [10],
@@ -544,7 +544,7 @@ export function useMobileOptimization() {
 export interface TouchFriendlyButtonProps {
   children: React.ReactNode
   onClick?: () => void
-  variant?: 'default' | 'primary' | 'secondary' | 'ghost'
+  variant?: 'default' | 'secondary' | 'ghost' | 'outline' | 'destructive' | 'link' | 'success' | 'error' | 'surface'
   haptic?: boolean
   className?: string
 }
