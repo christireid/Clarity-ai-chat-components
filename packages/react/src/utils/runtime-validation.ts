@@ -101,6 +101,7 @@ export function validateFunction(
   value: unknown,
   propName: string,
   componentName: string
+// eslint-disable-next-line
 ): asserts value is Function {
   if (value === undefined || value === null) {
     return // Optional callbacks are allowed
