@@ -156,8 +156,8 @@ export function FileUpload({
         className={cn(
           'relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ease-out cursor-pointer',
           isDragging
-            ? 'border-primary bg-primary/10 shadow-[0_8px_16px_rgba(0,0,0,0.12)] scale-[1.02]'
-            : 'border-border/60 hover:border-primary/50 hover:bg-accent/50 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
+            ? 'border-primary bg-primary/10 shadow-lg scale-[1.02]'
+            : 'border-border/40 hover:border-primary/50 hover:bg-accent/50 hover:shadow-md'
         )}
         onClick={() => fileInputRef.current?.click()}
       >
@@ -171,7 +171,7 @@ export function FileUpload({
         />
 
         <motion.div
-          className="space-y-3"
+          className="space-y-3.5"
           animate={{
             scale: isDragging ? 1.05 : 1,
           }}
@@ -192,7 +192,7 @@ export function FileUpload({
                 ? 'Drop files here'
                 : 'Click to upload or drag and drop'}
             </p>
-            <p className="text-xs text-muted-foreground/80 mt-1">
+            <p className="text-xs text-muted-foreground/90 mt-1">
               Max {maxFiles} files, up to {formatFileSize(maxFileSize)} each
             </p>
           </div>
@@ -226,7 +226,7 @@ export function FileUpload({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            className="bg-destructive/5 border border-destructive/20 text-destructive px-4 py-3 rounded-xl text-sm shadow-[0_2px_8px_rgba(239,68,68,0.1)]"
+            className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-xl text-sm shadow-sm"
           >
             <div className="flex items-start gap-2">
               <svg className="h-4 w-4 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -245,7 +245,7 @@ export function FileUpload({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="space-y-2"
+            className="space-y-2.5"
           >
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">
@@ -261,7 +261,7 @@ export function FileUpload({
               </Button>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {files.map((file, index) => (
                 <motion.div
                   key={`${file.name}-${index}`}
@@ -269,7 +269,7 @@ export function FileUpload({
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 20, scale: 0.95 }}
                   transition={{ delay: index * 0.05, duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="flex items-center gap-3 p-3 bg-card border border-border/40 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:border-border/60 transition-all duration-200 ease-out"
+                  className="flex items-center gap-3 p-3 bg-card border border-border/40 rounded-xl shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 ease-out"
                 >
                   <motion.span
                     className="text-2xl"
@@ -281,7 +281,7 @@ export function FileUpload({
                   </motion.span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-foreground truncate">{file.name}</p>
-                    <p className="text-xs text-muted-foreground/80">
+                    <p className="text-xs text-muted-foreground/90">
                       {formatFileSize(file.size)} •{' '}
                       {file.type || 'Unknown type'}
                     </p>

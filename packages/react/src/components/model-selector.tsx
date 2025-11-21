@@ -85,16 +85,16 @@ export function ModelSelector({
         variant="surface"
         onClick={handleToggle}
         disabled={disabled}
-        className="w-full justify-between rounded-xl border border-border/40 bg-card/95 backdrop-blur-sm px-4 py-3 text-left text-sm shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:border-border/60 transition-all duration-200 ease-out"
+        className="w-full justify-between rounded-xl border border-border/40 bg-card/95 backdrop-blur-md px-4 py-3 text-left text-sm shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 ease-out"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <div className="flex min-w-0 flex-1 items-center gap-3">
-          <span className="truncate text-foreground font-medium">
+        <div className="flex min-w-0 flex-1 items-center gap-3.5">
+          <span className="truncate text-foreground font-semibold">
             {selectedModel?.name || 'Select model'}
           </span>
           {showMetrics && selectedModel && (
-            <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/90">
               {(['speed', 'cost'] as const).map((type) => {
                 const { variant, label } = getBadgeProps(type, selectedModel[type])
                 const displayValue = type === 'cost' ? `$${selectedModel[type]}` : selectedModel[type]
@@ -135,7 +135,7 @@ export function ModelSelector({
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             role="listbox"
-            className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/40 bg-card/98 backdrop-blur-md shadow-[0_12px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)]"
+            className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/40 bg-card/98 backdrop-blur-lg shadow-xl"
           >
             {models.map((model) => (
               <button
@@ -147,17 +147,17 @@ export function ModelSelector({
                 className={cn(
                   'w-full px-4 py-3 text-left transition-colors duration-150 ease-out first:rounded-t-2xl last:rounded-b-2xl',
                   model.id === value
-                    ? 'bg-muted/50 text-foreground'
-                    : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground'
+                    ? 'bg-muted/60 text-foreground'
+                    : 'text-muted-foreground/90 hover:bg-muted/40 hover:text-foreground'
                 )}
               >
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="font-medium text-foreground">
+                    <span className="font-semibold text-foreground">
                       {model.name}
                     </span>
                     {showMetrics && (
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-1.5">
                         {(['speed', 'quality', 'cost'] as const).map((type) => {
                           const { variant, label } = getBadgeProps(type, model[type])
                           const displayValue =
@@ -177,11 +177,11 @@ export function ModelSelector({
                     )}
                   </div>
                   {showDescription && model.description && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground/90">
                       {model.description}
                     </p>
                   )}
-                  <p className="text-xs text-muted-foreground/80">
+                  <p className="text-xs text-muted-foreground/90">
                     {(model.contextWindow / 1000).toFixed(0)}K context
                     {model.vision && ' · Vision'}
                     {model.toolCalling && ' · Tools'}

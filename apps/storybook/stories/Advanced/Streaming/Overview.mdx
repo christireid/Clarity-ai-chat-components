@@ -1,0 +1,81 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Advanced/Streaming/Overview" />
+
+# Streaming & Real-time Components
+
+Streaming components handle real-time data delivery from AI models. They provide smooth, token-by-token streaming experiences with proper error handling and cancellation support.
+
+## Quick Links
+
+- [StreamBlock](?path=/docs/advanced-streaming-streamblock--docs) ⭐ - Structured streaming blocks
+- [StreamingTextRenderer](?path=/docs/advanced-streaming-streamingtextrenderer--docs) ⭐ - Token-by-token rendering
+- [StreamCancellation](?path=/docs/advanced-streaming-streamcancellation--docs) - Cancel streaming requests
+- [StreamingExamples](?path=/docs/advanced-streaming-streamingexamples--docs) - Complete streaming examples
+
+## Component Categories
+
+### Rendering
+- **StreamingTextRenderer** - Smooth token-by-token text display
+- **StreamBlock** - Structured streaming with markdown support
+
+### Control
+- **StreamCancellation** - Cancel and manage streams
+- **StreamingExamples** - Full-featured streaming demos
+
+## Key Features
+
+<FeatureGrid features={[
+  {
+    title: 'Token-by-Token Streaming',
+    description: 'Smooth rendering of AI responses as they arrive',
+  },
+  {
+    title: 'Markdown Support',
+    description: 'Stream markdown with syntax highlighting',
+  },
+  {
+    title: 'Stream Cancellation',
+    description: 'Cancel streams gracefully with proper cleanup',
+  },
+  {
+    title: 'Error Recovery',
+    description: 'Handle network errors and retry logic',
+  },
+  {
+    title: 'SSE & WebSocket',
+    description: 'Support for multiple streaming protocols',
+  },
+  {
+    title: 'Backpressure Handling',
+    description: 'Handle high-speed streams without lag',
+  },
+]} columns={3} />
+
+## Best Practices
+
+- ✅ Show streaming indicator while generating
+- ✅ Support stream cancellation
+- ✅ Handle network errors gracefully
+- ✅ Implement proper cleanup on unmount
+- ✅ Optimize rendering performance
+- ✅ Provide visual feedback for stream status
+
+## Streaming Protocols
+
+### Server-Sent Events (SSE)
+Recommended for most use cases. Simple, reliable, HTTP-based.
+
+### WebSockets
+Use for bidirectional communication and low-latency requirements.
+
+### HTTP Streaming
+Use for custom protocols or edge deployments.
+
+## When to Use
+
+**StreamBlock**: For structured streaming (code, markdown, JSON)
+**StreamingTextRenderer**: For plain text streaming
+**StreamCancellation**: To allow users to stop generation
+**StreamingExamples**: For reference implementations

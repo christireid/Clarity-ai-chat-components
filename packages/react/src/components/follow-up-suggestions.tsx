@@ -44,8 +44,8 @@ export interface FollowUpSuggestionsProps {
 }
 
 const gridClasses = {
-  grid: 'grid grid-cols-1 md:grid-cols-2 gap-3',
-  list: 'flex flex-col gap-3',
+  grid: 'grid grid-cols-1 md:grid-cols-2 gap-3.5',
+  list: 'flex flex-col gap-3.5',
 }
 
 export function FollowUpSuggestions({
@@ -73,17 +73,17 @@ export function FollowUpSuggestions({
       <Button
         variant="outline"
         className={cn(
-          'group flex w-full flex-col items-start gap-2 rounded-2xl p-4 text-left border-border/40 shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all duration-200 ease-out hover:-translate-y-[2px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:border-primary/50 hover:bg-accent/50',
+          'group flex w-full flex-col items-start gap-2.5 rounded-2xl p-4 text-left border-border/40 shadow-sm transition-all duration-200 ease-out hover:-translate-y-[2px] hover:shadow-md hover:border-primary/50 hover:bg-accent/50',
           layout === 'list' && 'rounded-2xl'
         )}
         onClick={() => onSelect(suggestion)}
         aria-label={`Follow up with ${suggestion.title}`}
       >
-        <div className="flex w-full items-center justify-between gap-3">
-          <div className="flex items-center gap-3 text-sm font-semibold text-foreground flex-1 min-w-0">
+        <div className="flex w-full items-center justify-between gap-3.5">
+          <div className="flex items-center gap-3.5 text-sm font-bold text-foreground flex-1 min-w-0">
             {suggestion.icon && (
               <motion.span
-                className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-primary/20 group-hover:bg-primary/20 transition-all duration-200 shrink-0"
+                className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm ring-1 ring-primary/30 group-hover:bg-primary/20 transition-all duration-200 shrink-0"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               >
@@ -111,13 +111,13 @@ export function FollowUpSuggestions({
         </div>
 
         {suggestion.description && (
-          <p className="text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed">
+          <p className="text-sm text-muted-foreground/90 line-clamp-2 leading-relaxed">
             {suggestion.description}
           </p>
         )}
 
         {suggestion.keywords && suggestion.keywords.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {suggestion.keywords.map((keyword) => (
               <Badge
                 key={keyword}
@@ -141,14 +141,14 @@ export function FollowUpSuggestions({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2, delay: index * 0.05 }}
-          className="rounded-lg border bg-muted/50 p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+          className="rounded-lg border bg-muted/50 p-4 shadow-sm"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             <Skeleton width={32} height={32} rounded="lg" variant="shimmer" />
             <Skeleton width="70%" height={16} variant="shimmer" />
           </div>
-          <SkeletonText lines={2} className="mt-3" variant="shimmer" />
-          <div className="mt-3 flex gap-2">
+          <SkeletonText lines={2} className="mt-3.5" variant="shimmer" />
+          <div className="mt-3.5 flex gap-2.5">
             <Skeleton width={72} height={20} rounded="full" variant="shimmer" />
             <Skeleton width={64} height={20} rounded="full" variant="shimmer" />
           </div>
@@ -165,10 +165,10 @@ export function FollowUpSuggestions({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
     >
-      <Card ref={containerRef} className={cn('shadow-[0_10px_24px_rgba(15,23,42,0.12)]', className)}>
+      <Card ref={containerRef} className={cn('shadow-lg', className)}>
         <CardHeader className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/30">
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -184,7 +184,7 @@ export function FollowUpSuggestions({
               </svg>
             </div>
             <div className="flex-1">
-              <CardTitle className="text-base font-semibold text-foreground">
+              <CardTitle className="text-base font-bold text-foreground">
                 {title}
               </CardTitle>
               <CardDescription className="text-xs text-muted-foreground">

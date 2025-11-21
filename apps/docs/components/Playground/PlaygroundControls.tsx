@@ -148,10 +148,22 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <div className="flex items-center gap-2">
         <button
           onClick={handleCopyCode}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all text-sm font-medium",
+            copied && "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+          )}
         >
-          <Code2 className="w-4 h-4" />
-          {copied ? 'Copied!' : 'Copy Code'}
+          {copied ? (
+            <>
+              <Check className="w-4 h-4" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Code2 className="w-4 h-4" />
+              Copy Code
+            </>
+          )}
         </button>
 
         <button
@@ -193,52 +205,107 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       </div>
 
       {/* Share Modal */}
-      {showShareModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Share Playground
-            </h3>
-            
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Share this URL to let others view and edit your code:
-            </p>
+      <AnimatePresence>
+        {showShareModal && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+              onClick={() => setShowShareModal(false)}
+              aria-hidden="true"
+            />
 
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={shareUrl}
-                readOnly
-                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm"
-              />
-              <button
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(shareUrl)
-                    setCopied(true)
-                    toast.success('Share link copied to clipboard')
-                    setTimeout(() => setCopied(false), 2000)
-                  } catch (error) {
-                    toast.error('Failed to copy share link')
-                  }
-                }}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
-              >
-                {copied ? 'Copied!' : 'Copy'}
-              </button>
-            </div>
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="share-modal-title"
+            >
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4 pointer-events-auto">
+                <div className="flex items-center justify-between mb-4">
+                  <h3
+                    id="share-modal-title"
+                    className="text-lg font-semibold text-gray-900 dark:text-white"
+                  >
+                    Share Playground
+                  </h3>
+                  <button
+                    onClick={() => setShowShareModal(false)}
+                    className={cn(
+                      "p-1.5 rounded-lg text-gray-500 dark:text-gray-400",
+                      "hover:bg-gray-100 dark:hover:bg-gray-700",
+                      "transition-colors",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    )}
+                    aria-label="Close share modal"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
 
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={() => setShowShareModal(false)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-sm font-medium"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Share this URL to let others view and edit your code:
+                </p>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={shareUrl}
+                    readOnly
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Share URL"
+                  />
+                  <button
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(shareUrl)
+                        setCopied(true)
+                        toast.success('Share link copied to clipboard')
+                        setTimeout(() => setCopied(false), 2000)
+                      } catch (error) {
+                        toast.error('Failed to copy share link')
+                      }
+                    }}
+                    className={cn(
+                      "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-medium",
+                      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                      copied && "bg-green-500 hover:bg-green-600"
+                    )}
+                    aria-label="Copy share link to clipboard"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-4 h-4 inline mr-1" />
+                        Copied!
+                      </>
+                    ) : (
+                      'Copy'
+                    )}
+                  </button>
+                </div>
+
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={() => setShowShareModal(false)}
+                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   )
 }

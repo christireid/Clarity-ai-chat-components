@@ -41,10 +41,15 @@ export function SourceCard({
 
   if (variant === 'compact') {
     return (
-      <a
+      <motion.a
         href={source.url}
         target="_blank"
         rel="noopener noreferrer"
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3, delay: index ? index * 0.05 : 0 }}
+        whileHover={{ scale: 1.02, x: 4 }}
+        whileTap={{ scale: 0.98 }}
         className={cn(
           'flex items-center gap-2 px-3 py-2 rounded-md',
           'bg-secondary/50 hover:bg-secondary',
@@ -55,26 +60,43 @@ export function SourceCard({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Icon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+        <motion.div
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+        >
+          <Icon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+        </motion.div>
         <span className="text-sm truncate flex-1">{source.title}</span>
         {source.score && (
-          <span
+          <motion.span
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
             className={cn(
               'text-xs font-medium px-2 py-0.5 rounded',
               relevanceColor
             )}
           >
             {Math.round(source.score * 100)}%
-          </span>
+          </motion.span>
         )}
-        <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-      </a>
+        <motion.div
+          whileHover={{ x: 2 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+        </motion.div>
+      </motion.a>
     )
   }
 
   // Default variant
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index ? index * 0.05 : 0 }}
+      whileHover={{ y: -4, scale: 1.01 }}
       className={cn(
         'rounded-lg border border-border bg-card overflow-hidden',
         'transition-all duration-200',
@@ -87,7 +109,9 @@ export function SourceCard({
       {/* Header */}
       <div className="flex items-start gap-3 p-4">
         {/* Icon */}
-        <div
+        <motion.div
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 15 }}
           className={cn(
             'p-2 rounded-md',
             'bg-primary/10 text-primary',
@@ -95,7 +119,7 @@ export function SourceCard({
           )}
         >
           <Icon className="w-4 h-4" />
-        </div>
+        </motion.div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
@@ -151,8 +175,10 @@ export function SourceCard({
 
         {/* Expand/collapse button */}
         {source.snippet && onToggle && (
-          <button
+          <motion.button
             onClick={onToggle}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             className={cn(
               'p-1.5 rounded-md',
               'hover:bg-accent hover:text-accent-foreground',
@@ -160,12 +186,13 @@ export function SourceCard({
             )}
             aria-label={expanded ? 'Collapse' : 'Expand'}
           >
-            {expanded ? (
-              <ChevronUp className="w-4 h-4" />
-            ) : (
+            <motion.div
+              animate={{ rotate: expanded ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
               <ChevronDown className="w-4 h-4" />
-            )}
-          </button>
+            </motion.div>
+          </motion.button>
         )}
       </div>
 
@@ -187,7 +214,7 @@ export function SourceCard({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   )
 }
 

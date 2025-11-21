@@ -24,7 +24,7 @@ export function ThinkingIndicator({
 }: ThinkingIndicatorProps) {
   // Memoize icon and label getters to prevent recreation on every render
   const getStageIcon = useCallback((stage: AIStatus['stage']) => {
-    const iconProps = { size: 20 }
+    const iconProps = { size: 18 }
     switch (stage) {
       case 'thinking':
         return <BotIcon {...iconProps} />
@@ -78,7 +78,7 @@ export function ThinkingIndicator({
         ease: ANIMATION_EASING.out,
       }}
       className={cn(
-        'flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 px-5 py-4 shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
+        'flex items-center gap-3.5 rounded-lg border border-border/40 bg-muted/40 px-5 py-4 shadow-md',
         className
       )}
     >
@@ -100,8 +100,8 @@ export function ThinkingIndicator({
 
       {/* Status Text */}
       <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-sm">
+        <div className="flex items-center gap-2.5">
+          <span className="font-semibold text-sm">
             {stageLabel}
           </span>
 
@@ -120,7 +120,7 @@ export function ThinkingIndicator({
                   delay: i * 0.2,
                   ease: ANIMATION_EASING.inOut,
                 }}
-                className="w-1.5 h-1.5 rounded-full bg-current"
+                className="w-1 h-1 rounded-full bg-current"
               />
             ))}
           </div>
@@ -135,7 +135,7 @@ export function ThinkingIndicator({
               duration: ANIMATION_DURATION.fast / 1000,
               ease: ANIMATION_EASING.out,
             }}
-            className="text-xs text-muted-foreground mt-1"
+            className="text-xs text-muted-foreground/90 mt-1.5"
           >
             {status.topic}
           </motion.p>
@@ -143,7 +143,7 @@ export function ThinkingIndicator({
 
         {/* Progress Bar */}
         {status?.progress !== undefined && (
-          <div className="mt-2 h-1 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
+          <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${status.progress}%` }}
@@ -162,7 +162,7 @@ export function ThinkingIndicator({
         <motion.span
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-xs text-muted-foreground"
+          className="text-xs font-medium text-muted-foreground/90"
         >
           ~{estimatedSeconds}s
         </motion.span>

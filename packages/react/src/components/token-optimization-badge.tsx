@@ -68,7 +68,7 @@ export function TokenOptimizationBadge({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border bg-muted/50 px-3 py-1.5',
+        'inline-flex items-center gap-2.5 rounded-full border border-border/40 bg-muted/60 shadow-sm px-3 py-1.5',
         sizeClasses[size],
         className
       )}
@@ -86,13 +86,13 @@ export function TokenOptimizationBadge({
           d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
         />
       </svg>
-      <span className="font-medium text-success">
+      <span className="font-semibold text-success">
         {formatNumber(stats.tokensSaved)} saved
       </span>
       {showCost && stats.costSavings > 0 && (
         <>
-          <span className="text-muted-foreground">•</span>
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground/90">•</span>
+          <span className="text-muted-foreground/90">
             {formatCost(stats.costSavings)}
           </span>
         </>

@@ -269,14 +269,14 @@ export function RetryButton({
   }
 
   return (
-    <div className="flex flex-col items-start gap-3">
+    <div className="flex flex-col items-start gap-3.5">
       <Button
         onClick={handleRetry}
         disabled={!canRetry}
         variant={variantMap[variant]}
         size={sizeMap[size]}
         loading={isRetrying}
-        className={cn('gap-2', className)}
+        className={cn('gap-2.5', className)}
         aria-label={`Retry (${attemptsRemaining} attempts remaining)`}
       >
         {!isRetrying && (
@@ -306,7 +306,7 @@ export function RetryButton({
       </Button>
 
       {/* Error message */}
-      <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+      <p className="text-sm text-muted-foreground/90 flex items-center gap-1.5">
         <svg
           className="h-3.5 w-3.5 text-warning"
           fill="none"

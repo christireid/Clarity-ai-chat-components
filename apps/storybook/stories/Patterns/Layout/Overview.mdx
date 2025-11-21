@@ -1,0 +1,297 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Patterns/Layout/Overview" />
+
+# Layout Patterns
+
+Proven patterns for building responsive, accessible layouts for chat interfaces across devices and screen sizes.
+
+## Quick Links
+
+- [Mobile-First Chat](?path=/docs/patterns-layout-mobile--docs) ⭐
+- [Split View Layout](?path=/docs/patterns-layout-splitview--docs)
+- [Responsive Sidebar](?path=/docs/patterns-layout-sidebar--docs)
+- [Modal Overlays](?path=/docs/patterns-layout-modals--docs)
+- [Virtual Scrolling](?path=/docs/patterns-layout-virtualization--docs)
+
+## Common Layout Patterns
+
+### 📱 Mobile-First Chat
+**Problem**: Chat interfaces need to work seamlessly on mobile devices
+**Solution**: Mobile-optimized layouts with touch interactions
+
+**When to use**:
+- Any customer-facing chat
+- Mobile apps
+- Responsive web applications
+- PWAs
+
+**Key features**:
+- Touch-optimized controls
+- Full-screen on mobile
+- Swipe gestures
+- Virtual keyboard handling
+- Safe area respect (iOS notch)
+
+### 🔀 Split View Layout
+**Problem**: Users need to view chat alongside other content
+**Solution**: Multi-pane layout with resizable sections
+
+**When to use**:
+- Desktop applications
+- Dashboard interfaces
+- Documentation browsers
+- Code editors with chat
+
+**Key features**:
+- Resizable panes
+- Collapsible sections
+- Keyboard shortcuts
+- State persistence
+- Responsive breakpoints
+
+### 📂 Responsive Sidebar
+**Problem**: Navigation needs to work on both mobile and desktop
+**Solution**: Adaptive sidebar that collapses on small screens
+
+**When to use**:
+- Multi-conversation interfaces
+- Settings and navigation
+- User lists and contacts
+- Channel browsers
+
+**Key features**:
+- Auto-collapse on mobile
+- Overlay vs. push modes
+- Touch swipe to open
+- Persistent state
+- Smooth transitions
+
+### 🪟 Modal Overlays
+**Problem**: Contextual UI without losing conversation context
+**Solution**: Modal dialogs and popovers for secondary actions
+
+**When to use**:
+- Settings panels
+- File previews
+- Confirmation dialogs
+- Quick actions
+- Context menus
+
+**Key features**:
+- Focus trap
+- Click-outside to close
+- ESC key support
+- Backdrop blur
+- Stacking context management
+
+### ♾️ Virtual Scrolling
+**Problem**: Performance degrades with hundreds of messages
+**Solution**: Render only visible messages with virtualization
+
+**When to use**:
+- Long conversation histories (100+ messages)
+- Real-time feeds
+- Large data lists
+- Archive viewers
+
+**Key features**:
+- Windowed rendering
+- Dynamic item heights
+- Scroll position restoration
+- Smooth scrolling
+- Infinite loading
+
+## Best Practices
+
+### Responsive Design
+- ✅ Start mobile-first, enhance for desktop
+- ✅ Test on actual devices, not just DevTools
+- ✅ Consider landscape and portrait orientations
+- ✅ Handle virtual keyboard on mobile
+- ❌ Don't assume minimum screen sizes
+- ❌ Don't use fixed pixel widths
+- ❌ Don't ignore tablet breakpoints
+
+### Performance
+- ✅ Use CSS containment for layout
+- ✅ Virtualize long lists
+- ✅ Lazy load images and media
+- ✅ Minimize layout shifts
+- ❌ Don't animate layout properties
+- ❌ Don't render offscreen content
+- ❌ Don't use inline styles when possible
+
+### Accessibility
+- ✅ Maintain focus management
+- ✅ Support keyboard navigation
+- ✅ Provide skip links
+- ✅ Use semantic HTML landmarks
+- ❌ Don't trap focus permanently
+- ❌ Don't hide scroll bars without alternatives
+- ❌ Don't override native behaviors unnecessarily
+
+### Touch Interactions
+- ✅ Use 44x44px minimum touch targets
+- ✅ Support swipe gestures naturally
+- ✅ Prevent accidental actions
+- ✅ Provide visual feedback
+- ❌ Don't rely on hover states
+- ❌ Don't use small click areas
+- ❌ Don't ignore touch hold actions
+
+## Implementation Examples
+
+### Responsive Layout
+```typescript
+// Mobile-first responsive layout
+const ChatLayout = () => {
+  const [isMobile] = useMediaQuery('(max-width: 768px)')
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile)
+
+  return (
+    <div className=\"flex h-screen overflow-hidden\">
+      {/* Sidebar */}
+      <aside
+        className={cn(
+          \"border-r transition-transform\",
+          isMobile && !sidebarOpen && \"-translate-x-full\",
+          isMobile ? \"absolute inset-y-0 left-0 z-50 w-80 bg-white shadow-xl\" : \"relative w-64\"
+        )}
+      >
+        <ConversationList />
+      </aside>
+
+      {/* Main chat */}
+      <main className=\"flex-1 flex flex-col\">
+        <ChatWindow />
+      </main>
+
+      {/* Mobile backdrop */}
+      {isMobile && sidebarOpen && (
+        <div
+          className=\"fixed inset-0 bg-black/50 z-40\"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+    </div>
+  )
+}
+```
+
+### Virtual Scrolling
+```typescript
+import { useVirtualizer } from '@tanstack/react-virtual'
+
+const VirtualMessageList = ({ messages }: { messages: Message[] }) => {
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  const virtualizer = useVirtualizer({
+    count: messages.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 80, // Estimated message height
+    overscan: 5, // Render 5 extra items above/below viewport
+  })
+
+  return (
+    <div ref={parentRef} className=\"h-full overflow-auto\">
+      <div
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+          position: 'relative',
+        }}
+      >
+        {virtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              transform: `translateY(${virtualItem.start}px)`,
+            }}
+          >
+            <Message message={messages[virtualItem.index]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+### Modal Management
+```typescript
+const useModal = () => {
+  const [isOpen, setIsOpen] = useState(false)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+
+  const open = () => {
+    previousFocusRef.current = document.activeElement as HTMLElement
+    setIsOpen(true)
+  }
+
+  const close = () => {
+    setIsOpen(false)
+    previousFocusRef.current?.focus()
+  }
+
+  // ESC key handler
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close()
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen])
+
+  return { isOpen, open, close }
+}
+```
+
+## Common Pitfalls
+
+### Layout Shifts
+❌ **Problem**: Content jumps during loading
+```typescript
+// Bad: Images without dimensions cause shifts
+<img src={url} alt=\"...\" />
+```
+
+✅ **Solution**: Reserve space for content
+```typescript
+// Good: Specify aspect ratio
+<div className=\"aspect-video bg-gray-100\">
+  <img src={url} alt=\"...\" className=\"w-full h-full object-cover\" />
+</div>
+```
+
+### Z-index Management
+❌ **Problem**: Overlapping elements with conflicting z-index
+```typescript
+// Bad: Random z-index values
+<div style={{ zIndex: 9999 }}>
+<div style={{ zIndex: 99999 }}>
+```
+
+✅ **Solution**: Use a z-index scale
+```typescript
+// Good: Consistent layering system
+const zIndex = {
+  base: 0,
+  dropdown: 1000,
+  sticky: 1100,
+  modal: 1200,
+  popover: 1300,
+  tooltip: 1400,
+}
+```
+
+---
+
+**Ready to implement?** Start with [Mobile-First Chat](?path=/docs/patterns-layout-mobile--docs) for responsive interfaces, or explore [Virtual Scrolling](?path=/docs/patterns-layout-virtualization--docs) for performance optimization.

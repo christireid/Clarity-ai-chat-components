@@ -1,0 +1,148 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Hooks/Utilities/Overview" />
+
+# Utility Hooks
+
+Utility hooks provide common functionality for chat interfaces including clipboard operations, error handling, voice input, window size tracking, and keyboard shortcuts.
+
+## Quick Links
+
+- [useClipboard](?path=/docs/hooks-utilities-useclipboard--docs) ⭐ - Copy to clipboard
+- [useErrorRecovery](?path=/docs/hooks-utilities-useerrorrecovery--docs) ⭐ - Error handling and retry
+- [useVoiceInput](?path=/docs/hooks-utilities-usevoiceinput--docs) - Voice-to-text input
+- [useWindowSize](?path=/docs/hooks-utilities-usewindowsize--docs) - Track window dimensions
+
+## Hook Categories
+
+### Browser APIs
+- **useClipboard** - Copy text and code to clipboard
+- **useVoiceInput** - Web Speech API integration
+- **useWindowSize** - Responsive layout support
+
+### Error Handling
+- **useErrorRecovery** - Automatic retry and error recovery
+
+## Key Features
+
+<FeatureGrid features={[
+  {
+    title: 'Clipboard API',
+    description: 'Copy text with fallback support',
+  },
+  {
+    title: 'Voice Input',
+    description: 'Speech-to-text with browser API',
+  },
+  {
+    title: 'Error Recovery',
+    description: 'Automatic retry with backoff',
+  },
+  {
+    title: 'Window Tracking',
+    description: 'Responsive breakpoint detection',
+  },
+  {
+    title: 'Visual Feedback',
+    description: 'Success/error state management',
+  },
+  {
+    title: 'Browser Compatible',
+    description: 'Graceful degradation',
+  },
+]} columns={3} />
+
+## Best Practices
+
+- ✅ Provide visual feedback for clipboard operations
+- ✅ Handle missing browser API support gracefully
+- ✅ Request microphone permissions properly
+- ✅ Debounce window resize handlers
+- ✅ Implement exponential backoff for retries
+- ✅ Show clear error messages to users
+
+## Basic Usage
+
+### useClipboard
+
+```tsx
+import { useClipboard } from '@clarity-chat/react'
+
+function CodeBlock({ code }) {
+  const { copy, copied } = useClipboard()
+
+  return (
+    <div>
+      <pre>{code}</pre>
+      <button onClick={() => copy(code)}>
+        {copied ? 'Copied!' : 'Copy'}
+      </button>
+    </div>
+  )
+}
+```
+
+### useErrorRecovery
+
+```tsx
+import { useErrorRecovery } from '@clarity-chat/react'
+
+function DataFetcher() {
+  const { execute, loading, error, retry } = useErrorRecovery(
+    async () => {
+      const res = await fetch('/api/data')
+      return res.json()
+    },
+    { maxRetries: 3, backoff: 'exponential' }
+  )
+
+  if (error) return <button onClick={retry}>Retry</button>
+  if (loading) return <div>Loading...</div>
+  return <div>Data loaded</div>
+}
+```
+
+### useVoiceInput
+
+```tsx
+import { useVoiceInput } from '@clarity-chat/react'
+
+function VoiceChat() {
+  const { transcript, isListening, start, stop } = useVoiceInput()
+
+  return (
+    <div>
+      <p>{transcript}</p>
+      <button onClick={isListening ? stop : start}>
+        {isListening ? 'Stop' : 'Start'} Listening
+      </button>
+    </div>
+  )
+}
+```
+
+### useWindowSize
+
+```tsx
+import { useWindowSize } from '@clarity-chat/react'
+
+function ResponsiveLayout() {
+  const { width, isMobile, isTablet, isDesktop } = useWindowSize()
+
+  return (
+    <div>
+      {isMobile && <MobileLayout />}
+      {isTablet && <TabletLayout />}
+      {isDesktop && <DesktopLayout />}
+    </div>
+  )
+}
+```
+
+## When to Use
+
+**useClipboard**: For copy-to-clipboard buttons
+**useErrorRecovery**: For network requests with retries
+**useVoiceInput**: For voice-based chat interfaces
+**useWindowSize**: For responsive layouts

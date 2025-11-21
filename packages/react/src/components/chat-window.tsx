@@ -52,30 +52,30 @@ export interface ChatWindowProps {
 // Default empty state component - extracted for better performance
 const DefaultEmptyState = () => (
   <motion.div
-    className="text-center space-y-6"
-    initial={{ opacity: 0, scale: 0.9 }}
+    className="text-center space-y-8 px-4"
+    initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.3 }}
+    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
   >
     <motion.div
-      className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-[0_1px_3px_rgba(15,23,42,0.1)] ring-1 ring-primary/20"
+      className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 shadow-lg ring-1 ring-primary/30"
       animate={{
-        scale: [1, 1.05, 1],
-        rotate: [0, 2, -2, 0],
+        scale: [1, 1.02, 1],
+        rotate: [0, 1, -1, 0],
       }}
       transition={{
-        duration: 3,
+        duration: 4,
         repeat: Infinity,
         ease: 'easeInOut',
       }}
     >
-      <BotIcon size={36} className="text-primary" />
+      <BotIcon size={40} className="text-primary" />
     </motion.div>
-    <div className="space-y-2">
-      <h3 className="text-xl font-semibold text-foreground">
+    <div className="space-y-3">
+      <h3 className="text-2xl font-bold text-foreground">
         Start a conversation
       </h3>
-      <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+      <p className="text-sm text-muted-foreground/90 max-w-sm mx-auto leading-relaxed">
         Send a message to begin chatting with the AI assistant. I'm here to help
         with your questions and tasks.
       </p>
@@ -282,28 +282,28 @@ export function ChatWindow({
   return (
     <Card
       className={cn(
-        'flex h-full flex-col overflow-hidden shadow-[0_10px_24px_rgba(15,23,42,0.12)]',
+        'flex h-full flex-col overflow-hidden shadow-xl border-border/40',
         className
       )}
     >
       {/* Optional Header */}
       {showHeader && (
         <motion.div
-          className="flex items-center justify-between gap-4 border-b border-border/50 bg-card px-4 py-3 sm:px-6 backdrop-blur-sm"
+          className="flex items-center justify-between gap-4 border-b border-border/60 bg-card/50 px-5 py-4 sm:px-6 backdrop-blur-md"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
-              <BotIcon size={20} />
+          <div className="flex items-center gap-3.5 min-w-0 flex-1">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25">
+              <BotIcon size={22} />
             </div>
-            <div className="min-w-0 flex-1">
-              <h2 className="text-sm font-semibold text-foreground truncate">
+            <div className="min-w-0 flex-1 space-y-0.5">
+              <h2 className="text-sm font-bold text-foreground truncate leading-tight">
                 {sessionTitle}
               </h2>
               {sessionSubtitle && (
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="text-xs text-muted-foreground/80 truncate leading-tight">
                   {sessionSubtitle}
                 </p>
               )}
@@ -316,7 +316,7 @@ export function ChatWindow({
           </div>
 
           {/* Header Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2.5 shrink-0">
             {headerActions}
 
             {onExport && normalizedMessages.length > 0 && (
@@ -324,7 +324,7 @@ export function ChatWindow({
                 size="sm"
                 variant="ghost"
                 onClick={onExport}
-                className="gap-1.5"
+                className="gap-2 hover:bg-accent/50 transition-colors"
                 title="Export conversation"
               >
                 <svg
@@ -349,7 +349,7 @@ export function ChatWindow({
                 size="sm"
                 variant="ghost"
                 onClick={onClear}
-                className="gap-1.5 text-muted-foreground hover:text-destructive"
+                className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
                 title="Clear conversation"
               >
                 <svg
@@ -389,7 +389,7 @@ export function ChatWindow({
         {/* Thinking Indicator - positioned above input */}
         <AnimatePresence>
           {isLoading && aiStatus && (
-            <div className="px-4 pb-2">
+            <div className="px-5 pb-3">
               <ThinkingIndicator status={aiStatus} />
             </div>
           )}

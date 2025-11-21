@@ -136,7 +136,7 @@ export const SemanticColors: Story = {
         {/* Warning */}
         <div>
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <span className="text-2xl">†</span> Warning
+            <span className="text-2xl">‚ö†Ô∏è</span> Warning
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <ColorSwatch name="yellow-50" value="#fefce8" />
@@ -164,7 +164,7 @@ export const SemanticColors: Story = {
         {/* Info */}
         <div>
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <span className="text-2xl">9</span> Info
+            <span className="text-2xl">‚ÑπÔ∏è</span> Info
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <ColorSwatch name="blue-50" value="#eff6ff" />
@@ -334,7 +334,7 @@ function App() {
         </div>
 
         <div className="callout callout-info">
-          <p className="font-semibold mb-2">=° Pro Tip</p>
+          <p className="font-semibold mb-2">üí° Pro Tip</p>
           <p className="text-sm">
             You can also extend an existing theme by merging your custom values with a preset theme.
             This way, you only need to override the values you want to change.
@@ -367,22 +367,22 @@ export const DarkMode: Story = {
           {
             title: 'Automatic Contrast',
             description: 'Colors automatically adjust for proper contrast in dark mode.',
-            icon: <span className="text-2xl"><</span>,
+            icon: <span className="text-2xl">üåì</span>,
           },
           {
             title: 'System Preference',
             description: 'Respects user system preferences by default.',
-            icon: <span className="text-2xl">=ª</span>,
+            icon: <span className="text-2xl">üíª</span>,
           },
           {
             title: 'Manual Override',
             description: 'Users can manually toggle light/dark mode.',
-            icon: <span className="text-2xl"><®</span>,
+            icon: <span className="text-2xl">üîÜ</span>,
           },
           {
             title: 'Persistent',
             description: 'Mode preference is saved in localStorage.',
-            icon: <span className="text-2xl">=æ</span>,
+            icon: <span className="text-2xl">üíæ</span>,
           },
         ]}
       />

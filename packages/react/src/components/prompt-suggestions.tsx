@@ -143,11 +143,11 @@ export function PromptSuggestions({
   // Loading skeleton
   if (isLoading) {
     return (
-      <div className={cn('flex flex-wrap gap-2', className)}>
+      <div className={cn('flex flex-wrap gap-2.5', className)}>
         {Array.from({ length: maxSuggestions }).map((_, i) => (
           <div
             key={i}
-            className="h-8 w-24 animate-pulse rounded-full bg-muted"
+            className="h-9 w-28 animate-pulse rounded-full bg-muted/60"
           />
         ))}
       </div>
@@ -165,9 +165,9 @@ export function PromptSuggestions({
   // Render chips layout
   if (layout === 'chips') {
     return (
-      <div className={cn('space-y-3', className)}>
+      <div className={cn('space-y-3.5', className)}>
         {showCategories && categories.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             <Button
               variant={selectedCategory === 'all' ? 'default' : 'outline'}
               size="sm"
@@ -187,7 +187,7 @@ export function PromptSuggestions({
             ))}
           </div>
         )}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           <AnimatePresence mode="popLayout">
             {processedSuggestions.map((suggestion, index) => (
               <motion.div
@@ -209,7 +209,7 @@ export function PromptSuggestions({
                     'group relative rounded-full',
                     'hover:bg-primary hover:text-primary-foreground hover:border-primary',
                     'transition-all duration-200 ease-out',
-                    'hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-[1px]'
+                    'hover:shadow-md hover:-translate-y-[1px]'
                   )}
                   aria-label={suggestion.label || suggestion.text}
                 >
@@ -237,7 +237,7 @@ export function PromptSuggestions({
   // Render cards layout
   if (layout === 'cards') {
     return (
-      <div className={cn('grid grid-cols-1 md:grid-cols-2 gap-3', className)}>
+      <div className={cn('grid grid-cols-1 md:grid-cols-2 gap-3.5', className)}>
         <AnimatePresence mode="popLayout">
           {processedSuggestions.map((suggestion, index) => (
             <motion.div
@@ -255,13 +255,13 @@ export function PromptSuggestions({
                 hoverable
                 className={cn(
                   'cursor-pointer transition-all duration-200 ease-out',
-                  'hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] hover:border-primary/60',
+                  'hover:shadow-lg hover:border-primary/50',
                   'hover:-translate-y-[2px]',
                   'group'
                 )}
                 onClick={() => onSelect(suggestion)}
               >
-                <CardContent className="p-4">
+                <CardContent className="px-4 py-3.5">
                   <div className="flex items-start gap-3">
                     {suggestion.icon && (
                       <motion.div
@@ -273,11 +273,11 @@ export function PromptSuggestions({
                       </motion.div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-sm mb-1 text-foreground group-hover:text-primary transition-colors duration-200">
+                      <h4 className="font-semibold text-sm mb-1.5 text-foreground group-hover:text-primary transition-colors duration-200">
                         {suggestion.label || suggestion.text}
                       </h4>
                       {suggestion.description && (
-                        <p className="text-xs text-muted-foreground/80 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-muted-foreground/90 line-clamp-2 leading-relaxed">
                           {suggestion.description}
                         </p>
                       )}
@@ -299,7 +299,7 @@ export function PromptSuggestions({
 
   // Render list layout
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('space-y-2.5', className)}>
       <AnimatePresence mode="popLayout">
         {processedSuggestions.map((suggestion, index) => (
           <motion.div
@@ -317,17 +317,17 @@ export function PromptSuggestions({
               variant="ghost"
               className={cn(
                 'w-full justify-start text-left',
-                'hover:bg-accent'
+                'hover:bg-accent/50'
               )}
               onClick={() => onSelect(suggestion)}
             >
               {suggestion.icon && (
-                <span className="mr-2">{suggestion.icon}</span>
+                <span className="mr-2.5">{suggestion.icon}</span>
               )}
               <div className="flex-1 text-left">
-                <div className="font-medium">{suggestion.label || suggestion.text}</div>
+                <div className="font-semibold text-sm">{suggestion.label || suggestion.text}</div>
                 {suggestion.description && (
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-muted-foreground/90 mt-0.5">
                     {suggestion.description}
                   </div>
                 )}

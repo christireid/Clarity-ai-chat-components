@@ -50,17 +50,17 @@ export function ContextCard({
   const getTypeColor = () => {
     switch (context.type) {
       case 'document':
-        return 'bg-primary/10 text-primary ring-1 ring-primary/20'
+        return 'bg-primary/10 text-primary ring-1 ring-primary/30'
       case 'image':
-        return 'bg-secondary/10 text-secondary-foreground ring-1 ring-secondary/20'
+        return 'bg-secondary/10 text-secondary-foreground ring-1 ring-secondary/30'
       case 'video':
-        return 'bg-destructive/10 text-destructive ring-1 ring-destructive/20'
+        return 'bg-destructive/10 text-destructive ring-1 ring-destructive/30'
       case 'audio':
-        return 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/20'
+        return 'bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/30'
       case 'link':
-        return 'bg-[hsl(var(--info))]/10 text-[hsl(var(--info))] ring-1 ring-[hsl(var(--info))]/20'
+        return 'bg-[hsl(var(--info))]/10 text-[hsl(var(--info))] ring-1 ring-[hsl(var(--info))]/30'
       case 'text':
-        return 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] ring-1 ring-[hsl(var(--warning))]/20'
+        return 'bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] ring-1 ring-[hsl(var(--warning))]/30'
       default:
         return 'bg-muted text-muted-foreground ring-1 ring-border'
     }
@@ -75,18 +75,18 @@ export function ContextCard({
     >
       <Card
         className={cn(
-          'group relative transition-all duration-200 ease-out border-border/40 shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:-translate-y-[2px] cursor-pointer',
+          'group relative transition-all duration-200 ease-out border-border/40 shadow-sm hover:shadow-md hover:-translate-y-[2px] cursor-pointer',
           !context.isActive && 'opacity-60',
           className
         )}
         onClick={() => onPreview?.(context)}
       >
         <CardContent className="p-4">
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3.5">
             {/* Icon/Thumbnail */}
             <div
               className={cn(
-                'flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center text-2xl shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]',
+                'flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center text-2xl shadow-sm',
                 getTypeColor()
               )}
             >
@@ -103,12 +103,12 @@ export function ContextCard({
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start justify-between gap-2.5">
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-sm truncate">
+                  <h4 className="font-semibold text-sm truncate">
                     {context.name}
                   </h4>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground/90 mt-1.5">
                     {context.metadata.extractedText
                       ? truncate(context.metadata.extractedText, 80)
                       : context.type}
@@ -128,12 +128,12 @@ export function ContextCard({
               </div>
 
               {/* Metadata */}
-              <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2.5 mt-2.5 text-xs text-muted-foreground/90">
                 <Badge variant="outline" size="sm" className="capitalize">
                   {context.type}
                 </Badge>
                 {context.metadata.fileSize && (
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5">
                     <svg
                       className="h-3 w-3"
                       fill="none"
@@ -151,7 +151,7 @@ export function ContextCard({
                   </span>
                 )}
                 {context.metadata.pageCount && (
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5">
                     <svg
                       className="h-3 w-3"
                       fill="none"
@@ -169,7 +169,7 @@ export function ContextCard({
                   </span>
                 )}
                 {context.metadata.duration && (
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5">
                     <svg
                       className="h-3 w-3"
                       fill="none"
@@ -192,7 +192,7 @@ export function ContextCard({
 
           {/* Actions */}
           {showActions && (
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="flex items-center gap-2.5 mt-3.5 pt-3.5 border-t opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               {onToggle && (
                 <Button
                   variant="ghost"

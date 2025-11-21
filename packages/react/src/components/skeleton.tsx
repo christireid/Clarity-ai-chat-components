@@ -64,7 +64,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     return (
       <div
         className={cn(
-          'bg-muted/50 backdrop-blur-sm',
+          'bg-muted/60 backdrop-blur-sm',
           roundedClasses[rounded],
           className
         )}
@@ -77,7 +77,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   return (
     <motion.div
       className={cn(
-        'bg-muted/50 backdrop-blur-sm',
+        'bg-muted/60 backdrop-blur-sm',
         roundedClasses[rounded],
         className
       )}
@@ -116,7 +116,7 @@ export const SkeletonText: React.FC<SkeletonTextProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('space-y-2', className)} style={{ gap: `${gap}px` }}>
+    <div className={cn('space-y-2.5', className)} style={{ gap: `${gap}px` }}>
       {Array.from({ length: lines }).map((_, index) => (
         <Skeleton
           key={index}
@@ -184,7 +184,7 @@ export const SkeletonMessage: React.FC<SkeletonMessageProps> = ({
   return (
     <div
       className={cn(
-        'flex gap-3 p-4',
+        'flex gap-3.5 p-4',
         isUser && 'flex-row-reverse',
         className
       )}
@@ -233,7 +233,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('rounded-lg border border-border/60 bg-card overflow-hidden shadow-[0_1px_3px_rgba(15,23,42,0.1)]', className)}>
+    <div className={cn('rounded-lg border border-border/40 bg-card overflow-hidden shadow-sm', className)}>
       {/* Image */}
       {showImage && (
         <Skeleton variant={variant} height={imageHeight} rounded="none" />
@@ -243,7 +243,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({
       <div className="p-6 space-y-4">
         {/* Header */}
         {showHeader && (
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <Skeleton variant={variant} width="60%" height={24} rounded="sm" />
             <Skeleton variant={variant} width="40%" height={16} rounded="sm" />
           </div>
@@ -254,7 +254,7 @@ export const SkeletonCard: React.FC<SkeletonCardProps> = ({
 
         {/* Footer */}
         {showFooter && (
-          <div className="flex gap-2 pt-2">
+          <div className="flex gap-2.5 pt-2">
             <Skeleton variant={variant} width={80} height={36} rounded="md" />
             <Skeleton variant={variant} width={80} height={36} rounded="md" />
           </div>
@@ -289,7 +289,7 @@ export const SkeletonList: React.FC<SkeletonListProps> = ({
   return (
     <div className={cn('space-y-4', className)}>
       {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className="flex gap-3 items-start">
+        <div key={index} className="flex gap-3.5 items-start">
           {showAvatar && <SkeletonAvatar size={40} variant={variant} />}
           <div className="flex-1">
             <SkeletonText lines={lines} variant={variant} lastLineWidth={80} />
@@ -353,7 +353,7 @@ export const SkeletonInput: React.FC<SkeletonInputProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('space-y-2.5', className)}>
       {showLabel && (
         <Skeleton variant={variant} width="30%" height={16} rounded="sm" />
       )}
@@ -389,7 +389,7 @@ export const SkeletonChatWindow: React.FC<{ variant?: 'pulse' | 'shimmer' | 'non
 
       {/* Input */}
       <div className="p-4 border-t">
-        <div className="flex gap-2">
+        <div className="flex gap-2.5">
           <Skeleton variant={variant} height={40} className="flex-1" rounded="md" />
           <Skeleton variant={variant} width={40} height={40} rounded="md" />
         </div>

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { SearchDialog } from './SearchDialog'
 import clsx from 'clsx'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const navigation = [
   { name: 'Learn', href: '/learn/quick-start' },
@@ -69,26 +70,47 @@ export function Navigation() {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-8">
-              <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-                <BookOpen className="w-6 h-6 text-brand-500" />
-                <span>Clarity Chat</span>
+              <Link href="/" className="group flex items-center gap-2 font-bold text-xl">
+                <motion.div
+                  whileHover={{ rotate: 15, scale: 1.1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                >
+                  <BookOpen className="w-6 h-6 text-brand-500" />
+                </motion.div>
+                <span className="group-hover:text-brand-500 transition-colors">Clarity Chat</span>
               </Link>
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center gap-1">
-                {navigation.map((item) => (
-                  <Link
+                {navigation.map((item, index) => (
+                  <motion.div
                     key={item.name}
-                    href={item.href}
-                    className={clsx(
-                      'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-                      pathname?.startsWith(item.href)
-                        ? 'bg-bg-tertiary text-brand-500'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
-                    )}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    {item.name}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      className={clsx(
+                        'relative px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                        pathname?.startsWith(item.href)
+                          ? 'bg-bg-tertiary text-brand-500'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+                      )}
+                    >
+                      {item.name}
+                      {!pathname?.startsWith(item.href) && (
+                        <motion.span
+                          className="absolute bottom-1 left-4 right-4 h-0.5 bg-brand-500"
+                          initial={{ scaleX: 0 }}
+                          whileHover={{ scaleX: 1 }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      )}
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -96,9 +118,11 @@ export function Navigation() {
             {/* Actions */}
             <div className="flex items-center gap-2">
               {/* Search */}
-              <button
+              <motion.button
                 onClick={() => setSearchOpen(true)}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-bg-secondary hover:bg-bg-tertiary transition-colors text-sm text-text-secondary"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-bg-secondary hover:bg-bg-tertiary transition-colors text-sm text-text-secondary hover:shadow-sm"
                 aria-label="Search documentation"
               >
                 <Search className="w-4 h-4" />
@@ -106,75 +130,141 @@ export function Navigation() {
                 <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-bg-primary px-1.5 font-mono text-xs">
                   <span className="text-xs">⌘</span>K
                 </kbd>
-              </button>
+              </motion.button>
 
               {/* Mobile Search */}
-              <button
+              <motion.button
                 onClick={() => setSearchOpen(true)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 className="sm:hidden p-2 rounded-lg hover:bg-bg-secondary transition-colors"
                 aria-label="Search"
               >
                 <Search className="w-5 h-5" />
-              </button>
+              </motion.button>
 
               {/* Theme Toggle */}
-              <button
+              <motion.button
                 onClick={cycleTheme}
+                whileHover={{ scale: 1.1, rotate: 15 }}
+                whileTap={{ scale: 0.9 }}
                 className="p-2 rounded-lg hover:bg-bg-secondary transition-colors"
-                aria-label={mounted ? `Current theme: ${theme}. Click to cycle through themes.` : 'Toggle theme'}
-                suppressHydrationWarning
+                aria-label="Cycle through themes: light, dark, and system"
               >
-                {getThemeIcon()}
-              </button>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={theme}
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {getThemeIcon()}
+                  </motion.div>
+                </AnimatePresence>
+              </motion.button>
 
               {/* GitHub */}
-              <a
+              <motion.a
                 href="https://github.com/christireid/Clarity-ai-chat-components"
                 target="_blank"
                 rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 className="p-2 rounded-lg hover:bg-bg-secondary transition-colors"
                 aria-label="View on GitHub"
               >
                 <ExternalLink className="w-5 h-5" />
-              </a>
+              </motion.a>
 
               {/* Mobile Menu Toggle */}
-              <button
+              <motion.button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 className="md:hidden p-2 rounded-lg hover:bg-bg-secondary transition-colors"
                 aria-label="Toggle mobile menu"
               >
-                {mobileMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
+                <AnimatePresence mode="wait">
+                  {mobileMenuOpen ? (
+                    <motion.div
+                      key="close"
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <X className="w-6 h-6" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="menu"
+                      initial={{ rotate: 90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Menu className="w-6 h-6" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
             </div>
           </div>
 
           {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-border animate-slide-down">
-              <div className="flex flex-col gap-2">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={clsx(
-                      'px-4 py-3 rounded-lg text-sm font-medium transition-colors',
-                      pathname?.startsWith(item.href)
-                        ? 'bg-bg-tertiary text-brand-500'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
-                    )}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                className="md:hidden overflow-hidden border-t border-border"
+              >
+                <motion.div
+                  initial="hidden"
+                  animate="show"
+                  exit="hidden"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                      opacity: 1,
+                      transition: {
+                        staggerChildren: 0.05,
+                        delayChildren: 0.1,
+                      },
+                    },
+                  }}
+                  className="flex flex-col gap-2 py-4"
+                >
+                  {navigation.map((item) => (
+                    <motion.div
+                      key={item.name}
+                      variants={{
+                        hidden: { opacity: 0, x: -20 },
+                        show: { opacity: 1, x: 0 },
+                      }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={clsx(
+                          'block px-4 py-3 rounded-lg text-sm font-medium transition-colors',
+                          pathname?.startsWith(item.href)
+                            ? 'bg-bg-tertiary text-brand-500'
+                            : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+                        )}
+                      >
+                        {item.name}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </nav>
       </header>
 

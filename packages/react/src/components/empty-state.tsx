@@ -19,8 +19,15 @@ import {
   AlertCircleIcon,
   CheckCircleIcon,
   InfoIcon,
+  SparklesIcon,
+  CodeIcon,
+  MessageSquareIcon,
+  LightbulbIcon,
 } from './icons'
 import { InteractiveButton } from './interactive-card'
+import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
 // import { createScaleVariant } from '../animations' // Reserved for future use
 
 export interface EmptyStateProps {
@@ -58,11 +65,11 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      initial={{ opacity: 0, y: 20, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        'flex flex-col items-center justify-center text-center p-8 space-y-6',
+        'flex flex-col items-center justify-center text-center px-6 py-12 space-y-8',
         className
       )}
     >
@@ -71,8 +78,8 @@ export function EmptyState({
         <motion.div
           initial={{ scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
-          className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-[0_4px_12px_rgba(0,0,0,0.08)] ring-1 ring-primary/20"
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.1, type: 'spring', stiffness: 280, damping: 22 }}
+          className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/15 to-primary/5 shadow-lg ring-1 ring-primary/25"
         >
           {icon}
         </motion.div>
@@ -82,12 +89,12 @@ export function EmptyState({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
-        className="space-y-3 max-w-md"
+        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: 0.25 }}
+        className="space-y-3.5 max-w-lg"
       >
-        <h3 className="text-xl font-semibold text-foreground">{title}</h3>
+        <h3 className="text-2xl font-bold text-foreground leading-tight">{title}</h3>
         {description && (
-          <p className="text-base text-muted-foreground/80 leading-relaxed">
+          <p className="text-sm text-muted-foreground/90 leading-relaxed">
             {description}
           </p>
         )}
@@ -98,8 +105,8 @@ export function EmptyState({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
-          className="flex gap-3"
+          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: 0.35 }}
+          className="flex flex-wrap gap-3 justify-center"
         >
           {action && (
             <InteractiveButton
@@ -126,31 +133,167 @@ export function EmptyState({
 EmptyState.displayName = 'EmptyState'
 
 /**
- * Empty Chat State
+ * Default starter prompts for empty chat state
+ */
+const DEFAULT_STARTER_PROMPTS: PromptSuggestion[] = [
+  {
+    id: 'starter-help',
+    text: 'Help me write code',
+    label: 'Write Code',
+    icon: <CodeIcon size={16} />,
+    description: 'Get help with coding tasks and debugging',
+    type: 'starter',
+    category: 'Development',
+  },
+  {
+    id: 'starter-explain',
+    text: 'Explain a concept to me',
+    label: 'Explain Concept',
+    icon: <LightbulbIcon size={16} />,
+    description: 'Learn about complex topics in simple terms',
+    type: 'starter',
+    category: 'Learning',
+  },
+  {
+    id: 'starter-brainstorm',
+    text: 'Help me brainstorm ideas',
+    label: 'Brainstorm',
+    icon: <SparklesIcon size={16} />,
+    description: 'Generate creative ideas and solutions',
+    type: 'starter',
+    category: 'Creativity',
+  },
+  {
+    id: 'starter-chat',
+    text: 'Just chat and answer questions',
+    label: 'Chat',
+    icon: <MessageSquareIcon size={16} />,
+    description: 'Have a conversation and get answers',
+    type: 'starter',
+    category: 'General',
+  },
+]
+
+/**
+ * Empty Chat State with Suggested Prompts
  */
 export function EmptyChatState({
   onStartChat,
+  onSuggestionSelect,
+  suggestions = DEFAULT_STARTER_PROMPTS,
+  showSuggestions = true,
   className,
 }: {
+  /** Callback when "Start Chat" button is clicked */
   onStartChat?: () => void
+  /** Callback when a suggestion is selected */
+  onSuggestionSelect?: (suggestion: PromptSuggestion) => void
+  /** Custom starter prompts (defaults to built-in suggestions) */
+  suggestions?: PromptSuggestion[]
+  /** Show suggested prompts */
+  showSuggestions?: boolean
+  /** Additional className */
   className?: string
 }) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
-    <EmptyState
-      icon={<BotIcon size={32} className="text-primary" />}
-      title="Start a conversation"
-      description="Send a message to begin chatting with the AI assistant"
-      action={
-        onStartChat
-          ? {
-              label: 'Start Chat',
-              onClick: onStartChat,
-              variant: 'primary',
-            }
-          : undefined
-      }
-      className={className}
-    />
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        duration: getMotionSafeDuration(prefersReducedMotion, 0.5),
+        ease: [0.25, 0.1, 0.25, 1]
+      }}
+      className={cn(
+        'flex flex-col items-center justify-center text-center px-6 py-12 space-y-8 max-w-3xl mx-auto',
+        className
+      )}
+    >
+      {/* Icon */}
+      <motion.div
+        initial={{ scale: 0, rotate: -90 }}
+        animate={{
+          scale: 1,
+          rotate: 0
+        }}
+        transition={{
+          duration: getMotionSafeDuration(prefersReducedMotion, 0.6),
+          ease: [0.25, 0.1, 0.25, 1],
+          delay: getMotionSafeDuration(prefersReducedMotion, 0.1),
+          type: 'spring',
+          stiffness: 280,
+          damping: 22
+        }}
+        className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/15 to-primary/5 shadow-lg ring-1 ring-primary/25"
+      >
+        <BotIcon size={40} className="text-primary" />
+      </motion.div>
+
+      {/* Content */}
+      <motion.div
+        initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0) }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
+          ease: [0.25, 0.1, 0.25, 1],
+          delay: getMotionSafeDuration(prefersReducedMotion, 0.25)
+        }}
+        className="space-y-3.5"
+      >
+        <h3 className="text-2xl font-bold text-foreground leading-tight">
+          Start a conversation
+        </h3>
+        <p className="text-sm text-muted-foreground/90 leading-relaxed max-w-md">
+          {showSuggestions
+            ? 'Choose a suggestion below or type your own message to begin chatting with the AI assistant.'
+            : 'Send a message to begin chatting with the AI assistant. I\'m here to help with your questions and tasks.'
+          }
+        </p>
+      </motion.div>
+
+      {/* Suggested Prompts */}
+      {showSuggestions && suggestions.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0) }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
+            ease: [0.25, 0.1, 0.25, 1],
+            delay: getMotionSafeDuration(prefersReducedMotion, 0.35)
+          }}
+          className="w-full"
+        >
+          <PromptSuggestions
+            suggestions={suggestions}
+            onSelect={onSuggestionSelect || (() => {})}
+            suggestionType="starter"
+            layout="cards"
+            maxSuggestions={6}
+          />
+        </motion.div>
+      )}
+
+      {/* Optional "Start Chat" button */}
+      {onStartChat && !showSuggestions && (
+        <motion.div
+          initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0) }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: getMotionSafeDuration(prefersReducedMotion, 0.4),
+            ease: [0.25, 0.1, 0.25, 1],
+            delay: getMotionSafeDuration(prefersReducedMotion, 0.35)
+          }}
+        >
+          <InteractiveButton
+            variant="primary"
+            onClick={onStartChat}
+          >
+            Start Chat
+          </InteractiveButton>
+        </motion.div>
+      )}
+    </motion.div>
   )
 }
 

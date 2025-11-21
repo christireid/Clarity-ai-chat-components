@@ -1,0 +1,106 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Hooks/Streaming/Overview" />
+
+# Streaming Hooks
+
+Streaming hooks handle real-time data delivery from AI models using SSE, WebSockets, or custom protocols. They provide low-level control over streaming behavior.
+
+## Quick Links
+
+- [useStreaming](?path=/docs/hooks-streaming-usestreaming--docs) ⭐ - Core streaming hook
+- [useStreamableUI](?path=/docs/hooks-streaming-usestreamableui--docs) ⭐ - Streamable UI components
+- [useStreamingSSE](?path=/docs/hooks-streaming-usestreamingsse--docs) - Server-Sent Events streaming
+
+## Hook Categories
+
+### Core Streaming
+- **useStreaming** - Generic streaming with any protocol
+- **useStreamingSSE** - Server-Sent Events (SSE) streaming
+
+### UI Streaming
+- **useStreamableUI** - Stream React components and UI
+
+## Key Features
+
+<FeatureGrid features={[
+  {
+    title: 'Multiple Protocols',
+    description: 'SSE, WebSocket, HTTP streaming support',
+  },
+  {
+    title: 'Automatic Reconnection',
+    description: 'Handles disconnects and retries',
+  },
+  {
+    title: 'Backpressure Handling',
+    description: 'Handles high-speed streams',
+  },
+  {
+    title: 'Stream Cancellation',
+    description: 'Cancel streams with cleanup',
+  },
+  {
+    title: 'Error Recovery',
+    description: 'Graceful error handling',
+  },
+  {
+    title: 'Progress Tracking',
+    description: 'Monitor stream progress',
+  },
+]} columns={3} />
+
+## Best Practices
+
+- ✅ Use SSE for most streaming use cases
+- ✅ Implement proper cleanup on unmount
+- ✅ Handle reconnection logic
+- ✅ Show streaming indicators
+- ✅ Support stream cancellation
+- ✅ Handle backpressure for fast streams
+
+## Basic Usage
+
+```tsx
+import { useStreaming } from '@clarity-chat/react'
+
+function StreamingChat() {
+  const { data, isStreaming, error, cancel } = useStreaming({
+    url: '/api/stream',
+    method: 'POST',
+    body: { message: 'Hello' },
+  })
+
+  return (
+    <div>
+      <div>{data}</div>
+      {isStreaming && <button onClick={cancel}>Cancel</button>}
+      {error && <div>Error: {error.message}</div>}
+    </div>
+  )
+}
+```
+
+## Protocol Comparison
+
+### Server-Sent Events (SSE)
+**Best for**: Most streaming use cases
+**Pros**: Simple, reliable, HTTP-based, auto-reconnect
+**Cons**: Unidirectional only
+
+### WebSockets
+**Best for**: Bidirectional communication
+**Pros**: Low latency, full-duplex
+**Cons**: More complex, requires WebSocket server
+
+### HTTP Streaming
+**Best for**: Custom protocols, edge deployments
+**Pros**: Maximum flexibility
+**Cons**: Manual implementation required
+
+## When to Use
+
+**useStreaming**: For custom streaming implementations
+**useStreamableUI**: To stream React components
+**useStreamingSSE**: For standard SSE streaming

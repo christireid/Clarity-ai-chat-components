@@ -318,8 +318,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
             className={cn(
-              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
-              blurBackdrop && 'backdrop-blur-md',
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/70',
+              blurBackdrop && 'backdrop-blur-lg',
               overlayClassName
             )}
             onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
@@ -334,7 +334,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
               transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                'relative w-full bg-card border shadow-md rounded-2xl pointer-events-auto',
+                'relative w-full bg-card border border-border/40 shadow-xl rounded-2xl pointer-events-auto',
                 sizeClasses[size],
                 className
               )}
@@ -348,12 +348,12 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    'absolute top-4 right-4 w-8 h-8 rounded-xl',
+                    'absolute top-4 right-4 w-8 h-8 rounded-lg',
                     'flex items-center justify-center',
                     'text-muted-foreground hover:text-foreground',
-                    'hover:bg-muted/50',
+                    'hover:bg-accent/50',
                     'transition-colors duration-150 ease-out',
-                    'focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2'
+                    'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2'
                   )}
                   aria-label="Close dialog"
                 >
@@ -396,7 +396,7 @@ export const DialogHeader: React.FC<DialogHeaderProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b border-border/40', className)}>
+    <div className={cn('flex flex-col space-y-2.5 px-6 py-5 border-b border-border/40', className)}>
       {children}
     </div>
   )
@@ -409,7 +409,7 @@ export const DialogTitle: React.FC<DialogTitleProps> = ({
   return (
     <h2
       className={cn(
-        'text-xl font-semibold leading-none tracking-tight text-foreground',
+        'text-xl font-bold leading-none tracking-tight text-foreground',
         className
       )}
     >
@@ -423,7 +423,7 @@ export const DialogDescription: React.FC<DialogDescriptionProps> = ({
   className,
 }) => {
   return (
-    <p className={cn('text-sm text-muted-foreground/80 leading-relaxed', className)}>
+    <p className={cn('text-sm text-muted-foreground/90 leading-relaxed', className)}>
       {children}
     </p>
   )
@@ -443,7 +443,7 @@ export const DialogFooter: React.FC<DialogFooterProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center justify-end gap-2 px-6 py-4 border-t border-border/40',
+        'flex items-center justify-end gap-2.5 px-6 py-4 border-t border-border/40',
         className
       )}
     >

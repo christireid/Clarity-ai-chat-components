@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { Copy, Check, ExternalLink, Download, Share2, Zap } from 'lucide-react'
 import clsx from 'clsx'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface QuickActionsProps {
   code: string
@@ -67,10 +68,35 @@ export function QuickActions({
   }
 
   return (
-    <div className={clsx('space-y-3', className)}>
-      <div className="flex flex-wrap gap-2">
-        <button
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      className={clsx('space-y-3', className)}
+    >
+      <motion.div
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+            },
+          },
+        }}
+        className="flex flex-wrap gap-2"
+      >
+        <motion.button
+          variants={{
+            hidden: { opacity: 0, scale: 0.9 },
+            show: { opacity: 1, scale: 1 },
+          }}
           onClick={handleCopyCode}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          animate={copiedCode ? { scale: [1, 1.1, 1] } : {}}
           className={clsx(
             'flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg',
             copiedCode
@@ -78,113 +104,203 @@ export function QuickActions({
               : 'bg-brand-500 hover:bg-brand-600 text-white'
           )}
         >
-          {copiedCode ? (
-            <React.Fragment>
-              <Check className="w-4 h-4" />
-              Code Copied!
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <Copy className="w-4 h-4" />
-              Copy Full Code
-            </React.Fragment>
-          )}
-        </button>
+          <AnimatePresence mode="wait">
+            {copiedCode ? (
+              <motion.div
+                key="check"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, rotate: 180 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center gap-2"
+              >
+                <Check className="w-4 h-4" />
+                Code Copied!
+              </motion.div>
+            ) : (
+              <motion.div
+                key="copy"
+                initial={{ scale: 0, rotate: 180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, rotate: -180 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center gap-2"
+              >
+                <Copy className="w-4 h-4" />
+                Copy Full Code
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
 
         {codesandboxUrl && (
-          <a
+          <motion.a
+            variants={{
+              hidden: { opacity: 0, scale: 0.9 },
+              show: { opacity: 1, scale: 1 },
+            }}
             href={codesandboxUrl}
             target="_blank"
             rel="noopener noreferrer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-yellow-400 hover:bg-yellow-500 text-gray-900 transition-all shadow-md hover:shadow-lg"
           >
             <ExternalLink className="w-4 h-4" />
             Open in CodeSandbox
-          </a>
+          </motion.a>
         )}
 
         {stackblitzUrl && (
-          <a
+          <motion.a
+            variants={{
+              hidden: { opacity: 0, scale: 0.9 },
+              show: { opacity: 1, scale: 1 },
+            }}
             href={stackblitzUrl}
             target="_blank"
             rel="noopener noreferrer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-blue-500 hover:bg-blue-600 text-white transition-all shadow-md hover:shadow-lg"
           >
             <Zap className="w-4 h-4" />
             Open in StackBlitz
-          </a>
+          </motion.a>
         )}
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <div className="group relative bg-gray-900 dark:bg-black rounded-lg p-3 border border-gray-700">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-2"
+      >
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="group relative bg-gray-900 dark:bg-black rounded-lg p-3 border border-gray-700"
+        >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-400 mb-1">Install command</p>
               <code className="text-sm text-green-400 font-mono">{installCommand}</code>
             </div>
-            <button
+            <motion.button
               onClick={handleCopyInstall}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               className="p-2 bg-gray-800 hover:bg-gray-700 rounded transition-colors opacity-0 group-hover:opacity-100"
               title="Copy install command"
             >
-              {copiedInstall ? (
-                <Check className="w-4 h-4 text-green-400" />
-              ) : (
-                <Copy className="w-4 h-4 text-gray-400" />
-              )}
-            </button>
+              <AnimatePresence mode="wait">
+                {copiedInstall ? (
+                  <motion.div
+                    key="check"
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0, rotate: 180 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Check className="w-4 h-4 text-green-400" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="copy"
+                    initial={{ scale: 0, rotate: 180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0, rotate: -180 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Copy className="w-4 h-4 text-gray-400" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
         {componentName && (
-          <div className="group relative bg-gray-900 dark:bg-black rounded-lg p-3 border border-gray-700">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="group relative bg-gray-900 dark:bg-black rounded-lg p-3 border border-gray-700"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-400 mb-1">Import statement</p>
                 <code className="text-sm text-blue-400 font-mono">{importStatement}</code>
               </div>
-              <button
+              <motion.button
                 onClick={handleCopyImport}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 className="p-2 bg-gray-800 hover:bg-gray-700 rounded transition-colors opacity-0 group-hover:opacity-100"
                 title="Copy import statement"
               >
-                {copiedImport ? (
-                  <Check className="w-4 h-4 text-green-400" />
-                ) : (
-                  <Copy className="w-4 h-4 text-gray-400" />
-                )}
-              </button>
+                <AnimatePresence mode="wait">
+                  {copiedImport ? (
+                    <motion.div
+                      key="check"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 180 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Check className="w-4 h-4 text-green-400" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="copy"
+                      initial={{ scale: 0, rotate: 180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: -180 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Copy className="w-4 h-4 text-gray-400" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
 
-      <div className="flex items-center gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-        <button
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.3 }}
+        className="flex items-center gap-2 pt-2 border-t border-gray-200 dark:border-gray-700"
+      >
+        <motion.button
           onClick={handleShare}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition-colors"
         >
           <Share2 className="w-3.5 h-3.5" />
           Share
-        </button>
+        </motion.button>
 
-        <a
+        <motion.a
           href={`https://www.npmjs.com/package/${npmPackage}`}
           target="_blank"
           rel="noopener noreferrer"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition-colors"
         >
           📦 View on NPM
-        </a>
+        </motion.a>
 
-        <a
+        <motion.a
           href="/learn/installation"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 transition-colors"
         >
           📖 Full Docs
-        </a>
-      </div>
-    </div>
+        </motion.a>
+      </motion.div>
+    </motion.div>
   )
 }

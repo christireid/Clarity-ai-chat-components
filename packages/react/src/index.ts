@@ -60,6 +60,7 @@ export { default as MessageList } from './components/virtualized-message-list'
 export { default as VirtualizedMessageList } from './components/virtualized-message-list'
 export { StreamingMessage } from './components/streaming-message'
 export { ThinkingIndicator } from './components/thinking-indicator'
+export { TypingIndicator, type TypingIndicatorVariant } from './components/typing-indicator'
 
 // Chat State Hooks
 export {
@@ -316,12 +317,20 @@ export * from './accessibility'
 // Core Message Components
 export { Message } from './components/message'
 export { MessageMetadata } from './components/message-metadata'
+export { TimeSeparator } from './components/time-separator'
 export { StreamBlock } from './components/stream-block'
 export { ToolInvocationCard } from './components/tool-invocation-card'
 export { ClarityToolResult } from './components/clarity-tool-result'
 export { CitationCard } from './components/citation-card'
 export { CopyButton } from './components/copy-button'
 export { FileUpload } from './components/file-upload'
+
+// ✨ ENHANCED (2025): Secure Message Actions with Security Indicators
+export {
+  MessageActionsSecure,
+  type SecurityInfo,
+  type MessageActionsSecureProps,
+} from './components/message/message-actions-secure'
 
 // Feature Components
 export { ModelSelector } from './components/model-selector'
@@ -343,6 +352,23 @@ export { MessageSearch } from './components/message-search'
 export { AdvancedMessageSearch } from './components/advanced-message-search'
 export { FollowUpSuggestions } from './components/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt-suggestions'
+export { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from './components/prompt-suggestions-enhanced'
+export { ConversationSummarizer } from './components/conversation-summarizer'
+export { BatteryIndicator } from './components/battery-indicator'
+export { PerformanceAnalyticsDashboard } from './components/performance-analytics-dashboard'
+export { SemanticMessageSearch } from './components/advanced-message-search-semantic'
+export { ConversationAnalyticsDashboard } from './components/conversation-analytics-dashboard'
+export { MessageThreadView, ThreadList } from './components/message-thread-view'
+export { MentionInput, MentionList, useMentions } from './components/mention-system'
+export { UserInteractionAnalytics, useInteractionTracking } from './components/user-interaction-analytics'
+export { ABTestingDashboard, useABTesting } from './components/ab-testing-dashboard'
+export {
+  MobileOptimizedMessage,
+  MobileChatWindow,
+  TouchFriendlyButton,
+  useMobileOptimization,
+} from './components/mobile-chat-optimized'
+export { OfflineChatSync, useOfflineChat } from './components/offline-chat-sync'
 export { EnhancedMarkdownRenderer } from './components/enhanced-markdown-renderer'
 export { EnhancedCodeBlock } from './components/enhanced-code-block'
 export { StreamingTextRenderer } from './components/streaming-text-renderer'
@@ -368,7 +394,8 @@ export * from './components/enterprise'
 
 // Error Handling Components
 export { ErrorBoundary } from './components/error-boundary'
-export { RetryButton } from './components/retry-button'
+export { RetryButton, type RetryErrorType } from './components/retry-button'
+export { ErrorMessage, type ErrorDetails, type ErrorSeverity } from './components/error-message'
 export { NetworkStatus } from './components/network-status'
 
 // Token Management Components
@@ -401,6 +428,7 @@ export { VoiceInput, InlineVoiceInput } from './components/voice-input'
 // Empty States
 export {
   EmptyState,
+  EmptyChatState,
   NoSearchResultsState,
   NoConversationsState,
   ErrorState,
@@ -426,6 +454,8 @@ export * from './hooks/use-intersection-observer'
 export * from './hooks/use-local-storage'
 export * from './hooks/use-indexed-db'
 export * from './hooks/use-media-query'
+export * from './hooks/use-reduced-motion'
+export * from './hooks/use-theme-shortcuts'
 export * from './hooks/use-mounted'
 export * from './hooks/use-previous'
 export * from './hooks/use-toggle'
@@ -439,6 +469,7 @@ export * from './hooks/use-realistic-typing'
 export * from './hooks/use-command-palette-commands'
 export * from './hooks/use-optimistic-message'
 export * from './hooks/use-performance'
+export * from './hooks/use-battery-aware'
 export * from './hooks/use-deferred-search'
 export * from './hooks/use-voice-input'
 export * from './hooks/use-model-router'

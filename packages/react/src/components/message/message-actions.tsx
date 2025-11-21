@@ -9,6 +9,7 @@ import {
   INTERACTION_VARIANTS,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
+import { useToast } from '../toast'
 
 export interface MessageActionsProps {
   messageContent: string
@@ -28,6 +29,12 @@ export interface MessageActionsProps {
 /**
  * Message actions component (copy, feedback, retry)
  * Extracted from Message component for better organization
+ *
+ * Enhanced with:
+ * - Staggered entrance animations
+ * - Icon-only buttons (cleaner, more minimal)
+ * - Delete feedback with animation
+ * - Improved hover/tap interactions
  */
 export const MessageActions = React.memo<MessageActionsProps>(
   ({
@@ -44,10 +51,25 @@ export const MessageActions = React.memo<MessageActionsProps>(
     onDelete,
     show,
   }) => {
-    if (!show) return null
+    const [isDeleting, setIsDeleting] = React.useState(false)
+    const toast = useToast()
 
     const isUserMessage = role === 'user'
     const isAssistantMessage = role === 'assistant'
+
+    const handleDelete = React.useCallback(() => {
+      setIsDeleting(true)
+
+      // Show feedback toast
+      toast?.info('Message deleted')
+
+      // Delay actual delete to allow animation
+      setTimeout(() => {
+        onDelete?.(messageId)
+      }, 300)
+    }, [messageId, onDelete, toast])
+
+    if (!show) return null
 
     return (
       <AnimatePresence>
@@ -59,18 +81,35 @@ export const MessageActions = React.memo<MessageActionsProps>(
             duration: ANIMATION_DURATION.fast / 1000,
             ease: ANIMATION_EASING.out,
           }}
-          className="flex items-center gap-2 overflow-hidden"
+          className="flex items-center gap-1.5 overflow-hidden"
         >
-          <CopyButton text={messageContent} size="sm" />
+          {/* Copy button - icon only, staggered animation */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.05, duration: 0.2 }}
+          >
+            <CopyButton
+              text={messageContent}
+              size="icon"
+              iconOnly
+              className="h-8 w-8 rounded-lg hover:bg-accent/50 transition-colors"
+            />
+          </motion.div>
 
-          {/* Thumbs Up with Confetti */}
-          <div className="relative">
+          {/* Thumbs Up with Confetti - cleaner, smaller */}
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1, duration: 0.2 }}
+          >
             <motion.div
               whileHover={{
-                scale: 1.1,
-                rotate: feedbackGiven === 'up' ? 0 : -15,
+                scale: 1.15,
+                rotate: feedbackGiven === 'up' ? 0 : -12,
               }}
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.85 }}
               animate={
                 feedbackGiven === 'up'
                   ? {
@@ -83,122 +122,153 @@ export const MessageActions = React.memo<MessageActionsProps>(
             >
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => onFeedback('up')}
                 className={cn(
-                  'transition-colors',
-                  feedbackGiven === 'up' && 'text-success bg-success/10'
+                  'h-8 w-8 rounded-lg transition-all',
+                  'hover:bg-accent/50',
+                  feedbackGiven === 'up' && 'text-success bg-success/10 hover:bg-success/15'
                 )}
                 aria-label="Good response"
               >
-                <ThumbsUpIcon size={12} />
+                <ThumbsUpIcon size={15} />
               </Button>
             </motion.div>
 
             <ConfettiAnimation show={showConfetti} />
-          </div>
+          </motion.div>
 
-          {/* Thumbs Down */}
+          {/* Thumbs Down - cleaner, smaller */}
           <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15, duration: 0.2 }}
             whileHover={{
-              scale: 1.1,
-              rotate: feedbackGiven === 'down' ? 0 : 15,
+              scale: 1.15,
+              rotate: feedbackGiven === 'down' ? 0 : 12,
             }}
-            whileTap={{ scale: 0.9 }}
-            animate={
-              feedbackGiven === 'down'
-                ? {
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 15, -15, 15, 0],
-                  }
-                : {}
-            }
-            transition={{ duration: 0.5 }}
+            whileTap={{ scale: 0.85 }}
           >
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onFeedback('down')}
-              className={cn(
-                'transition-colors',
-                feedbackGiven === 'down' &&
-                  'text-destructive bg-destructive/10'
-              )}
-              aria-label="Poor response"
+            <motion.div
+              animate={
+                feedbackGiven === 'down'
+                  ? {
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 15, -15, 15, 0],
+                    }
+                  : {}
+              }
+              transition={{ duration: 0.5 }}
             >
-              <ThumbsDownIcon size={12} />
-            </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onFeedback('down')}
+                className={cn(
+                  'h-8 w-8 rounded-lg transition-all',
+                  'hover:bg-accent/50',
+                  feedbackGiven === 'down' &&
+                    'text-destructive bg-destructive/10 hover:bg-destructive/15'
+                )}
+                aria-label="Poor response"
+              >
+                <ThumbsDownIcon size={15} />
+              </Button>
+            </motion.div>
           </motion.div>
 
           {hasError && onRetry && (
             <motion.div
-              whileHover={INTERACTION_VARIANTS.button.hover}
-              whileTap={INTERACTION_VARIANTS.button.tap}
-              transition={INTERACTION_VARIANTS.button.transition}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.2 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <Button variant="ghost" size="sm" onClick={onRetry} className="gap-1.5">
-                <RefreshIcon size={12} />
-                Retry
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onRetry}
+                className="h-8 w-8 rounded-lg hover:bg-accent/50 transition-colors"
+                aria-label="Retry"
+              >
+                <RefreshIcon size={15} />
               </Button>
             </motion.div>
           )}
 
-          {/* Edit button for user messages */}
+          {/* Edit button for user messages - icon only */}
           {isUserMessage && onEdit && (
             <motion.div
-              whileHover={INTERACTION_VARIANTS.button.hover}
-              whileTap={INTERACTION_VARIANTS.button.tap}
-              transition={INTERACTION_VARIANTS.button.transition}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.2 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => onEdit(messageId)}
-                className="gap-1.5"
+                className="h-8 w-8 rounded-lg hover:bg-accent/50 transition-colors"
                 aria-label="Edit message"
               >
-                <EditIcon size={12} />
-                Edit
+                <EditIcon size={15} />
               </Button>
             </motion.div>
           )}
 
-          {/* Regenerate button for assistant messages */}
+          {/* Regenerate button for assistant messages - icon only */}
           {isAssistantMessage && onRegenerate && !hasError && (
             <motion.div
-              whileHover={INTERACTION_VARIANTS.button.hover}
-              whileTap={INTERACTION_VARIANTS.button.tap}
-              transition={INTERACTION_VARIANTS.button.transition}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.25, duration: 0.2 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => onRegenerate(messageId)}
-                className="gap-1.5"
+                className="h-8 w-8 rounded-lg hover:bg-accent/50 transition-colors"
                 aria-label="Regenerate response"
               >
-                <RefreshIcon size={12} />
-                Regenerate
+                <RefreshIcon size={15} />
               </Button>
             </motion.div>
           )}
 
-          {/* Delete button for all messages */}
+          {/* Delete button - icon only with delete animation */}
           {onDelete && (
             <motion.div
-              whileHover={INTERACTION_VARIANTS.button.hover}
-              whileTap={INTERACTION_VARIANTS.button.tap}
-              transition={INTERACTION_VARIANTS.button.transition}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              transition={{ delay: 0.3, duration: 0.2 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <Button
                 variant="ghost"
-                size="sm"
-                onClick={() => onDelete(messageId)}
-                className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+                size="icon"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className={cn(
+                  'h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors',
+                  isDeleting && 'opacity-50 cursor-not-allowed'
+                )}
                 aria-label="Delete message"
               >
-                <TrashIcon size={12} />
-                Delete
+                <motion.div
+                  animate={isDeleting ? {
+                    rotate: [0, 10, -10, 10, 0],
+                    scale: [1, 0.9, 0.9, 0.9, 0.8],
+                  } : {}}
+                  transition={{ duration: 0.3 }}
+                >
+                  <TrashIcon size={15} />
+                </motion.div>
               </Button>
             </motion.div>
           )}

@@ -1,0 +1,108 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Hooks/State/Overview" />
+
+# State Management Hooks
+
+State management hooks help manage component state, local storage, and message operations. They provide utilities for common state patterns in chat interfaces.
+
+## Quick Links
+
+- [useLocalStorage](?path=/docs/hooks-state-uselocalstorage--docs) ⭐ - Persistent local storage
+- [usePrevious](?path=/docs/hooks-state-useprevious--docs) - Track previous values
+- [useClarityObject](?path=/docs/hooks-state-useclarityobject--docs) - Clarity object state
+- [useMessageOperations](?path=/docs/hooks-state-usemessageoperations--docs) - Message CRUD operations
+
+## Hook Categories
+
+### Persistence
+- **useLocalStorage** - Sync state with localStorage
+
+### State Utilities
+- **usePrevious** - Access previous render values
+- **useClarityObject** - Manage Clarity-specific state
+
+### Message Management
+- **useMessageOperations** - Edit, delete, branch messages
+
+## Key Features
+
+<FeatureGrid features={[
+  {
+    title: 'Local Storage Sync',
+    description: 'Automatic localStorage persistence',
+  },
+  {
+    title: 'Previous Value Tracking',
+    description: 'Compare current and previous state',
+  },
+  {
+    title: 'Message Operations',
+    description: 'Edit, delete, and branch messages',
+  },
+  {
+    title: 'Type Safety',
+    description: 'Full TypeScript support',
+  },
+  {
+    title: 'SSR Compatible',
+    description: 'Works with server-side rendering',
+  },
+  {
+    title: 'Performance Optimized',
+    description: 'Minimal re-renders',
+  },
+]} columns={3} />
+
+## Best Practices
+
+- ✅ Use `useLocalStorage` for user preferences
+- ✅ Implement proper serialization for complex objects
+- ✅ Handle storage quota errors
+- ✅ Use `usePrevious` for animations and transitions
+- ✅ Batch message operations for performance
+- ✅ Provide undo/redo for destructive operations
+
+## Basic Usage
+
+### useLocalStorage
+
+```tsx
+import { useLocalStorage } from '@clarity-chat/react'
+
+function Settings() {
+  const [theme, setTheme] = useLocalStorage('theme', 'light')
+
+  return (
+    <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+      Toggle Theme ({theme})
+    </button>
+  )
+}
+```
+
+### usePrevious
+
+```tsx
+import { usePrevious } from '@clarity-chat/react'
+
+function Counter() {
+  const [count, setCount] = useState(0)
+  const prevCount = usePrevious(count)
+
+  return (
+    <div>
+      Current: {count}, Previous: {prevCount}
+      <button onClick={() => setCount(c => c + 1)}>Increment</button>
+    </div>
+  )
+}
+```
+
+## When to Use
+
+**useLocalStorage**: For persisting user preferences
+**usePrevious**: For animations or comparing values
+**useClarityObject**: For Clarity-specific state management
+**useMessageOperations**: For message editing features

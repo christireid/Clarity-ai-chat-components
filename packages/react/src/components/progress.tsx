@@ -53,15 +53,15 @@ export const Progress: React.FC<ProgressProps> = ({
   }
 
   return (
-    <div className={cn('space-y-1', className)}>
+    <div className={cn('space-y-1.5', className)}>
       {/* Label */}
       {(showLabel || label) && (
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground/90">
             {label || 'Loading...'}
           </span>
           {!isIndeterminate && showLabel && (
-            <span className="text-muted-foreground font-medium">
+            <span className="text-muted-foreground/90 font-semibold">
               {percentage}%
             </span>
           )}
@@ -71,7 +71,7 @@ export const Progress: React.FC<ProgressProps> = ({
       {/* Progress bar */}
       <div
         className={cn(
-          'relative w-full overflow-hidden rounded-full bg-muted/50 shadow-inner',
+          'relative w-full overflow-hidden rounded-full bg-muted/60',
           sizeClasses[size]
         )}
       >
@@ -247,9 +247,9 @@ export const StreamingProgress: React.FC<StreamingProgressProps> = ({
   }
 
   return (
-    <div className={cn('flex items-center gap-2', className)}>
+    <div className={cn('flex items-center gap-2.5', className)}>
       {label && (
-        <span className="text-sm text-muted-foreground">{label}</span>
+        <span className="text-sm text-muted-foreground/90">{label}</span>
       )}
       <div className={cn('flex', sizeClasses[size])}>
         {[0, 1, 2].map((i) => (
@@ -311,19 +311,19 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
   const isComplete = percentage === 100
 
   return (
-    <div className={cn('space-y-2', className)}>
-      <div className="flex items-center justify-between gap-3">
+    <div className={cn('space-y-2.5', className)}>
+      <div className="flex items-center justify-between gap-3.5">
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium truncate">{fileName}</div>
+          <div className="text-sm font-semibold truncate">{fileName}</div>
           {fileSize !== undefined && uploadedSize !== undefined && (
-            <div className="text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground/90">
               {formatBytes(uploadedSize)} / {formatBytes(fileSize)}
             </div>
           )}
         </div>
-        
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground font-medium">
+
+        <div className="flex items-center gap-2.5">
+          <span className="text-sm text-muted-foreground/90 font-semibold">
             {percentage}%
           </span>
           {!isComplete && onCancel && (
@@ -362,10 +362,10 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
  */
 export const SkeletonProgress: React.FC<{ className?: string }> = ({ className }) => {
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('space-y-2.5', className)}>
       <div className="flex items-center justify-between">
-        <div className="h-4 w-32 bg-muted rounded animate-pulse" />
-        <div className="h-4 w-12 bg-muted rounded animate-pulse" />
+        <div className="h-4 w-32 bg-muted/60 rounded animate-pulse" />
+        <div className="h-4 w-12 bg-muted/60 rounded animate-pulse" />
       </div>
       <Progress />
     </div>

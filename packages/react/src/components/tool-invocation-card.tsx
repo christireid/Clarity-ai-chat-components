@@ -133,44 +133,44 @@ export function ToolInvocationCard({
       transition={{ duration: 0.2 }}
       className={className}
     >
-      <Card className="relative overflow-hidden shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] transition-shadow duration-150 ease-out">
+      <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-150 ease-out">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-4">
             {/* Tool Info */}
-            <div className="flex items-start gap-3 flex-1 min-w-0">
+            <div className="flex items-start gap-3.5 flex-1 min-w-0">
               {/* Icon */}
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm">
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
               </div>
               
               {/* Tool Name & Status */}
-              <div className="flex-1 min-w-0 space-y-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="font-semibold text-base text-foreground truncate">
+              <div className="flex-1 min-w-0 space-y-1.5">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h4 className="font-bold text-base text-foreground truncate">
                     {toolCall.function.name}
                   </h4>
-                  <Badge 
+                  <Badge
                     variant={getStatusBadgeVariant(status)}
                     pulse={status === 'executing'}
                   >
                     {getStatusLabel(status)}
                   </Badge>
                 </div>
-                
-                <p className="text-xs text-muted-foreground">Tool Invocation</p>
+
+                <p className="text-xs text-muted-foreground/90">Tool Invocation</p>
               </div>
             </div>
             
             {/* Approval Actions */}
             {requiresApproval && status === 'pending' && (
-              <div className="flex gap-2 shrink-0">
+              <div className="flex gap-2.5 shrink-0">
                 {onApprove && (
                   <Button
                     size="sm"
                     onClick={() => onApprove(toolCall)}
-                    className="gap-1"
+                    className="gap-1.5"
                   >
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -183,7 +183,7 @@ export function ToolInvocationCard({
                     size="sm"
                     variant="outline"
                     onClick={() => onReject(toolCall)}
-                    className="gap-1"
+                    className="gap-1.5"
                   >
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -198,7 +198,7 @@ export function ToolInvocationCard({
 
         <CardContent className="space-y-4">
           {/* Arguments Section */}
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <button
               onClick={() => setIsArgsExpanded(!isArgsExpanded)}
               className="flex w-full items-center justify-between text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -236,14 +236,14 @@ export function ToolInvocationCard({
 
           {/* Result Section */}
           {(result || error) && (
-            <div className="space-y-2 border-t pt-4">
+            <div className="space-y-2.5 border-t pt-4">
               {expandableResult ? (
                 <>
                   <button
                     onClick={() => setIsResultExpanded(!isResultExpanded)}
                     className="flex w-full items-center justify-between text-sm font-medium hover:text-primary transition-colors"
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2.5">
                       {error ? (
                         <>
                           <svg className="h-4 w-4 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,11 +280,11 @@ export function ToolInvocationCard({
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="overflow-hidden space-y-3"
+                        className="overflow-hidden space-y-3.5"
                       >
                         <pre className={cn(
                           'rounded-lg border p-3 text-sm overflow-x-auto',
-                          error ? 'bg-destructive/5 border-destructive/20' : 'bg-muted/50'
+                          error ? 'bg-destructive/10 border-destructive/30' : 'bg-muted/50'
                         )}>
                           <code className={cn(
                             'font-mono',
@@ -312,10 +312,10 @@ export function ToolInvocationCard({
                   </AnimatePresence>
                 </>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-3.5">
                   <pre className={cn(
                     'rounded-lg border p-3 text-sm overflow-x-auto',
-                    error ? 'bg-destructive/5 border-destructive/20' : 'bg-muted/50'
+                    error ? 'bg-destructive/10 border-destructive/30' : 'bg-muted/50'
                   )}>
                     <code className={cn(
                       'font-mono',

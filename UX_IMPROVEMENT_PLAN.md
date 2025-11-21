@@ -1,1288 +1,816 @@
-# AI Chat Components - UX Improvement Plan
+# AI Chat UX Improvement Plan
+## Comprehensive Analysis & Component-by-Component Enhancement Strategy
 
 **Date**: 2025-11-20
-**Status**: Ready for Implementation
-**Priority**: High Impact → Quick Wins → Enhancement Features
+**Focus**: Systematic UX improvements aligned with 2025 AI chat best practices
+**Scope**: 89 React components across chat, input, messaging, and enterprise features
 
 ---
 
 ## Executive Summary
 
-This plan provides a systematic, component-by-component approach to enhance the UX of Clarity Chat components based on industry best practices for AI chat applications. Improvements are prioritized by impact and organized into three phases for efficient implementation.
+This document outlines a comprehensive UX improvement strategy for Clarity AI Chat Components, based on:
+- 2025 AI chat interface best practices research
+- Accessibility standards (WCAG AAA compliance goals)
+- Current component architecture analysis
+- Industry-leading conversational AI design patterns
 
-### Current State Assessment
+### Key Findings
 
-**Strengths:**
-- ✅ Sophisticated animation system (Framer Motion)
-- ✅ Comprehensive loading states and feedback
-- ✅ Advanced features (voice, file upload, command palette)
-- ✅ Well-architected composable components
+**Strengths** ✅
+- Strong animation and motion design (Framer Motion integration)
+- Comprehensive component coverage (89 components)
+- Good accessibility foundation (keyboard navigation, ARIA labels)
+- Advanced features (streaming, token optimization, memory)
+- Excellent developer experience (TypeScript, clear APIs)
 
-**Improvement Opportunities:**
-- 🎯 Accessibility gaps (ARIA, screen readers, keyboard nav)
-- 🎯 Mobile optimization (touch targets, gestures, responsive)
-- 🎯 Error handling (descriptive messages, retry, offline)
-- 🎯 Performance (virtual scroll, lazy load, optimization)
-- 🎯 User guidance (onboarding, contextual help)
+**Opportunities for Enhancement** 🎯
+1. **Progressive Disclosure** - Too much visible at once; implement layered complexity
+2. **Mobile-First UX** - Desktop-centric patterns need mobile optimization
+3. **Onboarding & Discovery** - Missing contextual help and first-time user guidance
+4. **Error Communication** - Error states exist but could be more helpful and actionable
+5. **Emotional Design** - Add delight moments and personality
+6. **Loading States** - Enhance perception of speed and provide better feedback
+7. **Voice & Multimodal** - Strengthen voice-first and accessibility features
+8. **Cognitive Load** - Reduce mental effort through smart defaults and anticipation
 
 ---
 
-## Phase 1: Accessibility & Mobile Foundation (High Impact)
+## 1. Core Best Practices Analysis
 
-**Goal**: Ensure WCAG 2.1 AA compliance and excellent mobile experience
-**Estimated Effort**: 2-3 weeks
-**Impact**: Critical for usability and legal compliance
+### 2025 AI Chat UX Trends
 
-### 1.1 Message Components (`message.tsx`, `message-list.tsx`)
+| Best Practice | Current Status | Priority |
+|--------------|----------------|----------|
+| **Purpose-First Design** | ✅ Implemented (clear component purposes) | Maintain |
+| **AI Transparency** | ⚠️ Partial (status indicators exist, but could be clearer) | High |
+| **Mobile Optimization** | ⚠️ Partial (responsive but desktop-first) | High |
+| **Emotion-Aware UI** | ❌ Missing (no sentiment detection/adaptation) | Medium |
+| **Hybrid Interfaces** | ✅ Implemented (voice, text, multimodal) | Enhance |
+| **Flow Resilience** | ⚠️ Partial (conversation branching exists) | Medium |
+| **Transparent AI** | ⚠️ Partial (thinking indicator good, but needs enhancement) | High |
+| **Task-Oriented UI** | ❌ Missing (purely conversational, no hybrid controls) | High |
+| **5-Second First Impression** | ⚠️ Needs testing and optimization | High |
 
-#### Current Issues:
-- No ARIA live regions for streaming messages
-- Screen readers can't announce new messages
-- No focus management for keyboard users
-- Small touch targets on mobile
+### Accessibility Compliance
 
-#### Improvements:
+| Requirement | Current Status | Target |
+|-------------|----------------|--------|
+| **Keyboard Navigation** | ✅ Good (Tab, Enter, Escape, Cmd+K) | AAA |
+| **Screen Reader Support** | ⚠️ Partial (ARIA labels present, needs testing) | AAA |
+| **Focus Management** | ✅ Good (focus trap in modals) | AAA |
+| **Color Contrast** | ⚠️ Unknown (needs audit) | AAA |
+| **Text Alternatives** | ⚠️ Partial (some icons missing alt text) | AAA |
+| **Voice-First Capable** | ⚠️ Partial (voice input exists, not comprehensive) | AAA |
+| **Closed Captions** | ❌ Not applicable (text-based) | N/A |
+| **Easy Language** | ⚠️ Needs review for jargon | AAA |
 
-**Add ARIA Live Regions:**
-```typescript
-// message-list.tsx - Add to container
-<div
-  className="message-list"
-  role="log"
-  aria-live="polite"
-  aria-relevant="additions"
-  aria-atomic="false"
->
-  {messages.map((message) => (
-    <Message
-      key={message.id}
-      {...message}
-      aria-label={`Message from ${message.role} at ${formatTime(message.timestamp)}`}
-    />
-  ))}
-</div>
+
+## 2. Component-by-Component Improvement Plan
+
+### Priority System
+- 🔴 **Critical** - High impact, user-facing, immediate improvement
+- 🟡 **Important** - Medium impact, enhances experience
+- 🟢 **Enhancement** - Low priority, polish and delight
+
+---
+
+### 2.1 Message Display Components
+
+#### **Message.tsx** 🔴 Critical
+
+**Current State:**
+- Well-structured with markdown rendering
+- Good animations (slide-in, hover states)
+- Message actions (copy, feedback, retry, edit, delete)
+- Confetti on positive feedback ✨
+
+**UX Improvements:**
+
+1. **Reading Experience** 🔴
+   - [ ] **Line height optimization**: Increase line-height from default to 1.6-1.7 for better readability
+   - [ ] **Text width limiting**: Constrain max-width to ~65-75 characters (optimal reading width)
+   - [ ] **Font size scaling**: Implement responsive font sizes (16px mobile, 15px desktop minimum)
+   - [ ] **Link preview**: Add inline link previews on hover for URLs in messages
+
+2. **Progressive Disclosure** 🔴
+   - [ ] **Truncate long messages**: Add "Read more/less" for messages >500 characters
+   - [ ] **Collapse code blocks**: Large code blocks should collapse by default with line count badge
+   - [ ] **Lazy load images**: Implement blur-up loading for message attachments
+
+3. **Message Status Communication** 🟡
+   - [ ] **Visual hierarchy**: Make status badges more subtle (currently compete with content)
+   - [ ] **Retry intelligence**: Show "Retry with suggestions" instead of just "Retry"
+   - [ ] **Timestamp improvements**: Add "Just now" for <30s, relative time for <24h, full date after
+
+4. **Interaction Feedback** 🟢
+   - [ ] **Copy confirmation**: Add toast notification "Message copied" (currently missing)
+   - [ ] **Edit mode indicator**: Visual indicator when message is being edited
+   - [ ] **Action button grouping**: Group related actions (Edit/Delete separate from Copy/Feedback)
+   - [ ] **Haptic feedback**: Add subtle vibration on mobile for actions
+
+**Code Example:**
+```tsx
+// Improved reading width constraint
+<div className={cn(
+  !isUser && 'prose prose-sm dark:prose-invert',
+  !isUser && 'max-w-[65ch]', // Optimal reading width
+  !isUser && 'leading-relaxed', // Better line height
+  // ... existing classes
+)}>
 ```
 
-**Streaming Message Announcements:**
-```typescript
-// message.tsx - Add screen reader only text for streaming
-{isStreaming && (
-  <span className="sr-only" aria-live="assertive">
-    AI is responding
-  </span>
-)}
+---
 
-// Add after streaming completes
-{completedStreaming && (
-  <span className="sr-only" aria-live="polite">
-    Response complete
-  </span>
-)}
-```
+#### **MessageList.tsx** 🔴 Critical
 
-**Mobile Touch Targets:**
-```typescript
-// message.tsx - Increase button sizes on mobile
-<button
-  onClick={onCopy}
-  className={cn(
-    "p-2 rounded hover:bg-accent transition-colors",
-    "min-w-[44px] min-h-[44px]", // WCAG touch target
-    "md:min-w-[32px] md:min-h-[32px]" // Desktop can be smaller
-  )}
-  aria-label="Copy message"
->
-  <CopyIcon className="w-4 h-4" />
-</button>
-```
+**Current State:**
+- Auto-scroll to bottom
+- Empty state support
+- Message rendering with animations
 
-**Focus Management:**
-```typescript
-// message-list.tsx - Focus new messages for keyboard users
-const lastMessageRef = useRef<HTMLDivElement>(null)
+**UX Improvements:**
 
+1. **Scroll Behavior** 🔴
+   - [ ] **Smart scroll detection**: Don't auto-scroll if user has scrolled up
+   - [ ] **Scroll indicator**: Show "New messages" pill when scrolled up
+   - [ ] **Jump to bottom FAB**: Floating action button to jump to latest message
+   - [ ] **Scroll position restoration**: Remember scroll position on navigation
+
+2. **Message Grouping** 🟡
+   - [ ] **Same-sender grouping**: Combine consecutive messages from same sender
+   - [ ] **Time separators**: Add date separators (Today, Yesterday, Nov 19)
+   - [ ] **Conversation threading**: Visual threading for multi-turn conversations
+
+3. **Performance** 🔴
+   - [ ] **Virtual scrolling threshold**: Use VirtualizedMessageList for >50 messages
+   - [ ] **Intersection observer**: Only animate messages in viewport
+   - [ ] **Message batching**: Render messages in chunks for perceived performance
+
+4. **Empty State Enhancement** 🟡
+   - [ ] **Contextual suggestions**: Show suggested prompts in empty state
+   - [ ] **Quick actions**: Add quick action buttons (Upload file, Ask question, etc.)
+   - [ ] **Loading skeleton**: Add skeleton screen during initial load
+
+---
+
+#### **StreamingMessage.tsx** 🟡 Important
+
+**Current State:**
+- Token-by-token streaming
+- Streaming cursor animation
+
+**UX Improvements:**
+
+1. **Streaming Perception** 🔴
+   - [ ] **Realistic typing speed**: Variable speed based on content type (code slower, text faster)
+   - [ ] **Pause on punctuation**: Brief pause at sentence endings
+   - [ ] **Cursor pulse**: More prominent cursor with subtle pulse animation
+   - [ ] **Word-by-word option**: Allow configuration for word-by-word vs character streaming
+
+2. **Stream Interruption** 🟡
+   - [ ] **Pause button**: Allow user to pause/resume stream
+   - [ ] **Cancel confirmation**: Add "Are you sure?" for long streams
+   - [ ] **Resume from pause**: Save stream state for resumption
+
+3. **Content Preview** 🟢
+   - [ ] **Skeleton structure**: Show structure skeleton for formatted content before streaming
+   - [ ] **Section headers first**: Stream headers before body content
+   - [ ] **Estimated completion**: Show estimated time remaining
+
+---
+
+### 2.2 Input Components
+
+#### **ChatInput.tsx** 🔴 Critical
+
+**Current State:**
+- Auto-resizing textarea
+- Character counter with progress bar
+- Keyboard shortcuts (Enter, Shift+Enter)
+- Focus glow animation
+
+**UX Improvements:**
+
+1. **Input Intelligence** 🔴
+   - [ ] **Auto-save drafts**: Persist input to localStorage every 2s
+   - [ ] **Input suggestions**: Show autocomplete for common phrases
+   - [ ] **Smart paste**: Detect and format pasted code/URLs
+   - [ ] **Mention support**: @mentions for context/files (if applicable)
+
+2. **Mobile Experience** 🔴
+   - [ ] **Mobile keyboard optimization**: inputMode="text" for better keyboard
+   - [ ] **Attachment button**: Larger touch target (48x48px minimum)
+   - [ ] **Voice input prominence**: Make voice button more discoverable on mobile
+   - [ ] **Reduce animations**: Disable glow animation on low-power devices
+
+3. **Contextual Help** 🟡
+   - [ ] **Command palette**: Slash commands (/help, /clear, /export)
+   - [ ] **Shortcut hints**: Show keyboard shortcuts on hover
+   - [ ] **Example prompts**: Show example prompts on empty input focus
+   - [ ] **Error prevention**: Warn before sending empty messages
+
+4. **Character Counter UX** 🟢
+   - [ ] **Counter position**: Move counter outside textarea (currently overlaps)
+   - [ ] **Remaining vs total**: Show "450 remaining" instead of "550/1000"
+   - [ ] **Soft limit warning**: Warn at 80%, hard stop at 100%
+
+**Code Example:**
+```tsx
+// Add draft auto-save
 useEffect(() => {
-  if (messages.length > 0 && focusOnNew) {
-    lastMessageRef.current?.focus()
+  const timer = setTimeout(() => {
+    if (value.trim()) {
+      localStorage.setItem('clarity-chat-draft', value)
+    }
+  }, 2000)
+  return () => clearTimeout(timer)
+}, [value])
+
+// Restore draft on mount
+useEffect(() => {
+  const draft = localStorage.getItem('clarity-chat-draft')
+  if (draft && !value) {
+    onChange(draft)
   }
-}, [messages.length])
-
-// Apply to last message
-<Message
-  ref={isLastMessage ? lastMessageRef : null}
-  tabIndex={isLastMessage ? 0 : -1}
-  {...message}
-/>
-```
-
-### 1.2 Input Components (`message-input.tsx`)
-
-#### Current Issues:
-- No character/token counter
-- Unclear submit state (loading, disabled)
-- File upload doesn't show progress
-- No voice input visual feedback
-
-#### Improvements:
-
-**Token Counter with Warning States:**
-```typescript
-// message-input.tsx
-interface MessageInputProps {
-  maxTokens?: number
-  onTokenCountChange?: (count: number, percentage: number) => void
-}
-
-const [tokenCount, setTokenCount] = useState(0)
-
-const getTokenWarningLevel = (percentage: number) => {
-  if (percentage >= 90) return 'critical'
-  if (percentage >= 75) return 'warning'
-  return 'normal'
-}
-
-// In render
-<div className="relative">
-  <textarea
-    value={input}
-    onChange={(e) => {
-      setInput(e.target.value)
-      const tokens = estimateTokens(e.target.value)
-      setTokenCount(tokens)
-      onTokenCountChange?.(tokens, (tokens / maxTokens) * 100)
-    }}
-    aria-describedby="token-counter"
-  />
-
-  {maxTokens && (
-    <div
-      id="token-counter"
-      className={cn(
-        "absolute bottom-2 right-2 text-xs",
-        getTokenWarningLevel((tokenCount / maxTokens) * 100) === 'critical' && "text-destructive",
-        getTokenWarningLevel((tokenCount / maxTokens) * 100) === 'warning' && "text-yellow-600"
-      )}
-      role="status"
-      aria-live="polite"
-    >
-      {tokenCount} / {maxTokens} tokens
-      {tokenCount > maxTokens && (
-        <span className="ml-1" aria-label="Over limit">⚠️</span>
-      )}
-    </div>
-  )}
-</div>
-```
-
-**Enhanced Submit Button States:**
-```typescript
-// message-input.tsx - Clear visual states
-<button
-  type="submit"
-  disabled={!input.trim() || isLoading || tokenCount > maxTokens}
-  className={cn(
-    "send-button",
-    isLoading && "opacity-50 cursor-wait",
-    (!input.trim() || tokenCount > maxTokens) && "opacity-30 cursor-not-allowed"
-  )}
-  aria-label={
-    isLoading ? "Sending message..." :
-    tokenCount > maxTokens ? "Message exceeds token limit" :
-    !input.trim() ? "Enter a message to send" :
-    "Send message"
-  }
->
-  {isLoading ? (
-    <Spinner className="w-5 h-5" />
-  ) : (
-    <SendIcon className="w-5 h-5" />
-  )}
-  <span className="sr-only">
-    {isLoading ? "Sending..." : "Send"}
-  </span>
-</button>
-```
-
-**File Upload Progress:**
-```typescript
-// file-upload.tsx - Add progress indication
-interface FileUploadProgress {
-  file: File
-  progress: number
-  status: 'uploading' | 'complete' | 'error'
-}
-
-<div className="file-upload-item" role="status">
-  <div className="flex items-center justify-between mb-1">
-    <span className="text-sm truncate">{file.name}</span>
-    <span className="text-xs text-muted-foreground">
-      {status === 'uploading' && `${progress}%`}
-      {status === 'complete' && '✓'}
-      {status === 'error' && '✗'}
-    </span>
-  </div>
-
-  {status === 'uploading' && (
-    <>
-      <progress
-        value={progress}
-        max={100}
-        className="w-full h-1"
-        aria-label={`Uploading ${file.name}`}
-      />
-      <span className="sr-only">
-        Uploading {file.name}, {progress}% complete
-      </span>
-    </>
-  )}
-</div>
-```
-
-**Voice Input Visual Feedback:**
-```typescript
-// voice-input.tsx - Enhanced feedback
-const [isListening, setIsListening] = useState(false)
-const [audioLevel, setAudioLevel] = useState(0)
-
-<button
-  onClick={toggleVoice}
-  className={cn(
-    "voice-button",
-    isListening && "animate-pulse ring-2 ring-primary"
-  )}
-  aria-pressed={isListening}
-  aria-label={isListening ? "Stop recording" : "Start voice input"}
->
-  <motion.div
-    animate={isListening ? { scale: [1, 1.2, 1] } : { scale: 1 }}
-    transition={{ repeat: Infinity, duration: 1.5 }}
-  >
-    <MicIcon className="w-5 h-5" />
-  </motion.div>
-
-  {isListening && (
-    <motion.div
-      className="absolute inset-0 rounded-full bg-primary/20"
-      animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
-      transition={{ repeat: Infinity, duration: 1 }}
-    />
-  )}
-</button>
-
-{isListening && (
-  <div className="audio-visualizer" role="status" aria-live="polite">
-    <span className="sr-only">Recording audio, level {audioLevel}%</span>
-    {Array.from({ length: 5 }).map((_, i) => (
-      <motion.div
-        key={i}
-        className="bar"
-        animate={{
-          height: `${20 + (audioLevel / 5) * (i + 1)}%`
-        }}
-      />
-    ))}
-  </div>
-)}
-```
-
-### 1.3 Command Palette (`command-palette.tsx`)
-
-#### Current Issues:
-- ✅ Scrolling now works (fixed in previous session)
-- No keyboard shortcuts hints
-- Search could be smarter (fuzzy matching)
-- No category icons
-
-#### Improvements:
-
-**Enhanced Search with Fuzzy Matching:**
-```typescript
-// command-palette.tsx - Better search algorithm
-import Fuse from 'fuse.js'
-
-const fuse = useMemo(() => {
-  return new Fuse(items, {
-    keys: ['label', 'description', 'category'],
-    threshold: 0.4,
-    includeScore: true
-  })
-}, [items])
-
-const filteredItems = useMemo(() => {
-  if (!search) return items
-
-  const results = fuse.search(search)
-  return results.map(result => result.item)
-}, [search, fuse])
-```
-
-**Keyboard Shortcuts Display:**
-```typescript
-// command-palette.tsx - Add shortcuts section
-<div className="shortcuts-hint p-3 border-t bg-muted/30">
-  <div className="text-xs text-muted-foreground mb-2 font-semibold">
-    Quick Actions
-  </div>
-  <div className="grid grid-cols-2 gap-2 text-xs">
-    <div className="flex items-center gap-2">
-      <kbd className="kbd">Cmd+K</kbd>
-      <span>Open palette</span>
-    </div>
-    <div className="flex items-center gap-2">
-      <kbd className="kbd">Cmd+/</kbd>
-      <span>Show shortcuts</span>
-    </div>
-    <div className="flex items-center gap-2">
-      <kbd className="kbd">Cmd+N</kbd>
-      <span>New chat</span>
-    </div>
-    <div className="flex items-center gap-2">
-      <kbd className="kbd">Cmd+Enter</kbd>
-      <span>Send message</span>
-    </div>
-  </div>
-</div>
-```
-
-**Category Icons:**
-```typescript
-// command-palette.tsx - Add visual category distinction
-const categoryIcons: Record<string, React.ReactNode> = {
-  'Chat': <MessageSquareIcon className="w-4 h-4" />,
-  'Navigation': <CompassIcon className="w-4 h-4" />,
-  'Settings': <SettingsIcon className="w-4 h-4" />,
-  'Help': <HelpCircleIcon className="w-4 h-4" />
-}
-
-// In category header
-<div className="category-header flex items-center gap-2">
-  {categoryIcons[category]}
-  <span>{category}</span>
-</div>
-```
-
-### 1.4 Loading States (`skeleton-loader.tsx`, `typing-indicator.tsx`)
-
-#### Current Issues:
-- Good foundation but missing context
-- No indication of what's loading
-- Could use better animations
-
-#### Improvements:
-
-**Contextual Loading Messages:**
-```typescript
-// skeleton-loader.tsx - Add loading context
-interface SkeletonLoaderProps {
-  variant?: 'message' | 'list' | 'card'
-  count?: number
-  loadingText?: string
-}
-
-<div className="skeleton-container" role="status" aria-live="polite">
-  {loadingText && (
-    <p className="sr-only">{loadingText}</p>
-  )}
-  <div className="visual-skeleton" aria-hidden="true">
-    {/* Skeleton UI */}
-  </div>
-  <span className="sr-only">
-    {loadingText || 'Loading content'}
-  </span>
-</div>
-```
-
-**Enhanced Typing Indicator:**
-```typescript
-// typing-indicator.tsx - More informative
-interface TypingIndicatorProps {
-  userName?: string
-  showAvatar?: boolean
-  estimatedTime?: number
-}
-
-<div className="typing-indicator" role="status">
-  {showAvatar && (
-    <Avatar size="sm" className="mr-2">
-      {userName?.[0] || 'AI'}
-    </Avatar>
-  )}
-
-  <div className="flex flex-col gap-1">
-    <div className="flex gap-1" aria-hidden="true">
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={i}
-          className="dot"
-          animate={{ y: [0, -8, 0] }}
-          transition={{
-            repeat: Infinity,
-            duration: 0.6,
-            delay: i * 0.1
-          }}
-        />
-      ))}
-    </div>
-
-    {estimatedTime && (
-      <span className="text-xs text-muted-foreground">
-        Estimated {estimatedTime}s
-      </span>
-    )}
-  </div>
-
-  <span className="sr-only">
-    {userName || 'AI'} is typing a response
-    {estimatedTime && `, estimated ${estimatedTime} seconds`}
-  </span>
-</div>
+}, [])
 ```
 
 ---
 
-## Phase 2: Error Handling & Performance (Medium Impact)
+### 2.3 Status & Feedback Components
 
-**Goal**: Graceful error recovery and optimized performance
-**Estimated Effort**: 2 weeks
-**Impact**: High for reliability and user trust
+#### **ThinkingIndicator.tsx** 🟡 Important
 
-### 2.1 Error Boundary & Error States (`error-boundary.tsx`)
+**Current State:**
+- Stage-based indicators (thinking, researching, generating, etc.)
+- Icon animations
+- Progress bar
+- Estimated time
 
-#### Improvements Needed:
+**UX Improvements:**
 
-**Contextual Error Messages:**
-```typescript
-// error-boundary.tsx - User-friendly error handling
-interface ErrorInfo {
-  type: 'network' | 'api' | 'rate-limit' | 'unknown'
-  message: string
-  retryable: boolean
-}
+1. **AI Transparency** 🔴
+   - [ ] **What's happening**: Explain what AI is doing in plain language
+   - [ ] **Why it takes time**: Educational tooltips on first view
+   - [ ] **Model information**: Show which model is being used (GPT-4, etc.)
+   - [ ] **Token usage**: Real-time token consumption (for pro users)
 
-const getErrorInfo = (error: Error): ErrorInfo => {
-  if (error.message.includes('Failed to fetch')) {
-    return {
-      type: 'network',
-      message: 'Connection lost. Check your internet and try again.',
-      retryable: true
-    }
-  }
+2. **Personality & Trust** 🟡
+   - [ ] **Micro-interactions**: Add playful animations (icon bouncing, etc.)
+   - [ ] **Varied messages**: Rotate through different status messages
+   - [ ] **Sound effects**: Optional subtle sound for stage transitions
+   - [ ] **Color coding**: Different colors for different stages
 
-  if (error.message.includes('429')) {
-    return {
-      type: 'rate-limit',
-      message: 'Too many requests. Please wait a moment and try again.',
-      retryable: true
-    }
-  }
+3. **Performance Perception** 🟢
+   - [ ] **Optimistic UI**: Show "Generating" immediately, even before API call
+   - [ ] **Fake progress**: Start at 10% immediately for perceived speed
+   - [ ] **Stage transitions**: Smooth transitions between stages
 
-  if (error.message.includes('401') || error.message.includes('403')) {
-    return {
-      type: 'api',
-      message: 'Authentication error. Please check your API key.',
-      retryable: false
-    }
-  }
+**Code Example:**
+```tsx
+// Varied status messages for personality
+const thinkingMessages = [
+  'Thinking through this...',
+  'Pondering your question...',
+  'Let me consider that...',
+  'Processing...',
+]
 
-  return {
-    type: 'unknown',
-    message: 'Something went wrong. Please try again.',
-    retryable: true
-  }
-}
-
-// Error display
-<div className="error-container" role="alert">
-  <div className="error-icon">
-    {errorInfo.type === 'network' && <WifiOffIcon />}
-    {errorInfo.type === 'rate-limit' && <ClockIcon />}
-    {errorInfo.type === 'api' && <KeyIcon />}
-    {errorInfo.type === 'unknown' && <AlertTriangleIcon />}
-  </div>
-
-  <h3 className="error-title">
-    {errorInfo.type === 'network' && 'Connection Problem'}
-    {errorInfo.type === 'rate-limit' && 'Slow Down'}
-    {errorInfo.type === 'api' && 'Authentication Error'}
-    {errorInfo.type === 'unknown' && 'Unexpected Error'}
-  </h3>
-
-  <p className="error-message">{errorInfo.message}</p>
-
-  {errorInfo.retryable && (
-    <button
-      onClick={handleRetry}
-      className="retry-button"
-    >
-      Try Again
-    </button>
-  )}
-
-  <details className="error-details mt-4">
-    <summary className="text-xs text-muted-foreground cursor-pointer">
-      Technical Details
-    </summary>
-    <pre className="text-xs mt-2 p-2 bg-muted rounded">
-      {error.stack}
-    </pre>
-  </details>
-</div>
-```
-
-**Network Status Indicator:**
-```typescript
-// Add new component: network-status.tsx
-export const NetworkStatus = () => {
-  const [isOnline, setIsOnline] = useState(navigator.onLine)
-  const [showOfflineBanner, setShowOfflineBanner] = useState(false)
-
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true)
-      setShowOfflineBanner(false)
-    }
-
-    const handleOffline = () => {
-      setIsOnline(false)
-      setShowOfflineBanner(true)
-    }
-
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  }, [])
-
-  if (!showOfflineBanner) return null
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -100, opacity: 0 }}
-        className="fixed top-0 left-0 right-0 z-50 bg-yellow-500 text-black p-2 text-center text-sm"
-        role="alert"
-      >
-        <WifiOffIcon className="inline w-4 h-4 mr-2" />
-        You're offline. Messages will be sent when connection is restored.
-      </motion.div>
-    </AnimatePresence>
-  )
+const getMessage = () => {
+  return thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)]
 }
 ```
 
-### 2.2 Message List Performance (`message-list.tsx`)
 
-#### Current Issue:
-- Renders all messages (can be 100s or 1000s)
-- No virtualization
-- Images/media not lazy loaded
+---
 
-#### Improvements:
+#### **FollowUpSuggestions.tsx** 🟡 Important
 
-**Virtual Scrolling:**
-```typescript
-// message-list.tsx - Add react-window for virtualization
-import { VariableSizeList as List } from 'react-window'
-import AutoSizer from 'react-virtualized-auto-sizer'
+**Current State:**
+- Grid/list layouts
+- Icon support
+- Confidence badges
+- Loading skeletons
 
-interface MessageListProps {
-  messages: Message[]
-  enableVirtualization?: boolean
-  virtualizedThreshold?: number
+**UX Improvements:**
+
+1. **Suggestion Relevance** 🔴
+   - [ ] **Context-aware**: Generate suggestions based on last message
+   - [ ] **Smart ordering**: Show most relevant suggestions first
+   - [ ] **Dismiss suggestions**: Allow users to dismiss irrelevant ones
+   - [ ] **Learn from usage**: Track which suggestions are clicked
+
+2. **Visual Design** 🟡
+   - [ ] **Card elevation**: Reduce shadow, increase on hover
+   - [ ] **Icon consistency**: Ensure all suggestions have relevant icons
+   - [ ] **Confidence indicators**: Use visual weight instead of percentage
+   - [ ] **Skeleton matching**: Match skeleton to actual card structure
+
+3. **Interaction** 🟢
+   - [ ] **Swipe on mobile**: Swipe to dismiss on mobile
+   - [ ] **Quick actions**: Right-click for options (edit, dismiss, etc.)
+   - [ ] **Keyboard shortcuts**: Number keys to select (1-4)
+
+---
+
+### 2.4 Window & Layout Components
+
+#### **ChatWindow.tsx** 🔴 Critical
+
+**Current State:**
+- Header with session info
+- Message list + input
+- Export/clear functionality
+
+**UX Improvements:**
+
+1. **Layout Flexibility** 🔴
+   - [ ] **Resizable**: Allow users to resize chat window
+   - [ ] **Minimize/maximize**: Minimize to corner, maximize to full screen
+   - [ ] **Picture-in-picture**: Floating mode while browsing docs
+   - [ ] **Multi-column**: Side-by-side mode for context + chat
+
+2. **Header Enhancements** 🟡
+   - [ ] **Session actions**: Quick access to settings, model selector
+   - [ ] **Context pills**: Show active context (files, docs) as chips
+   - [ ] **Status indicator**: Connection status, model health
+   - [ ] **Minimize button**: Clear minimize/close buttons
+
+3. **Footer Optimization** 🟡
+   - [ ] **Sticky footer**: Ensure input always visible
+   - [ ] **Token counter**: Show token usage in footer
+   - [ ] **Model badge**: Display current model in footer
+
+4. **Empty State Magic** 🔴
+   - [ ] **Onboarding tour**: First-time user tour
+   - [ ] **Example conversations**: Show example use cases
+   - [ ] **Quick start guides**: Links to docs/tutorials
+   - [ ] **Template selection**: Pre-built conversation starters
+
+---
+
+#### **ChatButton.tsx** (DocsAssistant) 🟡 Important
+
+**Current State:**
+- Floating action button
+- Keyboard shortcut tooltip
+- Pulse animation
+
+**UX Improvements:**
+
+1. **Discoverability** 🔴
+   - [ ] **First visit highlight**: Highlight button on first page load
+   - [ ] **Tooltip auto-show**: Show tooltip after 3s on first visit
+   - [ ] **Unread badge**: Show badge for new features/updates
+   - [ ] **Context-aware text**: Change button text based on page ("Ask about Components")
+
+2. **Position & Behavior** 🟡
+   - [ ] **Smart positioning**: Avoid blocking content
+   - [ ] **Hide on scroll down**: Show on scroll up (mobile)
+   - [ ] **Multi-device**: Different positions for mobile/tablet/desktop
+   - [ ] **Accessibility**: Ensure keyboard accessible
+
+3. **Visual Refinement** 🟢
+   - [ ] **Reduce pulse**: Make pulse more subtle
+   - [ ] **Hover state**: Add clear hover indication
+   - [ ] **Loading state**: Show loading when opening
+
+---
+
+### 2.5 Error & Empty States
+
+#### **ErrorBoundary.tsx** 🟡 Important
+
+**Current State:**
+- Error catching
+- Recovery options
+
+**UX Improvements:**
+
+1. **Error Communication** 🔴
+   - [ ] **User-friendly messages**: Replace technical errors with friendly ones
+   - [ ] **What went wrong**: Explain error in plain language
+   - [ ] **What to do next**: Clear action steps
+   - [ ] **Error code**: Include error code for support (in small text)
+
+2. **Recovery Actions** 🟡
+   - [ ] **Smart retry**: Retry with fixed parameters
+   - [ ] **Alternative actions**: Offer alternatives (try different model, etc.)
+   - [ ] **Report issue**: One-click error reporting
+   - [ ] **Context preservation**: Preserve user input on error
+
+3. **Visual Design** 🟢
+   - [ ] **Illustration**: Add friendly error illustration
+   - [ ] **Color**: Use warm colors (orange) instead of destructive red
+   - [ ] **Animation**: Subtle animation on error appear
+
+**Code Example:**
+```tsx
+// User-friendly error messages
+const friendlyErrors = {
+  'RATE_LIMIT': 'Whoa, slow down! Too many requests. Try again in a moment.',
+  'NETWORK': 'Hmm, connection hiccup. Check your internet and try again.',
+  'AUTH': 'Looks like your session expired. Please log in again.',
+  'UNKNOWN': 'Something unexpected happened. Our team has been notified.',
 }
 
-export const MessageList = ({
-  messages,
-  enableVirtualization = true,
-  virtualizedThreshold = 50
-}) => {
-  const listRef = useRef<List>(null)
-  const rowHeights = useRef<Record<number, number>>({})
-
-  // Use virtualization for large lists
-  const shouldVirtualize = enableVirtualization && messages.length > virtualizedThreshold
-
-  const getRowHeight = (index: number) => {
-    return rowHeights.current[index] || 100 // Default estimate
-  }
-
-  const setRowHeight = (index: number, size: number) => {
-    listRef.current?.resetAfterIndex(index)
-    rowHeights.current[index] = size
-  }
-
-  if (!shouldVirtualize) {
-    // Standard rendering for small lists
-    return (
-      <div className="message-list">
-        {messages.map((message) => (
-          <Message key={message.id} {...message} />
-        ))}
-      </div>
-    )
-  }
-
-  // Virtualized rendering for large lists
-  return (
-    <AutoSizer>
-      {({ height, width }) => (
-        <List
-          ref={listRef}
-          height={height}
-          itemCount={messages.length}
-          itemSize={getRowHeight}
-          width={width}
-          overscanCount={5}
-        >
-          {({ index, style }) => (
-            <div style={style}>
-              <Message
-                {...messages[index]}
-                onHeightChange={(height) => setRowHeight(index, height)}
-              />
-            </div>
-          )}
-        </List>
-      )}
-    </AutoSizer>
-  )
+const getFriendlyMessage = (error: Error) => {
+  const type = detectErrorType(error)
+  return friendlyErrors[type] || friendlyErrors['UNKNOWN']
 }
-```
-
-**Lazy Load Images:**
-```typescript
-// Add new component: lazy-image.tsx
-export const LazyImage = ({ src, alt, className }: ImageProps) => {
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [isInView, setIsInView] = useState(false)
-  const imgRef = useRef<HTMLImageElement>(null)
-
-  useEffect(() => {
-    if (!imgRef.current) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsInView(true)
-            observer.disconnect()
-          }
-        })
-      },
-      { rootMargin: '50px' }
-    )
-
-    observer.observe(imgRef.current)
-
-    return () => observer.disconnect()
-  }, [])
-
-  return (
-    <div className={cn("relative", className)} ref={imgRef}>
-      {!isLoaded && (
-        <div className="skeleton-loader absolute inset-0" />
-      )}
-
-      {isInView && (
-        <img
-          src={src}
-          alt={alt}
-          loading="lazy"
-          onLoad={() => setIsLoaded(true)}
-          className={cn(
-            "transition-opacity duration-300",
-            isLoaded ? "opacity-100" : "opacity-0"
-          )}
-        />
-      )}
-    </div>
-  )
-}
-```
-
-### 2.3 Chat Component Optimization (`clarity-chat.tsx`)
-
-#### Improvements:
-
-**Message Batching & Debouncing:**
-```typescript
-// clarity-chat.tsx - Optimize updates
-import { useDebouncedCallback } from 'use-debounce'
-
-const [messages, setMessages] = useState<Message[]>([])
-const [pendingUpdates, setPendingUpdates] = useState<Message[]>([])
-
-// Batch message updates during streaming
-const flushPendingUpdates = useDebouncedCallback(() => {
-  if (pendingUpdates.length > 0) {
-    setMessages(prev => [...prev, ...pendingUpdates])
-    setPendingUpdates([])
-  }
-}, 100)
-
-const addMessage = useCallback((message: Message) => {
-  if (isStreaming) {
-    setPendingUpdates(prev => [...prev, message])
-    flushPendingUpdates()
-  } else {
-    setMessages(prev => [...prev, message])
-  }
-}, [isStreaming, flushPendingUpdates])
-```
-
-**Memoized Components:**
-```typescript
-// message.tsx - Prevent unnecessary re-renders
-export const Message = memo(({
-  id,
-  role,
-  content,
-  timestamp,
-  onCopy,
-  onRegenerate
-}: MessageProps) => {
-  // Component implementation
-}, (prevProps, nextProps) => {
-  // Custom comparison
-  return (
-    prevProps.id === nextProps.id &&
-    prevProps.content === nextProps.content &&
-    prevProps.isStreaming === nextProps.isStreaming
-  )
-})
-
-Message.displayName = 'Message'
 ```
 
 ---
 
-## Phase 3: Enhanced Features & Polish (Enhancement)
+### 2.6 Voice & Multimodal
 
-**Goal**: Delight users with thoughtful details
-**Estimated Effort**: 2-3 weeks
-**Impact**: Medium (improves satisfaction and retention)
+#### **VoiceInput.tsx** 🟡 Important
 
-### 3.1 Onboarding & Empty States
+**Current State:**
+- Web Speech API
+- Real-time transcription
+- Multi-language support
 
-**Interactive First-Time Experience:**
-```typescript
-// Add new component: onboarding-tour.tsx
-export const OnboardingTour = () => {
-  const [step, setStep] = useState(0)
-  const [hasSeenTour, setHasSeenTour] = useLocalStorage('onboarding-complete', false)
+**UX Improvements:**
 
-  if (hasSeenTour) return null
+1. **Voice UX** 🔴
+   - [ ] **Waveform visualization**: Show audio waveform during recording
+   - [ ] **Confidence indicator**: Show transcription confidence
+   - [ ] **Edit before send**: Allow editing transcript before sending
+   - [ ] **Voice commands**: Support commands like "send", "cancel", "delete"
 
-  const steps = [
-    {
-      target: '.message-input',
-      title: 'Start a Conversation',
-      content: 'Type your message here or click the mic icon for voice input.',
-      placement: 'top'
-    },
-    {
-      target: '.command-palette-trigger',
-      title: 'Quick Commands',
-      content: 'Press Cmd+K to open the command palette for quick actions.',
-      placement: 'bottom'
-    },
-    {
-      target: '.file-upload',
-      title: 'Share Files',
-      content: 'Upload images, documents, or code files to discuss with AI.',
-      placement: 'top'
-    }
-  ]
+2. **Accessibility** 🔴
+   - [ ] **Voice-first mode**: Full voice navigation option
+   - [ ] **Audio feedback**: Beep on start/stop recording
+   - [ ] **Visual feedback**: Clear visual indicator for deaf users
+   - [ ] **Fallback UI**: Clear fallback if speech API unavailable
 
-  return (
-    <Joyride
-      steps={steps}
-      continuous
-      showProgress
-      showSkipButton
-      run={!hasSeenTour}
-      callback={(data) => {
-        if (data.status === 'finished' || data.status === 'skipped') {
-          setHasSeenTour(true)
-        }
-      }}
-    />
-  )
-}
-```
+3. **Language Support** 🟡
+   - [ ] **Auto-detect language**: Detect language from speech
+   - [ ] **Language switcher**: Easy language switching
+   - [ ] **Accent handling**: Better handling of accents
 
-**Enhanced Empty State:**
-```typescript
-// clarity-chat.tsx - Better empty state
-const EmptyState = () => {
-  const suggestions = [
-    { icon: <CodeIcon />, text: 'Help me debug this code', category: 'Development' },
-    { icon: <PenIcon />, text: 'Write an email', category: 'Writing' },
-    { icon: <BrainIcon />, text: 'Explain a concept', category: 'Learning' },
-    { icon: <SparklesIcon />, text: 'Brainstorm ideas', category: 'Creative' }
-  ]
+---
 
-  return (
-    <div className="empty-state flex flex-col items-center justify-center h-full p-8">
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="text-center max-w-2xl"
-      >
-        <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10">
-          <SparklesIcon className="w-10 h-10 text-primary" />
-        </div>
+### 2.7 Mobile-Specific Improvements
 
-        <h2 className="text-2xl font-bold mb-2">
-          Start a Conversation
-        </h2>
-        <p className="text-muted-foreground mb-8">
-          Ask me anything or try one of these suggestions
-        </p>
+#### **All Components** 🔴 Critical
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-          {suggestions.map((suggestion, i) => (
-            <motion.button
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              onClick={() => onSendMessage(suggestion.text)}
-              className="flex items-center gap-3 p-4 rounded-lg border border-border hover:border-primary hover:bg-accent transition-all text-left group"
-            >
-              <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                {suggestion.icon}
-              </div>
-              <div className="flex-1">
-                <div className="font-medium">{suggestion.text}</div>
-                <div className="text-xs text-muted-foreground">
-                  {suggestion.category}
-                </div>
-              </div>
-              <ArrowRightIcon className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </motion.button>
-          ))}
-        </div>
+**Mobile-First Checklist:**
 
-        <div className="text-xs text-muted-foreground">
-          Tip: Press <kbd className="kbd">Cmd+K</kbd> for quick commands
-        </div>
-      </motion.div>
-    </div>
-  )
-}
-```
+1. **Touch Interactions** 🔴
+   - [ ] **44x44px minimum**: All touch targets at least 44px
+   - [ ] **Swipe gestures**: Swipe to delete messages, dismiss, etc.
+   - [ ] **Pull to refresh**: Pull down to reload
+   - [ ] **Haptic feedback**: Vibration on actions
 
-### 3.2 Context & Multi-turn Conversations
+2. **Screen Real Estate** 🔴
+   - [ ] **Bottom sheet**: Use bottom sheets instead of modals
+   - [ ] **Collapsible header**: Hide header on scroll down
+   - [ ] **Floating labels**: Use floating labels to save space
+   - [ ] **Tab bar**: Bottom tab bar for navigation
 
-**Conversation Threading:**
-```typescript
-// Add to message.tsx - Thread support
-interface MessageProps {
-  // ... existing props
-  threadId?: string
-  parentId?: string
-  replies?: Message[]
-  onReply?: (parentId: string) => void
-}
+3. **Performance** 🔴
+   - [ ] **Reduce animations**: Disable heavy animations on mobile
+   - [ ] **Lazy load**: Aggressive lazy loading
+   - [ ] **Image optimization**: WebP, responsive images
+   - [ ] **Bundle size**: Code splitting for mobile
 
-// In message display
-<div className="message-container">
-  <div className="message-content">
-    {content}
-  </div>
+4. **Mobile Keyboard** 🔴
+   - [ ] **Keyboard-aware**: Adjust layout when keyboard appears
+   - [ ] **Input focus**: Auto-focus input on mobile
+   - [ ] **Keyboard toolbar**: Add formatting toolbar above keyboard
 
-  {onReply && (
-    <button
-      onClick={() => onReply(id)}
-      className="reply-button text-xs text-muted-foreground hover:text-primary"
-    >
-      Reply in thread
-    </button>
-  )}
+---
 
-  {replies && replies.length > 0 && (
-    <div className="thread-replies ml-6 mt-2 border-l-2 border-muted pl-4">
-      {replies.map(reply => (
-        <Message key={reply.id} {...reply} isThreaded />
-      ))}
-    </div>
-  )}
-</div>
-```
+## 3. Cross-Cutting Improvements
 
-**Context Awareness Indicator:**
-```typescript
-// Add new component: context-indicator.tsx
-export const ContextIndicator = ({
-  messageCount,
-  tokenCount,
-  maxTokens
-}: ContextIndicatorProps) => {
-  const percentage = (tokenCount / maxTokens) * 100
+### 3.1 Animation & Motion 🟡
 
-  return (
-    <Tooltip content="Current conversation context">
-      <div className="context-indicator flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 text-xs">
-        <div className="flex items-center gap-1">
-          <MessageSquareIcon className="w-3 h-3" />
-          <span>{messageCount}</span>
-        </div>
+**Current**: Good use of Framer Motion
 
-        <div className="flex items-center gap-1">
-          <BrainIcon className="w-3 h-3" />
-          <span>{tokenCount.toLocaleString()}</span>
-        </div>
+**Enhancements:**
+- [ ] **Respect prefers-reduced-motion**: Disable animations for users who prefer reduced motion
+- [ ] **Performance**: Use `transform` and `opacity` only for 60fps
+- [ ] **Page transitions**: Add page transitions for navigation
+- [ ] **Micro-interactions**: Add subtle hover/click animations everywhere
+- [ ] **Loading choreography**: Coordinate multiple loading states
 
-        <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
-          <div
-            className={cn(
-              "h-full transition-all",
-              percentage < 75 && "bg-green-500",
-              percentage >= 75 && percentage < 90 && "bg-yellow-500",
-              percentage >= 90 && "bg-red-500"
-            )}
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
-      </div>
-    </Tooltip>
-  )
-}
-```
+```tsx
+// Respect reduced motion
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-### 3.3 Message Actions & Enhancements
-
-**Quick Reactions:**
-```typescript
-// message.tsx - Add reaction system
-const [reactions, setReactions] = useState<Record<string, number>>({})
-
-const quickReactions = ['👍', '👎', '❤️', '🎉', '🤔', '👀']
-
-<div className="message-reactions mt-2 flex items-center gap-1">
-  {quickReactions.map(emoji => (
-    <button
-      key={emoji}
-      onClick={() => handleReaction(emoji)}
-      className={cn(
-        "reaction-button px-2 py-1 rounded-full text-xs",
-        "hover:bg-accent transition-colors",
-        reactions[emoji] && "bg-primary/10 border border-primary"
-      )}
-      aria-label={`React with ${emoji}`}
-    >
-      <span>{emoji}</span>
-      {reactions[emoji] && (
-        <span className="ml-1 text-xs">{reactions[emoji]}</span>
-      )}
-    </button>
-  ))}
-</div>
-```
-
-**Message Bookmarking:**
-```typescript
-// message.tsx - Add bookmark functionality
-const [isBookmarked, setIsBookmarked] = useState(false)
-
-<button
-  onClick={() => {
-    setIsBookmarked(!isBookmarked)
-    onBookmark?.(id, !isBookmarked)
-  }}
-  className="bookmark-button"
-  aria-label={isBookmarked ? "Remove bookmark" : "Bookmark message"}
->
-  <motion.div
-    animate={{ scale: isBookmarked ? [1, 1.3, 1] : 1 }}
-    transition={{ duration: 0.3 }}
-  >
-    {isBookmarked ? (
-      <BookmarkFilledIcon className="w-4 h-4 text-primary" />
-    ) : (
-      <BookmarkIcon className="w-4 h-4" />
-    )}
-  </motion.div>
-</button>
-```
-
-**Copy Code Improvements:**
-```typescript
-// code-block.tsx - Enhanced copy button
-const [copied, setCopied] = useState(false)
-
-const handleCopy = async () => {
-  await navigator.clipboard.writeText(code)
-  setCopied(true)
-
-  // Show toast notification
-  toast.success('Code copied to clipboard')
-
-  setTimeout(() => setCopied(false), 2000)
-}
-
-<div className="code-block relative group">
-  <pre className="p-4 rounded-lg bg-muted overflow-x-auto">
-    <code>{code}</code>
-  </pre>
-
-  <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-    <button
-      onClick={handleCopy}
-      className="px-3 py-1.5 rounded bg-background/90 backdrop-blur text-xs font-medium hover:bg-background transition-colors"
-    >
-      {copied ? (
-        <>
-          <CheckIcon className="w-3 h-3 inline mr-1" />
-          Copied!
-        </>
-      ) : (
-        <>
-          <CopyIcon className="w-3 h-3 inline mr-1" />
-          Copy
-        </>
-      )}
-    </button>
-
-    <select
-      className="px-2 py-1 rounded bg-background/90 backdrop-blur text-xs"
-      onChange={(e) => onLanguageChange(e.target.value)}
-    >
-      <option value={detectedLanguage}>{detectedLanguage}</option>
-      {/* Other language options */}
-    </select>
-  </div>
-</div>
-```
-
-### 3.4 Mobile Optimizations
-
-**Swipe Gestures:**
-```typescript
-// message.tsx - Add swipe to reply
-import { useSwipeable } from 'react-swipeable'
-
-const swipeHandlers = useSwipeable({
-  onSwipedRight: () => {
-    if (onReply) {
-      hapticFeedback()
-      onReply(id)
-    }
-  },
-  trackMouse: false,
-  trackTouch: true,
-  delta: 50
-})
-
-<div {...swipeHandlers} className="message">
-  {/* Message content */}
-</div>
-```
-
-**Mobile Toolbar:**
-```typescript
-// message-input.tsx - Contextual mobile toolbar
-const [showMobileToolbar, setShowMobileToolbar] = useState(false)
-
-<div className="mobile-toolbar md:hidden">
-  <button
-    onClick={() => setShowMobileToolbar(!showMobileToolbar)}
-    className="toolbar-toggle"
-  >
-    <PlusIcon className="w-5 h-5" />
-  </button>
-
-  <AnimatePresence>
-    {showMobileToolbar && (
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        className="fixed bottom-16 left-0 right-0 p-4 bg-card border-t shadow-lg"
-      >
-        <div className="grid grid-cols-4 gap-3">
-          <button className="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-accent">
-            <ImageIcon className="w-6 h-6" />
-            <span className="text-xs">Photo</span>
-          </button>
-
-          <button className="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-accent">
-            <FileIcon className="w-6 h-6" />
-            <span className="text-xs">File</span>
-          </button>
-
-          <button className="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-accent">
-            <MicIcon className="w-6 h-6" />
-            <span className="text-xs">Voice</span>
-          </button>
-
-          <button className="flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-accent">
-            <CommandIcon className="w-6 h-6" />
-            <span className="text-xs">Commands</span>
-          </button>
-        </div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-</div>
-```
-
-**Pull-to-Refresh:**
-```typescript
-// clarity-chat.tsx - Add pull to refresh for mobile
-import { usePullToRefresh } from '@/hooks/use-pull-to-refresh'
-
-const { pullProgress, isPulling } = usePullToRefresh({
-  onRefresh: async () => {
-    await loadMoreMessages()
-    hapticFeedback()
-  },
-  threshold: 80,
-  enabled: hasMoreMessages && isMobile
-})
-
-<div className="chat-container relative">
-  {isPulling && (
-    <motion.div
-      className="absolute top-0 left-0 right-0 flex justify-center pt-4"
-      style={{ opacity: pullProgress / 100 }}
-    >
-      <motion.div
-        animate={{ rotate: pullProgress * 3.6 }}
-        className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full"
-      />
-    </motion.div>
-  )}
-
-  <MessageList messages={messages} />
-</div>
+const animation = prefersReducedMotion
+  ? { opacity: [0, 1] }
+  : { opacity: [0, 1], y: [20, 0], scale: [0.95, 1] }
 ```
 
 ---
 
-## Phase 4: Implementation Checklist
+### 3.2 Accessibility (WCAG AAA) 🔴
 
-### Pre-Implementation
-- [ ] Review current component implementations
-- [ ] Set up accessibility testing tools (axe DevTools, NVDA)
-- [ ] Create component testing plan
-- [ ] Set up performance monitoring
+**Priority Improvements:**
 
-### Phase 1 (Weeks 1-3)
-- [ ] Message list ARIA live regions
-- [ ] Keyboard navigation improvements
-- [ ] Mobile touch target optimization
-- [ ] Input component enhancements (token counter, states)
-- [ ] Voice input visual feedback
-- [ ] Command palette search improvements
-- [ ] Loading state context
-- [ ] Run accessibility audit
+1. **Screen Reader** 🔴
+   - [ ] **Live regions**: Use aria-live for dynamic content
+   - [ ] **Descriptive labels**: All interactive elements labeled
+   - [ ] **Skip links**: Skip to main content
+   - [ ] **Landmarks**: Proper ARIA landmarks
 
-### Phase 2 (Weeks 4-5)
-- [ ] Error boundary enhancements
-- [ ] Network status indicator
-- [ ] Message list virtualization
-- [ ] Image lazy loading
-- [ ] Message batching optimization
-- [ ] Component memoization
-- [ ] Performance profiling
+2. **Keyboard Navigation** 🔴
+   - [ ] **Focus indicators**: High-contrast focus indicators
+   - [ ] **Shortcuts help**: Keyboard shortcuts help modal
+   - [ ] **Custom shortcuts**: Allow users to customize shortcuts
+   - [ ] **Escape key**: Consistent Escape key behavior
 
-### Phase 3 (Weeks 6-8)
-- [ ] Onboarding tour
-- [ ] Enhanced empty states
-- [ ] Message threading
-- [ ] Context indicator
-- [ ] Quick reactions
-- [ ] Message bookmarking
-- [ ] Code block improvements
-- [ ] Mobile gestures
-- [ ] Mobile toolbar
-- [ ] Pull-to-refresh
+3. **Visual** 🔴
+   - [ ] **Color contrast audit**: Ensure AAA compliance (7:1 ratio)
+   - [ ] **Focus visible**: Always show focus
+   - [ ] **Text spacing**: Allow text spacing adjustments
+   - [ ] **Zoom**: Test at 200% zoom
 
-### Post-Implementation
-- [ ] Full accessibility audit
-- [ ] Performance benchmarking
-- [ ] User testing session
-- [ ] Documentation updates
-- [ ] Analytics integration
+4. **Cognitive** 🟡
+   - [ ] **Simple language**: Avoid jargon
+   - [ ] **Clear instructions**: Step-by-step guidance
+   - [ ] **Consistent patterns**: Predictable interactions
+   - [ ] **Error prevention**: Prevent errors before they happen
+
 
 ---
 
-## Success Metrics
+### 3.3 Onboarding & Help 🔴
 
-### Accessibility
-- ✅ WCAG 2.1 AA compliance (100%)
-- ✅ Keyboard navigation score (Lighthouse)
-- ✅ Screen reader compatibility (NVDA, JAWS, VoiceOver)
-- Target: 0 critical accessibility issues
+**Critical for Adoption:**
 
-### Performance
-- First Contentful Paint: < 1.5s
-- Time to Interactive: < 3.5s
-- Message render time: < 100ms (for standard messages)
-- Virtual scroll FPS: 60fps stable
-- Bundle size: < 150KB (gzipped)
+1. **First-Time Experience** 🔴
+   - [ ] **Welcome tour**: Interactive product tour
+   - [ ] **Tooltips**: Contextual tooltips on first use
+   - [ ] **Empty states**: Actionable empty states with guidance
+   - [ ] **Sample data**: Pre-populate with example data
 
-### User Experience
-- Error recovery rate: > 90%
-- Mobile usability score: > 85/100
-- User satisfaction (NPS): > 50
-- Feature discoverability: > 70%
+2. **In-App Help** 🟡
+   - [ ] **Help button**: Persistent help button
+   - [ ] **Contextual help**: Help based on current screen
+   - [ ] **Video tutorials**: Short video guides
+   - [ ] **Searchable help**: Search docs from app
 
-### Mobile
-- Touch target compliance: 100%
-- Gesture recognition rate: > 95%
-- Mobile load time: < 2.5s
-- Responsive breakpoints: All tested
+3. **Progressive Disclosure** 🔴
+   - [ ] **Start simple**: Show basic features first
+   - [ ] **Gradual complexity**: Reveal advanced features over time
+   - [ ] **Feature announcements**: Announce new features
+   - [ ] **Tooltips dismissal**: Allow permanent dismissal
 
 ---
 
-## Additional Recommendations
+## 4. Implementation Roadmap
 
-### 1. Design System Documentation
-Create comprehensive Storybook documentation for each component showing:
-- All states (loading, error, empty, success)
-- Accessibility features
-- Mobile responsive behavior
-- Dark mode variations
-- Usage examples
+### Phase 1: Foundation (Weeks 1-2) 🔴
+**Focus**: Critical UX issues affecting all users
 
-### 2. Testing Strategy
-- Unit tests for all interactive components
-- Integration tests for user flows
-- Accessibility tests with axe-core
-- Visual regression tests
-- Performance benchmarks
+- [ ] Mobile touch target optimization (44x44px)
+- [ ] Accessibility audit and fixes (WCAG AAA)
+- [ ] Error message improvements
+- [ ] Smart scroll behavior
+- [ ] Input draft auto-save
+- [ ] Reduced motion support
+- [ ] Focus management improvements
 
-### 3. Analytics & Monitoring
-Track key user interactions:
-- Message send rate
-- Error frequency by type
-- Feature usage (voice, file upload, commands)
-- User flow dropoff points
-- Performance metrics by device/browser
-
-### 4. Progressive Enhancement
-- Ensure core functionality works without JavaScript
-- Provide fallbacks for modern features
-- Optimize for low-bandwidth connections
-- Support offline capabilities where possible
+**Metrics**: Accessibility score, mobile task completion rate
 
 ---
 
-## Conclusion
+### Phase 2: Core Experience (Weeks 3-4) 🔴
+**Focus**: Message reading and input experience
 
-This plan provides a systematic approach to enhancing the UX of Clarity Chat components with prioritized, actionable improvements. Implementation is phased to deliver high-impact accessibility and mobile optimizations first, followed by performance improvements and enhanced features.
+- [ ] Message reading optimizations (line height, width, truncation)
+- [ ] ChatInput intelligence (suggestions, smart paste)
+- [ ] Message grouping and time separators
+- [ ] AI transparency improvements (ThinkingIndicator)
+- [ ] Jump-to-bottom button
+- [ ] Mobile keyboard optimization
 
-**Estimated Total Effort**: 7-8 weeks
-**Priority**: High (Accessibility) → Medium (Performance) → Low (Enhancements)
-**Impact**: Significant improvement in usability, accessibility, and user satisfaction
+**Metrics**: Time to complete task, user satisfaction score
 
-Start with Phase 1 (Accessibility & Mobile) as these improvements have the highest impact on the largest number of users and are critical for legal compliance and basic usability.
+---
+
+### Phase 3: Delight & Discovery (Weeks 5-6) 🟡
+**Focus**: Onboarding, help, and emotional design
+
+- [ ] Welcome tour and onboarding
+- [ ] Empty state enhancements
+- [ ] Follow-up suggestion improvements
+- [ ] Micro-interactions and animations
+- [ ] Contextual help system
+- [ ] Feature discovery (tooltips, badges)
+
+**Metrics**: Feature adoption rate, time to first success
+
+---
+
+### Phase 4: Advanced Features (Weeks 7-8) 🟢
+**Focus**: Power user features and polish
+
+- [ ] Voice input enhancements (waveform, commands)
+- [ ] Resizable chat window
+- [ ] Token dashboard improvements
+- [ ] Memory inspector enhancements
+- [ ] Theme marketplace
+- [ ] Performance optimizations
+
+**Metrics**: Power user engagement, performance scores
+
+---
+
+### Phase 5: Mobile Excellence (Weeks 9-10) 🔴
+**Focus**: Mobile-specific optimizations
+
+- [ ] Bottom sheet modals
+- [ ] Swipe gestures
+- [ ] Mobile-specific layouts
+- [ ] Haptic feedback
+- [ ] Pull to refresh
+- [ ] Mobile performance optimization
+
+**Metrics**: Mobile task completion, mobile retention
+
+---
+
+## 5. Measurement & Success Criteria
+
+### Key Metrics
+
+| Metric | Current | Target | Priority |
+|--------|---------|--------|----------|
+| **Accessibility Score (Lighthouse)** | Unknown | 100 | 🔴 |
+| **Mobile Usability (PageSpeed)** | Unknown | >90 | 🔴 |
+| **Time to First Message** | Unknown | <3s | 🔴 |
+| **Task Completion Rate** | Unknown | >90% | 🔴 |
+| **Error Rate** | Unknown | <2% | 🟡 |
+| **Feature Discovery Rate** | Unknown | >60% | 🟡 |
+| **User Satisfaction (CSAT)** | Unknown | >4.5/5 | 🟡 |
+| **Retention (7-day)** | Unknown | >40% | 🟢 |
+
+### User Testing
+
+**Test Plan:**
+1. **Usability testing** (5 users per phase)
+2. **A/B testing** for major changes
+3. **Analytics tracking** for all interactions
+4. **Accessibility testing** with assistive technologies
+5. **Mobile testing** on real devices
+
+---
+
+## 6. Component Priority Matrix
+
+### Immediate (This Sprint) 🔴
+
+1. **Message.tsx** - Reading experience, truncation
+2. **ChatInput.tsx** - Draft save, mobile optimization
+3. **MessageList.tsx** - Smart scroll, jump-to-bottom
+4. **ChatWindow.tsx** - Empty state, onboarding
+5. **Accessibility** - Touch targets, keyboard nav
+6. **Error states** - Friendly messages, recovery
+
+### Next Sprint 🟡
+
+7. **ThinkingIndicator.tsx** - AI transparency
+8. **FollowUpSuggestions.tsx** - Relevance, interaction
+9. **ChatButton.tsx** - Discoverability
+10. **VoiceInput.tsx** - Waveform, confidence
+11. **Animations** - Reduced motion, performance
+12. **Mobile gestures** - Swipe, haptic
+
+### Future 🟢
+
+13. **TokenOptimizationDashboard.tsx** - Charts, insights
+14. **MemoryInspector.tsx** - Visual tree
+15. **Theming** - More themes, marketplace
+16. **i18n** - Internationalization
+17. **Advanced features** - Resizing, PiP
+18. **Performance** - Bundle optimization
+
+---
+
+## 7. Quick Wins (Can Ship Today)
+
+### High-Impact, Low-Effort 🚀
+
+1. **Add "Message copied" toast** (Message.tsx) - 10 minutes
+2. **Increase button touch targets to 44px** (All buttons) - 30 minutes
+3. **Add `prefers-reduced-motion` check** (Animations) - 1 hour
+4. **Improve error messages** (ErrorBoundary) - 2 hours
+5. **Add jump-to-bottom button** (MessageList) - 2 hours
+6. **Auto-save drafts** (ChatInput) - 1 hour
+7. **Add keyboard shortcuts help** (ChatWindow) - 2 hours
+8. **Improve empty state CTAs** (EmptyState) - 1 hour
+
+**Total**: ~10 hours of work, massive UX improvement
+
+---
+
+## 8. Design Patterns & Consistency
+
+### Create Shared Patterns
+
+**Problem**: Some components reinvent patterns
+**Solution**: Create shared design patterns library
+
+- [ ] **Loading states**: Standard skeleton pattern
+- [ ] **Empty states**: Reusable empty state component
+- [ ] **Error states**: Consistent error display
+- [ ] **Button states**: Unified button state management
+- [ ] **Card patterns**: Standardized card layouts
+- [ ] **Modal patterns**: Consistent modal/dialog UX
+- [ ] **Form patterns**: Unified form validation/feedback
+
+---
+
+## 9. UX Principles for Clarity Chat
+
+### Core Principles
+
+1. **Clarity First** 🎯
+   - Clear over clever
+   - Explicit over implicit
+   - Helpful over minimal
+
+2. **Progressively Powerful** 📈
+   - Simple by default
+   - Powerful when needed
+   - No dead ends
+
+3. **Delightfully Responsive** ⚡
+   - Fast perceived performance
+   - Smooth animations
+   - Instant feedback
+
+4. **Accessible to All** ♿
+   - WCAG AAA compliance
+   - Voice-first capable
+   - Cognitive accessibility
+
+5. **Human & Trustworthy** 🤝
+   - Transparent about AI
+   - Friendly error messages
+   - Personality without gimmicks
+
+---
+
+## 10. Conclusion
+
+This comprehensive plan provides a roadmap for systematically improving every aspect of the Clarity AI Chat Components UX. The improvements are based on:
+
+✅ **2025 AI chat best practices**
+✅ **Accessibility standards (WCAG AAA)**
+✅ **Mobile-first design principles**
+✅ **User research and industry patterns**
+✅ **Performance optimization**
+
+### Next Steps
+
+1. **Review & prioritize** - Team review of this plan
+2. **Create tickets** - Break down into actionable tickets
+3. **Start with quick wins** - Ship easy improvements first
+4. **Set up metrics** - Implement analytics and tracking
+5. **User testing** - Test with real users
+6. **Iterate** - Continuous improvement based on feedback
+
+### Resources Needed
+
+- **Design**: 1 UX designer for research & testing
+- **Development**: 2 frontend developers
+- **Testing**: Accessibility tester + user testers
+- **Timeline**: 10 weeks for full implementation
+- **Tools**: Analytics, A/B testing, accessibility tools
+
+---
+
+## Appendix A: Research Sources
+
+### 2025 AI Chat UX Best Practices
+- Smashing Magazine: "Design Patterns For AI Interfaces"
+- Letsgroto: "10 Best AI Chatbot UX Design Best Practices for 2025"
+- Botpress: "Chatbot Design: Everything You Need to Build Better Bots in 2025"
+- WillowTree: "Conversational AI Assistant Design: 7 UX/UI Best Practices"
+- Parallel HQ: "Chatbot UX Design: Complete Guide (2025)"
+
+### Accessibility Resources
+- WCAG AAA Guidelines
+- BOIA: "Five Key Accessibility Considerations for Chatbots"
+- Voice Tech Global: "Designing Accessible Chatbots"
+- Conversation Design Institute: "Best Practices for Chatbots"
+
+### UI/UX Patterns
+- GetStream: Chat UI documentation
+- Sendbird: "15 Chatbot UI examples for designing an effective user interface"
+- BricXLabs: "16 Chat UI Design Patterns That Work in 2025"
+
+---
+
+**Document Version**: 1.0
+**Last Updated**: 2025-11-20
+**Next Review**: After Phase 1 completion
+**Maintained By**: UX Team
+

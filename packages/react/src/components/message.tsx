@@ -22,6 +22,7 @@ import {
   MessageActions,
   MessageMetadata,
 } from './message/index'
+import { ErrorMessage, type ErrorDetails } from './error-message'
 
 export interface MessageProps {
   message: MessageType
@@ -34,6 +35,14 @@ export interface MessageProps {
   showAvatar?: boolean
   showTimestamp?: boolean
   className?: string
+  /** Whether this message is the first in a group (default: true) */
+  isGroupStart?: boolean
+  /** Whether this message is the last in a group (default: true) */
+  isGroupEnd?: boolean
+  /** Whether this message is part of a group (default: false) */
+  isGrouped?: boolean
+  /** Error details for failed messages */
+  errorDetails?: ErrorDetails | string
   /** React 19: ref as prop */
   ref?: React.Ref<HTMLDivElement>
 }
@@ -117,6 +126,10 @@ export function Message({
   showAvatar = true,
   showTimestamp = true,
   className,
+  isGroupStart = true,
+  isGroupEnd = true,
+  isGrouped = false,
+  errorDetails,
   ref,
 }: MessageProps) {
   const [isHovered, setIsHovered] = React.useState(false)
@@ -208,14 +221,16 @@ export function Message({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group flex gap-3 p-4 rounded-xl transition-all duration-200 ease-out',
+          'group flex gap-3.5 rounded-xl transition-all duration-200 ease-out',
+          // Reduced padding for grouped messages
+          isGrouped && !isGroupStart && !isGroupEnd ? 'px-4 py-1.5' : 'p-4',
           isUser && 'flex-row-reverse',
-          isHovered && 'bg-muted/30',
+          isHovered && 'bg-muted/40',
           className
         )}
       >
-        {/* Avatar */}
-        {showAvatar && (
+        {/* Avatar - only show on group start */}
+        {showAvatar && isGroupStart ? (
           <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
@@ -233,51 +248,56 @@ export function Message({
               className="flex-shrink-0"
             />
           </motion.div>
-        )}
+        ) : showAvatar && isGrouped ? (
+          // Spacer to maintain alignment in grouped messages
+          <div className="w-10 flex-shrink-0" aria-hidden="true" />
+        ) : null}
 
         {/* Message Content */}
         <div
           className={cn(
-            'flex-1 space-y-2',
+            'flex-1 space-y-2.5',
             isUser && 'flex flex-col items-end'
           )}
         >
-          {/* Header */}
-          <div
-            className={cn(
-              'flex items-center gap-2',
-              isUser && 'flex-row-reverse'
-            )}
-          >
-            <span className="font-semibold text-sm">
-              {isUser ? 'You' : 'AI Assistant'}
-            </span>
-            {showTimestamp && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isHovered ? 1 : 0.7 }}
-                transition={{ duration: 0.2 }}
-                className="text-xs text-muted-foreground/80"
-              >
-                {formatRelativeTime(message.createdAt)}
-              </motion.span>
-            )}
-            {message.status === 'sending' && (
-              <Badge variant="secondary" dot>
-                Sending
-              </Badge>
-            )}
-            {message.status === 'error' && (
-              <Badge variant="destructive">Error</Badge>
-            )}
-          </div>
+          {/* Header - only show on group start */}
+          {isGroupStart && (
+            <div
+              className={cn(
+                'flex items-center gap-2.5',
+                isUser && 'flex-row-reverse'
+              )}
+            >
+              <span className="font-semibold text-sm">
+                {isUser ? 'You' : 'AI Assistant'}
+              </span>
+              {showTimestamp && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: isHovered ? 1 : 0.7 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-xs text-muted-foreground/90"
+                >
+                  {formatRelativeTime(message.createdAt)}
+                </motion.span>
+              )}
+              {message.status === 'sending' && (
+                <Badge variant="secondary" dot>
+                  Sending
+                </Badge>
+              )}
+              {message.status === 'error' && (
+                <Badge variant="destructive">Error</Badge>
+              )}
+            </div>
+          )}
 
           {/* Content */}
           <div
             className={cn(
               !isUser && 'prose prose-sm dark:prose-invert max-w-none',
               isUser &&
-                'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-[0_1px_3px_rgba(15,23,42,0.1)] ring-1 ring-primary/20'
+                'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm ring-1 ring-primary/30'
             )}
           >
             {isUser ? (
@@ -307,6 +327,16 @@ export function Message({
               />
             )}
           </div>
+
+          {/* Error Message */}
+          {message.status === 'error' && errorDetails && (
+            <ErrorMessage
+              error={errorDetails}
+              onRetry={onRetry}
+              compact={isGrouped}
+              maxRetryAttempts={3}
+            />
+          )}
 
           {/* Attachments */}
           {message.attachments && message.attachments.length > 0 && (

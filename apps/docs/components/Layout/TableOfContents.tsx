@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import clsx from 'clsx'
+import { motion } from 'framer-motion'
 
 interface TocItem {
   title: string
@@ -51,33 +52,63 @@ export function TableOfContents({ items }: TableOfContentsProps) {
   }
 
   return (
-    <div className="space-y-2">
-      <h4 className="font-semibold text-sm text-text-primary mb-4">
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      className="space-y-2"
+    >
+      <motion.h4
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="font-semibold text-sm text-text-primary mb-4"
+      >
         On this page
-      </h4>
+      </motion.h4>
       <nav>
         <ul className="space-y-2">
-          {items.map((item) => (
-            <li
+          {items.map((item, index) => (
+            <motion.li
               key={item.id}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.15 + index * 0.03 }}
               style={{ paddingLeft: `${(item.level - 2) * 12}px` }}
             >
-              <a
-                href={`#${item.id}`}
-                onClick={(e) => handleClick(e, item.id)}
-                className={clsx(
-                  'block text-sm py-1 transition-colors border-l-2',
-                  activeId === item.id
-                    ? 'border-brand-500 text-brand-600 dark:text-brand-400 font-medium'
-                    : 'border-transparent text-text-secondary hover:text-text-primary hover:border-border'
-                )}
+              <motion.div
+                whileHover={{ x: 2 }}
+                transition={{ duration: 0.2 }}
               >
-                {item.title}
-              </a>
-            </li>
+                <a
+                  href={`#${item.id}`}
+                  onClick={(e) => handleClick(e, item.id)}
+                  className={clsx(
+                    'block text-sm py-1 pl-3 transition-all border-l-2 relative',
+                    activeId === item.id
+                      ? 'border-brand-500 text-brand-600 dark:text-brand-400 font-medium'
+                      : 'border-transparent text-text-secondary hover:text-text-primary hover:border-border'
+                  )}
+                >
+                  {item.title}
+                  {activeId === item.id && (
+                    <motion.div
+                      layoutId="activeIndicator"
+                      className="absolute left-0 top-0 bottom-0 w-0.5 bg-brand-500"
+                      initial={false}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 30
+                      }}
+                    />
+                  )}
+                </a>
+              </motion.div>
+            </motion.li>
           ))}
         </ul>
       </nav>
-    </div>
+    </motion.div>
   )
 }

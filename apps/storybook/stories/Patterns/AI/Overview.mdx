@@ -1,0 +1,437 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Patterns/AI/Overview" />
+
+# AI Patterns
+
+Specialized patterns for building AI-powered chat experiences with streaming, tool calling, RAG, and token optimization.
+
+## Quick Links
+
+- [Streaming Responses](?path=/docs/patterns-ai-streaming--docs) ⭐
+- [Token Optimization](?path=/docs/patterns-ai-tokens--docs) ⭐
+- [RAG Integration](?path=/docs/patterns-ai-rag--docs)
+- [Tool Calling](?path=/docs/patterns-ai-tools--docs)
+- [Multi-modal Input](?path=/docs/patterns-ai-multimodal--docs)
+
+## Common AI Patterns
+
+### 🌊 Streaming Responses
+**Problem**: Users wait for entire AI response before seeing any output
+**Solution**: Stream tokens as they're generated for better UX
+
+**When to use**:
+- All AI chat interfaces
+- Long-form content generation
+- Real-time translation
+- Code generation
+
+**Key features**:
+- Token-by-token rendering
+- Streaming indicators
+- Cancellation support
+- Error recovery
+- Partial response handling
+
+### 🎯 Token Optimization
+**Problem**: Hitting token limits or excessive costs
+**Solution**: Intelligent context management and summarization
+
+**When to use**:
+- Long conversations
+- Document Q&A
+- Multi-turn analysis
+- Cost-sensitive applications
+
+**Key features**:
+- Context window management
+- Automatic summarization
+- Message pruning strategies
+- Token counting
+- Cost tracking
+
+### 📚 RAG Integration
+**Problem**: AI needs access to external knowledge
+**Solution**: Retrieval-Augmented Generation with document search
+
+**When to use**:
+- Documentation bots
+- Knowledge base assistants
+- Code search and explanation
+- Customer support with docs
+
+**Key features**:
+- Document retrieval
+- Relevance ranking
+- Citation tracking
+- Source attribution
+- Hybrid search (vector + keyword)
+
+### 🔧 Tool Calling
+**Problem**: AI needs to perform actions or access data
+**Solution**: Function calling with clear execution feedback
+
+**When to use**:
+- API integration
+- Database queries
+- File operations
+- Calculations and data processing
+
+**Key features**:
+- Tool definition and registration
+- Parameter validation
+- Execution feedback
+- Error handling
+- Multi-step tool use
+
+### 🎨 Multi-modal Input
+**Problem**: Users want to provide images, audio, or files
+**Solution**: Multi-modal processing with appropriate UI
+
+**When to use**:
+- Image analysis
+- Voice commands
+- Document processing
+- Video understanding
+
+**Key features**:
+- File upload and preview
+- Voice input with transcription
+- Image annotation
+- Format conversion
+- Progress tracking
+
+## Best Practices
+
+### Streaming
+- ✅ Start streaming immediately, don't buffer
+- ✅ Show typing indicators before first token
+- ✅ Support cancellation mid-stream
+- ✅ Handle network errors gracefully
+- ❌ Don't wait for complete response
+- ❌ Don't ignore backpressure
+- ❌ Don't leave streams unclosed
+
+### Token Management
+- ✅ Track token usage per message
+- ✅ Warn before approaching limits
+- ✅ Implement smart summarization
+- ✅ Cache common responses
+- ❌ Don't send entire history every time
+- ❌ Don't ignore token costs
+- ❌ Don't truncate mid-sentence
+
+### RAG
+- ✅ Show source citations
+- ✅ Allow users to view sources
+- ✅ Re-rank results for relevance
+- ✅ Handle "no results" gracefully
+- ❌ Don't hallucinate when no relevant docs
+- ❌ Don't hide uncertainty
+- ❌ Don't ignore source quality
+
+### Tool Calling
+- ✅ Confirm destructive actions
+- ✅ Show tool execution status
+- ✅ Handle tool failures gracefully
+- ✅ Log tool usage for debugging
+- ❌ Don't execute without validation
+- ❌ Don't hide tool errors from users
+- ❌ Don't allow unlimited tool calls
+
+## Implementation Examples
+
+### Streaming with Server-Sent Events
+```typescript
+const useStreamingChat = () => {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isStreaming, setIsStreaming] = useState(false)
+  const abortControllerRef = useRef<AbortController | null>(null)
+
+  const sendMessage = async (content: string) => {
+    // Add user message
+    const userMessage = { id: generateId(), role: 'user', content }
+    setMessages(prev => [...prev, userMessage])
+
+    // Start streaming
+    setIsStreaming(true)
+    abortControllerRef.current = new AbortController()
+
+    const assistantMessage = {
+      id: generateId(),
+      role: 'assistant',
+      content: '',
+    }
+    setMessages(prev => [...prev, assistantMessage])
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...messages, userMessage] }),
+        signal: abortControllerRef.current.signal,
+      })
+
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+
+      while (true) {
+        const { done, value } = await reader!.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n').filter(line => line.trim())
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.slice(6))
+
+            if (data.token) {
+              setMessages(prev =>
+                prev.map(msg =>
+                  msg.id === assistantMessage.id
+                    ? { ...msg, content: msg.content + data.token }
+                    : msg
+                )
+              )
+            }
+          }
+        }
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Stream cancelled')
+      } else {
+        console.error('Streaming error:', error)
+      }
+    } finally {
+      setIsStreaming(false)
+    }
+  }
+
+  const cancel = () => {
+    abortControllerRef.current?.abort()
+    setIsStreaming(false)
+  }
+
+  return { messages, isStreaming, sendMessage, cancel }
+}
+```
+
+### Token-Aware Context Management
+```typescript
+import { encode } from 'gpt-tokenizer'
+
+const MAX_CONTEXT_TOKENS = 4000
+const MAX_RESPONSE_TOKENS = 1000
+
+const optimizeContext = (messages: Message[]): Message[] => {
+  // Always keep system message and last few user messages
+  const systemMessages = messages.filter(m => m.role === 'system')
+  const recentMessages = messages.slice(-4)
+
+  let currentTokens = countTokens([...systemMessages, ...recentMessages])
+
+  if (currentTokens <= MAX_CONTEXT_TOKENS - MAX_RESPONSE_TOKENS) {
+    return messages
+  }
+
+  // Summarize older messages
+  const olderMessages = messages.slice(0, -4)
+    .filter(m => m.role !== 'system')
+
+  if (olderMessages.length > 0) {
+    const summary = summarizeMessages(olderMessages)
+    const summaryMessage = {
+      role: 'system',
+      content: `Previous conversation summary: ${summary}`,
+    }
+
+    return [...systemMessages, summaryMessage, ...recentMessages]
+  }
+
+  return [...systemMessages, ...recentMessages]
+}
+
+const countTokens = (messages: Message[]): number => {
+  return messages.reduce((total, msg) => {
+    return total + encode(msg.content).length
+  }, 0)
+}
+```
+
+### RAG with Citations
+```typescript
+interface RAGResult {
+  answer: string
+  sources: Source[]
+  relevanceScores: number[]
+}
+
+const useRAGChat = () => {
+  const [messages, setMessages] = useState<Message[]>([])
+
+  const askQuestion = async (question: string) => {
+    // 1. Retrieve relevant documents
+    const documents = await searchDocuments(question, {
+      limit: 5,
+      minRelevance: 0.7,
+    })
+
+    if (documents.length === 0) {
+      return {
+        answer: "I couldn't find any relevant information to answer your question.",
+        sources: [],
+      }
+    }
+
+    // 2. Build context with citations
+    const context = documents
+      .map((doc, i) => `[Source ${i + 1}] ${doc.content}`)
+      .join('\n\n')
+
+    // 3. Generate answer with citations
+    const prompt = `Answer the question using the following sources.
+    Cite sources using [Source N] notation.
+
+    ${context}
+
+    Question: ${question}`
+
+    const answer = await generateResponse(prompt)
+
+    // 4. Parse and attach sources
+    const citedSources = documents.filter((doc, i) =>
+      answer.includes(`[Source ${i + 1}]`)
+    )
+
+    return {
+      answer,
+      sources: citedSources,
+      relevanceScores: documents.map(d => d.relevance),
+    }
+  }
+
+  return { messages, askQuestion }
+}
+```
+
+### Tool Calling Pattern
+```typescript
+interface Tool {
+  name: string
+  description: string
+  parameters: Record<string, any>
+  execute: (params: any) => Promise<any>
+}
+
+const tools: Tool[] = [
+  {
+    name: 'search_database',
+    description: 'Search the customer database',
+    parameters: {
+      query: { type: 'string', required: true },
+      limit: { type: 'number', default: 10 },
+    },
+    execute: async ({ query, limit }) => {
+      const results = await db.customers.search(query, limit)
+      return results
+    },
+  },
+  {
+    name: 'send_email',
+    description: 'Send an email to a customer',
+    parameters: {
+      to: { type: 'string', required: true },
+      subject: { type: 'string', required: true },
+      body: { type: 'string', required: true },
+    },
+    execute: async ({ to, subject, body }) => {
+      // Require confirmation for destructive actions
+      const confirmed = await confirmAction('Send email?')
+      if (!confirmed) return { cancelled: true }
+
+      const result = await emailService.send({ to, subject, body })
+      return result
+    },
+  },
+]
+
+const executeToolCall = async (
+  toolName: string,
+  params: any
+): Promise<{ success: boolean; result?: any; error?: string }> => {
+  const tool = tools.find(t => t.name === toolName)
+
+  if (!tool) {
+    return { success: false, error: `Tool '${toolName}' not found` }
+  }
+
+  try {
+    // Validate parameters
+    validateParams(params, tool.parameters)
+
+    // Execute with timeout
+    const result = await Promise.race([
+      tool.execute(params),
+      timeout(30000, 'Tool execution timeout'),
+    ])
+
+    return { success: true, result }
+  } catch (error) {
+    return { success: false, error: error.message }
+  }
+}
+```
+
+## Common Pitfalls
+
+### Streaming Errors
+❌ **Problem**: Not handling stream interruptions
+```typescript
+// Bad: No error handling
+const stream = await fetch('/api/stream')
+const reader = stream.body.getReader()
+while (true) {
+  const { value } = await reader.read() // Can fail!
+}
+```
+
+✅ **Solution**: Proper error handling and cleanup
+```typescript
+// Good: Handle errors and cleanup
+try {
+  const stream = await fetch('/api/stream')
+  const reader = stream.body.getReader()
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      processChunk(value)
+    }
+  } finally {
+    reader.releaseLock()
+  }
+} catch (error) {
+  handleStreamError(error)
+}
+```
+
+### Token Counting
+❌ **Problem**: Inaccurate token estimation
+```typescript
+// Bad: Character count is not token count!
+const tokens = message.length / 4
+```
+
+✅ **Solution**: Use proper tokenizer
+```typescript
+// Good: Actual token counting
+import { encode } from 'gpt-tokenizer'
+const tokens = encode(message).length
+```
+
+---
+
+**Ready to implement?** Start with [Streaming Responses](?path=/docs/patterns-ai-streaming--docs) for better UX, or explore [Token Optimization](?path=/docs/patterns-ai-tokens--docs) for cost efficiency.

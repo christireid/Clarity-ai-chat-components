@@ -68,6 +68,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.0",
+    "js-tiktoken": "^1.0.21",
     "jszip": "^3.10.1",
     "katex": "^0.16.25",
     "lucide-react": "^0.552.0",

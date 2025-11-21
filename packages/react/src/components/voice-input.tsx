@@ -295,11 +295,11 @@ export function VoiceInput({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.96 }}
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card/95 border border-border/40 shadow-[0_12px_32px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] rounded-2xl z-[var(--z-popover)] backdrop-blur-md"
+            className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card/95 border border-border/40 shadow-xl rounded-2xl z-[var(--z-popover)] backdrop-blur-lg"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 {voice.isListening && (
                   <Badge variant="destructive" pulse>
                     Recording
@@ -344,7 +344,7 @@ export function VoiceInput({
 
             {/* Waveform visualization when listening */}
             {voice.isListening && (
-              <div className="mb-3 flex items-center justify-center gap-1 h-12">
+              <div className="mb-3 flex items-center justify-center gap-1.5 h-12">
                 {[...Array(5)].map((_, i) => (
                   <motion.div
                     key={i}
@@ -389,7 +389,7 @@ export function VoiceInput({
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-3 p-3 bg-destructive/5 border border-destructive/20 rounded-xl">
+                className="mb-3 p-3 bg-destructive/10 border border-destructive/30 rounded-xl">
                 <div className="flex items-start gap-2">
                   <svg
                     className="h-4 w-4 text-destructive shrink-0 mt-0.5"
@@ -411,7 +411,7 @@ export function VoiceInput({
 
             {/* Actions */}
             {!autoSubmit && voice.transcript && (
-              <div className="flex gap-2">
+              <div className="flex gap-2.5">
                 <Button size="sm" onClick={handleSubmit} className="flex-1">
                   Send
                 </Button>
@@ -423,7 +423,7 @@ export function VoiceInput({
 
             {/* Confidence indicator */}
             {voice.confidence > 0 && (
-              <div className="mt-3 pt-3 border-t space-y-1.5">
+              <div className="mt-3 pt-3 border-t border-border/40 space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-muted-foreground">
                     Confidence
@@ -456,7 +456,7 @@ export function VoiceInput({
 
       {/* Tooltip */}
       {showTooltip && !voice.isListening && !showTranscript && (
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-foreground text-background text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-[0_16px_32px_rgba(15,23,42,0.32)]">
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-foreground text-background text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl">
           {tooltipText}
         </div>
       )}

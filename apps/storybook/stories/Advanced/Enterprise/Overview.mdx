@@ -1,0 +1,100 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Advanced/Enterprise/Overview" />
+
+# Enterprise Features
+
+Enterprise components provide security, compliance, and multi-tenancy features for production AI applications. Built for scale, security, and compliance.
+
+## Quick Links
+
+- [AuthTenantDashboard](?path=/docs/advanced-enterprise-authtenantdashboard--docs) ⭐ - Multi-tenant management
+- [SSOConfigWizard](?path=/docs/advanced-enterprise-ssoconfigwizard--docs) ⭐ - SSO configuration
+- [SeatInviteDialog](?path=/docs/advanced-enterprise-seatinvitedialog--docs) - Team member invitations
+- [AuditLogViewer](?path=/docs/advanced-enterprise-auditlogviewer--docs) - Audit log browser
+- [SafetyReviewConsole](?path=/docs/advanced-enterprise-safetyreviewconsole--docs) - AI safety monitoring
+- [EvaluationDashboard](?path=/docs/advanced-enterprise-evaluationdashboard--docs) - Response evaluation
+- [BatchExportDialog](?path=/docs/advanced-enterprise-batchexportdialog--docs) - Batch data export
+- [ExportDialog](?path=/docs/advanced-enterprise-exportdialog--docs) - Data export
+
+## Component Categories
+
+### Authentication & Authorization
+- **AuthTenantDashboard** - Multi-tenant organization management
+- **SSOConfigWizard** - Single Sign-On setup
+- **SeatInviteDialog** - Team member management
+
+### Compliance & Security
+- **AuditLogViewer** - View and export audit logs
+- **SafetyReviewConsole** - Monitor AI safety and compliance
+- **EvaluationDashboard** - Evaluate response quality
+
+### Data Management
+- **BatchExportDialog** - Export conversations and data
+- **ExportDialog** - Individual export operations
+
+## Key Features
+
+<FeatureGrid features={[
+  {
+    title: 'Multi-Tenancy',
+    description: 'Isolated workspaces for organizations',
+  },
+  {
+    title: 'SSO Integration',
+    description: 'SAML, OAuth, OIDC support',
+  },
+  {
+    title: 'Audit Logging',
+    description: 'Complete audit trail for compliance',
+  },
+  {
+    title: 'RBAC',
+    description: 'Role-based access control',
+  },
+  {
+    title: 'AI Safety',
+    description: 'Content filtering and safety monitoring',
+  },
+  {
+    title: 'Data Export',
+    description: 'GDPR-compliant data portability',
+  },
+]} columns={3} />
+
+## Best Practices
+
+- ✅ Implement proper RBAC (role-based access control)
+- ✅ Enable audit logging for all actions
+- ✅ Use SSO for enterprise authentication
+- ✅ Monitor AI safety and content filtering
+- ✅ Provide data export for compliance
+- ✅ Isolate tenant data completely
+- ✅ Implement rate limiting per tenant
+
+## Security Features
+
+### Authentication
+- SSO (SAML, OAuth, OIDC)
+- Multi-factor authentication
+- Session management
+
+### Authorization
+- Role-based access control (RBAC)
+- Attribute-based access control (ABAC)
+- Resource-level permissions
+
+### Compliance
+- SOC 2 Type II
+- GDPR compliance
+- HIPAA compliance (healthcare)
+- Audit logging
+
+## When to Use
+
+**AuthTenantDashboard**: For multi-organization deployments
+**SSOConfigWizard**: When enabling enterprise SSO
+**AuditLogViewer**: For compliance and security
+**SafetyReviewConsole**: To monitor AI safety
+**BatchExportDialog**: For data portability requirements

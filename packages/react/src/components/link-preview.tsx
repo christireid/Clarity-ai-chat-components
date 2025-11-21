@@ -40,13 +40,13 @@ export function LinkPreview({
 
   if (loading) {
     return (
-      <Card className={cn('p-4 animate-pulse', className)}>
-        <div className="flex gap-3">
-          <div className="w-24 h-24 bg-muted rounded" />
-          <div className="flex-1 space-y-2">
-            <div className="h-4 bg-muted rounded w-3/4" />
-            <div className="h-3 bg-muted rounded w-full" />
-            <div className="h-3 bg-muted rounded w-2/3" />
+      <Card className={cn('p-4 animate-pulse shadow-sm', className)}>
+        <div className="flex gap-3.5">
+          <div className="w-24 h-24 bg-muted/60 rounded" />
+          <div className="flex-1 space-y-2.5">
+            <div className="h-4 bg-muted/60 rounded w-3/4" />
+            <div className="h-3 bg-muted/60 rounded w-full" />
+            <div className="h-3 bg-muted/60 rounded w-2/3" />
           </div>
         </div>
       </Card>
@@ -62,8 +62,8 @@ export function LinkPreview({
     >
       <Card
         className={cn(
-          'group relative overflow-hidden transition-all',
-          onClick && 'cursor-pointer hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)]'
+          'group relative overflow-hidden transition-all shadow-sm',
+          onClick && 'cursor-pointer hover:shadow-lg'
         )}
         onClick={onClick}
       >
@@ -73,13 +73,13 @@ export function LinkPreview({
               e.stopPropagation()
               onRemove()
             }}
-            className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+            className="absolute top-2.5 right-2.5 z-10 w-6 h-6 rounded-full bg-background/90 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
           >
             ✕
           </button>
         )}
 
-        <div className="flex gap-3 p-4">
+        <div className="flex gap-3.5 p-4">
           {/* Image */}
           {metadata.image && !imageError ? (
             <div className="flex-shrink-0 w-24 h-24 rounded overflow-hidden bg-muted">
@@ -97,7 +97,7 @@ export function LinkPreview({
           )}
 
           {/* Content */}
-          <div className="flex-1 min-w-0 space-y-1">
+          <div className="flex-1 min-w-0 space-y-1.5">
             {/* Site Name / Domain */}
             <div className="flex items-center gap-2">
               {metadata.favicon && (
@@ -108,27 +108,27 @@ export function LinkPreview({
                   onError={(e) => (e.currentTarget.style.display = 'none')}
                 />
               )}
-              <p className="text-xs text-muted-foreground truncate">
+              <p className="text-xs text-muted-foreground/90 truncate">
                 {metadata.siteName || getDomain(metadata.url)}
               </p>
             </div>
 
             {/* Title */}
             {metadata.title && (
-              <h4 className="font-semibold text-sm line-clamp-2 leading-tight">
+              <h4 className="font-bold text-sm line-clamp-2 leading-tight">
                 {metadata.title}
               </h4>
             )}
 
             {/* Description */}
             {metadata.description && (
-              <p className="text-xs text-muted-foreground line-clamp-2">
+              <p className="text-xs text-muted-foreground/90 line-clamp-2">
                 {metadata.description}
               </p>
             )}
 
             {/* URL */}
-            <div className="flex items-center gap-2 pt-1">
+            <div className="flex items-center gap-2 pt-1.5">
               <Badge variant="outline" className="text-xs">
                 🔗 {getDomain(metadata.url)}
               </Badge>

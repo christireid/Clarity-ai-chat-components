@@ -1,0 +1,125 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Hooks/Performance/Overview" />
+
+# Performance Hooks
+
+Performance hooks optimize your chat interface for responsiveness and efficiency. They provide debouncing, throttling, token tracking, and auto-scroll functionality.
+
+## Quick Links
+
+- [useDebounce](?path=/docs/hooks-performance-usedebounce--docs) ⭐ - Debounce values and callbacks
+- [useThrottle](?path=/docs/hooks-performance-usethrottle--docs) ⭐ - Throttle function calls
+- [useTokenTracker](?path=/docs/hooks-performance-usetokentracker--docs) - Track token usage
+- [useAutoScroll](?path=/docs/hooks-performance-useautoscroll--docs) - Auto-scroll to bottom
+
+## Hook Categories
+
+### Rate Limiting
+- **useDebounce** - Delay value updates until pauses
+- **useThrottle** - Limit function call frequency
+
+### Optimization
+- **useTokenTracker** - Monitor and optimize token usage
+- **useAutoScroll** - Efficient auto-scrolling behavior
+
+## Key Features
+
+<FeatureGrid features={[
+  {
+    title: 'Input Debouncing',
+    description: 'Reduce API calls from rapid input',
+  },
+  {
+    title: 'Function Throttling',
+    description: 'Limit expensive operation frequency',
+  },
+  {
+    title: 'Token Tracking',
+    description: 'Monitor token usage in real-time',
+  },
+  {
+    title: 'Smart Auto-scroll',
+    description: 'Scroll only when appropriate',
+  },
+  {
+    title: 'Cancelable',
+    description: 'Cancel pending operations',
+  },
+  {
+    title: 'Configurable',
+    description: 'Customize delays and behavior',
+  },
+]} columns={3} />
+
+## Best Practices
+
+- ✅ Debounce search/filter inputs (300-500ms)
+- ✅ Throttle scroll handlers (100-200ms)
+- ✅ Track token usage to avoid limit errors
+- ✅ Only auto-scroll when user is at bottom
+- ✅ Cancel debounced operations on unmount
+- ✅ Use appropriate delays for UX
+
+## Basic Usage
+
+### useDebounce
+
+```tsx
+import { useDebounce } from '@clarity-chat/react'
+
+function SearchInput() {
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 500)
+
+  useEffect(() => {
+    // This only runs 500ms after user stops typing
+    fetchResults(debouncedSearch)
+  }, [debouncedSearch])
+
+  return <input value={search} onChange={(e) => setSearch(e.target.value)} />
+}
+```
+
+### useThrottle
+
+```tsx
+import { useThrottle } from '@clarity-chat/react'
+
+function ScrollTracker() {
+  const [scrollPos, setScrollPos] = useState(0)
+  const throttledScroll = useThrottle(scrollPos, 100)
+
+  return (
+    <div onScroll={(e) => setScrollPos(e.target.scrollTop)}>
+      Throttled position: {throttledScroll}
+    </div>
+  )
+}
+```
+
+### useAutoScroll
+
+```tsx
+import { useAutoScroll } from '@clarity-chat/react'
+
+function MessageList({ messages }) {
+  const scrollRef = useAutoScroll([messages])
+
+  return (
+    <div ref={scrollRef}>
+      {messages.map((m) => (
+        <div key={m.id}>{m.content}</div>
+      ))}
+    </div>
+  )
+}
+```
+
+## When to Use
+
+**useDebounce**: For search inputs and filters
+**useThrottle**: For scroll, resize, and mousemove handlers
+**useTokenTracker**: To monitor API costs and limits
+**useAutoScroll**: For chat message lists

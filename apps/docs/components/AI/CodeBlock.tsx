@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { Check, Copy, Terminal } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Check, Copy, Terminal, Download, Maximize2, Minimize2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useToast } from '@clarity-chat/react'
 import Prism from 'prismjs'
 
 // Import language support
@@ -36,7 +37,10 @@ export function CodeBlock({
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false)
   const [highlightedCode, setHighlightedCode] = useState('')
+  const [isExpanded, setIsExpanded] = useState(false)
   const codeRef = useRef<HTMLElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const toast = useToast()
 
   // Highlight code with Prism
   useEffect(() => {
@@ -50,31 +54,93 @@ export function CodeBlock({
     }
   }, [code, language])
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(code)
       setCopied(true)
+      toast.success('Code copied to clipboard')
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
       console.error('Failed to copy code:', error)
+      toast.error('Failed to copy code')
     }
-  }
+  }, [code, toast])
+
+  const handleDownload = useCallback(() => {
+    try {
+      const blob = new Blob([code], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename || `code.${language}`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      toast.success('Code downloaded')
+    } catch (error) {
+      console.error('Failed to download code:', error)
+      toast.error('Failed to download code')
+    }
+  }, [code, filename, language, toast])
+
+  const toggleExpanded = useCallback(() => {
+    setIsExpanded((prev) => !prev)
+  }, [])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!containerRef.current?.contains(document.activeElement)) return
+
+      // Cmd/Ctrl+Shift+C to copy
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'c') {
+        e.preventDefault()
+        handleCopy()
+      }
+      // Cmd/Ctrl+Shift+D to download
+      else if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'd') {
+        e.preventDefault()
+        handleDownload()
+      }
+      // Cmd/Ctrl+Shift+E to toggle expand
+      else if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'e') {
+        e.preventDefault()
+        toggleExpanded()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleCopy, handleDownload, toggleExpanded])
 
   const lines = code.split('\n')
   const highlightedLines = highlightedCode.split('\n')
+  const isTallCodeBlock = lines.length > 20
 
   return (
-    <div
+    <motion.div
+      ref={containerRef}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
         'rounded-lg border border-border overflow-hidden',
-        'bg-muted/50',
+        'bg-muted/50 shadow-sm hover:shadow-md transition-shadow duration-200',
         className
       )}
+      tabIndex={0}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-muted/80">
         <div className="flex items-center gap-2">
-          <Terminal className="w-4 h-4 text-muted-foreground" />
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.1, type: 'spring', stiffness: 200, damping: 15 }}
+          >
+            <Terminal className="w-4 h-4 text-muted-foreground" />
+          </motion.div>
           {filename ? (
             <span className="text-sm font-medium">{filename}</span>
           ) : (
@@ -82,46 +148,105 @@ export function CodeBlock({
           )}
         </div>
 
-        <button
-          onClick={handleCopy}
-          className={cn(
-            'flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium',
-            'transition-all duration-200',
-            copied
-              ? 'bg-green-500/10 text-green-600 dark:text-green-400'
-              : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'
-          )}
-        >
-          <AnimatePresence mode="wait">
-            {copied ? (
-              <motion.div
-                key="check"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                className="flex items-center gap-1.5"
-              >
-                <Check className="w-3 h-3" />
-                <span>Copied!</span>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="copy"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                className="flex items-center gap-1.5"
-              >
-                <Copy className="w-3 h-3" />
-                <span>Copy</span>
-              </motion.div>
+        <div className="flex items-center gap-1.5">
+          {/* Copy button */}
+          <motion.button
+            onClick={handleCopy}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={cn(
+              'flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium',
+              'transition-all duration-200',
+              copied
+                ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                : 'hover:bg-accent hover:text-accent-foreground text-muted-foreground'
             )}
-          </AnimatePresence>
-        </button>
+            aria-label="Copy code (⌘⇧C)"
+          >
+            <AnimatePresence mode="wait">
+              {copied ? (
+                <motion.div
+                  key="check"
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  exit={{ scale: 0, rotate: 180 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Check className="w-3 h-3" />
+                  <span>Copied!</span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="copy"
+                  initial={{ scale: 0, rotate: 180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  exit={{ scale: 0, rotate: -180 }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>Copy</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
+
+          {/* Download button */}
+          <motion.button
+            onClick={handleDownload}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-accent-foreground"
+            aria-label="Download code (⌘⇧D)"
+          >
+            <Download className="w-3.5 h-3.5" />
+          </motion.button>
+
+          {/* Expand/Collapse button (only for tall code blocks) */}
+          {isTallCodeBlock && (
+            <motion.button
+              onClick={toggleExpanded}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-accent-foreground"
+              aria-label={isExpanded ? 'Collapse code (⌘⇧E)' : 'Expand code (⌘⇧E)'}
+            >
+              <AnimatePresence mode="wait">
+                {isExpanded ? (
+                  <motion.div
+                    key="minimize"
+                    initial={{ scale: 0, rotate: -90 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0, rotate: 90 }}
+                  >
+                    <Minimize2 className="w-3.5 h-3.5" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="maximize"
+                    initial={{ scale: 0, rotate: 90 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0, rotate: -90 }}
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          )}
+        </div>
       </div>
 
       {/* Code */}
-      <div className="relative overflow-x-auto">
+      <motion.div
+        animate={{
+          maxHeight: isExpanded ? 'none' : isTallCodeBlock ? '500px' : 'none',
+        }}
+        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+        className={cn(
+          'relative overflow-x-auto',
+          isTallCodeBlock && !isExpanded && 'overflow-y-hidden'
+        )}
+      >
         <pre className="p-4 text-sm leading-relaxed">
           <code
             ref={codeRef}
@@ -135,8 +260,11 @@ export function CodeBlock({
                   const highlightedLine = highlightedLines[index] || line
 
                   return (
-                    <div
+                    <motion.div
                       key={index}
+                      initial={{ opacity: 0, x: -5 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.005, duration: 0.2 }}
                       className={cn(
                         'contents',
                         isHighlighted && 'bg-primary/5'
@@ -156,12 +284,13 @@ export function CodeBlock({
                       {/* Code line with syntax highlighting */}
                       <span
                         className={cn(
+                          'transition-colors duration-150 hover:bg-white/5 dark:hover:bg-black/10',
                           isHighlighted &&
                             'bg-primary/5 border-l-2 border-primary pl-2 -ml-2'
                         )}
                         dangerouslySetInnerHTML={{ __html: highlightedLine || '\n' }}
                       />
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
@@ -170,8 +299,17 @@ export function CodeBlock({
             )}
           </code>
         </pre>
-      </div>
-    </div>
+
+        {/* Gradient fade for collapsed code blocks */}
+        {isTallCodeBlock && !isExpanded && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-muted/80 to-transparent pointer-events-none"
+          />
+        )}
+      </motion.div>
+    </motion.div>
   )
 }
 

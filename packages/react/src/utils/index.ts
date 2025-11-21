@@ -58,3 +58,6 @@ export * from './tool-result-extractor'
 // Message conversion utilities are exported from chat-ui domain
 // See: src/exports/chat-ui.ts
 // These are re-exported here for backward compatibility only
+
+// Message grouping utilities
+export * from './message-grouping'

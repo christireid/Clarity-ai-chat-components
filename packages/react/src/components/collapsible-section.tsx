@@ -62,7 +62,7 @@ export function CollapsibleSection({
   }
 
   return (
-    <div className={cn('border border-border/50 rounded-lg shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]', className)}>
+    <div className={cn('border border-border/40 rounded-lg shadow-sm', className)}>
       {/* Trigger */}
       <motion.button
         type="button"
@@ -71,8 +71,8 @@ export function CollapsibleSection({
         className={cn(
           'w-full flex items-center justify-between p-4',
           'text-left font-medium transition-all duration-150 ease-out',
-          'hover:bg-muted/30',
-          'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1',
+          'hover:bg-muted/40',
+          'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-1',
           'disabled:opacity-50 disabled:cursor-not-allowed',
           triggerClassName
         )}
@@ -108,7 +108,7 @@ export function CollapsibleSection({
             transition={{ duration: duration, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className={cn('p-4 pt-0 border-t border-border/50', contentClassName)}>
+            <div className={cn('p-4 pt-0 border-t border-border/40', contentClassName)}>
               {children}
             </div>
           </motion.div>
@@ -181,7 +181,7 @@ export function Accordion({
   }
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('space-y-2.5', className)}>
       {items.map((item) => {
         const isOpen = allowMultiple
           ? multipleOpen.has(item.id)
@@ -235,7 +235,7 @@ export function ExpandableListItem({
     <CollapsibleSection
       defaultOpen={defaultOpen}
       trigger={
-        <div className="flex items-center gap-3 flex-1">
+        <div className="flex items-center gap-3.5 flex-1">
           {icon && <div className="text-muted-foreground">{icon}</div>}
           <span className="flex-1">{title}</span>
           {badge}

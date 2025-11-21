@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 interface PaginationProps {
   prev?: {
@@ -16,43 +19,77 @@ export function Pagination({ prev, next }: PaginationProps) {
   if (!prev && !next) return null
 
   return (
-    <nav
+    <motion.nav
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       aria-label="Page navigation"
       className="flex justify-between gap-4 pt-8 mt-8 border-t border-border"
     >
       {prev ? (
-        <Link
-          href={prev.href}
-          className="group flex items-center gap-2 px-4 py-3 rounded-lg border border-border hover:border-brand-500 hover:bg-bg-secondary transition-all flex-1 max-w-sm"
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          className="flex-1 max-w-sm"
         >
-          <ChevronLeft className="w-5 h-5 text-text-tertiary group-hover:text-brand-500 transition-colors" />
-          <div className="flex-1 min-w-0">
-            <div className="text-xs text-text-tertiary mb-1">Previous</div>
-            <div className="font-medium text-text-primary truncate">
-              {prev.title}
+          <Link
+            href={prev.href}
+            className="group flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:border-brand-500 hover:bg-bg-secondary transition-all hover:shadow-md"
+          >
+            <motion.div
+              whileHover={{ x: -3 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChevronLeft className="w-5 h-5 text-text-tertiary group-hover:text-brand-500 transition-colors" />
+            </motion.div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-text-tertiary mb-1 font-medium">Previous</div>
+              <div className="font-semibold text-text-primary truncate group-hover:text-brand-500 transition-colors">
+                {prev.title}
+              </div>
             </div>
-          </div>
-        </Link>
+          </Link>
+        </motion.div>
       ) : (
         <div className="flex-1" />
       )}
 
       {next ? (
-        <Link
-          href={next.href}
-          className="group flex items-center gap-2 px-4 py-3 rounded-lg border border-border hover:border-brand-500 hover:bg-bg-secondary transition-all flex-1 max-w-sm text-right"
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          className="flex-1 max-w-sm"
         >
-          <div className="flex-1 min-w-0">
-            <div className="text-xs text-text-tertiary mb-1">Next</div>
-            <div className="font-medium text-text-primary truncate">
-              {next.title}
+          <Link
+            href={next.href}
+            className="group flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:border-brand-500 hover:bg-bg-secondary transition-all text-right hover:shadow-md"
+          >
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-text-tertiary mb-1 font-medium">Next</div>
+              <div className="font-semibold text-text-primary truncate group-hover:text-brand-500 transition-colors">
+                {next.title}
+              </div>
             </div>
-          </div>
-          <ChevronRight className="w-5 h-5 text-text-tertiary group-hover:text-brand-500 transition-colors" />
-        </Link>
+            <motion.div
+              whileHover={{ x: 3 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChevronRight className="w-5 h-5 text-text-tertiary group-hover:text-brand-500 transition-colors" />
+            </motion.div>
+          </Link>
+        </motion.div>
       ) : (
         <div className="flex-1" />
       )}
-    </nav>
+    </motion.nav>
   )
 }

@@ -1,0 +1,56 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Components/Feedback/Overview" />
+
+# Feedback Components
+
+Feedback components communicate system status, user actions, and application state. They provide essential visual and interactive feedback to keep users informed.
+
+## Quick Links
+
+- [ThinkingIndicator](?path=/docs/components-feedback-thinkingindicator--docs) ⭐ - Animated thinking/loading indicator
+- [Toast](?path=/docs/components-feedback-toast--docs) ⭐ - Notification toast messages
+- [ErrorBoundary](?path=/docs/components-feedback-errorboundary--docs) - Error handling component
+- [NetworkStatus](?path=/docs/components-feedback-networkstatus--docs) - Connection status indicator
+- [ResponseQualityMeter](?path=/docs/components-feedback-responsequalitymeter--docs) - Response quality visualization
+- [SafetyStatusCard](?path=/docs/components-feedback-safetystatuscard--docs) - AI safety monitoring
+- [SessionSummaryCard](?path=/docs/components-feedback-sessionsummarycard--docs) - Conversation summary
+- [FeedbackAnimation](?path=/docs/components-feedback-feedbackanimation--docs) - Interactive animations
+- [EmptyState](?path=/docs/components-feedback-emptystate--docs) - Empty state placeholder
+
+## Component Categories
+
+### Loading & Progress
+- **ThinkingIndicator** - Shows AI is processing
+- **FeedbackAnimation** - Animated feedback states
+
+### Notifications
+- **Toast** - Temporary notification messages
+- **NetworkStatus** - Connection and sync status
+
+### Status & Quality
+- **ResponseQualityMeter** - Measures response quality
+- **SafetyStatusCard** - Monitors AI safety
+- **SessionSummaryCard** - Summarizes conversation
+
+### Error Handling
+- **ErrorBoundary** - Catches and displays errors
+- **EmptyState** - Friendly empty states
+
+## Best Practices
+
+- ✅ Show loading states for operations > 500ms
+- ✅ Keep toast messages brief (3-5 seconds)
+- ✅ Provide clear error messages with actions
+- ✅ Use appropriate status indicators
+- ✅ Ensure animations are accessible
+- ✅ Support prefers-reduced-motion
+
+## When to Use
+
+**ThinkingIndicator**: When AI is generating a response
+**Toast**: For temporary success/error messages
+**ErrorBoundary**: To gracefully handle component errors
+**NetworkStatus**: For real-time connection monitoring
+**EmptyState**: When lists or content areas are empty

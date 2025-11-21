@@ -1,0 +1,252 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Patterns/Chat/Overview" />
+
+# Chat Patterns
+
+Proven patterns for building conversational user interfaces. Learn how to handle multi-turn conversations, manage context, and create engaging chat experiences.
+
+## Quick Links
+
+- [Multi-turn Conversations](?path=/docs/patterns-chat-multiturn--docs) ⭐
+- [Conversation Branching](?path=/docs/patterns-chat-branching--docs)
+- [Message Threading](?path=/docs/patterns-chat-threading--docs)
+- [Typing Indicators](?path=/docs/patterns-chat-typing--docs)
+- [Message Reactions](?path=/docs/patterns-chat-reactions--docs)
+
+## Common Chat Patterns
+
+### 💬 Multi-turn Conversations
+**Problem**: Maintaining context across multiple conversation turns
+**Solution**: Use conversation memory and context management
+
+**When to use**:
+- Building chatbots or AI assistants
+- Customer support interfaces
+- Guided workflows with multiple steps
+
+**Key features**:
+- Persistent conversation history
+- Context-aware responses
+- Session management
+- Message threading
+
+### 🌳 Conversation Branching
+**Problem**: Handling alternate conversation paths and edits
+**Solution**: Tree-based conversation structure with branch management
+
+**When to use**:
+- Allowing users to explore different conversation paths
+- Editing previous messages and seeing new responses
+- A/B testing different prompts
+- Collaborative conversation editing
+
+**Key features**:
+- Branch visualization
+- Path switching
+- Edit and regenerate
+- Branch comparison
+
+### 🧵 Message Threading
+**Problem**: Organizing related messages in complex conversations
+**Solution**: Thread-based grouping with visual hierarchy
+
+**When to use**:
+- Multi-topic conversations
+- Team collaboration chats
+- Support ticket systems
+- Complex debugging sessions
+
+**Key features**:
+- Thread nesting
+- Collapse/expand threads
+- Thread indicators
+- Reply attribution
+
+### ⌨️ Typing Indicators
+**Problem**: Providing real-time feedback during message composition
+**Solution**: Visual indicators for user and AI activity
+
+**When to use**:
+- Real-time chat applications
+- Streaming AI responses
+- Collaborative editing
+- Multi-user conversations
+
+**Key features**:
+- Animated typing indicator
+- User presence detection
+- Activity status
+- Network state awareness
+
+### 👍 Message Reactions
+**Problem**: Quick feedback without full message responses
+**Solution**: Emoji reactions and quick actions on messages
+
+**When to use**:
+- Social chat features
+- Feedback collection
+- Message acknowledgment
+- User engagement tracking
+
+**Key features**:
+- Emoji picker
+- Reaction aggregation
+- User attribution
+- Accessibility support
+
+## Pattern Comparison
+
+| Pattern | Complexity | Use Case | Performance |
+|---------|-----------|----------|-------------|
+| **Multi-turn** | Medium | General chat | Good |
+| **Branching** | High | Advanced editing | Moderate |
+| **Threading** | Medium | Complex topics | Good |
+| **Typing** | Low | Real-time feedback | Excellent |
+| **Reactions** | Low | Quick feedback | Excellent |
+
+## Best Practices
+
+### Context Management
+- ✅ Limit context window size for performance
+- ✅ Implement pagination for long conversations
+- ✅ Use virtualization for message lists
+- ✅ Clear old context when appropriate
+- ❌ Don't load entire conversation history upfront
+- ❌ Don't ignore token limits
+
+### User Experience
+- ✅ Show loading states during AI responses
+- ✅ Provide clear feedback for user actions
+- ✅ Support keyboard navigation
+- ✅ Make messages copyable
+- ❌ Don't hide errors from users
+- ❌ Don't block UI during processing
+
+### Performance
+- ✅ Use virtualized lists for 100+ messages
+- ✅ Lazy load message attachments
+- ✅ Implement optimistic UI updates
+- ✅ Debounce typing indicators
+- ❌ Don't re-render entire conversation on new message
+- ❌ Don't load high-res images without optimization
+
+### Accessibility
+- ✅ Use semantic HTML for messages
+- ✅ Provide ARIA labels for actions
+- ✅ Support screen readers
+- ✅ Enable keyboard shortcuts
+- ❌ Don't rely solely on color for status
+- ❌ Don't trap focus in chat input
+
+## Implementation Tips
+
+### State Management
+```typescript
+// Good: Centralized conversation state
+const [conversation, setConversation] = useState({
+  messages: [],
+  activeThread: null,
+  branches: {},
+  metadata: {}
+})
+
+// Avoid: Scattered state across multiple components
+const [messages, setMessages] = useState([])
+const [thread, setThread] = useState(null)
+const [branches, setBranches] = useState({})
+```
+
+### Message Handling
+```typescript
+// Good: Optimistic updates
+function sendMessage(content) {
+  const optimisticMessage = {
+    id: generateTempId(),
+    content,
+    status: 'sending',
+    timestamp: new Date()
+  }
+
+  addMessage(optimisticMessage)
+
+  api.sendMessage(content)
+    .then(response => updateMessage(optimisticMessage.id, response))
+    .catch(error => markMessageFailed(optimisticMessage.id, error))
+}
+```
+
+### Performance Optimization
+```typescript
+// Good: Virtualized rendering
+<VirtualizedMessageList
+  messages={messages}
+  height={600}
+  itemHeight={80}
+  overscan={5}
+/>
+
+// Avoid: Rendering all messages
+{messages.map(msg => <Message key={msg.id} {...msg} />)}
+```
+
+## Common Pitfalls
+
+### Memory Leaks
+❌ **Problem**: Not cleaning up subscriptions
+```typescript
+useEffect(() => {
+  const subscription = messageStream.subscribe(handleMessage)
+  // Missing cleanup!
+}, [])
+```
+
+✅ **Solution**: Always clean up
+```typescript
+useEffect(() => {
+  const subscription = messageStream.subscribe(handleMessage)
+  return () => subscription.unsubscribe()
+}, [])
+```
+
+### Infinite Scrolling
+❌ **Problem**: Loading too much data at once
+```typescript
+function loadMore() {
+  setMessages([...messages, ...fetchNext100Messages()])
+}
+```
+
+✅ **Solution**: Paginate and virtualize
+```typescript
+function loadMore() {
+  const nextPage = await fetchNextPage(cursor, 20)
+  appendMessages(nextPage.messages)
+  setCursor(nextPage.nextCursor)
+}
+```
+
+## Advanced Techniques
+
+### Conversation Persistence
+- Save conversation state to localStorage/IndexedDB
+- Implement auto-save with debouncing
+- Sync across devices with backend
+- Handle offline scenarios gracefully
+
+### Real-time Collaboration
+- Use WebSocket for live updates
+- Implement operational transformation for conflicts
+- Show collaborator cursors and selections
+- Manage presence and activity status
+
+### AI Integration
+- Stream responses for better UX
+- Implement retry logic for failures
+- Cache common responses
+- Show token usage and limits
+
+---
+
+**Ready to implement?** Start with [Multi-turn Conversations](?path=/docs/patterns-chat-multiturn--docs) for basic chat functionality, or explore [Conversation Branching](?path=/docs/patterns-chat-branching--docs) for advanced editing features.

@@ -1,0 +1,96 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Hooks/Chat/Overview" />
+
+# Chat Hooks
+
+Chat hooks manage conversation state, message handling, and AI interactions. They provide the core functionality for building chat interfaces.
+
+## Quick Links
+
+- [useChat](?path=/docs/hooks-chat-usechat--docs) ⭐ - Core chat hook
+- [useChatEnhanced](?path=/docs/hooks-chat-usechatenhanced--docs) ⭐ - Enhanced chat with advanced features
+- [useClarityChat](?path=/docs/hooks-chat-useclaritychat--docs) - Full-featured Clarity chat hook
+- [useAssistant](?path=/docs/hooks-chat-useassistant--docs) - Assistant-style conversations
+- [useCompletion](?path=/docs/hooks-chat-usecompletion--docs) - Text completion hook
+
+## Hook Categories
+
+### Core Chat
+- **useChat** - Basic chat functionality with messages and streaming
+- **useChatEnhanced** - Enhanced version with memory and operations
+
+### Specialized
+- **useClarityChat** - Full Clarity feature set (tools, memory, etc.)
+- **useAssistant** - Thread-based assistant conversations
+- **useCompletion** - Simple text completion (non-chat)
+
+## Key Features
+
+<FeatureGrid features={[
+  {
+    title: 'Streaming Support',
+    description: 'Built-in support for streaming responses',
+  },
+  {
+    title: 'Message Management',
+    description: 'Add, edit, delete, and branch messages',
+  },
+  {
+    title: 'Error Handling',
+    description: 'Automatic retry and error recovery',
+  },
+  {
+    title: 'Tool Calling',
+    description: 'Execute functions from AI responses',
+  },
+  {
+    title: 'Memory Integration',
+    description: 'Persistent conversation context',
+  },
+  {
+    title: 'Type Safety',
+    description: 'Full TypeScript support',
+  },
+]} columns={3} />
+
+## Best Practices
+
+- ✅ Use `useChat` for simple chat interfaces
+- ✅ Use `useClarityChat` for full-featured applications
+- ✅ Handle loading and error states
+- ✅ Implement optimistic UI updates
+- ✅ Clean up on unmount
+- ✅ Use proper TypeScript types
+
+## Basic Usage
+
+```tsx
+import { useChat } from '@clarity-chat/react'
+
+function Chat() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: '/api/chat',
+  })
+
+  return (
+    <div>
+      {messages.map((m) => (
+        <div key={m.id}>{m.content}</div>
+      ))}
+      <form onSubmit={handleSubmit}>
+        <input value={input} onChange={handleInputChange} />
+      </form>
+    </div>
+  )
+}
+```
+
+## When to Use
+
+**useChat**: For standard chat interfaces
+**useChatEnhanced**: When you need message operations
+**useClarityChat**: For production apps with all features
+**useAssistant**: For thread-based assistant UIs
+**useCompletion**: For autocomplete or generation tasks

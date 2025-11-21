@@ -1,0 +1,292 @@
+import { Meta } from '@storybook/blocks'
+import { FeatureGrid } from '../../../.storybook/blocks'
+
+<Meta title="Patterns/Forms/Overview" />
+
+# Form Patterns
+
+Proven patterns for building robust form experiences in chat interfaces. Learn how to handle input validation, multi-step workflows, and file uploads.
+
+## Quick Links
+
+- [Multi-step Forms](?path=/docs/patterns-forms-multistep--docs) ⭐
+- [Dynamic Validation](?path=/docs/patterns-forms-validation--docs)
+- [File Upload Flows](?path=/docs/patterns-forms-fileupload--docs)
+- [Auto-save](?path=/docs/patterns-forms-autosave--docs)
+- [Form State Management](?path=/docs/patterns-forms-state--docs)
+
+## Common Form Patterns
+
+### 📊 Multi-step Forms
+**Problem**: Collecting complex data without overwhelming users
+**Solution**: Break forms into logical steps with progress indication
+
+**When to use**:
+- Onboarding flows
+- Complex data entry (surveys, applications)
+- Checkout processes
+- Settings configuration
+
+**Key features**:
+- Step navigation and progress tracking
+- Data persistence between steps
+- Validation per step
+- Review before submission
+
+### ✅ Dynamic Validation
+**Problem**: Providing immediate, helpful feedback on user input
+**Solution**: Real-time validation with clear error messages
+
+**When to use**:
+- Any form with validation rules
+- Password strength checking
+- Email/username availability checking
+- Format validation (phone, date, etc.)
+
+**Key features**:
+- Instant feedback
+- Field-level and form-level validation
+- Async validation (API checks)
+- Accessibility-friendly error messaging
+
+### 📁 File Upload Flows
+**Problem**: Handling file uploads with progress and error handling
+**Solution**: Drag-and-drop interface with upload queue management
+
+**When to use**:
+- Document uploads
+- Image galleries
+- Attachment systems
+- Bulk data import
+
+**Key features**:
+- Drag-and-drop support
+- Multiple file selection
+- Upload progress tracking
+- File type and size validation
+- Preview before upload
+
+### 💾 Auto-save
+**Problem**: Preventing data loss from crashes or navigation
+**Solution**: Automatic draft saving with restore capability
+
+**When to use**:
+- Long forms
+- Content editors
+- Chat message drafts
+- Form builders
+
+**Key features**:
+- Debounced auto-save
+- Draft restoration
+- Conflict resolution
+- Save status indicators
+
+### 🎛️ Form State Management
+**Problem**: Managing complex form state and dependencies
+**Solution**: Centralized state with computed fields and dependencies
+
+**When to use**:
+- Forms with dependent fields
+- Calculated values
+- Conditional sections
+- Complex validation rules
+
+**Key features**:
+- Field dependencies
+- Computed values
+- Conditional visibility
+- Undo/redo support
+
+## Best Practices
+
+### Validation
+- ✅ Validate on blur, not on every keystroke
+- ✅ Show success states, not just errors
+- ✅ Provide specific, actionable error messages
+- ✅ Disable submit until form is valid
+- ❌ Don't validate before user starts typing
+- ❌ Don't use generic error messages
+- ❌ Don't block submission without clear reasons
+
+### User Experience
+- ✅ Save progress automatically
+- ✅ Allow navigation between steps
+- ✅ Show clear progress indicators
+- ✅ Provide helpful placeholder text
+- ❌ Don't lose data on page refresh
+- ❌ Don't make users re-enter data
+- ❌ Don't hide validation rules until error
+
+### Performance
+- ✅ Debounce async validation
+- ✅ Cache validation results
+- ✅ Use optimistic updates for saves
+- ✅ Lazy load form sections
+- ❌ Don't validate on every keystroke
+- ❌ Don't block UI during validation
+- ❌ Don't make unnecessary API calls
+
+### Accessibility
+- ✅ Associate labels with inputs
+- ✅ Provide clear error announcements
+- ✅ Support keyboard navigation
+- ✅ Use proper HTML form elements
+- ❌ Don't rely on placeholder as label
+- ❌ Don't use color alone for validation state
+- ❌ Don't trap focus in modal forms
+
+## Implementation Examples
+
+### Multi-step Form State
+```typescript
+interface StepFormState {
+  currentStep: number
+  totalSteps: number
+  stepData: Record<number, any>
+  validSteps: Set<number>
+  canProceed: boolean
+}
+
+const useStepForm = (totalSteps: number) => {
+  const [state, setState] = useState<StepFormState>({
+    currentStep: 0,
+    totalSteps,
+    stepData: {},
+    validSteps: new Set(),
+    canProceed: false,
+  })
+
+  const goToStep = (step: number) => {
+    if (step >= 0 && step < totalSteps) {
+      setState(prev => ({ ...prev, currentStep: step }))
+    }
+  }
+
+  const updateStepData = (step: number, data: any) => {
+    setState(prev => ({
+      ...prev,
+      stepData: { ...prev.stepData, [step]: data },
+    }))
+  }
+
+  const validateStep = (step: number) => {
+    // Validation logic
+    const isValid = validateStepData(state.stepData[step])
+
+    setState(prev => {
+      const validSteps = new Set(prev.validSteps)
+      if (isValid) {
+        validSteps.add(step)
+      } else {
+        validSteps.delete(step)
+      }
+      return { ...prev, validSteps }
+    })
+
+    return isValid
+  }
+
+  return {
+    currentStep: state.currentStep,
+    totalSteps,
+    goToStep,
+    updateStepData,
+    validateStep,
+    canProceed: state.validSteps.has(state.currentStep),
+  }
+}
+```
+
+### Auto-save Hook
+```typescript
+const useAutoSave = <T>(
+  data: T,
+  saveFunction: (data: T) => Promise<void>,
+  options = { delay: 1000 }
+) => {
+  const [isSaving, setIsSaving] = useState(false)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const saveTimeout = useRef<NodeJS.Timeout>()
+
+  useEffect(() => {
+    // Clear previous timeout
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current)
+    }
+
+    // Debounce save
+    saveTimeout.current = setTimeout(async () => {
+      setIsSaving(true)
+      try {
+        await saveFunction(data)
+        setLastSaved(new Date())
+      } catch (error) {
+        console.error('Auto-save failed:', error)
+      } finally {
+        setIsSaving(false)
+      }
+    }, options.delay)
+
+    return () => {
+      if (saveTimeout.current) {
+        clearTimeout(saveTimeout.current)
+      }
+    }
+  }, [data, saveFunction, options.delay])
+
+  return { isSaving, lastSaved }
+}
+```
+
+## Common Pitfalls
+
+### Validation Timing
+❌ **Problem**: Validating too early frustrates users
+```typescript
+// Bad: Validates before user finishes typing
+<Input
+  onChange={(e) => {
+    setValue(e.target.value)
+    validate(e.target.value) // Too eager!
+  }}
+/>
+```
+
+✅ **Solution**: Validate on blur or submit
+```typescript
+// Good: Waits for user to finish
+<Input
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+  onBlur={(e) => validate(e.target.value)}
+/>
+```
+
+### State Management
+❌ **Problem**: Scattered form state across components
+```typescript
+// Bad: Multiple independent states
+const [name, setName] = useState('')
+const [email, setEmail] = useState('')
+const [phone, setPhone] = useState('')
+// ... many more fields
+```
+
+✅ **Solution**: Centralized form state
+```typescript
+// Good: Single form state object
+const [formData, setFormData] = useState({
+  name: '',
+  email: '',
+  phone: '',
+})
+
+const updateField = (field: string, value: string) => {
+  setFormData(prev => ({ ...prev, [field]: value }))
+}
+```
+
+---
+
+**Ready to implement?** Start with [Multi-step Forms](?path=/docs/patterns-forms-multistep--docs) for guided workflows, or explore [Dynamic Validation](?path=/docs/patterns-forms-validation--docs) for better user feedback.

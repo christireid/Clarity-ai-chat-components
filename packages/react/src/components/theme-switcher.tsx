@@ -4,6 +4,8 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
 
 export type Theme = 'light' | 'dark' | 'system'
 
@@ -127,6 +129,7 @@ export const ThemeSwitcher = React.forwardRef<
     },
     ref
   ) => {
+    const prefersReducedMotion = useReducedMotion()
     const [hoveredTheme, setHoveredTheme] = React.useState<Theme | null>(null)
 
     const handleThemeChange = (theme: Theme) => {
@@ -138,7 +141,7 @@ export const ThemeSwitcher = React.forwardRef<
         {/* Theme Options */}
         <div
           className={cn(
-            'flex gap-2',
+            'flex gap-2.5',
             compact ? 'flex-row' : 'flex-col sm:flex-row'
           )}
         >
@@ -151,38 +154,45 @@ export const ThemeSwitcher = React.forwardRef<
                 onClick={() => handleThemeChange(theme.name)}
                 onMouseEnter={() => setHoveredTheme(theme.name)}
                 onMouseLeave={() => setHoveredTheme(null)}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{
+                  opacity: 0,
+                  y: getMotionSafeValue(prefersReducedMotion, 20, 0)
+                }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  delay: index * 0.05,
-                  duration: ANIMATION_DURATION.normal / 1000,
+                  delay: getMotionSafeDuration(prefersReducedMotion, index * 0.05),
+                  duration: getMotionSafeDuration(prefersReducedMotion, ANIMATION_DURATION.normal / 1000),
                 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{
+                  scale: getMotionSafeValue(prefersReducedMotion, 1.05, 1)
+                }}
+                whileTap={{
+                  scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1)
+                }}
                 className={cn(
-                  'relative flex items-center gap-3 px-4 py-3 rounded-lg',
+                  'relative flex items-center gap-3.5 px-4 py-3.5 rounded-lg shadow-sm',
                   'border transition-all duration-150 ease-out',
-                  'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+                  'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2',
                   isActive
-                    ? 'border-primary bg-primary/10'
-                    : 'border-border hover:border-primary/50 hover:bg-muted',
-                  compact && 'flex-col text-center px-3 py-2'
+                    ? 'border-primary bg-primary/10 shadow-md'
+                    : 'border-border/40 hover:border-primary/50 hover:bg-muted/40',
+                  compact && 'flex-col text-center px-3.5 py-2.5'
                 )}
               >
                 {/* Icon */}
                 <motion.div
                   animate={
-                    isActive
+                    isActive && !prefersReducedMotion
                       ? {
                           rotate: [0, -10, 10, -10, 0],
                           scale: [1, 1.2, 1],
                         }
                       : {}
                   }
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: getMotionSafeDuration(prefersReducedMotion, 0.5) }}
                   className={cn(
                     'flex-shrink-0',
-                    isActive ? 'text-primary' : 'text-muted-foreground'
+                    isActive ? 'text-primary' : 'text-muted-foreground/90'
                   )}
                 >
                   {theme.icon}
@@ -191,9 +201,9 @@ export const ThemeSwitcher = React.forwardRef<
                 {/* Label */}
                 <span
                   className={cn(
-                    'text-sm font-medium',
+                    'text-sm font-semibold',
                     compact && 'text-xs',
-                    isActive ? 'text-primary' : 'text-foreground'
+                    isActive ? 'text-primary' : 'text-foreground/90'
                   )}
                 >
                   {theme.label}
@@ -220,40 +230,52 @@ export const ThemeSwitcher = React.forwardRef<
           <AnimatePresence mode="wait">
             <motion.div
               key={hoveredTheme || currentTheme}
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              initial={{
+                opacity: 0,
+                scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
+                y: getMotionSafeValue(prefersReducedMotion, 10, 0)
+              }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              exit={{
+                opacity: 0,
+                scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
+                y: getMotionSafeValue(prefersReducedMotion, -10, 0)
+              }}
               transition={{
-                duration: ANIMATION_DURATION.fast / 1000,
+                duration: getMotionSafeDuration(prefersReducedMotion, ANIMATION_DURATION.fast / 1000),
                 ease: ANIMATION_EASING.out,
               }}
-              className="mt-4 p-4 rounded-lg border overflow-hidden"
+              className="mt-4 p-4 rounded-lg border border-border/40 shadow-sm overflow-hidden"
             >
               {defaultThemes
                 .filter((t) => t.name === (hoveredTheme || currentTheme))
                 .map((theme) => (
                   <div key={theme.name}>
-                    <div className="text-sm font-medium mb-3">Preview</div>
-                    <div className="space-y-2">
+                    <div className="text-sm font-semibold mb-3">Preview</div>
+                    <div className="space-y-2.5">
                       {/* Color Swatches */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-2.5">
                         {Object.entries(theme.colors).map(([name, color]) => (
                           <motion.div
                             key={name}
-                            initial={{ scale: 0, rotate: -180 }}
+                            initial={{
+                              scale: getMotionSafeValue(prefersReducedMotion, 0, 1),
+                              rotate: getMotionSafeValue(prefersReducedMotion, -180, 0)
+                            }}
                             animate={{ scale: 1, rotate: 0 }}
                             transition={{
-                              type: 'spring',
+                              type: prefersReducedMotion ? 'tween' : 'spring',
                               stiffness: 200,
                               damping: 15,
+                              duration: getMotionSafeDuration(prefersReducedMotion, 0),
                             }}
-                            className="flex flex-col items-center gap-1"
+                            className="flex flex-col items-center gap-1.5"
                           >
                             <div
-                              className="w-10 h-10 rounded-full border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+                              className="w-10 h-10 rounded-full border border-border/40 shadow-sm"
                               style={{ backgroundColor: color }}
                             />
-                            <span className="text-xs text-muted-foreground capitalize">
+                            <span className="text-xs text-muted-foreground/90 capitalize">
                               {name}
                             </span>
                           </motion.div>
@@ -264,19 +286,19 @@ export const ThemeSwitcher = React.forwardRef<
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="mt-4 p-3 rounded border"
+                        transition={{ delay: getMotionSafeDuration(prefersReducedMotion, 0.2) }}
+                        className="mt-4 p-3 rounded border border-border/40 shadow-sm"
                         style={{
                           backgroundColor: theme.colors.background,
                           color: theme.colors.foreground,
                         }}
                       >
-                        <div className="text-sm font-medium mb-2">
+                        <div className="text-sm font-semibold mb-2">
                           Sample Content
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2.5">
                           <div
-                            className="px-3 py-1 rounded text-sm"
+                            className="px-3 py-1.5 rounded-lg text-sm shadow-sm"
                             style={{
                               backgroundColor: theme.colors.primary,
                               color: theme.colors.background,
@@ -285,7 +307,7 @@ export const ThemeSwitcher = React.forwardRef<
                             Primary
                           </div>
                           <div
-                            className="px-3 py-1 rounded text-sm"
+                            className="px-3 py-1.5 rounded-lg text-sm shadow-sm"
                             style={{
                               backgroundColor: theme.colors.secondary,
                               color: theme.colors.background,
@@ -294,7 +316,7 @@ export const ThemeSwitcher = React.forwardRef<
                             Secondary
                           </div>
                           <div
-                            className="px-3 py-1 rounded text-sm"
+                            className="px-3 py-1.5 rounded-lg text-sm shadow-sm"
                             style={{
                               backgroundColor: theme.colors.accent,
                               color: theme.colors.background,

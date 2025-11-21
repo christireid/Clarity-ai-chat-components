@@ -86,19 +86,19 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                 ease: ANIMATION_EASING.out,
               }}
               className={cn(
-                'fixed bg-background border border-border/50 rounded-lg shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] z-50 backdrop-blur-sm',
+                'fixed bg-background border border-border/40 rounded-lg shadow-md z-50 backdrop-blur-md',
                 'max-w-md max-h-[80vh] overflow-hidden flex flex-col',
                 positionClasses[position],
                 className
               )}
             >
               {/* Header */}
-              <div className="px-4 py-3 border-b flex items-center justify-between bg-muted/50">
+              <div className="px-4 py-3.5 border-b flex items-center justify-between bg-muted/60">
                 <motion.h3
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="font-semibold"
+                  className="font-bold"
                 >
                   Keyboard Shortcuts
                 </motion.h3>
@@ -107,7 +107,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                     onClick={onClose}
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-1 rounded-md hover:bg-muted/30 transition-all duration-200 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
+                    className="p-1.5 rounded-lg hover:bg-muted/40 transition-all duration-200 hover:shadow-sm"
                     aria-label="Close"
                   >
                     <svg
@@ -139,10 +139,10 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: groupIndex * 0.05 + 0.1 }}
                       >
-                        <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                        <div className="text-xs font-bold text-muted-foreground/90 uppercase tracking-wide mb-2.5">
                           {category}
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2.5">
                           {categoryShortcuts.map((shortcut, index) => (
                             <motion.div
                               key={index}
@@ -152,12 +152,12 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                                 delay: groupIndex * 0.05 + index * 0.03 + 0.15,
                               }}
                               whileHover={{ x: 4, scale: 1.02 }}
-                              className="flex items-center justify-between gap-4 p-2 rounded-md hover:bg-muted/30 transition-all duration-200"
+                              className="flex items-center justify-between gap-4 p-2.5 rounded-lg hover:bg-muted/40 transition-all duration-200"
                             >
-                              <span className="text-sm">
+                              <span className="text-sm text-foreground/90">
                                 {shortcut.description}
                               </span>
-                              <div className="flex gap-1 flex-shrink-0">
+                              <div className="flex gap-1.5 flex-shrink-0">
                                 {shortcut.keys.map((key, keyIndex) => (
                                   <React.Fragment key={keyIndex}>
                                     {keyIndex > 0 && (
@@ -168,8 +168,8 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                                     <motion.kbd
                                       whileHover={{ scale: 1.1 }}
                                       className={cn(
-                                        'px-2 py-1 text-xs font-mono rounded-sm ring-1',
-                                        'bg-muted border-border/60 shadow-[0_1px_2px_rgba(15,23,42,0.08)]',
+                                        'px-2 py-1 text-xs font-mono rounded-md ring-1',
+                                        'bg-muted border-border/40 shadow-sm',
                                         'inline-flex items-center justify-center min-w-[24px]'
                                       )}
                                     >
@@ -192,7 +192,7 @@ export const KeyboardHint = React.forwardRef<HTMLDivElement, KeyboardHintProps>(
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="px-4 py-3 border-t text-xs text-muted-foreground bg-muted/50"
+                className="px-4 py-3.5 border-t text-xs text-muted-foreground/90 bg-muted/60"
               >
                 Press{' '}
                 <kbd className="px-1.5 py-0.5 bg-background rounded border mx-1">

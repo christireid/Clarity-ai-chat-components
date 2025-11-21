@@ -4,8 +4,10 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
 import { Message } from './message'
+import { TimeSeparator } from './time-separator'
 import { ScrollArea, Button, cn } from '@clarity-chat/primitives'
 import { useAutoScroll } from '../hooks/use-auto-scroll'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { ArrowDownIcon } from './icons'
 import { SkeletonMessage } from './skeleton'
 import {
@@ -13,6 +15,16 @@ import {
   createStaggerChildVariant,
 } from '../animations/utils'
 import { INTERACTION_VARIANTS } from '../animations/constants'
+import {
+  getMotionSafeDuration,
+  getMotionSafeScale,
+  getMotionSafeValue,
+} from '../animations/motion-safe'
+import {
+  getMessageGrouping,
+  getTimeSeparator,
+  shouldShowTimeSeparator,
+} from '../utils/message-grouping'
 import type { ReactNode } from 'react'
 
 export interface MessageListProps {
@@ -29,6 +41,10 @@ export interface MessageListProps {
   loadingCount?: number
   /** Empty state content */
   emptyState?: ReactNode
+  /** Enable message grouping (default: true) */
+  enableGrouping?: boolean
+  /** Show time separators between days (default: true) */
+  showTimeSeparators?: boolean
   className?: string
 }
 
@@ -78,6 +94,8 @@ export function MessageList({
   isLoading = false,
   loadingCount = 3,
   emptyState,
+  enableGrouping = true,
+  showTimeSeparators = true,
   className,
 }: MessageListProps) {
   // Runtime validation
@@ -95,6 +113,49 @@ export function MessageList({
     behavior: 'smooth',
     threshold: 100,
   })
+
+  // Accessibility: Respect user's motion preferences
+  const prefersReducedMotion = useReducedMotion()
+
+  // Track message count when user scrolls away
+  const [messageCountWhenScrolledAway, setMessageCountWhenScrolledAway] = React.useState<number | null>(null)
+  const [showPulse, setShowPulse] = React.useState(false)
+
+  // Track when user scrolls away from bottom
+  React.useEffect(() => {
+    if (!isNearBottom && messageCountWhenScrolledAway === null) {
+      setMessageCountWhenScrolledAway(messages.length)
+    } else if (isNearBottom) {
+      setMessageCountWhenScrolledAway(null)
+      setShowPulse(false)
+    }
+  }, [isNearBottom, messageCountWhenScrolledAway, messages.length])
+
+  // Show pulse animation when new messages arrive while scrolled away
+  React.useEffect(() => {
+    if (!isNearBottom && messageCountWhenScrolledAway !== null && messages.length > messageCountWhenScrolledAway) {
+      setShowPulse(true)
+      const timeout = setTimeout(() => setShowPulse(false), 2000)
+      return () => clearTimeout(timeout)
+    }
+  }, [messages.length, messageCountWhenScrolledAway, isNearBottom])
+
+  // Keyboard shortcut: End key to jump to bottom
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'End' && !isNearBottom) {
+        e.preventDefault()
+        scrollToBottom()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isNearBottom, scrollToBottom])
+
+  // Calculate new message count
+  const newMessageCount = messageCountWhenScrolledAway !== null
+    ? Math.max(0, messages.length - messageCountWhenScrolledAway)
+    : 0
 
   // React 19: Static function calls - compiler optimizes, no useMemo needed
   const containerVariants = createStaggerContainerVariant('normal', 0)
@@ -144,19 +205,49 @@ export function MessageList({
             animate="animate"
           >
             <AnimatePresence mode="popLayout">
-              {messages.map((message) => (
-                <motion.div key={message.id} variants={itemVariants} layout>
-                  <Message
-                    message={message}
-                    onCopy={(content) => onMessageCopy?.(message.id, content)}
-                    onFeedback={(type) => onMessageFeedback?.(message.id, type)}
-                    onRetry={() => onMessageRetry?.(message.id)}
-                    onEdit={() => onEditMessage?.(message.id)}
-                    onRegenerate={() => onRegenerateMessage?.(message.id)}
-                    onDelete={() => onDeleteMessage?.(message.id)}
-                  />
-                </motion.div>
-              ))}
+              {messages.map((message, index) => {
+                // Calculate grouping for this message
+                const grouping = enableGrouping
+                  ? getMessageGrouping(messages, index)
+                  : {
+                      isGroupStart: true,
+                      isGroupEnd: true,
+                      isGrouped: false,
+                      showTimestamp: true,
+                    }
+
+                // Check if we should show a time separator before this message
+                const showSeparator =
+                  showTimeSeparators &&
+                  shouldShowTimeSeparator(messages[index - 1], message)
+
+                return (
+                  <React.Fragment key={message.id}>
+                    {/* Time separator */}
+                    {showSeparator && message.timestamp && (
+                      <TimeSeparator>
+                        {getTimeSeparator(message.timestamp)}
+                      </TimeSeparator>
+                    )}
+
+                    {/* Message */}
+                    <motion.div variants={itemVariants} layout>
+                      <Message
+                        message={message}
+                        onCopy={(content) => onMessageCopy?.(message.id, content)}
+                        onFeedback={(type) =>
+                          onMessageFeedback?.(message.id, type)
+                        }
+                        onRetry={() => onMessageRetry?.(message.id)}
+                        onEdit={() => onEditMessage?.(message.id)}
+                        onRegenerate={() => onRegenerateMessage?.(message.id)}
+                        onDelete={() => onDeleteMessage?.(message.id)}
+                        {...grouping}
+                      />
+                    </motion.div>
+                  </React.Fragment>
+                )
+              })}
             </AnimatePresence>
 
             {/* Show loading skeleton for new messages while fetching */}
@@ -173,30 +264,94 @@ export function MessageList({
         )}
       </ScrollArea>
 
-      {/* Show scroll-to-bottom button when not at bottom */}
+      {/* Jump-to-bottom button with new message count */}
       <AnimatePresence>
         {!isNearBottom && messages.length > 0 && (
           <motion.div
-            className="absolute bottom-4 right-4"
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            className="absolute bottom-6 right-6 z-10"
+            initial={{
+              opacity: 0,
+              y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+              scale: getMotionSafeScale(prefersReducedMotion, 0.9),
+            }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+            exit={{
+              opacity: 0,
+              y: getMotionSafeValue(prefersReducedMotion, 10, 0),
+              scale: getMotionSafeScale(prefersReducedMotion, 0.9),
+            }}
+            transition={{
+              duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
           >
             <motion.div
-              whileHover={INTERACTION_VARIANTS.button.hover}
-              whileTap={INTERACTION_VARIANTS.button.tap}
-              transition={INTERACTION_VARIANTS.button.transition}
+              className="relative"
+              whileHover={{
+                scale: getMotionSafeScale(prefersReducedMotion, 1.05),
+              }}
+              whileTap={{ scale: getMotionSafeScale(prefersReducedMotion, 0.95) }}
+              animate={
+                showPulse && !prefersReducedMotion
+                  ? {
+                      scale: [1, 1.08, 1],
+                      transition: {
+                        duration: 0.6,
+                        repeat: 3,
+                        ease: 'easeInOut',
+                      },
+                    }
+                  : {}
+              }
             >
+              {/* New message count badge */}
+              <AnimatePresence>
+                {newMessageCount > 0 && (
+                  <motion.div
+                    initial={{
+                      scale: getMotionSafeScale(prefersReducedMotion, 0),
+                      opacity: 0,
+                    }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{
+                      scale: getMotionSafeScale(prefersReducedMotion, 0),
+                      opacity: 0,
+                    }}
+                    transition={{
+                      duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
+                      ease: prefersReducedMotion ? 'linear' : 'backOut',
+                    }}
+                    className="absolute -top-2 -right-2 z-20"
+                  >
+                    <div className="bg-primary text-primary-foreground text-xs font-semibold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5 shadow-lg border-2 border-background">
+                      {newMessageCount > 99 ? '99+' : newMessageCount}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <Button
-                size="sm"
+                size="icon"
                 variant="default"
                 onClick={scrollToBottom}
-                className="shadow-[0_4px_16px_rgba(0,0,0,0.12)] gap-1.5 bg-primary/95 hover:bg-primary hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] backdrop-blur-sm rounded-full"
-                aria-label="Scroll to bottom of messages"
+                className={cn(
+                  'h-12 w-12 rounded-full shadow-lg hover:shadow-xl',
+                  'bg-primary/95 hover:bg-primary backdrop-blur-md',
+                  'border border-primary-foreground/10',
+                  'transition-all duration-200'
+                )}
+                aria-label={
+                  newMessageCount > 0
+                    ? `Jump to bottom (${newMessageCount} new ${newMessageCount === 1 ? 'message' : 'messages'})`
+                    : 'Jump to bottom (End key)'
+                }
+                title={
+                  newMessageCount > 0
+                    ? `${newMessageCount} new ${newMessageCount === 1 ? 'message' : 'messages'}`
+                    : 'Jump to bottom (End key)'
+                }
               >
-                <ArrowDownIcon size={16} />
-                Scroll to bottom
+                <ArrowDownIcon size={20} className="text-primary-foreground" />
               </Button>
             </motion.div>
           </motion.div>

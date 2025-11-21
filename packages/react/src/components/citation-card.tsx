@@ -94,7 +94,7 @@ export function CitationCard({
     >
       <Card
         className={cn(
-          'group relative overflow-hidden border-border/40 shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-all duration-200 ease-out hover:-translate-y-[2px]',
+          'group relative overflow-hidden border-border/40 shadow-sm hover:shadow-md transition-all duration-200 ease-out hover:-translate-y-[2px]',
           onClick && 'cursor-pointer',
           className
         )}
@@ -103,13 +103,13 @@ export function CitationCard({
           else setIsExpanded(!isExpanded)
         }}
       >
-        <CardHeader className="flex flex-row items-start gap-3 pb-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ring-1 ring-primary/20">
+        <CardHeader className="flex flex-row items-start gap-3.5 pb-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/30">
             <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
             </svg>
           </span>
-          <div className="flex-1 space-y-1">
+          <div className="flex-1 space-y-1.5">
             <CardTitle className="truncate leading-tight">
               {citation.source}
             </CardTitle>
@@ -119,13 +119,13 @@ export function CitationCard({
               const authorText = renderMetadataValue(author)
               if (!authorText) return null
               return (
-                <CardDescription className="text-xs text-muted-foreground">
+                <CardDescription className="text-xs text-muted-foreground/90">
                   {authorText}
                 </CardDescription>
               )
             })()}
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2.5">
             {showConfidence && citation.confidence !== undefined && (
               <Badge
                 variant={getConfidenceVariant(citation.confidence)}
@@ -203,11 +203,11 @@ export function CitationCard({
           )}
 
           {citation.metadata && Object.keys(citation.metadata).length > 0 && (
-            <div className="space-y-2 rounded-lg border bg-muted/50 p-3">
+            <div className="space-y-2.5 rounded-lg border bg-muted/50 p-3">
               <span className="text-xs font-semibold uppercase text-muted-foreground tracking-wide">
                 Metadata
               </span>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 {(() => {
                   const date = citation.metadata?.['date']
                   if (!date) return null

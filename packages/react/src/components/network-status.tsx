@@ -292,7 +292,7 @@ export function NetworkStatus({
       aria-live="polite"
       aria-label={`Network status: ${config.label}`}
     >
-      <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] border border-border/50 backdrop-blur-sm">
+      <div className="flex items-center gap-2.5 px-3.5 py-2.5 bg-card rounded-lg shadow-md border border-border/40 backdrop-blur-md">
         {/* Status indicator dot */}
         <div className="relative flex h-3 w-3">
           <div
@@ -302,13 +302,13 @@ export function NetworkStatus({
         </div>
 
         {/* Status label */}
-        <span className={`text-sm font-semibold ${config.textColor}`}>
+        <span className={`text-sm font-bold ${config.textColor}`}>
           {config.label}
         </span>
 
         {/* Details (optional) */}
         {showDetails && (latency !== null || downlinkSpeed !== null) && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground border-l pl-2">
+          <div className="flex items-center gap-2.5 text-xs text-muted-foreground/90 border-l pl-2.5">
             {latency !== null && (
               <span className="font-mono">{latency.toFixed(0)}ms</span>
             )}

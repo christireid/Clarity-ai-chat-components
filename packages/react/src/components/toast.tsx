@@ -22,6 +22,8 @@ import {
   ANIMATION_EASING,
   // createSlideVariant, // Reserved for future use
 } from '../animations'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
 import type { ReactNode } from 'react'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
@@ -83,6 +85,8 @@ export function ToastItem({
   action,
   onClose,
 }: ToastProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   // Memoize icon selection
   const Icon = React.useMemo(
     () =>
@@ -97,11 +101,11 @@ export function ToastItem({
 
   // Memoize color classes
   const colorClasses = React.useMemo(() => ({
-    success: 'bg-success/10 border-success/20 text-success-foreground',
+    success: 'bg-success/10 border-success/30 text-success-foreground',
     error:
-      'bg-destructive/10 border-destructive/20 text-destructive-foreground',
-    info: 'bg-info/10 border-info/20 text-info-foreground',
-    warning: 'bg-warning/10 border-warning/20 text-warning-foreground',
+      'bg-destructive/10 border-destructive/30 text-destructive-foreground',
+    info: 'bg-info/10 border-info/30 text-info-foreground',
+    warning: 'bg-warning/10 border-warning/30 text-warning-foreground',
   }[type]), [type])
 
   // Memoize icon color classes
@@ -118,34 +122,42 @@ export function ToastItem({
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+      initial={{
+        opacity: 0,
+        y: getMotionSafeValue(prefersReducedMotion, -20, 0),
+        scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1)
+      }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 100, scale: 0.95 }}
+      exit={{
+        opacity: 0,
+        x: getMotionSafeValue(prefersReducedMotion, 100, 0),
+        scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1)
+      }}
       transition={{
-        duration: ANIMATION_DURATION.normal / 1000,
+        duration: getMotionSafeDuration(prefersReducedMotion, ANIMATION_DURATION.normal / 1000),
         ease: ANIMATION_EASING.spring,
       }}
       className={cn(
-        'relative flex gap-3 p-4 rounded-xl border-2 border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] backdrop-blur-md',
-        'min-w-[320px] max-w-[420px]',
+        'relative flex gap-3.5 px-4 py-3.5 rounded-xl border border-border/40 shadow-lg backdrop-blur-xl',
+        'min-w-[340px] max-w-[440px]',
         colorClasses
       )}
     >
       {/* Icon */}
       <div className={cn('flex-shrink-0 mt-0.5', iconColorClasses)}>
-        <Icon size={20} />
+        <Icon size={18} />
       </div>
 
       {/* Content */}
-      <div className="flex-1 space-y-1">
+      <div className="flex-1 space-y-1.5">
         {title && (
-          <div className="font-semibold text-sm leading-none">{title}</div>
+          <div className="font-bold text-sm leading-tight">{title}</div>
         )}
-        <div className="text-sm opacity-90">{description}</div>
+        <div className="text-sm leading-relaxed opacity-95">{description}</div>
         {action && (
           <button
             onClick={action.onClick}
-            className="text-sm font-medium underline hover:no-underline mt-2"
+            className="text-sm font-bold underline underline-offset-2 hover:no-underline mt-1.5 transition-all"
             aria-label={action.label}
           >
             {action.label}
@@ -158,10 +170,10 @@ export function ToastItem({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleClose}
-        className="flex-shrink-0 p-1 rounded-md hover:bg-background/20 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08)] transition-all duration-200"
+        className="flex-shrink-0 p-1.5 rounded-lg hover:bg-background/40 transition-all duration-200"
         aria-label="Close notification"
       >
-        <CloseIcon size={16} />
+        <CloseIcon size={14} />
       </motion.button>
     </motion.div>
   )
@@ -180,12 +192,12 @@ export interface ToastContainerProps {
 
 // Position classes - extracted as constant
 const POSITION_CLASSES = {
-  'top-left': 'top-4 left-4 items-start',
-  'top-center': 'top-4 left-1/2 -translate-x-1/2 items-center',
-  'top-right': 'top-4 right-4 items-end',
-  'bottom-left': 'bottom-4 left-4 items-start',
-  'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2 items-center',
-  'bottom-right': 'bottom-4 right-4 items-end',
+  'top-left': 'top-6 left-6 items-start',
+  'top-center': 'top-6 left-1/2 -translate-x-1/2 items-center',
+  'top-right': 'top-6 right-6 items-end',
+  'bottom-left': 'bottom-6 left-6 items-start',
+  'bottom-center': 'bottom-6 left-1/2 -translate-x-1/2 items-center',
+  'bottom-right': 'bottom-6 right-6 items-end',
 } as const
 
 export function ToastContainer({
@@ -198,7 +210,7 @@ export function ToastContainer({
   return (
     <div
       className={cn(
-        'fixed z-50 flex flex-col gap-2 pointer-events-none',
+        'fixed z-50 flex flex-col gap-2.5 pointer-events-none',
         positionClass
       )}
     >

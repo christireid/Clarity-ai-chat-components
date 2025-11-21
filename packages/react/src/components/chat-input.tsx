@@ -266,14 +266,14 @@ export function ChatInput({
   return (
     <motion.div
       className={cn(
-        'relative flex flex-col gap-2 p-4 border-t border-border/60 bg-background/95 backdrop-blur-sm shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
+        'relative flex flex-col gap-3 px-5 py-4 border-t border-border/80 bg-background/95 backdrop-blur-md shadow-[0_-2px_8px_rgba(15,23,42,0.06)]',
         className
       )}
       initial="idle"
       animate={isFocused ? 'focused' : 'idle'}
       variants={containerVariants}
     >
-      <div className="flex gap-2 items-end">
+      <div className="flex gap-3 items-end">
         {/* Textarea Container with smooth expand/contract */}
         <motion.div
           className="flex-1 relative"
@@ -294,8 +294,8 @@ export function ChatInput({
             maxRows={6}
             variant={isOverLimit ? 'error' : 'default'}
             className={cn(
-              'transition-all duration-200 shadow-[0_1px_3px_rgba(15,23,42,0.1)]',
-              isFocused && glowOnFocus && 'ring-[3px] ring-ring/50 shadow-[0_4px_12px_rgba(15,23,42,0.15)]',
+              'transition-all duration-200 shadow-sm border-border/40',
+              isFocused && glowOnFocus && 'ring-2 ring-ring/30 shadow-md border-ring/50',
               isOverLimit && 'animate-[shake_0.4s_ease-in-out]'
             )}
           />
@@ -308,10 +308,10 @@ export function ChatInput({
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 5 }}
-                  className="absolute bottom-2 right-2 flex flex-col items-end gap-1"
+                  className="absolute bottom-3 right-3 flex flex-col items-end gap-1.5"
                 >
                   {/* Progress bar */}
-                  <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
+                  <div className="w-20 h-1.5 bg-muted/60 rounded-full overflow-hidden shadow-inner">
                     <motion.div
                       className={cn('h-full', progressColor)}
                       initial={{ width: 0 }}
@@ -349,10 +349,10 @@ export function ChatInput({
           state={buttonState}
           size="icon"
           className={cn(
-            'transition-all duration-200 ease-out shrink-0 h-11 w-11 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)]',
+            'transition-all duration-200 ease-out shrink-0 h-11 w-11 rounded-xl shadow-sm',
             hasContent && !isOverLimit
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:-translate-y-[1px]'
-              : 'bg-muted text-muted-foreground'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]'
+              : 'bg-muted/60 text-muted-foreground border border-border/40'
           )}
           aria-label={
             buttonState === 'loading'
@@ -373,7 +373,7 @@ export function ChatInput({
                 exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ duration: 0.15 }}
               >
-                <SendIcon size={18} />
+                <SendIcon size={19} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -387,7 +387,7 @@ export function ChatInput({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="text-xs text-destructive px-1"
+            className="text-xs text-destructive px-1 font-medium"
           >
             Message exceeds maximum length by {charCount - (maxLength || 0)}{' '}
             characters
@@ -395,21 +395,21 @@ export function ChatInput({
         )}
       </AnimatePresence>
 
-      {/* Hint text */}
+      {/* Hint text - increased spacing to prevent crowding with focus ring */}
       <AnimatePresence>
         {isFocused && !hasContent && (
           <motion.p
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="text-xs text-muted-foreground px-1"
+            className="text-xs text-muted-foreground/80 px-1 mt-1"
           >
             Press{' '}
-            <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
+            <kbd className="px-2 py-0.5 text-[10px] font-semibold border border-border/60 rounded-md bg-muted/50 shadow-sm">
               Enter
             </kbd>{' '}
             to send •{' '}
-            <kbd className="px-1.5 py-0.5 text-xs border rounded bg-muted">
+            <kbd className="px-2 py-0.5 text-[10px] font-semibold border border-border/60 rounded-md bg-muted/50 shadow-sm">
               Shift + Enter
             </kbd>{' '}
             for new line

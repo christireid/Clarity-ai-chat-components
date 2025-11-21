@@ -44,6 +44,7 @@ const clarityTheme = create({
   // Button
   buttonBg: '#3b82f6',
   buttonBorder: '#3b82f6',
+  buttonTextColor: '#ffffff',
 
   // Boolean
   booleanBg: '#f3f4f6',
@@ -93,6 +94,7 @@ const clarityDarkTheme = create({
   // Button
   buttonBg: '#3b82f6',
   buttonBorder: '#3b82f6',
+  buttonTextColor: '#ffffff',
 
   // Boolean
   booleanBg: '#1f2937',
