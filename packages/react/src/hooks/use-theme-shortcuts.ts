@@ -120,7 +120,7 @@ export function useThemeShortcuts(options: UseThemeShortcutsOptions = {}) {
 
         const modes: ('light' | 'dark' | 'system')[] = ['light', 'dark', 'system']
         const currentIndex = modes.indexOf(theme.mode)
-        const nextMode = modes[(currentIndex + 1) % modes.length]
+        const nextMode = modes[(currentIndex + 1) % modes.length] as 'light' | 'dark' | 'system'
 
         setTheme({ mode: nextMode })
         onShortcut?.('cycle', nextMode)
@@ -172,57 +172,5 @@ export function useThemeShortcuts(options: UseThemeShortcutsOptions = {}) {
   }
 }
 
-/**
- * ThemeShortcutHint - Display current theme shortcuts
- *
- * Useful for showing users what keyboard shortcuts are available
- *
- * @example
- * ```tsx
- * function SettingsPanel() {
- *   const { shortcuts } = useThemeShortcuts()
- *
- *   return (
- *     <div>
- *       <h3>Theme Shortcuts</h3>
- *       <p>Toggle: {shortcuts.toggle}</p>
- *       <p>Cycle: {shortcuts.cycle}</p>
- *     </div>
- *   )
- * }
- * ```
- */
-export interface ThemeShortcutHintProps {
-  className?: string
-  showToggle?: boolean
-  showCycle?: boolean
-}
-
-export function ThemeShortcutHint({
-  className,
-  showToggle = true,
-  showCycle = true,
-}: ThemeShortcutHintProps) {
-  const { shortcuts } = useThemeShortcuts()
-
-  return (
-    <div className={className}>
-      {showToggle && (
-        <div className="text-xs text-muted-foreground/90">
-          <kbd className="px-1.5 py-0.5 bg-muted rounded border border-border/40 font-mono text-xs">
-            {shortcuts.toggle}
-          </kbd>
-          <span className="ml-1.5">Toggle theme</span>
-        </div>
-      )}
-      {showCycle && (
-        <div className="text-xs text-muted-foreground/90">
-          <kbd className="px-1.5 py-0.5 bg-muted rounded border border-border/40 font-mono text-xs">
-            {shortcuts.cycle}
-          </kbd>
-          <span className="ml-1.5">Cycle themes</span>
-        </div>
-      )}
-    </div>
-  )
-}
+// Note: ThemeShortcutHint component moved to components/theme-shortcut-hint.tsx
+// to avoid JSX in .ts file
