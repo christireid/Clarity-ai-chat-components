@@ -1,5 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'Example: Token Optimization',
   description: 'End-to-end example combining retrieval, compression, and reranking.',

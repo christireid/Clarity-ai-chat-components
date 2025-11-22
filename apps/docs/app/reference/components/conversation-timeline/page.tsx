@@ -4,6 +4,8 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Conversation Timeline - Clarity Chat Components',
   description: 'Visual timeline showing conversation flow with user messages, AI responses, tool calls, and system events.',

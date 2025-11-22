@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'useTokenOptimization Hook | Clarity Chat',
   description: 'Coordinate token budgeting, compression, caching, and routing for cost-efficient AI conversations.',

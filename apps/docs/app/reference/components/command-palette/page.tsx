@@ -2,6 +2,7 @@
 
 import { Metadata } from 'next'
 import { ToastProvider } from '@clarity-chat/react'
+import { Badge } from '@clarity-chat/primitives'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -9,7 +10,6 @@ import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
-import { Badge } from '@clarity-chat/primitives'
 
 
 const commandPaletteProps: Prop[] = [
@@ -77,6 +77,8 @@ const commandPaletteProps: Prop[] = [
     description: 'Additional CSS classes',
   },
 ]
+
+export const dynamic = 'force-dynamic'
 
 export default function CommandPalettePage() {
   return (

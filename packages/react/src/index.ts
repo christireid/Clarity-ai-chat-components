@@ -1,6 +1,8 @@
+'use client'
+
 /**
  * @clarity-chat/react - Main Entry Point
- * 
+ *
  * This package provides a layered architecture for building AI chat applications:
  * 
  * - Top-Level APIs: Drop-in ready components and hooks (ClarityChat, useClarityChat)
@@ -317,6 +319,7 @@ export * from './accessibility'
 // Core Message Components
 export { Message } from './components/message'
 export { MessageMetadata } from './components/message-metadata'
+export { MessageOptimized } from './components/message-optimized'
 export { TimeSeparator } from './components/time-separator'
 export { StreamBlock } from './components/stream-block'
 export { ToolInvocationCard } from './components/tool-invocation-card'
@@ -348,18 +351,54 @@ export { KnowledgeBaseViewer } from './components/knowledge-base-viewer'
 export { ExportDialog } from './components/export-dialog'
 export { BatchExportDialog } from './components/batch-export-dialog'
 export { StreamCancellation } from './components/stream-cancellation'
-export { MessageSearch } from './components/message-search'
+export { MessageSearch, MessageSearchWithSuspense } from './components/message-search'
 export { AdvancedMessageSearch } from './components/advanced-message-search'
 export { FollowUpSuggestions } from './components/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt-suggestions'
+export { PromptLibrary } from './components/prompt-library'
 export { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from './components/prompt-suggestions-enhanced'
 export { ConversationSummarizer } from './components/conversation-summarizer'
 export { BatteryIndicator } from './components/battery-indicator'
 export { PerformanceAnalyticsDashboard } from './components/performance-analytics-dashboard'
+export { PerformanceDashboard } from './components/performance-dashboard'
 export { SemanticMessageSearch } from './components/advanced-message-search-semantic'
 export { ConversationAnalyticsDashboard } from './components/conversation-analytics-dashboard'
 export { MessageThreadView, ThreadList } from './components/message-thread-view'
 export { MentionInput, MentionList, useMentions } from './components/mention-system'
+export { ConversationSharing, ShareAnalyticsDashboard, useConversationSharing } from './components/conversation-sharing'
+export {
+  CollaborativeEditor,
+  CollaborativeMessageList,
+  PresenceIndicator,
+  useCollaborativeSession,
+} from './components/collaborative-editing'
+export {
+  DocumentIntegration,
+  useDocumentIntegration,
+  type DocumentPlatform,
+  type DocumentMetadata,
+  type DocumentContent,
+  type DocumentExportOptions,
+} from './components/document-integration'
+export {
+  CalendarIntegration,
+  useCalendarIntegration,
+  useAvailabilityCheck,
+  type CalendarEvent,
+  type ActionItem,
+  type AvailabilitySlot,
+} from './components/calendar-integration'
+export {
+  EmailIntegration,
+  useEmailIntegration,
+  type EmailProvider,
+  type EmailAccount,
+  type EmailThread,
+  type EmailMessage,
+  type EmailNotification,
+  type EmailTemplate,
+  type DigestConfig,
+} from './components/email-integration'
 export { UserInteractionAnalytics, useInteractionTracking } from './components/user-interaction-analytics'
 export { ABTestingDashboard, useABTesting } from './components/ab-testing-dashboard'
 export {
@@ -394,6 +433,7 @@ export * from './components/enterprise'
 
 // Error Handling Components
 export { ErrorBoundary } from './components/error-boundary'
+export * from './components/error-boundary-enhanced'
 export { RetryButton, type RetryErrorType } from './components/retry-button'
 export { ErrorMessage, type ErrorDetails, type ErrorSeverity } from './components/error-message'
 export { NetworkStatus } from './components/network-status'
@@ -402,6 +442,7 @@ export { NetworkStatus } from './components/network-status'
 export { TokenCounter } from './components/token-counter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token-optimization-badge'
+export { TokenOptimizationDashboard } from './components/token-optimization-dashboard'
 
 // Context & Conversation Management
 export { ContextVisualizer } from './components/context-visualizer'
@@ -480,6 +521,12 @@ export * from './hooks/use-submit-button-state'
 export * from './hooks/use-mobile-keyboard'
 // Note: DesignTokens type is exported from './theme', only export the hook here
 export { useDesignTokens } from './hooks/use-design-tokens'
+
+// ============================================================================
+// TEMPLATES (Pre-built Chat Templates)
+// ============================================================================
+
+export * from './templates'
 
 // Helper hooks (internal - use top-level APIs instead)
 // These are implementation details and should not be used directly.

@@ -5,6 +5,8 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import matter from 'gray-matter'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Getting Started - Clarity Chat',
   description: 'Get started with Clarity Chat - installation, setup, and your first chat interface.',

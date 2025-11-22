@@ -1,5 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'RetryButton - Clarity Chat Components',
   description: 'Button to retry failed AI operations with built-in states.',

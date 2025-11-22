@@ -5,6 +5,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { AgentOrchestrationDiagram } from '@/components/Diagrams/AgentOrchestrationDiagram'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'AI Agents Guide - Clarity Chat',
   description:

@@ -3,6 +3,8 @@ import { Metadata } from 'next'
 import { ApiTable } from '@/components/Demo/ApiTable'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'useModelRouter - Clarity Chat Hooks',
   description: 'Intelligently route requests to different models based on cost, latency, and quality.',

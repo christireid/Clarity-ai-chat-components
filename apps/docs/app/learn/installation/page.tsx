@@ -6,6 +6,8 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { InstallationFlow } from '@/components/Diagrams/InstallationFlow'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Installation',
   description: 'How to install Clarity Chat UI in your project',

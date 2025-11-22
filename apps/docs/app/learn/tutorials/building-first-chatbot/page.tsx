@@ -3,6 +3,8 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Tutorial: Building Your First Chatbot',
   description: 'Step-by-step guide to building a production-ready chatbot in 30 minutes.',
@@ -87,23 +89,73 @@ export async function POST(req: Request) {
         <p>Update <code>app/page.tsx</code>:</p>
         <CodePlayground
           initialCode={`'use client'
-import { useChat } from 'ai/react'
+import { useState } from 'react'
+import { ChatWindow } from '@clarity-chat/react'
 
 export default function Home() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: '/api/chat'
-  })
+  const [messages, setMessages] = useState([
+    {
+      id: '1',
+      chatId: 'demo',
+      role: 'assistant',
+      content: 'Hello! I am your AI assistant. How can I help you today?',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent'
+    }
+  ])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSendMessage = async (content) => {
+    // Add user message
+    const userMessage = {
+      id: Date.now().toString(),
+      chatId: 'demo',
+      role: 'user',
+      content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sent'
+    }
+    setMessages(prev => [...prev, userMessage])
+    setIsLoading(true)
+
+    try {
+      // Call your API here
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        body: JSON.stringify({ messages: [...messages, userMessage] })
+      })
+
+      const data = await response.json()
+
+      // Add AI response
+      const aiMessage = {
+        id: (Date.now() + 1).toString(),
+        chatId: 'demo',
+        role: 'assistant',
+        content: data.response,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent'
+      }
+      setMessages(prev => [...prev, aiMessage])
+    } catch (error) {
+      console.error('Error:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-2xl h-[600px]">
         <ChatWindow
           messages={messages}
-          input={input}
-          onInputChange={handleInputChange}
-          onSubmit={handleSubmit}
+          onSendMessage={handleSendMessage}
           isLoading={isLoading}
-          placeholder="Ask me anything..."
+          showHeader
+          sessionTitle="AI Assistant"
         />
       </div>
     </main>

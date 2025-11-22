@@ -3,6 +3,8 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Multi-user Chat Example - Clarity Chat Components',
   description: 'Complete multi-user chat application with typing indicators, presence, reactions, and real-time updates.',
@@ -177,10 +179,8 @@ function MultiUserChat() {
                   <div
                     className={\`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-900 \${
                       isOnline ? 'bg-green-500' : 'bg-gray-400'
-                    }\
-
-render(<MultiUserChat />)`}
-        />
+                    }\`}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm truncate">

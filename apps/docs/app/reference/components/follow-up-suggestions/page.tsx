@@ -4,6 +4,8 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Follow-Up Suggestions - Clarity Chat Components',
   description: 'Smart follow-up question suggestions to keep conversations flowing naturally.',

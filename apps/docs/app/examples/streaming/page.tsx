@@ -4,6 +4,8 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Streaming Chat Demo - Clarity Chat',
   description: 'Advanced streaming experience that renders tokens as soon as they arrive from the server.',

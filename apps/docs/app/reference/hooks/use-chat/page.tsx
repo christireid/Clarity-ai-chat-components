@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { MessageFlowSequence } from '@/components/Diagrams/MessageFlowSequence'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'useChat Hook | Clarity Chat',
   description:

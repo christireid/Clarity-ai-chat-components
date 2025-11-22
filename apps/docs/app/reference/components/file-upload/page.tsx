@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'File Upload | Clarity Chat',
   description: 'File upload component with drag-and-drop, validation, and progress tracking.'

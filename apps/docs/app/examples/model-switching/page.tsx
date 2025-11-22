@@ -4,6 +4,8 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Model Switching Demo - Clarity Chat',
   description: 'Showcase app highlighting how to toggle between providers and models on the fly.',

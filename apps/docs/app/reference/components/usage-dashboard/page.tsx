@@ -4,6 +4,8 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'UsageDashboard - Clarity Chat Components',
   description: 'Monitor usage, quotas, and rate limits in real time.',

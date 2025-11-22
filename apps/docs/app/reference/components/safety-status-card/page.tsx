@@ -4,6 +4,8 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Safety Status Card - Clarity Chat Components',
   description: 'Display AI safety check results - content moderation, policy compliance, and safety guardrails.',

@@ -1,9 +1,10 @@
 import React from 'react';
 import { Metadata } from 'next';
-;
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
-import { Badge } from '@clarity-chat/primitives';
+import { CodePlayground } from '@/components/Playground/CodePlayground';
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Toast Component - Clarity Chat Components',
@@ -16,9 +17,9 @@ export default function ToastPage() {
       <header className="docs-header">
         <div>
           <div className="flex gap-2 mb-3">
-            <Badge variant="subtle" size="sm">Component</Badge>
-            <Badge variant="success" size="sm">Stable</Badge>
-            <Badge variant="info" size="sm" dot>In Use</Badge>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Component</span>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Stable</span>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">In Use</span>
           </div>
           <h1>Toast</h1>
           <p className="text-xl text-neutral-700 dark:text-neutral-300 mt-2">
@@ -503,6 +504,7 @@ render(<CustomIconToast />)`}
         <CodePlayground
           initialCode={`import { useState, useEffect } from 'react';
 import { Button, useToast, Progress } from '@clarity/chat-components';
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export default function ProgressToast() {
   const { showToast, dismissToast } = useToast();

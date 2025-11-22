@@ -4,6 +4,8 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Memory Inspector - Clarity Chat Components',
   description: 'Inspect and manage what the AI remembers from conversations - debug memory, remove outdated info, or promote important details.',

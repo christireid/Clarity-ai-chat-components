@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-;
+import { CodePlayground } from '@/components/Playground/CodePlayground';
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
 import { ViewInStorybook } from '@/components/Links/StorybookLink';
@@ -442,6 +442,7 @@ render(<FileUploadProgress />)`}
         <CodePlayground
           initialCode={`import { useState } from 'react';
 import { Progress, Button } from '@clarity/chat-components';
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export default function MultiStepProgress() {
   const [currentStep, setCurrentStep] = useState(1);

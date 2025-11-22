@@ -5,6 +5,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { StreamingAnimation } from '@/components/Diagrams/StreamingAnimation'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Streaming Guide - Clarity Chat',
   description: 'Complete guide to implementing streaming AI responses for better UX.',

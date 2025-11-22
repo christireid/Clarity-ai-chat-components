@@ -10,6 +10,8 @@ import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 import { UseChatFlowAnimation } from '@/components/Diagrams/CodeFlowAnimation'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Tutorial: Build a Complete Chat App',
   description: 'In this hands-on tutorial, you\'ll build a fully-featured chat application from scratch with real-time messaging, user avatars, typing indicators, and more.',

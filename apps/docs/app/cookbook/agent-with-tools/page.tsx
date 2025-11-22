@@ -4,6 +4,8 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'AI Agent with Tools - Cookbook - Clarity Chat',
   description: 'Build an AI agent that can call functions, search databases, and use external APIs.',

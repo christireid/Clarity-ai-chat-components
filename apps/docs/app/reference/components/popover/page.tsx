@@ -4,6 +4,8 @@ import { Metadata } from 'next';
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Popover Component - Clarity Chat Components',
   description: 'A flexible floating content container that displays rich contextual information relative to a trigger element.',
@@ -663,6 +665,7 @@ render(<SharePopover />)`}
         <CodePlayground
           initialCode={`import { useState } from 'react';
 import { Popover } from '@clarity/chat-components';
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export default function ColorPickerPopover() {
   const [color, setColor] = useState('#3b82f6');
@@ -693,10 +696,9 @@ export default function ColorPickerPopover() {
                   onClick={() => setColor(c)}
                   className={\`w-8 h-8 rounded hover:scale-110 transition-transform \${
                     color === c ? 'ring-2 ring-gray-400 ring-offset-2' : ''
-                  }\
-
-render(<ColorPickerPopover />)`}
-        />
+                  }\`}
+                  style={{ backgroundColor: c }}
+                />
               ))}
             </div>
           </div>

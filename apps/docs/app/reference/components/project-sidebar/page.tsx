@@ -1,5 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'ProjectSidebar - Clarity Chat Components',
   description: 'Sidebar for navigating conversations, documents, and tools.',

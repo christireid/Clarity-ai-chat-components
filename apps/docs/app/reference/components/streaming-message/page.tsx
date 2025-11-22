@@ -2,6 +2,8 @@ import { Metadata } from 'next'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Streaming Message - Clarity Chat',
   description: 'Display AI responses with token-by-token streaming, tool calls, thinking steps, citations, and error handling.',

@@ -1,5 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'NetworkStatus - Clarity Chat Components',
   description: 'Indicator for online/offline status and connectivity changes.',

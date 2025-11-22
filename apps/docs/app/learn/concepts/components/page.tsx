@@ -1,16 +1,13 @@
 'use client'
 
-import { Metadata } from 'next'
-import { ToastProvider } from '@clarity-chat/react'
 import { Callout } from '@/components/MDX/Callout'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 
-
 export default function ComponentsConceptPage() {
   return (
-    <ToastProvider>
+    <>
     <div className="docs-content">
       <div className="mb-8">
         <div className="inline-block px-3 py-1 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 text-sm font-semibold mb-4">
@@ -95,7 +92,7 @@ export function CustomerSuccessWorkspace() {
   const chat = useChat({ id: 'customer-success', api: '/api/chat/cs' })
 
   return (
-    <ToastProvider>
+    <>
     <div className="grid lg:grid-cols-[280px,minmax(0,1fr),320px] h-[calc(100vh-64px)]">
       <ConversationList
         conversations={chat.conversations}
@@ -121,7 +118,7 @@ export function CustomerSuccessWorkspace() {
         className="hidden xl:block border-l border-border"
       />
     </div>
-    </ToastProvider>
+    </>
   )
 }`}
         />
@@ -191,7 +188,7 @@ export function CustomerSuccessWorkspace() {
         </ul>
       </section>
     </div>
-    </ToastProvider>
+    </>
   )
 }
 

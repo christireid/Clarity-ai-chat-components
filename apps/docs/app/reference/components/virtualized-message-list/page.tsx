@@ -6,6 +6,8 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { ApiTable } from '@/components/Demo/ApiTable'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'VirtualizedMessageList',
   description: 'High-performance message rendering for conversations with thousands of entries.',

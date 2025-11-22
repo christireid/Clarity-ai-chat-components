@@ -1,5 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'StreamBlock - Clarity Chat Components',
   description: 'Render a block of streaming content with partial updates.',

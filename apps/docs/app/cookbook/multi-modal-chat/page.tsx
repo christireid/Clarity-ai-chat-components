@@ -4,6 +4,8 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Multi-Modal Chat - Cookbook - Clarity Chat',
   description: 'Build a chat that handles images, PDFs, and other files with GPT-4 Vision.',

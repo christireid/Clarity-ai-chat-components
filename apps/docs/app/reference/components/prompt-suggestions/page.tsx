@@ -1,5 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'PromptSuggestions - Clarity Chat Components',
   description: 'Suggest follow-up prompts to keep conversations moving.',

@@ -3,6 +3,8 @@ import { Metadata } from 'next'
 import { Callout } from '@/components/MDX/Callout'
 
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Custom Styling Example - Clarity Chat Components',
   description: 'Learn how to style Clarity Chat components with custom CSS, Tailwind classes, and CSS-in-JS.',
@@ -389,9 +391,7 @@ function BrandThemesExample() {
         <ChatWindow
           messages={messages}
           onSendMessage={(text) => console.log(text)}
-          placeholder={\`Message in \${themes[selectedTheme].name} style...\
-
-render(<BrandThemesExample />)`}
+          placeholder={\`Message in \${themes[selectedTheme].name} style...\`}
         />
       </div>
     </div>

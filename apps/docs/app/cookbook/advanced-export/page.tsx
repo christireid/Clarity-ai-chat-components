@@ -3,6 +3,8 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Advanced Export Workflows - Cookbook - Clarity Chat',
   description: 'Export chat transcripts with analytics, privacy filtering, and multiple formats.',

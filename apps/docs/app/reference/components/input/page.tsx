@@ -1,11 +1,11 @@
 import React from 'react';
 import { Metadata } from 'next';
-;
-;
 import { ApiTable } from '@/components/Demo/ApiTable';
 import { Callout } from '@/components/MDX/Callout';
 import { ViewInStorybook } from '@/components/Links/StorybookLink';
-;
+import { CodePlayground } from '@/components/Playground/CodePlayground';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Input Component - Clarity Chat Components',
@@ -164,6 +164,7 @@ render(<InputValidation />)`}
         <CodePlayground
           initialCode={`import { useState } from 'react';
 import { Input } from '@clarity/chat-components';
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 
 export default function ControlledInput() {
   const [value, setValue] = useState('');

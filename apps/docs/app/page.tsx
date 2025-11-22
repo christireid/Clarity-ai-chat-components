@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { HeroSection } from '@/components/Layout/HeroSection'
 import { FeaturesGrid } from '@/components/Layout/FeaturesGrid'
-import { Testimonials } from '@/components/Layout/Testimonials'
 import { LiveChatDemo } from '@/components/Layout/LiveChatDemo'
 import { CodeExample } from '@/components/Demo/CodeExample'
 import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
@@ -165,11 +164,6 @@ function App() {
           </div>
           <FeatureMatrix />
         </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="bg-bg-secondary">
-        <Testimonials />
       </section>
 
       {/* CTA Section */}

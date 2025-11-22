@@ -1,5 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'TokenOptimizationDashboard - Clarity Chat Components',
   description: 'Dashboard view of token optimization strategies and results.',

@@ -5,10 +5,9 @@ import dynamic from 'next/dynamic'
 import { TemplateSelector } from '@/components/Playground/TemplateSelector'
 import { PlaygroundControls } from '@/components/Playground/PlaygroundControls'
 import { playgroundTemplates } from '@/lib/playground-templates'
-import { ToastProvider } from '@clarity-chat/react'
 
 // Dynamic import to avoid React version conflicts during static generation
-const CodePlayground = dynamic(
+const DynamicCodePlayground = dynamic(
   () => import('@/components/Playground/CodePlayground').then(mod => ({ default: mod.CodePlayground })),
   {
     ssr: false,
@@ -35,7 +34,7 @@ export default function PlaygroundPage() {
   }
 
   return (
-    <ToastProvider>
+    <>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <div className="border-b bg-white dark:bg-gray-800">
@@ -72,7 +71,7 @@ export default function PlaygroundPage() {
 
           {/* Main Playground */}
           <div className="col-span-12 lg:col-span-9">
-            <CodePlayground
+            <DynamicCodePlayground
               initialCode={code}
               dependencies={dependencies}
               onCodeChange={setCode}
@@ -81,6 +80,6 @@ export default function PlaygroundPage() {
         </div>
       </div>
       </div>
-    </ToastProvider>
+    </>
   )
 }

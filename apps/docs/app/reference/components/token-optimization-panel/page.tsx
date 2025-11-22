@@ -1,5 +1,6 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const metadata: Metadata = {
   title: 'TokenOptimizationPanel - Clarity Chat Components',
   description: 'Interactive panel to configure and visualize token optimization.',

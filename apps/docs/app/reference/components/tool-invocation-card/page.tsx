@@ -1,5 +1,8 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { CodePlayground } from '@/components/Playground/CodePlayground'
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'ToolInvocationCard - Clarity Chat Components',
   description: 'Visualize tool calls, inputs, and results inside conversations.',

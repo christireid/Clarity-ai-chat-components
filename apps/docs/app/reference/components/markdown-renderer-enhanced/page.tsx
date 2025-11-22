@@ -6,6 +6,8 @@ import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { ApiTable } from '@/components/Demo/ApiTable'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'MarkdownRendererEnhanced',
   description: 'Render markdown with GitHub-flavored syntax, syntax highlighting, and LaTeX math support.',

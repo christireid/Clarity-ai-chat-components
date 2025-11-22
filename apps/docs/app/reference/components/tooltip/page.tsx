@@ -1,9 +1,12 @@
 import React from 'react'
 import { Metadata } from 'next'
+import { Badge } from '@clarity-chat/primitives'
 import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Tooltip - Clarity Chat Components',

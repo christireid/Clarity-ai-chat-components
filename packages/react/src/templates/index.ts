@@ -1,6 +1,8 @@
+'use client'
+
 /**
  * Pre-built Chat Templates
- * 
+ *
  * Ready-to-use chat interface configurations for common use cases
  */
 

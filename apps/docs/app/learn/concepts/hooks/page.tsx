@@ -9,10 +9,12 @@ import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
 import { TryItOut } from '@/components/Enhanced/TryItOut'
 
 
+export const dynamic = 'force-dynamic'
+
 export default function HooksConceptPage() {
   return (
     <ToastProvider>
-    <div className="docs-content">
+    <div>
       <div className="mb-8">
         <div className="inline-block px-3 py-1 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 text-sm font-semibold mb-4">
           Concept

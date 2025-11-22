@@ -5,6 +5,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Badge - Clarity Chat Components',
   description: 'Display notification counts, status indicators, and labels with various styles and positions.',

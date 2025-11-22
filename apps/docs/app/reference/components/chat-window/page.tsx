@@ -146,6 +146,8 @@ const chatWindowProps: Prop[] = [
   },
 ]
 
+export const dynamic = 'force-dynamic'
+
 export default function ChatWindowPage() {
   return (
     <ToastProvider>
@@ -178,25 +180,44 @@ export default function ChatWindowPage() {
         </p>
         <CodePlayground
           initialCode={`function Example() {
-  const messages = [
+  const [messages, setMessages] = React.useState([
     {
       id: '1',
+      chatId: 'demo',
       role: 'user',
       content: 'Hello! How are you?',
-      avatar: '👤',
+      status: 'sent',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
     {
       id: '2',
+      chatId: 'demo',
       role: 'assistant',
       content: 'I\\'m doing great! How can I help you today?',
-      avatar: '🤖',
+      status: 'sent',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
-  ]
+  ])
+
+  const handleSend = (content) => {
+    const newMsg = {
+      id: Date.now().toString(),
+      chatId: 'demo',
+      role: 'user',
+      content,
+      status: 'sent',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    setMessages(prev => [...prev, newMsg])
+  }
 
   return (
     <ToastProvider>
     <div className="h-96 border rounded-lg">
-      <ChatWindow messages={messages} showAvatars />
+      <ChatWindow messages={messages} onSendMessage={handleSend} showAvatars />
     </div>
     </ToastProvider>
   )
@@ -243,11 +264,12 @@ function BasicChat() {
 
   return (
     <ToastProvider>
-    <ChatWindow
-      messages={messages}
-      onSendMessage={handleSend}
-      height="400px"
-    />
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSend}
+        height="400px"
+      />
+    </ToastProvider>
   )
 }`}
       >
@@ -273,12 +295,13 @@ function BasicChat() {
 ])
 
 return (
-    <ToastProvider>
-  <ChatWindow
-    messages={messages}
-    onSendMessage={handleSend}
-    showAvatars
-  />
+  <ToastProvider>
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+      showAvatars
+    />
+  </ToastProvider>
 )`}
         language="tsx"
         showLineNumbers
@@ -294,12 +317,13 @@ return (
 ])
 
 return (
-    <ToastProvider>
-  <ChatWindow
-    messages={messages}
-    onSendMessage={handleSend}
-    typingUsers={typingUsers}
-  />
+  <ToastProvider>
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+      typingUsers={typingUsers}
+    />
+  </ToastProvider>
 )`}
         language="tsx"
       />
@@ -324,13 +348,14 @@ return (
 }
 
 return (
-    <ToastProvider>
-  <ChatWindow
-    messages={messages}
-    onSendMessage={handleSend}
-    onReaction={handleReaction}
-    enableReactions
-  />
+  <ToastProvider>
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+      onReaction={handleReaction}
+      enableReactions
+    />
+  </ToastProvider>
 )`}
         language="tsx"
         showLineNumbers
@@ -436,13 +461,14 @@ const [messages, setMessages] = useState([
 ])
 
 return (
-    <ToastProvider>
-  <ChatWindow
-    messages={messages}
-    onSendMessage={handleSend}
-    showAvatars
-    showTimestamps
-  />
+  <ToastProvider>
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+      showAvatars
+      showTimestamps
+    />
+  </ToastProvider>
 )`}
         language="tsx"
         showLineNumbers
@@ -470,11 +496,12 @@ return (
 ])
 
 return (
-    <ToastProvider>
-  <ChatWindow
-    messages={messages}
-    onSendMessage={handleSend}
-  />
+  <ToastProvider>
+    <ChatWindow
+      messages={messages}
+      onSendMessage={handleSend}
+    />
+  </ToastProvider>
 )`}
         language="tsx"
         showLineNumbers

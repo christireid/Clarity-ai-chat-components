@@ -4,7 +4,8 @@ import { ApiTable } from '@/components/Demo/ApiTable'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
-import { Badge } from '@clarity-chat/primitives'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Button - Clarity Chat Components',
@@ -16,8 +17,8 @@ export default function ButtonPage() {
     <div className="docs-content">
       <div className="docs-header">
         <div className="flex gap-2 mb-2">
-          <Badge variant="subtle" size="sm">Component</Badge>
-          <Badge variant="success" size="sm">Stable</Badge>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Component</span>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Stable</span>
         </div>
         <h1>Button</h1>
         <p className="docs-lead">

@@ -5,6 +5,8 @@ import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
 import { RAGPipelineDiagram } from '@/components/Diagrams/RAGPipelineDiagram'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'RAG Guide - Clarity Chat',
   description:
