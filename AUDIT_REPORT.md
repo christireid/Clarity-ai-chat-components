@@ -14,11 +14,26 @@ This audit covers the entire Clarity AI Chat Components monorepo, including 13 p
 
 | Severity | Count | Primary Categories |
 |----------|-------|-------------------|
-| **CRITICAL** | 5 | Build failures, security vulnerability, data corruption risk |
-| **HIGH** | 23 | Accessibility, memory leaks, type safety, error handling |
-| **MEDIUM** | 44 | Incomplete implementations, performance, edge cases |
-| **LOW** | 23 | Code organization, documentation, minor inconsistencies |
-| **Total** | **95** | |
+| **CRITICAL** | 8 | Build failures, security vulnerabilities, data corruption risk |
+| **HIGH** | 31 | Accessibility, memory leaks, type safety, test coverage gaps |
+| **MEDIUM** | 71 | Incomplete implementations, performance, edge cases, anti-patterns |
+| **LOW** | 36 | Code organization, documentation, minor inconsistencies |
+| **Total** | **146** | |
+
+### Coverage by Package
+
+| Package | Issues | Test Coverage |
+|---------|--------|---------------|
+| React (components) | 28 | 9.4% (10/106) |
+| React (hooks) | 15 | 39.3% (24/61) |
+| Primitives | 12 | 100% (15/15) |
+| Memory | 14 | 0% (0/47) |
+| Errors | 4 | 0% (0/6) |
+| CLI | 11 | Not measured |
+| Dev-tools | 9 | Not measured |
+| Codemods | 7 | Not measured |
+| Examples | 24 | N/A |
+| Config/Build | 12 | N/A |
 
 ---
 
@@ -33,7 +48,12 @@ This audit covers the entire Clarity AI Chat Components monorepo, including 13 p
 7. [Testing Utils Issues](#7-testing-utils-issues)
 8. [Configuration Issues](#8-configuration-issues)
 9. [Storybook & Documentation Issues](#9-storybook--documentation-issues)
-10. [Recommended Priority Order](#10-recommended-priority-order)
+10. [CLI Package Issues](#10-cli-package-issues)
+11. [Dev-Tools Package Issues](#11-dev-tools-package-issues)
+12. [Codemods Package Issues](#12-codemods-package-issues)
+13. [Examples Directory Issues](#13-examples-directory-issues)
+14. [Test Coverage Gaps](#14-test-coverage-gaps)
+15. [Recommended Priority Order](#15-recommended-priority-order)
 
 ---
 
@@ -1510,42 +1530,653 @@ Resolve Storybook addon version conflicts.
 
 ---
 
-## 10. Recommended Priority Order
+## 10. CLI Package Issues
+
+### CLI-001: Command Injection Risk in Upgrade Command
+
+**Severity:** HIGH
+**File:** `packages/cli/src/commands/upgrade.ts:66`
+
+**Issue:** Using `execSync` with unsanitized package names from registry response:
+```typescript
+const result = execSync(`npm view ${packageName} version`, {...})
+```
+
+**Impact:** If package names come from untrusted sources, this could be exploited for command injection.
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Fix command injection vulnerability in packages/cli/src/commands/upgrade.ts.
+
+Replace execSync with a safer alternative:
+1. Use the npm registry API directly instead of shell command
+2. Or sanitize package names before use:
+
+```typescript
+import { execFileSync } from 'child_process'
+
+// Safe - uses execFileSync with arguments array
+const result = execFileSync('npm', ['view', packageName, 'version'], {...})
+```
+
+Also validate package names match expected format: /^[@a-z0-9-_\/]+$/i
+```
+</details>
+
+---
+
+### CLI-002: API Key Validation Headers Incorrect
+
+**Severity:** HIGH
+**File:** `packages/cli/src/commands/keys.ts:357-362`
+
+**Issue:** API key validation uses incorrect headers for different providers. Anthropic requires `x-api-key` header but the logic is inconsistent.
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Fix API key validation in packages/cli/src/commands/keys.ts.
+
+Update the validation logic to use correct headers per provider:
+- OpenAI: Authorization: Bearer <key>
+- Anthropic: x-api-key: <key>
+- Google: API key in query parameter OR Authorization header
+
+Create separate validation functions for each provider with proper error handling.
+```
+</details>
+
+---
+
+### CLI-003: Silent Config Save Failure
+
+**Severity:** MEDIUM
+**File:** `packages/cli/src/commands/init.ts:120-129`
+
+**Issue:** Config file save failure is logged but execution continues, potentially causing silent failures.
+
+---
+
+### CLI-004: Path Construction Using __dirname
+
+**Severity:** MEDIUM
+**File:** `packages/cli/src/commands/add.ts:116`
+
+**Issue:** Using `__dirname` for template paths may fail in bundled environments.
+
+---
+
+### CLI-005: Missing Port Validation
+
+**Severity:** LOW
+**File:** `packages/cli/src/commands/dev.ts:22-34`
+
+**Issue:** Port number used without validation (should be 1-65535).
+
+---
+
+### CLI-006: Global Config Cache Race Condition
+
+**Severity:** MEDIUM
+**File:** `packages/cli/src/utils/config.ts:54-55`
+
+**Issue:** Global `cachedConfig` variable can cause issues with concurrent CLI operations.
+
+---
+
+## 11. Dev-Tools Package Issues
+
+### DEVTOOLS-001: Unbounded API Inspector Logs
+
+**Severity:** MEDIUM
+**File:** `packages/dev-tools/src/debug/api-inspector.ts:109-113`
+
+**Issue:** FIFO deletion only removes one item per addition, potentially keeping many items in memory.
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Improve log management in packages/dev-tools/src/debug/api-inspector.ts.
+
+Replace single-item FIFO with batch cleanup:
+```typescript
+if (this.logs.size > this.maxLogs) {
+  const toDelete = this.logs.size - this.maxLogs + (this.maxLogs * 0.1) // Remove 10% extra
+  const keys = Array.from(this.logs.keys()).slice(0, toDelete)
+  keys.forEach(key => this.logs.delete(key))
+}
+```
+```
+</details>
+
+---
+
+### DEVTOOLS-002: Deep Cloning Performance Issue
+
+**Severity:** MEDIUM
+**File:** `packages/dev-tools/src/debug/time-travel.ts:50-51`
+
+**Issue:** Using `JSON.parse(JSON.stringify())` for state snapshots is slow and fails with non-serializable objects.
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Improve state cloning in packages/dev-tools/src/debug/time-travel.ts.
+
+Use structuredClone for better performance:
+```typescript
+messages: structuredClone(messages),
+config: structuredClone(config),
+```
+
+Or use a library like immer for structural sharing if performance is critical.
+```
+</details>
+
+---
+
+### DEVTOOLS-003: TimeTravelDebugger Memory Leak
+
+**Severity:** MEDIUM
+**File:** `packages/dev-tools/src/react/hooks/use-time-travel.tsx:61`
+
+**Issue:** New TimeTravelDebugger instance created without cleanup.
+
+---
+
+### DEVTOOLS-004: Missing Dependency Arrays in useOptimistic
+
+**Severity:** MEDIUM
+**Files:** Multiple hooks in dev-tools
+
+**Issue:** useOptimistic calls don't specify dependency arrays properly, causing potential infinite re-renders.
+
+---
+
+### DEVTOOLS-005: Inefficient Log Filtering
+
+**Severity:** LOW
+**File:** `packages/dev-tools/src/react/hooks/use-api-inspector.tsx:134-147`
+
+**Issue:** Stats calculation filters logs on every render without memoization.
+
+---
+
+### DEVTOOLS-006: Search Serializes All Snapshots
+
+**Severity:** LOW
+**File:** `packages/dev-tools/src/debug/time-travel.ts:142-147`
+
+**Issue:** Search serializes all snapshots to JSON on every search, very expensive with 100+ snapshots.
+
+---
+
+## 12. Codemods Package Issues
+
+### CODEMOD-001: Incomplete JSX Element Handling
+
+**Severity:** MEDIUM
+**File:** `packages/codemods/src/transforms/v1-to-v2.ts:38-49`
+
+**Issue:** Only handles JSXIdentifier but not JSXMemberExpression (e.g., `<namespace.ChatWindow>`).
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Fix JSX element handling in packages/codemods/src/transforms/v1-to-v2.ts.
+
+Update the visitor to handle all JSX element name types:
+```typescript
+if (path.node.openingElement.name.type === 'JSXIdentifier') {
+  // Handle direct names
+} else if (path.node.openingElement.name.type === 'JSXMemberExpression') {
+  // Handle namespaced names like MyLib.ChatWindow
+  const memberExpr = path.node.openingElement.name
+  if (memberExpr.property.type === 'JSXIdentifier' && memberExpr.property.name in renames) {
+    memberExpr.property.name = renames[memberExpr.property.name]
+  }
+}
+```
+```
+</details>
+
+---
+
+### CODEMOD-002: Object Property Types Not Fully Handled
+
+**Severity:** MEDIUM
+**File:** `packages/codemods/src/transforms/v1-to-v2.ts:68-84`
+
+**Issue:** Only handles ObjectProperty but not ObjectMethod, SpreadElement, or RestElement.
+
+---
+
+### CODEMOD-003: Weak Version Parsing
+
+**Severity:** MEDIUM
+**File:** `packages/codemods/src/cli.ts:120-126`
+
+**Issue:** `parseFloat` fails for prerelease versions like `v1.0.0-beta`.
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Fix version parsing in packages/codemods/src/cli.ts.
+
+Use semver library for proper version comparison:
+```bash
+pnpm add semver
+```
+
+```typescript
+import semver from 'semver'
+
+const from = semver.coerce(t.from)?.version
+const to = semver.coerce(t.to)?.version
+if (from && to && semver.gte(from, fromVersion) && semver.lte(to, toVersion)) {
+  // ...
+}
+```
+```
+</details>
+
+---
+
+### CODEMOD-004: No Transform File Existence Check
+
+**Severity:** MEDIUM
+**File:** `packages/codemods/src/runner.ts:18-22`
+
+**Issue:** Transform path constructed but never verified to exist before execution.
+
+---
+
+## 13. Examples Directory Issues
+
+### EXAMPLE-001: Dummy API Key Fallback
+
+**Severity:** HIGH
+**File:** `apps/examples/ecommerce-assistant/src/app/api/chat/route.ts:8`
+
+**Issue:** Uses `'dummy-key-for-build'` as fallback when API key not set:
+```typescript
+apiKey: process.env.OPENAI_API_KEY || 'dummy-key-for-build'
+```
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Remove dummy API key fallback in examples.
+
+Replace with proper validation:
+```typescript
+const apiKey = process.env.OPENAI_API_KEY
+if (!apiKey) {
+  throw new Error('OPENAI_API_KEY environment variable is required')
+}
+```
+
+Update all example files that use this pattern.
+```
+</details>
+
+---
+
+### EXAMPLE-002: Client-Side API Key Acceptance
+
+**Severity:** HIGH
+**File:** `apps/examples/model-comparison-demo/src/app/api/chat/route.ts:259-272`
+
+**Issue:** API route accepts `apiKey` in request body from client, potentially exposing keys in logs.
+
+---
+
+### EXAMPLE-003: API Key in URL Query Parameters
+
+**Severity:** MEDIUM
+**File:** `apps/examples/model-comparison-demo/src/app/api/chat/route.ts:150`
+
+**Issue:** Google AI endpoint constructs URL with API key in query string.
+
+---
+
+### EXAMPLE-004: Browser Dialog APIs Instead of Components
+
+**Severity:** MEDIUM
+**Files:** Multiple examples
+
+**Issue:** Using `alert()`, `prompt()`, `confirm()` instead of proper UI components:
+- `apps/examples/advanced-chat-features/src/App.tsx:102`
+- `apps/examples/basic-chat/src/App.tsx:102`
+- `apps/examples/rag-workbench-demo/src/app/page.tsx:81, 123`
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Replace browser dialogs with proper UI components in examples.
+
+1. Create a reusable ConfirmDialog component
+2. Create a PromptDialog component
+3. Create a toast/notification system for alerts
+4. Replace all alert/prompt/confirm calls with these components
+
+This improves UX, accessibility, and styling consistency.
+```
+</details>
+
+---
+
+### EXAMPLE-005: Rough Token Estimation
+
+**Severity:** MEDIUM
+**Files:** Multiple examples using `Math.ceil(content.length / 4)`
+
+**Issue:** Inaccurate token counting (off by 10-50%).
+
+---
+
+### EXAMPLE-006: Deprecated OpenAI Function Calling API
+
+**Severity:** MEDIUM
+**File:** `apps/examples/ecommerce-assistant/src/app/api/chat/route.ts:91-94`
+
+**Issue:** Uses deprecated `function_call` and `functions` array instead of modern `tools` API.
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Update to modern OpenAI tools API in apps/examples/ecommerce-assistant/src/app/api/chat/route.ts.
+
+Replace:
+```typescript
+functions: [...],
+function_call: 'auto'
+```
+
+With:
+```typescript
+tools: [
+  {
+    type: 'function',
+    function: {
+      name: 'search_products',
+      description: '...',
+      parameters: {...}
+    }
+  }
+],
+tool_choice: 'auto'
+```
+```
+</details>
+
+---
+
+### EXAMPLE-007: Unimplemented Streaming Functions
+
+**Severity:** MEDIUM
+**File:** `apps/examples/rag-workbench-demo/src/app/api/chat/route.ts:273, 289`
+
+**Issue:** `streamAnthropic()` and `streamGoogle()` throw "not fully implemented" errors.
+
+---
+
+### EXAMPLE-008: TypeScript Disabled
+
+**Severity:** LOW
+**File:** `apps/examples/multi-user-chat/app/routes/_index.tsx:1`
+
+**Issue:** `// @ts-nocheck` at top of file disables all type checking.
+
+---
+
+### EXAMPLE-009: Missing ARIA Labels
+
+**Severity:** MEDIUM
+**File:** `apps/examples/comprehensive-chat-demo/src/App.tsx:589, 520-550`
+
+**Issue:** Buttons and selects lack proper aria-labels.
+
+---
+
+### EXAMPLE-010: Memory Leak in Event Listeners
+
+**Severity:** MEDIUM
+**File:** `apps/examples/comprehensive-chat-demo/src/App.tsx:273`
+
+**Issue:** Window event listener cleanup depends on closure variables that change.
+
+---
+
+## 14. Test Coverage Gaps
+
+### Critical Coverage Gaps
+
+| Package | Coverage | Risk Level |
+|---------|----------|------------|
+| Memory | 0% (0/47 files) | **CRITICAL** |
+| Errors | 0% (0/6 files) | **HIGH** |
+| React Components | 9.4% (10/106) | **CRITICAL** |
+| React Hooks | 39.3% (24/61) | **MEDIUM** |
+| Primitives | 100% (15/15) | ✅ Good |
+
+### TEST-001: Memory Package - Zero Test Coverage
+
+**Severity:** CRITICAL
+
+**47 untested files including:**
+- `memory-service.ts` (1,016 lines) - Main memory management
+- `token-optimizer.ts` (624 lines) - Token optimization engine
+- All storage adapters (8 files)
+- All compression strategies (6 files)
+- React integration hooks
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Create comprehensive tests for the memory package.
+
+Priority order:
+1. packages/memory/src/memory-service.ts - Core service
+   - Test initialization with different configs
+   - Test add/get/update/delete operations
+   - Test query functionality
+   - Test cleanup and summarization tasks
+
+2. packages/memory/src/stores/*.ts - Storage adapters
+   - Test each adapter implementation
+   - Test data persistence
+   - Test error handling
+
+3. packages/memory/src/utils/token-counter.ts - Token counting
+   - Test accuracy against known values
+   - Test edge cases (empty strings, unicode, etc.)
+
+Create test files in packages/memory/src/__tests__/
+Target: 80% code coverage on critical paths
+```
+</details>
+
+---
+
+### TEST-002: React Components - 96 Untested
+
+**Severity:** HIGH
+
+**Critical untested components:**
+- `clarity-chat.tsx` (188 lines) - Main component
+- `chat-layout.tsx` (101 lines)
+- `chat-recipes.tsx` (257 lines)
+- `error-boundary.tsx`, `error-boundary-enhanced.tsx`
+- All analytics dashboards (6 components)
+- All enterprise components (4)
+- All AI-ops components (3)
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Add tests for critical React components.
+
+Priority:
+1. clarity-chat.tsx - Main export, needs full test coverage
+2. error-boundary.tsx - Error handling critical
+3. chat-layout.tsx - Core layout component
+
+For each component test:
+- Rendering with various props
+- User interactions
+- Error states
+- Accessibility (using @testing-library/react)
+
+Create tests in packages/react/src/components/__tests__/
+```
+</details>
+
+---
+
+### TEST-003: React Hooks - 37 Untested
+
+**Severity:** MEDIUM
+
+**Critical untested hooks:**
+- `use-chat-enhanced.ts` (619 lines) - Largest hook
+- `use-token-optimization-enhanced.tsx`
+- `use-security.ts`
+- `use-rag-pipeline.ts`
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Add tests for critical React hooks.
+
+Use @testing-library/react-hooks or renderHook from @testing-library/react.
+
+Priority hooks to test:
+1. use-chat-enhanced.ts - Core chat functionality
+2. use-token-optimization-enhanced.tsx - Token management
+3. use-message-history.tsx - Message persistence
+
+Test patterns:
+- Initial state
+- State updates after actions
+- Error handling
+- Cleanup on unmount
+```
+</details>
+
+---
+
+### TEST-004: Errors Package - Zero Coverage
+
+**Severity:** HIGH
+
+**6 untested files:**
+- `base-error.ts` (176 lines)
+- `api-errors.ts`
+- `config-errors.ts`
+- `validation-errors.ts`
+
+<details>
+<summary><strong>Claude Agent Prompt</strong></summary>
+
+```
+Create tests for the errors package.
+
+In packages/errors/src/__tests__/:
+
+1. base-error.test.ts
+   - Test error creation with all options
+   - Test formatting methods (terminal, JSON, log)
+   - Test serialization
+
+2. api-errors.test.ts
+   - Test each error type
+   - Test error codes and messages
+   - Test recovery suggestions
+```
+</details>
+
+---
+
+## 15. Recommended Priority Order
 
 ### Immediate (P0) - Do First
 1. **CRIT-005** - Fix docs site dependencies
 2. **CRIT-003** - Remove eval() security vulnerability
-3. **BUILD-002** - Re-enable error-handling tests
-4. **BUILD-004** - Fix TypeScript build order
+3. **CLI-001** - Fix command injection risk
+4. **EXAMPLE-001/002** - Fix API key security in examples
+5. **BUILD-002** - Re-enable error-handling tests
 
 ### Short-term (P1) - This Sprint
-5. **CRIT-001** - Implement missing integration components (or remove exports)
-6. **REACT-002** - Fix accessibility issues (249+ elements)
-7. **PRIM-001** - Fix Input duplicate error rendering
-8. **PRIM-003/004** - Fix Portal implementations
-9. **MEM-003** - Improve token counting accuracy
-10. **STORY-001** - Re-enable package stories
+6. **TEST-001** - Add memory package tests (0% → 50%+)
+7. **TEST-002** - Add tests for critical components
+8. **REACT-002** - Fix accessibility issues (249+ elements)
+9. **PRIM-003/004** - Fix Portal implementations
+10. **MEM-003** - Improve token counting accuracy
 
 ### Medium-term (P2) - Next Sprint
-11. **REACT-001** - Complete prompt system
-12. **MEM-001** - Implement summarization
-13. **MEM-004** - Fix listener memory leak
-14. **PRIM-006** - Enhance Checkbox accessibility
-15. **CONFIG-001** - Fix unused variables properly
+11. **TEST-003/004** - Complete test coverage gaps
+12. **CRIT-001** - Implement missing integration components
+13. **DEVTOOLS-002** - Fix deep cloning performance
+14. **CODEMOD-001/002** - Fix codemod transformations
+15. **EXAMPLE-004/006** - Fix example anti-patterns
 
 ### Long-term (P3) - Backlog
-16. Code organization improvements
-17. Documentation enhancements
-18. Performance optimizations
-19. Additional test coverage
+16. CLI improvements (validation, error handling)
+17. Dev-tools performance optimization
+18. Documentation enhancements
+19. Code organization improvements
 
 ---
 
-## Appendix: Files Modified During Audit
+## Appendix A: Files Modified During Audit
 
 1. `packages/react/src/components/icons.tsx` - Added missing FlagIcon
 2. `packages/react/src/index.ts` - Commented out missing component exports
 
+## Appendix B: Test Commands
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Run specific package tests
+pnpm --filter @clarity-chat/react test
+pnpm --filter @clarity-chat/memory test
+pnpm --filter @clarity-chat/primitives test
+
+# Run E2E tests
+pnpm test:e2e
+```
+
+## Appendix C: Quick Wins
+
+These issues can be fixed in under 30 minutes each:
+
+1. Fix duplicate boxShadow in tailwind.config.js
+2. Fix escaped quotes in Storybook stories
+3. Add missing dependencies to docs site
+4. Remove @storybook/addon-designs from package.json
+5. Fix port validation in CLI
+6. Add memoization to dev-tools log filtering
+
 ---
 
 *Report generated by Claude (Opus 4) during comprehensive codebase audit.*
+*Second pass completed with additional findings from CLI, dev-tools, codemods, examples, and test coverage analysis.*
