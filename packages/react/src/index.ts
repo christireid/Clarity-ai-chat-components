@@ -372,33 +372,38 @@ export {
   PresenceIndicator,
   useCollaborativeSession,
 } from './components/collaborative-editing'
-export {
-  DocumentIntegration,
-  useDocumentIntegration,
-  type DocumentPlatform,
-  type DocumentMetadata,
-  type DocumentContent,
-  type DocumentExportOptions,
-} from './components/document-integration'
-export {
-  CalendarIntegration,
-  useCalendarIntegration,
-  useAvailabilityCheck,
-  type CalendarEvent,
-  type ActionItem,
-  type AvailabilitySlot,
-} from './components/calendar-integration'
-export {
-  EmailIntegration,
-  useEmailIntegration,
-  type EmailProvider,
-  type EmailAccount,
-  type EmailThread,
-  type EmailMessage,
-  type EmailNotification,
-  type EmailTemplate,
-  type DigestConfig,
-} from './components/email-integration'
+// TODO: Implement document-integration component
+// export {
+//   DocumentIntegration,
+//   useDocumentIntegration,
+//   type DocumentPlatform,
+//   type DocumentMetadata,
+//   type DocumentContent,
+//   type DocumentExportOptions,
+// } from './components/document-integration'
+
+// TODO: Implement calendar-integration component
+// export {
+//   CalendarIntegration,
+//   useCalendarIntegration,
+//   useAvailabilityCheck,
+//   type CalendarEvent,
+//   type ActionItem,
+//   type AvailabilitySlot,
+// } from './components/calendar-integration'
+
+// TODO: Implement email-integration component
+// export {
+//   EmailIntegration,
+//   useEmailIntegration,
+//   type EmailProvider,
+//   type EmailAccount,
+//   type EmailThread,
+//   type EmailMessage,
+//   type EmailNotification,
+//   type EmailTemplate,
+//   type DigestConfig,
+// } from './components/email-integration'
 export { UserInteractionAnalytics, useInteractionTracking } from './components/user-interaction-analytics'
 export { ABTestingDashboard, useABTesting } from './components/ab-testing-dashboard'
 export {
