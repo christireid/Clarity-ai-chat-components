@@ -19,17 +19,32 @@ function safeEvaluateMath(expression: string): number {
   const tokens: string[] = []
   let i = 0
 
+  // Guard against DoS via extremely long expressions
+  if (expression.length > 1000) {
+    throw new Error('Expression too long (max 1000 characters)')
+  }
+
   // Tokenize
   while (i < expression.length) {
-    const char = expression[i]
+    const char = expression.charAt(i)
     if (/\s/.test(char)) {
       i++
       continue
     }
-    if (/\d/.test(char) || (char === '.' && i + 1 < expression.length && /\d/.test(expression[i + 1]))) {
+    if (/\d/.test(char) || (char === '.' && i + 1 < expression.length && /\d/.test(expression.charAt(i + 1)))) {
       let num = ''
-      while (i < expression.length && (/\d/.test(expression[i]) || expression[i] === '.')) {
-        num += expression[i++]
+      let hasDecimal = false
+      while (i < expression.length) {
+        const c = expression.charAt(i)
+        if (!/\d/.test(c) && c !== '.') break
+        if (c === '.') {
+          if (hasDecimal) {
+            throw new Error('Invalid number: multiple decimal points')
+          }
+          hasDecimal = true
+        }
+        num += c
+        i++
       }
       tokens.push(num)
       continue
@@ -44,6 +59,8 @@ function safeEvaluateMath(expression: string): number {
 
   // Parse with recursive descent
   let pos = 0
+  let depth = 0
+  const MAX_DEPTH = 100 // Prevent stack overflow from deeply nested expressions
 
   function parseAddSub(): number {
     let left = parseMulDiv()
@@ -67,15 +84,23 @@ function safeEvaluateMath(expression: string): number {
   }
 
   function parseUnary(): number {
-    if (tokens[pos] === '-') {
-      pos++
-      return -parseUnary()
+    depth++
+    if (depth > MAX_DEPTH) {
+      throw new Error('Expression too deeply nested (max 100 levels)')
     }
-    if (tokens[pos] === '+') {
-      pos++
-      return parseUnary()
+    try {
+      if (tokens[pos] === '-') {
+        pos++
+        return -parseUnary()
+      }
+      if (tokens[pos] === '+') {
+        pos++
+        return parseUnary()
+      }
+      return parsePrimary()
+    } finally {
+      depth--
     }
-    return parsePrimary()
   }
 
   function parsePrimary(): number {

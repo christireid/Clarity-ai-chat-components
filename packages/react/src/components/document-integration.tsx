@@ -200,8 +200,9 @@ export const DocumentIntegration = React.forwardRef<HTMLDivElement, DocumentInte
     syncing: false,
   })
 
-  // Handle empty platforms array safely
-  const safePlatforms = platforms.length > 0 ? platforms : ['local' as DocumentPlatform]
+  // Handle empty platforms array safely and filter out invalid platforms
+  const validPlatforms = platforms.filter(p => PLATFORM_CONFIG[p] !== undefined)
+  const safePlatforms = validPlatforms.length > 0 ? validPlatforms : ['local' as DocumentPlatform]
   const [selectedPlatform, setSelectedPlatform] = React.useState<DocumentPlatform>(safePlatforms[0])
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
 
@@ -399,7 +400,7 @@ export const DocumentIntegration = React.forwardRef<HTMLDivElement, DocumentInte
               <AnimatePresence>
                 {state.documents.map((doc, index) => {
                   const isSelected = selectedIds.has(doc.id)
-                  const config = PLATFORM_CONFIG[doc.platform]
+                  const config = PLATFORM_CONFIG[doc.platform] || PLATFORM_CONFIG['local']
 
                   return (
                     <motion.div

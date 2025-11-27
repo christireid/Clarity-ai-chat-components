@@ -18,6 +18,11 @@ import '@clarity-chat/react/styles.css'
  * Does NOT use eval() or Function() - completely safe from code injection.
  */
 function safeEvaluateMath(expression: string): number {
+  // Guard against DoS via extremely long expressions
+  if (expression.length > 1000) {
+    throw new Error('Expression too long (max 1000 characters)')
+  }
+
   const tokens = tokenizeMath(expression)
   const result = parseMathExpression(tokens)
   return result.value
@@ -27,14 +32,17 @@ interface ParseState {
   tokens: string[]
   pos: number
   value: number
+  depth: number
 }
+
+const MAX_DEPTH = 100 // Prevent stack overflow from deeply nested expressions
 
 function tokenizeMath(expr: string): string[] {
   const tokens: string[] = []
   let i = 0
 
   while (i < expr.length) {
-    const char = expr[i]
+    const char = expr.charAt(i)
 
     // Skip whitespace
     if (/\s/.test(char)) {
@@ -43,10 +51,20 @@ function tokenizeMath(expr: string): string[] {
     }
 
     // Number (including decimals)
-    if (/\d/.test(char) || (char === '.' && i + 1 < expr.length && /\d/.test(expr[i + 1]))) {
+    if (/\d/.test(char) || (char === '.' && i + 1 < expr.length && /\d/.test(expr.charAt(i + 1)))) {
       let num = ''
-      while (i < expr.length && (/\d/.test(expr[i]) || expr[i] === '.')) {
-        num += expr[i++]
+      let hasDecimal = false
+      while (i < expr.length) {
+        const c = expr.charAt(i)
+        if (!/\d/.test(c) && c !== '.') break
+        if (c === '.') {
+          if (hasDecimal) {
+            throw new Error('Invalid number: multiple decimal points')
+          }
+          hasDecimal = true
+        }
+        num += c
+        i++
       }
       tokens.push(num)
       continue
@@ -66,7 +84,7 @@ function tokenizeMath(expr: string): string[] {
 }
 
 function parseMathExpression(tokens: string[]): ParseState {
-  let state: ParseState = { tokens, pos: 0, value: 0 }
+  let state: ParseState = { tokens, pos: 0, value: 0, depth: 0 }
   state = parseAddSubtract(state)
 
   if (state.pos < tokens.length) {
@@ -121,22 +139,28 @@ function parseMultiplyDivide(state: ParseState): ParseState {
 }
 
 function parseUnary(state: ParseState): ParseState {
+  // Check depth to prevent stack overflow
+  if (state.depth >= MAX_DEPTH) {
+    throw new Error('Expression too deeply nested (max 100 levels)')
+  }
+
   const token = state.tokens[state.pos]
+  const newState = { ...state, depth: state.depth + 1 }
 
   // Handle unary minus
   if (token === '-') {
-    state.pos++
-    const result = parseUnary(state)
+    newState.pos++
+    const result = parseUnary(newState)
     return { ...result, value: -result.value }
   }
 
   // Handle unary plus (just skip it)
   if (token === '+') {
-    state.pos++
-    return parseUnary(state)
+    newState.pos++
+    return parseUnary(newState)
   }
 
-  return parsePrimary(state)
+  return parsePrimary(newState)
 }
 
 function parsePrimary(state: ParseState): ParseState {
