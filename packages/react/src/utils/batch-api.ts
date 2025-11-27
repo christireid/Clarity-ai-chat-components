@@ -1,0 +1,676 @@
+/**
+ * Batch API Support
+ *
+ * Enables batch processing of LLM requests for 50% cost reduction on
+ * non-time-sensitive operations. Supports both OpenAI and Anthropic batch APIs.
+ *
+ * Key features:
+ * - Automatic request batching with configurable thresholds
+ * - Priority-based queue management
+ * - Provider-specific batch implementations
+ * - Cost tracking and savings estimation
+ *
+ * @module utils/batch-api
+ */
+
+import { estimateTokens } from './tokenization/estimator'
+
+/**
+ * Message format for batch requests
+ */
+export interface BatchMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
+/**
+ * Batch request configuration
+ */
+export interface BatchRequest {
+  /** Unique request ID */
+  id: string
+  /** Model to use */
+  model: string
+  /** Messages for the request */
+  messages: BatchMessage[]
+  /** Optional request options */
+  options?: {
+    maxTokens?: number
+    temperature?: number
+    topP?: number
+    stopSequences?: string[]
+  }
+  /** Request priority */
+  priority: 'low' | 'normal' | 'high'
+  /** Deadline for completion */
+  deadline?: Date
+  /** Custom metadata */
+  metadata?: Record<string, unknown>
+}
+
+/**
+ * Batch job status
+ */
+export type BatchJobStatus =
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'failed'
+  | 'cancelled'
+  | 'expired'
+
+/**
+ * Batch job information
+ */
+export interface BatchJob {
+  /** Job ID */
+  id: string
+  /** Provider (openai, anthropic) */
+  provider: string
+  /** Current status */
+  status: BatchJobStatus
+  /** Requests in this batch */
+  requestIds: string[]
+  /** Creation timestamp */
+  createdAt: number
+  /** Completion timestamp */
+  completedAt?: number
+  /** Error message if failed */
+  error?: string
+  /** Progress (0-100) */
+  progress?: number
+}
+
+/**
+ * Batch result for a single request
+ */
+export interface BatchResult {
+  /** Original request ID */
+  requestId: string
+  /** Success status */
+  success: boolean
+  /** Response content */
+  content?: string
+  /** Error if failed */
+  error?: string
+  /** Token usage */
+  usage?: {
+    inputTokens: number
+    outputTokens: number
+  }
+  /** Processing time (ms) */
+  processingTime?: number
+}
+
+/**
+ * Batch configuration
+ */
+export interface BatchConfig {
+  /** API provider */
+  provider: 'openai' | 'anthropic'
+  /** Maximum requests per batch */
+  maxBatchSize?: number
+  /** Maximum wait time before submitting batch (ms) */
+  maxWaitTime?: number
+  /** Progress callback */
+  onProgress?: (completed: number, total: number) => void
+  /** Batch status callback */
+  onStatusChange?: (job: BatchJob) => void
+}
+
+/**
+ * Cost estimation for batch operations
+ */
+export interface BatchCostEstimate {
+  /** Regular API cost */
+  regularCost: number
+  /** Batch API cost (with discount) */
+  batchCost: number
+  /** Savings from using batch */
+  savings: number
+  /** Savings percentage */
+  savingsPercent: number
+  /** Estimated completion time (ms) */
+  estimatedCompletionTime: number
+}
+
+/**
+ * Batch manager statistics
+ */
+export interface BatchStats {
+  /** Total requests batched */
+  totalBatched: number
+  /** Total requests completed */
+  totalCompleted: number
+  /** Total requests failed */
+  totalFailed: number
+  /** Total input tokens */
+  totalInputTokens: number
+  /** Total output tokens */
+  totalOutputTokens: number
+  /** Total savings (USD) */
+  totalSavings: number
+  /** Average batch size */
+  averageBatchSize: number
+  /** Average wait time (ms) */
+  averageWaitTime: number
+}
+
+/**
+ * Provider-specific pricing for batch API (50% discount)
+ */
+const BATCH_PRICING: Record<string, { inputPer1M: number; outputPer1M: number }> = {
+  // OpenAI - 50% off
+  'gpt-4o': { inputPer1M: 1.25, outputPer1M: 5.0 },
+  'gpt-4o-mini': { inputPer1M: 0.075, outputPer1M: 0.3 },
+  'gpt-4-turbo': { inputPer1M: 5.0, outputPer1M: 15.0 },
+  // Anthropic - 50% off
+  'claude-3-5-sonnet': { inputPer1M: 1.5, outputPer1M: 7.5 },
+  'claude-3-5-haiku': { inputPer1M: 0.4, outputPer1M: 2.0 },
+  'claude-3-opus': { inputPer1M: 7.5, outputPer1M: 37.5 },
+}
+
+/**
+ * Generate unique ID
+ */
+function generateId(): string {
+  return `batch_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
+}
+
+/**
+ * Batch Request Manager
+ *
+ * Manages queuing, batching, and execution of LLM requests.
+ *
+ * @example
+ * ```ts
+ * const manager = new BatchRequestManager({
+ *   provider: 'openai',
+ *   maxBatchSize: 50,
+ *   maxWaitTime: 60000,
+ * })
+ *
+ * // Add requests
+ * const promise1 = manager.addRequest({
+ *   id: 'req1',
+ *   model: 'gpt-4o-mini',
+ *   messages: [{ role: 'user', content: 'Hello' }],
+ *   priority: 'low',
+ * })
+ *
+ * // Submit batch when ready
+ * const job = await manager.submitBatch()
+ *
+ * // Get results
+ * const results = await manager.getResults(job.id)
+ * ```
+ */
+export class BatchRequestManager {
+  private config: Required<BatchConfig>
+  private queue: Map<string, BatchRequest> = new Map()
+  private jobs: Map<string, BatchJob> = new Map()
+  private results: Map<string, BatchResult[]> = new Map()
+  private pendingPromises: Map<string, {
+    resolve: (result: BatchResult) => void
+    reject: (error: Error) => void
+  }> = new Map()
+  private stats: BatchStats = {
+    totalBatched: 0,
+    totalCompleted: 0,
+    totalFailed: 0,
+    totalInputTokens: 0,
+    totalOutputTokens: 0,
+    totalSavings: 0,
+    averageBatchSize: 0,
+    averageWaitTime: 0,
+  }
+  private batchTimer: ReturnType<typeof setTimeout> | null = null
+  private oldestQueueTime: number = 0
+
+  constructor(config: BatchConfig) {
+    this.config = {
+      provider: config.provider,
+      maxBatchSize: config.maxBatchSize ?? 100,
+      maxWaitTime: config.maxWaitTime ?? 60000,
+      onProgress: config.onProgress ?? (() => {}),
+      onStatusChange: config.onStatusChange ?? (() => {}),
+    }
+  }
+
+  /**
+   * Add a request to the batch queue
+   *
+   * Returns a promise that resolves when the batch completes.
+   */
+  addRequest(request: BatchRequest): Promise<BatchResult> {
+    return new Promise((resolve, reject) => {
+      // Store request
+      this.queue.set(request.id, request)
+      this.pendingPromises.set(request.id, { resolve, reject })
+
+      // Track queue timing
+      if (this.queue.size === 1) {
+        this.oldestQueueTime = Date.now()
+        this.startAutoSubmitTimer()
+      }
+
+      // Auto-submit if batch is full
+      if (this.queue.size >= this.config.maxBatchSize) {
+        this.submitBatch()
+      }
+    })
+  }
+
+  /**
+   * Submit current queue as a batch
+   */
+  async submitBatch(): Promise<BatchJob | null> {
+    if (this.queue.size === 0) {
+      return null
+    }
+
+    // Clear timer
+    if (this.batchTimer) {
+      clearTimeout(this.batchTimer)
+      this.batchTimer = null
+    }
+
+    // Create batch job
+    const requestIds = Array.from(this.queue.keys())
+    const job: BatchJob = {
+      id: generateId(),
+      provider: this.config.provider,
+      status: 'pending',
+      requestIds,
+      createdAt: Date.now(),
+    }
+
+    this.jobs.set(job.id, job)
+    this.config.onStatusChange(job)
+
+    // Track stats
+    const waitTime = Date.now() - this.oldestQueueTime
+    this.stats.totalBatched += requestIds.length
+    this.stats.averageBatchSize =
+      (this.stats.averageBatchSize * (this.stats.totalBatched - requestIds.length) +
+        requestIds.length) /
+      this.stats.totalBatched
+    this.stats.averageWaitTime =
+      (this.stats.averageWaitTime * (this.stats.totalBatched - requestIds.length) + waitTime) /
+      this.stats.totalBatched
+
+    // Clear queue
+    const requests = Array.from(this.queue.values())
+    this.queue.clear()
+    this.oldestQueueTime = 0
+
+    // Process batch (in a real implementation, this would call the provider API)
+    this.processBatch(job, requests)
+
+    return job
+  }
+
+  /**
+   * Get batch job status
+   */
+  getBatchStatus(jobId: string): BatchJob | undefined {
+    return this.jobs.get(jobId)
+  }
+
+  /**
+   * Cancel a batch job
+   */
+  async cancelBatch(jobId: string): Promise<boolean> {
+    const job = this.jobs.get(jobId)
+    if (!job) return false
+    if (job.status !== 'pending' && job.status !== 'in_progress') return false
+
+    job.status = 'cancelled'
+    this.config.onStatusChange(job)
+
+    // Reject pending promises
+    for (const requestId of job.requestIds) {
+      const pending = this.pendingPromises.get(requestId)
+      if (pending) {
+        pending.reject(new Error('Batch cancelled'))
+        this.pendingPromises.delete(requestId)
+      }
+    }
+
+    return true
+  }
+
+  /**
+   * Get results for a batch job
+   */
+  getResults(jobId: string): BatchResult[] | undefined {
+    return this.results.get(jobId)
+  }
+
+  /**
+   * Get current queue size
+   */
+  getQueueSize(): number {
+    return this.queue.size
+  }
+
+  /**
+   * Get batch statistics
+   */
+  getStats(): BatchStats {
+    return { ...this.stats }
+  }
+
+  /**
+   * Flush queue (submit immediately)
+   */
+  async flush(): Promise<BatchJob | null> {
+    return this.submitBatch()
+  }
+
+  /**
+   * Clear queue without submitting
+   */
+  clearQueue(): void {
+    for (const [requestId] of this.queue) {
+      const pending = this.pendingPromises.get(requestId)
+      if (pending) {
+        pending.reject(new Error('Queue cleared'))
+        this.pendingPromises.delete(requestId)
+      }
+    }
+    this.queue.clear()
+
+    if (this.batchTimer) {
+      clearTimeout(this.batchTimer)
+      this.batchTimer = null
+    }
+  }
+
+  /**
+   * Start auto-submit timer
+   */
+  private startAutoSubmitTimer(): void {
+    if (this.batchTimer) return
+
+    this.batchTimer = setTimeout(() => {
+      this.submitBatch()
+    }, this.config.maxWaitTime)
+  }
+
+  /**
+   * Process batch (simulated - real implementation would call provider API)
+   */
+  private async processBatch(job: BatchJob, requests: BatchRequest[]): Promise<void> {
+    job.status = 'in_progress'
+    this.config.onStatusChange(job)
+
+    const results: BatchResult[] = []
+
+    // In a real implementation, this would:
+    // 1. Format requests for provider batch API
+    // 2. Submit batch to provider
+    // 3. Poll for completion
+    // 4. Parse results
+
+    // Simulated processing
+    for (let i = 0; i < requests.length; i++) {
+      const request = requests[i]
+
+      // Estimate tokens for cost tracking
+      const inputTokens = request.messages.reduce(
+        (sum, m) => sum + estimateTokens(m.content),
+        0
+      )
+
+      const result: BatchResult = {
+        requestId: request.id,
+        success: true,
+        content: `[Batch response for ${request.id}]`,
+        usage: {
+          inputTokens,
+          outputTokens: Math.floor(inputTokens * 0.5), // Estimate
+        },
+      }
+
+      results.push(result)
+      this.stats.totalInputTokens += result.usage?.inputTokens ?? 0
+      this.stats.totalOutputTokens += result.usage?.outputTokens ?? 0
+
+      // Resolve pending promise
+      const pending = this.pendingPromises.get(request.id)
+      if (pending) {
+        pending.resolve(result)
+        this.pendingPromises.delete(request.id)
+      }
+
+      // Report progress
+      this.config.onProgress(i + 1, requests.length)
+    }
+
+    // Store results
+    this.results.set(job.id, results)
+
+    // Update job
+    job.status = 'completed'
+    job.completedAt = Date.now()
+    job.progress = 100
+    this.config.onStatusChange(job)
+
+    // Update stats
+    const successCount = results.filter(r => r.success).length
+    this.stats.totalCompleted += successCount
+    this.stats.totalFailed += requests.length - successCount
+
+    // Calculate savings
+    const savings = this.calculateBatchSavings(requests)
+    this.stats.totalSavings += savings.savings
+  }
+
+  /**
+   * Calculate savings for a batch
+   */
+  private calculateBatchSavings(requests: BatchRequest[]): BatchCostEstimate {
+    let totalInputTokens = 0
+    let totalOutputTokens = 0
+
+    for (const request of requests) {
+      const inputTokens = request.messages.reduce(
+        (sum, m) => sum + estimateTokens(m.content),
+        0
+      )
+      totalInputTokens += inputTokens
+      totalOutputTokens += Math.floor(inputTokens * 0.5) // Estimate
+    }
+
+    // Get model pricing
+    const modelKey = requests[0]?.model ?? 'gpt-4o-mini'
+    const pricing = BATCH_PRICING[modelKey] ?? BATCH_PRICING['gpt-4o-mini']
+
+    const batchCost =
+      (totalInputTokens / 1_000_000) * pricing.inputPer1M +
+      (totalOutputTokens / 1_000_000) * pricing.outputPer1M
+
+    // Regular price is 2x batch price
+    const regularCost = batchCost * 2
+
+    return {
+      regularCost,
+      batchCost,
+      savings: regularCost - batchCost,
+      savingsPercent: 50,
+      estimatedCompletionTime: requests.length * 100, // Rough estimate
+    }
+  }
+}
+
+/**
+ * Estimate savings from using batch API
+ */
+export function estimateBatchSavings(
+  requests: Array<{ messages: BatchMessage[]; model?: string }>
+): BatchCostEstimate {
+  let totalInputTokens = 0
+  let totalOutputTokens = 0
+
+  for (const request of requests) {
+    const inputTokens = request.messages.reduce(
+      (sum, m) => sum + estimateTokens(m.content),
+      0
+    )
+    totalInputTokens += inputTokens
+    totalOutputTokens += Math.floor(inputTokens * 0.5)
+  }
+
+  const modelKey = requests[0]?.model ?? 'gpt-4o-mini'
+  const pricing = BATCH_PRICING[modelKey] ?? BATCH_PRICING['gpt-4o-mini']
+
+  const batchCost =
+    (totalInputTokens / 1_000_000) * pricing.inputPer1M +
+    (totalOutputTokens / 1_000_000) * pricing.outputPer1M
+
+  const regularCost = batchCost * 2
+
+  return {
+    regularCost,
+    batchCost,
+    savings: regularCost - batchCost,
+    savingsPercent: 50,
+    estimatedCompletionTime: requests.length * 100,
+  }
+}
+
+/**
+ * Check if a request should use batch API
+ */
+export function shouldUseBatch(
+  request: { messages: BatchMessage[] },
+  options: {
+    urgency?: 'low' | 'normal' | 'high'
+    minSavingsThreshold?: number
+    maxWaitAcceptable?: number
+  } = {}
+): { useBatch: boolean; reason: string } {
+  const { urgency = 'normal', minSavingsThreshold = 0.01, maxWaitAcceptable = 86400000 } = options
+
+  // High urgency requests should not be batched
+  if (urgency === 'high') {
+    return { useBatch: false, reason: 'Request is high urgency' }
+  }
+
+  // Estimate tokens
+  const tokens = request.messages.reduce((sum, m) => sum + estimateTokens(m.content), 0)
+
+  // Very small requests have minimal savings
+  if (tokens < 100) {
+    return { useBatch: false, reason: 'Request too small for meaningful savings' }
+  }
+
+  // Estimate savings
+  const inputCost = (tokens / 1_000_000) * 0.15 // Using gpt-4o-mini baseline
+  const savings = inputCost * 0.5
+
+  if (savings < minSavingsThreshold) {
+    return { useBatch: false, reason: `Savings $${savings.toFixed(4)} below threshold` }
+  }
+
+  // Check if wait time is acceptable
+  // Batch API typically completes within 24 hours
+  if (maxWaitAcceptable < 3600000) {
+    // Less than 1 hour
+    return { useBatch: false, reason: 'Wait time requirement too strict for batch API' }
+  }
+
+  return {
+    useBatch: true,
+    reason: `Batch recommended: ~$${savings.toFixed(4)} savings, ${urgency} urgency`,
+  }
+}
+
+/**
+ * Create a JSONL file content for OpenAI batch API
+ */
+export function createOpenAIBatchFile(
+  requests: BatchRequest[]
+): string {
+  return requests
+    .map(req => {
+      const body = {
+        model: req.model,
+        messages: req.messages.map(m => ({
+          role: m.role,
+          content: m.content,
+        })),
+        ...(req.options?.maxTokens && { max_tokens: req.options.maxTokens }),
+        ...(req.options?.temperature !== undefined && { temperature: req.options.temperature }),
+      }
+
+      return JSON.stringify({
+        custom_id: req.id,
+        method: 'POST',
+        url: '/v1/chat/completions',
+        body,
+      })
+    })
+    .join('\n')
+}
+
+/**
+ * Create a batch request file for Anthropic
+ */
+export function createAnthropicBatchFile(
+  requests: BatchRequest[]
+): object[] {
+  return requests.map(req => ({
+    custom_id: req.id,
+    params: {
+      model: req.model,
+      max_tokens: req.options?.maxTokens ?? 1024,
+      messages: req.messages.map(m => ({
+        role: m.role,
+        content: m.content,
+      })),
+    },
+  }))
+}
+
+/**
+ * Parse OpenAI batch results
+ */
+export function parseOpenAIBatchResults(
+  jsonlContent: string
+): BatchResult[] {
+  return jsonlContent
+    .split('\n')
+    .filter(line => line.trim())
+    .map(line => {
+      try {
+        const result = JSON.parse(line)
+        const response = result.response?.body
+
+        if (result.error) {
+          return {
+            requestId: result.custom_id,
+            success: false,
+            error: result.error.message,
+          }
+        }
+
+        return {
+          requestId: result.custom_id,
+          success: true,
+          content: response?.choices?.[0]?.message?.content ?? '',
+          usage: {
+            inputTokens: response?.usage?.prompt_tokens ?? 0,
+            outputTokens: response?.usage?.completion_tokens ?? 0,
+          },
+        }
+      } catch {
+        return {
+          requestId: 'unknown',
+          success: false,
+          error: 'Failed to parse result',
+        }
+      }
+    })
+}

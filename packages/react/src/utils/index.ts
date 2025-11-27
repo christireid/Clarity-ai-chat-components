@@ -90,6 +90,24 @@ export * from './smart-cache'
 export * from './model-router'
 export * from './response-limiter'
 export * from './request-batcher'
+
+// Batch API Support (50% cost savings)
+export {
+  BatchRequestManager,
+  estimateBatchSavings,
+  shouldUseBatch,
+  createOpenAIBatchFile,
+  createAnthropicBatchFile,
+  parseOpenAIBatchResults,
+  type BatchRequest,
+  type BatchJob,
+  type BatchJobStatus,
+  type BatchResult,
+  type BatchConfig,
+  type BatchCostEstimate,
+  type BatchStats,
+  type BatchMessage,
+} from './batch-api'
 export * from './reference-handler'
 export * from './response-prefilling'
 export * from './prompt-structure'
@@ -102,6 +120,22 @@ export * from './chat-config-builder'
 
 // Streaming utilities (shared across hooks)
 export * from './streaming-helpers'
+
+// Streaming Optimization (output token savings)
+export {
+  StreamingResponseMonitor,
+  PartialResponseCache,
+  createOptimizedStreamHandler,
+  hashQuery,
+  estimateResponseLength,
+  getRecommendedMaxTokens,
+  DEFAULT_COMPLETION_SIGNALS,
+  DEFAULT_EARLY_STOP_PATTERNS,
+  type StreamingOptimizationConfig,
+  type ChunkAnalysis,
+  type StreamingMetrics,
+  type PartialResponseEntry,
+} from './streaming-optimizer'
 
 // Message conversion utilities (canonical implementation)
 export * from './message-conversion'
