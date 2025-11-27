@@ -19,21 +19,26 @@ import {
 const Progress = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { value?: number }
->(({ className, value = 0, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      'relative h-4 w-full overflow-hidden rounded-full bg-gray-200',
-      className
-    )}
-    {...props}
-  >
+>(({ className, value = 0, ...props }, ref) => {
+  // Guard against NaN/Infinity - clamp to valid percentage range
+  const safeValue = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0
+
+  return (
     <div
-      className="h-full bg-blue-600 transition-all"
-      style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
-    />
-  </div>
-))
+      ref={ref}
+      className={cn(
+        'relative h-4 w-full overflow-hidden rounded-full bg-gray-200',
+        className
+      )}
+      {...props}
+    >
+      <div
+        className="h-full bg-blue-600 transition-all"
+        style={{ width: `${safeValue}%` }}
+      />
+    </div>
+  )
+})
 Progress.displayName = 'Progress'
 
 /**

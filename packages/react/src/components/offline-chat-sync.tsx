@@ -195,6 +195,7 @@ export function OfflineChatSync({
       await new Promise<void>((resolve, reject) => {
         transaction.oncomplete = () => resolve()
         transaction.onerror = () => reject(transaction.error)
+        transaction.onabort = () => reject(new Error('Transaction aborted'))
       })
     } catch (error) {
       console.error('Failed to save messages:', error)

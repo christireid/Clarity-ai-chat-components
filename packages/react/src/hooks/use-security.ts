@@ -232,9 +232,10 @@ export function useSecureChat(options?: {
           }
 
           // Step 6: Add assistant message
+          // Use nullish coalescing to preserve empty string as valid output
           const assistantMsg: Message = {
             role: 'assistant',
-            content: outputValidation.output || response,
+            content: outputValidation.output ?? response,
           }
 
           setMessages([...newMessages, assistantMsg])
