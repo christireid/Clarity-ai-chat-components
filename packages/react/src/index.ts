@@ -391,6 +391,9 @@ export {
   type CalendarEvent,
   type ActionItem,
   type AvailabilitySlot,
+  type EventAttendee,
+  type EventReminder,
+  type RecurrenceRule,
 } from './components/calendar-integration'
 
 // Email Integration
@@ -404,6 +407,8 @@ export {
   type EmailNotification,
   type EmailTemplate,
   type DigestConfig,
+  type EmailParticipant,
+  type EmailAttachment,
 } from './components/email-integration'
 export { UserInteractionAnalytics, useInteractionTracking } from './components/user-interaction-analytics'
 export { ABTestingDashboard, useABTesting } from './components/ab-testing-dashboard'

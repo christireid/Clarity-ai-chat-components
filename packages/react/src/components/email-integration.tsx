@@ -12,6 +12,20 @@ import {
 import { RefreshIcon, CheckIcon, CloseIcon } from './icons'
 
 /**
+ * Custom hook to track mounted state
+ */
+function useIsMounted() {
+  const isMounted = React.useRef(false)
+  React.useEffect(() => {
+    isMounted.current = true
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
+  return isMounted
+}
+
+/**
  * Email provider types
  */
 export type EmailProvider =
@@ -146,7 +160,7 @@ interface EmailIntegrationState {
 /**
  * Props for EmailIntegration
  */
-export interface EmailIntegrationProps {
+export interface EmailIntegrationProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
   /** Connected accounts */
   accounts?: EmailAccount[]
   /** Initial threads */
@@ -169,8 +183,6 @@ export interface EmailIntegrationProps {
   fetchMessages?: (threadId: string) => Promise<EmailMessage[]>
   /** Mark as read function */
   markAsRead?: (threadId: string) => Promise<void>
-  /** Custom className */
-  className?: string
 }
 
 /**
@@ -239,20 +251,26 @@ function getParticipantsDisplay(participants: EmailParticipant[]): string {
  * - Managing notifications
  * - Email digests
  */
-export function EmailIntegration({
-  accounts = [],
-  initialThreads = [],
-  showAccountSelector = true,
-  showNotifications = true,
-  maxThreads = 20,
-  onThreadSelect,
-  onSendEmail,
-  onReply,
-  fetchThreads,
-  fetchMessages,
-  markAsRead,
-  className,
-}: EmailIntegrationProps) {
+export const EmailIntegration = React.forwardRef<HTMLDivElement, EmailIntegrationProps>(
+  function EmailIntegration(
+    {
+      accounts = [],
+      initialThreads = [],
+      showAccountSelector = true,
+      showNotifications = true,
+      maxThreads = 20,
+      onThreadSelect,
+      onSendEmail,
+      onReply,
+      fetchThreads,
+      fetchMessages,
+      markAsRead,
+      className,
+      ...props
+    },
+    ref
+  ) {
+  const isMounted = useIsMounted()
   const [state, setState] = React.useState<EmailIntegrationState>({
     accounts,
     threads: initialThreads,
@@ -268,6 +286,16 @@ export function EmailIntegration({
   const [selectedThread, setSelectedThread] = React.useState<EmailThread | null>(null)
   const [replyText, setReplyText] = React.useState('')
 
+  // Clear error helper
+  const clearError = React.useCallback(() => {
+    setState(prev => ({ ...prev, error: null }))
+  }, [])
+
+  // Clear reply text when thread changes
+  React.useEffect(() => {
+    setReplyText('')
+  }, [selectedThread?.id])
+
   // Load threads
   const loadThreads = React.useCallback(async () => {
     if (!fetchThreads) return
@@ -276,19 +304,23 @@ export function EmailIntegration({
 
     try {
       const threads = await fetchThreads(selectedAccount || undefined)
-      setState(prev => ({
-        ...prev,
-        threads: threads.slice(0, maxThreads),
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          threads: threads.slice(0, maxThreads),
+          loading: false,
+        }))
+      }
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Failed to load emails',
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to load emails',
+          loading: false,
+        }))
+      }
     }
-  }, [fetchThreads, selectedAccount, maxThreads])
+  }, [fetchThreads, selectedAccount, maxThreads, isMounted])
 
   // Select thread and load messages
   const selectThread = React.useCallback(async (thread: EmailThread) => {
@@ -297,21 +329,33 @@ export function EmailIntegration({
 
     // Mark as read
     if (thread.unread && markAsRead) {
-      await markAsRead(thread.id)
-      setState(prev => ({
-        ...prev,
-        threads: prev.threads.map(t =>
-          t.id === thread.id ? { ...t, unread: false } : t
-        ),
-      }))
+      try {
+        await markAsRead(thread.id)
+        if (isMounted.current) {
+          setState(prev => ({
+            ...prev,
+            threads: prev.threads.map(t =>
+              t.id === thread.id ? { ...t, unread: false } : t
+            ),
+          }))
+        }
+      } catch {
+        // Silently fail for mark as read
+      }
     }
 
     // Load full messages if needed
     if (fetchMessages && !thread.messages) {
-      const messages = await fetchMessages(thread.id)
-      setSelectedThread(prev => prev ? { ...prev, messages } : null)
+      try {
+        const messages = await fetchMessages(thread.id)
+        if (isMounted.current) {
+          setSelectedThread(prev => prev ? { ...prev, messages } : null)
+        }
+      } catch {
+        // Failed to load messages, keep thread selected without full messages
+      }
     }
-  }, [onThreadSelect, markAsRead, fetchMessages])
+  }, [onThreadSelect, markAsRead, fetchMessages, isMounted])
 
   // Send reply
   const sendReply = React.useCallback(async () => {
@@ -321,22 +365,28 @@ export function EmailIntegration({
 
     try {
       const message = await onReply(selectedThread.id, replyText)
-      setSelectedThread(prev => prev ? {
-        ...prev,
-        messages: [...(prev.messages || []), message],
-        messageCount: prev.messageCount + 1,
-        lastMessageAt: message.timestamp,
-      } : null)
-      setReplyText('')
+      if (isMounted.current) {
+        setSelectedThread(prev => prev ? {
+          ...prev,
+          messages: [...(prev.messages || []), message],
+          messageCount: prev.messageCount + 1,
+          lastMessageAt: message.timestamp,
+        } : null)
+        setReplyText('')
+      }
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Failed to send reply',
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to send reply',
+        }))
+      }
     } finally {
-      setState(prev => ({ ...prev, syncing: false }))
+      if (isMounted.current) {
+        setState(prev => ({ ...prev, syncing: false }))
+      }
     }
-  }, [selectedThread, onReply, replyText])
+  }, [selectedThread, onReply, replyText, isMounted])
 
   // Load threads on mount and account change
   React.useEffect(() => {
@@ -351,13 +401,13 @@ export function EmailIntegration({
   }, [state.threads])
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div ref={ref} className={cn('space-y-4', className)} role="region" aria-label="Email integration" {...props}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold">Email</h3>
           {unreadCount > 0 && (
-            <Badge variant="default">{unreadCount}</Badge>
+            <Badge variant="default" aria-label={`${unreadCount} unread emails`}>{unreadCount}</Badge>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -377,7 +427,7 @@ export function EmailIntegration({
 
       {/* Account selector */}
       {showAccountSelector && state.accounts.length > 1 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label="Email accounts">
           {state.accounts.map(account => {
             const config = PROVIDER_CONFIG[account.provider]
             return (
@@ -387,8 +437,11 @@ export function EmailIntegration({
                 size="sm"
                 onClick={() => setSelectedAccount(account.id)}
                 className="gap-2"
+                role="tab"
+                aria-selected={selectedAccount === account.id}
+                aria-label={`Select ${account.email}`}
               >
-                <span>{config.icon}</span>
+                <span aria-hidden="true">{config.icon}</span>
                 <span>{account.email}</span>
                 {account.unreadCount && account.unreadCount > 0 && (
                   <Badge variant="secondary" className="ml-1">
@@ -403,8 +456,20 @@ export function EmailIntegration({
 
       {/* Error display */}
       {state.error && (
-        <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
-          {state.error}
+        <div
+          className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm flex items-center justify-between"
+          role="alert"
+        >
+          <span>{state.error}</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearError}
+            aria-label="Dismiss error"
+            className="ml-2 h-6 w-6 p-0"
+          >
+            <CloseIcon className="w-4 h-4" />
+          </Button>
         </div>
       )}
 
@@ -471,17 +536,19 @@ export function EmailIntegration({
 
             {/* Reply box */}
             {onReply && (
-              <div className="mt-4 pt-4 border-t">
+              <div className="mt-4 pt-4 border-t border-muted">
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder="Write a reply..."
-                  className="w-full min-h-[80px] p-2 border rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-primary"
+                  aria-label="Reply message"
+                  className="w-full min-h-[80px] p-2 border border-input bg-background text-foreground rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-muted-foreground"
                 />
                 <div className="flex justify-end mt-2">
                   <Button
                     onClick={sendReply}
                     disabled={!replyText.trim() || state.syncing}
+                    aria-label={state.syncing ? 'Sending reply' : 'Send reply'}
                   >
                     {state.syncing ? 'Sending...' : 'Send Reply'}
                   </Button>
@@ -609,7 +676,10 @@ export function EmailIntegration({
       )}
     </div>
   )
-}
+})
+
+// Display name for debugging
+EmailIntegration.displayName = 'EmailIntegration'
 
 /**
  * Hook for email integration

@@ -9,7 +9,21 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
-import { ClockIcon, CheckIcon, RefreshIcon } from './icons'
+import { ClockIcon, CheckIcon, RefreshIcon, CloseIcon } from './icons'
+
+/**
+ * Custom hook to track mounted state
+ */
+function useIsMounted() {
+  const isMounted = React.useRef(false)
+  React.useEffect(() => {
+    isMounted.current = true
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
+  return isMounted
+}
 
 /**
  * Calendar event
@@ -100,7 +114,7 @@ interface CalendarIntegrationState {
 /**
  * Props for CalendarIntegration
  */
-export interface CalendarIntegrationProps {
+export interface CalendarIntegrationProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
   /** Initial events */
   initialEvents?: CalendarEvent[]
   /** Action items from conversation */
@@ -123,8 +137,6 @@ export interface CalendarIntegrationProps {
   fetchEvents?: (start: Date, end: Date) => Promise<CalendarEvent[]>
   /** Fetch availability function */
   fetchAvailability?: (start: Date, end: Date) => Promise<AvailabilitySlot[]>
-  /** Custom className */
-  className?: string
 }
 
 /**
@@ -205,20 +217,26 @@ function getPriorityColor(priority: ActionItem['priority']): string {
  * - Checking availability
  * - Scheduling from conversation
  */
-export function CalendarIntegration({
-  initialEvents = [],
-  actionItems: initialActionItems = [],
-  dateRange,
-  showActionItems = true,
-  showAvailability = false,
-  onEventCreate,
-  onEventUpdate,
-  onEventDelete,
-  onActionToEvent,
-  fetchEvents,
-  fetchAvailability,
-  className,
-}: CalendarIntegrationProps) {
+export const CalendarIntegration = React.forwardRef<HTMLDivElement, CalendarIntegrationProps>(
+  function CalendarIntegration(
+    {
+      initialEvents = [],
+      actionItems: initialActionItems = [],
+      dateRange,
+      showActionItems = true,
+      showAvailability = false,
+      onEventCreate,
+      onEventUpdate,
+      onEventDelete,
+      onActionToEvent,
+      fetchEvents,
+      fetchAvailability,
+      className,
+      ...props
+    },
+    ref
+  ) {
+  const isMounted = useIsMounted()
   const [state, setState] = React.useState<CalendarIntegrationState>({
     events: initialEvents,
     actionItems: initialActionItems,
@@ -228,7 +246,11 @@ export function CalendarIntegration({
   })
 
   const [selectedDate, setSelectedDate] = React.useState<Date>(new Date())
-  const [creatingEvent, setCreatingEvent] = React.useState(false)
+
+  // Clear error helper
+  const clearError = React.useCallback(() => {
+    setState(prev => ({ ...prev, error: null }))
+  }, [])
 
   // Calculate date range
   const range = React.useMemo(() => {
@@ -251,15 +273,19 @@ export function CalendarIntegration({
 
     try {
       const events = await fetchEvents(range.start, range.end)
-      setState(prev => ({ ...prev, events, loading: false }))
+      if (isMounted.current) {
+        setState(prev => ({ ...prev, events, loading: false }))
+      }
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Failed to load events',
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to load events',
+          loading: false,
+        }))
+      }
     }
-  }, [fetchEvents, range])
+  }, [fetchEvents, range, isMounted])
 
   // Load availability
   const loadAvailability = React.useCallback(async () => {
@@ -267,12 +293,16 @@ export function CalendarIntegration({
 
     try {
       const availability = await fetchAvailability(range.start, range.end)
-      setState(prev => ({ ...prev, availability }))
+      if (isMounted.current) {
+        setState(prev => ({ ...prev, availability }))
+      }
     } catch (error) {
-      // Silently fail for availability
-      console.error('Failed to load availability:', error)
+      // Silently fail for availability (non-critical)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to load availability:', error)
+      }
     }
-  }, [fetchAvailability, range])
+  }, [fetchAvailability, range, isMounted])
 
   // Create event from action item
   const convertActionToEvent = React.useCallback(async (actionItem: ActionItem) => {
@@ -282,22 +312,26 @@ export function CalendarIntegration({
 
     try {
       const event = await onActionToEvent(actionItem)
-      setState(prev => ({
-        ...prev,
-        events: [...prev.events, event],
-        actionItems: prev.actionItems.map(a =>
-          a.id === actionItem.id ? { ...a, status: 'completed' as const } : a
-        ),
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          events: [...prev.events, event],
+          actionItems: prev.actionItems.map(a =>
+            a.id === actionItem.id ? { ...a, status: 'completed' as const } : a
+          ),
+          loading: false,
+        }))
+      }
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Failed to create event',
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to create event',
+          loading: false,
+        }))
+      }
     }
-  }, [onActionToEvent])
+  }, [onActionToEvent, isMounted])
 
   // Delete event
   const deleteEvent = React.useCallback(async (eventId: string) => {
@@ -307,19 +341,23 @@ export function CalendarIntegration({
 
     try {
       await onEventDelete(eventId)
-      setState(prev => ({
-        ...prev,
-        events: prev.events.filter(e => e.id !== eventId),
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          events: prev.events.filter(e => e.id !== eventId),
+          loading: false,
+        }))
+      }
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Failed to delete event',
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to delete event',
+          loading: false,
+        }))
+      }
     }
-  }, [onEventDelete])
+  }, [onEventDelete, isMounted])
 
   // Group events by date
   const eventsByDate = React.useMemo(() => {
@@ -346,7 +384,7 @@ export function CalendarIntegration({
   }, [loadEvents, loadAvailability, showAvailability])
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div ref={ref} className={cn('space-y-4', className)} role="region" aria-label="Calendar integration" {...props}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">Calendar</h3>
@@ -365,8 +403,8 @@ export function CalendarIntegration({
           {onEventCreate && (
             <Button
               size="sm"
-              onClick={() => setCreatingEvent(true)}
               disabled={state.loading}
+              aria-label="Create new event"
             >
               New Event
             </Button>
@@ -376,8 +414,20 @@ export function CalendarIntegration({
 
       {/* Error display */}
       {state.error && (
-        <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
-          {state.error}
+        <div
+          className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm flex items-center justify-between"
+          role="alert"
+        >
+          <span>{state.error}</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearError}
+            aria-label="Dismiss error"
+            className="ml-2 h-6 w-6 p-0"
+          >
+            <CloseIcon className="w-4 h-4" />
+          </Button>
         </div>
       )}
 
@@ -533,12 +583,17 @@ export function CalendarIntegration({
         <Card>
           <CardContent className="p-4">
             <div className="text-sm font-medium mb-3">Availability</div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2" role="list" aria-label="Available time slots">
               {state.availability
                 .filter(slot => slot.status === 'free')
                 .slice(0, 6)
                 .map((slot, index) => (
-                  <Badge key={index} variant="outline" className="cursor-pointer hover:bg-accent">
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="cursor-pointer hover:bg-accent"
+                    role="listitem"
+                  >
                     {formatDate(slot.start)} {formatTime(slot.start)}
                   </Badge>
                 ))}
@@ -548,7 +603,10 @@ export function CalendarIntegration({
       )}
     </div>
   )
-}
+})
+
+// Display name for debugging
+CalendarIntegration.displayName = 'CalendarIntegration'
 
 /**
  * Hook for calendar integration

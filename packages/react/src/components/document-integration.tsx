@@ -9,7 +9,21 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
-import { FileIcon, DownloadIcon, RefreshIcon, CheckIcon } from './icons'
+import { FileIcon, DownloadIcon, RefreshIcon, CheckIcon, CloseIcon } from './icons'
+
+/**
+ * Custom hook to track mounted state
+ */
+function useIsMounted() {
+  const isMounted = React.useRef(false)
+  React.useEffect(() => {
+    isMounted.current = true
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
+  return isMounted
+}
 
 /**
  * Supported document platforms
@@ -90,7 +104,7 @@ interface DocumentIntegrationState {
 /**
  * Props for DocumentIntegration
  */
-export interface DocumentIntegrationProps {
+export interface DocumentIntegrationProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
   /** Enabled platforms */
   platforms?: DocumentPlatform[]
   /** Initial documents */
@@ -111,8 +125,6 @@ export interface DocumentIntegrationProps {
   multiSelect?: boolean
   /** Max documents to display */
   maxDocuments?: number
-  /** Custom className */
-  className?: string
 }
 
 /**
@@ -161,19 +173,25 @@ function formatDate(date: Date): string {
  * - Document export
  * - Cross-platform sync
  */
-export function DocumentIntegration({
-  platforms = ['google-docs', 'notion', 'local'],
-  initialDocuments = [],
-  onDocumentSelect,
-  onContentExtract,
-  onExport,
-  fetchDocument,
-  listDocuments,
-  showPlatformSelector = true,
-  multiSelect = false,
-  maxDocuments = 50,
-  className,
-}: DocumentIntegrationProps) {
+export const DocumentIntegration = React.forwardRef<HTMLDivElement, DocumentIntegrationProps>(
+  function DocumentIntegration(
+    {
+      platforms = ['google-docs', 'notion', 'local'],
+      initialDocuments = [],
+      onDocumentSelect,
+      onContentExtract,
+      onExport,
+      fetchDocument,
+      listDocuments,
+      showPlatformSelector = true,
+      multiSelect = false,
+      maxDocuments = 50,
+      className,
+      ...props
+    },
+    ref
+  ) {
+  const isMounted = useIsMounted()
   const [state, setState] = React.useState<DocumentIntegrationState>({
     documents: initialDocuments,
     selectedDocument: null,
@@ -181,8 +199,16 @@ export function DocumentIntegration({
     error: null,
     syncing: false,
   })
-  const [selectedPlatform, setSelectedPlatform] = React.useState<DocumentPlatform>(platforms[0])
+
+  // Handle empty platforms array safely
+  const safePlatforms = platforms.length > 0 ? platforms : ['local' as DocumentPlatform]
+  const [selectedPlatform, setSelectedPlatform] = React.useState<DocumentPlatform>(safePlatforms[0])
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
+
+  // Clear error helper
+  const clearError = React.useCallback(() => {
+    setState(prev => ({ ...prev, error: null }))
+  }, [])
 
   // Load documents from platform
   const loadDocuments = React.useCallback(async (platform: DocumentPlatform) => {
@@ -192,19 +218,23 @@ export function DocumentIntegration({
 
     try {
       const docs = await listDocuments(platform)
-      setState(prev => ({
-        ...prev,
-        documents: docs.slice(0, maxDocuments),
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          documents: docs.slice(0, maxDocuments),
+          loading: false,
+        }))
+      }
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Failed to load documents',
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to load documents',
+          loading: false,
+        }))
+      }
     }
-  }, [listDocuments, maxDocuments])
+  }, [listDocuments, maxDocuments, isMounted])
 
   // Select document and fetch content
   const selectDocument = React.useCallback(async (doc: DocumentMetadata) => {
@@ -222,21 +252,25 @@ export function DocumentIntegration({
 
     try {
       const content = await fetchDocument(doc.id, doc.platform)
-      setState(prev => ({
-        ...prev,
-        selectedDocument: content,
-        loading: false,
-      }))
-      onDocumentSelect?.(content)
-      onContentExtract?.(content)
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          selectedDocument: content,
+          loading: false,
+        }))
+        onDocumentSelect?.(content)
+        onContentExtract?.(content)
+      }
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Failed to fetch document',
-        loading: false,
-      }))
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to fetch document',
+          loading: false,
+        }))
+      }
     }
-  }, [fetchDocument, onDocumentSelect, onContentExtract])
+  }, [fetchDocument, onDocumentSelect, onContentExtract, isMounted])
 
   // Toggle document selection (for multi-select)
   const toggleSelection = React.useCallback((docId: string) => {
@@ -257,26 +291,46 @@ export function DocumentIntegration({
 
     setState(prev => ({ ...prev, syncing: true }))
 
+    let objectUrl: string | null = null
+
     try {
       const blob = await onExport(docId, options)
-      // Trigger download
-      const url = URL.createObjectURL(blob)
+      if (!isMounted.current) return
+
+      // Trigger download with proper cleanup
+      objectUrl = URL.createObjectURL(blob)
       const a = document.createElement('a')
-      a.href = url
+      a.href = objectUrl
       a.download = `document.${options.format}`
+      a.style.display = 'none'
       document.body.appendChild(a)
       a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      // Delay removal to ensure download starts
+      setTimeout(() => {
+        if (a.parentNode) {
+          document.body.removeChild(a)
+        }
+        if (objectUrl) {
+          URL.revokeObjectURL(objectUrl)
+        }
+      }, 100)
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : 'Export failed',
-      }))
+      // Clean up URL if created
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl)
+      }
+      if (isMounted.current) {
+        setState(prev => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Export failed',
+        }))
+      }
     } finally {
-      setState(prev => ({ ...prev, syncing: false }))
+      if (isMounted.current) {
+        setState(prev => ({ ...prev, syncing: false }))
+      }
     }
-  }, [onExport])
+  }, [onExport, isMounted])
 
   // Load documents when platform changes
   React.useEffect(() => {
@@ -286,11 +340,11 @@ export function DocumentIntegration({
   }, [selectedPlatform, loadDocuments, listDocuments])
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div ref={ref} className={cn('space-y-4', className)} role="region" aria-label="Document integration" {...props}>
       {/* Platform selector */}
-      {showPlatformSelector && platforms.length > 1 && (
-        <div className="flex flex-wrap gap-2">
-          {platforms.map(platform => {
+      {showPlatformSelector && safePlatforms.length > 1 && (
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label="Document platforms">
+          {safePlatforms.map(platform => {
             const config = PLATFORM_CONFIG[platform]
             return (
               <Button
@@ -299,8 +353,11 @@ export function DocumentIntegration({
                 size="sm"
                 onClick={() => setSelectedPlatform(platform)}
                 className="gap-2"
+                role="tab"
+                aria-selected={selectedPlatform === platform}
+                aria-label={`Select ${config.name}`}
               >
-                <span>{config.icon}</span>
+                <span aria-hidden="true">{config.icon}</span>
                 <span>{config.name}</span>
               </Button>
             )
@@ -310,8 +367,20 @@ export function DocumentIntegration({
 
       {/* Error display */}
       {state.error && (
-        <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
-          {state.error}
+        <div
+          className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm flex items-center justify-between"
+          role="alert"
+        >
+          <span>{state.error}</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearError}
+            aria-label="Dismiss error"
+            className="ml-2 h-6 w-6 p-0"
+          >
+            <CloseIcon className="w-4 h-4" />
+          </Button>
         </div>
       )}
 
@@ -489,7 +558,10 @@ export function DocumentIntegration({
       )}
     </div>
   )
-}
+})
+
+// Display name for debugging
+DocumentIntegration.displayName = 'DocumentIntegration'
 
 /**
  * Hook for document integration
