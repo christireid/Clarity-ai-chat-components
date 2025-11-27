@@ -315,6 +315,47 @@ function restorePreservedBlocks(
 }
 
 /**
+ * Smart sentence splitting that handles abbreviations and edge cases
+ * Avoids splitting on common abbreviations like Dr., Mr., U.S., etc.
+ */
+function splitIntoSentences(text: string): string[] {
+  // Protect common abbreviations by replacing with placeholders
+  const abbreviations = [
+    'Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Prof.', 'Jr.', 'Sr.',
+    'Inc.', 'Ltd.', 'Corp.', 'Co.',
+    'U.S.', 'U.K.', 'E.U.',
+    'e.g.', 'i.e.', 'vs.', 'etc.', 'viz.',
+    'Jan.', 'Feb.', 'Mar.', 'Apr.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.',
+  ]
+
+  let protected = text
+  const placeholders: Map<string, string> = new Map()
+
+  for (const abbr of abbreviations) {
+    if (protected.includes(abbr)) {
+      const placeholder = `__ABBR_${placeholders.size}__`
+      placeholders.set(placeholder, abbr)
+      protected = protected.split(abbr).join(placeholder)
+    }
+  }
+
+  // Also protect decimals (e.g., 3.14)
+  protected = protected.replace(/(\d)\.(\d)/g, '$1__DECIMAL__$2')
+
+  // Split on sentence boundaries
+  const sentences = protected.match(/[^.!?]+[.!?]+\s*/g) || [protected]
+
+  // Restore abbreviations and decimals
+  return sentences.map(sentence => {
+    let restored = sentence
+    for (const [placeholder, abbr] of placeholders) {
+      restored = restored.split(placeholder).join(abbr)
+    }
+    return restored.replace(/__DECIMAL__/g, '.')
+  }).filter(s => s.trim().length > 0)
+}
+
+/**
  * Compress text with importance-based token selection
  */
 function compressWithImportance(
@@ -327,8 +368,8 @@ function compressWithImportance(
     preserveSentences = true,
   } = options
 
-  // Split into sentences for better coherence
-  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text]
+  // Split into sentences for better coherence (with abbreviation handling)
+  const sentences = splitIntoSentences(text)
 
   if (!useImportanceScoring) {
     // Simple truncation when importance scoring disabled

@@ -1025,9 +1025,12 @@ export function useTokenOptimizationEnhanced(
 
   /**
    * Restructure prompt for optimal attention (question at end)
+   *
+   * If context is provided, it will be placed at the beginning of the prompt
+   * while the question/instruction stays at the end (following "lost in the middle" research).
    */
   const restructurePrompt = React.useCallback(
-    (prompt: string, _context?: string): {
+    (prompt: string, context?: string): {
       restructured: string
       wasRestructured: boolean
       questionPosition?: 'start' | 'middle' | 'end'
@@ -1036,9 +1039,17 @@ export function useTokenOptimizationEnhanced(
         return { restructured: prompt, wasRestructured: false }
       }
 
-      const result = restructurePromptUtil(prompt, promptStructureOptions)
+      // If context is provided, structure as: context at beginning, prompt at end
+      let inputForRestructure = prompt
+      if (context) {
+        // Prepend context - the restructurePromptUtil will detect
+        // and place the actual question at the end
+        inputForRestructure = `${context}\n\n${prompt}`
+      }
+
+      const result = restructurePromptUtil(inputForRestructure, promptStructureOptions)
       const restructured = result.user
-      const wasRestructured = restructured !== prompt
+      const wasRestructured = restructured !== inputForRestructure
 
       if (enableStats && wasRestructured) {
         setStats(prev => ({

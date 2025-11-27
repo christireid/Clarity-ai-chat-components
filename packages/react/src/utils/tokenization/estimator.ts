@@ -77,6 +77,31 @@ const PROVIDER_CHAR_RATIOS: Record<string, number> = {
 }
 
 /**
+ * CJK character range detection
+ * CJK characters typically use 1.5-2 tokens per character vs 0.25 for Latin
+ */
+function containsCJK(text: string): boolean {
+  // Common CJK ranges: Chinese, Japanese, Korean
+  return /[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/.test(text)
+}
+
+/**
+ * Calculate CJK-aware character count
+ * CJK characters count as ~3 chars for token estimation purposes
+ */
+function getEffectiveCharCount(text: string): number {
+  let count = 0
+  for (const char of text) {
+    if (/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]/.test(char)) {
+      count += 3 // CJK chars use more tokens
+    } else {
+      count += 1
+    }
+  }
+  return count
+}
+
+/**
  * Estimate token count for a given text
  *
  * This is the single source of truth for token estimation across the codebase.
@@ -96,6 +121,10 @@ const PROVIDER_CHAR_RATIOS: Record<string, number> = {
  * const claudeTokens = estimateTokens(longText, 'claude-3-5-sonnet')
  * // Uses 3.8 chars/token ratio
  *
+ * // CJK text is handled automatically
+ * const chineseTokens = estimateTokens("你好世界")
+ * // => 4 (accounts for higher token/char ratio)
+ *
  * // With provider-based estimation
  * const anthropicTokens = estimateTokensByProvider(text, 'anthropic')
  * ```
@@ -107,7 +136,12 @@ export function estimateTokens(text: string, model?: ModelName | string): number
     ? MODEL_CHAR_RATIOS[model] ?? inferRatioFromModelName(model)
     : DEFAULT_CHARS_PER_TOKEN
 
-  return Math.ceil(text.length / charsPerToken)
+  // Use effective char count for CJK-aware estimation
+  const effectiveLength = containsCJK(text)
+    ? getEffectiveCharCount(text)
+    : text.length
+
+  return Math.ceil(effectiveLength / charsPerToken)
 }
 
 /**
