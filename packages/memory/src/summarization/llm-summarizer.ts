@@ -137,24 +137,47 @@ interface CacheEntry {
 }
 
 /**
- * Simple hash for cache keys
+ * Hash content for cache key using multiple samples to reduce collisions
+ * Samples from start, middle, and end of content
  */
 function hashContent(content: string): string {
+  if (!content) return 'sum_0_empty'
+
   let hash = 0
-  for (let i = 0; i < Math.min(content.length, 1000); i++) {
-    const char = content.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash
+  const len = content.length
+
+  // Sample from multiple positions to reduce collisions for long docs
+  const sampleSize = Math.min(500, len)
+  const positions = [
+    0,                            // Start
+    Math.floor(len / 2),          // Middle
+    Math.max(0, len - sampleSize) // End
+  ]
+
+  for (const start of positions) {
+    const end = Math.min(start + sampleSize, len)
+    for (let i = start; i < end; i++) {
+      const char = content.charCodeAt(i)
+      hash = ((hash << 5) - hash) + char
+      hash = hash & hash
+    }
   }
-  return `sum_${content.length}_${Math.abs(hash).toString(36)}`
+
+  return `sum_${len}_${Math.abs(hash).toString(36)}`
 }
 
 /**
  * Estimate tokens (4 chars per token approximation)
  */
 function estimateTokens(text: string): number {
+  if (!text) return 0
   return Math.ceil(text.length / 4)
 }
+
+/**
+ * Maximum cache entries before eviction
+ */
+const MAX_CACHE_ENTRIES = 500
 
 /**
  * Default model selection by provider
@@ -319,7 +342,22 @@ export class LLMSummarizer implements Summarizer {
     const summary = await this.callLLM(prompt, maxTokens)
     const summaryTokens = estimateTokens(summary)
 
-    // Update cache
+    // Update cache with size limit
+    if (this.cache.size >= MAX_CACHE_ENTRIES) {
+      // Evict oldest entry
+      let oldestKey: string | null = null
+      let oldestTime = Infinity
+      for (const [key, entry] of this.cache) {
+        if (entry.timestamp < oldestTime) {
+          oldestTime = entry.timestamp
+          oldestKey = key
+        }
+      }
+      if (oldestKey) {
+        this.cache.delete(oldestKey)
+      }
+    }
+
     this.cache.set(cacheKey, {
       summary,
       timestamp: Date.now(),
@@ -392,11 +430,12 @@ export class LLMSummarizer implements Summarizer {
         stats: {
           originalTokens,
           summaryTokens,
-          compressionRatio: summaryTokens / originalTokens,
+          compressionRatio: originalTokens > 0 ? summaryTokens / originalTokens : 0,
         },
       }
     } catch {
       // Fallback to narrative summary
+      const responseTokens = estimateTokens(response)
       return {
         topics: [],
         decisions: [],
@@ -407,8 +446,8 @@ export class LLMSummarizer implements Summarizer {
         messageCount: messages.length,
         stats: {
           originalTokens,
-          summaryTokens: estimateTokens(response),
-          compressionRatio: estimateTokens(response) / originalTokens,
+          summaryTokens: responseTokens,
+          compressionRatio: originalTokens > 0 ? responseTokens / originalTokens : 0,
         },
       }
     }
@@ -487,7 +526,7 @@ export class LLMSummarizer implements Summarizer {
         summarizedMessages: toSummarize.length,
         originalTokens,
         finalTokens,
-        compressionRatio: finalTokens / originalTokens,
+        compressionRatio: originalTokens > 0 ? finalTokens / originalTokens : 1,
       },
     }
   }

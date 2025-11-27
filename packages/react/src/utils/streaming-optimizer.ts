@@ -257,6 +257,8 @@ export class StreamingResponseMonitor {
     this.accumulatedResponse = ''
     this.tokenCount = 0
     this.startTime = Date.now()
+    this.stopEvents = 0
+    this.totalConfidence = 0
     this.chunksProcessed = 0
     this.lastChunks = []
     this.stopped = false

@@ -305,7 +305,22 @@ export class BatchRequestManager {
     this.oldestQueueTime = 0
 
     // Process batch (in a real implementation, this would call the provider API)
-    this.processBatch(job, requests)
+    // Note: Processing is intentionally not awaited to allow non-blocking batch submission.
+    // Use getResults(job.id) or listen to onStatusChange to know when complete.
+    this.processBatch(job, requests).catch(error => {
+      job.status = 'failed'
+      job.error = error instanceof Error ? error.message : String(error)
+      this.config.onStatusChange(job)
+
+      // Reject all pending promises for this batch
+      for (const requestId of job.requestIds) {
+        const pending = this.pendingPromises.get(requestId)
+        if (pending) {
+          pending.reject(error instanceof Error ? error : new Error(String(error)))
+          this.pendingPromises.delete(requestId)
+        }
+      }
+    })
 
     return job
   }
@@ -385,6 +400,18 @@ export class BatchRequestManager {
       clearTimeout(this.batchTimer)
       this.batchTimer = null
     }
+  }
+
+  /**
+   * Destroy the manager and clean up resources
+   * Call this when the manager is no longer needed to prevent timer leaks
+   */
+  destroy(): void {
+    this.clearQueue()
+    // Clear all stored data
+    this.jobs.clear()
+    this.results.clear()
+    this.pendingPromises.clear()
   }
 
   /**
@@ -510,6 +537,16 @@ export class BatchRequestManager {
 export function estimateBatchSavings(
   requests: Array<{ messages: BatchMessage[]; model?: string }>
 ): BatchCostEstimate {
+  if (requests.length === 0) {
+    return {
+      regularCost: 0,
+      batchCost: 0,
+      savings: 0,
+      savingsPercent: 50,
+      estimatedCompletionTime: 0,
+    }
+  }
+
   let totalInputTokens = 0
   let totalOutputTokens = 0
 
