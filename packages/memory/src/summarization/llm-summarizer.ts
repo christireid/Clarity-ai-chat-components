@@ -180,6 +180,91 @@ function estimateTokens(text: string): number {
 const MAX_CACHE_ENTRIES = 500
 
 /**
+ * Retry configuration
+ */
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  baseDelayMs: 1000,
+  maxDelayMs: 10000,
+  /** HTTP status codes that should trigger retry */
+  retryableStatuses: [429, 500, 502, 503, 504],
+}
+
+/**
+ * Simple rate limiter using token bucket algorithm
+ */
+class RateLimiter {
+  private tokens: number
+  private lastRefill: number
+  private readonly maxTokens: number
+  private readonly refillRatePerSecond: number
+
+  constructor(requestsPerMinute: number = 60) {
+    this.maxTokens = requestsPerMinute
+    this.tokens = requestsPerMinute
+    this.refillRatePerSecond = requestsPerMinute / 60
+    this.lastRefill = Date.now()
+  }
+
+  async acquire(): Promise<void> {
+    this.refill()
+
+    if (this.tokens < 1) {
+      // Wait until we have a token
+      const waitTime = Math.ceil((1 - this.tokens) / this.refillRatePerSecond * 1000)
+      await new Promise(resolve => setTimeout(resolve, waitTime))
+      this.refill()
+    }
+
+    this.tokens -= 1
+  }
+
+  private refill(): void {
+    const now = Date.now()
+    const elapsed = (now - this.lastRefill) / 1000
+    this.tokens = Math.min(this.maxTokens, this.tokens + elapsed * this.refillRatePerSecond)
+    this.lastRefill = now
+  }
+}
+
+/**
+ * Sleep utility for retry delays
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/**
+ * Calculate exponential backoff delay with jitter
+ */
+function getRetryDelay(attempt: number): number {
+  const exponentialDelay = RETRY_CONFIG.baseDelayMs * Math.pow(2, attempt)
+  const jitter = Math.random() * 0.3 * exponentialDelay // 30% jitter
+  return Math.min(exponentialDelay + jitter, RETRY_CONFIG.maxDelayMs)
+}
+
+/**
+ * Check if an error is retryable
+ */
+function isRetryableError(error: unknown, status?: number): boolean {
+  if (status && RETRY_CONFIG.retryableStatuses.includes(status)) {
+    return true
+  }
+
+  // Network errors are retryable
+  if (error instanceof TypeError && error.message.includes('fetch')) {
+    return true
+  }
+
+  // Check for specific error messages
+  const message = error instanceof Error ? error.message.toLowerCase() : ''
+  return message.includes('timeout') ||
+         message.includes('network') ||
+         message.includes('econnreset') ||
+         message.includes('socket hang up')
+}
+
+/**
  * Default model selection by provider
  */
 const DEFAULT_MODELS: Record<string, string> = {
@@ -279,12 +364,15 @@ export class LLMSummarizer implements Summarizer {
   private config: Required<LLMSummarizationConfig>
   private cache: Map<string, CacheEntry> = new Map()
   private cacheTTL: number = 3600000 // 1 hour
+  private rateLimiter: RateLimiter
   private stats = {
     summariesGenerated: 0,
     cacheHits: 0,
     totalInputTokens: 0,
     totalOutputTokens: 0,
     totalSavings: 0,
+    retryCount: 0,
+    rateLimitWaits: 0,
   }
 
   constructor(config: LLMSummarizationConfig) {
@@ -299,6 +387,9 @@ export class LLMSummarizer implements Summarizer {
       customHandler: config.customHandler ?? (async () => ''),
       temperature: config.temperature ?? 0.3,
     }
+
+    // Initialize rate limiter (60 requests/min default, adjust per provider limits)
+    this.rateLimiter = new RateLimiter(60)
   }
 
   /**
@@ -600,6 +691,8 @@ Maximum ${sectionsTokens} tokens total.`
     totalInputTokens: number
     totalOutputTokens: number
     totalSavings: number
+    retryCount: number
+    rateLimitWaits: number
     avgCompressionRatio: number
     cacheHitRate: number
   } {
@@ -628,18 +721,49 @@ Maximum ${sectionsTokens} tokens total.`
   }
 
   /**
-   * Call LLM provider
+   * Call LLM provider with rate limiting
    */
   private async callLLM(prompt: string, maxTokens: number): Promise<string> {
+    // Apply rate limiting
+    const startWait = Date.now()
+    await this.rateLimiter.acquire()
+    if (Date.now() - startWait > 100) {
+      this.stats.rateLimitWaits++
+    }
+
     switch (this.config.provider) {
       case 'openai':
-        return this.callOpenAI(prompt, maxTokens)
+        return this.callWithRetry(() => this.callOpenAI(prompt, maxTokens))
       case 'anthropic':
-        return this.callAnthropic(prompt, maxTokens)
+        return this.callWithRetry(() => this.callAnthropic(prompt, maxTokens))
       case 'custom':
         return this.config.customHandler(prompt, { maxTokens })
       default:
         throw new Error(`Unknown provider: ${this.config.provider}`)
+    }
+  }
+
+  /**
+   * Execute API call with retry logic
+   */
+  private async callWithRetry(
+    fn: () => Promise<string>,
+    attempt: number = 0
+  ): Promise<string> {
+    try {
+      return await fn()
+    } catch (error) {
+      // Extract status code if available
+      const status = (error as { status?: number }).status
+
+      if (attempt < RETRY_CONFIG.maxRetries && isRetryableError(error, status)) {
+        this.stats.retryCount++
+        const delay = getRetryDelay(attempt)
+        await sleep(delay)
+        return this.callWithRetry(fn, attempt + 1)
+      }
+
+      throw error
     }
   }
 
@@ -667,7 +791,9 @@ Maximum ${sectionsTokens} tokens total.`
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}))
-      throw new Error(`OpenAI summarization failed: ${JSON.stringify(error)}`)
+      const err = new Error(`OpenAI summarization failed: ${JSON.stringify(error)}`)
+      ;(err as Error & { status: number }).status = response.status
+      throw err
     }
 
     const data = await response.json()
@@ -698,7 +824,9 @@ Maximum ${sectionsTokens} tokens total.`
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}))
-      throw new Error(`Anthropic summarization failed: ${JSON.stringify(error)}`)
+      const err = new Error(`Anthropic summarization failed: ${JSON.stringify(error)}`)
+      ;(err as Error & { status: number }).status = response.status
+      throw err
     }
 
     const data = await response.json()

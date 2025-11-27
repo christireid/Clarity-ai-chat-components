@@ -10,6 +10,22 @@
  * - Provider-specific batch implementations
  * - Cost tracking and savings estimation
  *
+ * ## Implementation Status
+ *
+ * **IMPORTANT**: The `processBatch` method in `BatchRequestManager` is currently
+ * a **placeholder implementation** that simulates batch processing. To use this
+ * in production, you must:
+ *
+ * 1. Replace `processBatch` with actual API calls to your LLM provider's batch endpoint
+ * 2. Implement polling for batch completion (batch APIs are async, 24hr completion)
+ * 3. Handle file upload for large batches (OpenAI requires JSONL file upload)
+ *
+ * The helper functions `createOpenAIBatchFile`, `createAnthropicBatchFile`, and
+ * `parseOpenAIBatchResults` are production-ready for formatting requests/responses.
+ *
+ * @see https://platform.openai.com/docs/guides/batch
+ * @see https://docs.anthropic.com/en/docs/build-with-claude/message-batches
+ *
  * @module utils/batch-api
  */
 
@@ -426,7 +442,23 @@ export class BatchRequestManager {
   }
 
   /**
-   * Process batch (simulated - real implementation would call provider API)
+   * Process batch
+   *
+   * ⚠️ PLACEHOLDER IMPLEMENTATION ⚠️
+   *
+   * This method currently simulates batch processing for development/testing.
+   * For production use, replace this with actual provider API calls:
+   *
+   * OpenAI:
+   *   1. Upload JSONL file via Files API
+   *   2. Create batch via POST /v1/batches
+   *   3. Poll GET /v1/batches/{id} until complete
+   *   4. Download results file
+   *
+   * Anthropic:
+   *   1. POST /v1/messages/batches with requests array
+   *   2. Poll GET /v1/messages/batches/{id} until complete
+   *   3. Retrieve results from response
    */
   private async processBatch(job: BatchJob, requests: BatchRequest[]): Promise<void> {
     job.status = 'in_progress'
@@ -434,13 +466,14 @@ export class BatchRequestManager {
 
     const results: BatchResult[] = []
 
-    // In a real implementation, this would:
-    // 1. Format requests for provider batch API
-    // 2. Submit batch to provider
-    // 3. Poll for completion
-    // 4. Parse results
+    // ============================================================
+    // PLACEHOLDER: Replace this block with actual provider API calls
+    // ============================================================
+    // Use createOpenAIBatchFile() or createAnthropicBatchFile() to format requests
+    // Use parseOpenAIBatchResults() to parse responses
+    // ============================================================
 
-    // Simulated processing
+    // Simulated processing (remove in production)
     for (let i = 0; i < requests.length; i++) {
       const request = requests[i]
 
