@@ -5,6 +5,8 @@
  * Can achieve 50-90% cost reduction on repeated context
  */
 
+import { estimateTokens } from '../tokenization/estimator'
+
 export type CacheProvider = 'anthropic' | 'openai' | 'auto'
 
 export interface CacheableContent {
@@ -192,11 +194,10 @@ export class PromptCacheManager {
   }
 
   /**
-   * Estimate tokens (rough approximation)
+   * Estimate tokens (uses centralized estimator)
    */
   private estimateTokens(text: string): number {
-    // Approximate: 4 chars per token
-    return Math.ceil(text.length / 4)
+    return estimateTokens(text)
   }
 
   /**
@@ -311,21 +312,21 @@ export function createAnthropicCachedMessages(
 
   // Add system message with cache control if long enough
   if (systemPrompt) {
-    const estimatedTokens = Math.ceil(systemPrompt.length / 4)
+    const tokens = estimateTokens(systemPrompt)
     messages.push({
       role: 'system',
       content: systemPrompt,
-      ...(estimatedTokens >= minCacheLength ? { cache_control: { type: 'ephemeral' } } : {}),
+      ...(tokens >= minCacheLength ? { cache_control: { type: 'ephemeral' } } : {}),
     })
   }
 
   // Add conversation messages
   // Cache the last long user message (typically contains context)
   conversationMessages.forEach((msg, index) => {
-    const estimatedTokens = Math.ceil(msg.content.length / 4)
+    const tokens = estimateTokens(msg.content)
     const isLastUserMessage =
       msg.role === 'user' && index === conversationMessages.length - 1
-    const shouldCache = isLastUserMessage && estimatedTokens >= minCacheLength
+    const shouldCache = isLastUserMessage && tokens >= minCacheLength
 
     messages.push({
       ...msg,
@@ -377,5 +378,413 @@ export function estimateCacheSavings(params: {
     monthlySavings,
     annualSavings,
     details: `Saving ${(cacheDiscount * 100).toFixed(0)}% on ${cacheableTokens} tokens per conversation`,
+  }
+}
+
+// =============================================================================
+// 4-Breakpoint Caching Strategy
+// =============================================================================
+
+export interface CacheBreakpoint {
+  /** Index in message array */
+  index: number
+  /** Cumulative tokens up to this point */
+  cumulativeTokens: number
+  /** Priority level for this breakpoint */
+  priority: 'critical' | 'high' | 'medium' | 'low'
+  /** Reason for this breakpoint */
+  reason: string
+}
+
+export interface MultiBreakpointConfig {
+  /** Maximum number of breakpoints (Anthropic supports up to 4) */
+  maxBreakpoints?: number
+  /** Minimum tokens between breakpoints */
+  minTokensBetweenBreakpoints?: number
+  /** Provider-specific limits */
+  provider?: 'anthropic' | 'openai'
+}
+
+/**
+ * Calculate optimal cache breakpoints for multi-turn conversations
+ *
+ * Anthropic supports up to 4 cache breakpoints, which can be strategically
+ * placed to maximize cache hits across different conversation patterns.
+ *
+ * @example
+ * ```ts
+ * const breakpoints = calculateCacheBreakpoints(messages, {
+ *   maxBreakpoints: 4,
+ *   provider: 'anthropic'
+ * })
+ * // Returns optimal positions for cache markers
+ * ```
+ */
+export function calculateCacheBreakpoints(
+  messages: Array<{ role: string; content: string }>,
+  config: MultiBreakpointConfig = {}
+): CacheBreakpoint[] {
+  const {
+    maxBreakpoints = 4,
+    minTokensBetweenBreakpoints = 1024,
+    provider = 'anthropic',
+  } = config
+
+  // OpenAI doesn't support multiple breakpoints the same way
+  if (provider === 'openai') {
+    return calculateOpenAIBreakpoints(messages)
+  }
+
+  const breakpoints: CacheBreakpoint[] = []
+  let cumulativeTokens = 0
+
+  // Always include system message as first breakpoint
+  const systemIndex = messages.findIndex(m => m.role === 'system')
+  if (systemIndex >= 0 && messages[systemIndex]) {
+    const systemTokens = estimateTokens(messages[systemIndex].content)
+    if (systemTokens >= 1024) {
+      breakpoints.push({
+        index: systemIndex,
+        cumulativeTokens: systemTokens,
+        priority: 'critical',
+        reason: 'System prompt (static, high reuse)',
+      })
+      cumulativeTokens = systemTokens
+    }
+  }
+
+  // Calculate remaining message tokens
+  let lastBreakpointTokens = cumulativeTokens
+  for (let i = 0; i < messages.length; i++) {
+    if (i === systemIndex) continue
+
+    const msg = messages[i]!
+    const msgTokens = estimateTokens(msg.content)
+    cumulativeTokens += msgTokens
+
+    // Check if this is a good breakpoint candidate
+    const tokensSinceLastBreakpoint = cumulativeTokens - lastBreakpointTokens
+    const isGoodBreakpoint =
+      tokensSinceLastBreakpoint >= minTokensBetweenBreakpoints &&
+      breakpoints.length < maxBreakpoints
+
+    if (isGoodBreakpoint) {
+      // Prefer breaking after assistant messages (natural conversation boundary)
+      if (msg.role === 'assistant') {
+        breakpoints.push({
+          index: i,
+          cumulativeTokens,
+          priority: 'high',
+          reason: 'Conversation turn boundary',
+        })
+        lastBreakpointTokens = cumulativeTokens
+      }
+      // Or after long user messages with context
+      else if (msg.role === 'user' && msgTokens >= 512) {
+        breakpoints.push({
+          index: i,
+          cumulativeTokens,
+          priority: 'medium',
+          reason: 'Long user context',
+        })
+        lastBreakpointTokens = cumulativeTokens
+      }
+    }
+  }
+
+  // Ensure we have the maximum breakpoints if possible
+  // Fill remaining slots with evenly distributed breakpoints
+  while (breakpoints.length < maxBreakpoints) {
+    const availableMessages = messages.filter(
+      (_, i) => !breakpoints.some(bp => bp.index === i)
+    )
+
+    if (availableMessages.length === 0) break
+
+    // Find the largest gap between breakpoints
+    const sortedBreakpoints = [...breakpoints].sort((a, b) => a.index - b.index)
+    let largestGap = 0
+    let gapStart = 0
+    let gapEnd = messages.length - 1
+
+    for (let i = 0; i < sortedBreakpoints.length; i++) {
+      const prev = sortedBreakpoints[i - 1]?.index ?? -1
+      const curr = sortedBreakpoints[i]!.index
+      if (curr - prev > largestGap) {
+        largestGap = curr - prev
+        gapStart = prev + 1
+        gapEnd = curr - 1
+      }
+    }
+
+    // Add breakpoint in the middle of the gap
+    if (gapEnd > gapStart) {
+      const midIndex = Math.floor((gapStart + gapEnd) / 2)
+      if (messages[midIndex]) {
+        const midTokens = messages
+          .slice(0, midIndex + 1)
+          .reduce((sum, m) => sum + estimateTokens(m.content), 0)
+
+        breakpoints.push({
+          index: midIndex,
+          cumulativeTokens: midTokens,
+          priority: 'low',
+          reason: 'Fill gap for coverage',
+        })
+      }
+    } else {
+      break
+    }
+  }
+
+  return breakpoints.sort((a, b) => a.index - b.index)
+}
+
+/**
+ * Calculate breakpoints for OpenAI (simpler approach)
+ */
+function calculateOpenAIBreakpoints(
+  messages: Array<{ role: string; content: string }>
+): CacheBreakpoint[] {
+  const breakpoints: CacheBreakpoint[] = []
+
+  // OpenAI mainly caches the system message
+  const systemIndex = messages.findIndex(m => m.role === 'system')
+  if (systemIndex >= 0 && messages[systemIndex]) {
+    const systemTokens = estimateTokens(messages[systemIndex].content)
+    if (systemTokens >= 1024) {
+      breakpoints.push({
+        index: systemIndex,
+        cumulativeTokens: systemTokens,
+        priority: 'critical',
+        reason: 'System prompt caching',
+      })
+    }
+  }
+
+  return breakpoints
+}
+
+/**
+ * Apply cache breakpoints to messages (Anthropic format)
+ */
+export function applyBreakpointsToMessages(
+  messages: Array<{ role: string; content: string }>,
+  breakpoints: CacheBreakpoint[]
+): Array<{
+  role: string
+  content: string
+  cache_control?: { type: 'ephemeral' }
+}> {
+  const breakpointIndices = new Set(breakpoints.map(bp => bp.index))
+
+  return messages.map((msg, index) => {
+    if (breakpointIndices.has(index)) {
+      return {
+        ...msg,
+        cache_control: { type: 'ephemeral' as const },
+      }
+    }
+    return msg
+  })
+}
+
+// =============================================================================
+// Cache Warming Utilities
+// =============================================================================
+
+export interface CacheWarmingConfig {
+  /** Content to pre-warm */
+  content: Array<{
+    id: string
+    content: string
+    type: 'system' | 'context' | 'document'
+    priority: number
+  }>
+  /** Provider for cache format */
+  provider: 'anthropic' | 'openai'
+  /** Interval between warming requests (ms) */
+  warmingInterval?: number
+  /** TTL for warmed cache (ms) */
+  cacheTTL?: number
+}
+
+export interface WarmingResult {
+  /** Successfully warmed content IDs */
+  warmed: string[]
+  /** Failed content IDs */
+  failed: string[]
+  /** Total tokens warmed */
+  tokensWarmed: number
+  /** Estimated cost savings if cache is hit */
+  estimatedSavings: number
+}
+
+/**
+ * Create cache warming requests
+ *
+ * Cache warming sends minimal requests to populate the cache before
+ * actual user requests arrive, ensuring cache hits from the start.
+ *
+ * @example
+ * ```ts
+ * const warmingRequests = createCacheWarmingRequests({
+ *   content: [
+ *     { id: 'system', content: systemPrompt, type: 'system', priority: 1 },
+ *     { id: 'docs', content: documentation, type: 'document', priority: 2 },
+ *   ],
+ *   provider: 'anthropic'
+ * })
+ *
+ * // Execute warming requests in parallel before user traffic
+ * await Promise.all(warmingRequests.map(req => executeWarmingRequest(req)))
+ * ```
+ */
+export function createCacheWarmingRequests(
+  config: CacheWarmingConfig
+): Array<{
+  messages: Array<{ role: string; content: string; cache_control?: { type: 'ephemeral' } }>
+  isWarmingRequest: true
+  contentId: string
+  estimatedTokens: number
+}> {
+  const { content, provider } = config
+
+  // Sort by priority
+  const sorted = [...content].sort((a, b) => a.priority - b.priority)
+
+  return sorted.map(item => {
+    const tokens = estimateTokens(item.content)
+
+    // Create minimal request that will populate the cache
+    const messages: Array<{
+      role: string
+      content: string
+      cache_control?: { type: 'ephemeral' }
+    }> = []
+
+    if (item.type === 'system') {
+      messages.push({
+        role: 'system',
+        content: item.content,
+        ...(provider === 'anthropic' ? { cache_control: { type: 'ephemeral' as const } } : {}),
+      })
+      // Add minimal user message to complete the request
+      messages.push({
+        role: 'user',
+        content: 'Confirm cache ready.',
+      })
+    } else {
+      // For context/documents, include as user message
+      messages.push({
+        role: 'user',
+        content: `[Cache warming] ${item.content}`,
+        ...(provider === 'anthropic' ? { cache_control: { type: 'ephemeral' as const } } : {}),
+      })
+    }
+
+    return {
+      messages,
+      isWarmingRequest: true as const,
+      contentId: item.id,
+      estimatedTokens: tokens,
+    }
+  })
+}
+
+/**
+ * Calculate optimal warming schedule
+ *
+ * Returns a schedule that spreads cache warming requests to avoid
+ * overwhelming the API while ensuring caches are populated.
+ */
+export function calculateWarmingSchedule(
+  warmingRequests: Array<{ contentId: string; estimatedTokens: number }>,
+  config: {
+    maxConcurrent?: number
+    delayBetweenBatches?: number
+    cacheTTL?: number
+    refreshMargin?: number
+  } = {}
+): Array<{
+  batch: string[]
+  executeAt: number
+  refreshAt: number
+}> {
+  const {
+    maxConcurrent = 3,
+    delayBetweenBatches = 1000,
+    cacheTTL = 5 * 60 * 1000, // 5 minutes default
+    refreshMargin = 30 * 1000, // Refresh 30s before expiry
+  } = config
+
+  const schedule: Array<{
+    batch: string[]
+    executeAt: number
+    refreshAt: number
+  }> = []
+
+  let currentTime = 0
+
+  for (let i = 0; i < warmingRequests.length; i += maxConcurrent) {
+    const batch = warmingRequests
+      .slice(i, i + maxConcurrent)
+      .map(r => r.contentId)
+
+    schedule.push({
+      batch,
+      executeAt: currentTime,
+      refreshAt: currentTime + cacheTTL - refreshMargin,
+    })
+
+    currentTime += delayBetweenBatches
+  }
+
+  return schedule
+}
+
+/**
+ * TTL Extension Strategy
+ *
+ * Anthropic caches have a 5-minute TTL that extends on each hit.
+ * This utility calculates when to send keep-alive requests.
+ */
+export interface TTLExtensionConfig {
+  /** Base TTL in milliseconds (Anthropic: 5 minutes) */
+  baseTTL?: number
+  /** When to send refresh before expiry (ms) */
+  refreshBefore?: number
+  /** Maximum extension time before full refresh */
+  maxExtension?: number
+}
+
+export function calculateTTLRefreshSchedule(
+  lastCacheHit: number,
+  config: TTLExtensionConfig = {}
+): {
+  shouldRefresh: boolean
+  refreshAt: number
+  expiresAt: number
+  timeRemaining: number
+} {
+  const {
+    baseTTL = 5 * 60 * 1000, // 5 minutes
+    refreshBefore = 30 * 1000, // 30 seconds
+    maxExtension = 30 * 60 * 1000, // 30 minutes max
+  } = config
+
+  const now = Date.now()
+  const expiresAt = lastCacheHit + baseTTL
+  const timeRemaining = expiresAt - now
+  const refreshAt = expiresAt - refreshBefore
+
+  // Check if we've exceeded max extension
+  const shouldRefresh = timeRemaining <= refreshBefore && timeRemaining > 0
+
+  return {
+    shouldRefresh,
+    refreshAt,
+    expiresAt,
+    timeRemaining: Math.max(0, timeRemaining),
   }
 }

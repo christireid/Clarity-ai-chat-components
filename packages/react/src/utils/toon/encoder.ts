@@ -9,6 +9,8 @@
  * @see https://github.com/toon-format/toon
  */
 
+import { estimateTokens } from '../tokenization/estimator'
+
 export interface ToonOptions {
   /** Indent size for nested objects (default: 2) */
   indent?: number
@@ -269,9 +271,9 @@ export function estimateToonSavings(data: any): {
   const json = JSON.stringify(data)
   const toon = jsonToToon(data, { compact: true })
 
-  // Rough approximation: 4 chars per token
-  const jsonTokens = Math.ceil(json.length / 4)
-  const toonTokens = Math.ceil(toon.length / 4)
+  // Use centralized token estimation
+  const jsonTokens = estimateTokens(json)
+  const toonTokens = estimateTokens(toon)
   const savings = jsonTokens - toonTokens
   const savingsPercent = jsonTokens > 0 ? (savings / jsonTokens) * 100 : 0
 

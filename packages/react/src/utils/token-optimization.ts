@@ -1,6 +1,6 @@
 /**
  * Token Optimization Utilities
- * 
+ *
  * Comprehensive set of utilities for optimizing token usage in AI chat applications.
  * These utilities help reduce costs and improve performance by:
  * - Shortening and simplifying prompts
@@ -14,6 +14,7 @@
  */
 
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
+import { estimateTokens as centralEstimateTokens } from './tokenization/estimator'
 
 // ============================================================================
 // Types
@@ -255,11 +256,11 @@ export function shortenPrompt(
 }
 
 /**
- * Estimate token count (rough approximation)
+ * Estimate token count using centralized estimator
+ * @deprecated Import { estimateTokens } from './tokenization/estimator' directly for model-specific estimation
  */
 export function estimateTokens(text: string): number {
-  // More accurate: ~3.5 characters per token for English
-  return Math.ceil(text.length / 3.5)
+  return centralEstimateTokens(text)
 }
 
 /**
@@ -749,8 +750,8 @@ export function enforceOutputLimit(
   if (maxTokens) {
     const tokens = estimateTokens(output)
     if (tokens > maxTokens) {
-      // Rough approximation: tokens * 3.5 = characters
-      const maxChars = Math.floor(maxTokens * 3.5)
+      // Rough approximation: tokens * 4 = characters (using standard ratio)
+      const maxChars = Math.floor(maxTokens * 4)
       return enforceOutputLimit(output, { maxCharacters: maxChars, truncationStrategy })
     }
   }

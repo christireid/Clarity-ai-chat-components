@@ -6,6 +6,7 @@
 
 import { jsonToToon, estimateToonSavings, isSuitableForToon } from './encoder'
 import { toonToJson } from './decoder'
+import { estimateTokens } from '../tokenization/estimator'
 
 export interface ToonOptimizationResult {
   /** Format used (json or toon) */
@@ -57,7 +58,7 @@ export function autoOptimize(
   } = options
 
   const json = JSON.stringify(data)
-  const jsonTokens = Math.ceil(json.length / 4)
+  const jsonTokens = estimateTokens(json)
 
   // Force JSON if requested
   if (forceJson) {
@@ -93,7 +94,7 @@ export function autoOptimize(
   // Use TOON if savings exceed threshold or forced
   if (savings.savingsPercent >= minSavingsPercent || forceToon) {
     const toon = jsonToToon(data, { compact })
-    const toonTokens = Math.ceil(toon.length / 4)
+    const toonTokens = estimateTokens(toon)
 
     return {
       format: 'toon',

@@ -1,7 +1,8 @@
 /**
  * Model Pricing and Cost Calculation
  *
- * Up-to-date pricing for LLM models (as of 2025)
+ * Up-to-date pricing for LLM models (as of November 2025)
+ * Prices reflect current API pricing from official sources
  */
 
 import type { ModelName } from './accurate-counter'
@@ -18,14 +19,16 @@ export interface ModelPricing {
   /** Maximum output tokens */
   maxOutputTokens: number
   /** Provider */
-  provider: 'openai' | 'anthropic' | 'google' | 'other'
+  provider: 'openai' | 'anthropic' | 'google' | 'deepseek' | 'other'
 }
 
 /**
- * Model pricing database (updated for 2025)
+ * Model pricing database (updated November 2025)
  */
 export const MODEL_PRICING: Record<ModelName | string, ModelPricing> = {
-  // OpenAI GPT-4 family
+  // ==========================================================================
+  // OpenAI GPT-4 Family
+  // ==========================================================================
   'gpt-4': {
     inputCostPer1M: 30.0,
     outputCostPer1M: 60.0,
@@ -49,6 +52,38 @@ export const MODEL_PRICING: Record<ModelName | string, ModelPricing> = {
     maxOutputTokens: 16384,
     provider: 'openai',
   },
+  'gpt-4o-mini': {
+    inputCostPer1M: 0.15,
+    outputCostPer1M: 0.6,
+    cachedInputCostPer1M: 0.075,
+    contextWindow: 128000,
+    maxOutputTokens: 16384,
+    provider: 'openai',
+  },
+  'gpt-4.1': {
+    inputCostPer1M: 2.0,
+    outputCostPer1M: 8.0,
+    cachedInputCostPer1M: 0.5,
+    contextWindow: 1048576, // 1M tokens
+    maxOutputTokens: 32768,
+    provider: 'openai',
+  },
+  'gpt-4.1-mini': {
+    inputCostPer1M: 0.4,
+    outputCostPer1M: 1.6,
+    cachedInputCostPer1M: 0.1,
+    contextWindow: 1048576, // 1M tokens
+    maxOutputTokens: 32768,
+    provider: 'openai',
+  },
+  'gpt-4.1-nano': {
+    inputCostPer1M: 0.1,
+    outputCostPer1M: 0.4,
+    cachedInputCostPer1M: 0.025,
+    contextWindow: 1048576, // 1M tokens
+    maxOutputTokens: 32768,
+    provider: 'openai',
+  },
   'gpt-3.5-turbo': {
     inputCostPer1M: 0.5,
     outputCostPer1M: 1.5,
@@ -57,7 +92,45 @@ export const MODEL_PRICING: Record<ModelName | string, ModelPricing> = {
     provider: 'openai',
   },
 
-  // Anthropic Claude family
+  // ==========================================================================
+  // OpenAI O1/O3 Reasoning Models
+  // ==========================================================================
+  'o1': {
+    inputCostPer1M: 15.0,
+    outputCostPer1M: 60.0,
+    cachedInputCostPer1M: 7.5,
+    contextWindow: 200000,
+    maxOutputTokens: 100000,
+    provider: 'openai',
+  },
+  'o1-mini': {
+    inputCostPer1M: 3.0,
+    outputCostPer1M: 12.0,
+    cachedInputCostPer1M: 1.5,
+    contextWindow: 128000,
+    maxOutputTokens: 65536,
+    provider: 'openai',
+  },
+  'o1-preview': {
+    inputCostPer1M: 15.0,
+    outputCostPer1M: 60.0,
+    cachedInputCostPer1M: 7.5,
+    contextWindow: 128000,
+    maxOutputTokens: 32768,
+    provider: 'openai',
+  },
+  'o3-mini': {
+    inputCostPer1M: 1.1,
+    outputCostPer1M: 4.4,
+    cachedInputCostPer1M: 0.55,
+    contextWindow: 200000,
+    maxOutputTokens: 100000,
+    provider: 'openai',
+  },
+
+  // ==========================================================================
+  // Anthropic Claude 3 Family
+  // ==========================================================================
   'claude-3-opus': {
     inputCostPer1M: 15.0,
     outputCostPer1M: 75.0,
@@ -90,8 +163,38 @@ export const MODEL_PRICING: Record<ModelName | string, ModelPricing> = {
     maxOutputTokens: 4096,
     provider: 'anthropic',
   },
+  'claude-3-5-haiku': {
+    inputCostPer1M: 0.8,
+    outputCostPer1M: 4.0,
+    cachedInputCostPer1M: 0.08,
+    contextWindow: 200000,
+    maxOutputTokens: 8192,
+    provider: 'anthropic',
+  },
 
-  // Google Gemini family
+  // ==========================================================================
+  // Anthropic Claude 4 Family (2025)
+  // ==========================================================================
+  'claude-sonnet-4': {
+    inputCostPer1M: 3.0,
+    outputCostPer1M: 15.0,
+    cachedInputCostPer1M: 0.3,
+    contextWindow: 200000,
+    maxOutputTokens: 16384,
+    provider: 'anthropic',
+  },
+  'claude-opus-4': {
+    inputCostPer1M: 15.0,
+    outputCostPer1M: 75.0,
+    cachedInputCostPer1M: 1.5,
+    contextWindow: 200000,
+    maxOutputTokens: 32768,
+    provider: 'anthropic',
+  },
+
+  // ==========================================================================
+  // Google Gemini Family
+  // ==========================================================================
   'gemini-pro': {
     inputCostPer1M: 0.5,
     outputCostPer1M: 1.5,
@@ -103,9 +206,118 @@ export const MODEL_PRICING: Record<ModelName | string, ModelPricing> = {
     inputCostPer1M: 1.25,
     outputCostPer1M: 5.0,
     cachedInputCostPer1M: 0.31,
-    contextWindow: 2097152, // 2M tokens!
+    contextWindow: 2097152, // 2M tokens
     maxOutputTokens: 8192,
     provider: 'google',
+  },
+  'gemini-1.5-flash': {
+    inputCostPer1M: 0.075,
+    outputCostPer1M: 0.3,
+    cachedInputCostPer1M: 0.01875,
+    contextWindow: 1048576, // 1M tokens
+    maxOutputTokens: 8192,
+    provider: 'google',
+  },
+  'gemini-2.0-flash': {
+    inputCostPer1M: 0.1,
+    outputCostPer1M: 0.4,
+    cachedInputCostPer1M: 0.025,
+    contextWindow: 1048576, // 1M tokens
+    maxOutputTokens: 8192,
+    provider: 'google',
+  },
+  'gemini-2.0-pro': {
+    inputCostPer1M: 1.25,
+    outputCostPer1M: 5.0,
+    cachedInputCostPer1M: 0.31,
+    contextWindow: 2097152, // 2M tokens
+    maxOutputTokens: 8192,
+    provider: 'google',
+  },
+
+  // ==========================================================================
+  // DeepSeek Models
+  // ==========================================================================
+  'deepseek-chat': {
+    inputCostPer1M: 0.14,
+    outputCostPer1M: 0.28,
+    cachedInputCostPer1M: 0.014,
+    contextWindow: 65536,
+    maxOutputTokens: 8192,
+    provider: 'deepseek',
+  },
+  'deepseek-coder': {
+    inputCostPer1M: 0.14,
+    outputCostPer1M: 0.28,
+    cachedInputCostPer1M: 0.014,
+    contextWindow: 65536,
+    maxOutputTokens: 8192,
+    provider: 'deepseek',
+  },
+  'deepseek-r1': {
+    inputCostPer1M: 0.55,
+    outputCostPer1M: 2.19,
+    cachedInputCostPer1M: 0.14,
+    contextWindow: 65536,
+    maxOutputTokens: 8192,
+    provider: 'deepseek',
+  },
+
+  // ==========================================================================
+  // Meta Llama Models (via API providers)
+  // ==========================================================================
+  'llama-3': {
+    inputCostPer1M: 0.25,
+    outputCostPer1M: 0.25,
+    contextWindow: 8192,
+    maxOutputTokens: 4096,
+    provider: 'other',
+  },
+  'llama-3.1': {
+    inputCostPer1M: 0.25,
+    outputCostPer1M: 0.25,
+    contextWindow: 131072, // 128K
+    maxOutputTokens: 4096,
+    provider: 'other',
+  },
+  'llama-3.2': {
+    inputCostPer1M: 0.2,
+    outputCostPer1M: 0.2,
+    contextWindow: 131072, // 128K
+    maxOutputTokens: 4096,
+    provider: 'other',
+  },
+  'llama-3.3': {
+    inputCostPer1M: 0.4,
+    outputCostPer1M: 0.4,
+    contextWindow: 131072, // 128K
+    maxOutputTokens: 8192,
+    provider: 'other',
+  },
+
+  // ==========================================================================
+  // Mistral Models
+  // ==========================================================================
+  'mistral-large': {
+    inputCostPer1M: 2.0,
+    outputCostPer1M: 6.0,
+    contextWindow: 128000,
+    maxOutputTokens: 8192,
+    provider: 'other',
+  },
+  'mistral-medium': {
+    inputCostPer1M: 2.7,
+    outputCostPer1M: 8.1,
+    contextWindow: 32768,
+    maxOutputTokens: 8192,
+    provider: 'other',
+  },
+  'mistral-small': {
+    inputCostPer1M: 0.2,
+    outputCostPer1M: 0.6,
+    contextWindow: 32768,
+    maxOutputTokens: 8192,
+    provider: 'other',
   },
 }
 
@@ -300,7 +512,7 @@ export function recommendModel(params: {
   outputTokens: number
   maxCostPerRequest?: number
   minContextWindow?: number
-  providers?: Array<'openai' | 'anthropic' | 'google' | 'other'>
+  providers?: Array<'openai' | 'anthropic' | 'google' | 'deepseek' | 'other'>
 }): {
   recommended: string
   alternatives: string[]

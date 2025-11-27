@@ -1,9 +1,11 @@
 /**
  * Smart Caching System with Semantic Similarity
- * 
+ *
  * Advanced caching that understands query similarity, not just exact matches.
  * Can save 20-40% on repeated or similar queries.
  */
+
+import { estimateTokens } from './tokenization/estimator'
 
 export interface CacheEntry<T = any> {
   /** Unique cache key */
@@ -74,12 +76,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
 }
 
-/**
- * Estimate tokens (rough approximation)
- */
-function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4)
-}
+// Token estimation imported from centralized module: estimateTokens
 
 /**
  * Create a simple hash for exact matching

@@ -6,16 +6,48 @@
  */
 
 export type ModelName =
+  // OpenAI GPT-4 Family
   | 'gpt-4'
   | 'gpt-4-turbo'
   | 'gpt-4o'
+  | 'gpt-4o-mini'
+  | 'gpt-4.1'
+  | 'gpt-4.1-mini'
+  | 'gpt-4.1-nano'
   | 'gpt-3.5-turbo'
+  // OpenAI O1/O3 Reasoning Models
+  | 'o1'
+  | 'o1-mini'
+  | 'o1-preview'
+  | 'o3-mini'
+  // Anthropic Claude 3 Family
   | 'claude-3-opus'
   | 'claude-3-sonnet'
   | 'claude-3-haiku'
   | 'claude-3-5-sonnet'
+  | 'claude-3-5-haiku'
+  // Anthropic Claude 4 Family
+  | 'claude-sonnet-4'
+  | 'claude-opus-4'
+  // Google Gemini Family
   | 'gemini-pro'
   | 'gemini-1.5-pro'
+  | 'gemini-1.5-flash'
+  | 'gemini-2.0-flash'
+  | 'gemini-2.0-pro'
+  // DeepSeek Models
+  | 'deepseek-chat'
+  | 'deepseek-coder'
+  | 'deepseek-r1'
+  // Llama Models
+  | 'llama-3'
+  | 'llama-3.1'
+  | 'llama-3.2'
+  | 'llama-3.3'
+  // Mistral Models
+  | 'mistral-large'
+  | 'mistral-medium'
+  | 'mistral-small'
 
 export interface TokenCount {
   /** Total tokens */
@@ -78,19 +110,58 @@ const MODEL_CONFIGS: Record<
   {
     encoding: string
     charsPerToken: number
-    provider: 'openai' | 'anthropic' | 'google'
+    provider: 'openai' | 'anthropic' | 'google' | 'deepseek' | 'meta' | 'mistral'
   }
 > = {
+  // OpenAI GPT-4 Family
   'gpt-4': { encoding: 'cl100k_base', charsPerToken: 4, provider: 'openai' },
   'gpt-4-turbo': { encoding: 'cl100k_base', charsPerToken: 4, provider: 'openai' },
   'gpt-4o': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  'gpt-4o-mini': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  'gpt-4.1': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  'gpt-4.1-mini': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  'gpt-4.1-nano': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
   'gpt-3.5-turbo': { encoding: 'cl100k_base', charsPerToken: 4, provider: 'openai' },
+
+  // OpenAI O1/O3 Reasoning Models
+  'o1': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  'o1-mini': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  'o1-preview': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  'o3-mini': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+
+  // Anthropic Claude 3 Family
   'claude-3-opus': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
   'claude-3-sonnet': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
   'claude-3-haiku': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
   'claude-3-5-sonnet': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
+  'claude-3-5-haiku': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
+
+  // Anthropic Claude 4 Family
+  'claude-sonnet-4': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
+  'claude-opus-4': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
+
+  // Google Gemini Family
   'gemini-pro': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
   'gemini-1.5-pro': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
+  'gemini-1.5-flash': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
+  'gemini-2.0-flash': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
+  'gemini-2.0-pro': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
+
+  // DeepSeek Models
+  'deepseek-chat': { encoding: 'deepseek', charsPerToken: 4, provider: 'deepseek' },
+  'deepseek-coder': { encoding: 'deepseek', charsPerToken: 4, provider: 'deepseek' },
+  'deepseek-r1': { encoding: 'deepseek', charsPerToken: 4, provider: 'deepseek' },
+
+  // Llama Models
+  'llama-3': { encoding: 'llama3', charsPerToken: 4, provider: 'meta' },
+  'llama-3.1': { encoding: 'llama3', charsPerToken: 4, provider: 'meta' },
+  'llama-3.2': { encoding: 'llama3', charsPerToken: 4, provider: 'meta' },
+  'llama-3.3': { encoding: 'llama3', charsPerToken: 4, provider: 'meta' },
+
+  // Mistral Models
+  'mistral-large': { encoding: 'mistral', charsPerToken: 4, provider: 'mistral' },
+  'mistral-medium': { encoding: 'mistral', charsPerToken: 4, provider: 'mistral' },
+  'mistral-small': { encoding: 'mistral', charsPerToken: 4, provider: 'mistral' },
 }
 
 /**

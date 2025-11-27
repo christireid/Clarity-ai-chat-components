@@ -174,6 +174,9 @@ export function cosineSimilarity(a: number[], b: number[]): number {
 
 /**
  * Estimate token count (rough approximation: 1 token ≈ 4 characters)
+ *
+ * This is the standard token estimation ratio used across the codebase.
+ * For model-specific estimation, see @clarity/react/utils/tokenization/estimator
  */
 export function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4)

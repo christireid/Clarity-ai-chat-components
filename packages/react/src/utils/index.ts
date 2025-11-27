@@ -39,6 +39,11 @@ export * from './model-router'
 export * from './response-limiter'
 export * from './request-batcher'
 export * from './reference-handler'
+export * from './response-prefilling'
+export * from './prompt-structure'
+
+// Tokenization utilities
+export * from './tokenization'
 
 // Configuration Builder
 export * from './chat-config-builder'
