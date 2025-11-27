@@ -1,13 +1,23 @@
 /**
- * Enhanced Token Optimization Hook
+ * Enhanced Token Optimization Hook (Unified)
  *
- * Next-generation token optimization with:
+ * Comprehensive token optimization with all features:
  * - TOON support (30-60% savings on structured data)
  * - Accurate tokenization (tiktoken)
  * - Prompt caching (50-90% savings)
  * - Advanced semantic caching
  * - Real-time cost tracking
- * - All existing optimizations
+ * - History limiting and throttling
+ * - Model routing
+ * - Reference system for large data
+ * - Output limits and batching
+ * - Response prefilling
+ * - Context ordering
+ *
+ * This is the unified hook that combines all features from
+ * useTokenOptimization (basic) and useTokenOptimizationEnhanced.
+ *
+ * @since 2.0.0
  */
 
 'use client'
@@ -25,38 +35,122 @@ import { PromptCacheManager, createAnthropicCachedMessages, type CacheStats } fr
 import { compressPrompt, type CompressionResult } from '../utils/prompt-compression'
 import { SmartCache } from '../utils/smart-cache'
 
+// Import utilities from token-optimization for unified API
+import {
+  limitHistory,
+  createThrottler,
+  routeToModel,
+  estimateRoutingSavings,
+  createReference,
+  enforceOutputLimit,
+  createBatcher,
+  type HistoryLimitingOptions,
+  type ThrottlingOptions,
+  type ModelRoutingOptions,
+  type ReferenceOptions,
+  type OutputLimitOptions,
+  type BatchingOptions,
+} from '../utils/token-optimization'
+
+// Import new optimization utilities
+import { PREFILL_TEMPLATES, type PrefillConfig, type PrefillTemplate } from '../utils/response-prefilling'
+import { restructurePrompt as restructurePromptUtil, type PromptStructureOptions } from '../utils/prompt-structure'
+
 export interface EnhancedTokenOptimizationOptions {
   /** Model to use */
   model?: ModelName
 
+  // ============ TOON Optimization ============
   /** Enable TOON format optimization */
   enableToon?: boolean
   /** Minimum TOON savings threshold */
   toonMinSavings?: number
 
+  // ============ Tokenization ============
   /** Enable accurate tokenization (requires js-tiktoken) */
   enableAccurateTokenization?: boolean
 
+  // ============ Prompt Caching ============
   /** Enable prompt caching */
   enablePromptCaching?: boolean
   /** Prompt caching provider */
   cachingProvider?: 'anthropic' | 'openai' | 'auto'
 
+  // ============ Semantic Caching ============
   /** Enable semantic caching */
   enableSemanticCaching?: boolean
   /** Similarity threshold for semantic caching */
   similarityThreshold?: number
 
+  // ============ Compression ============
   /** Enable prompt compression */
   enablePromptCompression?: boolean
   /** Compression aggressiveness */
   compressionLevel?: 'conservative' | 'balanced' | 'aggressive'
 
+  // ============ Cost Tracking ============
   /** Enable real-time cost tracking */
   enableCostTracking?: boolean
 
   /** Enable statistics collection */
   enableStats?: boolean
+
+  // ============ History & Throttling (from basic hook) ============
+  /** Enable history limiting */
+  enableHistoryLimiting?: boolean
+  /** History limiting options */
+  historyLimiting?: HistoryLimitingOptions
+
+  /** Enable request throttling */
+  enableThrottling?: boolean
+  /** Throttling options */
+  throttling?: ThrottlingOptions
+
+  // ============ Model Routing (from basic hook) ============
+  /** Enable model routing based on query complexity */
+  enableModelRouting?: boolean
+  /** Model routing options */
+  modelRouting?: ModelRoutingOptions
+
+  // ============ References (from basic hook) ============
+  /** Enable reference system for large data */
+  enableReferences?: boolean
+  /** Reference options */
+  references?: ReferenceOptions
+
+  // ============ Output Limits (from basic hook) ============
+  /** Enable output limits */
+  enableOutputLimits?: boolean
+  /** Output limit options */
+  outputLimits?: OutputLimitOptions
+
+  // ============ Batching (from basic hook) ============
+  /** Enable request batching */
+  enableBatching?: boolean
+  /** Batching options */
+  batching?: BatchingOptions
+
+  // ============ Response Prefilling (NEW) ============
+  /** Enable response prefilling to skip LLM preambles */
+  enablePrefilling?: boolean
+  /** Prefill configuration */
+  prefillConfig?: PrefillConfig
+
+  // ============ Prompt Structure (NEW) ============
+  /** Enable question-at-end prompt restructuring */
+  enablePromptStructure?: boolean
+  /** Prompt structure configuration */
+  promptStructureOptions?: PromptStructureOptions
+
+  // ============ Presets ============
+  /**
+   * Configuration preset for quick setup
+   * - 'aggressive': All optimizations, max savings
+   * - 'balanced': Key optimizations, good UX
+   * - 'conservative': Safe optimizations only
+   * - 'realtime': Optimized for low latency
+   */
+  preset?: 'aggressive' | 'balanced' | 'conservative' | 'realtime'
 }
 
 export interface EnhancedOptimizationStats {
@@ -101,6 +195,36 @@ export interface EnhancedOptimizationStats {
     savingsFromOptimization: number
   }
 
+  /** History limiting stats (from basic hook) */
+  historyLimiting: {
+    messagesRemoved: number
+    tokensSaved: number
+  }
+
+  /** Throttling stats (from basic hook) */
+  throttling: {
+    requestsThrottled: number
+  }
+
+  /** Model routing stats (from basic hook) */
+  modelRouting: {
+    simpleModelRoutes: number
+    complexModelRoutes: number
+    routingCostSaved: number
+  }
+
+  /** Prefilling stats (NEW) */
+  prefilling: {
+    prefilledResponses: number
+    preambleTokensSaved: number
+  }
+
+  /** Prompt structure stats (NEW) */
+  promptStructure: {
+    restructuredPrompts: number
+    questionsMovedToEnd: number
+  }
+
   /** Overall */
   overall: {
     totalTokensSaved: number
@@ -127,21 +251,77 @@ export interface EnhancedOptimizationResult {
 }
 
 /**
- * Enhanced Token Optimization Hook
+ * Get configuration from preset
+ */
+function getPresetConfig(preset?: EnhancedTokenOptimizationOptions['preset']): Partial<EnhancedTokenOptimizationOptions> {
+  switch (preset) {
+    case 'aggressive':
+      return {
+        enableToon: true,
+        enablePromptCaching: true,
+        enableSemanticCaching: true,
+        enablePromptCompression: true,
+        compressionLevel: 'aggressive',
+        enableHistoryLimiting: true,
+        enableModelRouting: true,
+        enablePrefilling: true,
+        enablePromptStructure: true,
+      }
+    case 'balanced':
+      return {
+        enableToon: true,
+        enablePromptCaching: true,
+        enablePromptCompression: true,
+        compressionLevel: 'balanced',
+        enableHistoryLimiting: true,
+        enablePrefilling: true,
+      }
+    case 'conservative':
+      return {
+        enableToon: true,
+        enablePromptCompression: true,
+        compressionLevel: 'conservative',
+      }
+    case 'realtime':
+      return {
+        enableToon: true,
+        enableSemanticCaching: true,
+        enablePromptCompression: true,
+        compressionLevel: 'conservative',
+        // Skip caching for lowest latency
+        enablePromptCaching: false,
+      }
+    default:
+      return {}
+  }
+}
+
+/**
+ * Enhanced Token Optimization Hook (Unified)
  *
  * @example
  * ```tsx
+ * // Using a preset for quick setup
+ * const optimizer = useTokenOptimizationEnhanced({ preset: 'balanced' })
+ *
+ * // Or customize individual options
  * const {
  *   optimizeData,
  *   optimizePrompt,
  *   prepareMessages,
+ *   optimizeHistory,
+ *   routeQuery,
+ *   getPrefill,
  *   stats,
  *   resetStats
  * } = useTokenOptimizationEnhanced({
  *   model: 'claude-3-5-sonnet',
  *   enableToon: true,
  *   enablePromptCaching: true,
- *   enableSemanticCaching: true
+ *   enableSemanticCaching: true,
+ *   enableHistoryLimiting: true,
+ *   enableModelRouting: true,
+ *   enablePrefilling: true
  * })
  *
  * // Optimize structured data (uses TOON if beneficial)
@@ -150,6 +330,12 @@ export interface EnhancedOptimizationResult {
  *
  * // Prepare messages with cache control
  * const messages = prepareMessages(conversationMessages)
+ *
+ * // Route to appropriate model
+ * const model = routeQuery(userQuery)
+ *
+ * // Get prefill for JSON response
+ * const prefill = getPrefill('json') // returns '{'
  *
  * // Track total savings
  * console.log(`Total saved: $${stats.overall.totalCostSaved.toFixed(4)}`)
@@ -182,25 +368,81 @@ export function useTokenOptimizationEnhanced(
   /** Calculate cost */
   calculateCost: (params: { inputTokens: number; outputTokens: number }) => CostCalculation
 
+  // ========== From basic hook ==========
+  /** Limit conversation history */
+  optimizeHistory: (messages: CoreMessage[]) => CoreMessage[]
+
+  /** Check if request can be made (throttling) */
+  canMakeRequest: () => boolean
+
+  /** Record a request (for throttling) */
+  recordRequest: () => void
+
+  /** Route query to appropriate model */
+  routeQuery: (query: string) => string
+
+  /** Create reference for large data */
+  createDataReference: (
+    data: string | object
+  ) => { type: 'reference'; id: string; originalSize: number } | { type: 'data'; data: string | object }
+
+  /** Enforce output limits */
+  limitOutput: (output: string) => string
+
+  /** Add request to batch */
+  batchRequest: <T>(request: () => Promise<T>) => Promise<T>
+
+  // ========== New optimizations ==========
+  /** Get prefill string for response format */
+  getPrefill: (format: 'json' | 'xml' | 'code' | 'markdown') => string
+
+  /** Restructure prompt for optimal attention (question at end) */
+  restructurePrompt: (prompt: string, context?: string) => {
+    restructured: string
+    wasRestructured: boolean
+    questionPosition?: 'start' | 'middle' | 'end'
+  }
+
   /** Get statistics */
   stats: EnhancedOptimizationStats
 
   /** Reset statistics */
   resetStats: () => void
 } {
+  // Apply presets
+  const presetConfig = getPresetConfig(options.preset)
+
   const {
     model = 'gpt-4',
-    enableToon = true,
+    enableToon = presetConfig.enableToon ?? true,
     toonMinSavings = 20,
     enableAccurateTokenization = true,
-    enablePromptCaching = false,
+    enablePromptCaching = presetConfig.enablePromptCaching ?? false,
     cachingProvider = 'auto',
-    enableSemanticCaching = false,
+    enableSemanticCaching = presetConfig.enableSemanticCaching ?? false,
     similarityThreshold = 0.85,
-    enablePromptCompression = true,
-    compressionLevel = 'balanced',
+    enablePromptCompression = presetConfig.enablePromptCompression ?? true,
+    compressionLevel = presetConfig.compressionLevel ?? 'balanced',
     enableCostTracking = true,
     enableStats = true,
+    // From basic hook
+    enableHistoryLimiting = presetConfig.enableHistoryLimiting ?? false,
+    historyLimiting = {},
+    enableThrottling = false,
+    throttling = {},
+    enableModelRouting = presetConfig.enableModelRouting ?? false,
+    modelRouting = {},
+    enableReferences = false,
+    references = {},
+    enableOutputLimits = false,
+    outputLimits = {},
+    enableBatching = false,
+    batching = {},
+    // New optimizations
+    enablePrefilling = presetConfig.enablePrefilling ?? false,
+    prefillConfig = {},
+    enablePromptStructure = presetConfig.enablePromptStructure ?? false,
+    promptStructureOptions = {},
   } = options
 
   // Initialize managers
@@ -224,6 +466,18 @@ export function useTokenOptimizationEnhanced(
           })
         : null,
     [enableSemanticCaching, similarityThreshold]
+  )
+
+  // Initialize throttler (from basic hook)
+  const throttler = React.useMemo(
+    () => (enableThrottling ? createThrottler(throttling) : null),
+    [enableThrottling, throttling]
+  )
+
+  // Initialize batcher (from basic hook)
+  const batcher = React.useMemo(
+    () => (enableBatching ? createBatcher(batching) : null),
+    [enableBatching, batching]
   )
 
   // Statistics
@@ -256,6 +510,26 @@ export function useTokenOptimizationEnhanced(
       outputCost: 0,
       cachedCost: 0,
       savingsFromOptimization: 0,
+    },
+    historyLimiting: {
+      messagesRemoved: 0,
+      tokensSaved: 0,
+    },
+    throttling: {
+      requestsThrottled: 0,
+    },
+    modelRouting: {
+      simpleModelRoutes: 0,
+      complexModelRoutes: 0,
+      routingCostSaved: 0,
+    },
+    prefilling: {
+      prefilledResponses: 0,
+      preambleTokensSaved: 0,
+    },
+    promptStructure: {
+      restructuredPrompts: 0,
+      questionsMovedToEnd: 0,
     },
     overall: {
       totalTokensSaved: 0,
@@ -544,6 +818,26 @@ export function useTokenOptimizationEnhanced(
         cachedCost: 0,
         savingsFromOptimization: 0,
       },
+      historyLimiting: {
+        messagesRemoved: 0,
+        tokensSaved: 0,
+      },
+      throttling: {
+        requestsThrottled: 0,
+      },
+      modelRouting: {
+        simpleModelRoutes: 0,
+        complexModelRoutes: 0,
+        routingCostSaved: 0,
+      },
+      prefilling: {
+        prefilledResponses: 0,
+        preambleTokensSaved: 0,
+      },
+      promptStructure: {
+        restructuredPrompts: 0,
+        questionsMovedToEnd: 0,
+      },
       overall: {
         totalTokensSaved: 0,
         totalCostSaved: 0,
@@ -552,6 +846,218 @@ export function useTokenOptimizationEnhanced(
     })
     promptCacheManager.resetStats()
   }, [promptCacheManager])
+
+  // ========== Methods from basic hook ==========
+
+  /**
+   * Optimize history (limit conversation messages)
+   */
+  const optimizeHistory = React.useCallback(
+    (messages: CoreMessage[]): CoreMessage[] => {
+      if (!enableHistoryLimiting) {
+        return messages
+      }
+
+      const originalLength = messages.length
+      const limited = limitHistory(messages, historyLimiting)
+
+      // Track stats
+      if (enableStats && limited.length < originalLength) {
+        setStats(prev => ({
+          ...prev,
+          historyLimiting: {
+            messagesRemoved: prev.historyLimiting.messagesRemoved + (originalLength - limited.length),
+            tokensSaved: prev.historyLimiting.tokensSaved, // Would need token counting for accurate tracking
+          },
+        }))
+      }
+
+      return limited
+    },
+    [enableHistoryLimiting, historyLimiting, enableStats]
+  )
+
+  /**
+   * Check if request can be made (throttling)
+   */
+  const canMakeRequest = React.useCallback((): boolean => {
+    if (!enableThrottling || !throttler) {
+      return true
+    }
+
+    const canMake = throttler.canMakeRequest()
+    if (!canMake && enableStats) {
+      setStats(prev => ({
+        ...prev,
+        throttling: {
+          requestsThrottled: prev.throttling.requestsThrottled + 1,
+        },
+      }))
+    }
+
+    return canMake
+  }, [enableThrottling, throttler, enableStats])
+
+  /**
+   * Record request (for throttling)
+   */
+  const recordRequest = React.useCallback((): void => {
+    if (enableThrottling && throttler) {
+      throttler.recordRequest()
+    }
+  }, [enableThrottling, throttler])
+
+  /**
+   * Route query to appropriate model
+   */
+  const routeQuery = React.useCallback(
+    (query: string): string => {
+      if (!enableModelRouting) {
+        return modelRouting.complexModel ?? model ?? 'gpt-4'
+      }
+
+      const routedModel = routeToModel(query, modelRouting)
+      const savings = estimateRoutingSavings(query, modelRouting)
+
+      if (enableStats) {
+        setStats(prev => ({
+          ...prev,
+          modelRouting: {
+            simpleModelRoutes: prev.modelRouting.simpleModelRoutes + (routedModel === modelRouting.simpleModel ? 1 : 0),
+            complexModelRoutes: prev.modelRouting.complexModelRoutes + (routedModel === modelRouting.complexModel ? 1 : 0),
+            routingCostSaved: prev.modelRouting.routingCostSaved + savings.saved,
+          },
+        }))
+      }
+
+      return routedModel
+    },
+    [enableModelRouting, modelRouting, model, enableStats]
+  )
+
+  /**
+   * Create data reference for large data
+   */
+  const createDataReference = React.useCallback(
+    (data: string | object): { type: 'reference'; id: string; originalSize: number } | { type: 'data'; data: string | object } => {
+      if (!enableReferences) {
+        return { type: 'data', data }
+      }
+
+      return createReference(data, references)
+    },
+    [enableReferences, references]
+  )
+
+  /**
+   * Enforce output limits
+   */
+  const limitOutput = React.useCallback(
+    (output: string): string => {
+      if (!enableOutputLimits) {
+        return output
+      }
+
+      return enforceOutputLimit(output, outputLimits)
+    },
+    [enableOutputLimits, outputLimits]
+  )
+
+  /**
+   * Batch request
+   */
+  const batchRequest = React.useCallback(
+    async <T,>(request: () => Promise<T>): Promise<T> => {
+      if (!enableBatching || !batcher) {
+        return request()
+      }
+
+      return batcher.add(request)
+    },
+    [enableBatching, batcher]
+  )
+
+  // ========== New optimization methods ==========
+
+  /**
+   * Get prefill string for response format
+   */
+  const getPrefill = React.useCallback(
+    (format: 'json' | 'xml' | 'code' | 'markdown'): string => {
+      if (!enablePrefilling) {
+        return ''
+      }
+
+      // Map format to template
+      let template: PrefillTemplate | undefined
+      switch (format) {
+        case 'json':
+          template = PREFILL_TEMPLATES.json
+          break
+        case 'xml':
+          // No XML template, use custom
+          template = undefined
+          break
+        case 'code':
+          template = PREFILL_TEMPLATES.javascript
+          break
+        case 'markdown':
+          template = PREFILL_TEMPLATES.analysis
+          break
+      }
+
+      const prefill = template?.config.prefill ?? (format === 'xml' ? '<response>' : '')
+
+      if (enableStats && prefill) {
+        setStats(prev => ({
+          ...prev,
+          prefilling: {
+            prefilledResponses: prev.prefilling.prefilledResponses + 1,
+            preambleTokensSaved: prev.prefilling.preambleTokensSaved + 10, // Estimated average preamble tokens
+          },
+        }))
+      }
+
+      return prefill
+    },
+    [enablePrefilling, enableStats]
+  )
+
+  /**
+   * Restructure prompt for optimal attention (question at end)
+   */
+  const restructurePrompt = React.useCallback(
+    (prompt: string, _context?: string): {
+      restructured: string
+      wasRestructured: boolean
+      questionPosition?: 'start' | 'middle' | 'end'
+    } => {
+      if (!enablePromptStructure) {
+        return { restructured: prompt, wasRestructured: false }
+      }
+
+      const result = restructurePromptUtil(prompt, promptStructureOptions)
+      const restructured = result.user
+      const wasRestructured = restructured !== prompt
+
+      if (enableStats && wasRestructured) {
+        setStats(prev => ({
+          ...prev,
+          promptStructure: {
+            restructuredPrompts: prev.promptStructure.restructuredPrompts + 1,
+            questionsMovedToEnd: prev.promptStructure.questionsMovedToEnd + 1,
+          },
+        }))
+      }
+
+      return {
+        restructured,
+        wasRestructured,
+        questionPosition: 'end',
+      }
+    },
+    [enablePromptStructure, promptStructureOptions, enableStats]
+  )
 
   // Update overall stats periodically
   React.useEffect(() => {
@@ -585,12 +1091,25 @@ export function useTokenOptimizationEnhanced(
   ])
 
   return {
+    // Original enhanced methods
     optimizeData,
     optimizePrompt,
     prepareMessages,
     parseResponse,
     countTokens: countTokensWrapper,
     calculateCost: calculateCostWrapper,
+    // From basic hook
+    optimizeHistory,
+    canMakeRequest,
+    recordRequest,
+    routeQuery,
+    createDataReference,
+    limitOutput,
+    batchRequest,
+    // New optimizations
+    getPrefill,
+    restructurePrompt,
+    // Stats
     stats,
     resetStats,
   }
