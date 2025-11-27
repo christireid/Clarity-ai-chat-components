@@ -181,7 +181,8 @@ export function useBatteryAware(config?: Partial<BatteryAwareConfig>) {
 
     const initBattery = async () => {
       try {
-        battery = await nav.getBattery()
+        // getBattery is checked above, safe to use non-null assertion
+        battery = await nav.getBattery!()
         updateBatteryStatus(battery)
 
         // Listen for battery changes

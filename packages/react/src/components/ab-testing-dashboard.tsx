@@ -10,9 +10,31 @@ import {
   CardTitle,
   Badge,
   Button,
-  Progress,
   cn,
 } from '@clarity-chat/primitives'
+
+/**
+ * Simple Progress component for internal use
+ */
+const Progress = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & { value?: number }
+>(({ className, value = 0, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'relative h-4 w-full overflow-hidden rounded-full bg-gray-200',
+      className
+    )}
+    {...props}
+  >
+    <div
+      className="h-full bg-blue-600 transition-all"
+      style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+    />
+  </div>
+))
+Progress.displayName = 'Progress'
 
 /**
  * Experiment variant
@@ -47,9 +69,7 @@ export interface SignificanceTest {
   pValue: number
   confidenceLevel: number
   sampleSize: number
-  effect
-
-Size: number
+  effectSize: number
 }
 
 /**

@@ -63,6 +63,8 @@
   },
   "dependencies": {
     "@clarity-chat/memory": "workspace:*",
+    "@clarity-chat/primitives": "workspace:*",
+    "@clarity-chat/types": "workspace:*",
     "@radix-ui/react-slot": "^1.0.2",
     "@types/prismjs": "^1.26.5",
     "class-variance-authority": "^0.7.0",

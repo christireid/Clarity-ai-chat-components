@@ -213,7 +213,7 @@ export function CollaborativeEditor({
   const [operations, setOperations] = React.useState<EditOperation[]>([])
 
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
-  const lockTimerRef = React.useRef<NodeJS.Timeout>()
+  const lockTimerRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Get active editors for this message
   const activeEditors = React.useMemo(() => {

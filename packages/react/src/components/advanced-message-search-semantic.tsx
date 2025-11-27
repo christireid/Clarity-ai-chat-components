@@ -123,9 +123,11 @@ function cosineSimilarity(a: number[], b: number[]): number {
   let normB = 0
 
   for (let i = 0; i < a.length; i++) {
-    dotProduct += a[i] * b[i]
-    normA += a[i] * a[i]
-    normB += b[i] * b[i]
+    const ai = a[i]!
+    const bi = b[i]!
+    dotProduct += ai * bi
+    normA += ai * ai
+    normB += bi * bi
   }
 
   const denominator = Math.sqrt(normA) * Math.sqrt(normB)
@@ -311,7 +313,8 @@ export function SemanticMessageSearch({
       setExpandedQueries(queries)
 
       // Generate embedding for query
-      const queryEmbedding = await generateEmbedding(queries[0])
+      const primaryQuery = queries[0] ?? searchQuery
+      const queryEmbedding = await generateEmbedding(primaryQuery)
 
       // Calculate semantic similarity for each message
       const semanticScores = new Map<string, number>()

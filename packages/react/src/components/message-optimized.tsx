@@ -142,7 +142,6 @@ export const MessageOptimized = React.memo(
 
         return (
           <>
-            {/* @ts-expect-error - ReactMarkdown v9 has type compatibility issues */}
             <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeHighlight as any]}

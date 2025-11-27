@@ -741,6 +741,12 @@ importers:
       '@clarity-chat/memory':
         specifier: workspace:*
         version: link:../memory
+      '@clarity-chat/primitives':
+        specifier: workspace:*
+        version: link:../primitives
+      '@clarity-chat/types':
+        specifier: workspace:*
+        version: link:../types
       '@radix-ui/react-slot':
         specifier: ^1.0.2
         version: 1.2.4(@types/react@19.2.3)(react@19.2.0)

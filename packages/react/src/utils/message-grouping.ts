@@ -102,13 +102,13 @@ export function getMessageGrouping(
  * @returns Whether messages are close enough in time to be grouped
  */
 function isWithinTimeThreshold(message1: Message, message2: Message): boolean {
-  // If either message doesn't have a timestamp, don't group
-  if (!message1.timestamp || !message2.timestamp) {
+  // If either message doesn't have a createdAt, don't group
+  if (!message1.createdAt || !message2.createdAt) {
     return false
   }
 
-  const time1 = new Date(message1.timestamp).getTime()
-  const time2 = new Date(message2.timestamp).getTime()
+  const time1 = new Date(message1.createdAt).getTime()
+  const time2 = new Date(message2.createdAt).getTime()
   const timeDiff = Math.abs(time2 - time1)
 
   return timeDiff <= GROUP_TIME_THRESHOLD_MS
@@ -235,13 +235,13 @@ export function shouldShowTimeSeparator(
     return true
   }
 
-  // Don't show if either message lacks timestamp
-  if (!previousMessage.timestamp || !currentMessage.timestamp) {
+  // Don't show if either message lacks createdAt
+  if (!previousMessage.createdAt || !currentMessage.createdAt) {
     return false
   }
 
-  const prevDate = new Date(previousMessage.timestamp)
-  const currDate = new Date(currentMessage.timestamp)
+  const prevDate = new Date(previousMessage.createdAt)
+  const currDate = new Date(currentMessage.createdAt)
 
   // Show separator if messages are on different days
   const prevDay = new Date(

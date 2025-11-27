@@ -217,11 +217,14 @@ export function ConversationSummarizer({
         msgs.forEach((msg) => {
           const matches = msg.content.matchAll(codeBlockPattern)
           for (const match of matches) {
-            codeSnippets.push({
-              language: match[1] || 'plaintext',
-              code: match[2].trim(),
-              description: 'Code snippet from conversation',
-            })
+            const codeContent = match[2]
+            if (codeContent) {
+              codeSnippets.push({
+                language: match[1] || 'plaintext',
+                code: codeContent.trim(),
+                description: 'Code snippet from conversation',
+              })
+            }
           }
         })
       }
