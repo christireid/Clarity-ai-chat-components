@@ -170,6 +170,20 @@ export {
   type EnhancedOptimizationResult,
 } from './hooks/use-token-optimization-enhanced'
 
+// Token Budget Monitor - Real-time threshold warnings and auto-trimming
+export {
+  useTokenBudgetMonitor,
+  getStatusColor,
+  formatTokenUsage,
+  createModelBudgetMonitor,
+  type TokenBudgetConfig,
+  type TokenBudgetMonitorReturn,
+  type TokenUsage,
+  type TokenUsageStatus,
+  type TrimResult,
+  type BudgetMessage,
+} from './hooks/use-token-budget-monitor'
+
 // Original Token Optimization Hook
 export {
   useTokenOptimization,
