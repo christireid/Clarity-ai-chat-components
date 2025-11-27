@@ -1,9 +1,11 @@
 /**
  * Intelligent Model Router
- * 
+ *
  * Routes queries to appropriate models based on complexity.
  * Can save 40-60% on costs by using cheaper models for simple queries.
  */
+
+import { estimateTokens } from './tokenization/estimator'
 
 export interface RouteModelConfig {
   /** Model identifier */
@@ -129,12 +131,7 @@ const COMPLEXITY_PATTERNS = {
   ],
 }
 
-/**
- * Estimate token count
- */
-function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4)
-}
+// Token estimation imported from centralized module: estimateTokens
 
 /**
  * Analyze query complexity

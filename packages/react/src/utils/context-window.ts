@@ -5,6 +5,8 @@
  * Works with any tokenizer or estimation function.
  */
 
+import { estimateTokens as centralEstimateTokens } from './tokenization/estimator'
+
 export interface ContextMessage {
   role: 'system' | 'user' | 'assistant' | 'function'
   content: string
@@ -301,9 +303,9 @@ export class ContextWindowManager {
 }
 
 /**
- * Simple token estimation (rough, use proper tokenizer in production)
+ * Simple token estimation (re-exported from centralized module)
+ * @deprecated Use import { estimateTokens } from './tokenization/estimator' directly
  */
 export function estimateTokens(text: string): number {
-  // Rough estimate: ~4 characters per token
-  return Math.ceil(text.length / 4)
+  return centralEstimateTokens(text)
 }

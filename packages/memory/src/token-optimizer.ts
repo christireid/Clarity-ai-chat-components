@@ -16,9 +16,13 @@ import type {
 
 /**
  * Token counter using approximate GPT tokenization
- * For production, integrate with tiktoken or actual tokenizer
+ *
+ * Uses the standard 4 chars/token ratio used across the codebase.
+ * For production, integrate with tiktoken or actual tokenizer.
+ * For model-specific estimation, see @clarity/react/utils/tokenization/estimator
  */
 export class TokenCounter {
+  /** Standard characters per token ratio used across the codebase */
   private static readonly AVG_CHARS_PER_TOKEN = 4
 
   /**
@@ -26,8 +30,8 @@ export class TokenCounter {
    */
   static count(text: string): number {
     if (!text) return 0
-    // Approximate: ~4 characters per token
-    // This is a rough estimate; use tiktoken for accurate counting
+    // Standard: ~4 characters per token
+    // This is the standard ratio used across the codebase
     return Math.ceil(text.length / this.AVG_CHARS_PER_TOKEN)
   }
 

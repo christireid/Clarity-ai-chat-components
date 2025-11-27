@@ -1,9 +1,11 @@
 /**
  * Prompt Compression Utilities
- * 
+ *
  * Utilities for optimizing prompts to reduce token usage while maintaining meaning.
  * Can save 20-35% on input tokens.
  */
+
+import { estimateTokens } from './tokenization/estimator'
 
 export interface CompressionOptions {
   /** Remove redundant whitespace */
@@ -92,12 +94,7 @@ const ABBREVIATIONS: Record<string, string> = {
   'arguments': 'args',
 }
 
-/**
- * Estimate token count (rough approximation: 4 chars ≈ 1 token)
- */
-function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4)
-}
+// Token estimation imported from centralized module: estimateTokens
 
 /**
  * Preserve code blocks and markdown

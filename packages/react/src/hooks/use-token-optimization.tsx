@@ -1,8 +1,25 @@
 /**
- * Token Optimization Hook
- * 
- * Comprehensive hook for optimizing token usage in AI chat applications.
- * Provides easy-to-use access to all token optimization features.
+ * Token Optimization Hook (Legacy)
+ *
+ * @deprecated Use `useTokenOptimizationEnhanced` instead. This hook is maintained
+ * for backward compatibility only. The enhanced hook includes all features from
+ * this hook plus TOON encoding, accurate tokenization, prompt caching, and more.
+ *
+ * Migration guide:
+ * ```tsx
+ * // Before (deprecated)
+ * import { useTokenOptimization } from '@clarity-chat/react'
+ * const { optimizePrompt } = useTokenOptimization({ enablePromptShortening: true })
+ *
+ * // After (recommended)
+ * import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+ * const { optimizePrompt } = useTokenOptimizationEnhanced({
+ *   preset: 'balanced',  // or customize individual options
+ *   enablePromptCompression: true,
+ * })
+ * ```
+ *
+ * @see useTokenOptimizationEnhanced for the unified hook with all features
  */
 
 'use client'
@@ -127,7 +144,9 @@ export interface UseTokenOptimizationReturn {
 
 /**
  * Hook for token optimization
- * 
+ *
+ * @deprecated Use `useTokenOptimizationEnhanced` instead for all new development.
+ *
  * @example
  * ```tsx
  * const {
@@ -142,20 +161,20 @@ export interface UseTokenOptimizationReturn {
  *   enableCaching: true,
  *   enableModelRouting: true,
  * })
- * 
+ *
  * // Optimize prompt before sending
  * const { optimized, savings } = optimizePrompt(userInput)
  * console.log(`Saved ${savings.tokensSaved} tokens (${savings.percentage.toFixed(1)}%)`)
- * 
+ *
  * // Limit history
  * const limitedMessages = optimizeHistory(messages)
- * 
+ *
  * // Check cache
  * const cached = getCachedResponse(optimized)
  * if (cached) {
  *   return cached
  * }
- * 
+ *
  * // Route to appropriate model
  * const model = routeQuery(optimized)
  * ```
@@ -163,6 +182,17 @@ export interface UseTokenOptimizationReturn {
 export function useTokenOptimization(
   options: UseTokenOptimizationOptions = {}
 ): UseTokenOptimizationReturn {
+  // Emit deprecation warning in development
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[useTokenOptimization] DEPRECATED: useTokenOptimization is deprecated. ' +
+          'Please migrate to useTokenOptimizationEnhanced for additional features including ' +
+          'TOON encoding, accurate tokenization, prompt caching, presets, and more. ' +
+          'See documentation for migration guide.'
+      )
+    }
+  }, [])
   const {
     enablePromptShortening = false,
     enableHistoryLimiting = false,
