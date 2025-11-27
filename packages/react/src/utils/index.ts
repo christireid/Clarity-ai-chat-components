@@ -34,6 +34,32 @@ export * from './mobile'
 // Note: CompressionOptions/Result from prompt-compression conflict with memory types
 // Only export the compressPrompt function from here
 export { compressPrompt } from './prompt-compression'
+
+// Advanced Semantic Compression (LLMLingua-style)
+export {
+  compressPromptSemantic,
+  compressPromptCombined,
+  calculateTokenImportance,
+  estimateCompressibility,
+  type SemanticCompressionOptions,
+  type SemanticCompressionResult,
+  type TokenImportance,
+} from './prompt-compression-advanced'
+
+// Context Ordering (Lost-in-the-Middle mitigation)
+export {
+  reorderForAttention,
+  addStructuralMarkers,
+  optimizeContextLayout,
+  calculateMessageImportance,
+  estimateAttentionLoss,
+  createContextOrderingHook,
+  type ContextMessage,
+  type OrderingOptions,
+  type OrderedContext,
+  type StructuredMessage,
+} from './context-ordering'
+
 export * from './smart-cache'
 export * from './model-router'
 export * from './response-limiter'
