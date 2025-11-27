@@ -9,21 +9,8 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
-import { ClockIcon, CheckIcon, RefreshIcon, CloseIcon } from './icons'
-
-/**
- * Custom hook to track mounted state
- */
-function useIsMounted() {
-  const isMounted = React.useRef(false)
-  React.useEffect(() => {
-    isMounted.current = true
-    return () => {
-      isMounted.current = false
-    }
-  }, [])
-  return isMounted
-}
+import { ClockIcon, RefreshIcon, CloseIcon } from './icons'
+import { useIsMounted } from '../hooks/use-is-mounted'
 
 /**
  * Calendar event
@@ -226,7 +213,7 @@ export const CalendarIntegration = React.forwardRef<HTMLDivElement, CalendarInte
       showActionItems = true,
       showAvailability = false,
       onEventCreate,
-      onEventUpdate,
+      onEventUpdate: _onEventUpdate,
       onEventDelete,
       onActionToEvent,
       fetchEvents,
@@ -245,7 +232,7 @@ export const CalendarIntegration = React.forwardRef<HTMLDivElement, CalendarInte
     error: null,
   })
 
-  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date())
+  const [selectedDate, _setSelectedDate] = React.useState<Date>(new Date())
 
   // Clear error helper
   const clearError = React.useCallback(() => {
@@ -524,7 +511,7 @@ export const CalendarIntegration = React.forwardRef<HTMLDivElement, CalendarInte
                         )}
                         {event.attendees && event.attendees.length > 0 && (
                           <div className="flex items-center gap-1 mt-1">
-                            {event.attendees.slice(0, 3).map((attendee, i) => (
+                            {event.attendees.slice(0, 3).map((attendee) => (
                               <div
                                 key={attendee.email}
                                 className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs"

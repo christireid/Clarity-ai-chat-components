@@ -10,20 +10,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { FileIcon, DownloadIcon, RefreshIcon, CheckIcon, CloseIcon } from './icons'
-
-/**
- * Custom hook to track mounted state
- */
-function useIsMounted() {
-  const isMounted = React.useRef(false)
-  React.useEffect(() => {
-    isMounted.current = true
-    return () => {
-      isMounted.current = false
-    }
-  }, [])
-  return isMounted
-}
+import { useIsMounted } from '../hooks/use-is-mounted'
 
 /**
  * Supported document platforms
