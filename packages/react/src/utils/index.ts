@@ -60,6 +60,20 @@ export {
   type StructuredMessage,
 } from './context-ordering'
 
+// Chain-of-Thought (CoT) Optimization
+export {
+  analyzeCoTPrompt,
+  optimizeCoTPrompt,
+  addZeroShotCoT,
+  recommendCoTApproach,
+  estimateCoTSavings,
+  createCoTPrompt,
+  COT_TRIGGERS,
+  type CoTOptimizationOptions,
+  type CoTAnalysis,
+  type CoTOptimizationResult,
+} from './cot-optimizer'
+
 export * from './smart-cache'
 export * from './model-router'
 export * from './response-limiter'

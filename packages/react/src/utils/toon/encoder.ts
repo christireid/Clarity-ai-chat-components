@@ -308,3 +308,168 @@ export function isSuitableForToon(data: any): boolean {
 
   return false
 }
+
+/**
+ * TOON format instructions for LLMs
+ *
+ * These instructions help LLMs understand and parse TOON-formatted data
+ * when included in prompts.
+ */
+export const TOON_INSTRUCTIONS = {
+  /** Brief instruction for simple cases */
+  brief: `The data below is in TOON (Token-Oriented Object Notation) format. Parse headers as comma-separated column names, with each row containing corresponding values.`,
+
+  /** Detailed instruction for complex cases */
+  detailed: `The following data is in TOON (Token-Oriented Object Notation) format - a compact alternative to JSON.
+
+TOON Format Rules:
+1. For arrays of objects: first row contains comma-separated column names (headers), subsequent rows contain comma-separated values
+2. For nested objects: YAML-style indentation with key: value pairs
+3. Strings containing commas or quotes are wrapped in double quotes
+4. Parse as tabular data where headers map to values by position
+
+Example interpretation:
+\`\`\`
+name, age, city
+Alice, 30, NYC
+Bob, 25, SF
+\`\`\`
+Equals JSON: [{"name":"Alice","age":30,"city":"NYC"},{"name":"Bob","age":25,"city":"SF"}]`,
+
+  /** System message version */
+  system: `When you receive data in TOON format (indicated by comma-separated headers followed by matching rows), parse it as structured tabular data. TOON is a token-efficient alternative to JSON where the first row defines column headers and subsequent rows contain values.`,
+
+  /** Inline instruction (minimal) */
+  inline: `[TOON format: headers on first line, values in rows]`,
+}
+
+/**
+ * Options for wrapping TOON data with instructions
+ */
+export interface ToonInstructionOptions {
+  /** Include instructions for LLM comprehension */
+  includeInstructions?: boolean
+  /** Instruction detail level */
+  instructionLevel?: 'brief' | 'detailed' | 'inline'
+  /** Where to place instructions */
+  instructionPlacement?: 'before' | 'after' | 'system'
+  /** Mark whether instructions were already sent in conversation */
+  instructionsAlreadySent?: boolean
+}
+
+/**
+ * Wrap TOON-formatted data with instructions for LLM comprehension
+ *
+ * @example
+ * ```ts
+ * const toonData = jsonToToon(users)
+ * const withInstructions = wrapWithToonInstructions(toonData, {
+ *   includeInstructions: true,
+ *   instructionLevel: 'brief'
+ * })
+ * ```
+ */
+export function wrapWithToonInstructions(
+  toonData: string,
+  options: ToonInstructionOptions = {}
+): {
+  content: string
+  systemMessage?: string
+  instructionsIncluded: boolean
+} {
+  const {
+    includeInstructions = true,
+    instructionLevel = 'brief',
+    instructionPlacement = 'before',
+    instructionsAlreadySent = false,
+  } = options
+
+  // Skip instructions if already sent or not requested
+  if (!includeInstructions || instructionsAlreadySent) {
+    return {
+      content: toonData,
+      instructionsIncluded: false,
+    }
+  }
+
+  // Get appropriate instruction text
+  let instruction: string
+  switch (instructionLevel) {
+    case 'detailed':
+      instruction = TOON_INSTRUCTIONS.detailed
+      break
+    case 'inline':
+      instruction = TOON_INSTRUCTIONS.inline
+      break
+    case 'brief':
+    default:
+      instruction = TOON_INSTRUCTIONS.brief
+  }
+
+  // Handle system message placement
+  if (instructionPlacement === 'system') {
+    return {
+      content: toonData,
+      systemMessage: TOON_INSTRUCTIONS.system,
+      instructionsIncluded: true,
+    }
+  }
+
+  // Handle before/after placement
+  const content = instructionPlacement === 'before'
+    ? `${instruction}\n\n${toonData}`
+    : `${toonData}\n\n${instruction}`
+
+  return {
+    content,
+    instructionsIncluded: true,
+  }
+}
+
+/**
+ * Create a conversation-aware TOON wrapper
+ *
+ * Tracks whether instructions have been sent to avoid repetition.
+ *
+ * @example
+ * ```ts
+ * const wrapper = createToonConversationWrapper()
+ *
+ * // First message - includes instructions
+ * const first = wrapper.wrap(jsonToToon(data1))
+ *
+ * // Second message - no instructions (already sent)
+ * const second = wrapper.wrap(jsonToToon(data2))
+ * ```
+ */
+export function createToonConversationWrapper(
+  defaultOptions: ToonInstructionOptions = {}
+): {
+  wrap: (toonData: string, options?: ToonInstructionOptions) => ReturnType<typeof wrapWithToonInstructions>
+  reset: () => void
+  instructionsSent: boolean
+} {
+  let instructionsSent = false
+
+  return {
+    wrap: (toonData: string, options: ToonInstructionOptions = {}) => {
+      const result = wrapWithToonInstructions(toonData, {
+        ...defaultOptions,
+        ...options,
+        instructionsAlreadySent: instructionsSent,
+      })
+
+      if (result.instructionsIncluded) {
+        instructionsSent = true
+      }
+
+      return result
+    },
+    reset: () => {
+      instructionsSent = false
+    },
+    get instructionsSent() {
+      return instructionsSent
+    },
+  }
+}
