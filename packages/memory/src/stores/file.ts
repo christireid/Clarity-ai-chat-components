@@ -194,7 +194,10 @@ export class FileStore implements VectorStore {
 
     // Use atomic write pattern: write to temp file, then rename
     // This prevents data corruption if process crashes during write
-    const tempPath = `${this.filePath}.${Date.now()}.tmp`
+    // Note: This implementation is safe for single-process use only.
+    // For multi-process scenarios, use a database or add file locking.
+    const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+    const tempPath = `${this.filePath}.${uniqueId}.tmp`
     const backupPath = `${this.filePath}.bak`
 
     try {
