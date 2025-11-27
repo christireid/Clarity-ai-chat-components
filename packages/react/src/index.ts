@@ -184,6 +184,43 @@ export {
   type BudgetMessage,
 } from './hooks/use-token-budget-monitor'
 
+// KV Cache-Aligned Prompt Builder - Optimizes prompt structure for cache reuse
+export {
+  buildKVCacheOptimizedPrompt,
+  createSegment,
+  createSystemSegment,
+  createContextSegment,
+  createRAGSegment,
+  createHistorySegment,
+  createUserSegment,
+  conversationToSegments,
+  validateSegments,
+  estimateKVCacheSavings,
+  PromptBudgetExceededError,
+  type SegmentPriority,
+  type SegmentType,
+  type PromptSegment,
+  type KVCachePromptConfig,
+  type FormattedMessage,
+  type TrimmedSegmentInfo,
+  type BuiltPrompt,
+} from './utils/kv-cache-prompt-builder'
+
+// Dynamic Output Token Calculator - Intelligent max_tokens based on context
+export {
+  calculateDynamicOutputLimit,
+  injectBrevityInstruction,
+  getPreferenceConfig,
+  getTaskTypeConfig,
+  detectTaskType,
+  createModelOutputConfig,
+  getMaxTokens,
+  type OutputPreference,
+  type TaskType,
+  type OutputLimitConfig,
+  type OutputLimitResult,
+} from './utils/dynamic-output-limit'
+
 // Original Token Optimization Hook
 export {
   useTokenOptimization,
