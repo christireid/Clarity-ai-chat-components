@@ -184,19 +184,56 @@ export class FileStore implements VectorStore {
   }
 
   private async persist(): Promise<void> {
+    const data: FileStoreData = {
+      memories: Array.from(this.memories.values()),
+      version: '1.0.0',
+      lastUpdated: Date.now(),
+    }
+
+    const content = JSON.stringify(data, null, 2)
+
+    // Use atomic write pattern: write to temp file, then rename
+    // This prevents data corruption if process crashes during write
+    const tempPath = `${this.filePath}.${Date.now()}.tmp`
+    const backupPath = `${this.filePath}.bak`
+
     try {
-      const data: FileStoreData = {
-        memories: Array.from(this.memories.values()),
-        version: '1.0.0',
-        lastUpdated: Date.now(),
+      // Write to temporary file first
+      await fs.writeFile(tempPath, content, 'utf-8')
+
+      // Create backup of existing file (if it exists)
+      try {
+        await fs.copyFile(this.filePath, backupPath)
+      } catch {
+        // Original file may not exist yet - that's fine
       }
 
-      await fs.writeFile(
-        this.filePath,
-        JSON.stringify(data, null, 2),
-        'utf-8'
-      )
+      // Atomic rename: replace target with temp file
+      await fs.rename(tempPath, this.filePath)
+
+      // Clean up backup after successful write
+      try {
+        await fs.unlink(backupPath)
+      } catch {
+        // Backup may not exist - that's fine
+      }
     } catch (error) {
+      // Clean up temp file on error
+      try {
+        await fs.unlink(tempPath)
+      } catch {
+        // Temp file may not exist - that's fine
+      }
+
+      // Attempt to restore from backup if main file was corrupted
+      try {
+        await fs.access(backupPath)
+        await fs.rename(backupPath, this.filePath)
+        console.warn('Restored from backup after persist failure')
+      } catch {
+        // No backup to restore from
+      }
+
       console.error('Failed to persist memories:', error)
       throw error
     }
