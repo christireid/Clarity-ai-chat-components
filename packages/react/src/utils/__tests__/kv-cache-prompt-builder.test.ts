@@ -355,6 +355,59 @@ describe('validateSegments', () => {
   })
 })
 
+describe('minHistoryTokens', () => {
+  it('should report when minHistoryTokens is met', () => {
+    const segments: PromptSegment[] = [
+      createSystemSegment('sys', 'System'),
+      createHistorySegment('h1', 'A'.repeat(100), 'user'), // ~25 tokens
+      createHistorySegment('h2', 'B'.repeat(100), 'assistant'), // ~25 tokens
+      createUserSegment('user', 'Query'),
+    ]
+
+    const result = buildKVCacheOptimizedPrompt(segments, {
+      maxInputTokens: 1000,
+      reservedForOutput: 100,
+      minHistoryTokens: 40,
+    })
+
+    expect(result.minHistoryTokensMet).toBe(true)
+    expect(result.historyTokensIncluded).toBeGreaterThanOrEqual(40)
+  })
+
+  it('should report when minHistoryTokens is not met due to budget', () => {
+    const segments: PromptSegment[] = [
+      createSystemSegment('sys', 'A'.repeat(200)), // ~50 tokens
+      createHistorySegment('h1', 'B'.repeat(100), 'user'), // ~25 tokens
+      createUserSegment('user', 'C'.repeat(100)), // ~25 tokens
+    ]
+
+    const result = buildKVCacheOptimizedPrompt(segments, {
+      maxInputTokens: 150,
+      reservedForOutput: 20,
+      minHistoryTokens: 100, // More than available
+    })
+
+    expect(result.minHistoryTokensMet).toBe(false)
+    expect(result.historyTokensIncluded).toBeLessThan(100)
+  })
+
+  it('should report minHistoryTokensMet as true when minHistoryTokens is 0', () => {
+    const segments: PromptSegment[] = [
+      createSystemSegment('sys', 'System'),
+      createUserSegment('user', 'Query'),
+    ]
+
+    const result = buildKVCacheOptimizedPrompt(segments, {
+      maxInputTokens: 1000,
+      reservedForOutput: 100,
+      minHistoryTokens: 0,
+    })
+
+    expect(result.minHistoryTokensMet).toBe(true)
+    expect(result.historyTokensIncluded).toBe(0)
+  })
+})
+
 describe('input validation', () => {
   it('should throw on non-positive maxInputTokens', () => {
     const segments = [createUserSegment('user', 'Query')]
@@ -423,6 +476,8 @@ describe('estimateKVCacheSavings', () => {
       tokenBreakdown: { system: 400, 'static-context': 0, rag: 300, history: 200, user: 100 },
       availableForOutput: 5000,
       budgetWarning: false,
+      historyTokensIncluded: 200,
+      minHistoryTokensMet: true,
     }
 
     const result = estimateKVCacheSavings(builtPrompt, 10)
@@ -444,6 +499,8 @@ describe('estimateKVCacheSavings', () => {
       tokenBreakdown: { system: 0, 'static-context': 0, rag: 500, history: 300, user: 200 },
       availableForOutput: 5000,
       budgetWarning: false,
+      historyTokensIncluded: 300,
+      minHistoryTokensMet: true,
     }
 
     const result = estimateKVCacheSavings(builtPrompt, 10)

@@ -106,6 +106,10 @@ export interface BuiltPrompt {
   availableForOutput: number
   /** Whether any must-have content was at risk */
   budgetWarning: boolean
+  /** History tokens included in the prompt */
+  historyTokensIncluded: number
+  /** Whether minHistoryTokens requirement was met (if specified) */
+  minHistoryTokensMet: boolean
 }
 
 /**
@@ -335,14 +339,6 @@ export function buildKVCacheOptimizedPrompt(
       remainingBudget -= segmentCost
       includedHistoryTokens += segment.tokenCount!
     } else {
-      // Check if we need to keep this for minHistoryTokens
-      const wouldMeetMinimum = includedHistoryTokens >= minHistoryTokens
-
-      if (!wouldMeetMinimum && minHistoryTokens > 0 && includedHistoryTokens < totalHistoryTokens) {
-        // Try to include anyway if we haven't met minimum and there's any budget
-        // This is a best-effort - we can't exceed budget even for minimum
-      }
-
       trimmedSegments.push({
         id: segment.id,
         type: segment.type,
@@ -352,6 +348,9 @@ export function buildKVCacheOptimizedPrompt(
       })
     }
   }
+
+  // Check if minHistoryTokens requirement was met
+  const minHistoryTokensMet = minHistoryTokens === 0 || includedHistoryTokens >= minHistoryTokens
 
   // Combine and sort all included segments
   const allIncluded = [...mustHaveSegments, ...includedOptional]
@@ -398,6 +397,8 @@ export function buildKVCacheOptimizedPrompt(
     tokenBreakdown,
     availableForOutput: maxInputTokens - totalTokens,
     budgetWarning: remainingBudget < 100, // Warn if very tight
+    historyTokensIncluded: includedHistoryTokens,
+    minHistoryTokensMet,
   }
 }
 
