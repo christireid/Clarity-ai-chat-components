@@ -1,12 +1,172 @@
 /**
  * Happy Path Workflows - Real-World Usage Examples
- * 
+ *
  * These examples demonstrate the primary workflows that real users
  * of this library care about, using the layered architecture.
  */
 
 import * as React from 'react'
 import '@clarity-chat/react/styles.css'
+
+// ============================================================================
+// SAFE MATH EXPRESSION EVALUATOR
+// ============================================================================
+
+/**
+ * Safe math expression evaluator using a recursive descent parser.
+ * Only supports: numbers (including decimals/negatives), +, -, *, /, parentheses
+ * Does NOT use eval() or Function() - completely safe from code injection.
+ */
+function safeEvaluateMath(expression: string): number {
+  const tokens = tokenizeMath(expression)
+  const result = parseMathExpression(tokens)
+  return result.value
+}
+
+interface ParseState {
+  tokens: string[]
+  pos: number
+  value: number
+}
+
+function tokenizeMath(expr: string): string[] {
+  const tokens: string[] = []
+  let i = 0
+
+  while (i < expr.length) {
+    const char = expr[i]
+
+    // Skip whitespace
+    if (/\s/.test(char)) {
+      i++
+      continue
+    }
+
+    // Number (including decimals)
+    if (/\d/.test(char) || (char === '.' && i + 1 < expr.length && /\d/.test(expr[i + 1]))) {
+      let num = ''
+      while (i < expr.length && (/\d/.test(expr[i]) || expr[i] === '.')) {
+        num += expr[i++]
+      }
+      tokens.push(num)
+      continue
+    }
+
+    // Operators and parentheses
+    if (/[+\-*/()]/.test(char)) {
+      tokens.push(char)
+      i++
+      continue
+    }
+
+    throw new Error(`Invalid character in expression: "${char}"`)
+  }
+
+  return tokens
+}
+
+function parseMathExpression(tokens: string[]): ParseState {
+  let state: ParseState = { tokens, pos: 0, value: 0 }
+  state = parseAddSubtract(state)
+
+  if (state.pos < tokens.length) {
+    throw new Error(`Unexpected token: "${tokens[state.pos]}"`)
+  }
+
+  if (!isFinite(state.value)) {
+    throw new Error('Result is not a finite number')
+  }
+
+  return state
+}
+
+function parseAddSubtract(state: ParseState): ParseState {
+  state = parseMultiplyDivide(state)
+
+  while (state.pos < state.tokens.length) {
+    const op = state.tokens[state.pos]
+    if (op !== '+' && op !== '-') break
+
+    state.pos++
+    const right = parseMultiplyDivide(state)
+    state.pos = right.pos
+    state.value = op === '+' ? state.value + right.value : state.value - right.value
+  }
+
+  return state
+}
+
+function parseMultiplyDivide(state: ParseState): ParseState {
+  state = parseUnary(state)
+
+  while (state.pos < state.tokens.length) {
+    const op = state.tokens[state.pos]
+    if (op !== '*' && op !== '/') break
+
+    state.pos++
+    const right = parseUnary(state)
+    state.pos = right.pos
+
+    if (op === '/') {
+      if (right.value === 0) {
+        throw new Error('Division by zero')
+      }
+      state.value = state.value / right.value
+    } else {
+      state.value = state.value * right.value
+    }
+  }
+
+  return state
+}
+
+function parseUnary(state: ParseState): ParseState {
+  const token = state.tokens[state.pos]
+
+  // Handle unary minus
+  if (token === '-') {
+    state.pos++
+    const result = parseUnary(state)
+    return { ...result, value: -result.value }
+  }
+
+  // Handle unary plus (just skip it)
+  if (token === '+') {
+    state.pos++
+    return parseUnary(state)
+  }
+
+  return parsePrimary(state)
+}
+
+function parsePrimary(state: ParseState): ParseState {
+  const token = state.tokens[state.pos]
+
+  if (token === undefined) {
+    throw new Error('Unexpected end of expression')
+  }
+
+  // Parenthesized expression
+  if (token === '(') {
+    state.pos++ // consume '('
+    state = parseAddSubtract(state)
+
+    if (state.tokens[state.pos] !== ')') {
+      throw new Error('Missing closing parenthesis')
+    }
+    state.pos++ // consume ')'
+    return state
+  }
+
+  // Number
+  const num = parseFloat(token)
+  if (isNaN(num)) {
+    throw new Error(`Invalid number: "${token}"`)
+  }
+
+  state.pos++
+  return { ...state, value: num }
+}
 
 // ============================================================================
 // WORKFLOW 1: Simple Chat UI (3 lines)
@@ -96,17 +256,22 @@ export function CustomChatWithToolsWorkflow() {
 
   const calculatorTool = {
     name: 'calculator',
-    description: 'Perform mathematical calculations',
+    description: 'Perform mathematical calculations (supports +, -, *, /, parentheses)',
     parameters: {
       type: 'object',
       properties: {
-        expression: { type: 'string', description: 'Mathematical expression' },
+        expression: { type: 'string', description: 'Mathematical expression (e.g., "2 + 3 * 4")' },
       },
       required: ['expression'],
     },
     execute: async (args: { expression: string }) => {
-      // In production, this would be a safe math evaluator
-      return { result: eval(args.expression) }
+      // Using safe math evaluator - no eval() or code injection risk
+      try {
+        const result = safeEvaluateMath(args.expression)
+        return { result }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Invalid expression' }
+      }
     },
   }
 

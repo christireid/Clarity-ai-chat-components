@@ -1,39 +1,129 @@
 /**
  * Built-in Tools for Agents
- * 
+ *
  * Common tools that agents can use for various tasks.
  */
 
 import type { Tool } from './types'
+
+// ============================================================================
+// SAFE MATH EXPRESSION EVALUATOR
+// ============================================================================
+
+/**
+ * Safe math expression evaluator using a recursive descent parser.
+ * Supports: numbers, +, -, *, /, parentheses, unary minus
+ * Does NOT use eval() - completely safe from code injection.
+ */
+function safeEvaluateMath(expression: string): number {
+  const tokens: string[] = []
+  let i = 0
+
+  // Tokenize
+  while (i < expression.length) {
+    const char = expression[i]
+    if (/\s/.test(char)) {
+      i++
+      continue
+    }
+    if (/\d/.test(char) || (char === '.' && i + 1 < expression.length && /\d/.test(expression[i + 1]))) {
+      let num = ''
+      while (i < expression.length && (/\d/.test(expression[i]) || expression[i] === '.')) {
+        num += expression[i++]
+      }
+      tokens.push(num)
+      continue
+    }
+    if (/[+\-*/()]/.test(char)) {
+      tokens.push(char)
+      i++
+      continue
+    }
+    throw new Error(`Invalid character: "${char}"`)
+  }
+
+  // Parse with recursive descent
+  let pos = 0
+
+  function parseAddSub(): number {
+    let left = parseMulDiv()
+    while (pos < tokens.length && (tokens[pos] === '+' || tokens[pos] === '-')) {
+      const op = tokens[pos++]
+      const right = parseMulDiv()
+      left = op === '+' ? left + right : left - right
+    }
+    return left
+  }
+
+  function parseMulDiv(): number {
+    let left = parseUnary()
+    while (pos < tokens.length && (tokens[pos] === '*' || tokens[pos] === '/')) {
+      const op = tokens[pos++]
+      const right = parseUnary()
+      if (op === '/' && right === 0) throw new Error('Division by zero')
+      left = op === '*' ? left * right : left / right
+    }
+    return left
+  }
+
+  function parseUnary(): number {
+    if (tokens[pos] === '-') {
+      pos++
+      return -parseUnary()
+    }
+    if (tokens[pos] === '+') {
+      pos++
+      return parseUnary()
+    }
+    return parsePrimary()
+  }
+
+  function parsePrimary(): number {
+    const token = tokens[pos]
+    if (token === undefined) throw new Error('Unexpected end of expression')
+    if (token === '(') {
+      pos++
+      const result = parseAddSub()
+      if (tokens[pos] !== ')') throw new Error('Missing closing parenthesis')
+      pos++
+      return result
+    }
+    const num = parseFloat(token)
+    if (isNaN(num)) throw new Error(`Invalid number: "${token}"`)
+    pos++
+    return num
+  }
+
+  const result = parseAddSub()
+  if (pos < tokens.length) throw new Error(`Unexpected token: "${tokens[pos]}"`)
+  if (!isFinite(result)) throw new Error('Result is not a finite number')
+  return result
+}
 
 /**
  * Calculator tool for mathematical operations
  */
 export const calculatorTool: Tool = {
   name: 'calculator',
-  description: 'Perform mathematical calculations. Supports basic arithmetic, algebra, and functions.',
+  description: 'Perform basic mathematical calculations. Supports +, -, *, /, parentheses, and negative numbers.',
   parameters: {
     type: 'object',
     properties: {
       expression: {
         type: 'string',
-        description: 'The mathematical expression to evaluate (e.g., "2 + 2", "sqrt(16)", "sin(pi/2)")',
+        description: 'The mathematical expression to evaluate (e.g., "2 + 2", "(10 - 5) * 2", "-3 + 4")',
       },
     },
     required: ['expression'],
   },
   async execute(args) {
-    try {
-      // Use a safe math evaluator (in production, use a library like mathjs)
-      const expression = args['expression']
-      if (typeof expression !== 'string') {
-        throw new Error('Expression must be a string')
-      }
-      const result = eval(expression) // UNSAFE: Only for demo. Use mathjs in production!
-      return { result, expression }
-    } catch (error: any) {
-      throw new Error(`Calculation error: ${error.message}`)
+    const expression = args['expression']
+    if (typeof expression !== 'string') {
+      throw new Error('Expression must be a string')
     }
+    // Use safe math evaluator - no eval() or code injection risk
+    const result = safeEvaluateMath(expression)
+    return { result, expression }
   },
   category: 'utility',
   tags: ['math', 'calculation'],
