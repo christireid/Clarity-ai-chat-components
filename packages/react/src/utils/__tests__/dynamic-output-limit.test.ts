@@ -339,6 +339,64 @@ describe('createModelOutputConfig', () => {
   })
 })
 
+describe('input validation', () => {
+  it('should throw on non-positive modelCapacity', () => {
+    expect(() =>
+      calculateDynamicOutputLimit({
+        modelCapacity: 0,
+        inputTokenCount: 100,
+      })
+    ).toThrow('modelCapacity must be positive')
+
+    expect(() =>
+      calculateDynamicOutputLimit({
+        modelCapacity: -1000,
+        inputTokenCount: 100,
+      })
+    ).toThrow('modelCapacity must be positive')
+  })
+
+  it('should throw on negative inputTokenCount', () => {
+    expect(() =>
+      calculateDynamicOutputLimit({
+        modelCapacity: 10000,
+        inputTokenCount: -100,
+      })
+    ).toThrow('inputTokenCount cannot be negative')
+  })
+
+  it('should throw on negative minOutputTokens', () => {
+    expect(() =>
+      calculateDynamicOutputLimit({
+        modelCapacity: 10000,
+        inputTokenCount: 100,
+        minOutputTokens: -50,
+      })
+    ).toThrow('minOutputTokens cannot be negative')
+  })
+
+  it('should throw on negative uiConfiguredMax', () => {
+    expect(() =>
+      calculateDynamicOutputLimit({
+        modelCapacity: 10000,
+        inputTokenCount: 100,
+        uiConfiguredMax: -500,
+      })
+    ).toThrow('uiConfiguredMax cannot be negative')
+  })
+
+  it('should handle inputTokenCount > modelCapacity gracefully', () => {
+    const result = calculateDynamicOutputLimit({
+      modelCapacity: 1000,
+      inputTokenCount: 1500,
+    })
+
+    expect(result.absoluteMaxTokens).toBe(0)
+    expect(result.recommendedMaxTokens).toBe(0)
+    expect(result.inputConstrained).toBe(true)
+  })
+})
+
 describe('getMaxTokens', () => {
   it('should return recommended max tokens', () => {
     const maxTokens = getMaxTokens(10000, 5000, 'balanced', 'chat')

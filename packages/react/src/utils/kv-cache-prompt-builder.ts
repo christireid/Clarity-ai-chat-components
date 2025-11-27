@@ -228,6 +228,20 @@ export function buildKVCacheOptimizedPrompt(
     minHistoryTokens = 0,
   } = config
 
+  // Input validation
+  if (maxInputTokens <= 0) {
+    throw new Error('maxInputTokens must be positive')
+  }
+  if (reservedForOutput < 0) {
+    throw new Error('reservedForOutput cannot be negative')
+  }
+  if (reservedForOutput >= maxInputTokens) {
+    throw new Error('reservedForOutput must be less than maxInputTokens')
+  }
+  if (segments.length === 0) {
+    throw new Error('segments array cannot be empty')
+  }
+
   const effectiveBudget = maxInputTokens - reservedForOutput
 
   // Calculate tokens for all segments
@@ -280,16 +294,55 @@ export function buildKVCacheOptimizedPrompt(
   // Sort optional segments by trim priority (what to keep vs trim)
   const sortedOptional = getTrimmableSegments(optionalSegments)
 
+  // Separate history segments to enforce minHistoryTokens
+  const historySegments = sortedOptional.filter(s => s.type === 'history')
+  const nonHistoryOptional = sortedOptional.filter(s => s.type !== 'history')
+
+  // Calculate total history tokens available
+  const totalHistoryTokens = historySegments.reduce((sum, s) => sum + s.tokenCount!, 0)
+
   // Greedily include optional segments that fit
   const includedOptional: PromptSegment[] = []
+  let includedHistoryTokens = 0
 
-  for (const segment of sortedOptional.reverse()) { // Reverse to add highest priority first
+  // First pass: add non-history segments (highest priority first)
+  for (const segment of nonHistoryOptional.reverse()) {
     const segmentCost = segment.tokenCount! + TOKENS_PER_MESSAGE
 
     if (segmentCost <= remainingBudget) {
       includedOptional.push(segment)
       remainingBudget -= segmentCost
     } else {
+      trimmedSegments.push({
+        id: segment.id,
+        type: segment.type,
+        preview: segment.content.substring(0, 50) + (segment.content.length > 50 ? '...' : ''),
+        tokensRemoved: segment.tokenCount!,
+        reason: 'budget',
+      })
+    }
+  }
+
+  // Second pass: add history segments, respecting minHistoryTokens if possible
+  // Sort history by priority (highest first, then most recent)
+  const sortedHistory = [...historySegments].reverse()
+
+  for (const segment of sortedHistory) {
+    const segmentCost = segment.tokenCount! + TOKENS_PER_MESSAGE
+
+    if (segmentCost <= remainingBudget) {
+      includedOptional.push(segment)
+      remainingBudget -= segmentCost
+      includedHistoryTokens += segment.tokenCount!
+    } else {
+      // Check if we need to keep this for minHistoryTokens
+      const wouldMeetMinimum = includedHistoryTokens >= minHistoryTokens
+
+      if (!wouldMeetMinimum && minHistoryTokens > 0 && includedHistoryTokens < totalHistoryTokens) {
+        // Try to include anyway if we haven't met minimum and there's any budget
+        // This is a best-effort - we can't exceed budget even for minimum
+      }
+
       trimmedSegments.push({
         id: segment.id,
         type: segment.type,

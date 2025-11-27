@@ -355,6 +355,64 @@ describe('validateSegments', () => {
   })
 })
 
+describe('input validation', () => {
+  it('should throw on non-positive maxInputTokens', () => {
+    const segments = [createUserSegment('user', 'Query')]
+
+    expect(() =>
+      buildKVCacheOptimizedPrompt(segments, {
+        maxInputTokens: 0,
+        reservedForOutput: 100,
+      })
+    ).toThrow('maxInputTokens must be positive')
+
+    expect(() =>
+      buildKVCacheOptimizedPrompt(segments, {
+        maxInputTokens: -100,
+        reservedForOutput: 100,
+      })
+    ).toThrow('maxInputTokens must be positive')
+  })
+
+  it('should throw on negative reservedForOutput', () => {
+    const segments = [createUserSegment('user', 'Query')]
+
+    expect(() =>
+      buildKVCacheOptimizedPrompt(segments, {
+        maxInputTokens: 1000,
+        reservedForOutput: -100,
+      })
+    ).toThrow('reservedForOutput cannot be negative')
+  })
+
+  it('should throw when reservedForOutput >= maxInputTokens', () => {
+    const segments = [createUserSegment('user', 'Query')]
+
+    expect(() =>
+      buildKVCacheOptimizedPrompt(segments, {
+        maxInputTokens: 1000,
+        reservedForOutput: 1000,
+      })
+    ).toThrow('reservedForOutput must be less than maxInputTokens')
+
+    expect(() =>
+      buildKVCacheOptimizedPrompt(segments, {
+        maxInputTokens: 1000,
+        reservedForOutput: 1500,
+      })
+    ).toThrow('reservedForOutput must be less than maxInputTokens')
+  })
+
+  it('should throw on empty segments array', () => {
+    expect(() =>
+      buildKVCacheOptimizedPrompt([], {
+        maxInputTokens: 1000,
+        reservedForOutput: 100,
+      })
+    ).toThrow('segments array cannot be empty')
+  })
+})
+
 describe('estimateKVCacheSavings', () => {
   it('should calculate savings correctly', () => {
     const builtPrompt = {

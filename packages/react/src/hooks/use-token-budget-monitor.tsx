@@ -199,6 +199,25 @@ function createInitialUsage(config: TokenBudgetConfig): TokenUsage {
  * ```
  */
 export function useTokenBudgetMonitor(config: TokenBudgetConfig): TokenBudgetMonitorReturn {
+  // Validate config
+  if (process.env.NODE_ENV !== 'production') {
+    if (config.maxInputTokens <= 0) {
+      console.warn('[useTokenBudgetMonitor] maxInputTokens must be positive')
+    }
+    const reserved = config.reservedForOutput ?? DEFAULT_CONFIG.reservedForOutput
+    if (reserved >= config.maxInputTokens) {
+      console.warn('[useTokenBudgetMonitor] reservedForOutput should be less than maxInputTokens')
+    }
+    const warning = config.warningThreshold ?? DEFAULT_CONFIG.warningThreshold
+    const critical = config.criticalThreshold ?? DEFAULT_CONFIG.criticalThreshold
+    if (warning >= critical) {
+      console.warn('[useTokenBudgetMonitor] warningThreshold should be less than criticalThreshold')
+    }
+    if (warning < 0 || warning > 1 || critical < 0 || critical > 1) {
+      console.warn('[useTokenBudgetMonitor] thresholds should be between 0 and 1')
+    }
+  }
+
   // Merge config with defaults
   const resolvedConfig = React.useMemo(() => ({
     ...DEFAULT_CONFIG,
@@ -398,7 +417,8 @@ export function useTokenBudgetMonitor(config: TokenBudgetConfig): TokenBudgetMon
 
         // Auto-trim if enabled and critical
         if (resolvedConfig.autoTrim && (status === 'critical' || status === 'exceeded')) {
-          const targetTokens = resolvedConfig.effectiveMax * resolvedConfig.criticalThreshold * 0.9 // Trim to 90% of critical
+          const effectiveMax = resolvedConfig.maxInputTokens - resolvedConfig.reservedForOutput
+          const targetTokens = effectiveMax * resolvedConfig.criticalThreshold * 0.9 // Trim to 90% of critical
           const trimResult = performTrim(messages, targetTokens, status === 'exceeded' ? 'exceeded' : 'critical')
 
           if (trimResult) {
@@ -424,7 +444,8 @@ export function useTokenBudgetMonitor(config: TokenBudgetConfig): TokenBudgetMon
    * Manually trigger trim to get below critical
    */
   const trimToCritical = React.useCallback((): TrimResult | null => {
-    const targetTokens = resolvedConfig.effectiveMax * resolvedConfig.criticalThreshold * 0.9
+    const effectiveMax = resolvedConfig.maxInputTokens - resolvedConfig.reservedForOutput
+    const targetTokens = effectiveMax * resolvedConfig.criticalThreshold * 0.9
     const result = performTrim(messagesRef.current, targetTokens, 'manual')
 
     if (result) {

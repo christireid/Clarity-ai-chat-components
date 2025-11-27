@@ -155,6 +155,20 @@ export function calculateDynamicOutputLimit(config: OutputLimitConfig): OutputLi
     includeBrevityInstruction = true,
   } = config
 
+  // Input validation
+  if (modelCapacity <= 0) {
+    throw new Error('modelCapacity must be positive')
+  }
+  if (inputTokenCount < 0) {
+    throw new Error('inputTokenCount cannot be negative')
+  }
+  if (minOutputTokens < 0) {
+    throw new Error('minOutputTokens cannot be negative')
+  }
+  if (uiConfiguredMax !== undefined && uiConfiguredMax < 0) {
+    throw new Error('uiConfiguredMax cannot be negative')
+  }
+
   // Calculate absolute maximum (what's left after input)
   const absoluteMaxTokens = Math.max(0, modelCapacity - inputTokenCount)
 
