@@ -74,6 +74,18 @@ export {
   type CoTOptimizationResult,
 } from './cot-optimizer'
 
+// Structured Output Schema Caching
+export {
+  SchemaCache,
+  createOpenAIWarmingRequest,
+  estimateSchemaLatency,
+  recommendSchemaStrategy,
+  COMMON_SCHEMAS,
+  type SchemaEntry,
+  type SchemaCacheOptions,
+  type SchemaWarmingResult,
+} from './structured-output-cache'
+
 export * from './smart-cache'
 export * from './model-router'
 export * from './response-limiter'
