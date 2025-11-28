@@ -255,7 +255,10 @@ export class PersistentSemanticCache {
    * Check cache for a matching response
    */
   async checkCache(query: string): Promise<CachedResponse | null> {
-    const startTime = performance.now()
+    // Validate input - avoid expensive embedding call for invalid queries
+    if (!query || typeof query !== 'string') {
+      return null
+    }
 
     try {
       const db = await this.getDb()

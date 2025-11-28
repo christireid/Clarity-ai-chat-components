@@ -238,13 +238,26 @@ describe('LocalEmbedder', () => {
   })
 
   describe('dispose', () => {
-    it('should clean up resources', async () => {
+    it('should clean up resources and reset stats', async () => {
       const embedder = new LocalEmbedder({ dimensions: 64 })
 
-      await embedder.embed('Test')
+      // Generate some embeddings to populate stats
+      await embedder.embed('Test 1')
+      await embedder.embed('Test 2')
+      await embedder.embed('Test 1') // Cache hit
+
+      const statsBefore = embedder.getStats()
+      expect(statsBefore.totalGenerated).toBe(2)
+      expect(statsBefore.cacheHits).toBe(1)
+      expect(statsBefore.cacheSize).toBe(2)
+
       embedder.dispose()
 
-      expect(embedder.getStats().cacheSize).toBe(0)
+      const statsAfter = embedder.getStats()
+      expect(statsAfter.cacheSize).toBe(0)
+      expect(statsAfter.totalGenerated).toBe(0)
+      expect(statsAfter.cacheHits).toBe(0)
+      expect(statsAfter.avgGenerationTimeMs).toBe(0)
       expect(embedder.isModelLoaded()).toBe(false)
     })
   })
