@@ -62,27 +62,50 @@ describe('PromptCacheManager', () => {
   })
 
   describe('registerCacheable / unregisterCacheable', () => {
-    it('registers cacheable content', () => {
-      cacheManager.registerCacheable('system-prompt', {
-        content: 'You are a helpful assistant.',
-        type: 'system',
-        minLength: 100,
-      })
-
-      // Content is registered (verified indirectly through API usage)
-      expect(true).toBe(true)
+    it('registers cacheable content without error', () => {
+      // Should not throw when registering
+      expect(() => {
+        cacheManager.registerCacheable('system-prompt', {
+          content: 'You are a helpful assistant.',
+          type: 'system',
+          minLength: 100,
+        })
+      }).not.toThrow()
     })
 
-    it('unregisters cacheable content', () => {
+    it('allows overwriting registered content', () => {
+      // Register initial content
+      cacheManager.registerCacheable('test-id', {
+        content: 'Initial content',
+        type: 'system',
+      })
+
+      // Overwrite with new content - should not throw
+      expect(() => {
+        cacheManager.registerCacheable('test-id', {
+          content: 'Updated content',
+          type: 'context',
+        })
+      }).not.toThrow()
+    })
+
+    it('unregisters cacheable content without error', () => {
       cacheManager.registerCacheable('test-content', {
         content: 'Test',
         type: 'custom',
       })
 
-      cacheManager.unregisterCacheable('test-content')
+      // Should not throw when unregistering
+      expect(() => {
+        cacheManager.unregisterCacheable('test-content')
+      }).not.toThrow()
+    })
 
-      // Content is unregistered (no error thrown)
-      expect(true).toBe(true)
+    it('handles unregistering non-existent content gracefully', () => {
+      // Should not throw when unregistering content that was never registered
+      expect(() => {
+        cacheManager.unregisterCacheable('non-existent-id')
+      }).not.toThrow()
     })
   })
 

@@ -1,5 +1,12 @@
-import { describe, it, expect, vi } from 'vitest'
-import { jsonToToon } from '../toon/encoder'
+import { describe, it, expect } from 'vitest'
+import {
+  jsonToToon,
+  estimateToonSavings,
+  isSuitableForToon,
+  wrapWithToonInstructions,
+  createToonConversationWrapper,
+  TOON_INSTRUCTIONS,
+} from '../toon/encoder'
 import { toonToJson, validateToon } from '../toon/decoder'
 
 describe('TOON Encoder', () => {
@@ -488,5 +495,206 @@ describe('Round-trip encoding/decoding', () => {
     expect(decoded).toHaveLength(3)
     expect(decoded[0].name).toBe('Alice')
     expect(decoded[2].active).toBe(true)
+  })
+})
+
+// =============================================================================
+// HELPER FUNCTION TESTS
+// =============================================================================
+
+describe('estimateToonSavings', () => {
+  it('calculates token savings for uniform arrays', () => {
+    const data = [
+      { name: 'Alice', age: 30 },
+      { name: 'Bob', age: 25 },
+    ]
+
+    const result = estimateToonSavings(data)
+
+    expect(result.jsonTokens).toBeGreaterThan(0)
+    expect(result.toonTokens).toBeGreaterThan(0)
+    expect(result.savings).toBeGreaterThan(0)
+    expect(result.savingsPercent).toBeGreaterThan(0)
+  })
+
+  it('handles empty data', () => {
+    const result = estimateToonSavings({})
+
+    expect(result.jsonTokens).toBeGreaterThan(0)
+    expect(result.toonTokens).toBeGreaterThan(0)
+  })
+
+  it('returns zero savings percent when JSON is empty', () => {
+    const result = estimateToonSavings(null)
+
+    // Null encodes similarly in both formats
+    expect(result.savingsPercent).toBeDefined()
+  })
+})
+
+describe('isSuitableForToon', () => {
+  it('returns true for uniform object arrays', () => {
+    const data = [
+      { name: 'Alice', age: 30 },
+      { name: 'Bob', age: 25 },
+    ]
+
+    expect(isSuitableForToon(data)).toBe(true)
+  })
+
+  it('returns false for primitive arrays', () => {
+    expect(isSuitableForToon([1, 2, 3])).toBe(false)
+  })
+
+  it('returns true for objects with mostly primitive values', () => {
+    const data = {
+      name: 'test',
+      value: 42,
+      active: true,
+    }
+
+    expect(isSuitableForToon(data)).toBe(true)
+  })
+
+  it('returns false for primitives', () => {
+    expect(isSuitableForToon('string')).toBe(false)
+    expect(isSuitableForToon(42)).toBe(false)
+    expect(isSuitableForToon(null)).toBe(false)
+  })
+})
+
+describe('wrapWithToonInstructions', () => {
+  it('wraps data with brief instructions by default', () => {
+    const toonData = 'name, age\nAlice, 30'
+    const result = wrapWithToonInstructions(toonData)
+
+    expect(result.content).toContain(toonData)
+    expect(result.content).toContain('TOON')
+    expect(result.instructionsIncluded).toBe(true)
+  })
+
+  it('skips instructions when instructionsAlreadySent is true', () => {
+    const toonData = 'name, age\nAlice, 30'
+    const result = wrapWithToonInstructions(toonData, {
+      instructionsAlreadySent: true,
+    })
+
+    expect(result.content).toBe(toonData)
+    expect(result.instructionsIncluded).toBe(false)
+  })
+
+  it('skips instructions when includeInstructions is false', () => {
+    const toonData = 'name, age\nAlice, 30'
+    const result = wrapWithToonInstructions(toonData, {
+      includeInstructions: false,
+    })
+
+    expect(result.content).toBe(toonData)
+    expect(result.instructionsIncluded).toBe(false)
+  })
+
+  it('uses detailed instructions when specified', () => {
+    const toonData = 'name, age\nAlice, 30'
+    const result = wrapWithToonInstructions(toonData, {
+      instructionLevel: 'detailed',
+    })
+
+    expect(result.content).toContain('TOON Format Rules')
+    expect(result.instructionsIncluded).toBe(true)
+  })
+
+  it('uses inline instructions when specified', () => {
+    const toonData = 'name, age\nAlice, 30'
+    const result = wrapWithToonInstructions(toonData, {
+      instructionLevel: 'inline',
+    })
+
+    expect(result.content).toContain('[TOON format:')
+    expect(result.instructionsIncluded).toBe(true)
+  })
+
+  it('places instructions after data when specified', () => {
+    const toonData = 'name, age\nAlice, 30'
+    const result = wrapWithToonInstructions(toonData, {
+      instructionPlacement: 'after',
+    })
+
+    expect(result.content.startsWith(toonData)).toBe(true)
+  })
+
+  it('returns system message for system placement', () => {
+    const toonData = 'name, age\nAlice, 30'
+    const result = wrapWithToonInstructions(toonData, {
+      instructionPlacement: 'system',
+    })
+
+    expect(result.content).toBe(toonData)
+    expect(result.systemMessage).toBeDefined()
+    expect(result.systemMessage).toContain('TOON')
+  })
+})
+
+describe('createToonConversationWrapper', () => {
+  it('includes instructions on first wrap', () => {
+    const wrapper = createToonConversationWrapper()
+    const result = wrapper.wrap('name, age\nAlice, 30')
+
+    expect(result.instructionsIncluded).toBe(true)
+    expect(wrapper.instructionsSent).toBe(true)
+  })
+
+  it('skips instructions on subsequent wraps', () => {
+    const wrapper = createToonConversationWrapper()
+
+    // First wrap
+    wrapper.wrap('name, age\nAlice, 30')
+
+    // Second wrap - should skip instructions
+    const result = wrapper.wrap('city, country\nNYC, USA')
+
+    expect(result.instructionsIncluded).toBe(false)
+  })
+
+  it('resets instruction state', () => {
+    const wrapper = createToonConversationWrapper()
+
+    wrapper.wrap('data1')
+    expect(wrapper.instructionsSent).toBe(true)
+
+    wrapper.reset()
+    expect(wrapper.instructionsSent).toBe(false)
+
+    const result = wrapper.wrap('data2')
+    expect(result.instructionsIncluded).toBe(true)
+  })
+
+  it('uses default options', () => {
+    const wrapper = createToonConversationWrapper({
+      instructionLevel: 'detailed',
+    })
+
+    const result = wrapper.wrap('name, age\nAlice, 30')
+
+    expect(result.content).toContain('TOON Format Rules')
+  })
+})
+
+describe('TOON_INSTRUCTIONS', () => {
+  it('provides brief instruction', () => {
+    expect(TOON_INSTRUCTIONS.brief).toContain('TOON')
+    expect(TOON_INSTRUCTIONS.brief.length).toBeLessThan(200)
+  })
+
+  it('provides detailed instruction', () => {
+    expect(TOON_INSTRUCTIONS.detailed).toContain('TOON Format Rules')
+    expect(TOON_INSTRUCTIONS.detailed.length).toBeGreaterThan(200)
+  })
+
+  it('provides system instruction', () => {
+    expect(TOON_INSTRUCTIONS.system).toContain('TOON')
+  })
+
+  it('provides inline instruction', () => {
+    expect(TOON_INSTRUCTIONS.inline).toContain('[TOON')
   })
 })
