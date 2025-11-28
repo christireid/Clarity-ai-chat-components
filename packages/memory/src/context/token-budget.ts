@@ -1,10 +1,26 @@
 /**
  * Token Budget Manager
- * 
+ *
  * Manages token allocation and budgeting for context building
  */
 
 import type { TokenBudgetConfig, TokenBreakdown } from '../types'
+
+/**
+ * Clamp a number to a range, handling NaN/Infinity
+ */
+function clamp(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return min
+  return Math.max(min, Math.min(max, value))
+}
+
+/**
+ * Ensure a number is non-negative and finite
+ */
+function safeNonNegative(value: number): number {
+  if (!Number.isFinite(value) || value < 0) return 0
+  return value
+}
 
 export class TokenBudgetManager {
   private config: TokenBudgetConfig
@@ -17,16 +33,16 @@ export class TokenBudgetManager {
    * Get token allocation breakdown
    */
   getAllocation(options?: { maxTokens?: number }): TokenBreakdown {
-    const maxTokens = options?.maxTokens || this.config.maxContextWindow
+    const maxTokens = Math.max(1, options?.maxTokens || this.config.maxContextWindow || 1)
     const allocation = this.config.allocation
 
     return {
-      systemPrompt: Math.floor(maxTokens * allocation.systemPrompt),
-      userPreferences: Math.floor(maxTokens * allocation.userPreferences),
-      recentContext: Math.floor(maxTokens * allocation.recentContext),
-      semanticMemory: Math.floor(maxTokens * allocation.semanticMemory),
-      episodicMemory: Math.floor(maxTokens * allocation.episodicMemory),
-      responseReserve: Math.floor(maxTokens * allocation.responseReserve),
+      systemPrompt: Math.floor(maxTokens * safeNonNegative(allocation.systemPrompt)),
+      userPreferences: Math.floor(maxTokens * safeNonNegative(allocation.userPreferences)),
+      recentContext: Math.floor(maxTokens * safeNonNegative(allocation.recentContext)),
+      semanticMemory: Math.floor(maxTokens * safeNonNegative(allocation.semanticMemory)),
+      episodicMemory: Math.floor(maxTokens * safeNonNegative(allocation.episodicMemory)),
+      responseReserve: Math.floor(maxTokens * safeNonNegative(allocation.responseReserve)),
       summary: Math.floor(maxTokens * 0.05), // Fixed 5% for summary
       total: maxTokens,
     }
@@ -48,11 +64,14 @@ export class TokenBudgetManager {
     }
 
     const adjusted = { ...breakdown }
-    const maxTokens = breakdown.total
+    const maxTokens = Math.max(1, breakdown.total || 1)
+
+    // Normalize memoryRichness to [0, 1]
+    const memoryRichness = clamp(context.memoryRichness, 0, 1)
 
     // If no preferences, redistribute
     if (!context.hasPreferences) {
-      const freed = adjusted.userPreferences
+      const freed = safeNonNegative(adjusted.userPreferences)
       adjusted.userPreferences = 0
       adjusted.semanticMemory += Math.floor(freed * 0.6)
       adjusted.episodicMemory += Math.floor(freed * 0.4)
@@ -60,21 +79,21 @@ export class TokenBudgetManager {
 
     // If no recent context, redistribute
     if (!context.hasRecent) {
-      const freed = adjusted.recentContext
+      const freed = safeNonNegative(adjusted.recentContext)
       adjusted.recentContext = 0
       adjusted.semanticMemory += Math.floor(freed * 0.7)
       adjusted.episodicMemory += Math.floor(freed * 0.3)
     }
 
     // Adjust based on memory richness
-    if (context.memoryRichness < 0.3) {
+    if (memoryRichness < 0.3) {
       // Low memory richness, reduce memory allocation
-      const reduction = Math.floor(adjusted.semanticMemory * 0.2)
+      const reduction = Math.floor(safeNonNegative(adjusted.semanticMemory) * 0.2)
       adjusted.semanticMemory -= reduction
       adjusted.recentContext += reduction
-    } else if (context.memoryRichness > 0.7) {
+    } else if (memoryRichness > 0.7) {
       // High memory richness, increase memory allocation
-      const increase = Math.floor(adjusted.recentContext * 0.2)
+      const increase = Math.floor(safeNonNegative(adjusted.recentContext) * 0.2)
       adjusted.recentContext -= increase
       adjusted.semanticMemory += increase
     }
@@ -92,18 +111,20 @@ export class TokenBudgetManager {
     if (currentTotal > maxTokens) {
       let excess = currentTotal - maxTokens
 
-      // Reduce in priority order: semanticMemory → episodicMemory → recentContext → userPreferences
-      // systemPrompt is never reduced as it's critical for operation
+      // Reduce in priority order: semanticMemory → episodicMemory → recentContext → userPreferences → summary → systemPrompt
+      // systemPrompt is reduced last as it's critical for operation
       const reductionOrder: (keyof TokenBreakdown)[] = [
         'semanticMemory',
         'episodicMemory',
         'recentContext',
         'userPreferences',
+        'summary',
+        'systemPrompt', // Last resort
       ]
 
       for (const field of reductionOrder) {
         if (excess <= 0) break
-        const current = adjusted[field] as number
+        const current = safeNonNegative(adjusted[field] as number)
         if (current >= excess) {
           ;(adjusted[field] as number) = current - excess
           excess = 0
@@ -111,14 +132,6 @@ export class TokenBudgetManager {
           excess -= current
           ;(adjusted[field] as number) = 0
         }
-      }
-
-      // If still over budget after all reductions, log warning (systemPrompt protection)
-      if (excess > 0 && process.env.NODE_ENV === 'development') {
-        console.warn(
-          `TokenBudgetManager: Unable to reduce allocation by ${excess} tokens. ` +
-            `systemPrompt (${adjusted.systemPrompt}) is protected from reduction.`
-        )
       }
     }
 

@@ -200,7 +200,7 @@ describe('TokenBudgetManager', () => {
         expect(adjusted.userPreferences).toBe(200)
       })
 
-      it('should reduce userPreferences when needed but protect systemPrompt', () => {
+      it('should reduce userPreferences when needed', () => {
         const manager = new TokenBudgetManager(createConfig({ maxContextWindow: 300 }))
         const breakdown = {
           systemPrompt: 200,
@@ -226,8 +226,107 @@ describe('TokenBudgetManager', () => {
         expect(adjusted.episodicMemory).toBe(0)
         expect(adjusted.recentContext).toBe(0)
         expect(adjusted.userPreferences).toBe(0)
-        // systemPrompt should be protected
+        // systemPrompt unchanged when not needed
         expect(adjusted.systemPrompt).toBe(200)
+      })
+
+      it('should reduce systemPrompt as last resort when all else exhausted', () => {
+        const manager = new TokenBudgetManager(createConfig({ maxContextWindow: 100 }))
+        const breakdown = {
+          systemPrompt: 500,
+          userPreferences: 0,
+          recentContext: 0,
+          semanticMemory: 0,
+          episodicMemory: 0,
+          responseReserve: 0,
+          summary: 0,
+          total: 100, // maxTokens
+        }
+
+        // currentTotal = 500, excess = 400
+        // Only systemPrompt available to reduce
+        const adjusted = manager.adjustAllocation(breakdown, {
+          hasPreferences: true,
+          hasRecent: true,
+          memoryRichness: 0.5,
+        })
+
+        expect(adjusted.systemPrompt).toBe(100)
+      })
+    })
+
+    describe('Input validation', () => {
+      it('should handle NaN memoryRichness', () => {
+        const manager = new TokenBudgetManager(createConfig())
+        const breakdown = manager.getAllocation()
+
+        // Should not throw, NaN treated as 0
+        const adjusted = manager.adjustAllocation(breakdown, {
+          hasPreferences: true,
+          hasRecent: true,
+          memoryRichness: NaN,
+        })
+
+        expect(adjusted.semanticMemory).toBeGreaterThanOrEqual(0)
+      })
+
+      it('should handle negative memoryRichness', () => {
+        const manager = new TokenBudgetManager(createConfig())
+        const breakdown = manager.getAllocation()
+
+        const adjusted = manager.adjustAllocation(breakdown, {
+          hasPreferences: true,
+          hasRecent: true,
+          memoryRichness: -0.5, // Clamped to 0
+        })
+
+        // memoryRichness < 0.3 triggers reduction
+        expect(adjusted).toBeDefined()
+      })
+
+      it('should handle memoryRichness > 1', () => {
+        const manager = new TokenBudgetManager(createConfig())
+        const breakdown = manager.getAllocation()
+
+        const adjusted = manager.adjustAllocation(breakdown, {
+          hasPreferences: true,
+          hasRecent: true,
+          memoryRichness: 2.0, // Clamped to 1
+        })
+
+        // memoryRichness > 0.7 triggers increase
+        expect(adjusted).toBeDefined()
+      })
+
+      it('should handle maxTokens = 0', () => {
+        const manager = new TokenBudgetManager(createConfig({ maxContextWindow: 0 }))
+        const allocation = manager.getAllocation()
+
+        // Should default to 1 to avoid division issues
+        expect(allocation.total).toBe(1)
+      })
+
+      it('should handle negative allocation values gracefully', () => {
+        const manager = new TokenBudgetManager(createConfig())
+        const breakdown = {
+          systemPrompt: -100,
+          userPreferences: 100,
+          recentContext: 100,
+          semanticMemory: 100,
+          episodicMemory: 100,
+          responseReserve: 0,
+          summary: 100,
+          total: 1000,
+        }
+
+        // Should not throw
+        const adjusted = manager.adjustAllocation(breakdown, {
+          hasPreferences: true,
+          hasRecent: true,
+          memoryRichness: 0.5,
+        })
+
+        expect(adjusted).toBeDefined()
       })
     })
   })
