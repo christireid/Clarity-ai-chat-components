@@ -36,8 +36,10 @@ export interface InputProps
   ref?: React.Ref<HTMLInputElement>
 }
 
-const Input = ({ className, variant, inputSize, type, error, icon, iconPosition = 'left', ref, ...props }: InputProps) => {
+const Input = ({ className, variant, inputSize, type, error, icon, iconPosition = 'left', ref, id, ...props }: InputProps) => {
     const hasError = error || variant === 'error'
+    // Generate error ID for aria-describedby accessibility
+    const errorId = error && id ? `${id}-error` : undefined
 
     if (icon) {
       return (
@@ -49,6 +51,9 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
           )}
           <input
             type={type}
+            id={id}
+            aria-invalid={hasError ? true : undefined}
+            aria-describedby={errorId}
             className={cn(
               inputVariants({ variant: hasError ? 'error' : variant, inputSize }),
               iconPosition === 'left' && 'pl-10',
@@ -63,7 +68,7 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
               {icon}
             </div>
           )}
-          <ErrorMessage error={error} />
+          <ErrorMessage error={error} id={errorId} />
         </div>
       )
     }
@@ -72,6 +77,9 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
       <div>
         <input
           type={type}
+          id={id}
+          aria-invalid={hasError ? true : undefined}
+          aria-describedby={errorId}
           className={cn(
             inputVariants({ variant: hasError ? 'error' : variant, inputSize }),
             className
@@ -79,14 +87,7 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
           ref={ref}
           {...props}
         />
-        {error && (
-          <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
-            <svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {error}
-          </p>
-        )}
+        <ErrorMessage error={error} id={errorId} />
       </div>
     )
 }
