@@ -21,6 +21,7 @@ export const Checkbox = ({
   label,
   error,
   required,
+  disabled,
   labelPosition = 'right',
   'aria-label': ariaLabel,
   ...props
@@ -35,6 +36,7 @@ export const Checkbox = ({
       ref={ref}
       type="checkbox"
       id={checkboxId}
+      disabled={disabled}
       aria-required={required || undefined}
       aria-invalid={error ? true : undefined}
       aria-describedby={errorId}
@@ -65,7 +67,10 @@ export const Checkbox = ({
         {checkboxElement}
         <label
           htmlFor={checkboxId}
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
+          className={cn(
+            'text-sm font-medium leading-none select-none',
+            disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
+          )}
         >
           {label}
           {required && <span className="text-destructive ml-0.5">*</span>}

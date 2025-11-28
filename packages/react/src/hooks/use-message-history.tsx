@@ -132,14 +132,15 @@ export function useMessageHistory(
     autoCleanup: true,
   })
 
-  // Calculate pagination
-  const totalPages = enablePagination ? Math.ceil(messages.length / pageSize) : 1
+  // Calculate pagination (ensure pageSize >= 1 to prevent division by zero)
+  const safePageSize = Math.max(1, pageSize)
+  const totalPages = enablePagination ? Math.ceil(messages.length / safePageSize) : 1
   const paginatedMessages = React.useMemo(() => {
     if (!enablePagination) return messages
-    const start = (currentPage - 1) * pageSize
-    const end = start + pageSize
+    const start = (currentPage - 1) * safePageSize
+    const end = start + safePageSize
     return messages.slice(start, end)
-  }, [messages, currentPage, pageSize, enablePagination])
+  }, [messages, currentPage, safePageSize, enablePagination])
 
   const hasNextPage = currentPage < totalPages
   const hasPrevPage = currentPage > 1
