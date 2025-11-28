@@ -691,9 +691,151 @@ export class MemoryService {
    */
   private startSummarizationTask(): void {
     this.summarizationInterval = setInterval(() => {
-      // Implement summarization logic
-      // This would compress old memories to save space
+      this.runSummarizationCycle().catch((error) => {
+        if (this.config.debug) {
+          console.error('Summarization task failed:', error)
+        }
+      })
     }, this.config.summarizationInterval!)
+  }
+
+  /**
+   * Run a single summarization cycle
+   * Finds old memories and compresses them to save space
+   */
+  private async runSummarizationCycle(): Promise<void> {
+    const now = new Date()
+    const candidatesForSummarization: MemoryItem[] = []
+
+    // Find memories that need summarization
+    for (const memory of this.cache.values()) {
+      // Skip if already compressed
+      if (memory.compressed) continue
+
+      // Skip if content is too short (less than 200 chars)
+      if (memory.content.length < 200) continue
+
+      // Skip if too recent (less than 1 hour old)
+      const ageMs = now.getTime() - memory.createdAt.getTime()
+      if (ageMs < 60 * 60 * 1000) continue
+
+      // Skip high priority or critical memories
+      if (memory.priority === 'critical' || memory.priority === 'high') continue
+
+      // Check if memory has low access count (not frequently used)
+      if (memory.accessCount > 5) continue
+
+      candidatesForSummarization.push(memory)
+    }
+
+    // Limit batch size to avoid overwhelming the system
+    const batchSize = 10
+    const batch = candidatesForSummarization.slice(0, batchSize)
+
+    // Summarize each memory
+    for (const memory of batch) {
+      try {
+        const summary = this.createSummary(memory.content)
+
+        // Only update if summary is significantly shorter
+        if (summary.length < memory.content.length * 0.7) {
+          await this.updateMemory(memory.id, {
+            compressed: summary,
+            original: memory.content,
+            content: summary, // Use summary as primary content
+          })
+
+          this.emitEvent({
+            type: 'memory:compressed',
+            timestamp: new Date(),
+            memory: { ...memory, compressed: summary },
+          })
+
+          if (this.config.debug) {
+            console.log(
+              `Summarized memory ${memory.id}: ${memory.content.length} -> ${summary.length} chars`
+            )
+          }
+        }
+      } catch (error) {
+        if (this.config.debug) {
+          console.error(`Failed to summarize memory ${memory.id}:`, error)
+        }
+      }
+    }
+  }
+
+  /**
+   * Create a summary of text content
+   * Uses extractive summarization to preserve key information
+   */
+  private createSummary(content: string, maxLength: number = 200): string {
+    // Split into sentences
+    const sentences = content
+      .split(/[.!?]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 10)
+
+    if (sentences.length <= 2) {
+      // Content is already short, just truncate if needed
+      return content.length > maxLength
+        ? content.slice(0, maxLength - 3) + '...'
+        : content
+    }
+
+    // Score sentences by importance
+    const scoredSentences = sentences.map((sentence, index) => {
+      let score = 0
+
+      // First and last sentences are usually important
+      if (index === 0) score += 3
+      if (index === sentences.length - 1) score += 2
+
+      // Sentences with key phrases
+      const keyPhrases = [
+        /important/i,
+        /key/i,
+        /main/i,
+        /summary/i,
+        /conclusion/i,
+        /result/i,
+        /because/i,
+        /therefore/i,
+        /however/i,
+      ]
+      for (const phrase of keyPhrases) {
+        if (phrase.test(sentence)) score += 1
+      }
+
+      // Longer sentences often contain more information
+      if (sentence.length > 50) score += 1
+      if (sentence.length > 100) score += 1
+
+      return { sentence, score, index }
+    })
+
+    // Sort by score and select top sentences
+    scoredSentences.sort((a, b) => b.score - a.score)
+
+    // Build summary from top sentences, preserving original order
+    const selectedIndices = new Set<number>()
+    let currentLength = 0
+
+    for (const { sentence, index } of scoredSentences) {
+      if (currentLength + sentence.length + 2 > maxLength) break
+      selectedIndices.add(index)
+      currentLength += sentence.length + 2
+    }
+
+    // Reconstruct in original order
+    const summaryParts = sentences.filter((_, i) => selectedIndices.has(i))
+
+    if (summaryParts.length === 0) {
+      // Fallback: just take the first part
+      return content.slice(0, maxLength - 3) + '...'
+    }
+
+    return summaryParts.join('. ') + '.'
   }
 
   /**
