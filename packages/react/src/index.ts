@@ -276,8 +276,7 @@ export * from './embeddings'
 
 // Prompt System
 export * from './prompts'
-// TODO: Re-enable prompt system once core/ directory is implemented
-// export * from './prompt'
+export * from './prompt'
 
 // Document Loaders
 export * from './document-loaders'
