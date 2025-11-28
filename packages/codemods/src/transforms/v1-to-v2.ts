@@ -36,15 +36,30 @@ const transform: Transform = (file, api) => {
 
   // Transform 2: Update ChatWindow JSX to ChatInterface
   root.find(j.JSXElement).forEach((path) => {
-    if (
-      path.node.openingElement.name.type === 'JSXIdentifier' &&
-      path.node.openingElement.name.name === 'ChatWindow'
-    ) {
-      path.node.openingElement.name.name = 'ChatInterface'
+    const openingName = path.node.openingElement.name
+
+    // Handle direct JSXIdentifier (e.g., <ChatWindow>)
+    if (openingName.type === 'JSXIdentifier' && openingName.name === 'ChatWindow') {
+      openingName.name = 'ChatInterface'
       if (path.node.closingElement && path.node.closingElement.name.type === 'JSXIdentifier') {
         path.node.closingElement.name.name = 'ChatInterface'
       }
       hasChanges = true
+    }
+
+    // Handle JSXMemberExpression (e.g., <namespace.ChatWindow>)
+    if (openingName.type === 'JSXMemberExpression') {
+      if (openingName.property.type === 'JSXIdentifier' && openingName.property.name === 'ChatWindow') {
+        openingName.property.name = 'ChatInterface'
+        // Update closing element too
+        if (path.node.closingElement && path.node.closingElement.name.type === 'JSXMemberExpression') {
+          const closingProperty = path.node.closingElement.name.property
+          if (closingProperty.type === 'JSXIdentifier') {
+            closingProperty.name = 'ChatInterface'
+          }
+        }
+        hasChanges = true
+      }
     }
   })
 
@@ -66,11 +81,13 @@ const transform: Transform = (file, api) => {
     const properties = path.node.properties
 
     properties.forEach((prop, index) => {
-      if (
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.key.name === 'apiKey'
-      ) {
+      // Skip non-ObjectProperty types (SpreadElement, ObjectMethod, RestElement)
+      if (prop.type !== 'ObjectProperty') return
+
+      // Ensure key is an Identifier (not computed or string literal)
+      if (prop.key.type !== 'Identifier') return
+
+      if (prop.key.name === 'apiKey') {
         // Replace apiKey with credentials object
         const newProp = j.objectProperty(
           j.identifier('credentials'),
