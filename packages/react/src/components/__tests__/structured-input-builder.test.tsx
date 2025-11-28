@@ -987,4 +987,27 @@ describe('edge cases', () => {
     const result = onSubmit.mock.calls[0][0]
     expect(result.formattedPrompt).toContain('Task')
   })
+
+  it('should sanitize field.id with special characters for valid HTML IDs', () => {
+    const onChange = vi.fn()
+    const fields: StructuredInputField[] = [
+      { id: 'my field!@#', name: 'test', label: 'Test', type: 'text', required: false },
+    ]
+
+    render(
+      <StructuredInputBuilder
+        fields={fields}
+        values={{}}
+        onChange={onChange}
+      />
+    )
+
+    // Should render without error and input should be accessible
+    const input = screen.getByLabelText(/test/i)
+    expect(input).toBeDefined()
+    // The ID should be sanitized (no spaces or special chars)
+    expect(input.id).not.toContain(' ')
+    expect(input.id).not.toContain('!')
+    expect(input.id).toMatch(/^field-[a-zA-Z]/)
+  })
 })

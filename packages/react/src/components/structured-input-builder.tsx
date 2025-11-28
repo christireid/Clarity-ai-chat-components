@@ -190,6 +190,57 @@ function estimateTokens(text: string): number {
 }
 
 /**
+ * Sanitize a string for use as an HTML ID
+ * Replaces invalid characters with hyphens and ensures it starts with a letter
+ */
+function sanitizeHtmlId(id: string): string {
+  if (!id) return 'field-empty'
+  // Replace spaces and invalid chars with hyphens, ensure starts with letter
+  const sanitized = id
+    .replace(/[^a-zA-Z0-9_-]/g, '-')
+    .replace(/^[^a-zA-Z]/, 'f-')
+  return sanitized || 'field-fallback'
+}
+
+/**
+ * Validate fields and return errors map
+ * Shared between component and hook to avoid duplication
+ */
+function validateFields(
+  fields: StructuredInputField[],
+  values: Record<string, string>
+): Record<string, string> {
+  const errors: Record<string, string> = {}
+
+  for (const field of fields) {
+    const value = values[field.name] ?? ''
+
+    // Required validation
+    if (field.required && !value.trim()) {
+      errors[field.name] = `${field.label} is required`
+      continue
+    }
+
+    // Custom validation with error protection
+    if (field.validate && value) {
+      try {
+        const validationResult = field.validate(value)
+        if (typeof validationResult === 'string') {
+          errors[field.name] = validationResult
+        } else if (!validationResult) {
+          errors[field.name] = `Invalid ${field.label.toLowerCase()}`
+        }
+      } catch {
+        // Validation function threw - treat as invalid
+        errors[field.name] = `Validation error for ${field.label.toLowerCase()}`
+      }
+    }
+  }
+
+  return errors
+}
+
+/**
  * Field component for rendering individual inputs
  */
 const FieldInput = React.memo(function FieldInput({
@@ -211,7 +262,7 @@ const FieldInput = React.memo(function FieldInput({
   size: 'sm' | 'md' | 'lg'
   disabled: boolean
 }) {
-  const inputId = `field-${field.id}`
+  const inputId = `field-${sanitizeHtmlId(field.id)}`
   const isDisabled = disabled || field.disabled
 
   const sizeClasses = {
@@ -547,37 +598,20 @@ export function StructuredInputBuilder({
     }))
   }, [tokenBreakdown, totalTokens])
 
-  // Validate fields
-  const errors = React.useMemo((): Record<string, string> => {
-    const result: Record<string, string> = {}
-
-    for (const field of fields) {
-      const value = values[field.name] ?? ''
-
-      // Required validation
-      if (field.required && !value.trim()) {
-        result[field.name] = `${field.label} is required`
-        continue
-      }
-
-      // Custom validation with error protection
-      if (field.validate && value) {
-        try {
-          const validationResult = field.validate(value)
-          if (typeof validationResult === 'string') {
-            result[field.name] = validationResult
-          } else if (!validationResult) {
-            result[field.name] = `Invalid ${field.label.toLowerCase()}`
-          }
-        } catch {
-          // Validation function threw - treat as invalid
-          result[field.name] = `Validation error for ${field.label.toLowerCase()}`
-        }
-      }
+  // Create O(1) lookup map for token counts by field ID
+  const tokensByFieldId = React.useMemo((): Map<string, number> => {
+    const map = new Map<string, number>()
+    for (const b of breakdownWithPercentages) {
+      map.set(b.fieldId, b.tokens)
     }
+    return map
+  }, [breakdownWithPercentages])
 
-    return result
-  }, [fields, values])
+  // Validate fields using shared function
+  const errors = React.useMemo(
+    () => validateFields(fields, values),
+    [fields, values]
+  )
 
   const isValid = Object.keys(errors).length === 0
 
@@ -657,7 +691,7 @@ export function StructuredInputBuilder({
               value={values[field.name] ?? field.defaultValue ?? ''}
               onChange={(v) => handleFieldChange(field.name, v)}
               error={errors[field.name]}
-              tokenCount={breakdownWithPercentages.find((b) => b.fieldId === field.id)?.tokens}
+              tokenCount={tokensByFieldId.get(field.id)}
               showTokens={showTokenBreakdown}
               size="sm"
               disabled={disabled}
@@ -699,7 +733,7 @@ export function StructuredInputBuilder({
               value={values[field.name] ?? field.defaultValue ?? ''}
               onChange={(v) => handleFieldChange(field.name, v)}
               error={errors[field.name]}
-              tokenCount={breakdownWithPercentages.find((b) => b.fieldId === field.id)?.tokens}
+              tokenCount={tokensByFieldId.get(field.id)}
               showTokens={false}
               size="sm"
               disabled={disabled}
@@ -777,7 +811,7 @@ export function StructuredInputBuilder({
                       value={values[field.name] ?? field.defaultValue ?? ''}
                       onChange={(v) => handleFieldChange(field.name, v)}
                       error={errors[field.name]}
-                      tokenCount={breakdownWithPercentages.find((b) => b.fieldId === field.id)?.tokens}
+                      tokenCount={tokensByFieldId.get(field.id)}
                       showTokens={showTokenBreakdown}
                       size={size}
                       disabled={disabled}
@@ -802,7 +836,7 @@ export function StructuredInputBuilder({
               value={values[field.name] ?? field.defaultValue ?? ''}
               onChange={(v) => handleFieldChange(field.name, v)}
               error={errors[field.name]}
-              tokenCount={breakdownWithPercentages.find((b) => b.fieldId === field.id)?.tokens}
+              tokenCount={tokensByFieldId.get(field.id)}
               showTokens={showTokenBreakdown}
               size={size}
               disabled={disabled}
@@ -904,30 +938,8 @@ export function useStructuredInput(
       }
     }
 
-    // Validate
-    const errors: Record<string, string> = {}
-    for (const field of fields) {
-      const value = values[field.name] ?? ''
-
-      if (field.required && !value.trim()) {
-        errors[field.name] = `${field.label} is required`
-        continue
-      }
-
-      if (field.validate && value) {
-        try {
-          const validationResult = field.validate(value)
-          if (typeof validationResult === 'string') {
-            errors[field.name] = validationResult
-          } else if (!validationResult) {
-            errors[field.name] = `Invalid ${field.label.toLowerCase()}`
-          }
-        } catch {
-          // Validation function threw - treat as invalid
-          errors[field.name] = `Validation error for ${field.label.toLowerCase()}`
-        }
-      }
-    }
+    // Validate using shared function
+    const errors = validateFields(fields, values)
 
     let formattedPrompt: string
     try {
