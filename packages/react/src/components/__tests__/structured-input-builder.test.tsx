@@ -379,6 +379,36 @@ describe('StructuredInputBuilder', () => {
 
       expect(screen.getByText(/invalid email format/i)).toBeDefined()
     })
+
+    it('should handle validation function that throws an error', () => {
+      const onChange = vi.fn()
+      const fields: StructuredInputField[] = [
+        {
+          id: 'dangerous',
+          name: 'dangerous',
+          label: 'Dangerous Field',
+          type: 'text',
+          required: false,
+          validate: () => {
+            throw new Error('Validation exploded!')
+          },
+        },
+      ]
+
+      // Should not throw when rendering
+      expect(() => {
+        render(
+          <StructuredInputBuilder
+            fields={fields}
+            values={{ dangerous: 'some value' }}
+            onChange={onChange}
+          />
+        )
+      }).not.toThrow()
+
+      // Should show validation error message
+      expect(screen.getByText(/validation error for dangerous field/i)).toBeDefined()
+    })
   })
 
   describe('token estimation', () => {
@@ -524,6 +554,25 @@ describe('StructuredInputBuilder', () => {
       const taskInput = screen.getByLabelText(/task/i)
       expect(taskInput.getAttribute('aria-invalid')).toBe('true')
     })
+
+    it('should set aria-required for required fields', () => {
+      const onChange = vi.fn()
+      render(
+        <StructuredInputBuilder
+          fields={defaultFields}
+          values={{}}
+          onChange={onChange}
+        />
+      )
+
+      const taskInput = screen.getByLabelText(/task/i)
+      const contextInput = screen.getByLabelText(/context/i)
+
+      // Task is required
+      expect(taskInput.getAttribute('aria-required')).toBe('true')
+      // Context is not required
+      expect(contextInput.getAttribute('aria-required')).toBe('false')
+    })
   })
 
   describe('sections', () => {
@@ -662,6 +711,31 @@ describe('useStructuredInput hook', () => {
     )
 
     expect(result.current.isOverBudget).toBe(true)
+  })
+
+  it('should handle validation function that throws', () => {
+    const fieldsWithThrowingValidator: StructuredInputField[] = [
+      {
+        id: 'boom',
+        name: 'boom',
+        label: 'Boom',
+        type: 'text',
+        required: false,
+        validate: () => {
+          throw new Error('Kaboom!')
+        },
+      },
+    ]
+
+    const { result } = renderHook(() =>
+      useStructuredInput(fieldsWithThrowingValidator, {
+        initialValues: { boom: 'trigger' },
+      })
+    )
+
+    // Should not crash and should report invalid
+    expect(result.current.result.isValid).toBe(false)
+    expect(result.current.result.errors.boom).toBe('Validation error for boom')
   })
 
   it('should format prompt correctly', () => {

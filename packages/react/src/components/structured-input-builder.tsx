@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { cn } from '../utils/cn'
-import { countTokens } from '../utils/tokenization/accurate-counter'
 
 /**
  * Field priority for token optimization
@@ -132,16 +131,6 @@ export interface StructuredInputBuilderProps {
 }
 
 /**
- * Priority weights for token allocation
- */
-const PRIORITY_WEIGHTS: Record<FieldPriority, number> = {
-  critical: 1.0,
-  high: 0.9,
-  medium: 0.7,
-  low: 0.5,
-}
-
-/**
  * Default prompt formatter that creates structured output
  */
 function defaultFormatPrompt(
@@ -253,6 +242,7 @@ const FieldInput = React.memo(function FieldInput({
             disabled={isDisabled}
             className={cn(baseInputClasses, 'resize-none')}
             aria-invalid={!!error}
+            aria-required={field.required}
             aria-describedby={error ? `${inputId}-error` : undefined}
           />
         )
@@ -266,6 +256,7 @@ const FieldInput = React.memo(function FieldInput({
             disabled={isDisabled}
             className={baseInputClasses}
             aria-invalid={!!error}
+            aria-required={field.required}
             aria-describedby={error ? `${inputId}-error` : undefined}
           >
             <option value="">{field.placeholder ?? 'Select an option...'}</option>
@@ -288,6 +279,7 @@ const FieldInput = React.memo(function FieldInput({
             disabled={isDisabled}
             className={baseInputClasses}
             aria-invalid={!!error}
+            aria-required={field.required}
             aria-describedby={error ? `${inputId}-error` : undefined}
           />
         )
@@ -299,6 +291,7 @@ const FieldInput = React.memo(function FieldInput({
             type="button"
             role="switch"
             aria-checked={value === 'true'}
+            aria-required={field.required}
             onClick={() => onChange(value === 'true' ? 'false' : 'true')}
             disabled={isDisabled}
             className={cn(
@@ -328,6 +321,7 @@ const FieldInput = React.memo(function FieldInput({
             disabled={isDisabled}
             className={baseInputClasses}
             aria-invalid={!!error}
+            aria-required={field.required}
             aria-describedby={error ? `${inputId}-error` : undefined}
           />
         )
@@ -554,13 +548,18 @@ export function StructuredInputBuilder({
         continue
       }
 
-      // Custom validation
+      // Custom validation with error protection
       if (field.validate && value) {
-        const validationResult = field.validate(value)
-        if (typeof validationResult === 'string') {
-          result[field.name] = validationResult
-        } else if (!validationResult) {
-          result[field.name] = `Invalid ${field.label.toLowerCase()}`
+        try {
+          const validationResult = field.validate(value)
+          if (typeof validationResult === 'string') {
+            result[field.name] = validationResult
+          } else if (!validationResult) {
+            result[field.name] = `Invalid ${field.label.toLowerCase()}`
+          }
+        } catch {
+          // Validation function threw - treat as invalid
+          result[field.name] = `Validation error for ${field.label.toLowerCase()}`
         }
       }
     }
@@ -896,11 +895,16 @@ export function useStructuredInput(
       }
 
       if (field.validate && value) {
-        const validationResult = field.validate(value)
-        if (typeof validationResult === 'string') {
-          errors[field.name] = validationResult
-        } else if (!validationResult) {
-          errors[field.name] = `Invalid ${field.label.toLowerCase()}`
+        try {
+          const validationResult = field.validate(value)
+          if (typeof validationResult === 'string') {
+            errors[field.name] = validationResult
+          } else if (!validationResult) {
+            errors[field.name] = `Invalid ${field.label.toLowerCase()}`
+          }
+        } catch {
+          // Validation function threw - treat as invalid
+          errors[field.name] = `Validation error for ${field.label.toLowerCase()}`
         }
       }
     }
