@@ -91,13 +91,24 @@ export class TokenBudgetManager {
     if (currentTotal > maxTokens) {
       const excess = currentTotal - maxTokens
       // Reduce from largest allocations
-      if (adjusted.semanticMemory > excess) {
+      if (adjusted.semanticMemory >= excess) {
         adjusted.semanticMemory -= excess
       } else {
-        adjusted.semanticMemory = 0
+        // Calculate remaining BEFORE setting semanticMemory to 0
         const remaining = excess - adjusted.semanticMemory
-        if (adjusted.episodicMemory > remaining) {
+        adjusted.semanticMemory = 0
+        if (adjusted.episodicMemory >= remaining) {
           adjusted.episodicMemory -= remaining
+        } else {
+          // If episodic memory isn't enough, reduce it to 0 and continue with other allocations
+          const stillRemaining = remaining - adjusted.episodicMemory
+          adjusted.episodicMemory = 0
+          // Reduce recentContext if needed
+          if (adjusted.recentContext >= stillRemaining) {
+            adjusted.recentContext -= stillRemaining
+          } else {
+            adjusted.recentContext = 0
+          }
         }
       }
     }
