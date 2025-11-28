@@ -447,3 +447,87 @@ describe('compression quality', () => {
     expect(result.compressionRatio).toBeLessThan(0.9)
   })
 })
+
+describe('edge cases', () => {
+  it('should handle null/undefined input gracefully', async () => {
+    const compressor = new LLMLinguaCompressor()
+
+    // @ts-expect-error - testing runtime behavior with invalid input
+    const result1 = await compressor.compress(null)
+    expect(result1.original).toBe('')
+    expect(result1.compressed).toBe('')
+    expect(result1.method).toBe('none')
+
+    // @ts-expect-error - testing runtime behavior with invalid input
+    const result2 = await compressor.compress(undefined)
+    expect(result2.method).toBe('none')
+  })
+
+  it('should handle empty string', async () => {
+    const compressor = new LLMLinguaCompressor({ minTokensToCompress: 0 })
+    const result = await compressor.compress('')
+
+    expect(result.original).toBe('')
+    expect(result.compressed).toBe('')
+    expect(result.compressionRatio).toBe(1.0)
+  })
+
+  it('should handle whitespace-only input', async () => {
+    const compressor = new LLMLinguaCompressor({ minTokensToCompress: 0 })
+    const result = await compressor.compress('   \n\t  ')
+
+    expect(result.compressed.trim()).toBe('')
+  })
+
+  it('should handle single word input', async () => {
+    const compressor = new LLMLinguaCompressor({
+      minTokensToCompress: 0,
+      preserveFirst: 100,
+      preserveLast: 50,
+    })
+    const result = await compressor.compress('hello')
+
+    expect(result.compressed).toBe('hello')
+  })
+
+  it('should handle empty segments array', async () => {
+    const compressor = new LLMLinguaCompressor({ minTokensToCompress: 10 })
+    const result = await compressor.compressWithSegments('Some text to compress', [])
+
+    // Should fall back to regular compression
+    expect(result.compressed.length).toBeLessThanOrEqual(result.original.length)
+  })
+
+  it('should handle out-of-bounds segments', async () => {
+    const compressor = new LLMLinguaCompressor({ minTokensToCompress: 10 })
+    const text = 'Short text'
+    const result = await compressor.compressWithSegments(text, [
+      { start: -10, end: 5, preserve: true },  // negative start
+      { start: 5, end: 1000, preserve: true }, // end past text length
+    ])
+
+    // Should clamp to valid bounds and not crash
+    expect(result.compressed).toBeTruthy()
+  })
+
+  it('should handle overlapping segments', async () => {
+    const compressor = new LLMLinguaCompressor({ minTokensToCompress: 10 })
+    const text = 'AAAA BBBB CCCC DDDD EEEE'
+    const result = await compressor.compressWithSegments(text, [
+      { start: 0, end: 10, preserve: true },
+      { start: 5, end: 15, preserve: true }, // overlaps with previous
+    ])
+
+    // Should handle without crashing
+    expect(result.compressed).toBeTruthy()
+  })
+
+  it('should handle null input in compressWithSegments', async () => {
+    const compressor = new LLMLinguaCompressor()
+
+    // @ts-expect-error - testing runtime behavior
+    const result = await compressor.compressWithSegments(null, [])
+    expect(result.original).toBe('')
+    expect(result.method).toBe('none')
+  })
+})

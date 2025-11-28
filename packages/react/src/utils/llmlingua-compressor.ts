@@ -2,8 +2,11 @@
  * LLMLingua-2 Style Prompt Compressor
  *
  * Implements advanced prompt compression for RAG contexts using
- * perplexity-based token importance scoring, achieving 3-5x compression
- * while preserving semantic meaning.
+ * perplexity-inspired token importance scoring. Uses statistical methods
+ * to achieve ~1.5-2x compression while preserving semantic meaning.
+ *
+ * Note: The statistical fallback achieves moderate compression (~50-70% of original).
+ * Full LLMLingua-2 ML model integration would achieve 3-5x compression.
  *
  * Key features:
  * - Perplexity-inspired token scoring (simulated with statistical methods)
@@ -174,7 +177,8 @@ function calculatePerplexityScore(
   let score = 0.5
 
   // Position-based importance (start and end more important)
-  const normalizedPos = position / totalTokens
+  // Guard against division by zero
+  const normalizedPos = totalTokens > 0 ? position / totalTokens : 0
   if (normalizedPos < 0.1 || normalizedPos > 0.9) {
     score += 0.2
   }
@@ -196,8 +200,11 @@ function calculatePerplexityScore(
   }
 
   // Context frequency (rare words more important - inverse frequency)
+  // Guard against division by zero
   const wordLower = lower
-  const frequency = context.filter(w => w.toLowerCase() === wordLower).length / context.length
+  const frequency = context.length > 0
+    ? context.filter(w => w.toLowerCase() === wordLower).length / context.length
+    : 0
   if (frequency < 0.01) {
     score += 0.2 // Very rare
   } else if (frequency < 0.05) {
@@ -430,6 +437,20 @@ export class LLMLinguaCompressor {
     const startTime = performance.now()
     const config = { ...this.config, ...options }
 
+    // Input validation
+    if (text == null || typeof text !== 'string') {
+      return {
+        original: '',
+        compressed: '',
+        originalTokens: 0,
+        compressedTokens: 0,
+        compressionRatio: 1.0,
+        preservedSegments: [],
+        processingTimeMs: performance.now() - startTime,
+        method: 'none',
+      }
+    }
+
     const originalTokens = estimateTokens(text)
 
     // Skip compression if too short
@@ -472,14 +493,19 @@ export class LLMLinguaCompressor {
     }
 
     const compressedTokens = estimateTokens(compressed)
-    const compressionRatio = compressedTokens / originalTokens
+    // Guard against division by zero
+    const compressionRatio = originalTokens > 0 ? compressedTokens / originalTokens : 1.0
     const processingTimeMs = performance.now() - startTime
 
-    // Update stats
+    // Update stats (cap array size to prevent memory leak)
     this.stats.totalCompressions++
     this.stats.totalTokensSaved += originalTokens - compressedTokens
     this.stats.totalProcessingTimeMs += processingTimeMs
     this.stats.compressionRatios.push(compressionRatio)
+    if (this.stats.compressionRatios.length > 1000) {
+      // Keep last 1000 ratios for average calculation
+      this.stats.compressionRatios = this.stats.compressionRatios.slice(-1000)
+    }
 
     return {
       original: text,
@@ -501,10 +527,39 @@ export class LLMLinguaCompressor {
     segments: Array<{ start: number; end: number; preserve: boolean }>
   ): Promise<CompressionResult> {
     const startTime = performance.now()
+
+    // Input validation
+    if (text == null || typeof text !== 'string') {
+      return {
+        original: '',
+        compressed: '',
+        originalTokens: 0,
+        compressedTokens: 0,
+        compressionRatio: 1.0,
+        preservedSegments: [],
+        processingTimeMs: performance.now() - startTime,
+        method: 'none',
+      }
+    }
+
+    // If no segments provided, compress entire text
+    if (!segments || segments.length === 0) {
+      return this.compress(text)
+    }
+
     const originalTokens = estimateTokens(text)
 
+    // Validate and clamp segments to valid bounds
+    const validatedSegments = segments
+      .map(seg => ({
+        start: Math.max(0, Math.min(seg.start, text.length)),
+        end: Math.max(0, Math.min(seg.end, text.length)),
+        preserve: seg.preserve,
+      }))
+      .filter(seg => seg.start < seg.end) // Remove invalid segments
+
     // Sort segments by start position
-    const sortedSegments = [...segments].sort((a, b) => a.start - b.start)
+    const sortedSegments = [...validatedSegments].sort((a, b) => a.start - b.start)
 
     // Extract preserved and compressible parts
     const parts: Array<{ text: string; preserve: boolean; start: number }> = []
@@ -574,20 +629,25 @@ export class LLMLinguaCompressor {
 
     const compressed = processedParts.join('')
     const compressedTokens = estimateTokens(compressed)
+    // Guard against division by zero
+    const compressionRatio = originalTokens > 0 ? compressedTokens / originalTokens : 1.0
     const processingTimeMs = performance.now() - startTime
 
-    // Update stats
+    // Update stats (cap array size to prevent memory leak)
     this.stats.totalCompressions++
     this.stats.totalTokensSaved += originalTokens - compressedTokens
     this.stats.totalProcessingTimeMs += processingTimeMs
-    this.stats.compressionRatios.push(compressedTokens / originalTokens)
+    this.stats.compressionRatios.push(compressionRatio)
+    if (this.stats.compressionRatios.length > 1000) {
+      this.stats.compressionRatios = this.stats.compressionRatios.slice(-1000)
+    }
 
     return {
       original: text,
       compressed,
       originalTokens,
       compressedTokens,
-      compressionRatio: compressedTokens / originalTokens,
+      compressionRatio,
       preservedSegments,
       processingTimeMs,
       method: this.modelLoaded ? 'llmlingua' : 'fallback',
