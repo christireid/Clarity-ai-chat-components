@@ -139,6 +139,10 @@ function normalizeQuery(query: string): string {
 /**
  * Persistent Semantic Cache using IndexedDB
  *
+ * Note: Semantic similarity search performs a linear scan of all entries,
+ * which works well for caches up to ~1000 entries. For larger caches,
+ * consider reducing maxEntries or implementing vector indexing.
+ *
  * @example
  * ```typescript
  * const cache = new PersistentSemanticCache({
@@ -292,6 +296,16 @@ export class PersistentSemanticCache {
     response: string,
     metadata?: Record<string, unknown>
   ): Promise<void> {
+    // Validate inputs
+    if (!query || typeof query !== 'string') {
+      console.warn('[PersistentSemanticCache] Invalid query - skipping store')
+      return
+    }
+    if (!response || typeof response !== 'string') {
+      console.warn('[PersistentSemanticCache] Invalid response - skipping store')
+      return
+    }
+
     try {
       const db = await this.getDb()
       const queryEmbedding = await this.config.embedFunction(query)
@@ -484,6 +498,7 @@ export class PersistentSemanticCache {
 
   /**
    * Find semantic match using embedding similarity
+   * Note: O(n) linear scan - acceptable for maxEntries <= 1000
    */
   private async findSemanticMatch(
     db: IDBDatabase,
@@ -566,9 +581,12 @@ export class PersistentSemanticCache {
         if (entry) {
           entry.hits++
           entry.lastAccessed = Date.now()
-          store.put(entry)
+          const putRequest = store.put(entry)
+          putRequest.onsuccess = () => resolve()
+          putRequest.onerror = () => reject(putRequest.error)
+        } else {
+          resolve()
         }
-        resolve()
       }
       getRequest.onerror = () => reject(getRequest.error)
     })

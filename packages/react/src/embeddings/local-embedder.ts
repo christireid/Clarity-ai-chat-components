@@ -387,6 +387,11 @@ export class LocalEmbedder {
   dispose(): void {
     this.cache.clear()
     this.modelLoaded = false
+    this.stats = {
+      totalGenerated: 0,
+      cacheHits: 0,
+      totalGenerationTimeMs: 0,
+    }
   }
 
   /**
