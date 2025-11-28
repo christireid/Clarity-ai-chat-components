@@ -401,6 +401,38 @@ describe('HistoryManager', () => {
       // Selection should be cleaned up
       expect(screen.getByText('0 of 3 selected')).toBeDefined()
     })
+
+    it('should warn about duplicate IDs in development', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const originalEnv = process.env.NODE_ENV
+
+      // Set to development mode
+      process.env.NODE_ENV = 'development'
+
+      const messagesWithDuplicates: HistoryMessage[] = [
+        { id: 'dup-1', role: 'user', content: 'First' },
+        { id: 'dup-1', role: 'assistant', content: 'Second' }, // Duplicate!
+        { id: 'unique', role: 'user', content: 'Third' },
+      ]
+
+      render(
+        <HistoryManager
+          messages={messagesWithDuplicates}
+          onMessagesChange={vi.fn()}
+          maxTokens={4096}
+        />
+      )
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Duplicate message IDs detected')
+      )
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('dup-1')
+      )
+
+      consoleSpy.mockRestore()
+      process.env.NODE_ENV = originalEnv
+    })
   })
 })
 

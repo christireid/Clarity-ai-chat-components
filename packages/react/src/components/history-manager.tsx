@@ -408,6 +408,11 @@ export function HistoryToolbar({
  * - Keyboard accessible
  * - Responsive design
  *
+ * **Performance Notes:**
+ * - Best for conversations under 200 messages
+ * - For very long histories (500+), consider pagination or virtualization
+ * - Each message requires unique `id` - duplicates cause undefined behavior
+ *
  * @example
  * ```tsx
  * // Basic usage
@@ -449,6 +454,21 @@ export function HistoryManager({
   onPrune,
 }: HistoryManagerProps) {
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
+
+  // Warn about duplicate IDs in development
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      const ids = messages.map((m) => m.id)
+      const uniqueIds = new Set(ids)
+      if (uniqueIds.size !== ids.length) {
+        const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
+        console.warn(
+          `[HistoryManager] Duplicate message IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
+          'Each message must have a unique id for correct behavior.'
+        )
+      }
+    }
+  }, [messages])
 
   // Clean up stale selectedIds when messages change externally
   React.useEffect(() => {
