@@ -59,61 +59,97 @@ interface PreferenceOption {
 }
 
 /**
- * Icons for preference options
+ * Icon component for preference options
+ * Memoized to prevent re-renders
  */
-const ConciseIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8" />
-  </svg>
-)
+const PreferenceIcon = React.memo(function PreferenceIcon({ type }: { type: OutputPreference }) {
+  const paths: Record<OutputPreference, string> = {
+    concise: 'M4 6h16M4 12h8',
+    balanced: 'M4 6h16M4 12h16M4 18h12',
+    detailed: 'M4 6h16M4 10h16M4 14h16M4 18h16',
+  }
 
-const BalancedIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h12" />
-  </svg>
-)
-
-const DetailedIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-  </svg>
-)
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={paths[type]} />
+    </svg>
+  )
+})
 
 /**
- * Preference options configuration
+ * Preference options configuration (without JSX to prevent re-creation)
  */
-const PREFERENCE_OPTIONS: PreferenceOption[] = [
+const PREFERENCE_OPTIONS: Omit<PreferenceOption, 'icon'>[] = [
   {
     value: 'concise',
     label: 'Concise',
     shortLabel: 'Brief',
     description: 'Short, to-the-point responses',
-    icon: <ConciseIcon />,
   },
   {
     value: 'balanced',
     label: 'Balanced',
     shortLabel: 'Normal',
     description: 'Standard response length',
-    icon: <BalancedIcon />,
   },
   {
     value: 'detailed',
     label: 'Detailed',
     shortLabel: 'Full',
     description: 'Comprehensive explanations',
-    icon: <DetailedIcon />,
   },
 ]
+
+/**
+ * Valid preference values for validation
+ */
+const VALID_PREFERENCES = new Set<OutputPreference>(['concise', 'balanced', 'detailed'])
 
 /**
  * Format token count for display
  */
 function formatTokens(tokens: number): string {
+  if (tokens <= 0) {
+    return '0'
+  }
   if (tokens >= 1000) {
     return `~${(tokens / 1000).toFixed(1)}K`
   }
   return `~${tokens}`
+}
+
+/**
+ * Safe wrapper for calculateDynamicOutputLimit that returns fallback on error
+ */
+function safeCalculateOutputLimit(
+  modelCapacity: number,
+  inputTokens: number,
+  preference: OutputPreference,
+  taskType: TaskType
+): { recommendedMaxTokens: number; brevityInstruction: string } {
+  try {
+    // Guard against invalid inputs that would throw
+    const safeCapacity = Math.max(1, modelCapacity)
+    const safeInputTokens = Math.max(0, inputTokens)
+
+    return calculateDynamicOutputLimit({
+      modelCapacity: safeCapacity,
+      inputTokenCount: safeInputTokens,
+      userPreference: preference,
+      taskType,
+    })
+  } catch {
+    // Fallback defaults if calculation fails
+    const fallbackTokens: Record<OutputPreference, number> = {
+      concise: 500,
+      balanced: 1000,
+      detailed: 2000,
+    }
+    return {
+      recommendedMaxTokens: fallbackTokens[preference] ?? 1000,
+      brevityInstruction: '',
+    }
+  }
 }
 
 /**
@@ -178,47 +214,58 @@ export function OutputPreferenceSelector({
   className,
   size = 'md',
 }: OutputPreferenceSelectorProps) {
+  // Refs for focus management
+  const buttonRefs = React.useRef<Map<OutputPreference, HTMLButtonElement>>(new Map())
+
+  // Validate value prop and fall back to balanced if invalid
+  const safeValue = VALID_PREFERENCES.has(value) ? value : 'balanced'
+
+  // Warn in development if invalid value is passed
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && !VALID_PREFERENCES.has(value)) {
+      console.warn(
+        `[OutputPreferenceSelector] Invalid value "${value}" passed. ` +
+        'Expected one of: concise, balanced, detailed. Falling back to "balanced".'
+      )
+    }
+  }, [value])
+
   /**
-   * Calculate token estimate for a given preference
+   * Calculate token estimate for a given preference (with error handling)
    */
   const calculateTokenEstimate = React.useCallback(
     (pref: OutputPreference): number => {
-      const result = calculateDynamicOutputLimit({
-        modelCapacity,
-        inputTokenCount: inputTokens,
-        userPreference: pref,
-        taskType,
-      })
+      const result = safeCalculateOutputLimit(modelCapacity, inputTokens, pref, taskType)
       return result.recommendedMaxTokens
     },
     [modelCapacity, inputTokens, taskType]
   )
 
   /**
-   * Handle option selection
+   * Handle option selection (with error handling)
    */
   const handleSelect = React.useCallback(
-    (selectedMode: OutputPreference) => {
+    (selectedMode: OutputPreference, focusTarget?: HTMLButtonElement | null) => {
       if (disabled) return
 
-      const result = calculateDynamicOutputLimit({
-        modelCapacity,
-        inputTokenCount: inputTokens,
-        userPreference: selectedMode,
-        taskType,
-      })
+      const result = safeCalculateOutputLimit(modelCapacity, inputTokens, selectedMode, taskType)
 
       onChange({
         mode: selectedMode,
         maxTokens: result.recommendedMaxTokens,
         brevityInstruction: result.brevityInstruction,
       })
+
+      // Move focus to newly selected item (WAI-ARIA radiogroup pattern)
+      if (focusTarget) {
+        focusTarget.focus()
+      }
     },
     [disabled, modelCapacity, inputTokens, taskType, onChange]
   )
 
   /**
-   * Handle keyboard navigation
+   * Handle keyboard navigation with focus management
    */
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent, currentIndex: number) => {
@@ -251,7 +298,9 @@ export function OutputPreferenceSelector({
 
       const option = PREFERENCE_OPTIONS[newIndex]
       if (option) {
-        handleSelect(option.value)
+        // Get the button ref for the new option to move focus
+        const newButton = buttonRefs.current.get(option.value)
+        handleSelect(option.value, newButton)
       }
     },
     [disabled, handleSelect]
@@ -287,15 +336,19 @@ export function OutputPreferenceSelector({
         aria-label="Response length preference"
       >
         {PREFERENCE_OPTIONS.map((option, index) => {
-          const isSelected = value === option.value
+          const isSelected = safeValue === option.value
           const tokenEstimate = showTokenEstimate ? calculateTokenEstimate(option.value) : null
 
           return (
             <button
               key={option.value}
+              ref={(el) => {
+                if (el) buttonRefs.current.set(option.value, el)
+              }}
               type="button"
               role="radio"
               aria-checked={isSelected}
+              tabIndex={isSelected ? 0 : -1}
               disabled={disabled}
               onClick={() => handleSelect(option.value)}
               onKeyDown={(e) => handleKeyDown(e, index)}
@@ -309,7 +362,9 @@ export function OutputPreferenceSelector({
                 disabled && 'opacity-50 cursor-not-allowed'
               )}
             >
-              <span className={sizes.icon}>{option.icon}</span>
+              <span className={sizes.icon}>
+                <PreferenceIcon type={option.value} />
+              </span>
               <span>{size === 'sm' ? option.shortLabel : option.label}</span>
               {tokenEstimate !== null && (
                 <span className="text-xs text-muted-foreground font-mono">
@@ -331,16 +386,20 @@ export function OutputPreferenceSelector({
       aria-label="Response length preference"
     >
       {PREFERENCE_OPTIONS.map((option, index) => {
-        const isSelected = value === option.value
+        const isSelected = safeValue === option.value
         const config = getPreferenceConfig(option.value)
         const tokenEstimate = showTokenEstimate ? calculateTokenEstimate(option.value) : null
 
         return (
           <button
             key={option.value}
+            ref={(el) => {
+              if (el) buttonRefs.current.set(option.value, el)
+            }}
             type="button"
             role="radio"
             aria-checked={isSelected}
+            tabIndex={isSelected ? 0 : -1}
             disabled={disabled}
             onClick={() => handleSelect(option.value)}
             onKeyDown={(e) => handleKeyDown(e, index)}
@@ -368,7 +427,7 @@ export function OutputPreferenceSelector({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className={cn('text-muted-foreground', isSelected && 'text-primary')}>
-                  {option.icon}
+                  <PreferenceIcon type={option.value} />
                 </span>
                 <span className={cn('font-medium', isSelected && 'text-primary')}>
                   {option.label}
@@ -444,16 +503,22 @@ export function useOutputPreference(
     taskType = 'chat',
   } = config ?? {}
 
-  const [mode, setMode] = React.useState<OutputPreference>(initialMode)
+  // Validate initial mode
+  const safeInitial = VALID_PREFERENCES.has(initialMode) ? initialMode : 'balanced'
+  const [mode, setMode] = React.useState<OutputPreference>(safeInitial)
 
-  // Calculate derived values
+  // Calculate derived values (with error handling)
   const result = React.useMemo(() => {
-    return calculateDynamicOutputLimit({
-      modelCapacity,
-      inputTokenCount: inputTokens,
-      userPreference: mode,
-      taskType,
-    })
+    const safeResult = safeCalculateOutputLimit(modelCapacity, inputTokens, mode, taskType)
+    return {
+      recommendedMaxTokens: safeResult.recommendedMaxTokens,
+      brevityInstruction: safeResult.brevityInstruction,
+      // Provide stub values for other properties to match the full result shape
+      absoluteMaxTokens: Math.max(0, modelCapacity - inputTokens),
+      reasoning: '',
+      inputConstrained: false,
+      inputUtilization: modelCapacity > 0 ? (inputTokens / modelCapacity) * 100 : 0,
+    }
   }, [modelCapacity, inputTokens, mode, taskType])
 
   const handlePreferenceChange = React.useCallback((pref: OutputPreferenceValue) => {
@@ -518,15 +583,12 @@ export const UncontrolledOutputPreferenceSelector = React.forwardRef<
   { defaultValue = 'balanced', onValueChange, modelCapacity = 128000, inputTokens = 0, taskType = 'chat', ...props },
   ref
 ) {
-  const [mode, setMode] = React.useState<OutputPreference>(defaultValue)
+  // Validate default value
+  const safeDefault = VALID_PREFERENCES.has(defaultValue) ? defaultValue : 'balanced'
+  const [mode, setMode] = React.useState<OutputPreference>(safeDefault)
 
   const getCurrentValue = React.useCallback((): OutputPreferenceValue => {
-    const result = calculateDynamicOutputLimit({
-      modelCapacity,
-      inputTokenCount: inputTokens,
-      userPreference: mode,
-      taskType,
-    })
+    const result = safeCalculateOutputLimit(modelCapacity, inputTokens, mode, taskType)
 
     return {
       mode,

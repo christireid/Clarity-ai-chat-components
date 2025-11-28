@@ -431,6 +431,121 @@ describe('UncontrolledOutputPreferenceSelector', () => {
   })
 })
 
+describe('edge cases', () => {
+  it('should handle modelCapacity=0 without crashing', () => {
+    const onChange = vi.fn()
+
+    // Should not throw
+    expect(() => {
+      render(
+        <OutputPreferenceSelector
+          value="balanced"
+          onChange={onChange}
+          modelCapacity={0}
+          inputTokens={100}
+        />
+      )
+    }).not.toThrow()
+
+    // Should still call onChange with fallback values
+    fireEvent.click(screen.getByRole('radio', { name: /concise/i }))
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: 'concise',
+        maxTokens: expect.any(Number),
+      })
+    )
+  })
+
+  it('should handle negative inputTokens without crashing', () => {
+    const onChange = vi.fn()
+
+    expect(() => {
+      render(
+        <OutputPreferenceSelector
+          value="balanced"
+          onChange={onChange}
+          modelCapacity={128000}
+          inputTokens={-1000}
+        />
+      )
+    }).not.toThrow()
+
+    fireEvent.click(screen.getByRole('radio', { name: /detailed/i }))
+    expect(onChange).toHaveBeenCalled()
+  })
+
+  it('should handle invalid value prop gracefully', () => {
+    const onChange = vi.fn()
+
+    // Should not throw when given invalid value
+    expect(() => {
+      render(
+        <OutputPreferenceSelector
+          // @ts-expect-error - testing runtime behavior with invalid value
+          value="invalid"
+          onChange={onChange}
+        />
+      )
+    }).not.toThrow()
+
+    // Should fall back to balanced (shown as selected)
+    const balancedButton = screen.getByRole('radio', { name: /balanced/i })
+    expect(balancedButton.getAttribute('aria-checked')).toBe('true')
+
+    // Should still be interactive
+    fireEvent.click(screen.getByRole('radio', { name: /concise/i }))
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'concise' })
+    )
+  })
+
+  it('should handle inputTokens > modelCapacity', () => {
+    const onChange = vi.fn()
+
+    render(
+      <OutputPreferenceSelector
+        value="balanced"
+        onChange={onChange}
+        modelCapacity={1000}
+        inputTokens={5000}
+      />
+    )
+
+    fireEvent.click(screen.getByRole('radio', { name: /concise/i }))
+
+    // Should still work, returning minimal/fallback tokens
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: 'concise',
+        maxTokens: expect.any(Number),
+      })
+    )
+  })
+
+  it('should only allow selected item to be tabbable', () => {
+    const onChange = vi.fn()
+    render(
+      <OutputPreferenceSelector
+        value="balanced"
+        onChange={onChange}
+        displayMode="compact"
+      />
+    )
+
+    const options = screen.getAllByRole('radio')
+
+    // Find which one is balanced (should have tabIndex=0)
+    const balancedOption = options.find(opt => opt.getAttribute('aria-checked') === 'true')
+    const otherOptions = options.filter(opt => opt.getAttribute('aria-checked') === 'false')
+
+    expect(balancedOption?.getAttribute('tabindex')).toBe('0')
+    otherOptions.forEach(opt => {
+      expect(opt.getAttribute('tabindex')).toBe('-1')
+    })
+  })
+})
+
 describe('useOutputPreference hook', () => {
   it('should initialize with default mode', () => {
     const { result } = renderHook(() => useOutputPreference('balanced'))
