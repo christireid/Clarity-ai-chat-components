@@ -38,8 +38,10 @@ export interface InputProps
 
 const Input = ({ className, variant, inputSize, type, error, icon, iconPosition = 'left', ref, id, ...props }: InputProps) => {
     const hasError = error || variant === 'error'
-    // Generate error ID for aria-describedby accessibility
-    const errorId = error && id ? `${id}-error` : undefined
+    // Generate stable fallback ID for accessibility (matches Checkbox pattern)
+    const generatedId = React.useId()
+    const inputId = id || generatedId
+    const errorId = error ? `${inputId}-error` : undefined
 
     if (icon) {
       return (
@@ -51,7 +53,7 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
           )}
           <input
             type={type}
-            id={id}
+            id={inputId}
             aria-invalid={hasError ? true : undefined}
             aria-describedby={errorId}
             className={cn(
@@ -77,7 +79,7 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
       <div>
         <input
           type={type}
-          id={id}
+          id={inputId}
           aria-invalid={hasError ? true : undefined}
           aria-describedby={errorId}
           className={cn(

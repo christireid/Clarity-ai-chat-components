@@ -712,12 +712,16 @@ export class MemoryService {
       // Skip if already compressed
       if (memory.compressed) continue
 
+      // Skip if content is missing or invalid
+      if (!memory.content || typeof memory.content !== 'string') continue
+
       // Skip if content is too short (less than 200 chars)
       if (memory.content.length < 200) continue
 
       // Skip if too recent (less than 1 hour old)
-      const ageMs = now.getTime() - memory.createdAt.getTime()
-      if (ageMs < 60 * 60 * 1000) continue
+      const createdAt = memory.createdAt instanceof Date ? memory.createdAt : new Date(memory.createdAt)
+      const ageMs = now.getTime() - createdAt.getTime()
+      if (isNaN(ageMs) || ageMs < 60 * 60 * 1000) continue
 
       // Skip high priority or critical memories
       if (memory.priority === 'critical' || memory.priority === 'high') continue
