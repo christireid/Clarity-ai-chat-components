@@ -222,7 +222,7 @@ export function OutputPreferenceSelector({
 
   // Warn in development if invalid value is passed
   React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && !VALID_PREFERENCES.has(value)) {
+    if (process.env['NODE_ENV'] === 'development' && !VALID_PREFERENCES.has(value)) {
       console.warn(
         `[OutputPreferenceSelector] Invalid value "${value}" passed. ` +
         'Expected one of: concise, balanced, detailed. Falling back to "balanced".'
