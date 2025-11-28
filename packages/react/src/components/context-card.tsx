@@ -76,10 +76,20 @@ export function ContextCard({
       <Card
         className={cn(
           'group relative transition-all duration-200 ease-out border-border/40 shadow-sm hover:shadow-md hover:-translate-y-[2px] cursor-pointer',
+          'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-1',
           !context.isActive && 'opacity-60',
           className
         )}
         onClick={() => onPreview?.(context)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onPreview?.(context)
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label={`Preview context: ${context.name}`}
       >
         <CardContent className="p-4">
           <div className="flex items-start gap-3.5">

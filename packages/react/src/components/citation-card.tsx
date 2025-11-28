@@ -95,6 +95,7 @@ export function CitationCard({
       <Card
         className={cn(
           'group relative overflow-hidden border-border/40 shadow-sm hover:shadow-md transition-all duration-200 ease-out hover:-translate-y-[2px]',
+          'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-1',
           onClick && 'cursor-pointer',
           className
         )}
@@ -102,6 +103,17 @@ export function CitationCard({
           if (onClick) onClick(citation)
           else setIsExpanded(!isExpanded)
         }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            if (onClick) onClick(citation)
+            else setIsExpanded(!isExpanded)
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label={`Citation from ${citation.source}${isExpanded ? ', expanded' : ', collapsed'}`}
+        aria-expanded={isExpanded}
       >
         <CardHeader className="flex flex-row items-start gap-3.5 pb-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/30">

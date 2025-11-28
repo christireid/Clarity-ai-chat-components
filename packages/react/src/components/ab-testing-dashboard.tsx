@@ -287,9 +287,20 @@ export function ABTestingDashboard({
             <Card
               className={cn(
                 'cursor-pointer transition-colors',
+                'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-1',
                 isSelected && 'border-primary'
               )}
               onClick={() => handleSelectExperiment(experiment)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleSelectExperiment(experiment)
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`Select experiment ${experiment.experimentName}`}
+              aria-pressed={isSelected}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
