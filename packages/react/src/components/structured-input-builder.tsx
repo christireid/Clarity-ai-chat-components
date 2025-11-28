@@ -443,6 +443,9 @@ const TokenUsageBar = React.memo(function TokenUsageBar({
 /**
  * Structured Input Builder Component
  *
+ * **Architecture Layer**: Mid-Level (Composable Building Blocks)
+ * **Domain**: Token Optimization
+ *
  * A form-based component for building structured prompts with token optimization.
  * Helps users organize their inputs into sections that are optimally ordered
  * for LLM processing and KV cache efficiency.
@@ -454,6 +457,15 @@ const TokenUsageBar = React.memo(function TokenUsageBar({
  * - Section-based prompt formatting
  * - Validation support
  * - Accessible form controls
+ *
+ * **When to use:**
+ * - Building structured prompt interfaces for LLM applications
+ * - When you need token-aware form inputs
+ * - Creating prompt templates with organized sections
+ *
+ * **When NOT to use:**
+ * - Simple single-input chat interfaces (use ChatInput instead)
+ * - When token optimization is not a concern
  *
  * @example
  * ```tsx
