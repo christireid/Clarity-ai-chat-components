@@ -948,7 +948,18 @@ export function useStructuredInput(
 }
 
 /**
- * Pre-built field configurations for common use cases
+ * Pre-built field configurations for common use cases.
+ *
+ * **Important:** Each preset generates a field with a default `id` and `name`.
+ * If using the same preset multiple times, override `id` and `name` to avoid conflicts:
+ *
+ * @example
+ * ```tsx
+ * const fields = [
+ *   PRESET_FIELDS.task({ id: 'task1', name: 'task1', label: 'First Task' }),
+ *   PRESET_FIELDS.task({ id: 'task2', name: 'task2', label: 'Second Task' }),
+ * ]
+ * ```
  */
 export const PRESET_FIELDS = {
   /** Task description field */
