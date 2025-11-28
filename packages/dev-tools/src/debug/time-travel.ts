@@ -47,8 +47,8 @@ export class TimeTravelDebugger {
     const snapshot: StateSnapshot = {
       id: this.generateId(),
       timestamp: new Date(),
-      messages: JSON.parse(JSON.stringify(messages)), // Deep clone
-      config: JSON.parse(JSON.stringify(config)),
+      messages: structuredClone(messages),
+      config: structuredClone(config),
       metadata: metadata || {},
       label,
     }
