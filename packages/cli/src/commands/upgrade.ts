@@ -78,9 +78,11 @@ async function checkForUpdates(): Promise<PackageUpdate[]> {
 
       try {
         // Use execFileSync with arguments array (safe from injection)
+        // 30 second timeout prevents indefinite hangs if npm is unresponsive
         const result = execFileSync('npm', ['view', packageName, 'version'], {
           encoding: 'utf8',
           stdio: 'pipe',
+          timeout: 30000,
         })
 
         const latest = result.trim()
@@ -257,9 +259,11 @@ async function showChangelog(packageName: string, version: string) {
   try {
     // Try to fetch changelog from GitHub
     // Use execFileSync with arguments array (safe from injection)
+    // 30 second timeout prevents indefinite hangs if npm is unresponsive
     const result = execFileSync('npm', ['view', packageName, 'homepage'], {
       encoding: 'utf8',
       stdio: 'pipe',
+      timeout: 30000,
     })
 
     const homepage = result.trim()

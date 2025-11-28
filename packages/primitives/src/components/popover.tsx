@@ -337,8 +337,8 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
     }
   }
 
-  if (!open) return null
-
+  // Note: Do NOT add early return for !open here - AnimatePresence needs
+  // to stay mounted to animate the exit transition
   return (
     <PopoverPortal>
       <AnimatePresence>
