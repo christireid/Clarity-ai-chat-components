@@ -326,8 +326,13 @@ function iterativeCompress(
 /**
  * LLMLingua-2 Style Compressor
  *
- * Achieves 3-5x compression on RAG context while preserving semantic meaning.
- * Uses perplexity-inspired token importance scoring.
+ * Uses perplexity-inspired token importance scoring to compress text.
+ * Statistical fallback achieves ~1.5-2x compression while preserving semantic meaning.
+ *
+ * Performance notes:
+ * - Works well for texts up to ~10K tokens
+ * - For very large inputs (>10K tokens), consider chunking first
+ * - Importance calculation is O(n) where n = token count
  *
  * @example
  * ```typescript
@@ -336,7 +341,7 @@ function iterativeCompress(
  *
  * const result = await compressor.compress(ragContext)
  * console.log(`Compressed from ${result.originalTokens} to ${result.compressedTokens}`)
- * console.log(`Ratio: ${result.compressionRatio}`) // ~0.25
+ * console.log(`Ratio: ${result.compressionRatio}`) // ~0.5-0.7 with statistical method
  *
  * // Compress with preserved segments
  * const result2 = await compressor.compressWithSegments(text, [
@@ -697,17 +702,25 @@ export class LLMLinguaCompressor {
  *
  * @example
  * ```typescript
+ * // Simple usage (creates new compressor)
  * const compressed = await compressRAGContext(
  *   ['Document 1 text...', 'Document 2 text...'],
  *   { targetRatio: 0.25 }
  * )
+ *
+ * // With existing compressor (preserves stats across calls)
+ * const compressor = new LLMLinguaCompressor({ targetRatio: 0.25 })
+ * const batch1 = await compressRAGContext(docs1, {}, compressor)
+ * const batch2 = await compressRAGContext(docs2, {}, compressor)
+ * console.log(compressor.getStats()) // Shows combined stats
  * ```
  */
 export async function compressRAGContext(
   ragResults: string[],
-  config: LLMLinguaConfig = {}
+  config: LLMLinguaConfig = {},
+  existingCompressor?: LLMLinguaCompressor
 ): Promise<string[]> {
-  const compressor = new LLMLinguaCompressor(config)
+  const compressor = existingCompressor ?? new LLMLinguaCompressor(config)
 
   const compressedResults = await Promise.all(
     ragResults.map(async (text) => {

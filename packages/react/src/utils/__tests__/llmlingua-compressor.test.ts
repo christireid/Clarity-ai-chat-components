@@ -342,6 +342,23 @@ describe('compressRAGContext', () => {
     const compressed = await compressRAGContext(ragResults)
     expect(compressed.length).toBe(1)
   })
+
+  it('should use existing compressor when provided', async () => {
+    const compressor = new LLMLinguaCompressor({
+      targetRatio: 0.5,
+      minTokensToCompress: 10,
+    })
+
+    const batch1 = ['First document with some content to compress.']
+    const batch2 = ['Second document with different content to compress.']
+
+    await compressRAGContext(batch1, {}, compressor)
+    await compressRAGContext(batch2, {}, compressor)
+
+    const stats = compressor.getStats()
+    // Stats should accumulate across both calls
+    expect(stats.totalCompressions).toBe(2)
+  })
 })
 
 describe('intelligentCompress', () => {

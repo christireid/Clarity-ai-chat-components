@@ -60,7 +60,8 @@ export {
   type StructuredMessage,
 } from './context-ordering'
 
-// LLMLingua-2 Style Compression (3-5x RAG context compression)
+// LLMLingua-2 Style Compression (~1.5-2x RAG context compression)
+// Note: Statistical fallback achieves ~50-70% of original. Full ML model would achieve 3-5x.
 export {
   LLMLinguaCompressor,
   compressRAGContext,
