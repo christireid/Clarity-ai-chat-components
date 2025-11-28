@@ -60,6 +60,17 @@ export {
   type StructuredMessage,
 } from './context-ordering'
 
+// LLMLingua-2 Style Compression (3-5x RAG context compression)
+export {
+  LLMLinguaCompressor,
+  compressRAGContext,
+  intelligentCompress,
+  createLLMLinguaCompressor,
+  type LLMLinguaConfig,
+  type CompressionResult,
+  type CompressorStats,
+} from './llmlingua-compressor'
+
 // Chain-of-Thought (CoT) Optimization
 export {
   analyzeCoTPrompt,
