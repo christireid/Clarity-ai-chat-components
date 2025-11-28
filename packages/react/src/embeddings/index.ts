@@ -35,6 +35,7 @@ export * from './openai'
 export * from './cohere'
 export * from './cache'
 export * from './react'
+export * from './local-embedder'
 
 import type {
   EmbeddingProvider,

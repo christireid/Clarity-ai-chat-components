@@ -221,6 +221,17 @@ export {
   type OutputLimitResult,
 } from './utils/dynamic-output-limit'
 
+// Persistent Semantic Cache - IndexedDB-backed cache with similarity matching
+export {
+  PersistentSemanticCache,
+  createPersistentSemanticCache,
+  usePersistentSemanticCacheConfig,
+  type SemanticCacheConfig,
+  type CachedResponse,
+  type SemanticCacheStats,
+  type CacheCheckResult,
+} from './utils/semantic-cache-persistent'
+
 // Original Token Optimization Hook
 export {
   useTokenOptimization,
