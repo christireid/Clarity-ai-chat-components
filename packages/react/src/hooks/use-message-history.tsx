@@ -255,8 +255,9 @@ export function useMessageHistory(
     }
   }, [conversationId, loadConversation])
 
-  // Update ref when load changes
-  React.useEffect(() => {
+  // Use useLayoutEffect to ensure ref is always up-to-date before useEffect runs
+  // This prevents stale closures when the load effect runs
+  React.useLayoutEffect(() => {
     loadRef.current = load
   }, [load])
 
