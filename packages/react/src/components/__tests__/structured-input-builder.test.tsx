@@ -1101,8 +1101,63 @@ describe('edge cases', () => {
 
     // IDs should be different (no collision)
     expect(input1.id).not.toBe(input2.id)
-    // Both should start with 'field-f' (prepended f for digit-starting IDs)
-    expect(input1.id).toMatch(/^field-f1/)
-    expect(input2.id).toMatch(/^field-f2/)
+    // Both should start with 'field-f' and contain hash + original sanitized ID
+    expect(input1.id).toMatch(/^field-f[a-z0-9]+-1abc$/)
+    expect(input2.id).toMatch(/^field-f[a-z0-9]+-2abc$/)
+  })
+
+  it('should not cause ID collisions for special character-only IDs', () => {
+    const onChange = vi.fn()
+    const fields: StructuredInputField[] = [
+      { id: '!!!', name: 'field1', label: 'Field 1', type: 'text', required: false },
+      { id: '@@@', name: 'field2', label: 'Field 2', type: 'text', required: false },
+      { id: '###', name: 'field3', label: 'Field 3', type: 'text', required: false },
+    ]
+
+    render(
+      <StructuredInputBuilder
+        fields={fields}
+        values={{}}
+        onChange={onChange}
+      />
+    )
+
+    const input1 = screen.getByLabelText(/field 1/i)
+    const input2 = screen.getByLabelText(/field 2/i)
+    const input3 = screen.getByLabelText(/field 3/i)
+
+    // All IDs should be different (no collision from special chars)
+    expect(input1.id).not.toBe(input2.id)
+    expect(input2.id).not.toBe(input3.id)
+    expect(input1.id).not.toBe(input3.id)
+
+    // All should be valid HTML IDs (start with letter)
+    expect(input1.id).toMatch(/^field-f[a-z0-9]+$/)
+    expect(input2.id).toMatch(/^field-f[a-z0-9]+$/)
+    expect(input3.id).toMatch(/^field-f[a-z0-9]+$/)
+  })
+
+  it('should warn about duplicate field IDs in development mode', () => {
+    const onChange = vi.fn()
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    const fields: StructuredInputField[] = [
+      { id: 'duplicate', name: 'field1', label: 'Field 1', type: 'text', required: false },
+      { id: 'duplicate', name: 'field2', label: 'Field 2', type: 'text', required: false },
+    ]
+
+    render(
+      <StructuredInputBuilder
+        fields={fields}
+        values={{}}
+        onChange={onChange}
+      />
+    )
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Duplicate field IDs detected: duplicate')
+    )
+
+    warnSpy.mockRestore()
   })
 })

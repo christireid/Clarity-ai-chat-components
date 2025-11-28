@@ -190,16 +190,35 @@ function estimateTokens(text: string): number {
 }
 
 /**
+ * Simple hash function for generating unique suffixes
+ * Returns a short alphanumeric string derived from input
+ */
+function simpleHash(str: string): string {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i)
+    hash = hash & hash // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString(36).slice(0, 4)
+}
+
+/**
  * Sanitize a string for use as an HTML ID
- * Replaces invalid characters with hyphens and ensures it starts with a letter
+ * Replaces invalid characters with hyphens and ensures it starts with a letter.
+ * Uses a hash suffix to prevent collisions when different inputs sanitize to the same result.
  */
 function sanitizeHtmlId(id: string): string {
   if (!id) return 'field-empty'
-  // Replace spaces and invalid chars with hyphens
+  // Replace invalid chars with hyphens
   let sanitized = id.replace(/[^a-zA-Z0-9_-]/g, '-')
-  // Prepend 'f' if doesn't start with letter (preserve original char to avoid collisions)
-  if (sanitized && !/^[a-zA-Z]/.test(sanitized)) {
-    sanitized = 'f' + sanitized
+  // Collapse consecutive hyphens to single hyphen
+  sanitized = sanitized.replace(/-+/g, '-')
+  // Remove leading/trailing hyphens
+  sanitized = sanitized.replace(/^-+|-+$/g, '')
+  // If empty after sanitization (all special chars) or starts with non-letter, add hash prefix
+  if (!sanitized || !/^[a-zA-Z]/.test(sanitized)) {
+    const hash = simpleHash(id)
+    sanitized = sanitized ? `f${hash}-${sanitized}` : `f${hash}`
   }
   return sanitized || 'field-fallback'
 }
@@ -577,6 +596,20 @@ export function StructuredInputBuilder({
   title,
   description,
 }: StructuredInputBuilderProps) {
+  // Warn about duplicate field IDs in development mode
+  React.useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      const ids = fields.map((f) => f.id)
+      const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
+      if (duplicates.length > 0) {
+        console.warn(
+          `[StructuredInputBuilder] Duplicate field IDs detected: ${[...new Set(duplicates)].join(', ')}. ` +
+          `Each field must have a unique ID to avoid accessibility and rendering issues.`
+        )
+      }
+    }
+  }, [fields])
+
   // Calculate token breakdown
   const tokenBreakdown = React.useMemo((): TokenBreakdown[] => {
     return fields.map((field) => {
