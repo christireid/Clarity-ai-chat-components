@@ -118,6 +118,15 @@ export function useMessageHistory(
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
+  // Track mounted state to prevent state updates after unmount
+  const mountedRef = React.useRef(true)
+  React.useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
+
   const { saveConversation, loadConversation, isAvailable } = useConversationStorage({
     maxMessages: maxHistorySize,
     autoCleanup: true,
@@ -183,8 +192,10 @@ export function useMessageHistory(
       // In a real implementation, this would fetch older messages from the server
       // For now, we'll just simulate loading
       await new Promise((resolve) => setTimeout(resolve, 500))
+      if (!mountedRef.current) return
       setIsLoading(false)
     } catch (err) {
+      if (!mountedRef.current) return
       setError(err as Error)
       setIsLoading(false)
     }
@@ -196,8 +207,10 @@ export function useMessageHistory(
     try {
       // In a real implementation, this would fetch newer messages from the server
       await new Promise((resolve) => setTimeout(resolve, 500))
+      if (!mountedRef.current) return
       setIsLoading(false)
     } catch (err) {
+      if (!mountedRef.current) return
       setError(err as Error)
       setIsLoading(false)
     }
@@ -232,8 +245,10 @@ export function useMessageHistory(
     setError(null)
     try {
       await saveConversation(conversationId, messages)
+      if (!mountedRef.current) return
       setIsLoading(false)
     } catch (err) {
+      if (!mountedRef.current) return
       setError(err as Error)
       setIsLoading(false)
       throw err
@@ -245,11 +260,14 @@ export function useMessageHistory(
     setError(null)
     try {
       const loaded = await loadConversation(conversationId)
+      // Only update state if still mounted (prevents state update after unmount)
+      if (!mountedRef.current) return
       if (loaded) {
         setMessages(loaded)
       }
       setIsLoading(false)
     } catch (err) {
+      if (!mountedRef.current) return
       setError(err as Error)
       setIsLoading(false)
     }
@@ -270,6 +288,7 @@ export function useMessageHistory(
   }, [conversationId, isAvailable]) // load accessed via ref
 
   const clear = React.useCallback(async () => {
+    if (!mountedRef.current) return
     setIsLoading(true)
     setError(null)
     try {

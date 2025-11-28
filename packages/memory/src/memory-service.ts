@@ -736,6 +736,11 @@ export class MemoryService {
     const batchSize = 10
     const batch = candidatesForSummarization.slice(0, batchSize)
 
+    // Track metrics for this cycle
+    let summarizedCount = 0
+    let bytesSaved = 0
+    let skippedCount = 0
+
     // Summarize each memory
     for (const memory of batch) {
       try {
@@ -755,11 +760,16 @@ export class MemoryService {
             memory: { ...memory, compressed: summary },
           })
 
+          summarizedCount++
+          bytesSaved += memory.content.length - summary.length
+
           if (this.config.debug) {
             console.log(
               `Summarized memory ${memory.id}: ${memory.content.length} -> ${summary.length} chars`
             )
           }
+        } else {
+          skippedCount++
         }
       } catch (error) {
         if (this.config.debug) {
@@ -767,6 +777,37 @@ export class MemoryService {
         }
       }
     }
+
+    // Log cycle metrics
+    if (this.config.debug && (summarizedCount > 0 || batch.length > 0)) {
+      console.log(
+        `[MemoryService] Summarization cycle complete: ` +
+          `${summarizedCount}/${batch.length} memories compressed, ` +
+          `${bytesSaved} bytes saved, ` +
+          `${skippedCount} skipped (insufficient compression), ` +
+          `${candidatesForSummarization.length - batch.length} queued for next cycle`
+      )
+    }
+  }
+
+  /**
+   * Split text into sentences, handling common abbreviations
+   */
+  private splitIntoSentences(text: string): string[] {
+    // Common abbreviations that shouldn't trigger sentence splits
+    const abbreviations = /\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|vs|etc|e\.g|i\.e|Inc|Ltd|Corp|Co|U\.S|U\.K)\./gi
+
+    // Temporarily replace abbreviation periods with placeholder
+    const placeholder = '<<<DOT>>>'
+    const protected_ = text.replace(abbreviations, (match) => match.replace(/\./g, placeholder))
+
+    // Split on sentence-ending punctuation followed by space or end
+    const sentences = protected_
+      .split(/(?<=[.!?])\s+/)
+      .map((s) => s.replace(new RegExp(placeholder, 'g'), '.').trim())
+      .filter((s) => s.length > 10)
+
+    return sentences
   }
 
   /**
@@ -774,11 +815,8 @@ export class MemoryService {
    * Uses extractive summarization to preserve key information
    */
   private createSummary(content: string, maxLength: number = 200): string {
-    // Split into sentences
-    const sentences = content
-      .split(/[.!?]+/)
-      .map((s) => s.trim())
-      .filter((s) => s.length > 10)
+    // Split into sentences using abbreviation-aware splitter
+    const sentences = this.splitIntoSentences(content)
 
     if (sentences.length <= 2) {
       // Content is already short, just truncate if needed
