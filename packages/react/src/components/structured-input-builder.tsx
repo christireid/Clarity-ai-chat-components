@@ -195,10 +195,12 @@ function estimateTokens(text: string): number {
  */
 function sanitizeHtmlId(id: string): string {
   if (!id) return 'field-empty'
-  // Replace spaces and invalid chars with hyphens, ensure starts with letter
-  const sanitized = id
-    .replace(/[^a-zA-Z0-9_-]/g, '-')
-    .replace(/^[^a-zA-Z]/, 'f-')
+  // Replace spaces and invalid chars with hyphens
+  let sanitized = id.replace(/[^a-zA-Z0-9_-]/g, '-')
+  // Prepend 'f' if doesn't start with letter (preserve original char to avoid collisions)
+  if (sanitized && !/^[a-zA-Z]/.test(sanitized)) {
+    sanitized = 'f' + sanitized
+  }
   return sanitized || 'field-fallback'
 }
 

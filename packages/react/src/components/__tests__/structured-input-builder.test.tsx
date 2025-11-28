@@ -1010,4 +1010,29 @@ describe('edge cases', () => {
     expect(input.id).not.toContain('!')
     expect(input.id).toMatch(/^field-[a-zA-Z]/)
   })
+
+  it('should not cause ID collisions for IDs starting with different digits', () => {
+    const onChange = vi.fn()
+    const fields: StructuredInputField[] = [
+      { id: '1abc', name: 'field1', label: 'Field 1', type: 'text', required: false },
+      { id: '2abc', name: 'field2', label: 'Field 2', type: 'text', required: false },
+    ]
+
+    render(
+      <StructuredInputBuilder
+        fields={fields}
+        values={{}}
+        onChange={onChange}
+      />
+    )
+
+    const input1 = screen.getByLabelText(/field 1/i)
+    const input2 = screen.getByLabelText(/field 2/i)
+
+    // IDs should be different (no collision)
+    expect(input1.id).not.toBe(input2.id)
+    // Both should start with 'field-f' (prepended f for digit-starting IDs)
+    expect(input1.id).toMatch(/^field-f1/)
+    expect(input2.id).toMatch(/^field-f2/)
+  })
 })
