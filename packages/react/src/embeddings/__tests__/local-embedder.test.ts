@@ -28,6 +28,36 @@ describe('LocalEmbedder', () => {
       })
       expect(embedder).toBeDefined()
     })
+
+    it('should throw on invalid dimensions', () => {
+      expect(() => {
+        new LocalEmbedder({ dimensions: 0 })
+      }).toThrow('dimensions must be positive')
+
+      expect(() => {
+        new LocalEmbedder({ dimensions: -10 })
+      }).toThrow('dimensions must be positive')
+    })
+
+    it('should throw on invalid batchSize', () => {
+      expect(() => {
+        new LocalEmbedder({ batchSize: 0 })
+      }).toThrow('batchSize must be positive')
+
+      expect(() => {
+        new LocalEmbedder({ batchSize: -5 })
+      }).toThrow('batchSize must be positive')
+    })
+
+    it('should throw on invalid maxCacheSize', () => {
+      expect(() => {
+        new LocalEmbedder({ maxCacheSize: 0 })
+      }).toThrow('maxCacheSize must be positive')
+
+      expect(() => {
+        new LocalEmbedder({ maxCacheSize: -100 })
+      }).toThrow('maxCacheSize must be positive')
+    })
   })
 
   describe('embed', () => {
@@ -78,6 +108,35 @@ describe('LocalEmbedder', () => {
 
       // Both should produce the same cache key (normalized)
       expect(result2.cached).toBe(true)
+    })
+
+    it('should respect maxCacheSize and evict oldest entries', async () => {
+      const embedder = new LocalEmbedder({
+        dimensions: 64,
+        maxCacheSize: 3,
+      })
+
+      // Add 3 entries (at max)
+      await embedder.embed('First')
+      await embedder.embed('Second')
+      await embedder.embed('Third')
+      expect(embedder.getStats().cacheSize).toBe(3)
+
+      // Add 4th entry - should evict the oldest (First)
+      await embedder.embed('Fourth')
+      expect(embedder.getStats().cacheSize).toBe(3)
+
+      // Third and Fourth should still be cached
+      const result3 = await embedder.embed('Third')
+      expect(result3.cached).toBe(true)
+
+      const result4 = await embedder.embed('Fourth')
+      expect(result4.cached).toBe(true)
+
+      // First should no longer be cached (was evicted)
+      // Note: Re-requesting First will evict Second (FIFO)
+      const result1 = await embedder.embed('First')
+      expect(result1.cached).toBe(false)
     })
 
     it('should handle empty text', async () => {

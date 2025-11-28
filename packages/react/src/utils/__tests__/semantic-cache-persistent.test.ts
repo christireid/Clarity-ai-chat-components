@@ -135,6 +135,71 @@ describe('PersistentSemanticCache', () => {
 
       expect(cache).toBeDefined()
     })
+
+    it('should throw on invalid maxEntries', () => {
+      expect(() => {
+        new PersistentSemanticCache({
+          embedFunction: mockEmbedFunction,
+          maxEntries: 0,
+        })
+      }).toThrow('maxEntries must be positive')
+
+      expect(() => {
+        new PersistentSemanticCache({
+          embedFunction: mockEmbedFunction,
+          maxEntries: -10,
+        })
+      }).toThrow('maxEntries must be positive')
+    })
+
+    it('should throw on negative ttlMs', () => {
+      expect(() => {
+        new PersistentSemanticCache({
+          embedFunction: mockEmbedFunction,
+          ttlMs: -1000,
+        })
+      }).toThrow('ttlMs cannot be negative')
+    })
+
+    it('should allow ttlMs of 0 (no expiry)', () => {
+      const cache = new PersistentSemanticCache({
+        embedFunction: mockEmbedFunction,
+        ttlMs: 0,
+      })
+      expect(cache).toBeDefined()
+    })
+
+    it('should throw on invalid similarityThreshold', () => {
+      expect(() => {
+        new PersistentSemanticCache({
+          embedFunction: mockEmbedFunction,
+          similarityThreshold: -0.1,
+        })
+      }).toThrow('similarityThreshold must be between 0 and 1')
+
+      expect(() => {
+        new PersistentSemanticCache({
+          embedFunction: mockEmbedFunction,
+          similarityThreshold: 1.5,
+        })
+      }).toThrow('similarityThreshold must be between 0 and 1')
+    })
+
+    it('should accept boundary similarityThreshold values', () => {
+      expect(() => {
+        new PersistentSemanticCache({
+          embedFunction: mockEmbedFunction,
+          similarityThreshold: 0,
+        })
+      }).not.toThrow()
+
+      expect(() => {
+        new PersistentSemanticCache({
+          embedFunction: mockEmbedFunction,
+          similarityThreshold: 1,
+        })
+      }).not.toThrow()
+    })
   })
 
   describe('createPersistentSemanticCache', () => {

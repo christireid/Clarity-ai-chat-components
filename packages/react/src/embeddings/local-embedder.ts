@@ -78,17 +78,11 @@ const DEFAULT_CONFIG: Required<LocalEmbedderConfig> = {
 }
 
 /**
- * Simple hash function for cache keys
+ * Normalize text for cache keys
+ * Uses the full normalized text to avoid hash collisions
  */
-function hashText(text: string): string {
-  const normalized = text.toLowerCase().trim()
-  let hash = 0
-  for (let i = 0; i < normalized.length; i++) {
-    const char = normalized.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash
-  }
-  return hash.toString(36)
+function normalizeTextForCache(text: string): string {
+  return text.toLowerCase().trim().replace(/\s+/g, ' ')
 }
 
 /**
@@ -233,8 +227,14 @@ export class LocalEmbedder {
       }
 
       // Attempt to load TensorFlow.js dynamically
-      // This allows tree-shaking when not used
-      const tf = await import('@tensorflow/tfjs').catch(() => null)
+      // Using variable to avoid static analysis by bundlers (package is optional)
+      const tfPackage = '@tensorflow/tfjs'
+      const usePackage = '@tensorflow-models/universal-sentence-encoder'
+
+      // Dynamic import with runtime-determined module name
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval
+      const dynamicImport = new Function('moduleName', 'return import(moduleName)')
+      const tf = await dynamicImport(tfPackage).catch(() => null)
 
       if (!tf) {
         // TensorFlow not available, use fallback
@@ -242,9 +242,7 @@ export class LocalEmbedder {
       }
 
       // Try to load Universal Sentence Encoder
-      const use = await import('@tensorflow-models/universal-sentence-encoder').catch(
-        () => null
-      )
+      const use = await dynamicImport(usePackage).catch(() => null)
 
       if (use) {
         // TensorFlow is available but model loading is not yet implemented
@@ -281,7 +279,7 @@ export class LocalEmbedder {
    */
   async embed(text: string): Promise<EmbeddingResult> {
     const startTime = performance.now()
-    const cacheKey = hashText(text)
+    const cacheKey = normalizeTextForCache(text)
 
     // Check cache first
     if (this.config.cacheEmbeddings && this.cache.has(cacheKey)) {
