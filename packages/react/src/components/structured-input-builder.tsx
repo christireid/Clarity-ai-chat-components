@@ -598,7 +598,7 @@ export function StructuredInputBuilder({
 }: StructuredInputBuilderProps) {
   // Warn about duplicate field IDs in development mode
   React.useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env['NODE_ENV'] !== 'production') {
       const ids = fields.map((f) => f.id)
       const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
       if (duplicates.length > 0) {
