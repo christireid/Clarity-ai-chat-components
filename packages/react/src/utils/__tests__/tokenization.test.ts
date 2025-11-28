@@ -7,7 +7,7 @@
  * - model-pricing.ts: Cost calculation, cache savings, model comparison
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import {
   countTokens,
   countConversationTokens,
@@ -232,10 +232,11 @@ describe('Accurate Counter', () => {
     })
 
     it('evicts oldest entries when cache is full', async () => {
-      // Fill cache with entries
-      for (let i = 0; i < 1001; i++) {
-        await countTokens(`text-${i}`, { model: 'gpt-4', cache: true })
-      }
+      // Fill cache with entries using parallel execution for speed
+      const promises = Array.from({ length: 1001 }, (_, i) =>
+        countTokens(`text-${i}`, { model: 'gpt-4', cache: true })
+      )
+      await Promise.all(promises)
 
       const stats = getTokenizerStats()
       expect(stats.cacheSize).toBeLessThanOrEqual(1000)
