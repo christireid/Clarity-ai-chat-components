@@ -198,4 +198,43 @@ describe('Input Component', () => {
       expect(screen.getByRole('textbox')).toBeRequired()
     })
   })
+
+  describe('Auto-generated ID', () => {
+    it('should generate id when not provided', () => {
+      render(<Input />)
+      const input = screen.getByRole('textbox')
+      expect(input.id).toBeTruthy()
+    })
+
+    it('should use provided id when given', () => {
+      render(<Input id="my-input" />)
+      const input = screen.getByRole('textbox')
+      expect(input.id).toBe('my-input')
+    })
+
+    it('should link error message with generated id', () => {
+      render(<Input error="Error message" />)
+      const input = screen.getByRole('textbox')
+      const errorId = `${input.id}-error`
+      expect(input).toHaveAttribute('aria-describedby', errorId)
+    })
+
+    it('should link error message with provided id', () => {
+      render(<Input id="email" error="Invalid email" />)
+      const input = screen.getByRole('textbox')
+      expect(input).toHaveAttribute('aria-describedby', 'email-error')
+    })
+
+    it('should set aria-invalid when error is present', () => {
+      render(<Input error="Required field" />)
+      const input = screen.getByRole('textbox')
+      expect(input).toHaveAttribute('aria-invalid', 'true')
+    })
+
+    it('should not set aria-invalid when no error', () => {
+      render(<Input />)
+      const input = screen.getByRole('textbox')
+      expect(input).not.toHaveAttribute('aria-invalid')
+    })
+  })
 })

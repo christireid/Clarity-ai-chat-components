@@ -297,6 +297,7 @@ export function useMessageHistory(
       // Optionally clear from storage
       setIsLoading(false)
     } catch (err) {
+      if (!mountedRef.current) return
       setError(err as Error)
       setIsLoading(false)
     }
