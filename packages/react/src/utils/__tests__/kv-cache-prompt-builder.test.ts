@@ -121,12 +121,15 @@ describe('buildKVCacheOptimizedPrompt', () => {
 
   describe('trimming behavior', () => {
     it('should trim low priority segments to fit budget', () => {
+      // Use content large enough to exceed budget and require trimming
+      // Token estimation is ~length/4, so 400 chars ≈ 100 tokens
+      // With budget of 80 tokens, this should force trimming
       const segments: PromptSegment[] = [
         createSystemSegment('sys', 'System'),
-        createHistorySegment('h1', 'Old message 1', 'user', 'low'),
-        createHistorySegment('h2', 'Old message 2', 'assistant', 'low'),
-        createHistorySegment('h3', 'Recent message', 'user', 'normal'),
-        createUserSegment('user', 'Current query'),
+        createHistorySegment('h1', 'A'.repeat(400), 'user', 'low'),
+        createHistorySegment('h2', 'B'.repeat(400), 'assistant', 'low'),
+        createHistorySegment('h3', 'C'.repeat(200), 'user', 'normal'),
+        createUserSegment('user', 'Query'),
       ]
 
       const result = buildKVCacheOptimizedPrompt(segments, {
@@ -134,13 +137,13 @@ describe('buildKVCacheOptimizedPrompt', () => {
         reservedForOutput: 20,
       })
 
-      // Some history should be trimmed
+      // Some history should be trimmed due to tight budget
       expect(result.trimmedSegments.length).toBeGreaterThan(0)
 
       // Must-have segments should remain
       const contents = result.messages.map(m => m.content)
       expect(contents).toContain('System')
-      expect(contents).toContain('Current query')
+      expect(contents).toContain('Query')
     })
 
     it('should trim lowest priority first', () => {

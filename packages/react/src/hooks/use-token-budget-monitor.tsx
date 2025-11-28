@@ -199,8 +199,8 @@ function createInitialUsage(config: TokenBudgetConfig): TokenUsage {
  * ```
  */
 export function useTokenBudgetMonitor(config: TokenBudgetConfig): TokenBudgetMonitorReturn {
-  // Validate config
-  if (process.env.NODE_ENV !== 'production') {
+  // Validate config in development
+  if (process.env['NODE_ENV'] !== 'production') {
     if (config.maxInputTokens <= 0) {
       console.warn('[useTokenBudgetMonitor] maxInputTokens must be positive')
     }

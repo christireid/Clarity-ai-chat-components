@@ -419,14 +419,14 @@ export function createModelOutputConfig(
   inputTokenCount: number,
   overrides?: Partial<Omit<OutputLimitConfig, 'modelCapacity' | 'inputTokenCount'>>
 ): OutputLimitConfig {
-  const modelCapacities: Record<string, number> = {
+  const modelCapacities = {
     'gpt-4': 8192,
     'gpt-4-turbo': 128000,
     'gpt-4o': 128000,
     'claude-3-opus': 200000,
     'claude-3-5-sonnet': 200000,
     'claude-3-haiku': 200000,
-  }
+  } as const
 
   return {
     modelCapacity: modelCapacities[model],
