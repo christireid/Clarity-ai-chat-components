@@ -302,9 +302,6 @@ export function buildKVCacheOptimizedPrompt(
   const historySegments = sortedOptional.filter(s => s.type === 'history')
   const nonHistoryOptional = sortedOptional.filter(s => s.type !== 'history')
 
-  // Calculate total history tokens available
-  const totalHistoryTokens = historySegments.reduce((sum, s) => sum + s.tokenCount!, 0)
-
   // Greedily include optional segments that fit
   const includedOptional: PromptSegment[] = []
   let includedHistoryTokens = 0
