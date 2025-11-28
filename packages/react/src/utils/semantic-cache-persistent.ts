@@ -176,6 +176,18 @@ export class PersistentSemanticCache {
       throw new Error('embedFunction is required for PersistentSemanticCache')
     }
 
+    // Validate optional config values
+    if (config.maxEntries !== undefined && config.maxEntries <= 0) {
+      throw new Error('maxEntries must be positive')
+    }
+    if (config.ttlMs !== undefined && config.ttlMs < 0) {
+      throw new Error('ttlMs cannot be negative')
+    }
+    if (config.similarityThreshold !== undefined &&
+        (config.similarityThreshold < 0 || config.similarityThreshold > 1)) {
+      throw new Error('similarityThreshold must be between 0 and 1')
+    }
+
     this.config = {
       dbName: config.dbName ?? DEFAULT_CONFIG.dbName,
       storeName: config.storeName ?? DEFAULT_CONFIG.storeName,
@@ -194,7 +206,7 @@ export class PersistentSemanticCache {
 
     if (this.dbPromise) return this.dbPromise
 
-    this.dbPromise = new Promise((resolve, reject) => {
+    this.dbPromise = new Promise<IDBDatabase>((resolve, reject) => {
       // Check if IndexedDB is available
       if (typeof indexedDB === 'undefined') {
         reject(new Error('IndexedDB is not available'))
@@ -225,6 +237,11 @@ export class PersistentSemanticCache {
           store.createIndex('lastAccessed', 'lastAccessed', { unique: false })
         }
       }
+    })
+
+    // Reset dbPromise on failure so next call can retry
+    this.dbPromise.catch(() => {
+      this.dbPromise = null
     })
 
     return this.dbPromise
@@ -340,7 +357,6 @@ export class PersistentSemanticCache {
     try {
       const db = await this.getDb()
       const entries = await this.getAllEntries(db)
-      const now = Date.now()
       let pruned = 0
 
       for (const entry of entries) {

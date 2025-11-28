@@ -22,6 +22,8 @@ export interface LocalEmbedderConfig {
   batchSize?: number
   /** Cache generated embeddings (default: true) */
   cacheEmbeddings?: boolean
+  /** Maximum cache size to prevent unbounded growth (default: 10000) */
+  maxCacheSize?: number
   /** Pre-load model on initialization (default: false) */
   warmupOnLoad?: boolean
   /** Use fallback if TensorFlow unavailable (default: true) */
@@ -70,6 +72,7 @@ const DEFAULT_CONFIG: Required<LocalEmbedderConfig> = {
   dimensions: 128, // Use smaller dimension for fallback
   batchSize: 32,
   cacheEmbeddings: true,
+  maxCacheSize: 10000,
   warmupOnLoad: false,
   useFallback: true,
 }
@@ -188,6 +191,17 @@ export class LocalEmbedder {
   }
 
   constructor(config: LocalEmbedderConfig = {}) {
+    // Validate config
+    if (config.dimensions !== undefined && config.dimensions <= 0) {
+      throw new Error('dimensions must be positive')
+    }
+    if (config.batchSize !== undefined && config.batchSize <= 0) {
+      throw new Error('batchSize must be positive')
+    }
+    if (config.maxCacheSize !== undefined && config.maxCacheSize <= 0) {
+      throw new Error('maxCacheSize must be positive')
+    }
+
     this.config = {
       ...DEFAULT_CONFIG,
       ...config,
@@ -202,6 +216,12 @@ export class LocalEmbedder {
 
   /**
    * Initialize the embedder (load TensorFlow model if available)
+   *
+   * Note: TensorFlow.js integration is prepared but not fully implemented.
+   * The fallback embedding is always used for now. To enable TensorFlow:
+   * 1. Install @tensorflow/tfjs and @tensorflow-models/universal-sentence-encoder
+   * 2. Uncomment the model loading code below
+   * 3. Implement generateTensorFlowEmbedding()
    */
   async initialize(): Promise<void> {
     // Try to dynamically import TensorFlow.js
@@ -226,14 +246,14 @@ export class LocalEmbedder {
         () => null
       )
 
-      if (use && this.config.modelUrl) {
-        // Load custom model
-        // await use.load({ modelUrl: this.config.modelUrl })
-        this.modelLoaded = true
-      } else if (use) {
-        // Load default USE model
-        // await use.load()
-        this.modelLoaded = true
+      if (use) {
+        // TensorFlow is available but model loading is not yet implemented
+        // To enable: uncomment below and implement generateTensorFlowEmbedding()
+        // const model = this.config.modelUrl
+        //   ? await use.load({ modelUrl: this.config.modelUrl })
+        //   : await use.load()
+        // this.model = model
+        // this.modelLoaded = true
       }
     } catch {
       // TensorFlow loading failed, use fallback
@@ -298,8 +318,16 @@ export class LocalEmbedder {
     this.stats.totalGenerated++
     this.stats.totalGenerationTimeMs += generationTimeMs
 
-    // Cache the embedding
+    // Cache the embedding (with size limit enforcement)
     if (this.config.cacheEmbeddings) {
+      // Evict oldest entries if cache is full
+      if (this.cache.size >= this.config.maxCacheSize) {
+        // Remove first (oldest) entry
+        const firstKey = this.cache.keys().next().value
+        if (firstKey !== undefined) {
+          this.cache.delete(firstKey)
+        }
+      }
       this.cache.set(cacheKey, embedding)
     }
 
