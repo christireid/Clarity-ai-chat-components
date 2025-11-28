@@ -350,6 +350,57 @@ describe('HistoryManager', () => {
       const individualTokenCount = screen.queryByText(/^\d+ tokens$/)
       expect(individualTokenCount).toBeNull()
     })
+
+    it('should hide delete button when allowIndividualDelete is false', () => {
+      const messages = createMessages(2)
+      const onChange = vi.fn()
+
+      render(
+        <HistoryManager
+          messages={messages}
+          onMessagesChange={onChange}
+          maxTokens={4096}
+          allowIndividualDelete={false}
+        />
+      )
+
+      // Delete buttons should not be present
+      const deleteButtons = screen.queryAllByLabelText(/Delete message from/)
+      expect(deleteButtons.length).toBe(0)
+    })
+
+    it('should clean up stale selectedIds when messages change', () => {
+      const initialMessages = createMessages(5)
+      const onChange = vi.fn()
+
+      const { rerender } = render(
+        <HistoryManager
+          messages={initialMessages}
+          onMessagesChange={onChange}
+          maxTokens={4096}
+        />
+      )
+
+      // Select first two messages
+      const checkboxes = screen.getAllByRole('checkbox')
+      fireEvent.click(checkboxes[1]!)
+      fireEvent.click(checkboxes[2]!)
+
+      expect(screen.getByText('2 of 5 selected')).toBeDefined()
+
+      // Parent removes those messages (simulating external change)
+      const remainingMessages = initialMessages.slice(2)
+      rerender(
+        <HistoryManager
+          messages={remainingMessages}
+          onMessagesChange={onChange}
+          maxTokens={4096}
+        />
+      )
+
+      // Selection should be cleaned up
+      expect(screen.getByText('0 of 3 selected')).toBeDefined()
+    })
   })
 })
 
@@ -409,6 +460,34 @@ describe('TokenUsageBar', () => {
     )
 
     expect(screen.getByText('100.0%')).toBeDefined()
+  })
+
+  it('should handle max=0 without division by zero', () => {
+    render(
+      <TokenUsageBar
+        current={500}
+        max={0}
+        warningThreshold={0.8}
+        criticalThreshold={0.95}
+      />
+    )
+
+    // Should not crash and should show some percentage
+    expect(screen.getByRole('progressbar')).toBeDefined()
+  })
+
+  it('should handle warningThreshold >= criticalThreshold gracefully', () => {
+    render(
+      <TokenUsageBar
+        current={900}
+        max={1000}
+        warningThreshold={0.95}
+        criticalThreshold={0.8}
+      />
+    )
+
+    // Should not crash - component should handle this edge case
+    expect(screen.getByRole('progressbar')).toBeDefined()
   })
 })
 

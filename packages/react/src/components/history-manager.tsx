@@ -61,6 +61,8 @@ interface HistoryMessageRowProps {
   onDelete: () => void
   compact?: boolean
   showTokenCount?: boolean
+  /** Whether to show delete button (default: true) */
+  showDeleteButton?: boolean
 }
 
 /**
@@ -125,8 +127,12 @@ export function TokenUsageBar({
   warningThreshold,
   criticalThreshold,
 }: TokenUsageBarProps) {
-  const percentage = Math.min((current / max) * 100, 100)
-  const isWarning = percentage >= warningThreshold * 100
+  // Guard against division by zero
+  const safeMax = max > 0 ? max : 1
+  const percentage = Math.min((current / safeMax) * 100, 100)
+  // Ensure warning < critical for sensible behavior
+  const effectiveWarning = Math.min(warningThreshold, criticalThreshold - 0.01)
+  const isWarning = percentage >= effectiveWarning * 100
   const isCritical = percentage >= criticalThreshold * 100
 
   const getBarColor = () => {
@@ -183,6 +189,7 @@ export function HistoryMessageRow({
   onDelete,
   compact = false,
   showTokenCount = true,
+  showDeleteButton = true,
 }: HistoryMessageRowProps) {
   const roleInfo = getRoleInfo(message.role)
   const maxContentLength = compact ? 50 : 120
@@ -214,7 +221,13 @@ export function HistoryMessageRow({
           {/* Timestamp */}
           {message.timestamp && (
             <span className="text-xs text-muted-foreground">
-              {message.timestamp.toLocaleTimeString()}
+              {(() => {
+                // Handle both Date objects and ISO strings (from JSON)
+                const date = message.timestamp instanceof Date
+                  ? message.timestamp
+                  : new Date(message.timestamp)
+                return isNaN(date.getTime()) ? '' : date.toLocaleTimeString()
+              })()}
             </span>
           )}
 
@@ -232,20 +245,22 @@ export function HistoryMessageRow({
         </p>
       </div>
 
-      {/* Delete button */}
-      <button
-        onClick={onDelete}
-        className={cn(
-          'p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10',
-          'opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity',
-          'focus:outline-none focus:ring-2 focus:ring-destructive/50'
-        )}
-        aria-label={`Delete message from ${message.role}`}
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-        </svg>
-      </button>
+      {/* Delete button - only shown when allowed */}
+      {showDeleteButton && (
+        <button
+          onClick={onDelete}
+          className={cn(
+            'p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10',
+            'opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity',
+            'focus:outline-none focus:ring-2 focus:ring-destructive/50'
+          )}
+          aria-label={`Delete message from ${message.role}`}
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      )}
     </div>
   )
 }
@@ -265,6 +280,21 @@ export function HistoryToolbar({
 }: HistoryToolbarProps) {
   const [showKeepLastOptions, setShowKeepLastOptions] = React.useState(false)
   const [showClearConfirm, setShowClearConfirm] = React.useState(false)
+  const dropdownRef = React.useRef<HTMLDivElement>(null)
+
+  // Close dropdown on outside click
+  React.useEffect(() => {
+    if (!showKeepLastOptions) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowKeepLastOptions(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showKeepLastOptions])
 
   const keepLastOptions = [5, 10, 20, 50]
 
@@ -292,7 +322,7 @@ export function HistoryToolbar({
       </button>
 
       {/* Keep last N */}
-      <div className="relative">
+      <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setShowKeepLastOptions(!showKeepLastOptions)}
           disabled={disabled}
@@ -419,6 +449,16 @@ export function HistoryManager({
   onPrune,
 }: HistoryManagerProps) {
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
+
+  // Clean up stale selectedIds when messages change externally
+  React.useEffect(() => {
+    const currentIds = new Set(messages.map((m) => m.id))
+    setSelectedIds((prev) => {
+      const hasStale = [...prev].some((id) => !currentIds.has(id))
+      if (!hasStale) return prev // No change needed
+      return new Set([...prev].filter((id) => currentIds.has(id)))
+    })
+  }, [messages])
 
   // Calculate token counts for each message
   const messageTokenCounts = React.useMemo(() => {
@@ -573,9 +613,10 @@ export function HistoryManager({
               tokenCount={messageTokenCounts.get(message.id) ?? 0}
               selected={selectedIds.has(message.id)}
               onSelect={(selected) => handleSelect(message.id, selected)}
-              onDelete={() => allowIndividualDelete && handleDelete(message.id)}
+              onDelete={() => handleDelete(message.id)}
               compact={compact}
               showTokenCount={showTokenCounts}
+              showDeleteButton={allowIndividualDelete}
             />
           ))
         )}
