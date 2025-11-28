@@ -513,6 +513,15 @@ export {
   type HistoryMessage,
   type HistoryManagerProps,
 } from './components/history-manager'
+export {
+  OutputPreferenceSelector,
+  UncontrolledOutputPreferenceSelector,
+  useOutputPreference,
+  type OutputPreferenceValue,
+  type OutputPreferenceSelectorProps,
+  type UncontrolledOutputPreferenceSelectorProps,
+  type UncontrolledOutputPreferenceSelectorRef,
+} from './components/output-preference-selector'
 
 // Context & Conversation Management
 export { ContextVisualizer } from './components/context-visualizer'
