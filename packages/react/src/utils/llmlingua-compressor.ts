@@ -23,11 +23,7 @@
  */
 
 import { estimateTokens } from './tokenization/estimator'
-import {
-  compressPromptSemantic,
-  calculateTokenImportance,
-  type SemanticCompressionResult,
-} from './prompt-compression-advanced'
+import { compressPromptSemantic } from './prompt-compression-advanced'
 
 /**
  * Configuration for LLMLingua compression
@@ -754,7 +750,6 @@ export async function intelligentCompress(
   } = options
 
   const startTime = performance.now()
-  const originalTokens = estimateTokens(text)
 
   // If text contains significant code, use TF-IDF which handles structure better
   const codeBlockCount = (text.match(/```[\s\S]*?```/g) || []).length

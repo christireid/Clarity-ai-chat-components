@@ -2,14 +2,13 @@
  * Tests for LLMLingua-2 Style Compressor
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import {
   LLMLinguaCompressor,
   compressRAGContext,
   intelligentCompress,
   createLLMLinguaCompressor,
   type LLMLinguaConfig,
-  type CompressionResult,
 } from '../llmlingua-compressor'
 
 // Sample texts for testing
@@ -166,7 +165,6 @@ describe('LLMLinguaCompressor', () => {
       const result = await compressor.compress(LONG_TEXT)
 
       // First words should be preserved
-      const firstWords = LONG_TEXT.split(/\s+/).slice(0, 5).join(' ')
       expect(result.compressed.startsWith('Introduction')).toBe(true)
 
       // Should have preserved segments
