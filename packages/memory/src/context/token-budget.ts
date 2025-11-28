@@ -80,6 +80,7 @@ export class TokenBudgetManager {
     }
 
     // Ensure we don't exceed total
+    // Note: responseReserve is excluded as it's reserved for the model's response
     const currentTotal =
       adjusted.systemPrompt +
       adjusted.userPreferences +
@@ -89,27 +90,35 @@ export class TokenBudgetManager {
       (adjusted.summary ?? 0)
 
     if (currentTotal > maxTokens) {
-      const excess = currentTotal - maxTokens
-      // Reduce from largest allocations
-      if (adjusted.semanticMemory >= excess) {
-        adjusted.semanticMemory -= excess
-      } else {
-        // Calculate remaining BEFORE setting semanticMemory to 0
-        const remaining = excess - adjusted.semanticMemory
-        adjusted.semanticMemory = 0
-        if (adjusted.episodicMemory >= remaining) {
-          adjusted.episodicMemory -= remaining
+      let excess = currentTotal - maxTokens
+
+      // Reduce in priority order: semanticMemory → episodicMemory → recentContext → userPreferences
+      // systemPrompt is never reduced as it's critical for operation
+      const reductionOrder: (keyof TokenBreakdown)[] = [
+        'semanticMemory',
+        'episodicMemory',
+        'recentContext',
+        'userPreferences',
+      ]
+
+      for (const field of reductionOrder) {
+        if (excess <= 0) break
+        const current = adjusted[field] as number
+        if (current >= excess) {
+          ;(adjusted[field] as number) = current - excess
+          excess = 0
         } else {
-          // If episodic memory isn't enough, reduce it to 0 and continue with other allocations
-          const stillRemaining = remaining - adjusted.episodicMemory
-          adjusted.episodicMemory = 0
-          // Reduce recentContext if needed
-          if (adjusted.recentContext >= stillRemaining) {
-            adjusted.recentContext -= stillRemaining
-          } else {
-            adjusted.recentContext = 0
-          }
+          excess -= current
+          ;(adjusted[field] as number) = 0
         }
+      }
+
+      // If still over budget after all reductions, log warning (systemPrompt protection)
+      if (excess > 0 && process.env.NODE_ENV === 'development') {
+        console.warn(
+          `TokenBudgetManager: Unable to reduce allocation by ${excess} tokens. ` +
+            `systemPrompt (${adjusted.systemPrompt}) is protected from reduction.`
+        )
       }
     }
 

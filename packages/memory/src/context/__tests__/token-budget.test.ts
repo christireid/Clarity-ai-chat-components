@@ -169,6 +169,66 @@ describe('TokenBudgetManager', () => {
         expect(adjusted.semanticMemory).toBeGreaterThanOrEqual(0)
         expect(adjusted.episodicMemory).toBeGreaterThanOrEqual(0)
       })
+
+      it('should cascade to userPreferences when other allocations exhausted', () => {
+        const manager = new TokenBudgetManager(createConfig({ maxContextWindow: 500 }))
+        const breakdown = {
+          systemPrompt: 200,
+          userPreferences: 200,
+          recentContext: 100,
+          semanticMemory: 100,
+          episodicMemory: 100,
+          responseReserve: 0,
+          summary: 100,
+          total: 500, // maxTokens
+        }
+
+        // currentTotal = 200 + 200 + 100 + 100 + 100 + 100 = 800
+        // excess = 800 - 500 = 300
+        // Reduction order: semanticMemory(100) → episodicMemory(100) → recentContext(100) = 300
+        // Should reduce all three to 0
+        const adjusted = manager.adjustAllocation(breakdown, {
+          hasPreferences: true,
+          hasRecent: true,
+          memoryRichness: 0.5,
+        })
+
+        expect(adjusted.semanticMemory).toBe(0)
+        expect(adjusted.episodicMemory).toBe(0)
+        expect(adjusted.recentContext).toBe(0)
+        // userPreferences should be unchanged since we absorbed all excess
+        expect(adjusted.userPreferences).toBe(200)
+      })
+
+      it('should reduce userPreferences when needed but protect systemPrompt', () => {
+        const manager = new TokenBudgetManager(createConfig({ maxContextWindow: 300 }))
+        const breakdown = {
+          systemPrompt: 200,
+          userPreferences: 200,
+          recentContext: 100,
+          semanticMemory: 100,
+          episodicMemory: 100,
+          responseReserve: 0,
+          summary: 100,
+          total: 300, // maxTokens
+        }
+
+        // currentTotal = 200 + 200 + 100 + 100 + 100 + 100 = 800
+        // excess = 800 - 300 = 500
+        // Reduction: semantic(100) + episodic(100) + recent(100) + userPref(200) = 500
+        const adjusted = manager.adjustAllocation(breakdown, {
+          hasPreferences: true,
+          hasRecent: true,
+          memoryRichness: 0.5,
+        })
+
+        expect(adjusted.semanticMemory).toBe(0)
+        expect(adjusted.episodicMemory).toBe(0)
+        expect(adjusted.recentContext).toBe(0)
+        expect(adjusted.userPreferences).toBe(0)
+        // systemPrompt should be protected
+        expect(adjusted.systemPrompt).toBe(200)
+      })
     })
   })
 
