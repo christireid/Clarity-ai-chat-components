@@ -505,6 +505,14 @@ export { TokenCounter } from './components/token-counter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token-optimization-badge'
 export { TokenOptimizationDashboard } from './components/token-optimization-dashboard'
+export {
+  HistoryManager,
+  HistoryMessageRow,
+  TokenUsageBar,
+  HistoryToolbar,
+  type HistoryMessage,
+  type HistoryManagerProps,
+} from './components/history-manager'
 
 // Context & Conversation Management
 export { ContextVisualizer } from './components/context-visualizer'
