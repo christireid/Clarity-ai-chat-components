@@ -599,9 +599,17 @@ export function StructuredInputBuilder({
 
       if (!isValid || !onSubmit) return
 
+      let formattedPrompt: string
+      try {
+        formattedPrompt = formatPrompt(values, fields)
+      } catch {
+        // Fallback to default formatter if custom one throws
+        formattedPrompt = defaultFormatPrompt(values, fields)
+      }
+
       const result: StructuredInputResult = {
         values,
-        formattedPrompt: formatPrompt(values, fields),
+        formattedPrompt,
         tokenBreakdown: breakdownWithPercentages,
         totalTokens,
         errors,
@@ -921,9 +929,17 @@ export function useStructuredInput(
       }
     }
 
+    let formattedPrompt: string
+    try {
+      formattedPrompt = formatPrompt(values, fields)
+    } catch {
+      // Fallback to default formatter if custom one throws
+      formattedPrompt = defaultFormatPrompt(values, fields)
+    }
+
     return {
       values,
-      formattedPrompt: formatPrompt(values, fields),
+      formattedPrompt,
       tokenBreakdown,
       totalTokens,
       errors,

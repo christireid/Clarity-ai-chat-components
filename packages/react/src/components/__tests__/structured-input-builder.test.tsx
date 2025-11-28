@@ -756,6 +756,26 @@ describe('useStructuredInput hook', () => {
     expect(result.current.result.formattedPrompt).toContain('Context')
     expect(result.current.result.formattedPrompt).toContain('Background info')
   })
+
+  it('should handle formatPrompt that throws by falling back to default', () => {
+    const throwingFormatter = () => {
+      throw new Error('Formatter exploded!')
+    }
+
+    const { result } = renderHook(() =>
+      useStructuredInput(
+        [{ id: 'task', name: 'task', label: 'Task', type: 'text', required: true }],
+        {
+          initialValues: { task: 'Test value' },
+          formatPrompt: throwingFormatter,
+        }
+      )
+    )
+
+    // Should not crash and should use fallback formatter
+    expect(result.current.result.formattedPrompt).toContain('Task')
+    expect(result.current.result.formattedPrompt).toContain('Test value')
+  })
 })
 
 describe('PRESET_FIELDS', () => {
@@ -936,5 +956,35 @@ describe('edge cases', () => {
 
     const input = screen.getByLabelText(/test/i) as HTMLInputElement
     expect(input.value).toBe('Default')
+  })
+
+  it('should handle formatPrompt that throws by falling back to default', () => {
+    const onChange = vi.fn()
+    const onSubmit = vi.fn()
+    const throwingFormatter = () => {
+      throw new Error('Formatter exploded!')
+    }
+    const fields: StructuredInputField[] = [
+      { id: 'task', name: 'task', label: 'Task', type: 'text', required: true },
+    ]
+
+    render(
+      <StructuredInputBuilder
+        fields={fields}
+        values={{ task: 'Test task' }}
+        onChange={onChange}
+        onSubmit={onSubmit}
+        formatPrompt={throwingFormatter}
+      />
+    )
+
+    // Should not throw when submitting
+    const submitButton = screen.getByRole('button', { name: /build prompt/i })
+    expect(() => fireEvent.click(submitButton)).not.toThrow()
+
+    // onSubmit should still be called with fallback formatted prompt
+    expect(onSubmit).toHaveBeenCalled()
+    const result = onSubmit.mock.calls[0][0]
+    expect(result.formattedPrompt).toContain('Task')
   })
 })
