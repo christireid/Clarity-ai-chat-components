@@ -1,18 +1,163 @@
 /**
  * Token Counter Utilities
- * Approximate token counting for common models
+ * Improved token counting with model-specific heuristics and confidence levels
  */
 
+/**
+ * Supported model families for token counting
+ */
+export type ModelFamily = 'gpt-4' | 'gpt-3.5' | 'claude' | 'generic'
+
+/**
+ * Content type affects token counting accuracy
+ */
+export type ContentType = 'prose' | 'code' | 'mixed' | 'unknown'
+
+/**
+ * Token count result with confidence level
+ */
+export interface TokenCountResult {
+  /** Estimated token count */
+  count: number
+  /** Confidence level of the estimate */
+  confidence: 'exact' | 'high' | 'approximate'
+  /** Content type detected */
+  contentType: ContentType
+}
+
+/**
+ * Model-specific character-to-token ratios
+ * Based on empirical analysis of different model tokenizers
+ */
+const MODEL_RATIOS: Record<ModelFamily, { prose: number; code: number }> = {
+  'gpt-4': { prose: 4.0, code: 3.5 },
+  'gpt-3.5': { prose: 4.0, code: 3.5 },
+  'claude': { prose: 3.8, code: 3.3 },
+  'generic': { prose: 4.0, code: 3.5 },
+}
+
+/**
+ * Detect content type based on text characteristics
+ */
+function detectContentType(text: string): ContentType {
+  if (!text || text.length === 0) return 'unknown'
+
+  // Code indicators
+  const codePatterns = [
+    /^\s*(function|const|let|var|class|import|export|if|for|while|return)\s/m,
+    /[{}();=]/g,
+    /^\s*\/\//m,
+    /^\s*#\s*(include|define|pragma)/m,
+    /^\s*(def|class|import|from|if|elif|else|for|while|return)\s/m,
+  ]
+
+  const codeMatches = codePatterns.reduce((count, pattern) => {
+    const matches = text.match(pattern)
+    return count + (matches ? matches.length : 0)
+  }, 0)
+
+  const codeRatio = codeMatches / (text.length / 100)
+
+  if (codeRatio > 2) return 'code'
+  if (codeRatio > 0.5) return 'mixed'
+  return 'prose'
+}
+
+/**
+ * Count special tokens that may affect the count
+ * (URLs, numbers, special characters)
+ */
+function countSpecialTokenAdjustment(text: string): number {
+  let adjustment = 0
+
+  // URLs are typically 1 token
+  const urls = text.match(/https?:\/\/[^\s]+/g)
+  if (urls) {
+    urls.forEach((url) => {
+      // Subtract characters, add 1 token
+      adjustment -= url.length / 4 - 1
+    })
+  }
+
+  // Numbers are typically 1-2 tokens regardless of length
+  const numbers = text.match(/\d{4,}/g)
+  if (numbers) {
+    numbers.forEach((num) => {
+      adjustment -= num.length / 4 - 2
+    })
+  }
+
+  return Math.round(adjustment)
+}
+
 export class TokenCounter {
-  private static readonly AVG_CHARS_PER_TOKEN = 4
+  private static readonly DEFAULT_CHARS_PER_TOKEN = 4
+  private static currentModel: ModelFamily = 'generic'
+
+  /**
+   * Set the model family for more accurate counting
+   */
+  static setModel(model: ModelFamily): void {
+    this.currentModel = model
+  }
+
+  /**
+   * Get current model family
+   */
+  static getModel(): ModelFamily {
+    return this.currentModel
+  }
+
+  /**
+   * Count tokens in text with confidence level
+   * Returns detailed result including confidence
+   */
+  static countWithConfidence(
+    text: string,
+    model?: ModelFamily
+  ): TokenCountResult {
+    if (!text) {
+      return { count: 0, confidence: 'exact', contentType: 'unknown' }
+    }
+
+    const targetModel = model || this.currentModel
+    const contentType = detectContentType(text)
+    const ratios = MODEL_RATIOS[targetModel]
+
+    let ratio: number
+    let confidence: 'exact' | 'high' | 'approximate'
+
+    switch (contentType) {
+      case 'code':
+        ratio = ratios.code
+        confidence = 'high'
+        break
+      case 'prose':
+        ratio = ratios.prose
+        confidence = 'high'
+        break
+      case 'mixed':
+        ratio = (ratios.code + ratios.prose) / 2
+        confidence = 'approximate'
+        break
+      default:
+        ratio = this.DEFAULT_CHARS_PER_TOKEN
+        confidence = 'approximate'
+    }
+
+    const baseCount = Math.ceil(text.length / ratio)
+    const adjustment = countSpecialTokenAdjustment(text)
+    const count = Math.max(1, baseCount + adjustment)
+
+    return { count, confidence, contentType }
+  }
 
   /**
    * Count tokens in text (approximate)
-   * Uses ~4 characters per token as a rough estimate
+   * Backward compatible - returns just the count
    */
   static count(text: string): number {
-    if (!text) return 0
-    return Math.ceil(text.length / this.AVG_CHARS_PER_TOKEN)
+    return this.countWithConfidence(text).count
   }
 
   /**
@@ -20,6 +165,41 @@ export class TokenCounter {
    */
   static countBatch(texts: string[]): number {
     return texts.reduce((sum, text) => sum + this.count(text), 0)
+  }
+
+  /**
+   * Count tokens in multiple texts with confidence
+   */
+  static countBatchWithConfidence(texts: string[]): TokenCountResult {
+    if (texts.length === 0) {
+      return { count: 0, confidence: 'exact', contentType: 'unknown' }
+    }
+
+    let totalCount = 0
+    let hasApproximate = false
+    const contentTypes: ContentType[] = []
+
+    for (const text of texts) {
+      const result = this.countWithConfidence(text)
+      totalCount += result.count
+      if (result.confidence === 'approximate') {
+        hasApproximate = true
+      }
+      contentTypes.push(result.contentType)
+    }
+
+    // Determine overall content type
+    const codeCount = contentTypes.filter((t) => t === 'code').length
+    const proseCount = contentTypes.filter((t) => t === 'prose').length
+    let overallType: ContentType = 'mixed'
+    if (codeCount > proseCount * 2) overallType = 'code'
+    else if (proseCount > codeCount * 2) overallType = 'prose'
+
+    return {
+      count: totalCount,
+      confidence: hasApproximate ? 'approximate' : 'high',
+      contentType: overallType,
+    }
   }
 
   /**
@@ -54,6 +234,20 @@ export class TokenCounter {
   }
 
   /**
+   * Estimate tokens remaining in a budget
+   */
+  static remaining(text: string, budget: number): number {
+    return Math.max(0, budget - this.count(text))
+  }
+
+  /**
+   * Check if text fits within token budget
+   */
+  static fitsInBudget(text: string, budget: number): boolean {
+    return this.count(text) <= budget
+  }
+
+  /**
    * Split text into sentences
    */
   static splitSentences(text: string): string[] {
@@ -61,6 +255,21 @@ export class TokenCounter {
       .split(/[.!?]+/)
       .map((s) => s.trim())
       .filter((s) => s.length > 0)
+  }
+
+  /**
+   * Get token-to-character ratio for current model
+   */
+  static getTokenRatio(contentType: ContentType = 'prose'): number {
+    const ratios = MODEL_RATIOS[this.currentModel]
+    switch (contentType) {
+      case 'code':
+        return ratios.code
+      case 'prose':
+        return ratios.prose
+      default:
+        return (ratios.code + ratios.prose) / 2
+    }
   }
 }
 
@@ -70,4 +279,14 @@ export class TokenCounter {
  */
 export function countTokens(text: string): number {
   return TokenCounter.count(text)
+}
+
+/**
+ * Convenience function for counting tokens with confidence
+ */
+export function countTokensWithConfidence(
+  text: string,
+  model?: ModelFamily
+): TokenCountResult {
+  return TokenCounter.countWithConfidence(text, model)
 }

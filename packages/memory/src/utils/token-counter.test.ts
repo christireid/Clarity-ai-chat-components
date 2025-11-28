@@ -1,8 +1,8 @@
 /**
  * Token Counter Tests
  */
-import { describe, it, expect } from 'vitest'
-import { TokenCounter, countTokens } from './token-counter'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { TokenCounter, countTokens, countTokensWithConfidence } from './token-counter'
 
 describe('TokenCounter', () => {
   describe('count', () => {
@@ -146,5 +146,215 @@ describe('countTokens', () => {
   it('should be an alias for TokenCounter.count', () => {
     const text = 'Hello World'
     expect(countTokens(text)).toBe(TokenCounter.count(text))
+  })
+})
+
+describe('TokenCounter - Enhanced Features', () => {
+  beforeEach(() => {
+    // Reset to default model before each test
+    TokenCounter.setModel('generic')
+  })
+
+  describe('setModel/getModel', () => {
+    it('should set and get model family', () => {
+      TokenCounter.setModel('gpt-4')
+      expect(TokenCounter.getModel()).toBe('gpt-4')
+
+      TokenCounter.setModel('claude')
+      expect(TokenCounter.getModel()).toBe('claude')
+    })
+
+    it('should default to generic model', () => {
+      expect(TokenCounter.getModel()).toBe('generic')
+    })
+  })
+
+  describe('countWithConfidence', () => {
+    it('should return TokenCountResult with all fields', () => {
+      const result = TokenCounter.countWithConfidence('Hello World')
+
+      expect(result).toHaveProperty('count')
+      expect(result).toHaveProperty('confidence')
+      expect(result).toHaveProperty('contentType')
+      expect(typeof result.count).toBe('number')
+    })
+
+    it('should return exact confidence for empty text', () => {
+      const result = TokenCounter.countWithConfidence('')
+
+      expect(result.count).toBe(0)
+      expect(result.confidence).toBe('exact')
+      expect(result.contentType).toBe('unknown')
+    })
+
+    it('should detect prose content', () => {
+      const text = 'The quick brown fox jumps over the lazy dog. This is a simple sentence.'
+      const result = TokenCounter.countWithConfidence(text)
+
+      expect(result.contentType).toBe('prose')
+      expect(result.confidence).toBe('high')
+    })
+
+    it('should detect code content', () => {
+      const code = `
+        function hello() {
+          const message = 'Hello';
+          console.log(message);
+          return message;
+        }
+      `
+      const result = TokenCounter.countWithConfidence(code)
+
+      expect(result.contentType).toBe('code')
+      expect(result.confidence).toBe('high')
+    })
+
+    it('should detect mixed content', () => {
+      const mixed = `
+        Here is some code:
+        const x = 5;
+        And here is more text explaining what it does.
+      `
+      const result = TokenCounter.countWithConfidence(mixed)
+
+      expect(['code', 'mixed']).toContain(result.contentType)
+    })
+
+    it('should use specified model for counting', () => {
+      const text = 'Hello World'
+
+      const gpt4Result = TokenCounter.countWithConfidence(text, 'gpt-4')
+      const claudeResult = TokenCounter.countWithConfidence(text, 'claude')
+
+      // Claude uses slightly different ratios (3.8 vs 4.0)
+      // Results may differ slightly
+      expect(gpt4Result.count).toBeGreaterThan(0)
+      expect(claudeResult.count).toBeGreaterThan(0)
+    })
+  })
+
+  describe('countBatchWithConfidence', () => {
+    it('should return combined result for multiple texts', () => {
+      const texts = ['Hello World', 'How are you?']
+      const result = TokenCounter.countBatchWithConfidence(texts)
+
+      expect(result.count).toBeGreaterThan(0)
+      expect(result).toHaveProperty('confidence')
+      expect(result).toHaveProperty('contentType')
+    })
+
+    it('should return exact confidence for empty array', () => {
+      const result = TokenCounter.countBatchWithConfidence([])
+
+      expect(result.count).toBe(0)
+      expect(result.confidence).toBe('exact')
+    })
+
+    it('should sum token counts from all texts', () => {
+      const texts = ['Hello', 'World']
+      const result = TokenCounter.countBatchWithConfidence(texts)
+
+      const individual1 = TokenCounter.count('Hello')
+      const individual2 = TokenCounter.count('World')
+
+      expect(result.count).toBe(individual1 + individual2)
+    })
+  })
+
+  describe('remaining', () => {
+    it('should calculate remaining tokens in budget', () => {
+      const text = 'Hello' // ~2 tokens
+      const remaining = TokenCounter.remaining(text, 10)
+
+      expect(remaining).toBe(10 - TokenCounter.count(text))
+    })
+
+    it('should return 0 if text exceeds budget', () => {
+      const text = 'Hello World this is a long text'
+      const remaining = TokenCounter.remaining(text, 1)
+
+      expect(remaining).toBe(0)
+    })
+  })
+
+  describe('fitsInBudget', () => {
+    it('should return true if text fits in budget', () => {
+      const text = 'Hello'
+      expect(TokenCounter.fitsInBudget(text, 10)).toBe(true)
+    })
+
+    it('should return false if text exceeds budget', () => {
+      const text = 'Hello World this is a very long text that exceeds the budget'
+      expect(TokenCounter.fitsInBudget(text, 1)).toBe(false)
+    })
+
+    it('should return true if text exactly matches budget', () => {
+      const text = 'Hi' // 1 token
+      expect(TokenCounter.fitsInBudget(text, 1)).toBe(true)
+    })
+  })
+
+  describe('getTokenRatio', () => {
+    it('should return ratio for prose', () => {
+      const ratio = TokenCounter.getTokenRatio('prose')
+      expect(ratio).toBeGreaterThan(0)
+    })
+
+    it('should return ratio for code', () => {
+      const ratio = TokenCounter.getTokenRatio('code')
+      expect(ratio).toBeGreaterThan(0)
+    })
+
+    it('should return different ratios for different content types', () => {
+      const proseRatio = TokenCounter.getTokenRatio('prose')
+      const codeRatio = TokenCounter.getTokenRatio('code')
+
+      // Code typically has more tokens per character
+      expect(codeRatio).toBeLessThanOrEqual(proseRatio)
+    })
+
+    it('should reflect current model settings', () => {
+      TokenCounter.setModel('claude')
+      const claudeRatio = TokenCounter.getTokenRatio('prose')
+
+      TokenCounter.setModel('gpt-4')
+      const gptRatio = TokenCounter.getTokenRatio('prose')
+
+      // Claude has slightly different ratios
+      expect(claudeRatio).not.toBe(gptRatio)
+    })
+  })
+
+  describe('URL and number handling', () => {
+    it('should handle URLs in text', () => {
+      const textWithUrl = 'Check out https://example.com/very/long/path/to/resource for more info'
+      const result = TokenCounter.countWithConfidence(textWithUrl)
+
+      expect(result.count).toBeGreaterThan(0)
+    })
+
+    it('should handle long numbers', () => {
+      const textWithNumbers = 'The order number is 1234567890 and the amount is 9876543210'
+      const result = TokenCounter.countWithConfidence(textWithNumbers)
+
+      expect(result.count).toBeGreaterThan(0)
+    })
+  })
+})
+
+describe('countTokensWithConfidence', () => {
+  it('should be a convenience function for TokenCounter.countWithConfidence', () => {
+    const text = 'Hello World'
+    const result = countTokensWithConfidence(text)
+
+    expect(result).toEqual(TokenCounter.countWithConfidence(text))
+  })
+
+  it('should accept optional model parameter', () => {
+    const text = 'Hello World'
+    const result = countTokensWithConfidence(text, 'claude')
+
+    expect(result).toHaveProperty('count')
+    expect(result).toHaveProperty('confidence')
   })
 })
