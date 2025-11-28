@@ -2,7 +2,7 @@
  * Upgrade command - Check for and install updates
  */
 
-import { execSync } from 'child_process'
+import { execFileSync } from 'child_process'
 import chalk from 'chalk'
 import ora from 'ora'
 import prompts from 'prompts'
@@ -19,6 +19,14 @@ import { createTable } from '../ui/table.js'
 import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('upgrade')
+
+/**
+ * Validate package name to prevent command injection
+ * Only allows scoped packages with alphanumeric chars, hyphens, and underscores
+ */
+function isValidPackageName(name: string): boolean {
+  return /^@[a-z0-9-]+\/[a-z0-9-_]+$/i.test(name)
+}
 
 interface PackageUpdate {
   name: string
@@ -62,8 +70,15 @@ async function checkForUpdates(): Promise<PackageUpdate[]> {
 
     // Check each package
     for (const packageName of clarityPackages) {
+      // Validate package name to prevent command injection
+      if (!isValidPackageName(packageName)) {
+        logger.warn(`Skipping invalid package name: ${packageName}`)
+        continue
+      }
+
       try {
-        const result = execSync(`npm view ${packageName} version`, {
+        // Use execFileSync with arguments array (safe from injection)
+        const result = execFileSync('npm', ['view', packageName, 'version'], {
           encoding: 'utf8',
           stdio: 'pipe',
         })
@@ -233,12 +248,19 @@ async function installUpdates(updates: PackageUpdate[]) {
 async function showChangelog(packageName: string, version: string) {
   console.log(chalk.blue.bold(`\n📋 Changelog for ${packageName}@${version}\n`))
 
+  // Validate package name to prevent command injection
+  if (!isValidPackageName(packageName)) {
+    console.log(chalk.gray('Changelog not available (invalid package name)'))
+    return
+  }
+
   try {
     // Try to fetch changelog from GitHub
-    const result = execSync(
-      `npm view ${packageName} homepage`,
-      { encoding: 'utf8', stdio: 'pipe' }
-    )
+    // Use execFileSync with arguments array (safe from injection)
+    const result = execFileSync('npm', ['view', packageName, 'homepage'], {
+      encoding: 'utf8',
+      stdio: 'pipe',
+    })
 
     const homepage = result.trim()
     const changelogUrl = `${homepage}/blob/main/CHANGELOG.md`
