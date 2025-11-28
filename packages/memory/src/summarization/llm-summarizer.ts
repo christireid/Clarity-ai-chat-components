@@ -17,6 +17,7 @@
  */
 
 import type { Summarizer } from './summarizer'
+import { estimateTokens } from '../utils/core'
 
 /**
  * Message format for summarization
@@ -166,13 +167,8 @@ function hashContent(content: string): string {
   return `sum_${len}_${Math.abs(hash).toString(36)}`
 }
 
-/**
- * Estimate tokens (4 chars per token approximation)
- */
-function estimateTokens(text: string): number {
-  if (!text) return 0
-  return Math.ceil(text.length / 4)
-}
+// Note: estimateTokens is imported from '../utils/core'
+// for consistent token estimation across the codebase
 
 /**
  * Maximum cache entries before eviction

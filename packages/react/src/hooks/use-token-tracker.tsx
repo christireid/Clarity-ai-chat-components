@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { estimateTokens } from '../utils/tokenization/estimator'
 
 /**
  * Token pricing for popular models
@@ -109,13 +110,12 @@ export interface UseTokenTrackerReturn {
 }
 
 /**
- * Rough token estimation (4 chars ≈ 1 token)
- * For production, use tiktoken or equivalent
+ * Token estimation using centralized estimator
+ * Adds overhead for role and formatting
  */
 function estimateTokensFromText(text: string): number {
-  // Simple approximation: ~4 characters per token
-  // Add overhead for role and formatting
-  return Math.ceil(text.length / 4) + 4
+  // Use centralized estimator + overhead for role and formatting
+  return estimateTokens(text) + 4
 }
 
 /**

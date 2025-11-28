@@ -1,11 +1,12 @@
 /**
  * compressContext - Low-level utility for compressing context
- * 
+ *
  * Primitive function for compressing context to fit within token limits.
  * Used internally by memory system and available for custom implementations.
  */
 
 import type { Message } from '@clarity-chat/types'
+import { estimateTokens as estimateTokensFromText } from '../tokenization/estimator'
 
 /**
  * Options for compressing context
@@ -57,9 +58,9 @@ export function compressContext(
 }
 
 /**
- * Estimate token count for messages
+ * Estimate token count for messages using centralized estimator
  */
 function estimateTokens(messages: Message[]): number {
   const text = messages.map((m) => m.content).join(' ')
-  return Math.ceil(text.length / 4) // Rough: 1 token ≈ 4 chars
+  return estimateTokensFromText(text)
 }

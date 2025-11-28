@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { SmartCache, CacheOptions, CacheStats } from '../utils/smart-cache'
+import { estimateTokens } from '../utils/tokenization/estimator'
 
 export interface UseSmartCacheOptions<T = any> extends CacheOptions {
   /** Enable cache (default: true) */
@@ -114,8 +115,8 @@ export function useSmartCache<T = any>(
       
       if (result) {
         onCacheHit?.(query, result)
-        // Estimate tokens saved
-        const tokens = Math.ceil(query.length / 4)
+        // Estimate tokens saved using centralized estimator
+        const tokens = estimateTokens(query)
         cache.recordSavings(tokens, costPerToken)
       } else {
         onCacheMiss?.(query)

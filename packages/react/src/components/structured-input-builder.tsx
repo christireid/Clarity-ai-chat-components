@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { cn } from '../utils/cn'
+import { estimateTokens } from '../utils/tokenization/estimator'
 
 /**
  * Field priority for token optimization
@@ -180,14 +181,8 @@ function defaultFormatPrompt(
   return parts.join('\n\n')
 }
 
-/**
- * Estimate tokens for a string (sync version using estimation)
- */
-function estimateTokens(text: string): number {
-  if (!text) return 0
-  // Rough estimate: ~4 chars per token for English text
-  return Math.ceil(text.length / 4)
-}
+// Note: estimateTokens is imported from '../utils/tokenization/estimator'
+// for consistent token estimation across the codebase
 
 /**
  * Simple hash function for generating unique suffixes

@@ -47,6 +47,7 @@ import type {
 import { OpenAIEmbeddingProvider } from './openai'
 import { CohereEmbeddingProvider } from './cohere'
 import { MemoryEmbeddingCache } from './cache'
+import { estimateTokens as estimateTokensCentralized } from '../utils/tokenization/estimator'
 
 /**
  * Create an embedding provider
@@ -239,11 +240,10 @@ export const EmbeddingUtils = {
   },
 
   /**
-   * Estimate token count for text
+   * Estimate token count for text using centralized estimator
    */
   estimateTokens(text: string): number {
-    // Rough estimation: ~4 chars per token
-    return Math.ceil(text.length / 4)
+    return estimateTokensCentralized(text)
   },
 
   /**
