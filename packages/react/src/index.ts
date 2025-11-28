@@ -522,6 +522,19 @@ export {
   type UncontrolledOutputPreferenceSelectorProps,
   type UncontrolledOutputPreferenceSelectorRef,
 } from './components/output-preference-selector'
+export {
+  StructuredInputBuilder,
+  useStructuredInput,
+  PRESET_FIELDS,
+  type StructuredInputField,
+  type StructuredInputResult,
+  type StructuredInputBuilderProps,
+  type FieldPriority,
+  type FieldSection,
+  type FieldType,
+  type SelectOption,
+  type TokenBreakdown,
+} from './components/structured-input-builder'
 
 // Context & Conversation Management
 export { ContextVisualizer } from './components/context-visualizer'
