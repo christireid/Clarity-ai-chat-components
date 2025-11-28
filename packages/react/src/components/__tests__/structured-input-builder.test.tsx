@@ -573,6 +573,76 @@ describe('StructuredInputBuilder', () => {
       // Context is not required
       expect(contextInput.getAttribute('aria-required')).toBe('false')
     })
+
+    it('should link description to input via aria-describedby', () => {
+      const onChange = vi.fn()
+      const fields: StructuredInputField[] = [
+        {
+          id: 'with-desc',
+          name: 'withDesc',
+          label: 'Field With Description',
+          type: 'text',
+          required: false,
+          description: 'This is helpful description text',
+        },
+      ]
+
+      render(
+        <StructuredInputBuilder
+          fields={fields}
+          values={{}}
+          onChange={onChange}
+        />
+      )
+
+      const input = screen.getByLabelText(/field with description/i)
+      const describedBy = input.getAttribute('aria-describedby')
+
+      // Should have aria-describedby pointing to description
+      expect(describedBy).toBeTruthy()
+      expect(describedBy).toContain('description')
+
+      // The description element should exist with matching ID
+      const descriptionElement = document.getElementById(describedBy!)
+      expect(descriptionElement).toBeTruthy()
+      expect(descriptionElement?.textContent).toBe('This is helpful description text')
+    })
+
+    it('should include both description and error in aria-describedby', () => {
+      const onChange = vi.fn()
+      const fields: StructuredInputField[] = [
+        {
+          id: 'with-both',
+          name: 'withBoth',
+          label: 'Required Field',
+          type: 'text',
+          required: true,
+          description: 'This field is required',
+        },
+      ]
+
+      render(
+        <StructuredInputBuilder
+          fields={fields}
+          values={{}} // Empty value triggers required error
+          onChange={onChange}
+        />
+      )
+
+      const input = screen.getByLabelText(/required field/i)
+      const describedBy = input.getAttribute('aria-describedby')
+
+      // Should have both description and error IDs
+      expect(describedBy).toContain('description')
+      expect(describedBy).toContain('error')
+
+      // Both elements should exist
+      const ids = describedBy!.split(' ')
+      expect(ids.length).toBe(2)
+      ids.forEach(id => {
+        expect(document.getElementById(id)).toBeTruthy()
+      })
+    })
   })
 
   describe('sections', () => {

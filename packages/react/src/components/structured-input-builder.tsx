@@ -265,6 +265,10 @@ const FieldInput = React.memo(function FieldInput({
   disabled: boolean
 }) {
   const inputId = `field-${sanitizeHtmlId(field.id)}`
+  const descriptionId = field.description ? `${inputId}-description` : undefined
+  const errorId = error ? `${inputId}-error` : undefined
+  // Combine description and error IDs for aria-describedby (both should be announced)
+  const describedBy = [descriptionId, errorId].filter(Boolean).join(' ') || undefined
   const isDisabled = disabled || field.disabled
 
   const sizeClasses = {
@@ -296,7 +300,7 @@ const FieldInput = React.memo(function FieldInput({
             className={cn(baseInputClasses, 'resize-none')}
             aria-invalid={!!error}
             aria-required={field.required}
-            aria-describedby={error ? `${inputId}-error` : undefined}
+            aria-describedby={describedBy}
           />
         )
 
@@ -310,7 +314,7 @@ const FieldInput = React.memo(function FieldInput({
             className={baseInputClasses}
             aria-invalid={!!error}
             aria-required={field.required}
-            aria-describedby={error ? `${inputId}-error` : undefined}
+            aria-describedby={describedBy}
           >
             <option value="">{field.placeholder ?? 'Select an option...'}</option>
             {field.options?.map((option) => (
@@ -333,7 +337,7 @@ const FieldInput = React.memo(function FieldInput({
             className={baseInputClasses}
             aria-invalid={!!error}
             aria-required={field.required}
-            aria-describedby={error ? `${inputId}-error` : undefined}
+            aria-describedby={describedBy}
           />
         )
 
@@ -375,7 +379,7 @@ const FieldInput = React.memo(function FieldInput({
             className={baseInputClasses}
             aria-invalid={!!error}
             aria-required={field.required}
-            aria-describedby={error ? `${inputId}-error` : undefined}
+            aria-describedby={describedBy}
           />
         )
     }
@@ -402,13 +406,13 @@ const FieldInput = React.memo(function FieldInput({
       </div>
 
       {field.description && (
-        <p className="text-xs text-muted-foreground">{field.description}</p>
+        <p id={descriptionId} className="text-xs text-muted-foreground">{field.description}</p>
       )}
 
       {renderInput()}
 
       {error && (
-        <p id={`${inputId}-error`} className="text-xs text-destructive">
+        <p id={errorId} className="text-xs text-destructive">
           {error}
         </p>
       )}
