@@ -14,11 +14,13 @@
 
 | Severity | Count | Estimated Total Effort |
 |----------|-------|------------------------|
-| Critical (P0) | 8 | 12h |
-| High (P1) | 19 | 28h |
+| Critical (P0) | 7 | 10h |
+| High (P1) | 19 | 29h |
 | Medium (P2) | 22 | 18h |
 | Low (P3) | 14 | 10h |
-| **Total** | **63** | **68h** |
+| **Total** | **62** | **67h** |
+
+> **Review Note:** P1-011 was removed (false positive - tooltip already has keyboard support). P0-007 reclassified to P1-020.
 
 ### Health Score
 
@@ -32,11 +34,11 @@
 
 ### Top 5 Critical Findings
 
-1. **P0-001**: Touch targets below WCAG 44x44px minimum (buttons, checkboxes, close icons)
+1. **P0-001**: Touch targets below WCAG 44x44px minimum (buttons, checkboxes, close icons) ⚠️ *Breaking change warning*
 2. **P0-006**: Missing confirmation dialogs for destructive actions (delete, clear)
-3. **P0-007**: No global keyboard shortcuts for power users
-4. **P0-008**: Checkbox touch targets only 16x16px (critically small)
-5. **P0-005**: Storybook build errors (@clarity-chat/memory package resolution)
+3. **P0-008**: Checkbox touch targets only 16x16px (critically small)
+4. **P0-005**: Storybook build errors (@clarity-chat/memory package resolution)
+5. **P0-004**: Missing prefers-reduced-motion support
 
 ### Quick Wins (High Impact, Low Effort)
 
@@ -123,31 +125,37 @@ Initial design prioritized desktop aesthetics over mobile accessibility.
 
 #### Implementation Plan
 
-**Files to Modify:**
-1. `packages/primitives/src/components/dialog.tsx` - Line 351
-2. `packages/primitives/src/components/drawer.tsx` - Line 319
-3. `packages/primitives/src/components/button.tsx` - Lines 34, 36
-4. `packages/react/src/components/message/message-actions.tsx` - Line 128
+> ⚠️ **BREAKING CHANGE WARNING:** Increasing button sizes from 32px to 44px is a 37.5% size increase that will affect layouts. Consider these alternative approaches:
+>
+> **Option A (Recommended):** Add touch-target padding wrapper that expands clickable area without changing visual size
+> **Option B:** Use responsive sizing - larger on touch devices only via `@media (pointer: coarse)`
+> **Option C:** Direct size increase (most disruptive, use with caution)
 
-**Step-by-Step Fix:**
+**Files to Modify:**
+1. `packages/primitives/src/components/dialog.tsx` - Line 350-357 (cn() call)
+2. `packages/primitives/src/components/drawer.tsx` - Line 318-327
+3. `packages/primitives/src/components/button.tsx` - Lines 33-36
+4. `packages/react/src/components/message/message-actions.tsx` - Lines 127-128
+
+**Step-by-Step Fix (Option C - Direct Increase):**
 
 1. **Update Dialog close button**
    ```tsx
-   // Before
-   className="absolute top-4 right-4 w-8 h-8 rounded-lg"
+   // Before (within cn() call)
+   'absolute top-4 right-4 w-8 h-8 rounded-lg'
 
    // After
-   className="absolute top-4 right-4 w-11 h-11 rounded-lg"
+   'absolute top-4 right-4 w-11 h-11 rounded-lg'
    ```
    *Rationale: 44x44px meets WCAG minimum*
 
 2. **Update Drawer close button**
    ```tsx
-   // Before
-   className="absolute top-4 right-4 w-8 h-8 rounded-md"
+   // Before (within cn() call)
+   'absolute top-4 right-4 w-8 h-8 rounded-md'
 
    // After
-   className="absolute top-4 right-4 w-11 h-11 rounded-md"
+   'absolute top-4 right-4 w-11 h-11 rounded-md'
    ```
 
 3. **Update Button sm variant**
@@ -170,11 +178,11 @@ Initial design prioritized desktop aesthetics over mobile accessibility.
 
 5. **Update MessageActions buttons**
    ```tsx
-   // Before
-   className={cn('h-8 w-8 rounded-lg transition-all')}
+   // Before (within cn() call)
+   'h-8 w-8 rounded-lg transition-all'
 
    // After
-   className={cn('h-11 w-11 rounded-lg transition-all')}
+   'h-11 w-11 rounded-lg transition-all'
    ```
 
 #### Testing Requirements
@@ -407,15 +415,17 @@ All destructive actions show a styled confirmation dialog with clear cancel and 
 
 ---
 
-### Issue P0-007: No Global Keyboard Shortcuts
+### ~~Issue P0-007~~ → P1-020: No Global Keyboard Shortcuts [RECLASSIFIED]
+
+> **Review Note:** Reclassified from P0 (Critical) to P1 (High). This is a power-user efficiency enhancement (Nielsen H7), not a critical accessibility barrier. Users can still access all functionality without shortcuts.
 
 #### Metadata
 | Field | Value |
 |-------|-------|
-| **ID** | P0-007 |
+| **ID** | P1-020 (formerly P0-007) |
 | **Category** | Usability |
 | **Subcategory** | Efficiency |
-| **Severity** | Critical |
+| **Severity** | High |
 | **Heuristic** | H7: Flexibility and Efficiency of Use |
 | **Component(s)** | Global (all components) |
 | **File Path(s)** | New file: `packages/react/src/hooks/use-global-shortcuts.ts` |
@@ -611,28 +621,9 @@ Drop zone only responds to click, not keyboard.
 
 ---
 
-### Issue P1-011: Tooltip Missing Keyboard Trigger
+### ~~Issue P1-011: Tooltip Missing Keyboard Trigger~~ [REMOVED - FALSE POSITIVE]
 
-#### Metadata
-| Field | Value |
-|-------|-------|
-| **ID** | P1-011 |
-| **Category** | Accessibility |
-| **Subcategory** | Keyboard Access |
-| **Severity** | High |
-| **WCAG Criteria** | 2.1.1 Keyboard |
-| **Component(s)** | Tooltip |
-| **File Path(s)** | `packages/primitives/src/components/tooltip.tsx` |
-| **Line Number(s)** | 116-130 |
-| **Estimated Effort** | S (1h) |
-
-#### Current State
-
-Tooltips only appear on mouse hover, not on keyboard focus.
-
-#### Implementation Plan
-
-Add `onFocus` and `onBlur` handlers to show/hide tooltip when trigger element receives keyboard focus.
+> **Note:** This issue was removed during code review. The Tooltip component at `tooltip.tsx:201-204` already includes `onFocus={handleMouseEnter}` and `onBlur={handleMouseLeave}` handlers, providing proper keyboard accessibility.
 
 ---
 
@@ -1071,4 +1062,20 @@ apps/storybook/
 ---
 
 *End of Comprehensive UI/UX Audit Report*
-*Total Issues: 63 | Estimated Effort: 68 hours*
+*Total Issues: 62 | Estimated Effort: 67 hours*
+
+---
+
+## APPENDIX D: Code Review Corrections
+
+**Changes made during senior code review:**
+
+1. **P1-011 REMOVED (False Positive):** Tooltip already has keyboard focus support via `onFocus`/`onBlur` handlers at `tooltip.tsx:201-204`
+
+2. **P0-007 → P1-020 (Reclassified):** Global keyboard shortcuts are an efficiency enhancement, not a critical accessibility barrier
+
+3. **P0-001 Updated:** Added breaking change warning and alternative implementation approaches (padding wrapper, responsive sizing)
+
+4. **Line Numbers Corrected:** Updated to reference multi-line cn() calls accurately
+
+**Review Date:** 2025-11-30
