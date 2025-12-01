@@ -10,9 +10,36 @@ import {
   CardTitle,
   Badge,
   Button,
-  Progress,
   cn,
 } from '@clarity-chat/primitives'
+
+/**
+ * Simple Progress component for internal use
+ */
+const Progress = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & { value?: number }
+>(({ className, value = 0, ...props }, ref) => {
+  // Guard against NaN/Infinity - clamp to valid percentage range
+  const safeValue = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'relative h-4 w-full overflow-hidden rounded-full bg-gray-200',
+        className
+      )}
+      {...props}
+    >
+      <div
+        className="h-full bg-blue-600 transition-all"
+        style={{ width: `${safeValue}%` }}
+      />
+    </div>
+  )
+})
+Progress.displayName = 'Progress'
 
 /**
  * Experiment variant
@@ -47,9 +74,7 @@ export interface SignificanceTest {
   pValue: number
   confidenceLevel: number
   sampleSize: number
-  effect
-
-Size: number
+  effectSize: number
 }
 
 /**
@@ -262,9 +287,20 @@ export function ABTestingDashboard({
             <Card
               className={cn(
                 'cursor-pointer transition-colors',
+                'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-1',
                 isSelected && 'border-primary'
               )}
               onClick={() => handleSelectExperiment(experiment)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleSelectExperiment(experiment)
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`Select experiment ${experiment.experimentName}`}
+              aria-pressed={isSelected}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">

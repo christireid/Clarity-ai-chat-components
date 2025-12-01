@@ -11,8 +11,23 @@
 
 import { useMemo } from 'react'
 import type { CoreMessage } from '../../hooks/use-chat-enhanced'
-import type { OptimizationStage, OptimizationDiagnostics } from '../core/engine/prompt-optimizer'
+import type { OptimizationStage, OptimizationDiagnostics } from '../core'
 import type { ModelRoutingDecision } from './use-dynamic-model-routing'
+
+/**
+ * Extended message type with optional metadata
+ */
+interface MessageWithMetadata extends CoreMessage {
+  metadata?: {
+    compressed?: boolean
+    originalTokens?: number
+    originalLength?: number
+    compressedTokens?: number
+    compressionType?: string
+    originalCount?: number
+    styleTransformed?: string
+  }
+}
 
 /**
  * Optimization history entry
@@ -75,9 +90,9 @@ export interface UsePromptDebuggerOptions {
   /** Model routing decision */
   routingDecision?: ModelRoutingDecision
   /** Messages before optimization */
-  messagesBefore?: CoreMessage[]
+  messagesBefore?: MessageWithMetadata[]
   /** Messages after optimization */
-  messagesAfter?: CoreMessage[]
+  messagesAfter?: MessageWithMetadata[]
   /** Whether to include detailed logs */
   detailed?: boolean
 }
@@ -143,7 +158,7 @@ export function usePromptDebugger(
       return []
     }
 
-    return diagnostics.stages.map((stage) => ({
+    return diagnostics.stages.map((stage: OptimizationStage) => ({
       timestamp: Date.now(),
       stage: stage.name,
       tokensBefore: stage.tokensBefore,
@@ -231,7 +246,7 @@ export function usePromptDebugger(
     }
 
     let cumulativeTime = 0
-    return diagnostics.stages.map((stage, index) => {
+    return diagnostics.stages.map((stage: OptimizationStage) => {
       cumulativeTime += stage.duration || 0
       return {
         stage: stage.name,
@@ -254,7 +269,7 @@ export function usePromptDebugger(
     }
 
     const totalDuration = diagnostics.stages.reduce(
-      (sum, stage) => sum + (stage.duration || 0),
+      (sum: number, stage: OptimizationStage) => sum + (stage.duration || 0),
       0
     )
     const compressionRatio =
@@ -282,7 +297,7 @@ export function usePromptDebugger(
 
     const stages = diagnostics
       ? diagnostics.stages.map(
-          (stage) =>
+          (stage: OptimizationStage) =>
             `${stage.name}: ${stage.tokensBefore} → ${stage.tokensAfter} tokens ` +
             `(${stage.tokensSaved > 0 ? '-' : '+'}${Math.abs(stage.tokensSaved)} tokens) ` +
             `[${stage.duration || 0}ms]`

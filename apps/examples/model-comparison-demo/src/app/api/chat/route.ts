@@ -13,7 +13,8 @@ interface ModelConfig {
   model: string
   temperature?: number
   maxTokens?: number
-  apiKey?: string
+  // Note: apiKey is intentionally NOT accepted from client for security
+  // API keys should only come from server-side environment variables
 }
 
 interface TokenUsage {
@@ -255,20 +256,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get API key from environment
-    let apiKey = config.apiKey
-    if (!apiKey) {
-      switch (config.provider) {
-        case 'openai':
-          apiKey = process.env.OPENAI_API_KEY
-          break
-        case 'anthropic':
-          apiKey = process.env.ANTHROPIC_API_KEY
-          break
-        case 'google':
-          apiKey = process.env.GOOGLE_API_KEY
-          break
-      }
+    // Get API key from environment only (never accept from client to prevent exposure in logs)
+    let apiKey: string | undefined
+    switch (config.provider) {
+      case 'openai':
+        apiKey = process.env.OPENAI_API_KEY
+        break
+      case 'anthropic':
+        apiKey = process.env.ANTHROPIC_API_KEY
+        break
+      case 'google':
+        apiKey = process.env.GOOGLE_API_KEY
+        break
     }
 
     if (!apiKey) {

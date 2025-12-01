@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { cn } from '../lib/utils'
 
@@ -578,7 +579,13 @@ export const DropdownMenuGroup: React.FC<{ children: React.ReactNode; className?
   )
 }
 
-const DropdownMenuPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface DropdownMenuPortalProps {
+  children: React.ReactNode
+  /** Container element to render portal into (defaults to document.body) */
+  container?: Element | null
+}
+
+const DropdownMenuPortal: React.FC<DropdownMenuPortalProps> = ({ children, container }) => {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
@@ -588,7 +595,9 @@ const DropdownMenuPortal: React.FC<{ children: React.ReactNode }> = ({ children 
 
   if (!mounted) return null
 
-  return <>{children}</>
+  // Use createPortal to render content outside the DOM hierarchy
+  // This fixes z-index stacking and overflow clipping issues
+  return createPortal(children, container ?? document.body)
 }
 
 function getMenuTransform(side: 'top' | 'right' | 'bottom' | 'left', align: 'start' | 'center' | 'end'): string {

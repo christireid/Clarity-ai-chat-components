@@ -132,16 +132,26 @@ export function useAPIInspector() {
   }, [inspector, dispatch])
 
   const stats = useMemo(() => {
-    const completedLogs = state.logs.filter(log => log.timing.duration)
-    const errorLogs = state.logs.filter(log => log.error)
-    
+    // Single pass through logs for better performance
+    let completedCount = 0
+    let errorCount = 0
+    let totalDuration = 0
+
+    for (const log of state.logs) {
+      if (log.timing.duration) {
+        completedCount++
+        totalDuration += log.timing.duration
+      }
+      if (log.error) {
+        errorCount++
+      }
+    }
+
     return {
       totalCalls: state.logs.length,
-      completedCalls: completedLogs.length,
-      errorCalls: errorLogs.length,
-      averageResponseTime: completedLogs.length > 0
-        ? completedLogs.reduce((sum, log) => sum + (log.timing.duration || 0), 0) / completedLogs.length
-        : 0,
+      completedCalls: completedCount,
+      errorCalls: errorCount,
+      averageResponseTime: completedCount > 0 ? totalDuration / completedCount : 0,
       totalUsage: inspector.getTotalUsage(),
     }
   }, [state.logs, inspector])

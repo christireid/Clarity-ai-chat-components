@@ -67,6 +67,9 @@ packages/*/src/**/*.d.ts
 # Core dump files
 core
 **/core
+# Exception: prompt system core directory
+!**/src/prompt/core/
+!**/src/prompt/core/**
 
 # Temporary documentation files (archived)
 archive/documentation-overhaul/

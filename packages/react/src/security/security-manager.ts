@@ -14,8 +14,10 @@
 
 import type { EnhancedPromptInjectionConfig } from '../safety/prompt-injection-enhanced'
 import type { JailbreakPreventionConfig, Message, OutputValidationResult } from '../safety/jailbreak-prevention'
-import type { PIIDetectionConfig } from '../safety/pii-detection'
-import type { ContentFilterConfig } from '../safety/content-filter'
+
+// These config types are defined inline since they're not exported from their modules
+type PIIDetectionConfig = Record<string, unknown>
+type ContentFilterConfig = Record<string, unknown>
 
 /**
  * Security context for validation

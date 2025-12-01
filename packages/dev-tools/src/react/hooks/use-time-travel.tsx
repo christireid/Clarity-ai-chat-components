@@ -58,8 +58,13 @@ function reducer(
  * Hook for Time-Travel Debugging with optimistic updates
  */
 export function useTimeTravel(timeTravelDebugger?: TimeTravelDebugger) {
-  const timeTravel = timeTravelDebugger || new TimeTravelDebugger()
-  
+  // Use ref to maintain stable instance across renders
+  const timeTravelRef = React.useRef<TimeTravelDebugger | null>(null)
+  if (!timeTravelRef.current) {
+    timeTravelRef.current = timeTravelDebugger || new TimeTravelDebugger()
+  }
+  const timeTravel = timeTravelRef.current
+
   // Initialize state from time travel debugger
   const [initialState] = React.useState<TimeTravelState>(() => ({
     snapshots: timeTravel.getAll(),

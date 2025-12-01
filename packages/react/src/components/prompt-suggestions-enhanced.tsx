@@ -146,16 +146,26 @@ export function usePromptSuggestionsEnhanced(
   const getConversationContext = React.useCallback(() => {
     if (messages.length === 0) {
       return {
-        topics: [],
-        entities: [],
+        topics: [] as string[],
+        entities: [] as string[],
         sentiment: 'neutral' as const,
         messageCount: 0,
         lastRole: null,
-        keywords: [],
+        keywords: [] as string[],
       }
     }
 
     const lastMessage = messages[messages.length - 1]
+    if (!lastMessage) {
+      return {
+        topics: [] as string[],
+        entities: [] as string[],
+        sentiment: 'neutral' as const,
+        messageCount: 0,
+        lastRole: null,
+        keywords: [] as string[],
+      }
+    }
     const lastContent = lastMessage.content.toLowerCase()
 
     // Extract keywords (simple implementation - can be enhanced with NLP)

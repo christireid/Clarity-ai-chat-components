@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
 
@@ -336,8 +337,8 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
     }
   }
 
-  if (!open) return null
-
+  // Note: Do NOT add early return for !open here - AnimatePresence needs
+  // to stay mounted to animate the exit transition
   return (
     <PopoverPortal>
       <AnimatePresence>
@@ -386,7 +387,13 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
 // Portal Component
 // ============================================================================
 
-const PopoverPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface PopoverPortalProps {
+  children: React.ReactNode
+  /** Container element to render portal into (defaults to document.body) */
+  container?: Element | null
+}
+
+const PopoverPortal: React.FC<PopoverPortalProps> = ({ children, container }) => {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
@@ -396,7 +403,9 @@ const PopoverPortal: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   if (!mounted) return null
 
-  return <>{children}</>
+  // Use createPortal to render content outside the DOM hierarchy
+  // This fixes z-index stacking and overflow clipping issues
+  return createPortal(children, container ?? document.body)
 }
 
 // ============================================================================

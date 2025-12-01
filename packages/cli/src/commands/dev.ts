@@ -18,9 +18,31 @@ interface DevOptions {
   open?: boolean
 }
 
+function validatePort(port: string): number {
+  const portNum = parseInt(port, 10)
+  if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
+    throw new Error(`Invalid port "${port}". Port must be a number between 1 and 65535.`)
+  }
+  return portNum
+}
+
 export async function devCommand(options: DevOptions) {
-  const port = options.port || '3000'
-  
+  const portString = options.port || '3000'
+
+  // Validate port before proceeding
+  let port: number
+  try {
+    port = validatePort(portString)
+  } catch (error) {
+    console.log()
+    console.log(errorBox(
+      error instanceof Error ? error.message : 'Invalid port number',
+      '✗ Configuration Error'
+    ))
+    console.log()
+    process.exit(1)
+  }
+
   console.log()
   console.log(sectionHeader('🔥 Development Server'))
   console.log()
@@ -57,7 +79,7 @@ export async function devCommand(options: DevOptions) {
     // Start the actual dev server
     const devProcess = execa('npm', ['run', 'dev'], {
       stdio: 'inherit',
-      env: { PORT: port }
+      env: { PORT: port.toString() }
     })
 
     await devProcess

@@ -33,6 +33,8 @@ export class TimeTravelDebugger {
   private transitions: StateTransition[] = []
   private currentIndex: number = -1
   private maxSnapshots: number = 100
+  // Cache for search optimization - maps snapshot ID to lowercase serialized string
+  private searchIndex: Map<string, string> = new Map()
 
   constructor(options?: { maxSnapshots?: number }) {
     if (options?.maxSnapshots) {
@@ -47,8 +49,8 @@ export class TimeTravelDebugger {
     const snapshot: StateSnapshot = {
       id: this.generateId(),
       timestamp: new Date(),
-      messages: JSON.parse(JSON.stringify(messages)), // Deep clone
-      config: JSON.parse(JSON.stringify(config)),
+      messages: structuredClone(messages),
+      config: structuredClone(config),
       metadata: metadata || {},
       label,
     }
@@ -71,7 +73,10 @@ export class TimeTravelDebugger {
 
     // Maintain max snapshots limit
     if (this.snapshots.length > this.maxSnapshots) {
-      this.snapshots.shift()
+      const removed = this.snapshots.shift()
+      if (removed) {
+        this.searchIndex.delete(removed.id)
+      }
       this.currentIndex--
     }
 
@@ -137,12 +142,19 @@ export class TimeTravelDebugger {
   }
 
   /**
-   * Search snapshots
+   * Search snapshots using cached search index for performance
    */
   search(query: string): StateSnapshot[] {
+    const lowerQuery = query.toLowerCase()
     return this.snapshots.filter(snapshot => {
-      const searchString = JSON.stringify(snapshot).toLowerCase()
-      return searchString.includes(query.toLowerCase())
+      // Check cache first
+      let searchString = this.searchIndex.get(snapshot.id)
+      if (!searchString) {
+        // Build and cache search string
+        searchString = JSON.stringify(snapshot).toLowerCase()
+        this.searchIndex.set(snapshot.id, searchString)
+      }
+      return searchString.includes(lowerQuery)
     })
   }
 
@@ -179,6 +191,7 @@ export class TimeTravelDebugger {
     this.snapshots = []
     this.transitions = []
     this.currentIndex = -1
+    this.searchIndex.clear()
   }
 
   /**

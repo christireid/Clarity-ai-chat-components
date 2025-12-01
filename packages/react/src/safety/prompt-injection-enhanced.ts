@@ -10,7 +10,7 @@
  * Based on OWASP LLM Top 10 2025 research
  */
 
-import type { SafetyGuardrail, SafetyResult } from './types'
+// Types are now defined inline in EnhancedInjectionResult
 
 /**
  * Known jailbreak attack patterns database (2025)
@@ -189,16 +189,30 @@ export interface EnhancedPromptInjectionConfig {
 /**
  * Detection result with detailed analysis
  */
-export interface EnhancedInjectionResult extends SafetyResult {
+export interface EnhancedInjectionResult {
+  /** Overall safety status */
+  safe: boolean
+
+  /** Recommended action */
+  action: 'allow' | 'block' | 'review'
+
   /**
    * Detection method used
    */
   method: 'heuristic' | 'semantic' | 'pattern-db' | 'llm-judge' | 'multi-turn'
 
   /**
+   * Confidence score (0-1)
+   */
+  confidence: number
+
+  /**
    * Specific threats detected
    */
   threats: string[]
+
+  /** Explanation of the detection */
+  explanation?: string
 
   /**
    * Attack category
@@ -215,11 +229,6 @@ export interface EnhancedInjectionResult extends SafetyResult {
     | 'affirmative-prefix'
 
   /**
-   * Explanation for detection
-   */
-  explanation?: string
-
-  /**
    * Sanitized version (if applicable)
    */
   sanitized?: string
@@ -230,7 +239,7 @@ export interface EnhancedInjectionResult extends SafetyResult {
  *
  * Multi-layered detection system with graduated confidence levels
  */
-export class EnhancedPromptInjectionGuardrail implements SafetyGuardrail {
+export class EnhancedPromptInjectionGuardrail {
   name = 'enhanced-prompt-injection'
   private config: Required<EnhancedPromptInjectionConfig>
   private conversationHistory: Array<{ role: string; content: string }> = []

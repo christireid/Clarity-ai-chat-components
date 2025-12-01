@@ -25,6 +25,7 @@ export default defineConfig({
         // Only run enterprise module tests that work without memory issues
         // See TEST_INFRASTRUCTURE_ISSUES.md for details on excluded tests
         include: [
+            'src/agents/__tests__/**/*.test.ts',
             'src/embeddings/__tests__/**/*.test.ts',
             'src/prompts/__tests__/**/*.test.ts',
             'src/plugins/__tests__/**/*.test.ts',

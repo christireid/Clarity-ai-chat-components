@@ -4,9 +4,14 @@ import { searchProducts, getProduct, getRecommendations } from '@/lib/products'
 
 // Initialize OpenAI client only when needed
 function getOpenAIClient() {
-  return new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY || 'dummy-key-for-build',
-  })
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) {
+    throw new Error(
+      'OPENAI_API_KEY environment variable is required. ' +
+      'Please set it in your .env.local file.'
+    )
+  }
+  return new OpenAI({ apiKey })
 }
 
 // Define available functions for the AI

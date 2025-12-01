@@ -68,6 +68,8 @@ export interface OutputValidationResult {
   action: 'allow' | 'block' | 'sanitize'
   sanitized?: string
   explanation?: string
+  /** The validated output (original if safe, undefined if blocked) */
+  output?: string
 }
 
 /**

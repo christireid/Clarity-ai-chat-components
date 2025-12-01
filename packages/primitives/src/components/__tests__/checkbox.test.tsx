@@ -164,4 +164,101 @@ describe('Checkbox Component', () => {
       expect(screen.getByRole('checkbox')).toBeChecked()
     })
   })
+
+  describe('Label Support', () => {
+    it('should render label when provided', () => {
+      render(<Checkbox label="Accept terms" />)
+      expect(screen.getByText('Accept terms')).toBeInTheDocument()
+    })
+
+    it('should associate label with checkbox via htmlFor', () => {
+      render(<Checkbox label="Accept terms" id="terms" />)
+      const label = screen.getByText('Accept terms')
+      expect(label).toHaveAttribute('for', 'terms')
+    })
+
+    it('should generate id if not provided for label association', () => {
+      render(<Checkbox label="Accept terms" />)
+      const checkbox = screen.getByRole('checkbox')
+      const label = screen.getByText('Accept terms')
+      expect(checkbox.id).toBeTruthy()
+      expect(label).toHaveAttribute('for', checkbox.id)
+    })
+
+    it('should render required indicator when required', () => {
+      render(<Checkbox label="Accept terms" required />)
+      expect(screen.getByText('*')).toBeInTheDocument()
+    })
+
+    it('should position label on left when labelPosition is left', () => {
+      const { container } = render(<Checkbox label="Accept terms" labelPosition="left" />)
+      const wrapper = container.querySelector('.flex-row-reverse')
+      expect(wrapper).toBeInTheDocument()
+    })
+
+    it('should position label on right by default', () => {
+      const { container } = render(<Checkbox label="Accept terms" />)
+      const wrapper = container.querySelector('.flex-row-reverse')
+      expect(wrapper).not.toBeInTheDocument()
+    })
+
+    it('should make label clickable to toggle checkbox', async () => {
+      const user = userEvent.setup()
+      render(<Checkbox label="Accept terms" onChange={mockOnChange} />)
+
+      await user.click(screen.getByText('Accept terms'))
+      expect(mockOnChange).toHaveBeenCalled()
+    })
+  })
+
+  describe('Error Handling', () => {
+    it('should display error message when error prop is provided', () => {
+      render(<Checkbox error="This field is required" />)
+      expect(screen.getByText('This field is required')).toBeInTheDocument()
+    })
+
+    it('should set aria-invalid when error is present', () => {
+      render(<Checkbox error="Error" />)
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox).toHaveAttribute('aria-invalid', 'true')
+    })
+
+    it('should link error message via aria-describedby', () => {
+      render(<Checkbox error="Error message" id="my-checkbox" />)
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox).toHaveAttribute('aria-describedby', 'my-checkbox-error')
+    })
+
+    it('should apply error styling to checkbox border', () => {
+      const { container } = render(<Checkbox error="Error" />)
+      const checkbox = container.querySelector('input[type="checkbox"]')
+      expect(checkbox).toHaveClass('border-destructive')
+    })
+
+    it('should display error with label', () => {
+      render(<Checkbox label="Terms" error="Required" />)
+      expect(screen.getByText('Terms')).toBeInTheDocument()
+      expect(screen.getByText('Required')).toBeInTheDocument()
+    })
+  })
+
+  describe('ARIA Attributes', () => {
+    it('should set aria-required when required', () => {
+      render(<Checkbox required />)
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox).toHaveAttribute('aria-required', 'true')
+    })
+
+    it('should not set aria-label when label is present', () => {
+      render(<Checkbox label="Terms" aria-label="Alt label" />)
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox).not.toHaveAttribute('aria-label')
+    })
+
+    it('should set aria-label when no visible label', () => {
+      render(<Checkbox aria-label="Hidden label" />)
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox).toHaveAttribute('aria-label', 'Hidden label')
+    })
+  })
 })

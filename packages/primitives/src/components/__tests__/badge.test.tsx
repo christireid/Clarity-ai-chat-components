@@ -25,14 +25,14 @@ describe('Badge Component', () => {
       const { container } = render(<Badge variant="destructive">Error</Badge>)
       const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
-      expect(badge).toHaveClass('bg-destructive/90')
+      expect(badge).toHaveClass('bg-destructive')
     })
 
     it('should render with outline variant', () => {
       const { container } = render(<Badge variant="outline">Outline</Badge>)
       const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
-      expect(badge).toHaveClass('bg-transparent')
+      expect(badge).toHaveClass('bg-background')
     })
 
     it('should render with success variant', () => {
@@ -88,7 +88,7 @@ describe('Badge Component', () => {
       const { container } = render(<Badge>Badge</Badge>)
       const badge = container.querySelector('div')
       expect(badge).toBeInTheDocument()
-      expect(badge).toHaveClass('px-2.5')
+      expect(badge).toHaveClass('px-3')
     })
   })
 

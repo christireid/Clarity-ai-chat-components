@@ -90,7 +90,7 @@ export function OfflineChatSync({
   const [lastSync, setLastSync] = React.useState<number | null>(null)
 
   const dbRef = React.useRef<IDBDatabase | null>(null)
-  const syncIntervalRef = React.useRef<NodeJS.Timeout>()
+  const syncIntervalRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Initialize IndexedDB
   React.useEffect(() => {
@@ -192,7 +192,11 @@ export function OfflineChatSync({
         store.put(msg)
       }
 
-      await transaction.complete
+      await new Promise<void>((resolve, reject) => {
+        transaction.oncomplete = () => resolve()
+        transaction.onerror = () => reject(transaction.error)
+        transaction.onabort = () => reject(new Error('Transaction aborted'))
+      })
     } catch (error) {
       console.error('Failed to save messages:', error)
     }

@@ -97,9 +97,18 @@ export function AuditLogViewer({
                 key={entry.id}
                 className={cn(
                   'px-4 py-3 transition-colors',
-                  onEntryClick && 'cursor-pointer hover:bg-muted/40'
+                  onEntryClick && 'cursor-pointer hover:bg-muted/40 focus:bg-muted/40 focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-inset'
                 )}
                 onClick={() => onEntryClick?.(entry)}
+                onKeyDown={(e) => {
+                  if (onEntryClick && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault()
+                    onEntryClick(entry)
+                  }
+                }}
+                role={onEntryClick ? 'button' : undefined}
+                tabIndex={onEntryClick ? 0 : undefined}
+                aria-label={onEntryClick ? `View details for ${entry.action} by ${entry.user}` : undefined}
               >
                 <div className="flex flex-wrap items-start gap-3">
                   <div className="min-w-0 flex-1 space-y-1">

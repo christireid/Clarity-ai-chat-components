@@ -276,8 +276,7 @@ export * from './embeddings'
 
 // Prompt System
 export * from './prompts'
-// TODO: Re-enable prompt system once core/ directory is implemented
-// export * from './prompt'
+export * from './prompt'
 
 // Document Loaders
 export * from './document-loaders'
@@ -372,6 +371,7 @@ export {
   PresenceIndicator,
   useCollaborativeSession,
 } from './components/collaborative-editing'
+// Document Integration
 export {
   DocumentIntegration,
   useDocumentIntegration,
@@ -379,7 +379,10 @@ export {
   type DocumentMetadata,
   type DocumentContent,
   type DocumentExportOptions,
+  type DocumentChunk,
 } from './components/document-integration'
+
+// Calendar Integration
 export {
   CalendarIntegration,
   useCalendarIntegration,
@@ -387,7 +390,12 @@ export {
   type CalendarEvent,
   type ActionItem,
   type AvailabilitySlot,
+  type EventAttendee,
+  type EventReminder,
+  type RecurrenceRule,
 } from './components/calendar-integration'
+
+// Email Integration
 export {
   EmailIntegration,
   useEmailIntegration,
@@ -398,6 +406,8 @@ export {
   type EmailNotification,
   type EmailTemplate,
   type DigestConfig,
+  type EmailParticipant,
+  type EmailAttachment,
 } from './components/email-integration'
 export { UserInteractionAnalytics, useInteractionTracking } from './components/user-interaction-analytics'
 export { ABTestingDashboard, useABTesting } from './components/ab-testing-dashboard'
