@@ -15,12 +15,12 @@
 | Severity | Count | Estimated Total Effort |
 |----------|-------|------------------------|
 | Critical (P0) | 7 | 10h |
-| High (P1) | 19 | 29h |
-| Medium (P2) | 22 | 18h |
+| High (P1) | 20 | 29.5h |
+| Medium (P2) | 23 | 18.5h |
 | Low (P3) | 14 | 10h |
-| **Total** | **62** | **67h** |
+| **Total** | **64** | **68h** |
 
-> **Review Note:** P1-011 was removed (false positive - tooltip already has keyboard support). P0-007 reclassified to P1-020.
+> **Review Note:** P1-011 was removed (false positive - tooltip already has keyboard support). P0-007 reclassified to P1-020. Added P1-021 (tooltip z-index) and P2-023 (stale line numbers in agent prompts) during review.
 
 ### Health Score
 
@@ -689,6 +689,58 @@ Status (online/offline/away/busy) conveyed only by color.
 | P1-017 | Icon Buttons Insufficient Hover Contrast | S (1h) |
 | P1-018 | Upload Progress Not Announced | S (1h) |
 | P1-019 | Streaming Cursor No Accessible Name | XS (0.5h) |
+| P1-021 | Tooltip Hardcoded Z-Index (9999) | XS (0.5h) |
+
+---
+
+### Issue P1-021: Tooltip Hardcoded Z-Index [ADDED IN REVIEW]
+
+#### Metadata
+| Field | Value |
+|-------|-------|
+| **ID** | P1-021 |
+| **Category** | Robustness |
+| **Subcategory** | Z-Index Management |
+| **Severity** | High |
+| **Component(s)** | Tooltip |
+| **File Path(s)** | `packages/primitives/src/components/tooltip.tsx` |
+| **Line Number(s)** | 226 |
+| **Estimated Effort** | XS (0.5h) |
+
+#### Current State
+
+```tsx
+// packages/primitives/src/components/tooltip.tsx:226
+style={{
+  position: 'fixed',
+  left: 0,
+  top: 0,
+  transform: getTooltipTransform(side, align),
+  transformOrigin: getTransformOrigin(),
+  zIndex: 9999,  // Hardcoded magic number
+}}
+```
+
+This is identical to the issue in P1-009 (hardcoded z-index in a11y-utils). Magic z-index values cause stacking context conflicts.
+
+#### Implementation Plan
+
+```tsx
+// Use CSS variable instead
+zIndex: 'var(--z-tooltip)',
+```
+
+Add to theme CSS:
+```css
+:root {
+  --z-tooltip: 9999;
+}
+```
+
+#### Acceptance Criteria
+- [ ] Z-index uses CSS variable
+- [ ] Tooltip still appears above other content
+- [ ] Consistent with other z-index management in codebase
 
 ---
 
@@ -720,6 +772,57 @@ Status (online/offline/away/busy) conveyed only by color.
 | P2-020 | Hover State Insufficient Contrast | Visual | S (1h) |
 | P2-021 | ChatWindow Story Fixed Dimensions | Storybook | XS (0.5h) |
 | P2-022 | No Responsive Story Variants | Storybook | M (3h) |
+| P2-023 | Agent Task Prompts May Have Stale Line Numbers | Docs | XS (0.5h) |
+
+---
+
+### Issue P2-023: Agent Task Prompts May Have Stale Line Numbers [ADDED IN REVIEW]
+
+#### Metadata
+| Field | Value |
+|-------|-------|
+| **ID** | P2-023 |
+| **Category** | Documentation |
+| **Subcategory** | Agent Prompts |
+| **Severity** | Medium |
+| **Affects** | All Agent Task Prompts in this report |
+| **Estimated Effort** | XS (0.5h) |
+
+#### Current State
+
+The Agent Task Prompts reference specific line numbers that may become stale as the codebase evolves. For example:
+
+```
+## Files to Modify
+- packages/primitives/src/components/dialog.tsx (line 351)
+```
+
+If code is added or removed above line 351, the reference becomes invalid and agents may modify the wrong code.
+
+#### Implementation Plan
+
+**Option A (Recommended):** Add verification step to all Agent Task Prompts:
+
+```markdown
+## Pre-Flight Check
+Before making changes, verify the target code exists at the expected location:
+1. Search for the pattern (e.g., `w-8 h-8`) in the file
+2. Confirm the surrounding context matches the "Before" code
+3. If line numbers differ, update your target accordingly
+```
+
+**Option B:** Use code patterns instead of line numbers:
+
+```markdown
+## Files to Modify
+- packages/primitives/src/components/dialog.tsx
+  - Find: `'absolute top-4 right-4 w-8 h-8 rounded-lg'`
+  - Replace with: `'absolute top-4 right-4 w-11 h-11 rounded-lg'`
+```
+
+#### Acceptance Criteria
+- [ ] All Agent Task Prompts include verification step OR use pattern-based targeting
+- [ ] Agents can successfully locate and modify target code even if line numbers shift
 
 ---
 
@@ -1062,7 +1165,7 @@ apps/storybook/
 ---
 
 *End of Comprehensive UI/UX Audit Report*
-*Total Issues: 62 | Estimated Effort: 67 hours*
+*Total Issues: 64 | Estimated Effort: 68 hours*
 
 ---
 
@@ -1070,12 +1173,33 @@ apps/storybook/
 
 **Changes made during senior code review:**
 
+### Removed Issues
 1. **P1-011 REMOVED (False Positive):** Tooltip already has keyboard focus support via `onFocus`/`onBlur` handlers at `tooltip.tsx:201-204`
 
-2. **P0-007 → P1-020 (Reclassified):** Global keyboard shortcuts are an efficiency enhancement, not a critical accessibility barrier
+### Reclassified Issues
+2. **P0-007 → P1-020 (Reclassified):** Global keyboard shortcuts are an efficiency enhancement (Nielsen H7), not a critical accessibility barrier. Users can still access all functionality without shortcuts.
 
-3. **P0-001 Updated:** Added breaking change warning and alternative implementation approaches (padding wrapper, responsive sizing)
+### Updated Issues
+3. **P0-001 Updated:** Added breaking change warning (37.5% size increase) and three alternative implementation approaches:
+   - Option A: Touch-target padding wrapper (recommended)
+   - Option B: Responsive sizing via `@media (pointer: coarse)`
+   - Option C: Direct size increase (most disruptive)
 
-4. **Line Numbers Corrected:** Updated to reference multi-line cn() calls accurately
+4. **Line Numbers Corrected:** Updated to reference multi-line cn() calls accurately (e.g., dialog.tsx:350-357 instead of :351)
 
-**Review Date:** 2025-11-30
+### New Issues Added
+5. **P1-021 ADDED:** Tooltip hardcoded z-index (`zIndex: 9999` at tooltip.tsx:226) - identical pattern to P1-009 but in different component
+
+6. **P2-023 ADDED:** Agent Task Prompts may have stale line numbers - recommended adding pre-flight verification steps or using pattern-based targeting instead of line numbers
+
+### Summary of Changes
+| Change Type | Count | Net Effect |
+|-------------|-------|------------|
+| Removed | 1 | -1 |
+| Reclassified | 1 | 0 (severity change only) |
+| Added | 2 | +2 |
+| **Net Change** | | **+1 issue** |
+
+**Final totals:** 64 issues, 68 hours estimated effort
+
+**Review Date:** 2025-12-01
