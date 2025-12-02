@@ -170,6 +170,68 @@ export {
   type EnhancedOptimizationResult,
 } from './hooks/use-token-optimization-enhanced'
 
+// Token Budget Monitor - Real-time threshold warnings and auto-trimming
+export {
+  useTokenBudgetMonitor,
+  getStatusColor,
+  formatTokenUsage,
+  createModelBudgetMonitor,
+  type TokenBudgetConfig,
+  type TokenBudgetMonitorReturn,
+  type TokenUsage,
+  type TokenUsageStatus,
+  type TrimResult,
+  type BudgetMessage,
+} from './hooks/use-token-budget-monitor'
+
+// KV Cache-Aligned Prompt Builder - Optimizes prompt structure for cache reuse
+export {
+  buildKVCacheOptimizedPrompt,
+  createSegment,
+  createSystemSegment,
+  createContextSegment,
+  createRAGSegment,
+  createHistorySegment,
+  createUserSegment,
+  conversationToSegments,
+  validateSegments,
+  estimateKVCacheSavings,
+  PromptBudgetExceededError,
+  type SegmentPriority,
+  type SegmentType,
+  type PromptSegment,
+  type KVCachePromptConfig,
+  type FormattedMessage,
+  type TrimmedSegmentInfo,
+  type BuiltPrompt,
+} from './utils/kv-cache-prompt-builder'
+
+// Dynamic Output Token Calculator - Intelligent max_tokens based on context
+export {
+  calculateDynamicOutputLimit,
+  injectBrevityInstruction,
+  getPreferenceConfig,
+  getTaskTypeConfig,
+  detectTaskType,
+  createModelOutputConfig,
+  getMaxTokens,
+  type OutputPreference,
+  type TaskType,
+  type OutputLimitConfig,
+  type OutputLimitResult,
+} from './utils/dynamic-output-limit'
+
+// Persistent Semantic Cache - IndexedDB-backed cache with similarity matching
+export {
+  PersistentSemanticCache,
+  createPersistentSemanticCache,
+  usePersistentSemanticCacheConfig,
+  type SemanticCacheConfig,
+  type CachedResponse,
+  type SemanticCacheStats,
+  type CacheCheckResult,
+} from './utils/semantic-cache-persistent'
+
 // Original Token Optimization Hook
 export {
   useTokenOptimization,
@@ -453,6 +515,36 @@ export { TokenCounter } from './components/token-counter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token-optimization-badge'
 export { TokenOptimizationDashboard } from './components/token-optimization-dashboard'
+export {
+  HistoryManager,
+  HistoryMessageRow,
+  TokenUsageBar,
+  HistoryToolbar,
+  type HistoryMessage,
+  type HistoryManagerProps,
+} from './components/history-manager'
+export {
+  OutputPreferenceSelector,
+  UncontrolledOutputPreferenceSelector,
+  useOutputPreference,
+  type OutputPreferenceValue,
+  type OutputPreferenceSelectorProps,
+  type UncontrolledOutputPreferenceSelectorProps,
+  type UncontrolledOutputPreferenceSelectorRef,
+} from './components/output-preference-selector'
+export {
+  StructuredInputBuilder,
+  useStructuredInput,
+  PRESET_FIELDS,
+  type StructuredInputField,
+  type StructuredInputResult,
+  type StructuredInputBuilderProps,
+  type FieldPriority,
+  type FieldSection,
+  type FieldType,
+  type SelectOption,
+  type TokenBreakdown,
+} from './components/structured-input-builder'
 
 // Context & Conversation Management
 export { ContextVisualizer } from './components/context-visualizer'

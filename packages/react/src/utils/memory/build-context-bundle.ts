@@ -1,12 +1,13 @@
 /**
  * buildContextBundle - Low-level utility for building context bundles
- * 
+ *
  * Primitive function for constructing context bundles from messages and memories.
  * Used internally by memory system and available for custom implementations.
  */
 
 import type { Message } from '@clarity-chat/types'
 import type { MemoryItem } from '@clarity-chat/memory'
+import { estimateTokens } from '../tokenization/estimator'
 
 /**
  * Context bundle structure
@@ -67,8 +68,8 @@ export function buildContextBundle(
   const memoryTexts = relevantMemories.map((mem) => `Memory: ${mem.content}`)
   const text = [...memoryTexts, ...messageTexts].join('\n\n')
 
-  // Estimate token count (rough: 1 token ≈ 4 chars)
-  const tokenCount = Math.ceil(text.length / 4)
+  // Estimate token count using centralized estimator
+  const tokenCount = estimateTokens(text)
 
   return {
     messages: filteredMessages,

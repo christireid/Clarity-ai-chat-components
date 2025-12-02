@@ -23,13 +23,16 @@ export default defineConfig({
         // Isolate tests properly
         isolate: true,
         // Only run enterprise module tests that work without memory issues
-        // See TEST_INFRASTRUCTURE_ISSUES.md for details on excluded tests
+        // Some tests (hooks, components) have memory/mock issues and need to be run separately
         include: [
             'src/agents/__tests__/**/*.test.ts',
             'src/embeddings/__tests__/**/*.test.ts',
             'src/prompts/__tests__/**/*.test.ts',
             'src/plugins/__tests__/**/*.test.ts',
             'src/safety/__tests__/**/*.test.ts',
+            'src/utils/__tests__/toon.test.ts',
+            'src/utils/__tests__/tokenization.test.ts',
+            'src/utils/__tests__/prompt-cache-manager.test.ts',
         ],
         coverage: {
             provider: 'v8',

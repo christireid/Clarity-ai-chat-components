@@ -62,14 +62,19 @@ export const DEFAULT_COMPLETION_SIGNALS = [
 
 /**
  * Default early stop patterns
+ *
+ * Note: These patterns are designed to be safe from catastrophic backtracking:
+ * - All use anchors (^, $) or short fixed patterns
+ * - Applied only to last 200 chars of response (see checkEarlyStopPatterns)
+ * - Avoid unbounded repetition (.*) without anchors
  */
 export const DEFAULT_EARLY_STOP_PATTERNS = [
-  /^```\s*$/m, // End of code block
-  /^\}\s*$/m, // JSON closing brace on its own line
-  /^<\/\w+>\s*$/m, // XML closing tag
-  /\n\n\*{3,}\s*$/m, // Section break at end
-  /\[END\]/i,
-  /\[DONE\]/i,
+  /^```\s*$/m, // End of code block (anchored)
+  /^\}\s*$/m, // JSON closing brace on its own line (anchored)
+  /^<\/[a-zA-Z]{1,20}>\s*$/m, // XML closing tag, limited tag length (anchored)
+  /\n\n\*{3,10}\s*$/m, // Section break at end, limited asterisks (anchored)
+  /\[END\]/i, // Short fixed pattern
+  /\[DONE\]/i, // Short fixed pattern
 ]
 
 /**
@@ -257,6 +262,8 @@ export class StreamingResponseMonitor {
     this.accumulatedResponse = ''
     this.tokenCount = 0
     this.startTime = Date.now()
+    this.stopEvents = 0
+    this.totalConfidence = 0
     this.chunksProcessed = 0
     this.lastChunks = []
     this.stopped = false

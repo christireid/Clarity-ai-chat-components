@@ -1,9 +1,12 @@
 /**
  * Prompt Compression Utilities
- * 
+ *
  * Implements token-efficient prompt compression techniques while maintaining
  * semantic integrity. Achieves 5-20x compression ratios.
  */
+
+// Re-export centralized estimateTokens for backward compatibility
+export { estimateTokens } from '../tokenization/estimator'
 
 export interface PromptCompressionOptions {
   targetRatio?: number // Target compression ratio (default: 8)
@@ -293,10 +296,5 @@ export class PromptCompressor {
   }
 }
 
-/**
- * Simple token estimation (fallback)
- */
-export function estimateTokens(text: string): number {
-  // Rough estimate: ~4 characters per token
-  return Math.ceil(text.length / 4)
-}
+// Note: estimateTokens is now re-exported from '../tokenization/estimator'
+// for consistent token estimation across the codebase

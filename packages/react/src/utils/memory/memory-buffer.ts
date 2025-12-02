@@ -1,11 +1,12 @@
 /**
  * Memory Buffering & Summarization Utilities
- * 
+ *
  * Implements intelligent memory compression and buffering to prevent context overflow
  * while preserving essential information through hierarchical summarization.
  */
 
 import type { MemoryItem, MemoryBufferConfig, MemoryType } from './types'
+import { estimateTokens as estimateTokensCentralized } from '../tokenization/estimator'
 
 export interface BufferedMessage {
   role: 'user' | 'assistant' | 'system'
@@ -251,11 +252,10 @@ export class MemoryBuffer {
   }
 
   /**
-   * Estimate tokens (rough approximation)
+   * Estimate tokens using centralized estimator
    */
   private estimateTokens(text: string): number {
-    // Rough estimate: ~4 characters per token
-    return Math.ceil(text.length / 4)
+    return estimateTokensCentralized(text)
   }
 
   /**

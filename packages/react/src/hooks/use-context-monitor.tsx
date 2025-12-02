@@ -525,16 +525,29 @@ export function useContextMonitor(
   /** Check if context is at critical level */
   isCritical: boolean
 } {
-  const resolvedOptions: Required<UseContextMonitorOptions> = {
-    maxTokens: options.maxTokens ?? 128000,
-    reservedTokens: options.reservedTokens ?? 4096,
-    warningThreshold: options.warningThreshold ?? 0.8,
-    criticalThreshold: options.criticalThreshold ?? 0.95,
-    trackHistory: options.trackHistory ?? false,
-    maxHistoryEntries: options.maxHistoryEntries ?? 100,
-    model: options.model ?? '',
-    stalenessThresholdMinutes: options.stalenessThresholdMinutes ?? 60,
-  }
+  // Memoize resolved options to prevent unnecessary re-renders
+  const resolvedOptions = React.useMemo<Required<UseContextMonitorOptions>>(
+    () => ({
+      maxTokens: options.maxTokens ?? 128000,
+      reservedTokens: options.reservedTokens ?? 4096,
+      warningThreshold: options.warningThreshold ?? 0.8,
+      criticalThreshold: options.criticalThreshold ?? 0.95,
+      trackHistory: options.trackHistory ?? false,
+      maxHistoryEntries: options.maxHistoryEntries ?? 100,
+      model: options.model ?? '',
+      stalenessThresholdMinutes: options.stalenessThresholdMinutes ?? 60,
+    }),
+    [
+      options.maxTokens,
+      options.reservedTokens,
+      options.warningThreshold,
+      options.criticalThreshold,
+      options.trackHistory,
+      options.maxHistoryEntries,
+      options.model,
+      options.stalenessThresholdMinutes,
+    ]
+  )
 
   const [utilization, setUtilization] = React.useState<ContextUtilization | null>(null)
   const [warnings, setWarnings] = React.useState<ContextWarning[]>([])

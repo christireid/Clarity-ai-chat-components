@@ -17,6 +17,7 @@
  */
 
 import type { Summarizer } from './summarizer'
+import { estimateTokens } from '../utils/core'
 
 /**
  * Message format for summarization
@@ -137,23 +138,126 @@ interface CacheEntry {
 }
 
 /**
- * Simple hash for cache keys
+ * Hash content for cache key using multiple samples to reduce collisions
+ * Samples from start, middle, and end of content
  */
 function hashContent(content: string): string {
+  if (!content) return 'sum_0_empty'
+
   let hash = 0
-  for (let i = 0; i < Math.min(content.length, 1000); i++) {
-    const char = content.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash
+  const len = content.length
+
+  // Sample from multiple positions to reduce collisions for long docs
+  const sampleSize = Math.min(500, len)
+  const positions = [
+    0,                            // Start
+    Math.floor(len / 2),          // Middle
+    Math.max(0, len - sampleSize) // End
+  ]
+
+  for (const start of positions) {
+    const end = Math.min(start + sampleSize, len)
+    for (let i = start; i < end; i++) {
+      const char = content.charCodeAt(i)
+      hash = ((hash << 5) - hash) + char
+      hash = hash & hash
+    }
   }
-  return `sum_${content.length}_${Math.abs(hash).toString(36)}`
+
+  return `sum_${len}_${Math.abs(hash).toString(36)}`
+}
+
+// Note: estimateTokens is imported from '../utils/core'
+// for consistent token estimation across the codebase
+
+/**
+ * Maximum cache entries before eviction
+ */
+const MAX_CACHE_ENTRIES = 500
+
+/**
+ * Retry configuration
+ */
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  baseDelayMs: 1000,
+  maxDelayMs: 10000,
+  /** HTTP status codes that should trigger retry */
+  retryableStatuses: [429, 500, 502, 503, 504],
 }
 
 /**
- * Estimate tokens (4 chars per token approximation)
+ * Simple rate limiter using token bucket algorithm
  */
-function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4)
+class RateLimiter {
+  private tokens: number
+  private lastRefill: number
+  private readonly maxTokens: number
+  private readonly refillRatePerSecond: number
+
+  constructor(requestsPerMinute: number = 60) {
+    this.maxTokens = requestsPerMinute
+    this.tokens = requestsPerMinute
+    this.refillRatePerSecond = requestsPerMinute / 60
+    this.lastRefill = Date.now()
+  }
+
+  async acquire(): Promise<void> {
+    this.refill()
+
+    if (this.tokens < 1) {
+      // Wait until we have a token
+      const waitTime = Math.ceil((1 - this.tokens) / this.refillRatePerSecond * 1000)
+      await new Promise(resolve => setTimeout(resolve, waitTime))
+      this.refill()
+    }
+
+    this.tokens -= 1
+  }
+
+  private refill(): void {
+    const now = Date.now()
+    const elapsed = (now - this.lastRefill) / 1000
+    this.tokens = Math.min(this.maxTokens, this.tokens + elapsed * this.refillRatePerSecond)
+    this.lastRefill = now
+  }
+}
+
+/**
+ * Sleep utility for retry delays
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/**
+ * Calculate exponential backoff delay with jitter
+ */
+function getRetryDelay(attempt: number): number {
+  const exponentialDelay = RETRY_CONFIG.baseDelayMs * Math.pow(2, attempt)
+  const jitter = Math.random() * 0.3 * exponentialDelay // 30% jitter
+  return Math.min(exponentialDelay + jitter, RETRY_CONFIG.maxDelayMs)
+}
+
+/**
+ * Check if an error is retryable
+ */
+function isRetryableError(error: unknown, status?: number): boolean {
+  if (status && RETRY_CONFIG.retryableStatuses.includes(status)) {
+    return true
+  }
+
+  // Network errors are retryable
+  if (error instanceof TypeError && error.message.includes('fetch')) {
+    return true
+  }
+
+  // Check for specific error messages
+  const message = error instanceof Error ? error.message.toLowerCase() : ''
+  return message.includes('timeout') ||
+         message.includes('network') ||
+         message.includes('econnreset') ||
+         message.includes('socket hang up')
 }
 
 /**
@@ -256,12 +360,15 @@ export class LLMSummarizer implements Summarizer {
   private config: Required<LLMSummarizationConfig>
   private cache: Map<string, CacheEntry> = new Map()
   private cacheTTL: number = 3600000 // 1 hour
+  private rateLimiter: RateLimiter
   private stats = {
     summariesGenerated: 0,
     cacheHits: 0,
     totalInputTokens: 0,
     totalOutputTokens: 0,
     totalSavings: 0,
+    retryCount: 0,
+    rateLimitWaits: 0,
   }
 
   constructor(config: LLMSummarizationConfig) {
@@ -276,6 +383,9 @@ export class LLMSummarizer implements Summarizer {
       customHandler: config.customHandler ?? (async () => ''),
       temperature: config.temperature ?? 0.3,
     }
+
+    // Initialize rate limiter (60 requests/min default, adjust per provider limits)
+    this.rateLimiter = new RateLimiter(60)
   }
 
   /**
@@ -319,7 +429,22 @@ export class LLMSummarizer implements Summarizer {
     const summary = await this.callLLM(prompt, maxTokens)
     const summaryTokens = estimateTokens(summary)
 
-    // Update cache
+    // Update cache with size limit
+    if (this.cache.size >= MAX_CACHE_ENTRIES) {
+      // Evict oldest entry
+      let oldestKey: string | null = null
+      let oldestTime = Infinity
+      for (const [key, entry] of this.cache) {
+        if (entry.timestamp < oldestTime) {
+          oldestTime = entry.timestamp
+          oldestKey = key
+        }
+      }
+      if (oldestKey) {
+        this.cache.delete(oldestKey)
+      }
+    }
+
     this.cache.set(cacheKey, {
       summary,
       timestamp: Date.now(),
@@ -392,11 +517,12 @@ export class LLMSummarizer implements Summarizer {
         stats: {
           originalTokens,
           summaryTokens,
-          compressionRatio: summaryTokens / originalTokens,
+          compressionRatio: originalTokens > 0 ? summaryTokens / originalTokens : 0,
         },
       }
     } catch {
       // Fallback to narrative summary
+      const responseTokens = estimateTokens(response)
       return {
         topics: [],
         decisions: [],
@@ -407,8 +533,8 @@ export class LLMSummarizer implements Summarizer {
         messageCount: messages.length,
         stats: {
           originalTokens,
-          summaryTokens: estimateTokens(response),
-          compressionRatio: estimateTokens(response) / originalTokens,
+          summaryTokens: responseTokens,
+          compressionRatio: originalTokens > 0 ? responseTokens / originalTokens : 0,
         },
       }
     }
@@ -487,7 +613,7 @@ export class LLMSummarizer implements Summarizer {
         summarizedMessages: toSummarize.length,
         originalTokens,
         finalTokens,
-        compressionRatio: finalTokens / originalTokens,
+        compressionRatio: originalTokens > 0 ? finalTokens / originalTokens : 1,
       },
     }
   }
@@ -561,6 +687,8 @@ Maximum ${sectionsTokens} tokens total.`
     totalInputTokens: number
     totalOutputTokens: number
     totalSavings: number
+    retryCount: number
+    rateLimitWaits: number
     avgCompressionRatio: number
     cacheHitRate: number
   } {
@@ -589,18 +717,49 @@ Maximum ${sectionsTokens} tokens total.`
   }
 
   /**
-   * Call LLM provider
+   * Call LLM provider with rate limiting
    */
   private async callLLM(prompt: string, maxTokens: number): Promise<string> {
+    // Apply rate limiting
+    const startWait = Date.now()
+    await this.rateLimiter.acquire()
+    if (Date.now() - startWait > 100) {
+      this.stats.rateLimitWaits++
+    }
+
     switch (this.config.provider) {
       case 'openai':
-        return this.callOpenAI(prompt, maxTokens)
+        return this.callWithRetry(() => this.callOpenAI(prompt, maxTokens))
       case 'anthropic':
-        return this.callAnthropic(prompt, maxTokens)
+        return this.callWithRetry(() => this.callAnthropic(prompt, maxTokens))
       case 'custom':
         return this.config.customHandler(prompt, { maxTokens })
       default:
         throw new Error(`Unknown provider: ${this.config.provider}`)
+    }
+  }
+
+  /**
+   * Execute API call with retry logic
+   */
+  private async callWithRetry(
+    fn: () => Promise<string>,
+    attempt: number = 0
+  ): Promise<string> {
+    try {
+      return await fn()
+    } catch (error) {
+      // Extract status code if available
+      const status = (error as { status?: number }).status
+
+      if (attempt < RETRY_CONFIG.maxRetries && isRetryableError(error, status)) {
+        this.stats.retryCount++
+        const delay = getRetryDelay(attempt)
+        await sleep(delay)
+        return this.callWithRetry(fn, attempt + 1)
+      }
+
+      throw error
     }
   }
 
@@ -628,7 +787,9 @@ Maximum ${sectionsTokens} tokens total.`
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}))
-      throw new Error(`OpenAI summarization failed: ${JSON.stringify(error)}`)
+      const err = new Error(`OpenAI summarization failed: ${JSON.stringify(error)}`)
+      ;(err as Error & { status: number }).status = response.status
+      throw err
     }
 
     const data = await response.json()
@@ -659,7 +820,9 @@ Maximum ${sectionsTokens} tokens total.`
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}))
-      throw new Error(`Anthropic summarization failed: ${JSON.stringify(error)}`)
+      const err = new Error(`Anthropic summarization failed: ${JSON.stringify(error)}`)
+      ;(err as Error & { status: number }).status = response.status
+      throw err
     }
 
     const data = await response.json()

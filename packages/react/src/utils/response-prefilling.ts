@@ -10,6 +10,8 @@
  * @module utils/response-prefilling
  */
 
+import { estimateTokens } from './tokenization/estimator'
+
 export interface PrefillConfig {
   /** The prefill text to start the response with */
   prefill: string
@@ -297,8 +299,8 @@ export function validatePrefill(
     const match = response.match(pattern)
     if (match) {
       preambleDetected = true
-      // Rough estimate: 4 chars per token
-      preambleTokens = Math.ceil(match[0].length / 4)
+      // Use centralized token estimator
+      preambleTokens = estimateTokens(match[0])
       break
     }
   }

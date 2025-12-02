@@ -1,10 +1,11 @@
 /**
  * Chat helper utilities for Vercel AI SDK compatible hooks
- * 
+ *
  * Provides utilities for message transformation, formatting, and manipulation
  */
 
 import type { CoreMessage, CoreMessageContent } from '../hooks/use-chat-enhanced'
+import { estimateTokens } from './tokenization/estimator'
 
 /**
  * Convert CoreMessage to plain text
@@ -321,24 +322,17 @@ export function validateMessage(message: CoreMessage): { valid: boolean; errors:
 
 /**
  * Estimate token count (rough approximation)
- * Uses a more accurate approximation: ~0.75 tokens per word, or ~4 characters per token
- * 
+ * Uses centralized estimator for consistency across codebase
+ *
  * @param {CoreMessage} message - Message to estimate tokens for
  * @returns {number} Estimated token count
  */
 export function estimateTokenCount(message: CoreMessage): number {
   const text = messageToText(message)
   if (!text) return 0
-  
-  // More accurate: count words (better approximation) or fallback to char-based
-  const words = text.trim().split(/\s+/).filter(Boolean)
-  if (words.length > 0) {
-    // ~0.75 tokens per word is more accurate for English text
-    return Math.ceil(words.length * 0.75)
-  }
-  
-  // Fallback: ~4 characters per token (conservative estimate)
-  return Math.ceil(text.length / 4)
+
+  // Use centralized estimator for consistent token counting
+  return estimateTokens(text)
 }
 
 /**

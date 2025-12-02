@@ -328,22 +328,22 @@ function splitIntoSentences(text: string): string[] {
     'Jan.', 'Feb.', 'Mar.', 'Apr.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.',
   ]
 
-  let protected = text
+  let protectedText = text
   const placeholders: Map<string, string> = new Map()
 
   for (const abbr of abbreviations) {
-    if (protected.includes(abbr)) {
+    if (protectedText.includes(abbr)) {
       const placeholder = `__ABBR_${placeholders.size}__`
       placeholders.set(placeholder, abbr)
-      protected = protected.split(abbr).join(placeholder)
+      protectedText = protectedText.split(abbr).join(placeholder)
     }
   }
 
   // Also protect decimals (e.g., 3.14)
-  protected = protected.replace(/(\d)\.(\d)/g, '$1__DECIMAL__$2')
+  protectedText = protectedText.replace(/(\d)\.(\d)/g, '$1__DECIMAL__$2')
 
   // Split on sentence boundaries
-  const sentences = protected.match(/[^.!?]+[.!?]+\s*/g) || [protected]
+  const sentences = protectedText.match(/[^.!?]+[.!?]+\s*/g) || [protectedText]
 
   // Restore abbreviations and decimals
   return sentences.map(sentence => {
