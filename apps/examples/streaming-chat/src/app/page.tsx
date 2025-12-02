@@ -2,10 +2,17 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { ChatWindow } from '@clarity-chat/react'
-import type { Message } from '@clarity-chat/types'
+
+type StreamMessage = {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp?: number
+  isStreaming?: boolean
+}
 
 export default function Home() {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<StreamMessage[]>([
     {
       id: '1',
       chatId: 'streaming-demo',
@@ -26,7 +33,7 @@ export default function Home() {
 
   const handleSendMessage = useCallback(async (content: string) => {
     // Create user message
-    const userMessage: Message = {
+    const userMessage: StreamMessage = {
       id: Date.now().toString(),
       chatId: 'streaming-demo',
       role: 'user',
@@ -41,7 +48,7 @@ export default function Home() {
     setIsStreaming(true)
 
     // Create streaming assistant message
-    const assistantMessage: Message = {
+    const assistantMessage: StreamMessage = {
       id: (Date.now() + 1).toString(),
       chatId: 'streaming-demo',
       role: 'assistant',
