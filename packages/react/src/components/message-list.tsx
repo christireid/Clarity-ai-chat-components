@@ -165,46 +165,58 @@ export function MessageList({
   const showEmptyState = messages.length === 0 && !isLoading && emptyState
 
   return (
-    <div className="relative h-full">
+    <div className={cn("flex flex-col flex-1 min-h-0 overflow-hidden", className)}>
       <ScrollArea
         ref={scrollRef as React.LegacyRef<HTMLDivElement>}
-        className={cn('h-full bg-transparent px-2 py-4 sm:px-4', className)}
+        className="flex-1 min-h-0 bg-transparent px-2 py-4 sm:px-4"
       >
-        {/* Loading skeletons */}
-        {isLoading && messages.length === 0 && (
-          <div className="space-y-4 px-4 py-6">
-            {Array.from({ length: loadingCount }).map((_, index) => (
-              <SkeletonMessage
-                key={`skeleton-${index}`}
-                role={index % 2 === 0 ? 'user' : 'assistant'}
-                lines={index % 2 === 0 ? 2 : 4}
-                variant="shimmer"
-              />
-            ))}
-          </div>
-        )}
+        <AnimatePresence mode="wait" initial={false}>
+          {/* Loading skeletons - only when no messages exist */}
+          {isLoading && messages.length === 0 && (
+            <motion.div
+              key="loading-skeletons"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="space-y-4 px-4 py-6"
+            >
+              {Array.from({ length: loadingCount }).map((_, index) => (
+                <SkeletonMessage
+                  key={`skeleton-${index}`}
+                  role={index % 2 === 0 ? 'user' : 'assistant'}
+                  lines={index % 2 === 0 ? 2 : 4}
+                  variant="shimmer"
+                />
+              ))}
+            </motion.div>
+          )}
 
-        {/* Empty state */}
-        {showEmptyState && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-            className="flex h-full items-center justify-center px-6 py-12 bg-gradient-to-b from-background/0 to-muted/10"
-          >
-            {emptyState}
-          </motion.div>
-        )}
+          {/* Empty state */}
+          {showEmptyState && (
+            <motion.div
+              key="empty-state"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="px-2 py-4"
+            >
+              {emptyState}
+            </motion.div>
+          )}
 
-        {/* Messages */}
-        {messages.length > 0 && (
-          <motion.div
-            className="space-y-3 px-2 pb-6 sm:px-4"
-            variants={containerVariants}
-            initial="initial"
-            animate="animate"
-          >
-            <AnimatePresence mode="popLayout">
+          {/* Messages */}
+          {messages.length > 0 && (
+            <motion.div
+              key="messages-container"
+              className="space-y-3 px-2 pb-6 sm:px-4"
+              variants={containerVariants}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
               {messages.map((message, index) => {
                 // Calculate grouping for this message
                 const grouping = enableGrouping
@@ -222,16 +234,22 @@ export function MessageList({
                   shouldShowTimeSeparator(messages[index - 1], message)
 
                 return (
-                  <React.Fragment key={message.id}>
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, delay: index * 0.03 }}
+                    className="w-full"
+                  >
                     {/* Time separator */}
-                    {showSeparator && message.timestamp && (
+                    {showSeparator && message.createdAt && (
                       <TimeSeparator>
-                        {getTimeSeparator(message.timestamp)}
+                        {getTimeSeparator(new Date(message.createdAt).toISOString())}
                       </TimeSeparator>
                     )}
 
                     {/* Message */}
-                    <motion.div variants={itemVariants} layout>
+                    <motion.div variants={itemVariants}>
                       <Message
                         message={message}
                         onCopy={(content) => onMessageCopy?.(message.id, content)}
@@ -245,23 +263,23 @@ export function MessageList({
                         {...grouping}
                       />
                     </motion.div>
-                  </React.Fragment>
+                  </motion.div>
                 )
               })}
-            </AnimatePresence>
 
-            {/* Show loading skeleton for new messages while fetching */}
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-              >
-                <SkeletonMessage role="assistant" lines={3} variant="shimmer" />
-              </motion.div>
-            )}
-          </motion.div>
-        )}
+              {/* Show loading skeleton for new messages while fetching */}
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <SkeletonMessage role="assistant" lines={3} variant="shimmer" />
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </ScrollArea>
 
       {/* Jump-to-bottom button with new message count */}
