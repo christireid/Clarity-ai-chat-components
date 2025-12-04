@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useClarityObject } from '@clarity-chat/react'
 import { Button, Card, CardHeader, CardContent, Badge } from '@clarity-chat/primitives'
 import { useState } from 'react'

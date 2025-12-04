@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ResponseQualityMeter } from '@clarity-chat/react'
 import type { ResponseQualityMetric } from '@clarity-chat/react'
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatWindow } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 import { useState } from 'react'

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import {
   Dialog,
@@ -13,7 +13,7 @@ import {
   Button,
   Input,
 } from '@clarity-chat/primitives'
-import { expect, userEvent, within, waitFor } from '@storybook/test'
+import { expect, userEvent, within, waitFor } from 'storybook/test'
 
 const meta: Meta<typeof Dialog> = {
   title: 'Components/Layout/Dialog',

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { UsageDashboard } from '@clarity-chat/react'
 import type { UsageStats } from '@clarity-chat/types'
 

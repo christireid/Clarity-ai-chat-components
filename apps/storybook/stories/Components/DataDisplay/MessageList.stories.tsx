@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { VirtualizedMessageList as MessageList } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
-import { expect, within } from '@storybook/test'
+import { expect, within } from 'storybook/test'
 
 /**
  * **MessageList Component**

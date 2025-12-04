@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
-import { expect, userEvent, within } from '@storybook/test'
+import { expect, userEvent, within } from 'storybook/test'
 
 /**
  * Enhanced Button component with ripple effect, loading states, and success/error feedback.

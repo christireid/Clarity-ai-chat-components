@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AdvancedMessageSearch } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 

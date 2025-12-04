@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useClarityChat, ChatWindow, MemoryProvider, convertCoreMessagesToMessages } from '@clarity-chat/react'
-import { Button, Card, Badge, Select } from '@clarity-chat/primitives'
+import { Button, Card, Badge } from '@clarity-chat/primitives'
 import { useState, useMemo } from 'react'
 
 /**
@@ -261,14 +261,15 @@ function MemoryStrategiesDemo() {
           <h3 className="text-lg font-semibold">Memory Strategies</h3>
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium">Strategy:</label>
-            <Select
+            <select
               value={strategy}
-              onValueChange={(value: any) => setStrategy(value)}
+              onChange={(e) => setStrategy(e.target.value as any)}
+              className="border rounded p-1 text-sm bg-background"
             >
               <option value="sliding-window">Sliding Window</option>
               <option value="semantic-chunks">Semantic Chunks</option>
               <option value="vector-store">Vector Store</option>
-            </Select>
+            </select>
           </div>
         </div>
 
@@ -367,13 +368,14 @@ function TransportDemo() {
           <h3 className="text-lg font-semibold">Transport Selection</h3>
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium">Transport:</label>
-            <Select
+            <select
               value={transport}
-              onValueChange={(value: any) => setTransport(value)}
+              onChange={(e) => setTransport(e.target.value as any)}
+              className="border rounded p-1 text-sm bg-background"
             >
               <option value="sse">SSE (Server-Sent Events)</option>
               <option value="websocket">WebSocket</option>
-            </Select>
+            </select>
           </div>
         </div>
 
@@ -491,26 +493,28 @@ function FullFeaturedDemo() {
           {memoryEnabled && (
             <div className="flex items-center gap-2">
               <label className="text-sm font-medium">Strategy:</label>
-              <Select
+              <select
                 value={memoryStrategy}
-                onValueChange={(value: any) => setMemoryStrategy(value)}
+                onChange={(e) => setMemoryStrategy(e.target.value as any)}
+                className="border rounded p-1 text-sm bg-background"
               >
                 <option value="sliding-window">Sliding Window</option>
                 <option value="semantic-chunks">Semantic Chunks</option>
                 <option value="vector-store">Vector Store</option>
-              </Select>
+              </select>
             </div>
           )}
 
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium">Transport:</label>
-            <Select
+            <select
               value={transport}
-              onValueChange={(value: any) => setTransport(value)}
+              onChange={(e) => setTransport(e.target.value as any)}
+              className="border rounded p-1 text-sm bg-background"
             >
               <option value="sse">SSE</option>
               <option value="websocket">WebSocket</option>
-            </Select>
+            </select>
           </div>
         </div>
 

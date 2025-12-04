@@ -1,7 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { TokenOptimizationPanel } from '../../../packages/react/src/components/token-optimization-panel'
-import type { TokenOptimizationStats } from '../../../packages/react/src/hooks/use-token-optimization'
+import { TokenOptimizationPanel, type TokenOptimizationStats } from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Analytics/TokenOptimizationPanel',

@@ -1,9 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import {
-  TokenOptimizationDashboard,
-  type OptimizationMetrics,
-} from '../../../packages/react/src/components/token-optimization-dashboard'
+import { TokenOptimizationDashboard } from '@clarity-chat/react'
+import type { OptimizationMetrics } from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Analytics/TokenOptimizationDashboard',

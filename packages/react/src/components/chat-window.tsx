@@ -294,11 +294,11 @@ export function ChatWindow({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <div className="flex items-center gap-3.5 min-w-0 flex-1">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25">
               <BotIcon size={22} />
             </div>
-            <div className="min-w-0 flex-1 space-y-0.5">
+            <div className="min-w-0 flex-1 space-y-0.5 pl-0.5">
               <h2 className="text-sm font-bold text-foreground truncate leading-tight">
                 {sessionTitle}
               </h2>
@@ -372,7 +372,7 @@ export function ChatWindow({
         </motion.div>
       )}
 
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
         <MessageList
           messages={normalizedMessages}
           isLoading={isLoading}
@@ -383,7 +383,7 @@ export function ChatWindow({
           onRegenerateMessage={onRegenerateMessage}
           onDeleteMessage={onDeleteMessage}
           emptyState={effectiveEmptyState}
-          className="flex-1"
+          className="flex-1 min-h-0"
         />
 
         {/* Thinking Indicator - positioned above input */}

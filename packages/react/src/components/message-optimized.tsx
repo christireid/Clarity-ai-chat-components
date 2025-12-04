@@ -200,7 +200,6 @@ export const MessageOptimized = React.memo(
           {/* Avatar */}
           {showAvatar && (
             <Avatar
-              src={isUser ? undefined : '/ai-avatar.png'}
               alt={isUser ? 'User' : 'AI Assistant'}
               fallback={isUser ? 'U' : 'AI'}
               className="flex-shrink-0"

@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { VoiceInput, InlineVoiceInput } from '@clarity-chat/react'
 import { useState } from 'react'
-import { expect, within } from '@storybook/test'
+import { expect, within } from 'storybook/test'
 
 const meta: Meta<typeof VoiceInput> = {
   title: 'Components/Inputs/VoiceInput',

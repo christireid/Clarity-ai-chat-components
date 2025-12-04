@@ -1,9 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import {
-  SSOConfigWizard,
-  type SSOConfigStep,
-} from '../../../packages/react/src/components/enterprise/SSOConfigWizard'
+import { SSOConfigWizard, type SSOConfigStep } from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Enterprise/SSOConfigWizard',

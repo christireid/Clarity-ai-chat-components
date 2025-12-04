@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@clarity-chat/primitives'
 import { useState } from 'react'
-import { expect, userEvent, within, waitFor } from '@storybook/test'
+import { expect, userEvent, within, waitFor } from 'storybook/test'
 
 /**
  * Popover component for displaying floating content.

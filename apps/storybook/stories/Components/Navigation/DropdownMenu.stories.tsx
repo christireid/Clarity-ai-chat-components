@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,7 +9,7 @@ import {
   DropdownMenuGroup,
 } from '@clarity-chat/primitives'
 import { Button } from '@clarity-chat/primitives'
-import { expect, userEvent, within, waitFor } from '@storybook/test'
+import { expect, userEvent, within, waitFor } from 'storybook/test'
 
 /**
  * DropdownMenu provides a context menu triggered by a button click.

@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { SeatInviteDialog } from '../../../packages/react/src/components/enterprise/SeatInviteDialog'
+import { SeatInviteDialog } from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Enterprise/SeatInviteDialog',

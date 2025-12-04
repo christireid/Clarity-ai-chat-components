@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Badge } from '@clarity-chat/primitives'
-import { expect, within } from '@storybook/test'
+import { expect, within } from 'storybook/test'
 
 /**
  * Badge component for displaying small count indicators, status labels, and tags.

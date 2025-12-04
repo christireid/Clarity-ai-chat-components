@@ -1,9 +1,29 @@
-import type { Decorator, Preview } from '@storybook/react'
+import type { Decorator, Preview } from '@storybook/react-vite'
 import React from 'react'
-import { ThemeProvider } from '@clarity-chat/react'
+import { ThemeProvider, ToastProvider } from '@clarity-chat/react'
 import { getAllThemes } from '@clarity-chat/react/theme'
 import { clarityTheme, clarityDarkTheme } from './manager'
 import './globals.css'
+
+// Suppress AbortError from Storybook's waitForAnimations in React 19
+if (typeof window !== 'undefined') {
+  const originalOnError = window.onerror
+  window.onerror = (message, source, lineno, colno, error) => {
+    if (error?.name === 'AbortError' || (typeof message === 'string' && message.includes('AbortError'))) {
+      return true // Suppress the error
+    }
+    return originalOnError?.(message, source, lineno, colno, error) ?? false
+  }
+
+  const originalOnUnhandledRejection = window.onunhandledrejection
+  window.onunhandledrejection = (event) => {
+    if (event.reason?.name === 'AbortError') {
+      event.preventDefault()
+      return
+    }
+    originalOnUnhandledRejection?.call(window, event)
+  }
+}
 
 const themePresets = getAllThemes()
   .map(({ name, metadata }) => ({
@@ -27,9 +47,11 @@ const withTheme: Decorator = (Story, context) => {
         enableTransitions: false,
       }}
     >
-      <div className="sb-clarity-shell min-h-screen bg-background text-foreground">
-        <Story />
-      </div>
+      <ToastProvider>
+        <div className="sb-clarity-shell min-h-screen bg-background text-foreground">
+          <Story />
+        </div>
+      </ToastProvider>
     </ThemeProvider>
   )
 }
@@ -86,6 +108,19 @@ const preview: Preview = {
       source: {
         state: 'open',
       },
+      story: {
+        inline: true,
+        iframeHeight: 400,
+      },
+    },
+    // Disable animation waiting to prevent AbortError flickering
+    chromatic: {
+      disableSnapshot: false,
+      pauseAnimationAtEnd: false,
+    },
+    // Increase timeout for test runner to prevent AbortError
+    test: {
+      dangerouslyIgnoreUnhandledErrors: true,
     },
     a11y: {
       config: {
@@ -104,16 +139,15 @@ const preview: Preview = {
     },
     layout: 'centered',
     backgrounds: {
-      default: 'system',
-      values: [
-        { name: 'system', value: 'transparent' },
-        { name: 'light', value: '#ffffff' },
-        { name: 'dark', value: '#111827' },
-        { name: 'gradient', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-      ],
+      options: {
+        system: { name: 'system', value: 'transparent' },
+        light: { name: 'light', value: '#ffffff' },
+        dark: { name: 'dark', value: '#111827' },
+        gradient: { name: 'gradient', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }
+      }
     },
     viewport: {
-      viewports: {
+      options: {
         mobile: {
           name: 'Mobile',
           styles: { width: '375px', height: '667px' },
@@ -133,7 +167,9 @@ const preview: Preview = {
       },
     },
   },
+
   decorators: [withTheme],
+
   globalTypes: {
     locale: {
       name: 'Locale',
@@ -183,7 +219,14 @@ const preview: Preview = {
       },
     },
   },
+
   tags: ['autodocs'],
+
+  initialGlobals: {
+    backgrounds: {
+      value: 'system'
+    }
+  }
 }
 
 export default preview

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   EmptyState,
   EmptyChatState,
@@ -8,7 +8,7 @@ import {
   SuccessState,
 } from '@clarity-chat/react'
 import { Database, FileQuestion } from 'lucide-react'
-import { expect, userEvent, within } from '@storybook/test'
+import { expect, userEvent, within } from 'storybook/test'
 
 /**
  * Empty State Components

@@ -1,5 +1,10 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
+import { fileURLToPath } from "node:url";
 import type { StorybookConfig } from '@storybook/react-vite'
-import path from 'path'
+import path, { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const config: StorybookConfig = {
   stories: [
@@ -10,27 +15,21 @@ const config: StorybookConfig = {
     // '../../../packages/error-handling/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
     // '../../../packages/react/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
-  
+
+  staticDirs: ['../public'],
+
   addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-a11y',
-    '@storybook/addon-measure',
-    '@storybook/addon-outline',
-    'storybook-dark-mode',
-    // '@storybook/addon-designs', // Commented out - requires Storybook 10
+    getAbsolutePath("@storybook/addon-links"),
+    getAbsolutePath("@storybook/addon-a11y"),
+    // getAbsolutePath("storybook-dark-mode"),
+    getAbsolutePath("@storybook/addon-docs")
   ],
-  
+
   framework: {
-    name: '@storybook/react-vite',
+    name: getAbsolutePath("@storybook/react-vite"),
     options: {},
   },
-  
-  docs: {
-    autodocs: 'tag',
-  },
-  
+
   typescript: {
     reactDocgen: 'react-docgen-typescript',
     reactDocgenTypescriptOptions: {
@@ -48,55 +47,59 @@ const config: StorybookConfig = {
       },
     },
   },
-  
+
   core: {
     disableTelemetry: true,
   },
-  
+
   features: {
     // Storybook 10 uses storyStoreV8 by default
     buildStoriesJson: true,
   },
-    viteFinal: async (config) => {
-      config.resolve = config.resolve || {}
-      const existingAlias = Array.isArray(config.resolve.alias)
-        ? config.resolve.alias
-        : Object.entries(config.resolve.alias || {}).map(([find, replacement]) => ({
-            find,
-            replacement,
-          }))
 
-      config.resolve.alias = [
-        { find: /^@clarity-chat\/react\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/react/src/$1') },
-        { find: '@clarity-chat/react', replacement: path.resolve(__dirname, '../../../packages/react/src/index.ts') },
-        { find: /^@clarity-chat\/primitives\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/primitives/src/$1') },
-        { find: '@clarity-chat/primitives', replacement: path.resolve(__dirname, '../../../packages/primitives/src/index.ts') },
-        { find: /^@clarity-chat\/types\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/types/src/$1') },
-        { find: '@clarity-chat/types', replacement: path.resolve(__dirname, '../../../packages/types/src/index.ts') },
-        { find: /^@clarity-chat\/error-handling\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/error-handling/src/$1') },
-        { find: '@clarity-chat/error-handling', replacement: path.resolve(__dirname, '../../../packages/error-handling/src/index.ts') },
-        ...existingAlias,
-      ]
-      
-      // Configure build options for CSS imports
-      config.build = config.build || {}
-      config.build.rollupOptions = config.build.rollupOptions || {}
-      config.build.rollupOptions.external = config.build.rollupOptions.external || []
+  viteFinal: async (config) => {
+    config.resolve = config.resolve || {}
+    const existingAlias = Array.isArray(config.resolve.alias)
+      ? config.resolve.alias
+      : Object.entries(config.resolve.alias || {}).map(([find, replacement]) => ({
+          find,
+          replacement,
+        }))
 
-      if (Array.isArray(config.build.rollupOptions.external)) {
-        config.build.rollupOptions.external.push(
-          'highlight.js/styles/github-dark.css',
-          'katex/dist/katex.min.css'
-        )
-      }
+    config.resolve.alias = [
+      { find: /^@clarity-chat\/react\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/react/src/$1') },
+      { find: '@clarity-chat/react', replacement: path.resolve(__dirname, '../../../packages/react/src/index.ts') },
+      { find: /^@clarity-chat\/primitives\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/primitives/src/$1') },
+      { find: '@clarity-chat/primitives', replacement: path.resolve(__dirname, '../../../packages/primitives/src/index.ts') },
+      { find: /^@clarity-chat\/types\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/types/src/$1') },
+      { find: '@clarity-chat/types', replacement: path.resolve(__dirname, '../../../packages/types/src/index.ts') },
+      { find: /^@clarity-chat\/error-handling\/(.+)$/, replacement: path.resolve(__dirname, '../../../packages/error-handling/src/$1') },
+      { find: '@clarity-chat/error-handling', replacement: path.resolve(__dirname, '../../../packages/error-handling/src/index.ts') },
+      ...existingAlias,
+    ]
+    
+    // Configure build options for CSS imports
+    config.build = config.build || {}
+    config.build.rollupOptions = config.build.rollupOptions || {}
+    config.build.rollupOptions.external = config.build.rollupOptions.external || []
 
-      // Add process polyfill for browser compatibility
-      config.define = config.define || {}
-      config.define['process.env'] = JSON.stringify({})
+    if (Array.isArray(config.build.rollupOptions.external)) {
+      config.build.rollupOptions.external.push(
+        'highlight.js/styles/github-dark.css',
+        'katex/dist/katex.min.css'
+      )
+    }
 
-      return config
-    },
+    // Add process polyfill for browser compatibility
+    config.define = config.define || {}
+    config.define['process.env'] = JSON.stringify({})
 
+    return config
+  }
 }
 
 export default config
+
+function getAbsolutePath(value: string): any {
+  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)));
+}

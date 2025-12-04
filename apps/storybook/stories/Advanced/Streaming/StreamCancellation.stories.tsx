@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { StreamCancellation } from '@clarity-chat/react'
 
 const meta: Meta<typeof StreamCancellation> = {

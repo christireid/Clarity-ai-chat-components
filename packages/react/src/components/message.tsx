@@ -23,6 +23,7 @@ import {
   MessageMetadata,
 } from './message/index'
 import { ErrorMessage, type ErrorDetails } from './error-message'
+import { CopyButton } from './copy-button'
 
 export interface MessageProps {
   message: MessageType
@@ -159,6 +160,52 @@ export function Message({
   // React 19: Compiler optimizes static objects - no useMemo needed
   const markdownComponents = {
     code: MarkdownCodeBlock,
+    // Custom pre handler - wrap code blocks with styling and copy button
+    pre: ({ children, node, ...props }: any) => {
+      // Extract code string from the code element for copy button
+      let codeString = ''
+      React.Children.forEach(children, (child) => {
+        if (React.isValidElement(child) && child.props) {
+          // Get from data attribute or extract text content
+          codeString = child.props['data-code-string'] || ''
+          if (!codeString && child.props.children) {
+            // Fallback: extract text from children
+            const extractText = (node: React.ReactNode): string => {
+              if (typeof node === 'string') return node
+              if (Array.isArray(node)) return node.map(extractText).join('')
+              if (React.isValidElement(node) && node.props?.children) {
+                return extractText(node.props.children)
+              }
+              return ''
+            }
+            codeString = extractText(child.props.children)
+          }
+        }
+      })
+
+      return (
+        <div className="relative group/code my-4">
+          <pre
+            className="relative overflow-x-auto bg-muted/50 border border-border rounded-lg p-4"
+            {...props}
+          >
+            {children}
+          </pre>
+          {codeString && (
+            <CopyButton
+              text={codeString}
+              className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
+            />
+          )}
+        </div>
+      )
+    },
+    // Always use div for paragraphs to prevent hydration mismatches
+    // The <p> element cannot contain block elements, and detecting them
+    // reliably across server/client is problematic. Using div is safe.
+    p: ({ children, ...props }: any) => (
+      <div className="mb-4 leading-relaxed" {...props}>{children}</div>
+    ),
     // Table styling
     table: ({ children, ...props }: any) => (
       <div className="overflow-x-auto my-4 w-full">
@@ -221,7 +268,7 @@ export function Message({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          'group flex gap-3.5 rounded-xl transition-all duration-200 ease-out',
+          'group flex gap-3 rounded-xl transition-all duration-200 ease-out',
           // Reduced padding for grouped messages
           isGrouped && !isGroupStart && !isGroupEnd ? 'px-4 py-1.5' : 'p-4',
           isUser && 'flex-row-reverse',
@@ -242,7 +289,6 @@ export function Message({
             }}
           >
             <Avatar
-              src={isUser ? undefined : '/ai-avatar.png'}
               alt={isUser ? 'User' : 'AI Assistant'}
               fallback={isUser ? 'U' : 'AI'}
               className="flex-shrink-0"
@@ -264,22 +310,25 @@ export function Message({
           {isGroupStart && (
             <div
               className={cn(
-                'flex items-center gap-2.5',
-                isUser && 'flex-row-reverse'
+                'flex items-center',
+                isUser ? 'gap-2 flex-row-reverse' : 'gap-2'
               )}
             >
-              <span className="font-semibold text-sm">
+              <span className="font-semibold text-sm whitespace-nowrap">
                 {isUser ? 'You' : 'AI Assistant'}
               </span>
               {showTimestamp && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isHovered ? 1 : 0.7 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-xs text-muted-foreground/90"
-                >
-                  {formatRelativeTime(message.createdAt)}
-                </motion.span>
+                <>
+                  <span className="text-muted-foreground/50">·</span>
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isHovered ? 1 : 0.7 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-xs text-muted-foreground/90 whitespace-nowrap"
+                  >
+                    {formatRelativeTime(message.createdAt)}
+                  </motion.span>
+                </>
               )}
               {message.status === 'sending' && (
                 <Badge variant="secondary" dot>

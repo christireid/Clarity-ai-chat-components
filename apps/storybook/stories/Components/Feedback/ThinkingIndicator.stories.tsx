@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ThinkingIndicator } from '@clarity-chat/react'
 import type { ThinkingStage } from '@clarity-chat/types'
-import { expect, within } from '@storybook/test'
+import { expect, within } from 'storybook/test'
 
 /**
  * **ThinkingIndicator Component**

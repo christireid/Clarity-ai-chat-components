@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState, useEffect } from 'react'
 import { StreamingTextRenderer } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'

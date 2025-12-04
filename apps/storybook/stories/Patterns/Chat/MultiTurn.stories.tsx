@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ChatWindow, ChatInput, Message, ThinkingIndicator } from '@clarity-chat/react'
 import { StatusBadge } from '../../../.storybook/blocks'
 import React, { useState } from 'react'

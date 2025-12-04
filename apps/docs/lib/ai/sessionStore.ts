@@ -359,6 +359,9 @@ export function getOrCreateSessionId(): string {
 
 /**
  * Session middleware helpers for API routes
+ *
+ * Note: sessionId is used as both the lookup key and stored in session.id
+ * to ensure consistency between creation and retrieval.
  */
 export async function getOrCreateSessionForRequest(
   sessionId: string,
@@ -369,7 +372,11 @@ export async function getOrCreateSessionForRequest(
   let session = await store.get(sessionId)
 
   if (!session) {
+    // Create session using sessionId as the primary key (session.id)
+    // This ensures the same key is used for both storage and retrieval
     session = createSession(sessionId, { userId, userAgent })
+    // Override the UUID with the sessionId for consistent lookups
+    session.id = sessionId
     await store.set(session)
   }
 

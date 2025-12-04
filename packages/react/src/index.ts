@@ -510,6 +510,9 @@ export { RetryButton, type RetryErrorType } from './components/retry-button'
 export { ErrorMessage, type ErrorDetails, type ErrorSeverity } from './components/error-message'
 export { NetworkStatus } from './components/network-status'
 
+// Error Reporting System
+export * from './error'
+
 // Token Management Components
 export { TokenCounter } from './components/token-counter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
@@ -565,7 +568,7 @@ export * from './components/interactive-card'
 // Interactive Components
 export { CommandPalette, type CommandItem } from './components/command-palette'
 export { ContextMenu } from './components/context-menu'
-export { Draggable } from './components/draggable'
+export { Draggable, DropZone } from './components/draggable'
 export { VoiceInput, InlineVoiceInput } from './components/voice-input'
 
 // Empty States
@@ -618,7 +621,26 @@ export * from './hooks/use-voice-input'
 export * from './hooks/use-model-router'
 export * from './hooks/use-smart-throttle'
 export * from './hooks/use-smart-cache'
-export * from './hooks/use-context-monitor'
+// Note: use-context-monitor has formatTokenCount and getUtilizationColor which conflict with ./prompt exports
+// Export specific items to avoid conflicts
+export {
+  useContextMonitor,
+  createContextMonitorIntegration,
+  type ContextBreakdown,
+  type ContextEfficiency,
+  type ContextUtilization,
+  type WarningLevel,
+  type WarningType,
+  type ContextWarning,
+  type OptimizationRecommendation,
+  type ContextMessage as ContextMonitorMessage,
+  type UseContextMonitorOptions,
+} from './hooks/use-context-monitor'
+// Re-export context-monitor specific utilities with different names to avoid conflicts
+export {
+  getUtilizationColor as getContextUtilizationColor,
+  formatTokenCount as formatContextTokenCount,
+} from './hooks/use-context-monitor'
 export * from './hooks/use-character-counter'
 export * from './hooks/use-submit-button-state'
 export * from './hooks/use-mobile-keyboard'

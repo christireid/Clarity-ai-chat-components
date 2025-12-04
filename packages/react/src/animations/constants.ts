@@ -27,8 +27,8 @@ export const ANIMATION_EASING = {
   inOut: 'easeInOut',
   /** Sharp, immediate transitions */
   sharp: 'easeInOut',
-  /** Spring physics */
-  spring: 'spring',
+  /** Bouncy spring-like easing (cubic-bezier approximation) */
+  spring: [0.34, 1.56, 0.64, 1] as const,
 } as const
 
 export const STAGGER_TIMING = {

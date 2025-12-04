@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { ChatWindow, ChatInput, Message } from '@clarity-chat/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { ChatWindow } from '@clarity-chat/react'
 import { StatusBadge } from '../../.storybook/blocks'
 import React, { useState } from 'react'
 
@@ -44,27 +44,25 @@ export const InteractiveChat: Story = {
         timestamp: new Date(Date.now() - 60000),
       },
     ])
-    const [input, setInput] = useState('')
 
-    const handleSubmit = () => {
-      if (!input.trim()) return
+    const handleSubmit = (content: string) => {
+      if (!content.trim()) return
 
       const userMessage = {
         id: Date.now().toString(),
         role: 'user' as const,
-        content: input,
+        content: content,
         timestamp: new Date(),
       }
 
       setMessages((prev) => [...prev, userMessage])
-      setInput('')
 
       // Simulate AI response
       setTimeout(() => {
         const aiMessage = {
           id: (Date.now() + 1).toString(),
           role: 'assistant' as const,
-          content: `You said: "${input}". This is a demo playground - messages don't actually get sent to an AI. Try exploring other stories to see real examples!`,
+          content: `You said: "${content}". This is a demo playground - messages don't actually get sent to an AI. Try exploring other stories to see real examples!`,
           timestamp: new Date(),
         }
         setMessages((prev) => [...prev, aiMessage])
@@ -85,30 +83,17 @@ export const InteractiveChat: Story = {
         </div>
 
         <div className="bg-white dark:bg-gray-900 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden">
-          <ChatWindow className="h-[600px]">
-            <div className="flex flex-col h-full">
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {messages.map((message) => (
-                  <Message key={message.id} message={message} />
-                ))}
-              </div>
-
-              <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-                <ChatInput
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onSubmit={handleSubmit}
-                  placeholder="Type a message to try it out..."
-                  disabled={false}
-                />
-              </div>
-            </div>
-          </ChatWindow>
+          <ChatWindow 
+            className="h-[600px]"
+            messages={messages}
+            onSendMessage={handleSubmit}
+            isLoading={false}
+          />
         </div>
 
         <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-200 dark:border-blue-800">
           <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <span className="text-2xl">=¡</span> Try These Next
+            <span className="text-2xl">ðŸ’¡</span> Try These Next
           </h3>
           <ul className="space-y-2 text-sm">
             <li>

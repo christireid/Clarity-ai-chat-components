@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { useAutoScroll } from '../../../packages/react/src/hooks/use-auto-scroll'
+import { useAutoScroll } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
 
 const meta = {

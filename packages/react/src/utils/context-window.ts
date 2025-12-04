@@ -5,7 +5,6 @@
  * Works with any tokenizer or estimation function.
  */
 
-import { estimateTokens as centralEstimateTokens } from './tokenization/estimator'
 
 export interface ContextMessage {
   role: 'system' | 'user' | 'assistant' | 'function'
@@ -302,10 +301,5 @@ export class ContextWindowManager {
   }
 }
 
-/**
- * Simple token estimation (re-exported from centralized module)
- * @deprecated Use import { estimateTokens } from './tokenization/estimator' directly
- */
-export function estimateTokens(text: string): number {
-  return centralEstimateTokens(text)
-}
+// Note: estimateTokens is available from './tokenization/estimator'
+// It was previously re-exported here but removed to avoid duplicate exports

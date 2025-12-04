@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ExportDialog } from '@clarity-chat/react'
 import type { ExportFormat } from '@clarity-chat/types'
 

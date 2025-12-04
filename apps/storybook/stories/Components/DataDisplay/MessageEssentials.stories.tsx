@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
 import { Message } from '@clarity-chat/react'
 import type { Message as MessageType } from '@clarity-chat/types'

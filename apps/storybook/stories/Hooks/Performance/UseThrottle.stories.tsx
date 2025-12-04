@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useThrottle } from '@clarity-chat/react'
 import { Button } from '@clarity-chat/primitives'
 import { useState, useEffect } from 'react'

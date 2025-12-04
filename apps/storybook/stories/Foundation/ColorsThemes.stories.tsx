@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ThemeProvider, getAllThemes } from '@clarity-chat/react'
 import { StatusBadge, FeatureGrid, ThemeShowcase } from '../../.storybook/blocks'
 import React from 'react'

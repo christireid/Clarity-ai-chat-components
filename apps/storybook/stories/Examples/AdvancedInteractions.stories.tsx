@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
 import {
   CommandPalette,
@@ -8,9 +8,9 @@ import {
   ContextMenu,
   ThemeSwitcher,
   useTheme,
-  useUndoRedo,
-  useUndoRedoShortcuts,
-  useHaptic,
+  // useUndoRedo,
+  // useUndoRedoShortcuts,
+  // useHaptic,
   useKeyboardShortcuts,
 } from '@clarity-chat/react'
 
@@ -306,65 +306,13 @@ const ThemeSwitcherDemo = () => {
 // ============================================================================
 
 const UndoRedoDemo = () => {
-  const [text, { set, undo, redo, canUndo, canRedo }] = useUndoRedo({
-    initialState: 'Hello World',
-  })
-
-  const [showToast, setShowToast] = React.useState(false)
-  const [toastMessage, setToastMessage] = React.useState('')
-
-  useUndoRedoShortcuts(
-    () => {
-      undo()
-      setToastMessage('Undo')
-      setShowToast(true)
-      setTimeout(() => setShowToast(false), 2000)
-    },
-    () => {
-      redo()
-      setToastMessage('Redo')
-      setShowToast(true)
-      setTimeout(() => setShowToast(false), 2000)
-    }
-  )
-
   return (
     <div className="p-8">
       <div className="max-w-2xl mx-auto space-y-4">
         <h2 className="text-2xl font-bold">Undo/Redo Demo</h2>
         <p className="text-muted-foreground">
-          Use <kbd className="px-2 py-1 bg-muted rounded">⌘Z</kbd> to undo and{' '}
-          <kbd className="px-2 py-1 bg-muted rounded">⌘⇧Z</kbd> to redo
+          This demo is currently disabled due to missing dependencies.
         </p>
-
-        <textarea
-          value={text}
-          onChange={e => set(e.target.value)}
-          className="w-full h-32 p-4 border rounded-lg"
-        />
-
-        <div className="flex gap-2">
-          <button
-            onClick={undo}
-            disabled={!canUndo}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Undo
-          </button>
-          <button
-            onClick={redo}
-            disabled={!canRedo}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Redo
-          </button>
-        </div>
-
-        {showToast && (
-          <div className="fixed bottom-4 right-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg shadow-lg animate-in slide-in-from-bottom-5">
-            {toastMessage}
-          </div>
-        )}
       </div>
     </div>
   )
@@ -375,60 +323,13 @@ const UndoRedoDemo = () => {
 // ============================================================================
 
 const HapticDemo = () => {
-  const { isSupported, light, medium, heavy, success, warning, error } = useHaptic()
-
   return (
     <div className="p-8">
       <div className="max-w-2xl mx-auto space-y-4">
         <h2 className="text-2xl font-bold">Haptic Feedback Demo</h2>
-        {isSupported ? (
-          <p className="text-muted-foreground">
-            Haptic feedback is supported on this device. Click buttons to feel vibrations.
-          </p>
-        ) : (
-          <p className="text-destructive">
-            Haptic feedback is not supported on this device.
-          </p>
-        )}
-
-        <div className="grid grid-cols-2 gap-4">
-          <button
-            onClick={light}
-            className="px-4 py-3 bg-card border rounded-lg hover:bg-muted transition-colors"
-          >
-            Light
-          </button>
-          <button
-            onClick={medium}
-            className="px-4 py-3 bg-card border rounded-lg hover:bg-muted transition-colors"
-          >
-            Medium
-          </button>
-          <button
-            onClick={heavy}
-            className="px-4 py-3 bg-card border rounded-lg hover:bg-muted transition-colors"
-          >
-            Heavy
-          </button>
-          <button
-            onClick={success}
-            className="px-4 py-3 bg-success/10 border border-success rounded-lg hover:bg-success/20 transition-colors"
-          >
-            Success ✅
-          </button>
-          <button
-            onClick={warning}
-            className="px-4 py-3 bg-warning/10 border border-warning rounded-lg hover:bg-warning/20 transition-colors"
-          >
-            Warning ⚠️
-          </button>
-          <button
-            onClick={error}
-            className="px-4 py-3 bg-destructive/10 border border-destructive rounded-lg hover:bg-destructive/20 transition-colors"
-          >
-            Error ❌
-          </button>
-        </div>
+        <p className="text-muted-foreground">
+          This demo is currently disabled due to missing dependencies.
+        </p>
       </div>
     </div>
   )
@@ -442,7 +343,9 @@ const InteractiveDemo = () => {
   const [paletteOpen, setPaletteOpen] = React.useState(false)
   const [hintsVisible, setHintsVisible] = React.useState(false)
   const { theme, setTheme } = useTheme()
-  const { success, error } = useHaptic()
+  // const { success, error } = useHaptic()
+  const success = () => {}
+  const error = () => {}
 
   const commands = [
     {

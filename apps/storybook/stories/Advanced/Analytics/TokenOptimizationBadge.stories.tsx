@@ -1,7 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import * as React from 'react'
-import { TokenOptimizationBadge } from '../../../packages/react/src/components/token-optimization-badge'
-import type { TokenOptimizationStats } from '../../../packages/react/src/hooks/use-token-optimization'
+import { TokenOptimizationBadge, type TokenOptimizationStats } from '@clarity-chat/react'
 
 const meta = {
   title: 'Advanced/Analytics/TokenOptimizationBadge',

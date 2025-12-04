@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { AdvancedChatInput, type Suggestion } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { SavedPrompt } from '@clarity-chat/types'

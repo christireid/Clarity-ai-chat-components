@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ProjectSidebar } from '@clarity-chat/react'
 
 const meta: Meta<typeof ProjectSidebar> = {

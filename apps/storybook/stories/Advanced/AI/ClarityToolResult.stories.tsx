@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ClarityToolResult, createToolUIRegistry, type CoreMessage } from '@clarity-chat/react'
 import { Card, CardHeader, CardContent, Badge, Button } from '@clarity-chat/primitives'
 

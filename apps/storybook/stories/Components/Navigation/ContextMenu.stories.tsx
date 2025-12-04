@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ContextMenu } from '@clarity-chat/react'
 import type { ContextMenuItem } from '@clarity-chat/react'
 

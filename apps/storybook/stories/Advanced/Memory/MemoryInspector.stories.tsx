@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MemoryInspector } from '@clarity-chat/react'
 import type { MemoryItem } from '@clarity-chat/react'
 

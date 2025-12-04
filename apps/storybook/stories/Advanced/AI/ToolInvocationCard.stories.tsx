@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ToolInvocationCard, type ToolStatus } from '@clarity-chat/react'
 import { useState } from 'react'
 import type { ToolCall } from '@clarity-chat/types'

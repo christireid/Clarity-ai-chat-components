@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { SessionSummaryCard } from '@clarity-chat/react'
 import type { SessionSummaryHighlights, SessionMetric } from '@clarity-chat/react'
 
