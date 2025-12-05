@@ -13,7 +13,7 @@ interface KeyboardShortcut {
 
 const SHORTCUTS: KeyboardShortcut[] = [
   // Navigation
-  { keys: ['Cmd/Ctrl', 'K'], description: 'Open/close assistant', category: 'navigation' },
+  { keys: ['Cmd/Ctrl', 'A'], description: 'Open/close assistant', category: 'navigation' },
   { keys: ['Esc'], description: 'Close assistant', category: 'navigation' },
   { keys: ['Tab'], description: 'Navigate forward', category: 'navigation' },
   { keys: ['Shift', 'Tab'], description: 'Navigate backward', category: 'navigation' },

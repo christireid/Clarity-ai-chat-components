@@ -81,7 +81,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
             duration: ANIMATION_DURATION.fast / 1000,
             ease: ANIMATION_EASING.out,
           }}
-          className="flex items-center gap-1.5 overflow-hidden"
+          className="flex items-center gap-1.5 overflow-hidden mt-3"
         >
           {/* Copy button - icon only, staggered animation */}
           <motion.div
@@ -93,7 +93,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
               text={messageContent}
               size="icon"
               iconOnly
-              className="h-8 w-8 rounded-lg hover:bg-accent/50 transition-colors"
+              className="h-7 w-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-accent/50 transition-colors"
             />
           </motion.div>
 
@@ -125,13 +125,13 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 size="icon"
                 onClick={() => onFeedback('up')}
                 className={cn(
-                  'h-8 w-8 rounded-lg transition-all',
+                  'h-7 w-7 rounded-lg transition-all text-gray-400 hover:text-gray-600',
                   'hover:bg-accent/50',
                   feedbackGiven === 'up' && 'text-success bg-success/10 hover:bg-success/15'
                 )}
                 aria-label="Good response"
               >
-                <ThumbsUpIcon size={15} />
+                <ThumbsUpIcon size={14} />
               </Button>
             </motion.div>
 
@@ -165,14 +165,14 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 size="icon"
                 onClick={() => onFeedback('down')}
                 className={cn(
-                  'h-8 w-8 rounded-lg transition-all',
+                  'h-7 w-7 rounded-lg transition-all text-gray-400 hover:text-gray-600',
                   'hover:bg-accent/50',
                   feedbackGiven === 'down' &&
                     'text-destructive bg-destructive/10 hover:bg-destructive/15'
                 )}
                 aria-label="Poor response"
               >
-                <ThumbsDownIcon size={15} />
+                <ThumbsDownIcon size={14} />
               </Button>
             </motion.div>
           </motion.div>
@@ -189,10 +189,10 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 variant="ghost"
                 size="icon"
                 onClick={onRetry}
-                className="h-8 w-8 rounded-lg hover:bg-accent/50 transition-colors"
+                className="h-7 w-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-accent/50 transition-colors"
                 aria-label="Retry"
               >
-                <RefreshIcon size={15} />
+                <RefreshIcon size={14} />
               </Button>
             </motion.div>
           )}
@@ -210,10 +210,10 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 variant="ghost"
                 size="icon"
                 onClick={() => onEdit(messageId)}
-                className="h-8 w-8 rounded-lg hover:bg-accent/50 transition-colors"
+                className="h-7 w-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-accent/50 transition-colors"
                 aria-label="Edit message"
               >
-                <EditIcon size={15} />
+                <EditIcon size={14} />
               </Button>
             </motion.div>
           )}
@@ -231,10 +231,10 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 variant="ghost"
                 size="icon"
                 onClick={() => onRegenerate(messageId)}
-                className="h-8 w-8 rounded-lg hover:bg-accent/50 transition-colors"
+                className="h-7 w-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-accent/50 transition-colors"
                 aria-label="Regenerate response"
               >
-                <RefreshIcon size={15} />
+                <RefreshIcon size={14} />
               </Button>
             </motion.div>
           )}
@@ -255,7 +255,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 onClick={handleDelete}
                 disabled={isDeleting}
                 className={cn(
-                  'h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors',
+                  'h-7 w-7 rounded-lg text-gray-400 hover:text-destructive hover:bg-destructive/10 transition-colors',
                   isDeleting && 'opacity-50 cursor-not-allowed'
                 )}
                 aria-label="Delete message"
@@ -267,7 +267,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
                   } : {}}
                   transition={{ duration: 0.3 }}
                 >
-                  <TrashIcon size={15} />
+                  <TrashIcon size={14} />
                 </motion.div>
               </Button>
             </motion.div>

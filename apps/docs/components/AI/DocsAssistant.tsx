@@ -30,6 +30,171 @@ function getOrCreateSessionId(): string {
   return sessionId
 }
 
+/**
+ * Convert a raw URL from the docs index to a proper route URL
+ * Handles malformed URLs like "//page.tsx" or file paths
+ * Always returns a path starting with "/" to ensure relative routing
+ */
+function normalizeSourceUrl(rawUrl: string, title: string): string {
+  // Handle empty/invalid URLs
+  if (!rawUrl || rawUrl === '#' || rawUrl === 'undefined' || rawUrl.trim() === '') {
+    return generateUrlFromTitle(title)
+  }
+
+  // If it starts with http/https, return as-is (external link)
+  if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+    return rawUrl
+  }
+
+  // If it's already a valid route starting with /, check if it's a real route
+  const validPrefixes = ['/learn', '/guides/', '/reference/', '/examples/', '/integrations/', '/tools/', '/blog/', '/enterprise/']
+  if (validPrefixes.some(prefix => rawUrl.startsWith(prefix))) {
+    return rawUrl
+  }
+
+  // Handle malformed URLs - generate a proper URL from the title
+  return generateUrlFromTitle(title)
+}
+
+/**
+ * Generate a URL path from a document title
+ * Maps to actual routes in the docs site
+ */
+function generateUrlFromTitle(title: string): string {
+  if (!title || title.trim() === '') {
+    return '/learn'
+  }
+
+  const lowerTitle = title.toLowerCase()
+
+  // Convert title to a URL-friendly slug
+  const slug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .trim()
+
+  // Map to actual routes in the docs site
+
+  // Getting started / Learn
+  if (lowerTitle.includes('getting started') || lowerTitle.includes('quickstart') || lowerTitle.includes('introduction')) {
+    return '/learn'
+  }
+  if (lowerTitle.includes('installation') || lowerTitle.includes('install')) {
+    return '/guides/installation'
+  }
+
+  // Hooks - map to /reference/hooks/...
+  if (lowerTitle.includes('useautoscroll') || lowerTitle.includes('auto scroll') || lowerTitle.includes('auto-scroll')) {
+    return '/reference/hooks/use-auto-scroll'
+  }
+  if (lowerTitle.includes('usechat') || lowerTitle.includes('use chat') || lowerTitle.includes('use-chat')) {
+    return '/reference/hooks/use-chat-optimized'
+  }
+  if (lowerTitle.includes('usedebounce') || lowerTitle.includes('debounce')) {
+    return '/reference/hooks/use-debounce'
+  }
+  if (lowerTitle.includes('useerror') || lowerTitle.includes('error recovery')) {
+    return '/reference/hooks/use-error-recovery'
+  }
+  if (lowerTitle.includes('uselocalstorage') || lowerTitle.includes('local storage')) {
+    return '/reference/hooks/use-local-storage'
+  }
+  if (lowerTitle.includes('usemessage') || lowerTitle.includes('message operations')) {
+    return '/reference/hooks/use-message-operations'
+  }
+  if (lowerTitle.includes('usestreaming') || lowerTitle.includes('streaming')) {
+    return '/reference/hooks/use-streaming-sse'
+  }
+  if (lowerTitle.includes('hook')) {
+    return '/reference/hooks'
+  }
+
+  // Components - map to /reference/components/...
+  if (lowerTitle.includes('chat input') || lowerTitle.includes('chatinput')) {
+    return '/reference/components/advanced-chat-input'
+  }
+  if (lowerTitle.includes('chat window') || lowerTitle.includes('chatwindow')) {
+    return '/reference/components'
+  }
+  if (lowerTitle.includes('message') && !lowerTitle.includes('operations')) {
+    return '/reference/components/message-optimized'
+  }
+  if (lowerTitle.includes('token counter') || lowerTitle.includes('tokencounter')) {
+    return '/reference/components/token-counter'
+  }
+  if (lowerTitle.includes('thinking indicator') || lowerTitle.includes('thinking')) {
+    return '/reference/components/thinking-indicator'
+  }
+  if (lowerTitle.includes('voice input') || lowerTitle.includes('voice')) {
+    return '/reference/components/voice-input'
+  }
+  if (lowerTitle.includes('empty state')) {
+    return '/reference/components/empty-state'
+  }
+  if (lowerTitle.includes('error boundary')) {
+    return '/reference/components/error-boundary'
+  }
+  if (lowerTitle.includes('component')) {
+    return '/reference/components'
+  }
+
+  // Guides
+  if (lowerTitle.includes('theme') || lowerTitle.includes('styling') || lowerTitle.includes('customiz')) {
+    return '/guides/theming'
+  }
+  if (lowerTitle.includes('error') || lowerTitle.includes('handling')) {
+    return '/guides/error-handling'
+  }
+  if (lowerTitle.includes('memory')) {
+    return '/guides/memory'
+  }
+  if (lowerTitle.includes('plugin')) {
+    return '/guides/plugins'
+  }
+  if (lowerTitle.includes('model adapter')) {
+    return '/guides/model-adapters'
+  }
+  if (lowerTitle.includes('file upload')) {
+    return '/guides/file-upload'
+  }
+
+  // Examples
+  if (lowerTitle.includes('example') || lowerTitle.includes('demo')) {
+    return '/examples'
+  }
+
+  // Default to learn page
+  return '/learn'
+}
+
+/**
+ * Normalize all markdown links in content to use valid routes
+ * Finds all [text](url) patterns and fixes the URLs
+ */
+function normalizeLinksInContent(content: string): string {
+  // Match markdown links: [text](url)
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
+
+  return content.replace(linkRegex, (match, text, url) => {
+    // Skip external links
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return match
+    }
+
+    // Skip anchor links
+    if (url.startsWith('#')) {
+      return match
+    }
+
+    // Normalize the URL using the title/text as context
+    const normalizedUrl = normalizeSourceUrl(url, text)
+    return `[${text}](${normalizedUrl})`
+  })
+}
+
 // Suggested questions to help users get started
 const SUGGESTED_QUESTIONS: FollowUpSuggestion[] = [
   {
@@ -149,13 +314,13 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       const target = e.target as HTMLElement
       const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'
 
-      // Cmd/Ctrl+K to toggle chat
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      // Cmd/Ctrl+A to toggle chat (AI Assistant)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
         e.preventDefault()
         const willOpen = !isOpen
         setIsOpen(willOpen)
         if (willOpen) {
-          toast.info('Press Escape or Cmd+K to close', 'Documentation Assistant', 3000)
+          toast.info('Press Escape or Cmd+A to close', 'Documentation Assistant', 3000)
         }
       }
       // ? to show shortcuts help (only when not typing)
@@ -326,8 +491,11 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
               } else if (data.type === 'error') {
                 throw new Error(data.content || 'Stream error')
               } else if (data.type === 'done') {
+                // Normalize all links in the AI response before finalizing
+                const normalizedContent = normalizeLinksInContent(accumulatedContent)
+
                 // Append sources to the message content if available
-                let finalContent = accumulatedContent
+                let finalContent = normalizedContent
                 if (sources.length > 0) {
                   // Filter out invalid sources and format valid ones
                   const validSources = sources.filter((s: any) =>
@@ -343,9 +511,9 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
                       const title = (typeof rawTitle === 'string' && rawTitle.trim() && rawTitle !== 'undefined')
                         ? rawTitle.trim()
                         : 'Documentation'
-                      const url = (typeof source.url === 'string' && source.url.trim() && source.url !== 'undefined')
-                        ? source.url.trim()
-                        : '#'
+                      // Normalize the URL to ensure it's a valid route
+                      const rawUrl = (typeof source.url === 'string') ? source.url.trim() : ''
+                      const url = normalizeSourceUrl(rawUrl, title)
                       finalContent += `- [${title}](${url}) (${Math.round(confidence * 100)}% relevance)\n`
                     })
                   }

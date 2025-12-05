@@ -291,7 +291,7 @@ export const MessageOptimized = React.memo(
                       )}
                       aria-label="Good response"
                     >
-                      <ThumbsUpIcon size={16} />
+                      <ThumbsUpIcon size={6} />
                     </Button>
                   </motion.div>
 
@@ -310,7 +310,7 @@ export const MessageOptimized = React.memo(
                       )}
                       aria-label="Poor response"
                     >
-                      <ThumbsDownIcon size={16} />
+                      <ThumbsDownIcon size={6} />
                     </Button>
                   </motion.div>
 
@@ -326,7 +326,7 @@ export const MessageOptimized = React.memo(
                         onClick={handleRetry}
                         className="gap-1.5"
                       >
-                        <RefreshIcon size={16} />
+                        <RefreshIcon size={6} />
                         Retry
                       </Button>
                     </motion.div>

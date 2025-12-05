@@ -74,7 +74,7 @@ export function CopyButton({
             transition={{ duration: 0.15, ease: 'easeOut' }}
             className="flex items-center gap-1.5"
           >
-            <CheckIcon size={16} />
+            <CheckIcon size={14} />
             {!iconOnly && (
               <motion.span
                 initial={{ opacity: 0, x: -4 }}
@@ -94,7 +94,7 @@ export function CopyButton({
             transition={{ duration: 0.15 }}
             className="flex items-center gap-1.5"
           >
-            <CopyIcon size={16} />
+            <CopyIcon size={14} />
             {!iconOnly && (children || copyText)}
           </motion.div>
         )}
