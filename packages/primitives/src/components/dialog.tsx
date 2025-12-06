@@ -362,12 +362,17 @@ const LegacyDialogClose: React.FC<DialogCloseProps> = ({
   )
 }
 
-// Renamed internal shadcn/ui components to avoid export conflicts
+// Add displayNames to legacy components
+LegacyDialogTrigger.displayName = 'DialogTrigger'
+LegacyDialogContent.displayName = 'DialogContent'
+LegacyDialogClose.displayName = 'DialogClose'
+
+// Store references to shadcn/ui styled components before overwriting exports
 const ShadcnDialogContent = DialogContent
 const ShadcnDialogTrigger = DialogTrigger
 
 // ============================================================================
-// Exports
+// Exports (Legacy API as primary for backward compatibility)
 // ============================================================================
 
 export {

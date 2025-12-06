@@ -197,25 +197,34 @@ const LegacyPopoverClose: React.FC<{
   )
 }
 
+// Add displayNames to legacy components
+LegacyPopoverTrigger.displayName = 'PopoverTrigger'
+LegacyPopoverContent.displayName = 'PopoverContent'
+LegacyPopoverClose.displayName = 'PopoverClose'
+
+// Renamed internal shadcn/ui components to avoid export conflicts
+const ShadcnPopoverContent = PopoverContent
+const ShadcnPopoverTrigger = PopoverTrigger
+
 // ============================================================================
-// Exports (both shadcn/ui pattern and legacy API)
+// Exports (Legacy API as primary for backward compatibility - matches Dialog pattern)
 // ============================================================================
 
 export {
-  // shadcn/ui pattern exports
-  PopoverRoot,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverAnchor,
-  PopoverPortal,
-  PopoverClose,
-  PopoverArrow,
-  // Legacy API exports (for backward compatibility)
+  // Primary exports - Legacy API for backward compatibility
+  // These are what existing consumers expect (matching Dialog exports)
   Popover,
-  LegacyPopoverTrigger as PopoverTriggerLegacy,
-  LegacyPopoverContent as PopoverContentLegacy,
-  LegacyPopoverClose as PopoverCloseLegacy,
+  LegacyPopoverTrigger as PopoverTrigger,
+  LegacyPopoverContent as PopoverContent,
+  LegacyPopoverClose as PopoverClose,
+  PopoverAnchor,
+  PopoverArrow,
+  // shadcn/ui pattern exports (for new code or migration)
+  PopoverRoot,
+  PopoverPortal,
+  ShadcnPopoverTrigger as PopoverTriggerRadix,
+  ShadcnPopoverContent as PopoverContentRadix,
+  PopoverClose as PopoverCloseRadix,
 }
 
-// Re-export Popover compound components for legacy usage
 Popover.displayName = 'Popover'

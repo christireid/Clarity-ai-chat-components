@@ -368,15 +368,25 @@ const LegacyDropdownMenuContent: React.FC<DropdownMenuContentProps> = ({
   )
 }
 
+// Add displayNames to legacy components
+LegacyDropdownMenuTrigger.displayName = 'DropdownMenuTrigger'
+LegacyDropdownMenuContent.displayName = 'DropdownMenuContent'
+
+// Renamed internal shadcn/ui components to avoid export conflicts
+const ShadcnDropdownMenuContent = DropdownMenuContent
+const ShadcnDropdownMenuTrigger = DropdownMenuTrigger
+
 // ============================================================================
-// Exports
+// Exports (Legacy API as primary for backward compatibility - matches Dialog pattern)
 // ============================================================================
 
 export {
-  // shadcn/ui pattern exports (recommended)
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
+  // Primary exports - Legacy API for backward compatibility
+  // These are what existing consumers expect (matching Dialog exports)
+  DropdownMenu,
+  LegacyDropdownMenuTrigger as DropdownMenuTrigger,
+  LegacyDropdownMenuContent as DropdownMenuContent,
+  // shadcn/ui pattern component exports (always available)
   DropdownMenuItem,
   DropdownMenuCheckboxItem,
   DropdownMenuRadioItem,
@@ -389,10 +399,10 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
-  // Legacy API exports (for backward compatibility)
-  DropdownMenu,
-  LegacyDropdownMenuTrigger as DropdownMenuTriggerLegacy,
-  LegacyDropdownMenuContent as DropdownMenuContentLegacy,
+  // shadcn/ui pattern exports (for new code or migration)
+  DropdownMenuRoot,
+  ShadcnDropdownMenuTrigger as DropdownMenuTriggerRadix,
+  ShadcnDropdownMenuContent as DropdownMenuContentRadix,
 }
 
 DropdownMenu.displayName = 'DropdownMenu'
