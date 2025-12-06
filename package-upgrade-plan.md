@@ -553,13 +553,31 @@
 - **husky**: 8.0.3 → 9.1.7
 - **size-limit**: 11.0.1/11.1.6 → 12.0.0 (and all @size-limit/* packages)
 
-### New Features Adopted
+### New Features Adopted & Implemented
 
-1. **react-markdown v10**: Components already use wrapper div pattern, so upgrade was seamless
-2. **Vite 7**: Node 22.21.1 is compatible (requires 20.19+/22.12+)
-3. **Vitest 4**: Updated across all test packages
-4. **Next.js 16**: Updated both docs and marketing-site apps
-5. **framer-motion 12**: Standardized across all packages for consistent animations
+1. **react-markdown v10**: 
+   - Components already use wrapper div pattern, so upgrade was seamless
+   - ✅ **NEW**: Verified compatibility with async plugins support (available since v9.1.0)
+
+2. **Mermaid v11**: 
+   - ✅ **NEW**: Implemented `suppressErrorRendering: true` option in enhanced-markdown-renderer.tsx
+   - **Benefit**: Prevents Mermaid from inserting 'Syntax error' messages directly into DOM, allowing graceful error handling in our UI
+
+3. **Vite 7**: 
+   - Node 22.21.1 is compatible (requires 20.19+/22.12+)
+   - ✅ **NEW**: Updated esbuild target from node18 to node20 in vitest configs to match Vite 7 requirements
+
+4. **Vitest 4**: 
+   - Updated across all test packages
+   - Configs already using modern features (pool: 'threads', poolOptions)
+
+5. **Next.js 16**: 
+   - Updated both docs and marketing-site apps
+   - Enhanced caching strategies available (can be leveraged in future)
+
+6. **framer-motion 12**: 
+   - Standardized across all packages for consistent animations
+   - Performance improvements automatically benefit all components
 
 ### Important Notes
 
@@ -607,8 +625,55 @@
 
 **📋 REMAINING WORK (Optional/Deferred):**
 - ✅ **COMPLETED**: All 16 example apps updated from Vite 5.x/6.x to Vite 7.2.6
+- ✅ **COMPLETED**: Implemented Mermaid v11 `suppressErrorRendering` feature
+- ✅ **COMPLETED**: Updated esbuild targets to match Vite 7 requirements
 - Tailwind CSS v4 migration (deferred as separate project - major rewrite)
 - storybook-dark-mode v4 (incompatible with Storybook 10, staying on 3.0.3)
+
+### New Features Implementation Details
+
+**✅ IMPLEMENTED:**
+
+1. **Mermaid v11 - suppressErrorRendering:**
+   - **File**: `packages/react/src/components/enhanced-markdown-renderer.tsx` (line 85)
+   - **Change**: Added `suppressErrorRendering: true` to mermaid.initialize() config
+   - **Benefit**: Prevents Mermaid from inserting error messages directly into DOM, allowing our components to handle errors gracefully
+   - **Impact**: Better UX - users won't see raw "Syntax error" messages from Mermaid
+
+2. **Vite 7 - esbuild target update:**
+   - **File**: `packages/primitives/vitest.config.mts` (line 34)
+   - **Change**: Updated `esbuild.target` from `'node18'` to `'node20'`
+   - **Benefit**: Aligns with Vite 7 requirements (Node 20.19+ or 22.12+)
+   - **Impact**: Ensures compatibility with Vite 7 build system
+
+**📋 POTENTIAL FUTURE IMPROVEMENTS (Not Implemented - Requires Further Analysis):**
+
+1. **tailwind-merge v3**: 
+   - May have new configuration options (`createTailwindMerge`, `extendTailwindMerge`)
+   - Current usage is basic - could potentially customize for better conflict resolution
+   - **Status**: Current implementation works well, advanced features not immediately needed
+
+2. **react-markdown v10 - Async Plugins**:
+   - Supports async plugins (added in v9.1.0)
+   - Could enable async loading of heavy plugins (e.g., syntax highlighters)
+   - **Status**: Current synchronous plugins work fine, async would be optimization
+
+3. **Next.js 16**:
+   - Enhanced caching strategies
+   - Improved performance optimizations
+   - **Status**: Automatic benefits, no code changes needed
+
+4. **Vitest 4**:
+   - Already using modern features (pool: 'threads', poolOptions)
+   - May have additional performance improvements
+   - **Status**: Configs already optimized
+
+5. **framer-motion 12**:
+   - Performance improvements are automatic
+   - New animation features available
+   - **Status**: Current usage benefits automatically from performance improvements
+
+**Note**: The implemented changes focus on features that provide immediate, tangible benefits (error handling, compatibility). Other new features would require deeper analysis of use cases and may not provide immediate value given current codebase patterns.
 
 ### Final Package Status Summary
 
