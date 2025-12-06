@@ -37,4 +37,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  esbuild: {
+    // Vite 7 requires Node 20.19+ or 22.12+, update target accordingly
+    target: 'node20',
+  },
 })

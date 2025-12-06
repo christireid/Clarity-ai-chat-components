@@ -61,4 +61,8 @@ export default defineConfig({
       '@clarity-chat/primitives': path.resolve(__dirname, '../primitives/src'),
     },
   },
+  esbuild: {
+    // Vite 7 requires Node 20.19+ or 22.12+, update target accordingly
+    target: 'node20',
+  },
 })

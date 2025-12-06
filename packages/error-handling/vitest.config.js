@@ -25,5 +25,9 @@ export default defineConfig({
             },
         },
     },
+    esbuild: {
+        // Vite 7 requires Node 20.19+ or 22.12+, update target accordingly
+        target: 'node20',
+    },
 });
 //# sourceMappingURL=vitest.config.js.map

@@ -669,10 +669,16 @@
      ```
 
 3. **Vite 7 - esbuild target update:**
-   - **File**: `packages/primitives/vitest.config.mts` (line 34)
-   - **Change**: Updated `esbuild.target` from `'node18'` to `'node20'`
+   - **Files**: 
+     - `packages/primitives/vitest.config.mts` (line 34)
+     - `packages/react/vitest.config.mts` (added)
+     - `packages/error-handling/vitest.config.js` (added)
+     - `packages/memory/vitest.config.ts` (added)
+     - `packages/errors/vitest.config.ts` (added)
+     - `packages/cli/vitest.config.ts` (added)
+   - **Change**: Added/Updated `esbuild.target` to `'node20'` in all vitest configs
    - **Benefit**: Aligns with Vite 7 requirements (Node 20.19+ or 22.12+)
-   - **Impact**: Ensures compatibility with Vite 7 build system
+   - **Impact**: Ensures compatibility with Vite 7 build system across all packages
 
 **📋 POTENTIAL FUTURE IMPROVEMENTS (Not Implemented - Requires Further Analysis):**
 
