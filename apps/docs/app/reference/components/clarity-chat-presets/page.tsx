@@ -97,9 +97,12 @@ export default function ClarityChatPresetsPage() {
             Compare different presets to find the right one for your use case:
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" role="tablist" aria-label="Preset selection">
             <button
               onClick={() => setSelectedPreset('simple')}
+              role="tab"
+              aria-selected={selectedPreset === 'simple'}
+              aria-controls="preset-demo"
               className={`p-4 border rounded-lg text-left transition-colors ${
                 selectedPreset === 'simple'
                   ? 'border-primary bg-primary/5'
@@ -113,6 +116,9 @@ export default function ClarityChatPresetsPage() {
             </button>
             <button
               onClick={() => setSelectedPreset('memory')}
+              role="tab"
+              aria-selected={selectedPreset === 'memory'}
+              aria-controls="preset-demo"
               className={`p-4 border rounded-lg text-left transition-colors ${
                 selectedPreset === 'memory'
                   ? 'border-primary bg-primary/5'
@@ -126,6 +132,9 @@ export default function ClarityChatPresetsPage() {
             </button>
             <button
               onClick={() => setSelectedPreset('enterprise')}
+              role="tab"
+              aria-selected={selectedPreset === 'enterprise'}
+              aria-controls="preset-demo"
               className={`p-4 border rounded-lg text-left transition-colors ${
                 selectedPreset === 'enterprise'
                   ? 'border-primary bg-primary/5'
@@ -139,6 +148,9 @@ export default function ClarityChatPresetsPage() {
             </button>
             <button
               onClick={() => setSelectedPreset('streaming')}
+              role="tab"
+              aria-selected={selectedPreset === 'streaming'}
+              aria-controls="preset-demo"
               className={`p-4 border rounded-lg text-left transition-colors ${
                 selectedPreset === 'streaming'
                   ? 'border-primary bg-primary/5'
@@ -152,7 +164,8 @@ export default function ClarityChatPresetsPage() {
             </button>
           </div>
 
-          <div className="border rounded-lg p-6">
+          <div className="border rounded-lg p-6" role="tabpanel" id="preset-demo" aria-live="polite">
+
             {selectedPreset === 'simple' && <SimplePresetDemo />}
             {selectedPreset === 'memory' && <MemoryPresetDemo />}
             {selectedPreset === 'enterprise' && <EnterprisePresetDemo />}
@@ -447,26 +460,41 @@ export default function HomePage() {
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
-  const { messages } = await req.json()
-  
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages,
-      stream: true,
-    }),
-  })
+  try {
+    const { messages } = await req.json()
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages,
+        stream: true,
+      }),
+    })
 
-  return new Response(response.body, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-    },
-  })
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Failed to get response from AI API' },
+        { status: response.status }
+      )
+    }
+
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+      },
+    })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
 }`}
           language="tsx"
           showLineNumbers

@@ -30,6 +30,8 @@ function ProductDemo() {
         <button
           onClick={() => run({ query: 'gaming laptops' })}
           disabled={isLoading}
+          aria-busy={isLoading}
+          aria-label={isLoading ? 'Generating products...' : 'Generate gaming laptop products'}
           className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
         >
           {isLoading ? 'Generating...' : 'Generate Products'}
@@ -37,6 +39,8 @@ function ProductDemo() {
         <button
           onClick={() => run({ query: 'smartphones' })}
           disabled={isLoading}
+          aria-busy={isLoading}
+          aria-label={isLoading ? 'Generating products...' : 'Generate smartphone products'}
           className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
         >
           Generate Smartphones
@@ -514,35 +518,50 @@ function BlogPostGenerator() {
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
-  const { query } = await req.json()
-  
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: 'Generate a JSON array of products based on the user query. Each product should have name, price, description, and category fields.',
-        },
-        {
-          role: 'user',
-          content: \`Generate products for: \${query}\`,
-        },
-      ],
-      response_format: { type: 'json_object' },
-    }),
-  })
+  try {
+    const { query } = await req.json()
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'system',
+            content: 'Generate a JSON array of products based on the user query. Each product should have name, price, description, and category fields.',
+          },
+          {
+            role: 'user',
+            content: \`Generate products for: \${query}\`,
+          },
+        ],
+        response_format: { type: 'json_object' },
+      }),
+    })
 
-  const data = await response.json()
-  const content = JSON.parse(data.choices[0].message.content)
-  
-  // Return the products array
-  return NextResponse.json(content.products || [])
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Failed to generate products' },
+        { status: response.status }
+      )
+    }
+
+    const data = await response.json()
+    const content = JSON.parse(data.choices[0].message.content)
+    
+    // Return the products array
+    return NextResponse.json(content.products || [])
+  } catch (error) {
+    console.error('Product generation error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
 }`}
           language="tsx"
           showLineNumbers
@@ -593,7 +612,7 @@ export async function POST(req: Request) {
             <a href="/reference/hooks/use-clarity-chat-with-tools">useClarityChatWithTools</a> - Tool calling hook
           </li>
           <li>
-            <a href="/guides/typescript">TypeScript Guide</a> - Type safety patterns
+            <a href="/learn/guides/typescript">TypeScript Guide</a> - Type safety patterns
           </li>
         </ul>
 

@@ -491,28 +491,43 @@ function App() {
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
-  const { messages } = await req.json()
-  
-  // Call your AI API (OpenAI, Anthropic, etc.)
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages,
-      stream: true, // Enable streaming
-    }),
-  })
+  try {
+    const { messages } = await req.json()
+    
+    // Call your AI API (OpenAI, Anthropic, etc.)
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages,
+        stream: true, // Enable streaming
+      }),
+    })
 
-  // Return streaming response
-  return new Response(response.body, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-    },
-  })
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: 'Failed to get response from AI API' },
+        { status: response.status }
+      )
+    }
+
+    // Return streaming response
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+      },
+    })
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
 }`}
           language="tsx"
           showLineNumbers
