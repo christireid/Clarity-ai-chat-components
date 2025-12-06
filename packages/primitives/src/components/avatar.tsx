@@ -97,7 +97,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         )}
         {...props}
       >
-        {src && <AvatarImage src={src} alt={alt || 'Avatar'} />}
+        {/* Always render AvatarImage when src is provided - Radix UI handles loading/error internally */}
+        {src ? (
+          <AvatarImage src={src} alt={alt || 'Avatar'} />
+        ) : null}
         <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none animate-in fade-in duration-200">
           {getFallbackText()}
         </AvatarFallback>

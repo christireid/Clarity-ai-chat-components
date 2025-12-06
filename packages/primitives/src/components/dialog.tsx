@@ -146,9 +146,14 @@ export const DialogContent: React.FC<DialogContentProps> = ({
   blurBackdrop = true,
   overlayClassName,
 }) => {
+  // Note: shadcn/ui DialogContent already includes DialogOverlay internally (line 35 of ui/dialog.tsx)
+  // We can't easily replace it without modifying shadcn/ui's component structure
+  // For blurBackdrop, we'll render a custom overlay that will be layered
+  // The shadcn/ui overlay will be behind our custom one
   const { lock } = useBodyScrollLock()
 
-  // Body scroll lock
+  // Body scroll lock - Radix UI handles this internally, but we keep for compatibility
+  // DialogContent only renders when open, so this effect runs when open
   React.useEffect(() => {
     const unlockFn = lock()
     return unlockFn
@@ -156,12 +161,16 @@ export const DialogContent: React.FC<DialogContentProps> = ({
 
   return (
     <>
-      <DialogOverlay
-        className={cn(
-          blurBackdrop && 'backdrop-blur-lg',
-          overlayClassName
-        )}
-      />
+      {/* Custom overlay with blur support - rendered separately since shadcn/ui includes one */}
+      {/* This will create a second overlay, but allows us to customize blur */}
+      {blurBackdrop && (
+        <DialogOverlay
+          className={cn(
+            'backdrop-blur-lg z-[49]', // z-49 to be just below content (z-50)
+            overlayClassName
+          )}
+        />
+      )}
       <ShadcnDialogContent
         className={cn(
           'rounded-2xl border-border/40 shadow-xl',
@@ -173,7 +182,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
         onPointerDownOutside={closeOnClickOutside ? undefined : (e) => e.preventDefault()}
       >
         {showCloseButton && (
-          <ShadcnDialogClose className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2">
+          <ShadcnDialogClose className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2 z-10">
             <svg
               width="15"
               height="15"

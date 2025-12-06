@@ -45,7 +45,6 @@ export const Tooltip: React.FC<TooltipProps> = ({
   onOpenChange,
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(false)
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
 
@@ -59,29 +58,6 @@ export const Tooltip: React.FC<TooltipProps> = ({
     [controlledOpen, onOpenChange]
   )
 
-  // Handle delay for mouse enter
-  const handleMouseEnter = React.useCallback(() => {
-    if (disabled) return
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-
-    timeoutRef.current = setTimeout(() => {
-      setOpen(true)
-    }, delay)
-  }, [disabled, delay, setOpen])
-
-  // Handle mouse leave
-  const handleMouseLeave = React.useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    setOpen(false)
-  }, [setOpen])
-
-  // Cleanup timeout
-  React.useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    }
-  }, [])
-
   // Map align to Radix UI align prop
   const radixAlign = align === 'start' ? 'start' : align === 'end' ? 'end' : 'center'
 
@@ -89,13 +65,13 @@ export const Tooltip: React.FC<TooltipProps> = ({
     return <div className={cn('inline-block', className)}>{children}</div>
   }
 
+  // Use Radix UI's built-in delay via delayDuration prop
+  // Remove custom delay handlers to avoid double-delay
   return (
     <ShadcnTooltipProvider delayDuration={delay}>
       <ShadcnTooltip open={open} onOpenChange={setOpen}>
         <ShadcnTooltipTrigger asChild className={cn('inline-block', className)}>
-          <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            {children}
-          </div>
+          {children}
         </ShadcnTooltipTrigger>
         <ShadcnTooltipContent
           side={side}

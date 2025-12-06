@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 import { useRippleEffect } from '../hooks/use-ripple-effect'
@@ -100,7 +99,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const Comp = asChild ? Slot : ShadcnButton
     const [internalState, setInternalState] = React.useState<ButtonState>('idle')
     const stateTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
@@ -153,6 +151,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const isDisabled = disabled || currentState === 'loading'
 
     // Map custom variants to shadcn variants where possible
+    // For custom variants (success, error, surface), don't pass variant to shadcn
+    // and rely on our custom buttonVariants classes
     const shadcnVariant =
       variant === 'default' ||
       variant === 'secondary' ||
@@ -161,7 +161,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       variant === 'ghost' ||
       variant === 'link'
         ? variant
-        : 'default'
+        : undefined
 
     // Apply state-specific variant
     const effectiveVariant =
@@ -172,7 +172,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           : variant
 
     return (
-      <Comp
+      <ShadcnButton
         className={cn(
           buttonVariants({ variant: effectiveVariant, size }),
           currentState === 'success' &&
@@ -181,7 +181,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className
         )}
         variant={shadcnVariant}
-        size={size}
+        size={shadcnVariant ? size : undefined}
+        asChild={asChild}
         ref={ref}
         disabled={isDisabled}
         data-variant={effectiveVariant}
@@ -209,7 +210,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {/* Button content */}
         {stateContent}
         {children}
-      </Comp>
+      </ShadcnButton>
     )
   }
 )
