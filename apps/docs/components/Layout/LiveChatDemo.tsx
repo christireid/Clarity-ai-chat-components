@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Send, Bot, User, Sparkles } from 'lucide-react'
 import { useAutoScroll, useStreaming, TypingIndicator } from '@clarity-chat/react'
 
@@ -25,7 +25,9 @@ export function LiveChatDemo() {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [currentBotMessageId, setCurrentBotMessageId] = useState<string | null>(null)
+
+  // Use ref to avoid closure issues in callbacks
+  const currentBotMessageIdRef = useRef<string | null>(null)
 
   // Use the shared useAutoScroll hook from @clarity-chat/react
   const { scrollRef, scrollToBottom, setEnabled } = useAutoScroll({
@@ -34,28 +36,8 @@ export function LiveChatDemo() {
   })
 
   // Use the shared useStreaming hook from @clarity-chat/react
+  // The hook provides `content` which accumulates all streamed text
   const { content, isStreaming, startStreaming, reset } = useStreaming({
-    onChunk: (chunk) => {
-      // Update the bot message with each chunk
-      if (currentBotMessageId) {
-        setMessages(prev => prev.map(msg =>
-          msg.id === currentBotMessageId
-            ? { ...msg, text: msg.text + chunk }
-            : msg
-        ))
-      }
-    },
-    onComplete: () => {
-      // Mark streaming as complete
-      if (currentBotMessageId) {
-        setMessages(prev => prev.map(msg =>
-          msg.id === currentBotMessageId
-            ? { ...msg, isStreaming: false }
-            : msg
-        ))
-        setCurrentBotMessageId(null)
-      }
-    },
     onError: (error) => {
       console.error('Streaming error:', error)
       setMessages(prev => [...prev, {
@@ -64,9 +46,30 @@ export function LiveChatDemo() {
         sender: 'bot',
         timestamp: new Date(),
       }])
-      setCurrentBotMessageId(null)
+      currentBotMessageIdRef.current = null
+    },
+    onComplete: () => {
+      // Mark streaming as complete
+      const msgId = currentBotMessageIdRef.current
+      if (msgId) {
+        setMessages(prev => prev.map(msg =>
+          msg.id === msgId ? { ...msg, isStreaming: false } : msg
+        ))
+        currentBotMessageIdRef.current = null
+      }
     }
   })
+
+  // Sync streaming content to the current bot message
+  // This is more reliable than using onChunk with closures
+  useEffect(() => {
+    const msgId = currentBotMessageIdRef.current
+    if (msgId && content) {
+      setMessages(prev => prev.map(msg =>
+        msg.id === msgId ? { ...msg, text: content } : msg
+      ))
+    }
+  }, [content])
 
   // Scroll during streaming
   useEffect(() => {
@@ -108,7 +111,7 @@ export function LiveChatDemo() {
 
       // Create placeholder message for streaming
       const botMessageId = (Date.now() + 1).toString()
-      setCurrentBotMessageId(botMessageId)
+      currentBotMessageIdRef.current = botMessageId
       setMessages(prev => [...prev, {
         id: botMessageId,
         text: '',
