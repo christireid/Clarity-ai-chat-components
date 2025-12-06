@@ -187,6 +187,8 @@ const RETRY_CONFIG = {
   maxDelayMs: 10000,
   /** HTTP status codes that should trigger retry */
   retryableStatuses: [429, 500, 502, 503, 504],
+  /** Request timeout in milliseconds */
+  timeoutMs: 30000,
 }
 
 /**
@@ -907,19 +909,32 @@ Maximum ${sectionsTokens} tokens total.`
     const endpoint =
       this.config.apiEndpoint || 'https://api.openai.com/v1/chat/completions'
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.config.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: this.config.model,
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: Math.floor(maxTokens * 1.2),
-        temperature: this.config.temperature,
-      }),
-    })
+    // Set up request timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      RETRY_CONFIG.timeoutMs
+    )
+
+    let response: Response
+    try {
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.config.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: this.config.model,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: Math.floor(maxTokens * 1.2),
+          temperature: this.config.temperature,
+        }),
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}))
@@ -935,8 +950,24 @@ Maximum ${sectionsTokens} tokens total.`
       throw err
     }
 
-    const data = await response.json()
-    return data.choices?.[0]?.message?.content ?? ''
+    let data: unknown
+    try {
+      data = await response.json()
+    } catch {
+      throw new Error(
+        'OpenAI returned invalid JSON response. The API may be experiencing issues.'
+      )
+    }
+
+    const content = (
+      data as { choices?: Array<{ message?: { content?: string } }> }
+    )?.choices?.[0]?.message?.content
+    if (content === undefined || content === null) {
+      throw new Error(
+        'OpenAI returned empty or malformed response. The API may be experiencing issues.'
+      )
+    }
+    return content
   }
 
   /**
@@ -949,19 +980,32 @@ Maximum ${sectionsTokens} tokens total.`
     const endpoint =
       this.config.apiEndpoint || 'https://api.anthropic.com/v1/messages'
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': this.config.apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: this.config.model,
-        max_tokens: Math.floor(maxTokens * 1.2),
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    })
+    // Set up request timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      RETRY_CONFIG.timeoutMs
+    )
+
+    let response: Response
+    try {
+      response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': this.config.apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: this.config.model,
+          max_tokens: Math.floor(maxTokens * 1.2),
+          messages: [{ role: 'user', content: prompt }],
+        }),
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}))
@@ -977,8 +1021,23 @@ Maximum ${sectionsTokens} tokens total.`
       throw err
     }
 
-    const data = await response.json()
-    return data.content?.[0]?.text ?? ''
+    let data: unknown
+    try {
+      data = await response.json()
+    } catch {
+      throw new Error(
+        'Anthropic returned invalid JSON response. The API may be experiencing issues.'
+      )
+    }
+
+    const content = (data as { content?: Array<{ text?: string }> })
+      ?.content?.[0]?.text
+    if (content === undefined || content === null) {
+      throw new Error(
+        'Anthropic returned empty or malformed response. The API may be experiencing issues.'
+      )
+    }
+    return content
   }
 }
 
@@ -1045,14 +1104,23 @@ export function extractiveSummarize(text: string, maxTokens: number): string {
   const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0)
   if (sentences.length === 0) return text
 
-  // Score sentences by importance
-  const scored = sentences.map((sentence) => {
+  // Build index map for O(1) position lookups
+  const sentenceIndex = new Map<string, number>()
+  sentences.forEach((s, i) => {
+    if (!sentenceIndex.has(s)) {
+      sentenceIndex.set(s, i)
+    }
+  })
+
+  const lastIndex = sentences.length - 1
+
+  // Score sentences by importance (O(n) with index map)
+  const scored = sentences.map((sentence, index) => {
     let score = 0
 
     // Position scoring (first and last sentences more important)
-    const index = sentences.indexOf(sentence)
     if (index === 0) score += 3
-    if (index === sentences.length - 1) score += 2
+    if (index === lastIndex) score += 2
 
     // Length scoring (medium length preferred)
     const words = sentence.split(/\s+/).length
@@ -1072,28 +1140,32 @@ export function extractiveSummarize(text: string, maxTokens: number): string {
     // Question avoidance
     if (sentence.includes('?')) score -= 1
 
-    return { sentence, score }
+    return { sentence, score, originalIndex: index }
   })
 
   // Sort by score and select top sentences
   scored.sort((a, b) => b.score - a.score)
 
   // Select sentences until token budget is exhausted
-  const selected: string[] = []
+  const selected: Array<{ sentence: string; originalIndex: number }> = []
   let totalTokens = 0
   const maxChars = maxTokens * 4
 
-  for (const { sentence } of scored) {
+  for (const { sentence, originalIndex } of scored) {
     const sentenceTokens = estimateTokens(sentence)
     if (totalTokens + sentenceTokens > maxTokens) break
-    if (selected.join('. ').length + sentence.length > maxChars) break
+    if (
+      selected.map((s) => s.sentence).join('. ').length + sentence.length >
+      maxChars
+    )
+      break
 
-    selected.push(sentence.trim())
+    selected.push({ sentence: sentence.trim(), originalIndex })
     totalTokens += sentenceTokens
   }
 
-  // Restore original order
-  selected.sort((a, b) => sentences.indexOf(a) - sentences.indexOf(b))
+  // Restore original order using stored indices (O(n log n) sort)
+  selected.sort((a, b) => a.originalIndex - b.originalIndex)
 
-  return selected.join('. ') + '.'
+  return selected.map((s) => s.sentence).join('. ') + '.'
 }

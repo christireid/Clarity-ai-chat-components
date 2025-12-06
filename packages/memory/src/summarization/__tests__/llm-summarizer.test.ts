@@ -470,12 +470,22 @@ describe('LLMSummarizer', () => {
         json: () => Promise.resolve({ error: 'Rate limit' }),
       })
 
-      const resultPromise = summarizer.summarize('Test')
+      // Start the summarization - this will fail after retries
+      let error: Error | undefined
+      const resultPromise = summarizer.summarize('Test').catch((e) => {
+        error = e
+      })
 
       // Advance through all retries
       await vi.advanceTimersByTimeAsync(30000)
+      await vi.runAllTimersAsync()
 
-      await expect(resultPromise).rejects.toThrow()
+      // Wait for the promise to settle
+      await resultPromise
+
+      // Verify we got an error
+      expect(error).toBeDefined()
+      expect(error?.message).toContain('OpenAI summarization failed')
       expect(mockFetch.mock.calls.length).toBeLessThanOrEqual(4) // Initial + 3 retries max
     })
 
