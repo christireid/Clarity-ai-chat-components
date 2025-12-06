@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useCallback } from 'react'
 import { ToastProvider, useClarityChat, ChatWindow, MemoryProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
