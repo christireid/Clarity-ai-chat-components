@@ -10,6 +10,42 @@ interface AnimatedBackgroundProps {
   className?: string
 }
 
+// Module-level singleton to prevent multiple initializations
+// This ensures initParticlesEngine is only called once, even with multiple component instances
+let initializationPromise: Promise<void> | null = null
+let initializationState: 'idle' | 'initializing' | 'initialized' | 'error' = 'idle'
+let initializationError: Error | null = null
+
+function initializeParticlesEngine(): Promise<void> {
+  // If already initialized, return resolved promise
+  if (initializationState === 'initialized') {
+    return Promise.resolve()
+  }
+
+  // If already initializing, return the existing promise
+  if (initializationState === 'initializing' && initializationPromise) {
+    return initializationPromise
+  }
+
+  // Start initialization
+  initializationState = 'initializing'
+  initializationPromise = initParticlesEngine(async (engine) => {
+    await loadSlim(engine)
+  })
+    .then(() => {
+      initializationState = 'initialized'
+      initializationError = null
+    })
+    .catch((error) => {
+      initializationState = 'error'
+      initializationError = error instanceof Error ? error : new Error('Failed to load particles engine')
+      console.error('[AnimatedBackground] Failed to initialize particles:', initializationError)
+      throw initializationError
+    })
+
+  return initializationPromise
+}
+
 export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -22,80 +58,74 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     // SSR safety: only run on client
     if (typeof window === 'undefined') return
 
-    let isMounted = true
+    const abortController = new AbortController()
     setMounted(true)
 
-    // Check for prefers-reduced-motion with fallback for older browsers
-    const checkReducedMotion = () => {
+    // Check for prefers-reduced-motion
+    const setupReducedMotionListener = () => {
       try {
         const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-        if (isMounted) {
+        if (!abortController.signal.aborted) {
           setPrefersReducedMotion(mediaQuery.matches)
         }
 
-        // Use addEventListener if available (modern browsers)
-        if (mediaQuery.addEventListener) {
-          const handleChange = (e: MediaQueryListEvent) => {
-            if (isMounted) {
-              setPrefersReducedMotion(e.matches)
-            }
+        const handleChange = (e: MediaQueryListEvent) => {
+          if (!abortController.signal.aborted) {
+            setPrefersReducedMotion(e.matches)
           }
-          mediaQuery.addEventListener('change', handleChange)
-          return () => mediaQuery.removeEventListener('change', handleChange)
-        } else {
-          // Fallback for older browsers (addListener/removeListener)
-          const handleChange = (mql: MediaQueryList | MediaQueryListEvent) => {
-            if (isMounted) {
-              setPrefersReducedMotion(mql.matches)
-            }
-          }
-          // Legacy API - TypeScript types don't include these but they exist in older browsers
-          if ('addListener' in mediaQuery) {
-            mediaQuery.addListener(handleChange as EventListener)
-            return () => {
-              if ('removeListener' in mediaQuery) {
-                mediaQuery.removeListener(handleChange as EventListener)
-              }
-            }
-          }
-          return () => {}
         }
+
+        // Modern browsers use addEventListener
+        if (mediaQuery.addEventListener) {
+          mediaQuery.addEventListener('change', handleChange)
+          return () => {
+            if (!abortController.signal.aborted) {
+              mediaQuery.removeEventListener('change', handleChange)
+            }
+          }
+        }
+
+        // Legacy browsers (IE11 and older) - but this is likely unnecessary in 2024
+        // Keeping minimal fallback for completeness
+        if ('addListener' in mediaQuery) {
+          const legacyHandler = handleChange as unknown as (mql: MediaQueryList) => void
+          mediaQuery.addListener(legacyHandler)
+          return () => {
+            if (!abortController.signal.aborted && 'removeListener' in mediaQuery) {
+              mediaQuery.removeListener(legacyHandler)
+            }
+          }
+        }
+
+        return () => {}
       } catch (error) {
         // If matchMedia fails, default to no reduced motion
-        if (isMounted) {
+        if (!abortController.signal.aborted) {
           setPrefersReducedMotion(false)
         }
         return () => {}
       }
     }
 
-    const cleanupMediaQuery = checkReducedMotion()
+    const cleanupMediaQuery = setupReducedMotionListener()
 
-    // Initialize particles engine
-    const initializeParticles = async () => {
-      try {
-        await initParticlesEngine(async (engine) => {
-          await loadSlim(engine)
-        })
-        if (isMounted) {
+    // Initialize particles engine using singleton pattern
+    initializeParticlesEngine()
+      .then(() => {
+        if (!abortController.signal.aborted) {
           setParticlesInitialized(true)
           setInitError(null)
         }
-      } catch (error) {
-        // Log error but don't crash the component
-        const err = error instanceof Error ? error : new Error('Failed to load particles engine')
-        if (isMounted) {
-          setInitError(err)
+      })
+      .catch((error) => {
+        if (!abortController.signal.aborted) {
+          setInitError(error)
           setParticlesInitialized(false)
         }
-        console.error('[AnimatedBackground] Failed to initialize particles:', err)
-      }
-    }
-
-    initializeParticles()
+      })
 
     return () => {
-      isMounted = false
+      abortController.abort()
       cleanupMediaQuery()
     }
   }, [])
