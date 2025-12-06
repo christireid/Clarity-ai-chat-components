@@ -470,7 +470,7 @@ function Chat() {
       </section>
 
       <Pagination
-        previous={{ title: 'Hooks Overview', href: '/reference/hooks' }}
+        prev={{ title: 'Hooks Overview', href: '/reference/hooks' }}
         next={{ title: 'useChat', href: '/reference/hooks/use-chat' }}
       />
     </>

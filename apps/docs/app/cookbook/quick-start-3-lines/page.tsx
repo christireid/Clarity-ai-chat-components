@@ -302,7 +302,7 @@ app.listen(3000, () => {
       </section>
 
       <Pagination
-        previous={{ title: 'Cookbook Overview', href: '/cookbook' }}
+        prev={{ title: 'Cookbook Overview', href: '/cookbook' }}
         next={{ title: 'OpenAI Streaming Chat', href: '/cookbook/openai-streaming-chat' }}
       />
     </>

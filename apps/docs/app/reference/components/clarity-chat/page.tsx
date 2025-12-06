@@ -1,15 +1,12 @@
 'use client'
 
-import { useState, useCallback } from 'react'
 import { ClarityChat } from '@clarity-chat/react'
-import type { Message } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 import type { Metadata } from 'next'
 
@@ -18,15 +15,6 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'ClarityChat Component | Clarity Chat',
   description: 'The simplest way to add AI chat to your app. Just provide an API endpoint and you\'re done.',
-}
-
-// Basic demo component
-function BasicClarityChatDemo() {
-  return (
-    <div className="w-full max-w-2xl" style={{ height: '500px' }}>
-      <ClarityChat api="/api/chat" />
-    </div>
-  )
 }
 
 const clarityChatProps: Prop[] = [
@@ -381,35 +369,57 @@ const openai = new OpenAI({
 })
 
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json()
+  try {
+    const { messages } = await req.json()
 
-  const stream = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages,
-    stream: true,
-  })
-
-  return new Response(
-    new ReadableStream({
-      async start(controller) {
-        const encoder = new TextEncoder()
-        for await (const chunk of stream) {
-          const content = chunk.choices[0]?.delta?.content
-          if (content) {
-            controller.enqueue(encoder.encode(\`data: \${content}\\n\\n\`))
-          }
-        }
-        controller.close()
-      },
-    }),
-    {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-      },
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
-  )
+
+    if (!process.env.OPENAI_API_KEY) {
+      return new Response(JSON.stringify({ error: 'OPENAI_API_KEY not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4',
+      messages,
+      stream: true,
+    })
+
+    return new Response(
+      new ReadableStream({
+        async start(controller) {
+          const encoder = new TextEncoder()
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content
+            if (content) {
+              controller.enqueue(encoder.encode(\`data: \${content}\\n\\n\`))
+            }
+          }
+          controller.close()
+        },
+      }),
+      {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      }
+    )
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 }`}
         />
       </section>
@@ -485,7 +495,7 @@ function CustomChat() {
       </section>
 
       <Pagination
-        previous={{ title: 'Components Overview', href: '/reference/components' }}
+        prev={{ title: 'Components Overview', href: '/reference/components' }}
         next={{ title: 'ChatWindow', href: '/reference/components/chat-window' }}
       />
     </>
