@@ -571,9 +571,45 @@ pnpm run storybook
 
 ---
 
+## ⚠️ Critical Disclaimer
+
+**This integration is CODE-COMPLETE but NOT PRODUCTION-VERIFIED.**
+
+### What Was Actually Tested
+
+✅ TypeScript compilation  
+✅ Lint passes  
+✅ Unit tests pass  
+✅ Build succeeds  
+
+### What Was NOT Tested
+
+❌ **Visual rendering** - Components never rendered in a browser  
+❌ **CSS variables** - Never verified they exist (got lucky - Tailwind config has them)  
+❌ **Dark mode** - Never tested  
+❌ **Accessibility** - Never verified WCAG claims  
+❌ **Bundle size** - Never measured in a real application  
+❌ **TooltipProvider** - Never tested if missing provider throws helpful errors  
+❌ **Peer dependencies** - Never checked for conflicts in consuming apps  
+
+### Before Production Use
+
+**REQUIRED:**
+1. **Visually test at least one component in a browser**
+2. Add CSS variables to your global CSS (see `SHADCN_SETUP_REQUIRED.md`)
+3. Verify Tailwind config has color extensions (already present in this repo)
+4. Wrap app in `TooltipProvider` if using tooltips
+5. Check browser console for errors
+6. Verify bundle size impact
+7. Test dark mode if needed
+
+**See `/workspace/SHADCN_SETUP_REQUIRED.md` for complete setup instructions.**
+
+---
+
 ## Conclusion
 
-The shadcn/ui integration is **production-ready** for the primitives package. The repository now has:
+The shadcn/ui integration is **code-complete and passes all automated checks** for the primitives package. The repository now has:
 
 ✅ Official shadcn/ui components built on Radix UI  
 ✅ Backward compatibility with existing code  

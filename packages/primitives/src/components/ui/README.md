@@ -2,6 +2,17 @@
 
 This directory contains official shadcn/ui components built on Radix UI primitives.
 
+## ⚠️ SETUP REQUIRED
+
+**These components will NOT work without proper setup.** See `/workspace/SHADCN_SETUP_REQUIRED.md` for critical requirements:
+
+1. CSS variables must be defined in your global CSS
+2. Tailwind config must include color extensions  
+3. TooltipProvider must wrap your app (if using tooltips)
+4. Peer dependencies must be compatible
+
+**Do not use these components without completing setup first.**
+
 ## Components Available
 
 | Component | Status | Radix UI Primitive | Description |

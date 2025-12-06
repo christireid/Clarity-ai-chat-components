@@ -82,8 +82,16 @@ function MyComponent() {
 ✅ Lint: Passing
 ✅ Build: Successful
 ✅ TypeScript: No errors
-✅ Zero breaking changes
+✅ Zero breaking changes (code-level)
 ```
+
+**⚠️ CRITICAL:** These are **automated checks only**. Components have NOT been:
+- ❌ Visually tested in a browser
+- ❌ Tested with dark mode
+- ❌ Verified for accessibility
+- ❌ Measured for bundle size impact
+
+**REQUIRED BEFORE USE:** See `/workspace/SHADCN_SETUP_REQUIRED.md` for critical setup steps.
 
 ## 🎯 Why This Matters
 
