@@ -159,7 +159,7 @@ const LegacyPopoverContent: React.FC<PopoverContentProps> = ({
           closeOnEscape ? undefined : (e) => e.preventDefault()
         }
         className={cn(
-          'z-50 rounded-xl border bg-popover text-popover-foreground shadow-md outline-none backdrop-blur-sm',
+          'z-50 rounded-xl border bg-popover p-4 text-popover-foreground shadow-md outline-none backdrop-blur-sm',
           'animate-in fade-in-0 zoom-in-95',
           'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
           'data-[side=bottom]:slide-in-from-top-2',

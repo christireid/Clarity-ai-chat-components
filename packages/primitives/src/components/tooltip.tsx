@@ -98,11 +98,26 @@ export const Tooltip: React.FC<TooltipProps> = ({
     return <>{children}</>
   }
 
+  // If children is a valid React element, use it directly with asChild
+  // Otherwise, wrap in a span to ensure Radix has a valid element to work with
+  const isValidChild = React.isValidElement(children)
+  
+  const triggerElement = isValidChild ? (
+    // Clone element to merge className if provided
+    className ? 
+      React.cloneElement(children as React.ReactElement<{ className?: string }>, {
+        className: cn((children as React.ReactElement<{ className?: string }>).props.className, className),
+      }) : 
+      children
+  ) : (
+    <span className={cn('inline-block', className)}>{children}</span>
+  )
+
   return (
     <TooltipPrimitive.Provider delayDuration={delay}>
       <TooltipPrimitive.Root open={open} onOpenChange={onOpenChange}>
         <TooltipPrimitive.Trigger asChild>
-          <span className={cn('inline-block', className)}>{children}</span>
+          {triggerElement}
         </TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Content
