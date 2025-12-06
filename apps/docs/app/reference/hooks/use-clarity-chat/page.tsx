@@ -587,35 +587,52 @@ function ChatApp() {
         <h3>Error Handling Example</h3>
 
         <EnhancedCodeBlock
-          code={`const chat = useClarityChat({
-  api: '/api/chat',
-  onError: (error) => {
-    // Handle different error types
-    if (error.message.includes('network')) {
-      // Network error - show retry button
-      setShowRetry(true)
-    } else if (error.message.includes('rate limit')) {
-      // Rate limit - show wait message
-      setRateLimitMessage('Too many requests. Please wait.')
-    } else {
-      // Other errors - log and show generic message
-      console.error('Chat error:', error)
-      setErrorMessage('Something went wrong. Please try again.')
-    }
-  },
-})
+          code={`import { useClarityChat } from '@clarity-chat/react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
-// Handle memory errors
-if (chat.memoryErrorInfo.memoryError) {
-  const { memoryError, memoryErrorOperation, memoryErrorType } = chat.memoryErrorInfo
-  
-  if (memoryErrorType === 'network') {
-    // Network error - retry
-    console.log('Retrying memory operation...')
-  } else if (memoryErrorType === 'auth') {
-    // Auth error - redirect to login
-    router.push('/login')
+function ChatWithErrorHandling() {
+  const router = useRouter()
+  const [showRetry, setShowRetry] = useState(false)
+  const [rateLimitMessage, setRateLimitMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const chat = useClarityChat({
+    api: '/api/chat',
+    onError: (error) => {
+      // Handle different error types
+      if (error.message.includes('network')) {
+        // Network error - show retry button
+        setShowRetry(true)
+      } else if (error.message.includes('rate limit')) {
+        // Rate limit - show wait message
+        setRateLimitMessage('Too many requests. Please wait.')
+      } else {
+        // Other errors - log and show generic message
+        console.error('Chat error:', error)
+        setErrorMessage('Something went wrong. Please try again.')
+      }
+    },
+  })
+
+  // Handle memory errors
+  if (chat.memoryErrorInfo.memoryError) {
+    const { memoryError, memoryErrorOperation, memoryErrorType } = chat.memoryErrorInfo
+    
+    if (memoryErrorType === 'network') {
+      // Network error - retry
+      console.log('Retrying memory operation...')
+    } else if (memoryErrorType === 'auth') {
+      // Auth error - redirect to login
+      router.push('/login')
+    }
   }
+
+  return (
+    <div>
+      {/* Your chat UI here */}
+    </div>
+  )
 }`}
           language="tsx"
           showLineNumbers

@@ -342,16 +342,25 @@ function App() {
         <p>Add a header with session information and custom actions:</p>
 
         <EnhancedCodeBlock
-          code={`<ClarityChat
-  api="/api/chat"
-  showHeader
-  sessionTitle="AI Assistant"
-  sessionSubtitle="Always here to help"
-  showMessageCount
-  headerActions={
-    <button onClick={handleExport}>Export</button>
+          code={`function ChatWithHeader() {
+  const handleExport = () => {
+    // Export conversation logic
+    console.log('Exporting conversation...')
   }
-/>`}
+
+  return (
+    <ClarityChat
+      api="/api/chat"
+      showHeader
+      sessionTitle="AI Assistant"
+      sessionSubtitle="Always here to help"
+      showMessageCount
+      headerActions={
+        <button onClick={handleExport}>Export</button>
+      }
+    />
+  )
+}`}
           language="tsx"
           showLineNumbers
         />
