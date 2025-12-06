@@ -33,6 +33,14 @@ function BasicHookDemo() {
 
 // With memory demo
 function MemoryHookDemo() {
+  return (
+    <MemoryProvider config={{ maxTokens: 10000 }}>
+      <MemoryHookDemoInner />
+    </MemoryProvider>
+  )
+}
+
+function MemoryHookDemoInner() {
   const chat = useClarityChat({
     api: '/api/chat',
     memory: {
@@ -303,6 +311,15 @@ function ChatApp() {
         >
           <BasicHookDemo />
         </ComponentPreview>
+
+        <Callout type="warning">
+          <p>
+            <strong>Note:</strong> The demo above uses a placeholder API endpoint. In a real
+            application, you'll need to implement the <code>/api/chat</code> route. See the{' '}
+            <a href="#examples">Complete Example</a> below for error handling and a full
+            implementation.
+          </p>
+        </Callout>
 
         <h2 id="with-memory">With Memory</h2>
 

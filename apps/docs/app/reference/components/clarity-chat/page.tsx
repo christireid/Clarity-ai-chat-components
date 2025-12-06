@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { ToastProvider, ClarityChat } from '@clarity-chat/react'
+import { ToastProvider, ClarityChat, MemoryProvider } from '@clarity-chat/react'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
@@ -26,13 +26,15 @@ function BasicChatDemo() {
 // With memory demo
 function MemoryChatDemo() {
   return (
-    <div className="w-full max-w-2xl" style={{ height: '400px' }}>
-      <ClarityChat
-        api="/api/chat"
-        memory={{ enabled: true, strategy: 'sliding-window', maxTokens: 4000 }}
-        className="border border-border rounded-lg"
-      />
-    </div>
+    <MemoryProvider config={{ maxTokens: 10000 }}>
+      <div className="w-full max-w-2xl" style={{ height: '400px' }}>
+        <ClarityChat
+          api="/api/chat"
+          memory={{ enabled: true, strategy: 'sliding-window', maxTokens: 4000 }}
+          className="border border-border rounded-lg"
+        />
+      </div>
+    </MemoryProvider>
   )
 }
 
@@ -246,6 +248,14 @@ function App() {
         >
           <BasicChatDemo />
         </ComponentPreview>
+
+        <Callout type="warning">
+          <p>
+            <strong>Note:</strong> The demo above uses a placeholder API endpoint. In a real
+            application, you'll need to implement the <code>/api/chat</code> route. See the{' '}
+            <a href="#examples">Next.js API Route Example</a> below for a complete implementation.
+          </p>
+        </Callout>
 
         <h2 id="with-memory">With Memory</h2>
 

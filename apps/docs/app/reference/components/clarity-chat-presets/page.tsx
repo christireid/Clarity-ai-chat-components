@@ -187,6 +187,14 @@ function App() {
           <SimplePresetDemo />
         </ComponentPreview>
 
+        <Callout type="warning">
+          <p>
+            <strong>Note:</strong> The demo above uses a placeholder API endpoint. In a real
+            application, you'll need to implement the <code>/api/chat</code> route. See the{' '}
+            <a href="#examples">Next.js API Route Example</a> below for a complete implementation.
+          </p>
+        </Callout>
+
         <Callout type="tip">
           <p>
             The Simple preset is equivalent to using <code>ClarityChat</code> directly with default

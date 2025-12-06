@@ -53,8 +53,8 @@ function ProductDemo() {
       {object && (
         <div className="space-y-4">
           <h3 className="font-semibold">Generated Products:</h3>
-          {object.map((product, index) => (
-            <div key={index} className="p-4 border rounded-lg">
+          {object.map((product) => (
+            <div key={`${product.name}-${product.price}`} className="p-4 border rounded-lg">
               <h4 className="font-semibold">{product.name}</h4>
               <p className="text-sm text-muted-foreground">{product.category}</p>
               <p className="mt-2">{product.description}</p>
@@ -220,8 +220,8 @@ function Example() {
       </button>
       {object && (
         <div>
-          {object.map((product, i) => (
-            <div key={i}>
+          {object.map((product) => (
+            <div key={`${product.name}-${product.price}`}>
               <h3>{product.name}</h3>
               <p>${product.price}</p>
             </div>
@@ -272,8 +272,8 @@ function ProductRecommendations() {
       </button>
       {object && (
         <div>
-          {object.map((product, i) => (
-            <div key={i}>
+          {object.map((product) => (
+            <div key={\`\${product.name}-\${product.price}\`}>
               <h3>{product.name}</h3>
               <p>${product.price}</p>
               <p>{product.description}</p>
@@ -287,6 +287,15 @@ function ProductRecommendations() {
         >
           <ProductDemo />
         </ComponentPreview>
+
+        <Callout type="warning">
+          <p>
+            <strong>Note:</strong> The demo above uses a placeholder API endpoint. In a real
+            application, you'll need to implement the <code>/api/generate-products</code> route.
+            See the <a href="#examples">Next.js API Route Example</a> below for a complete
+            implementation.
+          </p>
+        </Callout>
 
         <h2 id="type-safety">Type Safety</h2>
 
@@ -377,23 +386,35 @@ function UserGenerator() {
 
         <h2 id="error-handling">Error Handling</h2>
 
-        <p>Handle errors gracefully:</p>
+        <p>Handle errors gracefully with proper user feedback:</p>
 
         <EnhancedCodeBlock
           code={`const { object, run, isLoading, error, reset } = useClarityObject<Product[]>({
   api: '/api/generate-products',
   onError: (error) => {
     console.error('Generation error:', error)
-    // Send to error tracking
-    errorTrackingService.captureException(error)
+    // Send to error tracking service
+    if (typeof errorTrackingService !== 'undefined') {
+      errorTrackingService.captureException(error)
+    }
   },
 })
 
 // In your component
 {error && (
-  <div className="error">
-    <p>Error: {error.message}</p>
-    <button onClick={reset}>Try Again</button>
+  <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
+    <p className="text-red-800 dark:text-red-200 font-semibold mb-2">
+      Error generating products
+    </p>
+    <p className="text-red-600 dark:text-red-400 text-sm mb-3">
+      {error.message}
+    </p>
+    <button
+      onClick={reset}
+      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+    >
+      Try Again
+    </button>
   </div>
 )}`}
           language="tsx"
