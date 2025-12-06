@@ -9,7 +9,15 @@ import { AnimatedBackground } from './AnimatedBackground'
 
 // Mock tsparticles
 vi.mock('@tsparticles/react', () => ({
-  default: ({ id, options, particlesLoaded }: any) => {
+  default: ({ 
+    id, 
+    options, 
+    particlesLoaded 
+  }: { 
+    id?: string
+    options?: unknown
+    particlesLoaded?: (container: unknown) => void 
+  }) => {
     // Simulate particles loaded callback
     if (particlesLoaded) {
       setTimeout(() => {

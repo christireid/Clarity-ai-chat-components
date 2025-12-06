@@ -234,8 +234,8 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   }), [isDark, reducedMotion])
 
   // Handle container cleanup
-  const handleParticlesLoaded = useCallback((container: Container | null) => {
-    if (isMountedRef.current) {
+  const handleParticlesLoaded = useCallback(async (container?: Container) => {
+    if (isMountedRef.current && container) {
       containerRef.current = container
     }
   }, [])
@@ -272,7 +272,7 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
       <Particles
         id="animated-background"
         particlesLoaded={handleParticlesLoaded}
-        options={particlesConfig}
+        options={particlesConfig as unknown as Parameters<typeof Particles>[0]['options']}
         className="w-full h-full"
       />
     </div>
