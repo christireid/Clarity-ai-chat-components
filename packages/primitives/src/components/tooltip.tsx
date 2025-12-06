@@ -75,6 +75,11 @@ export interface TooltipProps {
 /**
  * Convenience Tooltip component that wraps Radix UI primitives
  * Maintains backward compatibility with existing API
+ * 
+ * NOTE: Each Tooltip instance creates its own TooltipProvider for self-contained
+ * behavior. For apps with many tooltips, consider wrapping your app in a single
+ * <TooltipProvider> and using the primitive components (TooltipRoot, TooltipTrigger, 
+ * TooltipContent) directly for better performance.
  */
 export const Tooltip: React.FC<TooltipProps> = ({
   children,
