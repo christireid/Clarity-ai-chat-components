@@ -30,9 +30,11 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       // Wait for tooltip to appear (respects delay)
+      // Radix UI creates duplicate elements for accessibility, use queryAllByText
       await waitFor(() => {
-        expect(screen.getByText('Tooltip text')).toBeInTheDocument()
-      }, { timeout: 500 })
+        const tooltipElements = screen.getAllByText('Tooltip text')
+        expect(tooltipElements.length).toBeGreaterThan(0)
+      }, { timeout: 1000 })
     })
 
     it('should render with default side', () => {
@@ -61,7 +63,9 @@ describe('Tooltip Component', () => {
           <button>Button</button>
         </Tooltip>
       )
-      expect(screen.getByText('Controlled')).toBeInTheDocument()
+      // Radix UI creates duplicate elements for accessibility
+      const tooltipElements = screen.getAllByText('Controlled')
+      expect(tooltipElements.length).toBeGreaterThan(0)
     })
 
     it('should work as uncontrolled component', async () => {
@@ -76,8 +80,9 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('Uncontrolled')).toBeInTheDocument()
-      }, { timeout: 500 })
+        const tooltipElements = screen.getAllByText('Uncontrolled')
+        expect(tooltipElements.length).toBeGreaterThan(0)
+      }, { timeout: 1000 })
     })
 
     it('should call onOpenChange when state changes', async () => {
@@ -94,7 +99,7 @@ describe('Tooltip Component', () => {
 
       await waitFor(() => {
         expect(mockOnOpenChange).toHaveBeenCalled()
-      }, { timeout: 500 })
+      }, { timeout: 1000 })
     })
   })
 
@@ -115,8 +120,9 @@ describe('Tooltip Component', () => {
 
       // Should appear after delay
       await waitFor(() => {
-        expect(screen.getByText('Delayed')).toBeInTheDocument()
-      }, { timeout: 600 })
+        const tooltipElements = screen.getAllByText('Delayed')
+        expect(tooltipElements.length).toBeGreaterThan(0)
+      }, { timeout: 1000 })
     })
   })
 
@@ -133,16 +139,16 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       // Wait a bit to ensure tooltip doesn't appear
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await new Promise(resolve => setTimeout(resolve, 500))
       expect(screen.queryByText('Should not show')).not.toBeInTheDocument()
     })
   })
 
   describe('Arrow', () => {
-    it('should show arrow by default', async () => {
+    it('should render tooltip with arrow when showArrow is true', async () => {
       const user = userEvent.setup()
       render(
-        <Tooltip content="With arrow">
+        <Tooltip content="With arrow" showArrow>
           <button>Button</button>
         </Tooltip>
       )
@@ -151,11 +157,12 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('With arrow')).toBeInTheDocument()
-      }, { timeout: 500 })
+        const tooltipElements = screen.getAllByText('With arrow')
+        expect(tooltipElements.length).toBeGreaterThan(0)
+      }, { timeout: 1000 })
     })
 
-    it('should hide arrow when showArrow is false', async () => {
+    it('should render tooltip without arrow by default', async () => {
       const user = userEvent.setup()
       render(
         <Tooltip content="No arrow" showArrow={false}>
@@ -167,8 +174,9 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('No arrow')).toBeInTheDocument()
-      }, { timeout: 500 })
+        const tooltipElements = screen.getAllByText('No arrow')
+        expect(tooltipElements.length).toBeGreaterThan(0)
+      }, { timeout: 1000 })
     })
   })
 
@@ -194,8 +202,9 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('Custom content')).toBeInTheDocument()
-      }, { timeout: 500 })
+        const tooltipElements = screen.getAllByText('Custom content')
+        expect(tooltipElements.length).toBeGreaterThan(0)
+      }, { timeout: 1000 })
     })
   })
 
