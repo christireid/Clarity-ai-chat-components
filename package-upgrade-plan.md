@@ -594,7 +594,8 @@
 - All example apps updated for Next.js (10 apps) and framer-motion (3 apps)
 - **All 16 example apps updated from Vite 5.x/6.x to Vite 7.2.6** ✅
 - All @vitejs/plugin-react updated to 5.1.1 in example apps (where applicable)
-- Complex-chat example also updated React to 19.2.0 and TypeScript to 5.9.3 for consistency
+- Complex-chat example updated: React 18.3.1 → 19.2.0, TypeScript 5.6.2 → 5.9.3, @vitejs/plugin-react 4.3.1 → 5.1.1
+- use-clarity-chat-showcase updated: React 19.0.0 → 19.2.0 for consistency
 - Conflicting overrides resolved
 - Missing dependencies added
 - Plan file updated with accurate status
