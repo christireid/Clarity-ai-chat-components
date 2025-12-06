@@ -41,7 +41,7 @@
     "@types/jscodeshift": "^0.11.10",
     "@types/node": "^20.10.0",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.15"
   },
   "files": [
     "dist",
