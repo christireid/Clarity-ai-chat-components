@@ -98,6 +98,7 @@ export const referenceNavigation: NavItem[] = [
       {
         title: 'Core',
         items: [
+          { title: 'ClarityChat', href: '/reference/components/clarity-chat' },
           { title: 'ChatWindow', href: '/reference/components/chat-window' },
           { title: 'Message', href: '/reference/components/message' },
           { title: 'MessageList', href: '/reference/components/message-list' },
@@ -163,6 +164,7 @@ export const referenceNavigation: NavItem[] = [
   {
     title: 'Hooks',
     items: [
+      { title: 'useClarityChat', href: '/reference/hooks/use-clarity-chat' },
       { title: 'useChat', href: '/reference/hooks/use-chat' },
       { title: 'useMessages', href: '/reference/hooks/use-messages' },
       { title: 'useTyping', href: '/reference/hooks/use-typing' },
@@ -190,6 +192,7 @@ export const cookbookNavigation: NavItem[] = [
   {
     title: 'Getting Started',
     items: [
+      { title: '3-Line Quick Start', href: '/cookbook/quick-start-3-lines' },
       { title: 'OpenAI Streaming Chat', href: '/cookbook/openai-streaming-chat' },
       { title: 'Next.js Integration', href: '/cookbook/nextjs-integration' },
       { title: 'Custom Theming', href: '/cookbook/custom-theming' },
