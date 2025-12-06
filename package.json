@@ -35,7 +35,7 @@
     "benchmark": "node tools/scripts/benchmark.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
