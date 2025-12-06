@@ -247,7 +247,7 @@ export function ChatInput({
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)
 
   // Focus ring glow animation variants
-  const containerVariants = {
+  const containerVariants: import('framer-motion').Variants = {
     idle: {
       boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
     },
@@ -260,7 +260,9 @@ export function ChatInput({
           ],
           transition: { duration: 0.3, ease: 'easeOut' },
         }
-      : {},
+      : {
+          boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
+        },
   }
 
   return (

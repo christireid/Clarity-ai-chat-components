@@ -13,7 +13,7 @@
   },
   {
     "name": "@clarity-chat/error-handling",
-    "path": "packages/error-handling/dist/index.js",
+    "path": "packages/error-handling/dist/index.mjs",
     "limit": "50 KB",
     "webpack": false
   },

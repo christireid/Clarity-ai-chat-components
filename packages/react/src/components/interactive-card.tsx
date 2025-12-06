@@ -117,7 +117,6 @@ export const InteractiveCard = React.memo(
     }
 
     return (
-      // @ts-expect-error - framer-motion HTMLMotionProps type complexity issue
       <motion.div
         ref={ref}
         className={cn(
@@ -148,10 +147,10 @@ export const InteractiveCard = React.memo(
         }}
         animate={
           isHovered && !disabled && interactive
-            ? {
+            ? ({
                 ...hoverVariants[hoverIntensity],
                 scale: hoverIntensity !== 'none' ? 1.02 : 1,
-              }
+              } as const)
             : undefined
         }
         whileTap={
