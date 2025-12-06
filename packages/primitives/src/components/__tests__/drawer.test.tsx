@@ -234,7 +234,7 @@ describe('Drawer Component', () => {
 
       expect(() => {
         render(<DrawerTrigger>Trigger</DrawerTrigger>)
-      }).toThrow('Drawer components must be used within a Drawer')
+      }).toThrow(/must be used within `Dialog`/i)
 
       consoleSpy.mockRestore()
     })

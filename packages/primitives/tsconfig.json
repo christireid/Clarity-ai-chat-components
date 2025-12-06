@@ -4,6 +4,10 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    },
     "declaration": true,
     "declarationMap": true,
     "outDir": "./dist",

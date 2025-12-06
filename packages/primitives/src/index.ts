@@ -19,5 +19,4 @@ export * from './components/checkbox'
 export * from './components/error-message'
 
 // Hooks
-export * from './hooks/use-body-scroll-lock'
 export * from './hooks/use-ripple-effect'

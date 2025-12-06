@@ -228,7 +228,7 @@ describe('Dialog Component', () => {
 
       expect(() => {
         render(<DialogTrigger>Trigger</DialogTrigger>)
-      }).toThrow('Dialog components must be used within a Dialog')
+      }).toThrow(/must be used within `Dialog`/i)
 
       consoleSpy.mockRestore()
     })

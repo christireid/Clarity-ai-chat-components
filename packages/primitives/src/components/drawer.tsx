@@ -1,29 +1,69 @@
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import * as SheetPrimitive from '@radix-ui/react-dialog'
+import { X } from 'lucide-react'
+import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
-// ============================================================================
-// Types
-// ============================================================================
+type DrawerSide = 'left' | 'right' | 'top' | 'bottom'
+type DrawerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full'
 
-export interface DrawerProps {
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-  children: React.ReactNode
-  defaultOpen?: boolean
+const drawerVariants = cva(
+  'fixed z-50 bg-card shadow-2xl transition data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:duration-300 data-[state=closed]:duration-200',
+  {
+    variants: {
+      side: {
+        left: 'inset-y-0 left-0 data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left',
+        right:
+          'inset-y-0 right-0 data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right',
+        top: 'inset-x-0 top-0 data-[state=open]:slide-in-from-top data-[state=closed]:slide-out-to-top',
+        bottom:
+          'inset-x-0 bottom-0 data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom',
+      },
+    },
+    defaultVariants: {
+      side: 'right',
+    },
+  }
+)
+
+const drawerSizes: Record<DrawerSide, Record<DrawerSize, string>> = {
+  left: {
+    sm: 'w-64',
+    md: 'w-80',
+    lg: 'w-96',
+    xl: 'w-[28rem]',
+    full: 'w-screen',
+  },
+  right: {
+    sm: 'w-64',
+    md: 'w-80',
+    lg: 'w-96',
+    xl: 'w-[28rem]',
+    full: 'w-screen',
+  },
+  top: {
+    sm: 'h-56',
+    md: 'h-72',
+    lg: 'h-96',
+    xl: 'h-[32rem]',
+    full: 'h-screen',
+  },
+  bottom: {
+    sm: 'h-56',
+    md: 'h-72',
+    lg: 'h-96',
+    xl: 'h-[32rem]',
+    full: 'h-screen',
+  },
 }
 
-export interface DrawerTriggerProps {
-  asChild?: boolean
-  children: React.ReactNode
-  onClick?: () => void
-}
+export type DrawerProps = SheetPrimitive.DialogProps
+export type DrawerTriggerProps = SheetPrimitive.DialogTriggerProps
 
-export interface DrawerContentProps {
-  children: React.ReactNode
-  className?: string
-  side?: 'left' | 'right' | 'top' | 'bottom'
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+export interface DrawerContentProps
+  extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
+    VariantProps<typeof drawerVariants> {
+  size?: DrawerSize
   closeOnClickOutside?: boolean
   closeOnEscape?: boolean
   showCloseButton?: boolean
@@ -31,407 +71,152 @@ export interface DrawerContentProps {
   overlayClassName?: string
 }
 
-// ============================================================================
-// Context
-// ============================================================================
+export type DrawerHeaderProps = React.HTMLAttributes<HTMLDivElement>
+export type DrawerFooterProps = React.HTMLAttributes<HTMLDivElement>
+export type DrawerBodyProps = React.HTMLAttributes<HTMLDivElement>
+export type DrawerTitleProps = React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
+export type DrawerDescriptionProps = React.ComponentPropsWithoutRef<
+  typeof SheetPrimitive.Description
+>
+export type DrawerCloseProps = React.ComponentPropsWithoutRef<typeof SheetPrimitive.Close>
 
-interface DrawerContextValue {
-  open: boolean
-  setOpen: (open: boolean) => void
+export const Drawer = SheetPrimitive.Root
+export const DrawerTrigger = SheetPrimitive.Trigger
+export const DrawerClose = SheetPrimitive.Close
+export const DrawerPortal = SheetPrimitive.Portal
+
+interface DrawerOverlayProps
+  extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay> {
+  blur?: boolean
 }
 
-const DrawerContext = React.createContext<DrawerContextValue | null>(null)
+const DrawerOverlay = React.forwardRef<
+  React.ElementRef<typeof SheetPrimitive.Overlay>,
+  DrawerOverlayProps
+>(({ blur = true, className, ...props }, ref) => (
+  <SheetPrimitive.Overlay
+    ref={ref}
+    className={cn(
+      'fixed inset-0 z-40 bg-black/60 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0',
+      blur && 'backdrop-blur-sm',
+      className
+    )}
+    {...props}
+  />
+))
+DrawerOverlay.displayName = SheetPrimitive.Overlay.displayName
 
-const useDrawer = () => {
-  const context = React.useContext(DrawerContext)
-  if (!context) {
-    throw new Error('Drawer components must be used within a Drawer')
-  }
-  return context
-}
-
-// ============================================================================
-// Focus Trap Hook
-// ============================================================================
-
-function useFocusTrap(ref: React.RefObject<HTMLElement | null>, enabled: boolean) {
-  React.useEffect(() => {
-    if (!enabled || !ref.current) return
-
-    const element = ref.current
-    const previouslyFocusedElement = document.activeElement as HTMLElement
-
-    const getFocusableElements = () => {
-      return Array.from(
-        element.querySelectorAll<HTMLElement>(
-          'a[href], button:not(:disabled), textarea:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])'
-        )
-      )
-    }
-
-    const focusableElements = getFocusableElements()
-    if (focusableElements.length > 0) {
-      focusableElements[0].focus()
-    }
-
-    const handleTab = (e: KeyboardEvent) => {
-      const focusableElements = getFocusableElements()
-      if (focusableElements.length === 0) return
-
-      const firstElement = focusableElements[0]
-      const lastElement = focusableElements[focusableElements.length - 1]
-
-      if (e.key === 'Tab') {
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            e.preventDefault()
-            lastElement.focus()
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            e.preventDefault()
-            firstElement.focus()
-          }
-        }
-      }
-    }
-
-    element.addEventListener('keydown', handleTab)
-
-    return () => {
-      element.removeEventListener('keydown', handleTab)
-      if (previouslyFocusedElement) {
-        previouslyFocusedElement.focus()
-      }
-    }
-  }, [enabled, ref])
-}
-
-// ============================================================================
-// Drawer Root Component
-// ============================================================================
-
-export const Drawer: React.FC<DrawerProps> = ({
-  open: controlledOpen,
-  onOpenChange,
-  children,
-  defaultOpen = false,
-}) => {
-  const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
-  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
-
-  const setOpen = React.useCallback(
-    (newOpen: boolean) => {
-      if (controlledOpen === undefined) {
-        setInternalOpen(newOpen)
-      }
-      onOpenChange?.(newOpen)
+export const DrawerContent = React.forwardRef<
+  React.ElementRef<typeof SheetPrimitive.Content>,
+  DrawerContentProps
+>(
+  (
+    {
+      side = 'right',
+      size = 'md',
+      closeOnClickOutside = true,
+      closeOnEscape = true,
+      showCloseButton = true,
+      blurBackdrop = true,
+      overlayClassName,
+      className,
+      onInteractOutside,
+      onEscapeKeyDown,
+      children,
+      ...props
     },
-    [controlledOpen, onOpenChange]
-  )
-
-  return (
-    <DrawerContext.Provider value={{ open, setOpen }}>
-      {children}
-    </DrawerContext.Provider>
-  )
-}
-
-// ============================================================================
-// Drawer Trigger
-// ============================================================================
-
-export const DrawerTrigger: React.FC<DrawerTriggerProps> = ({
-  children,
-  onClick,
-  asChild,
-}) => {
-  const { setOpen } = useDrawer()
-
-  const handleClick = () => {
-    setOpen(true)
-    onClick?.()
+    ref
+  ) => {
+    return (
+      <DrawerPortal>
+        <DrawerOverlay blur={blurBackdrop} className={overlayClassName} />
+        <SheetPrimitive.Content
+          role="dialog"
+          aria-modal="true"
+          ref={ref}
+          data-side={side}
+          className={cn(
+            drawerVariants({ side }),
+            drawerSizes[side][size],
+            side === 'left' && 'rounded-r-2xl border-r border-border/40',
+            side === 'right' && 'rounded-l-2xl border-l border-border/40',
+            side === 'top' && 'rounded-b-2xl border-b border-border/40',
+            side === 'bottom' && 'rounded-t-2xl border-t border-border/40',
+            'focus:outline-none',
+            className
+          )}
+          onInteractOutside={(event) => {
+            if (!closeOnClickOutside) {
+              event.preventDefault()
+            }
+            onInteractOutside?.(event)
+          }}
+          onEscapeKeyDown={(event) => {
+            if (!closeOnEscape) {
+              event.preventDefault()
+            }
+            onEscapeKeyDown?.(event)
+          }}
+          {...props}
+        >
+          {showCloseButton && (
+            <SheetPrimitive.Close className="absolute right-4 top-4 rounded-full p-2 text-muted-foreground transition hover:bg-accent/60 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring/60 focus:ring-offset-2">
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close drawer</span>
+            </SheetPrimitive.Close>
+          )}
+          {children}
+        </SheetPrimitive.Content>
+      </DrawerPortal>
+    )
   }
+)
+DrawerContent.displayName = SheetPrimitive.Content.displayName
 
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, {
-      onClick: handleClick,
-    } as React.HTMLAttributes<HTMLElement>)
-  }
+export const DrawerHeader = ({ className, ...props }: DrawerHeaderProps) => (
+  <div
+    className={cn('flex flex-col space-y-2 border-b border-border/40 px-6 py-5', className)}
+    {...props}
+  />
+)
+DrawerHeader.displayName = 'DrawerHeader'
 
-  return (
-    <button onClick={handleClick} type="button">
-      {children}
-    </button>
-  )
-}
+export const DrawerFooter = ({ className, ...props }: DrawerFooterProps) => (
+  <div
+    className={cn(
+      'flex flex-col-reverse gap-2.5 border-t border-border/40 px-6 py-4 sm:flex-row sm:justify-end',
+      className
+    )}
+    {...props}
+  />
+)
+DrawerFooter.displayName = 'DrawerFooter'
 
-// ============================================================================
-// Drawer Content
-// ============================================================================
+export const DrawerBody = ({ className, ...props }: DrawerBodyProps) => (
+  <div className={cn('flex-1 overflow-y-auto px-6 py-4', className)} {...props} />
+)
+DrawerBody.displayName = 'DrawerBody'
 
-const sizeClasses = {
-  left: {
-    sm: 'w-64',
-    md: 'w-80',
-    lg: 'w-96',
-    xl: 'w-[480px]',
-    full: 'w-full',
-  },
-  right: {
-    sm: 'w-64',
-    md: 'w-80',
-    lg: 'w-96',
-    xl: 'w-[480px]',
-    full: 'w-full',
-  },
-  top: {
-    sm: 'h-64',
-    md: 'h-80',
-    lg: 'h-96',
-    xl: 'h-[480px]',
-    full: 'h-full',
-  },
-  bottom: {
-    sm: 'h-64',
-    md: 'h-80',
-    lg: 'h-96',
-    xl: 'h-[480px]',
-    full: 'h-full',
-  },
-}
+export const DrawerTitle = React.forwardRef<
+  React.ElementRef<typeof SheetPrimitive.Title>,
+  DrawerTitleProps
+>(({ className, ...props }, ref) => (
+  <SheetPrimitive.Title
+    ref={ref}
+    className={cn('text-lg font-semibold leading-tight text-foreground', className)}
+    {...props}
+  />
+))
+DrawerTitle.displayName = SheetPrimitive.Title.displayName
 
-const positionClasses = {
-  left: 'inset-y-0 left-0',
-  right: 'inset-y-0 right-0',
-  top: 'inset-x-0 top-0',
-  bottom: 'inset-x-0 bottom-0',
-}
-
-const slideAnimations = {
-  left: {
-    initial: { x: '-100%' },
-    animate: { x: 0 },
-    exit: { x: '-100%' },
-  },
-  right: {
-    initial: { x: '100%' },
-    animate: { x: 0 },
-    exit: { x: '100%' },
-  },
-  top: {
-    initial: { y: '-100%' },
-    animate: { y: 0 },
-    exit: { y: '-100%' },
-  },
-  bottom: {
-    initial: { y: '100%' },
-    animate: { y: 0 },
-    exit: { y: '100%' },
-  },
-}
-
-export const DrawerContent: React.FC<DrawerContentProps> = ({
-  children,
-  className,
-  side = 'right',
-  size = 'md',
-  closeOnClickOutside = true,
-  closeOnEscape = true,
-  showCloseButton = true,
-  blurBackdrop = true,
-  overlayClassName,
-}) => {
-  const { open, setOpen } = useDrawer()
-  const contentRef = React.useRef<HTMLDivElement>(null)
-
-  // Focus trap
-  useFocusTrap(contentRef, open)
-
-  // Escape key handling
-  React.useEffect(() => {
-    if (!open || !closeOnEscape) return
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setOpen(false)
-      }
-    }
-
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [open, closeOnEscape, setOpen])
-
-  // Body scroll lock
-  React.useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden'
-      return () => {
-        document.body.style.overflow = ''
-      }
-    }
-  }, [open])
-
-  if (!open) return null
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-            className={cn(
-              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/60',
-              blurBackdrop && 'backdrop-blur-sm',
-              overlayClassName
-            )}
-            onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
-            aria-hidden="true"
-          />
-
-          {/* Drawer Content */}
-          <motion.div
-            ref={contentRef}
-            {...slideAnimations[side]}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            className={cn(
-              'fixed z-[var(--z-modal)] bg-card border shadow-md',
-              positionClasses[side],
-              sizeClasses[side][size],
-              side === 'left' && 'border-r rounded-r-2xl',
-              side === 'right' && 'border-l rounded-l-2xl',
-              side === 'top' && 'border-b rounded-b-2xl',
-              side === 'bottom' && 'border-t rounded-t-2xl',
-              className
-            )}
-            role="dialog"
-            aria-modal="true"
-          >
-            {/* Close button */}
-            {showCloseButton && (
-              <button
-                onClick={() => setOpen(false)}
-                className={cn(
-                  'absolute top-4 right-4 w-8 h-8 rounded-md',
-                  'flex items-center justify-center',
-                  'text-muted-foreground hover:text-foreground',
-                  'hover:bg-muted/50',
-                  'transition-all duration-150 ease-out',
-                  'focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-1',
-                  'z-10'
-                )}
-                aria-label="Close drawer"
-              >
-                <svg
-                  width="15"
-                  height="15"
-                  viewBox="0 0 15 15"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
-                    fill="currentColor"
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
-
-            {children}
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  )
-}
-
-// ============================================================================
-// Drawer Sub-components
-// ============================================================================
-
-export const DrawerHeader: React.FC<{
-  children: React.ReactNode
-  className?: string
-}> = ({ children, className }) => {
-  return (
-    <div className={cn('flex flex-col space-y-2 px-6 py-5 border-b border-border/50', className)}>
-      {children}
-    </div>
-  )
-}
-
-export const DrawerTitle: React.FC<{
-  children: React.ReactNode
-  className?: string
-}> = ({ children, className }) => {
-  return (
-    <h2
-      className={cn(
-        'text-xl font-semibold leading-none tracking-tight',
-        className
-      )}
-    >
-      {children}
-    </h2>
-  )
-}
-
-export const DrawerDescription: React.FC<{
-  children: React.ReactNode
-  className?: string
-}> = ({ children, className }) => {
-  return (
-    <p className={cn('text-sm text-muted-foreground', className)}>
-      {children}
-    </p>
-  )
-}
-
-export const DrawerBody: React.FC<{
-  children: React.ReactNode
-  className?: string
-}> = ({ children, className }) => {
-  return <div className={cn('px-6 py-4 overflow-y-auto flex-1', className)}>{children}</div>
-}
-
-export const DrawerFooter: React.FC<{
-  children: React.ReactNode
-  className?: string
-}> = ({ children, className }) => {
-  return (
-    <div
-      className={cn(
-        'flex items-center justify-end gap-2 px-6 py-4 border-t',
-        className
-      )}
-    >
-      {children}
-    </div>
-  )
-}
-
-export const DrawerClose: React.FC<{
-  children?: React.ReactNode
-  className?: string
-  asChild?: boolean
-}> = ({ children, className, asChild }) => {
-  const { setOpen } = useDrawer()
-
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, {
-      onClick: () => setOpen(false),
-    } as React.HTMLAttributes<HTMLElement>)
-  }
-
-  return (
-    <button onClick={() => setOpen(false)} className={className} type="button">
-      {children}
-    </button>
-  )
-}
+export const DrawerDescription = React.forwardRef<
+  React.ElementRef<typeof SheetPrimitive.Description>,
+  DrawerDescriptionProps
+>(({ className, ...props }, ref) => (
+  <SheetPrimitive.Description
+    ref={ref}
+    className={cn('text-sm text-muted-foreground/90', className)}
+    {...props}
+  />
+))
+DrawerDescription.displayName = SheetPrimitive.Description.displayName
