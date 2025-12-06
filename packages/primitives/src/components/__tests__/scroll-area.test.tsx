@@ -28,7 +28,8 @@ describe('ScrollArea Component', () => {
 
     it('should render empty scroll area', () => {
       const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.overflow-auto')
+      // Radix ScrollArea uses different structure
+      const scrollArea = container.querySelector('[data-radix-scroll-area-root]')
       expect(scrollArea).toBeInTheDocument()
     })
   })
@@ -36,13 +37,13 @@ describe('ScrollArea Component', () => {
   describe('Styling', () => {
     it('should apply default scroll area styles', () => {
       const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.overflow-auto')
+      const scrollArea = container.querySelector('[data-radix-scroll-area-root]')
       expect(scrollArea).toBeInTheDocument()
     })
 
     it('should have custom scrollbar styling', () => {
       const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.scrollbar-thin')
+      const scrollArea = container.querySelector('[data-radix-scroll-area-root]')
       expect(scrollArea).toBeInTheDocument()
     })
 
