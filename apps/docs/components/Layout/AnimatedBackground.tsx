@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTheme } from 'next-themes'
 import Particles from '@tsparticles/react'
 import { loadSlim } from '@tsparticles/slim'
@@ -14,21 +14,52 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const engineRef = useRef<Engine | null>(null)
-  const lastMouseUpdateRef = useRef(0)
 
-  // Check for reduced motion preference
+  // Initialize client-side state after mount
   useEffect(() => {
+    setMounted(true)
+
+    // Check for reduced motion preference
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     setReducedMotion(mediaQuery.matches)
 
-    const handleChange = (e: MediaQueryListEvent) => {
+    const handleMotionChange = (e: MediaQueryListEvent) => {
       setReducedMotion(e.matches)
     }
 
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [])
+    // Determine theme based on resolvedTheme or system preference
+    const determineTheme = () => {
+      if (resolvedTheme === 'dark') {
+        setIsDarkMode(true)
+      } else if (resolvedTheme === 'light') {
+        setIsDarkMode(false)
+      } else {
+        // Fallback to system preference
+        const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+        setIsDarkMode(darkModeQuery.matches)
+      }
+    }
+
+    determineTheme()
+
+    const handleThemeChange = (e: MediaQueryListEvent) => {
+      // Only use system preference if resolvedTheme is not explicitly set
+      if (!resolvedTheme) {
+        setIsDarkMode(e.matches)
+      }
+    }
+
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    darkModeQuery.addEventListener('change', handleThemeChange)
+    mediaQuery.addEventListener('change', handleMotionChange)
+
+    return () => {
+      darkModeQuery.removeEventListener('change', handleThemeChange)
+      mediaQuery.removeEventListener('change', handleMotionChange)
+    }
+  }, [resolvedTheme])
 
   // Handle page visibility to pause animation when tab is hidden
   useEffect(() => {
@@ -46,34 +77,6 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [reducedMotion])
 
-  // Throttled mouse tracking for interactive particles
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      const now = Date.now()
-      // Throttle to ~60fps max
-      if (now - lastMouseUpdateRef.current < 16) return
-      lastMouseUpdateRef.current = now
-
-      // Update particle interactivity if engine is ready
-      if (engineRef.current && !reducedMotion) {
-        const container = engineRef.current.canvas?.element?.parentElement
-        if (container) {
-          const rect = container.getBoundingClientRect()
-          const relativeX = event.clientX - rect.left
-          const relativeY = event.clientY - rect.top
-
-          // Update particles interactivity (this will be handled by the config)
-          engineRef.current.interactivity.mouse.position = {
-            x: relativeX,
-            y: relativeY,
-          }
-        }
-      }
-    }
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true })
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [reducedMotion])
 
   // Handle window resize
   useEffect(() => {
@@ -87,20 +90,30 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine)
-    engineRef.current = engine
+    try {
+      await loadSlim(engine)
+      engineRef.current = engine
+    } catch (error) {
+      // Silently fail - background animation is non-critical
+      // In production, you might want to log this to an error tracking service
+      engineRef.current = null
+    }
   }, [])
 
-  // Determine if we're in dark mode
-  const isDark = mounted && (resolvedTheme === 'dark' || (!resolvedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches))
+  // Cleanup engine on unmount
+  useEffect(() => {
+    return () => {
+      if (engineRef.current) {
+        engineRef.current.destroy()
+        engineRef.current = null
+      }
+    }
+  }, [])
 
+  // Memoize configurations to prevent unnecessary re-renders
   // Configuration for dark mode: glowing nodes, cyberpunk grid
-  const darkModeConfig: ISourceOptions = {
+  const darkModeConfig: ISourceOptions = useMemo(() => ({
     background: {
       color: {
         value: 'transparent',
@@ -180,10 +193,10 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
       },
     },
     detectRetina: true,
-  }
+  }), [reducedMotion])
 
   // Configuration for light mode: subtle flowing mesh, soft gradient waves
-  const lightModeConfig: ISourceOptions = {
+  const lightModeConfig: ISourceOptions = useMemo(() => ({
     background: {
       color: {
         value: 'transparent',
@@ -263,9 +276,11 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
       },
     },
     detectRetina: true,
-  }
+  }), [reducedMotion])
 
-  const config = isDark ? darkModeConfig : lightModeConfig
+  const config = useMemo(() => {
+    return isDarkMode ? darkModeConfig : lightModeConfig
+  }, [isDarkMode, darkModeConfig, lightModeConfig])
 
   // Don't render if motion is reduced
   if (reducedMotion) {
