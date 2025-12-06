@@ -132,7 +132,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
   
   const { lock } = useBodyScrollLock()
 
-  // Body scroll lock using custom hook
+  // Body scroll lock - DialogContent only renders when dialog is open (Radix handles visibility)
+  // So we lock on mount and unlock on unmount
   React.useEffect(() => {
     const unlockFn = lock()
     return unlockFn
@@ -280,7 +281,12 @@ export const DialogClose: React.FC<DialogCloseProps> = ({
   className,
   asChild,
 }) => {
-  if (asChild && React.isValidElement(children)) {
+  // If asChild is true, we must have a valid React element as children
+  if (asChild) {
+    if (!React.isValidElement(children)) {
+      console.warn('DialogClose: asChild requires a valid React element as children')
+      return null
+    }
     return (
       <DialogPrimitive.Close className={className} asChild={asChild}>
         {children}
@@ -288,11 +294,10 @@ export const DialogClose: React.FC<DialogCloseProps> = ({
     )
   }
   
+  // If children provided, render them; otherwise render default button
   return (
-    <DialogPrimitive.Close className={className} asChild={asChild}>
-      {children ? (
-        children
-      ) : (
+    <DialogPrimitive.Close className={className} asChild={false}>
+      {children || (
         <button type="button" className={className}>
           Close
         </button>

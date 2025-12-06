@@ -47,14 +47,13 @@ export const TooltipLegacy: React.FC<TooltipProps> = ({
   side = 'top',
   align = 'center',
   delay = 200,
-  showArrow = true, // Preserved for API compatibility
+  showArrow = true, // Preserved for API compatibility - Radix doesn't support arrows natively
   className,
   contentClassName,
   disabled = false,
   open: controlledOpen,
   onOpenChange,
 }) => {
-  void showArrow // Preserved for API compatibility
   const [internalOpen, setInternalOpen] = React.useState(false)
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
 
@@ -72,14 +71,42 @@ export const TooltipLegacy: React.FC<TooltipProps> = ({
     return <>{children}</>
   }
 
+  // Validate children is a valid React element for asChild
+  if (!React.isValidElement(children)) {
+    console.warn('Tooltip: children must be a valid React element')
+    return <>{children}</>
+  }
+
+  // Apply className to the child element if it's a valid element
+  const childWithClassName = React.isValidElement(children)
+    ? React.cloneElement(children as React.ReactElement<any>, {
+        className: cn(className, (children as React.ReactElement<any>).props?.className),
+      })
+    : children
+
   return (
     <TooltipProvider delayDuration={delay}>
       <Tooltip open={open} onOpenChange={setOpen}>
-        <TooltipTrigger asChild className={className}>
-          {children}
+        <TooltipTrigger asChild>
+          {childWithClassName}
         </TooltipTrigger>
-        <TooltipContent side={side} align={align} className={contentClassName}>
+        <TooltipContent 
+          side={side} 
+          align={align} 
+          className={cn(contentClassName, showArrow && 'relative')}
+        >
           {content}
+          {showArrow === true && (
+            <div
+              className="absolute z-50 h-2 w-2 rotate-45 border border-border bg-popover"
+              style={{
+                [side === 'top' ? 'bottom' : side === 'bottom' ? 'top' : side === 'left' ? 'right' : 'left']: '-4px',
+                [side === 'top' || side === 'bottom' ? 'left' : 'top']: '50%',
+                transform: `translate${side === 'top' || side === 'bottom' ? 'X' : 'Y'}(-50%)`,
+              }}
+              data-testid="tooltip-arrow"
+            />
+          )}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

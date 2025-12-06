@@ -157,7 +157,7 @@ describe('Tooltip Component', () => {
 
     it('should hide arrow when showArrow is false', async () => {
       const user = userEvent.setup()
-      render(
+      const { container } = render(
         <Tooltip content="No arrow" showArrow={false}>
           <button>Button</button>
         </Tooltip>
@@ -167,7 +167,11 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('No arrow')).toBeInTheDocument()
+        // Check tooltip content exists
+        const tooltip = container.querySelector('[data-state*="open"]:not([style*="position: absolute"][style*="clip"])')
+        expect(tooltip).toBeInTheDocument()
+        // Arrow should not be present
+        expect(container.querySelector('[data-testid="tooltip-arrow"]')).not.toBeInTheDocument()
       }, { timeout: 500 })
     })
   })
@@ -194,7 +198,10 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('Custom content')).toBeInTheDocument()
+        // Find tooltip by role or data-state, not just text (Radix creates hidden span)
+        const tooltip = document.querySelector('[role="tooltip"].custom-content, [data-state*="open"].custom-content')
+        expect(tooltip).toBeInTheDocument()
+        expect(tooltip).toHaveClass('custom-content')
       }, { timeout: 500 })
     })
   })
