@@ -407,3 +407,152 @@ body {
   border-left: 3px solid hsl(var(--border));
   color: hsl(var(--muted-foreground));
 }
+
+/* ============================================================================
+   Streaming Message Stability - Prevents text flickering during streaming
+   ============================================================================ */
+
+/* Stable container for streaming content - prevents layout shifts */
+.clarity-streaming-container {
+  /* Prevent width recalculation causing flicker */
+  width: 100%;
+  max-width: 100%;
+
+  /* Prevent horizontal layout shift */
+  overflow-wrap: break-word;
+  word-break: break-word;
+
+  /* Reserve minimum space for content */
+  min-height: 1.5em;
+
+  /* Prevent font-loading flicker */
+  font-display: swap;
+
+  /* GPU acceleration for smoother rendering */
+  transform: translateZ(0);
+  will-change: contents;
+
+  /* Prevent text from jumping during streaming */
+  contain: layout style;
+}
+
+/* Streaming text wrapper - stabilizes text rendering */
+.clarity-streaming-text {
+  /* Prevent layout thrashing */
+  display: block;
+
+  /* Stable line height prevents jumping */
+  line-height: 1.6;
+
+  /* Smooth font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Prevent text selection during streaming (reduces repaints) */
+  user-select: text;
+}
+
+/* Markdown content during streaming */
+.clarity-streaming-markdown {
+  /* Prevent prose styles from causing reflow */
+  max-width: none !important;
+
+  /* Stable container */
+  position: relative;
+
+  /* Prevent layout shifts from paragraphs */
+  & > p:last-child,
+  & > div:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Streaming cursor - smooth animation without causing reflow */
+.clarity-streaming-cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  vertical-align: text-bottom;
+  animation: cursor-blink 0.8s ease-in-out infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ============================================================================
+   Thinking Indicator - Fixed layout for icon and text alignment
+   ============================================================================ */
+
+.clarity-thinking-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+}
+
+.clarity-thinking-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.clarity-thinking-icon {
+  /* Fixed size prevents icon from jumping or resizing */
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+
+  /* Prevent icon from shrinking in flex container */
+  flex-shrink: 0;
+
+  /* Smooth animations */
+  transform-origin: center;
+}
+
+.clarity-thinking-text {
+  /* Prevent text from causing layout shift */
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+  white-space: nowrap;
+
+  /* Vertically center with icon */
+  display: inline-flex;
+  align-items: center;
+}
+
+.clarity-thinking-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 2px;
+}
+
+.clarity-thinking-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: thinking-dot-pulse 1.5s ease-in-out infinite;
+}
+
+.clarity-thinking-dot:nth-child(1) { animation-delay: 0s; }
+.clarity-thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+.clarity-thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes thinking-dot-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

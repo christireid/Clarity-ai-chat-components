@@ -344,7 +344,11 @@ export function Message({
           {/* Content */}
           <div
             className={cn(
+              // Base streaming stability classes for assistant messages
+              !isUser && 'clarity-streaming-container',
               !isUser && 'prose prose-sm dark:prose-invert max-w-none',
+              // Apply streaming-specific optimizations
+              !isUser && isStreaming && 'clarity-streaming-markdown',
               isUser &&
                 'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm ring-1 ring-primary/30'
             )}
@@ -352,27 +356,21 @@ export function Message({
             {isUser ? (
               <p className="m-0 whitespace-pre-wrap text-primary-foreground">{message.content}</p>
             ) : (
-              <ReactMarkdown
-                remarkPlugins={remarkPlugins}
-                rehypePlugins={rehypePlugins}
-                components={markdownComponents as any}
-              >
-                {message.content}
-              </ReactMarkdown>
+              <div className={cn(isStreaming && 'clarity-streaming-text')}>
+                <ReactMarkdown
+                  remarkPlugins={remarkPlugins}
+                  rehypePlugins={rehypePlugins}
+                  components={markdownComponents as any}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </div>
             )}
 
             {isStreaming && (
-              <motion.span
-                animate={{
-                  opacity: [1, 0.3, 1],
-                  scale: [1, 0.95, 1],
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 1,
-                  ease: 'easeInOut',
-                }}
-                className="inline-block w-2 h-4 bg-current ml-1 rounded-sm"
+              <span
+                className="clarity-streaming-cursor"
+                aria-hidden="true"
               />
             )}
           </div>

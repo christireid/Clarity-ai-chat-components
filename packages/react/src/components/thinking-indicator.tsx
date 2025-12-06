@@ -78,49 +78,50 @@ export function ThinkingIndicator({
         ease: ANIMATION_EASING.out,
       }}
       className={cn(
-        'flex items-center gap-3.5 rounded-lg border border-border/40 bg-muted/40 px-5 py-4 shadow-md',
+        'flex items-center gap-3 rounded-lg border border-border/40 bg-muted/40 px-4 py-3 shadow-md',
         className
       )}
     >
-      {/* Animated Icon */}
+      {/* Animated Icon - Fixed size container for stability */}
       <motion.div
         animate={{
-          scale: [1, 1.15, 1],
-          rotate: [0, 3, -3, 0],
+          scale: [1, 1.1, 1],
+          rotate: [0, 2, -2, 0],
         }}
         transition={{
           duration: 2,
           repeat: Infinity,
           ease: ANIMATION_EASING.inOut,
         }}
-        className="text-primary"
+        className="flex-shrink-0 flex items-center justify-center w-[18px] h-[18px] text-primary"
       >
         {stageIcon}
       </motion.div>
 
-      {/* Status Text */}
-      <div className="flex-1">
-        <div className="flex items-center gap-2.5">
-          <span className="font-semibold text-sm">
+      {/* Status Text - Proper flex layout */}
+      <div className="flex-1 min-w-0">
+        {/* Label and dots in same row, properly aligned */}
+        <div className="flex items-center">
+          <span className="font-semibold text-sm leading-none">
             {stageLabel}
           </span>
 
-          {/* Animated Dots */}
-          <div className="flex gap-1">
+          {/* Animated Dots - inline with text, properly spaced */}
+          <div className="flex items-center gap-[3px] ml-1.5">
             {[0, 1, 2].map((i) => (
-              <motion.div
+              <motion.span
                 key={i}
                 animate={{
                   opacity: [0.3, 1, 0.3],
-                  scale: [0.8, 1, 0.8],
+                  scale: [0.85, 1, 0.85],
                 }}
                 transition={{
-                  duration: 1.5,
+                  duration: 1.4,
                   repeat: Infinity,
-                  delay: i * 0.2,
-                  ease: ANIMATION_EASING.inOut,
+                  delay: i * 0.15,
+                  ease: 'easeInOut',
                 }}
-                className="w-1 h-1 rounded-full bg-current"
+                className="w-[4px] h-[4px] rounded-full bg-current inline-block"
               />
             ))}
           </div>
@@ -129,13 +130,13 @@ export function ThinkingIndicator({
         {/* Topic/Detail */}
         {status?.topic && (
           <motion.p
-            initial={{ opacity: 0, y: 5 }}
+            initial={{ opacity: 0, y: 3 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: ANIMATION_DURATION.fast / 1000,
               ease: ANIMATION_EASING.out,
             }}
-            className="text-xs text-muted-foreground/90 mt-1.5"
+            className="text-xs text-muted-foreground/90 mt-1 truncate"
           >
             {status.topic}
           </motion.p>
@@ -143,7 +144,7 @@ export function ThinkingIndicator({
 
         {/* Progress Bar */}
         {status?.progress !== undefined && (
-          <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${status.progress}%` }}
@@ -162,7 +163,7 @@ export function ThinkingIndicator({
         <motion.span
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-xs font-medium text-muted-foreground/90"
+          className="flex-shrink-0 text-xs font-medium text-muted-foreground/90 tabular-nums"
         >
           ~{estimatedSeconds}s
         </motion.span>

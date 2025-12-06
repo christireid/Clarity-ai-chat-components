@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BookOpen, Code2, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
 import { ChatWindow, FollowUpSuggestions, useToast, type FollowUpSuggestion } from '@clarity-chat/react'
@@ -9,6 +9,32 @@ import { ChatButton } from './ChatButton'
 import { FeedbackButtons } from './FeedbackButtons'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { cn } from '@/lib/utils'
+
+// Throttle helper to reduce re-renders during streaming
+function throttle<T extends (...args: any[]) => void>(fn: T, delay: number): T {
+  let lastCall = 0
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+  return ((...args: Parameters<T>) => {
+    const now = Date.now()
+    const timeSinceLastCall = now - lastCall
+
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+
+    if (timeSinceLastCall >= delay) {
+      lastCall = now
+      fn(...args)
+    } else {
+      // Schedule the update for when the delay passes
+      timeoutId = setTimeout(() => {
+        lastCall = Date.now()
+        fn(...args)
+      }, delay - timeSinceLastCall)
+    }
+  }) as T
+}
 
 interface DocsAssistantProps {
   className?: string
@@ -459,6 +485,18 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       let accumulatedContent = ''
       let sources: Array<{ id: string; source: string; url: string; confidence: number }> = []
 
+      // Create a throttled update function to reduce flickering
+      // Updates at most every 50ms to prevent layout thrashing
+      const updateStreamingMessage = throttle((content: string) => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMessage.id
+              ? { ...m, content }
+              : m
+          )
+        )
+      }, 50)
+
       while (true) {
         const { done, value } = await reader.read()
 
@@ -475,14 +513,8 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
               if (data.type === 'text' && data.content) {
                 accumulatedContent += data.content
 
-                // Update the assistant message
-                setMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === assistantMessage.id
-                      ? { ...m, content: accumulatedContent }
-                      : m
-                  )
-                )
+                // Update with throttling to reduce flicker
+                updateStreamingMessage(accumulatedContent)
               } else if (data.type === 'sources' && data.data?.sources) {
                 // Store sources for potential display
                 // API sends: { url, title, score }
