@@ -77,7 +77,6 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [reducedMotion])
 
-
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
@@ -94,7 +93,7 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     try {
       await loadSlim(engine)
       engineRef.current = engine
-    } catch (error) {
+    } catch {
       // Silently fail - background animation is non-critical
       // In production, you might want to log this to an error tracking service
       engineRef.current = null
