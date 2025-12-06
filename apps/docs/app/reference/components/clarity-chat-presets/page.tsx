@@ -95,7 +95,7 @@ function MemoryChat() {
 // Wrap with MemoryProvider for vector-store strategy
 function App() {
   return (
-    <MemoryProvider>
+    <MemoryProvider config={{ maxTokens: 10000 }}>
       <MemoryChat />
     </MemoryProvider>
   )
@@ -158,7 +158,7 @@ function EnterpriseChat() {
 // Wrap with MemoryProvider for vector-store strategy
 function App() {
   return (
-    <MemoryProvider>
+    <MemoryProvider config={{ maxTokens: 10000 }}>
       <EnterpriseChat />
     </MemoryProvider>
   )
@@ -311,6 +311,9 @@ function CustomizedChat() {
               When using <code className="bg-muted px-1 rounded">WithMemory</code> or{' '}
               <code className="bg-muted px-1 rounded">Enterprise</code> with vector-store strategy,
               wrap your app with <code className="bg-muted px-1 rounded">MemoryProvider</code>.
+              <strong className="block mt-1">Note:</strong> MemoryProvider requires a{' '}
+              <code className="bg-muted px-1 rounded">config</code> prop with at least{' '}
+              <code className="bg-muted px-1 rounded">maxTokens</code>.
             </p>
           </div>
           <div className="border-l-4 border-brand-500 pl-4">

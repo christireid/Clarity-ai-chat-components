@@ -164,7 +164,7 @@ function ChatWithMemory() {
 // Wrap with MemoryProvider for vector-store strategy
 function App() {
   return (
-    <MemoryProvider>
+    <MemoryProvider config={{ maxTokens: 10000 }}>
       <ChatWithMemory />
     </MemoryProvider>
   )
@@ -245,6 +245,78 @@ function WebSocketChat() {
       isLoading={chat.isLoading}
       onSendMessage={handleSendMessage}
     />
+  )
+}`}
+        />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">API Validation & Error Handling</h2>
+        <CodePlayground
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+
+function ChatWithValidation() {
+  // Validate API endpoint before using hook
+  const apiEndpoint = process.env.NEXT_PUBLIC_CHAT_API || '/api/chat'
+  
+  if (!apiEndpoint || apiEndpoint.trim().length === 0) {
+    throw new Error('API endpoint is required. Set NEXT_PUBLIC_CHAT_API or provide api prop.')
+  }
+
+  const chat = useClarityChat({
+    api: apiEndpoint,
+    onError: (error) => {
+      console.error('Chat error:', error)
+      // Handle different error types
+      if (error.message.includes('network')) {
+        // Network error - show retry option
+      } else if (error.message.includes('rate limit')) {
+        // Rate limit - show wait message
+      } else {
+        // Other errors - show generic error
+      }
+    },
+  })
+
+  const handleSendMessage = async (content: string) => {
+    // Validate input
+    if (!content || content.trim().length === 0) {
+      return // Don't send empty messages
+    }
+
+    try {
+      await chat.append({ role: 'user', content })
+    } catch (error) {
+      // Handle send error
+      console.error('Failed to send message:', error)
+      // Could show toast notification here
+    }
+  }
+
+  return (
+    <div>
+      {chat.error && (
+        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-red-800 dark:text-red-200 font-semibold">Error</p>
+          <p className="text-red-700 dark:text-red-300 text-sm mt-1">
+            {chat.error.message}
+          </p>
+          {chat.error.message.includes('network') && (
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-2 text-sm underline"
+            >
+              Retry connection
+            </button>
+          )}
+        </div>
+      )}
+      <ChatWindow
+        messages={chat.messages}
+        isLoading={chat.isLoading}
+        onSendMessage={handleSendMessage}
+      />
+    </div>
   )
 }`}
         />
@@ -524,6 +596,14 @@ function ChatWithErrorHandling() {
             <h3 className="font-semibold mb-2">Handle Memory Errors Gracefully</h3>
             <p className="text-sm text-muted-foreground">
               Check <code className="bg-muted px-1 rounded">memoryErrorInfo</code> and provide fallback behavior when memory operations fail.
+            </p>
+          </div>
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">MemoryProvider Requires Config</h3>
+            <p className="text-sm text-muted-foreground">
+              When using <code className="bg-muted px-1 rounded">vector-store</code> strategy, always wrap with{' '}
+              <code className="bg-muted px-1 rounded">MemoryProvider</code> and provide the required{' '}
+              <code className="bg-muted px-1 rounded">config</code> prop with <code className="bg-muted px-1 rounded">maxTokens</code>.
             </p>
           </div>
         </div>

@@ -220,7 +220,7 @@ function ChatWithMemory() {
 // Wrap with MemoryProvider for vector-store strategy
 function App() {
   return (
-    <MemoryProvider>
+    <MemoryProvider config={{ maxTokens: 10000 }}>
       <ChatWithMemory />
     </MemoryProvider>
   )

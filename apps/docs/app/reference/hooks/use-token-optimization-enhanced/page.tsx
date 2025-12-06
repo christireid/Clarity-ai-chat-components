@@ -153,9 +153,12 @@ function OptimizedChat() {
       const optimized = await optimizeData(content)
       
       // Calculate cost (note: calculateCost takes { inputTokens, outputTokens })
+      // TokenCount.input and output are optional, so we use total as fallback
+      const inputTokens = optimized.tokens.input ?? optimized.tokens.total
+      const outputTokens = optimized.tokens.output ?? 0
       const cost = calculateCost({
-        inputTokens: optimized.tokens.input || optimized.tokens.total,
-        outputTokens: optimized.tokens.output || 0,
+        inputTokens,
+        outputTokens,
       })
       
       // Use optimized content
@@ -373,9 +376,12 @@ function CostTrackedChat() {
       const optimized = await optimizeData(content)
       
       // Calculate cost (note: calculateCost takes { inputTokens, outputTokens })
+      // TokenCount.input and output are optional, so we use total as fallback
+      const inputTokens = optimized.tokens.input ?? optimized.tokens.total
+      const outputTokens = optimized.tokens.output ?? 0
       const cost = calculateCost({
-        inputTokens: optimized.tokens.input || optimized.tokens.total,
-        outputTokens: optimized.tokens.output || 0,
+        inputTokens,
+        outputTokens,
       })
 
       console.log('Input Cost: $', cost.input)
