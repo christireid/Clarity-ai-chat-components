@@ -16,7 +16,7 @@ import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { Message } from '@clarity-chat/types'
 
-// Type assertions for react-window v2 with React 19
+// Type assertions for react-window v1.8.11 with React 19
 // AutoSizer component type assertion for compatibility
 const AutoSizerComponent = AutoSizer as React.ComponentType<React.ComponentProps<typeof AutoSizer>>
 // MessageListData type for react-window itemData prop
@@ -27,7 +27,7 @@ type MessageListData = {
   setItemHeight: (index: number, height: number) => void
 }
 // List component - using 'as any' to work around strict generic type constraints with refs
-// TODO: Verify if this is still needed with react-window v2.2.3 and React 19
+// Note: react-window v2 has breaking API changes, staying on v1.8.11 for compatibility
 const ListComponent = List as any
 
 // ============================================================================

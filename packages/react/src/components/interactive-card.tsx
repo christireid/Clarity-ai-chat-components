@@ -96,7 +96,7 @@ export const InteractiveCard = React.memo(
       },
     }
 
-    // Extract HTML drag event handlers to avoid conflicts with Framer Motion
+    // Extract HTML event handlers that conflict with Framer Motion props
     const { 
       onDrag: _onDrag, 
       onDragStart: _onDragStart, 
@@ -104,7 +104,11 @@ export const InteractiveCard = React.memo(
       onDragOver: _onDragOver, 
       onDragEnter: _onDragEnter, 
       onDragLeave: _onDragLeave, 
-      onDrop: _onDrop, 
+      onDrop: _onDrop,
+      animate: _animate,
+      onAnimationStart: _onAnimationStart,
+      onAnimationEnd: _onAnimationEnd,
+      onAnimationIteration: _onAnimationIteration,
       ...motionProps 
     } = props as InteractiveCardProps & {
       onDrag?: React.DragEventHandler<HTMLDivElement>
@@ -114,7 +118,19 @@ export const InteractiveCard = React.memo(
       onDragEnter?: React.DragEventHandler<HTMLDivElement>
       onDragLeave?: React.DragEventHandler<HTMLDivElement>
       onDrop?: React.DragEventHandler<HTMLDivElement>
+      animate?: unknown
+      onAnimationStart?: React.AnimationEventHandler<HTMLDivElement>
+      onAnimationEnd?: React.AnimationEventHandler<HTMLDivElement>
+      onAnimationIteration?: React.AnimationEventHandler<HTMLDivElement>
     }
+
+    // Determine animate prop - use custom hover animation if hovered, otherwise use prop or undefined
+    const animateValue: import('framer-motion').TargetAndTransition | undefined = isHovered && !disabled && interactive
+      ? {
+          ...hoverVariants[hoverIntensity],
+          scale: hoverIntensity !== 'none' ? 1.02 : 1,
+        } as import('framer-motion').TargetAndTransition
+      : (_animate as import('framer-motion').TargetAndTransition | undefined)
 
     return (
       <motion.div
@@ -145,14 +161,7 @@ export const InteractiveCard = React.memo(
             onCardClick?.()
           }
         }}
-        animate={
-          isHovered && !disabled && interactive
-            ? ({
-                ...hoverVariants[hoverIntensity],
-                scale: hoverIntensity !== 'none' ? 1.02 : 1,
-              } as const)
-            : undefined
-        }
+        animate={animateValue}
         whileTap={
           !disabled && interactive
             ? { scale: 0.98, transition: { duration: 0.1 } }
