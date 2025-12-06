@@ -78,6 +78,22 @@ const useClarityChatOptions: Prop[] = [
     type: '(message: CoreMessage) => void',
     description: 'Callback when a message stream finishes.',
   },
+  {
+    name: 'transport',
+    type: '"sse" | "websocket"',
+    default: '"sse"',
+    description: 'Transport protocol for streaming. SSE is default and Vercel-compatible.',
+  },
+  {
+    name: 'websocket',
+    type: 'ClarityWebSocketOptions',
+    description: 'WebSocket-specific options (only used when transport is "websocket").',
+  },
+  {
+    name: 'promptOptimization',
+    type: 'ClarityPromptOptimizationOptions',
+    description: 'Prompt optimization configuration for token reduction.',
+  },
 ]
 
 const useClarityChatReturn: Prop[] = [
@@ -125,6 +141,26 @@ const useClarityChatReturn: Prop[] = [
     name: 'setInput',
     type: '(input: string) => void',
     description: 'Update the input value.',
+  },
+  {
+    name: 'memoryInfo',
+    type: 'ClarityChatMemoryInfo',
+    description: 'Memory information and statistics (enabled, strategy, count, context summary).',
+  },
+  {
+    name: 'memoryErrorInfo',
+    type: 'ClarityChatErrorInfo',
+    description: 'Error information for memory operations (error, operation type, error classification).',
+  },
+  {
+    name: 'tokenStats',
+    type: 'ClarityChatTokenStats | undefined',
+    description: 'Token statistics from prompt optimization (if enabled).',
+  },
+  {
+    name: 'data',
+    type: 'CoreMessage | undefined',
+    description: 'Current assistant message being streamed.',
   },
 ]
 
@@ -228,7 +264,15 @@ function Chat() {
     },
   })
 
+  const handleSend = async (content: string) => {
+    await append({ role: 'user', content })
+  }
+
   // Memory is automatically managed
+  const handleSend = async (content: string) => {
+    await append({ role: 'user', content })
+  }
+
   return <ChatWindow messages={messages} onSendMessage={handleSend} />
 }`}
         />
@@ -269,6 +313,10 @@ function Chat() {
     },
   })
 
+  const handleSend = async (content: string) => {
+    await append({ role: 'user', content })
+  }
+
   return <ChatWindow messages={messages} onSendMessage={handleSend} />
 }`}
         />
@@ -285,6 +333,10 @@ function Chat() {
     temperature: 0.7,
     maxTokens: 2000,
   })
+
+  const handleSend = async (content: string) => {
+    await append({ role: 'user', content })
+  }
 
   return <ChatWindow messages={messages} onSendMessage={handleSend} />
 }`}

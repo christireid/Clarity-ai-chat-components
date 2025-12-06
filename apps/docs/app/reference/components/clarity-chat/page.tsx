@@ -128,9 +128,9 @@ const clarityChatProps: Prop[] = [
     description: 'Enable message operations like edit, delete, and branch.',
   },
   {
-    name: 'memoryStrategy',
-    type: '"sliding-window" | "semantic-chunks" | "vector-store"',
-    description: 'Memory strategy for conversation context management.',
+    name: 'memory',
+    type: 'ClarityMemoryOptions',
+    description: 'Memory configuration object for conversation context management. Use { enabled: true, strategy: "sliding-window" } instead of memoryStrategy prop.',
   },
   {
     name: 'onError',
@@ -271,7 +271,7 @@ function App() {
   return (
     <ClarityChat 
       api="/api/chat"
-      memoryStrategy="sliding-window"
+      memory={{ enabled: true, strategy: 'sliding-window' }}
     />
   )
 }`}

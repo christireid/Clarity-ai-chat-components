@@ -21,8 +21,8 @@ export default function QuickStart3LinesPage() {
       <h1>3-Line Quick Start</h1>
 
       <p className="lead">
-        Get a production-ready AI chat interface in <strong>just 3 lines of code</strong>.
-        No configuration needed.
+        Get a production-ready AI chat interface in <strong>just 3 lines of code</strong>
+        (plus imports). No configuration needed.
       </p>
 
       <Callout type="success" title="Fastest Way to Get Started">
@@ -84,15 +84,32 @@ function App() {
 import { NextRequest } from 'next/server'
 import OpenAI from 'openai'
 
+// Initialize OpenAI client
+// Make sure OPENAI_API_KEY is set in your .env.local file
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
 export async function POST(req: NextRequest) {
-  const { messages } = await req.json()
+  try {
+    const { messages } = await req.json()
 
-  const stream = await openai.chat.completions.create({
-    model: 'gpt-4',
+    if (!messages || !Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return new Response(JSON.stringify({ error: 'OPENAI_API_KEY not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    const stream = await openai.chat.completions.create({
+    model: process.env.OPENAI_MODEL || 'gpt-4', // Use env var or default to gpt-4
     messages,
     stream: true,
   })
@@ -118,6 +135,13 @@ export async function POST(req: NextRequest) {
       },
     }
   )
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 }`}
         />
 
@@ -140,19 +164,28 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { messages } = req.body
+  try {
+    const { messages } = req.body
 
-  res.setHeader('Content-Type', 'text/event-stream')
-  res.setHeader('Cache-Control', 'no-cache')
-  res.setHeader('Connection', 'keep-alive')
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages format' })
+    }
 
-  const stream = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages,
-    stream: true,
-  })
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OPENAI_API_KEY not configured' })
+    }
 
-  for await (const chunk of stream) {
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4', // Use env var or default to gpt-4
+      messages,
+      stream: true,
+    })
+
+    for await (const chunk of stream) {
     const content = chunk.choices[0]?.delta?.content
     if (content) {
       res.write(\`data: \${content}\\n\\n\`)
@@ -178,26 +211,41 @@ const openai = new OpenAI({
 })
 
 app.post('/api/chat', async (req, res) => {
-  const { messages } = req.body
+  try {
+    const { messages } = req.body
 
-  res.setHeader('Content-Type', 'text/event-stream')
-  res.setHeader('Cache-Control', 'no-cache')
-  res.setHeader('Connection', 'keep-alive')
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages format' })
+    }
 
-  const stream = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages,
-    stream: true,
-  })
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OPENAI_API_KEY not configured' })
+    }
 
-  for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content
-    if (content) {
-      res.write(\`data: \${content}\\n\\n\`)
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+
+    const stream = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4', // Use env var or default to gpt-4
+      messages,
+      stream: true,
+    })
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content
+      if (content) {
+        res.write(\`data: \${content}\\n\\n\`)
+      }
+    }
+
+    res.end()
+  } catch (error) {
+    console.error('Chat API error:', error)
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Internal server error' })
     }
   }
-
-  res.end()
 })
 
 app.listen(3000, () => {
