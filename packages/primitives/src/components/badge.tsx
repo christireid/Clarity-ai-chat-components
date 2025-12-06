@@ -4,6 +4,7 @@ import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 
+// Extended badge variants that include custom variants and sizes
 const badgeVariants = cva(
   'inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold tracking-wide transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2',
   {
@@ -50,31 +51,39 @@ export interface BadgeProps
   pulse?: boolean
   /** Enable glow effect */
   glow?: boolean
-  ref?: React.Ref<HTMLDivElement>
 }
 
-const Badge = ({ className, variant, size, dot = false, pulse = false, glow = false, children, ref, ...props }: BadgeProps) => {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        badgeVariants({ variant, size }),
-        pulse && 'animate-[badge-pulse_2s_ease-in-out_infinite]',
-        glow && 'animate-[glow_2s_ease-in-out_infinite]',
-        className
-      )}
-      {...props}
-    >
-      {dot && (
-        <span className="relative mr-1.5 flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
-        </span>
-      )}
-      {children}
-    </div>
-  )
-}
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+  ({ className, variant, size, dot = false, pulse = false, glow = false, children, ...props }, ref) => {
+    // Map custom variants to shadcn variants where possible
+    const shadcnVariant = variant === 'default' || variant === 'secondary' || variant === 'destructive' || variant === 'outline'
+      ? variant
+      : 'default'
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          badgeVariants({ variant, size }),
+          pulse && 'animate-[badge-pulse_2s_ease-in-out_infinite]',
+          glow && 'animate-[glow_2s_ease-in-out_infinite]',
+          // Apply shadcn badge base styles
+          shadcnVariant !== variant && 'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+          className
+        )}
+        {...props}
+      >
+        {dot && (
+          <span className="relative mr-1.5 flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
+          </span>
+        )}
+        {children}
+      </div>
+    )
+  }
+)
 
 Badge.displayName = 'Badge'
 
