@@ -144,15 +144,29 @@ export const PopoverClose: React.FC<{
   asChild?: boolean
 }> = ({ children, className, asChild }) => {
   const { setOpen } = usePopover()
+  const isMountedRef = React.useRef(true)
+
+  React.useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  const handleClose = React.useCallback(() => {
+    if (isMountedRef.current) {
+      setOpen(false)
+    }
+  }, [setOpen])
 
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
-      onClick: () => setOpen(false),
+      onClick: handleClose,
     } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (
-    <button onClick={() => setOpen(false)} className={className} type="button">
+    <button onClick={handleClose} className={className} type="button">
       {children}
     </button>
   )

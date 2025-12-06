@@ -94,9 +94,11 @@ export const Dialog: React.FC<DialogProps> = ({
 // ============================================================================
 
 export const DialogTrigger: React.FC<DialogTriggerProps> = ({ children, onClick, asChild = false }) => {
-  const handleClick = () => {
+  const handleClick = React.useCallback((_e: React.MouseEvent) => {
+    // Prevent double-triggering: Radix UI will handle the dialog open
+    // We only call the custom onClick if provided
     onClick?.()
-  }
+  }, [onClick])
 
   return (
     <ShadcnDialogTrigger asChild={asChild} onClick={handleClick}>

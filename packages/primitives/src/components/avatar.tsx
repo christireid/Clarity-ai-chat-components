@@ -58,14 +58,16 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     ref
   ) => {
     const getFallbackText = () => {
-      if (fallback) return fallback
-      if (alt) {
-        return alt
-          .split(' ')
-          .map((n) => n[0])
-          .join('')
-          .toUpperCase()
-          .slice(0, 2)
+      if (fallback && fallback.trim()) return fallback.trim()
+      if (alt && alt.trim()) {
+        const words = alt.trim().split(/\s+/).filter((w) => w.length > 0)
+        if (words.length > 0) {
+          return words
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)
+        }
       }
       return '?'
     }

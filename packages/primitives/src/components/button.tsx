@@ -116,14 +116,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // Auto-reset state after duration
     React.useEffect(() => {
       if ((currentState === 'success' || currentState === 'error') && !controlledState) {
+        // Validate stateDuration to prevent issues with invalid values
+        const duration = Math.max(0, stateDuration || 2000)
+        
         stateTimeoutRef.current = setTimeout(() => {
           setInternalState('idle')
-        }, stateDuration)
+        }, duration)
 
         return () => {
           if (stateTimeoutRef.current) {
             clearTimeout(stateTimeoutRef.current)
+            stateTimeoutRef.current = undefined
           }
+        }
+      } else {
+        // Clear timeout if state changes before duration completes
+        if (stateTimeoutRef.current) {
+          clearTimeout(stateTimeoutRef.current)
+          stateTimeoutRef.current = undefined
         }
       }
     }, [currentState, controlledState, stateDuration])

@@ -42,13 +42,32 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       const textarea = textareaRef.current
       if (!textarea || !autoResize) return
 
+      // SSR safety check
+      if (typeof window === 'undefined' || !window.getComputedStyle) {
+        return
+      }
+
       textarea.style.height = 'auto'
       const scrollHeight = textarea.scrollHeight
 
-      if (maxRows) {
-        const lineHeight = parseInt(getComputedStyle(textarea).lineHeight)
-        const maxHeight = lineHeight * maxRows
-        textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
+      if (maxRows && maxRows > 0) {
+        const computedStyle = getComputedStyle(textarea)
+        const lineHeightStr = computedStyle.lineHeight
+        // Parse lineHeight, fallback to 1.2em (typical default) if invalid
+        const lineHeight = lineHeightStr === 'normal' 
+          ? parseFloat(computedStyle.fontSize) * 1.2
+          : parseFloat(lineHeightStr) || parseFloat(computedStyle.fontSize) * 1.2
+        
+        if (isNaN(lineHeight) || lineHeight <= 0) {
+          // Fallback: use fontSize * 1.2 if lineHeight is invalid
+          const fontSize = parseFloat(computedStyle.fontSize) || 16
+          const fallbackLineHeight = fontSize * 1.2
+          const maxHeight = fallbackLineHeight * maxRows
+          textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
+        } else {
+          const maxHeight = lineHeight * maxRows
+          textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`
+        }
       } else {
         textarea.style.height = `${scrollHeight}px`
       }

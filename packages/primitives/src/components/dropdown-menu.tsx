@@ -143,8 +143,17 @@ export const DropdownMenuItem = React.forwardRef<
       }
 
       // onClick might expect HTMLButtonElement, but Radix uses div
+      // Wrap in try-catch to prevent errors from breaking the component
       if (onClick) {
-        onClick(event as unknown as React.MouseEvent<HTMLButtonElement>)
+        try {
+          onClick(event as unknown as React.MouseEvent<HTMLButtonElement>)
+        } catch (error) {
+          // Log error but don't break the component
+          // Use typeof check instead of process.env for client-side code
+          if (typeof window !== 'undefined' && window.console && console.error) {
+            console.error('Error in DropdownMenuItem onClick handler:', error)
+          }
+        }
       }
     }
 
