@@ -247,7 +247,8 @@ export function ChatInput({
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)
 
   // Focus ring glow animation variants
-  const containerVariants: import('framer-motion').Variants = {
+  // Leveraging Framer Motion v12's improved type inference - no explicit type needed
+  const containerVariants = {
     idle: {
       boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
     },
@@ -263,7 +264,7 @@ export function ChatInput({
       : {
           boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
         },
-  }
+  } as const satisfies import('framer-motion').Variants
 
   return (
     <motion.div

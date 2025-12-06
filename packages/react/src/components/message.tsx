@@ -15,6 +15,7 @@ import {
   ANIMATION_EASING,
 } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
+import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
 import {
@@ -158,8 +159,10 @@ export function Message({
   }
 
   // React 19: Compiler optimizes static objects - no useMemo needed
-  const markdownComponents = {
-    code: MarkdownCodeBlock,
+  // Using Partial<Components> to allow custom component types
+  // MarkdownCodeBlock is a memoized component, needs type assertion for react-markdown v10
+  const markdownComponents: Partial<Components> = {
+    code: MarkdownCodeBlock as unknown as Components['code'],
     // Custom pre handler - wrap code blocks with styling and copy button
     pre: ({ children, node, ...props }: any) => {
       // Extract code string from the code element for copy button
@@ -359,7 +362,7 @@ export function Message({
               <ReactMarkdown
                 remarkPlugins={remarkPlugins}
                 rehypePlugins={rehypePlugins}
-                components={markdownComponents as any}
+                components={markdownComponents}
               >
                 {message.content}
               </ReactMarkdown>

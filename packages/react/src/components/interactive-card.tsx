@@ -124,6 +124,7 @@ export const InteractiveCard = React.memo(
       onAnimationIteration?: React.AnimationEventHandler<HTMLDivElement>
     }
 
+    // Leveraging Framer Motion v12's improved type inference
     // Determine animate prop - use custom hover animation if hovered, otherwise use prop or undefined
     const animateValue: import('framer-motion').TargetAndTransition | undefined = isHovered && !disabled && interactive
       ? {

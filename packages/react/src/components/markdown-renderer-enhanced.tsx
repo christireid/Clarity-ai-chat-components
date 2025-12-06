@@ -13,6 +13,7 @@
 
 import React, { useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
+import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeHighlight from 'rehype-highlight'
@@ -224,29 +225,48 @@ export function MarkdownRendererEnhanced({
     return plugins
   }, [allowHtml, enableHighlight, enableMath])
 
-  // Custom component overrides
-  const components = useMemo(() => ({
-    code: (props: any) => (
-      <CodeBlock
-        {...props}
-        showLineNumbers={showLineNumbers}
-        enableCopy={enableCodeCopy}
-      />
-    ),
+  // Custom component overrides - using proper Types from react-markdown v10
+  const components = useMemo<Partial<Components>>(() => ({
+    code: ({ className, children, inline, ...props }: React.HTMLAttributes<HTMLElement> & { inline?: boolean }) => {
+      // Extract language from className (format: "language-js")
+      const match = /language-(\w+)/.exec(className || '')
+      const language = match ? match[1] : undefined
+      
+      // Inline code (no language)
+      if (inline || !language) {
+        return (
+          <code className={cn('px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm font-mono', className)} {...props}>
+            {children}
+          </code>
+        )
+      }
+      
+      // Code block with language - extract from className
+      const codeString = String(children).replace(/\n$/, '')
+      return (
+        <CodeBlock
+          className={className}
+          showLineNumbers={showLineNumbers}
+          enableCopy={enableCodeCopy}
+        >
+          {codeString}
+        </CodeBlock>
+      )
+    },
     // Table styling
-    table: ({ children, ...props }: any) => (
+    table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
       <div className="overflow-x-auto my-4">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700" {...props}>
           {children}
         </table>
       </div>
     ),
-    thead: ({ children, ...props }: any) => (
+    thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
       <thead className="bg-gray-50 dark:bg-gray-800" {...props}>
         {children}
       </thead>
     ),
-    th: ({ children, ...props }: any) => (
+    th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
       <th
         className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
         {...props}
@@ -254,13 +274,13 @@ export function MarkdownRendererEnhanced({
         {children}
       </th>
     ),
-    td: ({ children, ...props }: any) => (
+    td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" {...props}>
         {children}
       </td>
     ),
     // Link styling
-    a: ({ children, href, ...props }: any) => (
+    a: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
       <a
         href={href}
         className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -272,7 +292,7 @@ export function MarkdownRendererEnhanced({
       </a>
     ),
     // Blockquote styling
-    blockquote: ({ children, ...props }: any) => (
+    blockquote: ({ children, ...props }: React.BlockquoteHTMLAttributes<HTMLQuoteElement>) => (
       <blockquote
         className="border-l-4 border-gray-300 dark:border-gray-700 pl-4 my-4 italic text-gray-700 dark:text-gray-300"
         {...props}
@@ -281,17 +301,17 @@ export function MarkdownRendererEnhanced({
       </blockquote>
     ),
     // Heading IDs for anchor links
-    h1: ({ children, ...props }: any) => (
+    h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
       <h1 className="text-3xl font-bold mt-6 mb-4" {...props}>
         {children}
       </h1>
     ),
-    h2: ({ children, ...props }: any) => (
+    h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
       <h2 className="text-2xl font-bold mt-5 mb-3" {...props}>
         {children}
       </h2>
     ),
-    h3: ({ children, ...props }: any) => (
+    h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
       <h3 className="text-xl font-bold mt-4 mb-2" {...props}>
         {children}
       </h3>
