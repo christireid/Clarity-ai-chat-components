@@ -639,8 +639,36 @@
    - **Change**: Added `suppressErrorRendering: true` to mermaid.initialize() config
    - **Benefit**: Prevents Mermaid from inserting error messages directly into DOM, allowing our components to handle errors gracefully
    - **Impact**: Better UX - users won't see raw "Syntax error" messages from Mermaid
+   - **Additional**: Added try-catch around mermaid.run() for graceful error handling
 
-2. **Vite 7 - esbuild target update:**
+2. **react-markdown v10 - Async Plugin Loading:**
+   - **Files**: 
+     - `packages/react/src/components/markdown-renderer-enhanced.tsx` (line 227)
+     - `packages/react/src/components/message.tsx` (line 249)
+     - `packages/react/src/components/message-optimized.tsx` (line 147)
+     - `packages/react/src/components/enhanced-markdown-renderer.tsx` (line 121)
+   - **Change**: Converted rehypeHighlight to async plugin loading using dynamic import
+   - **Benefit**: Defers loading of heavy syntax highlighter until needed, reducing initial bundle size
+   - **Impact**: Improved initial load performance - syntax highlighter (~50KB+) loads only when code blocks are present
+   - **Code Pattern**:
+     ```typescript
+     plugins.push(async () => {
+       const { default: rehypeHighlight } = await import('rehype-highlight')
+       return rehypeHighlight
+     })
+     ```
+   - **Change**: Converted rehypeHighlight to async plugin loading using dynamic import
+   - **Benefit**: Defers loading of heavy syntax highlighter until needed, reducing initial bundle size
+   - **Impact**: Improved initial load performance - syntax highlighter (~50KB+) loads only when code blocks are present
+   - **Code Pattern**:
+     ```typescript
+     plugins.push(async () => {
+       const { default: rehypeHighlight } = await import('rehype-highlight')
+       return rehypeHighlight
+     })
+     ```
+
+3. **Vite 7 - esbuild target update:**
    - **File**: `packages/primitives/vitest.config.mts` (line 34)
    - **Change**: Updated `esbuild.target` from `'node18'` to `'node20'`
    - **Benefit**: Aligns with Vite 7 requirements (Node 20.19+ or 22.12+)

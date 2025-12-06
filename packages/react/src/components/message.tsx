@@ -15,7 +15,7 @@ import {
   ANIMATION_EASING,
 } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
-import rehypeHighlight from 'rehype-highlight'
+// rehypeHighlight is now loaded async (react-markdown v10 feature)
 import remarkGfm from 'remark-gfm'
 import {
   MarkdownCodeBlock,
@@ -246,9 +246,14 @@ export function Message({
 
   // Static plugin arrays - compiler optimizes
   const remarkPlugins = [remarkGfm]
+  // react-markdown v10 supports async plugins - use async loading for rehypeHighlight
+  // This improves initial bundle size by deferring syntax highlighter loading
   const rehypePlugins = [
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    rehypeHighlight as any, // Type incompatibility between vfile versions
+    // Async plugin loading for rehypeHighlight (heavy dependency)
+    async () => {
+      const { default: rehypeHighlight } = await import('rehype-highlight')
+      return rehypeHighlight as any // Type incompatibility between vfile versions
+    },
   ]
 
     return (

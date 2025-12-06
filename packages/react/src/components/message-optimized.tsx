@@ -19,7 +19,7 @@ import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon } from './icons'
 import { ANIMATION_DURATION, ANIMATION_EASING, INTERACTION_VARIANTS } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
-import rehypeHighlight from 'rehype-highlight'
+// rehypeHighlight is now loaded async (react-markdown v10 feature)
 import remarkGfm from 'remark-gfm'
 
 export interface MessageOptimizedProps {
@@ -144,7 +144,14 @@ export const MessageOptimized = React.memo(
           <>
             <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight as any]}
+            rehypePlugins={[
+              // react-markdown v10: Async plugin loading for rehypeHighlight
+              // Improves initial bundle size by deferring syntax highlighter loading
+              async () => {
+                const { default: rehypeHighlight } = await import('rehype-highlight')
+                return rehypeHighlight as any
+              },
+            ]}
             components={markdownComponents}
           >
             {message.content}
