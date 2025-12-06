@@ -12,7 +12,13 @@ export interface UseCommandPaletteOptions {
   /**
    * Keyboard shortcut to toggle the command palette
    * Uses 'mod' for Cmd on Mac and Ctrl on Windows/Linux
+   *
    * Format: 'mod+k', 'ctrl+shift+p', 'alt+n'
+   *
+   * Special key names: 'space', 'plus', 'minus', 'comma', 'period',
+   * 'slash', 'backslash', 'bracketleft', 'bracketright', 'semicolon',
+   * 'quote', 'backquote', 'equals'
+   *
    * @default 'mod+k'
    */
   shortcut?: string
@@ -95,8 +101,30 @@ function detectIsMac(): boolean {
 }
 
 /**
+ * Map of friendly key names to actual KeyboardEvent.key values
+ * Handles cases where the intuitive name differs from the event key
+ */
+const KEY_NAME_MAP: Record<string, string> = {
+  space: ' ',
+  plus: '+',
+  minus: '-',
+  equals: '=',
+  comma: ',',
+  period: '.',
+  slash: '/',
+  backslash: '\\',
+  bracketleft: '[',
+  bracketright: ']',
+  semicolon: ';',
+  quote: "'",
+  backquote: '`',
+}
+
+/**
  * Validate and parse a shortcut string into its component parts
  * Returns null if the shortcut is invalid
+ *
+ * Supports special key names: space, plus, minus, enter, escape, tab, etc.
  */
 function parseShortcut(
   shortcut: string
@@ -112,11 +140,16 @@ function parseShortcut(
     return null
   }
 
-  const key = parts.pop() || ''
+  let key = parts.pop() || ''
 
-  // Key must be non-empty and a single character or known key name
+  // Key must be non-empty
   if (!key || key.length === 0) {
     return null
+  }
+
+  // Map friendly names to actual key values
+  if (KEY_NAME_MAP[key]) {
+    key = KEY_NAME_MAP[key]
   }
 
   // Validate modifiers
@@ -290,10 +323,8 @@ export function useCommandPalette(
     onToggleRef.current = onToggle
   }, [onOpen, onClose, onToggle])
 
-  // Set mounted flag and detect platform
+  // Detect platform on mount (handles SSR hydration) and cleanup on unmount
   useEffect(() => {
-    isMountedRef.current = true
-    // Re-detect platform on mount (handles SSR hydration)
     setIsMac(detectIsMac())
 
     return () => {
