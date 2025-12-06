@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Send, Bot, User, Sparkles } from 'lucide-react'
+import { useAutoScroll, useStreaming, TypingIndicator } from '@clarity-chat/react'
 
 interface Message {
   id: string
@@ -24,37 +25,50 @@ export function LiveChatDemo() {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [isStreaming, setIsStreaming] = useState(false)
-  const [userHasScrolledUp, setUserHasScrolledUp] = useState(false)
+  const [currentBotMessageId, setCurrentBotMessageId] = useState<string | null>(null)
 
-  // Refs for auto-scroll
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  // Use the shared useAutoScroll hook from @clarity-chat/react
+  const { scrollRef, scrollToBottom, setEnabled } = useAutoScroll({
+    dependencies: [messages],
+    threshold: 100,
+  })
 
-  // Detect if user manually scrolled up (wants to read previous content)
-  const handleScroll = useCallback(() => {
-    if (!containerRef.current) return
-    const { scrollTop, scrollHeight, clientHeight } = containerRef.current
-    const isAtBottom = scrollHeight - scrollTop - clientHeight < 100
-    setUserHasScrolledUp(!isAtBottom)
-  }, [])
+  // Use the shared useStreaming hook from @clarity-chat/react
+  const { content, isStreaming, startStreaming, reset } = useStreaming({
+    onChunk: (chunk) => {
+      // Update the bot message with each chunk
+      if (currentBotMessageId) {
+        setMessages(prev => prev.map(msg =>
+          msg.id === currentBotMessageId
+            ? { ...msg, text: msg.text + chunk }
+            : msg
+        ))
+      }
+    },
+    onComplete: () => {
+      // Mark streaming as complete
+      if (currentBotMessageId) {
+        setMessages(prev => prev.map(msg =>
+          msg.id === currentBotMessageId
+            ? { ...msg, isStreaming: false }
+            : msg
+        ))
+        setCurrentBotMessageId(null)
+      }
+    },
+    onError: (error) => {
+      console.error('Streaming error:', error)
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        text: "I'm having trouble connecting right now. Please try again in a moment!",
+        sender: 'bot',
+        timestamp: new Date(),
+      }])
+      setCurrentBotMessageId(null)
+    }
+  })
 
-  // Scroll to bottom (respects user intent)
-  const scrollToBottom = useCallback((force = false) => {
-    if (userHasScrolledUp && !force) return
-
-    messagesEndRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end'
-    })
-  }, [userHasScrolledUp])
-
-  // Scroll when new message is added
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages, scrollToBottom])
-
-  // Scroll during streaming (throttled)
+  // Scroll during streaming
   useEffect(() => {
     if (isStreaming) {
       const interval = setInterval(() => scrollToBottom(), 100)
@@ -75,8 +89,8 @@ export function LiveChatDemo() {
     const currentInput = input
     setMessages(prev => [...prev, userMessage])
     setInput('')
-    setUserHasScrolledUp(false) // Reset scroll lock
-    scrollToBottom(true) // Force scroll
+    setEnabled(true) // Enable auto-scroll
+    scrollToBottom() // Force scroll
     setIsTyping(true)
 
     try {
@@ -86,15 +100,15 @@ export function LiveChatDemo() {
         body: JSON.stringify({ message: currentInput }),
       })
 
-      if (!response.ok) {
+      if (!response.ok || !response.body) {
         throw new Error('Failed to get response')
       }
 
       setIsTyping(false)
-      setIsStreaming(true)
 
       // Create placeholder message for streaming
       const botMessageId = (Date.now() + 1).toString()
+      setCurrentBotMessageId(botMessageId)
       setMessages(prev => [...prev, {
         id: botMessageId,
         text: '',
@@ -103,35 +117,9 @@ export function LiveChatDemo() {
         isStreaming: true,
       }])
 
-      // Read streaming response
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
+      // Use the streaming hook to handle the response
+      await startStreaming(response.body)
 
-      if (reader) {
-        let accumulatedText = ''
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value, { stream: true })
-          accumulatedText += chunk
-
-          // Update the bot message with accumulated text
-          setMessages(prev => prev.map(msg =>
-            msg.id === botMessageId
-              ? { ...msg, text: accumulatedText }
-              : msg
-          ))
-        }
-
-        // Mark streaming as complete
-        setMessages(prev => prev.map(msg =>
-          msg.id === botMessageId
-            ? { ...msg, isStreaming: false }
-            : msg
-        ))
-      }
     } catch (error) {
       console.error('Error getting response:', error)
       setMessages(prev => [...prev, {
@@ -140,9 +128,8 @@ export function LiveChatDemo() {
         sender: 'bot',
         timestamp: new Date(),
       }])
-    } finally {
       setIsTyping(false)
-      setIsStreaming(false)
+      reset()
     }
   }
 
@@ -173,8 +160,7 @@ export function LiveChatDemo() {
 
         {/* Messages */}
         <div
-          ref={containerRef}
-          onScroll={handleScroll}
+          ref={scrollRef as React.RefObject<HTMLDivElement>}
           className="h-[400px] overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-bg-secondary/50 to-bg-primary scroll-smooth"
         >
           {messages.map((message) => (
@@ -213,24 +199,15 @@ export function LiveChatDemo() {
             </div>
           ))}
 
-          {/* Typing Indicator */}
+          {/* Typing Indicator - using component from @clarity-chat/react */}
           {isTyping && (
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-600 dark:text-brand-400 flex items-center justify-center">
-                <Bot className="w-5 h-5" />
-              </div>
-              <div className="bg-bg-secondary rounded-2xl rounded-tl-sm px-4 py-3">
-                <div className="flex gap-1">
-                  <div className="w-2 h-2 rounded-full bg-text-secondary animate-bounce [animation-delay:-0.3s]" />
-                  <div className="w-2 h-2 rounded-full bg-text-secondary animate-bounce [animation-delay:-0.15s]" />
-                  <div className="w-2 h-2 rounded-full bg-text-secondary animate-bounce" />
-                </div>
-              </div>
-            </div>
+            <TypingIndicator
+              showAvatar
+              avatarFallback="AI"
+              label="Thinking..."
+              variant="dots"
+            />
           )}
-
-          {/* Scroll anchor */}
-          <div ref={messagesEndRef} />
         </div>
 
         {/* Input */}

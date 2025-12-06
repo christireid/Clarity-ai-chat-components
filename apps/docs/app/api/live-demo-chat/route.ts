@@ -1,13 +1,13 @@
 /**
  * Live Demo Chat API Endpoint
  *
- * Powers the homepage demo chat with Gemini AI and docs search.
- * Uses streaming responses for real-time UX.
+ * Powers the homepage demo chat with AI and docs search.
+ * Uses shared streaming utilities from lib/ai/streaming.ts
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest } from 'next/server'
 import { searchDocumentation, formatSearchResultsForRAG } from '@/lib/ai/keywordSearch'
+import { streamFromGemini, streamFromDemo, type StreamChunk } from '@/lib/ai/streaming'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -47,247 +47,28 @@ interface RequestBody {
 }
 
 /**
- * Demo mode responses when no API key is configured
+ * Create a plain text streaming response from StreamChunk generator
  */
-function getDemoResponse(message: string): string {
-  const lowerMessage = message.toLowerCase()
+function createPlainTextStream(
+  generator: AsyncGenerator<StreamChunk>
+): ReadableStream<Uint8Array> {
+  const encoder = new TextEncoder()
 
-  if (lowerMessage.includes('component') || lowerMessage.includes('chatwindow')) {
-    return `Clarity Chat includes **70+ components** for building chat interfaces!
-
-Here's a quick example using the core components:
-
-\`\`\`tsx
-import { ChatWindow, MessageList, InputBar } from '@clarity-chat/react'
-
-function MyChat() {
-  return (
-    <ChatWindow>
-      <MessageList messages={messages} />
-      <InputBar onSend={handleSend} />
-    </ChatWindow>
-  )
-}
-\`\`\`
-
-Key components include:
-- **ChatWindow**: Main container with layout
-- **MessageBubble**: Individual message display
-- **InputBar**: Message input with attachments
-- **TypingIndicator**: Shows when someone is typing
-
-Check out the [Component Reference](/reference/components) for the full list!`
-  }
-
-  if (lowerMessage.includes('hook') || lowerMessage.includes('usechat')) {
-    return `Clarity Chat provides **35+ hooks** for state management and AI integration!
-
-The most popular hook is \`useChat\`:
-
-\`\`\`tsx
-import { useChat } from '@clarity-chat/react'
-
-function MyChat() {
-  const { messages, sendMessage, isLoading } = useChat({
-    onMessage: (msg) => console.log('New message:', msg)
-  })
-
-  return <ChatWindow messages={messages} onSend={sendMessage} />
-}
-\`\`\`
-
-Other popular hooks:
-- **useStreaming**: Real-time message streaming
-- **useTokenCount**: Track token usage
-- **useMessageHistory**: Conversation persistence
-- **useTheme**: Dynamic theming
-
-See the [Hooks Reference](/reference/hooks) for all available hooks!`
-  }
-
-  if (lowerMessage.includes('stream')) {
-    return `Streaming is built right into Clarity Chat! Here's how to implement it:
-
-\`\`\`tsx
-import { useStreaming, StreamingMessage } from '@clarity-chat/react'
-
-function Chat() {
-  const { startStream, content, isStreaming } = useStreaming()
-
-  const handleSend = async (text: string) => {
-    await startStream('/api/chat', { message: text })
-  }
-
-  return (
-    <>
-      {isStreaming && <StreamingMessage content={content} />}
-    </>
-  )
-}
-\`\`\`
-
-The \`StreamingMessage\` component handles token-by-token rendering automatically with smooth animations.
-
-Learn more in our [Streaming Guide](/guides/streaming)!`
-  }
-
-  if (lowerMessage.includes('theme') || lowerMessage.includes('dark') || lowerMessage.includes('style')) {
-    return `Clarity Chat supports **11 built-in themes** with dark mode out of the box!
-
-\`\`\`tsx
-import { ThemeProvider } from '@clarity-chat/react'
-
-function App() {
-  return (
-    <ThemeProvider theme="midnight" darkMode>
-      <ChatWindow />
-    </ThemeProvider>
-  )
-}
-\`\`\`
-
-Available themes: default, midnight, ocean, forest, sunset, lavender, and more!
-
-You can also create custom themes using CSS variables:
-
-\`\`\`css
-:root {
-  --clarity-primary: #6366f1;
-  --clarity-bg: #1a1a2e;
-}
-\`\`\`
-
-Check out the [Theming Guide](/guides/theming) for full customization options!`
-  }
-
-  if (lowerMessage.includes('accessibility') || lowerMessage.includes('a11y') || lowerMessage.includes('wcag')) {
-    return `Accessibility is a core priority in Clarity Chat! All components are **WCAG AAA compliant**.
-
-Built-in accessibility features:
-- Full keyboard navigation (Tab, Enter, Escape, Arrow keys)
-- Screen reader support with proper ARIA labels
-- Focus management and focus trapping in modals
-- Reduced motion support
-- High contrast mode compatibility
-
-No extra work needed - accessibility works out of the box! You can customize ARIA labels:
-
-\`\`\`tsx
-<InputBar
-  ariaLabel="Type your message"
-  sendButtonAriaLabel="Send message"
-/>
-\`\`\`
-
-See our [Accessibility Guide](/guides/accessibility) for best practices!`
-  }
-
-  if (lowerMessage.includes('get started') || lowerMessage.includes('install') || lowerMessage.includes('start')) {
-    return `Getting started with Clarity Chat is easy!
-
-**1. Install the package:**
-\`\`\`bash
-npm install @clarity-chat/react
-\`\`\`
-
-**2. Import styles and components:**
-\`\`\`tsx
-import '@clarity-chat/react/styles.css'
-import { ChatWindow } from '@clarity-chat/react'
-\`\`\`
-
-**3. Build your first chat:**
-\`\`\`tsx
-function App() {
-  const [messages, setMessages] = useState([])
-
-  return (
-    <ChatWindow
-      messages={messages}
-      onSend={(text) => setMessages([...messages, { text }])}
-    />
-  )
-}
-\`\`\`
-
-That's it! Check out the [Quick Start Guide](/guides/quick-start) for a complete walkthrough.`
-  }
-
-  // Default response
-  return `Great question! Clarity Chat makes building production-ready chat interfaces simple.
-
-Here's what you can do:
-- **70+ Components**: ChatWindow, MessageBubble, InputBar, and more
-- **35+ Hooks**: useChat, useStreaming, useTokenCount for state management
-- **Full Theming**: 11 built-in themes with dark mode
-- **Accessibility**: WCAG AAA compliant out of the box
-- **TypeScript**: Full type safety and IntelliSense
-
-Try asking about:
-- "How do I add streaming?"
-- "What components are available?"
-- "How do I customize the theme?"
-
-Or explore the [documentation](/guides/quick-start) to get started!`
-}
-
-/**
- * Stream response from Gemini with docs context
- */
-async function* streamFromGemini(
-  message: string,
-  docsContext: string
-): AsyncGenerator<string> {
-  const apiKey = process.env.GEMINI_API_KEY
-
-  if (!apiKey) {
-    // Fallback to demo mode
-    const response = getDemoResponse(message)
-    // Simulate streaming by yielding words
-    const words = response.split(' ')
-    for (let i = 0; i < words.length; i++) {
-      yield words[i] + (i < words.length - 1 ? ' ' : '')
-      await new Promise(resolve => setTimeout(resolve, 20))
-    }
-    return
-  }
-
-  const genAI = new GoogleGenerativeAI(apiKey)
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
-
-  // Build the prompt with context
-  const messageWithContext = docsContext
-    ? `[Documentation Context]\n${docsContext}\n\n[User Question]\n${message}`
-    : message
-
-  try {
-    const chat = model.startChat({
-      history: [
-        {
-          role: 'user',
-          parts: [{ text: `System instructions: ${SYSTEM_PROMPT}` }]
-        },
-        {
-          role: 'model',
-          parts: [{ text: 'Understood. I am the Clarity Chat documentation assistant. I will help developers with questions about the component library. How can I help you today?' }]
+  return new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const chunk of generator) {
+          if (chunk.type === 'text' && chunk.content) {
+            controller.enqueue(encoder.encode(chunk.content))
+          }
         }
-      ]
-    })
-
-    const result = await chat.sendMessageStream(messageWithContext)
-
-    for await (const chunk of result.stream) {
-      const text = chunk.text()
-      if (text) {
-        yield text
+        controller.close()
+      } catch (error) {
+        console.error('Streaming error:', error)
+        controller.error(error)
       }
     }
-  } catch (error) {
-    console.error('Gemini API error:', error)
-    // Fallback to demo response
-    const response = getDemoResponse(message)
-    yield response
-  }
+  })
 }
 
 /**
@@ -312,21 +93,31 @@ export async function POST(request: NextRequest) {
 
     const { context: docsContext } = formatSearchResultsForRAG(searchResults)
 
+    // Build message with context
+    const messageWithContext = docsContext
+      ? `[Documentation Context]\n${docsContext}\n\n[User Question]\n${body.message}`
+      : body.message
+
+    // Choose streaming function based on API key availability
+    const hasGeminiKey = !!process.env.GEMINI_API_KEY
+
+    let generator: AsyncGenerator<StreamChunk>
+
+    if (hasGeminiKey) {
+      // Use shared Gemini streaming utility
+      generator = streamFromGemini(
+        [{ role: 'user', content: messageWithContext }],
+        { systemPrompt: SYSTEM_PROMPT }
+      )
+    } else {
+      // Use shared demo streaming utility
+      generator = streamFromDemo([
+        { role: 'user', content: body.message }
+      ])
+    }
+
     // Create streaming response
-    const encoder = new TextEncoder()
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of streamFromGemini(body.message, docsContext)) {
-            controller.enqueue(encoder.encode(chunk))
-          }
-          controller.close()
-        } catch (error) {
-          console.error('Streaming error:', error)
-          controller.error(error)
-        }
-      }
-    })
+    const stream = createPlainTextStream(generator)
 
     return new Response(stream, {
       headers: {
