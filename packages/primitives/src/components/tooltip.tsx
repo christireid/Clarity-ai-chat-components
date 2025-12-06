@@ -85,9 +85,13 @@ export const Tooltip: React.FC<TooltipProps> = ({
   // Map align to Radix UI align prop
   const radixAlign = align === 'start' ? 'start' : align === 'end' ? 'end' : 'center'
 
+  if (disabled) {
+    return <div className={cn('inline-block', className)}>{children}</div>
+  }
+
   return (
     <ShadcnTooltipProvider delayDuration={delay}>
-      <ShadcnTooltip open={open} onOpenChange={setOpen} disabled={disabled}>
+      <ShadcnTooltip open={open} onOpenChange={setOpen}>
         <ShadcnTooltipTrigger asChild className={cn('inline-block', className)}>
           <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             {children}
