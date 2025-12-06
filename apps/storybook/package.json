@@ -21,6 +21,7 @@
     "@storybook/addon-links": "^10.1.4",
     "@storybook/react": "^10.1.4",
     "@storybook/react-vite": "^10.1.4",
+    "@tailwindcss/postcss": "^4.1.17",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.22",
