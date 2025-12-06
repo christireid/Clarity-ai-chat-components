@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
+    "@google/generative-ai": "^0.21.0",
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/types": "workspace:*",
     "@mdx-js/react": "^3.0.1",
