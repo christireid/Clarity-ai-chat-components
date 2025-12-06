@@ -87,11 +87,19 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
 
         // Legacy browsers (IE11 and older) - but this is likely unnecessary in 2024
         // Keeping minimal fallback for completeness
-        if ('addListener' in mediaQuery) {
-          const legacyHandler = handleChange as unknown as (mql: MediaQueryList) => void
+        // @ts-expect-error - Legacy API signature differs from modern API
+        if ('addListener' in mediaQuery && typeof mediaQuery.addListener === 'function') {
+          // Legacy API: handler receives MediaQueryList directly, not MediaQueryListEvent
+          const legacyHandler = (mql: MediaQueryList) => {
+            if (!abortController.signal.aborted) {
+              setPrefersReducedMotion(mql.matches)
+            }
+          }
+          // @ts-expect-error - Legacy API
           mediaQuery.addListener(legacyHandler)
           return () => {
             if (!abortController.signal.aborted && 'removeListener' in mediaQuery) {
+              // @ts-expect-error - Legacy API
               mediaQuery.removeListener(legacyHandler)
             }
           }
