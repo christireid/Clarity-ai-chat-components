@@ -1,10 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTheme } from 'next-themes'
-import Particles from '@tsparticles/react'
+import Particles, { initParticlesEngine } from '@tsparticles/react'
 import { loadSlim } from '@tsparticles/slim'
-import type { Engine, ISourceOptions } from '@tsparticles/engine'
+import type { ISourceOptions } from '@tsparticles/engine'
 
 interface AnimatedBackgroundProps {
   className?: string
@@ -14,58 +14,89 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [particlesInitialized, setParticlesInitialized] = useState(false)
   const [initError, setInitError] = useState<Error | null>(null)
 
-  // Initialize client-side state and media queries
+  // Initialize client-side state, media queries, and particles engine
   useEffect(() => {
     // SSR safety: only run on client
     if (typeof window === 'undefined') return
 
+    let isMounted = true
     setMounted(true)
 
     // Check for prefers-reduced-motion with fallback for older browsers
     const checkReducedMotion = () => {
       try {
         const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-        setPrefersReducedMotion(mediaQuery.matches)
+        if (isMounted) {
+          setPrefersReducedMotion(mediaQuery.matches)
+        }
 
         // Use addEventListener if available (modern browsers)
         if (mediaQuery.addEventListener) {
           const handleChange = (e: MediaQueryListEvent) => {
-            setPrefersReducedMotion(e.matches)
+            if (isMounted) {
+              setPrefersReducedMotion(e.matches)
+            }
           }
           mediaQuery.addEventListener('change', handleChange)
           return () => mediaQuery.removeEventListener('change', handleChange)
         } else {
           // Fallback for older browsers (addListener/removeListener)
-          // @ts-expect-error - Legacy API for older browsers
           const handleChange = (mql: MediaQueryList | MediaQueryListEvent) => {
-            setPrefersReducedMotion(mql.matches)
+            if (isMounted) {
+              setPrefersReducedMotion(mql.matches)
+            }
           }
-          // @ts-expect-error - Legacy API
-          mediaQuery.addListener(handleChange)
-          // @ts-expect-error - Legacy API
-          return () => mediaQuery.removeListener(handleChange)
+          // Legacy API - TypeScript types don't include these but they exist in older browsers
+          if ('addListener' in mediaQuery) {
+            mediaQuery.addListener(handleChange as EventListener)
+            return () => {
+              if ('removeListener' in mediaQuery) {
+                mediaQuery.removeListener(handleChange as EventListener)
+              }
+            }
+          }
+          return () => {}
         }
       } catch (error) {
         // If matchMedia fails, default to no reduced motion
-        setPrefersReducedMotion(false)
+        if (isMounted) {
+          setPrefersReducedMotion(false)
+        }
         return () => {}
       }
     }
 
-    return checkReducedMotion()
-  }, [])
+    const cleanupMediaQuery = checkReducedMotion()
 
-  const particlesInit = useCallback(async (engine: Engine) => {
-    try {
-      await loadSlim(engine)
-      setInitError(null)
-    } catch (error) {
-      // Log error but don't crash the component
-      const err = error instanceof Error ? error : new Error('Failed to load particles engine')
-      setInitError(err)
-      console.error('[AnimatedBackground] Failed to initialize particles:', err)
+    // Initialize particles engine
+    const initializeParticles = async () => {
+      try {
+        await initParticlesEngine(async (engine) => {
+          await loadSlim(engine)
+        })
+        if (isMounted) {
+          setParticlesInitialized(true)
+          setInitError(null)
+        }
+      } catch (error) {
+        // Log error but don't crash the component
+        const err = error instanceof Error ? error : new Error('Failed to load particles engine')
+        if (isMounted) {
+          setInitError(err)
+          setParticlesInitialized(false)
+        }
+        console.error('[AnimatedBackground] Failed to initialize particles:', err)
+      }
+    }
+
+    initializeParticles()
+
+    return () => {
+      isMounted = false
+      cleanupMediaQuery()
     }
   }, [])
 
@@ -212,8 +243,8 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     return null
   }
 
-  // If initialization failed, render nothing (graceful degradation)
-  if (initError) {
+  // If initialization failed or not yet initialized, render nothing (graceful degradation)
+  if (initError || !particlesInitialized) {
     return null
   }
 
@@ -224,7 +255,6 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     >
       <Particles
         id="animated-background"
-        init={particlesInit}
         options={particlesConfig}
         className="w-full h-full"
       />
