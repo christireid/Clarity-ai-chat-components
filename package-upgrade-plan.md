@@ -590,3 +590,17 @@
 3. Update husky setup to remove deprecated `husky install` command
 4. Consider Tailwind CSS v4 migration as separate project
 5. Run full test suite after fixing pre-existing issues
+6. **NEW**: Update remaining example apps' Vite versions (15 apps still on 6.x)
+7. **NEW**: Verify storybook-dark-mode v4 compatibility (currently incompatible with Storybook 10, reverted to 3.0.3)
+8. **NEW**: Test all example apps after Next.js 16.0.7 upgrade
+
+### Issues Found During Review
+
+1. **CRITICAL FIXED**: Conflicting React overrides (removed legacy `overrides` section)
+2. **CRITICAL FIXED**: Incomplete Next.js updates (updated all 10 example apps to 16.0.7)
+3. **CRITICAL FIXED**: Incomplete framer-motion updates (updated 3 example apps to 12.23.25)
+4. **CRITICAL FIXED**: Storybook packages not fully updated (updated root package.json)
+5. **MEDIUM FIXED**: Missing package updates (updated eslint-plugin-react-hooks, globals, lint-staged, @changesets/changelog-github)
+6. **MEDIUM**: storybook-dark-mode v4 incompatible with Storybook 10 (reverted to 3.0.3)
+7. **MEDIUM**: 15 example apps still on Vite 6.x (need Vite 7 upgrade)
+8. **MINOR**: No verification tests run after major upgrades
