@@ -535,10 +535,19 @@ export class LLMSummarizer implements Summarizer {
 
   /**
    * Summarize conversation with structured output
+   *
+   * @param messages - Array of conversation messages (must not be empty)
+   * @throws Error if messages array is empty
    */
   async summarizeConversation(
     messages: SummaryMessage[]
   ): Promise<ConversationSummary> {
+    if (!messages || messages.length === 0) {
+      throw new Error(
+        'Cannot summarize empty conversation. Provide at least one message.'
+      )
+    }
+
     const originalTokens = messages.reduce(
       (sum, m) => sum + estimateTokens(m.content),
       0
@@ -629,7 +638,20 @@ export class LLMSummarizer implements Summarizer {
       compressionRatio: number
     }
   }> {
-    const { summarizeThreshold = 20, keepRecentCount = 10 } = options
+    if (!messages || messages.length === 0) {
+      throw new Error(
+        'Cannot progressively summarize empty conversation. Provide at least one message.'
+      )
+    }
+
+    const { summarizeThreshold = 20, keepRecentCount: rawKeepRecent = 10 } =
+      options
+
+    // Ensure keepRecentCount is valid and doesn't exceed message count
+    const keepRecentCount = Math.max(
+      1,
+      Math.min(rawKeepRecent, messages.length)
+    )
 
     const originalTokens = messages.reduce(
       (sum, m) => sum + estimateTokens(m.content),
@@ -654,6 +676,21 @@ export class LLMSummarizer implements Summarizer {
     // Split messages
     const toSummarize = messages.slice(0, -keepRecentCount)
     const recentMessages = messages.slice(-keepRecentCount)
+
+    // If nothing to summarize (all messages are "recent"), return as-is
+    if (toSummarize.length === 0) {
+      return {
+        summarizedPortion: '',
+        recentMessages: messages,
+        stats: {
+          originalMessages: messages.length,
+          summarizedMessages: 0,
+          originalTokens,
+          finalTokens: originalTokens,
+          compressionRatio: 1,
+        },
+      }
+    }
 
     // Summarize older messages
     const summary = await this.summarizeConversation(toSummarize)
@@ -698,12 +735,21 @@ export class LLMSummarizer implements Summarizer {
     }
     const originalTokens = estimateTokens(content)
 
-    // Level 1: Detailed summary (20% of original)
-    const detailedTokens = Math.floor(originalTokens * 0.2)
+    // Content must be substantial enough for hierarchical summarization
+    // (at least 50 tokens to create meaningful level breakdowns)
+    if (originalTokens < 50) {
+      throw new Error(
+        `Content too short for hierarchical summarization (${originalTokens} tokens). ` +
+          `Provide at least 200 characters (~50 tokens) or use summarize() instead.`
+      )
+    }
+
+    // Level 1: Detailed summary (20% of original, minimum 20 tokens)
+    const detailedTokens = Math.max(20, Math.floor(originalTokens * 0.2))
     const detailed = await this.summarize(content, detailedTokens)
 
-    // Level 2: Section summaries (10% of original)
-    const sectionsTokens = Math.floor(originalTokens * 0.1)
+    // Level 2: Section summaries (10% of original, minimum 15 tokens)
+    const sectionsTokens = Math.max(15, Math.floor(originalTokens * 0.1))
     const sectionsPrompt = `Break down this content into 3-5 key sections, each with a title and brief summary:
 
 ${content}

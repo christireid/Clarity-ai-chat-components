@@ -194,6 +194,12 @@ describe('LLMSummarizer', () => {
   })
 
   describe('summarizeConversation', () => {
+    it('should throw for empty messages array', async () => {
+      await expect(summarizer.summarizeConversation([])).rejects.toThrow(
+        'Cannot summarize empty conversation'
+      )
+    })
+
     it('should return structured conversation summary', async () => {
       const mockResponse = JSON.stringify({
         topics: ['topic1', 'topic2'],
@@ -268,6 +274,29 @@ describe('LLMSummarizer', () => {
   })
 
   describe('progressiveSummarize', () => {
+    it('should throw for empty messages array', async () => {
+      await expect(summarizer.progressiveSummarize([])).rejects.toThrow(
+        'Cannot progressively summarize empty conversation'
+      )
+    })
+
+    it('should handle keepRecentCount >= messages.length gracefully', async () => {
+      const messages: SummaryMessage[] = [
+        { role: 'user', content: 'Hello' },
+        { role: 'assistant', content: 'Hi there' },
+      ]
+
+      // keepRecentCount is larger than messages length - should return all as recent
+      const result = await summarizer.progressiveSummarize(messages, {
+        summarizeThreshold: 1, // Force summarization attempt
+        keepRecentCount: 100, // Much larger than 2 messages
+      })
+
+      expect(result.summarizedPortion).toBe('')
+      expect(result.recentMessages).toHaveLength(2)
+      expect(result.stats.summarizedMessages).toBe(0)
+    })
+
     it('should return original messages if under threshold', async () => {
       const messages: SummaryMessage[] = [
         { role: 'user', content: 'Hello' },
@@ -327,6 +356,13 @@ describe('LLMSummarizer', () => {
       await expect(summarizer.hierarchicalSummarize('')).rejects.toThrow(
         'Cannot create hierarchical summary of empty content'
       )
+    })
+
+    it('should throw for content that is too short', async () => {
+      // Content with less than 50 tokens (~200 chars)
+      await expect(
+        summarizer.hierarchicalSummarize('Short text.')
+      ).rejects.toThrow('Content too short for hierarchical summarization')
     })
 
     it('should create multi-level summaries', async () => {
