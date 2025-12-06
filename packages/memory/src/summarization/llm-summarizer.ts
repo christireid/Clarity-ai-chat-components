@@ -382,6 +382,25 @@ export class LLMSummarizer implements Summarizer {
   }
 
   constructor(config: LLMSummarizationConfig) {
+    // Validate API key for non-custom providers
+    if (
+      (config.provider === 'openai' || config.provider === 'anthropic') &&
+      !config.apiKey?.trim()
+    ) {
+      throw new Error(
+        `API key is required for ${config.provider} provider. ` +
+          `Pass apiKey in config or use provider: 'custom' with a customHandler.`
+      )
+    }
+
+    // Validate custom handler for custom provider
+    if (config.provider === 'custom' && !config.customHandler) {
+      throw new Error(
+        `customHandler is required for custom provider. ` +
+          `Provide a function: (prompt, options) => Promise<string>`
+      )
+    }
+
     this.config = {
       provider: config.provider,
       model: config.model ?? DEFAULT_MODELS[config.provider],
@@ -390,7 +409,11 @@ export class LLMSummarizer implements Summarizer {
       summaryStyle: config.summaryStyle ?? 'structured',
       apiKey: config.apiKey ?? '',
       apiEndpoint: config.apiEndpoint ?? '',
-      customHandler: config.customHandler ?? (async () => ''),
+      customHandler:
+        config.customHandler ??
+        (() => {
+          throw new Error('customHandler not configured')
+        }),
       temperature: config.temperature ?? 0.3,
     }
 
@@ -400,6 +423,10 @@ export class LLMSummarizer implements Summarizer {
 
   /**
    * Summarize text
+   *
+   * @param text - The text to summarize (must be non-empty)
+   * @param maxTokens - Target maximum tokens for the summary (must be positive)
+   * @throws Error if text is empty or maxTokens is not positive
    */
   async summarize(text: string, maxTokens?: number): Promise<string> {
     const targetTokens = maxTokens ?? this.config.maxSummaryTokens
@@ -409,11 +436,27 @@ export class LLMSummarizer implements Summarizer {
 
   /**
    * Summarize with full statistics
+   *
+   * @throws Error if text is empty/whitespace or maxTokens is not positive
    */
   async summarizeWithStats(
     text: string,
     maxTokens: number
   ): Promise<SummaryResult> {
+    // Input validation
+    if (!text || !text.trim()) {
+      throw new Error(
+        'Cannot summarize empty text. Provide non-empty content to summarize.'
+      )
+    }
+
+    if (!Number.isFinite(maxTokens) || maxTokens <= 0) {
+      throw new Error(
+        `maxTokens must be a positive number, got: ${maxTokens}. ` +
+          `Use a value like 100-500 for typical summaries.`
+      )
+    }
+
     const startTime = Date.now()
     const originalTokens = estimateTokens(text)
 
@@ -422,11 +465,13 @@ export class LLMSummarizer implements Summarizer {
     const cached = this.cache.get(cacheKey)
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
       this.stats.cacheHits++
+      const summaryTokens = estimateTokens(cached.summary)
       return {
         summary: cached.summary,
         originalTokens,
-        summaryTokens: estimateTokens(cached.summary),
-        compressionRatio: estimateTokens(cached.summary) / originalTokens,
+        summaryTokens,
+        compressionRatio:
+          originalTokens > 0 ? summaryTokens / originalTokens : 0,
         generationTime: 0,
         model: this.config.model,
         cached: true,
@@ -474,7 +519,7 @@ export class LLMSummarizer implements Summarizer {
       summary,
       originalTokens,
       summaryTokens,
-      compressionRatio: summaryTokens / originalTokens,
+      compressionRatio: originalTokens > 0 ? summaryTokens / originalTokens : 0,
       generationTime: Date.now() - startTime,
       model: this.config.model,
       cached: false,
@@ -635,15 +680,22 @@ export class LLMSummarizer implements Summarizer {
   /**
    * Hierarchical multi-level summarization
    *
-   * Creates summaries at multiple levels of detail:
-   * - Executive: Ultra-brief overview
-   * - Sections: Topic-by-topic breakdown
-   * - Detailed: Full summary with context
+   * Creates summaries at three fixed levels of detail:
+   * - Executive: Ultra-brief overview (~5% of original)
+   * - Sections: Topic-by-topic breakdown (~10% of original)
+   * - Detailed: Full summary with context (~20% of original)
+   *
+   * @param content - The content to summarize
+   * @returns HierarchicalSummary with executive, sections, and detailed summaries
+   * @throws Error if content is empty
+   *
+   * Note: The levels parameter is reserved for future use when variable-depth
+   * hierarchical summarization is implemented.
    */
-  async hierarchicalSummarize(
-    content: string,
-    _levels: number = 3
-  ): Promise<HierarchicalSummary> {
+  async hierarchicalSummarize(content: string): Promise<HierarchicalSummary> {
+    if (!content || !content.trim()) {
+      throw new Error('Cannot create hierarchical summary of empty content.')
+    }
     const originalTokens = estimateTokens(content)
 
     // Level 1: Detailed summary (20% of original)
@@ -736,8 +788,16 @@ Maximum ${sectionsTokens} tokens total.`
 
   /**
    * Set cache TTL
+   *
+   * @param ttlMs - Time-to-live in milliseconds (must be positive)
+   * @throws Error if ttlMs is not a positive number
    */
   setCacheTTL(ttlMs: number): void {
+    if (!Number.isFinite(ttlMs) || ttlMs <= 0) {
+      throw new Error(
+        `Cache TTL must be a positive number in milliseconds, got: ${ttlMs}`
+      )
+    }
     this.cacheTTL = ttlMs
   }
 
@@ -758,7 +818,10 @@ Maximum ${sectionsTokens} tokens total.`
       case 'anthropic':
         return this.callWithRetry(() => this.callAnthropic(prompt, maxTokens))
       case 'custom':
-        return this.config.customHandler(prompt, { maxTokens })
+        // Custom handlers also get retry logic for consistency
+        return this.callWithRetry(() =>
+          this.config.customHandler(prompt, { maxTokens })
+        )
       default:
         throw new Error(`Unknown provider: ${this.config.provider}`)
     }
@@ -813,9 +876,14 @@ Maximum ${sectionsTokens} tokens total.`
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
+      const errorBody = await response.json().catch(() => ({}))
+      // Extract user-friendly error message without exposing full API response
+      const errorMessage =
+        errorBody?.error?.message ||
+        errorBody?.error?.type ||
+        `HTTP ${response.status}`
       const err = new Error(
-        `OpenAI summarization failed: ${JSON.stringify(error)}`
+        `OpenAI summarization failed (${response.status}): ${errorMessage}`
       )
       ;(err as Error & { status: number }).status = response.status
       throw err
@@ -850,9 +918,14 @@ Maximum ${sectionsTokens} tokens total.`
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
+      const errorBody = await response.json().catch(() => ({}))
+      // Extract user-friendly error message without exposing full API response
+      const errorMessage =
+        errorBody?.error?.message ||
+        errorBody?.type ||
+        `HTTP ${response.status}`
       const err = new Error(
-        `Anthropic summarization failed: ${JSON.stringify(error)}`
+        `Anthropic summarization failed (${response.status}): ${errorMessage}`
       )
       ;(err as Error & { status: number }).status = response.status
       throw err
@@ -865,6 +938,12 @@ Maximum ${sectionsTokens} tokens total.`
 
 /**
  * Create a summarizer with fallback to extractive summarization
+ *
+ * Falls back to extractive summarization when:
+ * - LLM is not configured (missing apiKey/provider)
+ * - LLM API call fails due to network/API errors
+ *
+ * Does NOT fallback for input validation errors (empty text, invalid maxTokens).
  */
 export function createSummarizerWithFallback(
   config: Partial<LLMSummarizationConfig>
@@ -891,7 +970,16 @@ export function createSummarizerWithFallback(
       if (llmAvailable && summarizer) {
         try {
           return await summarizer.summarize(text, maxTokens)
-        } catch {
+        } catch (error) {
+          // Don't fallback for input validation errors - those should propagate
+          const message = error instanceof Error ? error.message : ''
+          if (
+            message.includes('Cannot summarize empty') ||
+            message.includes('maxTokens must be')
+          ) {
+            throw error
+          }
+          // Network/API errors trigger fallback
           llmAvailable = false
         }
       }

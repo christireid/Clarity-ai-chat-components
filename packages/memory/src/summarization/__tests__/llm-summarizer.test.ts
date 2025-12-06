@@ -46,7 +46,9 @@ describe('LLMSummarizer', () => {
           }),
       })
 
-      const result = await summarizer.summarize('This is a long text to summarize.')
+      const result = await summarizer.summarize(
+        'This is a long text to summarize.'
+      )
 
       expect(mockFetch).toHaveBeenCalledTimes(1)
       expect(mockFetch).toHaveBeenCalledWith(
@@ -180,7 +182,10 @@ describe('LLMSummarizer', () => {
             }),
         })
 
-      const results = await summarizer.summarizeBatch(['Text one', 'Text two'], 50)
+      const results = await summarizer.summarizeBatch(
+        ['Text one', 'Text two'],
+        50
+      )
 
       expect(results).toHaveLength(2)
       expect(results[0]).toBe('Summary 1.')
@@ -224,7 +229,8 @@ describe('LLMSummarizer', () => {
     })
 
     it('should handle JSON in markdown code block', async () => {
-      const mockResponse = '```json\n{"topics":["coding"],"narrative":"About coding."}\n```'
+      const mockResponse =
+        '```json\n{"topics":["coding"],"narrative":"About coding."}\n```'
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -252,9 +258,7 @@ describe('LLMSummarizer', () => {
           }),
       })
 
-      const messages: SummaryMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ]
+      const messages: SummaryMessage[] = [{ role: 'user', content: 'Hello' }]
 
       const result = await summarizer.summarizeConversation(messages)
 
@@ -319,6 +323,12 @@ describe('LLMSummarizer', () => {
   })
 
   describe('hierarchicalSummarize', () => {
+    it('should throw for empty content', async () => {
+      await expect(summarizer.hierarchicalSummarize('')).rejects.toThrow(
+        'Cannot create hierarchical summary of empty content'
+      )
+    })
+
     it('should create multi-level summaries', async () => {
       mockFetch
         .mockResolvedValueOnce({
@@ -326,7 +336,9 @@ describe('LLMSummarizer', () => {
           ok: true,
           json: () =>
             Promise.resolve({
-              choices: [{ message: { content: 'Detailed summary of the content.' } }],
+              choices: [
+                { message: { content: 'Detailed summary of the content.' } },
+              ],
             }),
         })
         .mockResolvedValueOnce({
@@ -337,7 +349,8 @@ describe('LLMSummarizer', () => {
               choices: [
                 {
                   message: {
-                    content: '## Section 1\nFirst section summary.\n## Section 2\nSecond section.',
+                    content:
+                      '## Section 1\nFirst section summary.\n## Section 2\nSecond section.',
                   },
                 },
               ],
@@ -539,6 +552,95 @@ describe('LLMSummarizer', () => {
     })
   })
 
+  describe('input validation', () => {
+    it('should throw for empty text', async () => {
+      await expect(summarizer.summarize('')).rejects.toThrow(
+        'Cannot summarize empty text'
+      )
+    })
+
+    it('should throw for whitespace-only text', async () => {
+      await expect(summarizer.summarize('   \n\t  ')).rejects.toThrow(
+        'Cannot summarize empty text'
+      )
+    })
+
+    it('should throw for zero maxTokens', async () => {
+      await expect(summarizer.summarize('Some text', 0)).rejects.toThrow(
+        'maxTokens must be a positive number'
+      )
+    })
+
+    it('should throw for negative maxTokens', async () => {
+      await expect(summarizer.summarize('Some text', -100)).rejects.toThrow(
+        'maxTokens must be a positive number'
+      )
+    })
+
+    it('should throw for NaN maxTokens', async () => {
+      await expect(summarizer.summarize('Some text', NaN)).rejects.toThrow(
+        'maxTokens must be a positive number'
+      )
+    })
+  })
+
+  describe('constructor validation', () => {
+    it('should throw for OpenAI provider without API key', () => {
+      expect(
+        () =>
+          new LLMSummarizer({
+            provider: 'openai',
+          })
+      ).toThrow('API key is required for openai provider')
+    })
+
+    it('should throw for Anthropic provider without API key', () => {
+      expect(
+        () =>
+          new LLMSummarizer({
+            provider: 'anthropic',
+          })
+      ).toThrow('API key is required for anthropic provider')
+    })
+
+    it('should throw for custom provider without handler', () => {
+      expect(
+        () =>
+          new LLMSummarizer({
+            provider: 'custom',
+          })
+      ).toThrow('customHandler is required for custom provider')
+    })
+
+    it('should accept custom provider with handler', () => {
+      expect(
+        () =>
+          new LLMSummarizer({
+            provider: 'custom',
+            customHandler: async () => 'test',
+          })
+      ).not.toThrow()
+    })
+  })
+
+  describe('setCacheTTL validation', () => {
+    it('should throw for zero TTL', () => {
+      expect(() => summarizer.setCacheTTL(0)).toThrow(
+        'Cache TTL must be a positive number'
+      )
+    })
+
+    it('should throw for negative TTL', () => {
+      expect(() => summarizer.setCacheTTL(-1000)).toThrow(
+        'Cache TTL must be a positive number'
+      )
+    })
+
+    it('should accept positive TTL', () => {
+      expect(() => summarizer.setCacheTTL(5000)).not.toThrow()
+    })
+  })
+
   describe('cache eviction', () => {
     it('should evict oldest entry when cache is full', async () => {
       // Create summarizer that will have limited cache
@@ -596,11 +698,14 @@ describe('createSummarizerWithFallback', () => {
 
     expect(isLLMAvailable()).toBe(false)
 
-    const result = await summarize('This is important. This is key information.', 50)
+    const result = await summarize(
+      'This is important. This is key information.',
+      50
+    )
     expect(result).not.toBe('')
   })
 
-  it('should fallback on LLM error', async () => {
+  it('should fallback on LLM network error', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
     const { summarize, isLLMAvailable } = createSummarizerWithFallback({
@@ -610,16 +715,48 @@ describe('createSummarizerWithFallback', () => {
 
     expect(isLLMAvailable()).toBe(true)
 
-    const result = await summarize('This is important. This is key content.', 50)
+    const result = await summarize(
+      'This is important. This is key content.',
+      50
+    )
 
     // Should have used extractive fallback
     expect(result).not.toBe('')
     expect(isLLMAvailable()).toBe(false) // Now marked unavailable
   })
+
+  it('should NOT fallback on empty text validation error', async () => {
+    const { summarize, isLLMAvailable } = createSummarizerWithFallback({
+      provider: 'openai',
+      apiKey: 'test-key',
+    })
+
+    expect(isLLMAvailable()).toBe(true)
+
+    // Empty text should throw, not fallback
+    await expect(summarize('', 50)).rejects.toThrow(
+      'Cannot summarize empty text'
+    )
+    // LLM should still be marked available (it's not a network/API issue)
+    expect(isLLMAvailable()).toBe(true)
+  })
+
+  it('should NOT fallback on invalid maxTokens validation error', async () => {
+    const { summarize, isLLMAvailable } = createSummarizerWithFallback({
+      provider: 'openai',
+      apiKey: 'test-key',
+    })
+
+    await expect(summarize('Some text', 0)).rejects.toThrow(
+      'maxTokens must be a positive number'
+    )
+    expect(isLLMAvailable()).toBe(true)
+  })
 })
 
 describe('extractiveSummarize', () => {
-  it('should return input for empty text', () => {
+  it('should return empty string for empty text', () => {
+    // extractiveSummarize is a fallback that gracefully handles edge cases
     expect(extractiveSummarize('', 50)).toBe('')
   })
 
@@ -688,8 +825,8 @@ describe('extractiveSummarize', () => {
 
     // Order should be preserved
     if (sentences.includes('First important statement here')) {
-      const firstIdx = sentences.findIndex(s => s.includes('First'))
-      const secondIdx = sentences.findIndex(s => s.includes('Second'))
+      const firstIdx = sentences.findIndex((s) => s.includes('First'))
+      const secondIdx = sentences.findIndex((s) => s.includes('Second'))
       if (firstIdx !== -1 && secondIdx !== -1) {
         expect(firstIdx).toBeLessThan(secondIdx)
       }
