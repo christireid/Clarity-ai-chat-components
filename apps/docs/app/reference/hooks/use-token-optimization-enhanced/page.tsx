@@ -25,6 +25,12 @@ const optionsProps: Prop[] = [
     description: 'Enable TOON format optimization (30-60% savings on structured data).',
   },
   {
+    name: 'toonMinSavings',
+    type: 'number',
+    default: '20',
+    description: 'Minimum TOON savings threshold as percentage (0-100). Only use TOON if savings >= this threshold. Default: 20%.',
+  },
+  {
     name: 'enableAccurateTokenization',
     type: 'boolean',
     default: 'false',
@@ -129,7 +135,7 @@ export default function UseTokenOptimizationEnhancedPage() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function OptimizedChat() {
   const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
@@ -142,16 +148,25 @@ function OptimizedChat() {
   })
 
   const handleSend = async (content: string) => {
-    // Optimize the data
-    const optimized = await optimizeData(content)
-    
-    // Calculate cost
-    const cost = calculateCost(optimized.tokens)
-    
-    // Use optimized content
-    console.log('Tokens:', optimized.tokens.total)
-    console.log('Cost: $', cost.total)
-    console.log('Savings: $', stats.overall.totalCostSaved)
+    try {
+      // Optimize the data
+      const optimized = await optimizeData(content)
+      
+      // Calculate cost (note: calculateCost takes { inputTokens, outputTokens })
+      const cost = calculateCost({
+        inputTokens: optimized.tokens.input || optimized.tokens.total,
+        outputTokens: optimized.tokens.output || 0,
+      })
+      
+      // Use optimized content
+      console.log('Tokens:', optimized.tokens.total)
+      console.log('Cost: $', cost.total)
+      if (stats) {
+        console.log('Savings: $', stats.overall.totalCostSaved)
+      }
+    } catch (error) {
+      console.error('Optimization failed:', error)
+    }
   }
 
   return (
@@ -236,29 +251,33 @@ function OptimizedChat() {
           TOON (Token-Oriented Object Notation) provides 30-60% token savings for structured data.
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function ToonOptimized() {
   const { optimizeData } = useTokenOptimizationEnhanced({
     enableToon: true,
-    toonMinSavings: 0.3, // Only use TOON if savings >= 30%
+    toonMinSavings: 30, // Only use TOON if savings >= 30% (value is percentage: 0-100)
     model: 'gpt-4',
   })
 
-  const handleSend = async () => {
-    const data = {
-      users: [
-        { id: 1, name: 'Alice', email: 'alice@example.com' },
-        { id: 2, name: 'Bob', email: 'bob@example.com' },
-      ],
-      metadata: { version: '1.0', timestamp: Date.now() },
-    }
+  const handleSend = async (content: string) => {
+    try {
+      const data = {
+        users: [
+          { id: 1, name: 'Alice', email: 'alice@example.com' },
+          { id: 2, name: 'Bob', email: 'bob@example.com' },
+        ],
+        metadata: { version: '1.0', timestamp: Date.now() },
+      }
 
-    const optimized = await optimizeData(data)
-    // Result: 30-60% fewer tokens, same data
-    console.log('Format:', optimized.format) // 'toon'
-    console.log('Tokens:', optimized.tokens.total)
-    console.log('Savings:', optimized.optimizations.toon?.savingsPercent)
+      const optimized = await optimizeData(data)
+      // Result: 30-60% fewer tokens, same data
+      console.log('Format:', optimized.format) // 'toon'
+      console.log('Tokens:', optimized.tokens.total)
+      console.log('Savings:', optimized.optimizations.toon?.savingsPercent)
+    } catch (error) {
+      console.error('TOON optimization failed:', error)
+    }
   }
 
   return <ChatWindow onSendMessage={handleSend} />
@@ -272,7 +291,7 @@ function ToonOptimized() {
           Save 50-90% on costs by caching repeated prompt content (Anthropic/OpenAI).
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function CachedChat() {
   const { optimizeData } = useTokenOptimizationEnhanced({
@@ -282,13 +301,17 @@ function CachedChat() {
   })
 
   const handleSend = async (content: string) => {
-    const optimized = await optimizeData({
-      systemPrompt: 'You are a helpful assistant.', // This will be cached
-      userMessage: content,
-    })
+    try {
+      const optimized = await optimizeData({
+        systemPrompt: 'You are a helpful assistant.', // This will be cached
+        userMessage: content,
+      })
 
-    if (optimized.optimizations.cached) {
-      console.log('Used cached prompt - 50-90% cost savings!')
+      if (optimized.optimizations.cached) {
+        console.log('Used cached prompt - 50-90% cost savings!')
+      }
+    } catch (error) {
+      console.error('Caching failed:', error)
     }
   }
 
@@ -303,7 +326,7 @@ function CachedChat() {
           Cache responses based on semantic similarity for 40-60% savings.
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function SemanticCachedChat() {
   const { optimizeData, stats } = useTokenOptimizationEnhanced({
@@ -313,11 +336,17 @@ function SemanticCachedChat() {
   })
 
   const handleSend = async (content: string) => {
-    const optimized = await optimizeData(content)
-    
-    // Check cache stats
-    console.log('Cache Hit Rate:', stats.semanticCache.hitRate)
-    console.log('Tokens Saved:', stats.semanticCache.tokensSaved)
+    try {
+      const optimized = await optimizeData(content)
+      
+      // Check cache stats (stats may be undefined initially)
+      if (stats) {
+        console.log('Cache Hit Rate:', stats.semanticCache.hitRate)
+        console.log('Tokens Saved:', stats.semanticCache.tokensSaved)
+      }
+    } catch (error) {
+      console.error('Semantic caching failed:', error)
+    }
   }
 
   return <ChatWindow onSendMessage={handleSend} />
@@ -331,7 +360,7 @@ function SemanticCachedChat() {
           Track costs in real-time and see savings from optimizations.
         </p>
         <CodePlayground
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
 function CostTrackedChat() {
   const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
@@ -340,13 +369,25 @@ function CostTrackedChat() {
   })
 
   const handleSend = async (content: string) => {
-    const optimized = await optimizeData(content)
-    const cost = calculateCost(optimized.tokens)
+    try {
+      const optimized = await optimizeData(content)
+      
+      // Calculate cost (note: calculateCost takes { inputTokens, outputTokens })
+      const cost = calculateCost({
+        inputTokens: optimized.tokens.input || optimized.tokens.total,
+        outputTokens: optimized.tokens.output || 0,
+      })
 
-    console.log('Input Cost: $', cost.input)
-    console.log('Output Cost: $', cost.output)
-    console.log('Total Cost: $', cost.total)
-    console.log('Savings: $', stats.costs.savingsFromOptimization)
+      console.log('Input Cost: $', cost.input)
+      console.log('Output Cost: $', cost.output)
+      console.log('Total Cost: $', cost.total)
+      
+      if (stats) {
+        console.log('Savings: $', stats.costs.savingsFromOptimization)
+      }
+    } catch (error) {
+      console.error('Cost tracking failed:', error)
+    }
   }
 
   return (
@@ -396,9 +437,9 @@ function CostTrackedChat() {
               </tr>
               <tr>
                 <td className="p-3 font-mono text-sm">calculateCost</td>
-                <td className="p-3 font-mono text-sm">(tokens: TokenCount) => CostCalculation</td>
+                <td className="p-3 font-mono text-sm">(params: {'{'} inputTokens: number, outputTokens: number {'}'}) => CostCalculation</td>
                 <td className="p-3 text-sm text-muted-foreground">
-                  Calculate cost for given token count based on model pricing.
+                  Calculate cost for given token counts based on model pricing.
                 </td>
               </tr>
               <tr>

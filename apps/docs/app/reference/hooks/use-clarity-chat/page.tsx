@@ -175,7 +175,7 @@ function App() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Prompt Optimization</h2>
         <CodePlayground
-          code={`import { useClarityChat } from '@clarity-chat/react'
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function OptimizedChat() {
   const chat = useClarityChat({
@@ -188,6 +188,10 @@ function OptimizedChat() {
       keepRecent: 2, // Always keep last 2 messages
     },
   })
+
+  const handleSendMessage = async (content: string) => {
+    await chat.append({ role: 'user', content })
+  }
 
   return (
     <div>
@@ -384,9 +388,9 @@ function ChatWithErrorHandling() {
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">append</td>
-                    <td className="p-3 font-mono text-sm">(message: CoreMessage) => void</td>
+                    <td className="p-3 font-mono text-sm">(message: CoreMessage) => Promise&lt;string | null&gt;</td>
                     <td className="p-3 text-sm text-muted-foreground">
-                      Add a new message and trigger AI response.
+                      Add a new message and trigger AI response. Returns message ID or null.
                     </td>
                   </tr>
                   <tr>
