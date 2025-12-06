@@ -20,15 +20,45 @@ const props: Prop[] = [
     description: 'Array of conversation messages for context-aware suggestions',
   },
   {
+    name: 'onSelect',
+    type: '(suggestion: PromptSuggestion) => void',
+    required: true,
+    description: 'Callback when a suggestion is selected',
+  },
+  {
     name: 'config',
     type: 'Partial<SuggestionRankingConfig>',
     description: 'Configuration for ML-based ranking and personalization',
   },
   {
-    name: 'onSelect',
-    type: '(suggestion: PromptSuggestion) => void',
-    required: true,
-    description: 'Callback when a suggestion is selected',
+    name: 'suggestionType',
+    type: '"starter" | "follow-up" | "quick-reply" | "template"',
+    description: 'Type of suggestions to show (inherited from PromptSuggestions)',
+  },
+  {
+    name: 'layout',
+    type: '"chips" | "cards" | "list"',
+    description: 'Layout style for suggestions (inherited from PromptSuggestions)',
+  },
+  {
+    name: 'isLoading',
+    type: 'boolean',
+    description: 'Show loading state (inherited from PromptSuggestions)',
+  },
+  {
+    name: 'maxSuggestions',
+    type: 'number',
+    description: 'Maximum number of suggestions to show (inherited from PromptSuggestions)',
+  },
+  {
+    name: 'emptyState',
+    type: 'React.ReactNode',
+    description: 'Custom empty state (inherited from PromptSuggestions)',
+  },
+  {
+    name: 'showCategories',
+    type: 'boolean',
+    description: 'Show suggestion categories (inherited from PromptSuggestions)',
   },
   {
     name: 'className',
@@ -100,9 +130,10 @@ export default function PromptSuggestionsEnhancedPage() {
         </p>
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
 function ChatWithSuggestions() {
-  const [messages, setMessages] = React.useState([])
+  const [messages, setMessages] = React.useState<Message[]>([])
   
   const { suggestions, trackInteraction, stats } = usePromptSuggestionsEnhanced(messages, {
     rankingModel: { type: 'hybrid', provider: 'openai' },
@@ -130,7 +161,7 @@ function ChatWithSuggestions() {
           },
         }}
         onSelect={(suggestion) => {
-          trackInteraction(suggestion.id, true)
+          trackInteraction(suggestion, true)
           // Handle suggestion selection
         }}
       />
@@ -149,8 +180,9 @@ render(<ChatWithSuggestions />)`}
         </p>
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
-function MLRankedSuggestions() {
+function MLRankedSuggestions({ messages }: { messages: Message[] }) {
   return (
     <PromptSuggestionsEnhanced
       messages={messages}
@@ -158,7 +190,7 @@ function MLRankedSuggestions() {
         rankingModel: {
           type: 'ml',
           provider: 'openai',
-          apiKey: process.env.OPENAI_API_KEY,
+          // Note: apiKey should be set server-side or via secure config
         },
         features: {
           conversationContext: true,
@@ -325,8 +357,8 @@ function FallbackSuggestions() {
         <h2>Related</h2>
         <ul>
           <li><a href="/reference/components/prompt-suggestions">PromptSuggestions</a> - Basic version</li>
-          <li><a href="/reference/hooks/use-prompt-suggestions-enhanced">usePromptSuggestionsEnhanced</a> - Hook API</li>
-          <li><a href="/guides/analytics">Analytics Guide</a> - Tracking user interactions</li>
+          <li><a href="/guides/performance">Performance Guide</a> - Tracking and analytics</li>
+          <li><a href="/guides/token-optimization">Token Optimization Guide</a> - Cost optimization strategies</li>
         </ul>
       </section>
     </div>

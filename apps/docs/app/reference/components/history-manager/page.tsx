@@ -104,10 +104,13 @@ export default function HistoryManagerPage() {
           Manage conversation history with token tracking:
         </p>
         <CodePlayground
-          initialCode={`import { HistoryManager } from '@clarity-chat/react'
+          initialCode={`import { HistoryManager, type HistoryMessage } from '@clarity-chat/react'
 
 function ChatWithHistory() {
-  const [messages, setMessages] = React.useState([])
+  const [messages, setMessages] = React.useState<HistoryMessage[]>([
+    { id: '1', role: 'user', content: 'Hello', timestamp: new Date() },
+    { id: '2', role: 'assistant', content: 'Hi there!', timestamp: new Date() },
+  ])
 
   return (
     <div className="p-4">

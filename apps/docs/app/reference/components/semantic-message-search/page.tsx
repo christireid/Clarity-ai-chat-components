@@ -17,17 +17,37 @@ const props: Prop[] = [
     name: 'messages',
     type: 'Message[]',
     required: true,
-    description: 'Array of messages to search',
-  },
-  {
-    name: 'onSelect',
-    type: '(message: Message) => void',
-    description: 'Callback when a message is selected',
+    description: 'Array of messages to search through',
   },
   {
     name: 'config',
     type: 'Partial<SemanticSearchConfig>',
     description: 'Semantic search configuration',
+  },
+  {
+    name: 'onResultsFound',
+    type: '(results: SemanticSearchResult[]) => void',
+    description: 'Callback when search results are found',
+  },
+  {
+    name: 'onGenerateEmbedding',
+    type: '(text: string) => Promise<number[]>',
+    description: 'Custom embedding generation function',
+  },
+  {
+    name: 'onRerank',
+    type: '(query: string, results: SemanticSearchResult[]) => Promise<SemanticSearchResult[]>',
+    description: 'Custom reranking function',
+  },
+  {
+    name: 'showHistory',
+    type: 'boolean',
+    description: 'Show search history',
+  },
+  {
+    name: 'placeholder',
+    type: 'string',
+    description: 'Placeholder text for search input',
   },
   {
     name: 'className',
@@ -71,28 +91,31 @@ export default function SemanticMessageSearchPage() {
         </p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
-function ChatWithSemanticSearch() {
-  const [messages, setMessages] = React.useState([])
-
+function ChatWithSemanticSearch({ messages }: { messages: Message[] }) {
   return (
     <div className="p-4">
       <SemanticMessageSearch
         messages={messages}
         config={{
-          provider: { type: 'openai', model: 'text-embedding-3-small' },
+          embeddings: {
+            type: 'openai',
+            model: 'text-embedding-3-small',
+          },
           similarityThreshold: 0.7,
           maxResults: 10,
         }}
-        onSelect={(message) => {
-          console.log('Selected message:', message)
+        onResultsFound={(results) => {
+          console.log('Found', results.length, 'results')
+          results.forEach((result) => {
+            console.log('Message:', result.message.content, 'Score:', result.score)
+          })
         }}
       />
     </div>
   )
-}
-
-render(<ChatWithSemanticSearch />)`}
+}`}
         />
       </section>
 
@@ -103,31 +126,32 @@ render(<ChatWithSemanticSearch />)`}
         </p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
-function WithOpenAI() {
+function WithOpenAI({ messages }: { messages: Message[] }) {
   return (
     <SemanticMessageSearch
       messages={messages}
       config={{
-        provider: {
+        embeddings: {
           type: 'openai',
           model: 'text-embedding-3-small',
-          apiKey: process.env.OPENAI_API_KEY,
+          // Note: apiKey should be configured server-side
         },
       }}
     />
   )
 }
 
-function WithCohere() {
+function WithCohere({ messages }: { messages: Message[] }) {
   return (
     <SemanticMessageSearch
       messages={messages}
       config={{
-        provider: {
+        embeddings: {
           type: 'cohere',
           model: 'embed-english-v3.0',
-          apiKey: process.env.COHERE_API_KEY,
+          // Note: apiKey should be configured server-side
         },
       }}
     />
@@ -168,15 +192,20 @@ function ThresholdSearch() {
         </p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
-function CachedSearch() {
+function CachedSearch({ messages }: { messages: Message[] }) {
   return (
     <SemanticMessageSearch
       messages={messages}
       config={{
-        provider: { type: 'openai', model: 'text-embedding-3-small' },
-        enableCaching: true,
-        cacheTTL: 3600000,  // 1 hour
+        embeddings: {
+          type: 'openai',
+          model: 'text-embedding-3-small',
+        },
+        // Embeddings are automatically cached by the component
+        similarityThreshold: 0.7,
+        maxResults: 10,
       }}
     />
   )
@@ -191,23 +220,28 @@ function CachedSearch() {
         </p>
         <CodePlayground
           initialCode={`import { SemanticMessageSearch } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
-function CustomEmbeddings() {
-  const customEmbed = async (text: string) => {
+function CustomEmbeddings({ messages }: { messages: Message[] }) {
+  const customEmbed = async (text: string): Promise<number[]> => {
     // Your custom embedding logic
     const response = await fetch('/api/embed', {
       method: 'POST',
       body: JSON.stringify({ text }),
     })
+    if (!response.ok) {
+      throw new Error('Failed to generate embedding')
+    }
     return response.json()
   }
 
   return (
     <SemanticMessageSearch
       messages={messages}
+      onGenerateEmbedding={customEmbed}
       config={{
-        customEmbeddingFn: customEmbed,
         similarityThreshold: 0.7,
+        maxResults: 10,
       }}
     />
   )
@@ -223,12 +257,13 @@ function CustomEmbeddings() {
       <section className="docs-section">
         <h2>Configuration Options</h2>
         <ul>
-          <li><strong>provider</strong>: <code>{'{ type, model, apiKey? }'}</code> - Embedding provider configuration</li>
+          <li><strong>embeddings</strong>: <code>{'{ type, model, apiKey?, endpoint? }'}</code> - Embedding provider configuration</li>
+          <li><strong>hybrid</strong>: <code>{'{ enabled, semanticWeight }'}</code> - Hybrid search configuration (semantic + keyword)</li>
+          <li><strong>reranking</strong>: <code>{'{ enabled, provider, apiKey?, endpoint? }'}</code> - Optional reranking configuration</li>
           <li><strong>similarityThreshold</strong>: <code>number</code> - Minimum similarity score (0-1)</li>
           <li><strong>maxResults</strong>: <code>number</code> - Maximum number of results to return</li>
-          <li><strong>enableCaching</strong>: <code>boolean</code> - Enable embedding caching</li>
-          <li><strong>cacheTTL</strong>: <code>number</code> - Cache time-to-live in milliseconds</li>
-          <li><strong>customEmbeddingFn</strong>: <code>{'(text: string) => Promise<number[]>'}</code> - Custom embedding function</li>
+          <li><strong>multiLanguage</strong>: <code>boolean</code> - Enable multi-language support</li>
+          <li><strong>queryExpansion</strong>: <code>boolean</code> - Enable query expansion with synonyms</li>
         </ul>
       </section>
 

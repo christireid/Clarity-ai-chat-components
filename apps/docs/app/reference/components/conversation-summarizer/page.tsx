@@ -126,8 +126,9 @@ render(<ChatWithSummaries />)`}
         </p>
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
-function AutoSummarizeChat() {
+function AutoSummarizeChat({ messages }: { messages: Message[] }) {
   return (
     <ConversationSummarizer
       messages={messages}
@@ -140,6 +141,7 @@ function AutoSummarizeChat() {
       }}
       onSummaryGenerated={(summary) => {
         // Automatically generated every 10 messages
+        console.log('Auto-generated summary:', summary.content)
       }}
     />
   )
@@ -219,8 +221,9 @@ function RichSummaries() {
         </p>
         <CodePlayground
           initialCode={`import { ConversationSummarizer, type ConversationSummary, type SummaryLevel } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
-function CustomSummarizer() {
+function CustomSummarizer({ messages }: { messages: Message[] }) {
   const customSummarize = async (
     messages: Message[],
     level: SummaryLevel
@@ -228,8 +231,12 @@ function CustomSummarizer() {
     // Your custom summarization logic
     const response = await fetch('/api/summarize', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages, level }),
     })
+    if (!response.ok) {
+      throw new Error('Failed to generate summary')
+    }
     return response.json()
   }
 

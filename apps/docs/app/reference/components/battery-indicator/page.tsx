@@ -127,10 +127,15 @@ function OptimizedChat() {
           autoOptimize: true,
         }}
       />
-      <ChatWindow
-        enableAnimations={!recommendations.disableAnimations}
-        updateInterval={recommendations.updateInterval}
-      />
+      {/* Apply battery-aware optimizations */}
+      <div>
+        {recommendations.disableAnimations && (
+          <p>Animations disabled to save battery</p>
+        )}
+        {recommendations.updateInterval && (
+          <p>Update interval: {recommendations.updateInterval}ms</p>
+        )}
+      </div>
     </>
   )
 }`}
@@ -194,7 +199,7 @@ function CompactIndicator() {
           initialCode={`import { BatteryIndicator, useBatteryAware } from '@clarity-chat/react'
 
 function ChatWithRecommendations() {
-  const { recommendations, batteryStatus } = useBatteryAware({
+  const { recommendations, batteryStatus, shouldEnableBatterySaver } = useBatteryAware({
     batterySaverThreshold: 0.2,
   })
 
@@ -205,10 +210,13 @@ function ChatWithRecommendations() {
         showTooltip
         config={{ batterySaverThreshold: 0.2 }}
       />
-      {recommendations.disableAnimations && (
+      {shouldEnableBatterySaver && (
         <div className="p-2 bg-yellow-100 rounded">
           Battery saver: Animations disabled
         </div>
+      )}
+      {recommendations.disableAnimations && (
+        <p>Animations are currently disabled</p>
       )}
     </>
   )

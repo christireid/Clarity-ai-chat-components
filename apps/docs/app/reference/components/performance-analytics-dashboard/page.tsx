@@ -259,6 +259,10 @@ function CustomDataDashboard() {
     <PerformanceAnalyticsDashboard
       data={data}
       showWebVitals
+      onDataUpdate={(updatedData) => {
+        // Handle data updates
+        console.log('Performance data updated:', updatedData)
+      }}
     />
   )
 }`}
