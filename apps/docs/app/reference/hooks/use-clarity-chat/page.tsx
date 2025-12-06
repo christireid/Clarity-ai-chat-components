@@ -69,12 +69,20 @@ function ChatComponent() {
     api: '/api/chat',
   })
 
+  const handleSendMessage = async (content: string) => {
+    await chat.append({ role: 'user', content })
+  }
+
+  const handleClear = () => {
+    chat.setMessages([])
+  }
+
   return (
     <ChatWindow
       messages={chat.messages}
       isLoading={chat.isLoading}
-      onSendMessage={chat.append}
-      onClear={chat.setMessages.bind(null, [])}
+      onSendMessage={handleSendMessage}
+      onClear={handleClear}
     />
   )
 }`}
@@ -115,7 +123,7 @@ function ChatComponent() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With Memory Integration</h2>
         <CodePlayground
-          code={`import { useClarityChat, MemoryProvider } from '@clarity-chat/react'
+          code={`import { useClarityChat, MemoryProvider, ChatWindow } from '@clarity-chat/react'
 
 function ChatWithMemory() {
   const chat = useClarityChat({
@@ -128,6 +136,10 @@ function ChatWithMemory() {
       maxRetryAttempts: 2,
     },
   })
+
+  const handleSendMessage = async (content: string) => {
+    await chat.append({ role: 'user', content })
+  }
 
   return (
     <div>
@@ -142,7 +154,8 @@ function ChatWithMemory() {
       </div>
       <ChatWindow
         messages={chat.messages}
-        onSendMessage={chat.append}
+        isLoading={chat.isLoading}
+        onSendMessage={handleSendMessage}
       />
     </div>
   )
@@ -192,7 +205,8 @@ function OptimizedChat() {
       )}
       <ChatWindow
         messages={chat.messages}
-        onSendMessage={chat.append}
+        isLoading={chat.isLoading}
+        onSendMessage={handleSendMessage}
       />
     </div>
   )
@@ -203,7 +217,7 @@ function OptimizedChat() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">With WebSocket Transport</h2>
         <CodePlayground
-          code={`import { useClarityChat } from '@clarity-chat/react'
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
 function WebSocketChat() {
   const chat = useClarityChat({
@@ -217,11 +231,59 @@ function WebSocketChat() {
     },
   })
 
+  const handleSendMessage = async (content: string) => {
+    await chat.append({ role: 'user', content })
+  }
+
   return (
     <ChatWindow
       messages={chat.messages}
-      onSendMessage={chat.append}
+      isLoading={chat.isLoading}
+      onSendMessage={handleSendMessage}
     />
+  )
+}`}
+        />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Error Handling</h2>
+        <CodePlayground
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
+
+function ChatWithErrorHandling() {
+  const chat = useClarityChat({
+    api: '/api/chat',
+    onError: (error) => {
+      console.error('Chat error:', error)
+      // Handle error (show toast, log to analytics, etc.)
+    },
+  })
+
+  const handleSendMessage = async (content: string) => {
+    try {
+      await chat.append({ role: 'user', content })
+    } catch (error) {
+      // Handle send error
+      console.error('Failed to send message:', error)
+    }
+  }
+
+  return (
+    <div>
+      {chat.error && (
+        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-red-800 dark:text-red-200">
+            Error: {chat.error.message}
+          </p>
+        </div>
+      )}
+      <ChatWindow
+        messages={chat.messages}
+        isLoading={chat.isLoading}
+        onSendMessage={handleSendMessage}
+      />
+    </div>
   )
 }`}
         />
