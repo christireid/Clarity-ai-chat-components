@@ -92,6 +92,7 @@ export const DialogContent = React.forwardRef<
       overlayClassName,
       onInteractOutside,
       onEscapeKeyDown,
+      'aria-describedby': ariaDescribedBy,
       ...props
     },
     ref
@@ -102,6 +103,7 @@ export const DialogContent = React.forwardRef<
         <DialogPrimitive.Content
           role="dialog"
           aria-modal="true"
+          aria-describedby={ariaDescribedBy ?? undefined}
           ref={ref}
           className={cn(
             'fixed left-1/2 top-1/2 z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border border-border/40 bg-card p-6 shadow-2xl sm:rounded-2xl',

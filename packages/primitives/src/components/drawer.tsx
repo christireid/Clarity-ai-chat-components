@@ -123,6 +123,7 @@ export const DrawerContent = React.forwardRef<
       onInteractOutside,
       onEscapeKeyDown,
       children,
+      'aria-describedby': ariaDescribedBy,
       ...props
     },
     ref
@@ -133,6 +134,7 @@ export const DrawerContent = React.forwardRef<
         <SheetPrimitive.Content
           role="dialog"
           aria-modal="true"
+          aria-describedby={ariaDescribedBy ?? undefined}
           ref={ref}
           data-side={side}
           className={cn(
