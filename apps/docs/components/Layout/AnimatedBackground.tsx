@@ -14,33 +14,78 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [initError, setInitError] = useState<Error | null>(null)
 
-  // Check for prefers-reduced-motion
+  // Initialize client-side state and media queries
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
+    // SSR safety: only run on client
+    if (typeof window === 'undefined') return
 
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches)
+    setMounted(true)
+
+    // Check for prefers-reduced-motion with fallback for older browsers
+    const checkReducedMotion = () => {
+      try {
+        const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+        setPrefersReducedMotion(mediaQuery.matches)
+
+        // Use addEventListener if available (modern browsers)
+        if (mediaQuery.addEventListener) {
+          const handleChange = (e: MediaQueryListEvent) => {
+            setPrefersReducedMotion(e.matches)
+          }
+          mediaQuery.addEventListener('change', handleChange)
+          return () => mediaQuery.removeEventListener('change', handleChange)
+        } else {
+          // Fallback for older browsers (addListener/removeListener)
+          // @ts-expect-error - Legacy API for older browsers
+          const handleChange = (mql: MediaQueryList | MediaQueryListEvent) => {
+            setPrefersReducedMotion(mql.matches)
+          }
+          // @ts-expect-error - Legacy API
+          mediaQuery.addListener(handleChange)
+          // @ts-expect-error - Legacy API
+          return () => mediaQuery.removeListener(handleChange)
+        }
+      } catch (error) {
+        // If matchMedia fails, default to no reduced motion
+        setPrefersReducedMotion(false)
+        return () => {}
+      }
     }
 
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [])
-
-  // Handle theme mounting
-  useEffect(() => {
-    setMounted(true)
+    return checkReducedMotion()
   }, [])
 
   const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine)
+    try {
+      await loadSlim(engine)
+      setInitError(null)
+    } catch (error) {
+      // Log error but don't crash the component
+      const err = error instanceof Error ? error : new Error('Failed to load particles engine')
+      setInitError(err)
+      console.error('[AnimatedBackground] Failed to initialize particles:', err)
+    }
   }, [])
 
-  // Determine if dark mode is active
+  // Determine if dark mode is active (SSR-safe)
   const isDark = useMemo(() => {
-    if (!mounted) return false
-    return resolvedTheme === 'dark' || (resolvedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    if (!mounted || typeof window === 'undefined') return false
+    
+    // Handle undefined resolvedTheme (ThemeProvider not set up)
+    if (!resolvedTheme) return false
+    
+    if (resolvedTheme === 'dark') return true
+    if (resolvedTheme === 'system') {
+      try {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+      } catch {
+        // Fallback if matchMedia fails
+        return false
+      }
+    }
+    return false
   }, [mounted, resolvedTheme])
 
   // Particle configuration based on theme
@@ -71,7 +116,7 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
           value: isDark ? 80 : 60,
           density: {
             enable: true,
-            value_area: 800,
+            area: 800,
           },
         },
         color: {
@@ -83,20 +128,20 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
         opacity: {
           value: opacity,
           random: true,
-          anim: {
+          animation: {
             enable: true,
             speed: 0.5,
-            opacity_min: 0.1,
+            minimumValue: 0.1,
             sync: false,
           },
         },
         size: {
           value: { min: 1, max: 3 },
           random: true,
-          anim: {
+          animation: {
             enable: true,
             speed: 2,
-            size_min: 0.5,
+            minimumValue: 0.5,
             sync: false,
           },
         },
@@ -164,6 +209,11 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
 
   // Don't render until mounted to avoid hydration mismatch
   if (!mounted) {
+    return null
+  }
+
+  // If initialization failed, render nothing (graceful degradation)
+  if (initError) {
     return null
   }
 
