@@ -11,29 +11,67 @@ import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { cn } from '@/lib/utils'
 
 // Throttle helper to reduce re-renders during streaming
-function throttle<T extends (...args: any[]) => void>(fn: T, delay: number): T {
+// Returns both the throttled function and a flush function to ensure final update
+function createThrottle<T extends (...args: any[]) => void>(fn: T, delay: number): {
+  throttled: T
+  flush: () => void
+  cancel: () => void
+} {
   let lastCall = 0
   let timeoutId: ReturnType<typeof setTimeout> | null = null
+  let lastArgs: Parameters<T> | null = null
 
-  return ((...args: Parameters<T>) => {
+  const throttled = ((...args: Parameters<T>) => {
     const now = Date.now()
     const timeSinceLastCall = now - lastCall
+    lastArgs = args
 
     if (timeoutId) {
       clearTimeout(timeoutId)
+      timeoutId = null
     }
 
     if (timeSinceLastCall >= delay) {
       lastCall = now
+      lastArgs = null
       fn(...args)
     } else {
       // Schedule the update for when the delay passes
       timeoutId = setTimeout(() => {
         lastCall = Date.now()
-        fn(...args)
+        timeoutId = null
+        if (lastArgs) {
+          const argsToUse = lastArgs
+          lastArgs = null
+          fn(...argsToUse)
+        }
       }, delay - timeSinceLastCall)
     }
   }) as T
+
+  // Flush any pending update immediately
+  const flush = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
+    if (lastArgs) {
+      const argsToUse = lastArgs
+      lastArgs = null
+      fn(...argsToUse)
+    }
+  }
+
+  // Cancel any pending update without executing
+  const cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
+    lastArgs = null
+  }
+
+  return { throttled, flush, cancel }
 }
 
 interface DocsAssistantProps {
@@ -487,35 +525,39 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
 
       // Create a throttled update function to reduce flickering
       // Updates at most every 50ms to prevent layout thrashing
-      const updateStreamingMessage = throttle((content: string) => {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantMessage.id
-              ? { ...m, content }
-              : m
+      const { throttled: updateStreamingMessage, flush: flushUpdate, cancel: cancelUpdate } = createThrottle(
+        (content: string) => {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantMessage.id
+                ? { ...m, content }
+                : m
+            )
           )
-        )
-      }, 50)
+        },
+        50
+      )
 
-      while (true) {
-        const { done, value } = await reader.read()
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
 
-        if (done) break
+          if (done) break
 
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
+          const chunk = decoder.decode(value)
+          const lines = chunk.split('\n')
 
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6))
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6))
 
-              if (data.type === 'text' && data.content) {
-                accumulatedContent += data.content
+                if (data.type === 'text' && data.content) {
+                  accumulatedContent += data.content
 
-                // Update with throttling to reduce flicker
-                updateStreamingMessage(accumulatedContent)
-              } else if (data.type === 'sources' && data.data?.sources) {
+                  // Update with throttling to reduce flicker
+                  updateStreamingMessage(accumulatedContent)
+                } else if (data.type === 'sources' && data.data?.sources) {
                 // Store sources for potential display
                 // API sends: { url, title, score }
                 sources = data.data.sources
@@ -568,12 +610,17 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             }
           }
         }
+      } finally {
+        // Ensure any pending throttled update is flushed before we finish
+        flushUpdate()
       }
 
       // Clear loading and AI status when streaming completes
       setIsLoading(false)
       setAiStatus(undefined)
     } catch (error) {
+      // Cancel any pending throttled updates on error
+      cancelUpdate()
       console.error('Chat error:', error)
 
       const errorMsg = error instanceof Error ? error.message : 'Please try again.'

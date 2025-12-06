@@ -430,10 +430,10 @@ body {
 
   /* GPU acceleration for smoother rendering */
   transform: translateZ(0);
-  will-change: contents;
+  will-change: transform;
 
-  /* Prevent text from jumping during streaming */
-  contain: layout style;
+  /* Prevent text from jumping during streaming - use size only to avoid breaking overflow */
+  contain: inline-size;
 }
 
 /* Streaming text wrapper - stabilizes text rendering */
@@ -482,6 +482,19 @@ body {
 @keyframes cursor-blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .clarity-streaming-cursor {
+    animation: none;
+    opacity: 0.7;
+  }
+
+  .clarity-thinking-dot {
+    animation: none;
+    opacity: 0.6;
+  }
 }
 
 /* ============================================================================

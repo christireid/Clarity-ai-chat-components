@@ -364,14 +364,14 @@ export function Message({
                 >
                   {message.content}
                 </ReactMarkdown>
+                {/* Cursor inside the streaming wrapper for proper inline positioning */}
+                {isStreaming && (
+                  <span
+                    className="clarity-streaming-cursor"
+                    aria-hidden="true"
+                  />
+                )}
               </div>
-            )}
-
-            {isStreaming && (
-              <span
-                className="clarity-streaming-cursor"
-                aria-hidden="true"
-              />
             )}
           </div>
 
