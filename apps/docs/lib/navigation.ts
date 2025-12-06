@@ -115,6 +115,15 @@ export const referenceNavigation: NavItem[] = [
           { title: 'KeyboardHint', href: '/reference/components/keyboard-hint' },
           { title: 'AdvancedMessageSearch', href: '/reference/components/advanced-message-search' },
           { title: 'RetryButton', href: '/reference/components/retry-button' },
+          { title: 'VoiceInput', href: '/reference/components/voice-input' },
+          { title: 'FileUpload', href: '/reference/components/file-upload' },
+        ],
+      },
+      {
+        title: 'Streaming',
+        items: [
+          { title: 'StreamingMessage', href: '/reference/components/streaming-message' },
+          { title: 'VirtualizedMessageList', href: '/reference/components/virtualized-message-list' },
         ],
       },
       {
@@ -165,6 +174,8 @@ export const referenceNavigation: NavItem[] = [
     title: 'Hooks',
     items: [
       { title: 'useClarityChat', href: '/reference/hooks/use-clarity-chat' },
+      { title: 'useChatHandlers', href: '/reference/hooks/use-chat-handlers' },
+      { title: 'useChatEnhanced', href: '/reference/hooks/use-chat-enhanced' },
       { title: 'useChat', href: '/reference/hooks/use-chat' },
       { title: 'useMessages', href: '/reference/hooks/use-messages' },
       { title: 'useTyping', href: '/reference/hooks/use-typing' },
@@ -176,6 +187,9 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useModelRouter', href: '/reference/hooks/use-model-router' },
       { title: 'usePerformance', href: '/reference/hooks/use-performance' },
       { title: 'useTokenTracker', href: '/reference/hooks/use-token-tracker' },
+      { title: 'useStreamingSSE', href: '/reference/hooks/use-streaming-sse' },
+      { title: 'useStreamingWebSocket', href: '/reference/hooks/use-streaming-websocket' },
+      { title: 'useStreamableUI', href: '/reference/hooks/use-streamable-ui' },
     ],
   },
   {

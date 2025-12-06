@@ -528,18 +528,18 @@ pnpm typecheck              # Type check
 ### Phase 2: High-Value Components (Week 2)
 
 #### Task 2.1: Advanced Input Components
-- [ ] `AdvancedChatInput` documentation
-- [ ] `VoiceInput` documentation
-- [ ] `FileUpload` documentation
+- [x] `AdvancedChatInput` documentation (exists, could be enhanced)
+- [x] `VoiceInput` documentation (enhanced from placeholder)
+- [x] `FileUpload` documentation (exists, complete)
 - [ ] `StructuredInputBuilder` documentation
 - [ ] Integration examples
 
 #### Task 2.2: Streaming Components
-- [ ] `StreamingMessage` documentation
-- [ ] `VirtualizedMessageList` documentation
-- [ ] `useStreamingSSE` documentation
-- [ ] `useStreamingWebSocket` documentation
-- [ ] `useStreamableUI` documentation
+- [x] `StreamingMessage` documentation (enhanced from placeholder)
+- [x] `VirtualizedMessageList` documentation (exists, complete)
+- [x] `useStreamingSSE` documentation (exists, basic)
+- [x] `useStreamingWebSocket` documentation (enhanced from basic)
+- [x] `useStreamableUI` documentation (created)
 - [ ] Streaming patterns guide
 
 #### Task 2.3: Analytics Components
@@ -547,6 +547,10 @@ pnpm typecheck              # Type check
 - [ ] `ConversationAnalyticsDashboard` documentation
 - [ ] `ABTestingDashboard` documentation
 - [ ] Analytics integration guide
+
+#### Task 2.4: Core Hooks
+- [x] `useChatHandlers` documentation (created)
+- [x] `useChatEnhanced` documentation (created)
 
 ### Phase 3: Hooks Documentation (Week 3)
 
