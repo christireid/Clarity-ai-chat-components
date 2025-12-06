@@ -91,9 +91,10 @@ export default function ConversationSummarizerPage() {
         </p>
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
+import type { Message } from '@clarity-chat/types'
 
 function ChatWithSummaries() {
-  const [messages, setMessages] = React.useState([])
+  const [messages, setMessages] = React.useState<Message[]>([])
 
   return (
     <div className="p-4">
@@ -107,8 +108,12 @@ function ChatWithSummaries() {
         }}
         onSummaryGenerated={(summary) => {
           console.log('Summary:', summary.content)
-          console.log('Key Topics:', summary.keyTopics)
-          console.log('Action Items:', summary.actionItems)
+          if (summary.keyTopics) {
+            console.log('Key Topics:', summary.keyTopics)
+          }
+          if (summary.actionItems) {
+            console.log('Action Items:', summary.actionItems)
+          }
         }}
       />
     </div>
@@ -129,6 +134,8 @@ render(<ChatWithSummaries />)`}
 import type { Message } from '@clarity-chat/types'
 
 function AutoSummarizeChat({ messages }: { messages: Message[] }) {
+  const [isGenerating, setIsGenerating] = React.useState(false)
+
   return (
     <ConversationSummarizer
       messages={messages}
@@ -141,6 +148,7 @@ function AutoSummarizeChat({ messages }: { messages: Message[] }) {
       }}
       onSummaryGenerated={(summary) => {
         // Automatically generated every 10 messages
+        setIsGenerating(false)
         console.log('Auto-generated summary:', summary.content)
       }}
     />
@@ -157,7 +165,7 @@ function AutoSummarizeChat({ messages }: { messages: Message[] }) {
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
 
-function MultiLevelSummaries() {
+function MultiLevelSummaries({ messages }: { messages: Message[] }) {
   return (
     <ConversationSummarizer
       messages={messages}
@@ -172,6 +180,9 @@ function MultiLevelSummaries() {
         },
       }}
       defaultLevel="detailed"
+      onSummaryGenerated={(summary) => {
+        console.log(\`\${summary.level} summary:\`, summary.content)
+      }}
     />
   )
 }`}
@@ -186,7 +197,7 @@ function MultiLevelSummaries() {
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
 
-function RichSummaries() {
+function RichSummaries({ messages }: { messages: Message[] }) {
   return (
     <ConversationSummarizer
       messages={messages}
@@ -262,7 +273,7 @@ function CustomSummarizer({ messages }: { messages: Message[] }) {
         <CodePlayground
           initialCode={`import { ConversationSummarizer } from '@clarity-chat/react'
 
-function SummariesWithHistory() {
+function SummariesWithHistory({ messages }: { messages: Message[] }) {
   return (
     <ConversationSummarizer
       messages={messages}
@@ -274,6 +285,7 @@ function SummariesWithHistory() {
       showHistory={true}  // Show all generated summaries
       onSummaryGenerated={(summary) => {
         // Track summary history
+        console.log('Summary generated at:', new Date(summary.timestamp))
       }}
     />
   )

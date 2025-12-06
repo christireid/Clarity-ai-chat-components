@@ -135,6 +135,8 @@ import type { Message } from '@clarity-chat/types'
 function ChatWithSuggestions() {
   const [messages, setMessages] = React.useState<Message[]>([])
   
+  // Note: suggestions is a Promise<PromptSuggestion[]>
+  // The component handles unwrapping internally
   const { suggestions, trackInteraction, stats } = usePromptSuggestionsEnhanced(messages, {
     rankingModel: { type: 'hybrid', provider: 'openai' },
     features: {
@@ -163,6 +165,7 @@ function ChatWithSuggestions() {
         onSelect={(suggestion) => {
           trackInteraction(suggestion, true)
           // Handle suggestion selection
+          setMessages([...messages, { role: 'user', content: suggestion.text }])
         }}
       />
     </div>
@@ -183,6 +186,11 @@ render(<ChatWithSuggestions />)`}
 import type { Message } from '@clarity-chat/types'
 
 function MLRankedSuggestions({ messages }: { messages: Message[] }) {
+  const handleSelect = (suggestion: PromptSuggestion) => {
+    console.log('Selected:', suggestion.text)
+    // Handle suggestion selection
+  }
+
   return (
     <PromptSuggestionsEnhanced
       messages={messages}
@@ -200,9 +208,7 @@ function MLRankedSuggestions({ messages }: { messages: Message[] }) {
         },
         fallback: 'rule-based',
       }}
-      onSelect={(suggestion) => {
-        console.log('Selected:', suggestion.text)
-      }}
+      onSelect={handleSelect}
     />
   )
 }`}
@@ -217,7 +223,7 @@ function MLRankedSuggestions({ messages }: { messages: Message[] }) {
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
-function PersonalizedSuggestions() {
+function PersonalizedSuggestions({ messages }: { messages: Message[] }) {
   return (
     <PromptSuggestionsEnhanced
       messages={messages}
@@ -248,10 +254,16 @@ function PersonalizedSuggestions() {
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
-function ABTestedSuggestions() {
+function ABTestedSuggestions({ messages }: { messages: Message[] }) {
+  const { abVariant, stats } = usePromptSuggestionsEnhanced(messages, {
+    enableABTesting: true,
+    trackEffectiveness: true,
+  })
+
   return (
-    <PromptSuggestionsEnhanced
-      messages={messages}
+    <>
+      <PromptSuggestionsEnhanced
+        messages={messages}
       config={{
         rankingModel: { type: 'hybrid' },
         features: {
@@ -263,10 +275,12 @@ function ABTestedSuggestions() {
         enableABTesting: true,  // Automatically splits users into control/experiment
         trackEffectiveness: true,
       }}
-      onSelect={(suggestion) => {
-        // Track which variant performs better
-      }}
-    />
+        onSelect={(suggestion) => {
+          // Track which variant performs better
+          console.log('Variant:', abVariant, 'CTR:', stats.clickThroughRate)
+        }}
+      />
+    </>
   )
 }`}
         />
@@ -280,7 +294,7 @@ function ABTestedSuggestions() {
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from '@clarity-chat/react'
 
-function TrackedSuggestions() {
+function TrackedSuggestions({ messages }: { messages: Message[] }) {
   const { suggestions, trackInteraction, stats } = usePromptSuggestionsEnhanced(messages, {
     trackEffectiveness: true,
   })
@@ -314,7 +328,7 @@ function TrackedSuggestions() {
         <CodePlayground
           initialCode={`import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
-function FallbackSuggestions() {
+function FallbackSuggestions({ messages }: { messages: Message[] }) {
   return (
     <PromptSuggestionsEnhanced
       messages={messages}
@@ -324,7 +338,8 @@ function FallbackSuggestions() {
         // Options: 'rule-based' | 'random' | 'frequency'
       }}
       onSelect={(suggestion) => {
-        // Gracefully degrades to rule-based ranking
+        // Gracefully degrades to rule-based ranking if ML fails
+        console.log('Selected:', suggestion.text)
       }}
     />
   )
