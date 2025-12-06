@@ -73,7 +73,64 @@
    - Message pruning
    - Bulk operations
 
-**Total New Pages**: 6 component documentation pages
+7. ✅ **OutputPreferenceSelector** (`/reference/components/output-preference-selector`)
+   - Output verbosity selection
+   - Token limit calculation
+   - Task-specific preferences
+   - Display modes
+
+8. ✅ **StructuredInputBuilder** (`/reference/components/structured-input-builder`)
+   - Structured prompt building
+   - Field prioritization
+   - Token optimization
+   - Custom validation
+
+9. ✅ **MessageThreadView** (`/reference/components/message-thread-view`)
+   - Threaded conversations
+   - Participant tracking
+   - Thread management
+   - Layout options
+
+#### New Hook Pages Created:
+1. ✅ **useTokenOptimizationEnhanced** (`/reference/hooks/use-token-optimization-enhanced`)
+   - TOON optimization
+   - Prompt caching
+   - Semantic caching
+   - Model routing
+
+2. ✅ **useTokenBudgetMonitor** (`/reference/hooks/use-token-budget-monitor`)
+   - Real-time budget monitoring
+   - Threshold warnings
+   - Auto-trimming
+   - Status tracking
+
+3. ✅ **useContextMonitor** (`/reference/hooks/use-context-monitor`)
+   - Context utilization monitoring
+   - Efficiency metrics
+   - Optimization recommendations
+   - Warning system
+
+4. ✅ **useBatteryAware** (`/reference/hooks/use-battery-aware`)
+   - Battery status monitoring
+   - Automatic optimizations
+   - Mobile performance
+   - Optimization recommendations
+
+**Total New Pages**: 9 component pages + 4 hook pages + 2 guide pages = 15 documentation pages
+
+#### New Guide Pages Created:
+1. ✅ **Token Optimization Guide** (`/guides/token-optimization`)
+   - TOON format optimization
+   - Prompt caching strategies
+   - Semantic caching
+   - History limiting
+   - Budget monitoring
+
+2. ✅ **Mobile Optimization Guide** (`/guides/mobile-optimization`)
+   - Battery-aware optimizations
+   - Mobile keyboard handling
+   - Responsive layouts
+   - Performance optimizations
 
 ### Documentation Quality
 - ✅ All pages include:
@@ -89,7 +146,7 @@
 ## Remaining Work
 
 ### High Priority (Phase 1.1 - Enhanced Components 2025)
-- [ ] MessageThreadView / ThreadList
+- [x] ✅ MessageThreadView / ThreadList
 - [ ] MentionInput / MentionList
 - [ ] CollaborativeEditor / CollaborativeMessageList
 - [ ] DocumentIntegration
@@ -99,17 +156,17 @@
 - [ ] ABTestingDashboard
 - [ ] MobileOptimizedMessage / MobileChatWindow
 - [ ] OfflineChatSync
-- [ ] OutputPreferenceSelector
-- [ ] StructuredInputBuilder
+- [x] ✅ OutputPreferenceSelector
+- [x] ✅ StructuredInputBuilder
 - [ ] MessageActionsSecure
 
-**Progress: 6/19 components documented (31.6%)**
+**Progress: 9/19 components documented (47.4%)**
 
 ### Phase 1.2: Enhanced Hooks (2025)
-- [ ] useTokenOptimizationEnhanced
-- [ ] useTokenBudgetMonitor
-- [ ] useContextMonitor
-- [ ] useBatteryAware
+- [x] ✅ useTokenOptimizationEnhanced
+- [x] ✅ useTokenBudgetMonitor
+- [x] ✅ useContextMonitor
+- [x] ✅ useBatteryAware
 - [ ] useSecurity / useSecurityMonitor / useSecureChat
 - [ ] useConversationSharing
 - [ ] useCollaborativeSession
@@ -201,4 +258,4 @@
 ---
 
 **Last Updated**: 2025-01-XX
-**Status**: In Progress - Phase 1.1 (31.6% complete)
+**Status**: In Progress - Phase 1.1 (47.4% complete), Phase 1.2 (22.2% complete - 4/18 hooks)
