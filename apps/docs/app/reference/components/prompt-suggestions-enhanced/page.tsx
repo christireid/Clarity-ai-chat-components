@@ -21,7 +21,7 @@ const props: Prop[] = [
   },
   {
     name: 'onSelect',
-    type: '(suggestion: PromptSuggestion) => void',
+    type: '(suggestion: { id: string; text: string; type: string; confidence?: number }) => void',
     required: true,
     description: 'Callback when a suggestion is selected',
   },
@@ -186,7 +186,7 @@ render(<ChatWithSuggestions />)`}
 import type { Message } from '@clarity-chat/types'
 
 function MLRankedSuggestions({ messages }: { messages: Message[] }) {
-  const handleSelect = (suggestion: PromptSuggestion) => {
+  const handleSelect = (suggestion: { id: string; text: string; type: string }) => {
     console.log('Selected:', suggestion.text)
     // Handle suggestion selection
   }
