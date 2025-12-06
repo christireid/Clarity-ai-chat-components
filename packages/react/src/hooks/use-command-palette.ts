@@ -12,6 +12,7 @@ export interface UseCommandPaletteOptions {
   /**
    * Keyboard shortcut to toggle the command palette
    * Uses 'mod' for Cmd on Mac and Ctrl on Windows/Linux
+   * Format: 'mod+k', 'ctrl+shift+p', 'alt+n'
    * @default 'mod+k'
    */
   shortcut?: string
@@ -78,11 +79,57 @@ export interface UseCommandPaletteReturn {
 }
 
 /**
- * Parse a shortcut string into its component parts
+ * Detect if running on Mac platform
+ * Uses a safe check that works in SSR and browser
  */
-function parseShortcut(shortcut: string): { modifiers: string[]; key: string } {
-  const parts = shortcut.toLowerCase().split('+')
+function detectIsMac(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return false
+  }
+  // Modern approach: navigator.userAgentData (Chrome 90+)
+  // Fallback: navigator.platform (deprecated but widely supported)
+  const platform =
+    (navigator as { userAgentData?: { platform?: string } }).userAgentData
+      ?.platform || navigator.platform
+  return platform?.toLowerCase().includes('mac') ?? false
+}
+
+/**
+ * Validate and parse a shortcut string into its component parts
+ * Returns null if the shortcut is invalid
+ */
+function parseShortcut(
+  shortcut: string
+): { modifiers: string[]; key: string } | null {
+  if (!shortcut || typeof shortcut !== 'string') {
+    return null
+  }
+
+  const parts = shortcut.toLowerCase().trim().split('+')
+
+  // Must have at least a key
+  if (parts.length === 0) {
+    return null
+  }
+
   const key = parts.pop() || ''
+
+  // Key must be non-empty and a single character or known key name
+  if (!key || key.length === 0) {
+    return null
+  }
+
+  // Validate modifiers
+  const validModifiers = ['mod', 'ctrl', 'alt', 'shift', 'meta']
+  for (const mod of parts) {
+    if (!validModifiers.includes(mod)) {
+      console.warn(
+        `useCommandPalette: Invalid modifier "${mod}" in shortcut "${shortcut}". Valid modifiers: ${validModifiers.join(', ')}`
+      )
+      return null
+    }
+  }
+
   return { modifiers: parts, key }
 }
 
@@ -94,14 +141,18 @@ function matchesShortcut(
   shortcut: string,
   isMac: boolean
 ): boolean {
-  const { modifiers, key } = parseShortcut(shortcut)
+  const parsed = parseShortcut(shortcut)
+  if (!parsed) return false
 
-  // Check if the key matches
+  const { modifiers, key } = parsed
+
+  // Check if the key matches (case-insensitive)
   if (event.key.toLowerCase() !== key) return false
 
   // Check modifiers
   const needsCtrl = modifiers.includes('ctrl')
   const needsMod = modifiers.includes('mod')
+  const needsMeta = modifiers.includes('meta')
   const needsAlt = modifiers.includes('alt')
   const needsShift = modifiers.includes('shift')
 
@@ -110,12 +161,13 @@ function matchesShortcut(
 
   if (needsMod && !modKey) return false
   if (needsCtrl && !event.ctrlKey) return false
+  if (needsMeta && !event.metaKey) return false
   if (needsAlt && !event.altKey) return false
   if (needsShift && !event.shiftKey) return false
 
-  // Make sure we don't have extra modifiers
+  // Make sure we don't have extra modifiers pressed
   const hasCtrlOrCmd = event.ctrlKey || event.metaKey
-  const expectedCtrlOrCmd = needsMod || needsCtrl
+  const expectedCtrlOrCmd = needsMod || needsCtrl || needsMeta
 
   if (hasCtrlOrCmd !== expectedCtrlOrCmd) return false
   if (event.altKey !== needsAlt) return false
@@ -128,8 +180,10 @@ function matchesShortcut(
  * Format a shortcut string for display
  */
 function formatShortcutDisplay(shortcut: string, isMac: boolean): string {
-  const { modifiers, key } = parseShortcut(shortcut)
+  const parsed = parseShortcut(shortcut)
+  if (!parsed) return shortcut // Return raw string if invalid
 
+  const { modifiers, key } = parsed
   const formattedParts: string[] = []
 
   for (const mod of modifiers) {
@@ -139,6 +193,9 @@ function formatShortcutDisplay(shortcut: string, isMac: boolean): string {
         break
       case 'ctrl':
         formattedParts.push(isMac ? '⌃' : 'Ctrl')
+        break
+      case 'meta':
+        formattedParts.push(isMac ? '⌘' : 'Win')
         break
       case 'alt':
         formattedParts.push(isMac ? '⌥' : 'Alt')
@@ -162,6 +219,10 @@ function formatShortcutDisplay(shortcut: string, isMac: boolean): string {
  * - Platform-aware shortcuts (Cmd on Mac, Ctrl on Windows/Linux)
  * - Configurable shortcut key
  * - Callbacks for open/close/toggle events
+ *
+ * @warning If you use multiple instances of this hook with the same shortcut,
+ * they will ALL respond to the keyboard event. Use different shortcuts or
+ * disable shortcuts on secondary instances with `shortcutEnabled: false`.
  *
  * @example
  * ```tsx
@@ -205,7 +266,18 @@ export function useCommandPalette(
   } = options
 
   const [isOpen, setIsOpenState] = useState(defaultOpen)
-  const [isMac, setIsMac] = useState(false)
+
+  // Detect platform once on mount, with SSR-safe initial value
+  // Use lazy initialization to avoid hydration mismatch
+  const [isMac, setIsMac] = useState(() => {
+    // During SSR or initial render, return false
+    // This will be corrected immediately on mount
+    if (typeof window === 'undefined') return false
+    return detectIsMac()
+  })
+
+  // Track if component is mounted to prevent state updates after unmount
+  const isMountedRef = useRef(true)
 
   // Use refs for callbacks to avoid re-creating the effect
   const onOpenRef = useRef(onOpen)
@@ -218,15 +290,20 @@ export function useCommandPalette(
     onToggleRef.current = onToggle
   }, [onOpen, onClose, onToggle])
 
-  // Detect platform on mount
+  // Set mounted flag and detect platform
   useEffect(() => {
-    setIsMac(
-      typeof window !== 'undefined' &&
-        navigator.platform.toLowerCase().includes('mac')
-    )
+    isMountedRef.current = true
+    // Re-detect platform on mount (handles SSR hydration)
+    setIsMac(detectIsMac())
+
+    return () => {
+      isMountedRef.current = false
+    }
   }, [])
 
   const setOpen = useCallback((open: boolean) => {
+    if (!isMountedRef.current) return
+
     setIsOpenState((prev) => {
       if (prev === open) return prev
 
@@ -245,6 +322,8 @@ export function useCommandPalette(
   const close = useCallback(() => setOpen(false), [setOpen])
 
   const toggle = useCallback(() => {
+    if (!isMountedRef.current) return
+
     setIsOpenState((prev) => {
       const newState = !prev
       if (newState) {
@@ -261,7 +340,19 @@ export function useCommandPalette(
   useEffect(() => {
     if (!shortcutEnabled) return
 
+    // Validate shortcut early
+    const parsed = parseShortcut(shortcut)
+    if (!parsed) {
+      console.warn(
+        `useCommandPalette: Invalid shortcut "${shortcut}". Keyboard shortcut disabled.`
+      )
+      return
+    }
+
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Don't process if component unmounted
+      if (!isMountedRef.current) return
+
       // Optionally prevent in input elements
       if (preventInInputs) {
         const target = event.target as HTMLElement
@@ -274,12 +365,15 @@ export function useCommandPalette(
 
       if (matchesShortcut(event, shortcut, isMac)) {
         event.preventDefault()
+        event.stopPropagation() // Prevent other listeners from firing
         toggle()
       }
     }
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    // Use capture phase to handle before other listeners
+    document.addEventListener('keydown', handleKeyDown, { capture: true })
+    return () =>
+      document.removeEventListener('keydown', handleKeyDown, { capture: true })
   }, [shortcutEnabled, shortcut, isMac, toggle, preventInInputs])
 
   const shortcutDisplay = formatShortcutDisplay(shortcut, isMac)
