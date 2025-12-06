@@ -332,7 +332,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
               ref={contentRef}
               {...animationProps}
               transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
               className={cn(
                 'relative w-full bg-card border border-border/40 shadow-xl rounded-2xl pointer-events-auto',
                 sizeClasses[size],

@@ -569,7 +569,7 @@ export class LLMSummarizer implements Summarizer {
     const {
       summarizeThreshold = 20,
       keepRecentCount = 10,
-      maxSummaryTokens = 500,
+      // maxSummaryTokens = 500, // Commented out as unused
     } = options
 
     const originalTokens = messages.reduce(
@@ -628,7 +628,7 @@ export class LLMSummarizer implements Summarizer {
    */
   async hierarchicalSummarize(
     content: string,
-    levels: number = 3
+    _levels: number = 3 // Prefixed with underscore as unused
   ): Promise<HierarchicalSummary> {
     const originalTokens = estimateTokens(content)
 
