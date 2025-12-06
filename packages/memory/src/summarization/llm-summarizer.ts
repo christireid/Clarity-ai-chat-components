@@ -53,7 +53,10 @@ export interface LLMSummarizationConfig {
   /** Custom API endpoint */
   apiEndpoint?: string
   /** Custom request handler */
-  customHandler?: (prompt: string, options: { maxTokens: number }) => Promise<string>
+  customHandler?: (
+    prompt: string,
+    options: { maxTokens: number }
+  ) => Promise<string>
   /** Temperature for generation */
   temperature?: number
 }
@@ -150,16 +153,16 @@ function hashContent(content: string): string {
   // Sample from multiple positions to reduce collisions for long docs
   const sampleSize = Math.min(500, len)
   const positions = [
-    0,                            // Start
-    Math.floor(len / 2),          // Middle
-    Math.max(0, len - sampleSize) // End
+    0, // Start
+    Math.floor(len / 2), // Middle
+    Math.max(0, len - sampleSize), // End
   ]
 
   for (const start of positions) {
     const end = Math.min(start + sampleSize, len)
     for (let i = start; i < end; i++) {
       const char = content.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
+      hash = (hash << 5) - hash + char
       hash = hash & hash
     }
   }
@@ -207,8 +210,10 @@ class RateLimiter {
 
     if (this.tokens < 1) {
       // Wait until we have a token
-      const waitTime = Math.ceil((1 - this.tokens) / this.refillRatePerSecond * 1000)
-      await new Promise(resolve => setTimeout(resolve, waitTime))
+      const waitTime = Math.ceil(
+        ((1 - this.tokens) / this.refillRatePerSecond) * 1000
+      )
+      await new Promise((resolve) => setTimeout(resolve, waitTime))
       this.refill()
     }
 
@@ -218,7 +223,10 @@ class RateLimiter {
   private refill(): void {
     const now = Date.now()
     const elapsed = (now - this.lastRefill) / 1000
-    this.tokens = Math.min(this.maxTokens, this.tokens + elapsed * this.refillRatePerSecond)
+    this.tokens = Math.min(
+      this.maxTokens,
+      this.tokens + elapsed * this.refillRatePerSecond
+    )
     this.lastRefill = now
   }
 }
@@ -227,7 +235,7 @@ class RateLimiter {
  * Sleep utility for retry delays
  */
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /**
@@ -254,10 +262,12 @@ function isRetryableError(error: unknown, status?: number): boolean {
 
   // Check for specific error messages
   const message = error instanceof Error ? error.message.toLowerCase() : ''
-  return message.includes('timeout') ||
-         message.includes('network') ||
-         message.includes('econnreset') ||
-         message.includes('socket hang up')
+  return (
+    message.includes('timeout') ||
+    message.includes('network') ||
+    message.includes('econnreset') ||
+    message.includes('socket hang up')
+  )
 }
 
 /**
@@ -400,7 +410,10 @@ export class LLMSummarizer implements Summarizer {
   /**
    * Summarize with full statistics
    */
-  async summarizeWithStats(text: string, maxTokens: number): Promise<SummaryResult> {
+  async summarizeWithStats(
+    text: string,
+    maxTokens: number
+  ): Promise<SummaryResult> {
     const startTime = Date.now()
     const originalTokens = estimateTokens(text)
 
@@ -472,13 +485,15 @@ export class LLMSummarizer implements Summarizer {
    * Batch summarize
    */
   async summarizeBatch(texts: string[], maxTokens: number): Promise<string[]> {
-    return Promise.all(texts.map(text => this.summarize(text, maxTokens)))
+    return Promise.all(texts.map((text) => this.summarize(text, maxTokens)))
   }
 
   /**
    * Summarize conversation with structured output
    */
-  async summarizeConversation(messages: SummaryMessage[]): Promise<ConversationSummary> {
+  async summarizeConversation(
+    messages: SummaryMessage[]
+  ): Promise<ConversationSummary> {
     const originalTokens = messages.reduce(
       (sum, m) => sum + estimateTokens(m.content),
       0
@@ -486,14 +501,15 @@ export class LLMSummarizer implements Summarizer {
 
     // Format conversation
     const content = messages
-      .map(m => `${m.role.toUpperCase()}: ${m.content}`)
+      .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
       .join('\n\n')
 
     // Generate prompt
     const maxTokens = Math.max(200, Math.floor(originalTokens * 0.2))
-    const prompt = CONVERSATION_SUMMARY_PROMPT
-      .replace('{content}', content)
-      .replace('{maxTokens}', String(maxTokens))
+    const prompt = CONVERSATION_SUMMARY_PROMPT.replace(
+      '{content}',
+      content
+    ).replace('{maxTokens}', String(maxTokens))
 
     // Call LLM
     const response = await this.callLLM(prompt, maxTokens)
@@ -517,7 +533,8 @@ export class LLMSummarizer implements Summarizer {
         stats: {
           originalTokens,
           summaryTokens,
-          compressionRatio: originalTokens > 0 ? summaryTokens / originalTokens : 0,
+          compressionRatio:
+            originalTokens > 0 ? summaryTokens / originalTokens : 0,
         },
       }
     } catch {
@@ -534,7 +551,8 @@ export class LLMSummarizer implements Summarizer {
         stats: {
           originalTokens,
           summaryTokens: responseTokens,
-          compressionRatio: originalTokens > 0 ? responseTokens / originalTokens : 0,
+          compressionRatio:
+            originalTokens > 0 ? responseTokens / originalTokens : 0,
         },
       }
     }
@@ -566,11 +584,7 @@ export class LLMSummarizer implements Summarizer {
       compressionRatio: number
     }
   }> {
-    const {
-      summarizeThreshold = 20,
-      keepRecentCount = 10,
-      maxSummaryTokens = 500,
-    } = options
+    const { summarizeThreshold = 20, keepRecentCount = 10 } = options
 
     const originalTokens = messages.reduce(
       (sum, m) => sum + estimateTokens(m.content),
@@ -628,7 +642,7 @@ export class LLMSummarizer implements Summarizer {
    */
   async hierarchicalSummarize(
     content: string,
-    levels: number = 3
+    _levels: number = 3
   ): Promise<HierarchicalSummary> {
     const originalTokens = estimateTokens(content)
 
@@ -651,11 +665,16 @@ Maximum ${sectionsTokens} tokens total.`
     const sectionsResponse = await this.callLLM(sectionsPrompt, sectionsTokens)
 
     // Parse sections
-    const sectionMatches = sectionsResponse.matchAll(/##\s*(.+?)\n([\s\S]*?)(?=##|$)/g)
-    const sections = Array.from(sectionMatches).map(match => ({
+    const sectionMatches = sectionsResponse.matchAll(
+      /##\s*(.+?)\n([\s\S]*?)(?=##|$)/g
+    )
+    const sections = Array.from(sectionMatches).map((match) => ({
       title: match[1].trim(),
       summary: match[2].trim(),
-      details: match[2].split('\n').filter(l => l.trim().startsWith('-')).map(l => l.trim()),
+      details: match[2]
+        .split('\n')
+        .filter((l) => l.trim().startsWith('-'))
+        .map((l) => l.trim()),
     }))
 
     // Level 3: Executive summary (5% of original)
@@ -664,11 +683,16 @@ Maximum ${sectionsTokens} tokens total.`
 
     return {
       executive,
-      sections: sections.length > 0 ? sections : [{
-        title: 'Summary',
-        summary: detailed,
-        details: [],
-      }],
+      sections:
+        sections.length > 0
+          ? sections
+          : [
+              {
+                title: 'Summary',
+                summary: detailed,
+                details: [],
+              },
+            ],
       detailed,
       compressionRatios: {
         executive: estimateTokens(executive) / originalTokens,
@@ -695,9 +719,10 @@ Maximum ${sectionsTokens} tokens total.`
     const totalOps = this.stats.summariesGenerated + this.stats.cacheHits
     return {
       ...this.stats,
-      avgCompressionRatio: this.stats.totalInputTokens > 0
-        ? this.stats.totalOutputTokens / this.stats.totalInputTokens
-        : 0,
+      avgCompressionRatio:
+        this.stats.totalInputTokens > 0
+          ? this.stats.totalOutputTokens / this.stats.totalInputTokens
+          : 0,
       cacheHitRate: totalOps > 0 ? this.stats.cacheHits / totalOps : 0,
     }
   }
@@ -752,7 +777,10 @@ Maximum ${sectionsTokens} tokens total.`
       // Extract status code if available
       const status = (error as { status?: number }).status
 
-      if (attempt < RETRY_CONFIG.maxRetries && isRetryableError(error, status)) {
+      if (
+        attempt < RETRY_CONFIG.maxRetries &&
+        isRetryableError(error, status)
+      ) {
         this.stats.retryCount++
         const delay = getRetryDelay(attempt)
         await sleep(delay)
@@ -767,7 +795,8 @@ Maximum ${sectionsTokens} tokens total.`
    * Call OpenAI API
    */
   private async callOpenAI(prompt: string, maxTokens: number): Promise<string> {
-    const endpoint = this.config.apiEndpoint || 'https://api.openai.com/v1/chat/completions'
+    const endpoint =
+      this.config.apiEndpoint || 'https://api.openai.com/v1/chat/completions'
 
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -777,9 +806,7 @@ Maximum ${sectionsTokens} tokens total.`
       },
       body: JSON.stringify({
         model: this.config.model,
-        messages: [
-          { role: 'user', content: prompt },
-        ],
+        messages: [{ role: 'user', content: prompt }],
         max_tokens: Math.floor(maxTokens * 1.2),
         temperature: this.config.temperature,
       }),
@@ -787,7 +814,9 @@ Maximum ${sectionsTokens} tokens total.`
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}))
-      const err = new Error(`OpenAI summarization failed: ${JSON.stringify(error)}`)
+      const err = new Error(
+        `OpenAI summarization failed: ${JSON.stringify(error)}`
+      )
       ;(err as Error & { status: number }).status = response.status
       throw err
     }
@@ -799,8 +828,12 @@ Maximum ${sectionsTokens} tokens total.`
   /**
    * Call Anthropic API
    */
-  private async callAnthropic(prompt: string, maxTokens: number): Promise<string> {
-    const endpoint = this.config.apiEndpoint || 'https://api.anthropic.com/v1/messages'
+  private async callAnthropic(
+    prompt: string,
+    maxTokens: number
+  ): Promise<string> {
+    const endpoint =
+      this.config.apiEndpoint || 'https://api.anthropic.com/v1/messages'
 
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -812,15 +845,15 @@ Maximum ${sectionsTokens} tokens total.`
       body: JSON.stringify({
         model: this.config.model,
         max_tokens: Math.floor(maxTokens * 1.2),
-        messages: [
-          { role: 'user', content: prompt },
-        ],
+        messages: [{ role: 'user', content: prompt }],
       }),
     })
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}))
-      const err = new Error(`Anthropic summarization failed: ${JSON.stringify(error)}`)
+      const err = new Error(
+        `Anthropic summarization failed: ${JSON.stringify(error)}`
+      )
       ;(err as Error & { status: number }).status = response.status
       throw err
     }
@@ -875,11 +908,11 @@ export function createSummarizerWithFallback(
  * Simple extractive summarization fallback
  */
 export function extractiveSummarize(text: string, maxTokens: number): string {
-  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0)
+  const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0)
   if (sentences.length === 0) return text
 
   // Score sentences by importance
-  const scored = sentences.map(sentence => {
+  const scored = sentences.map((sentence) => {
     let score = 0
 
     // Position scoring (first and last sentences more important)
@@ -892,8 +925,15 @@ export function extractiveSummarize(text: string, maxTokens: number): string {
     if (words >= 5 && words <= 20) score += 2
 
     // Keyword scoring
-    const keywords = ['important', 'key', 'main', 'conclusion', 'summary', 'result']
-    if (keywords.some(k => sentence.toLowerCase().includes(k))) score += 2
+    const keywords = [
+      'important',
+      'key',
+      'main',
+      'conclusion',
+      'summary',
+      'result',
+    ]
+    if (keywords.some((k) => sentence.toLowerCase().includes(k))) score += 2
 
     // Question avoidance
     if (sentence.includes('?')) score -= 1
