@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import { useTheme } from 'next-themes'
 import Particles, { initParticlesEngine } from '@tsparticles/react'
 import type { Container, Engine } from '@tsparticles/engine'
@@ -12,59 +12,124 @@ interface AnimatedBackgroundProps {
 
 export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) {
   const [init, setInit] = useState(false)
+  const [initError, setInitError] = useState<Error | null>(null)
   const [reducedMotion, setReducedMotion] = useState(false)
   const [mounted, setMounted] = useState(false)
   const containerRef = useRef<Container | null>(null)
+  const isMountedRef = useRef(true)
   const { resolvedTheme } = useTheme()
   const isDark = mounted && resolvedTheme === 'dark'
 
   // Handle theme mounting
   useEffect(() => {
     setMounted(true)
-  }, [])
-
-  // Check for reduced motion preference
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mediaQuery.matches)
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setReducedMotion(e.matches)
+    return () => {
+      isMountedRef.current = false
     }
-
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
-  // Initialize particles engine
+  // Check for reduced motion preference with SSR safety
   useEffect(() => {
-    initParticlesEngine(async (engine: Engine) => {
-      await loadSlim(engine)
-    }).then(() => {
-      setInit(true)
-    })
+    if (typeof window === 'undefined') return
+
+    try {
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+      setReducedMotion(mediaQuery.matches)
+
+      const handleChange = (e: MediaQueryListEvent) => {
+        setReducedMotion(e.matches)
+      }
+
+      // Use addEventListener for modern browsers, fallback for older ones
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', handleChange)
+        return () => mediaQuery.removeEventListener('change', handleChange)
+      } else {
+        // Fallback for older browsers
+        mediaQuery.addListener(handleChange)
+        return () => mediaQuery.removeListener(handleChange)
+      }
+    } catch (error) {
+      // Silently fail if matchMedia is not supported
+      console.warn('prefers-reduced-motion media query not supported:', error)
+    }
   }, [])
 
-  // Handle window resize
+  // Initialize particles engine with error handling and cleanup
   useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        containerRef.current.refresh()
+    let cancelled = false
+
+    const initEngine = async () => {
+      try {
+        await initParticlesEngine(async (engine: Engine) => {
+          await loadSlim(engine)
+        })
+
+        if (!cancelled && isMountedRef.current) {
+          setInit(true)
+          setInitError(null)
+        }
+      } catch (error) {
+        if (!cancelled && isMountedRef.current) {
+          const err = error instanceof Error ? error : new Error('Failed to initialize particles engine')
+          setInitError(err)
+          console.error('Failed to initialize particles engine:', err)
+        }
       }
     }
 
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    initEngine()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // Handle window resize with debouncing
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+    const handleResize = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+
+      timeoutId = setTimeout(() => {
+        if (containerRef.current && isMountedRef.current) {
+          try {
+            containerRef.current.refresh()
+          } catch (error) {
+            console.warn('Failed to refresh particles on resize:', error)
+          }
+        }
+      }, 150)
+    }
+
+    window.addEventListener('resize', handleResize, { passive: true })
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
   }, [])
 
   // Handle page visibility (pause when tab is hidden)
   useEffect(() => {
+    if (typeof document === 'undefined') return
+
     const handleVisibilityChange = () => {
-      if (containerRef.current) {
-        if (document.hidden) {
-          containerRef.current.pause()
-        } else {
-          containerRef.current.play()
+      if (containerRef.current && isMountedRef.current) {
+        try {
+          if (document.hidden) {
+            containerRef.current.pause()
+          } else {
+            containerRef.current.play()
+          }
+        } catch (error) {
+          console.warn('Failed to pause/play particles on visibility change:', error)
         }
       }
     }
@@ -73,8 +138,8 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [])
 
-  // Particle configuration
-  const particlesConfig = {
+  // Memoize particle configuration to prevent unnecessary re-renders
+  const particlesConfig = useMemo(() => ({
     background: {
       color: {
         value: 'transparent',
@@ -166,9 +231,36 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     detectRetina: true,
     pauseOnBlur: true,
     pauseOnOutsideViewport: true,
+  }), [isDark, reducedMotion])
+
+  // Handle container cleanup
+  const handleParticlesLoaded = useCallback((container: Container | null) => {
+    if (isMountedRef.current) {
+      containerRef.current = container
+    }
+  }, [])
+
+  // Cleanup container on unmount
+  useEffect(() => {
+    return () => {
+      if (containerRef.current) {
+        try {
+          containerRef.current.destroy()
+        } catch (error) {
+          console.warn('Error destroying particles container:', error)
+        }
+        containerRef.current = null
+      }
+    }
+  }, [])
+
+  // Don't render if initialization failed, reduced motion is enabled, or not mounted
+  if (!init || reducedMotion || !mounted) {
+    return null
   }
 
-  if (!init || reducedMotion || !mounted) {
+  // If initialization failed, render nothing (silent failure for background element)
+  if (initError) {
     return null
   }
 
@@ -179,9 +271,7 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     >
       <Particles
         id="animated-background"
-        particlesLoaded={(container) => {
-          containerRef.current = container
-        }}
+        particlesLoaded={handleParticlesLoaded}
         options={particlesConfig}
         className="w-full h-full"
       />
