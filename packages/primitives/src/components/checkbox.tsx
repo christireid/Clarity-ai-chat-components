@@ -1,3 +1,9 @@
+/**
+ * @deprecated Use ShadcnCheckbox from shadcn/ui instead.
+ * This custom checkbox will be removed in v2.0.0.
+ * 
+ * Migration: See /workspace/MIGRATION_GUIDE_SHADCN.md
+ */
 'use client'
 
 import * as React from 'react'

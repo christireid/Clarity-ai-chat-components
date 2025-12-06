@@ -1,3 +1,9 @@
+/**
+ * @deprecated Use ShadcnDropdownMenu from shadcn/ui instead.
+ * This custom dropdown will be removed in v2.0.0.
+ * 
+ * Migration: See /workspace/MIGRATION_GUIDE_SHADCN.md
+ */
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'

@@ -1,3 +1,9 @@
+/**
+ * @deprecated Use ShadcnTooltip from shadcn/ui instead.
+ * This custom tooltip will be removed in v2.0.0.
+ * 
+ * Migration: See /workspace/MIGRATION_GUIDE_SHADCN.md
+ */
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'

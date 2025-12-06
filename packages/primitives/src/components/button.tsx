@@ -1,3 +1,19 @@
+/**
+ * @deprecated Use ShadcnButton from shadcn/ui instead.
+ * This custom button will be removed in v2.0.0.
+ * 
+ * Migration:
+ * ```ts
+ * // Old
+ * import { Button } from '@clarity-chat/primitives'
+ * 
+ * // New
+ * import { ShadcnButton as Button } from '@clarity-chat/primitives'
+ * ```
+ * 
+ * Note: shadcn Button doesn't have built-in loading/ripple states.
+ * For those features, use this custom Button or create a wrapper.
+ */
 'use client'
 
 import * as React from 'react'

@@ -1,3 +1,9 @@
+/**
+ * @deprecated Use ShadcnDialog from shadcn/ui instead.
+ * This custom dialog will be removed in v2.0.0.
+ * 
+ * Migration: See /workspace/MIGRATION_GUIDE_SHADCN.md
+ */
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
