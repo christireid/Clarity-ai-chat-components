@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Send, Bot, User, Sparkles } from 'lucide-react'
 
 interface Message {
@@ -8,59 +8,142 @@ interface Message {
   text: string
   sender: 'user' | 'bot'
   timestamp: Date
+  isStreaming?: boolean
 }
 
 const initialMessages: Message[] = [
   {
     id: '1',
-    text: 'Hi! I can help you build amazing chat interfaces. What would you like to know?',
+    text: "Hi! I'm your Clarity Chat documentation assistant. Ask me anything about building chat interfaces with our 70+ components and 35+ hooks!",
     sender: 'bot',
     timestamp: new Date(Date.now() - 60000),
   },
 ]
 
-const predefinedResponses: Record<string, string> = {
-  components: 'Clarity Chat includes 70+ components including ChatWindow, Message, MessageList, InputBar, FileUpload, and many more!',
-  accessibility: 'All components are WCAG AAA compliant with full keyboard navigation, screen reader support, and ARIA attributes.',
-  theming: 'Choose from 11 built-in themes or create your own! Dark mode is supported by default.',
-  performance: 'Built with performance in mind - virtual scrolling for 1000+ messages, React.memo optimization, and tree-shaking support.',
-  default: 'Great question! Clarity Chat makes it easy to build production-ready chat UIs. Try asking about components, accessibility, theming, or performance!',
-}
-
 export function LiveChatDemo() {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [isStreaming, setIsStreaming] = useState(false)
+  const [userHasScrolledUp, setUserHasScrolledUp] = useState(false)
 
-  const handleSend = () => {
-    if (!input.trim()) return
+  // Refs for auto-scroll
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-    // Add user message
+  // Detect if user manually scrolled up (wants to read previous content)
+  const handleScroll = useCallback(() => {
+    if (!containerRef.current) return
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current
+    const isAtBottom = scrollHeight - scrollTop - clientHeight < 100
+    setUserHasScrolledUp(!isAtBottom)
+  }, [])
+
+  // Scroll to bottom (respects user intent)
+  const scrollToBottom = useCallback((force = false) => {
+    if (userHasScrolledUp && !force) return
+
+    messagesEndRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end'
+    })
+  }, [userHasScrolledUp])
+
+  // Scroll when new message is added
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, scrollToBottom])
+
+  // Scroll during streaming (throttled)
+  useEffect(() => {
+    if (isStreaming) {
+      const interval = setInterval(() => scrollToBottom(), 100)
+      return () => clearInterval(interval)
+    }
+  }, [isStreaming, scrollToBottom])
+
+  const handleSend = async () => {
+    if (!input.trim() || isTyping || isStreaming) return
+
     const userMessage: Message = {
       id: Date.now().toString(),
       text: input,
       sender: 'user',
       timestamp: new Date(),
     }
+
+    const currentInput = input
     setMessages(prev => [...prev, userMessage])
     setInput('')
+    setUserHasScrolledUp(false) // Reset scroll lock
+    scrollToBottom(true) // Force scroll
     setIsTyping(true)
 
-    // Simulate bot response
-    setTimeout(() => {
-      const key = Object.keys(predefinedResponses).find(k =>
-        input.toLowerCase().includes(k)
-      ) || 'default'
+    try {
+      const response = await fetch('/api/live-demo-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: currentInput }),
+      })
 
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: predefinedResponses[key],
+      if (!response.ok) {
+        throw new Error('Failed to get response')
+      }
+
+      setIsTyping(false)
+      setIsStreaming(true)
+
+      // Create placeholder message for streaming
+      const botMessageId = (Date.now() + 1).toString()
+      setMessages(prev => [...prev, {
+        id: botMessageId,
+        text: '',
         sender: 'bot',
         timestamp: new Date(),
+        isStreaming: true,
+      }])
+
+      // Read streaming response
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+
+      if (reader) {
+        let accumulatedText = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value, { stream: true })
+          accumulatedText += chunk
+
+          // Update the bot message with accumulated text
+          setMessages(prev => prev.map(msg =>
+            msg.id === botMessageId
+              ? { ...msg, text: accumulatedText }
+              : msg
+          ))
+        }
+
+        // Mark streaming as complete
+        setMessages(prev => prev.map(msg =>
+          msg.id === botMessageId
+            ? { ...msg, isStreaming: false }
+            : msg
+        ))
       }
-      setMessages(prev => [...prev, botMessage])
+    } catch (error) {
+      console.error('Error getting response:', error)
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        text: "I'm having trouble connecting right now. Please try again in a moment!",
+        sender: 'bot',
+        timestamp: new Date(),
+      }])
+    } finally {
       setIsTyping(false)
-    }, 1000 + Math.random() * 1000)
+      setIsStreaming(false)
+    }
   }
 
   return (
@@ -69,7 +152,7 @@ export function LiveChatDemo() {
       <div className="flex items-center justify-center gap-2 mb-4">
         <Sparkles className="w-4 h-4 text-brand-500" />
         <span className="text-sm font-medium text-brand-600 dark:text-brand-400">
-          Interactive Demo - Try it!
+          AI-Powered Demo - Ask anything about Clarity Chat!
         </span>
       </div>
 
@@ -83,13 +166,17 @@ export function LiveChatDemo() {
             </div>
             <div>
               <div className="font-semibold">Clarity Chat Assistant</div>
-              <div className="text-xs opacity-90">Always online</div>
+              <div className="text-xs opacity-90">Powered by Gemini</div>
             </div>
           </div>
         </div>
 
         {/* Messages */}
-        <div className="h-[400px] overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-bg-secondary/50 to-bg-primary">
+        <div
+          ref={containerRef}
+          onScroll={handleScroll}
+          className="h-[400px] overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-bg-secondary/50 to-bg-primary scroll-smooth"
+        >
           {messages.map((message) => (
             <div
               key={message.id}
@@ -116,7 +203,12 @@ export function LiveChatDemo() {
                   ? 'bg-bg-secondary text-text-primary rounded-tl-sm'
                   : 'bg-brand-500 text-white rounded-tr-sm'
               }`}>
-                <p className="text-sm leading-relaxed">{message.text}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                  {message.text}
+                  {message.isStreaming && (
+                    <span className="inline-block w-2 h-4 ml-1 bg-brand-500 animate-pulse" />
+                  )}
+                </p>
               </div>
             </div>
           ))}
@@ -136,6 +228,9 @@ export function LiveChatDemo() {
               </div>
             </div>
           )}
+
+          {/* Scroll anchor */}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input */}
@@ -151,19 +246,20 @@ export function LiveChatDemo() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about components, theming, accessibility..."
-              className="flex-1 px-4 py-3 rounded-lg border border-border bg-bg-secondary text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder="Ask about components, hooks, theming, accessibility..."
+              disabled={isTyping || isStreaming}
+              className="flex-1 px-4 py-3 rounded-lg border border-border bg-bg-secondary text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
             />
             <button
               type="submit"
-              disabled={!input.trim()}
+              disabled={!input.trim() || isTyping || isStreaming}
               className="px-6 py-3 bg-brand-500 hover:bg-brand-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 disabled:cursor-not-allowed"
             >
               <Send className="w-5 h-5" />
             </button>
           </form>
           <p className="text-xs text-text-secondary mt-2 text-center">
-            Try asking about: components, accessibility, theming, performance
+            Try: "How do I add streaming?" or "What hooks are available?"
           </p>
         </div>
       </div>
