@@ -354,12 +354,15 @@ This configuration tells shadcn CLI where to place components and how to set up 
 
 ### Build Artifacts
 
+**After shadcn/ui Integration:**
 ```
 ✅ dist/index.js (CJS): 60.05 KB
 ✅ dist/index.mjs (ESM): 54.96 KB
 ✅ dist/index.d.ts (Types): 24.61 KB
 ✅ Source maps generated
 ```
+
+**Note:** Bundle size includes both legacy custom components AND new shadcn/ui components. The size increase from adding shadcn/ui is absorbed by tree-shaking - if you only import shadcn components, you won't include the legacy code.
 
 ---
 

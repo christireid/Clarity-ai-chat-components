@@ -24,7 +24,6 @@ Successfully integrated **official shadcn/ui components** into the Clarity Chat 
 2. **`MIGRATION_GUIDE_SHADCN.md`** - Step-by-step migration guide for developers
 3. **`SHADCN_QUICK_REFERENCE.md`** - Quick API reference and common patterns
 4. **`packages/primitives/src/components/ui/README.md`** - Component directory guide
-5. **`packages/primitives/src/components/ui/examples.tsx`** - Code examples
 
 ## 🚀 How to Use
 
