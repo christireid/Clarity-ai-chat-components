@@ -75,9 +75,18 @@ function createPlainTextStream(
  * POST /api/live-demo-chat
  */
 export async function POST(request: NextRequest) {
-  try {
-    const body = (await request.json()) as RequestBody
+  let body: RequestBody
 
+  try {
+    body = (await request.json()) as RequestBody
+  } catch {
+    return Response.json(
+      { error: 'Invalid JSON in request body' },
+      { status: 400 }
+    )
+  }
+
+  try {
     if (!body.message) {
       return Response.json(
         { error: 'Message is required' },
