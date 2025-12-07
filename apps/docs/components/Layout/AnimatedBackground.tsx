@@ -1,66 +1,81 @@
 'use client'
 
-import { useCallback, useRef, useDeferredValue } from 'react'
-import Particles from '@tsparticles/react'
-import type { Container } from '@tsparticles/engine'
+import { useMemo, useDeferredValue } from 'react'
+import dynamic from 'next/dynamic'
+import type { ISourceOptions } from '@tsparticles/engine'
 import { cn } from '@/lib/utils'
-import { useReducedMotion } from './hooks/useReducedMotion'
-import { useThemeMode } from './hooks/useThemeMode'
-import { useParticlesEngine } from './hooks/useParticlesEngine'
-import { usePageVisibility } from './hooks/usePageVisibility'
-import { darkParticlesConfig, lightParticlesConfig } from './config/particles.config'
+import {
+  useMounted,
+  usePrefersReducedMotion,
+  useParticlesEngine,
+  useIsDark,
+} from './hooks'
+import {
+  createParticlesConfig,
+  createReducedMotionConfig,
+} from './AnimatedBackground.utils'
 
-/**
- * Props for the AnimatedBackground component.
- */
-export interface AnimatedBackgroundProps {
-  /** Additional CSS classes to apply to the container */
+// Dynamically import Particles to reduce initial bundle size
+// This is a heavy library that's only needed for the background animation
+// @tsparticles/react exports Particles as both default and named export
+const Particles = dynamic(
+  () =>
+    import('@tsparticles/react').then((mod) => {
+      // Handle both default and named exports for maximum compatibility
+      return mod.default || mod.Particles
+    }),
+  {
+    ssr: false,
+    loading: () => null, // Render nothing while loading
+  }
+)
+
+interface AnimatedBackgroundProps {
   className?: string
 }
 
 /**
- * High-performance animated particle background component.
+ * AnimatedBackground Component
  * 
+ * Provides an animated particle background for the home page.
  * Features:
- * - Interactive particles that respond to mouse interactions
- * - Theme-aware (dark/light mode support)
- * - Respects `prefers-reduced-motion` accessibility preference
- * - Performance optimized with Page Visibility API
- * - Graceful error handling and degradation
+ * - Theme-aware particle colors (dark/light mode)
+ * - Respects prefers-reduced-motion accessibility preference
+ * - High-performance with 60fps target
+ * - Non-intrusive (behind content, pointer-events: none)
  * - Uses React concurrent features (useDeferredValue) for smooth theme transitions
+ * 
+ * @param className - Optional additional CSS classes
  * 
  * @example
  * ```tsx
  * <AnimatedBackground className="custom-class" />
  * ```
  */
-export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) {
-  const prefersReducedMotion = useReducedMotion()
-  const isDarkRaw = useThemeMode()
+export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
+  const mounted = useMounted()
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const { isInitialized, hasError } = useParticlesEngine()
+  const isDarkRaw = useIsDark()
   
   // Use deferred value for theme to prevent blocking renders during theme transitions
   const isDark = useDeferredValue(isDarkRaw)
-  
-  const { isInitialized, error } = useParticlesEngine()
-  const containerRef = useRef<Container | null>(null)
 
-  // Particles loaded callback
-  const particlesLoaded = useCallback(async (container: Container | undefined) => {
-    if (container) {
-      containerRef.current = container
+  // Particle configuration based on theme and accessibility preferences
+  const particlesConfig: ISourceOptions = useMemo(() => {
+    if (prefersReducedMotion) {
+      return createReducedMotionConfig()
     }
-  }, [])
+    return createParticlesConfig(isDark)
+  }, [isDark, prefersReducedMotion])
 
-  // Handle page visibility for performance optimization
-  // Pass container ref value - hook will handle updates via internal ref
-  usePageVisibility(containerRef.current, isInitialized && !prefersReducedMotion)
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return null
+  }
 
-  // Don't render if reduced motion is preferred, not initialized, or error occurred
-  if (prefersReducedMotion || !isInitialized || error) {
-    // Log error in development mode for debugging
-    if (error && process.env.NODE_ENV === 'development') {
-      console.warn('[AnimatedBackground] Initialization error:', error)
-    }
+  // If initialization failed or not yet initialized, render nothing (graceful degradation)
+  if (hasError || !isInitialized) {
     return null
   }
 
@@ -72,8 +87,7 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     >
       <Particles
         id="animated-background"
-        particlesLoaded={particlesLoaded}
-        options={isDark ? darkParticlesConfig : lightParticlesConfig}
+        options={particlesConfig}
         className="w-full h-full"
       />
     </div>

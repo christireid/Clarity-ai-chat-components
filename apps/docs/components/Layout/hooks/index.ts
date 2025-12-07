@@ -1,4 +1,8 @@
-export { useReducedMotion } from './useReducedMotion'
+/**
+ * Custom hooks for AnimatedBackground component
+ */
+
+export { useMounted } from './useMounted'
+export { usePrefersReducedMotion } from './usePrefersReducedMotion'
 export { useParticlesEngine } from './useParticlesEngine'
-export { useWindowResize } from './useWindowResize'
-export { usePageVisibility } from './usePageVisibility'
+export { useIsDark } from './useIsDark'
