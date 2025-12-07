@@ -1,0 +1,210 @@
+import { MessageMetadata } from '@clarity-chat/react';
+/**
+ * **MessageMetadata Component**
+ *
+ * Component for displaying message metadata including tokens,
+ * cost, response time, model, confidence, and sources.
+ *
+ * **Key Features:**
+ * - Token usage display (input/output)
+ * - Cost calculation
+ * - Response time tracking
+ * - Model information
+ * - Confidence scores
+ * - Source citations
+ * - Expandable details
+ * - Accessible with ARIA labels
+ *
+ * **Use Cases:**
+ * - Token usage tracking
+ * - Cost monitoring
+ * - Performance metrics
+ * - Model information display
+ * - Source attribution
+ */
+const meta = {
+    title: 'Components/DataDisplay/MessageMetadata',
+    component: MessageMetadata,
+    parameters: {
+        layout: 'padded',
+        docs: {
+            description: {
+                component: `
+Component for displaying message metadata including tokens,
+cost, response time, model, confidence, and sources.
+
+## Features
+
+- ✅ Token usage display (input/output)
+- ✅ Cost calculation
+- ✅ Response time tracking
+- ✅ Model information
+- ✅ Confidence scores
+- ✅ Source citations
+- ✅ Expandable details
+- ✅ Accessible with ARIA labels
+- ✅ Visual indicators for metrics
+
+## Basic Usage
+
+\`\`\`tsx
+<MessageMetadata
+  message={messageWithMetadata}
+  showDetails={true}
+  showSources={true}
+/>
+\`\`\`
+        `,
+            },
+        },
+    },
+    tags: ['autodocs'],
+    argTypes: {
+        message: {
+            description: 'Message object with metadata',
+            control: { type: 'object' },
+        },
+        showDetails: {
+            description: 'Show detailed metadata (tokens, cost, etc.)',
+            control: 'boolean',
+        },
+        showSources: {
+            description: 'Show source citations',
+            control: 'boolean',
+        },
+        compact: {
+            description: 'Use compact layout',
+            control: 'boolean',
+        },
+    },
+};
+export default meta;
+const messageWithMetadata = {
+    id: '1',
+    chatId: 'chat-1',
+    role: 'assistant',
+    content: 'This is a response with comprehensive metadata.',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    metadata: {
+        tokens: 1250,
+        inputTokens: 850,
+        outputTokens: 400,
+        cost: 0.015,
+        responseTime: 2340,
+        model: 'gpt-4',
+        confidence: 0.87,
+        sources: [
+            { id: '1', title: 'Components/DataDisplay/MessageMetadata', url: 'https://example.com' },
+            { id: '2', title: 'Components/DataDisplay/MessageMetadata', url: 'https://example.com' },
+        ],
+    },
+};
+const messageMinimal = {
+    id: '2',
+    chatId: 'chat-1',
+    role: 'assistant',
+    content: 'This is a response with minimal metadata.',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    metadata: {
+        tokens: 50,
+        model: 'gpt-3.5-turbo',
+    },
+};
+const messageHighConfidence = {
+    id: '3',
+    chatId: 'chat-1',
+    role: 'assistant',
+    content: 'This is a high-confidence response.',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    metadata: {
+        tokens: 200,
+        model: 'gpt-4',
+        confidence: 0.95,
+        responseTime: 1200,
+    },
+};
+const messageLowConfidence = {
+    id: '4',
+    chatId: 'chat-1',
+    role: 'assistant',
+    content: 'This is a low-confidence response.',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    metadata: {
+        tokens: 150,
+        model: 'gpt-3.5-turbo',
+        confidence: 0.45,
+        responseTime: 800,
+    },
+};
+export const FullMetadata = {
+    args: {
+        message: messageWithMetadata,
+        showCost: true,
+        showResponseTime: true,
+        showConfidence: true,
+        showTokens: true,
+        showModel: true,
+        showSources: true,
+    },
+};
+export const MinimalMetadata = {
+    args: {
+        message: messageMinimal,
+        showTokens: true,
+        showModel: true,
+    },
+};
+export const CostAndTokens = {
+    args: {
+        message: messageWithMetadata,
+        showCost: true,
+        showTokens: true,
+        showModel: true,
+    },
+};
+export const PerformanceMetrics = {
+    args: {
+        message: messageWithMetadata,
+        showResponseTime: true,
+        showTokens: true,
+    },
+};
+export const ConfidenceScore = {
+    args: {
+        message: messageHighConfidence,
+        showConfidence: true,
+        showModel: true,
+    },
+};
+export const LowConfidence = {
+    args: {
+        message: messageLowConfidence,
+        showConfidence: true,
+        showModel: true,
+    },
+};
+export const WithSources = {
+    args: {
+        message: messageWithMetadata,
+        showSources: true,
+        showModel: true,
+    },
+};
+export const CompactMode = {
+    args: {
+        message: messageWithMetadata,
+        compact: true,
+        showCost: true,
+        showResponseTime: true,
+        showTokens: true,
+    },
+};
+//# sourceMappingURL=MessageMetadata.stories.js.map

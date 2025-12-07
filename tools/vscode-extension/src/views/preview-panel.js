@@ -4,8 +4,10 @@
  */
 import * as vscode from 'vscode';
 export class PreviewPanel {
+    static currentPanel;
+    panel;
+    disposables = [];
     constructor(panel, extensionUri) {
-        this.disposables = [];
         this.panel = panel;
         // Set the webview's initial html content
         this.update();

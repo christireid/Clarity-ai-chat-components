@@ -2,13 +2,14 @@
  * AI Model Response Comparison Tools
  * Compare responses from different AI models to help developers choose the right model
  */
+import { table, keyValueTable } from '../ui/table';
+import { infoBox } from '../ui/box';
+import chalk from 'chalk';
 /**
  * Compare responses from multiple models
  */
 export class ModelComparator {
-    constructor() {
-        this.responses = new Map();
-    }
+    responses = new Map();
     /**
      * Add a response for comparison
      */
@@ -98,53 +99,55 @@ export class ModelComparator {
     }
 }
 /**
- * Side-by-side comparison formatter
+ * Side-by-side comparison formatter with beautiful formatting
  */
 export function formatSideBySide(result) {
-    const lines = [];
-    lines.push('='.repeat(80));
-    lines.push(`PROMPT: ${result.prompt}`);
-    lines.push('='.repeat(80));
-    lines.push('');
-    // Response comparison
-    result.responses.forEach((response, index) => {
-        lines.push(`┌─ ${response.provider} / ${response.model} ${'─'.repeat(60 - response.model.length)}`);
-        lines.push(`│ Latency: ${response.metadata.latency}ms | Cost: $${response.metadata.cost.toFixed(4)} | Tokens: ${response.metadata.totalTokens}`);
-        lines.push('├' + '─'.repeat(78));
-        // Word-wrap content
-        const words = response.content.split(' ');
-        let line = '│ ';
-        words.forEach(word => {
-            if (line.length + word.length > 78) {
-                lines.push(line);
-                line = '│ ' + word + ' ';
-            }
-            else {
-                line += word + ' ';
-            }
-        });
-        if (line.length > 2) {
-            lines.push(line);
-        }
-        lines.push('└' + '─'.repeat(78));
-        lines.push('');
+    const output = [];
+    // Header
+    output.push('');
+    output.push(infoBox(result.prompt, '💬 Prompt'));
+    output.push('');
+    // Responses comparison table
+    const columns = [
+        { header: 'Provider/Model', width: 25, color: chalk.yellow },
+        { header: 'Latency', width: 12, align: 'right', color: chalk.cyan },
+        { header: 'Cost', width: 12, align: 'right', color: chalk.green },
+        { header: 'Tokens', width: 10, align: 'right', color: chalk.blue },
+        { header: 'Content Preview', width: 30 },
+    ];
+    const tableData = result.responses.map(response => {
+        const preview = response.content.length > 30
+            ? response.content.substring(0, 30) + '...'
+            : response.content;
+        return [
+            `${response.provider}/${response.model}`,
+            `${response.metadata.latency}ms`,
+            `$${response.metadata.cost.toFixed(4)}`,
+            response.metadata.totalTokens.toString(),
+            preview,
+        ];
     });
-    // Analysis
-    lines.push('═'.repeat(80));
-    lines.push('ANALYSIS');
-    lines.push('═'.repeat(80));
-    lines.push(`⚡ Fastest: ${result.analysis.fastest}`);
-    lines.push(`💰 Cheapest: ${result.analysis.cheapest}`);
-    lines.push(`📊 Most Tokens: ${result.analysis.mostTokens}`);
-    lines.push(`⏱️  Average Latency: ${result.analysis.averageLatency.toFixed(2)}ms`);
-    lines.push(`💵 Total Cost: $${result.analysis.totalCost.toFixed(4)}`);
-    lines.push('');
-    lines.push('RECOMMENDATIONS:');
-    result.analysis.recommendations.forEach((rec, i) => {
-        lines.push(`  ${i + 1}. ${rec}`);
-    });
-    lines.push('');
-    return lines.join('\n');
+    output.push(table(tableData, columns));
+    output.push('');
+    // Analysis summary
+    const analysisData = {
+        '⚡ Fastest': chalk.green(result.analysis.fastest),
+        '💰 Cheapest': chalk.green(result.analysis.cheapest),
+        '📊 Most Tokens': chalk.cyan(result.analysis.mostTokens),
+        '⏱️  Avg Latency': chalk.cyan(`${result.analysis.averageLatency.toFixed(2)}ms`),
+        '💵 Total Cost': chalk.yellow(`$${result.analysis.totalCost.toFixed(4)}`),
+    };
+    output.push(infoBox(keyValueTable(analysisData), '📊 Analysis'));
+    output.push('');
+    // Recommendations
+    if (result.analysis.recommendations.length > 0) {
+        const recs = result.analysis.recommendations
+            .map((rec, i) => `${i + 1}. ${rec}`)
+            .join('\n');
+        output.push(infoBox(recs, '💡 Recommendations'));
+        output.push('');
+    }
+    return output.join('\n');
 }
 export function scoreResponseQuality(prompt, response, expectedKeywords) {
     // Simple heuristic scoring (in production, use ML models)

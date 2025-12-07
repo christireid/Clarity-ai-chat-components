@@ -8,60 +8,61 @@
  * Mock OpenAI client
  */
 export class MockOpenAI {
+    options;
+    callCount = 0;
     constructor(options = {}) {
-        this.callCount = 0;
-        this.chat = {
-            completions: {
-                create: async (params) => {
-                    this.callCount++;
-                    // Simulate error
-                    if (this.options.error) {
-                        throw this.options.error;
-                    }
-                    // Simulate delay
-                    if (this.options.delay) {
-                        await this.delay(this.options.delay);
-                    }
-                    // Handle streaming
-                    if (params.stream) {
-                        return this.createMockStream();
-                    }
-                    // Return mock response
-                    const response = this.options.responses?.[this.callCount - 1] || {
-                        content: 'Mock response from OpenAI',
-                        model: params.model || 'gpt-4-turbo',
-                        usage: {
-                            promptTokens: 10,
-                            completionTokens: 20,
-                            totalTokens: 30
-                        }
-                    };
-                    return {
-                        id: `mock-${Date.now()}`,
-                        object: 'chat.completion',
-                        created: Math.floor(Date.now() / 1000),
-                        model: response.model,
-                        choices: [
-                            {
-                                index: 0,
-                                message: {
-                                    role: 'assistant',
-                                    content: response.content
-                                },
-                                finish_reason: 'stop'
-                            }
-                        ],
-                        usage: {
-                            prompt_tokens: response.usage.promptTokens,
-                            completion_tokens: response.usage.completionTokens,
-                            total_tokens: response.usage.totalTokens
-                        }
-                    };
-                }
-            }
-        };
         this.options = options;
     }
+    chat = {
+        completions: {
+            create: async (params) => {
+                this.callCount++;
+                // Simulate error
+                if (this.options.error) {
+                    throw this.options.error;
+                }
+                // Simulate delay
+                if (this.options.delay) {
+                    await this.delay(this.options.delay);
+                }
+                // Handle streaming
+                if (params.stream) {
+                    return this.createMockStream();
+                }
+                // Return mock response
+                const response = this.options.responses?.[this.callCount - 1] || {
+                    content: 'Mock response from OpenAI',
+                    model: params.model || 'gpt-4-turbo',
+                    usage: {
+                        promptTokens: 10,
+                        completionTokens: 20,
+                        totalTokens: 30
+                    }
+                };
+                return {
+                    id: `mock-${Date.now()}`,
+                    object: 'chat.completion',
+                    created: Math.floor(Date.now() / 1000),
+                    model: response.model,
+                    choices: [
+                        {
+                            index: 0,
+                            message: {
+                                role: 'assistant',
+                                content: response.content
+                            },
+                            finish_reason: 'stop'
+                        }
+                    ],
+                    usage: {
+                        prompt_tokens: response.usage.promptTokens,
+                        completion_tokens: response.usage.completionTokens,
+                        total_tokens: response.usage.totalTokens
+                    }
+                };
+            }
+        }
+    };
     async *createMockStream() {
         const chunks = this.options.streamChunks || [
             { content: 'Mock ' },
@@ -117,54 +118,55 @@ export class MockOpenAI {
  * Mock Anthropic client
  */
 export class MockAnthropic {
+    options;
+    callCount = 0;
     constructor(options = {}) {
-        this.callCount = 0;
-        this.messages = {
-            create: async (params) => {
-                this.callCount++;
-                // Simulate error
-                if (this.options.error) {
-                    throw this.options.error;
-                }
-                // Simulate delay
-                if (this.options.delay) {
-                    await this.delay(this.options.delay);
-                }
-                // Handle streaming
-                if (params.stream) {
-                    return this.createMockStream();
-                }
-                // Return mock response
-                const response = this.options.responses?.[this.callCount - 1] || {
-                    content: 'Mock response from Claude',
-                    model: params.model || 'claude-3-opus-20240229',
-                    usage: {
-                        promptTokens: 10,
-                        completionTokens: 20,
-                        totalTokens: 30
-                    }
-                };
-                return {
-                    id: `msg_mock${Date.now()}`,
-                    type: 'message',
-                    role: 'assistant',
-                    content: [
-                        {
-                            type: 'text',
-                            text: response.content
-                        }
-                    ],
-                    model: response.model,
-                    stop_reason: 'end_turn',
-                    usage: {
-                        input_tokens: response.usage.promptTokens,
-                        output_tokens: response.usage.completionTokens
-                    }
-                };
-            }
-        };
         this.options = options;
     }
+    messages = {
+        create: async (params) => {
+            this.callCount++;
+            // Simulate error
+            if (this.options.error) {
+                throw this.options.error;
+            }
+            // Simulate delay
+            if (this.options.delay) {
+                await this.delay(this.options.delay);
+            }
+            // Handle streaming
+            if (params.stream) {
+                return this.createMockStream();
+            }
+            // Return mock response
+            const response = this.options.responses?.[this.callCount - 1] || {
+                content: 'Mock response from Claude',
+                model: params.model || 'claude-3-opus-20240229',
+                usage: {
+                    promptTokens: 10,
+                    completionTokens: 20,
+                    totalTokens: 30
+                }
+            };
+            return {
+                id: `msg_mock${Date.now()}`,
+                type: 'message',
+                role: 'assistant',
+                content: [
+                    {
+                        type: 'text',
+                        text: response.content
+                    }
+                ],
+                model: response.model,
+                stop_reason: 'end_turn',
+                usage: {
+                    input_tokens: response.usage.promptTokens,
+                    output_tokens: response.usage.completionTokens
+                }
+            };
+        }
+    };
     async *createMockStream() {
         const chunks = this.options.streamChunks || [
             { content: 'Mock ' },
@@ -220,8 +222,9 @@ export class MockAnthropic {
  * Mock Google AI client
  */
 export class MockGoogleAI {
+    options;
+    callCount = 0;
     constructor(options = {}) {
-        this.callCount = 0;
         this.options = options;
     }
     getGenerativeModel(config) {

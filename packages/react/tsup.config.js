@@ -1,23 +1,58 @@
 import { defineConfig } from 'tsup';
-export default defineConfig({
-    entry: ['src/index.ts', 'src/styles/index.css'],
-    format: ['cjs', 'esm'],
-    dts: false, // Temporarily disable DTS generation to reduce memory usage
-    external: ['react', 'react-dom', 'framer-motion'],
-    clean: true,
-    sourcemap: false, // Disable to reduce memory
-    minify: false, // Disable to reduce memory
-    splitting: false, // Disable to reduce memory
-    treeshake: false, // Disable to reduce memory
-    // Handle CSS files
-    loader: {
-        '.css': 'copy',
+export default defineConfig([
+    // Main entry
+    {
+        entry: ['src/index.ts', 'src/styles/index.css'],
+        format: ['cjs', 'esm'],
+        // TODO: Re-enable DTS generation after fixing ~192 TypeScript strict mode errors
+        // The ESM/CJS builds succeed - only declaration file generation is failing
+        dts: false, // Temporarily disabled due to strict TypeScript errors
+        external: [
+            'react',
+            'react-dom',
+            'framer-motion',
+            '@clarity-chat/primitives',
+            '@clarity-chat/types',
+            '@clarity-chat/memory',
+            'mermaid',
+            'highlight.js/styles/github-dark.css',
+            'katex/dist/katex.min.css',
+        ],
+        clean: true,
+        sourcemap: false,
+        minify: false,
+        splitting: false,
+        treeshake: false,
+        loader: {
+            '.css': 'copy',
+        },
+        outExtension({ format }) {
+            return {
+                js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
+                css: '.css',
+            };
+        },
     },
-    outExtension({ format }) {
-        return {
-            js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
-            css: '.css',
-        };
-    },
-});
+    // TODO: Re-enable once prompt system core/ directory is implemented
+    // Prompt optimization subpath export
+    // {
+    //   entry: ['src/prompt/index.ts'],
+    //   format: ['cjs', 'esm'],
+    //   dts: false,
+    //   external: [
+    //     'react',
+    //     'react-dom',
+    //   ],
+    //   outDir: 'dist/prompt',
+    //   sourcemap: false,
+    //   minify: false,
+    //   splitting: false,
+    //   treeshake: false,
+    //   outExtension({ format }) {
+    //     return {
+    //       js: `.${format === 'cjs' ? 'js' : 'mjs'}`,
+    //     }
+    //   },
+    // },
+]);
 //# sourceMappingURL=tsup.config.js.map

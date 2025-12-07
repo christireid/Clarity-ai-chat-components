@@ -9,7 +9,7 @@ import { Resource } from '@modelcontextprotocol/sdk/types.js';
  */
 export declare const resources: Resource[];
 /**
- * Handle resource reads
+ * Handle resource reads with caching
  */
 export declare function handleResourceRead(uri: string): Promise<string>;
 //# sourceMappingURL=index.d.ts.map

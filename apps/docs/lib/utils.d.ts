@@ -3,7 +3,7 @@ import { type ClassValue } from 'clsx';
  * Combines class names using clsx and tailwind-merge
  * Useful for merging Tailwind classes and avoiding conflicts
  */
-export declare function cn(...inputs: ClassValue[]): string;
+export declare function cn(...inputs: ClassValue[]): any;
 /**
  * Format a date to a readable string
  */
