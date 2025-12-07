@@ -1,51 +1,27 @@
-import React from 'react'
-import { Metadata } from 'next'
-import { ApiTable } from '@/components/Demo/ApiTable'
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { ToastProvider, AgentRunFeed } from '@clarity-chat/react'
+import type { AgentRunStep } from '@clarity-chat/react'
+import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
+import { Pagination } from '@/components/Navigation/Pagination'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
+import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
+import { ComponentPreview } from '@/components/Demo/ComponentPreview'
+import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-export const dynamic = 'force-dynamic'
-
-export const metadata: Metadata = {
-  title: 'Agent Run Feed - Clarity Chat Components',
-  description: 'Display AI agent execution steps showing tool calls, reasoning, and multi-step workflows.',
-}
-
-export default function AgentRunFeedPage() {
-  return (
-    <div className="docs-content">
-      <div className="docs-header">
-        <span className="docs-badge">Component</span>
-        <h1>Agent Run Feed</h1>
-        <p className="docs-lead">
-          Watch an AI agent work in real-time. See each step it takes - calling tools, processing data, making decisions. Like watching a robot think.
-        </p>
-      </div>
-
-      <section className="docs-section">
-        <h2>Overview</h2>
-        <p>
-          AI agents (like LangChain agents or OpenAI Assistants) take multiple steps to solve problems. This component shows those steps as they happen - perfect for debugging or showing users "what's happening behind the scenes."
-        </p>
-        
-        <Callout type="info" title="What's an AI Agent?">
-          An agent can use tools (call APIs, search databases, run code) to solve problems.
-          Unlike simple chatbots, agents make plans and take multiple steps. This shows those steps.
-        </Callout>
-      </section>
-
-      <section className="docs-section">
-        <h2>Basic Usage</h2>
-        <CodePlayground
-          initialCode={`function SimpleAgentFeed() {
-  const steps = [
+// Basic demo component
+function BasicAgentFeedDemo() {
+  const [steps] = useState<AgentRunStep[]>([
     {
       id: '1',
-      title: 'Planning',
-      detail: 'Analyzing user request and determining required tools',
+      title: 'Analyzing request',
+      detail: 'Understanding user intent and requirements',
       status: 'succeeded',
-      startedAt: new Date('2024-11-03T10:00:00'),
-      completedAt: new Date('2024-11-03T10:00:01')
+      startedAt: new Date(Date.now() - 5000),
+      completedAt: new Date(Date.now() - 4000),
     },
     {
       id: '2',
@@ -53,104 +29,90 @@ export default function AgentRunFeedPage() {
       detail: 'Query: "customer support best practices"',
       status: 'succeeded',
       tool: 'vector_search',
-      startedAt: new Date('2024-11-03T10:00:01'),
-      completedAt: new Date('2024-11-03T10:00:03')
+      startedAt: new Date(Date.now() - 4000),
+      completedAt: new Date(Date.now() - 2000),
     },
     {
       id: '3',
       title: 'Generating response',
       detail: 'Synthesizing answer from search results',
       status: 'succeeded',
-      startedAt: new Date('2024-11-03T10:00:03'),
-      completedAt: new Date('2024-11-03T10:00:06')
-    }
-  ]
+      startedAt: new Date(Date.now() - 2000),
+      completedAt: new Date(),
+    },
+  ])
 
   return (
-    <AgentRunFeed steps={steps} />
+    <div className="w-full max-w-2xl">
+      <AgentRunFeed steps={steps} />
+    </div>
   )
 }
 
-render(<SimpleAgentFeed />)`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Live Agent Execution</h2>
-        <CodePlayground
-          initialCode={`import { useState, useEffect } from 'react'
-
-function LiveAgentExecution() {
-  const [steps, setSteps] = useState([])
+// Live execution demo
+function LiveAgentFeedDemo() {
+  const [steps, setSteps] = useState<AgentRunStep[]>([])
 
   useEffect(() => {
-    // Simulate agent executing steps
-    const sequence = [
+    const sequence: Array<Omit<AgentRunStep, 'id' | 'startedAt' | 'completedAt'> & { delay: number }> = [
       {
-        id: '1',
-        title: 'Received request',
+        title: 'Planning',
+        detail: 'Breaking down the task into steps',
         status: 'running',
-        startedAt: new Date(),
-        delay: 0
+        delay: 0,
       },
       {
-        id: '2',
         title: 'Calling weather API',
+        detail: 'Fetching current weather data',
+        status: 'running',
         tool: 'weather_api',
-        status: 'running',
-        startedAt: new Date(),
-        delay: 1000
+        delay: 1000,
       },
       {
-        id: '3',
         title: 'Calling calendar API',
-        tool: 'calendar_api',
+        detail: 'Checking available time slots',
         status: 'running',
-        startedAt: new Date(),
-        delay: 2500
+        tool: 'calendar_api',
+        delay: 2500,
       },
       {
-        id: '4',
         title: 'Generating recommendation',
+        detail: 'Combining data to create suggestion',
         status: 'running',
-        startedAt: new Date(),
-        delay: 4000
-      }
+        delay: 4000,
+      },
     ]
 
     sequence.forEach((step, i) => {
       setTimeout(() => {
-        setSteps(prev => [...prev, {
+        const newStep: AgentRunStep = {
+          id: `step-${i + 1}`,
           ...step,
-          status: 'running'
-        }])
+          startedAt: new Date(),
+        }
+        setSteps(prev => [...prev, newStep])
 
-        // Mark as succeeded after a bit
+        // Mark as succeeded after delay
         setTimeout(() => {
-          setSteps(prev => prev.map(s =>
-            s.id === step.id
-              ? {
-                  ...s,
-                  status: 'succeeded',
-                  completedAt: new Date(),
-                  detail: \`Step \${i + 1} completed successfully\`
-                }
-              : s
-          ))
+          setSteps(prev =>
+            prev.map(s =>
+              s.id === newStep.id
+                ? {
+                    ...s,
+                    status: 'succeeded' as const,
+                    completedAt: new Date(),
+                    outputPreview: `Step ${i + 1} completed successfully`,
+                  }
+                : s
+            )
+          )
         }, 800)
       }, step.delay)
     })
   }, [])
 
   return (
-    <div className="space-y-4">
-      <div className="p-3 bg-muted/50 rounded-lg">
-        <div className="text-sm font-medium">Agent Status</div>
-        <div className="text-xs text-muted-foreground">
-          {steps.length} / 4 steps completed
-        </div>
-      </div>
-      
+    <div className="w-full max-w-2xl">
       <AgentRunFeed
         steps={steps}
         title="Weather Planning Agent"
@@ -160,25 +122,231 @@ function LiveAgentExecution() {
   )
 }
 
-render(<LiveAgentExecution />)`}
+const agentRunFeedProps: Prop[] = [
+  {
+    name: 'steps',
+    type: 'AgentRunStep[]',
+    required: true,
+    description: 'Array of agent execution steps. Each step represents one action in the agent workflow.',
+  },
+  {
+    name: 'onRetry',
+    type: '(step: AgentRunStep) => void',
+    description: 'Callback when user retries a failed step. Shows retry button for failed steps.',
+  },
+  {
+    name: 'onOpenLogs',
+    type: '(step: AgentRunStep) => void',
+    description: 'Callback when user opens detailed logs for a step. Shows "View logs" button.',
+  },
+  {
+    name: 'title',
+    type: 'string',
+    default: '"Agent execution feed"',
+    description: 'Title displayed at the top of the feed.',
+  },
+  {
+    name: 'subtitle',
+    type: 'string',
+    default: '"Observe how the orchestrator called tools, merged evidence, and delivered the final answer."',
+    description: 'Subtitle/description displayed below the title.',
+  },
+  {
+    name: 'className',
+    type: 'string',
+    description: 'Additional CSS classes to apply to the container element.',
+  },
+]
+
+export const dynamic = 'force-dynamic'
+
+export default function AgentRunFeedPage() {
+  return (
+    <ToastProvider>
+      <>
+        <Breadcrumbs />
+
+        <h1>AgentRunFeed</h1>
+
+        <p className="lead">
+          Display AI agent execution steps in real-time, showing tool calls, reasoning,
+          and multi-step workflows. Perfect for debugging agents or showing users what's happening behind the scenes.
+        </p>
+
+        <Callout type="info">
+          <p>
+            <strong>What's an AI Agent?</strong> An agent can use tools (call APIs, search databases, run code)
+            to solve problems. Unlike simple chatbots, agents make plans and take multiple steps.
+            AgentRunFeed visualizes these steps as they happen.
+          </p>
+        </Callout>
+
+        <ViewInStorybook component="AgentRunFeed" />
+
+        <section className="my-12">
+          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+          <p className="mb-6 text-gray-600 dark:text-gray-400">
+            Watch an agent execute steps in real-time! See how it progresses through the workflow.
+          </p>
+          <CodePlayground
+            initialCode={`function Example() {
+  const [steps, setSteps] = React.useState([])
+
+  React.useEffect(() => {
+    const sequence = [
+      { id: '1', title: 'Planning', status: 'running', startedAt: new Date(), delay: 0 },
+      { id: '2', title: 'Calling API', tool: 'weather_api', status: 'running', startedAt: new Date(), delay: 1000 },
+    ]
+
+    sequence.forEach((step) => {
+      setTimeout(() => {
+        setSteps(prev => [...prev, step])
+        setTimeout(() => {
+          setSteps(prev => prev.map(s =>
+            s.id === step.id ? { ...s, status: 'succeeded', completedAt: new Date() } : s
+          ))
+        }, 800)
+      }, step.delay)
+    })
+  }, [])
+
+  return <AgentRunFeed steps={steps} />
+}
+
+render(<Example />)`}
+          />
+        </section>
+
+        <h2 id="import">Import</h2>
+
+        <EnhancedCodeBlock
+          code={`import { AgentRunFeed } from '@clarity-chat/react'
+import type { AgentRunStep } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'`}
+          language="tsx"
         />
-      </section>
 
-      <section className="docs-section">
-        <h2>With Failed Steps and Retry</h2>
-        <CodePlayground
-          initialCode={`import { useState } from 'react'
+        <h2 id="basic-usage">Basic Usage</h2>
 
-function FailureHandling() {
-  const [steps, setSteps] = useState([
+        <p>
+          AgentRunFeed displays a list of agent execution steps with status indicators:
+        </p>
+
+        <ComponentPreview
+          title="Simple Agent Feed"
+          description="Basic agent execution steps"
+          code={`import { AgentRunFeed } from '@clarity-chat/react'
+import type { AgentRunStep } from '@clarity-chat/react'
+
+function SimpleAgentFeed() {
+  const steps: AgentRunStep[] = [
+    {
+      id: '1',
+      title: 'Analyzing request',
+      detail: 'Understanding user intent',
+      status: 'succeeded',
+      startedAt: new Date(Date.now() - 5000),
+      completedAt: new Date(Date.now() - 4000),
+    },
+    {
+      id: '2',
+      title: 'Searching knowledge base',
+      status: 'succeeded',
+      tool: 'vector_search',
+      startedAt: new Date(Date.now() - 4000),
+      completedAt: new Date(Date.now() - 2000),
+    },
+  ]
+
+  return <AgentRunFeed steps={steps} />
+}`}
+        >
+          <BasicAgentFeedDemo />
+        </ComponentPreview>
+
+        <h2 id="live-execution">Live Agent Execution</h2>
+
+        <p>
+          Update steps in real-time as the agent executes:
+        </p>
+
+        <ComponentPreview
+          title="Live Execution"
+          description="Real-time step updates as agent executes"
+          code={`import { AgentRunFeed } from '@clarity-chat/react'
+import { useState, useEffect } from 'react'
+
+function LiveAgentExecution() {
+  const [steps, setSteps] = useState<AgentRunStep[]>([])
+
+  useEffect(() => {
+    // Simulate agent executing steps
+    const sequence = [
+      {
+        id: '1',
+        title: 'Planning',
+        status: 'running',
+        startedAt: new Date(),
+        delay: 0,
+      },
+      {
+        id: '2',
+        title: 'Calling weather API',
+        tool: 'weather_api',
+        status: 'running',
+        startedAt: new Date(),
+        delay: 1000,
+      },
+    ]
+
+    sequence.forEach((step, i) => {
+      setTimeout(() => {
+        setSteps(prev => [...prev, step])
+        
+        // Mark as succeeded after delay
+        setTimeout(() => {
+          setSteps(prev => prev.map(s =>
+            s.id === step.id
+              ? { ...s, status: 'succeeded', completedAt: new Date() }
+              : s
+          ))
+        }, 800)
+      }, step.delay)
+    })
+  }, [])
+
+  return (
+    <AgentRunFeed
+      steps={steps}
+      title="Weather Planning Agent"
+      subtitle="Checking weather and calendar"
+    />
+  )
+}`}
+        >
+          <LiveAgentFeedDemo />
+        </ComponentPreview>
+
+        <h2 id="with-retry">With Retry and Logs</h2>
+
+        <p>
+          Enable retry for failed steps and log viewing:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`import { AgentRunFeed } from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+
+function AgentWithRetry() {
+  const [steps, setSteps] = useState<AgentRunStep[]>([
     {
       id: '1',
       title: 'Database query',
-      detail: 'SELECT * FROM users WHERE active=true',
+      detail: 'SELECT * FROM users',
       status: 'succeeded',
       tool: 'postgres',
-      startedAt: new Date('2024-11-03T10:00:00'),
-      completedAt: new Date('2024-11-03T10:00:02')
+      startedAt: new Date(Date.now() - 5000),
+      completedAt: new Date(Date.now() - 3000),
     },
     {
       id: '2',
@@ -186,19 +354,20 @@ function FailureHandling() {
       detail: 'Failed to connect to api.example.com',
       status: 'failed',
       tool: 'rest_api',
-      startedAt: new Date('2024-11-03T10:00:02'),
-      completedAt: new Date('2024-11-03T10:00:05')
-    }
+      startedAt: new Date(Date.now() - 3000),
+      completedAt: new Date(Date.now() - 1000),
+    },
   ])
 
-  const handleRetry = (step) => {
-    console.log('Retrying:', step.title)
+  const handleRetry = useCallback((step: AgentRunStep) => {
     // Mark as running
     setSteps(prev => prev.map(s =>
-      s.id === step.id ? { ...s, status: 'running', detail: 'Retrying...' } : s
+      s.id === step.id
+        ? { ...s, status: 'running', detail: 'Retrying...' }
+        : s
     ))
 
-    // Simulate success after delay
+    // Simulate retry
     setTimeout(() => {
       setSteps(prev => prev.map(s =>
         s.id === step.id
@@ -206,16 +375,17 @@ function FailureHandling() {
               ...s,
               status: 'succeeded',
               detail: 'Connected successfully on retry',
-              completedAt: new Date()
+              completedAt: new Date(),
             }
           : s
       ))
     }, 2000)
-  }
+  }, [])
 
-  const handleOpenLogs = (step) => {
-    alert(\`Logs for: \${step.title}\\n\\nTool: \${step.tool}\\nStatus: \${step.status}\\nDetail: \${step.detail}\`)
-  }
+  const handleOpenLogs = useCallback((step: AgentRunStep) => {
+    // Open logs modal or navigate to logs page
+    console.log('Logs for:', step)
+  }, [])
 
   return (
     <AgentRunFeed
@@ -224,123 +394,292 @@ function FailureHandling() {
       onOpenLogs={handleOpenLogs}
     />
   )
-}
-
-render(<FailureHandling />)`}
+}`}
+          language="tsx"
+          showLineNumbers
         />
-      </section>
 
-      <section className="docs-section">
-        <h2>Props</h2>
-        <ApiTable title="AgentRunFeed Props" data={agentProps} />
-      </section>
+        <h2 id="status-indicators">Status Indicators</h2>
 
-      <section className="docs-section">
-        <h2>Integration with LangChain</h2>
-        <pre><code>{`// Stream agent steps from LangChain
-import { AgentRunFeed } from '@clarity-chat/react'
+        <p>
+          Each step displays a status badge with appropriate colors:
+        </p>
+
+        <ul>
+          <li>
+            <strong>pending:</strong> Queued (blue badge, spinner icon)
+          </li>
+          <li>
+            <strong>running:</strong> In progress (blue badge, pulsing icon)
+          </li>
+          <li>
+            <strong>succeeded:</strong> Completed (green badge, checkmark icon)
+          </li>
+          <li>
+            <strong>failed:</strong> Failed (red badge, X icon)
+          </li>
+        </ul>
+
+        <h2 id="step-details">Step Details</h2>
+
+        <p>
+          Steps can include additional information:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`import { AgentRunFeed } from '@clarity-chat/react'
+
+function DetailedSteps() {
+  const steps: AgentRunStep[] = [
+    {
+      id: '1',
+      title: 'Searching database',
+      detail: 'Query: SELECT * FROM products WHERE category = "electronics"',
+      status: 'succeeded',
+      tool: 'postgres',
+      startedAt: new Date(),
+      completedAt: new Date(),
+      outputPreview: 'Found 42 products',
+    },
+  ]
+
+  return <AgentRunFeed steps={steps} />
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="props">Props</h2>
+
+        <PropsTable props={agentRunFeedProps} />
+
+        <h2 id="agent-run-step-type">AgentRunStep Type</h2>
+
+        <p>
+          The <code>AgentRunStep</code> type structure:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`interface AgentRunStep {
+  id: string
+  title: string
+  detail?: string
+  status: 'pending' | 'running' | 'succeeded' | 'failed'
+  tool?: string
+  startedAt: Date
+  completedAt?: Date
+  outputPreview?: string
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="integration-with-langchain">Integration with LangChain</h2>
+
+        <p>
+          Stream agent steps from LangChain:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`import { AgentRunFeed } from '@clarity-chat/react'
 import { AgentExecutor } from 'langchain/agents'
+import { useState } from 'react'
 
 function LangChainAgent() {
-  const [steps, setSteps] = useState([])
+  const [steps, setSteps] = useState<AgentRunStep[]>([])
 
   const runAgent = async (query: string) => {
-    const executor = new AgentExecutor({ ... })
+    const executor = new AgentExecutor({
+      // Your agent configuration
+    })
 
     // Stream intermediate steps
     for await (const step of executor.stream(query)) {
       if (step.intermediateSteps) {
         setSteps(prev => [...prev, {
           id: Date.now().toString(),
-          title: step.tool,
+          title: step.tool || 'Processing',
           detail: step.input,
-          status: step.status,
+          status: step.status === 'error' ? 'failed' : 'succeeded',
           tool: step.tool,
           startedAt: new Date(step.startTime),
-          completedAt: step.endTime ? new Date(step.endTime) : undefined
+          completedAt: step.endTime ? new Date(step.endTime) : undefined,
         }])
       }
     }
   }
 
   return <AgentRunFeed steps={steps} />
-}`}</code></pre>
-      </section>
+}`}
+          language="tsx"
+          showLineNumbers
+        />
 
-      <section className="docs-section">
-        <h2>Best Practices</h2>
+        <h2 id="complete-example">Complete Example</h2>
+
+        <EnhancedCodeBlock
+          code={`import { useState, useEffect, useCallback } from 'react'
+import { AgentRunFeed } from '@clarity-chat/react'
+import type { AgentRunStep } from '@clarity-chat/react'
+
+function CompleteAgentFeed() {
+  const [steps, setSteps] = useState<AgentRunStep[]>([])
+
+  useEffect(() => {
+    // Simulate agent execution
+    const executeAgent = async () => {
+      // Step 1: Planning
+      setSteps([{
+        id: '1',
+        title: 'Planning',
+        detail: 'Analyzing request and determining required tools',
+        status: 'running',
+        startedAt: new Date(),
+      }])
+
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      setSteps(prev => prev.map(s =>
+        s.id === '1'
+          ? { ...s, status: 'succeeded', completedAt: new Date() }
+          : s
+      ))
+
+      // Step 2: Tool call
+      setSteps(prev => [...prev, {
+        id: '2',
+        title: 'Calling weather API',
+        detail: 'Fetching weather for San Francisco',
+        status: 'running',
+        tool: 'weather_api',
+        startedAt: new Date(),
+      }])
+
+      await new Promise(resolve => setTimeout(resolve, 2000))
+
+      setSteps(prev => prev.map(s =>
+        s.id === '2'
+          ? {
+              ...s,
+              status: 'succeeded',
+              completedAt: new Date(),
+              outputPreview: 'Temperature: 18°C, Condition: Sunny',
+            }
+          : s
+      ))
+
+      // Step 3: Final response
+      setSteps(prev => [...prev, {
+        id: '3',
+        title: 'Generating response',
+        detail: 'Combining results into final answer',
+        status: 'running',
+        startedAt: new Date(),
+      }])
+
+      await new Promise(resolve => setTimeout(resolve, 1500))
+
+      setSteps(prev => prev.map(s =>
+        s.id === '3'
+          ? { ...s, status: 'succeeded', completedAt: new Date() }
+          : s
+      ))
+    }
+
+    executeAgent()
+  }, [])
+
+  const handleRetry = useCallback((step: AgentRunStep) => {
+    // Retry logic
+    console.log('Retrying step:', step.id)
+  }, [])
+
+  const handleOpenLogs = useCallback((step: AgentRunStep) => {
+    // Open logs
+    console.log('Opening logs for:', step.id)
+  }, [])
+
+  return (
+    <AgentRunFeed
+      steps={steps}
+      title="Weather Assistant Agent"
+      subtitle="Checking weather and generating recommendations"
+      onRetry={handleRetry}
+      onOpenLogs={handleOpenLogs}
+    />
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="best-practices">Best Practices</h2>
+
         <ul>
-          <li>Update steps in real-time as agent executes</li>
-          <li>Show tool names so users understand what's happening</li>
-          <li>Include timing information for performance debugging</li>
-          <li>Provide retry for failed steps</li>
-          <li>Add log viewing for detailed debugging</li>
+          <li>
+            <strong>Update in real-time:</strong> Update steps as the agent executes for best UX
+          </li>
+          <li>
+            <strong>Show tool names:</strong> Include <code>tool</code> property so users understand what's happening
+          </li>
+          <li>
+            <strong>Include timing:</strong> Provide <code>startedAt</code> and <code>completedAt</code> for performance debugging
+          </li>
+          <li>
+            <strong>Provide retry:</strong> Enable retry for failed steps to improve reliability
+          </li>
+          <li>
+            <strong>Add log viewing:</strong> Provide detailed logs for debugging complex issues
+          </li>
         </ul>
 
-        <Callout type="tip" title="UX Consideration">
-          For end users, you might want to hide this by default and show a simple
-          loading spinner. Expose this view in "advanced" or "debug" mode.
+        <Callout type="tip">
+          <p>
+            <strong>UX Consideration:</strong> For end users, you might want to hide this by default
+            and show a simple loading spinner. Expose this view in "advanced" or "debug" mode.
+          </p>
         </Callout>
-      </section>
 
-      <section className="docs-section">
-        <h2>Related</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/reference/components/conversation-timeline" className="docs-card">
-            <h3>Conversation Timeline</h3>
-            <p>Complete conversation history</p>
-          </a>
-          <a href="/reference/components/tool-invocation-card" className="docs-card">
-            <h3>Tool Invocation Card</h3>
-            <p>Individual tool call details</p>
-          </a>
-          <a href="/reference/components/thinking-indicator" className="docs-card">
-            <h3>Thinking Indicator</h3>
-            <p>Simple "AI is thinking" loader</p>
-          </a>
-        </div>
-      </section>
-    </div>
+        <h2 id="accessibility">Accessibility</h2>
+
+        <p>AgentRunFeed is built with accessibility in mind:</p>
+
+        <ul>
+          <li>✅ Semantic HTML structure (ordered list)</li>
+          <li>✅ ARIA labels for status indicators</li>
+          <li>✅ Keyboard navigation for buttons</li>
+          <li>✅ Screen reader announcements for status changes</li>
+          <li>✅ Focus management</li>
+        </ul>
+
+        <h2 id="related">Related</h2>
+
+        <ul>
+          <li>
+            <a href="/reference/components/tool-invocation-card">ToolInvocationCard</a> - Individual tool call details
+          </li>
+          <li>
+            <a href="/reference/components/clarity-tool-result">ClarityToolResult</a> - Render tool results with custom UI
+          </li>
+          <li>
+            <a href="/reference/components/streaming-message">StreamingMessage</a> - Display streaming responses
+          </li>
+          <li>
+            <a href="/reference/components/thinking-indicator">ThinkingIndicator</a> - Simple "AI is thinking" loader
+          </li>
+        </ul>
+
+        <Pagination
+          previous={{
+            title: 'ToolInvocationCard',
+            href: '/reference/components/tool-invocation-card',
+          }}
+          next={{
+            title: 'ClarityToolResult',
+            href: '/reference/components/clarity-tool-result',
+          }}
+        />
+      </>
+    </ToastProvider>
   )
 }
-
-const agentProps = [
-  {
-    name: 'steps',
-    type: 'AgentRunStep[]',
-    required: true,
-    description: 'Array of agent execution steps'
-  },
-  {
-    name: 'onRetry',
-    type: '(step: AgentRunStep) => void',
-    required: false,
-    description: 'Callback to retry failed steps'
-  },
-  {
-    name: 'onOpenLogs',
-    type: '(step: AgentRunStep) => void',
-    required: false,
-    description: 'Callback to view detailed logs'
-  },
-  {
-    name: 'title',
-    type: 'string',
-    required: false,
-    default: "'Agent execution feed'",
-    description: 'Feed heading'
-  },
-  {
-    name: 'subtitle',
-    type: 'string',
-    required: false,
-    description: 'Feed description'
-  },
-  {
-    name: 'className',
-    type: 'string',
-    required: false,
-    description: 'Additional CSS classes'
-  }
-]
-
