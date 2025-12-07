@@ -113,3 +113,4 @@ Deliverables for each task: updated files, removal of redundant utilities, docum
 - Updated associated tests (`dialog.test.tsx`, `drawer.test.tsx`, `scroll-area.test.tsx`) plus README and exports to reflect the new structure.
 - Verified via `pnpm test --filter @clarity-chat/primitives` and recorded dependency installs (`pnpm add -Dw tailwindcss-animate`, `pnpm add -Dw tailwindcss`).
 - Wrapped shadcn’s `card`, `badge`, and Radix `scroll-area` primitives to keep Clarity-specific affordances (hover states, pulse/dot badges, viewport styling) while inheriting upstream structure. Added a `viewportClassName` escape hatch and data slot for the scroll-area viewport so downstream code/tests can target the scrollable region directly.
+- Migrated `Input` and `Textarea` to compose shadcn’s base elements under the hood while preserving existing ergonomics (error messaging, icon slots, size variants, auto-resize). Updated unit tests continue to pass against the new structure.
