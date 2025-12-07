@@ -622,12 +622,12 @@ function ChatWithErrorHandling() {
             </p>
           </Link>
           <Link
-            href="/reference/hooks/use-chat-handlers"
+            href="/reference/hooks/use-chat"
             className="border rounded-lg p-4 hover:bg-muted transition-colors"
           >
-            <h3 className="font-semibold mb-2">useChatHandlers Hook</h3>
+            <h3 className="font-semibold mb-2">useChatEnhanced Hook</h3>
             <p className="text-sm text-muted-foreground">
-              Pre-configured handlers for easier integration with ChatWindow.
+              The underlying hook that powers useClarityChat. Use for more control.
             </p>
           </Link>
           <Link
