@@ -83,20 +83,20 @@ describe('Checkbox Component', () => {
 
   describe('Styling', () => {
     it('should apply default styles', () => {
-      const { container } = render(<Checkbox />)
-      const checkbox = container.querySelector('input[type="checkbox"]')
+      render(<Checkbox />)
+      const checkbox = screen.getByRole('checkbox')
       expect(checkbox).toHaveClass('h-4', 'w-4', 'rounded')
     })
 
     it('should accept custom className', () => {
-      const { container } = render(<Checkbox className="custom-checkbox" />)
-      const checkbox = container.querySelector('input[type="checkbox"]')
+      render(<Checkbox className="custom-checkbox" />)
+      const checkbox = screen.getByRole('checkbox')
       expect(checkbox).toHaveClass('custom-checkbox')
     })
 
     it('should have proper focus styles', () => {
-      const { container } = render(<Checkbox />)
-      const checkbox = container.querySelector('input[type="checkbox"]')
+      render(<Checkbox />)
+      const checkbox = screen.getByRole('checkbox')
       expect(checkbox).toHaveClass('focus-visible:ring-[3px]')
     })
   })
@@ -125,9 +125,9 @@ describe('Checkbox Component', () => {
     })
 
     it('should be focusable', () => {
-      const { container } = render(<Checkbox />)
-      const checkbox = container.querySelector('input[type="checkbox"]') as HTMLElement | null
-      checkbox?.focus()
+      render(<Checkbox />)
+      const checkbox = screen.getByRole('checkbox')
+      checkbox.focus()
       expect(document.activeElement).toBe(checkbox)
     })
   })
@@ -139,14 +139,17 @@ describe('Checkbox Component', () => {
           <Checkbox name="agree" value="yes" />
         </form>
       )
-      const checkbox = screen.getByRole('checkbox')
-      expect(checkbox).toHaveAttribute('name', 'agree')
-      expect(checkbox).toHaveAttribute('value', 'yes')
+      const hiddenInput = document.querySelector(
+        'input[data-checkbox-hidden-input]'
+      ) as HTMLInputElement | null
+      expect(hiddenInput).not.toBeNull()
+      expect(hiddenInput!).toHaveAttribute('name', 'agree')
+      expect(hiddenInput!).toHaveAttribute('value', 'yes')
     })
 
     it('should support required attribute', () => {
       render(<Checkbox required />)
-      expect(screen.getByRole('checkbox')).toBeRequired()
+      expect(screen.getByRole('checkbox')).toHaveAttribute('aria-required', 'true')
     })
   })
 
@@ -230,8 +233,8 @@ describe('Checkbox Component', () => {
     })
 
     it('should apply error styling to checkbox border', () => {
-      const { container } = render(<Checkbox error="Error" />)
-      const checkbox = container.querySelector('input[type="checkbox"]')
+      render(<Checkbox error="Error" />)
+      const checkbox = screen.getByRole('checkbox')
       expect(checkbox).toHaveClass('border-destructive')
     })
 
