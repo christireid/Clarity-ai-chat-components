@@ -14,14 +14,19 @@ interface TimeTravelState {
   currentIndex: number
 }
 
+/**
+ * Action types for time travel reducer
+ */
+type TimeTravelAction =
+  | { type: 'RECORD'; snapshot: StateSnapshot }
+  | { type: 'JUMP_TO'; index: number }
+  | { type: 'GO_BACK'; steps: number }
+  | { type: 'GO_FORWARD'; steps: number }
+  | { type: 'CLEAR' }
+
 function reducer(
   state: TimeTravelState,
-  action:
-    | { type: 'RECORD'; snapshot: StateSnapshot }
-    | { type: 'JUMP_TO'; index: number }
-    | { type: 'GO_BACK'; steps: number }
-    | { type: 'GO_FORWARD'; steps: number }
-    | { type: 'CLEAR' }
+  action: TimeTravelAction
 ): TimeTravelState {
   switch (action.type) {
     case 'RECORD':
@@ -66,12 +71,16 @@ export function useTimeTravel(timeTravelDebugger?: TimeTravelDebugger) {
   const timeTravel = timeTravelRef.current
 
   // Initialize state from time travel debugger
-  const [initialState] = React.useState<TimeTravelState>(() => ({
-    snapshots: timeTravel.getAll(),
-    currentIndex: (timeTravel as any).currentIndex || -1,
-  }))
+  // Note: currentIndex is private, so we calculate from the snapshot count
+  const [initialState] = React.useState<TimeTravelState>(() => {
+    const snapshots = timeTravel.getAll()
+    return {
+      snapshots,
+      currentIndex: snapshots.length > 0 ? snapshots.length - 1 : -1,
+    }
+  })
 
-  const [state, dispatch] = useOptimistic<TimeTravelState, any>(
+  const [state, dispatch] = useOptimistic<TimeTravelState, TimeTravelAction>(
     initialState,
     reducer
   )
@@ -80,9 +89,9 @@ export function useTimeTravel(timeTravelDebugger?: TimeTravelDebugger) {
   const [, startTransition] = useTransition()
 
   const record = useCallback((
-    messages: any[],
-    config: any,
-    metadata?: Record<string, any>,
+    messages: unknown[],
+    config: unknown,
+    metadata?: Record<string, unknown>,
     label?: string
   ) => {
     const snapshotId = timeTravel.record(messages, config, metadata, label)

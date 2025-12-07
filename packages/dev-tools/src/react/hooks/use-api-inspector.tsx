@@ -15,14 +15,19 @@ interface APIInspectorState {
   verbose: boolean
 }
 
+/**
+ * Action types for API inspector reducer
+ */
+type APIInspectorAction =
+  | { type: 'ADD_LOG'; log: APICallLog }
+  | { type: 'UPDATE_LOG'; id: string; updates: Partial<APICallLog> }
+  | { type: 'CLEAR_LOGS' }
+  | { type: 'SET_ENABLED'; enabled: boolean }
+  | { type: 'SET_VERBOSE'; verbose: boolean }
+
 function reducer(
   state: APIInspectorState,
-  action: 
-    | { type: 'ADD_LOG'; log: APICallLog }
-    | { type: 'UPDATE_LOG'; id: string; updates: Partial<APICallLog> }
-    | { type: 'CLEAR_LOGS' }
-    | { type: 'SET_ENABLED'; enabled: boolean }
-    | { type: 'SET_VERBOSE'; verbose: boolean }
+  action: APIInspectorAction
 ): APIInspectorState {
   switch (action.type) {
     case 'ADD_LOG':
@@ -52,13 +57,15 @@ export function useAPIInspector() {
   const inspector = getAPIInspector()
   
   // Initialize state from inspector
+  // Note: enabled and verbose are private, so we start with sensible defaults
+  // The state will be updated via setEnabled/setVerbose calls
   const [initialState] = React.useState<APIInspectorState>(() => ({
     logs: inspector.getLogs(),
-    enabled: (inspector as any).enabled || false,
-    verbose: (inspector as any).verbose || false,
+    enabled: false,
+    verbose: false,
   }))
 
-  const [state, dispatch] = useOptimistic<APIInspectorState, any>(
+  const [state, dispatch] = useOptimistic<APIInspectorState, APIInspectorAction>(
     initialState,
     reducer
   )
@@ -72,7 +79,7 @@ export function useAPIInspector() {
     endpoint: string
     method: string
     headers: Record<string, string>
-    body: any
+    body: unknown
   }) => {
     const callId = inspector.startCall(options)
     
@@ -104,7 +111,7 @@ export function useAPIInspector() {
     status: number
     statusText: string
     headers: Record<string, string>
-    body?: any
+    body?: unknown
   }) => {
     inspector.completeCall(id, response)
     const log = inspector.getLog(id)

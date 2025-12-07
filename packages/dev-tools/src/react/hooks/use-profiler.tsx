@@ -14,13 +14,18 @@ interface ProfilerState {
   enabled: boolean
 }
 
+/**
+ * Action types for profiler reducer
+ */
+type ProfilerAction =
+  | { type: 'ADD_METRIC'; metric: PerformanceMetrics }
+  | { type: 'UPDATE_METRIC'; name: string; updates: Partial<PerformanceMetrics> }
+  | { type: 'CLEAR_METRICS' }
+  | { type: 'SET_ENABLED'; enabled: boolean }
+
 function reducer(
   state: ProfilerState,
-  action:
-    | { type: 'ADD_METRIC'; metric: PerformanceMetrics }
-    | { type: 'UPDATE_METRIC'; name: string; updates: Partial<PerformanceMetrics> }
-    | { type: 'CLEAR_METRICS' }
-    | { type: 'SET_ENABLED'; enabled: boolean }
+  action: ProfilerAction
 ): ProfilerState {
   switch (action.type) {
     case 'ADD_METRIC':
@@ -48,12 +53,14 @@ export function useProfiler() {
   const profiler = getProfiler()
   
   // Initialize state from profiler
+  // Note: enabled is private, so we start with a sensible default
+  // The state will be updated via setEnabled calls
   const [initialState] = React.useState<ProfilerState>(() => ({
     metrics: profiler.getAllMetrics(),
-    enabled: (profiler as any).enabled || false,
+    enabled: false,
   }))
 
-  const [state, dispatch] = useOptimistic<ProfilerState, any>(
+  const [state, dispatch] = useOptimistic<ProfilerState, ProfilerAction>(
     initialState,
     reducer
   )
@@ -75,7 +82,7 @@ export function useProfiler() {
     })
   }, [profiler, dispatch, startTransition])
 
-  const end = useCallback((name: string, custom?: Record<string, any>) => {
+  const end = useCallback((name: string, custom?: Record<string, unknown>) => {
     const metric = profiler.end(name, custom)
     if (metric) {
       startTransition(() => {
