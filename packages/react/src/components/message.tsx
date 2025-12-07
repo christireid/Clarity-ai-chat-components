@@ -259,6 +259,7 @@ export function Message({
     return (
       <motion.div
         ref={ref}
+        layoutId={message.id}
         initial={{
           opacity: 0,
           x: isUser ? 20 : -20, // Slide from appropriate side
@@ -266,6 +267,7 @@ export function Message({
         }}
         animate={{ opacity: 1, x: 0, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
+        layout
         transition={{
           duration: ANIMATION_DURATION.normal / 1000,
           ease: ANIMATION_EASING.out,
@@ -284,8 +286,10 @@ export function Message({
         {/* Avatar - only show on group start */}
         {showAvatar && isGroupStart ? (
           <motion.div
+            layoutId={`avatar-${message.id}`}
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
+            layout
             transition={{
               type: 'spring',
               stiffness: 500,

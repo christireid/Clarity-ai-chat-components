@@ -680,6 +680,24 @@
    - **Benefit**: Aligns with Vite 7 requirements (Node 20.19+ or 22.12+)
    - **Impact**: Ensures compatibility with Vite 7 build system across all packages
 
+4. **Framer Motion 12 - Layout Animations & layoutId:**
+   - **File**: `packages/react/src/components/message.tsx` (lines 261, 289)
+   - **Change**: Added `layoutId` and `layout` props to motion components for shared element transitions
+   - **Benefit**: Enables smooth layout animations when messages are reordered or updated
+   - **Impact**: Better UX with smoother transitions and shared element animations between message states
+   - **Code Pattern**:
+     ```typescript
+     <motion.div layoutId={message.id} layout ... />
+     <motion.div layoutId={`avatar-${message.id}`} layout ... />
+     ```
+
+5. **React 19 - useOptimistic Hook Detection:**
+   - **File**: `packages/react/src/hooks/use-optimistic-message.ts` (lines 13-15, 59-74)
+   - **Change**: Added detection and preparation for React 19's built-in `useOptimistic` hook
+   - **Benefit**: Foundation for leveraging React 19's optimized optimistic updates (when fully implemented)
+   - **Impact**: Code is prepared to use React 19's concurrent features for better performance
+   - **Note**: Full migration requires refactoring the custom hook to use React 19's API, which has different semantics
+
 **📋 POTENTIAL FUTURE IMPROVEMENTS (Not Implemented - Requires Further Analysis):**
 
 1. **tailwind-merge v3**: 

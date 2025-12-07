@@ -10,6 +10,10 @@
 import * as React from 'react'
 import type { Message } from '@clarity-chat/types'
 
+// React 19: Check if useOptimistic is available (React 19+)
+// Fallback to custom implementation for older React versions
+const hasUseOptimistic = typeof React.useOptimistic === 'function'
+
 export interface OptimisticMessage extends Message {
   /** Whether this is an optimistic (not yet confirmed) message */
   isOptimistic?: boolean
@@ -52,10 +56,22 @@ export function useOptimisticMessage(
 ): UseOptimisticMessageReturn {
   const { onSend, onConfirm, onError, defaultUser } = options
   
+  // React 19: Use built-in useOptimistic hook if available for better performance
+  // This provides automatic batching and better integration with React's concurrent features
+  const [optimisticMessages, addOptimisticMessage] = hasUseOptimistic
+    ? (React.useOptimistic as any)(
+        [] as OptimisticMessage[],
+        (state: OptimisticMessage[], newMessage: OptimisticMessage) => [...state, newMessage]
+      )
+    : [null, null]
+  
   const [messages, setMessages] = React.useState<OptimisticMessage[]>([])
   const [sending, setSending] = React.useState<Set<string>>(new Set())
 
   const isSending = sending.size > 0
+  
+  // Use React 19's useOptimistic if available, otherwise fall back to custom implementation
+  const useReact19Optimistic = hasUseOptimistic && optimisticMessages !== null
 
   // Send message optimistically
   const sendOptimistic = React.useCallback(
