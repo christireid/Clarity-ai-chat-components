@@ -102,7 +102,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const [internalState, setInternalState] = React.useState<ButtonState>('idle')
     const stateTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-    const currentState = controlledState || (loading ? 'loading' : internalState)
+    // Determine current state: controlled state takes precedence, then loading, then internal
+    // Use explicit null check since 'idle' is falsy but valid
+    const currentState = controlledState !== undefined 
+      ? controlledState 
+      : loading 
+        ? 'loading' 
+        : internalState
     const shouldShowRipple = ripple && variant !== 'link' && !disabled && currentState === 'idle'
 
     // Use ripple effect hook

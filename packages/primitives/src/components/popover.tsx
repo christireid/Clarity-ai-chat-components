@@ -72,9 +72,17 @@ export const Popover: React.FC<PopoverProps> = ({
     [controlledOpen, onOpenChange]
   )
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = React.useMemo(() => ({ setOpen }), [setOpen])
+
   return (
-    <PopoverContext.Provider value={{ setOpen }}>
-      <ShadcnPopover open={open} onOpenChange={setOpen} defaultOpen={defaultOpen}>
+    <PopoverContext.Provider value={contextValue}>
+      <ShadcnPopover 
+        open={open} 
+        onOpenChange={setOpen} 
+        // Only pass defaultOpen when uncontrolled (to avoid conflicts)
+        defaultOpen={controlledOpen === undefined ? defaultOpen : undefined}
+      >
         {children}
       </ShadcnPopover>
     </PopoverContext.Provider>
@@ -143,7 +151,7 @@ export const PopoverClose: React.FC<{
   className?: string
   asChild?: boolean
 }> = ({ children, className, asChild }) => {
-  const { setOpen } = usePopover()
+  const context = usePopover()
   const isMountedRef = React.useRef(true)
 
   React.useEffect(() => {
@@ -154,14 +162,19 @@ export const PopoverClose: React.FC<{
   }, [])
 
   const handleClose = React.useCallback(() => {
-    if (isMountedRef.current) {
-      setOpen(false)
+    if (isMountedRef.current && context) {
+      context.setOpen(false)
     }
-  }, [setOpen])
+  }, [context])
 
   if (asChild && React.isValidElement(children)) {
+    // Preserve existing onClick handler if present
+    const existingOnClick = (children.props as React.HTMLAttributes<HTMLElement>)?.onClick
     return React.cloneElement(children, {
-      onClick: handleClose,
+      onClick: (e: React.MouseEvent<HTMLElement>) => {
+        existingOnClick?.(e)
+        handleClose()
+      },
     } as React.HTMLAttributes<HTMLElement>)
   }
 

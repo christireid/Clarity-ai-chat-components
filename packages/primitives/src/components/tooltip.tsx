@@ -67,8 +67,11 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
   // Use Radix UI's built-in delay via delayDuration prop
   // Remove custom delay handlers to avoid double-delay
+  // Validate delay to prevent negative values
+  const validDelay = Math.max(0, delay || 200)
+  
   return (
-    <ShadcnTooltipProvider delayDuration={delay}>
+    <ShadcnTooltipProvider delayDuration={validDelay}>
       <ShadcnTooltip open={open} onOpenChange={setOpen}>
         <ShadcnTooltipTrigger asChild className={cn('inline-block', className)}>
           {children}

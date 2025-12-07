@@ -55,11 +55,6 @@ export interface BadgeProps
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
   ({ className, variant, size, dot = false, pulse = false, glow = false, children, ...props }, ref) => {
-    // Map custom variants to shadcn variants where possible
-    const shadcnVariant = variant === 'default' || variant === 'secondary' || variant === 'destructive' || variant === 'outline'
-      ? variant
-      : 'default'
-
     return (
       <div
         ref={ref}
@@ -67,8 +62,6 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
           badgeVariants({ variant, size }),
           pulse && 'animate-[badge-pulse_2s_ease-in-out_infinite]',
           glow && 'animate-[glow_2s_ease-in-out_infinite]',
-          // Apply shadcn badge base styles
-          shadcnVariant !== variant && 'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
           className
         )}
         {...props}
