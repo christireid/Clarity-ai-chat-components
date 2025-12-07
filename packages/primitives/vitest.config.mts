@@ -7,10 +7,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react()],
+  // Vite v7: Leveraging improved build performance and better ESM support
+  build: {
+    // Vite v7: Improved tree-shaking and minification
+    minify: 'esbuild',
+    target: 'esnext',
+  },
   test: {
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./vitest.setup.ts'],
+    // Vitest v4: Leveraging improved thread pool configuration
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: false,
+        maxThreads: 2,
+        minThreads: 1,
+      },
+    },
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     coverage: {
       provider: 'v8',
