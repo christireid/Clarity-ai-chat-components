@@ -1,116 +1,152 @@
 'use client'
 
-import { Metadata } from 'next'
-import { ToastProvider } from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+import { ToastProvider, Message } from '@clarity-chat/react'
+import type { Message as MessageType } from '@clarity-chat/types'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Pagination } from '@/components/Navigation/Pagination'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
+import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
+// Basic demo component
+function BasicMessageDemo() {
+  const message: MessageType = {
+    id: '1',
+    chatId: 'demo-chat',
+    role: 'assistant',
+    content: 'Hello! How can I help you today?',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  return (
+    <div className="w-full max-w-2xl border border-border rounded-lg p-4">
+      <Message message={message} />
+    </div>
+  )
+}
+
+// With actions demo
+function MessageWithActionsDemo() {
+  const [message, setMessage] = useState<MessageType>({
+    id: '1',
+    chatId: 'demo-chat',
+    role: 'assistant',
+    content: 'This is a message with all actions enabled.',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  })
+
+  const handleCopy = useCallback((content: string) => {
+    navigator.clipboard.writeText(content)
+    console.log('Copied:', content)
+  }, [])
+
+  const handleFeedback = useCallback((type: 'up' | 'down') => {
+    console.log('Feedback:', type)
+    setMessage(prev => ({
+      ...prev,
+      feedback: { type, timestamp: new Date() },
+    }))
+  }, [])
+
+  return (
+    <div className="w-full max-w-2xl border border-border rounded-lg p-4">
+      <Message
+        message={message}
+        onCopy={handleCopy}
+        onFeedback={handleFeedback}
+        onRetry={() => console.log('Retry')}
+        onEdit={() => console.log('Edit')}
+        onRegenerate={() => console.log('Regenerate')}
+        onDelete={() => console.log('Delete')}
+      />
+    </div>
+  )
+}
 
 const messageProps: Prop[] = [
   {
-    name: 'id',
-    type: 'string',
+    name: 'message',
+    type: 'Message',
     required: true,
-    description: 'Unique identifier for the message',
+    description: 'Message object from @clarity-chat/types containing id, role, content, status, etc.',
   },
   {
-    name: 'text',
-    type: 'string',
-    required: true,
-    description: 'The message content',
+    name: 'onCopy',
+    type: '(content: string) => void',
+    description: 'Callback when message is copied to clipboard. Receives the message content.',
   },
   {
-    name: 'sender',
-    type: 'string',
-    required: true,
-    description: 'Identifier for the message sender',
+    name: 'onFeedback',
+    type: '(type: "up" | "down") => void',
+    description: 'Callback when user provides feedback (thumbs up/down).',
   },
   {
-    name: 'timestamp',
-    type: 'Date',
-    required: true,
-    description: 'When the message was sent',
+    name: 'onRetry',
+    type: '() => void',
+    description: 'Callback when user requests to retry a failed message.',
   },
   {
-    name: 'avatar',
-    type: 'Avatar',
-    description: 'User avatar configuration',
+    name: 'onEdit',
+    type: '(messageId: string) => void',
+    description: 'Callback when user edits a message. Receives the message ID.',
   },
   {
-    name: 'reactions',
-    type: 'Record<string, number>',
-    description: 'Emoji reactions with counts',
+    name: 'onRegenerate',
+    type: '(messageId: string) => void',
+    description: 'Callback when user requests to regenerate a message. Receives the message ID.',
   },
   {
-    name: 'attachments',
-    type: 'Attachment[]',
-    description: 'File attachments',
-  },
-  {
-    name: 'metadata',
-    type: 'Record<string, any>',
-    description: 'Custom metadata',
-  },
-  {
-    name: 'isEdited',
-    type: 'boolean',
-    default: 'false',
-    description: 'Whether the message was edited',
-  },
-  {
-    name: 'isDeleted',
-    type: 'boolean',
-    default: 'false',
-    description: 'Whether the message was deleted',
-  },
-  {
-    name: 'variant',
-    type: '"default" | "compact" | "bubble"',
-    default: '"default"',
-    description: 'Visual style variant',
-  },
-  {
-    name: 'align',
-    type: '"left" | "right"',
-    default: '"left"',
-    description: 'Message alignment',
-  },
-  {
-    name: 'showTimestamp',
-    type: 'boolean',
-    default: 'true',
-    description: 'Show timestamp below message',
+    name: 'onDelete',
+    type: '(messageId: string) => void',
+    description: 'Callback when user deletes a message. Receives the message ID.',
   },
   {
     name: 'showAvatar',
     type: 'boolean',
     default: 'true',
-    description: 'Show user avatar',
+    description: 'Show avatar next to the message.',
   },
   {
-    name: 'onReactionClick',
-    type: '(emoji: string) => void',
-    description: 'Callback when reaction is clicked',
+    name: 'showTimestamp',
+    type: 'boolean',
+    default: 'true',
+    description: 'Show timestamp below the message.',
   },
   {
-    name: 'onEdit',
-    type: '() => void',
-    description: 'Callback for edit action',
+    name: 'isGroupStart',
+    type: 'boolean',
+    default: 'true',
+    description: 'Whether this message is the first in a group of consecutive messages from the same sender.',
   },
   {
-    name: 'onDelete',
-    type: '() => void',
-    description: 'Callback for delete action',
+    name: 'isGroupEnd',
+    type: 'boolean',
+    default: 'true',
+    description: 'Whether this message is the last in a group of consecutive messages from the same sender.',
+  },
+  {
+    name: 'isGrouped',
+    type: 'boolean',
+    default: 'false',
+    description: 'Whether this message is part of a group (affects spacing and avatar display).',
+  },
+  {
+    name: 'errorDetails',
+    type: 'ErrorDetails | string',
+    description: 'Error details to display for failed messages. Can be an ErrorDetails object or error message string.',
   },
   {
     name: 'className',
     type: 'string',
-    description: 'Additional CSS classes',
+    description: 'Additional CSS classes to apply to the message container.',
   },
 ]
 
@@ -119,417 +155,495 @@ export const dynamic = 'force-dynamic'
 export default function MessagePage() {
   return (
     <ToastProvider>
-    <>
-      <Breadcrumbs />
-      
-      <h1>Message</h1>
-      
-      <p className="lead">
-        The Message component displays individual chat messages with support for avatars,
-        timestamps, reactions, attachments, and more. It's highly customizable and accessible.
-      </p>
+      <>
+        <Breadcrumbs />
 
-      <ViewInStorybook component="Message" />
+        <h1>Message</h1>
 
-      <h2 id="import">Import</h2>
+        <p className="lead">
+          A low-level component for rendering individual chat messages with markdown support,
+          actions (copy, feedback, retry, edit, delete), and smooth animations.
+        </p>
 
-      <EnhancedCodeBlock
-        code={`import { Message } from '@clarity-chat/react'`}
-        language="tsx"
-      />
+        <Callout type="info">
+          <p>
+            For displaying multiple messages, use the{' '}
+            <a href="/reference/components/message-list">MessageList</a> component.
+            For complete chat interfaces, use <a href="/reference/components/clarity-chat">ClarityChat</a>.
+          </p>
+        </Callout>
 
-      <h2 id="basic-usage">Basic Usage</h2>
+        <ViewInStorybook component="Message" />
 
-      <EnhancedCodeBlock
-        code={`import { Message } from '@clarity-chat/react'
-
-function MessageExample() {
+        <section className="my-12">
+          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
+          <p className="mb-6 text-gray-600 dark:text-gray-400">
+            Experiment with the Message component! Try different configurations and see how it renders.
+          </p>
+          <CodePlayground
+            initialCode={`function Example() {
   const message = {
     id: '1',
-    text: 'Hello, how are you?',
-    sender: 'user1',
-    timestamp: new Date(),
+    chatId: 'demo',
+    role: 'assistant',
+    content: 'Hello! This is a demo message.',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
   }
 
-  return <Message {...message} />
-}`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <h2 id="with-avatar">With Avatar</h2>
-
-      <p>Add user avatars to personalize messages:</p>
-
-      <EnhancedCodeBlock
-        code={`const message = {
-  id: '1',
-  text: 'Hello!',
-  sender: 'user1',
-  timestamp: new Date(),
-  avatar: {
-    src: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user1',
-    alt: 'User 1',
-  },
-}
-
-<Message {...message} showAvatar />`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <h2 id="variants">Message Variants</h2>
-
-      <p>Choose from different visual styles:</p>
-
-      <EnhancedCodeBlock
-        code={`// Default style (standard message box)
-<Message {...message} variant="default" />
-
-// Compact style (minimal spacing)
-<Message {...message} variant="compact" />
-
-// Bubble style (rounded chat bubbles)
-<Message {...message} variant="bubble" />`}
-        language="tsx"
-      />
-
-      <h2 id="alignment">Message Alignment</h2>
-
-      <p>Align messages left or right based on sender:</p>
-
-      <EnhancedCodeBlock
-        code={`// User messages (right-aligned)
-<Message 
-  {...userMessage} 
-  align="right"
-  className="bg-brand-500 text-white"
-/>
-
-// Bot/other messages (left-aligned)
-<Message 
-  {...botMessage} 
-  align="left"
-  className="bg-gray-100"
-/>`}
-        language="tsx"
-      />
-
-      <h2 id="reactions">Message Reactions</h2>
-
-      <p>Enable emoji reactions on messages:</p>
-
-      <EnhancedCodeBlock
-        code={`const [message, setMessage] = useState({
-  id: '1',
-  text: 'Great idea!',
-  sender: 'user1',
-  timestamp: new Date(),
-  reactions: {
-    '👍': 5,
-    '❤️': 3,
-    '🎉': 2,
-  },
-})
-
-const handleReactionClick = (emoji: string) => {
-  setMessage({
-    ...message,
-    reactions: {
-      ...message.reactions,
-      [emoji]: (message.reactions[emoji] || 0) + 1,
-    },
-  })
-}
-
-<Message 
-  {...message}
-  onReactionClick={handleReactionClick}
-/>`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <h2 id="attachments">File Attachments</h2>
-
-      <p>Display file attachments with messages:</p>
-
-      <EnhancedCodeBlock
-        code={`const message = {
-  id: '1',
-  text: 'Here are the documents you requested',
-  sender: 'user1',
-  timestamp: new Date(),
-  attachments: [
-    {
-      id: '1',
-      name: 'presentation.pdf',
-      size: 2048000,
-      type: 'application/pdf',
-      url: '/files/presentation.pdf',
-    },
-    {
-      id: '2',
-      name: 'image.png',
-      size: 512000,
-      type: 'image/png',
-      url: '/images/image.png',
-      thumbnail: '/images/image-thumb.png',
-    },
-  ],
-}
-
-<Message {...message} />`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <h2 id="edit-delete">Edit & Delete</h2>
-
-      <p>Add edit and delete actions:</p>
-
-      <EnhancedCodeBlock
-        code={`const handleEdit = (messageId: string) => {
-  // Show edit modal or inline editor
-  console.log('Editing message:', messageId)
-}
-
-const handleDelete = (messageId: string) => {
-  // Confirm and delete message
-  console.log('Deleting message:', messageId)
-}
-
-<Message
-  {...message}
-  onEdit={() => handleEdit(message.id)}
-  onDelete={() => handleDelete(message.id)}
-/>`}
-        language="tsx"
-        showLineNumbers
-      />
-
-      <h2 id="edited-deleted">Edited & Deleted States</h2>
-
-      <EnhancedCodeBlock
-        code={`// Edited message
-<Message 
-  {...message}
-  isEdited
-/>
-
-// Deleted message
-<Message 
-  {...message}
-  isDeleted
-  text="This message was deleted"
-/>`}
-        language="tsx"
-      />
-
-      <h2 id="markdown">Markdown Support</h2>
-
-      <p>Enable markdown rendering in messages:</p>
-
-      <EnhancedCodeBlock
-        code={`import { Message } from '@clarity-chat/react'
-import ReactMarkdown from 'react-markdown'
-
-function MarkdownMessage({ message }) {
   return (
-    <ToastProvider>
-    <Message {...message}>
-      <ReactMarkdown>{message.text}</ReactMarkdown>
-    </Message>
+    <Message
+      message={message}
+      onCopy={(content) => console.log('Copied:', content)}
+    />
   )
 }
 
-// Usage
-const message = {
-  id: '1',
-  text: '**Bold text** and *italic text* with [links](https://example.com)',
-  sender: 'user1',
-  timestamp: new Date(),
-}`}
-        language="tsx"
-        showLineNumbers
-      />
+render(<Example />)`}
+          />
+        </section>
 
-      <Callout type="tip">
+        <h2 id="import">Import</h2>
+
+        <EnhancedCodeBlock
+          code={`import { Message } from '@clarity-chat/react'
+import type { Message as MessageType } from '@clarity-chat/types'
+import '@clarity-chat/react/styles.css'`}
+          language="tsx"
+        />
+
+        <h2 id="basic-usage">Basic Usage</h2>
+
         <p>
-          Markdown rendering is not included by default. Use libraries like{' '}
-          <code>react-markdown</code> or <code>marked</code> to parse markdown content.
+          Message is a controlled component that accepts a <code>Message</code> object
+          from <code>@clarity-chat/types</code>:
         </p>
-      </Callout>
 
-      <h2 id="props">Props</h2>
+        <ComponentPreview
+          title="Simple Message"
+          description="A basic message with default styling"
+          code={`import { Message } from '@clarity-chat/react'
+import type { Message as MessageType } from '@clarity-chat/types'
 
-      <PropsTable props={messageProps} />
+function SimpleMessage() {
+  const message: MessageType = {
+    id: '1',
+    chatId: 'demo-chat',
+    role: 'assistant',
+    content: 'Hello! How can I help you today?',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 
-      <h2 id="types">Type Definitions</h2>
-
-      <h3>Avatar Type</h3>
-
-      <EnhancedCodeBlock
-        code={`interface Avatar {
-  src: string
-  alt: string
-  fallback?: string
+  return <Message message={message} />
 }`}
-        language="tsx"
-      />
+        >
+          <BasicMessageDemo />
+        </ComponentPreview>
 
-      <h3>Attachment Type</h3>
+        <h2 id="message-actions">Message Actions</h2>
 
-      <EnhancedCodeBlock
-        code={`interface Attachment {
-  id: string
-  name: string
-  size: number
-  type: string
-  url: string
-  thumbnail?: string
-  preview?: string
+        <p>
+          Enable message actions by providing callback functions. The component automatically
+          shows action buttons on hover:
+        </p>
+
+        <ComponentPreview
+          title="With All Actions"
+          description="Message with copy, feedback, retry, edit, regenerate, and delete actions"
+          code={`import { Message } from '@clarity-chat/react'
+import { useState } from 'react'
+
+function MessageWithActions() {
+  const [message, setMessage] = useState<MessageType>({
+    id: '1',
+    chatId: 'demo',
+    role: 'assistant',
+    content: 'This message has all actions enabled.',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  })
+
+  return (
+    <Message
+      message={message}
+      onCopy={(content) => navigator.clipboard.writeText(content)}
+      onFeedback={(type) => console.log('Feedback:', type)}
+      onRetry={() => console.log('Retry')}
+      onEdit={(id) => console.log('Edit:', id)}
+      onRegenerate={(id) => console.log('Regenerate:', id)}
+      onDelete={(id) => console.log('Delete:', id)}
+    />
+  )
 }`}
-        language="tsx"
-      />
+        >
+          <MessageWithActionsDemo />
+        </ComponentPreview>
 
-      <h2 id="styling">Custom Styling</h2>
+        <h2 id="markdown-rendering">Markdown Rendering</h2>
 
-      <p>Customize message appearance with CSS classes:</p>
+        <p>
+          Message automatically renders markdown content with syntax highlighting for code blocks:
+        </p>
 
-      <EnhancedCodeBlock
-        code={`// Custom user message style
-<Message
-  {...message}
-  align="right"
-  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl shadow-lg"
-/>
+        <EnhancedCodeBlock
+          code={`import { Message } from '@clarity-chat/react'
 
-// Custom bot message style
-<Message
-  {...message}
-  align="left"
-  className="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-/>`}
-        language="tsx"
-      />
+function MarkdownMessage() {
+  const message: MessageType = {
+    id: '1',
+    chatId: 'demo',
+    role: 'assistant',
+    content: \`Here's some **bold text** and *italic text*.
 
-      <h2 id="accessibility">Accessibility</h2>
+\`\`\`typescript
+function greet(name: string) {
+  return \`Hello, \${name}!\`
+}
+\`\`\`
 
-      <p>Message component includes comprehensive accessibility features:</p>
+- List item 1
+- List item 2
+- List item 3\`,
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 
-      <ul>
-        <li>✅ Semantic HTML structure</li>
-        <li>✅ ARIA labels for screen readers</li>
-        <li>✅ Keyboard navigation for actions</li>
-        <li>✅ Focus indicators</li>
-        <li>✅ Time formatting for screen readers</li>
-        <li>✅ Alt text for avatars and images</li>
-      </ul>
+  return <Message message={message} />
+}`}
+          language="tsx"
+          showLineNumbers
+        />
 
-      <h2 id="examples">Complete Examples</h2>
+        <Callout type="tip">
+          <p>
+            Message uses <code>react-markdown</code> with <code>remark-gfm</code> for GitHub Flavored Markdown
+            and <code>rehype-highlight</code> for syntax highlighting. All markdown features are supported.
+          </p>
+        </Callout>
 
-      <h3>Chat Bubble Style</h3>
+        <h2 id="streaming-messages">Streaming Messages</h2>
 
-      <EnhancedCodeBlock
-        code={`function ChatBubbleMessages() {
-  const messages = [
+        <p>
+          Messages with <code>status: 'streaming'</code> automatically show a streaming indicator:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`import { Message } from '@clarity-chat/react'
+
+function StreamingMessage() {
+  const message: MessageType = {
+    id: '1',
+    chatId: 'demo',
+    role: 'assistant',
+    content: 'This message is currently streaming...',
+    status: 'streaming', // Shows streaming indicator
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  return <Message message={message} />
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="error-messages">Error Messages</h2>
+
+        <p>
+          Display error information for failed messages:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`import { Message } from '@clarity-chat/react'
+
+function ErrorMessage() {
+  const message: MessageType = {
+    id: '1',
+    chatId: 'demo',
+    role: 'assistant',
+    content: 'Failed to generate response',
+    status: 'error',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  return (
+    <Message
+      message={message}
+      errorDetails="Network error: Failed to connect to server"
+      onRetry={() => {
+        // Retry the message
+        console.log('Retrying...')
+      }}
+    />
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="message-grouping">Message Grouping</h2>
+
+        <p>
+          Group consecutive messages from the same sender for better visual organization:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`import { Message } from '@clarity-chat/react'
+
+function GroupedMessages() {
+  const messages: MessageType[] = [
     {
       id: '1',
-      text: 'Hey, how are you?',
-      sender: 'user',
-      timestamp: new Date(),
-      align: 'right' as const,
-      variant: 'bubble' as const,
-      className: 'bg-brand-500 text-white',
+      chatId: 'demo',
+      role: 'user',
+      content: 'First message',
+      status: 'sent',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
     {
       id: '2',
-      text: "I'm good, thanks! How about you?",
-      sender: 'bot',
-      timestamp: new Date(),
-      align: 'left' as const,
-      variant: 'bubble' as const,
-      className: 'bg-gray-100 dark:bg-gray-800',
+      chatId: 'demo',
+      role: 'user',
+      content: 'Second message in group',
+      status: 'sent',
+      createdAt: new Date(Date.now() + 1000),
+      updatedAt: new Date(Date.now() + 1000),
     },
   ]
 
   return (
-    <ToastProvider>
-    <div className="space-y-4 p-4">
-      {messages.map((message) => (
-        <Message key={message.id} {...message} />
-      ))}
+    <div className="space-y-1">
+      <Message
+        message={messages[0]}
+        isGroupStart={true}
+        isGroupEnd={false}
+        isGrouped={true}
+      />
+      <Message
+        message={messages[1]}
+        isGroupStart={false}
+        isGroupEnd={true}
+        isGrouped={true}
+      />
     </div>
-    </ToastProvider>
   )
 }`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <h3>Rich Message with All Features</h3>
+        <Callout type="info">
+          <p>
+            <a href="/reference/components/message-list">MessageList</a> automatically handles
+            message grouping for you. You only need to set these props when building custom message lists.
+          </p>
+        </Callout>
 
-      <EnhancedCodeBlock
-        code={`const richMessage = {
-  id: '1',
-  text: 'Check out this document and let me know what you think!',
-  sender: 'user1',
-  timestamp: new Date(),
-  avatar: {
-    src: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user1',
-    alt: 'User 1',
-  },
-  reactions: {
-    '👍': 3,
-    '❤️': 1,
-  },
-  attachments: [
-    {
-      id: '1',
-      name: 'proposal.pdf',
-      size: 1024000,
-      type: 'application/pdf',
-      url: '/files/proposal.pdf',
-    },
-  ],
-  metadata: {
-    read: true,
-    delivered: true,
-  },
-}
+        <h2 id="customization">Customization</h2>
 
-<Message
-  {...richMessage}
-  showAvatar
-  showTimestamp
-  onReactionClick={(emoji) => console.log('Reacted:', emoji)}
-  onEdit={() => console.log('Edit message')}
-  onDelete={() => console.log('Delete message')}
+        <p>Hide avatars or timestamps, or apply custom styling:</p>
+
+        <EnhancedCodeBlock
+          code={`<Message
+  message={message}
+  showAvatar={false}      // Hide avatar
+  showTimestamp={false}   // Hide timestamp
+  className="custom-message" // Custom CSS class
 />`}
-        language="tsx"
-        showLineNumbers
-      />
+          language="tsx"
+          showLineNumbers
+        />
 
-      <Callout type="success">
+        <h2 id="feedback-animations">Feedback Animations</h2>
+
         <p>
-          <strong>Next Steps:</strong> Check out the{' '}
-          <a href="/reference/components/message-list">MessageList</a> component
-          to display multiple messages efficiently.
+          When feedback is provided, Message shows a confetti animation for positive feedback:
         </p>
-      </Callout>
 
-      <Pagination
-        prev={{
-          title: 'ChatWindow',
-          href: '/reference/components/chat-window',
-        }}
-        next={{
-          title: 'MessageList',
-          href: '/reference/components/message-list',
-        }}
-      />
-    </>
+        <EnhancedCodeBlock
+          code={`import { Message } from '@clarity-chat/react'
+
+function MessageWithFeedback() {
+  const [message, setMessage] = useState<MessageType>({
+    id: '1',
+    chatId: 'demo',
+    role: 'assistant',
+    content: 'Great question!',
+    status: 'sent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  })
+
+  const handleFeedback = (type: 'up' | 'down') => {
+    setMessage(prev => ({
+      ...prev,
+      feedback: { type, timestamp: new Date() },
+    }))
+    // Show confetti animation for positive feedback
+  }
+
+  return (
+    <Message
+      message={message}
+      onFeedback={handleFeedback}
+    />
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="props">Props</h2>
+
+        <PropsTable props={messageProps} />
+
+        <h2 id="message-type">Message Type</h2>
+
+        <p>
+          The <code>Message</code> type from <code>@clarity-chat/types</code>:
+        </p>
+
+        <EnhancedCodeBlock
+          code={`interface Message {
+  id: string
+  chatId: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  status: 'pending' | 'sending' | 'sent' | 'streaming' | 'error'
+  attachments?: MessageAttachment[]
+  metadata?: MessageMetadata
+  feedback?: MessageFeedback
+  createdAt: Date
+  updatedAt: Date
+  editHistory?: MessageEdit[]
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="complete-example">Complete Example</h2>
+
+        <EnhancedCodeBlock
+          code={`import { Message } from '@clarity-chat/react'
+import type { Message as MessageType } from '@clarity-chat/types'
+
+function CompleteMessageExample() {
+  const message: MessageType = {
+    id: '1',
+    chatId: 'demo-chat',
+    role: 'assistant',
+    content: \`Here's a helpful response with **markdown** support.
+
+\`\`\`typescript
+const example = 'code blocks work too!'
+\`\`\`\`,
+    status: 'sent',
+    attachments: [
+      {
+        id: '1',
+        type: 'document',
+        url: '/files/document.pdf',
+        name: 'document.pdf',
+        size: 1024000,
+        mimeType: 'application/pdf',
+      },
+    ],
+    metadata: {
+      tokens: 150,
+      model: 'gpt-4',
+      processingTime: 1.2,
+    },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  return (
+    <Message
+      message={message}
+      onCopy={(content) => {
+        navigator.clipboard.writeText(content)
+        // Show toast notification
+      }}
+      onFeedback={(type) => {
+        // Send feedback to analytics
+        console.log('Feedback:', type)
+      }}
+      onRetry={() => {
+        // Retry message generation
+      }}
+      showAvatar
+      showTimestamp
+    />
+  )
+}`}
+          language="tsx"
+          showLineNumbers
+        />
+
+        <h2 id="accessibility">Accessibility</h2>
+
+        <p>Message is built with accessibility in mind:</p>
+
+        <ul>
+          <li>✅ Semantic HTML structure</li>
+          <li>✅ ARIA labels for all interactive elements</li>
+          <li>✅ Keyboard navigation for actions</li>
+          <li>✅ Focus indicators</li>
+          <li>✅ Screen reader announcements for feedback</li>
+          <li>✅ Proper heading hierarchy in markdown content</li>
+        </ul>
+
+        <h2 id="performance">Performance</h2>
+
+        <p>Message is optimized for performance:</p>
+
+        <ul>
+          <li>
+            <strong>React 19 optimizations:</strong> Automatic memoization of event handlers
+          </li>
+          <li>
+            <strong>Lazy markdown parsing:</strong> Markdown is only parsed when needed
+          </li>
+          <li>
+            <strong>Efficient re-renders:</strong> Only re-renders when message data changes
+          </li>
+        </ul>
+
+        <h2 id="related">Related</h2>
+
+        <ul>
+          <li>
+            <a href="/reference/components/message-list">MessageList</a> - Display multiple messages
+          </li>
+          <li>
+            <a href="/reference/components/virtualized-message-list">VirtualizedMessageList</a> - For large message lists
+          </li>
+          <li>
+            <a href="/reference/components/streaming-message">StreamingMessage</a> - Specialized component for streaming
+          </li>
+          <li>
+            <a href="/reference/components/chat-window">ChatWindow</a> - Complete chat interface
+          </li>
+        </ul>
+
+        <Pagination
+          previous={{
+            title: 'AdvancedChatInput',
+            href: '/reference/components/advanced-chat-input',
+          }}
+          next={{
+            title: 'MessageList',
+            href: '/reference/components/message-list',
+          }}
+        />
+      </>
     </ToastProvider>
   )
 }

@@ -3,6 +3,11 @@
  *
  * Resources that AI agents can read to understand the project
  */
+import { logger } from '../utils/logger.js';
+import { NotFoundError } from '../utils/errors.js';
+import { Cache } from '../utils/cache.js';
+// Cache static resources for 1 hour
+const resourceCache = new Cache(60 * 60 * 1000);
 /**
  * Available resources
  */
@@ -45,24 +50,48 @@ export const resources = [
     }
 ];
 /**
- * Handle resource reads
+ * Handle resource reads with caching
  */
 export async function handleResourceRead(uri) {
-    switch (uri) {
-        case 'clarity://docs/getting-started':
-            return getGettingStartedGuide();
-        case 'clarity://docs/architecture':
-            return getArchitectureOverview();
-        case 'clarity://docs/api-reference':
-            return getAPIReference();
-        case 'clarity://examples/list':
-            return JSON.stringify(getExamplesList(), null, 2);
-        case 'clarity://models/pricing':
-            return JSON.stringify(getModelPricing(), null, 2);
-        case 'clarity://models/capabilities':
-            return JSON.stringify(getModelCapabilities(), null, 2);
-        default:
-            throw new Error(`Unknown resource: ${uri}`);
+    logger.debug('Reading resource', { uri });
+    // Check cache first
+    const cached = resourceCache.get(uri);
+    if (cached) {
+        logger.debug('Resource cache hit', { uri });
+        return cached;
+    }
+    let content;
+    try {
+        switch (uri) {
+            case 'clarity://docs/getting-started':
+                content = getGettingStartedGuide();
+                break;
+            case 'clarity://docs/architecture':
+                content = getArchitectureOverview();
+                break;
+            case 'clarity://docs/api-reference':
+                content = getAPIReference();
+                break;
+            case 'clarity://examples/list':
+                content = JSON.stringify(getExamplesList(), null, 2);
+                break;
+            case 'clarity://models/pricing':
+                content = JSON.stringify(getModelPricing(), null, 2);
+                break;
+            case 'clarity://models/capabilities':
+                content = JSON.stringify(getModelCapabilities(), null, 2);
+                break;
+            default:
+                throw new NotFoundError('Resource', uri);
+        }
+        // Cache the content
+        resourceCache.set(uri, content);
+        logger.debug('Resource loaded and cached', { uri });
+        return content;
+    }
+    catch (error) {
+        logger.error('Failed to read resource', error instanceof Error ? error : undefined, { uri });
+        throw error;
     }
 }
 /**

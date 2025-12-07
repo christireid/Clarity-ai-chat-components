@@ -4,6 +4,7 @@ import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 import { ErrorMessage } from './error-message'
+import { Input as ShadcnInput } from './ui/input'
 
 const inputVariants = cva(
   'flex w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:border-primary focus-visible:shadow-xs hover:border-accent-foreground/20 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted transition-all duration-200',
@@ -28,15 +29,19 @@ const inputVariants = cva(
 )
 
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
+  extends Omit<React.ComponentProps<typeof ShadcnInput>, 'size'>,
     VariantProps<typeof inputVariants> {
   error?: string
   icon?: React.ReactNode
   iconPosition?: 'left' | 'right'
-  ref?: React.Ref<HTMLInputElement>
+  inputSize?: 'default' | 'sm' | 'lg'
 }
 
-const Input = ({ className, variant, inputSize, type, error, icon, iconPosition = 'left', ref, id, ...props }: InputProps) => {
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  (
+    { className, variant, inputSize, type, error, icon, iconPosition = 'left', id, ...props },
+    ref
+  ) => {
     const hasError = error || variant === 'error'
     // Generate stable fallback ID for accessibility (matches Checkbox pattern)
     const generatedId = React.useId()
@@ -47,11 +52,11 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
       return (
         <div className="relative">
           {iconPosition === 'left' && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
               {icon}
             </div>
           )}
-          <input
+          <ShadcnInput
             type={type}
             id={inputId}
             aria-invalid={hasError ? true : undefined}
@@ -66,7 +71,7 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
             {...props}
           />
           {iconPosition === 'right' && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
               {icon}
             </div>
           )}
@@ -77,7 +82,7 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
 
     return (
       <div>
-        <input
+        <ShadcnInput
           type={type}
           id={inputId}
           aria-invalid={hasError ? true : undefined}
@@ -92,7 +97,8 @@ const Input = ({ className, variant, inputSize, type, error, icon, iconPosition 
         <ErrorMessage error={error} id={errorId} />
       </div>
     )
-}
+  }
+)
 
 Input.displayName = 'Input'
 

@@ -8,7 +8,7 @@ Core primitive UI components for Clarity Chat - beautifully designed, accessible
 - ✅ **React 19 Compatible** - Built for the latest React version
 - ✅ **TypeScript First** - Full type safety and IntelliSense support
 - ✅ **Accessible** - WCAG 2.1 AA compliant, tested with axe-core
-- ✅ **Fully Tested** - 291 tests with 100% pass rate
+- ✅ **Fully Tested** - 312 tests with 100% pass rate
 - ✅ **Tree-Shakeable** - Import only what you need
 - ✅ **Customizable** - Tailwind CSS with class-variance-authority
 - ✅ **Animation Ready** - Framer Motion integration

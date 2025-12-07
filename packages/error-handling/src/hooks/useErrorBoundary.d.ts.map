@@ -1,1 +1,1 @@
-{"version":3,"file":"useErrorBoundary.d.ts","sourceRoot":"","sources":["useErrorBoundary.ts"],"names":[],"mappings":"AAEA;;;;;;;;;;;GAWG;AACH,wBAAgB,gBAAgB;IAc5B,4BAA4B;;IAE5B,gEAAgE;0BAbzB,KAAK;IAe5C,qCAAqC;;EAGxC"}
+{"version":3,"file":"useErrorBoundary.d.ts","sourceRoot":"","sources":["useErrorBoundary.ts"],"names":[],"mappings":"AAEA;;;;;;;;;;;;GAYG;AACH,wBAAgB,gBAAgB;IAkB5B,4BAA4B;;IAE5B,gEAAgE;0BAZzB,KAAK;IAc5C,qCAAqC;;EAGxC"}

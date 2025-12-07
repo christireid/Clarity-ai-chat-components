@@ -7,10 +7,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react()],
+  // Vite v7: Leveraging improved build performance and better ESM support
+  build: {
+    // Vite v7: Improved tree-shaking and minification
+    minify: 'esbuild',
+    target: 'esnext',
+  },
   test: {
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./vitest.setup.ts'],
+    // Vitest v4: Leveraging improved thread pool configuration
     // Optimize memory usage - use threads instead of forks for better memory management
     pool: 'threads',
     poolOptions: {
@@ -24,8 +31,7 @@ export default defineConfig({
     maxConcurrency: 2,
     // Increase test timeout for slower execution
     testTimeout: 15000,
-    // Isolate tests properly
-    isolate: true,
+    // Vitest v4: Better test isolation (moved to poolOptions.threads.isolate)
     // Enable more component tests with memory optimizations
     include: [
       'src/embeddings/__tests__/**/*.test.ts',

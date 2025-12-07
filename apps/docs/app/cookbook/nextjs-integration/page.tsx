@@ -1,361 +1,279 @@
 import React from 'react'
 import { Metadata } from 'next'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { Callout } from '@/components/MDX/Callout'
+import { YouWillLearn } from '@/components/Enhanced/YouWillLearn'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Next.js 14 Integration - Cookbook - Clarity Chat',
-  description: 'Complete Next.js App Router setup with Server Components, API routes, and Clarity Chat.',
+  title: 'Next.js Integration Deep Dive - Clarity Chat Components',
+  description: 'Complete guide to integrating Clarity Chat Components with Next.js App Router, Server Components, and API routes.',
 }
 
 export default function NextJSIntegrationPage() {
   return (
     <div className="docs-content">
       <div className="docs-header">
-        <span className="docs-badge">Cookbook</span>
-        <h1>Next.js 14 App Router Integration</h1>
+        <span className="docs-badge">Recipe</span>
+        <h1>Next.js Integration Deep Dive</h1>
         <p className="docs-lead">
-          Set up Clarity Chat in Next.js 14+ with App Router, Server Components, and proper TypeScript configuration.
+          Complete guide to integrating Clarity Chat Components with Next.js App Router, Server Components, API routes, and streaming.
         </p>
       </div>
 
-      <section className="docs-section">
-        <h2>Project Structure</h2>
-        <CodeBlock
-          language="text"
-          code={`app/
-├── layout.tsx          # Root layout with providers
-├── page.tsx           # Home page
-├── chat/
-│   └── page.tsx       # Chat page (client component)
-└── api/
-    └── chat/
-        └── route.ts   # Chat API endpoint
-
-lib/
-├── openai.ts          # OpenAI client
-└── utils.ts           # Helper functions`}
-        />
-      </section>
+      <YouWillLearn
+        items={[
+          'Set up Clarity Chat in Next.js App Router',
+          'Use Server Components for configuration',
+          'Create API routes for chat endpoints',
+          'Implement streaming responses',
+          'Handle authentication and middleware',
+        ]}
+      />
 
       <section className="docs-section">
-        <h2>Step 1: Install Dependencies</h2>
-        <CodeBlock
-          language="bash"
-          code={`npx create-next-app@latest my-chat-app --typescript --tailwind --app
-cd my-chat-app
-npm install @clarity-chat/react openai ai`}
-        />
-      </section>
+        <h2>App Router Setup</h2>
+        <p>
+          Set up Clarity Chat in Next.js App Router:
+        </p>
+        <CodePlayground
+          initialCode={`// app/chat/page.tsx
+'use client'
 
-      <section className="docs-section">
-        <h2>Step 2: Root Layout</h2>
-        <CodeBlock
-          language="typescript"
-          code={`// app/layout.tsx
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import '@clarity-chat/react/styles.css'
-import './globals.css'
+import { ClarityChat } from '@clarity-chat/react'
 
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
-  title: 'My AI Chat App',
-  description: 'Powered by Clarity Chat Components',
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function ChatPage() {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+    <div className="container mx-auto p-4">
+      <ClarityChat
+        api="/api/chat"
+        config={{
+          theme: 'light',
+          enableMemory: true,
+        }}
+      />
+    </div>
   )
 }`}
         />
       </section>
 
       <section className="docs-section">
-        <h2>Step 3: Chat API Route</h2>
-        <CodeBlock
-          language="typescript"
-          code={`// app/api/chat/route.ts
-import OpenAI from 'openai'
-import { OpenAIStream, StreamingTextResponse } from 'ai'
+        <h2>Server Component Configuration</h2>
+        <p>
+          Use Server Components for secure configuration:
+        </p>
+        <CodePlayground
+          initialCode={`// app/chat/layout.tsx
+import { ClarityChat } from '@clarity-chat/react'
 
-export const runtime = 'edge'
+export default async function ChatLayout({ children }: { children: React.ReactNode }) {
+  // Server-side configuration
+  const config = {
+    apiEndpoint: process.env.CHAT_API_ENDPOINT,
+    enableMemory: true,
+    maxTokens: 8000,
+  }
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!
-})
+  return (
+    <div>
+      <ClarityChatProvider config={config}>
+        {children}
+      </ClarityChatProvider>
+    </div>
+  )
+}
 
-export async function POST(req: Request) {
+// app/chat/page.tsx (Client Component)
+'use client'
+import { useClarityChat } from '@clarity-chat/react'
+
+export default function ChatPage() {
+  const chat = useClarityChat()
+  return <ChatWindow {...chat} />
+}`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>API Route with Streaming</h2>
+        <p>
+          Create streaming API route:
+        </p>
+        <CodePlayground
+          initialCode={`// app/api/chat/route.ts
+import { NextRequest } from 'next/server'
+import { StreamingTextResponse } from 'ai'
+
+export async function POST(req: NextRequest) {
   const { messages } = await req.json()
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
-    stream: true,
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a helpful assistant. Be concise and friendly.'
-      },
-      ...messages
-    ]
+  // Create streaming response
+  const stream = await createChatStream(messages)
+
+  return new StreamingTextResponse(stream)
+}
+
+async function createChatStream(messages: any[]) {
+  // Use OpenAI or other provider
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4',
+      messages,
+      stream: true,
+    }),
   })
 
-  const stream = OpenAIStream(response)
+  return response.body
+}`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Authentication Middleware</h2>
+        <p>
+          Add authentication to chat routes:
+        </p>
+        <CodePlayground
+          initialCode={`// middleware.ts
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export function middleware(request: NextRequest) {
+  // Check authentication
+  const token = request.cookies.get('auth-token')
+  
+  if (!token && request.nextUrl.pathname.startsWith('/chat')) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // Add tenant ID from session
+  const tenantId = request.headers.get('x-tenant-id')
+  if (tenantId) {
+    request.headers.set('x-tenant-id', tenantId)
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/chat/:path*', '/api/chat/:path*'],
+}`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Server Actions</h2>
+        <p>
+          Use Server Actions for chat operations:
+        </p>
+        <CodePlayground
+          initialCode={`// app/actions/chat.ts
+'use server'
+
+import { revalidatePath } from 'next/cache'
+
+export async function sendMessage(formData: FormData) {
+  const message = formData.get('message') as string
+  const conversationId = formData.get('conversationId') as string
+
+  // Process message server-side
+  const response = await createChatResponse(message, conversationId)
+
+  // Revalidate chat page
+  revalidatePath('/chat')
+
+  return response
+}
+
+export async function deleteConversation(conversationId: string) {
+  await deleteConversationFromDB(conversationId)
+  revalidatePath('/chat')
+}`}
+        />
+      </section>
+
+      <section className="docs-section">
+        <h2>Complete Next.js Integration</h2>
+        <p>
+          Complete Next.js integration example:
+        </p>
+        <CodePlayground
+          initialCode={`// app/chat/page.tsx
+'use client'
+
+import { ClarityChat } from '@clarity-chat/react'
+import { useSession } from 'next-auth/react'
+
+export default function ChatPage() {
+  const { data: session } = useSession()
+
+  return (
+    <div className="h-screen flex flex-col">
+      <header className="border-b p-4">
+        <h1>Chat</h1>
+        <div>User: {session?.user?.name}</div>
+      </header>
+      
+      <div className="flex-1">
+        <ClarityChat
+          api="/api/chat"
+          headers={{
+            'Authorization': \`Bearer \${session?.accessToken}\`,
+          }}
+          config={{
+            enableMemory: true,
+            enableStreaming: true,
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
+// app/api/chat/route.ts
+import { auth } from '@/auth'
+import { StreamingTextResponse } from 'ai'
+
+export async function POST(req: Request) {
+  const session = await auth()
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
+  const { messages } = await req.json()
+  const stream = await createChatStream(messages, session.user.id)
+
   return new StreamingTextResponse(stream)
 }`}
         />
       </section>
 
       <section className="docs-section">
-        <h2>Step 4: Chat Page Component</h2>
-        <CodeBlock
-          language="typescript"
-          code={`// app/chat/page.tsx
-'use client'
-
-import { ChatWindow } from '@clarity-chat/react'
-import { useState } from 'react'
-import type { Message } from '@clarity-chat/types'
-
-export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Hello! How can I help you today?',
-      createdAt: new Date()
-    }
-  ])
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleSendMessage = async (content: string) => {
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-      createdAt: new Date()
-    }
-    setMessages(prev => [...prev, userMessage])
-
-    // Create AI message placeholder
-    const aiMessageId = (Date.now() + 1).toString()
-    setMessages(prev => [...prev, {
-      id: aiMessageId,
-      role: 'assistant',
-      content: '',
-      createdAt: new Date(),
-      status: 'streaming'
-    }])
-
-    setIsLoading(true)
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMessage]
-        })
-      })
-
-      if (!response.ok) throw new Error('API error')
-
-      // Stream the response
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
-      let accumulated = ''
-
-      while (reader) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value)
-        accumulated += chunk
-
-        setMessages(prev => prev.map(m =>
-          m.id === aiMessageId
-            ? { ...m, content: accumulated }
-            : m
-        ))
-      }
-
-      // Mark as complete
-      setMessages(prev => prev.map(m =>
-        m.id === aiMessageId
-          ? { ...m, status: undefined }
-          : m
-      ))
-
-    } catch (error) {
-      console.error('Chat error:', error)
-      setMessages(prev => prev.map(m =>
-        m.id === aiMessageId
-          ? {
-              ...m,
-              content: 'Sorry, something went wrong.',
-              status: 'error'
-            }
-          : m
-      ))
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return (
-    <div className="h-screen flex flex-col">
-      <header className="border-b p-4">
-        <h1 className="text-xl font-bold">My AI Chat</h1>
-      </header>
-      <div className="flex-1">
-        <ChatWindow
-          messages={messages}
-          onSendMessage={handleSendMessage}
-          isLoading={isLoading}
-        />
-      </div>
-    </div>
-  )
-}`}
-        />
+        <h2>Best Practices</h2>
+        <ul>
+          <li>Use Server Components for configuration and data fetching</li>
+          <li>Use Client Components for interactive chat UI</li>
+          <li>Implement streaming for better UX</li>
+          <li>Add authentication middleware for protected routes</li>
+          <li>Use Server Actions for mutations</li>
+          <li>Handle errors gracefully</li>
+        </ul>
       </section>
 
       <section className="docs-section">
-        <h2>Step 5: Environment Variables</h2>
-        <CodeBlock
-          language="bash"
-          code={`# .env.local
-OPENAI_API_KEY=sk-your-key-here
-
-# .env.example (commit this to git)
-OPENAI_API_KEY=sk-...`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Step 6: TypeScript Configuration</h2>
-        <CodeBlock
-          language="json"
-          code={`// tsconfig.json
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "jsx": "preserve",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@/*": ["./*"]
-    }
-  }
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Production Improvements</h2>
-
-        <h3>1. Add Conversation Persistence</h3>
-        <CodeBlock
-          language="typescript"
-          code={`// Save to database (Supabase example)
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(url, key)
-
-// Save message
-await supabase.from('messages').insert({
-  conversation_id: conversationId,
-  role: message.role,
-  content: message.content,
-  created_at: message.createdAt
-})
-
-// Load conversation
-const { data } = await supabase
-  .from('messages')
-  .select('*')
-  .eq('conversation_id', conversationId)
-  .order('created_at', { ascending: true })`}
-        />
-
-        <h3>2. Add Authentication</h3>
-        <CodeBlock
-          language="typescript"
-          code={`// Use NextAuth.js
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-
-export async function POST(req: Request) {
-  const session = await getServerSession(authOptions)
-  
-  if (!session) {
-    return new Response('Unauthorized', { status: 401 })
-  }
-
-  const userId = session.user.id
-  // Now you can save messages per user
-}`}
-        />
-
-        <h3>3. Add Rate Limiting</h3>
-        <CodeBlock
-          language="typescript"
-          code={`// Use Upstash Rate Limit
-import { Ratelimit } from '@upstash/ratelimit'
-import { Redis } from '@upstash/redis'
-
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, '1 m') // 10 requests per minute
-})
-
-export async function POST(req: Request) {
-  const ip = req.headers.get('x-forwarded-for') || 'unknown'
-  const { success } = await ratelimit.limit(ip)
-  
-  if (!success) {
-    return new Response('Too many requests', { status: 429 })
-  }
-  
-  // Continue with chat...
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Related Recipes</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/cookbook/authentication" className="docs-card">
-            <h3>Add Authentication</h3>
-            <p>Secure with NextAuth</p>
-          </a>
-          <a href="/cookbook/rate-limiting" className="docs-card">
-            <h3>Rate Limiting</h3>
-            <p>Protect your API</p>
-          </a>
-          <a href="/cookbook/analytics-tracking" className="docs-card">
-            <h3>Analytics</h3>
-            <p>Track usage</p>
-          </a>
-        </div>
+        <h2>Related</h2>
+        <ul>
+          <li><a href="/reference/components/clarity-chat">ClarityChat</a> - Main chat component</li>
+          <li><a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat hook</li>
+        </ul>
       </section>
     </div>
   )
 }
-

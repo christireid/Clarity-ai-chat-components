@@ -1,12 +1,13 @@
 'use client'
 
 import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
 import { useRippleEffect } from '../hooks/use-ripple-effect'
 import { LoadingIcon, SuccessIcon, ErrorIcon } from './button-state-icons'
+import { Button as ShadcnButton } from './ui/button'
 
+// Extended button variants that include custom variants
 const buttonVariants = cva(
   'relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-[0.13px] ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50 overflow-hidden',
   {
@@ -60,7 +61,7 @@ const RIPPLE_COLORS: Record<string, string> = {
 } as const
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'size'>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
   loading?: boolean
@@ -75,64 +76,74 @@ export interface ButtonProps
   errorMessage?: React.ReactNode
   /** Duration for success/error state before returning to idle (ms, default: 2000) */
   stateDuration?: number
-  ref?: React.Ref<HTMLButtonElement>
 }
 
-const Button = ({
-  className,
-  variant,
-  size,
-  asChild = false,
-  loading = false,
-  state: controlledState,
-  ripple = true,
-  rippleColor,
-  successMessage,
-  errorMessage,
-  stateDuration = 2000,
-  disabled,
-  children,
-  onClick,
-  ref,
-  ...props
-}: ButtonProps) => {
-    const Comp = (asChild ? Slot : 'button') as 'button'
-    const [internalState, setInternalState] =
-      React.useState<ButtonState>('idle')
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      loading = false,
+      state: controlledState,
+      ripple = true,
+      rippleColor,
+      successMessage,
+      errorMessage,
+      stateDuration = 2000,
+      disabled,
+      children,
+      onClick,
+      ...props
+    },
+    ref
+  ) => {
+    const [internalState, setInternalState] = React.useState<ButtonState>('idle')
     const stateTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-    const currentState =
-      controlledState || (loading ? 'loading' : internalState)
-    const shouldShowRipple =
-      ripple && variant !== 'link' && !disabled && currentState === 'idle'
+    // Determine current state: controlled state takes precedence, then loading, then internal
+    // Use explicit null check since 'idle' is falsy but valid
+    const currentState = controlledState !== undefined 
+      ? controlledState 
+      : loading 
+        ? 'loading' 
+        : internalState
+    const shouldShowRipple = ripple && variant !== 'link' && !disabled && currentState === 'idle'
 
     // Use ripple effect hook
     const { ripples, addRipple } = useRippleEffect({
       enabled: shouldShowRipple,
     })
 
-    // React Compiler will optimize this automatically
+    // Ripple color
     const rippleColorValue = rippleColor || RIPPLE_COLORS[variant ?? 'default'] || 'rgba(22, 119, 255, 0.22)'
 
     // Auto-reset state after duration
     React.useEffect(() => {
-      if (
-        (currentState === 'success' || currentState === 'error') &&
-        !controlledState
-      ) {
+      if ((currentState === 'success' || currentState === 'error') && !controlledState) {
+        // Validate stateDuration to prevent issues with invalid values
+        const duration = Math.max(0, stateDuration || 2000)
+        
         stateTimeoutRef.current = setTimeout(() => {
           setInternalState('idle')
-        }, stateDuration)
-      }
+        }, duration)
 
-      return () => {
+        return () => {
+          if (stateTimeoutRef.current) {
+            clearTimeout(stateTimeoutRef.current)
+            stateTimeoutRef.current = undefined
+          }
+        }
+      } else {
+        // Clear timeout if state changes before duration completes
         if (stateTimeoutRef.current) {
           clearTimeout(stateTimeoutRef.current)
+          stateTimeoutRef.current = undefined
         }
       }
     }, [currentState, controlledState, stateDuration])
 
-    // React Compiler will optimize this automatically
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       if (shouldShowRipple) {
         addRipple(e)
@@ -140,7 +151,7 @@ const Button = ({
       onClick?.(e)
     }
 
-    // React Compiler will optimize this automatically
+    // State content
     let stateContent = null
     switch (currentState) {
       case 'loading':
@@ -155,6 +166,19 @@ const Button = ({
     }
     const isDisabled = disabled || currentState === 'loading'
 
+    // Map custom variants to shadcn variants where possible
+    // For custom variants (success, error, surface), don't pass variant to shadcn
+    // and rely on our custom buttonVariants classes
+    const shadcnVariant =
+      variant === 'default' ||
+      variant === 'secondary' ||
+      variant === 'destructive' ||
+      variant === 'outline' ||
+      variant === 'ghost' ||
+      variant === 'link'
+        ? variant
+        : undefined
+
     // Apply state-specific variant
     const effectiveVariant =
       currentState === 'success'
@@ -164,13 +188,17 @@ const Button = ({
           : variant
 
     return (
-      <Comp
+      <ShadcnButton
         className={cn(
-          buttonVariants({ variant: effectiveVariant, size, className }),
+          buttonVariants({ variant: effectiveVariant, size }),
           currentState === 'success' &&
             'after:absolute after:inset-0 after:rounded-inherit after:border-2 after:border-success/40 after:animate-[pulse_0.8s_ease-out_2] after:content-[""]',
-          currentState === 'error' && 'animate-[error-shake_0.4s_ease-in-out]'
+          currentState === 'error' && 'animate-[error-shake_0.4s_ease-in-out]',
+          className
         )}
+        variant={shadcnVariant}
+        size={shadcnVariant ? size : undefined}
+        asChild={asChild}
         ref={ref}
         disabled={isDisabled}
         data-variant={effectiveVariant}
@@ -198,9 +226,10 @@ const Button = ({
         {/* Button content */}
         {stateContent}
         {children}
-      </Comp>
+      </ShadcnButton>
     )
-}
+  }
+)
 
 Button.displayName = 'Button'
 

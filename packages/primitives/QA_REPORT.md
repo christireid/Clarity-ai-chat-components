@@ -1,9 +1,9 @@
 # QA Report - Primitives Package
 
-**Date:** November 12, 2024  
+**Date:** Updated after shadcn/ui refactor  
 **Package:** `@clarity-chat/primitives`  
 **Version:** 0.1.0  
-**Status:** ✅ **READY FOR RELEASE**
+**Status:** ✅ **READY FOR RELEASE** (Post shadcn/ui refactor)
 
 ## Summary
 
@@ -11,8 +11,8 @@ All QA checks have been completed successfully. The primitives package is fully 
 
 ## Test Results
 
-- **Test Files:** 16 passed (16)
-- **Tests:** 296 passed (296)
+- **Test Files:** 15 passed (15)
+- **Tests:** 312 passed (312)
 - **Status:** ✅ All tests passing
 
 ### Test Fixes Applied
@@ -77,9 +77,9 @@ All QA checks have been completed successfully. The primitives package is fully 
 
 - **Status:** ✅ Build successful
 - **Output Files:**
-  - `dist/index.js` (CJS) - 46.24 KB
-  - `dist/index.mjs` (ESM) - 42.98 KB
-  - `dist/index.d.ts` (TypeScript declarations) - 14.36 KB
+  - `dist/index.js` (CJS) - 48.95 KB
+  - `dist/index.mjs` (ESM) - 44.36 KB
+  - `dist/index.d.ts` (TypeScript declarations) - 16.71 KB
   - Source maps generated for all outputs
 
 ## Package Configuration

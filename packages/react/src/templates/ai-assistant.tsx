@@ -316,7 +316,7 @@ export function AIAssistantTemplate({
         updatedAt: new Date(),
         metadata: { error: true },
       }
-      setMessages((prev) => [...prev, errorMessage])
+      addOperationMessage(errorMessage)
       setIsLoading(false)
       return
     }
@@ -333,7 +333,7 @@ export function AIAssistantTemplate({
         updatedAt: new Date(),
       }
 
-      setMessages((prev) => [...prev, assistantMessage])
+      addOperationMessage(assistantMessage)
 
       // Note: streamChat is not part of ModelAdapter interface
       // This template demonstrates concept but needs proper adapter implementation

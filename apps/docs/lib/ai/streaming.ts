@@ -2,11 +2,12 @@
  * Streaming Utilities
  *
  * Handles streaming responses from LLMs using Server-Sent Events (SSE).
- * Supports both OpenAI and Anthropic streaming APIs.
+ * Supports OpenAI, Anthropic, and Google Gemini streaming APIs.
  */
 
 import OpenAI from 'openai'
 import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export interface StreamChunk {
   type: 'text' | 'error' | 'done' | 'sources' | 'thinking'
@@ -168,6 +169,66 @@ export async function* streamFromClaude(
 }
 
 /**
+ * Stream from Google Gemini API
+ */
+export async function* streamFromGemini(
+  messages: { role: string; content: string }[],
+  options: {
+    model?: string
+    temperature?: number
+    maxTokens?: number
+    systemPrompt?: string
+  } = {}
+): AsyncGenerator<StreamChunk> {
+  const {
+    model = 'gemini-1.5-flash',
+    systemPrompt,
+  } = options
+
+  const apiKey = process.env.GEMINI_API_KEY
+
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is not set')
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey)
+  const geminiModel = genAI.getGenerativeModel({ model })
+
+  try {
+    // Build history from messages (excluding the last user message)
+    const history = messages.slice(0, -1).map((m) => ({
+      role: m.role === 'user' ? 'user' as const : 'model' as const,
+      parts: [{ text: m.content }],
+    }))
+
+    // Add system prompt as initial exchange if provided
+    if (systemPrompt) {
+      history.unshift(
+        { role: 'user' as const, parts: [{ text: `System instructions: ${systemPrompt}` }] },
+        { role: 'model' as const, parts: [{ text: 'Understood. I will follow these instructions.' }] }
+      )
+    }
+
+    const chat = geminiModel.startChat({ history })
+    const lastMessage = messages[messages.length - 1].content
+    const result = await chat.sendMessageStream(lastMessage)
+
+    for await (const chunk of result.stream) {
+      const text = chunk.text()
+      if (text) {
+        yield {
+          type: 'text',
+          content: text,
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Gemini streaming error:', error)
+    throw error
+  }
+}
+
+/**
  * Demo/fallback streaming function when no API keys are configured
  */
 export async function* streamFromDemo(
@@ -217,13 +278,14 @@ export async function* streamFromDemo(
 /**
  * Get the appropriate streaming function based on configured model
  */
-export function getStreamingFunction(): typeof streamFromOpenAI | typeof streamFromClaude | typeof streamFromDemo {
+export function getStreamingFunction(): typeof streamFromOpenAI | typeof streamFromClaude | typeof streamFromGemini | typeof streamFromDemo {
   // Check if any API key is configured
   const hasOpenAI = !!process.env.OPENAI_API_KEY
   const hasAnthropic = !!process.env.ANTHROPIC_API_KEY
+  const hasGemini = !!process.env.GEMINI_API_KEY
 
   // If no API keys, use demo mode
-  if (!hasOpenAI && !hasAnthropic) {
+  if (!hasOpenAI && !hasAnthropic && !hasGemini) {
     console.warn('⚠️  No API keys configured - using demo mode')
     return streamFromDemo
   }
@@ -232,6 +294,10 @@ export function getStreamingFunction(): typeof streamFromOpenAI | typeof streamF
 
   if (model.startsWith('claude') && hasAnthropic) {
     return streamFromClaude
+  }
+
+  if (model.startsWith('gemini') && hasGemini) {
+    return streamFromGemini
   }
 
   if (hasOpenAI) {
