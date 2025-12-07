@@ -1,263 +1,78 @@
 'use client'
 
+/**
+ * DocsAssistant - Documentation Assistant Component
+ *
+ * A fully integrated documentation assistant that leverages the @clarity-chat/react
+ * library components and hooks instead of custom implementations.
+ *
+ * Library Features Used:
+ * - useKeyboardShortcuts - Keyboard handling
+ * - useClipboard - Copy functionality
+ * - useLocalStorage - Persistent storage
+ * - useThrottledCallback - Throttled updates
+ * - useReducedMotion - Accessibility
+ * - ErrorBoundary - Error handling
+ * - NetworkStatus - Connection status
+ * - VoiceInput - Voice input support
+ */
+
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { BookOpen, Code2, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
-import { ChatWindow, FollowUpSuggestions, useToast, type FollowUpSuggestion } from '@clarity-chat/react'
+import { BookOpen, Code2, Lightbulb, MessageSquare, Sparkles, AlertCircle } from 'lucide-react'
+import {
+  // Components
+  ChatWindow,
+  FollowUpSuggestions,
+  ErrorBoundary,
+  NetworkStatus,
+  VoiceInput,
+  // Hooks
+  useToast,
+  useKeyboardShortcuts,
+  useClipboard,
+  useLocalStorage,
+  useThrottledCallback,
+  useReducedMotion,
+  // Types
+  type FollowUpSuggestion,
+} from '@clarity-chat/react'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
 import { FeedbackButtons } from './FeedbackButtons'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { cn } from '@/lib/utils'
 
-// Throttle helper to reduce re-renders during streaming
-// Returns both the throttled function and a flush function to ensure final update
-function createThrottle<T extends (...args: any[]) => void>(fn: T, delay: number): {
-  throttled: T
-  flush: () => void
-  cancel: () => void
-} {
-  let lastCall = 0
-  let timeoutId: ReturnType<typeof setTimeout> | null = null
-  let lastArgs: Parameters<T> | null = null
-
-  const throttled = ((...args: Parameters<T>) => {
-    const now = Date.now()
-    const timeSinceLastCall = now - lastCall
-    lastArgs = args
-
-    if (timeoutId) {
-      clearTimeout(timeoutId)
-      timeoutId = null
-    }
-
-    if (timeSinceLastCall >= delay) {
-      lastCall = now
-      lastArgs = null
-      fn(...args)
-    } else {
-      // Schedule the update for when the delay passes
-      timeoutId = setTimeout(() => {
-        lastCall = Date.now()
-        timeoutId = null
-        if (lastArgs) {
-          const argsToUse = lastArgs
-          lastArgs = null
-          fn(...argsToUse)
-        }
-      }, delay - timeSinceLastCall)
-    }
-  }) as T
-
-  // Flush any pending update immediately
-  const flush = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId)
-      timeoutId = null
-    }
-    if (lastArgs) {
-      const argsToUse = lastArgs
-      lastArgs = null
-      fn(...argsToUse)
-    }
-  }
-
-  // Cancel any pending update without executing
-  const cancel = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId)
-      timeoutId = null
-    }
-    lastArgs = null
-  }
-
-  return { throttled, flush, cancel }
-}
+// ============================================================================
+// Types
+// ============================================================================
 
 interface DocsAssistantProps {
   className?: string
 }
 
-// Session ID management
-function getOrCreateSessionId(): string {
-  if (typeof window === 'undefined') return ''
-
-  const key = 'clarity-docs-assistant-session-id'
-  let sessionId = localStorage.getItem(key)
-
-  if (!sessionId) {
-    // Generate simple session ID
-    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    localStorage.setItem(key, sessionId)
-  }
-
-  return sessionId
+interface SavedConversation {
+  messages: Message[]
+  timestamp: number
 }
 
-/**
- * Convert a raw URL from the docs index to a proper route URL
- * Handles malformed URLs like "//page.tsx" or file paths
- * Always returns a path starting with "/" to ensure relative routing
- */
-function normalizeSourceUrl(rawUrl: string, title: string): string {
-  // Handle empty/invalid URLs
-  if (!rawUrl || rawUrl === '#' || rawUrl === 'undefined' || rawUrl.trim() === '') {
-    return generateUrlFromTitle(title)
-  }
-
-  // If it starts with http/https, return as-is (external link)
-  if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
-    return rawUrl
-  }
-
-  // If it's already a valid route starting with /, check if it's a real route
-  const validPrefixes = ['/learn', '/guides/', '/reference/', '/examples/', '/integrations/', '/tools/', '/blog/', '/enterprise/']
-  if (validPrefixes.some(prefix => rawUrl.startsWith(prefix))) {
-    return rawUrl
-  }
-
-  // Handle malformed URLs - generate a proper URL from the title
-  return generateUrlFromTitle(title)
+interface Source {
+  id?: string
+  source?: string
+  title?: string
+  url: string
+  confidence?: number
+  score?: number
 }
 
-/**
- * Generate a URL path from a document title
- * Maps to actual routes in the docs site
- */
-function generateUrlFromTitle(title: string): string {
-  if (!title || title.trim() === '') {
-    return '/learn'
-  }
+// ============================================================================
+// Constants
+// ============================================================================
 
-  const lowerTitle = title.toLowerCase()
-
-  // Convert title to a URL-friendly slug
-  const slug = title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .trim()
-
-  // Map to actual routes in the docs site
-
-  // Getting started / Learn
-  if (lowerTitle.includes('getting started') || lowerTitle.includes('quickstart') || lowerTitle.includes('introduction')) {
-    return '/learn'
-  }
-  if (lowerTitle.includes('installation') || lowerTitle.includes('install')) {
-    return '/guides/installation'
-  }
-
-  // Hooks - map to /reference/hooks/...
-  if (lowerTitle.includes('useautoscroll') || lowerTitle.includes('auto scroll') || lowerTitle.includes('auto-scroll')) {
-    return '/reference/hooks/use-auto-scroll'
-  }
-  if (lowerTitle.includes('usechat') || lowerTitle.includes('use chat') || lowerTitle.includes('use-chat')) {
-    return '/reference/hooks/use-chat-optimized'
-  }
-  if (lowerTitle.includes('usedebounce') || lowerTitle.includes('debounce')) {
-    return '/reference/hooks/use-debounce'
-  }
-  if (lowerTitle.includes('useerror') || lowerTitle.includes('error recovery')) {
-    return '/reference/hooks/use-error-recovery'
-  }
-  if (lowerTitle.includes('uselocalstorage') || lowerTitle.includes('local storage')) {
-    return '/reference/hooks/use-local-storage'
-  }
-  if (lowerTitle.includes('usemessage') || lowerTitle.includes('message operations')) {
-    return '/reference/hooks/use-message-operations'
-  }
-  if (lowerTitle.includes('usestreaming') || lowerTitle.includes('streaming')) {
-    return '/reference/hooks/use-streaming-sse'
-  }
-  if (lowerTitle.includes('hook')) {
-    return '/reference/hooks'
-  }
-
-  // Components - map to /reference/components/...
-  if (lowerTitle.includes('chat input') || lowerTitle.includes('chatinput')) {
-    return '/reference/components/advanced-chat-input'
-  }
-  if (lowerTitle.includes('chat window') || lowerTitle.includes('chatwindow')) {
-    return '/reference/components'
-  }
-  if (lowerTitle.includes('message') && !lowerTitle.includes('operations')) {
-    return '/reference/components/message-optimized'
-  }
-  if (lowerTitle.includes('token counter') || lowerTitle.includes('tokencounter')) {
-    return '/reference/components/token-counter'
-  }
-  if (lowerTitle.includes('thinking indicator') || lowerTitle.includes('thinking')) {
-    return '/reference/components/thinking-indicator'
-  }
-  if (lowerTitle.includes('voice input') || lowerTitle.includes('voice')) {
-    return '/reference/components/voice-input'
-  }
-  if (lowerTitle.includes('empty state')) {
-    return '/reference/components/empty-state'
-  }
-  if (lowerTitle.includes('error boundary')) {
-    return '/reference/components/error-boundary'
-  }
-  if (lowerTitle.includes('component')) {
-    return '/reference/components'
-  }
-
-  // Guides
-  if (lowerTitle.includes('theme') || lowerTitle.includes('styling') || lowerTitle.includes('customiz')) {
-    return '/guides/theming'
-  }
-  if (lowerTitle.includes('error') || lowerTitle.includes('handling')) {
-    return '/guides/error-handling'
-  }
-  if (lowerTitle.includes('memory')) {
-    return '/guides/memory'
-  }
-  if (lowerTitle.includes('plugin')) {
-    return '/guides/plugins'
-  }
-  if (lowerTitle.includes('model adapter')) {
-    return '/guides/model-adapters'
-  }
-  if (lowerTitle.includes('file upload')) {
-    return '/guides/file-upload'
-  }
-
-  // Examples
-  if (lowerTitle.includes('example') || lowerTitle.includes('demo')) {
-    return '/examples'
-  }
-
-  // Default to learn page
-  return '/learn'
-}
-
-/**
- * Normalize all markdown links in content to use valid routes
- * Finds all [text](url) patterns and fixes the URLs
- */
-function normalizeLinksInContent(content: string): string {
-  // Match markdown links: [text](url)
-  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
-
-  return content.replace(linkRegex, (match, text, url) => {
-    // Skip external links
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return match
-    }
-
-    // Skip anchor links
-    if (url.startsWith('#')) {
-      return match
-    }
-
-    // Normalize the URL using the title/text as context
-    const normalizedUrl = normalizeSourceUrl(url, text)
-    return `[${text}](${normalizedUrl})`
-  })
-}
+const SESSION_ID_KEY = 'clarity-docs-assistant-session-id'
+const MESSAGES_KEY = 'clarity-docs-assistant-messages'
+const CONVERSATION_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
+const STREAM_THROTTLE_MS = 50 // Throttle streaming updates
 
 // Suggested questions to help users get started
 const SUGGESTED_QUESTIONS: FollowUpSuggestion[] = [
@@ -291,16 +106,107 @@ const SUGGESTED_QUESTIONS: FollowUpSuggestion[] = [
   },
 ]
 
-// Custom empty state for the docs assistant
-function DocsAssistantEmptyState({ onSelectSuggestion }: { onSelectSuggestion: (suggestion: FollowUpSuggestion) => void }) {
+// ============================================================================
+// URL Normalization Utilities
+// ============================================================================
+
+function normalizeSourceUrl(rawUrl: string, title: string): string {
+  if (!rawUrl || rawUrl === '#' || rawUrl === 'undefined' || rawUrl.trim() === '') {
+    return generateUrlFromTitle(title)
+  }
+
+  if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+    return rawUrl
+  }
+
+  const validPrefixes = ['/learn', '/guides/', '/reference/', '/examples/', '/integrations/', '/tools/', '/blog/', '/enterprise/']
+  if (validPrefixes.some(prefix => rawUrl.startsWith(prefix))) {
+    return rawUrl
+  }
+
+  return generateUrlFromTitle(title)
+}
+
+function generateUrlFromTitle(title: string): string {
+  if (!title || title.trim() === '') {
+    return '/learn'
+  }
+
+  const lowerTitle = title.toLowerCase()
+
+  // Route mappings
+  const routeMappings: Record<string, string> = {
+    'getting started': '/learn',
+    'quickstart': '/learn',
+    'introduction': '/learn',
+    'installation': '/guides/installation',
+    'theme': '/guides/theming',
+    'styling': '/guides/theming',
+    'error': '/guides/error-handling',
+    'memory': '/guides/memory',
+    'hook': '/reference/hooks',
+    'component': '/reference/components',
+    'streaming': '/reference/hooks/use-streaming-sse',
+    'voice': '/reference/components/voice-input',
+  }
+
+  for (const [key, route] of Object.entries(routeMappings)) {
+    if (lowerTitle.includes(key)) {
+      return route
+    }
+  }
+
+  return '/learn'
+}
+
+function normalizeLinksInContent(content: string): string {
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
+
+  return content.replace(linkRegex, (match, text, url) => {
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('#')) {
+      return match
+    }
+    const normalizedUrl = normalizeSourceUrl(url, text)
+    return `[${text}](${normalizedUrl})`
+  })
+}
+
+// ============================================================================
+// Custom Hooks
+// ============================================================================
+
+function useSessionId() {
+  const [sessionId, setSessionId] = useState<string>('')
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    let id = localStorage.getItem(SESSION_ID_KEY)
+    if (!id) {
+      id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      localStorage.setItem(SESSION_ID_KEY, id)
+    }
+    setSessionId(id)
+  }, [])
+
+  return sessionId
+}
+
+// ============================================================================
+// Empty State Component
+// ============================================================================
+
+function DocsAssistantEmptyState({
+  onSelectSuggestion
+}: {
+  onSelectSuggestion: (suggestion: FollowUpSuggestion) => void
+}) {
   return (
     <div className="flex flex-col items-center p-4 pb-8 space-y-5 overflow-hidden">
-      {/* Icon */}
       <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-600/10 shadow-lg ring-1 ring-brand-500/30">
         <BookOpen className="w-10 h-10 text-brand-600" />
       </div>
 
-      {/* Content */}
       <div className="space-y-2 text-center max-w-md">
         <h3 className="text-xl font-bold text-foreground">
           Clarity Chat Documentation Assistant
@@ -311,7 +217,6 @@ function DocsAssistantEmptyState({ onSelectSuggestion }: { onSelectSuggestion: (
         </p>
       </div>
 
-      {/* Suggestions */}
       <div className="w-full">
         <FollowUpSuggestions
           suggestions={SUGGESTED_QUESTIONS}
@@ -325,152 +230,124 @@ function DocsAssistantEmptyState({ onSelectSuggestion }: { onSelectSuggestion: (
   )
 }
 
-export function DocsAssistant({ className }: DocsAssistantProps) {
+// ============================================================================
+// Inner Component (wrapped by ErrorBoundary)
+// ============================================================================
+
+function DocsAssistantInner({ className }: DocsAssistantProps) {
+  // State
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [aiStatus, setAiStatus] = useState<AIStatus | undefined>(undefined)
   const [showShortcuts, setShowShortcuts] = useState(false)
-  const sessionIdRef = useRef<string>('')
+
+  // Refs
   const dialogRef = useRef<HTMLDivElement>(null)
-  // Track active throttle cancel function for cleanup on unmount
-  const activeThrottleCancelRef = useRef<(() => void) | null>(null)
-  // AbortController for canceling streaming requests
   const abortControllerRef = useRef<AbortController | null>(null)
+
+  // Library hooks
+  const sessionId = useSessionId()
   const toast = useToast()
+  const prefersReducedMotion = useReducedMotion()
+  const { copy } = useClipboard({
+    timeout: 2000,
+    onSuccess: () => toast.success('Copied to clipboard'),
+    onError: () => toast.error('Failed to copy'),
+  })
 
-  // Cleanup any pending throttled updates and abort streaming on unmount
+  // Persistent storage using library hook
+  const [savedConversation, setSavedConversation, clearSavedConversation] = useLocalStorage<SavedConversation | null>(
+    MESSAGES_KEY,
+    null
+  )
+
+  // Initialize messages from saved conversation
   useEffect(() => {
-    return () => {
-      // Cancel any pending throttled updates
-      if (activeThrottleCancelRef.current) {
-        activeThrottleCancelRef.current()
-        activeThrottleCancelRef.current = null
-      }
-      // Abort any in-flight streaming requests
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-        abortControllerRef.current = null
+    if (savedConversation) {
+      const isValid = savedConversation.timestamp &&
+        Date.now() - savedConversation.timestamp < CONVERSATION_TTL_MS
+
+      if (isValid && savedConversation.messages) {
+        setMessages(savedConversation.messages)
+      } else {
+        clearSavedConversation()
       }
     }
-  }, [])
+  }, []) // Only run on mount
 
-  // Initialize session ID and restore conversation history
-  useEffect(() => {
-    sessionIdRef.current = getOrCreateSessionId()
-
-    // Restore conversation history from localStorage
-    try {
-      const savedMessages = localStorage.getItem('clarity-docs-assistant-messages')
-      if (savedMessages) {
-        const parsed = JSON.parse(savedMessages)
-        // Only restore if messages were saved in the last 24 hours
-        if (parsed.timestamp && Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
-          setMessages(parsed.messages || [])
-        }
-      }
-    } catch (error) {
-      console.error('Failed to restore conversation history:', error)
-    }
-  }, [])
-
-  // Save conversation history to localStorage
+  // Save messages when they change
   useEffect(() => {
     if (messages.length > 0) {
-      try {
-        localStorage.setItem(
-          'clarity-docs-assistant-messages',
-          JSON.stringify({
-            messages,
-            timestamp: Date.now(),
-          })
-        )
-      } catch (error) {
-        console.error('Failed to save conversation history:', error)
-      }
+      setSavedConversation({
+        messages,
+        timestamp: Date.now(),
+      })
     }
-  }, [messages])
+  }, [messages, setSavedConversation])
 
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    const handleKeyboard = (e: KeyboardEvent) => {
-      // Ignore if user is typing in an input
-      const target = e.target as HTMLElement
-      const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'
-
-      // Cmd/Ctrl+A to toggle chat (AI Assistant)
-      if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
-        e.preventDefault()
+  // Keyboard shortcuts using library hook
+  useKeyboardShortcuts([
+    {
+      key: 'mod+a',
+      callback: () => {
         const willOpen = !isOpen
         setIsOpen(willOpen)
         if (willOpen) {
           toast.info('Press Escape or Cmd+A to close', 'Documentation Assistant', 3000)
         }
-      }
-      // ? to show shortcuts help (only when not typing)
-      else if (e.key === '?' && !isTyping && isOpen) {
-        e.preventDefault()
-        setShowShortcuts(true)
-      }
-      // Escape to close
-      else if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false)
-      }
-    }
+      },
+      description: 'Toggle documentation assistant',
+    },
+    {
+      key: '?',
+      callback: () => {
+        if (isOpen) setShowShortcuts(true)
+      },
+      description: 'Show keyboard shortcuts',
+      enableInInput: false,
+    },
+    {
+      key: 'escape',
+      callback: () => {
+        if (isOpen) setIsOpen(false)
+      },
+      description: 'Close assistant',
+    },
+  ])
 
-    window.addEventListener('keydown', handleKeyboard)
-    return () => window.removeEventListener('keydown', handleKeyboard)
-  }, [isOpen, toast])
-
-  // Focus management: Focus first input when dialog opens
+  // Focus management
   useEffect(() => {
     if (isOpen && dialogRef.current) {
-      // Small delay to ensure DOM is ready
       const timer = setTimeout(() => {
         const textarea = dialogRef.current?.querySelector('textarea')
-        if (textarea) {
-          textarea.focus()
-        }
+        textarea?.focus()
       }, 100)
       return () => clearTimeout(timer)
     }
   }, [isOpen])
 
-  // Focus trap: Keep focus within dialog when open
+  // Cleanup on unmount
   useEffect(() => {
-    if (!isOpen || !dialogRef.current) return
-
-    const dialog = dialogRef.current
-    const focusableElements = dialog.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    )
-    const firstFocusable = focusableElements[0] as HTMLElement
-    const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement
-
-    const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return
-
-      if (e.shiftKey) {
-        // Shift + Tab
-        if (document.activeElement === firstFocusable) {
-          e.preventDefault()
-          lastFocusable?.focus()
-        }
-      } else {
-        // Tab
-        if (document.activeElement === lastFocusable) {
-          e.preventDefault()
-          firstFocusable?.focus()
-        }
-      }
+    return () => {
+      abortControllerRef.current?.abort()
     }
+  }, [])
 
-    dialog.addEventListener('keydown', handleTabKey as EventListener)
-    return () => dialog.removeEventListener('keydown', handleTabKey as EventListener)
-  }, [isOpen])
+  // Throttled message update for streaming using library hook
+  const updateStreamingMessage = useThrottledCallback(
+    (messageId: string, content: string) => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId ? { ...m, content } : m
+        )
+      )
+    },
+    STREAM_THROTTLE_MS
+  )
 
-  const handleSendMessage = async (content: string) => {
-    // Add user message
+  // Send message handler
+  const handleSendMessage = useCallback(async (content: string) => {
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       chatId: 'docs-assistant',
@@ -490,29 +367,18 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
     })
 
     try {
-      // Cancel any previous streaming request
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-
-      // Create new AbortController for this request
+      abortControllerRef.current?.abort()
       const abortController = new AbortController()
       abortControllerRef.current = abortController
 
-      // Call API endpoint with streaming
       const response = await fetch('/api/docs-assistant', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: content,
-          sessionId: sessionIdRef.current,
+          sessionId,
           currentPath: typeof window !== 'undefined' ? window.location.pathname : '/',
-          messages: messages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+          messages: messages.map((m) => ({ role: m.role, content: m.content })),
         }),
         signal: abortController.signal,
       })
@@ -521,15 +387,11 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         throw new Error(`API error: ${response.status}`)
       }
 
-      // Handle streaming response
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
 
-      if (!reader) {
-        throw new Error('No response body')
-      }
+      if (!reader) throw new Error('No response body')
 
-      // Create assistant message with streaming status
       const assistantMessage: Message = {
         id: `assistant-${Date.now()}`,
         chatId: 'docs-assistant',
@@ -541,8 +403,6 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       }
 
       setMessages((prev) => [...prev, assistantMessage])
-
-      // Hide skeleton and show thinking indicator as we start generating
       setIsLoading(false)
       setAiStatus({
         stage: 'generating',
@@ -551,81 +411,44 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       })
 
       let accumulatedContent = ''
-      let sources: Array<{ id: string; source: string; url: string; confidence: number }> = []
+      let sources: Source[] = []
 
-      // Create a throttled update function to reduce flickering
-      // Updates at most every 50ms to prevent layout thrashing
-      const { throttled: updateStreamingMessage, flush: flushUpdate, cancel: cancelUpdate } = createThrottle(
-        (content: string) => {
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantMessage.id
-                ? { ...m, content }
-                : m
-            )
-          )
-        },
-        50
-      )
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
 
-      // Store cancel function for cleanup on unmount
-      activeThrottleCancelRef.current = cancelUpdate
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
 
-      try {
-        while (true) {
-          const { done, value } = await reader.read()
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6))
 
-          if (done) break
-
-          const chunk = decoder.decode(value)
-          const lines = chunk.split('\n')
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6))
-
-                if (data.type === 'text' && data.content) {
-                  accumulatedContent += data.content
-
-                  // Update with throttling to reduce flicker
-                  updateStreamingMessage(accumulatedContent)
-                } else if (data.type === 'sources' && data.data?.sources) {
-                  // Store sources for potential display
-                  // API sends: { url, title, score }
-                  sources = data.data.sources
-                } else if (data.type === 'error') {
+              if (data.type === 'text' && data.content) {
+                accumulatedContent += data.content
+                updateStreamingMessage(assistantMessage.id, accumulatedContent)
+              } else if (data.type === 'sources' && data.data?.sources) {
+                sources = data.data.sources
+              } else if (data.type === 'error') {
                 throw new Error(data.content || 'Stream error')
               } else if (data.type === 'done') {
-                // Normalize all links in the AI response before finalizing
                 const normalizedContent = normalizeLinksInContent(accumulatedContent)
-
-                // Append sources to the message content if available
                 let finalContent = normalizedContent
-                if (sources.length > 0) {
-                  // Filter out invalid sources and format valid ones
-                  const validSources = sources.filter((s: any) =>
-                    s && typeof s === 'object' && (s.title || s.source || s.url)
-                  )
 
+                if (sources.length > 0) {
+                  const validSources = sources.filter((s) => s && (s.title || s.source || s.url))
                   if (validSources.length > 0) {
-                    finalContent += '\n\n---\n\n**📚 Sources:**\n'
-                    validSources.forEach((source: any) => {
+                    finalContent += '\n\n---\n\n**Sources:**\n'
+                    validSources.forEach((source) => {
                       const confidence = Number(source.score) || Number(source.confidence) || 0
-                      // Ensure title is a valid non-empty string
-                      const rawTitle = source.title || source.source
-                      const title = (typeof rawTitle === 'string' && rawTitle.trim() && rawTitle !== 'undefined')
-                        ? rawTitle.trim()
-                        : 'Documentation'
-                      // Normalize the URL to ensure it's a valid route
-                      const rawUrl = (typeof source.url === 'string') ? source.url.trim() : ''
-                      const url = normalizeSourceUrl(rawUrl, title)
+                      const title = (source.title || source.source || 'Documentation').trim()
+                      const url = normalizeSourceUrl(source.url || '', title)
                       finalContent += `- [${title}](${url}) (${Math.round(confidence * 100)}% relevance)\n`
                     })
                   }
                 }
 
-                // Mark as sent with sources
                 setMessages((prev) =>
                   prev.map((m) =>
                     m.id === assistantMessage.id
@@ -633,50 +456,29 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
                       : m
                   )
                 )
-
-                // Clear AI status when complete
                 setAiStatus(undefined)
               }
-            } catch (parseError) {
+            } catch {
               // Ignore parse errors for incomplete JSON
             }
           }
         }
-      } finally {
-        // Ensure any pending throttled update is flushed before we finish
-        flushUpdate()
-        // Clear the ref since this throttle is no longer active
-        activeThrottleCancelRef.current = null
-        // Clear the abort controller ref
-        abortControllerRef.current = null
       }
 
-      // Clear loading and AI status when streaming completes
+      abortControllerRef.current = null
       setIsLoading(false)
       setAiStatus(undefined)
     } catch (error) {
-      // Handle abort errors silently (user-initiated cancellation)
       if (error instanceof Error && error.name === 'AbortError') {
         setIsLoading(false)
         setAiStatus(undefined)
         return
       }
 
-      // Cancel any pending throttled updates on error
-      if (activeThrottleCancelRef.current) {
-        activeThrottleCancelRef.current()
-        activeThrottleCancelRef.current = null
-      }
-
-      // Clear the abort controller ref
       abortControllerRef.current = null
-
       const errorMsg = error instanceof Error ? error.message : 'Please try again.'
-
-      // Show error toast
       toast.error(errorMsg, 'Failed to get response')
 
-      // Add error message
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
         chatId: 'docs-assistant',
@@ -691,41 +493,38 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       setIsLoading(false)
       setAiStatus(undefined)
     }
-  }
+  }, [messages, sessionId, toast, updateStreamingMessage])
 
-  // Handle message copy
-  const handleMessageCopy = useCallback(async (messageId: string, content: string) => {
-    try {
-      await navigator.clipboard.writeText(content)
-      toast.success('Message copied to clipboard')
-    } catch (error) {
-      console.error('Failed to copy message:', error)
-      toast.error('Failed to copy message')
-    }
-  }, [toast])
+  // Message copy handler using library clipboard hook
+  const handleMessageCopy = useCallback(async (_messageId: string, content: string) => {
+    await copy(content)
+  }, [copy])
 
-  // Handle message retry
+  // Message retry handler
   const handleMessageRetry = useCallback((messageId: string) => {
-    // Find the user message before the failed message
     const messageIndex = messages.findIndex((m) => m.id === messageId)
     if (messageIndex > 0) {
       const previousMessage = messages[messageIndex - 1]
       if (previousMessage.role === 'user') {
-        // Remove the error message and retry
         setMessages((prev) => prev.filter((m) => m.id !== messageId))
         handleSendMessage(previousMessage.content)
         toast.info('Retrying message...')
       }
     }
-  }, [messages, toast])
+  }, [messages, toast, handleSendMessage])
 
-  // Handle export conversation
+  // Voice input handler
+  const handleVoiceTranscript = useCallback((transcript: string) => {
+    if (transcript.trim()) {
+      handleSendMessage(transcript.trim())
+    }
+  }, [handleSendMessage])
+
+  // Export handler
   const handleExport = useCallback(() => {
     try {
-      // Format conversation as markdown
       let markdown = '# Clarity Chat Documentation Assistant\n\n'
-      markdown += `Exported: ${new Date().toLocaleString()}\n\n`
-      markdown += '---\n\n'
+      markdown += `Exported: ${new Date().toLocaleString()}\n\n---\n\n`
 
       messages.forEach((message) => {
         const role = message.role === 'user' ? 'You' : 'Assistant'
@@ -733,7 +532,6 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         markdown += `## ${role} (${timestamp})\n\n${message.content}\n\n`
       })
 
-      // Create blob and download
       const blob = new Blob([markdown], { type: 'text/markdown' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -751,9 +549,9 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
     }
   }, [messages, toast])
 
-  const handleSelectSuggestion = (suggestion: FollowUpSuggestion) => {
+  const handleSelectSuggestion = useCallback((suggestion: FollowUpSuggestion) => {
     handleSendMessage(suggestion.title)
-  }
+  }, [handleSendMessage])
 
   const handleFeedback = useCallback(async (
     messageId: string,
@@ -763,14 +561,12 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
     try {
       const response = await fetch('/api/feedback', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messageId,
           type,
           comment,
-          sessionId: sessionIdRef.current,
+          sessionId,
         }),
       })
 
@@ -781,34 +577,38 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       toast.success(
         type === 'positive'
           ? 'Thanks for your feedback!'
-          : 'Feedback received. We\'ll work on improving.'
+          : "Feedback received. We'll work on improving."
       )
     } catch (error) {
       console.error('Failed to submit feedback:', error)
       toast.error('Failed to submit feedback. Please try again.')
     }
-  }, [toast])
+  }, [sessionId, toast])
 
-  // Custom message renderer with feedback buttons
-  const renderMessageWithFeedback = useCallback((message: Message) => {
-    const isAssistant = message.role === 'assistant'
-    const isComplete = message.status === 'sent'
+  const handleClear = useCallback(() => {
+    setMessages([])
+    clearSavedConversation()
+    toast.info('Conversation cleared')
+  }, [clearSavedConversation, toast])
 
-    return (
-      <div className="space-y-2">
-        {/* Message content is rendered by ChatWindow */}
+  // Animation variants - respect reduced motion preference
+  const dialogVariants = useMemo(() => ({
+    initial: prefersReducedMotion
+      ? { opacity: 0 }
+      : { opacity: 0, scale: 0.96, y: 20 },
+    animate: prefersReducedMotion
+      ? { opacity: 1 }
+      : { opacity: 1, scale: 1, y: 0 },
+    exit: prefersReducedMotion
+      ? { opacity: 0 }
+      : { opacity: 0, scale: 0.96, y: 20 },
+  }), [prefersReducedMotion])
 
-        {/* Add feedback buttons for completed assistant messages */}
-        {isAssistant && isComplete && (
-          <FeedbackButtons
-            messageId={message.id}
-            onFeedback={handleFeedback}
-            className="mt-2"
-          />
-        )}
-      </div>
-    )
-  }, [handleFeedback])
+  const backdropVariants = useMemo(() => ({
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  }), [])
 
   return (
     <>
@@ -820,24 +620,22 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         {isOpen && (
           <motion.div
             ref={dialogRef}
-            initial={{ opacity: 0, scale: 0.96, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 20 }}
+            variants={dialogVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             transition={{
-              duration: 0.25,
+              duration: prefersReducedMotion ? 0.1 : 0.25,
               ease: [0.25, 0.1, 0.25, 1],
             }}
             className={cn(
-              // Mobile: Full screen with small padding
               'fixed inset-2 sm:inset-4 md:inset-6',
-              // Desktop: Positioned right with fixed width
               'lg:right-6 lg:left-auto lg:top-6 lg:bottom-6 lg:w-[640px] xl:w-[720px]',
               'z-[70]',
               'flex flex-col',
               'rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden',
               'bg-white dark:bg-gray-900',
               'border border-gray-200/80 dark:border-gray-800',
-              // Improve touch interactions on mobile
               'touch-manipulation',
               className
             )}
@@ -846,6 +644,23 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             aria-labelledby="docs-assistant-title"
             aria-describedby="docs-assistant-description"
           >
+            {/* Network Status Indicator */}
+            <NetworkStatus
+              className="absolute top-2 right-12 z-10"
+              showOnlyWhenOffline
+            />
+
+            {/* Voice Input Button */}
+            <div className="absolute top-2 right-24 z-10">
+              <VoiceInput
+                onTranscript={handleVoiceTranscript}
+                size="sm"
+                variant="ghost"
+                tooltipText="Speak your question"
+                autoSubmit
+              />
+            </div>
+
             <ChatWindow
               messages={messages}
               isLoading={isLoading}
@@ -858,15 +673,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
               sessionSubtitle="Powered by Clarity Chat"
               showMessageCount
               onExport={messages.length > 0 ? handleExport : undefined}
-              onClear={
-                messages.length > 0
-                  ? () => {
-                      setMessages([])
-                      localStorage.removeItem('clarity-docs-assistant-messages')
-                      toast.info('Conversation cleared')
-                    }
-                  : undefined
-              }
+              onClear={messages.length > 0 ? handleClear : undefined}
               emptyState={<DocsAssistantEmptyState onSelectSuggestion={handleSelectSuggestion} />}
               className="h-full flex flex-col"
             />
@@ -874,14 +681,15 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         )}
       </AnimatePresence>
 
-      {/* Backdrop - covers everything including sidebar */}
+      {/* Backdrop */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            variants={backdropVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: prefersReducedMotion ? 0.1 : 0.25 }}
             className="fixed inset-0 bg-black/40 sm:bg-black/30 backdrop-blur-sm sm:backdrop-blur-md z-[60]"
             onClick={() => setIsOpen(false)}
             style={{ backdropFilter: 'blur(8px)' }}
@@ -896,5 +704,45 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         onClose={() => setShowShortcuts(false)}
       />
     </>
+  )
+}
+
+// ============================================================================
+// Exported Component with Error Boundary
+// ============================================================================
+
+export function DocsAssistant({ className }: DocsAssistantProps) {
+  const toast = useToast()
+
+  return (
+    <ErrorBoundary
+      fallback={(error, resetError) => (
+        <div className="fixed bottom-4 right-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg shadow-lg max-w-sm">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              <h3 className="font-semibold text-foreground">Documentation Assistant Error</h3>
+              <p className="text-sm text-muted-foreground">
+                {error.message || 'An unexpected error occurred.'}
+              </p>
+              <button
+                onClick={resetError}
+                className="text-sm text-primary hover:underline"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      onError={(error, errorInfo) => {
+        console.error('[DocsAssistant] Error:', error, errorInfo)
+      }}
+      onReset={() => {
+        toast.info('Documentation Assistant has been reset')
+      }}
+    >
+      <DocsAssistantInner className={className} />
+    </ErrorBoundary>
   )
 }
