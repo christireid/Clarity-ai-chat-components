@@ -68,6 +68,14 @@ export interface MarkdownRendererProps {
 /**
  * Enhanced code block with copy button and line numbers
  */
+interface CodeBlockProps extends React.HTMLAttributes<HTMLElement> {
+  inline?: boolean
+  className?: string
+  children?: React.ReactNode
+  showLineNumbers?: boolean
+  enableCopy?: boolean
+}
+
 function CodeBlock({
   inline,
   className,
@@ -75,7 +83,7 @@ function CodeBlock({
   showLineNumbers = false,
   enableCopy = true,
   ...props
-}: any) {
+}: CodeBlockProps) {
   const [copied, setCopied] = React.useState(false)
   const match = /language-(\w+)/.exec(className || '')
   const language = match ? match[1] : ''

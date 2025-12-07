@@ -158,13 +158,18 @@ export function Message({
     }
   }
 
-  // React 19: Compiler optimizes static objects - no useMemo needed
+  // Memoize markdown components to avoid recreation on every render
   // Using Partial<Components> to allow custom component types
-  // MarkdownCodeBlock is a memoized component, needs type assertion for react-markdown v10
-  const markdownComponents: Partial<Components> = {
-    code: MarkdownCodeBlock as unknown as Components['code'],
+  const markdownComponents = React.useMemo<Partial<Components>>(() => {
+    // Create wrapper for memoized component to match react-markdown's expected type
+    const CodeWrapper: Components['code'] = (props) => {
+      return <MarkdownCodeBlock {...props} />
+    }
+    
+    return {
+      code: CodeWrapper,
     // Custom pre handler - wrap code blocks with styling and copy button
-    pre: ({ children, node, ...props }: any) => {
+    pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement> & { node?: unknown }) => {
       // Extract code string from the code element for copy button
       let codeString = ''
       React.Children.forEach(children, (child) => {
@@ -210,28 +215,28 @@ export function Message({
     // Always use div for paragraphs to prevent hydration mismatches
     // The <p> element cannot contain block elements, and detecting them
     // reliably across server/client is problematic. Using div is safe.
-    p: ({ children, ...props }: any) => (
+    p: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
       <div className="mb-4 leading-relaxed" {...props}>{children}</div>
     ),
     // Table styling
-    table: ({ children, ...props }: any) => (
+    table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
       <div className="overflow-x-auto my-4 w-full">
         <table className="min-w-full table-auto border-collapse divide-y divide-border" {...props}>
           {children}
         </table>
       </div>
     ),
-    thead: ({ children, ...props }: any) => (
+    thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
       <thead className="bg-muted" {...props}>
         {children}
       </thead>
     ),
-    tbody: ({ children, ...props }: any) => (
+    tbody: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
       <tbody className="bg-background divide-y divide-border" {...props}>
         {children}
       </tbody>
     ),
-    th: ({ children, ...props }: any) => (
+    th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
       <th
         className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
         {...props}
@@ -239,24 +244,26 @@ export function Message({
         {children}
       </th>
     ),
-    td: ({ children, ...props }: any) => (
+    td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
       <td className="px-6 py-4 text-sm border border-border" {...props}>
         {children}
       </td>
     ),
-    tr: ({ children, ...props }: any) => (
+    tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
       <tr className="hover:bg-muted/50 transition-colors" {...props}>
         {children}
       </tr>
     ),
-  }
+    }
+  }, [])
 
-  // Static plugin arrays - compiler optimizes
-  const remarkPlugins = [remarkGfm]
-  const rehypePlugins = [
+  // Memoize plugin arrays to avoid recreation on every render
+  const remarkPlugins = React.useMemo(() => [remarkGfm], [])
+  const rehypePlugins = React.useMemo(() => [
+    // Type incompatibility between vfile versions - using type assertion as last resort
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    rehypeHighlight as any, // Type incompatibility between vfile versions
-  ]
+    rehypeHighlight as any,
+  ], [])
 
     return (
       <motion.div
@@ -370,6 +377,9 @@ export function Message({
 
             {isStreaming && (
               <motion.span
+                role="status"
+                aria-live="polite"
+                aria-label="Streaming response"
                 animate={{
                   opacity: [1, 0.3, 1],
                   scale: [1, 0.95, 1],
@@ -386,12 +396,14 @@ export function Message({
 
           {/* Error Message */}
           {message.status === 'error' && errorDetails && (
-            <ErrorMessage
-              error={errorDetails}
-              onRetry={onRetry}
-              compact={isGrouped}
-              maxRetryAttempts={3}
-            />
+            <div role="alert" aria-live="assertive">
+              <ErrorMessage
+                error={errorDetails}
+                onRetry={onRetry}
+                compact={isGrouped}
+                maxRetryAttempts={3}
+              />
+            </div>
           )}
 
           {/* Attachments */}
