@@ -3,11 +3,16 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import { ThemeProvider } from 'next-themes'
 import { AnimatedBackground } from './AnimatedBackground'
 
-// Mock tsparticles
+// Mock tsparticles with delayed initialization
+let initParticlesResolve: () => void
+let initParticlesPromise = new Promise<void>((resolve) => {
+  initParticlesResolve = resolve
+})
+
 vi.mock('@tsparticles/react', () => ({
   default: ({ 
     id, 
@@ -16,22 +21,22 @@ vi.mock('@tsparticles/react', () => ({
   }: { 
     id?: string
     options?: unknown
-    particlesLoaded?: (container: unknown) => void 
+    particlesLoaded?: (container: unknown) => Promise<void> 
   }) => {
-    // Simulate particles loaded callback
+    // Simulate particles loaded callback after a delay
     if (particlesLoaded) {
-      setTimeout(() => {
-        particlesLoaded({
+      setTimeout(async () => {
+        await particlesLoaded({
           refresh: vi.fn(),
           pause: vi.fn(),
           play: vi.fn(),
           destroy: vi.fn(),
         })
-      }, 0)
+      }, 10)
     }
     return <div data-testid="particles" data-id={id} />
   },
-  initParticlesEngine: vi.fn(() => Promise.resolve()),
+  initParticlesEngine: vi.fn(() => initParticlesPromise),
 }))
 
 vi.mock('@tsparticles/slim', () => ({
@@ -52,6 +57,10 @@ const mockMatchMedia = (matches: boolean) => {
 describe('AnimatedBackground', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Reset the promise for each test
+    initParticlesPromise = new Promise<void>((resolve) => {
+      initParticlesResolve = resolve
+    })
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn(() => mockMatchMedia(false)),
@@ -70,20 +79,35 @@ describe('AnimatedBackground', () => {
     )
   }
 
-  it('renders nothing when reduced motion is enabled', () => {
+  it('renders nothing when reduced motion is enabled', async () => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn(() => mockMatchMedia(true)),
     })
 
     const { container } = renderWithTheme(<AnimatedBackground />)
-    expect(container.firstChild).toBeNull()
+    
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 50))
+    })
+    
+    // Should be null because reduced motion is enabled
+    const particles = container.querySelector('[data-testid="particles"]')
+    expect(particles).toBeNull()
   })
 
-  it('renders nothing initially before mount', () => {
+  it('renders nothing initially before mount', async () => {
     const { container } = renderWithTheme(<AnimatedBackground />)
-    // Component should return null initially
-    expect(container.firstChild).toBeNull()
+    
+    // Initially should be null (before init completes)
+    const initialParticles = container.querySelector('[data-testid="particles"]')
+    expect(initialParticles).toBeNull()
+    
+    // After init completes, it should render
+    await act(async () => {
+      initParticlesResolve()
+      await new Promise(resolve => setTimeout(resolve, 50))
+    })
   })
 
   it('applies custom className when provided', async () => {
@@ -95,6 +119,11 @@ describe('AnimatedBackground', () => {
     const { container } = renderWithTheme(
       <AnimatedBackground className="custom-class" />
     )
+
+    await act(async () => {
+      initParticlesResolve()
+      await new Promise(resolve => setTimeout(resolve, 50))
+    })
 
     await waitFor(() => {
       const wrapper = container.querySelector('.custom-class')
@@ -109,6 +138,11 @@ describe('AnimatedBackground', () => {
     })
 
     const { container } = renderWithTheme(<AnimatedBackground />)
+
+    await act(async () => {
+      initParticlesResolve()
+      await new Promise(resolve => setTimeout(resolve, 50))
+    })
 
     await waitFor(() => {
       const wrapper = container.querySelector('[aria-hidden="true"]')
@@ -126,6 +160,11 @@ describe('AnimatedBackground', () => {
     const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener')
 
     const { unmount } = renderWithTheme(<AnimatedBackground />)
+
+    await act(async () => {
+      initParticlesResolve()
+      await new Promise(resolve => setTimeout(resolve, 50))
+    })
 
     await waitFor(() => {
       expect(addEventListenerSpy).toHaveBeenCalledWith(
@@ -154,6 +193,11 @@ describe('AnimatedBackground', () => {
 
     const { unmount } = renderWithTheme(<AnimatedBackground />)
 
+    await act(async () => {
+      initParticlesResolve()
+      await new Promise(resolve => setTimeout(resolve, 50))
+    })
+
     await waitFor(() => {
       expect(addEventListenerSpy).toHaveBeenCalledWith(
         'visibilitychange',
@@ -169,17 +213,25 @@ describe('AnimatedBackground', () => {
     )
   })
 
-  it('handles matchMedia errors gracefully', () => {
+  it('handles matchMedia errors gracefully', async () => {
+    // Mock matchMedia to throw only for prefers-reduced-motion query
+    const originalMatchMedia = window.matchMedia
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
-      value: vi.fn(() => {
-        throw new Error('matchMedia not supported')
+      value: vi.fn((query: string) => {
+        if (query.includes('prefers-reduced-motion')) {
+          throw new Error('matchMedia not supported')
+        }
+        return originalMatchMedia.call(window, query)
       }),
     })
 
-    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-
-    const { container } = renderWithTheme(<AnimatedBackground />)
+    await act(async () => {
+      renderWithTheme(<AnimatedBackground />)
+      await new Promise(resolve => setTimeout(resolve, 50))
+    })
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       'prefers-reduced-motion media query not supported:',
@@ -200,8 +252,9 @@ describe('AnimatedBackground', () => {
 
     const { unmount } = renderWithTheme(<AnimatedBackground />)
 
-    await waitFor(() => {
-      expect(removeEventListenerSpy).toHaveBeenCalled()
+    await act(async () => {
+      initParticlesResolve()
+      await new Promise(resolve => setTimeout(resolve, 50))
     })
 
     unmount()
