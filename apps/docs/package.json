@@ -7,16 +7,23 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
-    "@google/generative-ai": "^0.21.0",
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/types": "workspace:*",
+    "@google/generative-ai": "^0.21.0",
     "@mdx-js/react": "^3.0.1",
     "@next/mdx": "^15.1.6",
     "@pinecone-database/pinecone": "^4.0.0",
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
     "@types/prismjs": "^1.26.5",
     "@upstash/redis": "^1.35.6",
     "framer-motion": "^12.0.3",
@@ -33,14 +40,24 @@
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/mdx": "^2.0.13",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.6",
     "@types/react-dom": "^19.0.2",
     "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/coverage-v8": "^4.0.15",
+    "clsx": "^2.1.1",
     "eslint": "^9.39.1",
     "eslint-config-next": "^15.1.6",
+    "happy-dom": "^20.0.10",
+    "jsdom": "^27.2.0",
+    "tailwind-merge": "^2.6.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   }
 }
