@@ -1,22 +1,32 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useDeferredValue } from 'react'
 import dynamic from 'next/dynamic'
-import { loadSlim } from '@tsparticles/slim'
-import type { Engine, ISourceOptions } from '@tsparticles/engine'
-import { useMediaQuery } from './hooks/useMediaQuery'
-import { useThemeDetection } from './hooks/useThemeDetection'
-import { useDebouncedCallback } from './hooks/useDebouncedCallback'
-import { createDarkModeConfig, createLightModeConfig } from './config/particleConfigs'
-import { isParticlesEngine, type ParticlesEngine } from './types/particles'
+import type { ISourceOptions } from '@tsparticles/engine'
 import { cn } from '@/lib/utils'
+import {
+  useMounted,
+  usePrefersReducedMotion,
+  useParticlesEngine,
+  useIsDark,
+} from './hooks'
+import {
+  createParticlesConfig,
+  createReducedMotionConfig,
+} from './AnimatedBackground.utils'
 
 // Dynamically import Particles to reduce initial bundle size
+// This is a heavy library that's only needed for the background animation
+// @tsparticles/react exports Particles as both default and named export
 const Particles = dynamic(
-  () => import('@tsparticles/react').then((mod) => mod.default),
+  () =>
+    import('@tsparticles/react').then((mod) => {
+      // Handle both default and named exports for maximum compatibility
+      return mod.default || mod.Particles
+    }),
   {
     ssr: false,
-    loading: () => null, // No loading state needed for background
+    loading: () => null, // Render nothing while loading
   }
 )
 
@@ -24,76 +34,48 @@ interface AnimatedBackgroundProps {
   className?: string
 }
 
+/**
+ * AnimatedBackground Component
+ * 
+ * Provides an animated particle background for the home page.
+ * Features:
+ * - Theme-aware particle colors (dark/light mode)
+ * - Respects prefers-reduced-motion accessibility preference
+ * - High-performance with 60fps target
+ * - Non-intrusive (behind content, pointer-events: none)
+ * - Uses React concurrent features (useDeferredValue) for smooth theme transitions
+ * 
+ * @param className - Optional additional CSS classes
+ * 
+ * @example
+ * ```tsx
+ * <AnimatedBackground className="custom-class" />
+ * ```
+ */
 export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
-  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
-  const isDarkMode = useThemeDetection()
-  const engineRef = useRef<Engine | null>(null)
-  const [loadError, setLoadError] = useState(false)
+  const mounted = useMounted()
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const { isInitialized, hasError } = useParticlesEngine()
+  const isDarkRaw = useIsDark()
+  
+  // Use deferred value for theme to prevent blocking renders during theme transitions
+  const isDark = useDeferredValue(isDarkRaw)
 
-  // Handle page visibility to pause animation when tab is hidden
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (isParticlesEngine(engineRef.current)) {
-        if (document.hidden) {
-          engineRef.current.pause?.()
-        } else if (!reducedMotion) {
-          engineRef.current.play?.()
-        }
-      }
+  // Particle configuration based on theme and accessibility preferences
+  const particlesConfig: ISourceOptions = useMemo(() => {
+    if (prefersReducedMotion) {
+      return createReducedMotionConfig()
     }
+    return createParticlesConfig(isDark)
+  }, [isDark, prefersReducedMotion])
 
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [reducedMotion])
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return null
+  }
 
-  // Handle window resize with debouncing
-  const handleResize = useDebouncedCallback(() => {
-    if (isParticlesEngine(engineRef.current)) {
-      engineRef.current.canvas?.resize?.()
-    }
-  }, 150)
-
-  useEffect(() => {
-    window.addEventListener('resize', handleResize, { passive: true })
-    return () => window.removeEventListener('resize', handleResize)
-  }, [handleResize])
-
-  const particlesInit = useCallback(async (engine: Engine) => {
-    try {
-      await loadSlim(engine)
-      engineRef.current = engine
-      setLoadError(false)
-    } catch (error) {
-      // Background animation is non-critical, but track error for debugging
-      setLoadError(true)
-      engineRef.current = null
-      
-      // In production, you might want to log this to an error tracking service
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Failed to load tsparticles:', error)
-      }
-    }
-  }, [])
-
-  // Cleanup engine on unmount
-  useEffect(() => {
-    return () => {
-      if (isParticlesEngine(engineRef.current)) {
-        engineRef.current.destroy?.()
-        engineRef.current = null
-      }
-    }
-  }, [])
-
-  // Memoize configurations to prevent unnecessary re-renders
-  const config = useMemo(() => {
-    return isDarkMode
-      ? createDarkModeConfig(reducedMotion)
-      : createLightModeConfig(reducedMotion)
-  }, [isDarkMode, reducedMotion])
-
-  // Don't render if motion is reduced or if there was a load error
-  if (reducedMotion || loadError) {
+  // If initialization failed or not yet initialized, render nothing (graceful degradation)
+  if (hasError || !isInitialized) {
     return null
   }
 
@@ -101,11 +83,11 @@ export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
     <div
       className={cn('fixed inset-0 -z-10 pointer-events-none', className)}
       aria-hidden="true"
+      role="presentation"
     >
       <Particles
         id="animated-background"
-        init={particlesInit}
-        options={config as unknown as ISourceOptions}
+        options={particlesConfig}
         className="w-full h-full"
       />
     </div>
