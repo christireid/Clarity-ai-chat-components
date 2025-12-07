@@ -9,6 +9,11 @@ import { getMotionSafeDuration } from '../animations/motion-safe'
 
 /**
  * Typing indicator variant styles
+ * 
+ * @enhanced Framer Motion 12: Now using spring physics for smoother animations
+ * - Enhanced spring damping for natural motion
+ * - Improved bounce physics for dots animation
+ * - More responsive entrance/exit animations
  */
 export type TypingIndicatorVariant = 'dots' | 'pulse' | 'wave'
 
@@ -79,8 +84,11 @@ export function TypingIndicator({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
       transition={{
+        // Framer Motion 12: Enhanced spring physics for smoother entrance
+        type: 'spring',
+        damping: 20,
+        stiffness: 300,
         duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
-        ease: [0.25, 0.1, 0.25, 1],
       }}
       className={cn('flex gap-3.5 p-4', className)}
       role="status"
@@ -93,7 +101,10 @@ export function TypingIndicator({
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{
-            duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
+            // Framer Motion 12: Spring physics for avatar entrance
+            type: 'spring',
+            damping: 15,
+            stiffness: 200,
             delay: getMotionSafeDuration(prefersReducedMotion, 0.05),
           }}
         >
@@ -111,7 +122,10 @@ export function TypingIndicator({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{
-          duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
+          // Framer Motion 12: Smoother bubble entrance with spring
+          type: 'spring',
+          damping: 18,
+          stiffness: 250,
           delay: getMotionSafeDuration(prefersReducedMotion, 0.1),
         }}
         className={cn(
@@ -156,10 +170,12 @@ function DotsAnimation({ prefersReducedMotion }: { prefersReducedMotion: boolean
             opacity: [0.6, 1, 0.6],
           }}
           transition={{
-            duration: 0.6,
+            // Framer Motion 12: Enhanced spring bounce for dots
+            type: 'spring',
+            damping: 10,
+            stiffness: 400,
             repeat: Infinity,
             delay: i * 0.15,
-            ease: 'easeInOut',
           }}
           className="w-2 h-2 rounded-full bg-muted-foreground"
         />
