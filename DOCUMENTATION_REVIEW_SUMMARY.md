@@ -215,4 +215,15 @@ This document summarizes the comprehensive code review and fixes applied to the 
 
 All documentation files are **production-ready**. The code review identified and fixed all critical and medium issues. The documentation is comprehensive, follows repository patterns, and passes all lint checks. The only remaining issues are pre-existing problems in unrelated files that should be addressed separately.
 
+## Navigation Integration
+
+### Components Index Page
+- ✅ Added `ClarityChat` to "Chat Components" section (first item, marked as recommended)
+- ✅ Added `ClarityChatPresets` to "Chat Components" section (second item)
+
+### Hooks Index Page
+- ✅ Added `useClarityChat` to "Core Hooks" section (first item, marked as recommended)
+- ✅ Added `useTokenOptimizationEnhanced` to "Core Hooks" section (second item)
+- ✅ Added prominent documentation links with descriptions
+
 **Status: ✅ READY TO MERGE**
