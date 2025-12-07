@@ -47,6 +47,7 @@ import {
   CitationCard,
   EmptyChatState,
   ErrorBoundary,
+  ExportDialog,
   MessageSearch,
   NetworkStatus,
   TokenCounter,
@@ -246,6 +247,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const [aiStatus, setAiStatus] = useState<AIStatus | undefined>(undefined)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
+  const [showExportDialog, setShowExportDialog] = useState(false)
 
   // Refs
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -419,6 +421,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     // Track user message tokens
     trackMessage({ role: 'user', content })
     setIsLoading(true)
+    setCurrentCitations([]) // Clear previous citations when starting new request
     setAiStatus({
       stage: 'researching',
       topic: 'Searching documentation',
@@ -581,39 +584,141 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     }
   }, [handleSendMessage])
 
-  // Export handler
-  const handleExport = useCallback(() => {
+  // Export handler with multi-format support
+  const handleExportWithFormat = useCallback(async (options: {
+    format: string
+    includeMetadata?: boolean
+    includeImages?: boolean
+  }) => {
     try {
-      let markdown = '# Clarity Chat Documentation Assistant\n\n'
-      markdown += `Exported: ${new Date().toLocaleString()}\n\n---\n\n`
+      const { format, includeMetadata = true } = options
+      const timestamp = new Date().toLocaleString()
+      let content: string
+      let mimeType: string
+      let extension: string
 
-      messages.forEach((message) => {
-        const role = message.role === 'user' ? 'You' : 'Assistant'
-        const timestamp = new Date(message.createdAt).toLocaleTimeString()
-        markdown += `## ${role} (${timestamp})\n\n${message.content}\n\n`
-      })
+      switch (format) {
+        case 'json':
+          content = JSON.stringify({
+            exportedAt: timestamp,
+            sessionId,
+            messageCount: messages.length,
+            messages: messages.map((m) => ({
+              id: m.id,
+              role: m.role,
+              content: m.content,
+              createdAt: m.createdAt,
+              ...(includeMetadata && { status: m.status }),
+            })),
+          }, null, 2)
+          mimeType = 'application/json'
+          extension = 'json'
+          break
 
-      const blob = new Blob([markdown], { type: 'text/markdown' })
+        case 'html':
+          content = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarity Chat Export</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+    .message { margin: 1rem 0; padding: 1rem; border-radius: 8px; }
+    .user { background: #e3f2fd; }
+    .assistant { background: #f5f5f5; }
+    .meta { font-size: 0.75rem; color: #666; margin-bottom: 0.5rem; }
+    pre { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Clarity Chat Documentation Assistant</h1>
+  <p>Exported: ${timestamp}</p>
+  <hr>
+  ${messages.map((m) => `
+  <div class="message ${m.role}">
+    ${includeMetadata ? `<div class="meta">${m.role === 'user' ? 'You' : 'Assistant'} • ${new Date(m.createdAt).toLocaleTimeString()}</div>` : ''}
+    <div>${m.content.replace(/\n/g, '<br>')}</div>
+  </div>`).join('')}
+</body>
+</html>`
+          mimeType = 'text/html'
+          extension = 'html'
+          break
+
+        case 'markdown':
+        default:
+          content = '# Clarity Chat Documentation Assistant\n\n'
+          content += `Exported: ${timestamp}\n\n---\n\n`
+          messages.forEach((message) => {
+            const role = message.role === 'user' ? 'You' : 'Assistant'
+            const time = new Date(message.createdAt).toLocaleTimeString()
+            content += `## ${role}${includeMetadata ? ` (${time})` : ''}\n\n${message.content}\n\n`
+          })
+          mimeType = 'text/markdown'
+          extension = 'md'
+          break
+      }
+
+      const blob = new Blob([content], { type: mimeType })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `clarity-chat-${Date.now()}.md`
+      a.download = `clarity-chat-${Date.now()}.${extension}`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
 
-      toast.success('Conversation exported')
+      toast.success(`Conversation exported as ${extension.toUpperCase()}`)
     } catch (error) {
       console.error('Failed to export conversation:', error)
       toast.error('Failed to export conversation')
+      throw error // Re-throw for ExportDialog to handle
     }
-  }, [messages, toast])
+  }, [messages, sessionId, toast])
+
+  // Quick export (opens dialog)
+  const handleOpenExportDialog = useCallback(() => {
+    setShowExportDialog(true)
+  }, [])
 
   // Handler for library PromptSuggestion (uses text property)
   const handleSelectSuggestion = useCallback((suggestion: PromptSuggestion) => {
     handleSendMessage(suggestion.text)
   }, [handleSendMessage])
+
+  // Feedback handler for thumbs up/down on assistant messages
+  const handleFeedback = useCallback(async (
+    messageId: string,
+    type: 'up' | 'down'
+  ) => {
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messageId,
+          feedbackType: type,
+          sessionId,
+          timestamp: new Date().toISOString(),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Feedback submission failed: ${response.status}`)
+      }
+
+      toast.success(
+        type === 'up'
+          ? 'Thanks for your feedback!'
+          : "Feedback received. We'll work on improving."
+      )
+    } catch (error) {
+      console.error('Failed to submit feedback:', error)
+      toast.error('Failed to submit feedback. Please try again.')
+    }
+  }, [sessionId, toast])
 
   const handleClear = useCallback(() => {
     setMessages([])
@@ -758,11 +863,12 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               onSendMessage={handleSendMessage}
               onMessageCopy={handleMessageCopy}
               onMessageRetry={handleMessageRetry}
+              onMessageFeedback={handleFeedback}
               showHeader
               sessionTitle="Documentation Assistant"
               sessionSubtitle="Powered by Clarity Chat"
               showMessageCount
-              onExport={messages.length > 0 ? handleExport : undefined}
+              onExport={messages.length > 0 ? handleOpenExportDialog : undefined}
               onClear={messages.length > 0 ? handleClear : undefined}
               emptyState={
                 <EmptyChatState
@@ -832,6 +938,15 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       <KeyboardShortcutsHelp
         isOpen={showShortcuts}
         onClose={() => setShowShortcuts(false)}
+      />
+
+      {/* Export Dialog */}
+      <ExportDialog
+        open={showExportDialog}
+        onOpenChange={setShowExportDialog}
+        onExport={handleExportWithFormat}
+        resourceType="chat"
+        resourceName="Documentation Assistant Conversation"
       />
     </>
   )
