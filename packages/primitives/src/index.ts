@@ -100,7 +100,6 @@ export {
   Popover,
   PopoverTrigger,
   PopoverContent,
-  PopoverAnchor,
 } from './components/ui/popover'
 
 // Also export with Shadcn prefix for backward compatibility
@@ -108,7 +107,6 @@ export {
   Popover as ShadcnPopover,
   PopoverTrigger as ShadcnPopoverTrigger,
   PopoverContent as ShadcnPopoverContent,
-  PopoverAnchor as ShadcnPopoverAnchor,
 } from './components/ui/popover'
 
 // Tooltip

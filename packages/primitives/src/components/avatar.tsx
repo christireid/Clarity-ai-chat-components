@@ -3,6 +3,11 @@
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
+import {
+  Avatar as ShadcnAvatar,
+  AvatarImage,
+  AvatarFallback,
+} from './ui/avatar'
 
 const avatarVariants = cva(
   'relative flex shrink-0 overflow-hidden rounded-full ring-2 ring-background/80 shadow-xs transition-all duration-200 ease-out',
@@ -24,7 +29,7 @@ const avatarVariants = cva(
 )
 
 export interface AvatarProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>,
     VariantProps<typeof avatarVariants> {
   src?: string
   alt?: string
@@ -34,32 +39,35 @@ export interface AvatarProps
   hoverable?: boolean
   /** Custom status badge content */
   statusBadge?: React.ReactNode
-  ref?: React.Ref<HTMLDivElement>
+  children?: React.ReactNode
 }
 
-const Avatar = ({
-  className,
-  size,
-  src,
-  alt,
-  fallback,
-  status,
-  hoverable = false,
-  statusBadge,
-  ref,
-  ...props
-}: AvatarProps) => {
-    const [imageError, setImageError] = React.useState(false)
-
+const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+  (
+    {
+      className,
+      size,
+      src,
+      alt,
+      fallback,
+      status,
+      hoverable = false,
+      statusBadge,
+      ...props
+    },
+    ref
+  ) => {
     const getFallbackText = () => {
-      if (fallback) return fallback
-      if (alt) {
-        return alt
-          .split(' ')
-          .map((n) => n[0])
-          .join('')
-          .toUpperCase()
-          .slice(0, 2)
+      if (fallback && fallback.trim()) return fallback.trim()
+      if (alt && alt.trim()) {
+        const words = alt.trim().split(/\s+/).filter((w) => w.length > 0)
+        if (words.length > 0) {
+          return words
+            .map((n) => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)
+        }
       }
       return '?'
     }
@@ -81,27 +89,23 @@ const Avatar = ({
     }
 
     return (
-      <div
+      <ShadcnAvatar
         ref={ref}
         className={cn(
-          avatarVariants({ size, className }),
+          avatarVariants({ size }),
           hoverable &&
-            'hover:scale-[1.02] hover:shadow-sm cursor-pointer hover:-translate-y-[1px]'
+            'hover:scale-[1.02] hover:shadow-sm cursor-pointer hover:-translate-y-[1px]',
+          className
         )}
         {...props}
       >
-        {src && !imageError ? (
-          <img
-            src={src}
-            alt={alt || 'Avatar'}
-            className="aspect-square h-full w-full object-cover"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none animate-in fade-in duration-200">
-            {getFallbackText()}
-          </div>
-        )}
+        {/* Always render AvatarImage when src is provided - Radix UI handles loading/error internally */}
+        {src ? (
+          <AvatarImage src={src} alt={alt || 'Avatar'} />
+        ) : null}
+        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold select-none animate-in fade-in duration-200">
+          {getFallbackText()}
+        </AvatarFallback>
 
         {/* Status Indicator */}
         {status && !statusBadge && (
@@ -113,7 +117,13 @@ const Avatar = ({
             )}
           >
             {(status === 'online' || status === 'away') && (
-              <span className="absolute inset-0 rounded-full animate-ping opacity-60" style={{ backgroundColor: status === 'online' ? 'rgb(34, 197, 94)' : 'rgb(245, 158, 11)' }} />
+              <span
+                className="absolute inset-0 rounded-full animate-ping opacity-60"
+                style={{
+                  backgroundColor:
+                    status === 'online' ? 'rgb(34, 197, 94)' : 'rgb(245, 158, 11)',
+                }}
+              />
             )}
           </span>
         )}
@@ -122,9 +132,10 @@ const Avatar = ({
         {statusBadge && (
           <span className="absolute -bottom-1 -right-1">{statusBadge}</span>
         )}
-      </div>
+      </ShadcnAvatar>
     )
-}
+  }
+)
 
 Avatar.displayName = 'Avatar'
 
