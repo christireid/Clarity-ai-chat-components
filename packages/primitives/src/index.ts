@@ -180,6 +180,8 @@ export type { ErrorMessageProps } from './components/error-message'
 export { Input } from './components/input'
 export type { InputProps } from './components/input'
 
+export { Label } from './components/label'
+
 export { ScrollArea } from './components/scroll-area'
 
 export { Textarea } from './components/textarea'
