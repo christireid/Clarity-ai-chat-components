@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { CommandPalette, CommandItem } from '@clarity-chat/react'
+import { CommandPalette, CommandItem, useCommandPalette } from '@clarity-chat/react'
 import { useState } from 'react'
 import { expect, within } from 'storybook/test'
 
@@ -358,20 +358,11 @@ export const SearchDemo: Story = {
 
 export const KeyboardShortcuts: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
-
-    // Simulate Cmd+K to open
-    React.useEffect(() => {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-          e.preventDefault()
-          setOpen(true)
-        }
-      }
-
-      window.addEventListener('keydown', handleKeyDown)
-      return () => window.removeEventListener('keydown', handleKeyDown)
-    }, [])
+    // Use the useCommandPalette hook for proper toggle behavior
+    const { isOpen, toggle, close, shortcutDisplay } = useCommandPalette({
+      onOpen: () => console.log('Command palette opened'),
+      onClose: () => console.log('Command palette closed'),
+    })
 
     return (
       <div className="w-full space-y-4">
@@ -380,9 +371,9 @@ export const KeyboardShortcuts: Story = {
 
           <div className="space-y-2 text-sm">
             <div className="flex items-center justify-between">
-              <span>Open Command Palette</span>
+              <span>Toggle Command Palette</span>
               <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border">
-                ⌘K
+                {shortcutDisplay}
               </kbd>
             </div>
             <div className="flex items-center justify-between">
@@ -409,27 +400,31 @@ export const KeyboardShortcuts: Story = {
               </kbd>
             </div>
           </div>
+
+          <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-sm">
+            <strong>Toggle behavior:</strong> Press {shortcutDisplay} to open, press again to close!
+          </div>
         </div>
 
         <p className="text-sm text-muted-foreground">
           Press{' '}
           <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded border text-xs">
-            ⌘K
+            {shortcutDisplay}
           </kbd>{' '}
-          or click the button
+          to toggle or click the button
         </p>
 
         <button
-          onClick={() => setOpen(true)}
+          onClick={toggle}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
-          Open Palette
+          Toggle Palette ({shortcutDisplay})
         </button>
 
         <CommandPalette
           items={basicCommands}
-          open={open}
-          onClose={() => setOpen(false)}
+          open={isOpen}
+          onClose={close}
         />
       </div>
     )
@@ -438,7 +433,7 @@ export const KeyboardShortcuts: Story = {
     docs: {
       description: {
         story:
-          'Full keyboard navigation support. Press ⌘K to open, arrow keys to navigate, Enter to select, Esc to close.',
+          'Full keyboard navigation with toggle support. Press ⌘K/Ctrl+K to toggle open/closed, arrow keys to navigate, Enter to select, Esc to close.',
       },
     },
   },
@@ -450,8 +445,10 @@ export const KeyboardShortcuts: Story = {
 
 export const ChatApplication: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
     const [action, setAction] = useState<string>('')
+
+    // Use the useCommandPalette hook for proper toggle behavior
+    const { isOpen, toggle, close, shortcutDisplay } = useCommandPalette()
 
     const chatCommands: CommandItem[] = [
       {
@@ -508,10 +505,10 @@ export const ChatApplication: Story = {
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold">Chat Application</h3>
             <button
-              onClick={() => setOpen(true)}
+              onClick={toggle}
               className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
-              ⌘K
+              {shortcutDisplay}
             </button>
           </div>
 
@@ -524,8 +521,8 @@ export const ChatApplication: Story = {
 
         <CommandPalette
           items={chatCommands}
-          open={open}
-          onClose={() => setOpen(false)}
+          open={isOpen}
+          onClose={close}
           placeholder="Type a command or search..."
         />
       </div>
@@ -599,8 +596,10 @@ export const ThemeSwitch: Story = {
 
 export const QuickActions: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
     const [log, setLog] = useState<string[]>([])
+
+    // Use the useCommandPalette hook for proper toggle behavior
+    const { isOpen, toggle, close, shortcutDisplay } = useCommandPalette()
 
     const addLog = (message: string) => {
       setLog((prev) => [
@@ -647,10 +646,10 @@ export const QuickActions: Story = {
     return (
       <div className="w-full space-y-4">
         <button
-          onClick={() => setOpen(true)}
+          onClick={toggle}
           className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
         >
-          Quick Actions (⌘K)
+          Quick Actions ({shortcutDisplay})
         </button>
 
         {log.length > 0 && (
@@ -668,8 +667,8 @@ export const QuickActions: Story = {
 
         <CommandPalette
           items={quickActions}
-          open={open}
-          onClose={() => setOpen(false)}
+          open={isOpen}
+          onClose={close}
         />
       </div>
     )
@@ -682,21 +681,21 @@ export const QuickActions: Story = {
 
 export const Accessibility: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
+    const { isOpen, toggle, close, shortcutDisplay } = useCommandPalette()
 
     return (
       <div className="w-full space-y-6">
         <button
-          onClick={() => setOpen(true)}
+          onClick={toggle}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
-          Open Command Palette
+          Open Command Palette ({shortcutDisplay})
         </button>
 
         <CommandPalette
           items={basicCommands}
-          open={open}
-          onClose={() => setOpen(false)}
+          open={isOpen}
+          onClose={close}
         />
 
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm space-y-2">
@@ -714,5 +713,119 @@ export const Accessibility: Story = {
         </div>
       </div>
     )
+  },
+}
+
+// ============================================================================
+// Hook Demo
+// ============================================================================
+
+export const UseCommandPaletteHook: Story = {
+  render: () => {
+    const [events, setEvents] = useState<string[]>([])
+
+    const addEvent = (event: string) => {
+      setEvents((prev) => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${event}`])
+    }
+
+    // Demonstrate all hook options
+    const { isOpen, open, close, toggle, shortcutDisplay } = useCommandPalette({
+      defaultOpen: false,
+      shortcut: 'mod+k',
+      shortcutEnabled: true,
+      onOpen: () => addEvent('onOpen callback fired'),
+      onClose: () => addEvent('onClose callback fired'),
+      onToggle: (open) => addEvent(`onToggle callback: ${open ? 'opened' : 'closed'}`),
+    })
+
+    return (
+      <div className="w-full space-y-6">
+        <div className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
+          <h3 className="font-semibold text-lg">useCommandPalette Hook Demo</h3>
+
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="text-muted-foreground">Current State</div>
+              <div className="font-semibold text-lg">{isOpen ? 'Open' : 'Closed'}</div>
+            </div>
+            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="text-muted-foreground">Shortcut</div>
+              <kbd className="font-semibold text-lg">{shortcutDisplay}</kbd>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={open}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              open()
+            </button>
+            <button
+              onClick={close}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              close()
+            </button>
+            <button
+              onClick={toggle}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              toggle()
+            </button>
+          </div>
+
+          <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg text-sm">
+            <strong>Try it:</strong> Press <kbd className="px-2 py-0.5 bg-background border rounded">{shortcutDisplay}</kbd> to toggle.
+            It will open if closed, and close if open!
+          </div>
+        </div>
+
+        {events.length > 0 && (
+          <div className="p-4 bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl">
+            <h4 className="font-medium text-sm mb-2">Event Log</h4>
+            <div className="space-y-1 text-xs font-mono">
+              {events.map((event, i) => (
+                <div key={i} className="text-muted-foreground">{event}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm">
+          <strong>Hook API:</strong>
+          <pre className="mt-2 p-3 bg-background rounded border text-xs overflow-x-auto">{`const {
+  isOpen,        // boolean - current state
+  open,          // () => void - open the palette
+  close,         // () => void - close the palette
+  toggle,        // () => void - toggle open/closed
+  setOpen,       // (open: boolean) => void
+  shortcutDisplay // string - formatted shortcut (⌘K or Ctrl+K)
+} = useCommandPalette({
+  defaultOpen: false,      // initial state
+  shortcut: 'mod+k',       // keyboard shortcut
+  shortcutEnabled: true,   // enable/disable shortcut
+  onOpen: () => {},        // callback when opened
+  onClose: () => {},       // callback when closed
+  onToggle: (open) => {},  // callback on toggle
+  enableInInput: false,    // allow shortcut in input elements
+})`}</pre>
+        </div>
+
+        <CommandPalette
+          items={basicCommands}
+          open={isOpen}
+          onClose={close}
+        />
+      </div>
+    )
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates the useCommandPalette hook with all available options and callbacks. The hook provides proper toggle behavior for Cmd+K/Ctrl+K.',
+      },
+    },
   },
 }
