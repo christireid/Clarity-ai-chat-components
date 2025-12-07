@@ -3,6 +3,8 @@
  * 
  * Linear and circular progress indicators with determinate and indeterminate states.
  * Used for loading states, file uploads, and streaming progress.
+ * 
+ * @enhanced Framer Motion 12: Spring-based progress animations for smoother fills
  */
 
 import * as React from 'react'
@@ -96,8 +98,10 @@ export const Progress: React.FC<ProgressProps> = ({
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}
             transition={{
-              duration: ANIMATION_DURATION.slow / 1000,
-              ease: ANIMATION_EASING.out,
+              // Framer Motion 12: Smooth spring fill
+              type: 'spring',
+              damping: 30,
+              stiffness: 200,
             }}
           />
         )}

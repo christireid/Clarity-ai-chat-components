@@ -90,7 +90,12 @@ export const ResponseQualityMeter: React.FC<ResponseQualityMeterProps> = ({
                   className="absolute inset-y-0 left-0 rounded-full bg-primary"
                   initial={{ width: 0 }}
                   animate={{ width: `${metric.score * 100}%` }}
-                  transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                  transition={{ 
+                    // Framer Motion 12: Spring-based progress animation
+                    type: 'spring',
+                    damping: 25,
+                    stiffness: 200,
+                  }}
                 />
                 {metric.target !== undefined && (
                   <span
