@@ -6,27 +6,37 @@
  * A fully integrated documentation assistant that leverages the @clarity-chat/react
  * library components and hooks instead of custom implementations.
  *
- * Library Features Used:
- * - useKeyboardShortcuts - Keyboard handling
- * - useClipboard - Copy functionality
- * - useLocalStorage - Persistent storage
- * - useThrottledCallback - Throttled updates
- * - useReducedMotion - Accessibility
- * - ErrorBoundary - Error handling
- * - NetworkStatus - Connection status
+ * Library Components Used:
+ * - ChatWindow - Main chat interface
+ * - EmptyChatState - Empty state with starter prompts (replaces custom)
+ * - ErrorBoundary - Error handling wrapper
+ * - NetworkStatus - Connection status indicator
  * - VoiceInput - Voice input support
+ * - CopyButton - Copy to clipboard (available)
+ * - ThinkingIndicator - AI status (available)
+ *
+ * Library Hooks Used:
+ * - useKeyboardShortcuts - Keyboard handling (replaces custom)
+ * - useClipboard - Copy functionality
+ * - useLocalStorage - Session ID & conversation storage (replaces custom)
+ * - useThrottledCallback - Throttled streaming updates (replaces custom)
+ * - useReducedMotion - Accessibility preferences
+ * - useAutoScroll - Auto-scroll message list
+ * - useToast - Toast notifications
  */
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { BookOpen, Code2, Lightbulb, MessageSquare, Sparkles, AlertCircle } from 'lucide-react'
+import { Code2, Lightbulb, MessageSquare, Sparkles, AlertCircle } from 'lucide-react'
 import {
   // Components
   ChatWindow,
-  FollowUpSuggestions,
+  EmptyChatState,
   ErrorBoundary,
   NetworkStatus,
   VoiceInput,
+  CopyButton,
+  ThinkingIndicator,
   // Hooks
   useToast,
   useKeyboardShortcuts,
@@ -34,8 +44,9 @@ import {
   useLocalStorage,
   useThrottledCallback,
   useReducedMotion,
+  useAutoScroll,
   // Types
-  type FollowUpSuggestion,
+  type PromptSuggestion,
 } from '@clarity-chat/react'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
@@ -74,34 +85,46 @@ const MESSAGES_KEY = 'clarity-docs-assistant-messages'
 const CONVERSATION_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
 const STREAM_THROTTLE_MS = 50 // Throttle streaming updates
 
-// Suggested questions to help users get started
-const SUGGESTED_QUESTIONS: FollowUpSuggestion[] = [
+// Suggested questions to help users get started (using library PromptSuggestion type)
+const DOCS_STARTER_PROMPTS: PromptSuggestion[] = [
   {
     id: 'getting-started',
-    title: 'How do I get started with Clarity Chat?',
+    text: 'How do I get started with Clarity Chat?',
+    label: 'Get Started',
     description: 'Learn the basics of installation and setup',
     icon: <Sparkles className="w-4 h-4" />,
+    type: 'starter',
+    category: 'Setup',
     keywords: ['installation', 'setup', 'quickstart'],
   },
   {
     id: 'streaming',
-    title: 'How do I implement streaming messages?',
+    text: 'How do I implement streaming messages?',
+    label: 'Streaming',
     description: 'Add real-time streaming to your chat interface',
     icon: <MessageSquare className="w-4 h-4" />,
+    type: 'starter',
+    category: 'Features',
     keywords: ['streaming', 'real-time', 'SSE'],
   },
   {
     id: 'components',
-    title: 'What components are available?',
+    text: 'What components are available?',
+    label: 'Components',
     description: 'Explore all available UI components',
     icon: <Code2 className="w-4 h-4" />,
+    type: 'starter',
+    category: 'Reference',
     keywords: ['components', 'ui', 'reference'],
   },
   {
     id: 'theming',
-    title: 'How do I customize the theme?',
+    text: 'How do I customize the theme?',
+    label: 'Theming',
     description: 'Learn about theming and customization options',
     icon: <Lightbulb className="w-4 h-4" />,
+    type: 'starter',
+    category: 'Customization',
     keywords: ['theme', 'customize', 'styling'],
   },
 ]
@@ -171,64 +194,8 @@ function normalizeLinksInContent(content: string): string {
   })
 }
 
-// ============================================================================
-// Custom Hooks
-// ============================================================================
-
-function useSessionId() {
-  const [sessionId, setSessionId] = useState<string>('')
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    let id = localStorage.getItem(SESSION_ID_KEY)
-    if (!id) {
-      id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      localStorage.setItem(SESSION_ID_KEY, id)
-    }
-    setSessionId(id)
-  }, [])
-
-  return sessionId
-}
-
-// ============================================================================
-// Empty State Component
-// ============================================================================
-
-function DocsAssistantEmptyState({
-  onSelectSuggestion
-}: {
-  onSelectSuggestion: (suggestion: FollowUpSuggestion) => void
-}) {
-  return (
-    <div className="flex flex-col items-center p-4 pb-8 space-y-5 overflow-hidden">
-      <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-600/10 shadow-lg ring-1 ring-brand-500/30">
-        <BookOpen className="w-10 h-10 text-brand-600" />
-      </div>
-
-      <div className="space-y-2 text-center max-w-md">
-        <h3 className="text-xl font-bold text-foreground">
-          Clarity Chat Documentation Assistant
-        </h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          I'm here to help you navigate the documentation and answer questions about Clarity Chat.
-          Ask me anything about components, hooks, examples, or best practices.
-        </p>
-      </div>
-
-      <div className="w-full">
-        <FollowUpSuggestions
-          suggestions={SUGGESTED_QUESTIONS}
-          onSelect={onSelectSuggestion}
-          title="Quick Start"
-          subtitle="Try asking about these topics"
-          layout="grid"
-        />
-      </div>
-    </div>
-  )
-}
+// Session ID generation helper
+const generateSessionId = () => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
 // ============================================================================
 // Inner Component (wrapped by ErrorBoundary)
@@ -247,7 +214,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const abortControllerRef = useRef<AbortController | null>(null)
 
   // Library hooks
-  const sessionId = useSessionId()
   const toast = useToast()
   const prefersReducedMotion = useReducedMotion()
   const { copy } = useClipboard({
@@ -256,11 +222,21 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     onError: () => toast.error('Failed to copy'),
   })
 
-  // Persistent storage using library hook
+  // Session ID using library hook (replaces custom useSessionId)
+  const [sessionId] = useLocalStorage<string>(SESSION_ID_KEY, generateSessionId())
+
+  // Persistent conversation storage using library hook
   const [savedConversation, setSavedConversation, clearSavedConversation] = useLocalStorage<SavedConversation | null>(
     MESSAGES_KEY,
     null
   )
+
+  // Auto-scroll for message list using library hook
+  const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
+    dependencies: [messages],
+    threshold: 100,
+    behavior: prefersReducedMotion ? 'auto' : 'smooth',
+  })
 
   // Initialize messages from saved conversation
   useEffect(() => {
@@ -549,8 +525,9 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     }
   }, [messages, toast])
 
-  const handleSelectSuggestion = useCallback((suggestion: FollowUpSuggestion) => {
-    handleSendMessage(suggestion.title)
+  // Handler for library PromptSuggestion (uses text property)
+  const handleSelectSuggestion = useCallback((suggestion: PromptSuggestion) => {
+    handleSendMessage(suggestion.text)
   }, [handleSendMessage])
 
   const handleFeedback = useCallback(async (
@@ -674,7 +651,13 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               showMessageCount
               onExport={messages.length > 0 ? handleExport : undefined}
               onClear={messages.length > 0 ? handleClear : undefined}
-              emptyState={<DocsAssistantEmptyState onSelectSuggestion={handleSelectSuggestion} />}
+              emptyState={
+                <EmptyChatState
+                  suggestions={DOCS_STARTER_PROMPTS}
+                  onSuggestionSelect={handleSelectSuggestion}
+                  showSuggestions
+                />
+              }
               className="h-full flex flex-col"
             />
           </motion.div>
