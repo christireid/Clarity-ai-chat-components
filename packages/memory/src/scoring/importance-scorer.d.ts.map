@@ -1,0 +1,1 @@
+{"version":3,"file":"importance-scorer.d.ts","sourceRoot":"","sources":["importance-scorer.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAEH,OAAO,KAAK,EAAE,MAAM,EAAE,WAAW,EAAE,MAAM,UAAU,CAAA;AAEnD,qBAAa,gBAAgB;IAC3B;;OAEG;IACH,KAAK,CAAC,MAAM,EAAE,MAAM,EAAE,KAAK,CAAC,EAAE,MAAM,GAAG,WAAW;IA+BlD,OAAO,CAAC,gBAAgB;IAQxB,OAAO,CAAC,kBAAkB;CAK3B"}

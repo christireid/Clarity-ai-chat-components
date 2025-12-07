@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { ErrorBoundary } from './ErrorBoundary';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { ErrorBoundary } from '@clarity-chat/error-handling';
 declare const meta: Meta<typeof ErrorBoundary>;
 export default meta;
 type Story = StoryObj<typeof ErrorBoundary>;

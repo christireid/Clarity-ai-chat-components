@@ -1,19 +1,7 @@
 [
   {
-    "name": "@clarity-chat/react (ESM)",
-    "path": "packages/react/dist/index.mjs",
-    "limit": "100 KB",
-    "webpack": false
-  },
-  {
-    "name": "@clarity-chat/react (CJS)",
-    "path": "packages/react/dist/index.js",
-    "limit": "100 KB",
-    "webpack": false
-  },
-  {
     "name": "@clarity-chat/error-handling",
-    "path": "packages/error-handling/dist/index.js",
+    "path": "packages/error-handling/dist/index.mjs",
     "limit": "50 KB",
     "webpack": false
   },

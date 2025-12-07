@@ -5,11 +5,9 @@
  */
 import * as vscode from 'vscode';
 export class CodeLensProvider {
-    constructor() {
-        this.codeLenses = [];
-        this._onDidChangeCodeLenses = new vscode.EventEmitter();
-        this.onDidChangeCodeLenses = this._onDidChangeCodeLenses.event;
-    }
+    codeLenses = [];
+    _onDidChangeCodeLenses = new vscode.EventEmitter();
+    onDidChangeCodeLenses = this._onDidChangeCodeLenses.event;
     provideCodeLenses(document, token) {
         this.codeLenses = [];
         const text = document.getText();

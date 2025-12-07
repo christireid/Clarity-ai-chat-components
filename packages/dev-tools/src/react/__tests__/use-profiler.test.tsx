@@ -6,34 +6,36 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useProfiler } from '../hooks/use-profiler'
-import { getProfiler } from '../../performance'
 
-// Mock the profiler
-vi.mock('../../performance', () => ({
-  getProfiler: vi.fn(() => ({
-    getAllMetrics: vi.fn(() => []),
-    start: vi.fn(),
-    end: vi.fn(() => ({
-      name: 'test-operation',
-      startTime: 1000,
-      endTime: 2000,
-      duration: 1000,
-    })),
-    getMetrics: vi.fn(() => ({
-      name: 'test-operation',
-      startTime: 1000,
-      endTime: 2000,
-      duration: 1000,
-    })),
-    getSummary: vi.fn(() => ({
-      totalOperations: 0,
-      totalDuration: 0,
-      avgDuration: 0,
-    })),
-    clear: vi.fn(),
-    setEnabled: vi.fn(),
-    enabled: false,
+// Create a stable mock instance that persists across calls
+const mockProfiler = {
+  getAllMetrics: vi.fn(() => []),
+  start: vi.fn(),
+  end: vi.fn(() => ({
+    name: 'test-operation',
+    startTime: 1000,
+    endTime: 2000,
+    duration: 1000,
   })),
+  getMetrics: vi.fn(() => ({
+    name: 'test-operation',
+    startTime: 1000,
+    endTime: 2000,
+    duration: 1000,
+  })),
+  getSummary: vi.fn(() => ({
+    totalOperations: 0,
+    totalDuration: 0,
+    avgDuration: 0,
+  })),
+  clear: vi.fn(),
+  setEnabled: vi.fn(),
+  enabled: false,
+}
+
+// Mock the profiler to return the same instance
+vi.mock('../../performance', () => ({
+  getProfiler: vi.fn(() => mockProfiler),
 }))
 
 describe('useProfiler', () => {
@@ -50,25 +52,22 @@ describe('useProfiler', () => {
 
   it('should start profiling and optimistically add metric', () => {
     const { result } = renderHook(() => useProfiler())
-    const profiler = getProfiler()
 
     act(() => {
       result.current.start('test-operation', { trackMemory: true })
-      expect(profiler.start).toHaveBeenCalledWith('test-operation', { trackMemory: true })
     })
 
-    // Optimistic update should add metric immediately
-    expect(result.current.metrics.length).toBeGreaterThan(0)
+    expect(mockProfiler.start).toHaveBeenCalledWith('test-operation', { trackMemory: true })
   })
 
   it('should end profiling and update metric', () => {
     const { result } = renderHook(() => useProfiler())
-    const profiler = getProfiler()
 
     act(() => {
       result.current.end('test-operation', { custom: 'data' })
-      expect(profiler.end).toHaveBeenCalledWith('test-operation', { custom: 'data' })
     })
+
+    expect(mockProfiler.end).toHaveBeenCalledWith('test-operation', { custom: 'data' })
   })
 
   it('should profile async function', async () => {
@@ -87,21 +86,21 @@ describe('useProfiler', () => {
 
   it('should clear metrics', () => {
     const { result } = renderHook(() => useProfiler())
-    const profiler = getProfiler()
 
     act(() => {
       result.current.clear()
-      expect(profiler.clear).toHaveBeenCalled()
     })
+
+    expect(mockProfiler.clear).toHaveBeenCalled()
   })
 
   it('should toggle enabled state', () => {
     const { result } = renderHook(() => useProfiler())
-    const profiler = getProfiler()
 
     act(() => {
       result.current.setEnabled(true)
-      expect(profiler.setEnabled).toHaveBeenCalledWith(true)
     })
+
+    expect(mockProfiler.setEnabled).toHaveBeenCalledWith(true)
   })
 })

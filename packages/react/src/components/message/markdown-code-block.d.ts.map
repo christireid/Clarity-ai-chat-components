@@ -1,0 +1,1 @@
+{"version":3,"file":"markdown-code-block.d.ts","sourceRoot":"","sources":["markdown-code-block.tsx"],"names":[],"mappings":"AAEA,OAAO,KAA8B,MAAM,OAAO,CAAA;AA4ElD,MAAM,WAAW,sBAAsB;IACrC,MAAM,CAAC,EAAE,OAAO,CAAA;IAChB,SAAS,CAAC,EAAE,MAAM,CAAA;IAClB,QAAQ,CAAC,EAAE,KAAK,CAAC,SAAS,CAAA;IAC1B,CAAC,GAAG,EAAE,MAAM,GAAG,OAAO,CAAA;CACvB;AAED;;;GAGG;AACH,eAAO,MAAM,iBAAiB,KAsD7B,CAAA"}
