@@ -190,6 +190,7 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useModelRouter', href: '/reference/hooks/use-model-router' },
       { title: 'usePerformance', href: '/reference/hooks/use-performance' },
       { title: 'useTokenTracker', href: '/reference/hooks/use-token-tracker' },
+      { title: 'useSmartCache', href: '/reference/hooks/use-smart-cache' },
       { title: 'useStreamingSSE', href: '/reference/hooks/use-streaming-sse' },
       { title: 'useStreamingWebSocket', href: '/reference/hooks/use-streaming-websocket' },
       { title: 'useStreamableUI', href: '/reference/hooks/use-streamable-ui' },

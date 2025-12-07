@@ -561,14 +561,14 @@ pnpm typecheck              # Type check
 - [x] `useCompletion` documentation (created)
 
 #### Task 3.2: Message Operations Hooks
-- [ ] `useMessageOperations` documentation (enhance existing)
+- [x] `useMessageOperations` documentation (enhanced)
 - [ ] Usage patterns
 - [ ] Examples
 
 #### Task 3.3: Token Optimization Hooks
-- [ ] `useTokenOptimization` documentation (enhance existing)
-- [ ] `useModelRouter` documentation
-- [ ] `useSmartCache` documentation
+- [x] `useTokenOptimization` documentation (enhanced)
+- [x] `useModelRouter` documentation (exists, complete)
+- [x] `useSmartCache` documentation (created)
 - [ ] Optimization patterns
 
 #### Task 3.4: Enterprise AI Hooks
@@ -632,7 +632,7 @@ pnpm typecheck              # Type check
 - [x] Advanced input components (VoiceInput, FileUpload, AdvancedChatInput done)
 - [x] Streaming components and hooks (StreamingMessage, useStreamingSSE, useStreamingWebSocket, useStreamableUI done)
 - [x] Core chat hooks (useChatHandlers, useChatEnhanced done)
-- [ ] Token optimization hooks
+- [x] Token optimization hooks (useTokenOptimization enhanced, useModelRouter exists, useSmartCache created)
 - [x] Common patterns recipes (memory, streaming, error handling, multi-modal, voice, tools, offline, collaboration done)
 
 ### Medium Priority
