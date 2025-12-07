@@ -165,20 +165,24 @@ export function Message({
       // Extract code string from the code element for copy button
       let codeString = ''
       React.Children.forEach(children, (child) => {
-        if (React.isValidElement(child) && child.props) {
+        if (React.isValidElement(child)) {
+          const childProps = child.props as Record<string, unknown>
           // Get from data attribute or extract text content
-          codeString = child.props['data-code-string'] || ''
-          if (!codeString && child.props.children) {
+          codeString = (childProps['data-code-string'] as string) || ''
+          if (!codeString && childProps.children) {
             // Fallback: extract text from children
             const extractText = (node: React.ReactNode): string => {
               if (typeof node === 'string') return node
               if (Array.isArray(node)) return node.map(extractText).join('')
-              if (React.isValidElement(node) && node.props?.children) {
-                return extractText(node.props.children)
+              if (React.isValidElement(node)) {
+                const nodeProps = node.props as Record<string, unknown>
+                if (nodeProps.children) {
+                  return extractText(nodeProps.children as React.ReactNode)
+                }
               }
               return ''
             }
-            codeString = extractText(child.props.children)
+            codeString = extractText(childProps.children as React.ReactNode)
           }
         }
       })

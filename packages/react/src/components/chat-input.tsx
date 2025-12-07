@@ -247,6 +247,7 @@ export function ChatInput({
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)
 
   // Focus ring glow animation variants
+  // Note: Using type assertion for Framer Motion 12 compatibility
   const containerVariants = {
     idle: {
       boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)',
@@ -258,10 +259,10 @@ export function ChatInput({
             '0 0 0 4px hsl(var(--primary) / 0.15)',
             '0 0 0 4px hsl(var(--primary) / 0.15)',
           ],
-          transition: { duration: 0.3, ease: 'easeOut' },
+          transition: { duration: 0.3, ease: [0, 0, 0.2, 1] as const },
         }
       : {},
-  }
+  } as const
 
   return (
     <motion.div
