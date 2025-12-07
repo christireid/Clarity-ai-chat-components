@@ -622,24 +622,26 @@
   - Link to `useClarityChat` hook
 
 #### Task 1.5: Message Components Documentation
-- [ ] **Title:** Message Components
-- [ ] **Location:** `/apps/docs/app/reference/components/message/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/reference/components/message/page.tsx`
-  - Create: `/apps/docs/app/reference/components/message-list/page.tsx`
-  - Create: `/apps/docs/app/reference/components/virtualized-message-list/page.tsx`
-  - Create: `/apps/docs/app/reference/components/streaming-message/page.tsx`
-- [ ] **Content Outline:**
-  - Message component variants
-  - MessageList usage
-  - VirtualizedMessageList performance notes
-  - StreamingMessage real-time display
-  - Custom message rendering
-  - Message actions
-  - Message metadata
-- [ ] **Cross-links:**
-  - Link to streaming guide
+- [x] **Title:** Message Components
+- [x] **Location:** `/apps/docs/app/reference/components/message/page.tsx`
+- [x] **Files to Create/Update:**
+  - Updated: `/apps/docs/app/reference/components/message/page.tsx`
+  - Updated: `/apps/docs/app/reference/components/message-list/page.tsx`
+  - Updated: `/apps/docs/app/reference/components/virtualized-message-list/page.tsx`
+  - Updated: `/apps/docs/app/reference/components/streaming-message/page.tsx`
+- [x] **Content Outline:**
+  - Complete Message component documentation with all props
+  - MessageList with auto-scroll, grouping, time separators
+  - VirtualizedMessageList for large message lists (1000+)
+  - StreamingMessage with tool calls, citations, thinking steps
+  - Custom message rendering examples
+  - Message actions (copy, feedback, retry, edit, delete)
+  - Performance optimization tips
+  - Complete usage examples
+- [x] **Cross-links:**
+  - Link to streaming hooks
   - Link to performance guide
+  - Link to ChatWindow component
 
 #### Task 1.6: Tool & Agent Components
 - [ ] **Title:** Tool & Agent Components
@@ -1013,7 +1015,7 @@
 - [x] useClarityObject Hook Page (Task 2.2)
 
 ### In Progress
-- [ ] Phase 1: Core Component Documentation (4/6 tasks complete)
+- [ ] Phase 1: Core Component Documentation (5/6 tasks complete)
 - [ ] Phase 2: Core Hook Documentation (2/4 tasks complete)
 - [ ] Phase 3: Conceptual Guides
 - [ ] Phase 4: Pattern & Recipe Library
@@ -1029,8 +1031,12 @@
 3. `/apps/docs/app/reference/components/chat-window/page.tsx` - Enhanced ChatWindow component documentation
 4. `/apps/docs/app/reference/components/chat-input/page.tsx` - Complete ChatInput component documentation
 5. `/apps/docs/app/reference/components/advanced-chat-input/page.tsx` - Complete AdvancedChatInput component documentation
-6. `/apps/docs/app/reference/hooks/use-clarity-chat/page.tsx` - Complete useClarityChat hook documentation
-7. `/apps/docs/app/reference/hooks/use-clarity-object/page.tsx` - Complete useClarityObject hook documentation
+6. `/apps/docs/app/reference/components/message/page.tsx` - Complete Message component documentation
+7. `/apps/docs/app/reference/components/message-list/page.tsx` - Complete MessageList component documentation
+8. `/apps/docs/app/reference/components/virtualized-message-list/page.tsx` - Complete VirtualizedMessageList documentation
+9. `/apps/docs/app/reference/components/streaming-message/page.tsx` - Complete StreamingMessage documentation
+10. `/apps/docs/app/reference/hooks/use-clarity-chat/page.tsx` - Complete useClarityChat hook documentation
+11. `/apps/docs/app/reference/hooks/use-clarity-object/page.tsx` - Complete useClarityObject hook documentation
 
 **Key Features Added:**
 - Complete prop tables with descriptions
@@ -1104,10 +1110,10 @@
    - Complete examples
 
 **Total Documentation Added:**
-- 7 comprehensive documentation pages
-- ~4,500+ lines of documentation code
-- 45+ code examples
-- 7 interactive playgrounds
+- 11 comprehensive documentation pages
+- ~7,000+ lines of documentation code
+- 70+ code examples
+- 11 interactive playgrounds
 - Complete prop/option tables for all documented APIs
 
 ### Remaining Work
@@ -1158,4 +1164,4 @@
 ---
 
 **Last Updated:** 2025-01-27
-**Status:** Phase 1 & 2 partially complete (6/10 high-priority tasks done)
+**Status:** Phase 1 & 2 partially complete (7/10 high-priority tasks done)
