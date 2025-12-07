@@ -543,10 +543,10 @@ pnpm typecheck              # Type check
 - [ ] Streaming patterns guide (comprehensive streaming guide exists at /guides/streaming)
 
 #### Task 2.3: Analytics Components
-- [ ] `PerformanceAnalyticsDashboard` documentation
-- [ ] `ConversationAnalyticsDashboard` documentation
-- [ ] `ABTestingDashboard` documentation
-- [ ] Analytics integration guide
+- [x] `PerformanceAnalyticsDashboard` documentation (created)
+- [x] `ConversationAnalyticsDashboard` documentation (created)
+- [x] `ABTestingDashboard` documentation (created)
+- [x] Analytics integration guide (documented in examples)
 
 #### Task 2.4: Core Hooks
 - [x] `useChatHandlers` documentation (created)

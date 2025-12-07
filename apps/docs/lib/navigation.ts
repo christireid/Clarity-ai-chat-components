@@ -161,6 +161,14 @@ export const referenceNavigation: NavItem[] = [
         ],
       },
       {
+        title: 'Analytics',
+        items: [
+          { title: 'PerformanceAnalyticsDashboard', href: '/reference/components/performance-analytics-dashboard' },
+          { title: 'ConversationAnalyticsDashboard', href: '/reference/components/conversation-analytics-dashboard' },
+          { title: 'ABTestingDashboard', href: '/reference/components/ab-testing-dashboard' },
+        ],
+      },
+      {
         title: 'Enterprise',
         items: [
           { title: 'AuthTenantDashboard', href: '/reference/components/auth-tenant-dashboard' },
