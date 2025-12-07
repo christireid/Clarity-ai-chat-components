@@ -12,6 +12,7 @@ import {
   Textarea,
   Badge,
   ScrollArea,
+  Switch,
   cn,
 } from '@clarity-chat/primitives'
 import type {
@@ -337,24 +338,18 @@ export function SettingsPanel({
                     },
                     { key: 'compactMode', label: 'Compact Mode' },
                   ].map(({ key, label }) => (
-                    <label
+                    <Switch
                       key={key}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer"
-                    >
-                      <span className="text-sm">{label}</span>
-                      <input
-                        type="checkbox"
-                        checked={
-                          settings.uiPreferences[
-                            key as keyof UIPreferences
-                          ] as boolean
-                        }
-                        onChange={(e) =>
-                          handleUpdateUI({ [key]: e.target.checked })
-                        }
-                        className="w-4 h-4"
-                      />
-                    </label>
+                      label={label}
+                      containerClassName="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50"
+                      checked={
+                        settings.uiPreferences[key as keyof UIPreferences] as boolean
+                      }
+                      onChange={(event) =>
+                        handleUpdateUI({ [key]: event.target.checked })
+                      }
+                      name={key}
+                    />
                   ))}
                 </div>
               </div>
@@ -388,29 +383,20 @@ export function SettingsPanel({
                       description: 'Send crash reports and performance data',
                     },
                   ].map(({ key, label, description }) => (
-                    <label
+                    <Switch
                       key={key}
-                      className="flex items-start justify-between p-4 rounded-lg border hover:bg-muted/50 cursor-pointer"
-                    >
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{label}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {description}
-                        </p>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={
-                          settings.privacy[
-                            key as keyof PrivacySettings
-                          ] as boolean
-                        }
-                        onChange={(e) =>
-                          handleUpdatePrivacy({ [key]: e.target.checked })
-                        }
-                        className="w-4 h-4 mt-1 ml-4"
-                      />
-                    </label>
+                      label={label}
+                      description={description}
+                      align="start"
+                      containerClassName="flex items-start justify-between p-4 rounded-lg border hover:bg-muted/50"
+                      checked={
+                        settings.privacy[key as keyof PrivacySettings] as boolean
+                      }
+                      onChange={(event) =>
+                        handleUpdatePrivacy({ [key]: event.target.checked })
+                      }
+                      name={key}
+                    />
                   ))}
                 </div>
 
@@ -444,26 +430,22 @@ export function SettingsPanel({
                     },
                     { key: 'sound', label: 'Sound Alerts', icon: '🔊' },
                   ].map(({ key, label, icon }) => (
-                    <label
+                    <Switch
                       key={key}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer"
-                    >
-                      <span className="text-sm">
-                        {icon} {label}
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={
-                          settings.notifications[
-                            key as keyof NotificationSettings
-                          ] as boolean
-                        }
-                        onChange={(e) =>
-                          handleUpdateNotifications({ [key]: e.target.checked })
-                        }
-                        className="w-4 h-4"
-                      />
-                    </label>
+                      label={
+                        <span className="text-sm flex items-center gap-1.5">
+                          <span>{icon}</span> {label}
+                        </span>
+                      }
+                      containerClassName="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50"
+                      checked={
+                        settings.notifications[key as keyof NotificationSettings] as boolean
+                      }
+                      onChange={(event) =>
+                        handleUpdateNotifications({ [key]: event.target.checked })
+                      }
+                      name={key}
+                    />
                   ))}
                 </div>
 
@@ -473,24 +455,18 @@ export function SettingsPanel({
                     { key: 'newMessage', label: 'New Messages' },
                     { key: 'systemUpdates', label: 'System Updates' },
                   ].map(({ key, label }) => (
-                    <label
+                    <Switch
                       key={key}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer"
-                    >
-                      <span className="text-sm">{label}</span>
-                      <input
-                        type="checkbox"
-                        checked={
-                          settings.notifications[
-                            key as keyof NotificationSettings
-                          ] as boolean
-                        }
-                        onChange={(e) =>
-                          handleUpdateNotifications({ [key]: e.target.checked })
-                        }
-                        className="w-4 h-4"
-                      />
-                    </label>
+                      label={label}
+                      containerClassName="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50"
+                      checked={
+                        settings.notifications[key as keyof NotificationSettings] as boolean
+                      }
+                      onChange={(event) =>
+                        handleUpdateNotifications({ [key]: event.target.checked })
+                      }
+                      name={key}
+                    />
                   ))}
                 </div>
               </div>

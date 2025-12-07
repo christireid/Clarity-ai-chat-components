@@ -19,6 +19,7 @@ export * from './components/checkbox'
 export * from './components/error-message'
 export * from './components/command'
 export * from './components/select'
+export * from './components/switch'
 
 // Hooks
 export * from './hooks/use-ripple-effect'
