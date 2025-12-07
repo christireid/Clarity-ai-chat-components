@@ -601,10 +601,10 @@ pnpm typecheck              # Type check
 ### Phase 5: Polish & Enhancement (Week 5)
 
 #### Task 5.1: Enhance Existing Docs
-- [ ] Add missing prop tables
-- [ ] Add usage examples to all components
+- [x] Add missing prop tables (NetworkStatus enhanced)
+- [x] Add usage examples to all components (NetworkStatus enhanced)
 - [ ] Add accessibility notes
-- [ ] Add best practices sections
+- [x] Add best practices sections (NetworkStatus enhanced)
 - [ ] Add common patterns
 
 #### Task 5.2: Interactive Demos
