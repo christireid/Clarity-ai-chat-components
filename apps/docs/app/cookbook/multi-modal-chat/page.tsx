@@ -1,254 +1,402 @@
-import React from 'react'
-import { Metadata } from 'next'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
+'use client'
+
+import type { Metadata } from 'next'
+import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { Pagination } from '@/components/Navigation/Pagination'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Multi-Modal Chat - Cookbook - Clarity Chat',
-  description: 'Build a chat that handles images, PDFs, and other files with GPT-4 Vision.',
+  title: 'Multi-Modal Chat Recipe | Clarity Chat Cookbook',
+  description: 'Learn how to build chat interfaces that support text, images, files, and other media types.',
 }
 
 export default function MultiModalChatPage() {
   return (
-    <div className="docs-content">
-      <div className="docs-header">
-        <span className="docs-badge">Cookbook</span>
-        <h1>Multi-Modal Chat</h1>
-        <p className="docs-lead">
-          Let users upload images and ask questions about them. "What's in this screenshot?" "Describe this diagram." Powered by GPT-4 Vision.
+    <>
+      <Breadcrumbs />
+
+      <h1>Multi-Modal Chat Recipe</h1>
+
+      <p className="lead">
+        Build chat interfaces that support text, images, files, and other media types.
+        Perfect for applications that need to process visual content alongside text.
+      </p>
+
+      <Callout type="info" title="What is Multi-Modal?">
+        <p>
+          Multi-modal chat allows users to send and receive different types of content:
+          text, images, files, audio, video, and more. The AI can understand and respond
+          to all these formats.
         </p>
-      </div>
+      </Callout>
 
-      <section className="docs-section">
-        <h2>What You'll Build</h2>
-        <ul>
-          <li>✅ Upload images to chat</li>
-          <li>✅ Ask questions about images</li>
-          <li>✅ Show image previews in messages</li>
-          <li>✅ Handle PDFs with vision API</li>
-        </ul>
-      </section>
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Quick Start</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Enable multi-modal with file upload support:
+        </p>
+        
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { ClarityChat, FileUpload } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
-      <section className="docs-section">
-        <h2>Step 1: File Upload API</h2>
-        <CodeBlock
-          language="typescript"
-          code={`// app/api/upload/route.ts
-import { put } from '@vercel/blob'
-
-export async function POST(req: Request) {
-  const formData = await req.formData()
-  const file = formData.get('file') as File
-
-  // Upload to blob storage
-  const blob = await put(file.name, file, {
-    access: 'public',
-  })
-
-  return Response.json({
-    url: blob.url,
-    fileName: file.name,
-    type: file.type,
-    size: file.size
-  })
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Step 2: Vision API Integration</h2>
-        <CodeBlock
-          language="typescript"
-          code={`// app/api/chat/route.ts
-import OpenAI from 'openai'
-
-const openai = new OpenAI()
-
-export async function POST(req: Request) {
-  const { messages, imageUrls } = await req.json()
-
-  // Build messages with images
-  const messageWithImages = messages.map(msg => {
-    if (msg.attachments && msg.attachments.length > 0) {
-      return {
-        role: msg.role,
-        content: [
-          { type: 'text', text: msg.content },
-          ...msg.attachments.map(att => ({
-            type: 'image_url',
-            image_url: { url: att.url }
+function MultiModalChat() {
+  return (
+    <div>
+      <ClarityChat
+        api="/api/chat"
+        // Multi-modal is enabled by default when files are attached
+      />
+      <FileUpload
+        onUpload={async (files) => {
+          // Upload files and return attachments
+          return files.map(file => ({
+            id: file.name,
+            filename: file.name,
+            url: URL.createObjectURL(file),
+            size: file.size,
+            mimeType: file.type,
           }))
-        ]
-      }
-    }
-    return { role: msg.role, content: msg.content }
-  })
-
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4-vision-preview',
-    max_tokens: 4096,
-    messages: messageWithImages
-  })
-
-  return Response.json({
-    content: response.choices[0].message.content
-  })
+        }}
+      />
+    </div>
+  )
 }`}
         />
       </section>
 
-      <section className="docs-section">
-        <h2>Step 3: Chat UI with File Upload</h2>
-        <CodeBlock
-          language="typescript"
-          code={`'use client'
-
-import { ChatWindow, FileUpload } from '@clarity-chat/react'
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">With useClarityChat</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          For custom UIs, handle multi-modal messages:
+        </p>
+        
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { useClarityChat, ChatWindow, FileUpload } from '@clarity-chat/react'
 import { useState } from 'react'
 
-export default function MultiModalChat() {
-  const [messages, setMessages] = useState([])
+function MultiModalChat() {
+  const { messages, append } = useClarityChat({
+    api: '/api/chat',
+  })
+
   const [attachments, setAttachments] = useState([])
 
-  // Handle file upload
-  const handleUpload = async (files: File[]) => {
-    const uploaded = []
-    
-    for (const file of files) {
-      const formData = new FormData()
-      formData.append('file', file)
-      
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
+  const handleFileUpload = async (files: File[]) => {
+    // Upload files to your server
+    const uploaded = await Promise.all(
+      files.map(async (file) => {
+        const formData = new FormData()
+        formData.append('file', file)
+        
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        })
+        
+        const data = await response.json()
+        return {
+          id: data.id,
+          filename: file.name,
+          url: data.url,
+          size: file.size,
+          mimeType: file.type,
+        }
       })
-      
-      const result = await response.json()
-      uploaded.push({
-        id: result.url,
-        url: result.url,
-        type: file.type,
-        name: file.name
-      })
-    }
-    
+    )
+
     setAttachments(uploaded)
     return uploaded
   }
 
-  // Send message with attachments
-  const handleSendMessage = async (content: string) => {
-    const userMsg = {
-      id: Date.now().toString(),
+  const handleSend = async (content: string) => {
+    await append({
       role: 'user',
-      content,
-      createdAt: new Date(),
-      attachments: attachments  // Include uploaded files
-    }
-    
-    setMessages(prev => [...prev, userMsg])
-    setAttachments([])  // Clear for next message
-
-    // Call API with image URLs
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: [...messages, userMsg],
-        imageUrls: attachments.map(a => a.url)
-      })
+      content: [
+        { type: 'text', text: content },
+        ...attachments.map(att => ({
+          type: 'image',
+          image: att.url,
+        })),
+      ],
     })
-
-    const data = await response.json()
-    
-    setMessages(prev => [...prev, {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: data.content,
-      createdAt: new Date()
-    }])
+    setAttachments([])
   }
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="flex-1">
-        <ChatWindow
-          messages={messages}
-          onSendMessage={handleSendMessage}
-        />
-      </div>
-      
-      {/* File Upload Area */}
-      <div className="border-t p-4">
-        <FileUpload
-          onUpload={handleUpload}
-          acceptedFileTypes={['image/*', 'application/pdf']}
-          maxFiles={4}
-          maxFileSize={10 * 1024 * 1024}
-        />
-        
-        {/* Show attached files */}
-        {attachments.length > 0 && (
-          <div className="mt-2 flex gap-2">
-            {attachments.map(att => (
-              <div key={att.id} className="relative">
-                <img
-                  src={att.url}
-                  alt={att.name}
-                  className="w-16 h-16 object-cover rounded"
-                />
-                <button
-                  onClick={() => setAttachments(prev =>
-                    prev.filter(a => a.id !== att.id)
-                  )}
-                  className="absolute -top-1 -right-1 bg-destructive text-white rounded-full w-5 h-5"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+    <div>
+      <FileUpload onUpload={handleFileUpload} />
+      <ChatWindow
+        messages={messages}
+        onSendMessage={handleSend}
+      />
     </div>
   )
 }`}
         />
       </section>
 
-      <section className="docs-section">
-        <h2>Best Practices</h2>
-        <ul>
-          <li>Validate file types and sizes on upload</li>
-          <li>Show image previews before sending</li>
-          <li>Compress large images to save tokens</li>
-          <li>Use detail: "low" for faster responses</li>
-          <li>Handle vision API errors gracefully</li>
-          <li>Consider costs - vision is more expensive</li>
-        </ul>
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Image Support</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Send images with text messages:
+        </p>
 
-        <Callout type="warning" title="Token Costs">
-          Images use lots of tokens. A 1024x1024 image ≈ 765 tokens. Budget accordingly.
-        </Callout>
+        <h3 className="text-xl font-semibold mt-6 mb-4">With AdvancedChatInput</h3>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { AdvancedChatInput } from '@clarity-chat/react'
+
+function ImageChat() {
+  const [message, setMessage] = useState('')
+  const [attachments, setAttachments] = useState([])
+
+  return (
+    <AdvancedChatInput
+      value={message}
+      onChange={setMessage}
+      onSubmit={(text, files) => {
+        // Send message with image attachments
+        sendMessage({
+          role: 'user',
+          content: [
+            { type: 'text', text },
+            ...files.map(file => ({
+              type: 'image',
+              image: file.url,
+            })),
+          ],
+        })
+      }}
+      onFileUpload={async (files) => {
+        // Upload images
+        return files.map(file => ({
+          id: file.name,
+          filename: file.name,
+          url: URL.createObjectURL(file),
+          size: file.size,
+          mimeType: file.type,
+        }))
+      }}
+      acceptedFileTypes={['image/*']}
+    />
+  )
+}`}
+        />
+
+        <h3 className="text-xl font-semibold mt-6 mb-4">Image Preview</h3>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`function ImagePreview({ attachments }) {
+  return (
+    <div className="image-preview">
+      {attachments.map(att => (
+        <div key={att.id} className="image-item">
+          <img src={att.url} alt={att.filename} />
+          <button onClick={() => removeAttachment(att.id)}>Remove</button>
+        </div>
+      ))}
+    </div>
+  )
+}`}
+        />
       </section>
 
-      <section className="docs-section">
-        <h2>Related Recipes</h2>
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">API Endpoint Setup</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Your API endpoint needs to handle multi-modal content:
+        </p>
+
+        <h3 className="text-xl font-semibold mt-6 mb-4">Next.js App Router</h3>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`// app/api/chat/route.ts
+import { NextRequest } from 'next/server'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+export async function POST(req: NextRequest) {
+  try {
+    const { messages } = await req.json()
+
+    // Messages can contain multi-modal content
+    // Example: [
+    //   {
+    //     role: 'user',
+    //     content: [
+    //       { type: 'text', text: 'What is in this image?' },
+    //       { type: 'image_url', image_url: { url: 'https://...' } }
+    //     ]
+    //   }
+    // ]
+
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-4-vision-preview', // Use vision model for images
+      messages,
+      stream: true,
+    })
+
+    return new Response(
+      new ReadableStream({
+        async start(controller) {
+          const encoder = new TextEncoder()
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content
+            if (content) {
+              controller.enqueue(encoder.encode(\`data: \${content}\\n\\n\`))
+            }
+          }
+          controller.close()
+        },
+      }),
+      {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      }
+    )
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}`}
+        />
+      </section>
+
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">File Types</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Support different file types:
+        </p>
+
+        <h3 className="text-xl font-semibold mt-6 mb-4">Images</h3>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`// Send image with text
+await append({
+  role: 'user',
+  content: [
+    { type: 'text', text: 'Analyze this image' },
+    { type: 'image_url', image_url: { url: imageUrl } },
+  ],
+})`}
+        />
+
+        <h3 className="text-xl font-semibold mt-6 mb-4">PDFs and Documents</h3>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`// Upload and process PDF
+const handlePDFUpload = async (file: File) => {
+  // Extract text from PDF
+  const text = await extractTextFromPDF(file)
+  
+  // Send as context
+  await append({
+    role: 'user',
+    content: \`Please analyze this document: \\n\\n\${text}\`,
+  })
+}`}
+        />
+
+        <h3 className="text-xl font-semibold mt-6 mb-4">Audio</h3>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`// Transcribe audio and send
+const handleAudioUpload = async (file: File) => {
+  // Transcribe audio to text
+  const transcript = await transcribeAudio(file)
+  
+  await append({
+    role: 'user',
+    content: transcript,
+  })
+}`}
+        />
+      </section>
+
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Displaying Multi-Modal Messages</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Render different content types in messages:
+        </p>
+        
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`function MultiModalMessage({ message }) {
+  return (
+    <div className="message">
+      {Array.isArray(message.content) ? (
+        message.content.map((part, i) => {
+          if (part.type === 'text') {
+            return <div key={i}>{part.text}</div>
+          }
+          if (part.type === 'image_url' || part.type === 'image') {
+            const url = part.image_url?.url || part.image
+            return <img key={i} src={url} alt="User upload" />
+          }
+          return null
+        })
+      ) : (
+        <div>{message.content}</div>
+      )}
+    </div>
+  )
+}`}
+        />
+      </section>
+
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
+        <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
+          <li><strong>Validate file types</strong> - Only accept supported formats</li>
+          <li><strong>Limit file sizes</strong> - Prevent large uploads from slowing down the app</li>
+          <li><strong>Show upload progress</strong> - Give users feedback during uploads</li>
+          <li><strong>Handle errors gracefully</strong> - Show clear error messages for unsupported files</li>
+          <li><strong>Optimize images</strong> - Compress images before sending to reduce token usage</li>
+          <li><strong>Use appropriate models</strong> - Use vision models (gpt-4-vision) for images</li>
+        </ul>
+      </section>
+
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/cookbook/rag-document-chat" className="docs-card">
-            <h3>RAG Documents</h3>
-            <p>Combine with document search</p>
-          </a>
           <a href="/reference/components/file-upload" className="docs-card">
-            <h3>File Upload</h3>
-            <p>Component docs</p>
+            <h3>FileUpload Component</h3>
+            <p>File upload component</p>
+          </a>
+          <a href="/reference/components/advanced-chat-input" className="docs-card">
+            <h3>AdvancedChatInput Component</h3>
+            <p>Input with file support</p>
+          </a>
+          <a href="/cookbook/voice-input" className="docs-card">
+            <h3>Voice Input Recipe</h3>
+            <p>Add voice input support</p>
+          </a>
+          <a href="/guides/multi-modal" className="docs-card">
+            <h3>Multi-Modal Guide</h3>
+            <p>Complete multi-modal guide</p>
           </a>
         </div>
       </section>
-    </div>
+
+      <Pagination
+        prev={{ title: 'Error Handling', href: '/cookbook/error-handling' }}
+        next={{ title: 'Voice Input', href: '/cookbook/voice-input' }}
+      />
+    </>
   )
 }
-
