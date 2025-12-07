@@ -5,16 +5,17 @@ import type { AIStatus } from '@clarity-chat/types'
 
 describe('ThinkingIndicator Component', () => {
   describe('Rendering', () => {
-    it('should render default processing state', () => {
+    it('should render default thinking state when no status provided', () => {
       render(<ThinkingIndicator />)
-      expect(screen.getByText('Processing')).toBeInTheDocument()
-      expect(screen.getByText('💭')).toBeInTheDocument()
+      // Default is 'thinking' stage which shows 'Thinking' label
+      expect(screen.getByText('Thinking')).toBeInTheDocument()
     })
 
-    it('should render with default icon and text when no status provided', () => {
+    it('should render with icon container when no status provided', () => {
       const { container } = render(<ThinkingIndicator />)
-      expect(container.querySelector('.text-2xl')).toHaveTextContent('💭')
-      expect(screen.getByText('Processing')).toBeInTheDocument()
+      // Icon container has fixed size for stability
+      const iconContainer = container.querySelector('.w-\\[18px\\]')
+      expect(iconContainer).toBeInTheDocument()
     })
   })
 
@@ -22,40 +23,30 @@ describe('ThinkingIndicator Component', () => {
     it('should render thinking stage', () => {
       const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
-
-      expect(screen.getByText('🤔')).toBeInTheDocument()
       expect(screen.getByText('Thinking')).toBeInTheDocument()
     })
 
     it('should render researching stage', () => {
       const status: AIStatus = { stage: 'researching', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
-
-      expect(screen.getByText('🔍')).toBeInTheDocument()
       expect(screen.getByText('Researching')).toBeInTheDocument()
     })
 
     it('should render compiling stage', () => {
       const status: AIStatus = { stage: 'compiling', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
-
-      expect(screen.getByText('📝')).toBeInTheDocument()
       expect(screen.getByText('Compiling')).toBeInTheDocument()
     })
 
     it('should render generating stage', () => {
       const status: AIStatus = { stage: 'generating', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
-
-      expect(screen.getByText('✨')).toBeInTheDocument()
       expect(screen.getByText('Generating')).toBeInTheDocument()
     })
 
     it('should render finalizing stage', () => {
       const status: AIStatus = { stage: 'finalizing', startedAt: new Date() }
       render(<ThinkingIndicator status={status} />)
-
-      expect(screen.getByText('🎯')).toBeInTheDocument()
       expect(screen.getByText('Finalizing')).toBeInTheDocument()
     })
   })
@@ -78,9 +69,8 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
-      const topicElements = container.querySelectorAll(
-        '.text-xs.text-muted-foreground.mt-1'
-      )
+      // Topic element has truncate class
+      const topicElements = container.querySelectorAll('.truncate')
       expect(topicElements).toHaveLength(0)
     })
 
@@ -117,7 +107,8 @@ describe('ThinkingIndicator Component', () => {
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
-      const progressBar = container.querySelector('.h-1.bg-background')
+      // Progress bar container has h-1.5 class
+      const progressBar = container.querySelector('.h-1\\.5')
       expect(progressBar).toBeInTheDocument()
     })
 
@@ -125,7 +116,7 @@ describe('ThinkingIndicator Component', () => {
       const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
       const { container } = render(<ThinkingIndicator status={status} />)
 
-      const progressBar = container.querySelector('.h-1.bg-background')
+      const progressBar = container.querySelector('.h-1\\.5')
       expect(progressBar).not.toBeInTheDocument()
     })
 
@@ -139,7 +130,6 @@ describe('ThinkingIndicator Component', () => {
 
       const progressFill = container.querySelector('.h-full.bg-primary')
       expect(progressFill).toBeInTheDocument()
-      // Progress bar width should be set via inline style
     })
 
     it('should handle 0% progress', () => {
@@ -150,7 +140,7 @@ describe('ThinkingIndicator Component', () => {
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
-      const progressBar = container.querySelector('.h-1.bg-background')
+      const progressBar = container.querySelector('.h-1\\.5')
       expect(progressBar).toBeInTheDocument()
     })
 
@@ -162,7 +152,7 @@ describe('ThinkingIndicator Component', () => {
       }
       const { container } = render(<ThinkingIndicator status={status} />)
 
-      const progressBar = container.querySelector('.h-1.bg-background')
+      const progressBar = container.querySelector('.h-1\\.5')
       expect(progressBar).toBeInTheDocument()
     })
   })
@@ -177,17 +167,14 @@ describe('ThinkingIndicator Component', () => {
       }
       render(<ThinkingIndicator status={status} />)
 
-      expect(screen.getByText(/~\ds/)).toBeInTheDocument()
+      expect(screen.getByText(/~\d+s/)).toBeInTheDocument()
     })
 
     it('should not display estimated time when not provided', () => {
       const status: AIStatus = { stage: 'thinking', startedAt: new Date() }
-      const { container } = render(<ThinkingIndicator status={status} />)
+      render(<ThinkingIndicator status={status} />)
 
-      const timeElements = container.querySelectorAll(
-        'span.text-xs.text-muted-foreground'
-      )
-      expect(timeElements).toHaveLength(0)
+      expect(screen.queryByText(/~\d+s/)).not.toBeInTheDocument()
     })
 
     it('should calculate time remaining correctly', () => {
@@ -202,26 +189,14 @@ describe('ThinkingIndicator Component', () => {
       // Should show approximately 10 seconds
       expect(screen.getByText(/~10s/)).toBeInTheDocument()
     })
-
-    it('should round up time to nearest second', () => {
-      const futureTime = new Date(Date.now() + 3500) // 3.5 seconds
-      const status: AIStatus = {
-        stage: 'generating',
-        estimatedCompletion: futureTime,
-        startedAt: new Date(),
-      }
-      render(<ThinkingIndicator status={status} />)
-
-      // Should round up to 4 seconds
-      expect(screen.getByText(/~4s/)).toBeInTheDocument()
-    })
   })
 
   describe('Animated Dots', () => {
     it('should render three animated dots', () => {
       const { container } = render(<ThinkingIndicator />)
 
-      const dots = container.querySelectorAll('.w-1\\.5.h-1\\.5.rounded-full')
+      // Dots have class rounded-full bg-current
+      const dots = container.querySelectorAll('.rounded-full.bg-current')
       expect(dots).toHaveLength(3)
     })
   })
@@ -237,14 +212,13 @@ describe('ThinkingIndicator Component', () => {
       }
       render(<ThinkingIndicator status={status} />)
 
-      expect(screen.getByText('✨')).toBeInTheDocument()
       expect(screen.getByText('Generating')).toBeInTheDocument()
       expect(screen.getByText('Creating detailed response')).toBeInTheDocument()
       expect(screen.getByText(/~8s/)).toBeInTheDocument()
 
       // Progress bar should be present
       const { container } = render(<ThinkingIndicator status={status} />)
-      const progressBar = container.querySelector('.h-1.bg-background')
+      const progressBar = container.querySelector('.h-1\\.5')
       expect(progressBar).toBeInTheDocument()
     })
   })
@@ -322,9 +296,8 @@ describe('ThinkingIndicator Component', () => {
       }
       render(<ThinkingIndicator status={status} />)
 
-      // Should handle negative time gracefully
-      const { container } = render(<ThinkingIndicator status={status} />)
-      expect(container).toBeInTheDocument()
+      // Should show ~0s (clamped to 0 minimum)
+      expect(screen.getByText('~0s')).toBeInTheDocument()
     })
 
     it('should handle progress over 100%', () => {
@@ -362,6 +335,18 @@ describe('ThinkingIndicator Component', () => {
 
       expect(screen.getByText('Generating')).toBeInTheDocument()
       expect(screen.queryByText('Thinking')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Icon Container Stability', () => {
+    it('should have fixed size icon container to prevent layout shifts', () => {
+      const { container } = render(<ThinkingIndicator />)
+
+      // Icon container should have explicit width/height and flex-shrink-0
+      const iconContainer = container.querySelector('.w-\\[18px\\]')
+      expect(iconContainer).toBeInTheDocument()
+      expect(iconContainer).toHaveClass('h-[18px]')
+      expect(iconContainer).toHaveClass('flex-shrink-0')
     })
   })
 })

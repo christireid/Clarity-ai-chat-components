@@ -573,11 +573,10 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
                   // Update with throttling to reduce flicker
                   updateStreamingMessage(accumulatedContent)
                 } else if (data.type === 'sources' && data.data?.sources) {
-                // Store sources for potential display
-                // API sends: { url, title, score }
-                sources = data.data.sources
-                console.log('📚 Sources retrieved:', JSON.stringify(sources, null, 2))
-              } else if (data.type === 'error') {
+                  // Store sources for potential display
+                  // API sends: { url, title, score }
+                  sources = data.data.sources
+                } else if (data.type === 'error') {
                 throw new Error(data.content || 'Stream error')
               } else if (data.type === 'done') {
                 // Normalize all links in the AI response before finalizing

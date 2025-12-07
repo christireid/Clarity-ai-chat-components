@@ -81,8 +81,8 @@ describe('Message Component', () => {
         status: 'streaming' as const,
       }
       const { container } = render(<Message message={streamingMessage} />)
-      // Check for the streaming cursor span
-      const cursor = container.querySelector('span.inline-block.w-2.h-4')
+      // Check for the streaming cursor with CSS class
+      const cursor = container.querySelector('.clarity-streaming-cursor')
       expect(cursor).toBeInTheDocument()
     })
   })
