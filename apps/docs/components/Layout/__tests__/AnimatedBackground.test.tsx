@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { AnimatedBackground } from '../AnimatedBackground'
+import Particles from '@tsparticles/react'
 
 // Mock next-themes
 const mockResolvedTheme = vi.fn()
@@ -11,33 +12,36 @@ vi.mock('next-themes', () => ({
 }))
 
 // Mock @tsparticles/react
-const mockParticles = vi.fn(({ id, init, options, className }) => {
-  // Simulate initialization
-  if (init) {
-    const mockEngine = {
-      pause: vi.fn(),
-      play: vi.fn(),
-      destroy: vi.fn(),
-      canvas: {
-        resize: vi.fn(),
-        element: {
-          parentElement: document.body,
+vi.mock('@tsparticles/react', () => {
+  const mockParticles = vi.fn(({ id, init, options, className }) => {
+    // Simulate initialization
+    if (init) {
+      const mockEngine = {
+        pause: vi.fn(),
+        play: vi.fn(),
+        destroy: vi.fn(),
+        canvas: {
+          resize: vi.fn(),
+          element: {
+            parentElement: document.body,
+          },
         },
-      },
-      interactivity: {
-        mouse: {
-          position: { x: 0, y: 0 },
+        interactivity: {
+          mouse: {
+            position: { x: 0, y: 0 },
+          },
         },
-      },
+      }
+      Promise.resolve(init(mockEngine))
     }
-    Promise.resolve(init(mockEngine))
+    return <div data-testid={`particles-${id}`} className={className} />
+  })
+  
+  return {
+    default: mockParticles,
   }
-  return <div data-testid={`particles-${id}`} className={className} />
 })
 
-vi.mock('@tsparticles/react', () => ({
-  default: (...args: any[]) => mockParticles(...args),
-}))
 
 // Mock @tsparticles/slim
 vi.mock('@tsparticles/slim', () => ({
@@ -63,9 +67,9 @@ describe('AnimatedBackground', () => {
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
         dispatchEvent: vi.fn(),
-      }
+      } as MediaQueryList
     })
-    window.matchMedia = matchMediaMock
+    window.matchMedia = matchMediaMock as any
   })
 
   afterEach(() => {
@@ -188,7 +192,8 @@ describe('AnimatedBackground', () => {
       render(<AnimatedBackground />)
       
       await waitFor(() => {
-        expect(mockParticles).toHaveBeenCalled()
+        expect(Particles).toHaveBeenCalled()
+        const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
         const lastCall = mockParticles.mock.calls[mockParticles.mock.calls.length - 1]
         const config = lastCall[0].options
         
@@ -205,7 +210,8 @@ describe('AnimatedBackground', () => {
       render(<AnimatedBackground />)
       
       await waitFor(() => {
-        expect(mockParticles).toHaveBeenCalled()
+        expect(Particles).toHaveBeenCalled()
+        const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
         const lastCall = mockParticles.mock.calls[mockParticles.mock.calls.length - 1]
         const config = lastCall[0].options
         
@@ -247,7 +253,8 @@ describe('AnimatedBackground', () => {
       render(<AnimatedBackground />)
       
       await waitFor(() => {
-        expect(mockParticles).toHaveBeenCalled()
+        expect(Particles).toHaveBeenCalled()
+        const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
         const lastCall = mockParticles.mock.calls[mockParticles.mock.calls.length - 1]
         const config = lastCall[0].options
         
@@ -263,6 +270,7 @@ describe('AnimatedBackground', () => {
       const mockPlay = vi.fn()
       
       // Override the mock to capture engine methods
+      const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
       mockParticles.mockImplementation(({ init }) => {
         if (init) {
           const mockEngine = {
@@ -313,6 +321,7 @@ describe('AnimatedBackground', () => {
     it('should handle window resize events', async () => {
       const mockResize = vi.fn()
       
+      const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
       mockParticles.mockImplementation(({ init }) => {
         if (init) {
           const mockEngine = {

@@ -65,10 +65,11 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (engineRef.current) {
+        const engine = engineRef.current as any
         if (document.hidden) {
-          engineRef.current.pause()
+          engine.pause?.()
         } else if (!reducedMotion) {
-          engineRef.current.play()
+          engine.play?.()
         }
       }
     }
@@ -81,7 +82,8 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   useEffect(() => {
     const handleResize = () => {
       if (engineRef.current) {
-        engineRef.current.canvas?.resize()
+        const engine = engineRef.current as any
+        engine.canvas?.resize?.()
       }
     }
 
@@ -104,7 +106,8 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   useEffect(() => {
     return () => {
       if (engineRef.current) {
-        engineRef.current.destroy()
+        const engine = engineRef.current as any
+        engine.destroy?.()
         engineRef.current = null
       }
     }
@@ -112,7 +115,7 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
 
   // Memoize configurations to prevent unnecessary re-renders
   // Configuration for dark mode: glowing nodes, cyberpunk grid
-  const darkModeConfig: ISourceOptions = useMemo(() => ({
+  const darkModeConfig = useMemo(() => ({
     background: {
       color: {
         value: 'transparent',
@@ -195,7 +198,7 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   }), [reducedMotion])
 
   // Configuration for light mode: subtle flowing mesh, soft gradient waves
-  const lightModeConfig: ISourceOptions = useMemo(() => ({
+  const lightModeConfig = useMemo(() => ({
     background: {
       color: {
         value: 'transparent',
@@ -298,7 +301,7 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
       <Particles
         id="animated-background"
         init={particlesInit}
-        options={config}
+        options={config as unknown as ISourceOptions}
         className="w-full h-full"
       />
     </div>
