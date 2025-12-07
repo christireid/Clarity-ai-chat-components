@@ -4,6 +4,13 @@ import { ThemeProvider } from 'next-themes'
 import '@testing-library/jest-dom/vitest'
 import { AnimatedBackground } from '../AnimatedBackground'
 
+// Mock cn utility
+vi.mock('@/lib/utils', () => ({
+  cn: vi.fn((...classes: (string | undefined)[]) => 
+    classes.filter(Boolean).join(' ')
+  ),
+}))
+
 // Mock custom hooks
 vi.mock('../hooks/useReducedMotion', () => ({
   useReducedMotion: vi.fn(() => false),

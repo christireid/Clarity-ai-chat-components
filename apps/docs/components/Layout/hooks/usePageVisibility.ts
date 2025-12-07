@@ -5,7 +5,7 @@ import type { Container } from '@tsparticles/engine'
  * Hook to pause/play particle animations based on page visibility.
  * Uses the Page Visibility API to improve performance when the tab is hidden.
  * 
- * @param container - The particles container instance
+ * @param container - The particles container instance (can be null initially)
  * @param enabled - Whether to enable visibility handling (default: true)
  * 
  * @example
@@ -18,24 +18,36 @@ export function usePageVisibility(
   container: Container | null,
   enabled: boolean = true
 ): void {
+  // Use a ref to store the latest container value to avoid stale closures
+  const containerRef = useRef<Container | null>(container)
+  
+  // Update ref when container changes
   useEffect(() => {
-    if (!enabled || !container || typeof document === 'undefined') return
+    containerRef.current = container
+  }, [container])
+
+  useEffect(() => {
+    if (!enabled || typeof document === 'undefined') return
 
     const handleVisibilityChange = () => {
-      if (!container) return
+      const currentContainer = containerRef.current
+      if (!currentContainer) return
 
       try {
         if (document.hidden) {
-          container.pause()
+          currentContainer.pause()
         } else {
-          container.play()
+          currentContainer.play()
         }
       } catch {
         // Silently handle errors - container may be destroyed
       }
     }
 
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [container, enabled])
+    // Only set up listener if container exists
+    if (containerRef.current) {
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+      return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [enabled, container]) // Include container to re-run when it becomes available
 }

@@ -3,6 +3,7 @@
 import { useCallback, useRef } from 'react'
 import Particles from '@tsparticles/react'
 import type { Container } from '@tsparticles/engine'
+import { cn } from '@/lib/utils'
 import { useReducedMotion } from './hooks/useReducedMotion'
 import { useThemeMode } from './hooks/useThemeMode'
 import { useParticlesEngine } from './hooks/useParticlesEngine'
@@ -38,9 +39,6 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   const { isInitialized, error } = useParticlesEngine()
   const containerRef = useRef<Container | null>(null)
 
-  // Handle page visibility for performance optimization
-  usePageVisibility(containerRef.current, isInitialized && !prefersReducedMotion)
-
   // Particles loaded callback
   const particlesLoaded = useCallback(async (container: Container | undefined) => {
     if (container) {
@@ -48,14 +46,22 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     }
   }, [])
 
+  // Handle page visibility for performance optimization
+  // Pass container ref value - hook will handle updates via internal ref
+  usePageVisibility(containerRef.current, isInitialized && !prefersReducedMotion)
+
   // Don't render if reduced motion is preferred, not initialized, or error occurred
   if (prefersReducedMotion || !isInitialized || error) {
+    // Log error in development mode for debugging
+    if (error && process.env.NODE_ENV === 'development') {
+      console.warn('[AnimatedBackground] Initialization error:', error)
+    }
     return null
   }
 
   return (
     <div
-      className={`fixed inset-0 -z-10 ${className}`}
+      className={cn('fixed inset-0 -z-10', className)}
       style={{ pointerEvents: 'none' }}
       aria-hidden="true"
       role="presentation"
