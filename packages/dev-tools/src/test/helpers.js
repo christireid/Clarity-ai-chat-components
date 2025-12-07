@@ -7,6 +7,9 @@
  * - Token usage testing
  * - Streaming test helpers
  */
+import { table, keyValueTable } from '../ui/table';
+import { successBox, errorBox, infoBox } from '../ui/box';
+import chalk from 'chalk';
 /**
  * Assert that a value is truthy
  */
@@ -201,13 +204,14 @@ export function validateTokenUsage(usage, options = {}) {
  * Create a test suite
  */
 export class TestSuite {
+    name;
+    tests = [];
+    beforeEachHooks = [];
+    afterEachHooks = [];
+    beforeAllHooks = [];
+    afterAllHooks = [];
     constructor(name) {
         this.name = name;
-        this.tests = [];
-        this.beforeEachHooks = [];
-        this.afterEachHooks = [];
-        this.beforeAllHooks = [];
-        this.afterAllHooks = [];
     }
     /**
      * Add a test
@@ -245,10 +249,12 @@ export class TestSuite {
         return this;
     }
     /**
-     * Run all tests
+     * Run all tests with beautiful formatting
      */
     async run() {
-        console.log(`\n🧪 Running test suite: ${this.name}\n`);
+        console.log();
+        console.log(infoBox(`Running test suite: ${chalk.bold(this.name)}`, '🧪 Test Suite'));
+        console.log();
         const results = [];
         // Run beforeAll hooks
         for (const hook of this.beforeAllHooks) {
@@ -269,7 +275,7 @@ export class TestSuite {
                     status: 'passed',
                     duration
                 });
-                console.log(`  ✅ ${test.name} (${duration.toFixed(2)}ms)`);
+                console.log(chalk.green(`  ✅ ${test.name}`) + chalk.gray(` (${duration.toFixed(2)}ms)`));
                 // Run afterEach hooks
                 for (const hook of this.afterEachHooks) {
                     await hook();
@@ -283,8 +289,8 @@ export class TestSuite {
                     error: error,
                     duration
                 });
-                console.log(`  ❌ ${test.name}`);
-                console.log(`     ${error.message}`);
+                console.log(chalk.red(`  ❌ ${test.name}`));
+                console.log(chalk.gray(`     ${error.message}`));
                 // Still run afterEach hooks
                 for (const hook of this.afterEachHooks) {
                     try {
@@ -302,7 +308,36 @@ export class TestSuite {
         }
         const passed = results.filter(r => r.status === 'passed').length;
         const failed = results.filter(r => r.status === 'failed').length;
-        console.log(`\n${passed} passed, ${failed} failed (${this.tests.length} total)\n`);
+        // Summary table
+        const columns = [
+            { header: 'Test', width: 40, color: chalk.white },
+            { header: 'Status', width: 12, align: 'center' },
+            { header: 'Duration', width: 15, align: 'right', color: chalk.gray },
+            { header: 'Error', width: 30 },
+        ];
+        const tableData = results.map(r => [
+            r.name,
+            r.status === 'passed' ? chalk.green('✓ Passed') : chalk.red('✗ Failed'),
+            `${r.duration.toFixed(2)}ms`,
+            r.error ? r.error.message.substring(0, 30) + '...' : '—',
+        ]);
+        console.log();
+        console.log(table(tableData, columns));
+        console.log();
+        // Summary box
+        const summaryData = {
+            'Total': chalk.cyan(this.tests.length.toString()),
+            'Passed': chalk.green(passed.toString()),
+            'Failed': chalk.red(failed.toString()),
+            'Success Rate': chalk.cyan(`${((passed / this.tests.length) * 100).toFixed(1)}%`),
+        };
+        if (failed === 0) {
+            console.log(successBox(keyValueTable(summaryData), '✅ Test Results'));
+        }
+        else {
+            console.log(errorBox(keyValueTable(summaryData), '❌ Test Results'));
+        }
+        console.log();
         return {
             passed,
             failed,

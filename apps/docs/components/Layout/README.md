@@ -1,23 +1,18 @@
-# Layout Components
+# AnimatedBackground Component
 
-This directory contains layout components for the documentation site.
+An animated particle background component for the home page, designed to enhance perceived quality while maintaining performance and accessibility.
 
-## Components
+## Features
 
-### AnimatedBackground
+- 🎨 **Theme-aware**: Automatically adapts to dark/light mode
+- ♿ **Accessible**: Respects `prefers-reduced-motion` preference
+- ⚡ **High Performance**: 60fps target with optimized particle counts
+- 🎯 **Non-intrusive**: Positioned behind content with `pointer-events: none`
+- 📦 **Code Split**: Dynamically loaded to reduce initial bundle size
+- 🔧 **Maintainable**: Well-organized with custom hooks and utilities
+- ⚛️ **Concurrent Rendering**: Uses `useDeferredValue` for smooth theme transitions
 
-An interactive particle background component that enhances the visual appeal of the home page.
-
-#### Features
-
-- **Theme-aware**: Automatically adapts to dark/light mode
-- **Accessible**: Respects `prefers-reduced-motion` preference
-- **Performant**: Optimized with 60fps limit, visibility API, and debounced resize handlers
-- **Non-intrusive**: Uses `pointer-events-none` to not interfere with page interactions
-- **Type-safe**: Full TypeScript support with proper type guards
-- **Modular**: Extracted into reusable hooks and configuration files
-
-#### Usage
+## Usage
 
 ```tsx
 import { AnimatedBackground } from '@/components/Layout/AnimatedBackground'
@@ -26,75 +21,103 @@ export default function HomePage() {
   return (
     <div className="relative">
       <AnimatedBackground />
-      {/* Your page content */}
+      {/* Your content here */}
     </div>
   )
 }
 ```
 
-#### Props
+## Architecture
 
-```tsx
-interface AnimatedBackgroundProps {
-  className?: string // Optional additional CSS classes
-}
+### Component Structure
+
+```
+AnimatedBackground/
+├── AnimatedBackground.tsx      # Main component
+├── AnimatedBackground.config.ts # Configuration constants
+├── AnimatedBackground.utils.ts  # Utility functions
+└── hooks/
+    ├── index.ts                # Barrel export
+    ├── useMounted.ts           # SSR-safe mounted detection
+    ├── usePrefersReducedMotion.ts # Accessibility preference
+    ├── useIsDark.ts            # Theme detection
+    └── useParticlesEngine.ts   # Particles engine initialization
 ```
 
-#### Behavior
+### Key Design Decisions
 
-- **Dark Mode**: Displays 50 glowing blue particles with connecting lines
-- **Light Mode**: Displays 40 subtle particles with softer connections
-- **Reduced Motion**: Component doesn't render when `prefers-reduced-motion: reduce` is enabled
-- **Page Visibility**: Animation pauses when tab is hidden to save resources
-- **Window Resize**: Automatically adjusts to window size changes (debounced)
+1. **Dynamic Import**: The `Particles` component is dynamically imported to reduce initial bundle size
+2. **Singleton Pattern**: Particles engine initialization uses a singleton pattern to prevent multiple initializations
+3. **Custom Hooks**: Logic is extracted into reusable hooks for better testability and maintainability
+4. **Configuration**: All magic numbers are centralized in a config file for easy tuning
+5. **Graceful Degradation**: Component silently fails if initialization fails (renders nothing)
+6. **Concurrent Rendering**: Uses `useDeferredValue` to prevent blocking renders during theme transitions
 
-#### Architecture
+## Customization
 
-The component is built with a modular architecture:
+### Adjusting Particle Count
 
-- **Component**: `AnimatedBackground.tsx` - Main component (96 lines, down from 309)
-- **Hooks**: 
-  - `hooks/useMediaQuery.ts` - Media query detection
-  - `hooks/useThemeDetection.ts` - Theme detection with system fallback
-  - `hooks/useDebouncedCallback.ts` - Debounced callbacks
-- **Config**: `config/particleConfigs.ts` - Particle configurations
-- **Types**: `types/particles.ts` - Type definitions and guards
+Edit `AnimatedBackground.config.ts`:
 
-#### Technical Details
-
-- Uses `@tsparticles/react` for particle rendering
-- Custom hooks for reusable logic (media queries, theme detection)
-- Type-safe with proper type guards (no `as any`)
-- Debounced resize handlers for better performance
-- Memoized configurations to prevent unnecessary re-renders
-- Proper cleanup of event listeners and engine on unmount
-- SSR-safe (doesn't render until client-side mount)
-
-#### Testing
-
-The component has comprehensive test coverage (94.68%):
-
-```bash
-# Run tests
-pnpm test
-
-# Run tests with coverage
-pnpm test:coverage
+```typescript
+export const PARTICLES_COUNT = {
+  DARK: 80,   // Adjust for dark mode
+  LIGHT: 60,  // Adjust for light mode
+} as const
 ```
 
-**Test Files:**
-- `__tests__/AnimatedBackground.test.tsx` - Component tests (12 tests)
-- `hooks/__tests__/useMediaQuery.test.ts` - Media query hook tests (4 tests)
-- `hooks/__tests__/useThemeDetection.test.ts` - Theme detection hook tests (4 tests)
-- `hooks/__tests__/useDebouncedCallback.test.ts` - Debounce hook tests (3 tests)
+### Changing Colors
 
-**Total:** 23 tests, all passing
+The component uses Tailwind brand colors. To change colors, modify the color values in `AnimatedBackground.utils.ts`:
 
----
+```typescript
+const baseColor = isDark ? '#60a5fa' : '#3b82f6'
+const secondaryColor = isDark ? '#93c5fd' : '#60a5fa'
+```
 
-### Other Components
+### Performance Tuning
 
-- **HeroSection**: Hero section with animated elements
-- **FeaturesGrid**: Grid layout for feature displays
-- **Footer**: Site footer component
-- **LiveChatDemo**: Interactive chat demonstration
+Key performance settings in `AnimatedBackground.config.ts`:
+
+- `FPS_LIMIT`: Target frame rate (default: 60)
+- `DENSITY_AREA`: Particle density area (default: 800)
+- `PARTICLES_COUNT`: Number of particles per theme
+
+## Accessibility
+
+The component automatically respects the `prefers-reduced-motion` media query. When enabled, particles are disabled entirely to prevent motion sickness and improve accessibility.
+
+## Browser Support
+
+- Modern browsers with ES2020+ support
+- Legacy browser fallback for `matchMedia` API (IE11+)
+- Graceful degradation if particles engine fails to load
+
+## Performance Considerations
+
+1. **Code Splitting**: Particles library is dynamically imported
+2. **Pause on Blur**: Animation pauses when tab is not visible
+3. **Pause on Outside Viewport**: Animation pauses when scrolled out of view
+4. **Retina Detection**: Automatically adjusts for high-DPI displays
+5. **Optimized Particle Counts**: Different counts for dark/light mode based on visibility
+6. **Concurrent Rendering**: Theme changes use `useDeferredValue` to prevent blocking renders
+
+## Troubleshooting
+
+### Particles Not Showing
+
+1. Check browser console for errors
+2. Verify `@tsparticles/react` and `@tsparticles/slim` are installed
+3. Ensure component is mounted (client-side only)
+4. Check if `prefers-reduced-motion` is enabled
+
+### Performance Issues
+
+1. Reduce `PARTICLES_COUNT` values in config
+2. Increase `DENSITY_AREA` to spread particles out
+3. Disable animations in `prefers-reduced-motion` mode
+
+## Related Components
+
+- `HeroSection` - Uses similar theme-aware patterns
+- `FeaturesGrid` - Uses framer-motion for animations

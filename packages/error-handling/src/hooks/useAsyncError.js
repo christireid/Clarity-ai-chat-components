@@ -44,8 +44,9 @@ export function useAsyncError() {
                 setRetryCount(attempt + 1);
                 // If we haven't exhausted retries, wait and try again
                 if (attempt < maxRetries) {
-                    // Exponential backoff: 1s, 2s, 3s, etc.
-                    await new Promise((resolve) => setTimeout(resolve, retryDelay * (attempt + 1)));
+                    // Exponential backoff: 1s, 2s, 4s, etc. (proper exponential)
+                    const backoffDelay = retryDelay * Math.pow(2, attempt);
+                    await new Promise((resolve) => setTimeout(resolve, backoffDelay));
                 }
                 else {
                     // Final failure after all retries
@@ -59,7 +60,8 @@ export function useAsyncError() {
         // Should never reach here, but TypeScript needs it
         setIsLoading(false);
         return null;
-    }, []);
+    }, [] // Options are passed per call, so no deps needed
+    );
     return {
         /** Current error, if any */
         error,

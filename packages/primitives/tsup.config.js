@@ -9,5 +9,10 @@ export default defineConfig({
     minify: true,
     splitting: true,
     treeshake: true,
+    outExtension({ format }) {
+        return {
+            js: format === 'cjs' ? '.js' : '.mjs',
+        };
+    },
 });
 //# sourceMappingURL=tsup.config.js.map

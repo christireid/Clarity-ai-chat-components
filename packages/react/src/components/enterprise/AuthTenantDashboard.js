@@ -1,0 +1,18 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Badge, Button, Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription, cn, } from '@clarity-chat/primitives';
+const formatUsage = (used, total) => {
+    if (total === 0)
+        return '0%';
+    const pct = Math.min(100, Math.round((used / total) * 100));
+    return `${pct}%`;
+};
+export const AuthTenantDashboard = ({ organizationName, planName, planBadge, renewalDate, seatUsage, apiUsage, actions = [], className, }) => {
+    const usagePct = seatUsage.total === 0
+        ? 0
+        : Math.min(100, (seatUsage.used / seatUsage.total) * 100);
+    return (_jsxs(Card, { className: cn('border-border/60 bg-[hsl(var(--surface-elevated))] shadow-sm', className), children: [_jsx(CardHeader, { className: "space-y-3", children: _jsxs("div", { className: "flex flex-wrap items-center justify-between gap-3", children: [_jsxs("div", { children: [_jsx(CardTitle, { className: "text-lg font-semibold text-foreground", children: organizationName }), _jsx(CardDescription, { className: "text-sm text-muted-foreground/80", children: "Manage seats, plan limits, and upgrades." })] }), _jsxs("div", { className: "flex items-center gap-2", children: [_jsx(Badge, { variant: "subtle", className: "uppercase tracking-wide", children: planBadge ?? 'Active' }), _jsx("span", { className: "text-sm font-medium text-foreground", children: planName })] })] }) }), _jsxs(CardContent, { className: "grid gap-6 md:grid-cols-2", children: [_jsxs("div", { className: "space-y-3", children: [_jsxs("div", { className: "flex items-center justify-between text-sm text-muted-foreground/80", children: [_jsx("span", { children: "Seats used" }), _jsxs("span", { children: [seatUsage.used, "/", seatUsage.total, " \u2022", ' ', formatUsage(seatUsage.used, seatUsage.total)] })] }), _jsx("div", { role: "progressbar", "aria-label": "Seat usage", "aria-valuemin": 0, "aria-valuemax": seatUsage.total, "aria-valuenow": seatUsage.used, className: "relative h-2 w-full overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]", children: _jsx("div", { className: "h-full rounded-full bg-primary transition-all duration-300 ease-out", style: { width: `${usagePct}%` } }) }), _jsx("p", { className: "text-xs text-muted-foreground/70", children: seatUsage.used === seatUsage.total
+                                    ? 'All seats allocated. Upgrade or reassign to invite more teammates.'
+                                    : 'Invite more teammates to collaborate with the AI assistant.' })] }), _jsxs("div", { className: "space-y-3 rounded-lg border border-border/50 bg-muted p-4", children: [_jsxs("div", { className: "flex items-center justify-between text-sm text-muted-foreground/80", children: [_jsx("span", { children: "Renewal" }), _jsx("span", { children: renewalDate ?? 'Contact sales' })] }), apiUsage && (_jsxs("div", { className: "flex items-center justify-between text-sm text-muted-foreground/80", children: [_jsx("span", { children: apiUsage.label }), _jsx("span", { className: "font-semibold text-foreground", children: apiUsage.value })] })), _jsx("div", { className: "flex flex-wrap gap-2", children: actions.map((action) => (_jsx(Button, { variant: "surface", size: "sm", onClick: action.onClick, children: action.label }, action.id))) })] })] }), _jsxs(CardFooter, { className: "text-xs text-muted-foreground/70", children: ["Need custom terms or higher limits?", ' ', _jsx("span", { className: "text-primary", children: "Contact enterprise sales \u2192" })] })] }));
+};
+AuthTenantDashboard.displayName = 'AuthTenantDashboard';
+//# sourceMappingURL=AuthTenantDashboard.js.map

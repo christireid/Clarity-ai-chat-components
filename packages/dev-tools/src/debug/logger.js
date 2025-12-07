@@ -8,6 +8,9 @@
  * - Performance timing
  * - Log filtering
  */
+import { infoBox } from '../ui/box';
+import { keyValueTable } from '../ui/table';
+import chalk from 'chalk';
 const LOG_LEVELS = {
     trace: 0,
     debug: 1,
@@ -31,9 +34,14 @@ const LEVEL_ICONS = {
 };
 const RESET_COLOR = '\x1b[0m';
 export class Logger {
+    level;
+    prefix;
+    colors;
+    timestamps;
+    context;
+    timers = new Map();
+    logs = [];
     constructor(options = {}) {
-        this.timers = new Map();
-        this.logs = [];
         this.level = options.level || 'info';
         this.prefix = options.prefix || '';
         this.colors = options.colors ?? process.stdout.isTTY;
@@ -94,18 +102,33 @@ export class Logger {
         return duration;
     }
     /**
-     * Log a group of related messages
+     * Log a group of related messages with beautiful formatting
      */
     group(title, fn) {
-        this.info(`┌─ ${title}`);
-        const originalPrefix = this.prefix;
-        this.prefix = originalPrefix + '│  ';
+        const messages = [];
+        const originalLog = this.log.bind(this);
+        // Create a wrapper that captures messages
+        const groupLog = (level, message, context) => {
+            messages.push(message);
+            originalLog(level, message, context);
+        };
+        // Temporarily replace the log method
+        const savedLog = this.log;
+        this.log = groupLog;
         try {
             fn();
         }
         finally {
-            this.prefix = originalPrefix;
-            this.info('└─');
+            // Restore original log method
+            ;
+            this.log = savedLog;
+            // Display group summary
+            const groupContent = messages.length > 0
+                ? messages.map((msg, i) => `${i + 1}. ${msg}`).join('\n')
+                : 'No messages';
+            console.log();
+            console.log(infoBox(groupContent, `📦 ${title}`));
+            console.log();
         }
     }
     /**
@@ -145,9 +168,20 @@ export class Logger {
         this.logs = [];
     }
     /**
-     * Export logs as JSON
+     * Export logs as JSON with beautiful summary
      */
     exportLogs() {
+        const summary = {
+            'Total Logs': chalk.cyan(this.logs.length.toString()),
+            'Trace': chalk.gray(this.getLogsByLevel('trace').length.toString()),
+            'Debug': chalk.cyan(this.getLogsByLevel('debug').length.toString()),
+            'Info': chalk.green(this.getLogsByLevel('info').length.toString()),
+            'Warn': chalk.yellow(this.getLogsByLevel('warn').length.toString()),
+            'Error': chalk.red(this.getLogsByLevel('error').length.toString()),
+        };
+        console.log();
+        console.log(infoBox(keyValueTable(summary), '📋 Log Summary'));
+        console.log();
         return JSON.stringify(this.logs, null, 2);
     }
     /**
@@ -172,7 +206,7 @@ export class Logger {
         output(formatted);
     }
     /**
-     * Format log entry for output
+     * Format log entry for output with enhanced formatting
      */
     format(entry) {
         const parts = [];
@@ -181,7 +215,7 @@ export class Logger {
             const time = entry.timestamp.toISOString().split('T')[1].slice(0, -1);
             parts.push(this.colorize(`[${time}]`, 'trace'));
         }
-        // Level icon and name
+        // Level icon and name with better spacing
         const icon = LEVEL_ICONS[entry.level];
         const levelText = entry.level.toUpperCase().padEnd(5);
         parts.push(this.colorize(`${icon} ${levelText}`, entry.level));
@@ -189,12 +223,19 @@ export class Logger {
         if (this.prefix) {
             parts.push(this.prefix);
         }
-        // Message
-        parts.push(this.colorize(entry.message, entry.level));
-        // Context
+        // Message with enhanced colorization
+        const messageColor = this.colors
+            ? (entry.level === 'error' ? chalk.red
+                : entry.level === 'warn' ? chalk.yellow
+                    : entry.level === 'info' ? chalk.green
+                        : entry.level === 'debug' ? chalk.cyan
+                            : chalk.gray)
+            : (text) => text;
+        parts.push(messageColor(entry.message));
+        // Context with better formatting
         if (entry.context && Object.keys(entry.context).length > 0) {
             const contextStr = this.formatContext(entry.context);
-            parts.push(this.colorize(contextStr, 'trace'));
+            parts.push(this.colorize(`  ${contextStr}`, 'trace'));
         }
         return parts.join(' ');
     }
