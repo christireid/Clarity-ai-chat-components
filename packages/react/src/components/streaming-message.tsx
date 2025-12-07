@@ -8,6 +8,11 @@
  * - Thinking steps
  * - Citations
  * - Error states
+ * 
+ * @enhanced Framer Motion 12: Optimized streaming animations
+ * - Smoother cursor pulse with spring physics
+ * - Better error entrance with spring damping
+ * - Improved tool call animations
  */
 
 'use client'
@@ -80,7 +85,13 @@ const StreamingCursor = React.memo(function StreamingCursor() {
   return (
     <motion.span
       animate={{ opacity: [1, 0.3, 1] }}
-      transition={{ duration: 1, repeat: Infinity }}
+      transition={{ 
+        // Framer Motion 12: Smoother pulse using spring
+        type: 'spring',
+        damping: 15,
+        stiffness: 100,
+        repeat: Infinity 
+      }}
       className="inline-block ml-1"
       aria-hidden="true"
     >
@@ -99,6 +110,12 @@ const ErrorDisplay = React.memo(function ErrorDisplay({ error }: { error: string
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        // Framer Motion 12: Spring entrance for errors
+        type: 'spring',
+        damping: 20,
+        stiffness: 300,
+      }}
       className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
       role="alert"
     >

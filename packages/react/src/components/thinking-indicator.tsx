@@ -74,8 +74,10 @@ export function ThinkingIndicator({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{
-        duration: ANIMATION_DURATION.normal / 1000,
-        ease: ANIMATION_EASING.out,
+        // Framer Motion 12: Spring physics for thinking indicator
+        type: 'spring',
+        damping: 22,
+        stiffness: 280,
       }}
       className={cn(
         'flex items-center gap-3.5 rounded-lg border border-border/40 bg-muted/40 px-5 py-4 shadow-md',
@@ -89,9 +91,11 @@ export function ThinkingIndicator({
           rotate: [0, 3, -3, 0],
         }}
         transition={{
-          duration: 2,
+          // Framer Motion 12: Smoother icon animation with spring
+          type: 'spring',
+          damping: 8,
+          stiffness: 150,
           repeat: Infinity,
-          ease: ANIMATION_EASING.inOut,
         }}
         className="text-primary"
       >
