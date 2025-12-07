@@ -239,7 +239,12 @@ export function ErrorMessage({
       initial={{ opacity: 0, y: getMotionSafeValue(prefersReducedMotion, 10, 0), scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: getMotionSafeDuration(prefersReducedMotion, 0.3) }}
+      transition={{ 
+        // Framer Motion 12: Spring entrance for full error displays
+        type: 'spring',
+        damping: 25,
+        stiffness: 280,
+      }}
       className={cn(
         'relative p-4 rounded-lg border shadow-sm space-y-4',
         config.bgColor,
