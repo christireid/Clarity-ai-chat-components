@@ -1,5 +1,4 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { Component } from 'react';
 import { ClarityChatError } from '../errors';
 /**
  * Default error fallback UI component
@@ -40,10 +39,6 @@ function ErrorFallback({ error, resetError, }) {
 class ErrorBoundaryClass extends Component {
     constructor(props) {
         super(props);
-        this.reset = () => {
-            this.props.onReset?.();
-            this.setState({ error: null, errorInfo: null });
-        };
         this.state = { error: null, errorInfo: null };
     }
     static getDerivedStateFromError(error) {
@@ -63,6 +58,10 @@ class ErrorBoundaryClass extends Component {
             console.groupEnd();
         }
     }
+    reset = () => {
+        this.props.onReset?.();
+        this.setState({ error: null, errorInfo: null });
+    };
     render() {
         if (this.state.error) {
             if (this.props.fallback) {

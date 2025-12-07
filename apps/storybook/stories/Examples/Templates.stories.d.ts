@@ -1,0 +1,22 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { SupportBot, CodeAssistant, CustomerSupportTemplate, AIAssistantTemplate, CreativeWritingTemplate, DataAnalystTemplate, DocumentationBotTemplate, SalesAssistantTemplate, EducationTutorTemplate, CodeHelperTemplate } from '@clarity-chat/react';
+declare const meta: Meta;
+export default meta;
+export declare const SupportBotDefault: StoryObj<typeof SupportBot>;
+export declare const SupportBotCustomized: StoryObj<typeof SupportBot>;
+export declare const SupportBotWithKnowledgeBase: StoryObj<typeof SupportBot>;
+export declare const CodeAssistantDefault: StoryObj<typeof CodeAssistant>;
+export declare const CodeAssistantWithContext: StoryObj<typeof CodeAssistant>;
+export declare const CodeAssistantWithExecution: StoryObj<typeof CodeAssistant>;
+export declare const CodeAssistantPython: StoryObj<typeof CodeAssistant>;
+export declare const CodeAssistantTypeScript: StoryObj<typeof CodeAssistant>;
+export declare const CustomerSupportTemplateDefault: StoryObj<typeof CustomerSupportTemplate>;
+export declare const AIAssistantTemplateShowcase: StoryObj<typeof AIAssistantTemplate>;
+export declare const CreativeWritingTemplateStory: StoryObj<typeof CreativeWritingTemplate>;
+export declare const DataAnalystTemplateStory: StoryObj<typeof DataAnalystTemplate>;
+export declare const SalesAssistantTemplateStory: StoryObj<typeof SalesAssistantTemplate>;
+export declare const EducationTutorTemplateStory: StoryObj<typeof EducationTutorTemplate>;
+export declare const CodeHelperTemplateStory: StoryObj<typeof CodeHelperTemplate>;
+export declare const DocumentationBotTemplateStory: StoryObj<typeof DocumentationBotTemplate>;
+export declare const ComparisonView: StoryObj;
+//# sourceMappingURL=Templates.stories.d.ts.map

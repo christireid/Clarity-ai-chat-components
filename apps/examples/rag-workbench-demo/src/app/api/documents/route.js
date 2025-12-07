@@ -1,0 +1,100 @@
+/**
+ * Document management API
+ * POST: Upload document
+ * GET: List documents
+ * DELETE: Delete document
+ */
+import { NextResponse } from 'next/server';
+import { chunkDocument, approximateTokenCount } from '@/lib/rag';
+import { getDocuments, addDocument, removeDocument } from '@/lib/storage';
+export async function POST(request) {
+    try {
+        const formData = await request.formData();
+        const file = formData.get('file');
+        if (!file) {
+            return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+        }
+        // Validate file type
+        const allowedTypes = ['text/plain', 'text/markdown', 'application/pdf'];
+        if (!allowedTypes.includes(file.type) && !file.name.match(/\.(txt|md)$/)) {
+            return NextResponse.json({ error: 'Invalid file type. Please upload .txt or .md files' }, { status: 400 });
+        }
+        // Read file content
+        const content = await file.text();
+        if (!content || content.trim().length === 0) {
+            return NextResponse.json({ error: 'File is empty' }, { status: 400 });
+        }
+        // Create document
+        const documentId = `doc-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+        const chunks = chunkDocument(content);
+        // Set document ID on chunks
+        chunks.forEach(chunk => {
+            chunk.documentId = documentId;
+        });
+        const document = {
+            id: documentId,
+            name: file.name,
+            content,
+            createdAt: new Date(),
+            size: content.length,
+            chunks
+        };
+        addDocument(document);
+        return NextResponse.json({
+            success: true,
+            documentId: document.id,
+            name: document.name,
+            chunks: chunks.length,
+            tokens: approximateTokenCount(content),
+            size: document.size
+        });
+    }
+    catch (error) {
+        console.error('Document upload error:', error);
+        return NextResponse.json({ error: 'Failed to upload document' }, { status: 500 });
+    }
+}
+export async function GET() {
+    try {
+        const documents = getDocuments();
+        // Return document list without full content
+        const documentList = documents.map(doc => ({
+            id: doc.id,
+            name: doc.name,
+            createdAt: doc.createdAt,
+            size: doc.size,
+            chunks: doc.chunks.length,
+            tokens: approximateTokenCount(doc.content)
+        }));
+        return NextResponse.json({
+            documents: documentList,
+            total: documents.length
+        });
+    }
+    catch (error) {
+        console.error('Document list error:', error);
+        return NextResponse.json({ error: 'Failed to list documents' }, { status: 500 });
+    }
+}
+export async function DELETE(request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const documentId = searchParams.get('id');
+        if (!documentId) {
+            return NextResponse.json({ error: 'Document ID required' }, { status: 400 });
+        }
+        const success = removeDocument(documentId);
+        if (!success) {
+            return NextResponse.json({ error: 'Document not found' }, { status: 404 });
+        }
+        return NextResponse.json({
+            success: true,
+            message: 'Document deleted'
+        });
+    }
+    catch (error) {
+        console.error('Document delete error:', error);
+        return NextResponse.json({ error: 'Failed to delete document' }, { status: 500 });
+    }
+}
+//# sourceMappingURL=route.js.map

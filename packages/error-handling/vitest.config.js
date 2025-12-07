@@ -6,6 +6,16 @@ export default defineConfig({
         globals: true,
         environment: 'jsdom',
         setupFiles: './src/test/setup.ts',
+        // Exclude compiled .js test files - only run .ts/.tsx source files
+        exclude: [
+            'node_modules/**',
+            'dist/**',
+            '**/*.js',
+            '**/*.d.ts',
+            '**/*.config.*',
+            '**/*.stories.tsx',
+        ],
+        include: ['**/*.{test,spec}.{ts,tsx}'],
         coverage: {
             provider: 'v8',
             reporter: ['text', 'json', 'html', 'lcov'],
@@ -16,6 +26,7 @@ export default defineConfig({
                 '**/*.config.*',
                 '**/dist/',
                 '**/*.stories.tsx',
+                '**/*.js', // Exclude compiled JS files
             ],
             thresholds: {
                 lines: 80,

@@ -154,19 +154,20 @@ describe('DropdownMenu Component', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       )
-      // Radix UI uses data-disabled attribute instead of disabled attribute
+      // Radix UI uses aria-disabled and data-disabled instead of disabled attribute
       const item = screen.getByRole('menuitem', { name: 'Disabled Item' })
+      expect(item).toHaveAttribute('aria-disabled', 'true')
       expect(item).toHaveAttribute('data-disabled')
     })
   })
 
   describe('Error Handling', () => {
-    it('should throw error when DropdownMenuTrigger used outside DropdownMenu context', () => {
+    it('should throw error when used outside DropdownMenu context', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       expect(() => {
         render(<DropdownMenuTrigger>Trigger</DropdownMenuTrigger>)
-      }).toThrow()
+      }).toThrow('DropdownMenuTrigger')
 
       consoleSpy.mockRestore()
     })

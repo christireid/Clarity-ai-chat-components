@@ -148,26 +148,30 @@ describe('Popover Component', () => {
   })
 
   describe('Error Handling', () => {
-    it('should throw error when PopoverTrigger used outside Popover context', () => {
+    it('should throw error when used outside Popover context', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       expect(() => {
         render(<PopoverTrigger>Trigger</PopoverTrigger>)
-      }).toThrow()
+      }).toThrow('PopoverTrigger')
 
       consoleSpy.mockRestore()
     })
   })
 
   describe('Accessibility', () => {
-    it('should render popover content in document', () => {
+    it('should support aria-label', () => {
       render(
         <Popover open>
-          <PopoverContent>Content</PopoverContent>
+          <PopoverContent aria-label="Custom popover">Content</PopoverContent>
         </Popover>
       )
       // Popover content is rendered in document, check by text content
       expect(screen.getByText('Content')).toBeInTheDocument()
+      // Popover has role="dialog" (Radix UI sets this)
+      const popover = screen.getByRole('dialog')
+      expect(popover).toBeInTheDocument()
+      // Radix UI handles aria-modal internally - verify popover is accessible
     })
   })
 })

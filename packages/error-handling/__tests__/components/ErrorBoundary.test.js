@@ -1,6 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { useState } from 'react';
 import { ErrorBoundary } from '../../src/components/ErrorBoundary';
 import { ConfigurationError } from '../../src/errors';
 // Component that throws an error
@@ -51,27 +52,42 @@ describe('ErrorBoundary', () => {
         expect(screen.getByText('Add the required configuration')).toBeInTheDocument();
     });
     it('should reset error when resetError is called', async () => {
-        let shouldThrow = true;
-        const { rerender } = render(_jsx(ErrorBoundary, { children: _jsx(ConditionalError, { shouldThrow: shouldThrow }) }));
+        // Use a ref to control the error condition from outside the boundary
+        let shouldThrowRef = { current: true };
+        function ControlledError() {
+            if (shouldThrowRef.current) {
+                throw new Error('Conditional error');
+            }
+            return _jsx("div", { children: "No error" });
+        }
+        function TestWrapper() {
+            const [shouldThrow, setShouldThrow] = useState(true);
+            return (_jsxs("div", { children: [_jsx(ErrorBoundary, { children: _jsx(ControlledError, {}) }), _jsx("button", { onClick: () => {
+                            shouldThrowRef.current = false;
+                            setShouldThrow(false);
+                        }, "data-testid": "fix-error", children: "Fix Error" })] }));
+        }
+        render(_jsx(TestWrapper, {}));
         // Error should be caught
         expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
-        // Change condition first so component won't throw after reset
-        shouldThrow = false;
-        // Update the component first so it won't throw
+        // Fix the error condition first (so children won't throw after reset)
+        const fixButton = screen.getByTestId('fix-error');
         await act(async () => {
-            rerender(_jsx(ErrorBoundary, { children: _jsx(ConditionalError, { shouldThrow: shouldThrow }) }));
+            fireEvent.click(fixButton);
         });
-        // Now click reset button - error boundary should clear and show children
+        // Then click reset button - this should reset the error boundary state
+        // After reset, React will try to render children again, and since shouldThrowRef.current
+        // is now false, it should render successfully
         const resetButton = screen.getByText(/try again/i);
         await act(async () => {
             fireEvent.click(resetButton);
         });
         // Should show content, not error
         await waitFor(() => {
-            expect(screen.getByText('No error')).toBeInTheDocument();
+            expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument();
         }, { timeout: 3000 });
-        // Verify error is gone
-        expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument();
+        // Should show the content
+        expect(screen.getByText('No error')).toBeInTheDocument();
     });
     it('should call onReset callback when error is reset', () => {
         const onReset = vi.fn();
