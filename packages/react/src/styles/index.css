@@ -407,3 +407,103 @@ body {
   border-left: 3px solid hsl(var(--border));
   color: hsl(var(--muted-foreground));
 }
+
+/* ============================================================================
+   Streaming Message Stability - Prevents text flickering during streaming
+   ============================================================================ */
+
+/* Stable container for streaming content - prevents layout shifts */
+.clarity-streaming-container {
+  /* Prevent width recalculation causing flicker */
+  width: 100%;
+  max-width: 100%;
+
+  /* Prevent horizontal layout shift */
+  overflow-wrap: break-word;
+  word-break: break-word;
+
+  /* Reserve minimum space for content */
+  min-height: 1.5em;
+
+  /* Prevent font-loading flicker */
+  font-display: swap;
+
+  /* GPU acceleration for smoother rendering */
+  transform: translateZ(0);
+  will-change: transform;
+
+  /* Prevent text from jumping during streaming - use size only to avoid breaking overflow */
+  contain: inline-size;
+}
+
+/* Streaming text wrapper - stabilizes text rendering */
+.clarity-streaming-text {
+  /* Prevent layout thrashing */
+  display: block;
+
+  /* Stable line height prevents jumping */
+  line-height: 1.6;
+
+  /* Smooth font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Prevent text selection during streaming (reduces repaints) */
+  user-select: text;
+
+  /*
+   * Inline cursor positioning:
+   * Make the last markdown element display inline so the cursor
+   * appears on the same line as the last text, not on a new line.
+   * Target second-to-last child (last markdown element before cursor).
+   */
+  & > *:nth-last-child(2) {
+    display: inline;
+    margin-bottom: 0;
+  }
+
+  /* Cursor should flow inline after markdown content */
+  & > .clarity-streaming-cursor {
+    vertical-align: baseline;
+  }
+}
+
+/* Markdown content during streaming */
+.clarity-streaming-markdown {
+  /* Prevent prose styles from causing reflow */
+  max-width: none !important;
+
+  /* Stable container */
+  position: relative;
+
+  /* Prevent layout shifts from paragraphs */
+  & > p:last-child,
+  & > div:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Streaming cursor - smooth animation without causing reflow */
+.clarity-streaming-cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  vertical-align: text-bottom;
+  animation: cursor-blink 0.8s ease-in-out infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Respect reduced motion preferences for CSS animations */
+@media (prefers-reduced-motion: reduce) {
+  .clarity-streaming-cursor {
+    animation: none;
+    opacity: 0.7;
+  }
+}
