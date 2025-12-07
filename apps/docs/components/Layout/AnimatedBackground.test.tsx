@@ -72,6 +72,13 @@ vi.mock('./hooks/useParticlesEngine')
 vi.mock('./hooks/useWindowResize')
 vi.mock('./hooks/usePageVisibility')
 
+// Mock the cn utility
+vi.mock('@/lib/utils', () => ({
+  cn: (...classes: (string | undefined)[]) => {
+    return classes.filter(Boolean).join(' ')
+  },
+}))
+
 // Mock window.matchMedia
 const mockMatchMedia = (matches: boolean) => {
   return {

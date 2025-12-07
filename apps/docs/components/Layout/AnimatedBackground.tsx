@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState, useMemo, useCallback, memo } from 'react'
+import { useEffect, useRef, useState, useMemo, useCallback, memo, useDeferredValue } from 'react'
 import dynamic from 'next/dynamic'
 import { useTheme } from 'next-themes'
 import type { Container } from '@tsparticles/engine'
+import { cn } from '@/lib/utils'
 import { useReducedMotion } from './hooks/useReducedMotion'
 import { useParticlesEngine } from './hooks/useParticlesEngine'
 import { useWindowResize } from './hooks/useWindowResize'
@@ -48,7 +49,10 @@ export const AnimatedBackground = memo(function AnimatedBackground({
   const reducedMotion = useReducedMotion()
   const { isInitialized: engineInitialized, error: engineError } = useParticlesEngine()
   const { resolvedTheme } = useTheme()
-  const isDark = mounted && resolvedTheme === 'dark'
+  
+  // Use deferred value for theme to prevent blocking renders during theme transitions
+  const deferredTheme = useDeferredValue(resolvedTheme)
+  const isDark = mounted && deferredTheme === 'dark'
 
   // Handle theme mounting (prevent hydration mismatch)
   useEffect(() => {
@@ -59,38 +63,39 @@ export const AnimatedBackground = memo(function AnimatedBackground({
   }, [])
 
   // Handle window resize with debouncing
-  useWindowResize(
-    useCallback(() => {
-      if (containerRef.current && isMountedRef.current) {
-        try {
-          containerRef.current.refresh()
-        } catch (error) {
-          console.warn('Failed to refresh particles on resize:', error)
-        }
+  const handleResize = useCallback(() => {
+    if (containerRef.current && isMountedRef.current) {
+      try {
+        containerRef.current.refresh()
+      } catch (error) {
+        console.warn('Failed to refresh particles on resize:', error)
       }
-    }, []),
+    }
+  }, [])
+
+  useWindowResize(
+    handleResize,
     150,
     engineInitialized && !reducedMotion && mounted
   )
 
   // Handle page visibility (pause when tab is hidden)
-  usePageVisibility(
-    useCallback(
-      (isHidden: boolean) => {
-        if (containerRef.current && isMountedRef.current) {
-          try {
-            if (isHidden) {
-              containerRef.current.pause()
-            } else {
-              containerRef.current.play()
-            }
-          } catch (error) {
-            console.warn('Failed to pause/play particles on visibility change:', error)
-          }
+  const handleVisibilityChange = useCallback((isHidden: boolean) => {
+    if (containerRef.current && isMountedRef.current) {
+      try {
+        if (isHidden) {
+          containerRef.current.pause()
+        } else {
+          containerRef.current.play()
         }
-      },
-      []
-    ),
+      } catch (error) {
+        console.warn('Failed to pause/play particles on visibility change:', error)
+      }
+    }
+  }, [])
+
+  usePageVisibility(
+    handleVisibilityChange,
     engineInitialized && !reducedMotion && mounted
   )
 
@@ -231,7 +236,7 @@ export const AnimatedBackground = memo(function AnimatedBackground({
 
   return (
     <div
-      className={`fixed inset-0 -z-10 pointer-events-none ${className}`}
+      className={cn('fixed inset-0 -z-10 pointer-events-none', className)}
       aria-hidden="true"
     >
       <Particles
