@@ -3,12 +3,20 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { AnimatedBackground } from '../AnimatedBackground'
 import Particles from '@tsparticles/react'
 
-// Mock next-themes
-const mockResolvedTheme = vi.fn()
-vi.mock('next-themes', () => ({
-  useTheme: () => ({
-    resolvedTheme: mockResolvedTheme(),
-  }),
+// Mock custom hooks
+const mockUseMediaQuery = vi.fn()
+const mockUseThemeDetection = vi.fn()
+
+vi.mock('../hooks/useMediaQuery', () => ({
+  useMediaQuery: (query: string) => mockUseMediaQuery(query),
+}))
+
+vi.mock('../hooks/useThemeDetection', () => ({
+  useThemeDetection: () => mockUseThemeDetection(),
+}))
+
+vi.mock('../hooks/useDebouncedCallback', () => ({
+  useDebouncedCallback: (callback: () => void) => callback,
 }))
 
 // Mock @tsparticles/react
@@ -49,27 +57,12 @@ vi.mock('@tsparticles/slim', () => ({
 }))
 
 describe('AnimatedBackground', () => {
-  let matchMediaMock: ReturnType<typeof vi.fn>
-
   beforeEach(() => {
     vi.clearAllMocks()
-    mockResolvedTheme.mockReturnValue('light')
-
-    // Reset matchMedia mock
-    matchMediaMock = vi.fn((query: string) => {
-      const matches = query.includes('dark') ? false : false // Default to light mode
-      return {
-        matches,
-        media: query,
-        onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      } as MediaQueryList
-    })
-    window.matchMedia = matchMediaMock as any
+    
+    // Default mocks
+    mockUseMediaQuery.mockReturnValue(false) // No reduced motion
+    mockUseThemeDetection.mockReturnValue(false) // Light mode
   })
 
   afterEach(() => {
@@ -77,14 +70,12 @@ describe('AnimatedBackground', () => {
   })
 
   describe('Rendering', () => {
-    it('should not render until mounted (SSR safety)', async () => {
-      const { container } = render(<AnimatedBackground />)
-      // In test environment, useEffect runs synchronously, so we check initial render
-      // The component should check mounted state before rendering
-      // Since useEffect runs immediately in tests, we verify the component structure
+    it('should render particles when motion is not reduced', async () => {
+      mockUseMediaQuery.mockReturnValue(false)
+      render(<AnimatedBackground />)
+      
       await waitFor(() => {
-        // Component renders after mount check passes
-        expect(container.firstChild).toBeTruthy()
+        expect(screen.getByTestId('particles-animated-background')).toBeInTheDocument()
       })
     })
 
@@ -117,66 +108,16 @@ describe('AnimatedBackground', () => {
   })
 
   describe('Reduced Motion', () => {
-    it('should not render when prefers-reduced-motion is enabled', async () => {
-      matchMediaMock.mockImplementation((query: string) => {
-        if (query.includes('reduced-motion')) {
-          return {
-            matches: true,
-            media: query,
-            onchange: null,
-            addListener: vi.fn(),
-            removeListener: vi.fn(),
-            addEventListener: vi.fn(),
-            removeEventListener: vi.fn(),
-            dispatchEvent: vi.fn(),
-          }
-        }
-        return {
-          matches: false,
-          media: query,
-          onchange: null,
-          addListener: vi.fn(),
-          removeListener: vi.fn(),
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        }
-      })
-
+    it('should not render when prefers-reduced-motion is enabled', () => {
+      mockUseMediaQuery.mockReturnValue(true) // Reduced motion enabled
       const { container } = render(<AnimatedBackground />)
       
-      await waitFor(() => {
-        // Should remain null even after mount
-        expect(container.firstChild).toBeNull()
-      })
+      // Should return null when reduced motion is enabled
+      expect(container.firstChild).toBeNull()
     })
 
     it('should render when prefers-reduced-motion is disabled', async () => {
-      matchMediaMock.mockImplementation((query: string) => {
-        if (query.includes('reduced-motion')) {
-          return {
-            matches: false,
-            media: query,
-            onchange: null,
-            addListener: vi.fn(),
-            removeListener: vi.fn(),
-            addEventListener: vi.fn(),
-            removeEventListener: vi.fn(),
-            dispatchEvent: vi.fn(),
-          }
-        }
-        return {
-          matches: false,
-          media: query,
-          onchange: null,
-          addListener: vi.fn(),
-          removeListener: vi.fn(),
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        }
-      })
-
+      mockUseMediaQuery.mockReturnValue(false) // Reduced motion disabled
       render(<AnimatedBackground />)
       
       await waitFor(() => {
@@ -187,7 +128,8 @@ describe('AnimatedBackground', () => {
 
   describe('Theme Support', () => {
     it('should use dark mode config when theme is dark', async () => {
-      mockResolvedTheme.mockReturnValue('dark')
+      mockUseThemeDetection.mockReturnValue(true) // Dark mode
+      mockUseMediaQuery.mockReturnValue(false) // No reduced motion
       
       render(<AnimatedBackground />)
       
@@ -205,7 +147,8 @@ describe('AnimatedBackground', () => {
     })
 
     it('should use light mode config when theme is light', async () => {
-      mockResolvedTheme.mockReturnValue('light')
+      mockUseThemeDetection.mockReturnValue(false) // Light mode
+      mockUseMediaQuery.mockReturnValue(false) // No reduced motion
       
       render(<AnimatedBackground />)
       
@@ -219,47 +162,6 @@ describe('AnimatedBackground', () => {
         expect(config.particles.number.value).toBe(40)
         expect(config.particles.opacity.value.min).toBe(0.05)
         expect(config.particles.opacity.value.max).toBe(0.25)
-      })
-    })
-
-    it('should fallback to system preference when resolvedTheme is undefined', async () => {
-      mockResolvedTheme.mockReturnValue(undefined)
-      
-      matchMediaMock.mockImplementation((query: string) => {
-        if (query.includes('color-scheme') && query.includes('dark')) {
-          return {
-            matches: true, // System prefers dark
-            media: query,
-            onchange: null,
-            addListener: vi.fn(),
-            removeListener: vi.fn(),
-            addEventListener: vi.fn(),
-            removeEventListener: vi.fn(),
-            dispatchEvent: vi.fn(),
-          }
-        }
-        return {
-          matches: false,
-          media: query,
-          onchange: null,
-          addListener: vi.fn(),
-          removeListener: vi.fn(),
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        }
-      })
-      
-      render(<AnimatedBackground />)
-      
-      await waitFor(() => {
-        expect(Particles).toHaveBeenCalled()
-        const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
-        const lastCall = mockParticles.mock.calls[mockParticles.mock.calls.length - 1]
-        const config = lastCall[0].options
-        
-        // Should use dark mode config (50 particles)
-        expect(config.particles.number.value).toBe(50)
       })
     })
   })
