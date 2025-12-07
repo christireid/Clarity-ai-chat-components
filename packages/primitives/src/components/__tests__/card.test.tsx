@@ -8,7 +8,7 @@ import {
   CardContent,
   CardFooter,
 } from '../card'
-import { Button } from '../button'
+import { Button } from '../ui/button-enhanced'
 
 describe('Card Component', () => {
   describe('Rendering', () => {

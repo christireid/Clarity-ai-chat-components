@@ -4,8 +4,10 @@
  */
 import * as vscode from 'vscode';
 export class ApiKeyManager {
+    static currentPanel;
+    panel;
+    disposables = [];
     constructor(panel, context) {
-        this.disposables = [];
         this.panel = panel;
         this.update(context);
         this.panel.onDidDispose(() => this.dispose(), null, this.disposables);

@@ -4,6 +4,7 @@
  */
 import * as vscode from 'vscode';
 export class DiagnosticsProvider {
+    diagnosticCollection;
     constructor() {
         this.diagnosticCollection =
             vscode.languages.createDiagnosticCollection('clarity-chat');

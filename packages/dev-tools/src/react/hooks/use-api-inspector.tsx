@@ -6,7 +6,7 @@
 'use client'
 
 import * as React from 'react'
-import { useOptimistic, useCallback, useMemo } from 'react'
+import { useOptimistic, useCallback, useMemo, useTransition } from 'react'
 import { getAPIInspector, type APICallLog } from '../../debug'
 
 interface APIInspectorState {
@@ -15,14 +15,19 @@ interface APIInspectorState {
   verbose: boolean
 }
 
+/**
+ * Action types for API inspector reducer
+ */
+type APIInspectorAction =
+  | { type: 'ADD_LOG'; log: APICallLog }
+  | { type: 'UPDATE_LOG'; id: string; updates: Partial<APICallLog> }
+  | { type: 'CLEAR_LOGS' }
+  | { type: 'SET_ENABLED'; enabled: boolean }
+  | { type: 'SET_VERBOSE'; verbose: boolean }
+
 function reducer(
   state: APIInspectorState,
-  action: 
-    | { type: 'ADD_LOG'; log: APICallLog }
-    | { type: 'UPDATE_LOG'; id: string; updates: Partial<APICallLog> }
-    | { type: 'CLEAR_LOGS' }
-    | { type: 'SET_ENABLED'; enabled: boolean }
-    | { type: 'SET_VERBOSE'; verbose: boolean }
+  action: APIInspectorAction
 ): APIInspectorState {
   switch (action.type) {
     case 'ADD_LOG':
@@ -52,16 +57,21 @@ export function useAPIInspector() {
   const inspector = getAPIInspector()
   
   // Initialize state from inspector
+  // Note: enabled and verbose are private, so we start with sensible defaults
+  // The state will be updated via setEnabled/setVerbose calls
   const [initialState] = React.useState<APIInspectorState>(() => ({
     logs: inspector.getLogs(),
-    enabled: (inspector as any).enabled || false,
-    verbose: (inspector as any).verbose || false,
+    enabled: false,
+    verbose: false,
   }))
 
-  const [state, dispatch] = useOptimistic<APIInspectorState, any>(
+  const [state, dispatch] = useOptimistic<APIInspectorState, APIInspectorAction>(
     initialState,
     reducer
   )
+  
+  // React 19 requires useOptimistic updates to be called within a transition
+  const [, startTransition] = useTransition()
 
   const startCall = useCallback((options: {
     provider: string
@@ -69,7 +79,7 @@ export function useAPIInspector() {
     endpoint: string
     method: string
     headers: Record<string, string>
-    body: any
+    body: unknown
   }) => {
     const callId = inspector.startCall(options)
     
@@ -90,46 +100,58 @@ export function useAPIInspector() {
       },
     }
     
-    dispatch({ type: 'ADD_LOG', log: optimisticLog })
+    startTransition(() => {
+      dispatch({ type: 'ADD_LOG', log: optimisticLog })
+    })
     
     return callId
-  }, [inspector, dispatch])
+  }, [inspector, dispatch, startTransition])
 
   const completeCall = useCallback((id: string, response: {
     status: number
     statusText: string
     headers: Record<string, string>
-    body?: any
+    body?: unknown
   }) => {
     inspector.completeCall(id, response)
     const log = inspector.getLog(id)
     if (log) {
-      dispatch({ type: 'UPDATE_LOG', id, updates: log })
+      startTransition(() => {
+        dispatch({ type: 'UPDATE_LOG', id, updates: log })
+      })
     }
-  }, [inspector, dispatch])
+  }, [inspector, dispatch, startTransition])
 
   const recordError = useCallback((id: string, error: Error) => {
     inspector.recordError(id, error)
     const log = inspector.getLog(id)
     if (log) {
-      dispatch({ type: 'UPDATE_LOG', id, updates: log })
+      startTransition(() => {
+        dispatch({ type: 'UPDATE_LOG', id, updates: log })
+      })
     }
-  }, [inspector, dispatch])
+  }, [inspector, dispatch, startTransition])
 
   const clearLogs = useCallback(() => {
     inspector.clear()
-    dispatch({ type: 'CLEAR_LOGS' })
-  }, [inspector, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'CLEAR_LOGS' })
+    })
+  }, [inspector, dispatch, startTransition])
 
   const setEnabled = useCallback((enabled: boolean) => {
     inspector.setEnabled(enabled)
-    dispatch({ type: 'SET_ENABLED', enabled })
-  }, [inspector, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'SET_ENABLED', enabled })
+    })
+  }, [inspector, dispatch, startTransition])
 
   const setVerbose = useCallback((verbose: boolean) => {
     inspector.setVerbose(verbose)
-    dispatch({ type: 'SET_VERBOSE', verbose })
-  }, [inspector, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'SET_VERBOSE', verbose })
+    })
+  }, [inspector, dispatch, startTransition])
 
   const stats = useMemo(() => {
     // Single pass through logs for better performance

@@ -1,61 +1,16 @@
 'use client'
 
 import * as React from 'react'
-import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import { cn } from '../lib/utils'
+import {
+  Tooltip as ShadcnTooltip,
+  TooltipTrigger as ShadcnTooltipTrigger,
+  TooltipContent as ShadcnTooltipContent,
+  TooltipProvider as ShadcnTooltipProvider,
+} from './ui/tooltip'
 
 // ============================================================================
-// Tooltip Provider (shadcn/ui pattern)
-// ============================================================================
-
-const TooltipProvider = TooltipPrimitive.Provider
-
-// ============================================================================
-// Core Tooltip Components (shadcn/ui pattern)
-// ============================================================================
-
-const TooltipRoot = TooltipPrimitive.Root
-const TooltipTrigger = TooltipPrimitive.Trigger
-const TooltipPortal = TooltipPrimitive.Portal
-
-const TooltipContent = React.forwardRef<
-  React.ComponentRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        'z-50 overflow-hidden rounded-lg border bg-popover px-3 py-1.5 text-xs font-medium text-popover-foreground shadow-md',
-        'animate-in fade-in-0 zoom-in-95',
-        'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
-        'data-[side=bottom]:slide-in-from-top-2',
-        'data-[side=left]:slide-in-from-right-2',
-        'data-[side=right]:slide-in-from-left-2',
-        'data-[side=top]:slide-in-from-bottom-2',
-        className
-      )}
-      {...props}
-    />
-  </TooltipPrimitive.Portal>
-))
-TooltipContent.displayName = TooltipPrimitive.Content.displayName
-
-const TooltipArrow = React.forwardRef<
-  React.ComponentRef<typeof TooltipPrimitive.Arrow>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>
->(({ className, ...props }, ref) => (
-  <TooltipPrimitive.Arrow
-    ref={ref}
-    className={cn('fill-popover', className)}
-    {...props}
-  />
-))
-TooltipArrow.displayName = 'TooltipArrow'
-
-// ============================================================================
-// Convenience Tooltip Component (Legacy API preserved)
+// Types
 // ============================================================================
 
 export interface TooltipProps {
@@ -63,7 +18,7 @@ export interface TooltipProps {
   content: React.ReactNode
   side?: 'top' | 'right' | 'bottom' | 'left'
   align?: 'start' | 'center' | 'end'
-  delay?: number // milliseconds (delayDuration)
+  delay?: number // milliseconds
   showArrow?: boolean
   className?: string
   contentClassName?: string
@@ -72,82 +27,118 @@ export interface TooltipProps {
   onOpenChange?: (open: boolean) => void
 }
 
-/**
- * Convenience Tooltip component that wraps Radix UI primitives
- * Maintains backward compatibility with existing API
- * 
- * NOTE: Each Tooltip instance creates its own TooltipProvider for self-contained
- * behavior. For apps with many tooltips, consider wrapping your app in a single
- * <TooltipProvider> and using the primitive components (TooltipRoot, TooltipTrigger, 
- * TooltipContent) directly for better performance.
- */
+// ============================================================================
+// Tooltip Component
+// ============================================================================
+
 export const Tooltip: React.FC<TooltipProps> = ({
   children,
   content,
   side = 'top',
   align = 'center',
   delay = 200,
-  showArrow = false,
+  showArrow = true,
   className,
   contentClassName,
   disabled = false,
-  open,
+  open: controlledOpen,
   onOpenChange,
 }) => {
-  if (disabled) {
-    return <>{children}</>
-  }
+  const [internalOpen, setInternalOpen] = React.useState(false)
 
-  // If children is a valid React element, use it directly with asChild
-  // Otherwise, wrap in a span to ensure Radix has a valid element to work with
-  const isValidChild = React.isValidElement(children)
-  
-  const triggerElement = isValidChild ? (
-    // Clone element to merge className if provided
-    className ? 
-      React.cloneElement(children as React.ReactElement<{ className?: string }>, {
-        className: cn((children as React.ReactElement<{ className?: string }>).props.className, className),
-      }) : 
-      children
-  ) : (
-    <span className={cn('inline-block', className)}>{children}</span>
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+
+  const setOpen = React.useCallback(
+    (newOpen: boolean) => {
+      if (controlledOpen === undefined) {
+        setInternalOpen(newOpen)
+      }
+      onOpenChange?.(newOpen)
+    },
+    [controlledOpen, onOpenChange]
   )
 
+  // Map align to Radix UI align prop
+  const radixAlign = align === 'start' ? 'start' : align === 'end' ? 'end' : 'center'
+
+  if (disabled) {
+    return <div className={cn('inline-block', className)}>{children}</div>
+  }
+
+  // Use Radix UI's built-in delay via delayDuration prop
+  // Remove custom delay handlers to avoid double-delay
+  // Validate delay to prevent negative values
+  const validDelay = Math.max(0, delay || 200)
+  
   return (
-    <TooltipPrimitive.Provider delayDuration={delay}>
-      <TooltipPrimitive.Root open={open} onOpenChange={onOpenChange}>
-        <TooltipPrimitive.Trigger asChild>
-          {triggerElement}
-        </TooltipPrimitive.Trigger>
-        <TooltipPrimitive.Portal>
-          <TooltipPrimitive.Content
-            side={side}
-            align={align}
-            sideOffset={8}
-            className={cn(
-              'z-50 overflow-hidden rounded-lg border bg-popover px-3 py-1.5 text-xs font-medium text-popover-foreground shadow-md backdrop-blur-sm',
-              'animate-in fade-in-0 zoom-in-95',
-              'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
-              'data-[side=bottom]:slide-in-from-top-2',
-              'data-[side=left]:slide-in-from-right-2',
-              'data-[side=right]:slide-in-from-left-2',
-              'data-[side=top]:slide-in-from-bottom-2',
-              contentClassName
-            )}
-          >
-            {content}
-            {showArrow && (
-              <TooltipPrimitive.Arrow className="fill-popover" />
-            )}
-          </TooltipPrimitive.Content>
-        </TooltipPrimitive.Portal>
-      </TooltipPrimitive.Root>
-    </TooltipPrimitive.Provider>
+    <ShadcnTooltipProvider delayDuration={validDelay}>
+      <ShadcnTooltip open={open} onOpenChange={setOpen}>
+        <ShadcnTooltipTrigger asChild className={cn('inline-block', className)}>
+          {children}
+        </ShadcnTooltipTrigger>
+        <ShadcnTooltipContent
+          side={side}
+          align={radixAlign}
+          sideOffset={8}
+          className={cn(
+            'text-xs font-medium rounded-lg backdrop-blur-sm',
+            showArrow && 'relative',
+            contentClassName
+          )}
+        >
+          {content}
+          {showArrow && (
+            <div
+              className={cn(
+                'absolute w-2 h-2 bg-popover border-border/40 rotate-45',
+                getArrowClasses(side, align)
+              )}
+            />
+          )}
+        </ShadcnTooltipContent>
+      </ShadcnTooltip>
+    </ShadcnTooltipProvider>
   )
 }
 
 // ============================================================================
-// Simple Tooltip (Alternative API - preserved)
+// Helper Functions
+// ============================================================================
+
+function getArrowClasses(
+  side: 'top' | 'right' | 'bottom' | 'left',
+  align: 'start' | 'center' | 'end'
+): string {
+  const baseClasses: string[] = []
+
+  // Position arrow on opposite side
+  if (side === 'top') {
+    baseClasses.push('bottom-[-5px]', 'border-t', 'border-l')
+    if (align === 'start') baseClasses.push('left-3')
+    else if (align === 'end') baseClasses.push('right-3')
+    else baseClasses.push('left-1/2', '-translate-x-1/2')
+  } else if (side === 'bottom') {
+    baseClasses.push('top-[-5px]', 'border-b', 'border-r')
+    if (align === 'start') baseClasses.push('left-3')
+    else if (align === 'end') baseClasses.push('right-3')
+    else baseClasses.push('left-1/2', '-translate-x-1/2')
+  } else if (side === 'left') {
+    baseClasses.push('right-[-5px]', 'border-l', 'border-b')
+    if (align === 'start') baseClasses.push('top-3')
+    else if (align === 'end') baseClasses.push('bottom-3')
+    else baseClasses.push('top-1/2', '-translate-y-1/2')
+  } else if (side === 'right') {
+    baseClasses.push('left-[-5px]', 'border-r', 'border-t')
+    if (align === 'start') baseClasses.push('top-3')
+    else if (align === 'end') baseClasses.push('bottom-3')
+    else baseClasses.push('top-1/2', '-translate-y-1/2')
+  }
+
+  return baseClasses.join(' ')
+}
+
+// ============================================================================
+// Simple Tooltip (Alternative API)
 // ============================================================================
 
 export const SimpleTooltip: React.FC<{
@@ -161,17 +152,4 @@ export const SimpleTooltip: React.FC<{
       {children}
     </Tooltip>
   )
-}
-
-// ============================================================================
-// Exports
-// ============================================================================
-
-export {
-  TooltipProvider,
-  TooltipRoot,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipPortal,
-  TooltipArrow,
 }

@@ -1,0 +1,7 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { StatusBadge } from './StatusBadge';
+import clsx from 'clsx';
+export const ComponentHeader = ({ title, status = 'stable', description, version, figmaUrl, className, }) => {
+    return (_jsxs("div", { className: clsx('mb-8 pb-6 border-b-2 border-border', className), children: [_jsxs("div", { className: "flex items-start justify-between mb-4", children: [_jsxs("div", { className: "flex items-center gap-3", children: [_jsx("h1", { className: "text-3xl font-bold text-gray-900 dark:text-gray-100 m-0", children: title }), _jsx(StatusBadge, { status: status })] }), _jsxs("div", { className: "flex items-center gap-2", children: [version && (_jsxs("span", { className: "text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded", children: ["v", version] })), figmaUrl && (_jsx("a", { href: figmaUrl, target: "_blank", rel: "noopener noreferrer", className: "text-sm text-brand-500 hover:text-brand-600 underline", children: "View in Figma \u2192" }))] })] }), description && (_jsx("p", { className: "text-lg text-gray-600 dark:text-gray-400 leading-relaxed m-0", children: description }))] }));
+};
+//# sourceMappingURL=ComponentHeader.js.map

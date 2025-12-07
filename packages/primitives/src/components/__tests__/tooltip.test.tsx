@@ -26,15 +26,15 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Hover me')
+      const trigger = screen.getByRole('button', { name: 'Hover me' })
       await user.hover(trigger)
 
       // Wait for tooltip to appear (respects delay)
-      // Radix UI creates duplicate elements for accessibility, use queryAllByText
+      // Use getAllByText and check that tooltip content exists
       await waitFor(() => {
-        const tooltipElements = screen.getAllByText('Tooltip text')
-        expect(tooltipElements.length).toBeGreaterThan(0)
-      }, { timeout: 1000 })
+        const tooltips = screen.getAllByText('Tooltip text')
+        expect(tooltips.length).toBeGreaterThan(0)
+      }, { timeout: 500 })
     })
 
     it('should render with default side', () => {
@@ -63,9 +63,9 @@ describe('Tooltip Component', () => {
           <button>Button</button>
         </Tooltip>
       )
-      // Radix UI creates duplicate elements for accessibility
-      const tooltipElements = screen.getAllByText('Controlled')
-      expect(tooltipElements.length).toBeGreaterThan(0)
+      // Tooltip content should be visible when open is true
+      const tooltips = screen.getAllByText('Controlled')
+      expect(tooltips.length).toBeGreaterThan(0)
     })
 
     it('should work as uncontrolled component', async () => {
@@ -76,13 +76,13 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       await waitFor(() => {
-        const tooltipElements = screen.getAllByText('Uncontrolled')
-        expect(tooltipElements.length).toBeGreaterThan(0)
-      }, { timeout: 1000 })
+        const tooltips = screen.getAllByText('Uncontrolled')
+        expect(tooltips.length).toBeGreaterThan(0)
+      }, { timeout: 500 })
     })
 
     it('should call onOpenChange when state changes', async () => {
@@ -99,7 +99,7 @@ describe('Tooltip Component', () => {
 
       await waitFor(() => {
         expect(mockOnOpenChange).toHaveBeenCalled()
-      }, { timeout: 1000 })
+      }, { timeout: 500 })
     })
   })
 
@@ -112,17 +112,17 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       // Should not appear immediately
-      expect(screen.queryByText('Delayed')).not.toBeInTheDocument()
+      expect(screen.queryAllByText('Delayed').length).toBe(0)
 
       // Should appear after delay
       await waitFor(() => {
-        const tooltipElements = screen.getAllByText('Delayed')
-        expect(tooltipElements.length).toBeGreaterThan(0)
-      }, { timeout: 1000 })
+        const tooltips = screen.getAllByText('Delayed')
+        expect(tooltips.length).toBeGreaterThan(0)
+      }, { timeout: 600 })
     })
   })
 
@@ -139,30 +139,30 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       // Wait a bit to ensure tooltip doesn't appear
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 300))
       expect(screen.queryByText('Should not show')).not.toBeInTheDocument()
     })
   })
 
   describe('Arrow', () => {
-    it('should render tooltip with arrow when showArrow is true', async () => {
+    it('should show arrow by default', async () => {
       const user = userEvent.setup()
       render(
-        <Tooltip content="With arrow" showArrow>
+        <Tooltip content="With arrow">
           <button>Button</button>
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       await waitFor(() => {
-        const tooltipElements = screen.getAllByText('With arrow')
-        expect(tooltipElements.length).toBeGreaterThan(0)
-      }, { timeout: 1000 })
+        const tooltips = screen.getAllByText('With arrow')
+        expect(tooltips.length).toBeGreaterThan(0)
+      }, { timeout: 500 })
     })
 
-    it('should render tooltip without arrow by default', async () => {
+    it('should hide arrow when showArrow is false', async () => {
       const user = userEvent.setup()
       render(
         <Tooltip content="No arrow" showArrow={false}>
@@ -170,13 +170,13 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       await waitFor(() => {
-        const tooltipElements = screen.getAllByText('No arrow')
-        expect(tooltipElements.length).toBeGreaterThan(0)
-      }, { timeout: 1000 })
+        const tooltips = screen.getAllByText('No arrow')
+        expect(tooltips.length).toBeGreaterThan(0)
+      }, { timeout: 500 })
     })
   })
 
@@ -198,13 +198,14 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       await waitFor(() => {
-        const tooltipElements = screen.getAllByText('Custom content')
-        expect(tooltipElements.length).toBeGreaterThan(0)
-      }, { timeout: 1000 })
+        // Tooltip content may appear multiple times, verify it exists
+        const tooltips = screen.getAllByText('Custom content')
+        expect(tooltips.length).toBeGreaterThan(0)
+      }, { timeout: 500 })
     })
   })
 

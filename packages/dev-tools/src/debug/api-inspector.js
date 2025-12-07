@@ -8,12 +8,15 @@
  * - Token usage and cost
  * - Streaming chunks
  */
+import { keyValueTable } from '../ui/table';
+import { successBox, errorBox, infoBox } from '../ui/box';
+import chalk from 'chalk';
 class APIInspector {
+    logs = new Map();
+    enabled = false;
+    verbose = false;
+    maxLogs = 100;
     constructor(options = {}) {
-        this.logs = new Map();
-        this.enabled = false;
-        this.verbose = false;
-        this.maxLogs = 100;
         this.enabled = options.enabled ?? process.env.NODE_ENV === 'development';
         this.verbose = options.verbose ?? false;
         this.maxLogs = options.maxLogs ?? 100;
@@ -49,11 +52,14 @@ class APIInspector {
             }
         }
         if (this.verbose) {
-            console.log(`\n🔍 [API Inspector] Starting call ${id}`);
-            console.log(`   Provider: ${options.provider}`);
-            console.log(`   Model: ${options.model}`);
-            console.log(`   Endpoint: ${options.endpoint}`);
-            console.log(`   Request:`, JSON.stringify(log.request.body, null, 2));
+            const info = [
+                `Provider: ${chalk.cyan(options.provider)}`,
+                `Model: ${chalk.cyan(options.model)}`,
+                `Endpoint: ${chalk.gray(options.endpoint)}`,
+            ].join('\n');
+            console.log();
+            console.log(infoBox(info, `🔍 API Call ${id.substring(0, 12)}...`));
+            console.log();
         }
         return id;
     }
@@ -68,7 +74,7 @@ class APIInspector {
             return;
         log.timing.ttfb = performance.now() - log.timing.startTime;
         if (this.verbose) {
-            console.log(`   ⚡ TTFB: ${log.timing.ttfb.toFixed(2)}ms`);
+            console.log(chalk.cyan(`   ⚡ TTFB: ${log.timing.ttfb.toFixed(2)}ms`));
         }
     }
     /**
@@ -96,7 +102,8 @@ class APIInspector {
             tokens
         });
         if (this.verbose) {
-            console.log(`   📦 Chunk ${log.response.chunks.length}: ${content.substring(0, 50)}...`);
+            const preview = content.length > 50 ? content.substring(0, 50) + '...' : content;
+            console.log(chalk.gray(`   📦 Chunk ${log.response.chunks.length}: ${preview}`));
         }
     }
     /**
@@ -133,14 +140,20 @@ class APIInspector {
             };
         }
         if (this.verbose) {
-            console.log(`\n✅ [API Inspector] Completed call ${id}`);
-            console.log(`   Duration: ${log.timing.duration?.toFixed(2)}ms`);
+            const summary = {
+                'Duration': chalk.cyan(`${log.timing.duration?.toFixed(2)}ms`),
+            };
             if (log.usage) {
-                console.log(`   Tokens: ${log.usage.totalTokens} (prompt: ${log.usage.promptTokens}, completion: ${log.usage.completionTokens})`);
+                summary['Total Tokens'] = chalk.cyan(log.usage.totalTokens.toString());
+                summary['Prompt Tokens'] = chalk.gray(log.usage.promptTokens.toString());
+                summary['Completion Tokens'] = chalk.gray(log.usage.completionTokens.toString());
             }
             if (log.response.chunks) {
-                console.log(`   Chunks: ${log.response.chunks.length}`);
+                summary['Chunks'] = chalk.cyan(log.response.chunks.length.toString());
             }
+            console.log();
+            console.log(successBox(keyValueTable(summary), `✅ Call ${id.substring(0, 12)}... Complete`));
+            console.log();
         }
     }
     /**
@@ -160,9 +173,16 @@ class APIInspector {
             stack: error.stack
         };
         if (this.verbose) {
-            console.error(`\n❌ [API Inspector] Error in call ${id}`);
-            console.error(`   Duration: ${log.timing.duration?.toFixed(2)}ms`);
-            console.error(`   Error: ${error.message}`);
+            const errorInfo = {
+                'Duration': chalk.gray(`${log.timing.duration?.toFixed(2)}ms`),
+                'Error': chalk.red(error.message),
+            };
+            if (log.error?.code) {
+                errorInfo['Code'] = chalk.yellow(log.error.code);
+            }
+            console.log();
+            console.log(errorBox(keyValueTable(errorInfo), `❌ Call ${id.substring(0, 12)}... Failed`));
+            console.log();
         }
     }
     /**
