@@ -540,7 +540,7 @@ pnpm typecheck              # Type check
 - [x] `useStreamingSSE` documentation (exists, basic)
 - [x] `useStreamingWebSocket` documentation (enhanced from basic)
 - [x] `useStreamableUI` documentation (created)
-- [ ] Streaming patterns guide
+- [ ] Streaming patterns guide (comprehensive streaming guide exists at /guides/streaming)
 
 #### Task 2.3: Analytics Components
 - [ ] `PerformanceAnalyticsDashboard` documentation
@@ -588,15 +588,15 @@ pnpm typecheck              # Type check
 #### Task 4.2: Advanced Patterns
 - [x] Multi-modal chat recipe (created)
 - [x] Voice input recipe (created)
-- [ ] Offline-first recipe
-- [ ] Real-time collaboration recipe
+- [x] Offline-first recipe (created)
+- [x] Real-time collaboration recipe (created)
 - [x] Custom tool integration recipe (created)
 
 #### Task 4.3: Integration Guides
-- [ ] Next.js deep integration
+- [x] Next.js integration (exists at /cookbook/nextjs-integration)
 - [ ] Remix integration
-- [ ] Backend integration patterns
-- [ ] API route examples
+- [x] Backend integration patterns (created)
+- [x] API route examples (included in backend patterns and quick start)
 
 ### Phase 5: Polish & Enhancement (Week 5)
 
@@ -633,13 +633,13 @@ pnpm typecheck              # Type check
 - [x] Streaming components and hooks (StreamingMessage, useStreamingSSE, useStreamingWebSocket, useStreamableUI done)
 - [x] Core chat hooks (useChatHandlers, useChatEnhanced done)
 - [ ] Token optimization hooks
-- [x] Common patterns recipes (memory, streaming, error handling, multi-modal, voice, tools done)
+- [x] Common patterns recipes (memory, streaming, error handling, multi-modal, voice, tools, offline, collaboration done)
 
 ### Medium Priority
 - [ ] Analytics components
 - [ ] Enterprise components
 - [ ] AI infrastructure hooks
-- [ ] Integration guides
+- [x] Integration guides (backend patterns done, Next.js exists)
 
 ### Nice to Have
 - [ ] Interactive demos for all components
@@ -665,7 +665,7 @@ pnpm typecheck              # Type check
 
 ### Documentation Improvements Completed
 
-#### New Pages Created (18)
+#### New Pages Created (21)
 1. **ClarityChat Component** - The most important component page
    - Complete props documentation
    - Multiple usage examples
@@ -757,6 +757,21 @@ pnpm typecheck              # Type check
     - Tool definitions
     - Execution patterns
     - Approval workflows
+
+19. **Offline-First Recipe** - Offline support guide
+    - Message queuing
+    - IndexedDB storage
+    - Conflict resolution
+
+20. **Real-Time Collaboration Recipe** - Multi-user chat guide
+    - WebSocket setup
+    - Presence indicators
+    - Message broadcasting
+
+21. **Backend Integration Patterns** - Backend integration guide
+    - Express.js, FastAPI, NestJS
+    - Authentication
+    - Rate limiting
 
 #### Enhanced Pages (2)
 1. **Architecture Overview** - Added component layers and decision tree
@@ -920,6 +935,9 @@ While the critical documentation is complete, there are still opportunities for 
 - `apps/docs/app/cookbook/multi-modal-chat/page.tsx` (300+ lines)
 - `apps/docs/app/cookbook/voice-input/page.tsx` (300+ lines)
 - `apps/docs/app/cookbook/custom-tool-integration/page.tsx` (300+ lines)
+- `apps/docs/app/cookbook/offline-first/page.tsx` (300+ lines)
+- `apps/docs/app/cookbook/real-time-collaboration/page.tsx` (300+ lines)
+- `apps/docs/app/cookbook/backend-integration-patterns/page.tsx` (300+ lines)
 
 **Modified Files:**
 - `apps/docs/lib/navigation.ts` (added navigation entries)

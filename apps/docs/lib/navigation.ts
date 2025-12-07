@@ -218,6 +218,7 @@ export const cookbookNavigation: NavItem[] = [
       { title: 'Custom Tool Integration', href: '/cookbook/custom-tool-integration' },
       { title: 'OpenAI Streaming Chat', href: '/cookbook/openai-streaming-chat' },
       { title: 'Next.js Integration', href: '/cookbook/nextjs-integration' },
+      { title: 'Backend Integration Patterns', href: '/cookbook/backend-integration-patterns' },
       { title: 'Custom Theming', href: '/cookbook/custom-theming' },
     ],
   },
