@@ -182,7 +182,7 @@ function calculateInformationDensity(text: string): number {
     let weight = 0.5 // Default neutral weight
 
     // Code indicators
-    if (/^[{}\[\]()=>]$/.test(word) || /^(function|const|let|var|if|else|return|import|export)$/i.test(word)) {
+    if (/^[{}[\]()=>]$/.test(word) || /^(function|const|let|var|if|else|return|import|export)$/i.test(word)) {
       weight = DENSITY_WEIGHTS.codeBlock
     }
     // Numbers

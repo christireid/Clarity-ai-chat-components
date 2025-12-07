@@ -5,9 +5,10 @@
  */
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-const execAsync = promisify(exec);
+import { logger } from '../utils/logger.js';
+import { NotFoundError, ValidationError } from '../utils/errors.js';
+import { validateRequired, validateEnum, validateString, validateNumber } from '../utils/validation.js';
+import { validateProjectPath } from '../utils/security.js';
 /**
  * Available tools
  */
@@ -125,57 +126,88 @@ export const tools = [
     }
 ];
 /**
- * Handle tool calls
+ * Handle tool calls with proper validation and error handling
  */
 export async function handleToolCall(name, args) {
-    switch (name) {
-        case 'init_project':
-            return await initProject(args.provider, args.framework, args.projectPath);
-        case 'list_examples':
-            return await listExamples();
-        case 'get_example':
-            return await getExample(args.exampleName);
-        case 'validate_config':
-            return await validateConfig(args.projectPath);
-        case 'get_model_info':
-            return await getModelInfo(args.modelName);
-        case 'calculate_cost':
-            return await calculateCost(args.modelName, args.promptTokens, args.completionTokens);
-        case 'analyze_project':
-            return await analyzeProject(args.projectPath);
-        default:
-            throw new Error(`Unknown tool: ${name}`);
+    logger.debug('Tool call received', { tool: name, args });
+    try {
+        switch (name) {
+            case 'init_project':
+                validateRequired(args, ['provider', 'framework', 'projectPath']);
+                const provider = validateEnum(args.provider, ['openai', 'anthropic', 'google', 'all'], 'provider');
+                const framework = validateEnum(args.framework, ['nextjs', 'express', 'hono', 'standalone'], 'framework');
+                const projectPath = validateProjectPath(validateString(args.projectPath, 'projectPath'));
+                return await initProject(provider, framework, projectPath);
+            case 'list_examples':
+                return await listExamples();
+            case 'get_example':
+                validateRequired(args, ['exampleName']);
+                const exampleName = validateString(args.exampleName, 'exampleName');
+                return await getExample(exampleName);
+            case 'validate_config':
+                validateRequired(args, ['projectPath']);
+                const configPath = validateProjectPath(validateString(args.projectPath, 'projectPath'));
+                return await validateConfig(configPath);
+            case 'get_model_info':
+                validateRequired(args, ['modelName']);
+                const modelName = validateString(args.modelName, 'modelName');
+                return await getModelInfo(modelName);
+            case 'calculate_cost':
+                validateRequired(args, ['modelName', 'promptTokens', 'completionTokens']);
+                const costModelName = validateString(args.modelName, 'modelName');
+                const promptTokens = validateNumber(args.promptTokens, 'promptTokens', 0);
+                const completionTokens = validateNumber(args.completionTokens, 'completionTokens', 0);
+                return await calculateCost(costModelName, promptTokens, completionTokens);
+            case 'analyze_project':
+                validateRequired(args, ['projectPath']);
+                const analyzePath = validateProjectPath(validateString(args.projectPath, 'projectPath'));
+                return await analyzeProject(analyzePath);
+            default:
+                throw new ValidationError(`Unknown tool: ${name}`, { tool: name });
+        }
+    }
+    catch (error) {
+        logger.error(`Tool call failed: ${name}`, error instanceof Error ? error : undefined, { args });
+        throw error;
     }
 }
 /**
  * Initialize a new project
  */
 async function initProject(provider, framework, projectPath) {
-    const envContent = generateEnvTemplate(provider);
-    const exampleCode = generateExampleCode(provider, framework);
-    // Create project directory
-    await fs.mkdir(projectPath, { recursive: true });
-    // Write .env.local
-    await fs.writeFile(path.join(projectPath, '.env.local'), envContent);
-    // Write example code
-    const fileName = framework === 'nextjs' ? 'app/api/chat/route.ts' : 'src/index.ts';
-    const filePath = path.join(projectPath, fileName);
-    await fs.mkdir(path.dirname(filePath), { recursive: true });
-    await fs.writeFile(filePath, exampleCode);
-    // Create package.json
-    const packageJson = generatePackageJson(provider, framework);
-    await fs.writeFile(path.join(projectPath, 'package.json'), JSON.stringify(packageJson, null, 2));
-    return {
-        success: true,
-        message: `Project initialized at ${projectPath}`,
-        files: ['.env.local', fileName, 'package.json'],
-        nextSteps: [
-            `cd ${projectPath}`,
-            'npm install',
-            'Add your API keys to .env.local',
-            framework === 'nextjs' ? 'npm run dev' : 'npm start'
-        ]
-    };
+    logger.info('Initializing project', { provider, framework, projectPath });
+    try {
+        const envContent = generateEnvTemplate(provider);
+        const exampleCode = generateExampleCode(provider, framework);
+        // Create project directory
+        await fs.mkdir(projectPath, { recursive: true });
+        // Write .env.local
+        await fs.writeFile(path.join(projectPath, '.env.local'), envContent);
+        // Write example code
+        const fileName = framework === 'nextjs' ? 'app/api/chat/route.ts' : 'src/index.ts';
+        const filePath = path.join(projectPath, fileName);
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.writeFile(filePath, exampleCode);
+        // Create package.json
+        const packageJson = generatePackageJson(provider, framework);
+        await fs.writeFile(path.join(projectPath, 'package.json'), JSON.stringify(packageJson, null, 2));
+        logger.info('Project initialized successfully', { projectPath });
+        return {
+            success: true,
+            message: `Project initialized at ${projectPath}`,
+            files: ['.env.local', fileName, 'package.json'],
+            nextSteps: [
+                `cd ${projectPath}`,
+                'npm install',
+                'Add your API keys to .env.local',
+                framework === 'nextjs' ? 'npm run dev' : 'npm start'
+            ]
+        };
+    }
+    catch (error) {
+        logger.error('Failed to initialize project', error instanceof Error ? error : undefined, { provider, framework, projectPath });
+        throw new Error(`Failed to initialize project: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
 }
 /**
  * List available examples
@@ -198,6 +230,7 @@ async function listExamples() {
  * Get example code
  */
 async function getExample(exampleName) {
+    logger.debug('Getting example', { exampleName });
     const examples = {
         'basic-chat': `import { OpenAI } from 'openai'
 
@@ -228,7 +261,7 @@ async function streamChat(message: string) {
     };
     const code = examples[exampleName];
     if (!code) {
-        throw new Error(`Example not found: ${exampleName}`);
+        throw new NotFoundError('Example', exampleName);
     }
     return { name: exampleName, code };
 }
@@ -282,6 +315,7 @@ async function validateConfig(projectPath) {
  * Get model information
  */
 async function getModelInfo(modelName) {
+    logger.debug('Getting model info', { modelName });
     const modelInfo = {
         'gpt-4-turbo': {
             provider: 'OpenAI',
@@ -314,7 +348,7 @@ async function getModelInfo(modelName) {
     };
     const info = modelInfo[modelName];
     if (!info) {
-        throw new Error(`Model not found: ${modelName}`);
+        throw new NotFoundError('Model', modelName);
     }
     return info;
 }
@@ -341,6 +375,7 @@ async function calculateCost(modelName, promptTokens, completionTokens) {
  * Analyze project
  */
 async function analyzeProject(projectPath) {
+    logger.info('Analyzing project', { projectPath });
     const analysis = {
         path: projectPath,
         fileCount: 0,
@@ -351,6 +386,13 @@ async function analyzeProject(projectPath) {
         framework: 'unknown'
     };
     try {
+        // Check if directory exists
+        try {
+            await fs.access(projectPath);
+        }
+        catch {
+            throw new NotFoundError('Project directory', projectPath);
+        }
         // Count files
         const files = await fs.readdir(projectPath, { recursive: true });
         analysis.fileCount = files.length;
@@ -360,26 +402,35 @@ async function analyzeProject(projectPath) {
         analysis.hasTsConfig = files.includes('tsconfig.json');
         // Detect providers from package.json
         if (analysis.hasPackageJson) {
-            const packageJson = JSON.parse(await fs.readFile(path.join(projectPath, 'package.json'), 'utf-8'));
-            const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
-            if (deps['openai'])
-                analysis.providers.push('OpenAI');
-            if (deps['@anthropic-ai/sdk'])
-                analysis.providers.push('Anthropic');
-            if (deps['@google/generative-ai'])
-                analysis.providers.push('Google AI');
-            // Detect framework
-            if (deps['next'])
-                analysis.framework = 'Next.js';
-            else if (deps['express'])
-                analysis.framework = 'Express';
-            else if (deps['hono'])
-                analysis.framework = 'Hono';
+            try {
+                const packageJson = JSON.parse(await fs.readFile(path.join(projectPath, 'package.json'), 'utf-8'));
+                const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
+                if (deps['openai'])
+                    analysis.providers.push('OpenAI');
+                if (deps['@anthropic-ai/sdk'])
+                    analysis.providers.push('Anthropic');
+                if (deps['@google/generative-ai'])
+                    analysis.providers.push('Google AI');
+                // Detect framework
+                if (deps['next'])
+                    analysis.framework = 'Next.js';
+                else if (deps['express'])
+                    analysis.framework = 'Express';
+                else if (deps['hono'])
+                    analysis.framework = 'Hono';
+            }
+            catch (error) {
+                logger.warn('Failed to parse package.json', { error: error instanceof Error ? error.message : 'Unknown error' });
+            }
         }
         return analysis;
     }
     catch (error) {
-        throw new Error(`Failed to analyze project: ${error}`);
+        if (error instanceof NotFoundError) {
+            throw error;
+        }
+        logger.error('Failed to analyze project', error instanceof Error ? error : undefined, { projectPath });
+        throw new Error(`Failed to analyze project: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 }
 /**

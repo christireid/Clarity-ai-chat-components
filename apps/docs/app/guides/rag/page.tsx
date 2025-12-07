@@ -1,343 +1,823 @@
-import React from 'react'
-import { Metadata } from 'next'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
+'use client'
+
+import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
-import { RAGPipelineDiagram } from '@/components/Diagrams/RAGPipelineDiagram'
+import { ComponentPreview } from '@/components/Demo/ComponentPreview'
+import { Pagination } from '@/components/Navigation/Pagination'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title: 'RAG Guide - Clarity Chat',
-  description:
-    'Complete guide to Retrieval-Augmented Generation (RAG) for answering questions about your documents.',
-}
-
 export default function RAGGuidePage() {
   return (
-    <div className="docs-content">
-      <div className="docs-header">
-        <span className="docs-badge">Guide</span>
-        <h1>RAG: Retrieval-Augmented Generation</h1>
-        <p className="docs-lead">
-          Make AI answer questions using YOUR documents, not just its training
-          data. Like giving the AI a textbook before the test.
-        </p>
-      </div>
+    <>
+      <Breadcrumbs />
 
-      <section className="docs-section">
-        <h2>The Problem RAG Solves</h2>
-        <p>
-          Normal AI (like ChatGPT) only knows what it was trained on. Ask it
-          about your company's Q3 sales report? It can't help - it never saw
-          that document.
-        </p>
-
-        <p className="mt-4">
-          RAG solves this: Upload your documents → AI can answer questions about
-          them. It's like ctrl+F but the AI understands context and can
-          synthesize answers.
-        </p>
-
-        <RAGPipelineDiagram />
-
-        <Callout type="info" title="Real Example">
-          User: "What were our Q3 sales?"
-          <br />
-          Normal AI: "I don't know." ❌<br />
-          RAG AI: *searches your docs* "Q3 sales were $2.5M, up 15% from Q2." ✅
-        </Callout>
-      </section>
-
-      <section className="docs-section">
-        <h2>How RAG Works (Simple Version)</h2>
-
-        <h3>Step 1: Index (One-time setup)</h3>
-        <CodeBlock
-          language="text"
-          code={`1. Take your document (PDF, Word, etc.)
-2. Split into small chunks (paragraphs)
-3. Convert each chunk to numbers (embeddings)
-4. Store in vector database (Pinecone, Weaviate, etc.)`}
-        />
-
-        <h3>Step 2: Query (Every question)</h3>
-        <CodeBlock
-          language="text"
-          code={`1. User asks: "What's our return policy?"
-2. Convert question to numbers (embedding)
-3. Find similar chunks in your database (vector search)
-4. Send those chunks to AI as context
-5. AI reads the chunks and answers`}
-        />
-
-        <div className="mt-6 p-4 bg-primary/5 border-2 border-primary/20 rounded-xl">
-          <div className="font-semibold mb-2">🎯 Key Insight</div>
-          <p className="text-sm">
-            RAG doesn't retrain the AI. It gives the AI relevant documents to
-            read RIGHT BEFORE answering. Like giving someone a cheat sheet
-            during a test.
+      <div className="max-w-5xl mx-auto px-4 py-8 space-y-12">
+        <header>
+          <h1 className="text-4xl font-bold mb-3">RAG Pipeline Guide</h1>
+          <p className="text-lg text-muted-foreground">
+            Complete guide to Retrieval-Augmented Generation (RAG) for answering questions about your documents
+            using vector stores, embeddings, and semantic search.
           </p>
-        </div>
-      </section>
+        </header>
 
-      <section className="docs-section">
-        <h2>Implementation Overview</h2>
-        <CodeBlock
-          language="typescript"
-          code={`// 1. CREATE EMBEDDINGS (one-time)
-import OpenAI from 'openai'
-const openai = new OpenAI()
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Overview</h2>
+          <p className="mb-4">
+            RAG (Retrieval-Augmented Generation) allows AI to answer questions using your documents, not just
+            its training data. It combines semantic search with LLM generation to provide accurate, grounded responses.
+          </p>
 
-// Split document into chunks
-const chunks = splitDocument(documentText, 1000)
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+            <div className="p-4 border-2 border-muted rounded-xl">
+              <div className="font-semibold mb-2">❌ Without RAG</div>
+              <div className="text-sm space-y-2 text-muted-foreground">
+                <div>User: "What were our Q3 sales?"</div>
+                <div>AI: "I don't have access to that information."</div>
+                <div className="mt-4 text-xs text-destructive">
+                  ❌ Can only use training data
+                </div>
+              </div>
+            </div>
 
-// Create embeddings
-const embeddings = await openai.embeddings.create({
-  model: 'text-embedding-3-small',
-  input: chunks
-})
+            <div className="p-4 border-2 border-primary/20 bg-primary/5 rounded-xl">
+              <div className="font-semibold mb-2 text-primary">✅ With RAG</div>
+              <div className="text-sm space-y-2 text-muted-foreground">
+                <div>User: "What were our Q3 sales?"</div>
+                <div className="italic">*searches your documents*</div>
+                <div>AI: "Q3 sales were $2.5M, up 15% from Q2."</div>
+                <div className="mt-4 text-xs text-green-600 dark:text-green-400">
+                  ✅ Uses your documents
+                </div>
+              </div>
+            </div>
+          </div>
 
-// Store in vector DB
-await pinecone.upsert({
-  vectors: chunks.map((chunk, i) => ({
-    id: \`doc-\${i}\`,
-    values: embeddings.data[i].embedding,
-    metadata: { text: chunk }
-  }))
-})
+          <Callout type="info">
+            <p>
+              <strong>How RAG Works:</strong> Documents are split into chunks, converted to embeddings (vectors),
+              and stored in a vector database. When a question is asked, the query is embedded, similar chunks
+              are retrieved, and the LLM generates an answer using that context.
+            </p>
+          </Callout>
+        </section>
 
-// 2. SEARCH & ANSWER (every question)
-async function answerQuestion(question: string) {
-  // Convert question to embedding
-  const questionEmbedding = await openai.embeddings.create({
-    model: 'text-embedding-3-small',
-    input: question
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">RAG Pipeline Architecture</h2>
+          <p className="mb-4">
+            The RAG pipeline consists of several stages:
+          </p>
+
+          <EnhancedCodeBlock
+            code={`1. DOCUMENT INGESTION
+   - Load documents (PDF, Word, Markdown, etc.)
+   - Extract text content
+   - Split into chunks
+
+2. EMBEDDING GENERATION
+   - Convert text chunks to embeddings (vectors)
+   - Use embedding model (OpenAI, Cohere, etc.)
+
+3. VECTOR STORAGE
+   - Store embeddings in vector database
+   - Include metadata (source, date, etc.)
+
+4. QUERY PROCESSING
+   - Convert user question to embedding
+   - Search for similar chunks
+   - Retrieve top-K results
+
+5. CONTEXT AUGMENTATION
+   - Combine retrieved chunks into context
+   - Pass to LLM with question
+
+6. GENERATION
+   - LLM generates answer using context
+   - Include citations to sources`}
+            language="text"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Using useRAGPipeline</h2>
+          <p className="mb-4">
+            The <code>useRAGPipeline</code> hook provides a simple API for RAG with automatic vector store
+            and embedding management:
+          </p>
+
+          <EnhancedCodeBlock
+            code={`import { useRAGPipeline } from '@clarity-chat/react'
+
+function RAGExample() {
+  const rag = useRAGPipeline({
+    vectorStore: 'pinecone',
+    embeddingProvider: 'openai',
+    apiKeys: {
+      vectorStore: process.env.NEXT_PUBLIC_PINECONE_API_KEY,
+      embeddings: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    },
+    reranker: 'cohere', // Optional: rerank results
   })
 
-  // Search for similar chunks
-  const results = await pinecone.query({
-    vector: questionEmbedding.data[0].embedding,
-    topK: 3
-  })
+  const handleQuery = async () => {
+    // Retrieve relevant documents
+    const results = await rag.retrieve('What is React?', 5)
+    console.log('Retrieved documents:', results)
+  }
 
-  // Build context from results
-  const context = results.matches
-    .map(m => m.metadata.text)
-    .join('\\n\\n')
-
-  // Ask AI with context
-  const answer = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages: [
-      {
-        role: 'system',
-        content: \`Answer based on this context:\\n\\n\${context}\`
-      },
-      {
-        role: 'user',
-        content: question
-      }
-    ]
-  })
-
-  return answer.choices[0].message.content
+  return (
+    <div>
+      <button onClick={handleQuery}>Search Documents</button>
+    </div>
+  )
 }`}
-        />
-      </section>
+            language="tsx"
+            showLineNumbers
+          />
+        </section>
 
-      <section className="docs-section">
-        <h2>Chunking Strategies</h2>
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Vector Stores</h2>
+          <p className="mb-4">
+            Clarity Chat supports multiple vector store providers. Choose based on your needs:
+          </p>
 
-        <h3>Fixed Size (Simple)</h3>
-        <CodeBlock
-          language="typescript"
-          code={`// Split every 1000 characters
-function chunkBySize(text: string, size: number): string[] {
-  const chunks = []
-  for (let i = 0; i < text.length; i += size) {
+          <div className="overflow-x-auto mb-4">
+            <table className="w-full border-collapse border border-border">
+              <thead>
+                <tr className="bg-muted">
+                  <th className="border border-border p-2 text-left">Provider</th>
+                  <th className="border border-border p-2 text-left">Pros</th>
+                  <th className="border border-border p-2 text-left">Cons</th>
+                  <th className="border border-border p-2 text-left">Best For</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-border p-2"><strong>Pinecone</strong></td>
+                  <td className="border border-border p-2">Easiest setup, fully managed, great performance</td>
+                  <td className="border border-border p-2">Can be expensive at scale</td>
+                  <td className="border border-border p-2">Production apps, quick setup</td>
+                </tr>
+                <tr>
+                  <td className="border border-border p-2"><strong>Qdrant</strong></td>
+                  <td className="border border-border p-2">Open source, self-hostable, good performance</td>
+                  <td className="border border-border p-2">Requires self-hosting</td>
+                  <td className="border border-border p-2">Self-hosted deployments</td>
+                </tr>
+                <tr>
+                  <td className="border border-border p-2"><strong>Weaviate</strong></td>
+                  <td className="border border-border p-2">Open source, graph-like queries, good features</td>
+                  <td className="border border-border p-2">More complex setup</td>
+                  <td className="border border-border p-2">Complex queries, graph data</td>
+                </tr>
+                <tr>
+                  <td className="border border-border p-2"><strong>Chroma</strong></td>
+                  <td className="border border-border p-2">Simple, lightweight, good for development</td>
+                  <td className="border border-border p-2">Less scalable, fewer features</td>
+                  <td className="border border-border p-2">Development, small projects</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className="text-2xl font-semibold mb-3">Using Vector Stores</h3>
+          <EnhancedCodeBlock
+            code={`import { useVectorStore } from '@clarity-chat/react'
+
+function VectorStoreExample() {
+  const {
+    store,
+    status,
+    search,
+    addDocuments,
+  } = useVectorStore({
+    provider: 'pinecone',
+    config: {
+      apiKey: process.env.NEXT_PUBLIC_PINECONE_API_KEY,
+      indexName: 'my-index',
+      dimension: 1536, // OpenAI embedding dimension
+    },
+  })
+
+  const handleAddDocuments = async () => {
+    const documents = [
+      {
+        id: 'doc-1',
+        content: 'React is a JavaScript library for building user interfaces.',
+        embedding: await generateEmbedding('React is a JavaScript library...'),
+        metadata: { source: 'docs.md', page: 1 },
+      },
+    ]
+
+    await addDocuments(documents)
+  }
+
+  const handleSearch = async () => {
+    const results = await search('What is React?', { topK: 5 })
+    console.log('Search results:', results)
+  }
+
+  return (
+    <div>
+      <button onClick={handleAddDocuments}>Add Documents</button>
+      <button onClick={handleSearch}>Search</button>
+      <p>Status: {status}</p>
+    </div>
+  )
+}`}
+            language="tsx"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Embeddings</h2>
+          <p className="mb-4">
+            Embeddings convert text into numerical vectors that capture semantic meaning. Clarity Chat supports
+            multiple embedding providers:
+          </p>
+
+          <h3 className="text-2xl font-semibold mb-3">Embedding Providers</h3>
+          <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+            <li><strong>OpenAI:</strong> text-embedding-3-small, text-embedding-3-large, text-embedding-ada-002</li>
+            <li><strong>Cohere:</strong> embed-english-v3.0, embed-multilingual-v3.0</li>
+            <li><strong>Custom:</strong> Self-hosted or custom embedding models</li>
+          </ul>
+
+          <EnhancedCodeBlock
+            code={`import { useEmbeddings } from '@clarity-chat/react'
+
+function EmbeddingsExample() {
+  const { generate, provider } = useEmbeddings({
+    provider: 'openai',
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    model: 'text-embedding-3-small',
+  })
+
+  const handleEmbed = async () => {
+    // Single text
+    const embedding = await generate('What is React?')
+    console.log('Embedding:', embedding)
+
+    // Multiple texts (batch)
+    const embeddings = await generate([
+      'What is React?',
+      'What is Vue?',
+      'What is Angular?',
+    ])
+    console.log('Embeddings:', embeddings)
+  }
+
+  return (
+    <div>
+      <button onClick={handleEmbed}>Generate Embeddings</button>
+      {provider && <p>Model: {provider.defaultModel}</p>}
+    </div>
+  )
+}`}
+            language="tsx"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Document Chunking</h2>
+          <p className="mb-4">
+            Documents must be split into chunks before embedding. The chunking strategy affects retrieval quality:
+          </p>
+
+          <h3 className="text-2xl font-semibold mb-3">Chunking Strategies</h3>
+
+          <h4 className="text-xl font-semibold mb-2">1. Fixed Size</h4>
+          <p className="mb-4">
+            Simple chunking by character count. Fast but may split sentences:
+          </p>
+
+          <EnhancedCodeBlock
+            code={`function chunkBySize(text: string, size: number, overlap: number = 0): string[] {
+  const chunks: string[] = []
+  for (let i = 0; i < text.length; i += size - overlap) {
     chunks.push(text.slice(i, i + size))
   }
   return chunks
 }
 
-// Pros: Simple, fast
-// Cons: Might split mid-sentence`}
-        />
+// Usage
+const chunks = chunkBySize(documentText, 1000, 200) // 1000 chars, 200 overlap`}
+            language="tsx"
+            showLineNumbers
+          />
 
-        <h3>Semantic (Better)</h3>
-        <CodeBlock
-          language="typescript"
-          code={`// Split by paragraphs, sentences
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
+          <h4 className="text-xl font-semibold mb-2 mt-8">2. Semantic Chunking</h4>
+          <p className="mb-4">
+            Split by paragraphs, sentences, or semantic boundaries. Better quality:
+          </p>
 
-const splitter = new RecursiveCharacterTextSplitter({
-  chunkSize: 1000,
-  chunkOverlap: 200,  // Keep context between chunks
-  separators: ['\\n\\n', '\\n', '. ', ' ']
-})
+          <EnhancedCodeBlock
+            code={`function chunkSemantic(text: string, maxSize: number): string[] {
+  // Split by paragraphs first
+  const paragraphs = text.split('\\n\\n')
+  const chunks: string[] = []
+  let currentChunk = ''
 
-const chunks = await splitter.splitText(text)
-
-// Pros: Preserves meaning
-// Cons: Slower`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Choosing Vector Databases</h2>
-
-        <div className="space-y-4">
-          <div className="p-4 border-2 rounded-xl">
-            <div className="font-semibold mb-2">Pinecone</div>
-            <div className="text-sm space-y-1">
-              <div>✅ Easiest to set up</div>
-              <div>✅ Fully managed</div>
-              <div>❌ Can be expensive at scale</div>
-            </div>
-          </div>
-
-          <div className="p-4 border-2 rounded-xl">
-            <div className="font-semibold mb-2">Weaviate</div>
-            <div className="text-sm space-y-1">
-              <div>✅ Open source</div>
-              <div>✅ Self-hostable</div>
-              <div>❌ More setup required</div>
-            </div>
-          </div>
-
-          <div className="p-4 border-2 rounded-xl">
-            <div className="font-semibold mb-2">Supabase Vector</div>
-            <div className="text-sm space-y-1">
-              <div>✅ Free tier</div>
-              <div>✅ Built into Postgres</div>
-              <div>❌ Slower than dedicated vector DBs</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="docs-section">
-        <h2>Improving RAG Quality</h2>
-
-        <h3>1. Hybrid Search</h3>
-        <p>Combine vector search with keyword matching:</p>
-        <CodeBlock
-          language="typescript"
-          code={`// Vector search finds semantically similar
-const vectorResults = await vectorSearch(question)
-
-// Keyword search finds exact matches
-const keywordResults = await keywordSearch(question)
-
-// Combine both
-const combined = mergeAndRerank(vectorResults, keywordResults)`}
-        />
-
-        <h3>2. Reranking</h3>
-        <p>Re-order results by relevance:</p>
-        <CodeBlock
-          language="typescript"
-          code={`import { CohereClient } from 'cohere-ai'
-
-const cohere = new CohereClient({ apiKey: process.env.COHERE_API_KEY })
-
-// After vector search
-const reranked = await cohere.rerank({
-  model: 'rerank-english-v3.0',
-  query: question,
-  documents: searchResults.map(r => r.text),
-  topN: 3
-})
-
-// Use reranked results for AI context`}
-        />
-
-        <h3>3. Metadata Filtering</h3>
-        <CodeBlock
-          language="typescript"
-          code={`// Only search specific documents
-const results = await pinecone.query({
-  vector: embedding,
-  topK: 5,
-  filter: {
-    department: 'engineering',  // Only engineering docs
-    year: { $gte: 2024 }        // Only recent docs
-  }
-})`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Common Pitfalls</h2>
-
-        <Callout type="warning" title="Chunk Size Matters">
-          Too small (100 chars): Loses context, poor results
-          <br />
-          Too large (5000 chars): Wastes tokens, slow
-          <br />
-          Sweet spot: 500-1500 characters
-        </Callout>
-
-        <Callout type="warning" title="Don't Forget Overlap">
-          Use 10-20% overlap between chunks. Otherwise information at chunk
-          boundaries gets lost.
-        </Callout>
-
-        <Callout type="warning" title="Embeddings Can Be Stale">
-          If you update a document, re-embed it! Old embeddings point to old
-          content.
-        </Callout>
-      </section>
-
-      <section className="docs-section">
-        <h2>Measuring RAG Quality</h2>
-        <CodeBlock
-          language="typescript"
-          code={`import { ResponseQualityMeter } from '@clarity-chat/react'
-
-// After RAG response, evaluate
-const metrics = await evaluateRAGResponse(answer, question, sources)
-
-<ResponseQualityMeter
-  metrics={[
-    { 
-      label: 'Groundedness',
-      score: 0.92,
-      description: 'Answer based on sources, not hallucinated'
-    },
-    {
-      label: 'Answer Relevancy',
-      score: 0.88,
-      description: 'Actually answers the question'
-    },
-    {
-      label: 'Context Relevancy',
-      score: 0.85,
-      description: 'Retrieved chunks are relevant'
+  for (const para of paragraphs) {
+    if (currentChunk.length + para.length > maxSize) {
+      if (currentChunk) chunks.push(currentChunk.trim())
+      currentChunk = para
+    } else {
+      currentChunk += (currentChunk ? '\\n\\n' : '') + para
     }
-  ]}
-/>`}
-        />
-      </section>
+  }
+  if (currentChunk) chunks.push(currentChunk.trim())
+  return chunks
+}
 
-      <section className="docs-section">
-        <h2>Related</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/cookbook/rag-document-chat" className="docs-card">
-            <h3>RAG Recipe</h3>
-            <p>Complete implementation</p>
-          </a>
-          <a href="/reference/components/citation-card" className="docs-card">
-            <h3>Citation Card</h3>
-            <p>Show sources</p>
-          </a>
-          <a href="/reference/components/context-card" className="docs-card">
-            <h3>Context Card</h3>
-            <p>Manage documents</p>
-          </a>
+// Usage
+const chunks = chunkSemantic(documentText, 1000)`}
+            language="tsx"
+            showLineNumbers
+          />
+
+          <Callout type="tip">
+            <p>
+              <strong>Best Practices:</strong> Use 500-1500 character chunks with 10-20% overlap. Semantic
+              chunking preserves context better than fixed-size chunking.
+            </p>
+          </Callout>
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Indexing Documents</h2>
+          <p className="mb-4">
+            Index documents by chunking, embedding, and storing in a vector database:
+          </p>
+
+          <EnhancedCodeBlock
+            code={`import { useVectorStore, useEmbeddings } from '@clarity-chat/react'
+
+async function indexDocument(documentText: string, metadata: Record<string, any>) {
+  // 1. Chunk the document
+  const chunks = chunkSemantic(documentText, 1000)
+
+  // 2. Generate embeddings
+  const embeddings = useEmbeddings({
+    provider: 'openai',
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  })
+
+  const chunkEmbeddings = await Promise.all(
+    chunks.map(chunk => embeddings.generate(chunk))
+  )
+
+  // 3. Store in vector database
+  const vectorStore = useVectorStore({
+    provider: 'pinecone',
+    config: {
+      apiKey: process.env.NEXT_PUBLIC_PINECONE_API_KEY,
+      indexName: 'documents',
+    },
+  })
+
+  const vectors = chunks.map((chunk, i) => ({
+    id: \`doc-\${Date.now()}-\${i}\`,
+    content: chunk,
+    embedding: chunkEmbeddings[i],
+    metadata: {
+      ...metadata,
+      chunkIndex: i,
+      totalChunks: chunks.length,
+    },
+  }))
+
+  await vectorStore.addDocuments(vectors)
+
+  return vectors.length
+}`}
+            language="tsx"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Retrieval & Reranking</h2>
+          <p className="mb-4">
+            Retrieve relevant documents and optionally rerank them for better quality:
+          </p>
+
+          <h3 className="text-2xl font-semibold mb-3">Basic Retrieval</h3>
+          <EnhancedCodeBlock
+            code={`import { useRAGPipeline } from '@clarity-chat/react'
+
+function RetrievalExample() {
+  const rag = useRAGPipeline({
+    vectorStore: 'pinecone',
+    embeddingProvider: 'openai',
+  })
+
+  const handleRetrieve = async (query: string) => {
+    // Retrieve top 5 most similar documents
+    const results = await rag.retrieve(query, 5)
+
+    // Results include:
+    // - id: Vector ID
+    // - score: Similarity score (0-1)
+    // - metadata: Document metadata
+    // - content: Document text
+
+    return results
+  }
+
+  return <button onClick={() => handleRetrieve('What is React?')}>Search</button>
+}`}
+            language="tsx"
+            showLineNumbers
+          />
+
+          <h3 className="text-2xl font-semibold mb-3 mt-8">With Reranking</h3>
+          <p className="mb-4">
+            Reranking improves result quality by reordering based on relevance:
+          </p>
+
+          <EnhancedCodeBlock
+            code={`import { useRAGPipeline } from '@clarity-chat/react'
+
+function RerankingExample() {
+  const rag = useRAGPipeline({
+    vectorStore: 'pinecone',
+    embeddingProvider: 'openai',
+    reranker: 'cohere', // Optional: rerank results
+  })
+
+  const handleRetrieve = async (query: string) => {
+    // Retrieve and rerank
+    const results = await rag.retrieve(query, 10) // Get more initially
+    const reranked = await rag.rerank(query, results) // Rerank to top 5
+
+    return reranked
+  }
+
+  return <button onClick={() => handleRetrieve('What is React?')}>Search</button>
+}`}
+            language="tsx"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Integrating with Chat</h2>
+          <p className="mb-4">
+            Use RAG with <code>useClarityChat</code> to provide document-based answers:
+          </p>
+
+          <EnhancedCodeBlock
+            code={`import { useClarityChat, useRAGPipeline } from '@clarity-chat/react'
+import { useState, useCallback } from 'react'
+
+function ChatWithRAG() {
+  const [context, setContext] = useState('')
+
+  const rag = useRAGPipeline({
+    vectorStore: 'pinecone',
+    embeddingProvider: 'openai',
+  })
+
+  const {
+    messages,
+    append,
+    isLoading,
+  } = useClarityChat({
+    api: '/api/chat',
+    onRequest: async (messages) => {
+      // Retrieve relevant documents before sending to API
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage.role === 'user') {
+        const results = await rag.retrieve(lastMessage.content, 5)
+        const contextText = results
+          .map(r => r.metadata?.content || r.content)
+          .join('\\n\\n')
+        setContext(contextText)
+
+        // Add context to system message
+        return [
+          {
+            role: 'system',
+            content: \`Use the following context to answer questions:\\n\\n\${contextText}\`,
+          },
+          ...messages,
+        ]
+      }
+      return messages
+    },
+  })
+
+  const handleSend = useCallback(async (message: string) => {
+    await append({ role: 'user', content: message })
+  }, [append])
+
+  return (
+    <div>
+      {/* Chat UI */}
+      <div>
+        {messages.map(msg => (
+          <div key={msg.id}>{msg.content}</div>
+        ))}
+      </div>
+      {/* Show sources */}
+      {context && (
+        <div className="text-sm text-muted-foreground">
+          Sources: {context.slice(0, 100)}...
         </div>
-      </section>
+      )}
     </div>
+  )
+}`}
+            language="tsx"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Metadata Filtering</h2>
+          <p className="mb-4">
+            Use metadata filters to search specific documents or categories:
+          </p>
+
+          <EnhancedCodeBlock
+            code={`import { useVectorStore } from '@clarity-chat/react'
+
+function MetadataFilterExample() {
+  const { search } = useVectorStore({
+    provider: 'pinecone',
+    config: {
+      apiKey: process.env.NEXT_PUBLIC_PINECONE_API_KEY,
+      indexName: 'documents',
+    },
+  })
+
+  const handleSearch = async (query: string, department: string) => {
+    // Search only engineering documents
+    const results = await search(query, {
+      topK: 5,
+      filter: {
+        department: 'engineering',
+        year: { $gte: 2024 }, // Only recent documents
+      },
+    })
+
+    return results
+  }
+
+  return <button onClick={() => handleSearch('API changes', 'engineering')}>Search</button>
+}`}
+            language="tsx"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Complete Example</h2>
+          <p className="mb-4">
+            Here's a complete RAG implementation with document indexing and chat integration:
+          </p>
+
+          <EnhancedCodeBlock
+            code={`import { useState, useCallback } from 'react'
+import { useClarityChat, useRAGPipeline, useVectorStore, useEmbeddings } from '@clarity-chat/react'
+
+function CompleteRAGExample() {
+  const [documents, setDocuments] = useState([])
+
+  // Initialize RAG pipeline
+  const rag = useRAGPipeline({
+    vectorStore: 'pinecone',
+    embeddingProvider: 'openai',
+    apiKeys: {
+      vectorStore: process.env.NEXT_PUBLIC_PINECONE_API_KEY,
+      embeddings: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    },
+    reranker: 'cohere',
+  })
+
+  // Vector store for indexing
+  const { addDocuments } = useVectorStore({
+    provider: 'pinecone',
+    config: {
+      apiKey: process.env.NEXT_PUBLIC_PINECONE_API_KEY,
+      indexName: 'documents',
+    },
+  })
+
+  // Embeddings for indexing
+  const { generate } = useEmbeddings({
+    provider: 'openai',
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  })
+
+  // Chat with RAG
+  const {
+    messages,
+    append,
+    isLoading,
+  } = useClarityChat({
+    api: '/api/chat',
+    onRequest: async (messages) => {
+      const lastMessage = messages[messages.length - 1]
+      if (lastMessage.role === 'user') {
+        // Retrieve relevant documents
+        const results = await rag.retrieve(lastMessage.content, 5)
+        const context = results
+          .map(r => \`[Source: \${r.metadata?.source || 'unknown'}]\${r.metadata?.content || r.content}\`)
+          .join('\\n\\n')
+
+        return [
+          {
+            role: 'system',
+            content: \`Answer questions using the following context. Cite sources when possible.\\n\\nContext:\\n\${context}\`,
+          },
+          ...messages,
+        ]
+      }
+      return messages
+    },
+  })
+
+  // Index a document
+  const handleIndexDocument = useCallback(async (text: string, metadata: Record<string, any>) => {
+    // Chunk
+    const chunks = chunkSemantic(text, 1000)
+
+    // Embed
+    const embeddings = await Promise.all(
+      chunks.map(chunk => generate(chunk))
+    )
+
+    // Store
+    const vectors = chunks.map((chunk, i) => ({
+      id: \`doc-\${Date.now()}-\${i}\`,
+      content: chunk,
+      embedding: embeddings[i],
+      metadata: {
+        ...metadata,
+        chunkIndex: i,
+        totalChunks: chunks.length,
+      },
+    }))
+
+    await addDocuments(vectors)
+    setDocuments(prev => [...prev, { id: metadata.id, chunks: vectors.length }])
+  }, [generate, addDocuments])
+
+  return (
+    <div className="space-y-4">
+      {/* Document indexing */}
+      <div>
+        <button onClick={() => handleIndexDocument('Document text...', { source: 'doc1.pdf' })}>
+          Index Document
+        </button>
+        <p>Indexed: {documents.length} documents</p>
+      </div>
+
+      {/* Chat with RAG */}
+      <div>
+        {messages.map(msg => (
+          <div key={msg.id}>{msg.content}</div>
+        ))}
+        <button onClick={() => append({ role: 'user', content: 'What is in the documents?' })}>
+          Ask Question
+        </button>
+      </div>
+    </div>
+  )
+}`}
+            language="tsx"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Best Practices</h2>
+
+          <h3 className="text-2xl font-semibold mb-3">1. Chunk Size Matters</h3>
+          <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+            <li>Too small (100 chars): Loses context, poor results</li>
+            <li>Too large (5000 chars): Wastes tokens, slow</li>
+            <li>Sweet spot: 500-1500 characters</li>
+            <li>Use 10-20% overlap between chunks</li>
+          </ul>
+
+          <h3 className="text-2xl font-semibold mb-3 mt-8">2. Use Semantic Chunking</h3>
+          <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+            <li>Split by paragraphs, sentences, or semantic boundaries</li>
+            <li>Preserves context better than fixed-size chunking</li>
+            <li>Better retrieval quality</li>
+          </ul>
+
+          <h3 className="text-2xl font-semibold mb-3 mt-8">3. Include Rich Metadata</h3>
+          <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+            <li>Store source, date, author, category in metadata</li>
+            <li>Use metadata for filtering and citations</li>
+            <li>Enables better document management</li>
+          </ul>
+
+          <h3 className="text-2xl font-semibold mb-3 mt-8">4. Use Reranking</h3>
+          <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+            <li>Retrieve more results (10-20), then rerank to top 3-5</li>
+            <li>Improves relevance significantly</li>
+            <li>Worth the extra API call for production</li>
+          </ul>
+
+          <h3 className="text-2xl font-semibold mb-3 mt-8">5. Update Embeddings</h3>
+          <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+            <li>Re-embed documents when content changes</li>
+            <li>Delete old embeddings before adding new ones</li>
+            <li>Track document versions in metadata</li>
+          </ul>
+
+          <h3 className="text-2xl font-semibold mb-3 mt-8">6. Monitor Quality</h3>
+          <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+            <li>Track retrieval relevance scores</li>
+            <li>Monitor answer quality with user feedback</li>
+            <li>Adjust chunk size and retrieval parameters based on results</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Common Pitfalls</h2>
+
+          <Callout type="warning">
+            <p>
+              <strong>Chunk Size:</strong> Too small chunks lose context, too large chunks waste tokens.
+              Find the right balance for your documents (typically 500-1500 characters).
+            </p>
+          </Callout>
+
+          <Callout type="warning">
+            <p>
+              <strong>Overlap:</strong> Use 10-20% overlap between chunks. Otherwise information at chunk
+              boundaries gets lost.
+            </p>
+          </Callout>
+
+          <Callout type="warning">
+            <p>
+              <strong>Stale Embeddings:</strong> If you update a document, re-embed it! Old embeddings point
+              to old content and won't reflect changes.
+            </p>
+          </Callout>
+
+          <Callout type="warning">
+            <p>
+              <strong>Metadata:</strong> Always include source information in metadata for citations and
+              document management.
+            </p>
+          </Callout>
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-semibold mb-4">Related</h2>
+          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+            <li>
+              <a href="/reference/hooks/use-rag-pipeline" className="text-primary underline">
+                useRAGPipeline Hook
+              </a> – RAG pipeline hook documentation
+            </li>
+            <li>
+              <a href="/reference/hooks/use-vector-store" className="text-primary underline">
+                useVectorStore Hook
+              </a> – Vector store hook documentation
+            </li>
+            <li>
+              <a href="/reference/hooks/use-embeddings" className="text-primary underline">
+                useEmbeddings Hook
+              </a> – Embeddings hook documentation
+            </li>
+            <li>
+              <a href="/reference/components/citation-card" className="text-primary underline">
+                CitationCard Component
+              </a> – Display document sources
+            </li>
+            <li>
+              <a href="/guides/memory" className="text-primary underline">
+                Memory System Guide
+              </a> – Memory strategies for context management
+            </li>
+          </ul>
+        </section>
+
+        <Pagination
+          previous={{
+            title: 'Agent System Guide',
+            href: '/guides/agents',
+          }}
+          next={{
+            title: 'Getting Started',
+            href: '/guides/getting-started',
+          }}
+        />
+      </div>
+    </>
   )
 }

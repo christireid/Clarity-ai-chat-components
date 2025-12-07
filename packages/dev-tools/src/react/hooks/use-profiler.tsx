@@ -6,7 +6,7 @@
 'use client'
 
 import * as React from 'react'
-import { useOptimistic, useCallback, useMemo } from 'react'
+import { useOptimistic, useCallback, useMemo, useTransition } from 'react'
 import { getProfiler, type PerformanceMetrics } from '../../performance'
 
 interface ProfilerState {
@@ -14,13 +14,18 @@ interface ProfilerState {
   enabled: boolean
 }
 
+/**
+ * Action types for profiler reducer
+ */
+type ProfilerAction =
+  | { type: 'ADD_METRIC'; metric: PerformanceMetrics }
+  | { type: 'UPDATE_METRIC'; name: string; updates: Partial<PerformanceMetrics> }
+  | { type: 'CLEAR_METRICS' }
+  | { type: 'SET_ENABLED'; enabled: boolean }
+
 function reducer(
   state: ProfilerState,
-  action:
-    | { type: 'ADD_METRIC'; metric: PerformanceMetrics }
-    | { type: 'UPDATE_METRIC'; name: string; updates: Partial<PerformanceMetrics> }
-    | { type: 'CLEAR_METRICS' }
-    | { type: 'SET_ENABLED'; enabled: boolean }
+  action: ProfilerAction
 ): ProfilerState {
   switch (action.type) {
     case 'ADD_METRIC':
@@ -48,15 +53,20 @@ export function useProfiler() {
   const profiler = getProfiler()
   
   // Initialize state from profiler
+  // Note: enabled is private, so we start with a sensible default
+  // The state will be updated via setEnabled calls
   const [initialState] = React.useState<ProfilerState>(() => ({
     metrics: profiler.getAllMetrics(),
-    enabled: (profiler as any).enabled || false,
+    enabled: false,
   }))
 
-  const [state, dispatch] = useOptimistic<ProfilerState, any>(
+  const [state, dispatch] = useOptimistic<ProfilerState, ProfilerAction>(
     initialState,
     reducer
   )
+  
+  // React 19 requires useOptimistic updates to be called within a transition
+  const [, startTransition] = useTransition()
 
   const start = useCallback((name: string, options: { trackMemory?: boolean } = {}) => {
     profiler.start(name, options)
@@ -67,15 +77,19 @@ export function useProfiler() {
       startTime: performance.now(),
     }
     
-    dispatch({ type: 'ADD_METRIC', metric: optimisticMetric })
-  }, [profiler, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'ADD_METRIC', metric: optimisticMetric })
+    })
+  }, [profiler, dispatch, startTransition])
 
-  const end = useCallback((name: string, custom?: Record<string, any>) => {
+  const end = useCallback((name: string, custom?: Record<string, unknown>) => {
     const metric = profiler.end(name, custom)
     if (metric) {
-      dispatch({ type: 'UPDATE_METRIC', name, updates: metric })
+      startTransition(() => {
+        dispatch({ type: 'UPDATE_METRIC', name, updates: metric })
+      })
     }
-  }, [profiler, dispatch])
+  }, [profiler, dispatch, startTransition])
 
   const profile = useCallback(async <T,>(
     name: string,
@@ -95,13 +109,17 @@ export function useProfiler() {
 
   const clear = useCallback(() => {
     profiler.clear()
-    dispatch({ type: 'CLEAR_METRICS' })
-  }, [profiler, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'CLEAR_METRICS' })
+    })
+  }, [profiler, dispatch, startTransition])
 
   const setEnabled = useCallback((enabled: boolean) => {
     profiler.setEnabled(enabled)
-    dispatch({ type: 'SET_ENABLED', enabled })
-  }, [profiler, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'SET_ENABLED', enabled })
+    })
+  }, [profiler, dispatch, startTransition])
 
   const summary = useMemo(() => {
     return profiler.getSummary()

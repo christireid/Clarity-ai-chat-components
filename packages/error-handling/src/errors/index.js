@@ -3,6 +3,10 @@
  * Provides helpful context, solutions, and documentation links
  */
 export class ClarityChatError extends Error {
+    code;
+    solution;
+    docs;
+    context;
     constructor(message, options) {
         super(message);
         this.name = 'ClarityChatError';
@@ -53,6 +57,7 @@ export class ConfigurationError extends ClarityChatError {
  * API errors - HTTP request failures, invalid responses
  */
 export class APIError extends ClarityChatError {
+    statusCode;
     constructor(message, options) {
         super(message, options);
         this.name = 'APIError';
@@ -72,6 +77,9 @@ export class AuthenticationError extends ClarityChatError {
  * Rate limit errors - too many requests
  */
 export class RateLimitError extends ClarityChatError {
+    retryAfter;
+    limit;
+    remaining;
     constructor(message, options) {
         super(message, options);
         this.name = 'RateLimitError';
@@ -84,6 +92,9 @@ export class RateLimitError extends ClarityChatError {
  * Validation errors - invalid input data
  */
 export class ValidationError extends ClarityChatError {
+    field;
+    value;
+    expected;
     constructor(message, options) {
         super(message, options);
         this.name = 'ValidationError';
@@ -105,6 +116,8 @@ export class StreamError extends ClarityChatError {
  * Token limit errors - message or context too long
  */
 export class TokenLimitError extends ClarityChatError {
+    limit;
+    actual;
     constructor(message, options) {
         super(message, options);
         this.name = 'TokenLimitError';
@@ -125,6 +138,7 @@ export class NetworkError extends ClarityChatError {
  * Timeout errors - request took too long
  */
 export class TimeoutError extends ClarityChatError {
+    timeout;
     constructor(message, options) {
         super(message, options);
         this.name = 'TimeoutError';
@@ -135,6 +149,7 @@ export class TimeoutError extends ClarityChatError {
  * Component errors - React component lifecycle issues
  */
 export class ComponentError extends ClarityChatError {
+    componentName;
     constructor(message, options) {
         super(message, options);
         this.name = 'ComponentError';

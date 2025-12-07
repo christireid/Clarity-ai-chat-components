@@ -1,23 +1,11 @@
-import type { Metadata } from 'next'
+'use client'
+
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { Callout } from '@/components/MDX/Callout'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
+import { Pagination } from '@/components/Navigation/Pagination'
 
-import { CodePlayground } from '@/components/Playground/CodePlayground'
 export const dynamic = 'force-dynamic'
-
-export const metadata: Metadata = {
-  title: 'useTokenOptimization Hook | Clarity Chat',
-  description: 'Coordinate token budgeting, compression, caching, and routing for cost-efficient AI conversations.',
-}
-
-const secondaryHooks = [
-  { name: 'useTokenTracker', description: 'Live token + cost tracking UI (documented separately).' },
-  { name: 'usePromptCompression', description: 'Compress prompts and histories using heuristic + semantic strategies.' },
-  { name: 'useSmartCache', description: 'Cache LLM responses and embeddings to avoid duplicate calls.' },
-  { name: 'useSmartThrottle', description: 'Back off high-volume requests to avoid rate limits.' },
-  { name: 'useRequestBatcher', description: 'Batch small requests to reduce HTTP overhead.' },
-  { name: 'useModelRouter', description: 'Route requests to the cheapest provider meeting quality thresholds.' },
-  { name: 'useResponseLimiter', description: 'Limit output tokens or streaming duration dynamically.' },
-]
 
 export default function UseTokenOptimizationPage() {
   return (
@@ -28,72 +16,92 @@ export default function UseTokenOptimizationPage() {
         <header>
           <h1 className="text-4xl font-bold mb-3">useTokenOptimization</h1>
           <p className="text-lg text-muted-foreground">
-            Central coordinator for Clarity Chat’s token optimization suite. Automatically balances context window
-            allocation, compression, caching, throttling, and provider routing.
+            Legacy token optimization hook. <strong>Deprecated</strong> - use{' '}
+            <a href="/reference/hooks/use-token-optimization-enhanced" className="text-primary underline">
+              useTokenOptimizationEnhanced
+            </a>{' '}
+            instead.
           </p>
         </header>
 
-        <section>
-          <h2 className="text-2xl font-semibold mb-3">Usage</h2>
-          <div className="bg-muted p-6 rounded-lg">
-            <pre className="text-sm overflow-x-auto">
-              <code>{`import {
-  useTokenOptimization,
-  useTokenTracker,
-  usePromptCompression,
-  useModelRouter,
-} from '@clarity-chat/react'
+        <Callout type="warning">
+          <p>
+            <strong>Deprecated:</strong> This hook is deprecated and maintained for backward compatibility only.
+            Please migrate to <a href="/reference/hooks/use-token-optimization-enhanced">useTokenOptimizationEnhanced</a>{' '}
+            which includes all features from this hook plus additional optimizations like TOON format, prompt caching,
+            semantic caching, response prefilling, and more.
+          </p>
+        </Callout>
 
-const { optimizeContext, recommendation, state } = useTokenOptimization({
-  maxContextWindow: 128_000,
-  budgetUsd: 25,
-  targets: {
-    latencyMs: 4_000,
-    accuracy: 0.92,
-    costSavings: 0.6,
-  },
-})`}</code>
-            </pre>
-          </div>
+        <section>
+          <h2 className="text-2xl font-semibold mb-3">Migration Guide</h2>
+          <p className="mb-4">
+            To migrate from <code>useTokenOptimization</code> to <code>useTokenOptimizationEnhanced</code>:
+          </p>
+          <EnhancedCodeBlock
+            code={`// Old (deprecated)
+import { useTokenOptimization } from '@clarity-chat/react'
+
+const { optimizePrompt } = useTokenOptimization({
+  enablePromptShortening: true,
+})
+
+// New (recommended)
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+
+const { optimizePrompt } = useTokenOptimizationEnhanced({
+  preset: 'balanced', // or customize individual options
+  enablePromptCompression: true,
+})`}
+            language="tsx"
+            showLineNumbers
+          />
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold mb-3">What It Does</h2>
+          <p className="mb-4 text-muted-foreground">
+            This legacy hook provided basic prompt optimization features. The enhanced version includes all of these
+            features plus many more optimizations.
+          </p>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Evaluates conversation state (token counts, roles, metadata) and returns optimized context bundles.</li>
-            <li>Triggers compression pipelines (<code>usePromptCompression</code>) when nearing budget thresholds.</li>
-            <li>Advises provider/model selection via <code>useModelRouter</code> based on price/performance goals.</li>
-            <li>Integrates with <code>useSmartCache</code> to reuse previous completions or embeddings.</li>
-            <li>Feeds <code>useTokenTracker</code> so the UI reflects savings in real time.</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-3">Return Value</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>
-              <code>optimizeContext(input)</code> – Accepts {`{ systemPrompt, userPreferences, recentMessages, semanticMemories }`} and
-              returns trimmed segments respecting budgets.
-            </li>
-            <li>
-              <code>recommendation</code> – Suggested model/provider + rationale.
-            </li>
-            <li>
-              <code>state</code> – Current budget, savings, compression ratios, and throttling status.
-            </li>
+            <li>Basic prompt shortening and optimization</li>
+            <li>Token counting and estimation</li>
+            <li>Simple statistics tracking</li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold mb-3">Related Hooks</h2>
           <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            {secondaryHooks.map((hook) => (
-              <li key={hook.name}>
-                <code>{hook.name}</code> – {hook.description}
-              </li>
-            ))}
+            <li>
+              <a href="/reference/hooks/use-token-optimization-enhanced" className="text-primary underline">
+                useTokenOptimizationEnhanced
+              </a> – Recommended replacement with all features plus TOON, caching, compression, routing, and more
+            </li>
+            <li>
+              <a href="/reference/hooks/use-token-budget-monitor" className="text-primary underline">
+                useTokenBudgetMonitor
+              </a> – Real-time token budget monitoring with auto-trimming
+            </li>
+            <li>
+              <a href="/reference/hooks/use-token-tracker" className="text-primary underline">
+                useTokenTracker
+              </a> – Token usage and cost tracking
+            </li>
           </ul>
         </section>
+
+        <Pagination
+          previous={{
+            title: 'useTokenTracker',
+            href: '/reference/hooks/use-token-tracker',
+          }}
+          next={{
+            title: 'useTokenOptimizationEnhanced',
+            href: '/reference/hooks/use-token-optimization-enhanced',
+          }}
+        />
       </div>
     </>
   )

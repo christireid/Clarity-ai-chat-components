@@ -26,12 +26,14 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Hover me')
+      const trigger = screen.getByRole('button', { name: 'Hover me' })
       await user.hover(trigger)
 
       // Wait for tooltip to appear (respects delay)
+      // Use getAllByText and check that tooltip content exists
       await waitFor(() => {
-        expect(screen.getByText('Tooltip text')).toBeInTheDocument()
+        const tooltips = screen.getAllByText('Tooltip text')
+        expect(tooltips.length).toBeGreaterThan(0)
       }, { timeout: 500 })
     })
 
@@ -61,7 +63,9 @@ describe('Tooltip Component', () => {
           <button>Button</button>
         </Tooltip>
       )
-      expect(screen.getByText('Controlled')).toBeInTheDocument()
+      // Tooltip content should be visible when open is true
+      const tooltips = screen.getAllByText('Controlled')
+      expect(tooltips.length).toBeGreaterThan(0)
     })
 
     it('should work as uncontrolled component', async () => {
@@ -72,11 +76,12 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('Uncontrolled')).toBeInTheDocument()
+        const tooltips = screen.getAllByText('Uncontrolled')
+        expect(tooltips.length).toBeGreaterThan(0)
       }, { timeout: 500 })
     })
 
@@ -107,15 +112,16 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       // Should not appear immediately
-      expect(screen.queryByText('Delayed')).not.toBeInTheDocument()
+      expect(screen.queryAllByText('Delayed').length).toBe(0)
 
       // Should appear after delay
       await waitFor(() => {
-        expect(screen.getByText('Delayed')).toBeInTheDocument()
+        const tooltips = screen.getAllByText('Delayed')
+        expect(tooltips.length).toBeGreaterThan(0)
       }, { timeout: 600 })
     })
   })
@@ -147,11 +153,12 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('With arrow')).toBeInTheDocument()
+        const tooltips = screen.getAllByText('With arrow')
+        expect(tooltips.length).toBeGreaterThan(0)
       }, { timeout: 500 })
     })
 
@@ -163,11 +170,12 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('No arrow')).toBeInTheDocument()
+        const tooltips = screen.getAllByText('No arrow')
+        expect(tooltips.length).toBeGreaterThan(0)
       }, { timeout: 500 })
     })
   })
@@ -190,11 +198,13 @@ describe('Tooltip Component', () => {
         </Tooltip>
       )
 
-      const trigger = screen.getByText('Button')
+      const trigger = screen.getByRole('button', { name: 'Button' })
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('Custom content')).toBeInTheDocument()
+        // Tooltip content may appear multiple times, verify it exists
+        const tooltips = screen.getAllByText('Custom content')
+        expect(tooltips.length).toBeGreaterThan(0)
       }, { timeout: 500 })
     })
   })
