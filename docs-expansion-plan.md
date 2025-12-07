@@ -481,9 +481,9 @@ pnpm typecheck              # Type check
 - Real-time collaboration
 
 #### 10. Integration Guides
-- Next.js deep integration
-- Remix integration
-- Other frameworks
+- [x] Next.js deep integration (enhanced with advanced patterns, Server Components, production best practices)
+- [ ] Remix integration
+- [ ] Other frameworks
 - Backend integration patterns
 
 ---
