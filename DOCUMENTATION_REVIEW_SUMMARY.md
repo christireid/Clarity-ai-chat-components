@@ -6,7 +6,7 @@ This document summarizes the comprehensive code review and fixes applied to the 
 
 ## Files Created/Modified
 
-### New Documentation Pages Created
+### New Documentation Pages Created (4 files, 2,004 lines)
 
 1. **`apps/docs/app/reference/hooks/use-clarity-chat/page.tsx`** (655 lines)
    - Complete documentation for the `useClarityChat` hook
@@ -25,6 +25,17 @@ This document summarizes the comprehensive code review and fixes applied to the 
    - Includes: Options reference, presets, TOON, caching, cost tracking examples
 
 **Total: 2,004 lines of production-ready documentation**
+
+### Navigation Integration (2 files updated)
+
+5. **`apps/docs/app/reference/components/page.tsx`**
+   - Added `ClarityChat` and `ClarityChatPresets` to "Chat Components" section
+   - Placed at the top of the list as recommended components
+
+6. **`apps/docs/app/reference/hooks/page.tsx`**
+   - Added `useClarityChat` and `useTokenOptimizationEnhanced` to "Core Hooks" section
+   - Added prominent documentation links with descriptions
+   - Placed at the top as recommended hooks
 
 ## Issues Found & Fixed
 
