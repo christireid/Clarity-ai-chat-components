@@ -333,7 +333,19 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
   const [showShortcuts, setShowShortcuts] = useState(false)
   const sessionIdRef = useRef<string>('')
   const dialogRef = useRef<HTMLDivElement>(null)
+  // Track active throttle cancel function for cleanup on unmount
+  const activeThrottleCancelRef = useRef<(() => void) | null>(null)
   const toast = useToast()
+
+  // Cleanup any pending throttled updates on unmount
+  useEffect(() => {
+    return () => {
+      if (activeThrottleCancelRef.current) {
+        activeThrottleCancelRef.current()
+        activeThrottleCancelRef.current = null
+      }
+    }
+  }, [])
 
   // Initialize session ID and restore conversation history
   useEffect(() => {
@@ -538,6 +550,9 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         50
       )
 
+      // Store cancel function for cleanup on unmount
+      activeThrottleCancelRef.current = cancelUpdate
+
       try {
         while (true) {
           const { done, value } = await reader.read()
@@ -613,6 +628,8 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       } finally {
         // Ensure any pending throttled update is flushed before we finish
         flushUpdate()
+        // Clear the ref since this throttle is no longer active
+        activeThrottleCancelRef.current = null
       }
 
       // Clear loading and AI status when streaming completes
@@ -620,7 +637,10 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       setAiStatus(undefined)
     } catch (error) {
       // Cancel any pending throttled updates on error
-      cancelUpdate()
+      if (activeThrottleCancelRef.current) {
+        activeThrottleCancelRef.current()
+        activeThrottleCancelRef.current = null
+      }
       console.error('Chat error:', error)
 
       const errorMsg = error instanceof Error ? error.message : 'Please try again.'

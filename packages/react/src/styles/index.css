@@ -450,6 +450,22 @@ body {
 
   /* Prevent text selection during streaming (reduces repaints) */
   user-select: text;
+
+  /*
+   * Inline cursor positioning:
+   * Make the last markdown element display inline so the cursor
+   * appears on the same line as the last text, not on a new line.
+   * Target second-to-last child (last markdown element before cursor).
+   */
+  & > *:nth-last-child(2) {
+    display: inline;
+    margin-bottom: 0;
+  }
+
+  /* Cursor should flow inline after markdown content */
+  & > .clarity-streaming-cursor {
+    vertical-align: baseline;
+  }
 }
 
 /* Markdown content during streaming */
