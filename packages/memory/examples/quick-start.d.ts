@@ -5,5 +5,5 @@
  * Run: npm run example:basic
  * or: npx tsx examples/quick-start.ts
  */
-export {};
+export {}
 //# sourceMappingURL=quick-start.d.ts.map

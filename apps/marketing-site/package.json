@@ -8,27 +8,27 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext ts,tsx --max-warnings 0",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "^16.0.1",
+    "next": "^16.0.7",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "framer-motion": "^11.0.0",
-    "lucide-react": "^0.552.0",
+    "framer-motion": "^12.23.25",
+    "lucide-react": "^0.556.0",
     "@clarity-chat/react": "workspace:*",
     "@clarity-chat/primitives": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^22.10.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.9.3",
     "tailwindcss": "^3.4.0",
-    "postcss": "^8.4.0",
-    "autoprefixer": "^10.4.0",
-    "eslint": "^8.0.0",
-    "eslint-config-next": "^16.0.0"
+    "postcss": "^8.5.6",
+    "autoprefixer": "^10.4.22",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.7"
   }
 }

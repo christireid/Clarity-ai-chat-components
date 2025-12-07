@@ -4,6 +4,8 @@
  * Mock implementations and test helpers for testing components using useClarityChat
  */
 
+/* global RequestInfo, RequestInit */
+
 import * as React from 'react'
 import type {
   UseClarityChatReturn,

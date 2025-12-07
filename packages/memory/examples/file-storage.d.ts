@@ -5,5 +5,5 @@
  * Run: npm run example:file
  * or: npx tsx examples/file-storage.ts
  */
-export {};
+export {}
 //# sourceMappingURL=file-storage.d.ts.map

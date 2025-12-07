@@ -69,8 +69,11 @@ function getTextContent(children: React.ReactNode): string {
     return children.map(getTextContent).join('')
   }
 
-  if (React.isValidElement(children) && children.props.children) {
-    return getTextContent(children.props.children)
+  if (React.isValidElement(children)) {
+    const childProps = children.props as { children?: React.ReactNode }
+    if (childProps.children) {
+      return getTextContent(childProps.children)
+    }
   }
 
   return ''

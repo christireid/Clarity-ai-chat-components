@@ -80,21 +80,21 @@ export const InteractiveCard = React.memo(
         y: -2,
         boxShadow:
           '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
+        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const },
       },
       medium: {
         y: -4,
         boxShadow:
           '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
+        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const },
       },
       strong: {
         y: -8,
         boxShadow:
           '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
+        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const },
       },
-    }
+    } as const
 
     // Extract HTML drag event handlers to avoid conflicts with Framer Motion
     const { 
@@ -117,7 +117,7 @@ export const InteractiveCard = React.memo(
     }
 
     return (
-      // @ts-expect-error - framer-motion HTMLMotionProps type complexity issue
+      // @ts-expect-error - Framer Motion 12 has complex HTMLMotionProps type inference
       <motion.div
         ref={ref}
         className={cn(
@@ -151,7 +151,7 @@ export const InteractiveCard = React.memo(
             ? {
                 ...hoverVariants[hoverIntensity],
                 scale: hoverIntensity !== 'none' ? 1.02 : 1,
-              }
+              } as const
             : undefined
         }
         whileTap={
