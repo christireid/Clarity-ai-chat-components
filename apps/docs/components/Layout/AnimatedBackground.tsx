@@ -1,99 +1,61 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
-import { loadSlim } from '@tsparticles/slim'
-import type { Engine, ISourceOptions } from '@tsparticles/engine'
-import { useMediaQuery } from './hooks/useMediaQuery'
-import { useThemeDetection } from './hooks/useThemeDetection'
-import { useDebouncedCallback } from './hooks/useDebouncedCallback'
-import { createDarkModeConfig, createLightModeConfig } from './config/particleConfigs'
-import { isParticlesEngine, type ParticlesEngine } from './types/particles'
+import { useCallback, useRef } from 'react'
+import Particles from '@tsparticles/react'
+import type { Container } from '@tsparticles/engine'
 import { cn } from '@/lib/utils'
+import { useReducedMotion } from './hooks/useReducedMotion'
+import { useThemeMode } from './hooks/useThemeMode'
+import { useParticlesEngine } from './hooks/useParticlesEngine'
+import { usePageVisibility } from './hooks/usePageVisibility'
+import { darkParticlesConfig, lightParticlesConfig } from './config/particles.config'
 
-// Dynamically import Particles to reduce initial bundle size
-const Particles = dynamic(
-  () => import('@tsparticles/react').then((mod) => mod.default),
-  {
-    ssr: false,
-    loading: () => null, // No loading state needed for background
-  }
-)
-
-interface AnimatedBackgroundProps {
+/**
+ * Props for the AnimatedBackground component.
+ */
+export interface AnimatedBackgroundProps {
+  /** Additional CSS classes to apply to the container */
   className?: string
 }
 
-export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
-  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
-  const isDarkMode = useThemeDetection()
-  const engineRef = useRef<Engine | null>(null)
-  const [loadError, setLoadError] = useState(false)
+/**
+ * High-performance animated particle background component.
+ * 
+ * Features:
+ * - Interactive particles that respond to mouse interactions
+ * - Theme-aware (dark/light mode support)
+ * - Respects `prefers-reduced-motion` accessibility preference
+ * - Performance optimized with Page Visibility API
+ * - Graceful error handling and degradation
+ * 
+ * @example
+ * ```tsx
+ * <AnimatedBackground className="custom-class" />
+ * ```
+ */
+export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) {
+  const prefersReducedMotion = useReducedMotion()
+  const isDark = useThemeMode()
+  const { isInitialized, error } = useParticlesEngine()
+  const containerRef = useRef<Container | null>(null)
 
-  // Handle page visibility to pause animation when tab is hidden
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (isParticlesEngine(engineRef.current)) {
-        if (document.hidden) {
-          engineRef.current.pause?.()
-        } else if (!reducedMotion) {
-          engineRef.current.play?.()
-        }
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [reducedMotion])
-
-  // Handle window resize with debouncing
-  const handleResize = useDebouncedCallback(() => {
-    if (isParticlesEngine(engineRef.current)) {
-      engineRef.current.canvas?.resize?.()
-    }
-  }, 150)
-
-  useEffect(() => {
-    window.addEventListener('resize', handleResize, { passive: true })
-    return () => window.removeEventListener('resize', handleResize)
-  }, [handleResize])
-
-  const particlesInit = useCallback(async (engine: Engine) => {
-    try {
-      await loadSlim(engine)
-      engineRef.current = engine
-      setLoadError(false)
-    } catch (error) {
-      // Background animation is non-critical, but track error for debugging
-      setLoadError(true)
-      engineRef.current = null
-      
-      // In production, you might want to log this to an error tracking service
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Failed to load tsparticles:', error)
-      }
+  // Particles loaded callback
+  const particlesLoaded = useCallback(async (container: Container | undefined) => {
+    if (container) {
+      containerRef.current = container
     }
   }, [])
 
-  // Cleanup engine on unmount
-  useEffect(() => {
-    return () => {
-      if (isParticlesEngine(engineRef.current)) {
-        engineRef.current.destroy?.()
-        engineRef.current = null
-      }
+  // Handle page visibility for performance optimization
+  // Pass container ref value - hook will handle updates via internal ref
+  usePageVisibility(containerRef.current, isInitialized && !prefersReducedMotion)
+
+  // Don't render if reduced motion is preferred, not initialized, or error occurred
+  if (prefersReducedMotion || !isInitialized || error) {
+    // Log error in development mode for debugging
+    if (error && process.env.NODE_ENV === 'development') {
+      console.warn('[AnimatedBackground] Initialization error:', error)
     }
-  }, [])
-
-  // Memoize configurations to prevent unnecessary re-renders
-  const config = useMemo(() => {
-    return isDarkMode
-      ? createDarkModeConfig(reducedMotion)
-      : createLightModeConfig(reducedMotion)
-  }, [isDarkMode, reducedMotion])
-
-  // Don't render if motion is reduced or if there was a load error
-  if (reducedMotion || loadError) {
     return null
   }
 
@@ -101,11 +63,12 @@ export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
     <div
       className={cn('fixed inset-0 -z-10 pointer-events-none', className)}
       aria-hidden="true"
+      role="presentation"
     >
       <Particles
         id="animated-background"
-        init={particlesInit}
-        options={config as unknown as ISourceOptions}
+        particlesLoaded={particlesLoaded}
+        options={isDark ? darkParticlesConfig : lightParticlesConfig}
         className="w-full h-full"
       />
     </div>

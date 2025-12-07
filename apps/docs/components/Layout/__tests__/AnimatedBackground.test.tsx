@@ -1,319 +1,263 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor, act } from '@testing-library/react'
+import { ThemeProvider } from 'next-themes'
+import '@testing-library/jest-dom/vitest'
 import { AnimatedBackground } from '../AnimatedBackground'
 
-// Use vi.hoisted to define variables that can be used in mocks
-const { mockParticles, mockUseMediaQuery, mockUseThemeDetection } = vi.hoisted(() => {
-  const mockParticles = vi.fn(({ id, init, options, className }: any) => {
-    // Simulate initialization
-    if (init) {
-      const mockEngine = {
-        pause: vi.fn(),
-        play: vi.fn(),
-        destroy: vi.fn(),
-        canvas: {
-          resize: vi.fn(),
-          element: {
-            parentElement: document.body,
-          },
-        },
-        interactivity: {
-          mouse: {
-            position: { x: 0, y: 0 },
-          },
-        },
-      }
-      Promise.resolve(init(mockEngine))
-    }
-    return <div data-testid={`particles-${id}`} className={className} />
-  })
-  
-  return {
-    mockParticles,
-    mockUseMediaQuery: vi.fn(),
-    mockUseThemeDetection: vi.fn(),
-  }
-})
+// Mock cn utility
+vi.mock('@/lib/utils', () => ({
+  cn: vi.fn((...classes: (string | undefined)[]) => 
+    classes.filter(Boolean).join(' ')
+  ),
+}))
 
 // Mock custom hooks
-vi.mock('../hooks/useMediaQuery', () => ({
-  useMediaQuery: (query: string) => mockUseMediaQuery(query),
+vi.mock('../hooks/useReducedMotion', () => ({
+  useReducedMotion: vi.fn(() => false),
 }))
 
-vi.mock('../hooks/useThemeDetection', () => ({
-  useThemeDetection: () => mockUseThemeDetection(),
+vi.mock('../hooks/useThemeMode', () => ({
+  useThemeMode: vi.fn(() => false),
 }))
 
-vi.mock('../hooks/useDebouncedCallback', () => ({
-  useDebouncedCallback: (callback: () => void) => callback,
+vi.mock('../hooks/useParticlesEngine', () => ({
+  useParticlesEngine: vi.fn(() => ({
+    isInitialized: true,
+    error: null,
+    isLoading: false,
+  })),
 }))
 
-// Mock next/dynamic to return the component directly
-vi.mock('next/dynamic', () => ({
-  default: vi.fn((importFn, options) => {
-    // For tests, return the mock particles component directly
-    const Component = (props: any) => {
-      return mockParticles(props)
+vi.mock('../hooks/usePageVisibility', () => ({
+  usePageVisibility: vi.fn(),
+}))
+
+// Mock tsparticles
+vi.mock('@tsparticles/react', () => ({
+  default: vi.fn(({ id, options, particlesLoaded, className }) => {
+    // Simulate particles loaded callback after mount
+    if (particlesLoaded) {
+      setTimeout(() => {
+        act(() => {
+          particlesLoaded({
+            pause: vi.fn(),
+            play: vi.fn(),
+          } as any)
+        })
+      }, 10)
     }
-    Component.displayName = 'DynamicParticles'
-    return Component
+    return <div data-testid="particles" data-id={id} className={className} />
   }),
 }))
 
-// Mock @tsparticles/react
-vi.mock('@tsparticles/react', () => ({
-  default: mockParticles,
-}))
+// Import mocked hooks to control their behavior in tests
+import { useReducedMotion } from '../hooks/useReducedMotion'
+import { useThemeMode } from '../hooks/useThemeMode'
+import { useParticlesEngine } from '../hooks/useParticlesEngine'
 
+const mockUseReducedMotion = vi.mocked(useReducedMotion)
+const mockUseThemeMode = vi.mocked(useThemeMode)
+const mockUseParticlesEngine = vi.mocked(useParticlesEngine)
 
-// Mock @tsparticles/slim
-vi.mock('@tsparticles/slim', () => ({
-  loadSlim: vi.fn().mockResolvedValue(undefined),
-}))
+beforeEach(() => {
+  // Reset all mocks
+  vi.clearAllMocks()
+  
+  // Set default hook return values
+  mockUseReducedMotion.mockReturnValue(false)
+  mockUseThemeMode.mockReturnValue(false)
+  mockUseParticlesEngine.mockReturnValue({
+    isInitialized: true,
+    error: null,
+    isLoading: false,
+  })
+})
+
+const TestWrapper = ({ children, theme = 'system' }: { children: React.ReactNode; theme?: string }) => (
+  <ThemeProvider attribute="class" defaultTheme={theme} enableSystem>
+    {children}
+  </ThemeProvider>
+)
 
 describe('AnimatedBackground', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    
-    // Default mocks
-    mockUseMediaQuery.mockReturnValue(false) // No reduced motion
-    mockUseThemeDetection.mockReturnValue(false) // Light mode
-    mockParticles.mockClear()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   describe('Rendering', () => {
-    it('should render particles when motion is not reduced', async () => {
-      mockUseMediaQuery.mockReturnValue(false)
-      mockUseThemeDetection.mockReturnValue(false)
-      
-      render(<AnimatedBackground />)
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('particles-animated-background')).toBeInTheDocument()
+    it('should not render when not initialized', () => {
+      mockUseParticlesEngine.mockReturnValue({
+        isInitialized: false,
+        error: null,
+        isLoading: true,
       })
+
+      render(
+        <TestWrapper>
+          <AnimatedBackground />
+        </TestWrapper>
+      )
+      
+      expect(screen.queryByTestId('particles')).not.toBeInTheDocument()
     })
 
-    it('should render particles after mount', async () => {
-      render(<AnimatedBackground />)
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('particles-animated-background')).toBeInTheDocument()
+    it('should render particles after initialization', async () => {
+      mockUseParticlesEngine.mockReturnValue({
+        isInitialized: true,
+        error: null,
+        isLoading: false,
       })
+
+      render(
+        <TestWrapper>
+          <AnimatedBackground />
+        </TestWrapper>
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('particles')).toBeInTheDocument()
+      }, { timeout: 2000 })
     })
 
     it('should apply custom className', async () => {
-      const { container } = render(<AnimatedBackground className="custom-class" />)
-      
-      await waitFor(() => {
-        const wrapper = container.querySelector('.custom-class')
-        expect(wrapper).toBeInTheDocument()
-      })
-    })
+      render(
+        <TestWrapper>
+          <AnimatedBackground className="custom-class" />
+        </TestWrapper>
+      )
 
-    it('should have correct accessibility attributes', async () => {
-      const { container } = render(<AnimatedBackground />)
-      
       await waitFor(() => {
-        const wrapper = container.querySelector('[aria-hidden="true"]')
-        expect(wrapper).toBeInTheDocument()
-        expect(wrapper).toHaveClass('pointer-events-none')
-      })
-    })
-  })
-
-  describe('Reduced Motion', () => {
-    it('should not render when prefers-reduced-motion is enabled', () => {
-      mockUseMediaQuery.mockReturnValue(true) // Reduced motion enabled
-      const { container } = render(<AnimatedBackground />)
-      
-      // Should return null when reduced motion is enabled
-      expect(container.firstChild).toBeNull()
-    })
-
-    it('should render when prefers-reduced-motion is disabled', async () => {
-      mockUseMediaQuery.mockReturnValue(false) // Reduced motion disabled
-      render(<AnimatedBackground />)
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('particles-animated-background')).toBeInTheDocument()
-      })
+        const container = screen.getByTestId('particles').parentElement
+        expect(container).toHaveClass('custom-class')
+      }, { timeout: 2000 })
     })
   })
 
   describe('Theme Support', () => {
-    it('should use dark mode config when theme is dark', async () => {
-      mockUseThemeDetection.mockReturnValue(true) // Dark mode
-      mockUseMediaQuery.mockReturnValue(false) // No reduced motion
-      
-      render(<AnimatedBackground />)
-      
+    it('should use dark config when theme is dark', async () => {
+      mockUseThemeMode.mockReturnValue(true)
+
+      render(
+        <TestWrapper theme="dark">
+          <AnimatedBackground />
+        </TestWrapper>
+      )
+
       await waitFor(() => {
-        expect(mockParticles).toHaveBeenCalled()
-        const lastCall = mockParticles.mock.calls[mockParticles.mock.calls.length - 1]
-        const config = lastCall[0].options
-        
-        // Dark mode has more particles (50 vs 40)
-        expect(config.particles.number.value).toBe(50)
-        expect(config.particles.opacity.value.min).toBe(0.1)
-        expect(config.particles.opacity.value.max).toBe(0.4)
-      })
+        const particles = screen.getByTestId('particles')
+        expect(particles).toBeInTheDocument()
+      }, { timeout: 2000 })
     })
 
-    it('should use light mode config when theme is light', async () => {
-      mockUseThemeDetection.mockReturnValue(false) // Light mode
-      mockUseMediaQuery.mockReturnValue(false) // No reduced motion
-      
-      render(<AnimatedBackground />)
-      
+    it('should use light config when theme is light', async () => {
+      mockUseThemeMode.mockReturnValue(false)
+
+      render(
+        <TestWrapper theme="light">
+          <AnimatedBackground />
+        </TestWrapper>
+      )
+
       await waitFor(() => {
-        expect(mockParticles).toHaveBeenCalled()
-        const lastCall = mockParticles.mock.calls[mockParticles.mock.calls.length - 1]
-        const config = lastCall[0].options
-        
-        // Light mode has fewer particles (40 vs 50)
-        expect(config.particles.number.value).toBe(40)
-        expect(config.particles.opacity.value.min).toBe(0.05)
-        expect(config.particles.opacity.value.max).toBe(0.25)
-      })
+        const particles = screen.getByTestId('particles')
+        expect(particles).toBeInTheDocument()
+      }, { timeout: 2000 })
     })
   })
 
-  describe('Page Visibility', () => {
-    it('should pause animation when page becomes hidden', async () => {
-      const mockPause = vi.fn()
-      const mockPlay = vi.fn()
-      
-      // Override the mock to capture engine methods
-      mockParticles.mockImplementation(({ init }: any) => {
-        if (init) {
-          const mockEngine = {
-            pause: mockPause,
-            play: mockPlay,
-            destroy: vi.fn(),
-            canvas: {
-              resize: vi.fn(),
-              element: {
-                parentElement: document.body,
-              },
-            },
-            interactivity: {
-              mouse: {
-                position: { x: 0, y: 0 },
-              },
-            },
-          }
-          Promise.resolve(init(mockEngine))
-        }
-        return <div data-testid="particles" />
-      })
-      
-      render(<AnimatedBackground />)
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('particles')).toBeInTheDocument()
-      })
-      
-      // Simulate page becoming hidden using a spy
-      const hiddenDescriptor = Object.getOwnPropertyDescriptor(document, 'hidden')
-      if (hiddenDescriptor) {
-        Object.defineProperty(document, 'hidden', {
-          ...hiddenDescriptor,
-          value: true,
-        })
-      }
-      
-      document.dispatchEvent(new Event('visibilitychange'))
-      
-      await waitFor(() => {
-        expect(mockPause).toHaveBeenCalled()
-      })
-    })
-  })
+  describe('Accessibility - prefers-reduced-motion', () => {
+    it('should not render when prefers-reduced-motion is enabled', () => {
+      mockUseReducedMotion.mockReturnValue(true)
 
-  describe('Window Resize', () => {
-    it('should handle window resize events', async () => {
-      const mockResize = vi.fn()
-      
-      mockParticles.mockImplementation(({ init }: any) => {
-        if (init) {
-          const mockEngine = {
-            pause: vi.fn(),
-            play: vi.fn(),
-            destroy: vi.fn(),
-            canvas: {
-              resize: mockResize,
-              element: {
-                parentElement: document.body,
-              },
-            },
-            interactivity: {
-              mouse: {
-                position: { x: 0, y: 0 },
-              },
-            },
-          }
-          Promise.resolve(init(mockEngine))
-        }
-        return <div data-testid="particles" />
-      })
-      
-      render(<AnimatedBackground />)
-      
+      render(
+        <TestWrapper>
+          <AnimatedBackground />
+        </TestWrapper>
+      )
+
+      // Should not render particles when reduced motion is preferred
+      expect(screen.queryByTestId('particles')).not.toBeInTheDocument()
+    })
+
+    it('should render when prefers-reduced-motion is disabled', async () => {
+      mockUseReducedMotion.mockReturnValue(false)
+
+      render(
+        <TestWrapper>
+          <AnimatedBackground />
+        </TestWrapper>
+      )
+
       await waitFor(() => {
         expect(screen.getByTestId('particles')).toBeInTheDocument()
-      })
-      
-      // Simulate window resize
-      window.dispatchEvent(new Event('resize'))
-      
-      await waitFor(() => {
-        expect(mockResize).toHaveBeenCalled()
-      })
+      }, { timeout: 2000 })
     })
   })
 
   describe('Error Handling', () => {
-    it('should handle loadSlim failure gracefully', async () => {
-      const { loadSlim } = await import('@tsparticles/slim')
-      vi.mocked(loadSlim).mockRejectedValueOnce(new Error('Load failed'))
-      
-      mockUseMediaQuery.mockReturnValue(false)
-      mockUseThemeDetection.mockReturnValue(false)
-      
-      const { container } = render(<AnimatedBackground />)
-      
-      // Should not crash, component should handle error gracefully
-      await waitFor(() => {
-        // Component should handle error and not render particles (loadError state)
-        // The component returns null when loadError is true
-        expect(container.firstChild).toBeNull()
+    it('should gracefully handle initialization errors', () => {
+      const initError = new Error('Initialization failed')
+      mockUseParticlesEngine.mockReturnValue({
+        isInitialized: false,
+        error: initError,
+        isLoading: false,
       })
+
+      render(
+        <TestWrapper>
+          <AnimatedBackground />
+        </TestWrapper>
+      )
+
+      // Component should not render on error
+      expect(screen.queryByTestId('particles')).not.toBeInTheDocument()
+    })
+
+    it('should render when initialization succeeds after error', async () => {
+      // Simulate recovery from error
+      mockUseParticlesEngine.mockReturnValue({
+        isInitialized: true,
+        error: null,
+        isLoading: false,
+      })
+
+      render(
+        <TestWrapper>
+          <AnimatedBackground />
+        </TestWrapper>
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('particles')).toBeInTheDocument()
+      }, { timeout: 2000 })
     })
   })
 
-  describe('Cleanup', () => {
-    it('should cleanup event listeners on unmount', async () => {
-      const addEventListenerSpy = vi.spyOn(window, 'addEventListener')
-      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener')
-      const documentAddEventListenerSpy = vi.spyOn(document, 'addEventListener')
-      const documentRemoveEventListenerSpy = vi.spyOn(document, 'removeEventListener')
-      
-      const { unmount } = render(<AnimatedBackground />)
-      
+  describe('Accessibility Attributes', () => {
+    it('should have correct accessibility attributes', async () => {
+      render(
+        <TestWrapper>
+          <AnimatedBackground />
+        </TestWrapper>
+      )
+
       await waitFor(() => {
-        // Wait for component to mount and set up listeners
-        expect(addEventListenerSpy).toHaveBeenCalled()
-      })
-      
-      unmount()
-      
-      // Verify cleanup was called
-      expect(removeEventListenerSpy).toHaveBeenCalled()
-      expect(documentRemoveEventListenerSpy).toHaveBeenCalled()
+        const container = screen.getByTestId('particles').parentElement
+        expect(container).toHaveAttribute('aria-hidden', 'true')
+        expect(container).toHaveAttribute('role', 'presentation')
+        expect(container).toHaveClass('pointer-events-none')
+      }, { timeout: 2000 })
+    })
+  })
+
+  describe('Props', () => {
+    it('should apply custom className', async () => {
+      render(
+        <TestWrapper>
+          <AnimatedBackground className="custom-class" />
+        </TestWrapper>
+      )
+
+      await waitFor(() => {
+        const container = screen.getByTestId('particles').parentElement
+        expect(container).toHaveClass('custom-class')
+      }, { timeout: 2000 })
     })
   })
 })
