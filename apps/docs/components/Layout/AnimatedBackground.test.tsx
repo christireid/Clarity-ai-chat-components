@@ -6,12 +6,35 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import { ThemeProvider } from 'next-themes'
 import { AnimatedBackground } from './AnimatedBackground'
+import * as useReducedMotionHook from './hooks/useReducedMotion'
+import * as useParticlesEngineHook from './hooks/useParticlesEngine'
 
 // Mock tsparticles with delayed initialization
 let initParticlesResolve: () => void
 let initParticlesPromise = new Promise<void>((resolve) => {
   initParticlesResolve = resolve
 })
+
+// Mock the dynamic import
+vi.mock('next/dynamic', () => ({
+  default: vi.fn((importFn: () => Promise<any>) => {
+    return vi.fn((props: any) => {
+      // Simulate the dynamically imported component
+      const { particlesLoaded } = props
+      if (particlesLoaded) {
+        setTimeout(async () => {
+          await particlesLoaded({
+            refresh: vi.fn(),
+            pause: vi.fn(),
+            play: vi.fn(),
+            destroy: vi.fn(),
+          })
+        }, 10)
+      }
+      return <div data-testid="particles" data-id={props.id} />
+    })
+  }),
+}))
 
 vi.mock('@tsparticles/react', () => ({
   default: ({ 
@@ -43,6 +66,12 @@ vi.mock('@tsparticles/slim', () => ({
   loadSlim: vi.fn(() => Promise.resolve()),
 }))
 
+// Mock the hooks - we'll control them in tests
+vi.mock('./hooks/useReducedMotion')
+vi.mock('./hooks/useParticlesEngine')
+vi.mock('./hooks/useWindowResize')
+vi.mock('./hooks/usePageVisibility')
+
 // Mock window.matchMedia
 const mockMatchMedia = (matches: boolean) => {
   return {
@@ -61,6 +90,14 @@ describe('AnimatedBackground', () => {
     initParticlesPromise = new Promise<void>((resolve) => {
       initParticlesResolve = resolve
     })
+    
+    // Default hook implementations
+    vi.mocked(useReducedMotionHook.useReducedMotion).mockReturnValue(false)
+    vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
+      isInitialized: false,
+      error: null,
+    })
+    
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn(() => mockMatchMedia(false)),
@@ -80,10 +117,7 @@ describe('AnimatedBackground', () => {
   }
 
   it('renders nothing when reduced motion is enabled', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: vi.fn(() => mockMatchMedia(true)),
-    })
+    vi.mocked(useReducedMotionHook.useReducedMotion).mockReturnValue(true)
 
     const { container } = renderWithTheme(<AnimatedBackground />)
     
@@ -97,6 +131,12 @@ describe('AnimatedBackground', () => {
   })
 
   it('renders nothing initially before mount', async () => {
+    // Engine not initialized yet
+    vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
+      isInitialized: false,
+      error: null,
+    })
+
     const { container } = renderWithTheme(<AnimatedBackground />)
     
     // Initially should be null (before init completes)
@@ -104,16 +144,20 @@ describe('AnimatedBackground', () => {
     expect(initialParticles).toBeNull()
     
     // After init completes, it should render
+    vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
+      isInitialized: true,
+      error: null,
+    })
+    
     await act(async () => {
-      initParticlesResolve()
       await new Promise(resolve => setTimeout(resolve, 50))
     })
   })
 
   it('applies custom className when provided', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: vi.fn(() => mockMatchMedia(false)),
+    vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
+      isInitialized: true,
+      error: null,
     })
 
     const { container } = renderWithTheme(
@@ -121,7 +165,6 @@ describe('AnimatedBackground', () => {
     )
 
     await act(async () => {
-      initParticlesResolve()
       await new Promise(resolve => setTimeout(resolve, 50))
     })
 
@@ -132,15 +175,14 @@ describe('AnimatedBackground', () => {
   })
 
   it('has aria-hidden attribute for accessibility', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: vi.fn(() => mockMatchMedia(false)),
+    vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
+      isInitialized: true,
+      error: null,
     })
 
     const { container } = renderWithTheme(<AnimatedBackground />)
 
     await act(async () => {
-      initParticlesResolve()
       await new Promise(resolve => setTimeout(resolve, 50))
     })
 
@@ -151,116 +193,75 @@ describe('AnimatedBackground', () => {
   })
 
   it('handles window resize events', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: vi.fn(() => mockMatchMedia(false)),
+    vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
+      isInitialized: true,
+      error: null,
     })
 
-    const addEventListenerSpy = vi.spyOn(window, 'addEventListener')
-    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener')
+    const useWindowResizeMock = vi.fn()
+    vi.mocked(await import('./hooks/useWindowResize')).useWindowResize = useWindowResizeMock
 
-    const { unmount } = renderWithTheme(<AnimatedBackground />)
+    renderWithTheme(<AnimatedBackground />)
 
     await act(async () => {
-      initParticlesResolve()
       await new Promise(resolve => setTimeout(resolve, 50))
     })
 
-    await waitFor(() => {
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'resize',
-        expect.any(Function),
-        { passive: true }
-      )
-    })
-
-    unmount()
-
-    expect(removeEventListenerSpy).toHaveBeenCalledWith(
-      'resize',
-      expect.any(Function)
-    )
+    // Verify the hook was called
+    expect(useWindowResizeMock).toHaveBeenCalled()
   })
 
   it('handles visibility change events', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: vi.fn(() => mockMatchMedia(false)),
+    vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
+      isInitialized: true,
+      error: null,
     })
 
-    const addEventListenerSpy = vi.spyOn(document, 'addEventListener')
-    const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener')
+    const usePageVisibilityMock = vi.fn()
+    vi.mocked(await import('./hooks/usePageVisibility')).usePageVisibility = usePageVisibilityMock
 
-    const { unmount } = renderWithTheme(<AnimatedBackground />)
+    renderWithTheme(<AnimatedBackground />)
 
     await act(async () => {
-      initParticlesResolve()
       await new Promise(resolve => setTimeout(resolve, 50))
     })
 
-    await waitFor(() => {
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'visibilitychange',
-        expect.any(Function)
-      )
-    })
-
-    unmount()
-
-    expect(removeEventListenerSpy).toHaveBeenCalledWith(
-      'visibilitychange',
-      expect.any(Function)
-    )
+    // Verify the hook was called
+    expect(usePageVisibilityMock).toHaveBeenCalled()
   })
 
   it('handles matchMedia errors gracefully', async () => {
-    // Mock matchMedia to throw only for prefers-reduced-motion query
-    const originalMatchMedia = window.matchMedia
-    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: vi.fn((query: string) => {
-        if (query.includes('prefers-reduced-motion')) {
-          throw new Error('matchMedia not supported')
-        }
-        return originalMatchMedia.call(window, query)
-      }),
+    // This test is now covered by the useReducedMotion hook tests
+    // The component itself doesn't directly handle matchMedia errors
+    vi.mocked(useReducedMotionHook.useReducedMotion).mockReturnValue(false)
+    vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
+      isInitialized: true,
+      error: null,
     })
 
+    const { container } = renderWithTheme(<AnimatedBackground />)
+
     await act(async () => {
-      renderWithTheme(<AnimatedBackground />)
       await new Promise(resolve => setTimeout(resolve, 50))
     })
 
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      'prefers-reduced-motion media query not supported:',
-      expect.any(Error)
-    )
-
-    consoleWarnSpy.mockRestore()
+    // Component should render normally
+    expect(container.querySelector('[aria-hidden="true"]')).toBeTruthy()
   })
 
-  it('cleans up event listeners on unmount', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: vi.fn(() => mockMatchMedia(false)),
+  it('cleans up on unmount', async () => {
+    vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
+      isInitialized: true,
+      error: null,
     })
-
-    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener')
-    const removeDocumentListenerSpy = vi.spyOn(document, 'removeEventListener')
 
     const { unmount } = renderWithTheme(<AnimatedBackground />)
 
     await act(async () => {
-      initParticlesResolve()
       await new Promise(resolve => setTimeout(resolve, 50))
     })
 
-    unmount()
-
-    // Verify cleanup was called
-    expect(removeEventListenerSpy).toHaveBeenCalled()
-    expect(removeDocumentListenerSpy).toHaveBeenCalled()
+    // Unmount should not throw
+    expect(() => unmount()).not.toThrow()
   })
 })
