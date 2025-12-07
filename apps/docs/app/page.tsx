@@ -5,6 +5,7 @@ import { LiveChatDemo } from '@/components/Layout/LiveChatDemo'
 import { CodeExample } from '@/components/Demo/CodeExample'
 import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
 import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
+import { AnimatedBackground } from '@/components/Layout/AnimatedBackground'
 import {
   Sparkles,
   Zap,
@@ -20,6 +21,7 @@ import {
 export default function HomePage() {
   return (
     <div className="relative">
+      <AnimatedBackground />
       {/* Hero Section */}
       <HeroSection
         title={
