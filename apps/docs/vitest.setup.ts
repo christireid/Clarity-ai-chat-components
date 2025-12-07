@@ -58,3 +58,5 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 } as any
+
+// Note: cn utility from @/lib/utils should work now that clsx and tailwind-merge are installed

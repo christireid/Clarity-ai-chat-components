@@ -1,27 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { AnimatedBackground } from '../AnimatedBackground'
-import Particles from '@tsparticles/react'
 
-// Mock custom hooks
-const mockUseMediaQuery = vi.fn()
-const mockUseThemeDetection = vi.fn()
-
-vi.mock('../hooks/useMediaQuery', () => ({
-  useMediaQuery: (query: string) => mockUseMediaQuery(query),
-}))
-
-vi.mock('../hooks/useThemeDetection', () => ({
-  useThemeDetection: () => mockUseThemeDetection(),
-}))
-
-vi.mock('../hooks/useDebouncedCallback', () => ({
-  useDebouncedCallback: (callback: () => void) => callback,
-}))
-
-// Mock @tsparticles/react
-vi.mock('@tsparticles/react', () => {
-  const mockParticles = vi.fn(({ id, init, options, className }) => {
+// Use vi.hoisted to define variables that can be used in mocks
+const { mockParticles, mockUseMediaQuery, mockUseThemeDetection } = vi.hoisted(() => {
+  const mockParticles = vi.fn(({ id, init, options, className }: any) => {
     // Simulate initialization
     if (init) {
       const mockEngine = {
@@ -46,9 +29,41 @@ vi.mock('@tsparticles/react', () => {
   })
   
   return {
-    default: mockParticles,
+    mockParticles,
+    mockUseMediaQuery: vi.fn(),
+    mockUseThemeDetection: vi.fn(),
   }
 })
+
+// Mock custom hooks
+vi.mock('../hooks/useMediaQuery', () => ({
+  useMediaQuery: (query: string) => mockUseMediaQuery(query),
+}))
+
+vi.mock('../hooks/useThemeDetection', () => ({
+  useThemeDetection: () => mockUseThemeDetection(),
+}))
+
+vi.mock('../hooks/useDebouncedCallback', () => ({
+  useDebouncedCallback: (callback: () => void) => callback,
+}))
+
+// Mock next/dynamic to return the component directly
+vi.mock('next/dynamic', () => ({
+  default: vi.fn((importFn, options) => {
+    // For tests, return the mock particles component directly
+    const Component = (props: any) => {
+      return mockParticles(props)
+    }
+    Component.displayName = 'DynamicParticles'
+    return Component
+  }),
+}))
+
+// Mock @tsparticles/react
+vi.mock('@tsparticles/react', () => ({
+  default: mockParticles,
+}))
 
 
 // Mock @tsparticles/slim
@@ -63,6 +78,7 @@ describe('AnimatedBackground', () => {
     // Default mocks
     mockUseMediaQuery.mockReturnValue(false) // No reduced motion
     mockUseThemeDetection.mockReturnValue(false) // Light mode
+    mockParticles.mockClear()
   })
 
   afterEach(() => {
@@ -72,6 +88,8 @@ describe('AnimatedBackground', () => {
   describe('Rendering', () => {
     it('should render particles when motion is not reduced', async () => {
       mockUseMediaQuery.mockReturnValue(false)
+      mockUseThemeDetection.mockReturnValue(false)
+      
       render(<AnimatedBackground />)
       
       await waitFor(() => {
@@ -134,8 +152,7 @@ describe('AnimatedBackground', () => {
       render(<AnimatedBackground />)
       
       await waitFor(() => {
-        expect(Particles).toHaveBeenCalled()
-        const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
+        expect(mockParticles).toHaveBeenCalled()
         const lastCall = mockParticles.mock.calls[mockParticles.mock.calls.length - 1]
         const config = lastCall[0].options
         
@@ -153,8 +170,7 @@ describe('AnimatedBackground', () => {
       render(<AnimatedBackground />)
       
       await waitFor(() => {
-        expect(Particles).toHaveBeenCalled()
-        const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
+        expect(mockParticles).toHaveBeenCalled()
         const lastCall = mockParticles.mock.calls[mockParticles.mock.calls.length - 1]
         const config = lastCall[0].options
         
@@ -172,8 +188,7 @@ describe('AnimatedBackground', () => {
       const mockPlay = vi.fn()
       
       // Override the mock to capture engine methods
-      const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
-      mockParticles.mockImplementation(({ init }) => {
+      mockParticles.mockImplementation(({ init }: any) => {
         if (init) {
           const mockEngine = {
             pause: mockPause,
@@ -223,8 +238,7 @@ describe('AnimatedBackground', () => {
     it('should handle window resize events', async () => {
       const mockResize = vi.fn()
       
-      const mockParticles = Particles as unknown as ReturnType<typeof vi.fn>
-      mockParticles.mockImplementation(({ init }) => {
+      mockParticles.mockImplementation(({ init }: any) => {
         if (init) {
           const mockEngine = {
             pause: vi.fn(),
@@ -267,12 +281,16 @@ describe('AnimatedBackground', () => {
       const { loadSlim } = await import('@tsparticles/slim')
       vi.mocked(loadSlim).mockRejectedValueOnce(new Error('Load failed'))
       
+      mockUseMediaQuery.mockReturnValue(false)
+      mockUseThemeDetection.mockReturnValue(false)
+      
       const { container } = render(<AnimatedBackground />)
       
-      // Should not crash, component should still render container
+      // Should not crash, component should handle error gracefully
       await waitFor(() => {
-        // Component should handle error and not render particles
-        expect(container.firstChild).toBeTruthy()
+        // Component should handle error and not render particles (loadError state)
+        // The component returns null when loadError is true
+        expect(container.firstChild).toBeNull()
       })
     })
   })

@@ -1,7 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef } from 'react'
-import Particles from '@tsparticles/react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { loadSlim } from '@tsparticles/slim'
 import type { Engine, ISourceOptions } from '@tsparticles/engine'
 import { useMediaQuery } from './hooks/useMediaQuery'
@@ -9,15 +9,26 @@ import { useThemeDetection } from './hooks/useThemeDetection'
 import { useDebouncedCallback } from './hooks/useDebouncedCallback'
 import { createDarkModeConfig, createLightModeConfig } from './config/particleConfigs'
 import { isParticlesEngine, type ParticlesEngine } from './types/particles'
+import { cn } from '@/lib/utils'
+
+// Dynamically import Particles to reduce initial bundle size
+const Particles = dynamic(
+  () => import('@tsparticles/react').then((mod) => mod.default),
+  {
+    ssr: false,
+    loading: () => null, // No loading state needed for background
+  }
+)
 
 interface AnimatedBackgroundProps {
   className?: string
 }
 
-export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) {
+export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   const isDarkMode = useThemeDetection()
   const engineRef = useRef<Engine | null>(null)
+  const [loadError, setLoadError] = useState(false)
 
   // Handle page visibility to pause animation when tab is hidden
   useEffect(() => {
@@ -51,10 +62,16 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
     try {
       await loadSlim(engine)
       engineRef.current = engine
-    } catch {
-      // Silently fail - background animation is non-critical
-      // In production, you might want to log this to an error tracking service
+      setLoadError(false)
+    } catch (error) {
+      // Background animation is non-critical, but track error for debugging
+      setLoadError(true)
       engineRef.current = null
+      
+      // In production, you might want to log this to an error tracking service
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to load tsparticles:', error)
+      }
     }
   }, [])
 
@@ -75,14 +92,14 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
       : createLightModeConfig(reducedMotion)
   }, [isDarkMode, reducedMotion])
 
-  // Don't render if motion is reduced
-  if (reducedMotion) {
+  // Don't render if motion is reduced or if there was a load error
+  if (reducedMotion || loadError) {
     return null
   }
 
   return (
     <div
-      className={`fixed inset-0 -z-10 pointer-events-none ${className}`}
+      className={cn('fixed inset-0 -z-10 pointer-events-none', className)}
       aria-hidden="true"
     >
       <Particles

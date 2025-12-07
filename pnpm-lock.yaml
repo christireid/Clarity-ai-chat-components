@@ -189,6 +189,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.0.15
         version: 4.0.15(vitest@4.0.15(@types/node@22.19.0)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@27.2.0)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       eslint:
         specifier: ^9.39.1
         version: 9.39.1(jiti@2.6.1)
@@ -201,6 +204,9 @@ importers:
       jsdom:
         specifier: ^27.2.0
         version: 27.2.0
+      tailwind-merge:
+        specifier: ^2.6.0
+        version: 2.6.0
       tsx:
         specifier: ^4.19.2
         version: 4.20.6
