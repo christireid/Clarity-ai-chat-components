@@ -35,8 +35,6 @@ import {
   ErrorBoundary,
   NetworkStatus,
   VoiceInput,
-  CopyButton,
-  ThinkingIndicator,
   // Hooks
   useToast,
   useKeyboardShortcuts,
@@ -44,9 +42,14 @@ import {
   useLocalStorage,
   useThrottledCallback,
   useReducedMotion,
-  useAutoScroll,
   // Types
   type PromptSuggestion,
+  // Accessibility hooks
+  useFocusTrap,
+  useFocusRestoration,
+  // Animation utilities
+  createSlideVariant,
+  createFadeVariant,
 } from '@clarity-chat/react'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
@@ -84,6 +87,16 @@ const SESSION_ID_KEY = 'clarity-docs-assistant-session-id'
 const MESSAGES_KEY = 'clarity-docs-assistant-messages'
 const CONVERSATION_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
 const STREAM_THROTTLE_MS = 50 // Throttle streaming updates
+const CLIPBOARD_TIMEOUT_MS = 2000 // Clipboard success display time
+const TOAST_DURATION_MS = 3000 // Toast notification duration
+const FOCUS_DELAY_MS = 100 // Delay before focusing input
+
+// Static animation variants using library utilities (moved outside component for performance)
+const BACKDROP_VARIANTS = createFadeVariant('fast', 'out')
+// Dialog slide variant for reduced motion fallback
+const DIALOG_VARIANTS_REDUCED = createFadeVariant('fast', 'out')
+// Dialog slide variant for normal motion
+const DIALOG_VARIANTS_NORMAL = createSlideVariant('up', 20, 'fast', 'out')
 
 // Suggested questions to help users get started (using library PromptSuggestion type)
 const DOCS_STARTER_PROMPTS: PromptSuggestion[] = [
@@ -217,10 +230,14 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const toast = useToast()
   const prefersReducedMotion = useReducedMotion()
   const { copy } = useClipboard({
-    timeout: 2000,
+    timeout: CLIPBOARD_TIMEOUT_MS,
     onSuccess: () => toast.success('Copied to clipboard'),
     onError: () => toast.error('Failed to copy'),
   })
+
+  // Focus trap for modal accessibility (Critical: traps focus within dialog)
+  const focusTrapRef = useFocusTrap<HTMLDivElement>(isOpen)
+  const { saveFocus, restoreFocus } = useFocusRestoration()
 
   // Session ID using library hook (replaces custom useSessionId)
   const [sessionId] = useLocalStorage<string>(SESSION_ID_KEY, generateSessionId())
@@ -230,13 +247,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     MESSAGES_KEY,
     null
   )
-
-  // Auto-scroll for message list using library hook
-  const { scrollRef, isNearBottom, scrollToBottom } = useAutoScroll({
-    dependencies: [messages],
-    threshold: 100,
-    behavior: prefersReducedMotion ? 'auto' : 'smooth',
-  })
 
   // Initialize messages from saved conversation
   useEffect(() => {
@@ -263,14 +273,20 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   }, [messages, setSavedConversation])
 
   // Keyboard shortcuts using library hook
+  // Note: Using mod+. instead of mod+a to avoid conflict with "select all"
   useKeyboardShortcuts([
     {
-      key: 'mod+a',
+      key: 'mod+.',
       callback: () => {
         const willOpen = !isOpen
+        if (willOpen) {
+          saveFocus() // Save focus before opening
+        }
         setIsOpen(willOpen)
         if (willOpen) {
-          toast.info('Press Escape or Cmd+A to close', 'Documentation Assistant', 3000)
+          toast.info('Press Escape or Cmd+. to close', 'Documentation Assistant', TOAST_DURATION_MS)
+        } else {
+          restoreFocus() // Restore focus when closing
         }
       },
       description: 'Toggle documentation assistant',
@@ -286,19 +302,22 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     {
       key: 'escape',
       callback: () => {
-        if (isOpen) setIsOpen(false)
+        if (isOpen) {
+          setIsOpen(false)
+          restoreFocus()
+        }
       },
       description: 'Close assistant',
     },
   ])
 
-  // Focus management
+  // Focus management - focus input when dialog opens
   useEffect(() => {
     if (isOpen && dialogRef.current) {
       const timer = setTimeout(() => {
         const textarea = dialogRef.current?.querySelector('textarea')
         textarea?.focus()
-      }, 100)
+      }, FOCUS_DELAY_MS)
       return () => clearTimeout(timer)
     }
   }, [isOpen])
@@ -322,8 +341,15 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     STREAM_THROTTLE_MS
   )
 
-  // Send message handler
+  // Send message handler with validation
   const handleSendMessage = useCallback(async (content: string) => {
+    // Validate message content
+    const trimmedContent = content.trim()
+    if (!trimmedContent) {
+      toast.warning('Please enter a message')
+      return
+    }
+
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       chatId: 'docs-assistant',
@@ -568,24 +594,21 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     toast.info('Conversation cleared')
   }, [clearSavedConversation, toast])
 
-  // Animation variants - respect reduced motion preference
-  const dialogVariants = useMemo(() => ({
-    initial: prefersReducedMotion
-      ? { opacity: 0 }
-      : { opacity: 0, scale: 0.96, y: 20 },
-    animate: prefersReducedMotion
-      ? { opacity: 1 }
-      : { opacity: 1, scale: 1, y: 0 },
-    exit: prefersReducedMotion
-      ? { opacity: 0 }
-      : { opacity: 0, scale: 0.96, y: 20 },
-  }), [prefersReducedMotion])
+  // Animation variants - respect reduced motion preference using library utilities
+  const dialogVariants = useMemo(
+    () => prefersReducedMotion ? DIALOG_VARIANTS_REDUCED : DIALOG_VARIANTS_NORMAL,
+    [prefersReducedMotion]
+  )
 
-  const backdropVariants = useMemo(() => ({
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
-  }), [])
+  // Combine refs for both dialog and focus trap
+  const setDialogRefs = useCallback((node: HTMLDivElement | null) => {
+    // Set both refs to the same node
+    dialogRef.current = node
+    // The focusTrapRef is managed by the hook, but we need to sync them
+    if (focusTrapRef.current !== node) {
+      (focusTrapRef as React.MutableRefObject<HTMLDivElement | null>).current = node
+    }
+  }, [focusTrapRef])
 
   return (
     <>
@@ -596,7 +619,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            ref={dialogRef}
+            ref={setDialogRefs}
             variants={dialogVariants}
             initial="initial"
             animate="animate"
@@ -621,6 +644,11 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             aria-labelledby="docs-assistant-title"
             aria-describedby="docs-assistant-description"
           >
+            {/* Screen reader description (hidden visually) */}
+            <span id="docs-assistant-description" className="sr-only">
+              Chat with the Clarity Chat documentation assistant. Ask questions about components, hooks, and features.
+            </span>
+
             {/* Network Status Indicator */}
             <NetworkStatus
               className="absolute top-2 right-12 z-10"
@@ -668,13 +696,16 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            variants={backdropVariants}
+            variants={BACKDROP_VARIANTS}
             initial="initial"
             animate="animate"
             exit="exit"
             transition={{ duration: prefersReducedMotion ? 0.1 : 0.25 }}
             className="fixed inset-0 bg-black/40 sm:bg-black/30 backdrop-blur-sm sm:backdrop-blur-md z-[60]"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false)
+              restoreFocus()
+            }}
             style={{ backdropFilter: 'blur(8px)' }}
             aria-hidden="true"
           />
