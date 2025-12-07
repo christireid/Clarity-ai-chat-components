@@ -255,7 +255,12 @@ export const DialogDescription: React.FC<DialogDescriptionProps> = ({
   )
 }
 
-export const DialogBody: React.FC<{ children: React.ReactNode; className?: string }> = ({
+export interface DialogBodyProps {
+  children: React.ReactNode
+  className?: string
+}
+
+export const DialogBody: React.FC<DialogBodyProps> = ({
   children,
   className,
 }) => {

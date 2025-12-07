@@ -79,8 +79,8 @@ export const TooltipLegacy: React.FC<TooltipProps> = ({
 
   // Apply className to the child element if it's a valid element
   const childWithClassName = React.isValidElement(children)
-    ? React.cloneElement(children as React.ReactElement<any>, {
-        className: cn(className, (children as React.ReactElement<any>).props?.className),
+    ? React.cloneElement(children as React.ReactElement<React.HTMLAttributes<HTMLElement>>, {
+        className: cn(className, (children as React.ReactElement<React.HTMLAttributes<HTMLElement>>).props?.className),
       })
     : children
 

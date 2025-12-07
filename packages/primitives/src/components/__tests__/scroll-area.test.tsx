@@ -27,7 +27,7 @@ describe('ScrollArea Component', () => {
     })
 
     it('should render empty scroll area', () => {
-      const { container } = render(<ScrollArea data-testid="scroll-area" />)
+      render(<ScrollArea data-testid="scroll-area" />)
       // Radix ScrollArea uses different structure - check for root element
       const scrollArea = screen.getByTestId('scroll-area')
       expect(scrollArea).toBeInTheDocument()
