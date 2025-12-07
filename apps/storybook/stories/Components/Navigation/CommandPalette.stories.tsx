@@ -808,7 +808,7 @@ export const UseCommandPaletteHook: Story = {
   onOpen: () => {},        // callback when opened
   onClose: () => {},       // callback when closed
   onToggle: (open) => {},  // callback on toggle
-  preventInInputs: false,  // prevent shortcut in inputs
+  enableInInput: false,    // allow shortcut in input elements
 })`}</pre>
         </div>
 
