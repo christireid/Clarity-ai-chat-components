@@ -133,7 +133,12 @@ export function ModelSelector({
             initial={{ opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ 
+              // Framer Motion 12: Spring dropdown menu
+              type: 'spring',
+              damping: 24,
+              stiffness: 300,
+            }}
             role="listbox"
             className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/40 bg-card/98 backdrop-blur-lg shadow-xl"
           >

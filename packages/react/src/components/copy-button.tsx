@@ -6,6 +6,8 @@ import { Button, type ButtonProps, cn } from '@clarity-chat/primitives'
 import { useClipboard } from '../hooks/use-clipboard'
 import { CopyIcon, CheckIcon } from './icons'
 import { useToast } from './toast'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { getSpring } from '../animations/spring-presets'
 
 export interface CopyButtonProps
   extends Omit<ButtonProps, 'onClick' | 'state'> {
@@ -23,6 +25,14 @@ export interface CopyButtonProps
   toastMessage?: string
 }
 
+/**
+ * CopyButton - Button with copy-to-clipboard functionality
+ * 
+ * @enhanced Framer Motion 12: Spring physics for celebration animation
+ * - Bouncy spring for check icon (celebratory feel)
+ * - Smooth spring for copy icon (professional entrance)
+ * - Respects prefers-reduced-motion
+ */
 export function CopyButton({
   text,
   onCopy,
@@ -35,6 +45,7 @@ export function CopyButton({
   ...props
 }: CopyButtonProps) {
   const toast = useToast()
+  const prefersReducedMotion = useReducedMotion()
   const { copy, copied } = useClipboard({
     timeout: 2000,
     onSuccess: () => {
@@ -71,7 +82,7 @@ export function CopyButton({
             initial={{ scale: 0.5, opacity: 0, rotate: -45 }}
             animate={{ scale: 1, opacity: 1, rotate: 0 }}
             exit={{ scale: 0.5, opacity: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
+            transition={getSpring('bouncy', prefersReducedMotion)}
             className="flex items-center gap-1.5"
           >
             <CheckIcon size={14} />
@@ -79,7 +90,7 @@ export function CopyButton({
               <motion.span
                 initial={{ opacity: 0, x: -4 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 }}
+                transition={getSpring('quick', prefersReducedMotion, { delay: 0.05 })}
               >
                 {children || copiedText}
               </motion.span>
@@ -91,7 +102,7 @@ export function CopyButton({
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={getSpring('smooth', prefersReducedMotion)}
             className="flex items-center gap-1.5"
           >
             <CopyIcon size={14} />

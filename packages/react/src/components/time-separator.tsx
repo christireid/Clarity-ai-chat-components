@@ -40,7 +40,12 @@ export function TimeSeparator({ children, className }: TimeSeparatorProps) {
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      transition={{ 
+        // Framer Motion 12: Spring entrance for time separator
+        type: 'spring',
+        damping: 20,
+        stiffness: 280,
+      }}
       className={cn('relative flex items-center justify-center py-4', className)}
       role="separator"
       aria-label={`Messages from ${children}`}
@@ -52,7 +57,13 @@ export function TimeSeparator({ children, className }: TimeSeparatorProps) {
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.1, duration: 0.2 }}
+        transition={{ 
+          // Framer Motion 12: Spring scale for badge
+          type: 'spring',
+          damping: 18,
+          stiffness: 300,
+          delay: 0.1,
+        }}
         className={cn(
           'px-4 py-1.5 mx-4',
           'text-xs font-bold uppercase tracking-wider',

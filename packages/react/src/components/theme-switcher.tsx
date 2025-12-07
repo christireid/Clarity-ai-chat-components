@@ -189,7 +189,12 @@ export const ThemeSwitcher = React.forwardRef<
                         }
                       : {}
                   }
-                  transition={{ duration: getMotionSafeDuration(prefersReducedMotion, 0.5) }}
+                  transition={{ 
+                    // Framer Motion 12: Spring celebration animation
+                    type: 'spring',
+                    damping: 12,
+                    stiffness: 200,
+                  }}
                   className={cn(
                     'flex-shrink-0',
                     isActive ? 'text-primary' : 'text-muted-foreground/90'

@@ -68,7 +68,13 @@ export function FollowUpSuggestions({
       initial={{ opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.96 }}
-      transition={{ duration: 0.25, delay: index * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ 
+        // Framer Motion 12: Spring follow-up cards
+        type: 'spring',
+        damping: 24,
+        stiffness: 290,
+        delay: index * 0.05,
+      }}
     >
       <Button
         variant="outline"

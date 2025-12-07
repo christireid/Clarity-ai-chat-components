@@ -524,14 +524,19 @@ export function ConversationList({
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <motion.svg
-                      className="w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      animate={{ rotate: isExpanded ? 90 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
+                  <motion.svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    animate={{ rotate: isExpanded ? 90 : 0 }}
+                    transition={{ 
+                      // Framer Motion 12: Spring folder icon rotation
+                      type: 'spring',
+                      damping: 20,
+                      stiffness: 300,
+                    }}
+                  >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"

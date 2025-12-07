@@ -234,7 +234,7 @@ export default function App() {
               height="100%"
               defaultLanguage="typescript"
               value={code}
-              onChange={(value) => setCode(value || '')}
+              onChange={(value: string | undefined) => setCode(value || '')}
               theme={theme === 'dark' ? 'vs-dark' : 'light'}
               options={{
                 minimap: { enabled: false },

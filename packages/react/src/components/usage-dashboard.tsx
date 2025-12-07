@@ -114,7 +114,12 @@ export function UsageDashboard({
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${usagePercentage}%` }}
-                  transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+                  transition={{ 
+                    // Framer Motion 12: Spring progress fill
+                    type: 'spring',
+                    damping: 28,
+                    stiffness: 200,
+                  }}
                   className={cn(
                     'h-full rounded-full',
                     isLowBalance ? 'bg-gradient-to-r from-red-500 to-destructive' : 'bg-gradient-to-r from-primary/80 to-primary'
@@ -190,7 +195,13 @@ export function UsageDashboard({
                               <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${Math.min(percentage, 100)}%` }}
-                                transition={{ delay: Object.keys(stats.metrics).indexOf(key) * 0.05 + 0.2, duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                                transition={{ 
+                                  // Framer Motion 12: Staggered metric bars
+                                  type: 'spring',
+                                  damping: 30,
+                                  stiffness: 220,
+                                  delay: Object.keys(stats.metrics).indexOf(key) * 0.05 + 0.2,
+                                }}
                                 className={cn(
                                   'h-full rounded-full',
                                   isNearLimit

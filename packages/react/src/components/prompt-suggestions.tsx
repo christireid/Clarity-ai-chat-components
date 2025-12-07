@@ -196,9 +196,11 @@ export function PromptSuggestions({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -10 }}
                 transition={{
-                  duration: 0.25,
+                  // Framer Motion 12: Spring entrance for suggestions
+                  type: 'spring',
+                  damping: 22,
+                  stiffness: 300,
                   delay: index * 0.05,
-                  ease: [0.25, 0.1, 0.25, 1],
                 }}
               >
                 <Button
@@ -246,9 +248,11 @@ export function PromptSuggestions({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.96 }}
               transition={{
-                duration: 0.25,
+                // Framer Motion 12: Spring cards entrance
+                type: 'spring',
+                damping: 25,
+                stiffness: 280,
                 delay: index * 0.05,
-                ease: [0.25, 0.1, 0.25, 1],
               }}
             >
               <Card

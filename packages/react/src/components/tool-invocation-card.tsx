@@ -130,7 +130,12 @@ export function ToolInvocationCard({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ 
+        // Framer Motion 12: Spring entrance for tool card
+        type: 'spring',
+        damping: 22,
+        stiffness: 300,
+      }}
       className={className}
     >
       <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-150 ease-out">

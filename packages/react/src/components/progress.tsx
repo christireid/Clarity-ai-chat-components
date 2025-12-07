@@ -3,12 +3,16 @@
  * 
  * Linear and circular progress indicators with determinate and indeterminate states.
  * Used for loading states, file uploads, and streaming progress.
+ * 
+ * @enhanced Framer Motion 12: Spring-based progress animations for smoother fills
  */
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { getSpring } from '../animations/spring-presets'
 
 /**
  * Linear Progress Bar
@@ -36,6 +40,7 @@ export const Progress: React.FC<ProgressProps> = ({
   label,
   className,
 }) => {
+  const prefersReducedMotion = useReducedMotion()
   const isIndeterminate = value === undefined
   const percentage = Math.min(Math.max(value ?? 0, 0), 100)
 
@@ -81,11 +86,11 @@ export const Progress: React.FC<ProgressProps> = ({
             className={cn('absolute inset-y-0 rounded-full', colorClasses[variant])}
             style={{ width: '40%' }}
             animate={{
-              x: ['-100%', '250%'],
+              x: prefersReducedMotion ? '0%' : ['-100%', '250%'],
             }}
             transition={{
               duration: 1.5,
-              repeat: Infinity,
+              repeat: prefersReducedMotion ? 0 : Infinity,
               ease: 'linear',
             }}
           />
@@ -95,10 +100,7 @@ export const Progress: React.FC<ProgressProps> = ({
             className={cn('h-full rounded-full', colorClasses[variant])}
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}
-            transition={{
-              duration: ANIMATION_DURATION.slow / 1000,
-              ease: ANIMATION_EASING.out,
-            }}
+            transition={getSpring('gentle', prefersReducedMotion)}
           />
         )}
       </div>
@@ -132,6 +134,7 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   showLabel = false,
   className,
 }) => {
+  const prefersReducedMotion = useReducedMotion()
   const isIndeterminate = value === undefined
   const percentage = Math.min(Math.max(value ?? 0, 0), 100)
 
@@ -176,10 +179,10 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
             strokeDasharray={circumference}
             strokeDashoffset={circumference * 0.75}
             className={colorClasses[variant]}
-            animate={{ rotate: 360 }}
+            animate={{ rotate: prefersReducedMotion ? 0 : 360 }}
             transition={{
               duration: 1,
-              repeat: Infinity,
+              repeat: prefersReducedMotion ? 0 : Infinity,
               ease: 'linear',
             }}
             style={{ transformOrigin: 'center' }}
@@ -197,10 +200,14 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
             strokeDashoffset={circumference}
             className={colorClasses[variant]}
             animate={{ strokeDashoffset: offset }}
-            transition={{
-              duration: ANIMATION_DURATION.slow / 1000,
-              ease: ANIMATION_EASING.out,
-            }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0.01, ease: 'linear' }
+                : {
+                    duration: ANIMATION_DURATION.slow / 1000,
+                    ease: ANIMATION_EASING.out,
+                  }
+            }
           />
         )}
       </svg>
@@ -234,6 +241,8 @@ export const StreamingProgress: React.FC<StreamingProgressProps> = ({
   size = 'md',
   className,
 }) => {
+  const prefersReducedMotion = useReducedMotion()
+  
   const sizeClasses = {
     sm: 'gap-1',
     md: 'gap-1.5',
@@ -256,13 +265,17 @@ export const StreamingProgress: React.FC<StreamingProgressProps> = ({
           <motion.div
             key={i}
             className={cn('rounded-full bg-current', dotSizeClasses[size])}
-            animate={{
-              opacity: [0.3, 1, 0.3],
-              scale: [0.8, 1, 0.8],
-            }}
+            animate={
+              prefersReducedMotion
+                ? {}
+                : {
+                    opacity: [0.3, 1, 0.3],
+                    scale: [0.8, 1, 0.8],
+                  }
+            }
             transition={{
               duration: 1.5,
-              repeat: Infinity,
+              repeat: prefersReducedMotion ? 0 : Infinity,
               delay: i * 0.2,
               ease: ANIMATION_EASING.inOut,
             }}

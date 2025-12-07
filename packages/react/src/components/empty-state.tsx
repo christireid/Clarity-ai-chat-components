@@ -28,7 +28,7 @@ import { InteractiveButton } from './interactive-card'
 import { PromptSuggestions, type PromptSuggestion } from './prompt-suggestions'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
-// import { createScaleVariant } from '../animations' // Reserved for future use
+import { getSpring } from '../animations/spring-presets'
 
 export interface EmptyStateProps {
   /** Icon to display */
@@ -54,6 +54,12 @@ export interface EmptyStateProps {
 
 /**
  * Base Empty State Component
+ * 
+ * @enhanced Framer Motion 12: Spring physics for organic entrance
+ * - Smooth spring for container
+ * - Smooth spring with rotation for icon
+ * - Gentle spring for content
+ * - Respects prefers-reduced-motion
  */
 export function EmptyState({
   icon,
@@ -63,11 +69,13 @@ export function EmptyState({
   secondaryAction,
   className,
 }: EmptyStateProps) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={getSpring('smooth', prefersReducedMotion)}
       className={cn(
         'flex flex-col items-center justify-center text-center px-6 py-12 space-y-8',
         className
@@ -78,7 +86,7 @@ export function EmptyState({
         <motion.div
           initial={{ scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.1, type: 'spring', stiffness: 280, damping: 22 }}
+          transition={getSpring('smooth', prefersReducedMotion, { delay: 0.1 })}
           className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/15 to-primary/5 shadow-lg ring-1 ring-primary/25"
         >
           {icon}
@@ -89,7 +97,7 @@ export function EmptyState({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: 0.25 }}
+        transition={getSpring('gentle', prefersReducedMotion, { delay: 0.25 })}
         className="space-y-3.5 max-w-lg"
       >
         <h3 className="text-2xl font-bold text-foreground leading-tight">{title}</h3>
@@ -105,7 +113,7 @@ export function EmptyState({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: 0.35 }}
+          transition={getSpring('quick', prefersReducedMotion, { delay: 0.35 })}
           className="flex flex-wrap gap-3 justify-center"
         >
           {action && (
@@ -509,6 +517,8 @@ InfoState.displayName = 'InfoState'
 
 /**
  * Loading State (with animated icon)
+ * 
+ * @enhanced Framer Motion 12: Spring entrance with continuous rotation
  */
 export function LoadingState({
   title = 'Loading...',
@@ -519,11 +529,13 @@ export function LoadingState({
   description?: string
   className?: string
 }) {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={getSpring('quick', prefersReducedMotion)}
       className={cn(
         'flex flex-col items-center justify-center text-center p-8 space-y-6',
         className
@@ -531,8 +543,12 @@ export function LoadingState({
     >
       {/* Animated Spinner */}
       <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+        animate={{ rotate: prefersReducedMotion ? 0 : 360 }}
+        transition={{ 
+          duration: 1, 
+          repeat: prefersReducedMotion ? 0 : Infinity, 
+          ease: 'linear' 
+        }}
         className="w-12 h-12 border-4 border-primary/60 border-t-primary rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
       />
 
@@ -540,7 +556,7 @@ export function LoadingState({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.1, duration: 0.3 }}
+        transition={getSpring('quick', prefersReducedMotion, { delay: 0.1 })}
         className="space-y-2 max-w-sm"
       >
         <h3 className="text-lg font-semibold text-foreground">{title}</h3>
