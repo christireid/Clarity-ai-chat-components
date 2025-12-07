@@ -17,8 +17,13 @@ import {
 
 // Dynamically import Particles to reduce initial bundle size
 // This is a heavy library that's only needed for the background animation
+// @tsparticles/react exports Particles as both default and named export
 const Particles = dynamic(
-  () => import('@tsparticles/react').then((mod) => mod.default),
+  () =>
+    import('@tsparticles/react').then((mod) => {
+      // Handle both default and named exports for maximum compatibility
+      return mod.default || mod.Particles
+    }),
   {
     ssr: false,
     loading: () => null, // Render nothing while loading
@@ -74,6 +79,7 @@ export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
     <div
       className={cn('fixed inset-0 -z-10 pointer-events-none', className)}
       aria-hidden="true"
+      role="presentation"
     >
       <Particles
         id="animated-background"

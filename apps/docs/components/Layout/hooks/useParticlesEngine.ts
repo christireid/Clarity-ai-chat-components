@@ -17,11 +17,16 @@ export function useParticlesEngine() {
   const [error, setError] = useState<Error | null>(null)
   const initializationRef = useRef<Promise<void> | null>(null)
   const stateRef = useRef<InitializationState>('idle')
+  const mountedRef = useRef(true)
 
   useEffect(() => {
+    mountedRef.current = true
+
     // If already initialized, set state immediately
     if (stateRef.current === 'initialized') {
-      setState('initialized')
+      if (mountedRef.current) {
+        setState('initialized')
+      }
       return
     }
 
@@ -29,35 +34,45 @@ export function useParticlesEngine() {
     if (stateRef.current === 'initializing' && initializationRef.current) {
       initializationRef.current
         .then(() => {
-          stateRef.current = 'initialized'
-          setState('initialized')
-          setError(null)
+          if (mountedRef.current) {
+            stateRef.current = 'initialized'
+            setState('initialized')
+            setError(null)
+          }
         })
         .catch((err) => {
-          stateRef.current = 'error'
-          setState('error')
-          setError(err instanceof Error ? err : new Error('Failed to initialize particles engine'))
+          if (mountedRef.current) {
+            stateRef.current = 'error'
+            setState('error')
+            setError(err instanceof Error ? err : new Error('Failed to initialize particles engine'))
+          }
         })
       return
     }
 
     // Start new initialization
     stateRef.current = 'initializing'
-    setState('initializing')
+    if (mountedRef.current) {
+      setState('initializing')
+    }
 
     const initPromise = initParticlesEngine(async (engine) => {
       await loadSlim(engine)
     })
       .then(() => {
-        stateRef.current = 'initialized'
-        setState('initialized')
-        setError(null)
+        if (mountedRef.current) {
+          stateRef.current = 'initialized'
+          setState('initialized')
+          setError(null)
+        }
       })
       .catch((err) => {
         const error = err instanceof Error ? err : new Error('Failed to load particles engine')
-        stateRef.current = 'error'
-        setState('error')
-        setError(error)
+        if (mountedRef.current) {
+          stateRef.current = 'error'
+          setState('error')
+          setError(error)
+        }
         if (process.env.NODE_ENV === 'development') {
           console.error('[AnimatedBackground] Failed to initialize particles:', error)
         }
@@ -65,6 +80,11 @@ export function useParticlesEngine() {
       })
 
     initializationRef.current = initPromise
+
+    // Cleanup: mark as unmounted
+    return () => {
+      mountedRef.current = false
+    }
   }, [])
 
   return {

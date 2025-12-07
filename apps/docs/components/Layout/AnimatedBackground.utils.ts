@@ -44,6 +44,8 @@ export function createParticlesConfig(isDark: boolean): ISourceOptions {
   const baseColor = isDark ? '#60a5fa' : '#3b82f6' // brand-400 in dark, brand-500 in light
   const secondaryColor = isDark ? '#93c5fd' : '#60a5fa' // brand-300 in dark, brand-400 in light
 
+  // Type assertion needed due to tsparticles type definitions being incomplete
+  // The config works correctly at runtime
   return {
     fpsLimit: PARTICLES_CONFIG.FPS_LIMIT,
     particles: {
@@ -139,5 +141,5 @@ export function createParticlesConfig(isDark: boolean): ISourceOptions {
     detectRetina: true,
     pauseOnBlur: true,
     pauseOnOutsideViewport: true,
-  }
+  } as ISourceOptions
 }

@@ -21,12 +21,14 @@ export function useIsDark(): boolean {
   const mounted = useMounted()
 
   return useMemo(() => {
-    if (!mounted || typeof window === 'undefined') return false
+    // useMounted already handles SSR, so we can safely assume window exists if mounted
+    if (!mounted) return false
     if (!resolvedTheme) return false
 
     if (resolvedTheme === 'dark') return true
     if (resolvedTheme === 'system') {
       try {
+        // Safe to access window here since mounted is true
         return window.matchMedia('(prefers-color-scheme: dark)').matches
       } catch {
         return false

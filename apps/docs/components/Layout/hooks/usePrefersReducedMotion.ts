@@ -20,36 +20,46 @@ export function usePrefersReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches)
+    if (typeof window === 'undefined') {
+      return () => {}
     }
 
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', handleChange)
-      return () => mediaQuery.removeEventListener('change', handleChange)
-    }
+    let cleanup: (() => void) | undefined
 
-    // Legacy browser fallback (IE11 and older)
-    if ('addListener' in mediaQuery) {
-      const legacyHandler = (mql: MediaQueryList) => {
-        setPrefersReducedMotion(mql.matches)
+    try {
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+      setPrefersReducedMotion(mediaQuery.matches)
+
+      const handleChange = (e: MediaQueryListEvent) => {
+        setPrefersReducedMotion(e.matches)
       }
-      // @ts-expect-error - Legacy API signature differs from modern API
-      mediaQuery.addListener(legacyHandler)
-      return () => {
-        if ('removeListener' in mediaQuery) {
-          // @ts-expect-error - Legacy API
-          mediaQuery.removeListener(legacyHandler)
+
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', handleChange)
+        cleanup = () => {
+          mediaQuery.removeEventListener('change', handleChange)
+        }
+      } else if ('addListener' in mediaQuery) {
+        // Legacy browser fallback (IE11 and older)
+        const legacyHandler = (mql: MediaQueryList) => {
+          setPrefersReducedMotion(mql.matches)
+        }
+        // @ts-expect-error - Legacy API signature differs from modern API
+        mediaQuery.addListener(legacyHandler)
+        cleanup = () => {
+          if ('removeListener' in mediaQuery) {
+            // @ts-expect-error - Legacy API
+            mediaQuery.removeListener(legacyHandler)
+          }
         }
       }
+    } catch (error) {
+      // If matchMedia fails, default to no reduced motion
+      setPrefersReducedMotion(false)
     }
 
-    return () => {}
+    // Always return a cleanup function
+    return cleanup || (() => {})
   }, [])
 
   return prefersReducedMotion
