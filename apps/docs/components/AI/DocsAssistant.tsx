@@ -71,7 +71,6 @@ import {
 } from '@clarity-chat/react'
 import type { Message, AIStatus } from '@clarity-chat/types'
 import { ChatButton } from './ChatButton'
-import { FeedbackButtons } from './FeedbackButtons'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { cn } from '@/lib/utils'
 
@@ -615,38 +614,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const handleSelectSuggestion = useCallback((suggestion: PromptSuggestion) => {
     handleSendMessage(suggestion.text)
   }, [handleSendMessage])
-
-  const handleFeedback = useCallback(async (
-    messageId: string,
-    type: 'positive' | 'negative',
-    comment?: string
-  ) => {
-    try {
-      const response = await fetch('/api/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messageId,
-          type,
-          comment,
-          sessionId,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Feedback submission failed: ${response.status}`)
-      }
-
-      toast.success(
-        type === 'positive'
-          ? 'Thanks for your feedback!'
-          : "Feedback received. We'll work on improving."
-      )
-    } catch (error) {
-      console.error('Failed to submit feedback:', error)
-      toast.error('Failed to submit feedback. Please try again.')
-    }
-  }, [sessionId, toast])
 
   const handleClear = useCallback(() => {
     setMessages([])

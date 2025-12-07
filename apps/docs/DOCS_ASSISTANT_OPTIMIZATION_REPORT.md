@@ -454,7 +454,7 @@ import { useStreamingSSE } from '@clarity-chat/react'
 
 #### MessageSearch Integration
 - Added `MessageSearch` component from library
-- Search panel with Cmd+F keyboard shortcut
+- Search panel with Cmd+K keyboard shortcut
 - Deferred search for responsive UI
 - Shows match count and highlights search term
 

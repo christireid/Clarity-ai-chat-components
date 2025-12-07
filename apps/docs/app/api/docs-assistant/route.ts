@@ -21,7 +21,7 @@ import {
   handleStreamError,
   type StreamChunk,
 } from '@/lib/ai/streaming'
-import { SYSTEM_PROMPT, ERROR_PROMPT, RATE_LIMIT_PROMPT } from '@/lib/ai/prompts'
+import { SYSTEM_PROMPT, RATE_LIMIT_PROMPT } from '@/lib/ai/prompts'
 import {
   getOrCreateSessionForRequest,
   updateSessionWithMessages,
@@ -263,7 +263,6 @@ async function* streamWithRAG(
     }
 
     // Cache miss - proceed with normal RAG flow
-    console.log(`Cache miss - generating new response for: "${userMessage.substring(0, 50)}..."`)
 
     // Send sources first (if any)
     if (ragContext.sources.length > 0) {
@@ -572,7 +571,6 @@ async function* streamWithoutRAG(
     }
 
     // Cache miss - proceed with normal flow
-    console.log(`Cache miss (non-RAG) - generating new response for: "${userMessage.substring(0, 50)}..."`)
 
     // Use messages as-is (user message already added in main route)
 
