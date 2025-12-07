@@ -11,7 +11,7 @@
  * - CitationCard - Display RAG sources with confidence scores
  * - EmptyChatState - Empty state with starter prompts (replaces custom)
  * - ErrorBoundary - Error handling wrapper
- * - MessageSearch - Search through conversation history (Cmd+F)
+ * - MessageSearch - Search through conversation history (Cmd+K)
  * - NetworkStatus - Connection status indicator
  * - TokenCounter - Display token usage and cost estimates
  * - VoiceInput - Voice input support
@@ -33,7 +33,7 @@
  *
  * Keyboard Shortcuts:
  * - Cmd+. - Toggle assistant
- * - Cmd+F - Toggle message search (when open)
+ * - Cmd+K - Toggle message search (when open)
  * - ? - Show keyboard shortcuts help
  * - Escape - Close assistant or search
  */
@@ -357,7 +357,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       description: 'Close assistant or search',
     },
     {
-      key: 'mod+f',
+      key: 'mod+k',
       callback: () => {
         if (isOpen && messages.length > 0) {
           setShowSearch((prev) => !prev)
@@ -738,7 +738,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   'hover:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring/40',
                   showSearch && 'bg-accent text-accent-foreground'
                 )}
-                title="Search messages (Cmd+F)"
+                title="Search messages (Cmd+K)"
                 aria-label="Toggle message search"
               >
                 <Search className="w-4 h-4" />
