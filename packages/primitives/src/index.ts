@@ -18,6 +18,7 @@ export * from './components/scroll-area'
 export * from './components/checkbox'
 export * from './components/error-message'
 export * from './components/command'
+export * from './components/select'
 
 // Hooks
 export * from './hooks/use-ripple-effect'

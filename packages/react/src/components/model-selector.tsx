@@ -4,11 +4,18 @@
  * Dropdown to switch between AI models with metrics (speed, cost, quality)
  */
 
-'use client'
+"use client"
 
-import * as React from 'react'
-import { motion } from 'framer-motion'
-import { Badge, Button, cn } from '@clarity-chat/primitives'
+import * as React from "react"
+import {
+  Badge,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  cn,
+} from "@clarity-chat/primitives"
 import type { ModelConfig, ModelInfo } from '../adapters/types'
 
 export interface ModelSelectorProps {
@@ -32,31 +39,29 @@ export function ModelSelector({
   models,
   value,
   onChange,
-  className = '',
+  className = "",
   showMetrics = true,
   disabled = false,
-  showDescription = true
+  showDescription = true,
 }: ModelSelectorProps) {
-  const [isOpen, setIsOpen] = React.useState(false)
-  const containerRef = React.useRef<HTMLDivElement>(null)
-  
-  const handleToggle = React.useCallback(() => setIsOpen(!isOpen), [isOpen])
-  const handleBackdropClick = React.useCallback(() => setIsOpen(false), [])
-  
   // Memoize selected model lookup
   const selectedModel = React.useMemo(
-    () => models.find(m => m.id === value),
+    () => models.find((m) => m.id === value),
     [models, value]
   )
   
   // Memoize select handler
-  const handleSelect = React.useCallback((model: ModelInfo) => {
-    onChange(model.id, {
-      provider: model.provider,
-      model: model.id
-    })
-    setIsOpen(false)
-  }, [onChange])
+  const handleSelect = React.useCallback(
+    (modelId: string) => {
+      const model = models.find((m) => m.id === modelId)
+      if (!model) return
+      onChange(model.id, {
+        provider: model.provider,
+        model: model.id,
+      })
+    },
+    [models, onChange]
+  )
   
   // Memoize badge props getter
   const getBadgeProps = React.useCallback((type: 'speed' | 'cost' | 'quality', value: string): { variant: React.ComponentProps<typeof Badge>['variant']; label: string } => {
@@ -79,25 +84,28 @@ export function ModelSelector({
   }, [])
 
   return (
-    <div ref={containerRef} className={cn('relative', className)}>
-      <Button
-        type="button"
-        variant="surface"
-        onClick={handleToggle}
-        disabled={disabled}
-        className="w-full justify-between rounded-xl border border-border/40 bg-card/95 backdrop-blur-md px-4 py-3 text-left text-sm shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 ease-out"
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
+    <Select value={value} onValueChange={handleSelect} disabled={disabled}>
+      <SelectTrigger
+        className={cn(
+          "h-auto w-full justify-between rounded-xl border border-border/40 bg-card/95 px-4 py-3 text-left text-sm shadow-sm transition-all duration-200 ease-out hover:border-border/60 hover:shadow-md focus:ring-2 focus:ring-ring/60 focus:ring-offset-2",
+          className
+        )}
       >
         <div className="flex min-w-0 flex-1 items-center gap-3.5">
-          <span className="truncate text-foreground font-semibold">
-            {selectedModel?.name || 'Select model'}
+          <span className="truncate font-semibold text-foreground">
+            {selectedModel?.name || "Select model"}
           </span>
           {showMetrics && selectedModel && (
             <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/90">
-              {(['speed', 'cost'] as const).map((type) => {
-                const { variant, label } = getBadgeProps(type, selectedModel[type])
-                const displayValue = type === 'cost' ? `$${selectedModel[type]}` : selectedModel[type]
+              {(["speed", "cost"] as const).map((type) => {
+                const { variant, label } = getBadgeProps(
+                  type,
+                  selectedModel[type]
+                )
+                const displayValue =
+                  type === "cost"
+                    ? `$${selectedModel[type]}`
+                    : selectedModel[type]
                 return (
                   <Badge
                     key={type}
@@ -112,86 +120,66 @@ export function ModelSelector({
             </div>
           )}
         </div>
-        <svg
-          className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', isOpen && 'rotate-180')}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </Button>
-      
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={handleBackdropClick}
-            aria-hidden="true"
-          />
-          <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            role="listbox"
-            className="absolute z-20 mt-2 w-full overflow-auto rounded-2xl border border-border/40 bg-card/98 backdrop-blur-lg shadow-xl"
+        <SelectValue
+          aria-label={selectedModel?.name ?? "Select model"}
+          placeholder="Select model"
+          className="sr-only"
+        />
+      </SelectTrigger>
+      <SelectContent
+        className="w-[var(--radix-select-trigger-width)] rounded-2xl border border-border/40 bg-card/98 backdrop-blur-lg shadow-xl"
+        align="center"
+      >
+        {models.map((model) => (
+          <SelectItem
+            key={model.id}
+            value={model.id}
+            className="px-0 py-0 text-foreground focus-visible:outline-none"
           >
-            {models.map((model) => (
-              <button
-                key={model.id}
-                type="button"
-                role="option"
-                aria-selected={model.id === value}
-                onClick={() => handleSelect(model)}
-                className={cn(
-                  'w-full px-4 py-3 text-left transition-colors duration-150 ease-out first:rounded-t-2xl last:rounded-b-2xl',
-                  model.id === value
-                    ? 'bg-muted/60 text-foreground'
-                    : 'text-muted-foreground/90 hover:bg-muted/40 hover:text-foreground'
-                )}
-              >
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="font-semibold text-foreground">
-                      {model.name}
-                    </span>
-                    {showMetrics && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {(['speed', 'quality', 'cost'] as const).map((type) => {
-                          const { variant, label } = getBadgeProps(type, model[type])
-                          const displayValue =
-                            type === 'cost' ? `$${model[type]}` : model[type]
-                          return (
-                            <Badge
-                              key={type}
-                              variant={variant}
-                              className="rounded-full px-2 py-0.5 capitalize"
-                              title={label}
-                            >
-                              {displayValue}
-                            </Badge>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                  {showDescription && model.description && (
-                    <p className="text-sm text-muted-foreground/90">
-                      {model.description}
-                    </p>
+            <div className="w-full px-4 py-3 text-left">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="font-semibold text-foreground">
+                    {model.name}
+                  </span>
+                  {showMetrics && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {(["speed", "quality", "cost"] as const).map((type) => {
+                        const { variant, label } = getBadgeProps(
+                          type,
+                          model[type]
+                        )
+                        const displayValue =
+                          type === "cost" ? `$${model[type]}` : model[type]
+                        return (
+                          <Badge
+                            key={type}
+                            variant={variant}
+                            className="rounded-full px-2 py-0.5 capitalize"
+                            title={label}
+                          >
+                            {displayValue}
+                          </Badge>
+                        )
+                      })}
+                    </div>
                   )}
-                  <p className="text-xs text-muted-foreground/90">
-                    {(model.contextWindow / 1000).toFixed(0)}K context
-                    {model.vision && ' · Vision'}
-                    {model.toolCalling && ' · Tools'}
-                  </p>
                 </div>
-              </button>
-            ))}
-          </motion.div>
-        </>
-      )}
-    </div>
+                {showDescription && model.description && (
+                  <p className="text-sm text-muted-foreground/90">
+                    {model.description}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground/90">
+                  {(model.contextWindow / 1000).toFixed(0)}K context
+                  {model.vision && " · Vision"}
+                  {model.toolCalling && " · Tools"}
+                </p>
+              </div>
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
