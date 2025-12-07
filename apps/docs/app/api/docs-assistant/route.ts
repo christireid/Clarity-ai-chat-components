@@ -8,6 +8,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { enhanceMessageWithRAG, formatCitations, shouldUseRAG } from '@/lib/ai/rag'
 import {
+  enhanceMessageWithOptimizedRAG,
+  shouldUseEnhancedRAG,
+  formatEnhancedCitations,
+  type EnhancedRAGOptions,
+} from '@/lib/ai/ragOptimized'
+import {
   createSSEStream,
   getStreamingFunction,
   checkRateLimit,
@@ -25,6 +31,9 @@ import { getResponseCache, generateContextHash } from '@/lib/ai/responseCache'
 
 export const runtime = 'nodejs' // Use Node.js runtime for fs/crypto access
 export const dynamic = 'force-dynamic'
+
+// Feature flag for enhanced RAG (hybrid search + RRF + MMR)
+const USE_ENHANCED_RAG = process.env.ENHANCED_RAG !== 'false' // Default: enabled
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
@@ -137,13 +146,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Determine if we should use RAG
-    const useRAG = shouldUseRAG(body.message)
+    // Determine if we should use RAG (enhanced or legacy)
+    const useEnhancedRAG = USE_ENHANCED_RAG && shouldUseEnhancedRAG(body.message)
+    const useLegacyRAG = !USE_ENHANCED_RAG && shouldUseRAG(body.message)
 
-    // Create streaming response
-    const generator = useRAG
-      ? streamWithRAG(body.message, messages, body.currentPath, sessionId)
-      : streamWithoutRAG(body.message, messages, sessionId)
+    // Create streaming response - use enhanced RAG when enabled
+    const generator = useEnhancedRAG
+      ? streamWithEnhancedRAG(body.message, messages, body.currentPath, sessionId)
+      : useLegacyRAG
+        ? streamWithRAG(body.message, messages, body.currentPath, sessionId)
+        : streamWithoutRAG(body.message, messages, sessionId)
 
     return new Response(createSSEStream(generator), {
       headers: {
@@ -339,6 +351,176 @@ async function* streamWithRAG(
 }
 
 /**
+ * Stream response with Enhanced RAG (hybrid search + RRF + MMR)
+ *
+ * Uses the optimized RAG implementation for better retrieval quality:
+ * - Hybrid search (keyword + semantic)
+ * - Reciprocal Rank Fusion (RRF) for score combination
+ * - MMR (Maximal Marginal Relevance) for result diversity
+ * - Reranking for improved precision
+ */
+async function* streamWithEnhancedRAG(
+  userMessage: string,
+  messages: ChatMessage[],
+  currentPath?: string,
+  sessionId?: string
+): AsyncGenerator<StreamChunk> {
+  let assistantResponse = ''
+
+  try {
+    // Configure enhanced RAG options
+    const ragOptions: EnhancedRAGOptions = {
+      currentPath,
+      topK: 5,
+      retrieveK: 10,
+      minScore: 0.3,
+      keywordWeight: 0.4,
+      enableReranking: true,
+      enableMMR: true,
+      mmrLambda: 0.7,
+      maxContextLength: 4000,
+    }
+
+    // Enhance message with optimized RAG context
+    const { enhancedMessage, ragContext, hasRelevantDocs } = await enhanceMessageWithOptimizedRAG(
+      userMessage,
+      ragOptions
+    )
+
+    // Generate context hash for cache key
+    const contextHash = generateContextHash(ragContext.sources.map(s => ({
+      url: s.url,
+      title: s.title,
+      score: s.finalScore,
+    })))
+
+    // Check cache first
+    const cache = getResponseCache()
+    const cachedResponse = await cache.get(userMessage, contextHash)
+
+    if (cachedResponse) {
+      // Cache hit! Send sources from cache
+      if (cachedResponse.sources && cachedResponse.sources.length > 0) {
+        yield {
+          type: 'sources',
+          data: {
+            sources: cachedResponse.sources.map(s => ({
+              url: s.url,
+              title: s.title,
+              score: s.confidence,
+            })),
+            count: cachedResponse.sources.length,
+          },
+        }
+      }
+
+      // Stream cached response
+      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [cachedResponse.response]
+      for (const sentence of sentences) {
+        yield { type: 'text', content: sentence }
+        assistantResponse += sentence
+        await new Promise(resolve => setTimeout(resolve, 10))
+      }
+
+      // Save to session
+      if (sessionId && assistantResponse) {
+        try {
+          await updateSessionWithMessages(sessionId, [
+            { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
+            { role: 'assistant', content: assistantResponse, timestamp: new Date().toISOString() },
+          ])
+        } catch (error) {
+          console.error('Failed to save session:', error)
+        }
+      }
+
+      yield { type: 'done' }
+      return
+    }
+
+    // Cache miss - log search stats
+    console.log(`Enhanced RAG cache miss - Query: "${userMessage.substring(0, 40)}..."`)
+    console.log(`  Stats: keyword=${ragContext.stats.keywordResults}, semantic=${ragContext.stats.semanticResults}, hybrid=${ragContext.stats.hybridResults}`)
+
+    // Send sources first (if any) with enhanced citation format
+    if (ragContext.sources.length > 0) {
+      const citations = formatEnhancedCitations(ragContext.sources)
+
+      yield {
+        type: 'sources',
+        data: {
+          sources: citations.map(c => ({
+            id: c.id,
+            url: c.url,
+            title: c.source,
+            score: c.confidence,
+            matchedBy: c.matchedBy,
+            category: c.category,
+            chunkText: c.chunkText,
+          })),
+          count: citations.length,
+        },
+      }
+    }
+
+    // Update system message with enhanced RAG context
+    const updatedMessages = messages.map((msg, idx) => {
+      if (msg.role === 'system') {
+        return { ...msg, content: ragContext.systemPrompt }
+      }
+      // Replace the last user message with enhanced version
+      if (idx === messages.length - 1 && msg.role === 'user') {
+        return { ...msg, content: enhancedMessage }
+      }
+      return msg
+    })
+
+    // Stream response from LLM
+    const streamingFn = getStreamingFunction()
+    const stream = streamingFn(updatedMessages)
+
+    for await (const chunk of stream) {
+      if (chunk.type === 'text' && chunk.content) {
+        assistantResponse += chunk.content
+      }
+      yield chunk
+    }
+
+    // Cache the response
+    if (assistantResponse) {
+      try {
+        await cache.set(userMessage, assistantResponse, {
+          sources: ragContext.sources.map(s => ({
+            url: s.url,
+            title: s.title,
+            confidence: s.finalScore,
+          })),
+          model: process.env.AI_MODEL || 'unknown',
+          contextHash,
+        })
+      } catch (error) {
+        console.error('Failed to cache response:', error)
+      }
+    }
+
+    // Save messages to session
+    if (sessionId && assistantResponse) {
+      try {
+        await updateSessionWithMessages(sessionId, [
+          { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
+          { role: 'assistant', content: assistantResponse, timestamp: new Date().toISOString() },
+        ])
+      } catch (error) {
+        console.error('Failed to save session:', error)
+      }
+    }
+  } catch (error) {
+    console.error('Enhanced RAG streaming error:', error)
+    yield handleStreamError(error)
+  }
+}
+
+/**
  * Stream response without RAG (for simple queries)
  */
 async function* streamWithoutRAG(
@@ -463,9 +645,10 @@ export async function GET() {
   return NextResponse.json({
     status: 'ok',
     service: 'Clarity Chat Documentation Assistant',
-    version: '1.0.0',
+    version: '1.1.0',
     features: {
       rag: !!process.env.OPENAI_API_KEY || !!process.env.ANTHROPIC_API_KEY,
+      enhancedRAG: USE_ENHANCED_RAG,
       streaming: true,
       rateLimit: true,
       caching: true,

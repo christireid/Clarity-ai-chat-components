@@ -8,32 +8,48 @@
  *
  * Library Components Used:
  * - ChatWindow - Main chat interface
+ * - CitationCard - Display RAG sources with confidence scores
  * - EmptyChatState - Empty state with starter prompts (replaces custom)
  * - ErrorBoundary - Error handling wrapper
+ * - MessageSearch - Search through conversation history (Cmd+F)
  * - NetworkStatus - Connection status indicator
+ * - TokenCounter - Display token usage and cost estimates
  * - VoiceInput - Voice input support
- * - CopyButton - Copy to clipboard (available)
- * - ThinkingIndicator - AI status (available)
  *
  * Library Hooks Used:
  * - useKeyboardShortcuts - Keyboard handling (replaces custom)
  * - useClipboard - Copy functionality
+ * - useFocusTrap - Modal focus management (WCAG compliance)
+ * - useFocusRestoration - Restore focus on close
  * - useLocalStorage - Session ID & conversation storage (replaces custom)
- * - useThrottledCallback - Throttled streaming updates (replaces custom)
  * - useReducedMotion - Accessibility preferences
- * - useAutoScroll - Auto-scroll message list
+ * - useThrottledCallback - Throttled streaming updates (replaces custom)
  * - useToast - Toast notifications
+ * - useTokenTracker - Track conversation token usage and costs
+ *
+ * Animation Utilities:
+ * - createFadeVariant - Fade animation presets
+ * - createSlideVariant - Slide animation presets
+ *
+ * Keyboard Shortcuts:
+ * - Cmd+. - Toggle assistant
+ * - Cmd+F - Toggle message search (when open)
+ * - ? - Show keyboard shortcuts help
+ * - Escape - Close assistant or search
  */
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Code2, Lightbulb, MessageSquare, Sparkles, AlertCircle } from 'lucide-react'
+import { Code2, Lightbulb, MessageSquare, Sparkles, AlertCircle, Search } from 'lucide-react'
 import {
   // Components
   ChatWindow,
+  CitationCard,
   EmptyChatState,
   ErrorBoundary,
+  MessageSearch,
   NetworkStatus,
+  TokenCounter,
   VoiceInput,
   // Hooks
   useToast,
@@ -42,8 +58,10 @@ import {
   useLocalStorage,
   useThrottledCallback,
   useReducedMotion,
+  useTokenTracker,
   // Types
   type PromptSuggestion,
+  type Citation,
   // Accessibility hooks
   useFocusTrap,
   useFocusRestoration,
@@ -90,6 +108,12 @@ const STREAM_THROTTLE_MS = 50 // Throttle streaming updates
 const CLIPBOARD_TIMEOUT_MS = 2000 // Clipboard success display time
 const TOAST_DURATION_MS = 3000 // Toast notification duration
 const FOCUS_DELAY_MS = 100 // Delay before focusing input
+
+// Token tracking constants
+const MODEL_MAX_TOKENS = 128000 // Claude/GPT-4 turbo context window
+const TOKEN_COST_PER_TOKEN = 0.000003 // Claude 3 Sonnet pricing
+const TOKEN_WARNING_THRESHOLD = 0.75 // Warn at 75% usage
+const TOKEN_CRITICAL_THRESHOLD = 0.9 // Critical at 90% usage
 
 // Static animation variants using library utilities (moved outside component for performance)
 const BACKDROP_VARIANTS = createFadeVariant('fast', 'out')
@@ -221,6 +245,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [aiStatus, setAiStatus] = useState<AIStatus | undefined>(undefined)
   const [showShortcuts, setShowShortcuts] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
+  const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
 
   // Refs
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -238,6 +264,26 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   // Focus trap for modal accessibility (Critical: traps focus within dialog)
   const focusTrapRef = useFocusTrap<HTMLDivElement>(isOpen)
   const { saveFocus, restoreFocus } = useFocusRestoration()
+
+  // Token tracking using library hook
+  const {
+    tokens: totalTokens,
+    estimatedCost,
+    isNearLimit,
+    isCritical,
+    addMessage: trackMessage,
+    clear: clearTokens,
+  } = useTokenTracker({
+    modelName: 'claude-3-sonnet',
+    maxTokens: MODEL_MAX_TOKENS,
+    warningThreshold: TOKEN_WARNING_THRESHOLD,
+    criticalThreshold: TOKEN_CRITICAL_THRESHOLD,
+    onWarning: () => toast.warning('Approaching context limit'),
+    onCritical: () => toast.error('Near context limit - consider clearing conversation'),
+  })
+
+  // State for citation display
+  const [currentCitations, setCurrentCitations] = useState<Citation[]>([])
 
   // Session ID using library hook (replaces custom useSessionId)
   const [sessionId] = useLocalStorage<string>(SESSION_ID_KEY, generateSessionId())
@@ -302,12 +348,23 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     {
       key: 'escape',
       callback: () => {
-        if (isOpen) {
+        if (showSearch) {
+          setShowSearch(false)
+        } else if (isOpen) {
           setIsOpen(false)
           restoreFocus()
         }
       },
-      description: 'Close assistant',
+      description: 'Close assistant or search',
+    },
+    {
+      key: 'mod+f',
+      callback: () => {
+        if (isOpen && messages.length > 0) {
+          setShowSearch((prev) => !prev)
+        }
+      },
+      description: 'Toggle message search',
     },
   ])
 
@@ -361,6 +418,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     }
 
     setMessages((prev) => [...prev, userMessage])
+    // Track user message tokens
+    trackMessage({ role: 'user', content })
     setIsLoading(true)
     setAiStatus({
       stage: 'researching',
@@ -432,24 +491,25 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 updateStreamingMessage(assistantMessage.id, accumulatedContent)
               } else if (data.type === 'sources' && data.data?.sources) {
                 sources = data.data.sources
+                // Convert sources to Citation objects for CitationCard display
+                const citations: Citation[] = sources
+                  .filter((s) => s && (s.title || s.source || s.url))
+                  .map((source, index) => ({
+                    id: source.id || `citation-${index}-${Date.now()}`,
+                    source: (source.title || source.source || 'Documentation').trim(),
+                    chunkText: source.title || source.source || 'See documentation for more details',
+                    confidence: Number(source.score) || Number(source.confidence) || 0,
+                    url: normalizeSourceUrl(source.url || '', source.title || source.source || ''),
+                  }))
+                setCurrentCitations(citations)
               } else if (data.type === 'error') {
                 throw new Error(data.content || 'Stream error')
               } else if (data.type === 'done') {
                 const normalizedContent = normalizeLinksInContent(accumulatedContent)
-                let finalContent = normalizedContent
+                const finalContent = normalizedContent
 
-                if (sources.length > 0) {
-                  const validSources = sources.filter((s) => s && (s.title || s.source || s.url))
-                  if (validSources.length > 0) {
-                    finalContent += '\n\n---\n\n**Sources:**\n'
-                    validSources.forEach((source) => {
-                      const confidence = Number(source.score) || Number(source.confidence) || 0
-                      const title = (source.title || source.source || 'Documentation').trim()
-                      const url = normalizeSourceUrl(source.url || '', title)
-                      finalContent += `- [${title}](${url}) (${Math.round(confidence * 100)}% relevance)\n`
-                    })
-                  }
-                }
+                // Track assistant message tokens
+                trackMessage({ role: 'assistant', content: finalContent })
 
                 setMessages((prev) =>
                   prev.map((m) =>
@@ -591,8 +651,17 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const handleClear = useCallback(() => {
     setMessages([])
     clearSavedConversation()
+    clearTokens() // Reset token tracking
+    setCurrentCitations([]) // Clear citations
+    setShowSearch(false) // Close search
+    setFilteredMessages([]) // Clear filtered messages
     toast.info('Conversation cleared')
-  }, [clearSavedConversation, toast])
+  }, [clearSavedConversation, clearTokens, toast])
+
+  // Handle search results
+  const handleSearchResults = useCallback((results: Message[]) => {
+    setFilteredMessages(results)
+  }, [])
 
   // Animation variants - respect reduced motion preference using library utilities
   const dialogVariants = useMemo(
@@ -666,6 +735,62 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               />
             </div>
 
+            {/* Search Toggle Button - shows when there are messages */}
+            {messages.length > 0 && (
+              <button
+                onClick={() => setShowSearch((prev) => !prev)}
+                className={cn(
+                  'absolute top-2 right-36 z-10 p-2 rounded-lg transition-colors',
+                  'hover:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring/40',
+                  showSearch && 'bg-accent text-accent-foreground'
+                )}
+                title="Search messages (Cmd+F)"
+                aria-label="Toggle message search"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* Message Search Panel - shows when search is active */}
+            <AnimatePresence>
+              {showSearch && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                  className="absolute top-14 left-4 right-4 z-10 bg-background/95 backdrop-blur-sm rounded-lg border border-border/40 shadow-lg overflow-hidden"
+                >
+                  <div className="p-3">
+                    <MessageSearch
+                      messages={messages}
+                      onResultsChange={handleSearchResults}
+                      placeholder="Search conversation..."
+                      className="w-full"
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Token Counter - shows when conversation has tokens */}
+            {totalTokens > 0 && (
+              <div className="absolute top-2 left-4 z-10 max-w-[200px]">
+                <TokenCounter
+                  currentTokens={totalTokens}
+                  maxTokens={MODEL_MAX_TOKENS}
+                  costPerToken={TOKEN_COST_PER_TOKEN}
+                  showWarning={isNearLimit || isCritical}
+                  warningThreshold={TOKEN_WARNING_THRESHOLD}
+                  criticalThreshold={TOKEN_CRITICAL_THRESHOLD}
+                  showCost
+                  showBar
+                  size="sm"
+                  className="bg-background/80 backdrop-blur-sm rounded-lg p-2 border border-border/40"
+                />
+              </div>
+            )}
+
             <ChatWindow
               messages={messages}
               isLoading={isLoading}
@@ -688,6 +813,37 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               }
               className="h-full flex flex-col"
             />
+
+            {/* Citations Panel - shows when citations available */}
+            <AnimatePresence>
+              {currentCitations.length > 0 && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="border-t border-border/40 bg-muted/30 overflow-hidden"
+                >
+                  <div className="p-3">
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                      Sources ({currentCitations.length})
+                    </h3>
+                    <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                      {currentCitations.map((citation) => (
+                        <CitationCard
+                          key={citation.id}
+                          citation={citation}
+                          previewLength={80}
+                          showConfidence
+                          onSourceClick={(url) => window.open(url, '_blank', 'noopener,noreferrer')}
+                          className="text-sm"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
