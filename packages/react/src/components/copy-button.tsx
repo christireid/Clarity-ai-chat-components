@@ -71,7 +71,12 @@ export function CopyButton({
             initial={{ scale: 0.5, opacity: 0, rotate: -45 }}
             animate={{ scale: 1, opacity: 1, rotate: 0 }}
             exit={{ scale: 0.5, opacity: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
+            transition={{ 
+              // Framer Motion 12: Spring check icon celebration
+              type: 'spring',
+              damping: 15,
+              stiffness: 300,
+            }}
             className="flex items-center gap-1.5"
           >
             <CheckIcon size={14} />
@@ -91,7 +96,12 @@ export function CopyButton({
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={{ 
+              // Framer Motion 12: Spring copy icon entrance
+              type: 'spring',
+              damping: 18,
+              stiffness: 280,
+            }}
             className="flex items-center gap-1.5"
           >
             <CopyIcon size={14} />

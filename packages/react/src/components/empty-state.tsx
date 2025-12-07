@@ -67,7 +67,12 @@ export function EmptyState({
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ 
+        // Framer Motion 12: Spring entrance for empty states
+        type: 'spring',
+        damping: 24,
+        stiffness: 280,
+      }}
       className={cn(
         'flex flex-col items-center justify-center text-center px-6 py-12 space-y-8',
         className
@@ -89,7 +94,13 @@ export function EmptyState({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: 0.25 }}
+        transition={{ 
+          // Framer Motion 12: Spring content reveal
+          type: 'spring',
+          damping: 26,
+          stiffness: 290,
+          delay: 0.25,
+        }}
         className="space-y-3.5 max-w-lg"
       >
         <h3 className="text-2xl font-bold text-foreground leading-tight">{title}</h3>
