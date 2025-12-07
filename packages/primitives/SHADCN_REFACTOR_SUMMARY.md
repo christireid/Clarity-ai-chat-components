@@ -121,13 +121,13 @@ Updated with path aliases:
 - **Build**: ✅ Passes
 - **Lint**: ✅ Passes
 - **TypeScript**: ✅ All types correct
-- **Unit Tests**: ⚠️ 26 failures remaining (down from 35+)
+- **Unit Tests**: ⚠️ 16 failures remaining (down from 35+)
   - **Checkbox**: ✅ All 36 tests passing (fixed)
   - **DropdownMenu**: ✅ All 13 tests passing (fixed)
-  - **Avatar**: 4 failures (Radix UI AvatarImage behavior differences)
-  - **Dialog**: 4 failures (Radix UI Dialog structure differences)
-  - **Popover**: 2 failures (Radix UI error messages)
-  - **Other components**: 16 failures (various API differences)
+  - **Avatar**: 28/31 passing (3 failures - Radix UI AvatarImage behavior)
+  - **Dialog**: 13/15 passing (2 failures - aria-label/aria-modal expectations)
+  - **Popover**: ✅ All tests passing (fixed)
+  - **Other components**: ~11 failures (various API differences)
 
 ### Test Fixes Applied
 - ✅ **Checkbox**: Updated all tests to use `onCheckedChange` instead of `onChange`

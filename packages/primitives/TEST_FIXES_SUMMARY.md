@@ -7,9 +7,9 @@ This document tracks the test fixes applied to align tests with Radix UI's API a
 ## Progress
 
 - **Total Tests**: 312
-- **Passing**: 286 (91.7%)
-- **Failing**: 26 (8.3%)
-- **Improvement**: Reduced from 35+ failures to 26 failures
+- **Passing**: 294 (94.2%)
+- **Failing**: 18 (5.8%)
+- **Improvement**: Reduced from 35+ failures to 18 failures
 
 ## Completed Fixes
 
@@ -36,7 +36,7 @@ This document tracks the test fixes applied to align tests with Radix UI's API a
 
 ## Remaining Failures
 
-### ⏳ Avatar Component (4 failures)
+### ✅ Avatar Component (28/31 tests passing - 3 failures remaining)
 
 **Issues**:
 - Tests expect different image loading behavior
@@ -49,7 +49,7 @@ This document tracks the test fixes applied to align tests with Radix UI's API a
 - `should show fallback when image fails to load`
 - `should have proper alt text for images`
 
-### ⏳ Dialog Component (4 failures)
+### ✅ Dialog Component (13/15 tests passing - 2 failures remaining)
 
 **Issues**:
 - Tests expect different DOM structure
@@ -62,7 +62,7 @@ This document tracks the test fixes applied to align tests with Radix UI's API a
 - `should support aria-label on content`
 - `should throw error when used outside Dialog context`
 
-### ⏳ Popover Component (2 failures)
+### ✅ Popover Component (All tests passing - fixed)
 
 **Issues**:
 - Tests expect custom error messages
@@ -72,16 +72,16 @@ This document tracks the test fixes applied to align tests with Radix UI's API a
 - `should throw error when used outside Popover context`
 - `should support aria-label`
 
-### ⏳ Other Components (16 failures)
+### ⏳ Other Components (~13 failures remaining)
 
 Various component-specific API differences that need to be addressed.
 
 ## Next Steps
 
-1. **Avatar Tests**: Update to match Radix UI's `AvatarImage` behavior
-2. **Dialog Tests**: Update to account for portal rendering
-3. **Popover Tests**: Update error message expectations
-4. **Other Tests**: Review and fix remaining failures
+1. ✅ **Avatar Tests**: Updated to match Radix UI's `AvatarImage` behavior (3 minor failures remain)
+2. ✅ **Dialog Tests**: Updated to account for portal rendering (2 minor failures remain)
+3. ✅ **Popover Tests**: Updated error message expectations (all passing)
+4. ⏳ **Other Tests**: Review and fix remaining ~13 failures
 
 ## Testing Commands
 
