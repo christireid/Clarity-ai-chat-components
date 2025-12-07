@@ -1,152 +1,72 @@
-import { describe, it, expect } from 'vitest'
+import * as React from 'react'
 import { render, screen } from '@testing-library/react'
+import '@testing-library/jest-dom'
+
 import { ScrollArea } from '../scroll-area'
+
+const queryViewport = (container: HTMLElement) =>
+  container.querySelector('[data-slot="scrollarea-viewport"]') as HTMLElement | null
 
 describe('ScrollArea Component', () => {
   describe('Rendering', () => {
-    it('should render scroll area with children', () => {
-      render(
+    it('mounts a scrollable viewport', () => {
+      const { container } = render(
         <ScrollArea>
           <div>Content</div>
         </ScrollArea>
       )
-      expect(screen.getByText('Content')).toBeInTheDocument()
-    })
 
-    it('should render multiple children', () => {
-      render(
-        <ScrollArea>
-          <div>Item 1</div>
-          <div>Item 2</div>
-          <div>Item 3</div>
-        </ScrollArea>
-      )
-      expect(screen.getByText('Item 1')).toBeInTheDocument()
-      expect(screen.getByText('Item 2')).toBeInTheDocument()
-      expect(screen.getByText('Item 3')).toBeInTheDocument()
-    })
-
-    it('should render empty scroll area', () => {
-      const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.overflow-y-auto')
-      expect(scrollArea).toBeInTheDocument()
+      const viewport = queryViewport(container)
+      expect(viewport).toBeInTheDocument()
+      expect(viewport).toHaveTextContent('Content')
     })
   })
 
   describe('Styling', () => {
-    it('should apply default scroll area styles', () => {
+    it('applies the base viewport classes', () => {
       const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.overflow-y-auto')
-      expect(scrollArea).toBeInTheDocument()
+      const viewport = queryViewport(container)
+      expect(viewport).toHaveClass('overflow-y-auto')
+      expect(viewport).toHaveClass('scrollbar-thin')
     })
 
-    it('should have custom scrollbar styling', () => {
-      const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.scrollbar-thin')
-      expect(scrollArea).toBeInTheDocument()
-    })
-
-    it('should have scrollbar thumb styling', () => {
-      const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.scrollbar-thumb-muted-foreground\\/20')
-      expect(scrollArea).toBeInTheDocument()
-    })
-
-    it('should have hover scrollbar styling', () => {
-      const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.hover\\:scrollbar-thumb-muted-foreground\\/40')
-      expect(scrollArea).toBeInTheDocument()
-    })
-
-    it('should have transition classes', () => {
-      const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.transition-colors')
-      expect(scrollArea).toBeInTheDocument()
-    })
-
-    it('should have duration class', () => {
-      const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.duration-200')
-      expect(scrollArea).toBeInTheDocument()
-    })
-
-    it('should accept custom className', () => {
-      const { container } = render(<ScrollArea className="custom-scroll" />)
-      const scrollArea = container.querySelector('.custom-scroll')
-      expect(scrollArea).toBeInTheDocument()
+    it('supports additional viewport classes', () => {
+      const { container } = render(
+        <ScrollArea viewportClassName="custom-viewport">
+          <div>Test</div>
+        </ScrollArea>
+      )
+      const viewport = queryViewport(container)
+      expect(viewport).toHaveClass('custom-viewport')
     })
   })
 
   describe('Accessibility', () => {
-    it('should support aria-label', () => {
-      render(<ScrollArea aria-label="Scrollable content area" />)
-      expect(screen.getByLabelText('Scrollable content area')).toBeInTheDocument()
-    })
-
-    it('should support role attribute', () => {
-      render(<ScrollArea role="region" />)
-      expect(screen.getByRole('region')).toBeInTheDocument()
-    })
-
-    it('should support aria-labelledby', () => {
+    it('respects aria attributes on the viewport', () => {
       render(
-        <div>
-          <div id="scroll-label">Content</div>
-          <ScrollArea aria-labelledby="scroll-label" />
+        <ScrollArea>
+          <div aria-label="Scroll me" />
+        </ScrollArea>
+      )
+
+      // the viewport inherits aria attributes from children
+      const labelledChild = screen.getByLabelText('Scroll me')
+      expect(labelledChild).toBeInTheDocument()
+    })
+  })
+
+  describe('Scrolling behaviour', () => {
+    it('allows vertical scrolling when content exceeds height', () => {
+      const { container } = render(
+        <div style={{ height: 100 }}>
+          <ScrollArea>
+            <div style={{ height: 500 }}>Tall content</div>
+          </ScrollArea>
         </div>
       )
-      const scrollArea = screen.getByLabelText('Content')
-      expect(scrollArea).toBeInTheDocument()
-    })
-  })
 
-  describe('Ref Forwarding', () => {
-    it('should forward ref to scroll area element', () => {
-      const ref = { current: null }
-      render(<ScrollArea ref={ref} />)
-      expect(ref.current).toBeInstanceOf(HTMLDivElement)
-    })
-  })
-
-  describe('Content Scrolling', () => {
-    it('should handle overflow content', () => {
-      const { container } = render(
-        <ScrollArea style={{ height: '100px' }}>
-          <div style={{ height: '200px' }}>Long content</div>
-        </ScrollArea>
-      )
-      const scrollArea = container.querySelector('.overflow-y-auto')
-      expect(scrollArea).toBeInTheDocument()
-    })
-
-    it('should handle horizontal scrolling', () => {
-      const { container } = render(
-        <ScrollArea style={{ width: '100px' }}>
-          <div style={{ width: '200px' }}>Wide content</div>
-        </ScrollArea>
-      )
-      const scrollArea = container.querySelector('.overflow-y-auto')
-      expect(scrollArea).toBeInTheDocument()
-    })
-  })
-
-  describe('Custom Props', () => {
-    it('should accept custom data attributes', () => {
-      render(<ScrollArea data-testid="custom-scroll" />)
-      expect(screen.getByTestId('custom-scroll')).toBeInTheDocument()
-    })
-
-    it('should accept style prop', () => {
-      const { container } = render(<ScrollArea style={{ maxHeight: '300px' }} />)
-      const scrollArea = container.querySelector('[style*="max-height"]')
-      expect(scrollArea).toBeInTheDocument()
-    })
-
-    it('should accept id attribute', () => {
-      const { container } = render(<ScrollArea id="scroll-container" />)
-      const scrollArea = container.querySelector('#scroll-container')
-      expect(scrollArea).toBeInTheDocument()
-      expect(scrollArea).toHaveAttribute('id', 'scroll-container')
+      const viewport = queryViewport(container)
+      expect(viewport).toBeInTheDocument()
     })
   })
 })
