@@ -636,10 +636,10 @@ pnpm typecheck              # Type check
 - [x] Common patterns recipes (memory, streaming, error handling, multi-modal, voice, tools, offline, collaboration done)
 
 ### Medium Priority
-- [ ] Analytics components
-- [ ] Enterprise components
-- [ ] AI infrastructure hooks
-- [x] Integration guides (backend patterns done, Next.js exists)
+- [x] Analytics components (PerformanceAnalyticsDashboard, ConversationAnalyticsDashboard, ABTestingDashboard - all created)
+- [ ] Enterprise components (AuthTenantDashboard, ApiTokenManager, etc. - exist but not documented)
+- [x] AI infrastructure hooks (useRAGPipeline, useAgent, useVectorStore - all created)
+- [x] Integration guides (backend patterns done, Next.js enhanced)
 
 ### Nice to Have
 - [ ] Interactive demos for all components
