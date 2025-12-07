@@ -602,21 +602,24 @@
   - Link to `Message` component
 
 #### Task 1.4: ChatInput & AdvancedChatInput Pages
-- [ ] **Title:** ChatInput Components
-- [ ] **Location:** `/apps/docs/app/reference/components/chat-input/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/reference/components/chat-input/page.tsx`
-  - Create: `/apps/docs/app/reference/components/advanced-chat-input/page.tsx`
-- [ ] **Content Outline:**
-  - Basic ChatInput usage
-  - AdvancedChatInput with attachments
-  - File upload integration
-  - Voice input integration
-  - Customization examples
-  - Validation patterns
-- [ ] **Cross-links:**
-  - Link to `FileUpload` component
-  - Link to `VoiceInput` component
+- [x] **Title:** ChatInput Components
+- [x] **Location:** `/apps/docs/app/reference/components/chat-input/page.tsx`
+- [x] **Files to Create/Update:**
+  - Updated: `/apps/docs/app/reference/components/chat-input/page.tsx`
+  - Updated: `/apps/docs/app/reference/components/advanced-chat-input/page.tsx`
+- [x] **Content Outline:**
+  - Complete ChatInput documentation with all props
+  - AdvancedChatInput with file uploads, mentions, commands
+  - File upload integration examples
+  - Autocomplete (@mentions and /commands) examples
+  - Character limit and validation patterns
+  - Keyboard shortcuts documentation
+  - TypeScript types documentation
+  - Complete usage examples
+- [x] **Cross-links:**
+  - Link to `ChatWindow` component
+  - Link to `ClarityChat` component
+  - Link to `useClarityChat` hook
 
 #### Task 1.5: Message Components Documentation
 - [ ] **Title:** Message Components
@@ -1010,7 +1013,7 @@
 - [x] useClarityObject Hook Page (Task 2.2)
 
 ### In Progress
-- [ ] Phase 1: Core Component Documentation (3/6 tasks complete)
+- [ ] Phase 1: Core Component Documentation (4/6 tasks complete)
 - [ ] Phase 2: Core Hook Documentation (2/4 tasks complete)
 - [ ] Phase 3: Conceptual Guides
 - [ ] Phase 4: Pattern & Recipe Library
@@ -1024,8 +1027,10 @@
 1. `/apps/docs/app/reference/components/clarity-chat/page.tsx` - Complete ClarityChat component documentation
 2. `/apps/docs/app/reference/components/clarity-chat-presets/page.tsx` - Complete ClarityChatPresets documentation
 3. `/apps/docs/app/reference/components/chat-window/page.tsx` - Enhanced ChatWindow component documentation
-4. `/apps/docs/app/reference/hooks/use-clarity-chat/page.tsx` - Complete useClarityChat hook documentation
-5. `/apps/docs/app/reference/hooks/use-clarity-object/page.tsx` - Complete useClarityObject hook documentation
+4. `/apps/docs/app/reference/components/chat-input/page.tsx` - Complete ChatInput component documentation
+5. `/apps/docs/app/reference/components/advanced-chat-input/page.tsx` - Complete AdvancedChatInput component documentation
+6. `/apps/docs/app/reference/hooks/use-clarity-chat/page.tsx` - Complete useClarityChat hook documentation
+7. `/apps/docs/app/reference/hooks/use-clarity-object/page.tsx` - Complete useClarityObject hook documentation
 
 **Key Features Added:**
 - Complete prop tables with descriptions
@@ -1099,10 +1104,10 @@
    - Complete examples
 
 **Total Documentation Added:**
-- 5 comprehensive documentation pages
-- ~3,000+ lines of documentation code
-- 30+ code examples
-- 5 interactive playgrounds
+- 7 comprehensive documentation pages
+- ~4,500+ lines of documentation code
+- 45+ code examples
+- 7 interactive playgrounds
 - Complete prop/option tables for all documented APIs
 
 ### Remaining Work
@@ -1153,4 +1158,4 @@
 ---
 
 **Last Updated:** 2025-01-27
-**Status:** Phase 1 & 2 partially complete (5/10 high-priority tasks done)
+**Status:** Phase 1 & 2 partially complete (6/10 high-priority tasks done)
