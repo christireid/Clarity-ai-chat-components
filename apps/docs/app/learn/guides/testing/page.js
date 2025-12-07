@@ -1,0 +1,12 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import Link from 'next/link';
+import { Callout } from '@/components/MDX/Callout';
+export const dynamic = 'force-dynamic';
+export const metadata = {
+    title: 'Testing Quickstart - Learn Clarity Chat',
+    description: 'High-level testing plan before exploring the full testing/QA guide.',
+};
+export default function LearnTestingGuidePage() {
+    return (_jsxs("div", { className: "docs-content", children: [_jsxs("div", { className: "docs-header", children: [_jsx("span", { className: "docs-badge", children: "Quick Guide" }), _jsx("h1", { children: "Testing Clarity Chat" }), _jsx("p", { className: "docs-lead", children: "Use this cheat sheet to set up essential tests in minutes. When you are ready, the full Testing Strategy guide dives into mocked providers, accessibility tooling, and CI/CD integration." })] }), _jsxs("section", { className: "docs-section", children: [_jsx("h2", { children: "Baseline Commands" }), _jsxs("ul", { children: [_jsxs("li", { children: [_jsx("code", { children: "npm run test" }), " \u2014 runs jest + jest-axe suites (fast feedback)"] }), _jsxs("li", { children: [_jsx("code", { children: "npm run test:e2e" }), " \u2014 Playwright powered end-to-end flows"] }), _jsxs("li", { children: [_jsx("code", { children: "clarity-chat doctor" }), " \u2014 validates project configuration before deploy"] })] })] }), _jsxs("section", { className: "docs-section", children: [_jsx("h2", { children: "Mocked Providers" }), _jsxs("p", { children: ["Install ", _jsx("code", { children: "@clarity-chat/dev-tools" }), " and swap real providers for", ' ', _jsx("code", { children: "createMockProviders" }), ". You get deterministic completions, streaming, and error scenarios for unit and integration tests."] })] }), _jsxs("section", { className: "docs-section", children: [_jsx("h2", { children: "Accessibility Always-On" }), _jsxs("ul", { children: [_jsx("li", { children: "Integrate jest-axe into your component tests" }), _jsx("li", { children: "Add Playwright axe project for end-to-end coverage" }), _jsx("li", { children: "Include manual keyboard + screen reader smoke checks in your release checklist" })] })] }), _jsx("section", { className: "docs-section", children: _jsxs(Callout, { type: "success", children: ["Ready for the full playbook (mock providers, profiling, CLI health checks, incident response)? Read the", ' ', _jsx(Link, { href: "/guides/testing", children: "Testing Strategy Guide" }), "."] }) })] }));
+}
+//# sourceMappingURL=page.js.map

@@ -3,6 +3,9 @@
  *
  * Validates environment variables, API keys, and configuration files
  */
+import { table } from '../ui/table';
+import { successBox, errorBox, warningBox } from '../ui/box';
+import chalk from 'chalk';
 const API_KEY_CONFIGS = [
     {
         name: 'OpenAI',
@@ -315,37 +318,54 @@ export function validateMessages(messages) {
     };
 }
 /**
- * Print validation results
+ * Print validation results with beautiful formatting
  */
 export function printValidationResults(results, title) {
-    if (title) {
-        console.log(`\n${title}`);
-        console.log('='.repeat(title.length));
-    }
     if (results.valid) {
-        console.log('\n✅ All validations passed\n');
+        const content = results.warnings.length > 0
+            ? `All validations passed with ${results.warnings.length} warning(s)`
+            : 'All validations passed!';
+        console.log();
+        console.log(successBox(content, title || '✅ Validation'));
+        console.log();
         if (results.warnings.length > 0) {
-            console.log('⚠️  Warnings:');
-            results.warnings.forEach(warning => {
-                console.log(`   - ${warning.field}: ${warning.message}`);
-            });
+            const columns = [
+                { header: 'Field', width: 25, color: chalk.yellow },
+                { header: 'Message', width: 50 },
+            ];
+            const warningData = results.warnings.map(w => [w.field, w.message]);
+            console.log(table(warningData, columns));
             console.log();
         }
         return;
     }
-    console.log('\n❌ Validation failed\n');
-    console.log('Errors:');
-    results.errors.forEach(error => {
-        const icon = error.severity === 'error' ? '❌' : '⚠️';
-        console.log(`   ${icon} ${error.field}: ${error.message}`);
-    });
-    if (results.warnings.length > 0) {
-        console.log('\nWarnings:');
-        results.warnings.forEach(warning => {
-            console.log(`   ⚠️  ${warning.field}: ${warning.message}`);
-        });
-    }
+    // Errors table
+    const columns = [
+        { header: 'Field', width: 25, color: chalk.red },
+        { header: 'Severity', width: 12, align: 'center' },
+        { header: 'Message', width: 50 },
+    ];
+    const errorData = results.errors.map(error => [
+        error.field,
+        error.severity === 'error' ? chalk.red('ERROR') : chalk.yellow('WARNING'),
+        error.message,
+    ]);
     console.log();
+    console.log(errorBox('Validation failed', title || '❌ Validation'));
+    console.log();
+    console.log(table(errorData, columns));
+    console.log();
+    if (results.warnings.length > 0) {
+        const warningColumns = [
+            { header: 'Field', width: 25, color: chalk.yellow },
+            { header: 'Message', width: 50 },
+        ];
+        const warningData = results.warnings.map(w => [w.field, w.message]);
+        console.log(warningBox('Additional warnings', '⚠️  Warnings'));
+        console.log();
+        console.log(table(warningData, warningColumns));
+        console.log();
+    }
 }
 /**
  * Validate and throw error if invalid

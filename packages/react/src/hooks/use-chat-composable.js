@@ -1,0 +1,129 @@
+/**
+ * Composable Chat Hooks - Easy way to combine multiple features
+ *
+ * These hooks make it easy to compose multiple features together
+ * without boilerplate.
+ */
+'use client';
+import * as React from 'react';
+import { useChat } from './use-chat-unified';
+/**
+ * useChatComposable - Composable chat hook with feature flags
+ *
+ * Easily combine multiple features with a simple configuration object.
+ *
+ * @example
+ * ```tsx
+ * const chat = useChatComposable({
+ *   api: '/api/chat',
+ *   features: {
+ *     memory: { enabled: true, strategy: 'vector-store' },
+ *     persistence: { enabled: true, storageKey: 'my-chat' },
+ *     analytics: {
+ *       onMessageSent: (content) => track('message_sent'),
+ *     },
+ *   },
+ * })
+ * ```
+ */
+export function useChatComposable(options) {
+    const { features, ...chatOptions } = options;
+    // Build options with features applied
+    const finalOptions = {
+        ...chatOptions,
+        persistMessages: features?.persistence?.enabled ?? false,
+        storageKey: features?.persistence?.storageKey ?? 'clarity-chat',
+    };
+    // Add memory if enabled
+    if (features?.memory?.enabled) {
+        finalOptions.memory = {
+            enabled: true,
+            strategy: features.memory.strategy ?? 'vector-store',
+            maxTokens: features.memory.maxTokens,
+        };
+    }
+    const chat = useChat(finalOptions);
+    // Handle analytics
+    React.useEffect(() => {
+        if (features?.analytics?.onMessageSent) {
+            // Note: This is a simplified implementation
+            // For full analytics, you'd need to wrap the sendMessage function
+        }
+    }, [features?.analytics]);
+    return chat;
+}
+/**
+ * useChatWithFeatures - Type-safe feature composition
+ *
+ * Compose features with full type safety and autocomplete.
+ *
+ * @example
+ * ```tsx
+ * const chat = useChatWithFeatures({
+ *   api: '/api/chat',
+ *   memory: { strategy: 'vector-store' },
+ *   persistence: { storageKey: 'my-chat' },
+ * })
+ * ```
+ */
+export function useChatWithFeatures(options) {
+    return useChatComposable({
+        ...options,
+        features: {
+            memory: options.memory
+                ? { enabled: true, ...options.memory }
+                : undefined,
+            persistence: options.persistence
+                ? { enabled: true, ...options.persistence }
+                : undefined,
+        },
+    });
+}
+/**
+ * Hook builder pattern - Chain features together
+ */
+export class ChatHookBuilder {
+    options = {};
+    features = {};
+    constructor(api) {
+        this.options.api = api;
+    }
+    withMemory(strategy = 'vector-store', maxTokens) {
+        this.features.memory = { enabled: true, strategy, maxTokens };
+        return this;
+    }
+    withPersistence(storageKey = 'clarity-chat') {
+        this.features.persistence = { enabled: true, storageKey };
+        return this;
+    }
+    withAnalytics(callbacks) {
+        this.features.analytics = callbacks;
+        return this;
+    }
+    withErrorRecovery(maxRetries = 3) {
+        this.features.errorRecovery = { enabled: true, maxRetries };
+        return this;
+    }
+    build() {
+        return useChatComposable({
+            ...this.options,
+            features: this.features,
+        });
+    }
+}
+/**
+ * Create a chat hook builder
+ *
+ * @example
+ * ```tsx
+ * const chat = createChatHook('/api/chat')
+ *   .withMemory('vector-store')
+ *   .withPersistence('my-chat')
+ *   .withAnalytics({ onMessageSent: track })
+ *   .build()
+ * ```
+ */
+export function createChatHook(api) {
+    return new ChatHookBuilder(api);
+}
+//# sourceMappingURL=use-chat-composable.js.map

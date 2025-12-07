@@ -1,7 +1,7 @@
 // ============================================================================
-// shadcn/ui Components (Official, Battle-Tested with Radix UI)
+// shadcn/ui Components (Default - Official, Battle-Tested with Radix UI)
 // ============================================================================
-// These are the recommended components to use. They provide better:
+// These are the default components. They provide:
 // - Accessibility (WCAG 2.1 AA compliant)
 // - Keyboard navigation
 // - Focus management  
@@ -9,9 +9,29 @@
 // - Screen reader support
 // ============================================================================
 
+// Button (Enhanced with loading state)
+export { Button, buttonVariants } from './components/ui/button-enhanced'
+export type { ButtonProps } from './components/ui/button-enhanced'
+
+// Also export pure shadcn Button for those who want it
 export { Button as ShadcnButton, buttonVariants as shadcnButtonVariants } from './components/ui/button'
 export type { ButtonProps as ShadcnButtonProps } from './components/ui/button'
 
+// Dialog
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogTrigger,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from './components/ui/dialog'
+
+// Also export with Shadcn prefix for backward compatibility
 export {
   Dialog as ShadcnDialog,
   DialogPortal as ShadcnDialogPortal,
@@ -25,6 +45,26 @@ export {
   DialogDescription as ShadcnDialogDescription,
 } from './components/ui/dialog'
 
+// DropdownMenu
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioGroup,
+} from './components/ui/dropdown-menu'
+
+// Also export with Shadcn prefix for backward compatibility
 export {
   DropdownMenu as ShadcnDropdownMenu,
   DropdownMenuTrigger as ShadcnDropdownMenuTrigger,
@@ -43,6 +83,15 @@ export {
   DropdownMenuRadioGroup as ShadcnDropdownMenuRadioGroup,
 } from './components/ui/dropdown-menu'
 
+// Popover
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverAnchor,
+} from './components/ui/popover'
+
+// Also export with Shadcn prefix for backward compatibility
 export {
   Popover as ShadcnPopover,
   PopoverTrigger as ShadcnPopoverTrigger,
@@ -50,6 +99,15 @@ export {
   PopoverAnchor as ShadcnPopoverAnchor,
 } from './components/ui/popover'
 
+// Tooltip
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from './components/ui/tooltip'
+
+// Also export with Shadcn prefix for backward compatibility
 export {
   Tooltip as ShadcnTooltip,
   TooltipTrigger as ShadcnTooltipTrigger,
@@ -57,8 +115,27 @@ export {
   TooltipProvider as ShadcnTooltipProvider,
 } from './components/ui/tooltip'
 
+// Checkbox
+export { Checkbox } from './components/ui/checkbox'
+
+// Also export with Shadcn prefix for backward compatibility
 export { Checkbox as ShadcnCheckbox } from './components/ui/checkbox'
 
+// Drawer
+export {
+  Drawer,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerTrigger,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription,
+} from './components/ui/drawer'
+
+// Also export with Shadcn prefix for backward compatibility
 export {
   Drawer as ShadcnDrawer,
   DrawerPortal as ShadcnDrawerPortal,
@@ -73,14 +150,8 @@ export {
 } from './components/ui/drawer'
 
 // ============================================================================
-// Legacy Custom Components (Backward Compatibility)
+// Other Components (Not replaced by shadcn)
 // ============================================================================
-// These are kept for backward compatibility during migration.
-// New code should prefer the Shadcn* prefixed components above.
-// ============================================================================
-
-export { Button, buttonVariants } from './components/button'
-export type { ButtonProps, ButtonState } from './components/button'
 
 export { Avatar } from './components/avatar'
 export type { AvatarProps } from './components/avatar'
@@ -91,90 +162,16 @@ export type { BadgeProps } from './components/badge'
 export { Card } from './components/card'
 export type { CardProps } from './components/card'
 
-export { Checkbox } from './components/checkbox'
-export type { CheckboxProps } from './components/checkbox'
-
-export {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogBody,
-  DialogFooter,
-  DialogClose,
-} from './components/dialog'
-export type {
-  DialogProps,
-  DialogTriggerProps,
-  DialogContentProps,
-  DialogHeaderProps,
-  DialogTitleProps,
-  DialogDescriptionProps,
-  DialogFooterProps,
-  DialogCloseProps,
-} from './components/dialog'
-
-export {
-  Drawer,
-  DrawerTrigger,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerBody,
-  DrawerFooter,
-  DrawerClose,
-} from './components/drawer'
-export type {
-  DrawerProps,
-  DrawerTriggerProps,
-  DrawerContentProps,
-} from './components/drawer'
-
-export {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-  DropdownMenuGroup,
-} from './components/dropdown-menu'
-export type {
-  DropdownMenuProps,
-  DropdownMenuTriggerProps,
-  DropdownMenuContentProps,
-  DropdownMenuItemProps,
-} from './components/dropdown-menu'
-
 export { ErrorMessage } from './components/error-message'
 export type { ErrorMessageProps } from './components/error-message'
 
 export { Input } from './components/input'
 export type { InputProps } from './components/input'
 
-export {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverClose,
-  PopoverAnchor,
-} from './components/popover'
-export type {
-  PopoverProps,
-  PopoverTriggerProps,
-  PopoverContentProps,
-} from './components/popover'
-
 export { ScrollArea } from './components/scroll-area'
 
 export { Textarea } from './components/textarea'
 export type { TextareaProps } from './components/textarea'
-
-export { Tooltip, SimpleTooltip } from './components/tooltip'
-export type { TooltipProps } from './components/tooltip'
 
 export {
   LoadingIcon,

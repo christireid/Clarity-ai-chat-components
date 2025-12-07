@@ -9,7 +9,7 @@ import { Tool } from '@modelcontextprotocol/sdk/types.js';
  */
 export declare const tools: Tool[];
 /**
- * Handle tool calls
+ * Handle tool calls with proper validation and error handling
  */
 export declare function handleToolCall(name: string, args: Record<string, any>): Promise<any>;
 //# sourceMappingURL=index.d.ts.map
