@@ -46,6 +46,14 @@ vi.mock('../../debug/time-travel', () => {
     })),
     clear: vi.fn(),
     getAll: vi.fn(() => []),
+    getTimeline: vi.fn(() => []),
+    getStats: vi.fn(() => ({
+      totalSnapshots: 0,
+      totalTransitions: 0,
+      timeSpan: 0,
+      averageMessageCount: 0,
+      actionCounts: {},
+    })),
     currentIndex: -1,
   }
 

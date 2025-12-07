@@ -6,7 +6,7 @@
 'use client'
 
 import * as React from 'react'
-import { useOptimistic, useCallback, useMemo } from 'react'
+import { useOptimistic, useCallback, useMemo, useTransition } from 'react'
 import { TimeTravelDebugger, type StateSnapshot } from '../../debug/time-travel'
 
 interface TimeTravelState {
@@ -75,6 +75,9 @@ export function useTimeTravel(timeTravelDebugger?: TimeTravelDebugger) {
     initialState,
     reducer
   )
+  
+  // React 19 requires useOptimistic updates to be called within a transition
+  const [, startTransition] = useTransition()
 
   const record = useCallback((
     messages: any[],
@@ -85,42 +88,52 @@ export function useTimeTravel(timeTravelDebugger?: TimeTravelDebugger) {
     const snapshotId = timeTravel.record(messages, config, metadata, label)
     const snapshot = timeTravel.getCurrent()
     if (snapshot) {
-      dispatch({ type: 'RECORD', snapshot })
+      startTransition(() => {
+        dispatch({ type: 'RECORD', snapshot })
+      })
     }
     return snapshotId
-  }, [timeTravel, dispatch])
+  }, [timeTravel, dispatch, startTransition])
 
   const jumpTo = useCallback((snapshotId: string) => {
     const snapshot = timeTravel.jumpTo(snapshotId)
     if (snapshot) {
       const index = state.snapshots.findIndex(s => s.id === snapshotId)
       if (index !== -1) {
-        dispatch({ type: 'JUMP_TO', index })
+        startTransition(() => {
+          dispatch({ type: 'JUMP_TO', index })
+        })
       }
     }
     return snapshot
-  }, [timeTravel, dispatch, state.snapshots])
+  }, [timeTravel, dispatch, state.snapshots, startTransition])
 
   const goBack = useCallback((steps: number = 1) => {
     const snapshot = timeTravel.goBack(steps)
     if (snapshot) {
-      dispatch({ type: 'GO_BACK', steps })
+      startTransition(() => {
+        dispatch({ type: 'GO_BACK', steps })
+      })
     }
     return snapshot
-  }, [timeTravel, dispatch])
+  }, [timeTravel, dispatch, startTransition])
 
   const goForward = useCallback((steps: number = 1) => {
     const snapshot = timeTravel.goForward(steps)
     if (snapshot) {
-      dispatch({ type: 'GO_FORWARD', steps })
+      startTransition(() => {
+        dispatch({ type: 'GO_FORWARD', steps })
+      })
     }
     return snapshot
-  }, [timeTravel, dispatch])
+  }, [timeTravel, dispatch, startTransition])
 
   const clear = useCallback(() => {
     timeTravel.clear()
-    dispatch({ type: 'CLEAR' })
-  }, [timeTravel, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'CLEAR' })
+    })
+  }, [timeTravel, dispatch, startTransition])
 
   const current = useMemo(() => {
     return state.currentIndex >= 0 ? state.snapshots[state.currentIndex] : null

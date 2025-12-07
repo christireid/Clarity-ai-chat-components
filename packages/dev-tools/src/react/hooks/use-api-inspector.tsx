@@ -6,7 +6,7 @@
 'use client'
 
 import * as React from 'react'
-import { useOptimistic, useCallback, useMemo } from 'react'
+import { useOptimistic, useCallback, useMemo, useTransition } from 'react'
 import { getAPIInspector, type APICallLog } from '../../debug'
 
 interface APIInspectorState {
@@ -62,6 +62,9 @@ export function useAPIInspector() {
     initialState,
     reducer
   )
+  
+  // React 19 requires useOptimistic updates to be called within a transition
+  const [, startTransition] = useTransition()
 
   const startCall = useCallback((options: {
     provider: string
@@ -90,10 +93,12 @@ export function useAPIInspector() {
       },
     }
     
-    dispatch({ type: 'ADD_LOG', log: optimisticLog })
+    startTransition(() => {
+      dispatch({ type: 'ADD_LOG', log: optimisticLog })
+    })
     
     return callId
-  }, [inspector, dispatch])
+  }, [inspector, dispatch, startTransition])
 
   const completeCall = useCallback((id: string, response: {
     status: number
@@ -104,32 +109,42 @@ export function useAPIInspector() {
     inspector.completeCall(id, response)
     const log = inspector.getLog(id)
     if (log) {
-      dispatch({ type: 'UPDATE_LOG', id, updates: log })
+      startTransition(() => {
+        dispatch({ type: 'UPDATE_LOG', id, updates: log })
+      })
     }
-  }, [inspector, dispatch])
+  }, [inspector, dispatch, startTransition])
 
   const recordError = useCallback((id: string, error: Error) => {
     inspector.recordError(id, error)
     const log = inspector.getLog(id)
     if (log) {
-      dispatch({ type: 'UPDATE_LOG', id, updates: log })
+      startTransition(() => {
+        dispatch({ type: 'UPDATE_LOG', id, updates: log })
+      })
     }
-  }, [inspector, dispatch])
+  }, [inspector, dispatch, startTransition])
 
   const clearLogs = useCallback(() => {
     inspector.clear()
-    dispatch({ type: 'CLEAR_LOGS' })
-  }, [inspector, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'CLEAR_LOGS' })
+    })
+  }, [inspector, dispatch, startTransition])
 
   const setEnabled = useCallback((enabled: boolean) => {
     inspector.setEnabled(enabled)
-    dispatch({ type: 'SET_ENABLED', enabled })
-  }, [inspector, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'SET_ENABLED', enabled })
+    })
+  }, [inspector, dispatch, startTransition])
 
   const setVerbose = useCallback((verbose: boolean) => {
     inspector.setVerbose(verbose)
-    dispatch({ type: 'SET_VERBOSE', verbose })
-  }, [inspector, dispatch])
+    startTransition(() => {
+      dispatch({ type: 'SET_VERBOSE', verbose })
+    })
+  }, [inspector, dispatch, startTransition])
 
   const stats = useMemo(() => {
     // Single pass through logs for better performance
