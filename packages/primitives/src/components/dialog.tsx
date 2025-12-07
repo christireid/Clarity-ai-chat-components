@@ -116,7 +116,7 @@ const sizeClasses = {
   full: 'max-w-full mx-4',
 }
 
-export const DialogContent: React.FC<DialogContentProps> = ({
+export const DialogContent: React.FC<DialogContentProps & React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>> = ({
   children,
   className,
   size = 'md',
@@ -126,6 +126,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
   animation = 'scale', // Preserved for API compatibility, using Tailwind animations
   blurBackdrop = true,
   overlayClassName,
+  ...props
 }) => {
   // Animation prop preserved for API compatibility
   void animation
@@ -174,6 +175,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             e.preventDefault()
           }
         }}
+        {...props}
       >
         {showCloseButton && (
           <DialogPrimitive.Close
@@ -202,7 +204,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                 clipRule="evenodd"
               />
             </svg>
-            <span className="sr-only">Close</span>
+            <span className="sr-only">Close dialog</span>
           </DialogPrimitive.Close>
         )}
         {children}

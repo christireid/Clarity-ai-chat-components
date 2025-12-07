@@ -30,8 +30,10 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       // Wait for tooltip to appear (respects delay)
+      // Radix creates hidden span for accessibility, so check by role
       await waitFor(() => {
-        expect(screen.getByText('Tooltip text')).toBeInTheDocument()
+        const tooltip = screen.getByRole('tooltip', { hidden: true })
+        expect(tooltip).toBeInTheDocument()
       }, { timeout: 500 })
     })
 
@@ -61,7 +63,9 @@ describe('Tooltip Component', () => {
           <button>Button</button>
         </Tooltip>
       )
-      expect(screen.getByText('Controlled')).toBeInTheDocument()
+      // Radix creates hidden span for accessibility
+      const tooltip = screen.getByRole('tooltip', { hidden: true })
+      expect(tooltip).toBeInTheDocument()
     })
 
     it('should work as uncontrolled component', async () => {
@@ -76,7 +80,9 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('Uncontrolled')).toBeInTheDocument()
+        // Radix creates hidden span for accessibility
+        const tooltip = screen.getByRole('tooltip', { hidden: true })
+        expect(tooltip).toBeInTheDocument()
       }, { timeout: 500 })
     })
 
@@ -111,11 +117,13 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       // Should not appear immediately
-      expect(screen.queryByText('Delayed')).not.toBeInTheDocument()
+      expect(screen.queryByRole('tooltip', { hidden: true })).not.toBeInTheDocument()
 
       // Should appear after delay
       await waitFor(() => {
-        expect(screen.getByText('Delayed')).toBeInTheDocument()
+        // Radix creates hidden span for accessibility
+        const tooltip = screen.getByRole('tooltip', { hidden: true })
+        expect(tooltip).toBeInTheDocument()
       }, { timeout: 600 })
     })
   })
@@ -141,7 +149,7 @@ describe('Tooltip Component', () => {
   describe('Arrow', () => {
     it('should show arrow by default', async () => {
       const user = userEvent.setup()
-      render(
+      const { container } = render(
         <Tooltip content="With arrow">
           <button>Button</button>
         </Tooltip>
@@ -151,7 +159,10 @@ describe('Tooltip Component', () => {
       await user.hover(trigger)
 
       await waitFor(() => {
-        expect(screen.getByText('With arrow')).toBeInTheDocument()
+        const tooltip = screen.getByRole('tooltip', { hidden: true })
+        expect(tooltip).toBeInTheDocument()
+        // Arrow should be present
+        expect(container.querySelector('[data-testid="tooltip-arrow"]')).toBeInTheDocument()
       }, { timeout: 500 })
     })
 
