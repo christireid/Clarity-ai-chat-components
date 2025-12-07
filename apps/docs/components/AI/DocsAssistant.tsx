@@ -335,14 +335,22 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   // Track active throttle cancel function for cleanup on unmount
   const activeThrottleCancelRef = useRef<(() => void) | null>(null)
+  // AbortController for canceling streaming requests
+  const abortControllerRef = useRef<AbortController | null>(null)
   const toast = useToast()
 
-  // Cleanup any pending throttled updates on unmount
+  // Cleanup any pending throttled updates and abort streaming on unmount
   useEffect(() => {
     return () => {
+      // Cancel any pending throttled updates
       if (activeThrottleCancelRef.current) {
         activeThrottleCancelRef.current()
         activeThrottleCancelRef.current = null
+      }
+      // Abort any in-flight streaming requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+        abortControllerRef.current = null
       }
     }
   }, [])
@@ -482,6 +490,15 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
     })
 
     try {
+      // Cancel any previous streaming request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+
+      // Create new AbortController for this request
+      const abortController = new AbortController()
+      abortControllerRef.current = abortController
+
       // Call API endpoint with streaming
       const response = await fetch('/api/docs-assistant', {
         method: 'POST',
@@ -497,6 +514,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             content: m.content,
           })),
         }),
+        signal: abortController.signal,
       })
 
       if (!response.ok) {
@@ -629,18 +647,29 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
         flushUpdate()
         // Clear the ref since this throttle is no longer active
         activeThrottleCancelRef.current = null
+        // Clear the abort controller ref
+        abortControllerRef.current = null
       }
 
       // Clear loading and AI status when streaming completes
       setIsLoading(false)
       setAiStatus(undefined)
     } catch (error) {
+      // Handle abort errors silently (user-initiated cancellation)
+      if (error instanceof Error && error.name === 'AbortError') {
+        setIsLoading(false)
+        setAiStatus(undefined)
+        return
+      }
+
       // Cancel any pending throttled updates on error
       if (activeThrottleCancelRef.current) {
         activeThrottleCancelRef.current()
         activeThrottleCancelRef.current = null
       }
-      console.error('Chat error:', error)
+
+      // Clear the abort controller ref
+      abortControllerRef.current = null
 
       const errorMsg = error instanceof Error ? error.message : 'Please try again.'
 

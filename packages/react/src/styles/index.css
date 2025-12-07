@@ -500,88 +500,10 @@ body {
   50% { opacity: 0.3; }
 }
 
-/* Respect reduced motion preferences */
+/* Respect reduced motion preferences for CSS animations */
 @media (prefers-reduced-motion: reduce) {
   .clarity-streaming-cursor {
     animation: none;
     opacity: 0.7;
-  }
-
-  .clarity-thinking-dot {
-    animation: none;
-    opacity: 0.6;
-  }
-}
-
-/* ============================================================================
-   Thinking Indicator - Fixed layout for icon and text alignment
-   ============================================================================ */
-
-.clarity-thinking-bar {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 12px 16px;
-}
-
-.clarity-thinking-content {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.clarity-thinking-icon {
-  /* Fixed size prevents icon from jumping or resizing */
-  width: 18px;
-  height: 18px;
-  min-width: 18px;
-  min-height: 18px;
-
-  /* Prevent icon from shrinking in flex container */
-  flex-shrink: 0;
-
-  /* Smooth animations */
-  transform-origin: center;
-}
-
-.clarity-thinking-text {
-  /* Prevent text from causing layout shift */
-  font-size: 14px;
-  line-height: 1.4;
-  font-weight: 600;
-  white-space: nowrap;
-
-  /* Vertically center with icon */
-  display: inline-flex;
-  align-items: center;
-}
-
-.clarity-thinking-dots {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  margin-left: 2px;
-}
-
-.clarity-thinking-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: currentColor;
-  animation: thinking-dot-pulse 1.5s ease-in-out infinite;
-}
-
-.clarity-thinking-dot:nth-child(1) { animation-delay: 0s; }
-.clarity-thinking-dot:nth-child(2) { animation-delay: 0.2s; }
-.clarity-thinking-dot:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes thinking-dot-pulse {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
   }
 }

@@ -1,7 +1,12 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ThinkingIndicator } from '../thinking-indicator'
 import type { AIStatus } from '@clarity-chat/types'
+
+// Mock useReducedMotion hook
+vi.mock('../../hooks/use-reduced-motion', () => ({
+  useReducedMotion: vi.fn(() => false),
+}))
 
 describe('ThinkingIndicator Component', () => {
   describe('Rendering', () => {
@@ -347,6 +352,33 @@ describe('ThinkingIndicator Component', () => {
       expect(iconContainer).toBeInTheDocument()
       expect(iconContainer).toHaveClass('h-[18px]')
       expect(iconContainer).toHaveClass('flex-shrink-0')
+    })
+  })
+
+  describe('Reduced Motion Accessibility', () => {
+    it('should use useReducedMotion hook for accessibility', async () => {
+      // Import the mocked module to verify it's being used
+      const { useReducedMotion } = await import('../../hooks/use-reduced-motion')
+
+      render(<ThinkingIndicator />)
+
+      // Verify the hook was called
+      expect(useReducedMotion).toHaveBeenCalled()
+    })
+
+    it('should render properly regardless of reduced motion setting', async () => {
+      // Test that component renders in both states
+      const { useReducedMotion } = await import('../../hooks/use-reduced-motion')
+
+      // Test with reduced motion disabled (default)
+      vi.mocked(useReducedMotion).mockReturnValue(false)
+      const { rerender } = render(<ThinkingIndicator />)
+      expect(screen.getByText('Thinking')).toBeInTheDocument()
+
+      // Test with reduced motion enabled
+      vi.mocked(useReducedMotion).mockReturnValue(true)
+      rerender(<ThinkingIndicator />)
+      expect(screen.getByText('Thinking')).toBeInTheDocument()
     })
   })
 })
