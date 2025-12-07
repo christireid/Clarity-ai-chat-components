@@ -1,17 +1,16 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import { ThemeProvider } from 'next-themes'
+import '@testing-library/jest-dom/vitest'
 import { AnimatedBackground } from '../AnimatedBackground'
 
 // Mock tsparticles
-const mockParticlesLoaded = vi.fn()
 const mockInitParticlesEngine = vi.fn(() => Promise.resolve())
 
 vi.mock('@tsparticles/react', () => ({
   default: vi.fn(({ id, options, particlesLoaded, className }) => {
     // Simulate particles loaded callback after mount
     if (particlesLoaded) {
-      // Use setTimeout to simulate async behavior
       setTimeout(() => {
         act(() => {
           particlesLoaded({
@@ -23,7 +22,7 @@ vi.mock('@tsparticles/react', () => ({
     }
     return <div data-testid="particles" data-id={id} className={className} />
   }),
-  initParticlesEngine: (...args: any[]) => mockInitParticlesEngine(...args),
+  initParticlesEngine: (...args: unknown[]) => mockInitParticlesEngine(...args),
 }))
 
 vi.mock('@tsparticles/slim', () => ({
@@ -40,7 +39,7 @@ const mockRemoveListener = vi.fn()
 beforeEach(() => {
   // Reset all mocks
   vi.clearAllMocks()
-  mockInitParticlesEngine.mockResolvedValue(undefined)
+  mockInitParticlesEngine.mockResolvedValue(undefined as any)
 
   mockMatchMedia.mockReturnValue({
     matches: false,
@@ -72,17 +71,12 @@ beforeEach(() => {
         value: false,
       })
     } else {
-      // If not configurable, try to set the value directly
       // @ts-expect-error - test environment
       document.hidden = false
     }
   } catch {
     // Ignore if we can't set it
   }
-})
-
-afterEach(() => {
-  vi.clearAllMocks()
 })
 
 const TestWrapper = ({ children, theme = 'system' }: { children: React.ReactNode; theme?: string }) => (
@@ -114,11 +108,11 @@ describe('AnimatedBackground', () => {
       }, { timeout: 2000 })
       
       // Reset mock for other tests
-      mockInitParticlesEngine.mockResolvedValue(undefined)
+      mockInitParticlesEngine.mockResolvedValue(undefined as any)
     })
 
     it('should render particles after initialization', async () => {
-      mockInitParticlesEngine.mockResolvedValueOnce(undefined)
+      mockInitParticlesEngine.mockResolvedValueOnce(undefined as any)
 
       render(
         <TestWrapper>
@@ -132,7 +126,7 @@ describe('AnimatedBackground', () => {
     })
 
     it('should apply custom className', async () => {
-      mockInitParticlesEngine.mockResolvedValueOnce(undefined)
+      mockInitParticlesEngine.mockResolvedValueOnce(undefined as any)
 
       render(
         <TestWrapper>
@@ -147,7 +141,7 @@ describe('AnimatedBackground', () => {
     })
 
     it('should have correct accessibility attributes', async () => {
-      mockInitParticlesEngine.mockResolvedValueOnce(undefined)
+      mockInitParticlesEngine.mockResolvedValueOnce(undefined as any)
 
       render(
         <TestWrapper>
@@ -165,7 +159,7 @@ describe('AnimatedBackground', () => {
 
   describe('Theme Support', () => {
     it('should use dark config when theme is dark', async () => {
-      mockInitParticlesEngine.mockResolvedValueOnce(undefined)
+      mockInitParticlesEngine.mockResolvedValueOnce(undefined as any)
 
       render(
         <TestWrapper theme="dark">
@@ -180,7 +174,7 @@ describe('AnimatedBackground', () => {
     })
 
     it('should use light config when theme is light', async () => {
-      mockInitParticlesEngine.mockResolvedValueOnce(undefined)
+      mockInitParticlesEngine.mockResolvedValueOnce(undefined as any)
 
       render(
         <TestWrapper theme="light">
@@ -262,11 +256,7 @@ describe('AnimatedBackground', () => {
 
     it('should handle missing window.matchMedia gracefully', async () => {
       // This test verifies that the component's error handling works
-      // The component has try-catch around matchMedia, so errors are caught
-      // We test this by verifying the component still initializes successfully
-      // even when matchMedia might fail (the error is caught in useEffect)
-      
-      mockInitParticlesEngine.mockResolvedValueOnce(undefined)
+      mockInitParticlesEngine.mockResolvedValueOnce(undefined as any)
 
       // Temporarily make matchMedia throw, but the component's try-catch will handle it
       const originalMatchMedia = window.matchMedia
@@ -316,7 +306,7 @@ describe('AnimatedBackground', () => {
 
   describe('Performance - Page Visibility', () => {
     it('should set up visibility change listener after initialization', async () => {
-      mockInitParticlesEngine.mockResolvedValueOnce(undefined)
+      mockInitParticlesEngine.mockResolvedValueOnce(undefined as any)
 
       const originalAddEventListener = document.addEventListener
       const mockDocAddEventListener = vi.fn()
@@ -342,7 +332,7 @@ describe('AnimatedBackground', () => {
 
   describe('Cleanup', () => {
     it('should cleanup event listeners on unmount', async () => {
-      mockInitParticlesEngine.mockResolvedValueOnce(undefined)
+      mockInitParticlesEngine.mockResolvedValueOnce(undefined as any)
 
       const originalRemoveEventListener = document.removeEventListener
       const mockDocRemoveEventListener = vi.fn()

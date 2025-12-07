@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTheme } from 'next-themes'
 import Particles, { initParticlesEngine } from '@tsparticles/react'
 import { loadSlim } from '@tsparticles/slim'
-import type { Container, Engine, ISourceOptions } from '@tsparticles/engine'
+import type { Container, Engine, IOptions, RecursivePartial } from '@tsparticles/engine'
 
 interface AnimatedBackgroundProps {
   className?: string
@@ -109,43 +109,44 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
   }, [init, prefersReducedMotion])
 
   // Particles loaded callback
-  const particlesLoaded = useCallback((container: Container | undefined) => {
+  const particlesLoaded = useCallback(async (container: Container | undefined) => {
     if (container && !initAbortedRef.current) {
       containerRef.current = container
     }
   }, [])
 
   // Memoize configs to prevent recreation on every render
-  const darkConfig: ISourceOptions = useMemo(
-    () => ({
-      background: {
-        color: {
-          value: 'transparent',
-        },
-      },
-      fpsLimit: 60,
-      interactivity: {
-        events: {
-          onClick: {
-            enable: true,
-            mode: 'push',
-          },
-          onHover: {
-            enable: true,
-            mode: 'repulse',
-          },
-          resize: true,
-        },
-        modes: {
-          push: {
-            quantity: 2,
-          },
-          repulse: {
-            distance: 100,
-            duration: 0.4,
+  const darkConfig = useMemo(
+    () =>
+      ({
+        background: {
+          color: {
+            value: 'transparent',
           },
         },
-      },
+        fpsLimit: 60,
+        interactivity: {
+          events: {
+            onClick: {
+              enable: true,
+              mode: 'push' as const,
+            },
+            onHover: {
+              enable: true,
+              mode: 'repulse' as const,
+            },
+            resize: true,
+          },
+          modes: {
+            push: {
+              quantity: 2,
+            },
+            repulse: {
+              distance: 100,
+              duration: 0.4,
+            },
+          },
+        },
       particles: {
         color: {
           value: '#60a5fa', // brand-400
@@ -196,43 +197,44 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
           },
         },
       },
-      detectRetina: true,
-    }),
+        detectRetina: true,
+      } as unknown as RecursivePartial<IOptions>),
     []
   )
 
-  const lightConfig: ISourceOptions = useMemo(
-    () => ({
-      background: {
-        color: {
-          value: 'transparent',
+  const lightConfig = useMemo(
+    () =>
+      ({
+        background: {
+          color: {
+            value: 'transparent',
+          },
         },
-      },
-      fpsLimit: 60,
-      interactivity: {
-        events: {
-          onClick: {
-            enable: true,
-            mode: 'push',
+        fpsLimit: 60,
+        interactivity: {
+          events: {
+            onClick: {
+              enable: true,
+              mode: 'push' as const,
+            },
+            onHover: {
+              enable: true,
+              mode: 'grab' as const,
+            },
+            resize: true,
           },
-          onHover: {
-            enable: true,
-            mode: 'grab',
-          },
-          resize: true,
-        },
-        modes: {
-          push: {
-            quantity: 1,
-          },
-          grab: {
-            distance: 120,
-            links: {
-              opacity: 0.4,
+          modes: {
+            push: {
+              quantity: 1,
+            },
+            grab: {
+              distance: 120,
+              links: {
+                opacity: 0.4,
+              },
             },
           },
         },
-      },
       particles: {
         color: {
           value: '#93c5fd', // brand-300
@@ -283,8 +285,8 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
           },
         },
       },
-      detectRetina: true,
-    }),
+        detectRetina: true,
+      } as unknown as RecursivePartial<IOptions>),
     []
   )
 
