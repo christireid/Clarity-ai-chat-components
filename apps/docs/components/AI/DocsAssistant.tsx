@@ -83,9 +83,35 @@ interface DocsAssistantProps {
   className?: string
 }
 
+// SSE-like status tracking for streaming (inspired by useStreamingSSE)
+type StreamingStatus = 'idle' | 'connecting' | 'streaming' | 'error' | 'retrying'
+
 interface SavedConversation {
   messages: Message[]
   timestamp: number
+}
+
+// Queued message for offline support
+interface QueuedMessage {
+  id: string
+  content: string
+  timestamp: number
+}
+
+// Conversation branch for branching feature
+interface ConversationBranch {
+  id: string
+  name: string
+  messages: Message[]
+  parentBranchId: string | null
+  branchPointMessageId: string | null
+  createdAt: Date
+}
+
+// Branch state type
+interface BranchState {
+  branches: ConversationBranch[]
+  currentBranchId: string
 }
 
 interface Source {
@@ -104,11 +130,22 @@ interface Source {
 
 const SESSION_ID_KEY = 'clarity-docs-assistant-session-id'
 const MESSAGES_KEY = 'clarity-docs-assistant-messages'
+const MESSAGE_QUEUE_KEY = 'clarity-docs-assistant-queue' // Offline message queue
+const BRANCHES_KEY = 'clarity-docs-assistant-branches' // Conversation branches
 const CONVERSATION_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
 const STREAM_THROTTLE_MS = 50 // Throttle streaming updates
 const CLIPBOARD_TIMEOUT_MS = 2000 // Clipboard success display time
 const TOAST_DURATION_MS = 3000 // Toast notification duration
 const FOCUS_DELAY_MS = 100 // Delay before focusing input
+
+// Streaming retry configuration (inspired by useStreamingSSE)
+const MAX_RETRY_ATTEMPTS = 3
+const INITIAL_RETRY_DELAY_MS = 1000
+const MAX_RETRY_DELAY_MS = 10000
+const RETRY_BACKOFF_MULTIPLIER = 2
+
+// Offline queue configuration
+const QUEUE_PROCESS_DELAY_MS = 1000 // Delay before processing queue after coming online
 
 // Token tracking constants
 const MODEL_MAX_TOKENS = 128000 // Claude/GPT-4 turbo context window
@@ -166,6 +203,138 @@ const DOCS_STARTER_PROMPTS: PromptSuggestion[] = [
     keywords: ['theme', 'customize', 'styling'],
   },
 ]
+
+// ============================================================================
+// Code Playground Integration
+// ============================================================================
+
+interface CodeBlock {
+  language: string
+  code: string
+  startIndex: number
+  endIndex: number
+}
+
+/**
+ * Extract code blocks from markdown content
+ */
+function extractCodeBlocks(content: string): CodeBlock[] {
+  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
+  const blocks: CodeBlock[] = []
+  let match
+
+  while ((match = codeBlockRegex.exec(content)) !== null) {
+    blocks.push({
+      language: match[1] || 'text',
+      code: match[2].trim(),
+      startIndex: match.index,
+      endIndex: match.index + match[0].length,
+    })
+  }
+
+  return blocks
+}
+
+/**
+ * Detect if code is React/TypeScript and suitable for playground
+ */
+function isPlaygroundCompatible(language: string, code: string): boolean {
+  const supportedLanguages = ['tsx', 'jsx', 'typescript', 'javascript', 'ts', 'js', 'react']
+  if (!supportedLanguages.includes(language.toLowerCase())) return false
+
+  // Check for React-like patterns
+  const reactPatterns = [
+    /import.*from\s+['"]react['"]/,
+    /import.*@clarity-chat/,
+    /<\w+[\s/>]/,  // JSX tags
+    /export\s+(default\s+)?function/,
+    /const.*=.*\(.*\)\s*=>/,  // Arrow function components
+  ]
+
+  return reactPatterns.some(pattern => pattern.test(code))
+}
+
+/**
+ * Generate CodeSandbox URL for React code
+ */
+function generateCodeSandboxUrl(code: string, _language: string): string {
+  // Wrap code in a basic React app structure if needed
+  const hasImport = /import.*from/.test(code)
+
+  let fullCode = code
+
+  // Add basic React imports if not present
+  if (!hasImport) {
+    fullCode = `import React from 'react';\nimport { useState } from 'react';\n\n${code}`
+  }
+
+  // Create CodeSandbox parameters
+  const files = {
+    'App.tsx': {
+      content: fullCode,
+    },
+    'index.tsx': {
+      content: `import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+
+const root = createRoot(document.getElementById('root')!);
+root.render(<App />);
+`,
+    },
+    'package.json': {
+      content: JSON.stringify({
+        dependencies: {
+          'react': '^18.2.0',
+          'react-dom': '^18.2.0',
+          '@clarity-chat/react': 'latest',
+        },
+        devDependencies: {
+          'typescript': '^5.0.0',
+          '@types/react': '^18.2.0',
+          '@types/react-dom': '^18.2.0',
+        },
+      }, null, 2),
+    },
+  }
+
+  // Encode for URL using a safer method
+  const filesJson = JSON.stringify({ files })
+  const encoded = btoa(unescape(encodeURIComponent(filesJson)))
+
+  return `https://codesandbox.io/api/v1/sandboxes/define?parameters=${encoded}`
+}
+
+/**
+ * Generate StackBlitz URL for React code
+ */
+function generateStackBlitzUrl(code: string): string {
+  const hasImport = /import.*from/.test(code)
+
+  let fullCode = code
+  if (!hasImport) {
+    fullCode = `import React from 'react';\nimport { useState } from 'react';\n\n${code}`
+  }
+
+  // Use StackBlitz's simpler URL format
+  const params = new URLSearchParams({
+    file: 'App.tsx',
+    terminalHeight: '0',
+    view: 'preview',
+  })
+
+  // Encode the code for URL
+  const encoded = encodeURIComponent(fullCode)
+  return `https://stackblitz.com/edit/vitejs-vite-react-ts?${params.toString()}&code=${encoded}`
+}
+
+/**
+ * Open code in playground (CodeSandbox by default)
+ */
+function openInPlayground(code: string, language: string): void {
+  const url = generateCodeSandboxUrl(code, language)
+  window.open(url, '_blank', 'noopener,noreferrer')
+}
 
 // ============================================================================
 // URL Normalization Utilities
@@ -248,10 +417,27 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const [showExportDialog, setShowExportDialog] = useState(false)
+  const [streamingStatus, setStreamingStatus] = useState<StreamingStatus>('idle')
+  const [retryCount, setRetryCount] = useState(0)
+  const [isOnline, setIsOnline] = useState(true)
+  const [messageQueue, setMessageQueue] = useState<QueuedMessage[]>([])
+  const [branchState, setBranchState] = useState<BranchState>({
+    branches: [{
+      id: 'main',
+      name: 'Main Conversation',
+      messages: [],
+      parentBranchId: null,
+      branchPointMessageId: null,
+      createdAt: new Date(),
+    }],
+    currentBranchId: 'main',
+  })
 
   // Refs
   const dialogRef = useRef<HTMLDivElement>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
+  const partialContentRef = useRef<string>('') // Track partial response for recovery
+  const lastUserMessageRef = useRef<string>('') // Track last user message for retry
 
   // Library hooks
   const toast = useToast()
@@ -386,6 +572,224 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     }
   }, [])
 
+  // Load message queue from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedQueue = localStorage.getItem(MESSAGE_QUEUE_KEY)
+      if (savedQueue) {
+        const parsed = JSON.parse(savedQueue) as QueuedMessage[]
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessageQueue(parsed)
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load message queue:', e)
+    }
+  }, [])
+
+  // Save message queue to localStorage when it changes
+  useEffect(() => {
+    try {
+      if (messageQueue.length > 0) {
+        localStorage.setItem(MESSAGE_QUEUE_KEY, JSON.stringify(messageQueue))
+      } else {
+        localStorage.removeItem(MESSAGE_QUEUE_KEY)
+      }
+    } catch (e) {
+      console.error('Failed to save message queue:', e)
+    }
+  }, [messageQueue])
+
+  // Handle network status changes
+  const handleNetworkStatusChange = useCallback((status: 'online' | 'offline' | 'slow' | 'unstable') => {
+    const wasOffline = !isOnline
+    const nowOnline = status === 'online' || status === 'slow' || status === 'unstable'
+
+    setIsOnline(nowOnline)
+
+    // If we just came back online and have queued messages, show a notification
+    if (wasOffline && nowOnline && messageQueue.length > 0) {
+      toast.info(`You're back online! ${messageQueue.length} message${messageQueue.length > 1 ? 's' : ''} queued.`)
+    }
+
+    // Show offline notification
+    if (!wasOffline && status === 'offline') {
+      toast.warning('You are offline. Messages will be queued and sent when you reconnect.')
+    }
+  }, [isOnline, messageQueue.length, toast])
+
+  // Add message to queue when offline
+  const queueMessage = useCallback((content: string) => {
+    const queuedMsg: QueuedMessage = {
+      id: `queued-${Date.now()}`,
+      content,
+      timestamp: Date.now(),
+    }
+    setMessageQueue(prev => [...prev, queuedMsg])
+
+    // Add a pending message to the UI
+    const pendingMessage: Message = {
+      id: queuedMsg.id,
+      chatId: 'docs-assistant',
+      role: 'user',
+      content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'sending',
+    }
+    setMessages(prev => [...prev, pendingMessage])
+
+    toast.info('Message queued. Will be sent when you reconnect.')
+  }, [toast])
+
+  // Process the message queue when back online
+  const processMessageQueue = useCallback(async () => {
+    if (!isOnline || messageQueue.length === 0 || isLoading) return
+
+    const queue = [...messageQueue]
+    setMessageQueue([]) // Clear queue first to prevent duplicate processing
+
+    toast.info(`Sending ${queue.length} queued message${queue.length > 1 ? 's' : ''}...`)
+
+    for (const queuedMsg of queue) {
+      // Remove the pending message from UI
+      setMessages(prev => prev.filter(m => m.id !== queuedMsg.id))
+
+      // Send the actual message (this will add it back as a real message)
+      await handleSendMessageInternal(queuedMsg.content, 0)
+
+      // Small delay between messages to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 500))
+    }
+  }, [isOnline, messageQueue, isLoading])
+
+  // Process queue when coming back online
+  useEffect(() => {
+    if (isOnline && messageQueue.length > 0 && !isLoading) {
+      const timer = setTimeout(() => {
+        processMessageQueue()
+      }, QUEUE_PROCESS_DELAY_MS)
+      return () => clearTimeout(timer)
+    }
+  }, [isOnline, messageQueue.length, isLoading, processMessageQueue])
+
+  // Create a new conversation branch from a specific message
+  const createBranch = useCallback((fromMessageId: string, branchName?: string) => {
+    const currentBranch = branchState.branches.find(b => b.id === branchState.currentBranchId)
+    if (!currentBranch) return
+
+    // Find the index of the message to branch from
+    const messageIndex = messages.findIndex(m => m.id === fromMessageId)
+    if (messageIndex === -1) return
+
+    // Create new branch with messages up to and including the branch point
+    const branchMessages = messages.slice(0, messageIndex + 1)
+    const newBranchId = `branch-${Date.now()}`
+    const newBranch: ConversationBranch = {
+      id: newBranchId,
+      name: branchName || `Branch ${branchState.branches.length}`,
+      messages: branchMessages,
+      parentBranchId: branchState.currentBranchId,
+      branchPointMessageId: fromMessageId,
+      createdAt: new Date(),
+    }
+
+    setBranchState(prev => ({
+      branches: [...prev.branches, newBranch],
+      currentBranchId: newBranchId,
+    }))
+
+    // Update messages to show the branched conversation
+    setMessages(branchMessages)
+
+    toast.success(`Created branch: ${newBranch.name}`)
+  }, [branchState, messages, toast])
+
+  // Switch to a different branch
+  const switchBranch = useCallback((branchId: string) => {
+    const targetBranch = branchState.branches.find(b => b.id === branchId)
+    if (!targetBranch) {
+      toast.error('Branch not found')
+      return
+    }
+
+    // Save current messages to current branch before switching
+    setBranchState(prev => ({
+      ...prev,
+      branches: prev.branches.map(b =>
+        b.id === prev.currentBranchId
+          ? { ...b, messages: messages }
+          : b
+      ),
+      currentBranchId: branchId,
+    }))
+
+    // Load messages from target branch
+    setMessages(targetBranch.messages)
+
+    toast.info(`Switched to: ${targetBranch.name}`)
+  }, [branchState, messages, toast])
+
+  // Delete a branch (cannot delete main or current branch)
+  const deleteBranch = useCallback((branchId: string) => {
+    if (branchId === 'main') {
+      toast.error('Cannot delete main conversation')
+      return
+    }
+    if (branchId === branchState.currentBranchId) {
+      toast.error('Cannot delete current branch. Switch to another branch first.')
+      return
+    }
+
+    const branchToDelete = branchState.branches.find(b => b.id === branchId)
+    if (!branchToDelete) return
+
+    setBranchState(prev => ({
+      ...prev,
+      branches: prev.branches.filter(b => b.id !== branchId),
+    }))
+
+    toast.success(`Deleted branch: ${branchToDelete.name}`)
+  }, [branchState, toast])
+
+  // Get current branch info
+  const currentBranch = useMemo(() => {
+    return branchState.branches.find(b => b.id === branchState.currentBranchId) || branchState.branches[0]
+  }, [branchState])
+
+  // Open code in playground handler
+  const handleOpenInPlayground = useCallback((messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message || message.role !== 'assistant') return
+
+    const codeBlocks = extractCodeBlocks(message.content)
+    const playgroundCompatibleBlocks = codeBlocks.filter(
+      block => isPlaygroundCompatible(block.language, block.code)
+    )
+
+    if (playgroundCompatibleBlocks.length === 0) {
+      toast.warning('No playground-compatible code found in this message')
+      return
+    }
+
+    // If multiple blocks, use the first one or the largest one
+    const blockToOpen = playgroundCompatibleBlocks.reduce((largest, current) =>
+      current.code.length > largest.code.length ? current : largest
+    )
+
+    openInPlayground(blockToOpen.code, blockToOpen.language)
+    toast.success('Opening code in playground...')
+  }, [messages, toast])
+
+  // Check if a message has playground-compatible code
+  const messageHasPlaygroundCode = useCallback((messageId: string): boolean => {
+    const message = messages.find(m => m.id === messageId)
+    if (!message || message.role !== 'assistant') return false
+
+    const codeBlocks = extractCodeBlocks(message.content)
+    return codeBlocks.some(block => isPlaygroundCompatible(block.language, block.code))
+  }, [messages])
+
   // Throttled message update for streaming using library hook
   const updateStreamingMessage = useThrottledCallback(
     (messageId: string, content: string) => {
@@ -398,8 +802,30 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     STREAM_THROTTLE_MS
   )
 
-  // Send message handler with validation
-  const handleSendMessage = useCallback(async (content: string) => {
+  // Calculate exponential backoff delay for retries (inspired by useStreamingSSE)
+  const calculateRetryDelay = useCallback((attempt: number): number => {
+    const delay = INITIAL_RETRY_DELAY_MS * Math.pow(RETRY_BACKOFF_MULTIPLIER, attempt)
+    return Math.min(delay, MAX_RETRY_DELAY_MS)
+  }, [])
+
+  // Check if an error is retryable (network errors, rate limits, server errors)
+  const isRetryableError = useCallback((error: Error): boolean => {
+    const errorMsg = error.message.toLowerCase()
+    // Retry on network errors, rate limits (429), and server errors (5xx)
+    return (
+      error.name === 'TypeError' || // Network error
+      errorMsg.includes('network') ||
+      errorMsg.includes('fetch') ||
+      errorMsg.includes('429') || // Rate limit
+      errorMsg.includes('500') ||
+      errorMsg.includes('502') ||
+      errorMsg.includes('503') ||
+      errorMsg.includes('504')
+    )
+  }, [])
+
+  // Internal send message handler with validation and automatic retry
+  const handleSendMessageInternal = useCallback(async (content: string, currentRetry = 0) => {
     // Validate message content
     const trimmedContent = content.trim()
     if (!trimmedContent) {
@@ -407,24 +833,32 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       return
     }
 
-    const userMessage: Message = {
-      id: `user-${Date.now()}`,
-      chatId: 'docs-assistant',
-      role: 'user',
-      content,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      status: 'sent',
+    // Only add user message on first attempt (not retries)
+    if (currentRetry === 0) {
+      const userMessage: Message = {
+        id: `user-${Date.now()}`,
+        chatId: 'docs-assistant',
+        role: 'user',
+        content,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        status: 'sent',
+      }
+
+      setMessages((prev) => [...prev, userMessage])
+      // Track user message tokens
+      trackMessage({ role: 'user', content })
     }
 
-    setMessages((prev) => [...prev, userMessage])
-    // Track user message tokens
-    trackMessage({ role: 'user', content })
     setIsLoading(true)
+    setStreamingStatus('connecting')
+    setRetryCount(currentRetry)
     setCurrentCitations([]) // Clear previous citations when starting new request
+    partialContentRef.current = '' // Reset partial content
+    lastUserMessageRef.current = content // Store for recovery
     setAiStatus({
       stage: 'researching',
-      topic: 'Searching documentation',
+      topic: currentRetry > 0 ? `Retrying (${currentRetry}/${MAX_RETRY_ATTEMPTS})...` : 'Searching documentation',
       startedAt: new Date(),
     })
 
@@ -466,6 +900,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
       setMessages((prev) => [...prev, assistantMessage])
       setIsLoading(false)
+      setStreamingStatus('streaming')
       setAiStatus({
         stage: 'generating',
         topic: 'Generating response',
@@ -489,6 +924,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
               if (data.type === 'text' && data.content) {
                 accumulatedContent += data.content
+                partialContentRef.current = accumulatedContent // Track for recovery
                 updateStreamingMessage(assistantMessage.id, accumulatedContent)
               } else if (data.type === 'sources' && data.data?.sources) {
                 sources = data.data.sources
@@ -529,35 +965,105 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
         }
       }
 
+      // Success - reset retry count and status
       abortControllerRef.current = null
       setIsLoading(false)
+      setStreamingStatus('idle')
+      setRetryCount(0)
       setAiStatus(undefined)
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
+        // User cancelled - preserve partial content if any
+        if (partialContentRef.current) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.status === 'streaming'
+                ? { ...m, content: partialContentRef.current + '\n\n_(Response interrupted)_', status: 'sent' as const }
+                : m
+            )
+          )
+          toast.info('Response interrupted. Partial content preserved.')
+        }
         setIsLoading(false)
+        setStreamingStatus('idle')
         setAiStatus(undefined)
         return
       }
 
       abortControllerRef.current = null
-      const errorMsg = error instanceof Error ? error.message : 'Please try again.'
-      toast.error(errorMsg, 'Failed to get response')
+      const err = error instanceof Error ? error : new Error('Unknown error')
+      const errorMsg = err.message
 
-      const errorMessage: Message = {
-        id: `error-${Date.now()}`,
-        chatId: 'docs-assistant',
-        role: 'assistant',
-        content: `I encountered an error while processing your request. ${errorMsg}`,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        status: 'error',
+      // Check if we should retry with exponential backoff
+      if (isRetryableError(err) && currentRetry < MAX_RETRY_ATTEMPTS) {
+        const retryDelay = calculateRetryDelay(currentRetry)
+        setStreamingStatus('retrying')
+        toast.warning(`Connection issue. Retrying in ${Math.round(retryDelay / 1000)}s...`, 'Retry')
+
+        // Schedule retry with exponential backoff
+        setTimeout(() => {
+          handleSendMessageInternal(content, currentRetry + 1)
+        }, retryDelay)
+        return
       }
 
-      setMessages((prev) => [...prev, errorMessage])
+      // Max retries reached or non-retryable error
+      setStreamingStatus('error')
+
+      // Check if we have partial content to preserve
+      if (partialContentRef.current && partialContentRef.current.length > 50) {
+        // Preserve partial response with error indicator
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.status === 'streaming'
+              ? {
+                  ...m,
+                  content: partialContentRef.current + '\n\n_(Stream interrupted - click retry to continue)_',
+                  status: 'error' as const,
+                }
+              : m
+          )
+        )
+        toast.warning('Response interrupted. Partial content preserved - use retry to continue.')
+      } else {
+        // No meaningful partial content - show error message
+        const retryInfo = currentRetry > 0 ? ` (after ${currentRetry} retries)` : ''
+        toast.error(`${errorMsg}${retryInfo}`, 'Failed to get response')
+        const errorMessage: Message = {
+          id: `error-${Date.now()}`,
+          chatId: 'docs-assistant',
+          role: 'assistant',
+          content: `I encountered an error while processing your request. ${errorMsg}`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          status: 'error',
+        }
+        setMessages((prev) => [...prev, errorMessage])
+      }
+
       setIsLoading(false)
+      setRetryCount(0)
       setAiStatus(undefined)
     }
-  }, [messages, sessionId, toast, updateStreamingMessage])
+  }, [messages, sessionId, toast, updateStreamingMessage, trackMessage, isRetryableError, calculateRetryDelay])
+
+  // Public send message handler that checks for offline status
+  const handleSendMessage = useCallback(async (content: string) => {
+    const trimmedContent = content.trim()
+    if (!trimmedContent) {
+      toast.warning('Please enter a message')
+      return
+    }
+
+    // If offline, queue the message
+    if (!isOnline) {
+      queueMessage(trimmedContent)
+      return
+    }
+
+    // Otherwise, send normally
+    await handleSendMessageInternal(trimmedContent, 0)
+  }, [isOnline, queueMessage, handleSendMessageInternal, toast])
 
   // Message copy handler using library clipboard hook
   const handleMessageCopy = useCallback(async (_messageId: string, content: string) => {
@@ -787,8 +1293,21 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             {/* Network Status Indicator */}
             <NetworkStatus
               className="absolute top-2 right-12 z-10"
-              showOnlyWhenOffline
+              show={!isOnline || messageQueue.length > 0}
+              onStatusChange={handleNetworkStatusChange}
+              showDetails={!isOnline}
             />
+
+            {/* Offline Queue Indicator */}
+            {messageQueue.length > 0 && (
+              <div
+                className="absolute top-2 right-4 z-10 flex items-center gap-1.5 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-md text-xs font-medium"
+                title="Messages waiting to be sent"
+              >
+                <span className="inline-block w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                {messageQueue.length} queued
+              </div>
+            )}
 
             {/* Voice Input Button */}
             <div className="absolute top-2 right-24 z-10">
@@ -800,6 +1319,34 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 autoSubmit
               />
             </div>
+
+            {/* Branch Selector/Indicator */}
+            {(branchState.branches.length > 1 || branchState.currentBranchId !== 'main') && (
+              <div className="absolute top-2 left-4 z-10 flex items-center gap-2">
+                {/* Branch icon */}
+                <svg className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                {branchState.branches.length > 1 ? (
+                  <select
+                    value={branchState.currentBranchId}
+                    onChange={(e) => switchBranch(e.target.value)}
+                    className="px-2 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                    title="Switch conversation branch"
+                  >
+                    {branchState.branches.map((branch) => (
+                      <option key={branch.id} value={branch.id}>
+                        {branch.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="px-2 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md">
+                    {currentBranch.name}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Search Toggle Button - shows when there are messages */}
             {messages.length > 0 && (
@@ -870,6 +1417,29 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               showMessageCount
               onExport={messages.length > 0 ? handleOpenExportDialog : undefined}
               onClear={messages.length > 0 ? handleClear : undefined}
+              headerActions={
+                // Playground button - show when there are messages with code
+                messages.some(m => m.role === 'assistant' && messageHasPlaygroundCode(m.id)) ? (
+                  <button
+                    onClick={() => {
+                      // Find the last assistant message with playground code
+                      const lastWithCode = [...messages]
+                        .reverse()
+                        .find(m => m.role === 'assistant' && messageHasPlaygroundCode(m.id))
+                      if (lastWithCode) {
+                        handleOpenInPlayground(lastWithCode.id)
+                      }
+                    }}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+                    title="Open code in playground"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                    Try Code
+                  </button>
+                ) : undefined
+              }
               emptyState={
                 <EmptyChatState
                   suggestions={DOCS_STARTER_PROMPTS}

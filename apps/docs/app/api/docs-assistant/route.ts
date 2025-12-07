@@ -16,10 +16,12 @@ import {
 import {
   createSSEStream,
   getStreamingFunction,
+  getStreamingFunctionWithRouting,
   checkRateLimit,
   validateRequest,
   handleStreamError,
   type StreamChunk,
+  type QueryClassification,
 } from '@/lib/ai/streaming'
 import { SYSTEM_PROMPT, RATE_LIMIT_PROMPT } from '@/lib/ai/prompts'
 import {
@@ -34,6 +36,9 @@ export const dynamic = 'force-dynamic'
 
 // Feature flag for enhanced RAG (hybrid search + RRF + MMR)
 const USE_ENHANCED_RAG = process.env.ENHANCED_RAG !== 'false' // Default: enabled
+
+// Feature flag for smart model routing (routes queries to optimal models)
+const USE_SMART_ROUTING = process.env.SMART_MODEL_ROUTING !== 'false' // Default: enabled
 
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
@@ -150,12 +155,27 @@ export async function POST(request: NextRequest) {
     const useEnhancedRAG = USE_ENHANCED_RAG && shouldUseEnhancedRAG(body.message)
     const useLegacyRAG = !USE_ENHANCED_RAG && shouldUseRAG(body.message)
 
+    // Smart model routing - determine optimal model based on query complexity
+    let modelRouting: { model: string; classification: QueryClassification } | null = null
+    if (USE_SMART_ROUTING) {
+      const { model, classification } = getStreamingFunctionWithRouting(
+        body.message,
+        messages.length,
+        {
+          enabled: true,
+          optimizeForCost: process.env.OPTIMIZE_FOR_COST === 'true',
+          optimizeForSpeed: process.env.OPTIMIZE_FOR_SPEED === 'true',
+        }
+      )
+      modelRouting = { model, classification }
+    }
+
     // Create streaming response - use enhanced RAG when enabled
     const generator = useEnhancedRAG
-      ? streamWithEnhancedRAG(body.message, messages, body.currentPath, sessionId)
+      ? streamWithEnhancedRAG(body.message, messages, body.currentPath, sessionId, modelRouting?.model)
       : useLegacyRAG
-        ? streamWithRAG(body.message, messages, body.currentPath, sessionId)
-        : streamWithoutRAG(body.message, messages, sessionId)
+        ? streamWithRAG(body.message, messages, body.currentPath, sessionId, modelRouting?.model)
+        : streamWithoutRAG(body.message, messages, sessionId, modelRouting?.model)
 
     return new Response(createSSEStream(generator), {
       headers: {
@@ -164,6 +184,10 @@ export async function POST(request: NextRequest) {
         'Connection': 'keep-alive',
         'X-RateLimit-Remaining': rateLimit.remaining.toString(),
         'X-RateLimit-Reset': new Date(rateLimit.resetAt).toISOString(),
+        ...(modelRouting && {
+          'X-Model-Used': modelRouting.model,
+          'X-Query-Complexity': modelRouting.classification.complexity,
+        }),
       },
     })
   } catch (error) {
@@ -186,7 +210,8 @@ async function* streamWithRAG(
   userMessage: string,
   messages: ChatMessage[],
   currentPath?: string,
-  sessionId?: string
+  sessionId?: string,
+  modelOverride?: string
 ): AsyncGenerator<StreamChunk> {
   let assistantResponse = ''
 
@@ -294,9 +319,9 @@ async function* streamWithRAG(
       return msg
     })
 
-    // Stream response from LLM
+    // Stream response from LLM (use model override if provided)
     const streamingFn = getStreamingFunction()
-    const stream = streamingFn(updatedMessages)
+    const stream = streamingFn(updatedMessages, { model: modelOverride })
 
     for await (const chunk of stream) {
       if (chunk.type === 'text' && chunk.content) {
@@ -314,7 +339,7 @@ async function* streamWithRAG(
             title: s.title,
             confidence: s.score,
           })),
-          model: process.env.AI_MODEL || 'unknown',
+          model: modelOverride || process.env.AI_MODEL || 'unknown',
           contextHash,
         })
       } catch (error) {
@@ -362,7 +387,8 @@ async function* streamWithEnhancedRAG(
   userMessage: string,
   messages: ChatMessage[],
   currentPath?: string,
-  sessionId?: string
+  sessionId?: string,
+  modelOverride?: string
 ): AsyncGenerator<StreamChunk> {
   let assistantResponse = ''
 
@@ -472,9 +498,9 @@ async function* streamWithEnhancedRAG(
       return msg
     })
 
-    // Stream response from LLM
+    // Stream response from LLM (use model override if provided)
     const streamingFn = getStreamingFunction()
-    const stream = streamingFn(updatedMessages)
+    const stream = streamingFn(updatedMessages, { model: modelOverride })
 
     for await (const chunk of stream) {
       if (chunk.type === 'text' && chunk.content) {
@@ -492,7 +518,7 @@ async function* streamWithEnhancedRAG(
             title: s.title,
             confidence: s.finalScore,
           })),
-          model: process.env.AI_MODEL || 'unknown',
+          model: modelOverride || process.env.AI_MODEL || 'unknown',
           contextHash,
         })
       } catch (error) {
@@ -523,7 +549,8 @@ async function* streamWithEnhancedRAG(
 async function* streamWithoutRAG(
   userMessage: string,
   messages: ChatMessage[],
-  sessionId?: string
+  sessionId?: string,
+  modelOverride?: string
 ): AsyncGenerator<StreamChunk> {
   let assistantResponse = ''
 
@@ -574,9 +601,9 @@ async function* streamWithoutRAG(
 
     // Use messages as-is (user message already added in main route)
 
-    // Stream response from LLM
+    // Stream response from LLM (use model override if provided)
     const streamingFn = getStreamingFunction()
-    const stream = streamingFn(messages)
+    const stream = streamingFn(messages, { model: modelOverride })
 
     for await (const chunk of stream) {
       if (chunk.type === 'text' && chunk.content) {
@@ -589,7 +616,7 @@ async function* streamWithoutRAG(
     if (assistantResponse) {
       try {
         await cache.set(userMessage, assistantResponse, {
-          model: process.env.AI_MODEL || 'unknown',
+          model: modelOverride || process.env.AI_MODEL || 'unknown',
         })
       } catch (error) {
         console.error('Failed to cache response:', error)
@@ -641,10 +668,11 @@ export async function GET() {
   return NextResponse.json({
     status: 'ok',
     service: 'Clarity Chat Documentation Assistant',
-    version: '1.1.0',
+    version: '1.2.0',
     features: {
       rag: !!process.env.OPENAI_API_KEY || !!process.env.ANTHROPIC_API_KEY,
       enhancedRAG: USE_ENHANCED_RAG,
+      smartRouting: USE_SMART_ROUTING,
       streaming: true,
       rateLimit: true,
       caching: true,
@@ -652,7 +680,12 @@ export async function GET() {
     },
     models: {
       configured: process.env.AI_MODEL || 'gpt-4-turbo-preview',
-      available: ['gpt-4-turbo-preview', 'gpt-4', 'claude-3-5-sonnet-20241022'],
+      available: ['gpt-4-turbo-preview', 'gpt-4', 'gpt-3.5-turbo', 'claude-3-5-sonnet-20241022', 'claude-3-haiku-20240307', 'gemini-1.5-pro', 'gemini-1.5-flash'],
+      routing: USE_SMART_ROUTING ? {
+        simple: 'gpt-3.5-turbo (fast/cheap)',
+        moderate: 'gpt-4-turbo-preview (balanced)',
+        complex: 'claude-3-5-sonnet (most capable)',
+      } : 'disabled',
     },
     cache: cacheStats,
   })
