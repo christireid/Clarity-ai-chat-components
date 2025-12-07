@@ -20,6 +20,7 @@ export * from './components/error-message'
 export * from './components/command'
 export * from './components/select'
 export * from './components/switch'
+export * from './components/tabs'
 
 // Hooks
 export * from './hooks/use-ripple-effect'
