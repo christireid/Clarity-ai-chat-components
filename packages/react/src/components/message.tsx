@@ -330,8 +330,10 @@ export function Message({
                 <>
                   <span className="text-muted-foreground/50">·</span>
                   <motion.span
+                    layoutId={`timestamp-${message.id}`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isHovered ? 1 : 0.7 }}
+                    layout
                     transition={{ duration: 0.2 }}
                     className="text-xs text-muted-foreground/90 whitespace-nowrap"
                   >
@@ -372,10 +374,12 @@ export function Message({
 
             {isStreaming && (
               <motion.span
+                layoutId={`streaming-indicator-${message.id}`}
                 animate={{
                   opacity: [1, 0.3, 1],
                   scale: [1, 0.95, 1],
                 }}
+                layout
                 transition={{
                   repeat: Infinity,
                   duration: 1,

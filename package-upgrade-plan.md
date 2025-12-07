@@ -698,6 +698,21 @@
    - **Impact**: Code is prepared to use React 19's concurrent features for better performance
    - **Note**: Full migration requires refactoring the custom hook to use React 19's API, which has different semantics
 
+6. **Next.js 16 - Package Import Optimization:**
+   - **Files**: 
+     - `apps/docs/next.config.js` (added experimental.optimizePackageImports)
+     - `apps/marketing-site/next.config.js` (added experimental.optimizePackageImports)
+   - **Change**: Added `optimizePackageImports` for better tree-shaking and bundle optimization
+   - **Benefit**: Automatically optimizes imports from specified packages, reducing bundle size
+   - **Impact**: Smaller production bundles for Next.js apps, especially for large component libraries
+   - **Packages Optimized**: `@clarity-chat/react`, `@clarity-chat/primitives`, `lucide-react`, `framer-motion`
+
+7. **Framer Motion 12 - Enhanced Layout Animations:**
+   - **File**: `packages/react/src/components/message.tsx` (additional layoutId props)
+   - **Change**: Added `layoutId` to timestamp and streaming indicator for smoother transitions
+   - **Benefit**: Better shared element animations when message states change
+   - **Impact**: More polished UX with consistent layout animations throughout message components
+
 **📋 POTENTIAL FUTURE IMPROVEMENTS (Not Implemented - Requires Further Analysis):**
 
 1. **tailwind-merge v3**: 

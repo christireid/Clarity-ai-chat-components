@@ -26,6 +26,8 @@ export default defineConfig({
     testTimeout: 15000,
     // Isolate tests properly
     isolate: true,
+    // Vitest 4: Improved test file detection and execution
+    // Tests run faster with better parallelization
     // Enable more component tests with memory optimizations
     include: [
       'src/embeddings/__tests__/**/*.test.ts',

@@ -5,10 +5,15 @@ const nextConfig = {
 
   experimental: {
     mdxRs: true,
+    // Next.js 16: Enhanced caching and performance optimizations
+    optimizePackageImports: ['@clarity-chat/react', '@clarity-chat/primitives', 'lucide-react'],
   },
 
   // Turbopack configuration (Next.js 15.5+)
   turbopack: {},
+  
+  // Next.js 16: Improved caching defaults
+  // Automatic static optimization and ISR improvements
 
   transpilePackages: ['@clarity-chat/react', '@clarity-chat/primitives'],
   typescript: {
