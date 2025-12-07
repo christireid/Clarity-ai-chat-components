@@ -1,830 +1,546 @@
-'use client'
-
-import { useState, useCallback } from 'react'
-import { ToastProvider, useTokenOptimizationEnhanced } from '@clarity-chat/react'
-import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import type { Metadata } from 'next'
+import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-import { Pagination } from '@/components/Navigation/Pagination'
-import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { ViewInStorybook } from '@/components/Links/StorybookLink'
 
-// Basic demo component
-function BasicOptimizationDemo() {
-  const [input, setInput] = useState('')
-  const [result, setResult] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+export const dynamic = 'force-dynamic'
 
-  const {
-    optimizeData,
-    optimizePrompt,
-    stats,
-  } = useTokenOptimizationEnhanced({
-    preset: 'balanced',
-  })
-
-  const handleOptimize = useCallback(async () => {
-    if (!input.trim()) return
-    setLoading(true)
-    try {
-      const optimized = await optimizeData({ text: input })
-      setResult(optimized.content)
-    } catch (err) {
-      console.error('Optimization error:', err)
-    } finally {
-      setLoading(false)
-    }
-  }, [input, optimizeData])
-
-  return (
-    <div className="w-full max-w-2xl border border-border rounded-lg p-4">
-      <div className="space-y-4">
-        <div>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Enter text or JSON to optimize..."
-            className="w-full px-3 py-2 border border-border rounded min-h-[100px]"
-          />
-        </div>
-        <button
-          onClick={handleOptimize}
-          disabled={!input.trim() || loading}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
-          aria-label="Optimize content"
-        >
-          {loading ? 'Optimizing...' : 'Optimize'}
-        </button>
-        {result && (
-          <div className="p-3 bg-muted rounded">
-            <p className="text-sm font-semibold mb-1">Optimized:</p>
-            <p className="text-sm">{result}</p>
-          </div>
-        )}
-        {stats.overall.totalTokensSaved > 0 && (
-          <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded">
-            <p className="text-sm">
-              Saved: {stats.overall.totalTokensSaved} tokens ({stats.overall.averageSavingsPercent.toFixed(1)}%)
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+export const metadata: Metadata = {
+  title: 'useTokenOptimizationEnhanced Hook | Clarity Chat',
+  description:
+    'Comprehensive token optimization with TOON, accurate tokenization, prompt caching, semantic caching, and real-time cost tracking. Save 50-90% on AI costs.',
 }
 
-const enhancedTokenOptimizationOptionsProps: Prop[] = [
+const optionsProps: Prop[] = [
   {
     name: 'model',
     type: 'ModelName',
-    description: 'Model to use for token counting and cost calculation (e.g., "gpt-4", "claude-3-5-sonnet").',
-  },
-  {
-    name: 'preset',
-    type: '"aggressive" | "balanced" | "conservative" | "realtime"',
-    description: 'Configuration preset for quick setup. Overrides individual options.',
+    description: 'Model identifier for token counting and cost calculation.',
   },
   {
     name: 'enableToon',
     type: 'boolean',
+    default: 'false',
     description: 'Enable TOON format optimization (30-60% savings on structured data).',
   },
   {
     name: 'toonMinSavings',
     type: 'number',
-    description: 'Minimum TOON savings threshold (percentage) to use TOON format.',
+    default: '20',
+    description: 'Minimum TOON savings threshold as percentage (0-100). Only use TOON if savings >= this threshold. Default: 20%.',
   },
   {
     name: 'enableAccurateTokenization',
     type: 'boolean',
-    description: 'Enable accurate tokenization using js-tiktoken (slower but precise).',
+    default: 'false',
+    description: 'Enable accurate tokenization using js-tiktoken (model-specific counting).',
   },
   {
     name: 'enablePromptCaching',
     type: 'boolean',
-    description: 'Enable prompt caching (50-90% savings on repeated prompts).',
+    default: 'false',
+    description: 'Enable prompt caching (50-90% savings on repeated content).',
   },
   {
     name: 'cachingProvider',
     type: '"anthropic" | "openai" | "auto"',
-    description: 'Prompt caching provider. "auto" detects from model.',
+    default: '"auto"',
+    description: 'Prompt caching provider. Auto detects based on model.',
   },
   {
     name: 'enableSemanticCaching',
     type: 'boolean',
-    description: 'Enable semantic caching (similarity-based response reuse).',
+    default: 'false',
+    description: 'Enable semantic caching with similarity matching.',
   },
   {
     name: 'similarityThreshold',
     type: 'number',
-    description: 'Similarity threshold for semantic caching (0-1).',
+    default: '0.85',
+    description: 'Similarity threshold for semantic cache hits (0-1).',
   },
   {
     name: 'enablePromptCompression',
     type: 'boolean',
+    default: 'false',
     description: 'Enable prompt compression (20-35% savings).',
   },
   {
     name: 'compressionLevel',
     type: '"conservative" | "balanced" | "aggressive"',
+    default: '"balanced"',
     description: 'Compression aggressiveness level.',
   },
   {
     name: 'enableCostTracking',
     type: 'boolean',
-    description: 'Enable real-time cost tracking.',
+    default: 'false',
+    description: 'Enable real-time cost tracking and calculation.',
   },
   {
     name: 'enableStats',
     type: 'boolean',
-    description: 'Enable statistics collection.',
+    default: 'true',
+    description: 'Enable statistics collection for optimization metrics.',
   },
   {
-    name: 'enableHistoryLimiting',
-    type: 'boolean',
-    description: 'Enable history limiting to trim old messages.',
-  },
-  {
-    name: 'historyLimiting',
-    type: 'HistoryLimitingOptions',
-    description: 'History limiting configuration options.',
-  },
-  {
-    name: 'enableThrottling',
-    type: 'boolean',
-    description: 'Enable request throttling to avoid rate limits.',
-  },
-  {
-    name: 'throttling',
-    type: 'ThrottlingOptions',
-    description: 'Throttling configuration options.',
-  },
-  {
-    name: 'enableModelRouting',
-    type: 'boolean',
-    description: 'Enable model routing based on query complexity.',
-  },
-  {
-    name: 'modelRouting',
-    type: 'ModelRoutingOptions',
-    description: 'Model routing configuration options.',
-  },
-  {
-    name: 'enableReferences',
-    type: 'boolean',
-    description: 'Enable reference system for large data (store externally, reference in prompt).',
-  },
-  {
-    name: 'references',
-    type: 'ReferenceOptions',
-    description: 'Reference system configuration options.',
-  },
-  {
-    name: 'enableOutputLimits',
-    type: 'boolean',
-    description: 'Enable output limits to control response length.',
-  },
-  {
-    name: 'outputLimits',
-    type: 'OutputLimitOptions',
-    description: 'Output limit configuration options.',
-  },
-  {
-    name: 'enableBatching',
-    type: 'boolean',
-    description: 'Enable request batching to reduce HTTP overhead.',
-  },
-  {
-    name: 'batching',
-    type: 'BatchingOptions',
-    description: 'Batching configuration options.',
-  },
-  {
-    name: 'enablePrefilling',
-    type: 'boolean',
-    description: 'Enable response prefilling to skip LLM preambles.',
-  },
-  {
-    name: 'prefillConfig',
-    type: 'PrefillConfig',
-    description: 'Prefill configuration options.',
-  },
-  {
-    name: 'enablePromptStructure',
-    type: 'boolean',
-    description: 'Enable question-at-end prompt restructuring for better cache reuse.',
-  },
-  {
-    name: 'promptStructureOptions',
-    type: 'PromptStructureOptions',
-    description: 'Prompt structure configuration options.',
+    name: 'preset',
+    type: '"aggressive" | "balanced" | "conservative" | "realtime"',
+    description: 'Configuration preset for quick setup. See presets section.',
   },
 ]
-
-const enhancedTokenOptimizationReturnProps: Prop[] = [
-  {
-    name: 'optimizeData',
-    type: '(data: any) => Promise<EnhancedOptimizationResult>',
-    description: 'Optimize structured data (auto TOON/JSON). Returns optimized content with savings stats.',
-  },
-  {
-    name: 'optimizePrompt',
-    type: '(prompt: string) => Promise<EnhancedOptimizationResult>',
-    description: 'Optimize a text prompt using compression and caching.',
-  },
-  {
-    name: 'prepareMessages',
-    type: '(messages: CoreMessage[]) => Promise<CoreMessage[]>',
-    description: 'Prepare messages with cache control, compression, and history limiting.',
-  },
-  {
-    name: 'optimizeHistory',
-    type: '(messages: CoreMessage[]) => Promise<CoreMessage[]>',
-    description: 'Optimize conversation history (trim, compress, limit).',
-  },
-  {
-    name: 'routeQuery',
-    type: '(query: string) => Promise<ModelName>',
-    description: 'Route query to appropriate model based on complexity.',
-  },
-  {
-    name: 'getPrefill',
-    type: '(format: "json" | "xml" | "markdown") => string',
-    description: 'Get prefill string for response format (e.g., "{" for JSON).',
-  },
-  {
-    name: 'stats',
-    type: 'EnhancedOptimizationStats',
-    description: 'Comprehensive statistics on all optimizations applied.',
-  },
-  {
-    name: 'resetStats',
-    type: '() => void',
-    description: 'Reset all statistics to zero.',
-  },
-]
-
-export const dynamic = 'force-dynamic'
 
 export default function UseTokenOptimizationEnhancedPage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
-
-        <h1>useTokenOptimizationEnhanced</h1>
-
-        <p className="lead">
-          A comprehensive token optimization hook that combines all optimization features including TOON format,
-          prompt caching, semantic caching, compression, cost tracking, history limiting, model routing, and more.
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 rounded-full text-sm font-medium mb-4">
+          <span>🆕</span>
+          <span>2025 Enhanced Feature</span>
+        </div>
+        <h1 className="text-4xl font-bold mb-4">useTokenOptimizationEnhanced</h1>
+        <p className="text-xl text-muted-foreground mb-4">
+          Comprehensive token optimization hook with TOON support, accurate tokenization,
+          prompt caching, semantic caching, and real-time cost tracking. Save 50-90% on AI costs.
         </p>
+        <p className="text-muted-foreground">
+          <strong>Since:</strong> 2.0.0 • <strong>Domain:</strong> Token Optimization
+        </p>
+      </div>
 
-        <Callout type="info">
-          <p>
-            This is the <strong>recommended</strong> token optimization hook. The older{' '}
-            <a href="/reference/hooks/use-token-optimization">useTokenOptimization</a> is deprecated.
-          </p>
-        </Callout>
-
-        <ViewInStorybook component="useTokenOptimizationEnhanced" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Try optimizing text or JSON data! See how different optimizations reduce token usage.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
-  const { optimizeData, stats } = useTokenOptimizationEnhanced({
-    preset: 'balanced',
-  })
-
-  const handleOptimize = async () => {
-    const data = { name: 'Alice', age: 30, city: 'San Francisco' }
-    const result = await optimizeData(data)
-    console.log('Optimized:', result.content)
-    console.log('Savings:', stats.overall.totalTokensSaved)
-  }
-
-  return (
-    <div>
-      <button onClick={handleOptimize}>Optimize</button>
-      <p>Tokens saved: {stats.overall.totalTokensSaved}</p>
-    </div>
-  )
-}
-
-render(<Example />)`}
-          />
-        </section>
-
-        <h2 id="import">Import</h2>
-
-        <EnhancedCodeBlock
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-import type { EnhancedTokenOptimizationOptions, EnhancedOptimizationStats } from '@clarity-chat/react'`}
-          language="tsx"
-        />
-
-        <h2 id="basic-usage">Basic Usage</h2>
-
+      <Callout type="info" title="Cost Savings">
+        <p className="mb-2">
+          This hook can save you <strong>50-90% on AI API costs</strong> through:
+        </p>
+        <ul className="list-disc list-inside space-y-1 mb-2">
+          <li>
+            <strong>TOON Format:</strong> 30-60% savings on structured data
+          </li>
+          <li>
+            <strong>Prompt Caching:</strong> 50-90% savings on repeated content
+          </li>
+          <li>
+            <strong>Semantic Caching:</strong> 40-60% savings with similarity matching
+          </li>
+          <li>
+            <strong>Prompt Compression:</strong> 20-35% additional savings
+          </li>
+        </ul>
         <p>
-          Use a preset for quick setup:
+          Combined with other optimizations, total savings can reach <strong>90%</strong>.
         </p>
+      </Callout>
 
-        <ComponentPreview
-          title="Simple Optimization with Preset"
-          description="Basic optimization using a preset configuration"
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
+        <CodePlayground
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
-function SimpleOptimization() {
-  const {
-    optimizeData,
-    optimizePrompt,
-    stats,
-  } = useTokenOptimizationEnhanced({
-    preset: 'balanced', // 'aggressive' | 'balanced' | 'conservative' | 'realtime'
+function OptimizedChat() {
+  const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
+    model: 'gpt-4',
+    enableToon: true,
+    enablePromptCaching: true,
+    enableSemanticCaching: true,
+    enablePromptCompression: true,
+    enableCostTracking: true,
   })
 
-  const handleOptimize = async () => {
-    const result = await optimizeData({ name: 'Alice', age: 30 })
-    console.log('Optimized:', result.content)
-    console.log('Savings:', stats.overall.totalTokensSaved)
+  const handleSend = async (content: string) => {
+    try {
+      // Optimize the data
+      const optimized = await optimizeData(content)
+      
+      // Calculate cost (note: calculateCost takes { inputTokens, outputTokens })
+      // TokenCount.input and output are optional, so we use total as fallback
+      const inputTokens = optimized.tokens.input ?? optimized.tokens.total
+      const outputTokens = optimized.tokens.output ?? 0
+      const cost = calculateCost({
+        inputTokens,
+        outputTokens,
+      })
+      
+      // Use optimized content
+      console.log('Tokens:', optimized.tokens.total)
+      console.log('Cost: $', cost.total)
+      if (stats) {
+        console.log('Savings: $', stats.overall.totalCostSaved)
+      }
+    } catch (error) {
+      console.error('Optimization failed:', error)
+    }
   }
 
   return (
     <div>
-      <button onClick={handleOptimize}>Optimize</button>
+      <ChatWindow onSendMessage={handleSend} />
+      {stats && (
+        <div className="mt-4 p-4 bg-muted rounded-lg">
+          <p>Total Tokens Saved: {stats.overall.totalTokensSaved}</p>
+          <p>Total Cost Saved: ${stats.overall.totalCostSaved.toFixed(2)}</p>
+          <p>Average Savings: {stats.overall.averageSavingsPercent.toFixed(1)}%</p>
+        </div>
+      )}
     </div>
   )
 }`}
-        >
-          <BasicOptimizationDemo />
-        </ComponentPreview>
+        />
+      </section>
 
-        <h2 id="presets">Presets</h2>
-
-        <p>
-          Choose a preset based on your needs:
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Using Presets</h2>
+        <p className="text-muted-foreground mb-4">
+          Quick setup with pre-configured optimization levels:
         </p>
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Aggressive Preset</h3>
+            <CodePlayground
+              code={`const { optimizeData } = useTokenOptimizationEnhanced({
+  preset: 'aggressive', // All optimizations, max savings
+  model: 'gpt-4',
+})`}
+            />
+            <p className="mt-2 text-sm text-muted-foreground">
+              Enables all optimizations for maximum cost savings. Best for cost-sensitive applications.
+            </p>
+          </div>
 
-        <ul>
-          <li>
-            <strong>aggressive:</strong> All optimizations enabled, maximum savings (TOON, caching, compression, routing, prefilling)
-          </li>
-          <li>
-            <strong>balanced:</strong> Key optimizations, good UX (TOON, caching, compression, history limiting, prefilling)
-          </li>
-          <li>
-            <strong>conservative:</strong> Safe optimizations only (TOON, compression)
-          </li>
-          <li>
-            <strong>realtime:</strong> Optimized for low latency (TOON, semantic caching, conservative compression, no prompt caching)
-          </li>
-        </ul>
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Balanced Preset</h3>
+            <CodePlayground
+              code={`const { optimizeData } = useTokenOptimizationEnhanced({
+  preset: 'balanced', // Key optimizations, good UX
+  model: 'gpt-4',
+})`}
+            />
+            <p className="mt-2 text-sm text-muted-foreground">
+              Enables key optimizations while maintaining good user experience. Recommended for most use cases.
+            </p>
+          </div>
 
-        <h2 id="toon-optimization">TOON Optimization</h2>
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Conservative Preset</h3>
+            <CodePlayground
+              code={`const { optimizeData } = useTokenOptimizationEnhanced({
+  preset: 'conservative', // Safe optimizations only
+  model: 'gpt-4',
+})`}
+            />
+            <p className="mt-2 text-sm text-muted-foreground">
+              Enables only safe optimizations. Best when you need guaranteed quality.
+            </p>
+          </div>
 
-        <p>
-          TOON (Token-Oriented Object Notation) provides 30-60% savings on structured data:
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Realtime Preset</h3>
+            <CodePlayground
+              code={`const { optimizeData } = useTokenOptimizationEnhanced({
+  preset: 'realtime', // Optimized for low latency
+  model: 'gpt-4',
+})`}
+            />
+            <p className="mt-2 text-sm text-muted-foreground">
+              Optimized for low latency. Skips caching for fastest response times.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">TOON Format Optimization</h2>
+        <p className="text-muted-foreground mb-4">
+          TOON (Token-Oriented Object Notation) provides 30-60% token savings for structured data.
         </p>
+        <CodePlayground
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
 
-        <EnhancedCodeBlock
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-
-function ToonOptimization() {
+function ToonOptimized() {
   const { optimizeData } = useTokenOptimizationEnhanced({
     enableToon: true,
-    toonMinSavings: 20, // Only use TOON if savings >= 20%
-  })
-
-  const handleOptimize = async () => {
-    const data = {
-      users: [
-        { id: 1, name: 'Alice', email: 'alice@example.com' },
-        { id: 2, name: 'Bob', email: 'bob@example.com' },
-      ],
-    }
-
-    const result = await optimizeData(data)
-    // If TOON is beneficial, result.format will be 'toon'
-    // Otherwise, result.format will be 'json'
-    console.log('Format:', result.format)
-    console.log('Content:', result.content)
-  }
-
-  return <button onClick={handleOptimize}>Optimize with TOON</button>
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="prompt-caching">Prompt Caching</h2>
-
-        <p>
-          Prompt caching provides 50-90% savings on repeated prompts:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-
-function PromptCaching() {
-  const { prepareMessages } = useTokenOptimizationEnhanced({
-    enablePromptCaching: true,
-    cachingProvider: 'anthropic', // or 'openai' or 'auto'
-  })
-
-  const handlePrepare = async () => {
-    const messages = [
-      { role: 'system', content: 'You are a helpful assistant.' },
-      { role: 'user', content: 'What is the weather?' },
-    ]
-
-    // Messages are prepared with cache control
-    const prepared = await prepareMessages(messages)
-    // System message will be cached on first use
-    // Subsequent requests reuse cached tokens
-  }
-
-  return <button onClick={handlePrepare}>Prepare Messages</button>
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="semantic-caching">Semantic Caching</h2>
-
-        <p>
-          Semantic caching reuses responses for similar queries:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-
-function SemanticCaching() {
-  const { optimizePrompt } = useTokenOptimizationEnhanced({
-    enableSemanticCaching: true,
-    similarityThreshold: 0.85, // 85% similarity required
-  })
-
-  const handleOptimize = async () => {
-    // Similar prompts will reuse cached responses
-    const result1 = await optimizePrompt('What is the weather in SF?')
-    const result2 = await optimizePrompt('What is the weather in San Francisco?')
-    // result2 may reuse result1 if similarity is high enough
-  }
-
-  return <button onClick={handleOptimize}>Optimize with Semantic Cache</button>
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="prompt-compression">Prompt Compression</h2>
-
-        <p>
-          Prompt compression provides 20-35% savings:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-
-function PromptCompression() {
-  const { optimizePrompt } = useTokenOptimizationEnhanced({
-    enablePromptCompression: true,
-    compressionLevel: 'balanced', // 'conservative' | 'balanced' | 'aggressive'
-  })
-
-  const handleCompress = async () => {
-    const longPrompt = \`You are a helpful assistant. Please provide detailed,
-    comprehensive answers to user questions. Be thorough and explain concepts
-    clearly. Always consider multiple perspectives and provide balanced views.\`
-
-    const result = await optimizePrompt(longPrompt)
-    console.log('Original tokens:', result.tokens.original)
-    console.log('Compressed tokens:', result.tokens.optimized)
-    console.log('Savings:', result.optimizations.compression?.savingsPercent)
-  }
-
-  return <button onClick={handleCompress}>Compress Prompt</button>
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="history-limiting">History Limiting</h2>
-
-        <p>
-          Automatically trim old messages to stay within token budget:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-
-function HistoryLimiting() {
-  const { optimizeHistory } = useTokenOptimizationEnhanced({
-    enableHistoryLimiting: true,
-    historyLimiting: {
-      maxTokens: 8000,
-      keepSystem: true,
-      keepRecent: 5, // Keep last 5 messages
-      strategy: 'oldest-first',
-    },
-  })
-
-  const handleOptimize = async () => {
-    const messages = [
-      { role: 'system', content: 'You are helpful.' },
-      { role: 'user', content: 'Message 1' },
-      { role: 'assistant', content: 'Response 1' },
-      // ... many more messages
-    ]
-
-    // Oldest messages are trimmed to stay within budget
-    const optimized = await optimizeHistory(messages)
-  }
-
-  return <button onClick={handleOptimize}>Optimize History</button>
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="model-routing">Model Routing</h2>
-
-        <p>
-          Automatically route queries to appropriate models based on complexity:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-
-function ModelRouting() {
-  const { routeQuery } = useTokenOptimizationEnhanced({
-    enableModelRouting: true,
-    modelRouting: {
-      simpleModel: 'gpt-3.5-turbo',
-      complexModel: 'gpt-4',
-      complexityThreshold: 100, // tokens
-    },
-  })
-
-  const handleRoute = async () => {
-    const simpleQuery = 'What is 2+2?'
-    const complexQuery = 'Explain quantum computing in detail with examples.'
-
-    const model1 = await routeQuery(simpleQuery) // Returns 'gpt-3.5-turbo'
-    const model2 = await routeQuery(complexQuery) // Returns 'gpt-4'
-  }
-
-  return <button onClick={handleRoute}>Route Query</button>
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="response-prefilling">Response Prefilling</h2>
-
-        <p>
-          Skip LLM preambles by prefilling response format:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-
-function ResponsePrefilling() {
-  const { getPrefill } = useTokenOptimizationEnhanced({
-    enablePrefilling: true,
-  })
-
-  const handleGetPrefill = () => {
-    const jsonPrefill = getPrefill('json') // Returns '{'
-    const xmlPrefill = getPrefill('xml') // Returns '<'
-    const markdownPrefill = getPrefill('markdown') // Returns '#'
-
-    // Use in API call to skip preamble tokens
-    // e.g., systemPrompt: 'Respond in JSON format. Start with: {'
-  }
-
-  return <button onClick={handleGetPrefill}>Get Prefill</button>
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="cost-tracking">Cost Tracking</h2>
-
-        <p>
-          Track real-time costs:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-
-function CostTracking() {
-  const { stats } = useTokenOptimizationEnhanced({
+    toonMinSavings: 30, // Only use TOON if savings >= 30% (value is percentage: 0-100)
     model: 'gpt-4',
-    enableCostTracking: true,
   })
+
+  const handleSend = async (content: string) => {
+    try {
+      const data = {
+        users: [
+          { id: 1, name: 'Alice', email: 'alice@example.com' },
+          { id: 2, name: 'Bob', email: 'bob@example.com' },
+        ],
+        metadata: { version: '1.0', timestamp: Date.now() },
+      }
+
+      const optimized = await optimizeData(data)
+      // Result: 30-60% fewer tokens, same data
+      console.log('Format:', optimized.format) // 'toon'
+      console.log('Tokens:', optimized.tokens.total)
+      console.log('Savings:', optimized.optimizations.toon?.savingsPercent)
+    } catch (error) {
+      console.error('TOON optimization failed:', error)
+    }
+  }
+
+  return <ChatWindow onSendMessage={handleSend} />
+}`}
+        />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Prompt Caching</h2>
+        <p className="text-muted-foreground mb-4">
+          Save 50-90% on costs by caching repeated prompt content (Anthropic/OpenAI).
+        </p>
+        <CodePlayground
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+
+function CachedChat() {
+  const { optimizeData } = useTokenOptimizationEnhanced({
+    enablePromptCaching: true,
+    cachingProvider: 'auto', // Auto-detect based on model
+    model: 'gpt-4',
+  })
+
+  const handleSend = async (content: string) => {
+    try {
+      const optimized = await optimizeData({
+        systemPrompt: 'You are a helpful assistant.', // This will be cached
+        userMessage: content,
+      })
+
+      if (optimized.optimizations.cached) {
+        console.log('Used cached prompt - 50-90% cost savings!')
+      }
+    } catch (error) {
+      console.error('Caching failed:', error)
+    }
+  }
+
+  return <ChatWindow onSendMessage={handleSend} />
+}`}
+        />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Semantic Caching</h2>
+        <p className="text-muted-foreground mb-4">
+          Cache responses based on semantic similarity for 40-60% savings.
+        </p>
+        <CodePlayground
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+
+function SemanticCachedChat() {
+  const { optimizeData, stats } = useTokenOptimizationEnhanced({
+    enableSemanticCaching: true,
+    similarityThreshold: 0.85, // 85% similarity required for cache hit
+    model: 'gpt-4',
+  })
+
+  const handleSend = async (content: string) => {
+    try {
+      const optimized = await optimizeData(content)
+      
+      // Check cache stats (stats may be undefined initially)
+      if (stats) {
+        console.log('Cache Hit Rate:', stats.semanticCache.hitRate)
+        console.log('Tokens Saved:', stats.semanticCache.tokensSaved)
+      }
+    } catch (error) {
+      console.error('Semantic caching failed:', error)
+    }
+  }
+
+  return <ChatWindow onSendMessage={handleSend} />
+}`}
+        />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Cost Tracking</h2>
+        <p className="text-muted-foreground mb-4">
+          Track costs in real-time and see savings from optimizations.
+        </p>
+        <CodePlayground
+          code={`import { useTokenOptimizationEnhanced, ChatWindow } from '@clarity-chat/react'
+
+function CostTrackedChat() {
+  const { optimizeData, calculateCost, stats } = useTokenOptimizationEnhanced({
+    enableCostTracking: true,
+    model: 'gpt-4',
+  })
+
+  const handleSend = async (content: string) => {
+    try {
+      const optimized = await optimizeData(content)
+      
+      // Calculate cost (note: calculateCost takes { inputTokens, outputTokens })
+      // TokenCount.input and output are optional, so we use total as fallback
+      const inputTokens = optimized.tokens.input ?? optimized.tokens.total
+      const outputTokens = optimized.tokens.output ?? 0
+      const cost = calculateCost({
+        inputTokens,
+        outputTokens,
+      })
+
+      console.log('Input Cost: $', cost.input)
+      console.log('Output Cost: $', cost.output)
+      console.log('Total Cost: $', cost.total)
+      
+      if (stats) {
+        console.log('Savings: $', stats.costs.savingsFromOptimization)
+      }
+    } catch (error) {
+      console.error('Cost tracking failed:', error)
+    }
+  }
 
   return (
     <div>
-      <p>Total Cost: ${stats.costs.totalCost.toFixed(4)}</p>
-      <p>Input Cost: ${stats.costs.inputCost.toFixed(4)}</p>
-      <p>Output Cost: ${stats.costs.outputCost.toFixed(4)}</p>
-      <p>Savings: ${stats.costs.savingsFromOptimization.toFixed(4)}</p>
+      <ChatWindow onSendMessage={handleSend} />
+      {stats && (
+        <div className="mt-4 p-4 bg-muted rounded-lg">
+          <h3>Cost Breakdown</h3>
+          <p>Total Cost: ${stats.costs.totalCost.toFixed(4)}</p>
+          <p>Input Cost: ${stats.costs.inputCost.toFixed(4)}</p>
+          <p>Output Cost: ${stats.costs.outputCost.toFixed(4)}</p>
+          <p>Cached Cost: ${stats.costs.cachedCost.toFixed(4)}</p>
+          <p className="text-green-600">
+            Savings: ${stats.costs.savingsFromOptimization.toFixed(4)}
+          </p>
+        </div>
+      )}
     </div>
   )
 }`}
-          language="tsx"
-          showLineNumbers
         />
+      </section>
 
-        <h2 id="options">Options</h2>
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Options Reference</h2>
+        <PropsTable props={optionsProps} />
+      </section>
 
-        <PropsTable props={enhancedTokenOptimizationOptionsProps} />
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Return Value</h2>
+        <div className="border rounded-lg overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-muted">
+              <tr>
+                <th className="text-left p-3 font-semibold">Property</th>
+                <th className="text-left p-3 font-semibold">Type</th>
+                <th className="text-left p-3 font-semibold">Description</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              <tr>
+                <td className="p-3 font-mono text-sm">optimizeData</td>
+                <td className="p-3 font-mono text-sm">(data: any) =&gt; Promise{'<'}{'EnhancedOptimizationResult'}{'>'}</td>
+                <td className="p-3 text-sm text-muted-foreground">
+                  Optimize data with all enabled optimizations. Returns optimized content, tokens, cost, and optimization breakdown.
+                </td>
+              </tr>
+              <tr>
+                <td className="p-3 font-mono text-sm">calculateCost</td>
+                <td className="p-3 font-mono text-sm">(params: {'{'} inputTokens: number, outputTokens: number {'}'}) =&gt; CostCalculation</td>
+                <td className="p-3 text-sm text-muted-foreground">
+                  Calculate cost for given token counts based on model pricing.
+                </td>
+              </tr>
+              <tr>
+                <td className="p-3 font-mono text-sm">stats</td>
+                <td className="p-3 font-mono text-sm">EnhancedOptimizationStats</td>
+                <td className="p-3 text-sm text-muted-foreground">
+                  Comprehensive statistics including TOON, compression, caching, cost tracking, and overall savings.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-        <h2 id="return-values">Return Values</h2>
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Best Practices</h2>
+        <div className="space-y-4">
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">Start with Balanced Preset</h3>
+            <p className="text-sm text-muted-foreground">
+              Use <code className="bg-muted px-1 rounded">preset: 'balanced'</code> for most use cases.
+              It provides good savings while maintaining quality.
+            </p>
+          </div>
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">Enable Cost Tracking in Production</h3>
+            <p className="text-sm text-muted-foreground">
+              Always enable <code className="bg-muted px-1 rounded">enableCostTracking</code> to monitor
+              your API costs and savings in real-time.
+            </p>
+          </div>
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">Use TOON for Structured Data</h3>
+            <p className="text-sm text-muted-foreground">
+              Enable TOON when sending structured data (JSON objects, arrays) for 30-60% token savings.
+            </p>
+          </div>
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">Enable Prompt Caching for Repeated Content</h3>
+            <p className="text-sm text-muted-foreground">
+              If you have repeated system prompts or context, enable prompt caching for 50-90% savings
+              on that content.
+            </p>
+          </div>
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">Monitor Statistics</h3>
+            <p className="text-sm text-muted-foreground">
+              Regularly check <code className="bg-muted px-1 rounded">stats</code> to understand
+              which optimizations are providing the most value.
+            </p>
+          </div>
+        </div>
+      </section>
 
-        <PropsTable props={enhancedTokenOptimizationReturnProps} />
-
-        <h2 id="statistics">Statistics</h2>
-
-        <p>
-          The <code>stats</code> object provides comprehensive statistics:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`interface EnhancedOptimizationStats {
-  toon: {
-    conversions: number
-    totalTokensSaved: number
-    averageSavingsPercent: number
-  }
-  compression: {
-    compressions: number
-    totalTokensSaved: number
-    averageSavingsPercent: number
-  }
-  cache: CacheStats
-  semanticCache: {
-    hits: number
-    misses: number
-    hitRate: number
-    tokensSaved: number
-  }
-  costs: {
-    totalCost: number
-    inputCost: number
-    outputCost: number
-    cachedCost: number
-    savingsFromOptimization: number
-  }
-  overall: {
-    totalTokensSaved: number
-    totalCostSaved: number
-    averageSavingsPercent: number
-  }
-  // ... more stats
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="complete-example">Complete Example</h2>
-
-        <EnhancedCodeBlock
-          code={`import { useState, useCallback } from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
-import type { CoreMessage } from '@clarity-chat/react'
-
-function CompleteOptimizationExample() {
-  const [messages, setMessages] = useState<CoreMessage[]>([])
-  const [optimizedMessages, setOptimizedMessages] = useState<CoreMessage[]>([])
-
-  const {
-    optimizeData,
-    optimizePrompt,
-    prepareMessages,
-    optimizeHistory,
-    routeQuery,
-    getPrefill,
-    stats,
-    resetStats,
-  } = useTokenOptimizationEnhanced({
-    model: 'gpt-4',
-    preset: 'balanced',
-    enableCostTracking: true,
-    enableStats: true,
-  })
-
-  const handleOptimizeData = useCallback(async () => {
-    const data = {
-      users: [
-        { id: 1, name: 'Alice', email: 'alice@example.com' },
-        { id: 2, name: 'Bob', email: 'bob@example.com' },
-      ],
-    }
-
-    const result = await optimizeData(data)
-    console.log('Optimized:', result.content)
-    console.log('Format:', result.format)
-    console.log('Savings:', result.optimizations.toon?.savingsPercent)
-  }, [optimizeData])
-
-  const handlePrepareMessages = useCallback(async () => {
-    const prepared = await prepareMessages(messages)
-    setOptimizedMessages(prepared)
-  }, [messages, prepareMessages])
-
-  const handleOptimizeHistory = useCallback(async () => {
-    const optimized = await optimizeHistory(messages)
-    setOptimizedMessages(optimized)
-  }, [messages, optimizeHistory])
-
-  return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        <button onClick={handleOptimizeData}>Optimize Data</button>
-        <button onClick={handlePrepareMessages}>Prepare Messages</button>
-        <button onClick={handleOptimizeHistory}>Optimize History</button>
-        <button onClick={resetStats}>Reset Stats</button>
-      </div>
-
-      <div className="p-4 bg-muted rounded">
-        <h3 className="font-semibold mb-2">Statistics</h3>
-        <p>Total tokens saved: {stats.overall.totalTokensSaved}</p>
-        <p>Total cost saved: ${stats.overall.totalCostSaved.toFixed(4)}</p>
-        <p>Average savings: {stats.overall.averageSavingsPercent.toFixed(1)}%</p>
-        <p>TOON conversions: {stats.toon.conversions}</p>
-        <p>Cache hit rate: {(stats.semanticCache.hitRate * 100).toFixed(1)}%</p>
-      </div>
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Related Documentation</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          <Link
+            href="/reference/hooks/use-token-optimization"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">useTokenOptimization</h3>
+            <p className="text-sm text-muted-foreground">
+              Basic token optimization hook. Use this for simpler use cases.
+            </p>
+          </Link>
+          <Link
+            href="/guides/token-optimization"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">Token Optimization Guide</h3>
+            <p className="text-sm text-muted-foreground">
+              Comprehensive guide on reducing API costs with token optimization.
+            </p>
+          </Link>
+          <Link
+            href="/reference/components/token-optimization-dashboard"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">TokenOptimizationDashboard</h3>
+            <p className="text-sm text-muted-foreground">
+              UI component for visualizing token optimization metrics.
+            </p>
+          </Link>
+          <Link
+            href="/reference/hooks/use-token-tracker"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">useTokenTracker</h3>
+            <p className="text-sm text-muted-foreground">
+              Hook for tracking token usage and costs in real-time.
+            </p>
+          </Link>
+        </div>
+      </section>
     </div>
-  )
-}`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="best-practices">Best Practices</h2>
-
-        <ul>
-          <li>
-            <strong>Start with presets:</strong> Use <code>preset: 'balanced'</code> for most use cases
-          </li>
-          <li>
-            <strong>Enable cost tracking:</strong> Set <code>enableCostTracking: true</code> to monitor savings
-          </li>
-          <li>
-            <strong>Use TOON for structured data:</strong> Enable <code>enableToon</code> for JSON/object data
-          </li>
-          <li>
-            <strong>Cache repeated prompts:</strong> Enable <code>enablePromptCaching</code> for system prompts
-          </li>
-          <li>
-            <strong>Compress long prompts:</strong> Use <code>enablePromptCompression</code> for verbose prompts
-          </li>
-          <li>
-            <strong>Limit history:</strong> Enable <code>enableHistoryLimiting</code> to stay within budget
-          </li>
-          <li>
-            <strong>Route intelligently:</strong> Use <code>enableModelRouting</code> to save costs on simple queries
-          </li>
-          <li>
-            <strong>Monitor statistics:</strong> Check <code>stats</code> regularly to understand optimization impact
-          </li>
-        </ul>
-
-        <h2 id="related">Related</h2>
-
-        <ul>
-          <li>
-            <a href="/reference/hooks/use-token-budget-monitor">useTokenBudgetMonitor</a> - Real-time token budget monitoring
-          </li>
-          <li>
-            <a href="/reference/hooks/use-token-tracker">useTokenTracker</a> - Token usage and cost tracking
-          </li>
-          <li>
-            <a href="/reference/hooks/use-token-optimization">useTokenOptimization</a> - Legacy hook (deprecated)
-          </li>
-          <li>
-            <a href="/guides/token-optimization">Token Optimization Guide</a> - Comprehensive optimization strategies
-          </li>
-        </ul>
-
-        <Pagination
-          previous={{
-            title: 'useStreamableUI',
-            href: '/reference/hooks/use-streamable-ui',
-          }}
-          next={{
-            title: 'useTokenBudgetMonitor',
-            href: '/reference/hooks/use-token-budget-monitor',
-          }}
-        />
-      </>
-    </ToastProvider>
   )
 }
