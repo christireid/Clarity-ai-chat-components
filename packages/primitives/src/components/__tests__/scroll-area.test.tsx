@@ -28,7 +28,7 @@ describe('ScrollArea Component', () => {
 
     it('should render empty scroll area', () => {
       const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.overflow-auto')
+      const scrollArea = container.querySelector('.overflow-y-auto')
       expect(scrollArea).toBeInTheDocument()
     })
   })
@@ -36,7 +36,7 @@ describe('ScrollArea Component', () => {
   describe('Styling', () => {
     it('should apply default scroll area styles', () => {
       const { container } = render(<ScrollArea />)
-      const scrollArea = container.querySelector('.overflow-auto')
+      const scrollArea = container.querySelector('.overflow-y-auto')
       expect(scrollArea).toBeInTheDocument()
     })
 
@@ -115,7 +115,7 @@ describe('ScrollArea Component', () => {
           <div style={{ height: '200px' }}>Long content</div>
         </ScrollArea>
       )
-      const scrollArea = container.querySelector('.overflow-auto')
+      const scrollArea = container.querySelector('.overflow-y-auto')
       expect(scrollArea).toBeInTheDocument()
     })
 
@@ -125,7 +125,7 @@ describe('ScrollArea Component', () => {
           <div style={{ width: '200px' }}>Wide content</div>
         </ScrollArea>
       )
-      const scrollArea = container.querySelector('.overflow-auto')
+      const scrollArea = container.querySelector('.overflow-y-auto')
       expect(scrollArea).toBeInTheDocument()
     })
   })
