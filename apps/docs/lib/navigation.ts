@@ -194,6 +194,15 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useStreamingSSE', href: '/reference/hooks/use-streaming-sse' },
       { title: 'useStreamingWebSocket', href: '/reference/hooks/use-streaming-websocket' },
       { title: 'useStreamableUI', href: '/reference/hooks/use-streamable-ui' },
+      { title: 'useMessageOperations', href: '/reference/hooks/use-message-operations' },
+    ],
+  },
+  {
+    title: 'Enterprise AI',
+    items: [
+      { title: 'useRAGPipeline', href: '/reference/hooks/use-rag-pipeline' },
+      { title: 'useAgent', href: '/reference/hooks/use-agent' },
+      { title: 'useVectorStore', href: '/reference/hooks/use-vector-store' },
     ],
   },
   {

@@ -572,10 +572,10 @@ pnpm typecheck              # Type check
 - [ ] Optimization patterns
 
 #### Task 3.4: Enterprise AI Hooks
-- [ ] `useRAGPipeline` documentation
-- [ ] `useAgent` documentation
-- [ ] `useVectorStore` documentation
-- [ ] Integration patterns
+- [x] `useRAGPipeline` documentation (created)
+- [x] `useAgent` documentation (created)
+- [x] `useVectorStore` documentation (created)
+- [x] Integration patterns (documented in examples)
 
 ### Phase 4: Recipes & Patterns (Week 4)
 
