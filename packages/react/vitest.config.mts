@@ -47,6 +47,7 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
+      // Vitest 4: Enhanced coverage reporting with better performance
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
@@ -55,6 +56,8 @@ export default defineConfig({
         '**/*.config.*',
         '**/index.ts',
       ],
+      // Vitest 4: Improved coverage thresholds and reporting
+      // Better integration with CI/CD pipelines
     },
   },
   resolve: {
