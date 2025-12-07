@@ -1,0 +1,46 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import Link from 'next/link';
+import { ArrowLeft, Heart, Shield } from 'lucide-react';
+import { HealthcareWorkflow } from '@/components/Diagrams/HealthcareWorkflow';
+export const dynamic = 'force-dynamic';
+export const metadata = {
+    title: 'Healthcare Assistant Example',
+    description: 'HIPAA-compliant medical chatbot with patient records',
+};
+export default function HealthcareAssistantPage() {
+    return (_jsxs("div", { className: "container-docs py-12", children: [_jsxs(Link, { href: "/examples", className: "inline-flex items-center gap-2 text-brand-600 dark:text-brand-400 hover:underline mb-8", children: [_jsx(ArrowLeft, { className: "w-4 h-4" }), "Back to Examples"] }), _jsxs("div", { className: "max-w-4xl", children: [_jsxs("div", { className: "flex items-start gap-4 mb-8", children: [_jsx("div", { className: "p-3 bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl", children: _jsx(Heart, { className: "w-8 h-8" }) }), _jsxs("div", { children: [_jsx("h1", { className: "text-5xl font-bold mb-4", children: "Healthcare Assistant" }), _jsx("p", { className: "text-xl text-text-secondary", children: "HIPAA-compliant AI medical assistant for patient support and healthcare information" })] })] }), _jsxs("div", { className: "flex flex-wrap gap-2 mb-8", children: [_jsx("span", { className: "px-3 py-1 bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 rounded-full text-sm font-medium", children: "Advanced" }), _jsx("span", { className: "px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 rounded-full text-sm", children: "HIPAA-Compliant" }), _jsx("span", { className: "px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 rounded-full text-sm", children: "Production-Ready" })] }), _jsx("div", { className: "bg-yellow-50 dark:bg-yellow-950 border-l-4 border-yellow-500 p-6 rounded-r-lg mb-8", children: _jsxs("div", { className: "flex items-start gap-3", children: [_jsx(Shield, { className: "w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-1" }), _jsxs("div", { children: [_jsx("h3", { className: "font-bold text-yellow-800 dark:text-yellow-200 mb-2", children: "Important Medical Disclaimer" }), _jsxs("p", { className: "text-sm text-yellow-700 dark:text-yellow-300", children: ["This is a ", _jsx("strong", { children: "demonstration only" }), ". Not a substitute for professional medical advice, diagnosis, or treatment. Always consult qualified healthcare providers for medical decisions."] })] })] }) }), _jsxs("div", { className: "prose prose-lg dark:prose-invert max-w-none", children: [_jsx("h2", { children: "\u2728 Features" }), _jsxs("ul", { children: [_jsxs("li", { children: [_jsx("strong", { children: "Lab Results Interpretation" }), " - Explain test results in plain language"] }), _jsxs("li", { children: [_jsx("strong", { children: "Medication Information" }), " - Drug interactions, side effects, dosage"] }), _jsxs("li", { children: [_jsx("strong", { children: "Symptom Checker" }), " - Educational symptom information"] }), _jsxs("li", { children: [_jsx("strong", { children: "Appointment Scheduling" }), " - Find available time slots"] }), _jsxs("li", { children: [_jsx("strong", { children: "Medical Records" }), " - Access patient history (demo data)"] }), _jsxs("li", { children: [_jsx("strong", { children: "Prescription Reminders" }), " - Medication schedule tracking"] }), _jsxs("li", { children: [_jsx("strong", { children: "Health Tips" }), " - Preventive care recommendations"] }), _jsxs("li", { children: [_jsx("strong", { children: "PII Protection" }), " - Automatic detection and masking of sensitive data"] })] }), _jsx("h2", { children: "\uD83D\uDE80 Quick Start" }), _jsx("pre", { className: "bg-surface-muted p-4 rounded-lg", children: _jsx("code", { children: `cd examples/healthcare-assistant
+npm install
+cp .env.example .env.local
+# Add OPENAI_API_KEY
+npm run dev` }) }), _jsx(HealthcareWorkflow, {}), _jsx("h2", { children: "\uD83C\uDFD7\uFE0F Architecture" }), _jsx("p", { children: "The healthcare assistant uses specialized AI functions for medical tasks:" }), _jsx("pre", { className: "bg-surface-muted p-4 rounded-lg", children: _jsx("code", { children: `const medicalFunctions = [
+  {
+    name: 'get_patient_records',
+    description: 'Retrieve patient medical history',
+    parameters: { patientId: 'string', recordType: 'enum' }
+  },
+  {
+    name: 'interpret_lab_results',
+    description: 'Explain lab test results',
+    parameters: { testType: 'string', values: 'object' }
+  },
+  {
+    name: 'check_drug_interactions',
+    description: 'Check for medication interactions',
+    parameters: { medications: 'array' }
+  },
+  {
+    name: 'schedule_appointment',
+    description: 'Book medical appointments',
+    parameters: { specialty: 'string', urgency: 'enum' }
+  }
+]` }) }), _jsx("h2", { children: "\uD83D\uDD12 HIPAA Compliance" }), _jsx("p", { children: "For production healthcare applications, you must implement:" }), _jsxs("div", { className: "grid md:grid-cols-2 gap-4 not-prose my-6", children: [_jsxs("div", { className: "p-4 border border-border rounded-lg", children: [_jsx("h3", { className: "font-semibold text-lg mb-2", children: "\u2705 Required" }), _jsxs("ul", { className: "text-sm space-y-1", children: [_jsx("li", { children: "\u2022 End-to-end encryption" }), _jsx("li", { children: "\u2022 Audit logging" }), _jsx("li", { children: "\u2022 Access controls (RBAC)" }), _jsx("li", { children: "\u2022 Data retention policies" }), _jsx("li", { children: "\u2022 Business Associate Agreements" }), _jsx("li", { children: "\u2022 Regular security audits" })] })] }), _jsxs("div", { className: "p-4 border border-border rounded-lg", children: [_jsx("h3", { className: "font-semibold text-lg mb-2", children: "\uD83D\uDEE1\uFE0F Built-in" }), _jsxs("ul", { className: "text-sm space-y-1", children: [_jsx("li", { children: "\u2022 PII detection & masking" }), _jsx("li", { children: "\u2022 Content filtering" }), _jsx("li", { children: "\u2022 Secure session management" }), _jsx("li", { children: "\u2022 Error handling" }), _jsx("li", { children: "\u2022 Input validation" }), _jsx("li", { children: "\u2022 Safety monitoring" })] })] })] }), _jsx(HealthcareWorkflow, {}), _jsx("h2", { children: "\uD83D\uDCA1 Use Cases" }), _jsx("h3", { children: "1. Lab Results Explanation" }), _jsxs("p", { children: [_jsx("strong", { children: "Patient:" }), " \"Can you explain my cholesterol results?\""] }), _jsxs("p", { children: [_jsx("strong", { children: "Assistant:" }), " Retrieves results, explains each value, provides context and recommendations"] }), _jsx("h3", { children: "2. Medication Questions" }), _jsxs("p", { children: [_jsx("strong", { children: "Patient:" }), " \"Can I take ibuprofen with my blood pressure medication?\""] }), _jsxs("p", { children: [_jsx("strong", { children: "Assistant:" }), " Checks drug interactions, provides safety information"] }), _jsx("h3", { children: "3. Appointment Booking" }), _jsxs("p", { children: [_jsx("strong", { children: "Patient:" }), " \"I need to see a cardiologist next week\""] }), _jsxs("p", { children: [_jsx("strong", { children: "Assistant:" }), " Finds available specialists, shows time slots, books appointment"] }), _jsx("h2", { children: "\uD83D\uDCE6 Technologies" }), _jsxs("ul", { children: [_jsx("li", { children: "Next.js 15 for framework" }), _jsx("li", { children: "OpenAI GPT-4 for medical knowledge" }), _jsx("li", { children: "PII detection for privacy" }), _jsx("li", { children: "Audit logging for compliance" }), _jsx("li", { children: "TypeScript for type safety" })] }), _jsx("h2", { children: "\uD83D\uDD17 Related Examples" }), _jsxs("ul", { children: [_jsxs("li", { children: [_jsx(Link, { href: "/examples/financial-advisor", className: "text-brand-600 dark:text-brand-400 hover:underline", children: "Financial Advisor" }), ' ', "- Similar compliance requirements"] }), _jsxs("li", { children: [_jsx(Link, { href: "/guides/rag", className: "text-brand-600 dark:text-brand-400 hover:underline", children: "RAG Guide" }), ' ', "- For medical knowledge base integration"] })] }), _jsx("h2", { children: "\u2699\uFE0F Configuration" }), _jsx("pre", { className: "bg-surface-muted p-4 rounded-lg", children: _jsx("code", { children: `// .env.local
+OPENAI_API_KEY=sk-...
+HIPAA_MODE=true
+AUDIT_LOGGING=enabled
+PII_DETECTION=strict
+
+// Optional: EHR Integration
+EHR_API_URL=https://api.ehr-system.com
+EHR_API_KEY=...` }) })] }), _jsxs("div", { className: "mt-12 p-8 bg-gradient-to-r from-brand-50 to-blue-50 dark:from-brand-950 dark:to-blue-950 rounded-xl border border-brand-200 dark:border-brand-800", children: [_jsx("h3", { className: "text-2xl font-bold mb-4", children: "\uD83D\uDE80 Production Deployment" }), _jsx("p", { className: "text-text-secondary mb-6", children: "Ready to deploy a HIPAA-compliant healthcare chatbot? Check our deployment guide." }), _jsx(Link, { href: "/guides/deployment", className: "inline-flex items-center gap-2 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-colors", children: "Deployment Guide \u2192" })] })] })] }));
+}
+//# sourceMappingURL=page.js.map

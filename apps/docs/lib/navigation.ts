@@ -98,6 +98,7 @@ export const referenceNavigation: NavItem[] = [
       {
         title: 'Core',
         items: [
+          { title: 'ClarityChat', href: '/reference/components/clarity-chat' },
           { title: 'ChatWindow', href: '/reference/components/chat-window' },
           { title: 'Message', href: '/reference/components/message' },
           { title: 'MessageList', href: '/reference/components/message-list' },
@@ -114,6 +115,16 @@ export const referenceNavigation: NavItem[] = [
           { title: 'KeyboardHint', href: '/reference/components/keyboard-hint' },
           { title: 'AdvancedMessageSearch', href: '/reference/components/advanced-message-search' },
           { title: 'RetryButton', href: '/reference/components/retry-button' },
+          { title: 'VoiceInput', href: '/reference/components/voice-input' },
+          { title: 'FileUpload', href: '/reference/components/file-upload' },
+          { title: 'StructuredInputBuilder', href: '/reference/components/structured-input-builder' },
+        ],
+      },
+      {
+        title: 'Streaming',
+        items: [
+          { title: 'StreamingMessage', href: '/reference/components/streaming-message' },
+          { title: 'VirtualizedMessageList', href: '/reference/components/virtualized-message-list' },
         ],
       },
       {
@@ -150,6 +161,14 @@ export const referenceNavigation: NavItem[] = [
         ],
       },
       {
+        title: 'Analytics',
+        items: [
+          { title: 'PerformanceAnalyticsDashboard', href: '/reference/components/performance-analytics-dashboard' },
+          { title: 'ConversationAnalyticsDashboard', href: '/reference/components/conversation-analytics-dashboard' },
+          { title: 'ABTestingDashboard', href: '/reference/components/ab-testing-dashboard' },
+        ],
+      },
+      {
         title: 'Enterprise',
         items: [
           { title: 'AuthTenantDashboard', href: '/reference/components/auth-tenant-dashboard' },
@@ -163,6 +182,11 @@ export const referenceNavigation: NavItem[] = [
   {
     title: 'Hooks',
     items: [
+      { title: 'useClarityChat', href: '/reference/hooks/use-clarity-chat' },
+      { title: 'useChatHandlers', href: '/reference/hooks/use-chat-handlers' },
+      { title: 'useChatEnhanced', href: '/reference/hooks/use-chat-enhanced' },
+      { title: 'useAssistant', href: '/reference/hooks/use-assistant' },
+      { title: 'useCompletion', href: '/reference/hooks/use-completion' },
       { title: 'useChat', href: '/reference/hooks/use-chat' },
       { title: 'useMessages', href: '/reference/hooks/use-messages' },
       { title: 'useTyping', href: '/reference/hooks/use-typing' },
@@ -174,6 +198,19 @@ export const referenceNavigation: NavItem[] = [
       { title: 'useModelRouter', href: '/reference/hooks/use-model-router' },
       { title: 'usePerformance', href: '/reference/hooks/use-performance' },
       { title: 'useTokenTracker', href: '/reference/hooks/use-token-tracker' },
+      { title: 'useSmartCache', href: '/reference/hooks/use-smart-cache' },
+      { title: 'useStreamingSSE', href: '/reference/hooks/use-streaming-sse' },
+      { title: 'useStreamingWebSocket', href: '/reference/hooks/use-streaming-websocket' },
+      { title: 'useStreamableUI', href: '/reference/hooks/use-streamable-ui' },
+      { title: 'useMessageOperations', href: '/reference/hooks/use-message-operations' },
+    ],
+  },
+  {
+    title: 'Enterprise AI',
+    items: [
+      { title: 'useRAGPipeline', href: '/reference/hooks/use-rag-pipeline' },
+      { title: 'useAgent', href: '/reference/hooks/use-agent' },
+      { title: 'useVectorStore', href: '/reference/hooks/use-vector-store' },
     ],
   },
   {
@@ -190,8 +227,16 @@ export const cookbookNavigation: NavItem[] = [
   {
     title: 'Getting Started',
     items: [
+      { title: '3-Line Quick Start', href: '/cookbook/quick-start-3-lines' },
+      { title: 'Memory Integration', href: '/cookbook/memory-integration' },
+      { title: 'Streaming Setup', href: '/cookbook/streaming-setup' },
+      { title: 'Error Handling', href: '/cookbook/error-handling' },
+      { title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' },
+      { title: 'Voice Input', href: '/cookbook/voice-input' },
+      { title: 'Custom Tool Integration', href: '/cookbook/custom-tool-integration' },
       { title: 'OpenAI Streaming Chat', href: '/cookbook/openai-streaming-chat' },
       { title: 'Next.js Integration', href: '/cookbook/nextjs-integration' },
+      { title: 'Backend Integration Patterns', href: '/cookbook/backend-integration-patterns' },
       { title: 'Custom Theming', href: '/cookbook/custom-theming' },
     ],
   },
@@ -201,6 +246,8 @@ export const cookbookNavigation: NavItem[] = [
       { title: 'Streaming with Memory', href: '/cookbook/streaming-with-memory' },
       { title: 'RAG Document Chat', href: '/cookbook/rag-document-chat' },
       { title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' },
+      { title: 'Voice Input', href: '/cookbook/voice-input' },
+      { title: 'Custom Tool Integration', href: '/cookbook/custom-tool-integration' },
       { title: 'Agent with Tools', href: '/cookbook/agent-with-tools' },
       { title: 'Advanced Agent Workflow', href: '/cookbook/advanced-agent-workflow' },
     ],

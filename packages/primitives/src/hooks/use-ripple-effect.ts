@@ -32,6 +32,11 @@ export function useRippleEffect({ enabled, onRipple }: UseRippleEffectOptions = 
       if (!enabled) return
 
       const button = e.currentTarget
+      // SSR safety check
+      if (typeof window === 'undefined' || !button.getBoundingClientRect) {
+        return
+      }
+
       const rect = button.getBoundingClientRect()
       const x = e.clientX - rect.left
       const y = e.clientY - rect.top

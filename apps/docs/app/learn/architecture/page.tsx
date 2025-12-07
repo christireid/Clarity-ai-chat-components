@@ -95,6 +95,57 @@ export default function ArchitecturePage() {
       <section className="docs-section">
         <h2>Component Architecture</h2>
 
+        <h3>Architecture Layers</h3>
+        <p className="mb-4">
+          Clarity Chat follows a <strong>layered architecture</strong> with three main API levels:
+        </p>
+        <pre><code>{`┌─────────────────────────────────────────────────────┐
+│         TOP-LEVEL APIs (Drop-in Ready)                  │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │ ClarityChat Component                            │  │
+│  │ useClarityChat Hook                              │  │
+│  │ • Zero configuration                             │  │
+│  │ • Automatic message conversion                  │  │
+│  │ • Built-in error handling                       │  │
+│  │ • Memory integration                            │  │
+│  └──────────────────────────────────────────────────┘  │
+│                         │                                │
+│                         ▼                                │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │      MID-LEVEL APIs (Composable)                │  │
+│  │  ┌──────────────────────────────────────────┐  │  │
+│  │  │ ChatWindow Component                     │  │  │
+│  │  │ useChatEnhanced Hook                      │  │  │
+│  │  │ useChatHandlers Hook                      │  │  │
+│  │  │ • More control over UI                    │  │  │
+│  │  │ • Custom message handling                 │  │  │
+│  │  │ • Vercel AI SDK compatible                │  │  │
+│  │  └──────────────────────────────────────────┘  │  │
+│  └──────────────────────────────────────────────────┘  │
+│                         │                                │
+│                         ▼                                │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │      LOW-LEVEL APIs (Utilities)                 │  │
+│  │  ┌──────────────────────────────────────────┐  │  │
+│  │  │ useChat Hook                             │  │  │
+│  │  │ normalizeMessages                        │  │  │
+│  │  │ createStreamReader                       │  │  │
+│  │  │ • Raw state management                   │  │  │
+│  │  │ • Message utilities                      │  │  │
+│  │  │ • Streaming primitives                   │  │  │
+│  │  └──────────────────────────────────────────┘  │  │
+│  └──────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────┘`}</code></pre>
+
+        <Callout type="info" title="Which API Should I Use?">
+          <ul className="list-disc list-inside space-y-1">
+            <li><strong>ClarityChat</strong> - Start here for most use cases. Zero configuration.</li>
+            <li><strong>ChatWindow + useClarityChat</strong> - When you need custom UI but want easy state management.</li>
+            <li><strong>ChatWindow + useChatEnhanced</strong> - When migrating from Vercel AI SDK.</li>
+            <li><strong>Low-level APIs</strong> - When building completely custom implementations.</li>
+          </ul>
+        </Callout>
+
         <h3>Atomic Design Principles</h3>
         <pre><code>{`Atoms (Basic building blocks)
 ├── Button

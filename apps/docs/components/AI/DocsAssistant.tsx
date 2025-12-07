@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { BookOpen, Code2, Lightbulb, MessageSquare, Sparkles } from 'lucide-react'
 import { ChatWindow, FollowUpSuggestions, useToast, type FollowUpSuggestion } from '@clarity-chat/react'
@@ -9,6 +9,70 @@ import { ChatButton } from './ChatButton'
 import { FeedbackButtons } from './FeedbackButtons'
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { cn } from '@/lib/utils'
+
+// Throttle helper to reduce re-renders during streaming
+// Returns both the throttled function and a flush function to ensure final update
+function createThrottle<T extends (...args: any[]) => void>(fn: T, delay: number): {
+  throttled: T
+  flush: () => void
+  cancel: () => void
+} {
+  let lastCall = 0
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
+  let lastArgs: Parameters<T> | null = null
+
+  const throttled = ((...args: Parameters<T>) => {
+    const now = Date.now()
+    const timeSinceLastCall = now - lastCall
+    lastArgs = args
+
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
+
+    if (timeSinceLastCall >= delay) {
+      lastCall = now
+      lastArgs = null
+      fn(...args)
+    } else {
+      // Schedule the update for when the delay passes
+      timeoutId = setTimeout(() => {
+        lastCall = Date.now()
+        timeoutId = null
+        if (lastArgs) {
+          const argsToUse = lastArgs
+          lastArgs = null
+          fn(...argsToUse)
+        }
+      }, delay - timeSinceLastCall)
+    }
+  }) as T
+
+  // Flush any pending update immediately
+  const flush = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
+    if (lastArgs) {
+      const argsToUse = lastArgs
+      lastArgs = null
+      fn(...argsToUse)
+    }
+  }
+
+  // Cancel any pending update without executing
+  const cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
+    lastArgs = null
+  }
+
+  return { throttled, flush, cancel }
+}
 
 interface DocsAssistantProps {
   className?: string
@@ -269,7 +333,27 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
   const [showShortcuts, setShowShortcuts] = useState(false)
   const sessionIdRef = useRef<string>('')
   const dialogRef = useRef<HTMLDivElement>(null)
+  // Track active throttle cancel function for cleanup on unmount
+  const activeThrottleCancelRef = useRef<(() => void) | null>(null)
+  // AbortController for canceling streaming requests
+  const abortControllerRef = useRef<AbortController | null>(null)
   const toast = useToast()
+
+  // Cleanup any pending throttled updates and abort streaming on unmount
+  useEffect(() => {
+    return () => {
+      // Cancel any pending throttled updates
+      if (activeThrottleCancelRef.current) {
+        activeThrottleCancelRef.current()
+        activeThrottleCancelRef.current = null
+      }
+      // Abort any in-flight streaming requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+        abortControllerRef.current = null
+      }
+    }
+  }, [])
 
   // Initialize session ID and restore conversation history
   useEffect(() => {
@@ -406,6 +490,15 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
     })
 
     try {
+      // Cancel any previous streaming request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+
+      // Create new AbortController for this request
+      const abortController = new AbortController()
+      abortControllerRef.current = abortController
+
       // Call API endpoint with streaming
       const response = await fetch('/api/docs-assistant', {
         method: 'POST',
@@ -421,6 +514,7 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             content: m.content,
           })),
         }),
+        signal: abortController.signal,
       })
 
       if (!response.ok) {
@@ -459,36 +553,48 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
       let accumulatedContent = ''
       let sources: Array<{ id: string; source: string; url: string; confidence: number }> = []
 
-      while (true) {
-        const { done, value } = await reader.read()
+      // Create a throttled update function to reduce flickering
+      // Updates at most every 50ms to prevent layout thrashing
+      const { throttled: updateStreamingMessage, flush: flushUpdate, cancel: cancelUpdate } = createThrottle(
+        (content: string) => {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantMessage.id
+                ? { ...m, content }
+                : m
+            )
+          )
+        },
+        50
+      )
 
-        if (done) break
+      // Store cancel function for cleanup on unmount
+      activeThrottleCancelRef.current = cancelUpdate
 
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
 
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6))
+          if (done) break
 
-              if (data.type === 'text' && data.content) {
-                accumulatedContent += data.content
+          const chunk = decoder.decode(value)
+          const lines = chunk.split('\n')
 
-                // Update the assistant message
-                setMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === assistantMessage.id
-                      ? { ...m, content: accumulatedContent }
-                      : m
-                  )
-                )
-              } else if (data.type === 'sources' && data.data?.sources) {
-                // Store sources for potential display
-                // API sends: { url, title, score }
-                sources = data.data.sources
-                console.log('📚 Sources retrieved:', JSON.stringify(sources, null, 2))
-              } else if (data.type === 'error') {
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6))
+
+                if (data.type === 'text' && data.content) {
+                  accumulatedContent += data.content
+
+                  // Update with throttling to reduce flicker
+                  updateStreamingMessage(accumulatedContent)
+                } else if (data.type === 'sources' && data.data?.sources) {
+                  // Store sources for potential display
+                  // API sends: { url, title, score }
+                  sources = data.data.sources
+                } else if (data.type === 'error') {
                 throw new Error(data.content || 'Stream error')
               } else if (data.type === 'done') {
                 // Normalize all links in the AI response before finalizing
@@ -536,13 +642,34 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
             }
           }
         }
+      } finally {
+        // Ensure any pending throttled update is flushed before we finish
+        flushUpdate()
+        // Clear the ref since this throttle is no longer active
+        activeThrottleCancelRef.current = null
+        // Clear the abort controller ref
+        abortControllerRef.current = null
       }
 
       // Clear loading and AI status when streaming completes
       setIsLoading(false)
       setAiStatus(undefined)
     } catch (error) {
-      console.error('Chat error:', error)
+      // Handle abort errors silently (user-initiated cancellation)
+      if (error instanceof Error && error.name === 'AbortError') {
+        setIsLoading(false)
+        setAiStatus(undefined)
+        return
+      }
+
+      // Cancel any pending throttled updates on error
+      if (activeThrottleCancelRef.current) {
+        activeThrottleCancelRef.current()
+        activeThrottleCancelRef.current = null
+      }
+
+      // Clear the abort controller ref
+      abortControllerRef.current = null
 
       const errorMsg = error instanceof Error ? error.message : 'Please try again.'
 

@@ -9,7 +9,7 @@ import { Prompt } from '@modelcontextprotocol/sdk/types.js';
  */
 export declare const prompts: Prompt[];
 /**
- * Handle prompt generation
+ * Handle prompt generation with validation
  */
 export declare function handlePromptGet(name: string, args: Record<string, string>): Promise<string>;
 //# sourceMappingURL=index.d.ts.map

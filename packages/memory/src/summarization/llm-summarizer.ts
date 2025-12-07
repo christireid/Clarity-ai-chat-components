@@ -569,8 +569,8 @@ export class LLMSummarizer implements Summarizer {
     const {
       summarizeThreshold = 20,
       keepRecentCount = 10,
-      maxSummaryTokens = 500,
     } = options
+    // maxSummaryTokens is accepted in options but not used in this function
 
     const originalTokens = messages.reduce(
       (sum, m) => sum + estimateTokens(m.content),
@@ -628,7 +628,7 @@ export class LLMSummarizer implements Summarizer {
    */
   async hierarchicalSummarize(
     content: string,
-    levels: number = 3
+    _levels: number = 3
   ): Promise<HierarchicalSummary> {
     const originalTokens = estimateTokens(content)
 

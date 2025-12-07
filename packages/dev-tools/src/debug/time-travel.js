@@ -2,15 +2,20 @@
  * Time-Travel Debugging for AI Chat Applications
  * Record and replay conversation states for debugging
  */
+import { table, keyValueTable } from '../ui/table';
+import { infoBox } from '../ui/box';
+import chalk from 'chalk';
 /**
  * Time-travel debugger for chat state
  */
 export class TimeTravelDebugger {
+    snapshots = [];
+    transitions = [];
+    currentIndex = -1;
+    maxSnapshots = 100;
+    // Cache for search optimization - maps snapshot ID to lowercase serialized string
+    searchIndex = new Map();
     constructor(options) {
-        this.snapshots = [];
-        this.transitions = [];
-        this.currentIndex = -1;
-        this.maxSnapshots = 100;
         if (options?.maxSnapshots) {
             this.maxSnapshots = options.maxSnapshots;
         }
@@ -22,8 +27,8 @@ export class TimeTravelDebugger {
         const snapshot = {
             id: this.generateId(),
             timestamp: new Date(),
-            messages: JSON.parse(JSON.stringify(messages)), // Deep clone
-            config: JSON.parse(JSON.stringify(config)),
+            messages: structuredClone(messages),
+            config: structuredClone(config),
             metadata: metadata || {},
             label,
         };
@@ -43,7 +48,10 @@ export class TimeTravelDebugger {
         this.currentIndex = this.snapshots.length - 1;
         // Maintain max snapshots limit
         if (this.snapshots.length > this.maxSnapshots) {
-            this.snapshots.shift();
+            const removed = this.snapshots.shift();
+            if (removed) {
+                this.searchIndex.delete(removed.id);
+            }
             this.currentIndex--;
         }
         return snapshot.id;
@@ -97,12 +105,19 @@ export class TimeTravelDebugger {
         }));
     }
     /**
-     * Search snapshots
+     * Search snapshots using cached search index for performance
      */
     search(query) {
+        const lowerQuery = query.toLowerCase();
         return this.snapshots.filter(snapshot => {
-            const searchString = JSON.stringify(snapshot).toLowerCase();
-            return searchString.includes(query.toLowerCase());
+            // Check cache first
+            let searchString = this.searchIndex.get(snapshot.id);
+            if (!searchString) {
+                // Build and cache search string
+                searchString = JSON.stringify(snapshot).toLowerCase();
+                this.searchIndex.set(snapshot.id, searchString);
+            }
+            return searchString.includes(lowerQuery);
         });
     }
     /**
@@ -137,6 +152,7 @@ export class TimeTravelDebugger {
         this.snapshots = [];
         this.transitions = [];
         this.currentIndex = -1;
+        this.searchIndex.clear();
     }
     /**
      * Get statistics
@@ -224,38 +240,70 @@ export function createTimeTravelHook(timeTravel) {
     };
 }
 /**
- * Visual timeline renderer
+ * Visual timeline renderer with beautiful formatting
  */
 export function renderTimeline(timeTravel) {
     const timeline = timeTravel.getTimeline();
-    const lines = [];
-    lines.push('═'.repeat(80));
-    lines.push('TIME-TRAVEL DEBUGGER TIMELINE');
-    lines.push('═'.repeat(80));
-    lines.push('');
-    timeline.forEach((entry, index) => {
+    const output = [];
+    // Header
+    output.push('');
+    output.push(infoBox('Time-Travel Debugger Timeline', '⏱️  Timeline'));
+    output.push('');
+    if (timeline.length === 0) {
+        output.push(chalk.gray('No snapshots recorded yet.'));
+        output.push('');
+        return output.join('\n');
+    }
+    // Timeline table
+    const columns = [
+        { header: '#', width: 4, align: 'right' },
+        { header: 'Time', width: 12, color: chalk.gray },
+        { header: 'Label', width: 20, color: chalk.yellow },
+        { header: 'Messages', width: 10, align: 'center', color: chalk.cyan },
+        { header: 'Action', width: 20 },
+        { header: 'Status', width: 10, align: 'center' },
+    ];
+    const tableData = timeline.map((entry, index) => {
         const { snapshot, transition, isCurrent } = entry;
-        const marker = isCurrent ? '▶' : ' ';
         const time = snapshot.timestamp.toLocaleTimeString();
-        const label = snapshot.label || snapshot.id.substr(0, 12);
-        lines.push(`${marker} [${index}] ${time} - ${label}`);
-        lines.push(`   Messages: ${snapshot.messages.length} | Config: ${Object.keys(snapshot.config).length} keys`);
-        if (transition) {
-            lines.push(`   Action: ${transition.action}`);
-            if (transition.diff.messages) {
-                lines.push(`   └─ +${transition.diff.messages.added} messages`);
-            }
-            if (transition.diff.config) {
-                lines.push(`   └─ Config changed: ${transition.diff.config.keys.join(', ')}`);
-            }
-        }
-        lines.push('');
+        const label = snapshot.label || snapshot.id.substring(0, 12);
+        const action = transition?.action || '—';
+        const status = isCurrent ? chalk.green('▶ Current') : chalk.gray('○');
+        return [
+            index.toString(),
+            time,
+            label,
+            snapshot.messages.length.toString(),
+            action,
+            status,
+        ];
     });
+    output.push(table(tableData, columns));
+    output.push('');
+    // Current snapshot details
+    const current = timeline.find(e => e.isCurrent);
+    if (current) {
+        const details = {
+            'Snapshot ID': chalk.gray(current.snapshot.id.substring(0, 20) + '...'),
+            'Messages': chalk.cyan(current.snapshot.messages.length.toString()),
+            'Config Keys': chalk.cyan(Object.keys(current.snapshot.config).length.toString()),
+        };
+        if (current.snapshot.label) {
+            details['Label'] = chalk.yellow(current.snapshot.label);
+        }
+        output.push(infoBox(keyValueTable(details), '📍 Current Snapshot'));
+        output.push('');
+    }
+    // Statistics
     const stats = timeTravel.getStats();
-    lines.push('─'.repeat(80));
-    lines.push(`Total Snapshots: ${stats.totalSnapshots} | Time Span: ${Math.round(stats.timeSpan / 1000)}s`);
-    lines.push(`Average Messages: ${stats.averageMessageCount.toFixed(1)}`);
-    lines.push('');
-    return lines.join('\n');
+    const statsData = {
+        'Total Snapshots': chalk.cyan(stats.totalSnapshots.toString()),
+        'Total Transitions': chalk.cyan(stats.totalTransitions.toString()),
+        'Time Span': chalk.cyan(`${Math.round(stats.timeSpan / 1000)}s`),
+        'Avg Messages': chalk.cyan(stats.averageMessageCount.toFixed(1)),
+    };
+    output.push(infoBox(keyValueTable(statsData), '📊 Statistics'));
+    output.push('');
+    return output.join('\n');
 }
 //# sourceMappingURL=time-travel.js.map

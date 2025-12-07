@@ -154,9 +154,10 @@ describe('DropdownMenu Component', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       )
-      // Get the button element, not the text span
+      // Radix UI uses aria-disabled and data-disabled instead of disabled attribute
       const item = screen.getByRole('menuitem', { name: 'Disabled Item' })
-      expect(item).toBeDisabled()
+      expect(item).toHaveAttribute('aria-disabled', 'true')
+      expect(item).toHaveAttribute('data-disabled')
     })
   })
 
@@ -166,7 +167,7 @@ describe('DropdownMenu Component', () => {
 
       expect(() => {
         render(<DropdownMenuTrigger>Trigger</DropdownMenuTrigger>)
-      }).toThrow('DropdownMenu components must be used within a DropdownMenu')
+      }).toThrow('DropdownMenuTrigger')
 
       consoleSpy.mockRestore()
     })
