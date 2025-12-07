@@ -557,8 +557,8 @@ pnpm typecheck              # Type check
 #### Task 3.1: Core Chat Hooks
 - [x] `useChatEnhanced` documentation (completed in Phase 2)
 - [x] `useChatHandlers` documentation (completed in Phase 2)
-- [ ] `useAssistant` documentation
-- [ ] `useCompletion` documentation
+- [x] `useAssistant` documentation (created)
+- [x] `useCompletion` documentation (created)
 
 #### Task 3.2: Message Operations Hooks
 - [ ] `useMessageOperations` documentation (enhance existing)
@@ -586,7 +586,7 @@ pnpm typecheck              # Type check
 - [x] Error handling recipe (created)
 
 #### Task 4.2: Advanced Patterns
-- [ ] Multi-modal chat recipe
+- [x] Multi-modal chat recipe (created)
 - [ ] Voice input recipe
 - [ ] Offline-first recipe
 - [ ] Real-time collaboration recipe
