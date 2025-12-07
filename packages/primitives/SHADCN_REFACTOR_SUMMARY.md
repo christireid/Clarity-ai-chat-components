@@ -121,16 +121,30 @@ Updated with path aliases:
 - **Build**: ✅ Passes
 - **Lint**: ✅ Passes
 - **TypeScript**: ✅ All types correct
-- **Unit Tests**: ⚠️ 35+ failures (expected - due to API differences with Radix UI)
+- **Unit Tests**: ⚠️ 26 failures remaining (down from 35+)
+  - **Checkbox**: ✅ All 36 tests passing (fixed)
+  - **DropdownMenu**: ✅ All 13 tests passing (fixed)
+  - **Avatar**: 4 failures (Radix UI AvatarImage behavior differences)
+  - **Dialog**: 4 failures (Radix UI Dialog structure differences)
+  - **Popover**: 2 failures (Radix UI error messages)
+  - **Other components**: 16 failures (various API differences)
 
-### Test Failures (Expected)
-Test failures are due to API differences between Radix UI and original implementation:
-- Checkbox: Tests expect `onChange` but Radix UI uses `onCheckedChange`
-- Checkbox: Tests query `input[type="checkbox"]` but Radix UI renders `button[role="checkbox"]`
-- DropdownMenu: Tests expect `disabled` attribute but Radix UI uses `aria-disabled` and `data-disabled`
-- Error messages: Tests expect custom error messages but Radix UI has different messages
+### Test Fixes Applied
+- ✅ **Checkbox**: Updated all tests to use `onCheckedChange` instead of `onChange`
+- ✅ **Checkbox**: Updated queries to use `getByRole('checkbox')` instead of `querySelector('input')`
+- ✅ **Checkbox**: Fixed form integration tests to match Radix UI behavior
+- ✅ **Checkbox**: Fixed focusable test to verify actual focus behavior
+- ✅ **DropdownMenu**: Updated disabled checks to use `aria-disabled` and `data-disabled`
+- ✅ **DropdownMenu**: Updated error message expectations to match Radix UI
 
-**Action Required**: Update test suite to match Radix UI's API (see "Next Steps" below)
+### Remaining Test Failures (Expected)
+Remaining failures are due to API differences between Radix UI and original implementation:
+- **Avatar**: Tests expect different image loading behavior (Radix UI handles this internally)
+- **Dialog**: Tests expect different DOM structure (Radix UI uses portals)
+- **Popover**: Tests expect custom error messages but Radix UI has different messages
+- **Other**: Various component-specific API differences
+
+**Action Required**: Continue updating remaining test suites to match Radix UI's API (see "Next Steps" below)
 
 ## Known Limitations
 
@@ -154,11 +168,13 @@ Some components (e.g., `DropdownMenuItem`) use type assertions because Radix UI 
 ## Next Steps
 
 ### High Priority
-1. **Update Test Suite** - Modify tests to match Radix UI's API:
-   - Update Checkbox tests to use `onCheckedChange` instead of `onChange`
-   - Update Checkbox queries to use `getByRole('checkbox')` instead of `querySelector('input')`
-   - Update DropdownMenu disabled checks to use `aria-disabled`/`data-disabled`
-   - Update error message expectations
+1. **Update Remaining Test Suites** - Continue fixing tests to match Radix UI's API:
+   - ✅ Checkbox tests - **COMPLETED** (36/36 passing)
+   - ✅ DropdownMenu tests - **COMPLETED** (13/13 passing)
+   - ⏳ Avatar tests - Update image loading behavior expectations
+   - ⏳ Dialog tests - Update DOM structure expectations (portals)
+   - ⏳ Popover tests - Update error message expectations
+   - ⏳ Other component tests - Update as needed
 
 ### Medium Priority
 2. **Documentation** - Update component documentation to reflect shadcn/ui adoption
