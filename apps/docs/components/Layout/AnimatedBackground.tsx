@@ -61,8 +61,7 @@ export function AnimatedBackground({ className = '' }: AnimatedBackgroundProps) 
 
   return (
     <div
-      className={cn('fixed inset-0 -z-10', className)}
-      style={{ pointerEvents: 'none' }}
+      className={cn('fixed inset-0 -z-10 pointer-events-none', className)}
       aria-hidden="true"
       role="presentation"
     >

@@ -241,7 +241,7 @@ describe('AnimatedBackground', () => {
         const container = screen.getByTestId('particles').parentElement
         expect(container).toHaveAttribute('aria-hidden', 'true')
         expect(container).toHaveAttribute('role', 'presentation')
-        expect(container).toHaveStyle({ pointerEvents: 'none' })
+        expect(container).toHaveClass('pointer-events-none')
       }, { timeout: 2000 })
     })
   })
