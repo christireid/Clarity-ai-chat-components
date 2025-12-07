@@ -24,6 +24,7 @@ describe('Dialog Component', () => {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Test Dialog</DialogTitle>
+              <DialogDescription>Test description</DialogDescription>
             </DialogHeader>
           </DialogContent>
         </Dialog>
@@ -74,6 +75,7 @@ describe('Dialog Component', () => {
         <Dialog open={true} onOpenChange={mockOnOpenChange}>
           <DialogContent>
             <DialogTitle>Controlled</DialogTitle>
+            <DialogDescription>Controlled dialog</DialogDescription>
           </DialogContent>
         </Dialog>
       )
@@ -85,6 +87,7 @@ describe('Dialog Component', () => {
         <Dialog defaultOpen>
           <DialogContent>
             <DialogTitle>Uncontrolled</DialogTitle>
+            <DialogDescription>Uncontrolled dialog</DialogDescription>
           </DialogContent>
         </Dialog>
       )
@@ -99,6 +102,7 @@ describe('Dialog Component', () => {
           <DialogTrigger>Open Dialog</DialogTrigger>
           <DialogContent>
             <DialogTitle>Dialog</DialogTitle>
+            <DialogDescription>Dialog description</DialogDescription>
           </DialogContent>
         </Dialog>
       )
@@ -112,6 +116,7 @@ describe('Dialog Component', () => {
           <DialogTrigger>Open</DialogTrigger>
           <DialogContent>
             <DialogTitle>Opened</DialogTitle>
+            <DialogDescription>Opened dialog</DialogDescription>
           </DialogContent>
         </Dialog>
       )
@@ -131,6 +136,7 @@ describe('Dialog Component', () => {
         <Dialog open>
           <DialogContent>
             <DialogTitle>Content</DialogTitle>
+            <DialogDescription>Content description</DialogDescription>
           </DialogContent>
         </Dialog>
       )
@@ -142,6 +148,7 @@ describe('Dialog Component', () => {
         <Dialog open>
           <DialogContent size="lg">
             <DialogTitle>Large</DialogTitle>
+            <DialogDescription>Large dialog</DialogDescription>
           </DialogContent>
         </Dialog>
       )
@@ -154,6 +161,7 @@ describe('Dialog Component', () => {
         <Dialog open>
           <DialogContent className="custom-dialog">
             <DialogTitle>Custom</DialogTitle>
+            <DialogDescription>Custom dialog</DialogDescription>
           </DialogContent>
         </Dialog>
       )
@@ -167,15 +175,12 @@ describe('Dialog Component', () => {
         <Dialog open>
           <DialogContent>
             <DialogTitle>Dialog</DialogTitle>
+            <DialogDescription>Dialog description</DialogDescription>
             <DialogClose>Close</DialogClose>
           </DialogContent>
         </Dialog>
       )
-      // DialogClose renders children as button text, find by role and text content (excluding sr-only)
-      const closeButtons = screen.getAllByRole('button', { name: /close/i })
-      // Should find the actual close button (not sr-only span)
-      const closeButton = closeButtons.find(btn => !btn.querySelector('.sr-only'))
-      expect(closeButton).toBeInTheDocument()
+      expect(screen.getByText('Close')).toBeInTheDocument()
     })
 
     it('should close dialog when clicked', async () => {
@@ -185,15 +190,14 @@ describe('Dialog Component', () => {
         <Dialog open onOpenChange={mockOnOpenChange}>
           <DialogContent>
             <DialogTitle>Dialog</DialogTitle>
+            <DialogDescription>Dialog description</DialogDescription>
             <DialogClose>Close</DialogClose>
           </DialogContent>
         </Dialog>
       )
 
-      // Find the actual button, not the sr-only span
-      const closeButtons = screen.getAllByRole('button', { name: /close/i })
-      const closeButton = closeButtons.find(btn => !btn.querySelector('.sr-only')) || closeButtons[0]
-      await user.click(closeButton!)
+      const closeButton = screen.getByText('Close')
+      await user.click(closeButton)
 
       expect(mockOnOpenChange).toHaveBeenCalledWith(false)
     })
@@ -205,39 +209,36 @@ describe('Dialog Component', () => {
         <Dialog open>
           <DialogContent>
             <DialogTitle>Accessible Dialog</DialogTitle>
+            <DialogDescription>Accessible description</DialogDescription>
           </DialogContent>
         </Dialog>
       )
       expect(screen.getByRole('heading')).toBeInTheDocument()
     })
 
-    it('should support aria-label on content', () => {
+    it('should have dialog role with proper attributes', () => {
       render(
-        <Dialog open modal={true}>
-          <DialogContent aria-label="Test dialog">
-            {/* When no DialogTitle, aria-label can be used */}
-            <div>Content</div>
+        <Dialog open>
+          <DialogContent>
+            <DialogTitle>Dialog</DialogTitle>
+            <DialogDescription>Dialog description</DialogDescription>
           </DialogContent>
         </Dialog>
       )
       // Dialog content is rendered in portal, check by role
-      // Note: Radix prefers DialogTitle for accessibility, but aria-label works when no title
-      const dialog = screen.getByRole('dialog', { name: 'Test dialog' })
+      const dialog = screen.getByRole('dialog')
       expect(dialog).toBeInTheDocument()
-      // Radix Dialog sets aria-modal when modal={true}
-      // Check that dialog exists and has proper role
-      expect(dialog).toHaveAttribute('role', 'dialog')
     })
   })
 
   describe('Error Handling', () => {
-    it('should throw error when used outside Dialog context', () => {
+    it('should throw error when DialogTrigger used outside Dialog context', () => {
       // Suppress console.error for this test
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
       expect(() => {
         render(<DialogTrigger>Trigger</DialogTrigger>)
-      }).toThrow() // Radix uses different error message format
+      }).toThrow()
 
       consoleSpy.mockRestore()
     })

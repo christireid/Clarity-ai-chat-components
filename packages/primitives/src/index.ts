@@ -17,6 +17,7 @@ export * from './components/popover'
 export * from './components/scroll-area'
 export * from './components/checkbox'
 export * from './components/error-message'
+export * from './components/label'
 
 // Hooks
 export * from './hooks/use-body-scroll-lock'
