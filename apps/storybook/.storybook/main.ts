@@ -78,15 +78,18 @@ const config: StorybookConfig = {
       ...existingAlias,
     ]
     
-    // Configure build options for CSS imports
+    // Configure build options for CSS imports and externals
     config.build = config.build || {}
     config.build.rollupOptions = config.build.rollupOptions || {}
     config.build.rollupOptions.external = config.build.rollupOptions.external || []
 
+    // Vite 7: Need to externalize dependencies properly
     if (Array.isArray(config.build.rollupOptions.external)) {
       config.build.rollupOptions.external.push(
         'highlight.js/styles/github-dark.css',
-        'katex/dist/katex.min.css'
+        'katex/dist/katex.min.css',
+        /^react-window$/,
+        /^react-virtualized-auto-sizer$/
       )
     }
 

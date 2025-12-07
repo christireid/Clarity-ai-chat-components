@@ -8,3 +8,4 @@
 export * from './constants'
 export * from './utils'
 export * from './motion-safe'
+export * from './spring-presets'

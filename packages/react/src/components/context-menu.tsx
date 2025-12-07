@@ -166,7 +166,12 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
               {hasSubmenu && (
                 <motion.svg
                   animate={{ rotate: isSubmenuOpen ? 90 : 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ 
+                    // Framer Motion 12: Spring submenu arrow rotation
+                    type: 'spring',
+                    damping: 18,
+                    stiffness: 280,
+                  }}
                   width="12"
                   height="12"
                   viewBox="0 0 15 15"
@@ -192,8 +197,10 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: -10, scale: 0.95 }}
                   transition={{
-                    duration: ANIMATION_DURATION.fast / 1000,
-                    ease: ANIMATION_EASING.out,
+                    // Framer Motion 12: Spring submenu entrance
+                    type: 'spring',
+                    damping: 26,
+                    stiffness: 290,
                   }}
                   className={cn(
                     'absolute left-full top-0 ml-2',

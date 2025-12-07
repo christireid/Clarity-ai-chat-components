@@ -3,6 +3,8 @@
  * 
  * Material Design-inspired ripple effect for buttons and clickable elements.
  * Provides tactile feedback on click/tap.
+ * 
+ * @enhanced Framer Motion 12: Spring-based ripple expansion for more organic feel
  */
 
 'use client'
@@ -136,8 +138,10 @@ export const Ripple: React.FC<RippleProps> = ({
             animate={{ scale: 2, opacity: 0 }}
             exit={{ opacity: 0 }}
             transition={{
-              duration: duration / 1000,
-              ease: ANIMATION_EASING.out,
+              // Framer Motion 12: Spring ripple expansion
+              type: 'spring',
+              damping: 15,
+              stiffness: 150,
             }}
           />
         ))}

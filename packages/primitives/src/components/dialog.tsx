@@ -1,19 +1,8 @@
-'use client'
-
 import * as React from 'react'
+import { createPortal } from 'react-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
 import { useBodyScrollLock } from '../hooks/use-body-scroll-lock'
-import {
-  Dialog as ShadcnDialog,
-  DialogTrigger as ShadcnDialogTrigger,
-  DialogContent as ShadcnDialogContent,
-  DialogHeader as ShadcnDialogHeader,
-  DialogFooter as ShadcnDialogFooter,
-  DialogTitle as ShadcnDialogTitle,
-  DialogDescription as ShadcnDialogDescription,
-  DialogClose as ShadcnDialogClose,
-  DialogOverlay,
-} from './ui/dialog'
 
 // ============================================================================
 // Types
@@ -72,6 +61,88 @@ export interface DialogCloseProps {
 }
 
 // ============================================================================
+// Context
+// ============================================================================
+
+interface DialogContextValue {
+  open: boolean
+  setOpen: (open: boolean) => void
+}
+
+const DialogContext = React.createContext<DialogContextValue | null>(null)
+
+const useDialog = () => {
+  const context = React.useContext(DialogContext)
+  if (!context) {
+    throw new Error('Dialog components must be used within a Dialog')
+  }
+  return context
+}
+
+// ============================================================================
+// Focus Trap Hook
+// ============================================================================
+
+function useFocusTrap(ref: React.RefObject<HTMLElement | null>, enabled: boolean) {
+  React.useEffect(() => {
+    if (!enabled || !ref.current) return
+
+    const element = ref.current
+    const previouslyFocusedElement = document.activeElement as HTMLElement
+
+    // Get all focusable elements
+    const getFocusableElements = () => {
+      return Array.from(
+        element.querySelectorAll<HTMLElement>(
+          'a[href], button:not(:disabled), textarea:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])'
+        )
+      )
+    }
+
+    // Focus first element
+    const focusableElements = getFocusableElements()
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus()
+    }
+
+    // Handle tab key
+    const handleTab = (e: KeyboardEvent) => {
+      const focusableElements = getFocusableElements()
+      if (focusableElements.length === 0) return
+
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
+
+      if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          // Shift + Tab
+          if (document.activeElement === firstElement) {
+            e.preventDefault()
+            lastElement.focus()
+          }
+        } else {
+          // Tab
+          if (document.activeElement === lastElement) {
+            e.preventDefault()
+            firstElement.focus()
+          }
+        }
+      }
+    }
+
+    element.addEventListener('keydown', handleTab)
+
+    return () => {
+      element.removeEventListener('keydown', handleTab)
+      // Return focus to previously focused element
+      if (previouslyFocusedElement) {
+        previouslyFocusedElement.focus()
+      }
+    }
+  }, [enabled, ref])
+}
+
+// ============================================================================
 // Dialog Root Component
 // ============================================================================
 
@@ -80,12 +151,24 @@ export const Dialog: React.FC<DialogProps> = ({
   onOpenChange,
   children,
   defaultOpen = false,
-  modal = true,
 }) => {
+  const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+
+  const setOpen = React.useCallback(
+    (newOpen: boolean) => {
+      if (controlledOpen === undefined) {
+        setInternalOpen(newOpen)
+      }
+      onOpenChange?.(newOpen)
+    },
+    [controlledOpen, onOpenChange]
+  )
+
   return (
-    <ShadcnDialog open={controlledOpen} onOpenChange={onOpenChange} defaultOpen={defaultOpen} modal={modal}>
+    <DialogContext.Provider value={{ open, setOpen }}>
       {children}
-    </ShadcnDialog>
+    </DialogContext.Provider>
   )
 }
 
@@ -93,17 +176,28 @@ export const Dialog: React.FC<DialogProps> = ({
 // Dialog Trigger
 // ============================================================================
 
-export const DialogTrigger: React.FC<DialogTriggerProps> = ({ children, onClick, asChild = false }) => {
-  const handleClick = React.useCallback((_e: React.MouseEvent) => {
-    // Prevent double-triggering: Radix UI will handle the dialog open
-    // We only call the custom onClick if provided
+export const DialogTrigger: React.FC<DialogTriggerProps> = ({
+  children,
+  onClick,
+  asChild,
+}) => {
+  const { setOpen } = useDialog()
+
+  const handleClick = () => {
+    setOpen(true)
     onClick?.()
-  }, [onClick])
+  }
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      onClick: handleClick,
+    } as React.HTMLAttributes<HTMLElement>)
+  }
 
   return (
-    <ShadcnDialogTrigger asChild={asChild} onClick={handleClick}>
+    <button onClick={handleClick} type="button">
       {children}
-    </ShadcnDialogTrigger>
+    </button>
   )
 }
 
@@ -119,23 +213,34 @@ const sizeClasses = {
   full: 'max-w-full mx-4',
 }
 
-// Animation classes based on animation prop
-const getAnimationClasses = (animation: DialogContentProps['animation']) => {
-  switch (animation) {
-    case 'scale':
-      return 'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95'
-    case 'slide-up':
-      return 'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom'
-    case 'slide-down':
-      return 'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top'
-    case 'fade':
-      return 'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0'
-    case 'zoom':
-      return 'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95'
-    default:
-      return 'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95'
-  }
-}
+// Memoized animation variants - refined with better values
+const contentAnimations = {
+  scale: {
+    initial: { scale: 0.96, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    exit: { scale: 0.96, opacity: 0 },
+  },
+  'slide-up': {
+    initial: { y: 24, opacity: 0, scale: 0.98 },
+    animate: { y: 0, opacity: 1, scale: 1 },
+    exit: { y: 24, opacity: 0, scale: 0.98 },
+  },
+  'slide-down': {
+    initial: { y: -24, opacity: 0, scale: 0.98 },
+    animate: { y: 0, opacity: 1, scale: 1 },
+    exit: { y: -24, opacity: 0, scale: 0.98 },
+  },
+  fade: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+  },
+  zoom: {
+    initial: { scale: 0.9, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    exit: { scale: 0.9, opacity: 0 },
+  },
+} as const
 
 export const DialogContent: React.FC<DialogContentProps> = ({
   children,
@@ -148,97 +253,179 @@ export const DialogContent: React.FC<DialogContentProps> = ({
   blurBackdrop = true,
   overlayClassName,
 }) => {
-  // Note: shadcn/ui DialogContent already includes DialogOverlay internally (line 35 of ui/dialog.tsx)
-  // We can't easily replace it without modifying shadcn/ui's component structure
-  // For blurBackdrop, we'll render a custom overlay that will be layered
-  // The shadcn/ui overlay will be behind our custom one
+  const { open, setOpen } = useDialog()
+  const contentRef = React.useRef<HTMLDivElement>(null)
+  const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null)
   const { lock } = useBodyScrollLock()
 
-  // Body scroll lock - Radix UI handles this internally, but we keep for compatibility
-  // DialogContent only renders when open, so this effect runs when open
+  // Get or create portal container
   React.useEffect(() => {
-    const unlockFn = lock()
-    return unlockFn
-  }, [lock])
+    let container = document.getElementById('dialog-portal-root')
+    if (!container) {
+      container = document.createElement('div')
+      container.id = 'dialog-portal-root'
+      document.body.appendChild(container)
+    }
+    setPortalContainer(container)
+    return () => {
+      // Don't remove container on unmount as other dialogs might use it
+    }
+  }, [])
 
-  return (
-    <>
-      {/* Custom overlay with blur support - rendered separately since shadcn/ui includes one */}
-      {/* This will create a second overlay, but allows us to customize blur */}
-      {blurBackdrop && (
-        <DialogOverlay
-          className={cn(
-            'backdrop-blur-lg z-[49]', // z-49 to be just below content (z-50)
-            overlayClassName
-          )}
-        />
-      )}
-      <ShadcnDialogContent
-        className={cn(
-          'rounded-2xl border-border/40 shadow-xl',
-          sizeClasses[size],
-          getAnimationClasses(animation),
-          className
-        )}
-        onEscapeKeyDown={closeOnEscape ? undefined : (e) => e.preventDefault()}
-        onPointerDownOutside={closeOnClickOutside ? undefined : (e) => e.preventDefault()}
-      >
-        {showCloseButton && (
-          <ShadcnDialogClose className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2 z-10">
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 15 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
-                fill="currentColor"
-                fillRule="evenodd"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span className="sr-only">Close dialog</span>
-          </ShadcnDialogClose>
-        )}
-        {children}
-      </ShadcnDialogContent>
-    </>
+  // Focus trap
+  useFocusTrap(contentRef, open)
+
+  // Escape key handling - memoized callback
+  const handleEscape = React.useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && open && closeOnEscape) {
+        setOpen(false)
+      }
+    },
+    [open, closeOnEscape, setOpen]
   )
+
+  React.useEffect(() => {
+    if (!open || !closeOnEscape) return
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [open, closeOnEscape, handleEscape])
+
+  // Body scroll lock using custom hook
+  React.useEffect(() => {
+    if (open) {
+      const unlockFn = lock()
+      return unlockFn
+    }
+  }, [open, lock])
+
+  // Memoize animation props
+  const animationProps = React.useMemo(
+    () => contentAnimations[animation],
+    [animation]
+  )
+
+  if (!open || !portalContainer) return null
+
+  const dialogContent = (
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Backdrop - refined */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+            className={cn(
+              'fixed inset-0 z-[var(--z-modal-backdrop)] bg-black/70',
+              blurBackdrop && 'backdrop-blur-lg',
+              overlayClassName
+            )}
+            onClick={closeOnClickOutside ? () => setOpen(false) : undefined}
+            aria-hidden="true"
+          />
+
+          {/* Content */}
+          <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 pointer-events-none">
+            <motion.div
+              ref={contentRef}
+              {...animationProps}
+              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              className={cn(
+                'relative w-full bg-card border border-border/40 shadow-xl rounded-2xl pointer-events-auto',
+                sizeClasses[size],
+                className
+              )}
+              role="dialog"
+              aria-modal="true"
+            >
+              {/* Close button */}
+              {showCloseButton && (
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    'absolute top-4 right-4 w-8 h-8 rounded-lg',
+                    'flex items-center justify-center',
+                    'text-muted-foreground hover:text-foreground',
+                    'hover:bg-accent/50',
+                    'transition-colors duration-150 ease-out',
+                    'focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2'
+                  )}
+                  aria-label="Close dialog"
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 15 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
+                      fill="currentColor"
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </motion.button>
+              )}
+
+              {children}
+            </motion.div>
+          </div>
+        </>
+      )}
+    </AnimatePresence>
+  )
+
+  // Render via Portal for proper z-index stacking
+  return createPortal(dialogContent, portalContainer)
 }
 
 // ============================================================================
 // Dialog Sub-components
 // ============================================================================
 
-export const DialogHeader: React.FC<DialogHeaderProps> = ({ children, className }) => {
+export const DialogHeader: React.FC<DialogHeaderProps> = ({
+  children,
+  className,
+}) => {
   return (
-    <ShadcnDialogHeader className={cn('px-6 py-5 border-b border-border/40', className)}>
+    <div className={cn('flex flex-col space-y-2.5 px-6 py-5 border-b border-border/40', className)}>
       {children}
-    </ShadcnDialogHeader>
+    </div>
   )
 }
 
-export const DialogTitle: React.FC<DialogTitleProps> = ({ children, className }) => {
+export const DialogTitle: React.FC<DialogTitleProps> = ({
+  children,
+  className,
+}) => {
   return (
-    <ShadcnDialogTitle
+    <h2
       className={cn(
         'text-xl font-bold leading-none tracking-tight text-foreground',
         className
       )}
     >
       {children}
-    </ShadcnDialogTitle>
+    </h2>
   )
 }
 
-export const DialogDescription: React.FC<DialogDescriptionProps> = ({ children, className }) => {
+export const DialogDescription: React.FC<DialogDescriptionProps> = ({
+  children,
+  className,
+}) => {
   return (
-    <ShadcnDialogDescription className={cn('text-sm text-muted-foreground/90 leading-relaxed', className)}>
+    <p className={cn('text-sm text-muted-foreground/90 leading-relaxed', className)}>
       {children}
-    </ShadcnDialogDescription>
+    </p>
   )
 }
 
@@ -249,31 +436,38 @@ export const DialogBody: React.FC<{ children: React.ReactNode; className?: strin
   return <div className={cn('px-6 py-4', className)}>{children}</div>
 }
 
-export const DialogFooter: React.FC<DialogFooterProps> = ({ children, className }) => {
+export const DialogFooter: React.FC<DialogFooterProps> = ({
+  children,
+  className,
+}) => {
   return (
-    <ShadcnDialogFooter
+    <div
       className={cn(
         'flex items-center justify-end gap-2.5 px-6 py-4 border-t border-border/40',
         className
       )}
     >
       {children}
-    </ShadcnDialogFooter>
+    </div>
   )
 }
 
-export const DialogClose: React.FC<DialogCloseProps> = ({ children, className, asChild }) => {
+export const DialogClose: React.FC<DialogCloseProps> = ({
+  children,
+  className,
+  asChild,
+}) => {
+  const { setOpen } = useDialog()
+
   if (asChild && React.isValidElement(children)) {
-    return (
-      <ShadcnDialogClose asChild={asChild} className={className}>
-        {children}
-      </ShadcnDialogClose>
-    )
+    return React.cloneElement(children, {
+      onClick: () => setOpen(false),
+    } as React.HTMLAttributes<HTMLElement>)
   }
 
   return (
-    <ShadcnDialogClose className={className}>
+    <button onClick={() => setOpen(false)} className={className} type="button">
       {children}
-    </ShadcnDialogClose>
+    </button>
   )
 }

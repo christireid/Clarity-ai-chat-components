@@ -175,14 +175,24 @@ export function FileUpload({
           animate={{
             scale: isDragging ? 1.05 : 1,
           }}
-          transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ 
+            // Framer Motion 12: Spring scale on drag
+            type: 'spring',
+            damping: 18,
+            stiffness: 280,
+          }}
         >
           <motion.div
             className="text-5xl"
             animate={{
               y: isDragging ? -4 : 0,
             }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ 
+              // Framer Motion 12: Spring bounce on drag
+              type: 'spring',
+              damping: 15,
+              stiffness: 250,
+            }}
           >
             📁
           </motion.div>

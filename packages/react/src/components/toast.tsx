@@ -5,6 +5,11 @@
  *
  * Provides toast notifications for success, error, info, and warning messages.
  * Supports auto-dismiss, queue management, and custom durations.
+ * 
+ * @enhanced Framer Motion 12: Upgraded to use new spring physics
+ * - Smoother entrance/exit animations with spring damping
+ * - More natural motion for toast notifications
+ * - Improved layout animation performance
  */
 
 import React, { useState, useCallback, useRef, useEffect, memo, createContext, useContext, useMemo } from 'react'
@@ -134,8 +139,11 @@ export function ToastItem({
         scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1)
       }}
       transition={{
+        // Framer Motion 12: Enhanced spring physics for toast entrance/exit
+        type: 'spring',
+        damping: 25,
+        stiffness: 300,
         duration: getMotionSafeDuration(prefersReducedMotion, ANIMATION_DURATION.normal / 1000),
-        ease: ANIMATION_EASING.spring,
       }}
       className={cn(
         'relative flex gap-3.5 px-4 py-3.5 rounded-xl border border-border/40 shadow-lg backdrop-blur-xl',

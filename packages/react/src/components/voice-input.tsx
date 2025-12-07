@@ -294,7 +294,12 @@ export function VoiceInput({
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.96 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ 
+              // Framer Motion 12: Spring entrance for voice panel
+              type: 'spring',
+              damping: 20,
+              stiffness: 300,
+            }}
             className="absolute bottom-full right-0 mb-2 min-w-[280px] max-w-md p-4 bg-card/95 border border-border/40 shadow-xl rounded-2xl z-[var(--z-popover)] backdrop-blur-lg"
           >
             {/* Header */}
@@ -445,7 +450,12 @@ export function VoiceInput({
                     className="h-full bg-gradient-to-r from-green-500/80 to-green-500 rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${voice.confidence * 100}%` }}
-                    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                    transition={{ 
+                      // Framer Motion 12: Spring confidence bar
+                      type: 'spring',
+                      damping: 28,
+                      stiffness: 250,
+                    }}
                   />
                 </div>
               </div>
