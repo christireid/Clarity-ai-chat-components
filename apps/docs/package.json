@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
@@ -25,11 +26,9 @@
     "@tsparticles/slim": "^3.9.1",
     "@types/prismjs": "^1.26.5",
     "@upstash/redis": "^1.35.6",
-    "clsx": "^2.1.0",
     "framer-motion": "^12.0.3",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.469.0",
-    "tailwind-merge": "^2.2.0",
     "next": "^15.1.6",
     "next-themes": "^0.4.4",
     "openai": "^4.77.3",
@@ -41,18 +40,24 @@
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
-    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/mdx": "^2.0.13",
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.6",
     "@types/react-dom": "^19.0.2",
     "@types/uuid": "^10.0.0",
-    "@vitejs/plugin-react": "^4.3.0",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/coverage-v8": "^4.0.15",
+    "clsx": "^2.1.1",
     "eslint": "^9.39.1",
     "eslint-config-next": "^15.1.6",
-    "happy-dom": "^12.10.3",
+    "happy-dom": "^20.0.10",
+    "jsdom": "^27.2.0",
+    "tailwind-merge": "^2.6.0",
     "tsx": "^4.19.2",
     "typescript": "^5.9.3",
-    "vitest": "^1.1.0"
+    "vitest": "^4.0.15"
   }
 }

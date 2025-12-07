@@ -1,21 +1,22 @@
 'use client'
 
-import { useEffect, useRef, useState, useMemo, useCallback, memo, useDeferredValue } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useDeferredValue } from 'react'
 import dynamic from 'next/dynamic'
-import { useTheme } from 'next-themes'
-import type { Container } from '@tsparticles/engine'
+import { loadSlim } from '@tsparticles/slim'
+import type { Engine, ISourceOptions } from '@tsparticles/engine'
+import { useMediaQuery } from './hooks/useMediaQuery'
+import { useThemeDetection } from './hooks/useThemeDetection'
+import { useDebouncedCallback } from './hooks/useDebouncedCallback'
+import { createDarkModeConfig, createLightModeConfig } from './config/particleConfigs'
+import { isParticlesEngine, type ParticlesEngine } from './types/particles'
 import { cn } from '@/lib/utils'
-import { useReducedMotion } from './hooks/useReducedMotion'
-import { useParticlesEngine } from './hooks/useParticlesEngine'
-import { useWindowResize } from './hooks/useWindowResize'
-import { usePageVisibility } from './hooks/usePageVisibility'
 
-// Dynamically import Particles component to reduce initial bundle size
+// Dynamically import Particles to reduce initial bundle size
 const Particles = dynamic(
   () => import('@tsparticles/react').then((mod) => mod.default),
   {
     ssr: false,
-    loading: () => null, // No loading state needed for background element
+    loading: () => null, // No loading state needed for background
   }
 )
 
@@ -38,199 +39,80 @@ interface AnimatedBackgroundProps {
  * <AnimatedBackground className="opacity-50" />
  * ```
  */
-export const AnimatedBackground = memo(function AnimatedBackground({
-  className = '',
-}: AnimatedBackgroundProps) {
-  const [mounted, setMounted] = useState(false)
-  const containerRef = useRef<Container | null>(null)
-  const isMountedRef = useRef(true)
-
-  // Custom hooks
-  const reducedMotion = useReducedMotion()
-  const { isInitialized: engineInitialized, error: engineError } = useParticlesEngine()
-  const { resolvedTheme } = useTheme()
+export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
+  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
+  const isDarkModeRaw = useThemeDetection()
   
   // Use deferred value for theme to prevent blocking renders during theme transitions
-  const deferredTheme = useDeferredValue(resolvedTheme)
-  const isDark = mounted && deferredTheme === 'dark'
+  const isDarkMode = useDeferredValue(isDarkModeRaw)
+  
+  const engineRef = useRef<Engine | null>(null)
+  const [loadError, setLoadError] = useState(false)
 
-  // Handle theme mounting (prevent hydration mismatch)
+  // Handle page visibility to pause animation when tab is hidden
   useEffect(() => {
-    setMounted(true)
-    return () => {
-      isMountedRef.current = false
+    const handleVisibilityChange = () => {
+      if (isParticlesEngine(engineRef.current)) {
+        if (document.hidden) {
+          engineRef.current.pause?.()
+        } else if (!reducedMotion) {
+          engineRef.current.play?.()
+        }
+      }
     }
-  }, [])
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [reducedMotion])
 
   // Handle window resize with debouncing
-  const handleResize = useCallback(() => {
-    if (containerRef.current && isMountedRef.current) {
-      try {
-        containerRef.current.refresh()
-      } catch (error) {
-        console.warn('Failed to refresh particles on resize:', error)
+  const handleResize = useDebouncedCallback(() => {
+    if (isParticlesEngine(engineRef.current)) {
+      engineRef.current.canvas?.resize?.()
+    }
+  }, 150)
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize, { passive: true })
+    return () => window.removeEventListener('resize', handleResize)
+  }, [handleResize])
+
+  const particlesInit = useCallback(async (engine: Engine) => {
+    try {
+      await loadSlim(engine)
+      engineRef.current = engine
+      setLoadError(false)
+    } catch (error) {
+      // Background animation is non-critical, but track error for debugging
+      setLoadError(true)
+      engineRef.current = null
+      
+      // In production, you might want to log this to an error tracking service
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to load tsparticles:', error)
       }
     }
   }, [])
 
-  useWindowResize(
-    handleResize,
-    150,
-    engineInitialized && !reducedMotion && mounted
-  )
-
-  // Handle page visibility (pause when tab is hidden)
-  const handleVisibilityChange = useCallback((isHidden: boolean) => {
-    if (containerRef.current && isMountedRef.current) {
-      try {
-        if (isHidden) {
-          containerRef.current.pause()
-        } else {
-          containerRef.current.play()
-        }
-      } catch (error) {
-        console.warn('Failed to pause/play particles on visibility change:', error)
-      }
-    }
-  }, [])
-
-  usePageVisibility(
-    handleVisibilityChange,
-    engineInitialized && !reducedMotion && mounted
-  )
-
-  // Memoize particle configuration to prevent unnecessary re-renders
-  const particlesConfig = useMemo(() => {
-    // Type-safe configuration object
-    const config = {
-      background: {
-        color: {
-          value: 'transparent',
-        },
-      },
-      fpsLimit: 60,
-      particles: {
-        number: {
-          value: isDark ? 80 : 60,
-          density: {
-            enable: true,
-            value_area: 800,
-          },
-        },
-        color: {
-          value: isDark
-            ? ['#60a5fa', '#3b82f6', '#93c5fd'] // Light blue tones for dark mode
-            : ['#3b82f6', '#2563eb', '#60a5fa'], // Blue tones for light mode
-        },
-        shape: {
-          type: 'circle' as const,
-        },
-        opacity: {
-          value: isDark ? { min: 0.3, max: 0.8 } : { min: 0.2, max: 0.6 },
-          animation: {
-            enable: !reducedMotion,
-            speed: 0.5,
-            sync: false,
-          },
-        },
-        size: {
-          value: { min: 1, max: 3 },
-          animation: {
-            enable: !reducedMotion,
-            speed: 2,
-            sync: false,
-          },
-        },
-        move: {
-          enable: !reducedMotion,
-          direction: 'none' as const,
-          outModes: {
-            default: 'out' as const,
-          },
-          random: true,
-          speed: { min: 0.5, max: 1.5 },
-          straight: false,
-          attract: {
-            enable: false,
-            rotateX: 600,
-            rotateY: 1200,
-          },
-        },
-        links: {
-          enable: true,
-          distance: isDark ? 150 : 120,
-          color: isDark ? '#60a5fa' : '#3b82f6',
-          opacity: isDark ? 0.3 : 0.2,
-          width: 1,
-          triangles: {
-            enable: false,
-          },
-        },
-        collisions: {
-          enable: false,
-        },
-      },
-      interactivity: {
-        detectsOn: 'window' as const,
-        events: {
-          onHover: {
-            enable: !reducedMotion,
-            mode: 'repulse' as const,
-          },
-          onClick: {
-            enable: false,
-          },
-          resize: true,
-        },
-        modes: {
-          repulse: {
-            distance: 100,
-            duration: 0.4,
-            factor: 100,
-            speed: 1,
-          },
-        },
-      },
-      detectRetina: true,
-      pauseOnBlur: true,
-      pauseOnOutsideViewport: true,
-    }
-
-    // Type assertion needed due to strict library types for partial configs
-    // The config is type-safe, but tsparticles expects a more complete type
-    // Using 'any' here is acceptable as the library's types are overly strict for partial configs
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return config as any
-  }, [isDark, reducedMotion])
-
-  // Handle container cleanup
-  const handleParticlesLoaded = useCallback(async (container?: Container) => {
-    if (isMountedRef.current && container) {
-      containerRef.current = container
-    }
-  }, [])
-
-  // Cleanup container on unmount
+  // Cleanup engine on unmount
   useEffect(() => {
     return () => {
-      if (containerRef.current) {
-        try {
-          containerRef.current.destroy()
-        } catch (error) {
-          console.warn('Error destroying particles container:', error)
-        }
-        containerRef.current = null
+      if (isParticlesEngine(engineRef.current)) {
+        engineRef.current.destroy?.()
+        engineRef.current = null
       }
     }
   }, [])
 
-  // Don't render if initialization failed, reduced motion is enabled, or not mounted
-  if (!engineInitialized || reducedMotion || !mounted) {
-    return null
-  }
+  // Memoize configurations to prevent unnecessary re-renders
+  const config = useMemo(() => {
+    return isDarkMode
+      ? createDarkModeConfig(reducedMotion)
+      : createLightModeConfig(reducedMotion)
+  }, [isDarkMode, reducedMotion])
 
-  // If initialization failed, render nothing (silent failure for background element)
-  if (engineError) {
+  // Don't render if motion is reduced or if there was a load error
+  if (reducedMotion || loadError) {
     return null
   }
 
@@ -241,12 +123,10 @@ export const AnimatedBackground = memo(function AnimatedBackground({
     >
       <Particles
         id="animated-background"
-        particlesLoaded={handleParticlesLoaded}
-        options={particlesConfig}
+        init={particlesInit}
+        options={config as unknown as ISourceOptions}
         className="w-full h-full"
       />
     </div>
   )
-})
-
-AnimatedBackground.displayName = 'AnimatedBackground'
+}

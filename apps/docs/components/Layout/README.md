@@ -6,41 +6,96 @@ This directory contains layout components for the documentation site.
 
 ### AnimatedBackground
 
-A high-performance animated particle background component for the homepage.
+An interactive particle background component that enhances the visual appeal of the home page.
 
-**Usage:**
+#### Features
+
+- **Theme-aware**: Automatically adapts to dark/light mode
+- **Accessible**: Respects `prefers-reduced-motion` preference
+- **Performant**: Optimized with 60fps limit, visibility API, and debounced resize handlers
+- **Non-intrusive**: Uses `pointer-events-none` to not interfere with page interactions
+- **Type-safe**: Full TypeScript support with proper type guards
+- **Modular**: Extracted into reusable hooks and configuration files
+- **Concurrent Rendering**: Uses `useDeferredValue` for smooth theme transitions
+
+#### Usage
+
 ```tsx
 import { AnimatedBackground } from '@/components/Layout/AnimatedBackground'
 
-<AnimatedBackground />
+export default function HomePage() {
+  return (
+    <div className="relative">
+      <AnimatedBackground />
+      {/* Your page content */}
+    </div>
+  )
+}
 ```
 
-**Features:**
-- Interactive particle system with connecting nodes
-- Theme-aware (light/dark mode)
-- Respects `prefers-reduced-motion`
-- Performance optimized (60fps, debounced resize, visibility API)
-- Fully accessible (`aria-hidden`)
+#### Props
 
-**Props:**
-- `className?: string` - Optional additional CSS classes
+```tsx
+interface AnimatedBackgroundProps {
+  className?: string // Optional additional CSS classes
+}
+```
 
-**See also:**
-- [Implementation Details](./ANIMATED_BACKGROUND_IMPLEMENTATION.md)
-- [Test File](./AnimatedBackground.test.tsx)
+#### Behavior
 
-### HeroSection
+- **Dark Mode**: Displays 50 glowing blue particles with connecting lines
+- **Light Mode**: Displays 40 subtle particles with softer connections
+- **Reduced Motion**: Component doesn't render when `prefers-reduced-motion: reduce` is enabled
+- **Page Visibility**: Animation pauses when tab is hidden to save resources
+- **Window Resize**: Automatically adjusts to window size changes (debounced)
+- **Theme Transitions**: Uses React concurrent features for smooth theme switching
 
-Hero section component with animated counter and CTAs.
+#### Architecture
 
-### FeaturesGrid
+The component is built with a modular architecture:
 
-Grid layout for displaying feature cards.
+- **Component**: `AnimatedBackground.tsx` - Main component
+- **Hooks**: 
+  - `hooks/useMediaQuery.ts` - Media query detection
+  - `hooks/useThemeDetection.ts` - Theme detection with system fallback
+  - `hooks/useDebouncedCallback.ts` - Debounced callbacks
+- **Config**: `config/particleConfigs.ts` - Particle configurations
+- **Types**: `types/particles.ts` - Type definitions and guards
 
-### Footer
+#### Technical Details
 
-Site footer component.
+- Uses `@tsparticles/react` for particle rendering
+- Custom hooks for reusable logic (media queries, theme detection)
+- Type-safe with proper type guards (no `as any`)
+- Debounced resize handlers for better performance
+- Memoized configurations to prevent unnecessary re-renders
+- Proper cleanup of event listeners and engine on unmount
+- SSR-safe (doesn't render until client-side mount)
+- Uses `useDeferredValue` for non-blocking theme updates
 
-### LiveChatDemo
+#### Testing
 
-Interactive chat demo component.
+The component has comprehensive test coverage:
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests with coverage
+pnpm test:coverage
+```
+
+**Test Files:**
+- `__tests__/AnimatedBackground.test.tsx` - Component tests
+- `hooks/__tests__/useMediaQuery.test.ts` - Media query hook tests
+- `hooks/__tests__/useThemeDetection.test.ts` - Theme detection hook tests
+- `hooks/__tests__/useDebouncedCallback.test.ts` - Debounce hook tests
+
+---
+
+### Other Components
+
+- **HeroSection**: Hero section with animated elements
+- **FeaturesGrid**: Grid layout for feature displays
+- **Footer**: Site footer component
+- **LiveChatDemo**: Interactive chat demonstration
