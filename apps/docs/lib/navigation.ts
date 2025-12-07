@@ -117,6 +117,7 @@ export const referenceNavigation: NavItem[] = [
           { title: 'RetryButton', href: '/reference/components/retry-button' },
           { title: 'VoiceInput', href: '/reference/components/voice-input' },
           { title: 'FileUpload', href: '/reference/components/file-upload' },
+          { title: 'StructuredInputBuilder', href: '/reference/components/structured-input-builder' },
         ],
       },
       {
@@ -207,6 +208,9 @@ export const cookbookNavigation: NavItem[] = [
     title: 'Getting Started',
     items: [
       { title: '3-Line Quick Start', href: '/cookbook/quick-start-3-lines' },
+      { title: 'Memory Integration', href: '/cookbook/memory-integration' },
+      { title: 'Streaming Setup', href: '/cookbook/streaming-setup' },
+      { title: 'Error Handling', href: '/cookbook/error-handling' },
       { title: 'OpenAI Streaming Chat', href: '/cookbook/openai-streaming-chat' },
       { title: 'Next.js Integration', href: '/cookbook/nextjs-integration' },
       { title: 'Custom Theming', href: '/cookbook/custom-theming' },

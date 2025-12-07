@@ -531,7 +531,7 @@ pnpm typecheck              # Type check
 - [x] `AdvancedChatInput` documentation (exists, could be enhanced)
 - [x] `VoiceInput` documentation (enhanced from placeholder)
 - [x] `FileUpload` documentation (exists, complete)
-- [ ] `StructuredInputBuilder` documentation
+- [x] `StructuredInputBuilder` documentation (created)
 - [ ] Integration examples
 
 #### Task 2.2: Streaming Components
@@ -581,9 +581,9 @@ pnpm typecheck              # Type check
 
 #### Task 4.1: Quick Start Recipes
 - [x] 3-line setup recipe (completed in Phase 1)
-- [ ] Memory integration recipe
-- [ ] Streaming setup recipe
-- [ ] Error handling recipe
+- [x] Memory integration recipe (created)
+- [x] Streaming setup recipe (created)
+- [x] Error handling recipe (created)
 
 #### Task 4.2: Advanced Patterns
 - [ ] Multi-modal chat recipe

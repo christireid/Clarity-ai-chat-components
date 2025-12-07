@@ -1,391 +1,380 @@
-import React from 'react'
-import { Metadata } from 'next'
-import { CodeBlock } from '@/components/MDX/CodeBlock'
-import { CodePlayground } from '@/components/Playground/CodePlayground'
+'use client'
+
+import type { Metadata } from 'next'
+import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import { Pagination } from '@/components/Navigation/Pagination'
+import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
 import { Callout } from '@/components/MDX/Callout'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Error Handling - Cookbook - Clarity Chat',
-  description: 'Handle API errors, network failures, and edge cases gracefully in your chat app.',
+  title: 'Error Handling Recipe | Clarity Chat Cookbook',
+  description: 'Learn how to handle errors gracefully in your chat application with retry logic and user-friendly messages.',
 }
 
 export default function ErrorHandlingPage() {
   return (
-    <div className="docs-content">
-      <div className="docs-header">
-        <span className="docs-badge">Cookbook</span>
-        <h1>Robust Error Handling</h1>
-        <p className="docs-lead">
-          Things go wrong. APIs fail, networks drop, tokens run out. Handle errors gracefully so users aren't confused.
+    <>
+      <Breadcrumbs />
+
+      <h1>Error Handling Recipe</h1>
+
+      <p className="lead">
+        Implement robust error handling in your chat application with retry logic,
+        user-friendly messages, and graceful degradation.
+      </p>
+
+      <Callout type="warning" title="Errors Happen">
+        <p>
+          Network failures, API rate limits, and service outages are inevitable.
+          Good error handling makes your app feel reliable even when things go wrong.
         </p>
-      </div>
+      </Callout>
 
-      <section className="docs-section">
-        <h2>Common Errors You'll Face</h2>
-        <ul>
-          <li>❌ Rate limits (429)</li>
-          <li>❌ Network timeouts</li>
-          <li>❌ Invalid API keys (401)</li>
-          <li>❌ Token limits exceeded</li>
-          <li>❌ Model errors (500)</li>
-        </ul>
-      </section>
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Quick Start</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          ClarityChat includes built-in error handling:
+        </p>
+        
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { ClarityChat } from '@clarity-chat/react'
+import '@clarity-chat/react/styles.css'
 
-      <section className="docs-section">
-        <h2>Pattern 1: Retry with Exponential Backoff</h2>
-        <CodeBlock
-          language="typescript"
-          code={`// lib/retry.ts
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3,
-  baseDelay = 1000
-): Promise<T> {
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      return await fn()
-    } catch (error: any) {
-      const isLastAttempt = attempt === maxRetries - 1
-      const isRetryable = error?.status === 429 || error?.status >= 500
-
-      if (isLastAttempt || !isRetryable) {
-        throw error
-      }
-
-      // Wait before retry: 1s, 2s, 4s
-      const delay = baseDelay * Math.pow(2, attempt)
-      await new Promise(resolve => setTimeout(resolve, delay))
-    }
-  }
-  throw new Error('Max retries exceeded')
-}
-
-// Usage in API route
-export async function POST(req: Request) {
-  const response = await withRetry(
-    () => openai.chat.completions.create({ ... }),
-    3  // Retry up to 3 times
+function Chat() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      onError={(error) => {
+        // Custom error handling
+        console.error('Chat error:', error)
+      }}
+    />
   )
-  return response
 }`}
         />
       </section>
 
-      <section className="docs-section">
-        <h2>Pattern 2: Show Errors to Users</h2>
-        <CodeBlock
-          language="typescript"
-          code={`// In your chat component
-import { RetryButton } from '@clarity-chat/react'
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Error Types</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Common error types you should handle:
+        </p>
 
-const handleSendMessage = async (content: string) => {
-  try {
-    const response = await fetch('/api/chat', { ... })
-    
-    if (!response.ok) {
-      const error = await response.json()
-      
-      // Show error in message
-      setMessages(prev => [...prev, {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: getErrorMessage(response.status),
-        status: 'error',
-        error: error.message
-      }])
-      
-      return
-    }
-    
-    // Handle success...
-  } catch (error) {
-    console.error('Chat error:', error)
-    // Show error state
-  }
-}
+        <h3 className="text-xl font-semibold mt-6 mb-4">Network Errors</h3>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-function getErrorMessage(status: number): string {
-  switch (status) {
-    case 429:
-      return "We're getting too many requests. Please wait a moment and try again."
-    case 401:
-      return "Authentication failed. Please sign in again."
-    case 500:
-      return "Our AI is having trouble. We're looking into it."
-    default:
-      return "Something went wrong. Please try again."
-  }
+function Chat() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      onError={(error) => {
+        if (error.message.includes('network') || error.message.includes('fetch')) {
+          // Network error - show retry option
+          toast.error('Network error. Check your connection and try again.')
+        }
+      }}
+    />
+  )
+}`}
+        />
+
+        <h3 className="text-xl font-semibold mt-6 mb-4">Rate Limit Errors</h3>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { ClarityChat } from '@clarity-chat/react'
+
+function Chat() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      onError={(error) => {
+        if (error.message.includes('rate limit') || error.status === 429) {
+          // Rate limit - show wait message
+          toast.error('Too many requests. Please wait a moment and try again.')
+        }
+      }}
+    />
+  )
+}`}
+        />
+
+        <h3 className="text-xl font-semibold mt-6 mb-4">Authentication Errors</h3>
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { ClarityChat } from '@clarity-chat/react'
+
+function Chat() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      onError={(error) => {
+        if (error.status === 401 || error.status === 403) {
+          // Authentication error - redirect to login
+          router.push('/login')
+        }
+      }}
+    />
+  )
 }`}
         />
       </section>
 
-      <section className="docs-section">
-        <h2>Pattern 3: Message-Level Retry</h2>
-        <CodeBlock
-          language="typescript"
-          code={`import { Message, RetryButton } from '@clarity-chat/react'
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">With useClarityChat</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Access error state directly:
+        </p>
+        
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { useClarityChat, ChatWindow } from '@clarity-chat/react'
 
-function ChatMessage({ message }) {
-  const [isRetrying, setIsRetrying] = useState(false)
+function Chat() {
+  const { messages, append, error, isLoading } = useClarityChat({
+    api: '/api/chat',
+  })
 
-  const handleRetry = async () => {
-    setIsRetrying(true)
-    
-    try {
-      // Retry the failed message
-      await sendMessage(message.content)
-    } finally {
-      setIsRetrying(false)
-    }
+  if (error) {
+    return (
+      <div className="error-container">
+        <p className="error-message">
+          {error.message || 'Something went wrong. Please try again.'}
+        </p>
+        <button onClick={() => window.location.reload()}>
+          Retry
+        </button>
+      </div>
+    )
   }
 
   return (
-    <div>
-      <Message message={message} />
-      
-      {message.status === 'error' && (
-        <RetryButton
-          onRetry={handleRetry}
-          errorType="network"
-          isLoading={isRetrying}
-        />
-      )}
-    </div>
+    <ChatWindow
+      messages={messages}
+      isLoading={isLoading}
+      onSendMessage={async (content) => {
+        try {
+          await append({ role: 'user', content })
+        } catch (err) {
+          console.error('Failed to send message:', err)
+          toast.error('Failed to send message. Please try again.')
+        }
+      }}
+    />
   )
 }`}
         />
       </section>
 
-      <section className="docs-section">
-        <h2>Pattern 4: Error Boundaries</h2>
-        <CodeBlock
-          language="typescript"
-          code={`import { ErrorBoundary } from '@clarity-chat/react'
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Retry Logic</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Implement automatic retry with exponential backoff:
+        </p>
+        
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { useClarityChat } from '@clarity-chat/react'
+import { useCallback } from 'react'
 
-export default function ChatPage() {
+function Chat() {
+  const { append, error } = useClarityChat({
+    api: '/api/chat',
+  })
+
+  const retryWithBackoff = useCallback(async (
+    fn: () => Promise<void>,
+    maxRetries = 3
+  ) => {
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        await fn()
+        return // Success
+      } catch (err) {
+        if (i === maxRetries - 1) throw err // Last attempt failed
+        
+        // Exponential backoff: 1s, 2s, 4s
+        const delay = Math.pow(2, i) * 1000
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
+    }
+  }, [])
+
+  const handleSend = async (content: string) => {
+    await retryWithBackoff(async () => {
+      await append({ role: 'user', content })
+    })
+  }
+
+  return <ChatWindow onSendMessage={handleSend} />
+}`}
+        />
+      </section>
+
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Error Boundaries</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Use React Error Boundaries for catastrophic errors:
+        </p>
+        
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { ErrorBoundary } from '@clarity-chat/react'
+import { ClarityChat } from '@clarity-chat/react'
+
+function ChatApp() {
   return (
     <ErrorBoundary
-      fallback={(error, reset) => (
-        <div className="p-8 text-center">
+      fallback={({ error, resetError }) => (
+        <div className="error-boundary">
           <h2>Something went wrong</h2>
-          <p className="text-muted-foreground mt-2">
-            {error.message}
-          </p>
-          <button
-            onClick={reset}
-            className="mt-4 px-4 py-2 bg-primary text-white rounded"
-          >
-            Try Again
-          </button>
+          <p>{error.message}</p>
+          <button onClick={resetError}>Try again</button>
         </div>
       )}
-      onError={(error, errorInfo) => {
-        // Log to error tracking service
-        console.error('Chat error:', error, errorInfo)
-      }}
     >
-      <ChatWindow {...props} />
+      <ClarityChat api="/api/chat" />
     </ErrorBoundary>
   )
 }`}
         />
       </section>
 
-      <section className="docs-section">
-        <h2>Pattern 5: Network Status Detection</h2>
-        <CodeBlock
-          language="typescript"
-          code={`import { NetworkStatus } from '@clarity-chat/react'
-import { useState, useEffect } from 'react'
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">User-Friendly Error Messages</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Transform technical errors into user-friendly messages:
+        </p>
+        
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`function getErrorMessage(error: Error): string {
+  const message = error.message.toLowerCase()
 
-function ChatWithNetworkDetection() {
-  const [isOnline, setIsOnline] = useState(true)
-
-  useEffect(() => {
-    setIsOnline(navigator.onLine)
-    
-    const handleOnline = () => setIsOnline(true)
-    const handleOffline = () => setIsOnline(false)
-    
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-    
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  }, [])
-
-  return (
-    <>
-      <NetworkStatus isOnline={isOnline} />
-      <ChatWindow
-        {...props}
-        disabled={!isOnline}
-      />
-    </>
-  )
-}`}
-        />
-      </section>
-
-      <section className="docs-section">
-        <h2>Pattern 6: Graceful Degradation</h2>
-        <CodeBlock
-          language="typescript"
-          code={`// Fallback when streaming fails
-async function sendMessage(content: string) {
-  try {
-    // Try streaming first
-    return await sendStreamingMessage(content)
-  } catch (error) {
-    console.warn('Streaming failed, falling back to non-streaming')
-    // Fallback to non-streaming
-    return await sendRegularMessage(content)
+  if (message.includes('network') || message.includes('fetch')) {
+    return 'Unable to connect. Please check your internet connection.'
   }
+
+  if (message.includes('rate limit') || message.includes('429')) {
+    return 'Too many requests. Please wait a moment and try again.'
+  }
+
+  if (message.includes('timeout')) {
+    return 'Request timed out. Please try again.'
+  }
+
+  if (message.includes('unauthorized') || message.includes('401')) {
+    return 'Please sign in to continue.'
+  }
+
+  if (message.includes('forbidden') || message.includes('403')) {
+    return 'You don\'t have permission to perform this action.'
+  }
+
+  if (message.includes('not found') || message.includes('404')) {
+    return 'The requested resource was not found.'
+  }
+
+  if (message.includes('server error') || message.includes('500')) {
+    return 'Server error. Our team has been notified. Please try again later.'
+  }
+
+  // Default message
+  return 'Something went wrong. Please try again.'
 }
 
-// Fallback when AI fails
-async function sendStreamingMessage(content: string) {
-  try {
-    return await fetch('/api/chat', { ... })
-  } catch (error) {
-    // Show cached/pre-defined response
-    return {
-      content: "I'm having trouble right now. Here's what I can tell you: ..."
-    }
-  }
-}`}
+// Usage
+<ClarityChat
+  api="/api/chat"
+  onError={(error) => {
+    const userMessage = getErrorMessage(error)
+    toast.error(userMessage)
+  }}
+/>`}
         />
       </section>
 
-      <section className="docs-section">
-        <h2>Complete Error Handling Example</h2>
-        <CodeBlock
-          language="typescript"
-          code={`'use client'
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Error Logging</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
+          Log errors for debugging and monitoring:
+        </p>
+        
+        <EnhancedCodeBlock
+          language="tsx"
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-import { ChatWindow, Toast } from '@clarity-chat/react'
-import { useState } from 'react'
-
-export default function RobustChat() {
-  const [messages, setMessages] = useState([])
-  const [error, setError] = useState(null)
-
-  const handleSendMessage = async (content: string) => {
-    setError(null)
-    
-    const userMsg = {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-      createdAt: new Date()
-    }
-    setMessages(prev => [...prev, userMsg])
-
-    let retryCount = 0
-    const maxRetries = 3
-
-    while (retryCount < maxRetries) {
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: [...messages, userMsg] })
+function Chat() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      onError={(error) => {
+        // Log to error tracking service
+        errorTracking.captureException(error, {
+          tags: { component: 'ClarityChat' },
+          extra: {
+            api: '/api/chat',
+            timestamp: new Date().toISOString(),
+          },
         })
 
-        if (response.status === 429) {
-          // Rate limited - wait and retry
-          retryCount++
-          await new Promise(r => setTimeout(r, 2000 * retryCount))
-          continue
+        // Also log to console in development
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Chat error:', error)
         }
 
-        if (!response.ok) {
-          throw new Error(\`API error: \${response.status}\`)
-        }
-
-        // Success - handle response
-        const data = await response.json()
-        setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: data.content,
-          createdAt: new Date()
-        }])
-        return
-
-      } catch (err: any) {
-        console.error(\`Attempt \${retryCount + 1} failed:\`, err)
-        retryCount++
-        
-        if (retryCount === maxRetries) {
-          setError(err.message)
-          setMessages(prev => [...prev, {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            content: 'Sorry, I encountered an error. Please try again.',
-            status: 'error',
-            createdAt: new Date()
-          }])
-        }
-      }
-    }
-  }
-
-  return (
-    <>
-      {error && (
-        <Toast
-          type="error"
-          message={error}
-          onClose={() => setError(null)}
-        />
-      )}
-      <ChatWindow
-        messages={messages}
-        onSendMessage={handleSendMessage}
-      />
-    </>
+        // Show user-friendly message
+        toast.error(getErrorMessage(error))
+      }}
+    />
   )
 }`}
         />
       </section>
 
-      <section className="docs-section">
-        <h2>Best Practices</h2>
-        <ul>
-          <li>Always validate API responses</li>
-          <li>Use exponential backoff for retries</li>
-          <li>Show clear error messages to users</li>
-          <li>Log errors for debugging</li>
-          <li>Provide retry functionality</li>
-          <li>Handle offline gracefully</li>
-          <li>Use Error Boundaries for React errors</li>
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Best Practices</h2>
+        <ul className="list-disc list-inside mb-4 space-y-2 text-gray-600 dark:text-gray-400">
+          <li><strong>Always handle errors</strong> - Never let errors go unhandled</li>
+          <li><strong>Show user-friendly messages</strong> - Don't expose technical details</li>
+          <li><strong>Provide retry options</strong> - Let users retry failed operations</li>
+          <li><strong>Log errors for debugging</strong> - Use error tracking services</li>
+          <li><strong>Handle different error types</strong> - Network, rate limit, auth, etc.</li>
+          <li><strong>Use error boundaries</strong> - Catch catastrophic errors</li>
+          <li><strong>Implement retry logic</strong> - Automatic retry with backoff</li>
         </ul>
-
-        <Callout type="warning" title="Don't Show Technical Errors">
-          Users don't care about "500 Internal Server Error". Show: "Something
-          went wrong. We're fixing it." Keep it human.
-        </Callout>
       </section>
 
-      <section className="docs-section">
-        <h2>Related Recipes</h2>
+      <section className="my-12">
+        <h2 className="text-2xl font-bold mb-4">Related</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a href="/cookbook/rate-limiting" className="docs-card">
-            <h3>Rate Limiting</h3>
-            <p>Prevent hitting limits</p>
+          <a href="/reference/components/clarity-chat" className="docs-card">
+            <h3>ClarityChat Component</h3>
+            <p>Component with built-in error handling</p>
           </a>
-          <a href="/cookbook/analytics-tracking" className="docs-card">
-            <h3>Analytics</h3>
-            <p>Track errors</p>
+          <a href="/reference/hooks/use-clarity-chat" className="docs-card">
+            <h3>useClarityChat Hook</h3>
+            <p>Hook with error state</p>
+          </a>
+          <a href="/guides/error-handling" className="docs-card">
+            <h3>Error Handling Guide</h3>
+            <p>Complete error handling guide</p>
+          </a>
+          <a href="/reference/components/error-boundary" className="docs-card">
+            <h3>ErrorBoundary Component</h3>
+            <p>React error boundary component</p>
           </a>
         </div>
       </section>
-    </div>
+
+      <Pagination
+        prev={{ title: 'Streaming Setup', href: '/cookbook/streaming-setup' }}
+        next={{ title: 'Multi-Modal Chat', href: '/cookbook/multi-modal-chat' }}
+      />
+    </>
   )
 }
-
