@@ -1,52 +1,53 @@
 import { useEffect, useRef } from 'react'
-
-type VisibilityCallback = (isHidden: boolean) => void
+import type { Container } from '@tsparticles/engine'
 
 /**
- * Hook to handle page visibility changes (when tab becomes hidden/visible).
- * Useful for pausing/resuming animations or other expensive operations.
- *
- * @param callback - Function called with `true` when hidden, `false` when visible
- * @param enabled - Whether the visibility listener is enabled (default: true)
- *
+ * Hook to pause/play particle animations based on page visibility.
+ * Uses the Page Visibility API to improve performance when the tab is hidden.
+ * 
+ * @param container - The particles container instance (can be null initially)
+ * @param enabled - Whether to enable visibility handling (default: true)
+ * 
  * @example
  * ```tsx
- * usePageVisibility((isHidden) => {
- *   if (isHidden) {
- *     // Pause animations
- *   } else {
- *     // Resume animations
- *   }
- * })
+ * const containerRef = useRef<Container | null>(null)
+ * usePageVisibility(containerRef.current, isInitialized)
  * ```
  */
 export function usePageVisibility(
-  callback: VisibilityCallback,
+  container: Container | null,
   enabled: boolean = true
 ): void {
-  const callbackRef = useRef(callback)
-  const isMountedRef = useRef(true)
-
-  // Keep callback ref up to date
+  // Use a ref to store the latest container value to avoid stale closures
+  const containerRef = useRef<Container | null>(container)
+  
+  // Update ref when container changes
   useEffect(() => {
-    callbackRef.current = callback
-  }, [callback])
+    containerRef.current = container
+  }, [container])
 
   useEffect(() => {
-    isMountedRef.current = true
-
     if (!enabled || typeof document === 'undefined') return
 
     const handleVisibilityChange = () => {
-      if (isMountedRef.current) {
-        callbackRef.current(document.hidden)
+      const currentContainer = containerRef.current
+      if (!currentContainer) return
+
+      try {
+        if (document.hidden) {
+          currentContainer.pause()
+        } else {
+          currentContainer.play()
+        }
+      } catch {
+        // Silently handle errors - container may be destroyed
       }
     }
 
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-      isMountedRef.current = false
+    // Only set up listener if container exists
+    if (containerRef.current) {
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+      return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [enabled])
+  }, [enabled, container]) // Include container to re-run when it becomes available
 }

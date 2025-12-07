@@ -16,7 +16,7 @@ Object.defineProperty(window, 'scrollTo', {
   value: vi.fn(),
 })
 
-// Mock window.matchMedia
+// Mock window.matchMedia (can be overridden in tests)
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => {
@@ -58,5 +58,3 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 } as any
-
-// Note: cn utility from @/lib/utils should work now that clsx and tailwind-merge are installed

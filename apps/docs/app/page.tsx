@@ -1,11 +1,20 @@
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { HeroSection } from '@/components/Layout/HeroSection'
 import { FeaturesGrid } from '@/components/Layout/FeaturesGrid'
 import { LiveChatDemo } from '@/components/Layout/LiveChatDemo'
 import { CodeExample } from '@/components/Demo/CodeExample'
 import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
 import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
-import { AnimatedBackground } from '@/components/Layout/AnimatedBackground'
+
+// Lazy load the animated background to reduce initial bundle size
+// This component is decorative and can load after initial render
+const AnimatedBackground = dynamic(
+  () => import('@/components/Layout/AnimatedBackground').then((mod) => mod.AnimatedBackground),
+  {
+    ssr: false, // Particle animations require browser APIs
+  }
+)
 import {
   Sparkles,
   Zap,

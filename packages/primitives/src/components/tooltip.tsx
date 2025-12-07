@@ -4,35 +4,66 @@ import * as React from 'react'
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import { cn } from '../lib/utils'
 
+// ============================================================================
+// Tooltip Provider (shadcn/ui pattern)
+// ============================================================================
+
 const TooltipProvider = TooltipPrimitive.Provider
 
-const Tooltip = TooltipPrimitive.Root
+// ============================================================================
+// Core Tooltip Components (shadcn/ui pattern)
+// ============================================================================
 
+const TooltipRoot = TooltipPrimitive.Root
 const TooltipTrigger = TooltipPrimitive.Trigger
+const TooltipPortal = TooltipPrimitive.Portal
 
 const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
+  React.ComponentRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Content
-    ref={ref}
-    sideOffset={sideOffset}
-    className={cn(
-      'z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-      className
-    )}
-    {...props}
-  />
+  <TooltipPrimitive.Portal>
+    <TooltipPrimitive.Content
+      ref={ref}
+      sideOffset={sideOffset}
+      className={cn(
+        'z-50 overflow-hidden rounded-lg border bg-popover px-3 py-1.5 text-xs font-medium text-popover-foreground shadow-md',
+        'animate-in fade-in-0 zoom-in-95',
+        'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+        'data-[side=bottom]:slide-in-from-top-2',
+        'data-[side=left]:slide-in-from-right-2',
+        'data-[side=right]:slide-in-from-left-2',
+        'data-[side=top]:slide-in-from-bottom-2',
+        className
+      )}
+      {...props}
+    />
+  </TooltipPrimitive.Portal>
 ))
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
-// Legacy API compatibility wrapper
+const TooltipArrow = React.forwardRef<
+  React.ComponentRef<typeof TooltipPrimitive.Arrow>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>
+>(({ className, ...props }, ref) => (
+  <TooltipPrimitive.Arrow
+    ref={ref}
+    className={cn('fill-popover', className)}
+    {...props}
+  />
+))
+TooltipArrow.displayName = 'TooltipArrow'
+
+// ============================================================================
+// Convenience Tooltip Component (Legacy API preserved)
+// ============================================================================
+
 export interface TooltipProps {
   children: React.ReactNode
   content: React.ReactNode
   side?: 'top' | 'right' | 'bottom' | 'left'
   align?: 'start' | 'center' | 'end'
-  delay?: number
+  delay?: number // milliseconds (delayDuration)
   showArrow?: boolean
   className?: string
   contentClassName?: string
@@ -41,79 +72,106 @@ export interface TooltipProps {
   onOpenChange?: (open: boolean) => void
 }
 
-export const TooltipLegacy: React.FC<TooltipProps> = ({
+/**
+ * Convenience Tooltip component that wraps Radix UI primitives
+ * Maintains backward compatibility with existing API
+ * 
+ * NOTE: Each Tooltip instance creates its own TooltipProvider for self-contained
+ * behavior. For apps with many tooltips, consider wrapping your app in a single
+ * <TooltipProvider> and using the primitive components (TooltipRoot, TooltipTrigger, 
+ * TooltipContent) directly for better performance.
+ */
+export const Tooltip: React.FC<TooltipProps> = ({
   children,
   content,
   side = 'top',
   align = 'center',
   delay = 200,
-  showArrow = true, // Preserved for API compatibility - Radix doesn't support arrows natively
+  showArrow = false,
   className,
   contentClassName,
   disabled = false,
-  open: controlledOpen,
+  open,
   onOpenChange,
 }) => {
-  const [internalOpen, setInternalOpen] = React.useState(false)
-  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
-
-  const setOpen = React.useCallback(
-    (newOpen: boolean) => {
-      if (controlledOpen === undefined) {
-        setInternalOpen(newOpen)
-      }
-      onOpenChange?.(newOpen)
-    },
-    [controlledOpen, onOpenChange]
-  )
-
   if (disabled) {
     return <>{children}</>
   }
 
-  // Validate children is a valid React element for asChild
-  if (!React.isValidElement(children)) {
-    console.warn('Tooltip: children must be a valid React element')
-    return <>{children}</>
-  }
-
-  // Apply className to the child element if it's a valid element
-  const childWithClassName = React.isValidElement(children)
-    ? React.cloneElement(children as React.ReactElement<React.HTMLAttributes<HTMLElement>>, {
-        className: cn(className, (children as React.ReactElement<React.HTMLAttributes<HTMLElement>>).props?.className),
-      })
-    : children
+  // If children is a valid React element, use it directly with asChild
+  // Otherwise, wrap in a span to ensure Radix has a valid element to work with
+  const isValidChild = React.isValidElement(children)
+  
+  const triggerElement = isValidChild ? (
+    // Clone element to merge className if provided
+    className ? 
+      React.cloneElement(children as React.ReactElement<{ className?: string }>, {
+        className: cn((children as React.ReactElement<{ className?: string }>).props.className, className),
+      }) : 
+      children
+  ) : (
+    <span className={cn('inline-block', className)}>{children}</span>
+  )
 
   return (
-    <TooltipProvider delayDuration={delay}>
-      <Tooltip open={open} onOpenChange={setOpen}>
-        <TooltipTrigger asChild>
-          {childWithClassName}
-        </TooltipTrigger>
-        <TooltipContent 
-          side={side} 
-          align={align} 
-          className={cn(contentClassName, showArrow && 'relative')}
-        >
-          {content}
-          {showArrow === true && (
-            <div
-              className="absolute z-50 h-2 w-2 rotate-45 border border-border bg-popover"
-              style={{
-                [side === 'top' ? 'bottom' : side === 'bottom' ? 'top' : side === 'left' ? 'right' : 'left']: '-4px',
-                [side === 'top' || side === 'bottom' ? 'left' : 'top']: '50%',
-                transform: `translate${side === 'top' || side === 'bottom' ? 'X' : 'Y'}(-50%)`,
-              }}
-              data-testid="tooltip-arrow"
-            />
-          )}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <TooltipPrimitive.Provider delayDuration={delay}>
+      <TooltipPrimitive.Root open={open} onOpenChange={onOpenChange}>
+        <TooltipPrimitive.Trigger asChild>
+          {triggerElement}
+        </TooltipPrimitive.Trigger>
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Content
+            side={side}
+            align={align}
+            sideOffset={8}
+            className={cn(
+              'z-50 overflow-hidden rounded-lg border bg-popover px-3 py-1.5 text-xs font-medium text-popover-foreground shadow-md backdrop-blur-sm',
+              'animate-in fade-in-0 zoom-in-95',
+              'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+              'data-[side=bottom]:slide-in-from-top-2',
+              'data-[side=left]:slide-in-from-right-2',
+              'data-[side=right]:slide-in-from-left-2',
+              'data-[side=top]:slide-in-from-bottom-2',
+              contentClassName
+            )}
+          >
+            {content}
+            {showArrow && (
+              <TooltipPrimitive.Arrow className="fill-popover" />
+            )}
+          </TooltipPrimitive.Content>
+        </TooltipPrimitive.Portal>
+      </TooltipPrimitive.Root>
+    </TooltipPrimitive.Provider>
   )
 }
 
-// Export both new and legacy APIs
-export { TooltipProvider, TooltipTrigger, TooltipContent }
-// Default export for backward compatibility
-export { TooltipLegacy as Tooltip }
+// ============================================================================
+// Simple Tooltip (Alternative API - preserved)
+// ============================================================================
+
+export const SimpleTooltip: React.FC<{
+  children: React.ReactNode
+  text: string
+  side?: 'top' | 'right' | 'bottom' | 'left'
+  delay?: number
+}> = ({ children, text, side = 'top', delay = 200 }) => {
+  return (
+    <Tooltip content={text} side={side} delay={delay}>
+      {children}
+    </Tooltip>
+  )
+}
+
+// ============================================================================
+// Exports
+// ============================================================================
+
+export {
+  TooltipProvider,
+  TooltipRoot,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipPortal,
+  TooltipArrow,
+}

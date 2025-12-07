@@ -1,32 +1,25 @@
-import { useEffect, useRef, useState } from 'react'
-import type { Engine } from '@tsparticles/engine'
+import { useEffect, useState, useRef } from 'react'
+import { initParticlesEngine } from '@tsparticles/react'
 import { loadSlim } from '@tsparticles/slim'
-
-// Dynamic import to reduce initial bundle size
-let initParticlesEnginePromise: Promise<typeof import('@tsparticles/react')> | null = null
-
-async function getInitParticlesEngine() {
-  if (!initParticlesEnginePromise) {
-    initParticlesEnginePromise = import('@tsparticles/react')
-  }
-  const module = await initParticlesEnginePromise
-  return module.initParticlesEngine
-}
+import type { Engine } from '@tsparticles/engine'
 
 interface UseParticlesEngineResult {
+  /** Whether the engine has been initialized */
   isInitialized: boolean
+  /** Error that occurred during initialization, if any */
   error: Error | null
+  /** Whether initialization is in progress */
+  isLoading: boolean
 }
 
 /**
  * Hook to initialize the tsparticles engine with error handling and cleanup.
- * Handles async initialization and prevents memory leaks on unmount.
- *
- * @returns Object with `isInitialized` boolean and `error` Error | null
- *
+ * 
+ * @returns Object containing initialization state and error
+ * 
  * @example
  * ```tsx
- * const { isInitialized, error } = useParticlesEngine()
+ * const { isInitialized, error, isLoading } = useParticlesEngine()
  * if (error) {
  *   // Handle error
  * }
@@ -35,40 +28,38 @@ interface UseParticlesEngineResult {
 export function useParticlesEngine(): UseParticlesEngineResult {
   const [isInitialized, setIsInitialized] = useState(false)
   const [error, setError] = useState<Error | null>(null)
-  const isMountedRef = useRef(true)
-  const cancelledRef = useRef(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const initAbortedRef = useRef(false)
 
   useEffect(() => {
-    isMountedRef.current = true
-    cancelledRef.current = false
+    let isMounted = true
 
-    const initEngine = async () => {
-      try {
-        const initParticlesEngine = await getInitParticlesEngine()
-        await initParticlesEngine(async (engine: Engine) => {
-          await loadSlim(engine)
-        })
+    setIsLoading(true)
+    setError(null)
 
-        if (!cancelledRef.current && isMountedRef.current) {
+    initParticlesEngine(async (engine: Engine) => {
+      await loadSlim(engine)
+    })
+      .then(() => {
+        if (isMounted && !initAbortedRef.current) {
           setIsInitialized(true)
           setError(null)
+          setIsLoading(false)
         }
-      } catch (err) {
-        if (!cancelledRef.current && isMountedRef.current) {
-          const error = err instanceof Error ? err : new Error('Failed to initialize particles engine')
-          setError(error)
-          console.error('Failed to initialize particles engine:', error)
+      })
+      .catch((err: Error) => {
+        if (isMounted && !initAbortedRef.current) {
+          setError(err)
+          setIsInitialized(false)
+          setIsLoading(false)
         }
-      }
-    }
-
-    initEngine()
+      })
 
     return () => {
-      cancelledRef.current = true
-      isMountedRef.current = false
+      isMounted = false
+      initAbortedRef.current = true
     }
   }, [])
 
-  return { isInitialized, error }
+  return { isInitialized, error, isLoading }
 }

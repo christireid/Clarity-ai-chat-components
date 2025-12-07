@@ -6,7 +6,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'happy-dom',
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+    css: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -21,7 +23,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '.'),
+      '@': path.resolve(__dirname, './'),
       '@/components': path.resolve(__dirname, './components'),
       '@/lib': path.resolve(__dirname, './lib'),
       '@/styles': path.resolve(__dirname, './styles'),
