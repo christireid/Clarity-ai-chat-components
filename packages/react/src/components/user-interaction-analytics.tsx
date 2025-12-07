@@ -699,7 +699,12 @@ export function UserInteractionAnalytics({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            transition={{ 
+              // Framer Motion 12: Spring view transitions
+              type: 'spring',
+              damping: 25,
+              stiffness: 300,
+            }}
           >
             {selectedView === 'overview' && renderOverview()}
             {selectedView === 'features' && renderFeatures()}
