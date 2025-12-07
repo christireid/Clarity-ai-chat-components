@@ -20,8 +20,9 @@ export interface ButtonProps extends ShadcnButtonProps {
   loading?: boolean
   
   /**
-   * Whether to show ripple effect on click
-   * Note: This is from the legacy button and not yet implemented
+   * @deprecated Ripple effect is not available in the shadcn Button.
+   * This prop is accepted for backward compatibility but has no effect.
+   * Remove this prop from your code - it does nothing.
    */
   ripple?: boolean
 }

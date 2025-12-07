@@ -7,6 +7,18 @@
 // - Focus management  
 // - Browser compatibility
 // - Screen reader support
+//
+// MIGRATION STRATEGY:
+// The default exports (Button, Dialog, etc.) now point to shadcn/ui components
+// instead of the custom components that were previously here. This allows all
+// existing imports to automatically use shadcn without code changes.
+//
+// Example: `import { Button } from '@clarity-chat/primitives'`
+// - Before migration: pointed to ./components/button (custom)
+// - After migration: points to ./components/ui/button-enhanced (shadcn)
+//
+// The custom components were deleted. For backward compatibility, shadcn
+// components are also exported with a `Shadcn` prefix.
 // ============================================================================
 
 // Button (Enhanced with loading state)
