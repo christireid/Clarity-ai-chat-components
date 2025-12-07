@@ -19,12 +19,12 @@
 - **Duration:** ~60ms
 
 ### Code Coverage
-- **Statements:** 92.53%
+- **Statements:** 92.85%
 - **Branches:** 74.07%
 - **Functions:** 88.88%
-- **Lines:** 92.06%
+- **Lines:** 92.42%
 
-**Uncovered Lines:** Minor edge cases in event handlers (lines 29, 49-50, 70-71) - acceptable for production.
+**Uncovered Lines:** Minor edge cases in event handlers (lines 29, 49-50, 71-72) - acceptable for production.
 
 ---
 
