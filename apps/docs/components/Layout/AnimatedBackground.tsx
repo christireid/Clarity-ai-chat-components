@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useDeferredValue } from 'react'
 import dynamic from 'next/dynamic'
 import type { ISourceOptions } from '@tsparticles/engine'
 import { cn } from '@/lib/utils'
@@ -43,6 +43,7 @@ interface AnimatedBackgroundProps {
  * - Respects prefers-reduced-motion accessibility preference
  * - High-performance with 60fps target
  * - Non-intrusive (behind content, pointer-events: none)
+ * - Uses React concurrent features (useDeferredValue) for smooth theme transitions
  * 
  * @param className - Optional additional CSS classes
  * 
@@ -55,7 +56,10 @@ export function AnimatedBackground({ className }: AnimatedBackgroundProps) {
   const mounted = useMounted()
   const prefersReducedMotion = usePrefersReducedMotion()
   const { isInitialized, hasError } = useParticlesEngine()
-  const isDark = useIsDark()
+  const isDarkRaw = useIsDark()
+  
+  // Use deferred value for theme to prevent blocking renders during theme transitions
+  const isDark = useDeferredValue(isDarkRaw)
 
   // Particle configuration based on theme and accessibility preferences
   const particlesConfig: ISourceOptions = useMemo(() => {

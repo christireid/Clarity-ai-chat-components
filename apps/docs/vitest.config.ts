@@ -9,10 +9,25 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     css: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        '**/*.config.ts',
+        '**/*.d.ts',
+        'app/**',
+        'next.config.*',
+      ],
+    },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './'),
+      '@/components': path.resolve(__dirname, './components'),
+      '@/lib': path.resolve(__dirname, './lib'),
+      '@/styles': path.resolve(__dirname, './styles'),
+      '@/content': path.resolve(__dirname, './content'),
     },
   },
 })

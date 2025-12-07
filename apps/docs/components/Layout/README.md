@@ -10,6 +10,7 @@ An animated particle background component for the home page, designed to enhance
 - 🎯 **Non-intrusive**: Positioned behind content with `pointer-events: none`
 - 📦 **Code Split**: Dynamically loaded to reduce initial bundle size
 - 🔧 **Maintainable**: Well-organized with custom hooks and utilities
+- ⚛️ **Concurrent Rendering**: Uses `useDeferredValue` for smooth theme transitions
 
 ## Usage
 
@@ -50,6 +51,7 @@ AnimatedBackground/
 3. **Custom Hooks**: Logic is extracted into reusable hooks for better testability and maintainability
 4. **Configuration**: All magic numbers are centralized in a config file for easy tuning
 5. **Graceful Degradation**: Component silently fails if initialization fails (renders nothing)
+6. **Concurrent Rendering**: Uses `useDeferredValue` to prevent blocking renders during theme transitions
 
 ## Customization
 
@@ -98,6 +100,7 @@ The component automatically respects the `prefers-reduced-motion` media query. W
 3. **Pause on Outside Viewport**: Animation pauses when scrolled out of view
 4. **Retina Detection**: Automatically adjusts for high-DPI displays
 5. **Optimized Particle Counts**: Different counts for dark/light mode based on visibility
+6. **Concurrent Rendering**: Theme changes use `useDeferredValue` to prevent blocking renders
 
 ## Troubleshooting
 
