@@ -63,6 +63,21 @@ Applied Vitest v4 and Vite v7 optimizations across multiple packages to leverage
 - **Changes**: Added Vite v7 build config and Vitest v4 thread pool config
 - **Verification**: ✅ Builds successfully
 
+### ✅ @clarity-chat/cli
+- **File**: `packages/cli/vitest.config.ts`
+- **Changes**: Added Vite v7 build config and Vitest v4 thread pool config
+- **Verification**: ✅ Builds successfully
+
+### ✅ @clarity-chat/error-handling
+- **File**: `packages/error-handling/vitest.config.ts`
+- **Changes**: Added Vite v7 build config and Vitest v4 thread pool config
+- **Verification**: ✅ Builds successfully
+
+### ✅ @clarity-chat/mcp-server
+- **File**: `tools/mcp-server/vitest.config.ts`
+- **Changes**: Added Vite v7 build config and Vitest v4 thread pool config
+- **Note**: Config updated; build has pre-existing TypeScript configuration issues (unrelated to optimizations)
+
 ---
 
 ## Configuration Details
@@ -98,7 +113,10 @@ poolOptions: {
 - ✅ `@clarity-chat/primitives`: Builds successfully
 - ✅ `@clarity-chat/memory`: Builds successfully
 - ✅ `@clarity-chat/errors`: Builds successfully
+- ✅ `@clarity-chat/cli`: Builds successfully
+- ✅ `@clarity-chat/error-handling`: Builds successfully
 - ✅ `@clarity-chat/react`: Builds successfully (already optimized)
+- ⚠️ `@clarity-chat/mcp-server`: Config updated; has pre-existing build issues (unrelated)
 
 ### Test Status
 - ✅ All packages can run tests with new configuration
@@ -124,9 +142,9 @@ poolOptions: {
 ## Summary
 
 ### ✅ Completed
-1. Applied Vite v7 build optimizations to 3 additional packages
-2. Applied Vitest v4 thread pool configuration to 3 additional packages
-3. Verified all builds succeed
+1. Applied Vite v7 build optimizations to 6 additional packages
+2. Applied Vitest v4 thread pool configuration to 6 additional packages
+3. Verified all builds succeed (5 packages verified, 1 has pre-existing issues)
 4. Confirmed no regressions introduced
 
 ### Configuration Consistency
