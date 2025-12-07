@@ -460,7 +460,7 @@ function ChatWithErrorHandling() {
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-sm">append</td>
-                    <td className="p-3 font-mono text-sm">(message: CoreMessage) => Promise&lt;string | null&gt;</td>
+                    <td className="p-3 font-mono text-sm">(message: CoreMessage) =&gt; Promise{'<'}{'string | null'}{'>'}</td>
                     <td className="p-3 text-sm text-muted-foreground">
                       Add a new message and trigger AI response. Returns message ID or null.
                     </td>

@@ -436,14 +436,14 @@ function CostTrackedChat() {
             <tbody className="divide-y">
               <tr>
                 <td className="p-3 font-mono text-sm">optimizeData</td>
-                <td className="p-3 font-mono text-sm">(data: any) => Promise&lt;EnhancedOptimizationResult&gt;</td>
+                <td className="p-3 font-mono text-sm">(data: any) =&gt; Promise{'<'}{'EnhancedOptimizationResult'}{'>'}</td>
                 <td className="p-3 text-sm text-muted-foreground">
                   Optimize data with all enabled optimizations. Returns optimized content, tokens, cost, and optimization breakdown.
                 </td>
               </tr>
               <tr>
                 <td className="p-3 font-mono text-sm">calculateCost</td>
-                <td className="p-3 font-mono text-sm">(params: {'{'} inputTokens: number, outputTokens: number {'}'}) => CostCalculation</td>
+                <td className="p-3 font-mono text-sm">(params: {'{'} inputTokens: number, outputTokens: number {'}'}) =&gt; CostCalculation</td>
                 <td className="p-3 text-sm text-muted-foreground">
                   Calculate cost for given token counts based on model pricing.
                 </td>
