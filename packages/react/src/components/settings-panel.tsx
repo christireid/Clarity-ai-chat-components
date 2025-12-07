@@ -116,7 +116,12 @@ export function SettingsPanel({
             key={activeTab}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ 
+              // Framer Motion 12: Spring tab transition
+              type: 'spring',
+              damping: 25,
+              stiffness: 300,
+            }}
             className="space-y-6 pb-4"
           >
             {/* AI Behavior Tab */}

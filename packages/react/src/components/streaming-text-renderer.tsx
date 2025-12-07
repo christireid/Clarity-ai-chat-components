@@ -165,9 +165,11 @@ export function StreamingTextRenderer({
             opacity: [1, 0.3, 1],
           }}
           transition={{
-            duration: 0.8,
+            // Framer Motion 12: Smooth cursor pulse with spring
+            type: 'spring',
+            damping: 12,
+            stiffness: 100,
             repeat: Infinity,
-            ease: 'easeInOut',
           }}
           className="inline-block ml-0.5 text-current"
           aria-hidden="true"

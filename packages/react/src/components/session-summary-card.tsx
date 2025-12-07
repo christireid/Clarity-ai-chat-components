@@ -118,7 +118,12 @@ export function SessionSummaryCard({
     <motion.div
       initial={{ opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ 
+        // Framer Motion 12: Spring entrance for summary card
+        type: 'spring',
+        damping: 22,
+        stiffness: 280,
+      }}
     >
       <Card
         className={cn(
@@ -188,7 +193,13 @@ export function SessionSummaryCard({
                   key={highlight}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2, delay: index * 0.05 }}
+                  transition={{ 
+                    // Framer Motion 12: Spring staggered list items
+                    type: 'spring',
+                    damping: 25,
+                    stiffness: 300,
+                    delay: index * 0.05,
+                  }}
                   className="flex items-start gap-3 rounded-lg border bg-muted/50 px-4 py-3 text-sm text-muted-foreground shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
                 >
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
