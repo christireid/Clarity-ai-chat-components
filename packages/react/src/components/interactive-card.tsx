@@ -80,23 +80,23 @@ export const InteractiveCard = React.memo(
         y: -2,
         boxShadow:
           '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const },
+        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
       },
       medium: {
         y: -4,
         boxShadow:
           '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const },
+        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
       },
       strong: {
         y: -8,
         boxShadow:
           '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const },
+        transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] },
       },
-    } as const
+    }
 
-    // Extract HTML drag event handlers to avoid conflicts with Framer Motion
+    // Extract HTML event handlers that conflict with Framer Motion props
     const { 
       onDrag: _onDrag, 
       onDragStart: _onDragStart, 
@@ -104,7 +104,11 @@ export const InteractiveCard = React.memo(
       onDragOver: _onDragOver, 
       onDragEnter: _onDragEnter, 
       onDragLeave: _onDragLeave, 
-      onDrop: _onDrop, 
+      onDrop: _onDrop,
+      animate: _animate,
+      onAnimationStart: _onAnimationStart,
+      onAnimationEnd: _onAnimationEnd,
+      onAnimationIteration: _onAnimationIteration,
       ...motionProps 
     } = props as InteractiveCardProps & {
       onDrag?: React.DragEventHandler<HTMLDivElement>
@@ -114,10 +118,22 @@ export const InteractiveCard = React.memo(
       onDragEnter?: React.DragEventHandler<HTMLDivElement>
       onDragLeave?: React.DragEventHandler<HTMLDivElement>
       onDrop?: React.DragEventHandler<HTMLDivElement>
+      animate?: unknown
+      onAnimationStart?: React.AnimationEventHandler<HTMLDivElement>
+      onAnimationEnd?: React.AnimationEventHandler<HTMLDivElement>
+      onAnimationIteration?: React.AnimationEventHandler<HTMLDivElement>
     }
 
+    // Leveraging Framer Motion v12's improved type inference
+    // Determine animate prop - use custom hover animation if hovered, otherwise use prop or undefined
+    const animateValue: import('framer-motion').TargetAndTransition | undefined = isHovered && !disabled && interactive
+      ? {
+          ...hoverVariants[hoverIntensity],
+          scale: hoverIntensity !== 'none' ? 1.02 : 1,
+        } as import('framer-motion').TargetAndTransition
+      : (_animate as import('framer-motion').TargetAndTransition | undefined)
+
     return (
-      // @ts-expect-error - Framer Motion 12 has complex HTMLMotionProps type inference
       <motion.div
         ref={ref}
         className={cn(
@@ -146,14 +162,7 @@ export const InteractiveCard = React.memo(
             onCardClick?.()
           }
         }}
-        animate={
-          isHovered && !disabled && interactive
-            ? {
-                ...hoverVariants[hoverIntensity],
-                scale: hoverIntensity !== 'none' ? 1.02 : 1,
-              } as const
-            : undefined
-        }
+        animate={animateValue}
         whileTap={
           !disabled && interactive
             ? { scale: 0.98, transition: { duration: 0.1 } }

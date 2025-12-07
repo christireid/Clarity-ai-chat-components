@@ -54,13 +54,11 @@
     "url": "https://github.com/christireid/Clarity-ai-chat-components/issues"
   },
   "homepage": "https://github.com/christireid/Clarity-ai-chat-components#readme",
-  "peerDependencies": {},
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "^22.10.5",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.15"
   }
 }
