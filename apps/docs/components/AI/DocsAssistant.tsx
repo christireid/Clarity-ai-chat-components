@@ -94,6 +94,7 @@ interface Source {
   title?: string
   url: string
   confidence?: number
+  chunkText?: string // Content preview from enhanced RAG
   score?: number
 }
 
@@ -246,7 +247,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const [aiStatus, setAiStatus] = useState<AIStatus | undefined>(undefined)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
-  const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
 
   // Refs
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -268,7 +268,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   // Token tracking using library hook
   const {
     tokens: totalTokens,
-    estimatedCost,
     isNearLimit,
     isCritical,
     addMessage: trackMessage,
@@ -497,7 +496,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   .map((source, index) => ({
                     id: source.id || `citation-${index}-${Date.now()}`,
                     source: (source.title || source.source || 'Documentation').trim(),
-                    chunkText: source.title || source.source || 'See documentation for more details',
+                    // Use chunkText from enhanced RAG if available, fall back to title
+                    chunkText: source.chunkText || source.title || source.source || 'See documentation for more details',
                     confidence: Number(source.score) || Number(source.confidence) || 0,
                     url: normalizeSourceUrl(source.url || '', source.title || source.source || ''),
                   }))
@@ -654,14 +654,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     clearTokens() // Reset token tracking
     setCurrentCitations([]) // Clear citations
     setShowSearch(false) // Close search
-    setFilteredMessages([]) // Clear filtered messages
     toast.info('Conversation cleared')
   }, [clearSavedConversation, clearTokens, toast])
-
-  // Handle search results
-  const handleSearchResults = useCallback((results: Message[]) => {
-    setFilteredMessages(results)
-  }, [])
 
   // Animation variants - respect reduced motion preference using library utilities
   const dialogVariants = useMemo(
@@ -764,7 +758,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                   <div className="p-3">
                     <MessageSearch
                       messages={messages}
-                      onResultsChange={handleSearchResults}
                       placeholder="Search conversation..."
                       className="w-full"
                     />

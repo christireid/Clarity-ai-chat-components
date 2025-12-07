@@ -382,7 +382,7 @@ async function* streamWithEnhancedRAG(
     }
 
     // Enhance message with optimized RAG context
-    const { enhancedMessage, ragContext, hasRelevantDocs } = await enhanceMessageWithOptimizedRAG(
+    const { enhancedMessage, ragContext } = await enhanceMessageWithOptimizedRAG(
       userMessage,
       ragOptions
     )
@@ -438,9 +438,7 @@ async function* streamWithEnhancedRAG(
       return
     }
 
-    // Cache miss - log search stats
-    console.log(`Enhanced RAG cache miss - Query: "${userMessage.substring(0, 40)}..."`)
-    console.log(`  Stats: keyword=${ragContext.stats.keywordResults}, semantic=${ragContext.stats.semanticResults}, hybrid=${ragContext.stats.hybridResults}`)
+    // Cache miss - proceed with RAG search
 
     // Send sources first (if any) with enhanced citation format
     if (ragContext.sources.length > 0) {
