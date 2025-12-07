@@ -587,10 +587,10 @@ pnpm typecheck              # Type check
 
 #### Task 4.2: Advanced Patterns
 - [x] Multi-modal chat recipe (created)
-- [ ] Voice input recipe
+- [x] Voice input recipe (created)
 - [ ] Offline-first recipe
 - [ ] Real-time collaboration recipe
-- [ ] Custom tool integration recipe
+- [x] Custom tool integration recipe (created)
 
 #### Task 4.3: Integration Guides
 - [ ] Next.js deep integration
@@ -633,7 +633,7 @@ pnpm typecheck              # Type check
 - [x] Streaming components and hooks (StreamingMessage, useStreamingSSE, useStreamingWebSocket, useStreamableUI done)
 - [x] Core chat hooks (useChatHandlers, useChatEnhanced done)
 - [ ] Token optimization hooks
-- [ ] Common patterns recipes
+- [x] Common patterns recipes (memory, streaming, error handling, multi-modal, voice, tools done)
 
 ### Medium Priority
 - [ ] Analytics components
@@ -665,7 +665,7 @@ pnpm typecheck              # Type check
 
 ### Documentation Improvements Completed
 
-#### New Pages Created (9)
+#### New Pages Created (18)
 1. **ClarityChat Component** - The most important component page
    - Complete props documentation
    - Multiple usage examples
@@ -712,6 +712,51 @@ pnpm typecheck              # Type check
    - Complete API reference
    - Reconnection strategies
    - Binary message support
+
+10. **StructuredInputBuilder Component** - Structured prompt builder
+    - Token optimization
+    - Field validation
+    - Custom formatting
+
+11. **useAssistant Hook** - Assistant interactions with tools
+    - Tool calling support
+    - Multi-step workflows
+    - Thread management
+
+12. **useCompletion Hook** - Text completion
+    - Single-turn completions
+    - Autocomplete support
+    - Streaming support
+
+13. **Memory Integration Recipe** - Conversation memory guide
+    - Memory strategies
+    - Persistence patterns
+    - Monitoring
+
+14. **Streaming Setup Recipe** - Streaming implementation guide
+    - API endpoint setup
+    - Multiple protocols
+    - Best practices
+
+15. **Error Handling Recipe** - Error handling patterns
+    - Retry logic
+    - User-friendly messages
+    - Error boundaries
+
+16. **Multi-Modal Chat Recipe** - Multi-modal support guide
+    - Image support
+    - File handling
+    - Display patterns
+
+17. **Voice Input Recipe** - Voice-to-text guide
+    - Web Speech API
+    - Multi-language support
+    - Mobile optimization
+
+18. **Custom Tool Integration Recipe** - Tool integration guide
+    - Tool definitions
+    - Execution patterns
+    - Approval workflows
 
 #### Enhanced Pages (2)
 1. **Architecture Overview** - Added component layers and decision tree
@@ -866,6 +911,15 @@ While the critical documentation is complete, there are still opportunities for 
 - `apps/docs/app/reference/components/streaming-message/page.tsx` (enhanced from placeholder)
 - `apps/docs/app/reference/components/voice-input/page.tsx` (enhanced from placeholder)
 - `apps/docs/app/reference/hooks/use-streaming-websocket/page.tsx` (enhanced from basic)
+- `apps/docs/app/reference/components/structured-input-builder/page.tsx` (400+ lines)
+- `apps/docs/app/reference/hooks/use-assistant/page.tsx` (400+ lines)
+- `apps/docs/app/reference/hooks/use-completion/page.tsx` (400+ lines)
+- `apps/docs/app/cookbook/memory-integration/page.tsx` (300+ lines)
+- `apps/docs/app/cookbook/streaming-setup/page.tsx` (300+ lines)
+- `apps/docs/app/cookbook/error-handling/page.tsx` (300+ lines)
+- `apps/docs/app/cookbook/multi-modal-chat/page.tsx` (300+ lines)
+- `apps/docs/app/cookbook/voice-input/page.tsx` (300+ lines)
+- `apps/docs/app/cookbook/custom-tool-integration/page.tsx` (300+ lines)
 
 **Modified Files:**
 - `apps/docs/lib/navigation.ts` (added navigation entries)
