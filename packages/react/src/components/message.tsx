@@ -427,13 +427,9 @@ export function Message({
                 {message.content}
               </ReactMarkdown>
               {/* Cursor inside the streaming wrapper for proper inline positioning */}
+              {/* Note: Cursor is purely visual - parent MessageList handles aria-live announcements */}
               {isStreaming && (
-                <span
-                  role="status"
-                  aria-live="polite"
-                  aria-label="Streaming response"
-                  className="clarity-streaming-cursor"
-                />
+                <span aria-hidden="true" className="clarity-streaming-cursor" />
               )}
             </div>
           )}
