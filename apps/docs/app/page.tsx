@@ -37,12 +37,12 @@ export default function HomePage() {
       <HeroSection
         title={
           <>
-            Chat UIs That Work,
+            Finally, Chat UIs
             <br />
-            <span className="text-brand-500">Out of the Box</span>
+            <span className="text-brand-500">That Don't Fight You</span>
           </>
         }
-        description="Stop rebuilding chat from scratch. 70+ production-ready React components with streaming, accessibility, and theming built-in."
+        description="You've rebuilt chat from scratch three times already. Stop. 70+ production-ready components with streaming, accessibility, and theming—all built-in. Copy, paste, ship."
         installCommand="npm install @clarity-chat/react"
         primaryCta={{
           text: 'Get Started in 60s',
@@ -60,10 +60,9 @@ export default function HomePage() {
       {/* Live Demo Section */}
       <section id="demo" className="container-docs py-24 scroll-mt-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">See It In Action</h2>
+          <h2 className="text-4xl font-bold mb-4">See What You're Getting</h2>
           <p className="text-xl text-text-secondary">
-            Experience the power of Clarity Chat. Try the interactive demo
-            below.
+            No signup. No surprises. Just a chat UI that works.
           </p>
         </div>
 
@@ -114,9 +113,9 @@ function App() {
       {/* Features Grid */}
       <section className="container-docs py-24">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Why Clarity Chat?</h2>
+          <h2 className="text-4xl font-bold mb-4">Built for Developers Who Ship</h2>
           <p className="text-xl text-text-secondary">
-            Everything you need to build production-ready chat interfaces
+            Everything you need. Nothing you don't.
           </p>
         </div>
 
@@ -165,10 +164,10 @@ function App() {
         <div className="mt-24">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">
-              Optimized for Performance
+              Performance You Don't Have to Think About
             </h2>
             <p className="text-xl text-text-secondary">
-              After comprehensive React.memo optimization
+              Virtual scrolling. React.memo. Tree-shaking. Already done.
             </p>
           </div>
           <PerformanceComparison />
@@ -177,9 +176,9 @@ function App() {
         {/* Feature Comparison */}
         <div className="mt-24">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Most Feature-Complete</h2>
+            <h2 className="text-4xl font-bold mb-4">More Features, Less Work</h2>
             <p className="text-xl text-text-secondary">
-              Compare Clarity to alternatives
+              See how Clarity stacks up against the alternatives.
             </p>
           </div>
           <FeatureMatrix />
@@ -196,11 +195,10 @@ function App() {
 
           <div className="relative">
             <Heart className="w-12 h-12 mx-auto mb-4 fill-current" />
-            <h2 className="text-4xl font-bold mb-4">Ready to Get Started?</h2>
+            <h2 className="text-4xl font-bold mb-4">Ship Your First Chat Today</h2>
             <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-              Install Clarity Chat and build your first chat interface in
-              minutes. Join thousands of developers building beautiful
-              experiences.
+              One install. One import. One minute to a working chat.
+              No boilerplate. No configuration hell. Just results.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
