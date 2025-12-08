@@ -113,8 +113,10 @@ describe('color-utils', () => {
       expect(toHSLString('239 84% 67%')).toBe('239 84% 67%')
     })
 
-    it('should pass through invalid values unchanged', () => {
-      expect(toHSLString('invalid')).toBe('invalid')
+    it('should return fallback for invalid values', () => {
+      // Invalid values now return a safe fallback instead of passing through
+      expect(toHSLString('invalid')).toBe('0 0% 50%')
+      expect(toHSLString('')).toBe('0 0% 50%')
     })
   })
 

@@ -150,13 +150,23 @@ export function hexToHSLString(hex: string): string {
 
 /**
  * Convert HSL string to hex color
+ * Returns fallback (#000000) for invalid input
  */
 export function hslStringToHex(hslString: string): string {
   const [hStr, sStr, lStr] = hslString.split(' ')
+  const h = parseFloat(hStr ?? '0')
+  const s = parseFloat(sStr?.replace('%', '') ?? '0')
+  const l = parseFloat(lStr?.replace('%', '') ?? '0')
+
+  // Validate parsed values - return black for invalid input
+  if (isNaN(h) || isNaN(s) || isNaN(l)) {
+    return '#000000'
+  }
+
   const hsl: HSLColor = {
-    h: parseFloat(hStr ?? '0'),
-    s: parseFloat(sStr?.replace('%', '') ?? '0'),
-    l: parseFloat(lStr?.replace('%', '') ?? '0'),
+    h: Math.max(0, Math.min(360, h)),
+    s: Math.max(0, Math.min(100, s)),
+    l: Math.max(0, Math.min(100, l)),
   }
   const rgb = hslToRGB(hsl)
   return rgbToHex(rgb)
@@ -174,17 +184,39 @@ export function rgbToHex(rgb: RGBColor): string {
 }
 
 /**
+ * Default fallback color (neutral gray) for invalid inputs
+ */
+const FALLBACK_HSL = '0 0% 50%'
+
+/**
  * Parse any color format to HSL string
+ * Returns a valid HSL string or fallback for invalid input
  */
 export function toHSLString(color: string): string {
+  if (!color || typeof color !== 'string') {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        `[Clarity Chat] Invalid color value: ${color}. Using fallback.`
+      )
+    }
+    return FALLBACK_HSL
+  }
+
   if (isHexColor(color)) {
     return hexToHSLString(color)
   }
   if (isHSLString(color)) {
     return color
   }
-  // Default to returning the input (may be invalid)
-  return color
+
+  // Warn about invalid color in development
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      `[Clarity Chat] Unrecognized color format: "${color}". ` +
+        `Expected hex (#RRGGBB) or HSL (H S% L%). Using fallback.`
+    )
+  }
+  return FALLBACK_HSL
 }
 
 /**
@@ -242,13 +274,18 @@ export function getContrastRatio(color1: string, color2: string): number {
 
 /**
  * Parse HSL string to HSLColor object
+ * Returns clamped, valid values (NaN becomes 0)
  */
 function parseHSLString(hslString: string): HSLColor {
   const [h, s, l] = hslString.split(' ')
+  const hue = parseFloat(h ?? '0')
+  const sat = parseFloat(s?.replace('%', '') ?? '0')
+  const light = parseFloat(l?.replace('%', '') ?? '0')
+
   return {
-    h: parseFloat(h ?? '0'),
-    s: parseFloat(s?.replace('%', '') ?? '0'),
-    l: parseFloat(l?.replace('%', '') ?? '0'),
+    h: isNaN(hue) ? 0 : Math.max(0, Math.min(360, hue)),
+    s: isNaN(sat) ? 0 : Math.max(0, Math.min(100, sat)),
+    l: isNaN(light) ? 0 : Math.max(0, Math.min(100, light)),
   }
 }
 
