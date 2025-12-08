@@ -1,4 +1,15 @@
 import { NextResponse } from 'next/server'
+import {
+  type HookInfo,
+  type HooksAPIResponse,
+  type HookCategory,
+  API_RESPONSE_HEADERS,
+  AI_API_VERSION,
+  BASE_URL,
+  PACKAGE_VERSION,
+  createErrorResponse,
+  getStableTimestamp,
+} from '@/lib/ai/types'
 
 /**
  * AI-Optimized Hooks API
@@ -7,58 +18,74 @@ import { NextResponse } from 'next/server'
  * and understand Clarity Chat hooks.
  *
  * @route GET /api/ai/hooks
+ * @route OPTIONS /api/ai/hooks (CORS preflight)
  */
-
-interface HookInfo {
-  name: string
-  description: string
-  category: string
-  signature: string
-  parameters: ParameterInfo[]
-  returns: ReturnInfo
-  importPath: string
-  docsUrl: string
-  examples: string[]
-  relatedHooks: string[]
-  version: string
-}
-
-interface ParameterInfo {
-  name: string
-  type: string
-  required: boolean
-  description: string
-}
-
-interface ReturnInfo {
-  type: string
-  properties: { name: string; type: string; description: string }[]
-}
 
 const hooks: HookInfo[] = [
   // Core Chat Hooks
   {
     name: 'useChat',
-    description: 'Primary hook for managing chat state and operations. Handles messages, sending, loading states, and message history.',
+    description:
+      'Primary hook for managing chat state and operations. Handles messages, sending, loading states, and message history.',
     category: 'core',
     signature: 'useChat(options?: UseChatOptions): UseChatReturn',
     parameters: [
-      { name: 'initialMessages', type: 'Message[]', required: false, description: 'Initial messages to populate chat' },
-      { name: 'onSend', type: '(message: string) => Promise<void>', required: false, description: 'Custom send handler' },
-      { name: 'onError', type: '(error: Error) => void', required: false, description: 'Error handler callback' },
-      { name: 'api', type: 'string', required: false, description: 'API endpoint for chat' },
+      {
+        name: 'initialMessages',
+        type: 'Message[]',
+        required: false,
+        description: 'Initial messages to populate chat',
+      },
+      {
+        name: 'onSend',
+        type: '(message: string) => Promise<void>',
+        required: false,
+        description: 'Custom send handler',
+      },
+      {
+        name: 'onError',
+        type: '(error: Error) => void',
+        required: false,
+        description: 'Error handler callback',
+      },
+      {
+        name: 'api',
+        type: 'string',
+        required: false,
+        description: 'API endpoint for chat',
+      },
     ],
     returns: {
       type: 'UseChatReturn',
       properties: [
-        { name: 'messages', type: 'Message[]', description: 'Array of chat messages' },
+        {
+          name: 'messages',
+          type: 'Message[]',
+          description: 'Array of chat messages',
+        },
         { name: 'input', type: 'string', description: 'Current input value' },
-        { name: 'setInput', type: '(value: string) => void', description: 'Set input value' },
-        { name: 'handleSubmit', type: '(e: FormEvent) => void', description: 'Form submit handler' },
+        {
+          name: 'setInput',
+          type: '(value: string) => void',
+          description: 'Set input value',
+        },
+        {
+          name: 'handleSubmit',
+          type: '(e: FormEvent) => void',
+          description: 'Form submit handler',
+        },
         { name: 'isLoading', type: 'boolean', description: 'Loading state' },
         { name: 'error', type: 'Error | null', description: 'Current error' },
-        { name: 'append', type: '(message: Message) => void', description: 'Append a message' },
-        { name: 'reload', type: '() => void', description: 'Regenerate last response' },
+        {
+          name: 'append',
+          type: '(message: Message) => void',
+          description: 'Append a message',
+        },
+        {
+          name: 'reload',
+          type: '() => void',
+          description: 'Regenerate last response',
+        },
         { name: 'stop', type: '() => void', description: 'Stop streaming' },
       ],
     },
@@ -86,23 +113,66 @@ function ChatComponent() {
   },
   {
     name: 'useStreaming',
-    description: 'Hook for handling streaming responses. Supports SSE and WebSocket protocols with automatic reconnection.',
+    description:
+      'Hook for handling streaming responses. Supports SSE and WebSocket protocols with automatic reconnection.',
     category: 'core',
-    signature: 'useStreaming(options?: UseStreamingOptions): UseStreamingReturn',
+    signature:
+      'useStreaming(options?: UseStreamingOptions): UseStreamingReturn',
     parameters: [
-      { name: 'url', type: 'string', required: true, description: 'Streaming endpoint URL' },
-      { name: 'protocol', type: "'sse' | 'websocket'", required: false, description: 'Streaming protocol' },
-      { name: 'onChunk', type: '(chunk: string) => void', required: false, description: 'Callback for each chunk' },
-      { name: 'onComplete', type: '(fullText: string) => void', required: false, description: 'Callback when streaming completes' },
-      { name: 'onError', type: '(error: Error) => void', required: false, description: 'Error callback' },
+      {
+        name: 'url',
+        type: 'string',
+        required: true,
+        description: 'Streaming endpoint URL',
+      },
+      {
+        name: 'protocol',
+        type: "'sse' | 'websocket'",
+        required: false,
+        description: 'Streaming protocol',
+      },
+      {
+        name: 'onChunk',
+        type: '(chunk: string) => void',
+        required: false,
+        description: 'Callback for each chunk',
+      },
+      {
+        name: 'onComplete',
+        type: '(fullText: string) => void',
+        required: false,
+        description: 'Callback when streaming completes',
+      },
+      {
+        name: 'onError',
+        type: '(error: Error) => void',
+        required: false,
+        description: 'Error callback',
+      },
     ],
     returns: {
       type: 'UseStreamingReturn',
       properties: [
-        { name: 'data', type: 'string', description: 'Accumulated streamed data' },
-        { name: 'isStreaming', type: 'boolean', description: 'Whether actively streaming' },
-        { name: 'error', type: 'Error | null', description: 'Any streaming error' },
-        { name: 'start', type: '(body?: object) => void', description: 'Start streaming' },
+        {
+          name: 'data',
+          type: 'string',
+          description: 'Accumulated streamed data',
+        },
+        {
+          name: 'isStreaming',
+          type: 'boolean',
+          description: 'Whether actively streaming',
+        },
+        {
+          name: 'error',
+          type: 'Error | null',
+          description: 'Any streaming error',
+        },
+        {
+          name: 'start',
+          type: '(body?: object) => void',
+          description: 'Start streaming',
+        },
         { name: 'stop', type: '() => void', description: 'Stop streaming' },
         { name: 'reset', type: '() => void', description: 'Reset state' },
       ],
@@ -132,24 +202,69 @@ function StreamingChat() {
   },
   {
     name: 'useTokenTracker',
-    description: 'Track token usage across conversations. Calculates input/output tokens and provides cost estimation.',
+    description:
+      'Track token usage across conversations. Calculates input/output tokens and provides cost estimation.',
     category: 'analytics',
-    signature: 'useTokenTracker(options?: UseTokenTrackerOptions): UseTokenTrackerReturn',
+    signature:
+      'useTokenTracker(options?: UseTokenTrackerOptions): UseTokenTrackerReturn',
     parameters: [
-      { name: 'model', type: 'string', required: false, description: 'Model name for accurate counting' },
-      { name: 'messages', type: 'Message[]', required: false, description: 'Messages to track' },
-      { name: 'limit', type: 'number', required: false, description: 'Token limit threshold' },
+      {
+        name: 'model',
+        type: 'string',
+        required: false,
+        description: 'Model name for accurate counting',
+      },
+      {
+        name: 'messages',
+        type: 'Message[]',
+        required: false,
+        description: 'Messages to track',
+      },
+      {
+        name: 'limit',
+        type: 'number',
+        required: false,
+        description: 'Token limit threshold',
+      },
     ],
     returns: {
       type: 'UseTokenTrackerReturn',
       properties: [
-        { name: 'totalTokens', type: 'number', description: 'Total token count' },
-        { name: 'inputTokens', type: 'number', description: 'Input token count' },
-        { name: 'outputTokens', type: 'number', description: 'Output token count' },
-        { name: 'estimatedCost', type: 'number', description: 'Estimated cost in USD' },
-        { name: 'percentUsed', type: 'number', description: 'Percentage of limit used' },
-        { name: 'isOverLimit', type: 'boolean', description: 'Whether limit exceeded' },
-        { name: 'countTokens', type: '(text: string) => number', description: 'Count tokens in text' },
+        {
+          name: 'totalTokens',
+          type: 'number',
+          description: 'Total token count',
+        },
+        {
+          name: 'inputTokens',
+          type: 'number',
+          description: 'Input token count',
+        },
+        {
+          name: 'outputTokens',
+          type: 'number',
+          description: 'Output token count',
+        },
+        {
+          name: 'estimatedCost',
+          type: 'number',
+          description: 'Estimated cost in USD',
+        },
+        {
+          name: 'percentUsed',
+          type: 'number',
+          description: 'Percentage of limit used',
+        },
+        {
+          name: 'isOverLimit',
+          type: 'boolean',
+          description: 'Whether limit exceeded',
+        },
+        {
+          name: 'countTokens',
+          type: '(text: string) => number',
+          description: 'Count tokens in text',
+        },
       ],
     },
     importPath: '@clarity-chat/react',
@@ -177,22 +292,59 @@ function TokenDisplay({ messages }) {
   },
   {
     name: 'useTokenOptimization',
-    description: 'Automatically optimize token usage through context compression, message pruning, and smart caching.',
+    description:
+      'Automatically optimize token usage through context compression, message pruning, and smart caching.',
     category: 'analytics',
-    signature: 'useTokenOptimization(options?: UseTokenOptimizationOptions): UseTokenOptimizationReturn',
+    signature:
+      'useTokenOptimization(options?: UseTokenOptimizationOptions): UseTokenOptimizationReturn',
     parameters: [
-      { name: 'messages', type: 'Message[]', required: true, description: 'Messages to optimize' },
-      { name: 'targetTokens', type: 'number', required: false, description: 'Target token count' },
-      { name: 'strategy', type: "'prune' | 'compress' | 'summarize'", required: false, description: 'Optimization strategy' },
+      {
+        name: 'messages',
+        type: 'Message[]',
+        required: true,
+        description: 'Messages to optimize',
+      },
+      {
+        name: 'targetTokens',
+        type: 'number',
+        required: false,
+        description: 'Target token count',
+      },
+      {
+        name: 'strategy',
+        type: "'prune' | 'compress' | 'summarize'",
+        required: false,
+        description: 'Optimization strategy',
+      },
     ],
     returns: {
       type: 'UseTokenOptimizationReturn',
       properties: [
-        { name: 'optimizedMessages', type: 'Message[]', description: 'Optimized message array' },
-        { name: 'originalTokens', type: 'number', description: 'Original token count' },
-        { name: 'optimizedTokens', type: 'number', description: 'Optimized token count' },
-        { name: 'savings', type: 'number', description: 'Token savings percentage' },
-        { name: 'optimize', type: '() => void', description: 'Trigger optimization' },
+        {
+          name: 'optimizedMessages',
+          type: 'Message[]',
+          description: 'Optimized message array',
+        },
+        {
+          name: 'originalTokens',
+          type: 'number',
+          description: 'Original token count',
+        },
+        {
+          name: 'optimizedTokens',
+          type: 'number',
+          description: 'Optimized token count',
+        },
+        {
+          name: 'savings',
+          type: 'number',
+          description: 'Token savings percentage',
+        },
+        {
+          name: 'optimize',
+          type: '() => void',
+          description: 'Trigger optimization',
+        },
       ],
     },
     importPath: '@clarity-chat/react',
@@ -221,20 +373,49 @@ function OptimizedChat({ messages }) {
   // UI Hooks
   {
     name: 'useAutoScroll',
-    description: 'Automatically scroll to bottom of chat when new messages arrive. Detects user scroll and pauses auto-scroll.',
+    description:
+      'Automatically scroll to bottom of chat when new messages arrive. Detects user scroll and pauses auto-scroll.',
     category: 'ui',
-    signature: 'useAutoScroll(options?: UseAutoScrollOptions): UseAutoScrollReturn',
+    signature:
+      'useAutoScroll(options?: UseAutoScrollOptions): UseAutoScrollReturn',
     parameters: [
-      { name: 'ref', type: 'RefObject<HTMLElement>', required: true, description: 'Container element ref' },
-      { name: 'dependency', type: 'unknown[]', required: false, description: 'Deps to trigger scroll' },
-      { name: 'behavior', type: "'smooth' | 'instant'", required: false, description: 'Scroll behavior' },
+      {
+        name: 'ref',
+        type: 'RefObject<HTMLElement>',
+        required: true,
+        description: 'Container element ref',
+      },
+      {
+        name: 'dependency',
+        type: 'unknown[]',
+        required: false,
+        description: 'Deps to trigger scroll',
+      },
+      {
+        name: 'behavior',
+        type: "'smooth' | 'instant'",
+        required: false,
+        description: 'Scroll behavior',
+      },
     ],
     returns: {
       type: 'UseAutoScrollReturn',
       properties: [
-        { name: 'isAtBottom', type: 'boolean', description: 'Whether scrolled to bottom' },
-        { name: 'scrollToBottom', type: '() => void', description: 'Scroll to bottom manually' },
-        { name: 'isPaused', type: 'boolean', description: 'Whether auto-scroll is paused' },
+        {
+          name: 'isAtBottom',
+          type: 'boolean',
+          description: 'Whether scrolled to bottom',
+        },
+        {
+          name: 'scrollToBottom',
+          type: '() => void',
+          description: 'Scroll to bottom manually',
+        },
+        {
+          name: 'isPaused',
+          type: 'boolean',
+          description: 'Whether auto-scroll is paused',
+        },
       ],
     },
     importPath: '@clarity-chat/react',
@@ -262,17 +443,32 @@ function ChatMessages({ messages }) {
   },
   {
     name: 'useClipboard',
-    description: 'Copy text to clipboard with success feedback. Works across browsers with fallback support.',
+    description:
+      'Copy text to clipboard with success feedback. Works across browsers with fallback support.',
     category: 'ui',
-    signature: 'useClipboard(options?: UseClipboardOptions): UseClipboardReturn',
+    signature:
+      'useClipboard(options?: UseClipboardOptions): UseClipboardReturn',
     parameters: [
-      { name: 'timeout', type: 'number', required: false, description: 'Success state duration (ms)' },
+      {
+        name: 'timeout',
+        type: 'number',
+        required: false,
+        description: 'Success state duration (ms)',
+      },
     ],
     returns: {
       type: 'UseClipboardReturn',
       properties: [
-        { name: 'copy', type: '(text: string) => Promise<void>', description: 'Copy text to clipboard' },
-        { name: 'copied', type: 'boolean', description: 'Whether recently copied' },
+        {
+          name: 'copy',
+          type: '(text: string) => Promise<void>',
+          description: 'Copy text to clipboard',
+        },
+        {
+          name: 'copied',
+          type: 'boolean',
+          description: 'Whether recently copied',
+        },
         { name: 'error', type: 'Error | null', description: 'Any copy error' },
       ],
     },
@@ -296,11 +492,17 @@ function CopyButton({ text }) {
   },
   {
     name: 'useKeyboardShortcuts',
-    description: 'Register and manage keyboard shortcuts. Supports key combinations, scopes, and conditional activation.',
+    description:
+      'Register and manage keyboard shortcuts. Supports key combinations, scopes, and conditional activation.',
     category: 'accessibility',
     signature: 'useKeyboardShortcuts(shortcuts: ShortcutConfig[]): void',
     parameters: [
-      { name: 'shortcuts', type: 'ShortcutConfig[]', required: true, description: 'Array of shortcut configurations' },
+      {
+        name: 'shortcuts',
+        type: 'ShortcutConfig[]',
+        required: true,
+        description: 'Array of shortcut configurations',
+      },
     ],
     returns: {
       type: 'void',
@@ -326,22 +528,59 @@ function Chat() {
   },
   {
     name: 'useVoiceInput',
-    description: 'Speech recognition hook for voice-to-text input. Supports multiple languages and continuous listening.',
+    description:
+      'Speech recognition hook for voice-to-text input. Supports multiple languages and continuous listening.',
     category: 'input',
-    signature: 'useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputReturn',
+    signature:
+      'useVoiceInput(options?: UseVoiceInputOptions): UseVoiceInputReturn',
     parameters: [
-      { name: 'language', type: 'string', required: false, description: 'Recognition language code' },
-      { name: 'continuous', type: 'boolean', required: false, description: 'Continuous listening mode' },
-      { name: 'onResult', type: '(text: string) => void', required: false, description: 'Result callback' },
+      {
+        name: 'language',
+        type: 'string',
+        required: false,
+        description: 'Recognition language code',
+      },
+      {
+        name: 'continuous',
+        type: 'boolean',
+        required: false,
+        description: 'Continuous listening mode',
+      },
+      {
+        name: 'onResult',
+        type: '(text: string) => void',
+        required: false,
+        description: 'Result callback',
+      },
     ],
     returns: {
       type: 'UseVoiceInputReturn',
       properties: [
-        { name: 'isListening', type: 'boolean', description: 'Whether actively listening' },
-        { name: 'transcript', type: 'string', description: 'Current transcription' },
-        { name: 'startListening', type: '() => void', description: 'Start speech recognition' },
-        { name: 'stopListening', type: '() => void', description: 'Stop speech recognition' },
-        { name: 'isSupported', type: 'boolean', description: 'Whether browser supports API' },
+        {
+          name: 'isListening',
+          type: 'boolean',
+          description: 'Whether actively listening',
+        },
+        {
+          name: 'transcript',
+          type: 'string',
+          description: 'Current transcription',
+        },
+        {
+          name: 'startListening',
+          type: '() => void',
+          description: 'Start speech recognition',
+        },
+        {
+          name: 'stopListening',
+          type: '() => void',
+          description: 'Stop speech recognition',
+        },
+        {
+          name: 'isSupported',
+          type: 'boolean',
+          description: 'Whether browser supports API',
+        },
       ],
     },
     importPath: '@clarity-chat/react',
@@ -372,17 +611,32 @@ function VoiceChat() {
   // Utility Hooks
   {
     name: 'useDebounce',
-    description: 'Debounce a value with configurable delay. Useful for search inputs and API calls.',
+    description:
+      'Debounce a value with configurable delay. Useful for search inputs and API calls.',
     category: 'utility',
     signature: 'useDebounce<T>(value: T, delay: number): T',
     parameters: [
-      { name: 'value', type: 'T', required: true, description: 'Value to debounce' },
-      { name: 'delay', type: 'number', required: true, description: 'Debounce delay in ms' },
+      {
+        name: 'value',
+        type: 'T',
+        required: true,
+        description: 'Value to debounce',
+      },
+      {
+        name: 'delay',
+        type: 'number',
+        required: true,
+        description: 'Debounce delay in ms',
+      },
     ],
     returns: {
       type: 'T',
       properties: [
-        { name: 'debouncedValue', type: 'T', description: 'The debounced value' },
+        {
+          name: 'debouncedValue',
+          type: 'T',
+          description: 'The debounced value',
+        },
       ],
     },
     importPath: '@clarity-chat/react',
@@ -408,18 +662,34 @@ function SearchChat() {
   },
   {
     name: 'useLocalStorage',
-    description: 'Persist state to localStorage with automatic serialization and SSR safety.',
+    description:
+      'Persist state to localStorage with automatic serialization and SSR safety.',
     category: 'storage',
-    signature: 'useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void]',
+    signature:
+      'useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void]',
     parameters: [
-      { name: 'key', type: 'string', required: true, description: 'Storage key' },
-      { name: 'initialValue', type: 'T', required: true, description: 'Default value if not in storage' },
+      {
+        name: 'key',
+        type: 'string',
+        required: true,
+        description: 'Storage key',
+      },
+      {
+        name: 'initialValue',
+        type: 'T',
+        required: true,
+        description: 'Default value if not in storage',
+      },
     ],
     returns: {
       type: '[T, (value: T) => void]',
       properties: [
         { name: 'value', type: 'T', description: 'Current stored value' },
-        { name: 'setValue', type: '(value: T) => void', description: 'Update stored value' },
+        {
+          name: 'setValue',
+          type: '(value: T) => void',
+          description: 'Update stored value',
+        },
       ],
     },
     importPath: '@clarity-chat/react',
@@ -444,16 +714,26 @@ function ChatSettings() {
   },
   {
     name: 'useMediaQuery',
-    description: 'Responsive design hook that tracks media query matches. Useful for adaptive UI.',
+    description:
+      'Responsive design hook that tracks media query matches. Useful for adaptive UI.',
     category: 'utility',
     signature: 'useMediaQuery(query: string): boolean',
     parameters: [
-      { name: 'query', type: 'string', required: true, description: 'CSS media query string' },
+      {
+        name: 'query',
+        type: 'string',
+        required: true,
+        description: 'CSS media query string',
+      },
     ],
     returns: {
       type: 'boolean',
       properties: [
-        { name: 'matches', type: 'boolean', description: 'Whether query matches' },
+        {
+          name: 'matches',
+          type: 'boolean',
+          description: 'Whether query matches',
+        },
       ],
     },
     importPath: '@clarity-chat/react',
@@ -478,23 +758,52 @@ function ResponsiveChat() {
   },
   {
     name: 'useErrorRecovery',
-    description: 'Automatic error recovery with retry logic, exponential backoff, and fallback strategies.',
+    description:
+      'Automatic error recovery with retry logic, exponential backoff, and fallback strategies.',
     category: 'error-handling',
-    signature: 'useErrorRecovery(options?: UseErrorRecoveryOptions): UseErrorRecoveryReturn',
+    signature:
+      'useErrorRecovery(options?: UseErrorRecoveryOptions): UseErrorRecoveryReturn',
     parameters: [
-      { name: 'maxRetries', type: 'number', required: false, description: 'Maximum retry attempts' },
-      { name: 'backoffMs', type: 'number', required: false, description: 'Initial backoff delay' },
-      { name: 'onError', type: '(error: Error, attempt: number) => void', required: false, description: 'Error callback' },
+      {
+        name: 'maxRetries',
+        type: 'number',
+        required: false,
+        description: 'Maximum retry attempts',
+      },
+      {
+        name: 'backoffMs',
+        type: 'number',
+        required: false,
+        description: 'Initial backoff delay',
+      },
+      {
+        name: 'onError',
+        type: '(error: Error, attempt: number) => void',
+        required: false,
+        description: 'Error callback',
+      },
     ],
     returns: {
       type: 'UseErrorRecoveryReturn',
       properties: [
         { name: 'error', type: 'Error | null', description: 'Current error' },
-        { name: 'retryCount', type: 'number', description: 'Current retry count' },
-        { name: 'isRetrying', type: 'boolean', description: 'Whether retrying' },
+        {
+          name: 'retryCount',
+          type: 'number',
+          description: 'Current retry count',
+        },
+        {
+          name: 'isRetrying',
+          type: 'boolean',
+          description: 'Whether retrying',
+        },
         { name: 'retry', type: '() => void', description: 'Trigger retry' },
         { name: 'reset', type: '() => void', description: 'Reset error state' },
-        { name: 'execute', type: '(fn: () => Promise<T>) => Promise<T>', description: 'Execute with recovery' },
+        {
+          name: 'execute',
+          type: '(fn: () => Promise<T>) => Promise<T>',
+          description: 'Execute with recovery',
+        },
       ],
     },
     importPath: '@clarity-chat/react',
@@ -530,26 +839,62 @@ function ReliableChat() {
   },
 ]
 
-export async function GET() {
-  const response = {
-    name: 'Clarity Chat Hooks',
-    version: '0.1.0',
-    description: 'React hooks for building AI chat interfaces',
-    totalHooks: hooks.length,
-    categories: [...new Set(hooks.map(h => h.category))],
-    lastUpdated: new Date().toISOString(),
-    hooks,
-    usage: {
-      installation: 'npm install @clarity-chat/react',
-      basicImport: 'import { useChat, useStreaming, useTokenTracker } from "@clarity-chat/react"',
-      documentation: 'https://clarity-chat.dev/reference/hooks',
-    },
-  }
-
-  return NextResponse.json(response, {
-    headers: {
-      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
-      'Content-Type': 'application/json',
-    },
+/**
+ * Handle CORS preflight requests
+ */
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: API_RESPONSE_HEADERS,
   })
+}
+
+/**
+ * GET /api/ai/hooks
+ *
+ * Returns a complete catalog of Clarity Chat hooks
+ * with their parameters, returns, and usage examples.
+ */
+export async function GET() {
+  try {
+    // Extract unique categories with proper typing
+    const categories = [
+      ...new Set(hooks.map((h) => h.category)),
+    ] as HookCategory[]
+
+    const response: HooksAPIResponse = {
+      name: 'Clarity Chat Hooks',
+      version: PACKAGE_VERSION,
+      apiVersion: AI_API_VERSION,
+      description: 'React hooks for building AI chat interfaces',
+      totalHooks: hooks.length,
+      categories,
+      lastUpdated: getStableTimestamp(),
+      hooks,
+      usage: {
+        installation: 'npm install @clarity-chat/react',
+        basicImport:
+          'import { useChat, useStreaming, useTokenTracker } from "@clarity-chat/react"',
+        documentation: `${BASE_URL}/reference/hooks`,
+      },
+    }
+
+    return NextResponse.json(response, {
+      headers: API_RESPONSE_HEADERS,
+    })
+  } catch (error) {
+    console.error('[AI Hooks API] Error:', error)
+
+    const errorResponse = createErrorResponse(
+      'INTERNAL_ERROR',
+      'An unexpected error occurred while fetching hooks',
+      '/api/ai/hooks',
+      error instanceof Error ? error.message : undefined
+    )
+
+    return NextResponse.json(errorResponse, {
+      status: 500,
+      headers: API_RESPONSE_HEADERS,
+    })
+  }
 }

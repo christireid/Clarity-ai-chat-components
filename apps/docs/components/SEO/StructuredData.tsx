@@ -10,8 +10,18 @@
  * - Supports component and hook documentation types
  */
 
+import { getStableTimestamp } from '@/lib/ai/types'
+
 export interface StructuredDataProps {
-  type?: 'website' | 'software' | 'documentation' | 'article' | 'component' | 'hook' | 'howto' | 'faq'
+  type?:
+    | 'website'
+    | 'software'
+    | 'documentation'
+    | 'article'
+    | 'component'
+    | 'hook'
+    | 'howto'
+    | 'faq'
   title?: string
   description?: string
   url?: string
@@ -95,7 +105,7 @@ export function StructuredData({
               url: `${baseUrl}/logo.png`,
             },
           },
-          dateModified: new Date().toISOString(),
+          dateModified: getStableTimestamp(),
           inLanguage: 'en-US',
         }
 
@@ -110,7 +120,7 @@ export function StructuredData({
             '@type': 'Organization',
             name: 'Clarity Chat Team',
           },
-          dateModified: new Date().toISOString(),
+          dateModified: getStableTimestamp(),
         }
 
       // New type: Component documentation
@@ -131,7 +141,7 @@ export function StructuredData({
             '@type': 'Organization',
             name: 'Clarity Chat',
           },
-          dateModified: new Date().toISOString(),
+          dateModified: getStableTimestamp(),
           about: {
             '@type': 'SoftwareSourceCode',
             name: componentName || title,
@@ -173,7 +183,7 @@ export function StructuredData({
             '@type': 'Organization',
             name: 'Clarity Chat',
           },
-          dateModified: new Date().toISOString(),
+          dateModified: getStableTimestamp(),
           about: {
             '@type': 'SoftwareSourceCode',
             name: componentName || title,
@@ -253,7 +263,7 @@ export function StructuredData({
           },
           // AI-friendly site metadata
           inLanguage: 'en-US',
-          copyrightYear: new Date().getFullYear(),
+          copyrightYear: 2025, // Static to prevent hydration mismatch
           creator: {
             '@type': 'Organization',
             name: 'Clarity Chat Team',
@@ -282,7 +292,8 @@ export function OrganizationStructuredData() {
     name: 'Clarity Chat',
     url: 'https://clarity-chat.dev',
     logo: 'https://clarity-chat.dev/logo.png',
-    description: 'Building beautiful, accessible React components for chat interfaces',
+    description:
+      'Building beautiful, accessible React components for chat interfaces',
     sameAs: [
       'https://github.com/christireid/Clarity-ai-chat-components',
       'https://twitter.com/claritychat',
@@ -305,7 +316,11 @@ export interface BreadcrumbItem {
   url: string
 }
 
-export function BreadcrumbStructuredData({ items }: { items: BreadcrumbItem[] }) {
+export function BreadcrumbStructuredData({
+  items,
+}: {
+  items: BreadcrumbItem[]
+}) {
   const data = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -337,7 +352,8 @@ export function SoftwareLibraryStructuredData() {
     '@type': 'SoftwareSourceCode',
     name: 'Clarity Chat',
     alternateName: '@clarity-chat/react',
-    description: 'Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 70+ components, 35+ hooks, 11+ themes, and comprehensive token optimization.',
+    description:
+      'Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 70+ components, 35+ hooks, 11+ themes, and comprehensive token optimization.',
     url: 'https://clarity-chat.dev',
     codeRepository: 'https://github.com/christireid/Clarity-ai-chat-components',
     programmingLanguage: [
@@ -363,7 +379,7 @@ export function SoftwareLibraryStructuredData() {
     },
     license: 'https://opensource.org/licenses/MIT',
     version: '0.1.0',
-    dateModified: new Date().toISOString(),
+    dateModified: getStableTimestamp(),
     keywords: [
       'react',
       'typescript',
@@ -384,7 +400,8 @@ export function SoftwareLibraryStructuredData() {
       {
         '@type': 'SoftwareSourceCode',
         name: 'Components',
-        description: '70+ production-ready React components for chat interfaces',
+        description:
+          '70+ production-ready React components for chat interfaces',
       },
       {
         '@type': 'SoftwareSourceCode',
@@ -424,7 +441,8 @@ export function DocumentationSiteStructuredData() {
     name: 'Clarity Chat Documentation',
     alternateName: 'Clarity Chat Docs',
     url: 'https://clarity-chat.dev',
-    description: 'Official documentation for Clarity Chat - Enterprise-grade React components for AI chat interfaces',
+    description:
+      'Official documentation for Clarity Chat - Enterprise-grade React components for AI chat interfaces',
     inLanguage: 'en-US',
     isPartOf: {
       '@type': 'SoftwareApplication',
