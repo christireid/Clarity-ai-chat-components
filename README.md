@@ -5,6 +5,9 @@
 ### **The Most Complete AI Chat Component Library for React**
 
 <p align="center">
+  <a href="https://github.com/christireid/Clarity-ai-chat-components/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/christireid/Clarity-ai-chat-components/ci.yml?branch=main&style=for-the-badge&colorA=18181B&colorB=4A90E2&label=CI" alt="CI Status" />
+  </a>
   <a href="https://www.npmjs.com/package/@clarity-chat/react">
     <img src="https://img.shields.io/npm/v/@clarity-chat/react?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="NPM Version" />
   </a>

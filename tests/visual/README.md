@@ -9,18 +9,30 @@ Visual regression tests capture screenshots of components and compare them again
 ## Setup
 
 ```bash
-# Install dependencies
-npm install
+# Install dependencies (from repo root)
+pnpm install
 
 # Install Playwright browsers
 npx playwright install chromium
 ```
 
+## Initial Setup: Creating Baseline Screenshots
+
+Before running visual tests for the first time, you need to create baseline screenshots:
+
+```bash
+# Generate baseline screenshots (from repo root)
+pnpm test:visual --update-snapshots
+```
+
+This creates reference images in `__screenshots__/` that future tests compare against.
+Commit these baseline images to the repository.
+
 ## Running Tests
 
 ```bash
-# Run all visual tests
-npm run test:visual
+# Run all visual tests (from repo root)
+pnpm test:visual
 
 # Run in UI mode (interactive)
 npx playwright test --ui

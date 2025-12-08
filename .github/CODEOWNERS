@@ -1,0 +1,25 @@
+# Code Owners for Clarity Chat Components
+# These owners will be requested for review when someone opens a PR
+# that modifies code in the respective areas.
+
+# Default owner for everything
+* @christireid
+
+# CI/CD and workflow files - require explicit review
+.github/ @christireid
+.github/workflows/ @christireid
+.github/CODEOWNERS @christireid
+
+# Package configurations
+package.json @christireid
+pnpm-lock.yaml @christireid
+turbo.json @christireid
+tsconfig*.json @christireid
+
+# All packages
+packages/ @christireid
+
+# Security-sensitive files
+.env* @christireid
+*.pem @christireid
+*.key @christireid
