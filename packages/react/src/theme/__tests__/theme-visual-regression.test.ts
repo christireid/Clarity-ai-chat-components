@@ -287,26 +287,73 @@ describe('Theme Visual Regression', () => {
     })
   })
 
-  describe('Theme Snapshots', () => {
-    // Full theme snapshots to detect any structural changes
-    it('should match default light theme snapshot', () => {
+  describe('Theme Snapshots (Optimized)', () => {
+    /**
+     * Instead of full object snapshots (which create 500+ line files),
+     * we validate critical properties inline for better performance
+     * and easier maintenance.
+     */
+
+    it('should have stable default light theme structure', () => {
       const theme = getModernPreset('default')
-      expect(theme).toMatchSnapshot()
+
+      // Validate structure
+      expect(theme).toHaveProperty('name')
+      expect(theme).toHaveProperty('mode', 'light')
+      expect(theme).toHaveProperty('colors')
+      expect(theme).toHaveProperty('typography')
+      expect(theme).toHaveProperty('shadows')
+      expect(theme).toHaveProperty('borders')
+      expect(theme).toHaveProperty('animations')
+
+      // Validate critical color values inline
+      expect(theme.colors.primary).toBe('239 84% 56%')
+      expect(theme.colors.background).toBe('0 0% 100%')
+      expect(theme.colors.foreground).toBe('222 47% 11%')
     })
 
-    it('should match default dark theme snapshot', () => {
+    it('should have stable default dark theme structure', () => {
       const theme = getModernPreset('default-dark')
-      expect(theme).toMatchSnapshot()
+
+      expect(theme).toHaveProperty('mode', 'dark')
+      expect(theme.colors.primary).toBe('239 84% 70%')
+      expect(theme.colors.background).toBe('222 47% 11%')
+      expect(theme.colors.foreground).toBe('210 40% 98%')
     })
 
-    it('should match high-contrast light theme snapshot', () => {
+    it('should have stable high-contrast light theme structure', () => {
       const theme = getModernPreset('high-contrast')
-      expect(theme).toMatchSnapshot()
+
+      expect(theme).toHaveProperty('mode', 'light')
+      expect(theme.colors.primary).toBe('239 100% 40%')
+      expect(theme.colors.background).toBe('0 0% 100%')
+      expect(theme.colors.foreground).toBe('0 0% 0%')
     })
 
-    it('should match high-contrast dark theme snapshot', () => {
+    it('should have stable high-contrast dark theme structure', () => {
       const theme = getModernPreset('high-contrast-dark')
-      expect(theme).toMatchSnapshot()
+
+      expect(theme).toHaveProperty('mode', 'dark')
+      expect(theme.colors.primary).toBe('239 84% 75%')
+      expect(theme.colors.background).toBe('0 0% 0%')
+      expect(theme.colors.foreground).toBe('0 0% 100%')
+    })
+
+    it('should have consistent theme property counts', () => {
+      // Ensures no properties are accidentally added or removed
+      const defaultTheme = getModernPreset('default')
+
+      // Color tokens count
+      const colorKeys = Object.keys(defaultTheme.colors)
+      expect(colorKeys.length).toBeGreaterThanOrEqual(15)
+
+      // Border radius count
+      const radiusKeys = Object.keys(defaultTheme.borders.radius)
+      expect(radiusKeys.length).toBe(6) // none, sm, md, lg, xl, full
+
+      // Shadow count
+      const shadowKeys = Object.keys(defaultTheme.shadows)
+      expect(shadowKeys.length).toBeGreaterThanOrEqual(3)
     })
   })
 

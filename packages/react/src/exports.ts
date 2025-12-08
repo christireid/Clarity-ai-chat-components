@@ -346,6 +346,7 @@ export * from './hooks/use-character-counter'
 export * from './hooks/use-submit-button-state'
 export * from './hooks/use-mobile-keyboard'
 export { useDesignTokens } from './hooks/use-design-tokens'
+export * from './hooks/use-theme-analytics'
 
 // Additional Utilities
 export * from './utils'

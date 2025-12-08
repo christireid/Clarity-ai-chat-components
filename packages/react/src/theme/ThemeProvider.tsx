@@ -89,6 +89,21 @@ function normalizeThemeInput(
   return input as Partial<ThemeConfig>
 }
 
+/**
+ * Animation speed options for theme transitions
+ */
+export type ThemeAnimationSpeed = 'none' | 'fast' | 'normal' | 'slow'
+
+/**
+ * Animation speed durations in milliseconds
+ */
+const animationSpeedMap: Record<ThemeAnimationSpeed, number> = {
+  none: 0,
+  fast: 100,
+  normal: 200,
+  slow: 400,
+}
+
 export interface ThemeProviderProps {
   children: React.ReactNode
   /**
@@ -117,11 +132,57 @@ export interface ThemeProviderProps {
    */
   storageKey?: string
   /**
-   * Enable cross-tab theme synchronization via BroadcastChannel
-   * When enabled, theme changes in one tab are reflected in all other tabs
+   * Enable cross-tab theme synchronization via BroadcastChannel API.
+   *
+   * When enabled, theme changes in one tab are automatically reflected in all
+   * other tabs of the same origin. This provides a seamless user experience
+   * across multiple browser tabs.
+   *
+   * **Browser Support:**
+   * - Chrome 54+, Firefox 38+, Safari 15.4+, Edge 79+
+   * - Not supported in older browsers (gracefully degrades to localStorage-only)
+   * - Not available in Web Workers or Service Workers
+   *
+   * **Fallback Behavior:**
+   * If BroadcastChannel is not supported, the provider will:
+   * 1. Log a warning to the console (in development)
+   * 2. Continue to work with localStorage persistence only
+   * 3. Theme changes will sync on page reload but not in real-time
+   *
    * @default true
+   *
+   * @example
+   * // Enable cross-tab sync (default)
+   * <ThemeProvider enableCrossTabSync>
+   *
+   * @example
+   * // Disable for embedded/iframe contexts where sync isn't needed
+   * <ThemeProvider enableCrossTabSync={false}>
    */
   enableCrossTabSync?: boolean
+  /**
+   * Debounce delay for cross-tab sync messages in milliseconds.
+   * Prevents flooding with messages during rapid theme changes.
+   *
+   * Set to 0 to disable debouncing (immediate sync).
+   *
+   * @default 100
+   */
+  crossTabSyncDebounce?: number
+  /**
+   * Animation speed for theme transitions.
+   * Controls how fast color changes animate when switching themes.
+   *
+   * - 'none': No animation (instant switch)
+   * - 'fast': 100ms transition
+   * - 'normal': 200ms transition (default)
+   * - 'slow': 400ms transition
+   *
+   * Note: This is automatically set to 'none' if user prefers reduced motion.
+   *
+   * @default 'normal'
+   */
+  animationSpeed?: ThemeAnimationSpeed
 }
 
 /**
@@ -146,6 +207,8 @@ export function ThemeProvider({
   defaultTheme: defaultThemeInput,
   storageKey = 'clarity-chat-theme',
   enableCrossTabSync = true,
+  crossTabSyncDebounce = 100,
+  animationSpeed = 'normal',
 }: ThemeProviderProps) {
   // Normalize the input to handle both ThemeConfig and CompleteThemeConfig
   const normalizedDefault = React.useMemo(
@@ -273,12 +336,18 @@ export function ThemeProvider({
     if (!resolvedTheme) return
 
     const root = document.documentElement
-    // Disable transitions if user prefers reduced motion or explicitly disabled
+    // Disable transitions if user prefers reduced motion, explicitly disabled, or animation is 'none'
     const enableTransitions =
-      theme.enableTransitions !== false && !prefersReducedMotion
+      theme.enableTransitions !== false &&
+      !prefersReducedMotion &&
+      animationSpeed !== 'none'
+
+    // Use animationSpeed prop, but allow theme.transitionDuration to override if set
+    const baseTransitionDuration =
+      theme.transitionDuration || animationSpeedMap[animationSpeed]
     const transitionDuration = getMotionSafeDuration(
       prefersReducedMotion,
-      theme.transitionDuration || 200
+      baseTransitionDuration
     )
 
     // Add transition class for smooth color changes
@@ -306,6 +375,7 @@ export function ThemeProvider({
     theme.enableTransitions,
     theme.transitionDuration,
     prefersReducedMotion,
+    animationSpeed,
   ])
 
   // Save to localStorage (only persist user preferences, not full theme config)
@@ -365,37 +435,71 @@ export function ThemeProvider({
     }
   }, [storageKey, enableCrossTabSync])
 
-  // Broadcast theme changes to other tabs
+  // Broadcast theme changes to other tabs with debouncing
   const broadcastRef = React.useRef<BroadcastChannel | null>(null)
+  const broadcastTimeoutRef = React.useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null)
 
   React.useEffect(() => {
     if (!enableCrossTabSync || typeof window === 'undefined') return
-    if (typeof BroadcastChannel === 'undefined') return
+    if (typeof BroadcastChannel === 'undefined') {
+      // Log warning in development only
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          '[Clarity Chat] BroadcastChannel API not available. ' +
+            'Cross-tab theme sync will fall back to localStorage-only persistence. ' +
+            'Theme changes will sync on page reload but not in real-time.'
+        )
+      }
+      return
+    }
     if (!isHydrated) return // Don't broadcast until hydrated
 
     const channelName = `${storageKey}-sync`
 
-    try {
-      if (!broadcastRef.current) {
-        broadcastRef.current = new BroadcastChannel(channelName)
-      }
+    // Debounced broadcast function
+    const broadcastTheme = () => {
+      try {
+        if (!broadcastRef.current) {
+          broadcastRef.current = new BroadcastChannel(channelName)
+        }
 
-      // Broadcast the theme change
-      broadcastRef.current.postMessage({
-        type: 'theme-change',
-        theme: {
-          mode: theme.mode,
-          preset: theme.preset,
-          enableTransitions: theme.enableTransitions,
-        },
-      })
-    } catch {
-      // Silently fail if broadcast not available
+        // Broadcast the theme change
+        broadcastRef.current.postMessage({
+          type: 'theme-change',
+          theme: {
+            mode: theme.mode,
+            preset: theme.preset,
+            enableTransitions: theme.enableTransitions,
+          },
+        })
+      } catch {
+        // Silently fail if broadcast not available
+      }
+    }
+
+    // Clear any pending broadcast
+    if (broadcastTimeoutRef.current) {
+      clearTimeout(broadcastTimeoutRef.current)
+    }
+
+    // Apply debouncing if configured
+    if (crossTabSyncDebounce > 0) {
+      broadcastTimeoutRef.current = setTimeout(
+        broadcastTheme,
+        crossTabSyncDebounce
+      )
+    } else {
+      broadcastTheme()
     }
 
     return () => {
-      // Don't close here - we want to keep broadcasting on changes
-      // Close in the cleanup effect above
+      // Don't close channel here - we want to keep broadcasting on changes
+      // Clean up timeout on unmount
+      if (broadcastTimeoutRef.current) {
+        clearTimeout(broadcastTimeoutRef.current)
+      }
     }
   }, [
     theme.mode,
@@ -403,6 +507,7 @@ export function ThemeProvider({
     theme.enableTransitions,
     storageKey,
     enableCrossTabSync,
+    crossTabSyncDebounce,
     isHydrated,
   ])
 

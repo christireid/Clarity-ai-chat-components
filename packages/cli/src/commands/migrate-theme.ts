@@ -6,7 +6,7 @@ import chalk from 'chalk'
 import prompts from 'prompts'
 import fs from 'fs-extra'
 import path from 'path'
-import { glob } from 'glob'
+import fastGlob from 'fast-glob'
 import { getLogger } from '../utils/logger.js'
 import { ValidationError, handleError } from '../utils/errors.js'
 import { success, info, warn } from '../utils/output.js'
@@ -73,7 +73,7 @@ async function scanForLegacyThemes(cwd: string): Promise<string[]> {
 
   try {
     // Find all TypeScript/JavaScript files
-    const files = await glob('**/*.{ts,tsx,js,jsx}', {
+    const files = await fastGlob('**/*.{ts,tsx,js,jsx}', {
       cwd,
       ignore: [
         '**/node_modules/**',

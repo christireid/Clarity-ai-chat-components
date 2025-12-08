@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { cn } from '@clarity-chat/primitives'
 import {
   modernThemes,
   type ModernThemePresetName,
@@ -70,27 +71,48 @@ function toHSL(hslString: string): string {
 }
 
 /**
- * Size configurations
+ * Size configurations for Tailwind classes
  */
-const sizes = {
+const sizeClasses = {
   sm: {
-    width: 64,
-    height: 48,
-    borderRadius: 4,
-    padding: 4,
+    container: 'w-16 h-12 p-1 rounded',
+    gap: 'gap-0.5',
+    circleSize: 'w-1 h-1',
+    cardRadius: 'rounded-sm',
+    cardPadding: 'p-0.5',
+    lineHeight: 'h-0.5',
+    buttonSize: 'h-1.5 w-5',
+    labelSize: 'text-[9px]',
   },
   md: {
-    width: 96,
-    height: 72,
-    borderRadius: 6,
-    padding: 6,
+    container: 'w-24 h-[72px] p-1.5 rounded-md',
+    gap: 'gap-1',
+    circleSize: 'w-1.5 h-1.5',
+    cardRadius: 'rounded',
+    cardPadding: 'p-1',
+    lineHeight: 'h-[3px]',
+    buttonSize: 'h-2 w-7',
+    labelSize: 'text-[10px]',
   },
   lg: {
-    width: 128,
-    height: 96,
-    borderRadius: 8,
-    padding: 8,
+    container: 'w-32 h-24 p-2 rounded-lg',
+    gap: 'gap-1',
+    circleSize: 'w-1.5 h-1.5',
+    cardRadius: 'rounded-md',
+    cardPadding: 'p-1',
+    lineHeight: 'h-[3px]',
+    buttonSize: 'h-2 w-7',
+    labelSize: 'text-[11px]',
   },
+} as const
+
+/**
+ * Size width values for grid calculations
+ */
+const sizeWidths = {
+  sm: 64,
+  md: 96,
+  lg: 128,
 } as const
 
 export function ThemePreviewThumbnail({
@@ -109,7 +131,7 @@ export function ThemePreviewThumbnail({
     return modernThemes['default']
   }, [customTheme, preset])
 
-  const sizeConfig = sizes[size]
+  const classes = sizeClasses[size]
   const colors = theme.colors
 
   // Generate display name
@@ -121,85 +143,27 @@ export function ThemePreviewThumbnail({
     return 'Custom'
   }, [customTheme, preset])
 
-  const containerStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 6,
-    cursor: onClick ? 'pointer' : 'default',
-  }
-
-  const thumbnailStyle: React.CSSProperties = {
-    width: sizeConfig.width,
-    height: sizeConfig.height,
-    borderRadius: sizeConfig.borderRadius,
-    padding: sizeConfig.padding,
-    backgroundColor: toHSL(colors.background),
-    border: selected
-      ? `2px solid ${toHSL(colors.primary)}`
-      : '1px solid rgba(0,0,0,0.1)',
-    boxShadow: selected
-      ? `0 0 0 2px ${toHSL(colors.primary)}33`
-      : '0 1px 3px rgba(0,0,0,0.1)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: size === 'sm' ? 2 : 4,
-    overflow: 'hidden',
-    transition: 'all 150ms ease-in-out',
-    position: 'relative',
-  }
-
-  // Mini UI preview elements
-  const headerStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 3,
-  }
-
-  const circleSize = size === 'sm' ? 4 : size === 'md' ? 5 : 6
-
-  const cardStyle: React.CSSProperties = {
-    flex: 1,
-    backgroundColor: toHSL(colors.card),
-    borderRadius: Math.max(2, sizeConfig.borderRadius - 4),
-    padding: size === 'sm' ? 2 : 4,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 2,
-  }
-
-  const lineStyle = (width: string, color: string): React.CSSProperties => ({
-    height: size === 'sm' ? 2 : 3,
-    width,
-    backgroundColor: toHSL(color),
-    borderRadius: 1,
-    opacity: 0.9,
-  })
-
-  const buttonStyle: React.CSSProperties = {
-    height: size === 'sm' ? 6 : 8,
-    width: size === 'sm' ? 20 : 28,
-    backgroundColor: toHSL(colors.primary),
-    borderRadius: 2,
-    marginTop: 'auto',
-  }
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: size === 'sm' ? 9 : size === 'md' ? 10 : 11,
-    fontWeight: 500,
-    color: selected ? toHSL(colors.primary) : '#666',
-    textAlign: 'center',
-    maxWidth: sizeConfig.width,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  }
+  // CSS variables for dynamic theme colors
+  const themeVars = {
+    '--thumb-bg': toHSL(colors.background),
+    '--thumb-card': toHSL(colors.card),
+    '--thumb-primary': toHSL(colors.primary),
+    '--thumb-foreground': toHSL(colors.foreground),
+    '--thumb-muted-fg': toHSL(colors.mutedForeground),
+    '--thumb-destructive': toHSL(colors.destructive),
+    '--thumb-warning': toHSL(colors.warning),
+    '--thumb-success': toHSL(colors.success),
+  } as React.CSSProperties
 
   return (
     <div
-      style={containerStyle}
+      style={themeVars}
       onClick={onClick}
-      className={className}
+      className={cn(
+        'flex flex-col items-center gap-1.5',
+        onClick ? 'cursor-pointer' : 'cursor-default',
+        className
+      )}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={
@@ -215,50 +179,95 @@ export function ThemePreviewThumbnail({
       aria-label={`Theme preview: ${displayName}${selected ? ' (selected)' : ''}`}
       aria-pressed={onClick ? selected : undefined}
     >
-      <div style={thumbnailStyle}>
+      <div
+        className={cn(
+          'flex flex-col overflow-hidden transition-all duration-150 ease-in-out relative',
+          classes.container,
+          classes.gap,
+          selected
+            ? 'border-2 shadow-md ring-2 ring-offset-0'
+            : 'border shadow-sm'
+        )}
+        style={
+          {
+            backgroundColor: 'var(--thumb-bg)',
+            borderColor: selected ? 'var(--thumb-primary)' : 'rgba(0,0,0,0.1)',
+            boxShadow: selected
+              ? `0 0 0 2px color-mix(in srgb, var(--thumb-primary), transparent 80%)`
+              : '0 1px 3px rgba(0,0,0,0.1)',
+            '--tw-ring-color': selected
+              ? 'color-mix(in srgb, var(--thumb-primary), transparent 80%)'
+              : 'transparent',
+          } as React.CSSProperties
+        }
+      >
         {/* Header area with dots */}
-        <div style={headerStyle}>
+        <div className="flex items-center gap-[3px]">
           <div
-            style={{
-              width: circleSize,
-              height: circleSize,
-              borderRadius: '50%',
-              backgroundColor: toHSL(colors.destructive),
-            }}
+            className={cn('rounded-full', classes.circleSize)}
+            style={{ backgroundColor: 'var(--thumb-destructive)' }}
           />
           <div
-            style={{
-              width: circleSize,
-              height: circleSize,
-              borderRadius: '50%',
-              backgroundColor: toHSL(colors.warning),
-            }}
+            className={cn('rounded-full', classes.circleSize)}
+            style={{ backgroundColor: 'var(--thumb-warning)' }}
           />
           <div
-            style={{
-              width: circleSize,
-              height: circleSize,
-              borderRadius: '50%',
-              backgroundColor: toHSL(colors.success),
-            }}
+            className={cn('rounded-full', classes.circleSize)}
+            style={{ backgroundColor: 'var(--thumb-success)' }}
           />
         </div>
 
         {/* Card preview */}
-        <div style={cardStyle}>
-          <div style={lineStyle('70%', colors.foreground)} />
-          <div style={lineStyle('50%', colors.mutedForeground)} />
-          <div style={buttonStyle} />
+        <div
+          className={cn(
+            'flex-1 flex flex-col gap-0.5',
+            classes.cardRadius,
+            classes.cardPadding
+          )}
+          style={{ backgroundColor: 'var(--thumb-card)' }}
+        >
+          <div
+            className={cn('w-[70%] rounded-sm opacity-90', classes.lineHeight)}
+            style={{ backgroundColor: 'var(--thumb-foreground)' }}
+          />
+          <div
+            className={cn('w-[50%] rounded-sm opacity-90', classes.lineHeight)}
+            style={{ backgroundColor: 'var(--thumb-muted-fg)' }}
+          />
+          <div
+            className={cn('mt-auto rounded-sm', classes.buttonSize)}
+            style={{ backgroundColor: 'var(--thumb-primary)' }}
+          />
         </div>
       </div>
 
-      {showLabel && <div style={labelStyle}>{displayName}</div>}
+      {showLabel && (
+        <div
+          className={cn(
+            'font-medium text-center truncate',
+            classes.labelSize,
+            selected ? '' : 'text-muted-foreground'
+          )}
+          style={{
+            maxWidth: sizeWidths[size],
+            color: selected ? 'var(--thumb-primary)' : undefined,
+          }}
+        >
+          {displayName}
+        </div>
+      )}
     </div>
   )
 }
 
 /**
  * ThemePreviewGrid - Grid of theme preview thumbnails
+ *
+ * Features:
+ * - Keyboard navigation with arrow keys (roving tabindex)
+ * - Home/End key support
+ * - Filter by light/dark themes
+ * - Accessible radiogroup pattern
  *
  * @example
  * ```tsx
@@ -299,6 +308,9 @@ export function ThemePreviewGrid({
   filter = 'all',
   className = '',
 }: ThemePreviewGridProps) {
+  const gridRef = React.useRef<HTMLDivElement>(null)
+  const [focusedIndex, setFocusedIndex] = React.useState<number>(-1)
+
   const presets = React.useMemo(() => {
     const allPresets = Object.keys(modernThemes) as ModernThemePresetName[]
 
@@ -311,29 +323,242 @@ export function ThemePreviewGrid({
     return allPresets
   }, [filter])
 
-  const gridStyle: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: `repeat(auto-fill, minmax(${sizes[size].width + 16}px, 1fr))`,
-    gap: 16,
-    padding: 8,
-  }
+  // Initialize focused index when selection changes
+  React.useEffect(() => {
+    if (selectedPreset) {
+      const index = presets.indexOf(selectedPreset)
+      if (index !== -1) {
+        setFocusedIndex(index)
+      }
+    }
+  }, [selectedPreset, presets])
+
+  // Keyboard navigation handler
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!onSelect) return
+
+      const presetsCount = presets.length
+      let newIndex = focusedIndex
+
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+          e.preventDefault()
+          newIndex = focusedIndex < presetsCount - 1 ? focusedIndex + 1 : 0
+          break
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          e.preventDefault()
+          newIndex = focusedIndex > 0 ? focusedIndex - 1 : presetsCount - 1
+          break
+        case 'Home':
+          e.preventDefault()
+          newIndex = 0
+          break
+        case 'End':
+          e.preventDefault()
+          newIndex = presetsCount - 1
+          break
+        case 'Enter':
+        case ' ':
+          e.preventDefault()
+          if (focusedIndex >= 0 && focusedIndex < presetsCount) {
+            onSelect(presets[focusedIndex])
+          }
+          return
+        default:
+          return
+      }
+
+      setFocusedIndex(newIndex)
+
+      // Focus the new item
+      const items = gridRef.current?.querySelectorAll('[role="radio"]')
+      if (items && items[newIndex]) {
+        ;(items[newIndex] as HTMLElement).focus()
+      }
+    },
+    [focusedIndex, presets, onSelect]
+  )
+
+  // Calculate grid template columns based on size
+  const gridMinWidth = sizeWidths[size] + 16
 
   return (
     <div
-      style={gridStyle}
-      className={className}
+      ref={gridRef}
+      className={cn('grid gap-4 p-2', className)}
+      style={{
+        gridTemplateColumns: `repeat(auto-fill, minmax(${gridMinWidth}px, 1fr))`,
+      }}
       role="radiogroup"
       aria-label="Theme selection"
+      onKeyDown={handleKeyDown}
     >
-      {presets.map((preset) => (
-        <ThemePreviewThumbnail
+      {presets.map((preset, index) => (
+        <ThemePreviewGridItem
           key={preset}
           preset={preset}
           selected={selectedPreset === preset}
+          focused={focusedIndex === index}
           size={size}
           onClick={onSelect ? () => onSelect(preset) : undefined}
+          onFocus={() => setFocusedIndex(index)}
+          tabIndex={
+            onSelect
+              ? focusedIndex === index || (focusedIndex === -1 && index === 0)
+                ? 0
+                : -1
+              : undefined
+          }
         />
       ))}
+    </div>
+  )
+}
+
+/**
+ * Internal grid item component with radio role for accessibility
+ */
+interface ThemePreviewGridItemProps {
+  preset: ModernThemePresetName
+  selected: boolean
+  focused: boolean
+  size: 'sm' | 'md' | 'lg'
+  onClick?: () => void
+  onFocus?: () => void
+  tabIndex?: number
+}
+
+function ThemePreviewGridItem({
+  preset,
+  selected,
+  size,
+  onClick,
+  onFocus,
+  tabIndex,
+}: ThemePreviewGridItemProps) {
+  const theme = modernThemes[preset]
+  const classes = sizeClasses[size]
+  const colors = theme.colors
+
+  const displayName = preset
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (l) => l.toUpperCase())
+
+  // CSS variables for dynamic theme colors
+  const themeVars = {
+    '--thumb-bg': toHSL(colors.background),
+    '--thumb-card': toHSL(colors.card),
+    '--thumb-primary': toHSL(colors.primary),
+    '--thumb-foreground': toHSL(colors.foreground),
+    '--thumb-muted-fg': toHSL(colors.mutedForeground),
+    '--thumb-destructive': toHSL(colors.destructive),
+    '--thumb-warning': toHSL(colors.warning),
+    '--thumb-success': toHSL(colors.success),
+  } as React.CSSProperties
+
+  return (
+    <div
+      style={themeVars}
+      onClick={onClick}
+      onFocus={onFocus}
+      className={cn(
+        'flex flex-col items-center gap-1.5',
+        onClick ? 'cursor-pointer' : 'cursor-default',
+        'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg'
+      )}
+      role={onClick ? 'radio' : undefined}
+      tabIndex={tabIndex}
+      aria-checked={onClick ? selected : undefined}
+      aria-label={`${displayName}${selected ? ' (selected)' : ''}`}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onClick()
+              }
+            }
+          : undefined
+      }
+    >
+      <div
+        className={cn(
+          'flex flex-col overflow-hidden transition-all duration-150 ease-in-out relative',
+          classes.container,
+          classes.gap,
+          selected
+            ? 'border-2 shadow-md ring-2 ring-offset-0'
+            : 'border shadow-sm'
+        )}
+        style={
+          {
+            backgroundColor: 'var(--thumb-bg)',
+            borderColor: selected ? 'var(--thumb-primary)' : 'rgba(0,0,0,0.1)',
+            boxShadow: selected
+              ? `0 0 0 2px color-mix(in srgb, var(--thumb-primary), transparent 80%)`
+              : '0 1px 3px rgba(0,0,0,0.1)',
+            '--tw-ring-color': selected
+              ? 'color-mix(in srgb, var(--thumb-primary), transparent 80%)'
+              : 'transparent',
+          } as React.CSSProperties
+        }
+      >
+        {/* Header area with dots */}
+        <div className="flex items-center gap-[3px]">
+          <div
+            className={cn('rounded-full', classes.circleSize)}
+            style={{ backgroundColor: 'var(--thumb-destructive)' }}
+          />
+          <div
+            className={cn('rounded-full', classes.circleSize)}
+            style={{ backgroundColor: 'var(--thumb-warning)' }}
+          />
+          <div
+            className={cn('rounded-full', classes.circleSize)}
+            style={{ backgroundColor: 'var(--thumb-success)' }}
+          />
+        </div>
+
+        {/* Card preview */}
+        <div
+          className={cn(
+            'flex-1 flex flex-col gap-0.5',
+            classes.cardRadius,
+            classes.cardPadding
+          )}
+          style={{ backgroundColor: 'var(--thumb-card)' }}
+        >
+          <div
+            className={cn('w-[70%] rounded-sm opacity-90', classes.lineHeight)}
+            style={{ backgroundColor: 'var(--thumb-foreground)' }}
+          />
+          <div
+            className={cn('w-[50%] rounded-sm opacity-90', classes.lineHeight)}
+            style={{ backgroundColor: 'var(--thumb-muted-fg)' }}
+          />
+          <div
+            className={cn('mt-auto rounded-sm', classes.buttonSize)}
+            style={{ backgroundColor: 'var(--thumb-primary)' }}
+          />
+        </div>
+      </div>
+
+      <div
+        className={cn(
+          'font-medium text-center truncate',
+          classes.labelSize,
+          selected ? '' : 'text-muted-foreground'
+        )}
+        style={{
+          maxWidth: sizeWidths[size],
+          color: selected ? 'var(--thumb-primary)' : undefined,
+        }}
+      >
+        {displayName}
+      </div>
     </div>
   )
 }

@@ -19,6 +19,7 @@ import { analyzeCommand } from './commands/analyze.js'
 import { benchmarkCommand } from './commands/benchmark.js'
 import { browseCommand, searchComponents } from './commands/browse.js'
 import { migrateThemeCommand } from './commands/migrate-theme.js'
+import { validateThemeCommand } from './commands/validate-theme.js'
 import { generateCompletion } from './utils/completion.js'
 import { initOutputMode } from './utils/output.js'
 import { handleError, withErrorHandling } from './utils/errors.js'
@@ -184,6 +185,13 @@ program
   .option('-i, --interactive', 'Interactive mode for selecting changes')
   .option('-y, --yes', 'Skip confirmation prompts')
   .action(migrateThemeCommand)
+
+program
+  .command('validate-theme')
+  .description('✅ Validate theme configurations and accessibility')
+  .option('-p, --path <path>', 'Project path to validate', '.')
+  .option('--strict', 'Exit with error code if validation fails')
+  .action(validateThemeCommand)
 
 // Completion command
 program
