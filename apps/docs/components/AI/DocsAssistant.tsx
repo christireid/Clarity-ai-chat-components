@@ -73,7 +73,12 @@ import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp'
 import { cn } from '@/lib/utils'
 
 // Local imports from extracted modules
-import type { DocsAssistantProps, StreamingStatus, SavedConversation, Source } from './types'
+import type {
+  DocsAssistantProps,
+  StreamingStatus,
+  SavedConversation,
+  Source,
+} from './types'
 import {
   SESSION_ID_KEY,
   MESSAGES_KEY,
@@ -105,11 +110,7 @@ import {
   generateExportContent,
   downloadExport,
 } from './utils'
-import {
-  useOfflineQueue,
-  createPendingMessage,
-  useBranching,
-} from './hooks'
+import { useOfflineQueue, createPendingMessage, useBranching } from './hooks'
 
 // ============================================================================
 // Inner Component (wrapped by ErrorBoundary)
@@ -124,7 +125,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const [showExportDialog, setShowExportDialog] = useState(false)
-  const [streamingStatus, setStreamingStatus] = useState<StreamingStatus>('idle')
+  const [streamingStatus, setStreamingStatus] =
+    useState<StreamingStatus>('idle')
   const [retryCount, setRetryCount] = useState(0)
 
   // Refs
@@ -146,20 +148,22 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const { saveFocus, restoreFocus } = useFocusRestoration()
 
   // Offline queue hook
-  const {
-    isOnline,
-    messageQueue,
-    queueMessage,
-    handleNetworkStatusChange,
-  } = useOfflineQueue({
-    onQueueMessage: () => toast.info('Message queued. Will be sent when you reconnect.'),
-    onProcessQueue: (queue) => toast.info(`You're back online! ${queue.length} message${queue.length > 1 ? 's' : ''} queued.`),
-    onStatusChange: (online) => {
-      if (!online) {
-        toast.warning('You are offline. Messages will be queued and sent when you reconnect.')
-      }
-    },
-  })
+  const { isOnline, messageQueue, queueMessage, handleNetworkStatusChange } =
+    useOfflineQueue({
+      onQueueMessage: () =>
+        toast.info('Message queued. Will be sent when you reconnect.'),
+      onProcessQueue: (queue) =>
+        toast.info(
+          `You're back online! ${queue.length} message${queue.length > 1 ? 's' : ''} queued.`
+        ),
+      onStatusChange: (online) => {
+        if (!online) {
+          toast.warning(
+            'You are offline. Messages will be queued and sent when you reconnect.'
+          )
+        }
+      },
+    })
 
   // Branching hook
   const {
@@ -187,25 +191,28 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     warningThreshold: TOKEN_WARNING_THRESHOLD,
     criticalThreshold: TOKEN_CRITICAL_THRESHOLD,
     onWarning: () => toast.warning('Approaching context limit'),
-    onCritical: () => toast.error('Near context limit - consider clearing conversation'),
+    onCritical: () =>
+      toast.error('Near context limit - consider clearing conversation'),
   })
 
   // State for citation display
   const [currentCitations, setCurrentCitations] = useState<Citation[]>([])
 
   // Session ID using library hook
-  const [sessionId] = useLocalStorage<string>(SESSION_ID_KEY, generateSessionId())
+  const [sessionId] = useLocalStorage<string>(
+    SESSION_ID_KEY,
+    generateSessionId()
+  )
 
   // Persistent conversation storage using library hook
-  const [savedConversation, setSavedConversation, clearSavedConversation] = useLocalStorage<SavedConversation | null>(
-    MESSAGES_KEY,
-    null
-  )
+  const [savedConversation, setSavedConversation, clearSavedConversation] =
+    useLocalStorage<SavedConversation | null>(MESSAGES_KEY, null)
 
   // Initialize messages from saved conversation
   useEffect(() => {
     if (savedConversation) {
-      const isValid = savedConversation.timestamp &&
+      const isValid =
+        savedConversation.timestamp &&
         Date.now() - savedConversation.timestamp < CONVERSATION_TTL_MS
 
       if (isValid && savedConversation.messages) {
@@ -237,7 +244,11 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
         }
         setIsOpen(willOpen)
         if (willOpen) {
-          toast.info('Press Escape or Cmd+. to close', 'Documentation Assistant', TOAST_DURATION_MS)
+          toast.info(
+            'Press Escape or Cmd+. to close',
+            'Documentation Assistant',
+            TOAST_DURATION_MS
+          )
         } else {
           restoreFocus()
         }
@@ -294,45 +305,52 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   }, [])
 
   // Switch branch wrapper
-  const switchBranch = useCallback((branchId: string) => {
-    const result = switchBranchInternal(branchId, messages)
-    if (!result) {
-      toast.error('Branch not found')
-    }
-  }, [switchBranchInternal, messages, toast])
+  const switchBranch = useCallback(
+    (branchId: string) => {
+      const result = switchBranchInternal(branchId, messages)
+      if (!result) {
+        toast.error('Branch not found')
+      }
+    },
+    [switchBranchInternal, messages, toast]
+  )
 
   // Open code in playground handler
-  const handleOpenInPlayground = useCallback((messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message || message.role !== 'assistant') return
+  const handleOpenInPlayground = useCallback(
+    (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (!message || message.role !== 'assistant') return
 
-    const codeBlocks = extractCodeBlocks(message.content)
-    const playgroundCompatibleBlocks = codeBlocks.filter(
-      block => isPlaygroundCompatible(block.language, block.code)
-    )
+      const codeBlocks = extractCodeBlocks(message.content)
+      const playgroundCompatibleBlocks = codeBlocks.filter((block) =>
+        isPlaygroundCompatible(block.language, block.code)
+      )
 
-    if (playgroundCompatibleBlocks.length === 0) {
-      toast.warning('No playground-compatible code found in this message')
-      return
-    }
-
-    const blockToOpen = playgroundCompatibleBlocks.reduce((largest, current) =>
-      current.code.length > largest.code.length ? current : largest
-    )
-
-    const result = openInPlayground(blockToOpen.code, blockToOpen.language)
-    if (result.success) {
-      toast.success('Opening code in playground...')
-    } else {
-      // Provide fallback with URL for manual opening
-      toast.error(result.error || 'Failed to open playground')
-      // Copy URL to clipboard as fallback
-      if (result.url) {
-        navigator.clipboard?.writeText(result.url)
-        toast.info('Playground URL copied to clipboard')
+      if (playgroundCompatibleBlocks.length === 0) {
+        toast.warning('No playground-compatible code found in this message')
+        return
       }
-    }
-  }, [messages, toast])
+
+      const blockToOpen = playgroundCompatibleBlocks.reduce(
+        (largest, current) =>
+          current.code.length > largest.code.length ? current : largest
+      )
+
+      const result = openInPlayground(blockToOpen.code, blockToOpen.language)
+      if (result.success) {
+        toast.success('Opening code in playground...')
+      } else {
+        // Provide fallback with URL for manual opening
+        toast.error(result.error || 'Failed to open playground')
+        // Copy URL to clipboard as fallback
+        if (result.url) {
+          navigator.clipboard?.writeText(result.url)
+          toast.info('Playground URL copied to clipboard')
+        }
+      }
+    },
+    [messages, toast]
+  )
 
   // Check if messages have playground-compatible code (memoized)
   const messagesWithPlaygroundCode = useMemo(() => {
@@ -340,7 +358,11 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     for (const message of messages) {
       if (message.role !== 'assistant') continue
       const codeBlocks = extractCodeBlocks(message.content)
-      if (codeBlocks.some(block => isPlaygroundCompatible(block.language, block.code))) {
+      if (
+        codeBlocks.some((block) =>
+          isPlaygroundCompatible(block.language, block.code)
+        )
+      ) {
         result.add(message.id)
       }
     }
@@ -351,9 +373,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const updateStreamingMessage = useThrottledCallback(
     (messageId: string, content: string) => {
       setMessages((prev) =>
-        prev.map((m) =>
-          m.id === messageId ? { ...m, content } : m
-        )
+        prev.map((m) => (m.id === messageId ? { ...m, content } : m))
       )
     },
     STREAM_THROTTLE_MS
@@ -361,7 +381,8 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
   // Calculate exponential backoff delay for retries
   const calculateRetryDelay = useCallback((attempt: number): number => {
-    const delay = INITIAL_RETRY_DELAY_MS * Math.pow(RETRY_BACKOFF_MULTIPLIER, attempt)
+    const delay =
+      INITIAL_RETRY_DELAY_MS * Math.pow(RETRY_BACKOFF_MULTIPLIER, attempt)
     return Math.min(delay, MAX_RETRY_DELAY_MS)
   }, [])
 
@@ -381,330 +402,407 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   }, [])
 
   // Internal send message handler with validation and automatic retry
-  const handleSendMessageInternal = useCallback(async (content: string, currentRetry = 0) => {
-    const trimmedContent = content.trim()
-    if (!trimmedContent) {
-      toast.warning('Please enter a message')
-      return
-    }
-
-    // Only add user message on first attempt
-    if (currentRetry === 0) {
-      const userMessage: Message = {
-        id: `user-${Date.now()}`,
-        chatId: 'docs-assistant',
-        role: 'user',
-        content,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        status: 'sent',
-      }
-      setMessages((prev) => [...prev, userMessage])
-      trackMessage({ role: 'user', content })
-    }
-
-    setIsLoading(true)
-    setStreamingStatus('connecting')
-    setRetryCount(currentRetry)
-    setCurrentCitations([])
-    partialContentRef.current = ''
-    setAiStatus({
-      stage: 'researching',
-      topic: currentRetry > 0 ? `Retrying (${currentRetry}/${MAX_RETRY_ATTEMPTS})...` : 'Searching documentation',
-      startedAt: new Date(),
-    })
-
-    try {
-      abortControllerRef.current?.abort()
-      const abortController = new AbortController()
-      abortControllerRef.current = abortController
-
-      const response = await fetch('/api/docs-assistant', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: content,
-          sessionId,
-          currentPath: typeof window !== 'undefined' ? window.location.pathname : '/',
-          messages: messages.map((m) => ({ role: m.role, content: m.content })),
-        }),
-        signal: abortController.signal,
-      })
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`)
+  const handleSendMessageInternal = useCallback(
+    async (content: string, currentRetry = 0) => {
+      const trimmedContent = content.trim()
+      if (!trimmedContent) {
+        toast.warning('Please enter a message')
+        return
       }
 
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
-
-      if (!reader) throw new Error('No response body')
-
-      const assistantMessage: Message = {
-        id: `assistant-${Date.now()}`,
-        chatId: 'docs-assistant',
-        role: 'assistant',
-        content: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        status: 'streaming',
+      // Only add user message on first attempt
+      if (currentRetry === 0) {
+        const userMessage: Message = {
+          id: `user-${Date.now()}`,
+          chatId: 'docs-assistant',
+          role: 'user',
+          content,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          status: 'sent',
+        }
+        setMessages((prev) => [...prev, userMessage])
+        trackMessage({ role: 'user', content })
       }
 
-      setMessages((prev) => [...prev, assistantMessage])
-      setIsLoading(false)
-      setStreamingStatus('streaming')
+      setIsLoading(true)
+      setStreamingStatus('connecting')
+      setRetryCount(currentRetry)
+      setCurrentCitations([])
+      partialContentRef.current = ''
       setAiStatus({
-        stage: 'generating',
-        topic: 'Generating response',
+        stage: 'researching',
+        topic:
+          currentRetry > 0
+            ? `Retrying (${currentRetry}/${MAX_RETRY_ATTEMPTS})...`
+            : 'Searching documentation',
         startedAt: new Date(),
       })
 
-      let accumulatedContent = ''
-      let sources: Source[] = []
+      try {
+        abortControllerRef.current?.abort()
+        const abortController = new AbortController()
+        abortControllerRef.current = abortController
 
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
+        const response = await fetch('/api/docs-assistant', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: content,
+            sessionId,
+            currentPath:
+              typeof window !== 'undefined' ? window.location.pathname : '/',
+            messages: messages.map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          }),
+          signal: abortController.signal,
+        })
 
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`)
+        }
 
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6))
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder()
 
-              if (data.type === 'text' && data.content) {
-                accumulatedContent += data.content
-                partialContentRef.current = accumulatedContent
-                updateStreamingMessage(assistantMessage.id, accumulatedContent)
-              } else if (data.type === 'sources' && data.data?.sources) {
-                sources = data.data.sources
-                const citations: Citation[] = sources
-                  .filter((s) => s && (s.title || s.source || s.url))
-                  .map((source, index) => ({
-                    id: source.id || `citation-${index}-${Date.now()}`,
-                    source: (source.title || source.source || 'Documentation').trim(),
-                    chunkText: source.chunkText || source.title || source.source || 'See documentation for more details',
-                    confidence: Number(source.score) || Number(source.confidence) || 0,
-                    url: normalizeSourceUrl(source.url || '', source.title || source.source || ''),
-                  }))
-                setCurrentCitations(citations)
-              } else if (data.type === 'error') {
-                throw new Error(data.content || 'Stream error')
-              } else if (data.type === 'done') {
-                const finalContent = normalizeLinksInContent(accumulatedContent)
-                trackMessage({ role: 'assistant', content: finalContent })
-                setMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === assistantMessage.id
-                      ? { ...m, content: finalContent, status: 'sent' as const }
-                      : m
+        if (!reader) throw new Error('No response body')
+
+        const assistantMessage: Message = {
+          id: `assistant-${Date.now()}`,
+          chatId: 'docs-assistant',
+          role: 'assistant',
+          content: '',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          status: 'streaming',
+        }
+
+        setMessages((prev) => [...prev, assistantMessage])
+        setIsLoading(false)
+        setStreamingStatus('streaming')
+        setAiStatus({
+          stage: 'generating',
+          topic: 'Generating response',
+          startedAt: new Date(),
+        })
+
+        let accumulatedContent = ''
+        let sources: Source[] = []
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value)
+          const lines = chunk.split('\n')
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6))
+
+                if (data.type === 'text' && data.content) {
+                  accumulatedContent += data.content
+                  partialContentRef.current = accumulatedContent
+                  updateStreamingMessage(
+                    assistantMessage.id,
+                    accumulatedContent
                   )
-                )
-                setAiStatus(undefined)
-              }
-            } catch (parseError) {
-              if (process.env.NODE_ENV === 'development') {
-                console.debug('[DocsAssistant] JSON parse error:', parseError)
+                } else if (data.type === 'sources' && data.data?.sources) {
+                  sources = data.data.sources
+                  const citations: Citation[] = sources
+                    .filter((s) => s && (s.title || s.source || s.url))
+                    .map((source, index) => ({
+                      id: source.id || `citation-${index}-${Date.now()}`,
+                      source: (
+                        source.title ||
+                        source.source ||
+                        'Documentation'
+                      ).trim(),
+                      chunkText:
+                        source.chunkText ||
+                        source.title ||
+                        source.source ||
+                        'See documentation for more details',
+                      confidence:
+                        Number(source.score) || Number(source.confidence) || 0,
+                      url: normalizeSourceUrl(
+                        source.url || '',
+                        source.title || source.source || ''
+                      ),
+                    }))
+                  setCurrentCitations(citations)
+                } else if (data.type === 'error') {
+                  throw new Error(data.content || 'Stream error')
+                } else if (data.type === 'done') {
+                  const finalContent =
+                    normalizeLinksInContent(accumulatedContent)
+                  trackMessage({ role: 'assistant', content: finalContent })
+                  setMessages((prev) =>
+                    prev.map((m) =>
+                      m.id === assistantMessage.id
+                        ? {
+                            ...m,
+                            content: finalContent,
+                            status: 'sent' as const,
+                          }
+                        : m
+                    )
+                  )
+                  setAiStatus(undefined)
+                }
+              } catch (parseError) {
+                if (process.env.NODE_ENV === 'development') {
+                  console.debug('[DocsAssistant] JSON parse error:', parseError)
+                }
               }
             }
           }
         }
-      }
 
-      // Finalize any streaming message that didn't receive 'done'
-      if (accumulatedContent && accumulatedContent.length > 0) {
-        const finalContent = normalizeLinksInContent(accumulatedContent)
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantMessage.id && m.status === 'streaming'
-              ? { ...m, content: finalContent, status: 'sent' as const }
-              : m
-          )
-        )
-        trackMessage({ role: 'assistant', content: finalContent })
-      }
-
-      abortControllerRef.current = null
-      setIsLoading(false)
-      setStreamingStatus('idle')
-      setRetryCount(0)
-      setAiStatus(undefined)
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        if (partialContentRef.current) {
+        // Finalize any streaming message that didn't receive 'done'
+        if (accumulatedContent && accumulatedContent.length > 0) {
+          const finalContent = normalizeLinksInContent(accumulatedContent)
           setMessages((prev) =>
             prev.map((m) =>
-              m.status === 'streaming'
-                ? { ...m, content: partialContentRef.current + '\n\n_(Response interrupted)_', status: 'sent' as const }
+              m.id === assistantMessage.id && m.status === 'streaming'
+                ? { ...m, content: finalContent, status: 'sent' as const }
                 : m
             )
           )
-          toast.info('Response interrupted. Partial content preserved.')
+          trackMessage({ role: 'assistant', content: finalContent })
         }
+
+        abortControllerRef.current = null
         setIsLoading(false)
         setStreamingStatus('idle')
+        setRetryCount(0)
         setAiStatus(undefined)
-        return
-      }
-
-      abortControllerRef.current = null
-      const err = error instanceof Error ? error : new Error('Unknown error')
-      const errorMsg = err.message
-
-      // Retry with exponential backoff
-      if (isRetryableError(err) && currentRetry < MAX_RETRY_ATTEMPTS) {
-        const retryDelay = calculateRetryDelay(currentRetry)
-        setStreamingStatus('retrying')
-        toast.warning(`Connection issue. Retrying in ${Math.round(retryDelay / 1000)}s...`, 'Retry')
-        setTimeout(() => {
-          handleSendMessageInternal(content, currentRetry + 1)
-        }, retryDelay)
-        return
-      }
-
-      setStreamingStatus('error')
-
-      if (partialContentRef.current && partialContentRef.current.length > 50) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.status === 'streaming'
-              ? {
-                  ...m,
-                  content: partialContentRef.current + '\n\n_(Stream interrupted - click retry to continue)_',
-                  status: 'error' as const,
-                }
-              : m
-          )
-        )
-        toast.warning('Response interrupted. Partial content preserved - use retry to continue.')
-      } else {
-        const retryInfo = currentRetry > 0 ? ` (after ${currentRetry} retries)` : ''
-        toast.error(`${errorMsg}${retryInfo}`, 'Failed to get response')
-        const errorMessage: Message = {
-          id: `error-${Date.now()}`,
-          chatId: 'docs-assistant',
-          role: 'assistant',
-          content: `I encountered an error while processing your request. ${errorMsg}`,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          status: 'error',
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          if (partialContentRef.current) {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.status === 'streaming'
+                  ? {
+                      ...m,
+                      content:
+                        partialContentRef.current +
+                        '\n\n_(Response interrupted)_',
+                      status: 'sent' as const,
+                    }
+                  : m
+              )
+            )
+            toast.info('Response interrupted. Partial content preserved.')
+          }
+          setIsLoading(false)
+          setStreamingStatus('idle')
+          setAiStatus(undefined)
+          return
         }
-        setMessages((prev) => [...prev, errorMessage])
-      }
 
-      setIsLoading(false)
-      setRetryCount(0)
-      setAiStatus(undefined)
-    }
-  }, [messages, sessionId, toast, updateStreamingMessage, trackMessage, isRetryableError, calculateRetryDelay])
+        abortControllerRef.current = null
+        const err = error instanceof Error ? error : new Error('Unknown error')
+        const errorMsg = err.message
+
+        // Retry with exponential backoff
+        if (isRetryableError(err) && currentRetry < MAX_RETRY_ATTEMPTS) {
+          const retryDelay = calculateRetryDelay(currentRetry)
+          setStreamingStatus('retrying')
+          toast.warning(
+            `Connection issue. Retrying in ${Math.round(retryDelay / 1000)}s...`,
+            'Retry'
+          )
+          setTimeout(() => {
+            handleSendMessageInternal(content, currentRetry + 1)
+          }, retryDelay)
+          return
+        }
+
+        setStreamingStatus('error')
+
+        if (
+          partialContentRef.current &&
+          partialContentRef.current.length > 50
+        ) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.status === 'streaming'
+                ? {
+                    ...m,
+                    content:
+                      partialContentRef.current +
+                      '\n\n_(Stream interrupted - click retry to continue)_',
+                    status: 'error' as const,
+                  }
+                : m
+            )
+          )
+          toast.warning(
+            'Response interrupted. Partial content preserved - use retry to continue.'
+          )
+        } else {
+          const retryInfo =
+            currentRetry > 0 ? ` (after ${currentRetry} retries)` : ''
+          toast.error(`${errorMsg}${retryInfo}`, 'Failed to get response')
+          const errorMessage: Message = {
+            id: `error-${Date.now()}`,
+            chatId: 'docs-assistant',
+            role: 'assistant',
+            content: `I encountered an error while processing your request. ${errorMsg}`,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            status: 'error',
+          }
+          setMessages((prev) => [...prev, errorMessage])
+        }
+
+        setIsLoading(false)
+        setRetryCount(0)
+        setAiStatus(undefined)
+      }
+    },
+    [
+      messages,
+      sessionId,
+      toast,
+      updateStreamingMessage,
+      trackMessage,
+      isRetryableError,
+      calculateRetryDelay,
+    ]
+  )
 
   // Public send message handler that checks for offline status
-  const handleSendMessage = useCallback(async (content: string) => {
-    const trimmedContent = content.trim()
-    if (!trimmedContent) {
-      toast.warning('Please enter a message')
-      return
-    }
+  const handleSendMessage = useCallback(
+    async (content: string) => {
+      const trimmedContent = content.trim()
+      if (!trimmedContent) {
+        toast.warning('Please enter a message')
+        return
+      }
 
-    if (!isOnline) {
-      const queued = queueMessage(trimmedContent)
-      const pendingMessage = createPendingMessage(queued)
-      setMessages(prev => [...prev, pendingMessage])
-      return
-    }
+      if (!isOnline) {
+        const queued = queueMessage(trimmedContent)
+        const pendingMessage = createPendingMessage(queued)
+        setMessages((prev) => [...prev, pendingMessage])
+        return
+      }
 
-    await handleSendMessageInternal(trimmedContent, 0)
-  }, [isOnline, queueMessage, handleSendMessageInternal, toast])
+      await handleSendMessageInternal(trimmedContent, 0)
+    },
+    [isOnline, queueMessage, handleSendMessageInternal, toast]
+  )
 
   // Message copy handler
-  const handleMessageCopy = useCallback(async (_messageId: string, content: string) => {
-    await copy(content)
-  }, [copy])
+  const handleMessageCopy = useCallback(
+    async (_messageId: string, content: string) => {
+      await copy(content)
+    },
+    [copy]
+  )
 
   // Message retry handler
-  const handleMessageRetry = useCallback((messageId: string) => {
-    const messageIndex = messages.findIndex((m) => m.id === messageId)
-    if (messageIndex > 0) {
-      const previousMessage = messages[messageIndex - 1]
-      if (previousMessage.role === 'user') {
-        setMessages((prev) => prev.filter((m) => m.id !== messageId))
-        handleSendMessage(previousMessage.content)
-        toast.info('Retrying message...')
+  const handleMessageRetry = useCallback(
+    (messageId: string) => {
+      const messageIndex = messages.findIndex((m) => m.id === messageId)
+      if (messageIndex > 0) {
+        const previousMessage = messages[messageIndex - 1]
+        if (previousMessage.role === 'user') {
+          setMessages((prev) => prev.filter((m) => m.id !== messageId))
+          handleSendMessage(previousMessage.content)
+          toast.info('Retrying message...')
+        }
       }
-    }
-  }, [messages, toast, handleSendMessage])
+    },
+    [messages, toast, handleSendMessage]
+  )
 
   // Voice input handler
-  const handleVoiceTranscript = useCallback((transcript: string) => {
-    if (transcript.trim()) {
-      handleSendMessage(transcript.trim())
-    }
-  }, [handleSendMessage])
+  const handleVoiceTranscript = useCallback(
+    (transcript: string) => {
+      if (transcript.trim()) {
+        handleSendMessage(transcript.trim())
+      }
+    },
+    [handleSendMessage]
+  )
 
   // Export handler
-  const handleExportWithFormat = useCallback(async (options: {
-    format: string
-    includeMetadata?: boolean
-    includeImages?: boolean
-  }) => {
-    try {
-      const exportResult = generateExportContent(
-        messages,
-        sessionId,
-        { ...options, format: options.format as 'json' | 'html' | 'markdown' }
-      )
-      const downloadResult = downloadExport(exportResult)
-      if (downloadResult.success) {
-        toast.success(`Conversation exported as ${exportResult.extension.toUpperCase()}`)
-      } else {
-        throw new Error(downloadResult.error || 'Download failed')
+  const handleExportWithFormat = useCallback(
+    async (options: {
+      format: string
+      includeMetadata?: boolean
+      includeImages?: boolean
+    }) => {
+      try {
+        const exportResult = generateExportContent(messages, sessionId, {
+          ...options,
+          format: options.format as 'json' | 'html' | 'markdown',
+        })
+        const downloadResult = downloadExport(exportResult)
+        if (downloadResult.success) {
+          toast.success(
+            `Conversation exported as ${exportResult.extension.toUpperCase()}`
+          )
+        } else {
+          throw new Error(downloadResult.error || 'Download failed')
+        }
+      } catch (error) {
+        console.error('Failed to export conversation:', error)
+        toast.error('Failed to export conversation')
+        throw error
       }
-    } catch (error) {
-      console.error('Failed to export conversation:', error)
-      toast.error('Failed to export conversation')
-      throw error
-    }
-  }, [messages, sessionId, toast])
+    },
+    [messages, sessionId, toast]
+  )
 
   const handleOpenExportDialog = useCallback(() => {
     setShowExportDialog(true)
   }, [])
 
   // Handler for library PromptSuggestion
-  const handleSelectSuggestion = useCallback((suggestion: PromptSuggestion) => {
-    handleSendMessage(suggestion.text)
-  }, [handleSendMessage])
+  const handleSelectSuggestion = useCallback(
+    (suggestion: PromptSuggestion) => {
+      handleSendMessage(suggestion.text)
+    },
+    [handleSendMessage]
+  )
 
   // Feedback handler
-  const handleFeedback = useCallback(async (messageId: string, type: 'up' | 'down') => {
-    try {
-      const response = await fetch('/api/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messageId,
-          feedbackType: type,
-          sessionId,
-          timestamp: new Date().toISOString(),
-        }),
-      })
+  const handleFeedback = useCallback(
+    async (messageId: string, type: 'up' | 'down') => {
+      try {
+        const response = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messageId,
+            feedbackType: type,
+            sessionId,
+            timestamp: new Date().toISOString(),
+          }),
+        })
 
-      if (!response.ok) {
-        throw new Error(`Feedback submission failed: ${response.status}`)
+        if (!response.ok) {
+          throw new Error(`Feedback submission failed: ${response.status}`)
+        }
+
+        toast.success(
+          type === 'up'
+            ? 'Thanks for your feedback!'
+            : "Feedback received. We'll work on improving."
+        )
+      } catch (error) {
+        console.error('Failed to submit feedback:', error)
+        toast.error('Failed to submit feedback. Please try again.')
       }
-
-      toast.success(
-        type === 'up'
-          ? 'Thanks for your feedback!'
-          : "Feedback received. We'll work on improving."
-      )
-    } catch (error) {
-      console.error('Failed to submit feedback:', error)
-      toast.error('Failed to submit feedback. Please try again.')
-    }
-  }, [sessionId, toast])
+    },
+    [sessionId, toast]
+  )
 
   const handleClear = useCallback(() => {
     setMessages([])
@@ -717,17 +815,23 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
   // Animation variants - respect reduced motion preference
   const dialogVariants = useMemo(
-    () => prefersReducedMotion ? DIALOG_VARIANTS_REDUCED : DIALOG_VARIANTS_NORMAL,
+    () =>
+      prefersReducedMotion ? DIALOG_VARIANTS_REDUCED : DIALOG_VARIANTS_NORMAL,
     [prefersReducedMotion]
   )
 
   // Combine refs for dialog and focus trap
-  const setDialogRefs = useCallback((node: HTMLDivElement | null) => {
-    dialogRef.current = node
-    if (focusTrapRef.current !== node) {
-      (focusTrapRef as React.MutableRefObject<HTMLDivElement | null>).current = node
-    }
-  }, [focusTrapRef])
+  const setDialogRefs = useCallback(
+    (node: HTMLDivElement | null) => {
+      dialogRef.current = node
+      if (focusTrapRef.current !== node) {
+        ;(
+          focusTrapRef as React.MutableRefObject<HTMLDivElement | null>
+        ).current = node
+      }
+    },
+    [focusTrapRef]
+  )
 
   return (
     <>
@@ -804,8 +908,19 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             {/* Branch Selector */}
             {hasBranches && (
               <div className="absolute top-2 left-4 z-10 flex items-center gap-2">
-                <svg className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
                 {branchState.branches.length > 1 ? (
                   <>
@@ -901,7 +1016,9 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               sessionTitle="Documentation Assistant"
               sessionSubtitle="Powered by Clarity Chat"
               showMessageCount
-              onExport={messages.length > 0 ? handleOpenExportDialog : undefined}
+              onExport={
+                messages.length > 0 ? handleOpenExportDialog : undefined
+              }
               onClear={messages.length > 0 ? handleClear : undefined}
               headerActions={
                 messagesWithPlaygroundCode.size > 0 ? (
@@ -909,7 +1026,11 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                     onClick={() => {
                       const lastWithCode = [...messages]
                         .reverse()
-                        .find(m => m.role === 'assistant' && messagesWithPlaygroundCode.has(m.id))
+                        .find(
+                          (m) =>
+                            m.role === 'assistant' &&
+                            messagesWithPlaygroundCode.has(m.id)
+                        )
                       if (lastWithCode) {
                         handleOpenInPlayground(lastWithCode.id)
                       }
@@ -918,8 +1039,19 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                     title="Open code in playground"
                     aria-label="Open code in CodeSandbox playground"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                      />
                     </svg>
                     Try Code
                   </button>
@@ -956,7 +1088,9 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                           citation={citation}
                           previewLength={80}
                           showConfidence
-                          onSourceClick={(url) => window.open(url, '_blank', 'noopener,noreferrer')}
+                          onSourceClick={(url) =>
+                            window.open(url, '_blank', 'noopener,noreferrer')
+                          }
                           className="text-sm"
                         />
                       ))}
@@ -1021,7 +1155,9 @@ export function DocsAssistant({ className }: DocsAssistantProps) {
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
             <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">Documentation Assistant Error</h3>
+              <h3 className="font-semibold text-foreground">
+                Documentation Assistant Error
+              </h3>
               <p className="text-sm text-muted-foreground">
                 {error.message || 'An unexpected error occurred.'}
               </p>

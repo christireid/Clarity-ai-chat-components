@@ -29,9 +29,13 @@ export interface UseOfflineQueueReturn {
   isOnline: boolean
   messageQueue: QueuedMessage[]
   queueMessage: (content: string) => QueuedMessage
-  processQueue: (sendMessage: (content: string) => Promise<void>) => Promise<void>
+  processQueue: (
+    sendMessage: (content: string) => Promise<void>
+  ) => Promise<void>
   clearQueue: () => void
-  handleNetworkStatusChange: (status: 'online' | 'offline' | 'slow' | 'unstable') => void
+  handleNetworkStatusChange: (
+    status: 'online' | 'offline' | 'slow' | 'unstable'
+  ) => void
 }
 
 /**
@@ -66,7 +70,9 @@ function loadQueueFromStorage(): QueuedMessage[] {
   return []
 }
 
-export function useOfflineQueue(options: UseOfflineQueueOptions = {}): UseOfflineQueueReturn {
+export function useOfflineQueue(
+  options: UseOfflineQueueOptions = {}
+): UseOfflineQueueReturn {
   const { onQueueMessage, onProcessQueue, onStatusChange } = options
 
   // Use lazy initialization to avoid hydration mismatch
@@ -123,50 +129,60 @@ export function useOfflineQueue(options: UseOfflineQueueOptions = {}): UseOfflin
   }, [messageQueue, isHydrated])
 
   // Handle network status changes
-  const handleNetworkStatusChange = useCallback((status: 'online' | 'offline' | 'slow' | 'unstable') => {
-    const wasOffline = !isOnline
-    const nowOnline = status === 'online' || status === 'slow' || status === 'unstable'
+  const handleNetworkStatusChange = useCallback(
+    (status: 'online' | 'offline' | 'slow' | 'unstable') => {
+      const wasOffline = !isOnline
+      const nowOnline =
+        status === 'online' || status === 'slow' || status === 'unstable'
 
-    setIsOnline(nowOnline)
-    onStatusChange?.(nowOnline)
+      setIsOnline(nowOnline)
+      onStatusChange?.(nowOnline)
 
-    // If we just came back online and have queued messages, trigger callback
-    if (wasOffline && nowOnline && messageQueue.length > 0) {
-      onProcessQueue?.(messageQueue)
-    }
-  }, [isOnline, messageQueue, onStatusChange, onProcessQueue])
+      // If we just came back online and have queued messages, trigger callback
+      if (wasOffline && nowOnline && messageQueue.length > 0) {
+        onProcessQueue?.(messageQueue)
+      }
+    },
+    [isOnline, messageQueue, onStatusChange, onProcessQueue]
+  )
 
   // Queue a message for later sending
-  const queueMessage = useCallback((content: string): QueuedMessage => {
-    const queuedMsg: QueuedMessage = {
-      id: `queued-${Date.now()}`,
-      content,
-      timestamp: Date.now(),
-    }
-    setMessageQueue(prev => [...prev, queuedMsg])
-    onQueueMessage?.(queuedMsg)
-    return queuedMsg
-  }, [onQueueMessage])
+  const queueMessage = useCallback(
+    (content: string): QueuedMessage => {
+      const queuedMsg: QueuedMessage = {
+        id: `queued-${Date.now()}`,
+        content,
+        timestamp: Date.now(),
+      }
+      setMessageQueue((prev) => [...prev, queuedMsg])
+      onQueueMessage?.(queuedMsg)
+      return queuedMsg
+    },
+    [onQueueMessage]
+  )
 
   // Process the message queue
-  const processQueue = useCallback(async (sendMessage: (content: string) => Promise<void>) => {
-    if (isProcessingQueueRef.current) return
-    if (!isOnline || messageQueue.length === 0) return
+  const processQueue = useCallback(
+    async (sendMessage: (content: string) => Promise<void>) => {
+      if (isProcessingQueueRef.current) return
+      if (!isOnline || messageQueue.length === 0) return
 
-    isProcessingQueueRef.current = true
-    const queue = [...messageQueue]
-    setMessageQueue([]) // Clear queue first to prevent duplicate processing
+      isProcessingQueueRef.current = true
+      const queue = [...messageQueue]
+      setMessageQueue([]) // Clear queue first to prevent duplicate processing
 
-    try {
-      for (const queuedMsg of queue) {
-        await sendMessage(queuedMsg.content)
-        // Small delay between messages to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 500))
+      try {
+        for (const queuedMsg of queue) {
+          await sendMessage(queuedMsg.content)
+          // Small delay between messages to avoid rate limiting
+          await new Promise((resolve) => setTimeout(resolve, 500))
+        }
+      } finally {
+        isProcessingQueueRef.current = false
       }
-    } finally {
-      isProcessingQueueRef.current = false
-    }
-  }, [isOnline, messageQueue])
+    },
+    [isOnline, messageQueue]
+  )
 
   // Clear the queue (SSR-safe)
   const clearQueue = useCallback(() => {

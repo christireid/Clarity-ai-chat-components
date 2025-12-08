@@ -1,1 +1,0 @@
-{"version":3,"file":"embedding-provider.d.ts","sourceRoot":"","sources":["embedding-provider.ts"],"names":[],"mappings":"AAAA;;GAEG;AAEH,MAAM,WAAW,iBAAiB;IAChC,KAAK,CAAC,IAAI,EAAE,MAAM,GAAG,OAAO,CAAC,MAAM,EAAE,CAAC,CAAA;IACtC,UAAU,CAAC,CAAC,KAAK,EAAE,MAAM,EAAE,GAAG,OAAO,CAAC,MAAM,EAAE,EAAE,CAAC,CAAA;IACjD,UAAU,EAAE,MAAM,CAAA;CACnB"}

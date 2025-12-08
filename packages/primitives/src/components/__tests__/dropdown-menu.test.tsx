@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-} from '../dropdown-menu'
+} from '../ui/dropdown-menu'
 
 describe('DropdownMenu Component', () => {
   beforeEach(() => {

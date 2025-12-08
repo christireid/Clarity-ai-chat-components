@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Popover, PopoverTrigger, PopoverContent } from '../popover'
+import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover'
 
 describe('Popover Component', () => {
   beforeEach(() => {
@@ -66,7 +66,7 @@ describe('Popover Component', () => {
       )
 
       const trigger = screen.getByText('Toggle')
-      
+
       // First click opens
       await user.click(trigger)
       expect(screen.getByText('Content')).toBeInTheDocument()

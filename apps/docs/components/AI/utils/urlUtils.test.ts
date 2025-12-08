@@ -24,7 +24,9 @@ describe('generateUrlFromTitle', () => {
   })
 
   it('maps installation to /guides/installation', () => {
-    expect(generateUrlFromTitle('Installation Guide')).toBe('/guides/installation')
+    expect(generateUrlFromTitle('Installation Guide')).toBe(
+      '/guides/installation'
+    )
   })
 
   it('maps theming to /guides/theming', () => {
@@ -33,7 +35,9 @@ describe('generateUrlFromTitle', () => {
   })
 
   it('maps hooks to /reference/hooks', () => {
-    expect(generateUrlFromTitle('Custom Hooks Reference')).toBe('/reference/hooks')
+    expect(generateUrlFromTitle('Custom Hooks Reference')).toBe(
+      '/reference/hooks'
+    )
   })
 
   it('maps components to /reference/components', () => {
@@ -58,24 +62,40 @@ describe('normalizeSourceUrl', () => {
 
   it('returns title-based URL for invalid URL', () => {
     expect(normalizeSourceUrl('undefined', 'Hooks')).toBe('/reference/hooks')
-    expect(normalizeSourceUrl('   ', 'Components')).toBe('/reference/components')
+    expect(normalizeSourceUrl('   ', 'Components')).toBe(
+      '/reference/components'
+    )
   })
 
   it('preserves absolute URLs', () => {
-    expect(normalizeSourceUrl('https://example.com', 'Test')).toBe('https://example.com')
-    expect(normalizeSourceUrl('http://example.com/path', 'Test')).toBe('http://example.com/path')
+    expect(normalizeSourceUrl('https://example.com', 'Test')).toBe(
+      'https://example.com'
+    )
+    expect(normalizeSourceUrl('http://example.com/path', 'Test')).toBe(
+      'http://example.com/path'
+    )
   })
 
   it('preserves valid documentation paths', () => {
     expect(normalizeSourceUrl('/learn', 'Test')).toBe('/learn')
-    expect(normalizeSourceUrl('/guides/theming', 'Test')).toBe('/guides/theming')
-    expect(normalizeSourceUrl('/reference/hooks/useChat', 'Test')).toBe('/reference/hooks/useChat')
-    expect(normalizeSourceUrl('/examples/basic', 'Test')).toBe('/examples/basic')
+    expect(normalizeSourceUrl('/guides/theming', 'Test')).toBe(
+      '/guides/theming'
+    )
+    expect(normalizeSourceUrl('/reference/hooks/useChat', 'Test')).toBe(
+      '/reference/hooks/useChat'
+    )
+    expect(normalizeSourceUrl('/examples/basic', 'Test')).toBe(
+      '/examples/basic'
+    )
   })
 
   it('falls back to title-based URL for invalid paths', () => {
-    expect(normalizeSourceUrl('/invalid/path', 'Getting Started')).toBe('/learn')
-    expect(normalizeSourceUrl('relative/path', 'Hooks')).toBe('/reference/hooks')
+    expect(normalizeSourceUrl('/invalid/path', 'Getting Started')).toBe(
+      '/learn'
+    )
+    expect(normalizeSourceUrl('relative/path', 'Hooks')).toBe(
+      '/reference/hooks'
+    )
   })
 })
 

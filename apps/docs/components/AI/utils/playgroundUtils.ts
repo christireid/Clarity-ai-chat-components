@@ -35,26 +35,40 @@ export function extractCodeBlocks(content: string): CodeBlock[] {
 /**
  * Detect if code is React/TypeScript and suitable for playground
  */
-export function isPlaygroundCompatible(language: string, code: string): boolean {
-  const supportedLanguages = ['tsx', 'jsx', 'typescript', 'javascript', 'ts', 'js', 'react']
+export function isPlaygroundCompatible(
+  language: string,
+  code: string
+): boolean {
+  const supportedLanguages = [
+    'tsx',
+    'jsx',
+    'typescript',
+    'javascript',
+    'ts',
+    'js',
+    'react',
+  ]
   if (!supportedLanguages.includes(language.toLowerCase())) return false
 
   // Check for React-like patterns
   const reactPatterns = [
     /import.*from\s+['"]react['"]/,
     /import.*@clarity-chat/,
-    /<\w+[\s/>]/,  // JSX tags
+    /<\w+[\s/>]/, // JSX tags
     /export\s+(default\s+)?function/,
-    /const.*=.*\(.*\)\s*=>/,  // Arrow function components
+    /const.*=.*\(.*\)\s*=>/, // Arrow function components
   ]
 
-  return reactPatterns.some(pattern => pattern.test(code))
+  return reactPatterns.some((pattern) => pattern.test(code))
 }
 
 /**
  * Generate CodeSandbox URL for React code
  */
-export function generateCodeSandboxUrl(code: string, _language: string): string {
+export function generateCodeSandboxUrl(
+  code: string,
+  _language: string
+): string {
   // Wrap code in a basic React app structure if needed
   const hasImport = /import.*from/.test(code)
 
@@ -80,18 +94,22 @@ root.render(<App />);
 `,
     },
     'package.json': {
-      content: JSON.stringify({
-        dependencies: {
-          'react': '^18.2.0',
-          'react-dom': '^18.2.0',
-          '@clarity-chat/react': 'latest',
+      content: JSON.stringify(
+        {
+          dependencies: {
+            react: '^18.2.0',
+            'react-dom': '^18.2.0',
+            '@clarity-chat/react': 'latest',
+          },
+          devDependencies: {
+            typescript: '^5.0.0',
+            '@types/react': '^18.2.0',
+            '@types/react-dom': '^18.2.0',
+          },
         },
-        devDependencies: {
-          'typescript': '^5.0.0',
-          '@types/react': '^18.2.0',
-          '@types/react-dom': '^18.2.0',
-        },
-      }, null, 2),
+        null,
+        2
+      ),
     },
   }
 
@@ -126,7 +144,10 @@ export interface OpenPlaygroundResult {
  * Open code in playground (CodeSandbox by default)
  * Returns result object for handling popup blockers
  */
-export function openInPlayground(code: string, language: string): OpenPlaygroundResult {
+export function openInPlayground(
+  code: string,
+  language: string
+): OpenPlaygroundResult {
   // SSR safety check
   if (typeof window === 'undefined') {
     return { success: false, url: '', error: 'Not in browser environment' }
@@ -137,7 +158,11 @@ export function openInPlayground(code: string, language: string): OpenPlayground
   try {
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
 
-    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+    if (
+      !newWindow ||
+      newWindow.closed ||
+      typeof newWindow.closed === 'undefined'
+    ) {
       // Popup was blocked
       return {
         success: false,

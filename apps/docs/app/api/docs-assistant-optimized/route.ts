@@ -12,7 +12,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { enhanceMessageWithRAG, formatCitations, shouldUseRAG } from '@/lib/ai/rag'
+import {
+  enhanceMessageWithRAG,
+  formatCitations,
+  shouldUseRAG,
+} from '@/lib/ai/rag'
 import {
   createSSEStream,
   getStreamingFunction,
@@ -21,7 +25,11 @@ import {
   handleStreamError,
   type StreamChunk,
 } from '@/lib/ai/streaming'
-import { SYSTEM_PROMPT, ERROR_PROMPT, RATE_LIMIT_PROMPT } from '@/lib/ai/prompts'
+import {
+  SYSTEM_PROMPT,
+  ERROR_PROMPT,
+  RATE_LIMIT_PROMPT,
+} from '@/lib/ai/prompts'
 import {
   getOrCreateSessionForRequest,
   updateSessionWithMessages,
@@ -88,7 +96,11 @@ function compressConversationHistory(
   maxMessages: number = 10
 ): {
   compressed: ChatMessage[]
-  stats: { originalTokens: number; compressedTokens: number; savingsPercent: number }
+  stats: {
+    originalTokens: number
+    compressedTokens: number
+    savingsPercent: number
+  }
 } {
   // Limit history length
   const truncatedMessages = messages.slice(-maxMessages)
@@ -127,10 +139,7 @@ function compressSystemPrompt(prompt: string): CompressionResult {
 /**
  * Route to appropriate model based on query complexity
  */
-function selectModel(
-  query: string,
-  context?: string[]
-): RoutingDecision {
+function selectModel(query: string, context?: string[]): RoutingDecision {
   // Get available models based on configured API keys
   const hasOpenAI = !!process.env.OPENAI_API_KEY
   const hasAnthropic = !!process.env.ANTHROPIC_API_KEY
@@ -143,7 +152,9 @@ function selectModel(
 
   // Determine preferred provider
   const configuredModel = process.env.AI_MODEL || 'gpt-4-turbo-preview'
-  const preferProvider = configuredModel.startsWith('claude') ? 'anthropic' : 'openai'
+  const preferProvider = configuredModel.startsWith('claude')
+    ? 'anthropic'
+    : 'openai'
 
   return routeQuery(query, {
     availableModels,
@@ -171,7 +182,10 @@ function estimateTokenCost(
   }
 
   const modelPricing = pricing[model] || pricing['gpt-4-turbo-preview']
-  return (inputTokens / 1000) * modelPricing.input + (outputTokens / 1000) * modelPricing.output
+  return (
+    (inputTokens / 1000) * modelPricing.input +
+    (outputTokens / 1000) * modelPricing.output
+  )
 }
 
 // ============================================================================
@@ -216,7 +230,7 @@ export async function POST(request: NextRequest) {
         headers: {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive',
+          Connection: 'keep-alive',
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
           'X-RateLimit-Reset': new Date(rateLimit.resetAt).toISOString(),
         },
@@ -254,7 +268,9 @@ export async function POST(request: NextRequest) {
       if (enableCompression) {
         const compressed = compressSystemPrompt(SYSTEM_PROMPT)
         systemPrompt = compressed.compressed
-        console.log(`System prompt compressed: ${compressed.savingsPercent.toFixed(1)}% savings`)
+        console.log(
+          `System prompt compressed: ${compressed.savingsPercent.toFixed(1)}% savings`
+        )
       }
       messages.unshift({
         role: 'system',
@@ -263,7 +279,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Compress conversation history if enabled
-    let compressionStats = { originalTokens: 0, compressedTokens: 0, savingsPercent: 0 }
+    let compressionStats = {
+      originalTokens: 0,
+      compressedTokens: 0,
+      savingsPercent: 0,
+    }
     if (enableCompression && messages.length > 1) {
       const { compressed, stats } = compressConversationHistory(
         messages.slice(1), // Exclude system prompt
@@ -271,7 +291,9 @@ export async function POST(request: NextRequest) {
       )
       messages = [messages[0], ...compressed]
       compressionStats = stats
-      console.log(`Conversation compressed: ${stats.savingsPercent.toFixed(1)}% savings`)
+      console.log(
+        `Conversation compressed: ${stats.savingsPercent.toFixed(1)}% savings`
+      )
     }
 
     // Add current user message
@@ -283,10 +305,7 @@ export async function POST(request: NextRequest) {
     // Validate request
     const validation = validateRequest(messages)
     if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
 
     // Model routing
@@ -321,7 +340,7 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
         'X-RateLimit-Remaining': rateLimit.remaining.toString(),
         'X-RateLimit-Reset': new Date(rateLimit.resetAt).toISOString(),
         // Add optimization headers
@@ -404,7 +423,9 @@ async function* streamWithRAGOptimized(
         }
       }
 
-      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [cachedResponse.response]
+      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [
+        cachedResponse.response,
+      ]
       for (const sentence of sentences) {
         yield { type: 'text', content: sentence }
         assistantResponse += sentence
@@ -415,8 +436,16 @@ async function* streamWithRAGOptimized(
       if (sessionId && assistantResponse) {
         try {
           await updateSessionWithMessages(sessionId, [
-            { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
-            { role: 'assistant', content: assistantResponse, timestamp: new Date().toISOString() },
+            {
+              role: 'user',
+              content: userMessage,
+              timestamp: new Date().toISOString(),
+            },
+            {
+              role: 'assistant',
+              content: assistantResponse,
+              timestamp: new Date().toISOString(),
+            },
           ])
         } catch (error) {
           console.error('Failed to save session:', error)
@@ -493,8 +522,16 @@ async function* streamWithRAGOptimized(
     if (sessionId && assistantResponse) {
       try {
         await updateSessionWithMessages(sessionId, [
-          { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
-          { role: 'assistant', content: assistantResponse, timestamp: new Date().toISOString() },
+          {
+            role: 'user',
+            content: userMessage,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            role: 'assistant',
+            content: assistantResponse,
+            timestamp: new Date().toISOString(),
+          },
         ])
       } catch (error) {
         console.error('Failed to save session:', error)
@@ -525,7 +562,9 @@ async function* streamWithoutRAGOptimized(
         content: 'Retrieved from cache',
       }
 
-      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [cachedResponse.response]
+      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [
+        cachedResponse.response,
+      ]
       for (const sentence of sentences) {
         yield { type: 'text', content: sentence }
         assistantResponse += sentence
@@ -535,8 +574,16 @@ async function* streamWithoutRAGOptimized(
       if (sessionId && assistantResponse) {
         try {
           await updateSessionWithMessages(sessionId, [
-            { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
-            { role: 'assistant', content: assistantResponse, timestamp: new Date().toISOString() },
+            {
+              role: 'user',
+              content: userMessage,
+              timestamp: new Date().toISOString(),
+            },
+            {
+              role: 'assistant',
+              content: assistantResponse,
+              timestamp: new Date().toISOString(),
+            },
           ])
         } catch (error) {
           console.error('Failed to save session:', error)
@@ -580,8 +627,16 @@ async function* streamWithoutRAGOptimized(
     if (sessionId && assistantResponse) {
       try {
         await updateSessionWithMessages(sessionId, [
-          { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
-          { role: 'assistant', content: assistantResponse, timestamp: new Date().toISOString() },
+          {
+            role: 'user',
+            content: userMessage,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            role: 'assistant',
+            content: assistantResponse,
+            timestamp: new Date().toISOString(),
+          },
         ])
       } catch (error) {
         console.error('Failed to save session:', error)
@@ -630,7 +685,13 @@ export async function GET() {
     },
     models: {
       configured: process.env.AI_MODEL || 'gpt-4-turbo-preview',
-      available: ['gpt-4-turbo-preview', 'gpt-4', 'gpt-3.5-turbo', 'claude-3-5-sonnet-20241022', 'claude-3-haiku'],
+      available: [
+        'gpt-4-turbo-preview',
+        'gpt-4',
+        'gpt-3.5-turbo',
+        'claude-3-5-sonnet-20241022',
+        'claude-3-haiku',
+      ],
     },
     cache: cacheStats,
   })

@@ -17,38 +17,32 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./vitest.setup.ts'],
-    // Vitest v4: Leveraging improved thread pool configuration
-    // Optimize memory usage - use threads instead of forks for better memory management
-    pool: 'threads',
+    // Memory-optimized configuration for large test suites
+    // Using vmThreads with singleThread for optimal memory usage
+    pool: 'vmThreads',
     poolOptions: {
-      threads: {
-        singleThread: false,
-        maxThreads: 2, // Limit threads to reduce memory usage
-        minThreads: 1,
+      vmThreads: {
+        // Single thread mode significantly reduces memory overhead
+        singleThread: true,
+        // Memory limits per worker
+        memoryLimit: '512MB',
       },
     },
     // Reduce parallelism to avoid memory issues
-    maxConcurrency: 2,
+    maxConcurrency: 1,
     // Increase test timeout for slower execution
-    testTimeout: 15000,
-    // Vitest v4: Better test isolation (moved to poolOptions.threads.isolate)
-    // Enable more component tests with memory optimizations
+    testTimeout: 20000,
+    // Disable isolation to reduce memory overhead (tests should clean up properly)
+    isolate: false,
+    // Include all test directories
     include: [
-      'src/embeddings/__tests__/**/*.test.ts',
-      'src/prompts/__tests__/**/*.test.ts',
-      'src/plugins/__tests__/**/*.test.ts',
-      'src/safety/__tests__/**/*.test.ts',
-      'src/hooks/__tests__/**/*.test.{ts,tsx}',
-      'src/utils/__tests__/**/*.test.ts',
-      'src/theme/__tests__/**/*.test.{ts,tsx}',
-      'src/components/__tests__/**/*.test.tsx',
+      'src/**/__tests__/**/*.test.{ts,tsx}',
     ],
     // Exclude heavy tests that cause memory issues
     exclude: [
       'node_modules',
       'dist',
       '**/*.stories.tsx',
-      '**/chat-window.test.enhanced.tsx', // Heavy test, enable separately
     ],
     coverage: {
       provider: 'v8',
