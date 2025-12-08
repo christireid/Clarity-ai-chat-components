@@ -1,48 +1,78 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
-
 import js from '@eslint/js'
 import tseslint from '@typescript-eslint/eslint-plugin'
 import tsparser from '@typescript-eslint/parser'
 import reactPlugin from 'eslint-plugin-react'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y'
-import globalsLib from 'globals'
+import storybook from 'eslint-plugin-storybook'
+import globals from 'globals'
+
+const sharedRules = {
+  'react/react-in-jsx-scope': 'off',
+  'react/prop-types': 'off',
+  'react-hooks/rules-of-hooks': 'error',
+  'react-hooks/exhaustive-deps': 'off',
+  'jsx-a11y/alt-text': 'error',
+  'jsx-a11y/aria-props': 'error',
+  'jsx-a11y/aria-proptypes': 'error',
+  'jsx-a11y/aria-unsupported-elements': 'error',
+  'jsx-a11y/role-has-required-aria-props': 'error',
+  'jsx-a11y/role-supports-aria-props': 'error',
+}
+
+const sharedPlugins = {
+  '@typescript-eslint': tseslint,
+  react: reactPlugin,
+  'react-hooks': reactHooksPlugin,
+  'jsx-a11y': jsxA11yPlugin,
+}
 
 export default [
+  // Global ignores
+  {
+    ignores: [
+      '**/node_modules/',
+      '**/dist/',
+      '**/build/',
+      '**/coverage/',
+      '**/.next/',
+      '**/out/',
+      '**/storybook-static/',
+      '**/.turbo/',
+      '**/*.d.ts.map',
+      '**/*.js.map',
+      '**/*.config.d.ts',
+      '**/*.config.js.map',
+      '**/*.config.d.ts.map',
+      '**/tsup.config.bundled_*.mjs',
+      '**/tsup.config.bundled_*.d.mts',
+      'apps/docs/.vitepress/examples/MarkdownDemo.tsx',
+    ],
+  },
+
+  // Base JavaScript config
   js.configs.recommended,
-  // Ensure browser globals are recognized in JS/JSX files
+
+  // JavaScript/JSX files
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
       globals: {
-        ...globalsLib.browser,
-        ...globalsLib.node,
+        ...globals.browser,
+        ...globals.node,
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslint,
-      react: reactPlugin,
-      'react-hooks': reactHooksPlugin,
-      'jsx-a11y': jsxA11yPlugin,
-    },
+    plugins: sharedPlugins,
     rules: {
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'off',
+      ...sharedRules,
       'no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      'jsx-a11y/alt-text': 'error',
-      'jsx-a11y/aria-props': 'error',
-      'jsx-a11y/aria-proptypes': 'error',
-      'jsx-a11y/aria-unsupported-elements': 'error',
-      'jsx-a11y/role-has-required-aria-props': 'error',
-      'jsx-a11y/role-supports-aria-props': 'error',
     },
   },
+
+  // TypeScript/TSX files
   {
     files: ['**/*.{ts,tsx}'],
     ignores: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/__tests__/**'],
@@ -51,74 +81,60 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        ecmaFeatures: {
-          jsx: true,
-        },
+        ecmaFeatures: { jsx: true },
       },
       globals: {
+        ...globals.browser,
         React: 'readonly',
         JSX: 'readonly',
-        // Include standard browser globals
-        ...globalsLib.browser,
-        // Node globals for build
-        process: 'readonly',
         NodeJS: 'readonly',
-        require: 'readonly',
-        module: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslint,
-      react: reactPlugin,
-      'react-hooks': reactHooksPlugin,
-      'jsx-a11y': jsxA11yPlugin,
+    plugins: sharedPlugins,
+    settings: {
+      react: { version: '19.0' },
     },
     rules: {
       ...tseslint.configs.recommended.rules,
-      // TS-specific adjustments
+      ...sharedRules,
       'no-undef': 'off',
       'no-redeclare': 'off',
-      '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      'react-hooks/rules-of-hooks': 'error',
-      // Enforce no warnings policy by disabling warning-prone rules
-      'react-hooks/exhaustive-deps': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/no-explicit-any': 'off',
-      'jsx-a11y/alt-text': 'error',
-      'jsx-a11y/aria-props': 'error',
-      'jsx-a11y/aria-proptypes': 'error',
-      'jsx-a11y/aria-unsupported-elements': 'error',
-      'jsx-a11y/role-has-required-aria-props': 'error',
-      'jsx-a11y/role-supports-aria-props': 'error',
-    },
-    settings: {
-      react: {
-        version: '19.0',
-      },
+      '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
     },
   },
-  // Stories often use hooks inside render functions for Storybook controls
+
+  // Storybook files - disable hooks rules for story render functions
   {
     files: ['**/*.stories.{ts,tsx,js,jsx}'],
     rules: {
       'react-hooks/rules-of-hooks': 'off',
     },
   },
-  // Type declaration files frequently use empty object patterns intentionally
+
+  // Type declaration files
   {
     files: ['**/*.d.ts'],
     rules: {
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
-  // Loosen certain rules within the React package to achieve zero-errors linting
+
+  // Testing utilities package - exports functions that use expect
+  {
+    files: ['packages/testing-utils/src/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        expect: 'readonly',
+      },
+    },
+  },
+
+  // Package-specific overrides for zero-error linting
   {
     files: ['packages/react/**/*.{ts,tsx,js,jsx}'],
     rules: {
@@ -130,27 +146,23 @@ export default [
       '@typescript-eslint/no-unsafe-function-type': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
       'jsx-a11y/role-supports-aria-props': 'off',
+      'react-hooks/rules-of-hooks': 'off',
     },
   },
-  // Loosen certain rules within the Dev Tools package to achieve zero-errors linting
   {
-    files: ['packages/dev-tools/**/*.{ts,tsx,js,jsx}'],
+    files: [
+      'packages/dev-tools/**/*.{ts,tsx,js,jsx}',
+      'packages/cli/**/*.{ts,tsx,js,jsx}',
+    ],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
       'no-unused-vars': 'off',
     },
   },
-  // Loosen unused-var rules within the CLI package to achieve zero-errors linting
+
+  // Apps and examples overrides
   {
-    files: ['packages/cli/**/*.{ts,tsx,js,jsx}'],
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-unused-vars': 'off',
-    },
-  },
-  // Loosen rules within apps to achieve zero-errors linting
-  {
-    files: ['apps/**/*.{ts,tsx,js,jsx}'],
+    files: ['apps/**/*.{ts,tsx,js,jsx}', 'examples/**/*.{ts,tsx,js,jsx}'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
       'no-unused-vars': 'off',
@@ -158,15 +170,8 @@ export default [
       '@typescript-eslint/triple-slash-reference': 'off',
     },
   },
-  // Loosen rules within examples to achieve zero-errors linting
-  {
-    files: ['examples/**/*.{ts,tsx,js,jsx}'],
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      'no-unused-vars': 'off',
-      '@typescript-eslint/triple-slash-reference': 'off',
-    },
-  },
+
+  // Test files
   {
     files: [
       '**/*.test.{ts,tsx,js,jsx}',
@@ -180,12 +185,11 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        ecmaFeatures: {
-          jsx: true,
-        },
+        ecmaFeatures: { jsx: true },
       },
       globals: {
-        // Vitest globals
+        ...globals.browser,
+        ...globals.node,
         describe: 'readonly',
         it: 'readonly',
         test: 'readonly',
@@ -195,37 +199,36 @@ export default [
         afterEach: 'readonly',
         beforeAll: 'readonly',
         afterAll: 'readonly',
-        // Browser and Node globals for tests
-        ...globalsLib.browser,
-        ...globalsLib.node,
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslint,
+    plugins: sharedPlugins,
+    settings: {
+      react: { version: '19.0' },
     },
     rules: {
       ...tseslint.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'off', // Allow any in tests
+      ...sharedRules,
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
     },
   },
-  // Disable warnings for unused eslint-disable comments to keep zero-warnings policy
+
+  // Linter options
   {
     linterOptions: {
       reportUnusedDisableDirectives: 'off',
     },
   },
+
+  // Storybook plugin config
+  ...storybook.configs['flat/recommended'],
+
+  // Storybook overrides (must come after storybook config)
   {
-    ignores: [
-      'dist/',
-      'node_modules/',
-      'coverage/',
-      '.storybook/',
-      'packages/*/dist/',
-      'storybook-static/',
-      'apps/docs/.vitepress/examples/MarkdownDemo.tsx',
-    ],
+    files: ['**/*.stories.{ts,tsx,js,jsx}'],
+    rules: {
+      'storybook/no-renderer-packages': 'off',
+    },
   },
-  ...storybook.configs["flat/recommended"]
-];
+]

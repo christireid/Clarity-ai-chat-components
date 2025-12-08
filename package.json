@@ -5,31 +5,29 @@
   "private": true,
   "description": "Premium AI Chat Component Library by Code & Clarity",
   "packageManager": "pnpm@10.21.0",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
-    "dev": "npx turbo run dev",
-    "build": "npx turbo run build",
-    "lint": "npx turbo run lint",
-    "lint:fix": "npx turbo run lint -- --fix",
-    "test": "npx turbo run test",
-    "test:watch": "npx turbo run test -- --watch",
-    "test:coverage": "npx turbo run test -- --coverage",
-    "clean": "npx turbo run clean && rm -rf node_modules",
-    "storybook": "npm run dev --workspace=@clarity-chat/storybook",
-    "storybook:build": "npm run build --workspace=@clarity-chat/storybook",
-    "docs": "npm run dev --workspace=@clarity-chat/docs",
-    "docs:build": "npm run build --workspace=@clarity-chat/docs-site",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "turbo run test",
+    "test:watch": "turbo run test -- --watch",
+    "test:coverage": "turbo run test -- --coverage",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "storybook": "pnpm --filter @clarity-chat/storybook dev",
+    "storybook:build": "pnpm --filter @clarity-chat/storybook build",
+    "docs": "pnpm --filter @clarity-chat/docs dev",
+    "docs:build": "pnpm --filter @clarity-chat/docs-site build",
     "docs:generate": "typedoc",
     "index-docs": "tsx scripts/index-docs.ts",
     "index-docs:clear": "tsx scripts/index-docs.ts --clear",
     "index-docs:dry-run": "tsx scripts/index-docs.ts --dry-run",
-    "typecheck": "npx turbo run typecheck",
+    "typecheck": "turbo run typecheck",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "npx turbo run build && changeset publish",
+    "release": "turbo run build && changeset publish",
     "size": "size-limit",
     "analyze": "node tools/scripts/analyze-bundle.js",
     "benchmark": "node tools/scripts/benchmark.js",
@@ -71,15 +69,9 @@
       "@types/react-dom": "19.2.2"
     }
   },
-  "overrides": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@types/react": "18.3.26",
-    "@types/react-dom": "18.3.7"
-  },
   "engines": {
     "node": ">=20.0.0",
-    "npm": ">=9.0.0"
+    "pnpm": ">=10.0.0"
   },
   "repository": {
     "type": "git",
