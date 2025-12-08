@@ -6,8 +6,8 @@
       "startServerReadyTimeout": 60000,
       "url": [
         "http://localhost:3000/",
-        "http://localhost:3000/docs/getting-started",
-        "http://localhost:3000/docs/components"
+        "http://localhost:3000/examples",
+        "http://localhost:3000/cookbook"
       ],
       "numberOfRuns": 3,
       "settings": {
