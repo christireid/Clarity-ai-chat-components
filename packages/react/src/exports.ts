@@ -1,10 +1,10 @@
 /**
  * Structured Exports - Organized by Domain and Layer
- * 
+ *
  * This file defines the public API surface organized by:
  * 1. Domain (Chat UI, Chat State, Memory, etc.)
  * 2. Layer (Top-level, Mid-level, Low-level)
- * 
+ *
  * The main index.ts re-exports from here to maintain backward compatibility
  * while providing a clear structure for future development.
  */
@@ -59,7 +59,11 @@ export {
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
 } from './hooks/use-chat-enhanced'
-export { useChatHandlers, type UseChatHandlersOptions, type ChatHandlers } from './hooks/use-chat-handlers'
+export {
+  useChatHandlers,
+  type UseChatHandlersOptions,
+  type ChatHandlers,
+} from './hooks/use-chat-handlers'
 export {
   useClarityChatWithTools,
   type UseClarityChatWithToolsOptions,
@@ -85,10 +89,16 @@ export {
 // ============================================================================
 
 // Top-Level: Drop-in ready providers
-export { MemoryProvider, type MemoryProviderProps } from './memory/memory-provider'
+export {
+  MemoryProvider,
+  type MemoryProviderProps,
+} from './memory/memory-provider'
 
 // Mid-Level: Composable hooks
-export { useMemoryContext, type UseMemoryContextReturn } from './memory/memory-provider'
+export {
+  useMemoryContext,
+  type UseMemoryContextReturn,
+} from './memory/memory-provider'
 
 // Low-Level: Primitives
 export type {
@@ -138,7 +148,12 @@ export {
 
 // Mid-Level: Tool integration
 export * from './agents/tool-ui-registry'
-export { createAgent, type Agent, type Tool, type AgentExecution } from './agents'
+export {
+  createAgent,
+  type Agent,
+  type Tool,
+  type AgentExecution,
+} from './agents'
 
 // Low-Level: Primitives
 export type {
@@ -330,7 +345,7 @@ export * from './hooks/use-smart-cache'
 export * from './hooks/use-character-counter'
 export * from './hooks/use-submit-button-state'
 export * from './hooks/use-mobile-keyboard'
-export * from './hooks/use-design-tokens'
+export { useDesignTokens } from './hooks/use-design-tokens'
 
 // Additional Utilities
 export * from './utils'

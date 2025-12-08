@@ -266,8 +266,8 @@ export function ThemeProvider({
     const enableTransitions =
       theme.enableTransitions !== false && !prefersReducedMotion
     const transitionDuration = getMotionSafeDuration(
-      theme.transitionDuration || 200,
-      prefersReducedMotion
+      prefersReducedMotion,
+      theme.transitionDuration || 200
     )
 
     // Add transition class for smooth color changes
