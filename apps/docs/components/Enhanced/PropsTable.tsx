@@ -1,16 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { Check, X, Copy, ChevronDown, ExternalLink } from 'lucide-react'
+import { Check, Copy, ChevronDown, ExternalLink } from 'lucide-react'
 import { useState, useCallback } from 'react'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useClipboard } from '@clarity-chat/react'
 import {
   getTypeLink,
   getTypeDefinition,
-  getTypeDescription,
-  isTypeDocumented,
 } from '@/lib/type-registry'
+
+/** Minimum number of props before showing the filter input */
+const FILTER_THRESHOLD = 5
 
 export interface Prop {
   name: string
@@ -58,19 +60,9 @@ const rowVariants = {
 }
 
 export function PropsTable({ props, title = 'Props', className }: PropsTableProps) {
-  const [copiedProp, setCopiedProp] = useState<string | null>(null)
   const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set())
   const [filterText, setFilterText] = useState('')
-
-  const copyToClipboard = useCallback(async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopiedProp(text)
-      setTimeout(() => setCopiedProp(null), 2000)
-    } catch (error) {
-      console.error('Failed to copy:', error)
-    }
-  }, [])
+  const { copy, copied, value: copiedValue } = useClipboard({ timeout: 2000 })
 
   const toggleTypeExpansion = useCallback((propName: string) => {
     setExpandedTypes(prev => {
@@ -120,7 +112,7 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
         )}
 
         {/* Search/Filter */}
-        {props.length > 5 && (
+        {props.length > FILTER_THRESHOLD && (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -199,14 +191,14 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                       </motion.span>
                     )}
                     <motion.button
-                      onClick={() => copyToClipboard(prop.name)}
+                      onClick={() => copy(prop.name)}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className="ml-auto p-1 rounded hover:bg-bg-tertiary transition-colors opacity-0 group-hover:opacity-100"
-                      aria-label={`Copy ${prop.name}`}
+                      aria-label={`Copy ${prop.name} to clipboard`}
                     >
                       <AnimatePresence mode="wait">
-                        {copiedProp === prop.name ? (
+                        {copied && copiedValue === prop.name ? (
                           <motion.div
                             key="check"
                             initial={{ scale: 0, rotate: -180 }}

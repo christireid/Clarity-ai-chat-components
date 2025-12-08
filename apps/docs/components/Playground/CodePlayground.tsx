@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { LiveProvider, LivePreview, LiveError } from 'react-live'
 import { Maximize2, Minimize2, ExternalLink, Copy, Check, RotateCcw } from 'lucide-react'
+import { useClipboard } from '@clarity-chat/react'
 import { openInCodeSandbox } from '@/lib/sandbox-export'
 
 // Dynamic import for code editor to avoid SSR issues
@@ -28,7 +29,7 @@ export function CodePlayground({
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal')
   const [editorSize, setEditorSize] = useState(50)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const { copy, copied } = useClipboard({ timeout: 2000 })
 
   useEffect(() => {
     setCode(initialCode)
@@ -53,25 +54,19 @@ export function CodePlayground({
     }
   }, [isFullscreen])
 
-  const handleCodeChange = (newCode: string) => {
+  const handleCodeChange = useCallback((newCode: string) => {
     setCode(newCode)
     onCodeChange?.(newCode)
-  }
+  }, [onCodeChange])
 
-  const handleCopyCode = async () => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy code:', err)
-    }
-  }
+  const handleCopyCode = useCallback(() => {
+    copy(code)
+  }, [copy, code])
 
-  const handleResetCode = () => {
+  const handleResetCode = useCallback(() => {
     setCode(initialCode)
     onCodeChange?.(initialCode)
-  }
+  }, [initialCode, onCodeChange])
 
   const handleOpenInSandbox = () => {
     openInCodeSandbox({
@@ -85,9 +80,15 @@ export function CodePlayground({
   const [clarityComponents, setClarityComponents] = useState<Record<string, unknown> | null>(null)
 
   useEffect(() => {
+    let mounted = true
     import('@clarity-chat/react').then((mod) => {
-      setClarityComponents(mod)
+      if (mounted) {
+        setClarityComponents(mod)
+      }
     })
+    return () => {
+      mounted = false
+    }
   }, [])
 
   const scope = useMemo(() => ({
