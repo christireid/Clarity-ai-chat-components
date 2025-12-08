@@ -48,8 +48,10 @@
   --spacing-xl: 2rem;
 
   /* Typography */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:
+    'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
 }
 
 .dark {
@@ -241,7 +243,8 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
   }
   50% {
@@ -274,13 +277,21 @@ body {
 }
 
 @keyframes error-shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-8px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(8px);
   }
 }
@@ -295,13 +306,21 @@ body {
 }
 
 @keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-4px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(4px);
   }
 }
@@ -329,7 +348,7 @@ body {
   .clarity-message-content {
     max-width: 85%;
   }
-  
+
   .clarity-chat-input {
     padding: var(--spacing-sm);
   }
@@ -496,14 +515,92 @@ body {
 }
 
 @keyframes cursor-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 
-/* Respect reduced motion preferences for CSS animations */
+/* ============================================================================
+   Reduced Motion Support - Accessibility First
+   ============================================================================ */
+
+/*
+ * WCAG 2.1 Success Criterion 2.3.3: Animation from Interactions
+ * Respects prefers-reduced-motion for users with vestibular disorders
+ */
 @media (prefers-reduced-motion: reduce) {
+  /* Streaming cursor - static instead of blinking */
   .clarity-streaming-cursor {
     animation: none;
     opacity: 0.7;
+  }
+
+  /* Message entrance - instant display */
+  .clarity-message {
+    animation: none;
+  }
+
+  /* Loading dots - static indicator */
+  .clarity-loading-dot {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  /* Input focus - no transition */
+  .clarity-chat-input-field {
+    transition: none;
+  }
+
+  /* Button transitions - instant feedback */
+  .clarity-button {
+    transition: none;
+  }
+
+  /* All scroll behavior - instant */
+  * {
+    scroll-behavior: auto !important;
+  }
+
+  /* Utility classes for motion-safe animations */
+  .motion-safe\:animate-fade-in,
+  .motion-safe\:animate-slide-up,
+  .motion-safe\:animate-scale-in {
+    animation: none !important;
+  }
+
+  /* Preserve opacity for visibility but remove motion */
+  .motion-safe\:animate-fade-in {
+    opacity: 1;
+  }
+}
+
+/* Motion-safe utility: Only animate when motion is preferred */
+@media (prefers-reduced-motion: no-preference) {
+  .motion-safe\:animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .motion-safe\:animate-slide-up {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .motion-safe\:animate-scale-in {
+    animation: scale-in 0.2s ease-out;
+  }
+}
+
+/* Scale-in keyframe for motion-safe utility */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

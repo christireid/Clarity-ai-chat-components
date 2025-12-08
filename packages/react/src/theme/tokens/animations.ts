@@ -3,7 +3,23 @@
  *
  * Duration, easing, and keyframe definitions for smooth animations.
  * Respects prefers-reduced-motion for accessibility.
+ *
+ * NOTE: For the primary animation system, prefer using:
+ * - `@clarity/react/animations` for Framer Motion animations
+ * - `tailwind.config.js` for CSS/Tailwind animations
+ *
+ * This file provides CSS-compatible token values for theme integration.
+ *
+ * @see packages/react/src/animations/constants.ts for the centralized animation system
  */
+
+// Re-export from centralized animation system for convenience
+export {
+  DURATION_CSS,
+  ANIMATION_EASING,
+  TAILWIND_DURATION,
+  TAILWIND_EASING,
+} from '../../animations/constants'
 
 /**
  * Animation duration scale
@@ -24,8 +40,8 @@ export const durationTokens: DurationTokens = {
   fast: '150ms',
   normal: '200ms',
   slow: '300ms',
-  slower: '500ms',
-  slowest: '700ms',
+  slower: '400ms',
+  slowest: '500ms',
 }
 
 /**
