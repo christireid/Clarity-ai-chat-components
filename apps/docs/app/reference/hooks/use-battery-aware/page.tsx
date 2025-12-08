@@ -9,14 +9,16 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'useBatteryAware - Clarity Chat Components',
-  description: 'Battery-aware optimizations for mobile devices with automatic performance adjustments.',
+  description:
+    'Battery-aware optimizations for mobile devices with automatic performance adjustments.',
 }
 
 const configProps: Prop[] = [
   {
     name: 'batterySaverThreshold',
     type: 'number',
-    description: 'Battery level threshold for enabling battery saver (0-1, default: 0.2)',
+    description:
+      'Battery level threshold for enabling battery saver (0-1, default: 0.2)',
   },
   {
     name: 'optimizations',
@@ -42,7 +44,8 @@ export default function UseBatteryAwarePage() {
         <span className="docs-badge">Hook</span>
         <h1>useBatteryAware</h1>
         <p className="docs-lead">
-          Battery-aware optimizations for mobile devices with automatic performance adjustments based on battery level.
+          Battery-aware optimizations for mobile devices with automatic
+          performance adjustments based on battery level.
         </p>
       </div>
 
@@ -58,15 +61,15 @@ export default function UseBatteryAwarePage() {
 
       <Callout type="warning">
         <p>
-          <strong>Browser Support:</strong> The Battery API is experimental and not available in all browsers. The hook includes fallback behavior for unsupported browsers.
+          <strong>Browser Support:</strong> The Battery API is experimental and
+          not available in all browsers. The hook includes fallback behavior for
+          unsupported browsers.
         </p>
       </Callout>
 
       <section className="docs-section">
         <h2>Basic Usage</h2>
-        <p>
-          Monitor battery status and get optimization recommendations:
-        </p>
+        <p>Monitor battery status and get optimization recommendations:</p>
         <CodePlayground
           initialCode={`import { useBatteryAware } from '@clarity-chat/react'
 
@@ -95,9 +98,7 @@ function BatteryOptimized() {
 
       <section className="docs-section">
         <h2>Custom Configuration</h2>
-        <p>
-          Configure battery saver thresholds and optimizations:
-        </p>
+        <p>Configure battery saver thresholds and optimizations:</p>
         <CodePlayground
           initialCode={`import { useBatteryAware } from '@clarity-chat/react'
 
@@ -131,9 +132,7 @@ function CustomConfig() {
 
       <section className="docs-section">
         <h2>Battery Status Monitoring</h2>
-        <p>
-          Monitor battery status changes:
-        </p>
+        <p>Monitor battery status changes:</p>
         <CodePlayground
           initialCode={`import { useBatteryAware } from '@clarity-chat/react'
 
@@ -164,9 +163,7 @@ function StatusMonitor() {
 
       <section className="docs-section">
         <h2>Optimization Recommendations</h2>
-        <p>
-          Apply optimizations based on recommendations:
-        </p>
+        <p>Apply optimizations based on recommendations:</p>
         <CodePlayground
           initialCode={`import { useBatteryAware } from '@clarity-chat/react'
 
@@ -196,39 +193,85 @@ function ApplyOptimizations() {
       <section className="docs-section">
         <h2>Return Values</h2>
         <ul>
-          <li><code>batteryStatus</code>: Current battery status (level, charging, dischargingTime, etc.)</li>
-          <li><code>recommendations</code>: Optimization recommendations (disableAnimations, throttleUpdates, etc.)</li>
-          <li><code>isBatterySaverActive</code>: Whether battery saver mode is active</li>
-          <li><code>optimizationLevel</code>: Current optimization level ('none' | 'minimal' | 'moderate' | 'aggressive')</li>
+          <li>
+            <code>batteryStatus</code>: Current battery status (level, charging,
+            dischargingTime, etc.)
+          </li>
+          <li>
+            <code>recommendations</code>: Optimization recommendations
+            (disableAnimations, throttleUpdates, etc.)
+          </li>
+          <li>
+            <code>isBatterySaverActive</code>: Whether battery saver mode is
+            active
+          </li>
+          <li>
+            <code>optimizationLevel</code>: Current optimization level ('none' |
+            'minimal' | 'moderate' | 'aggressive')
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Optimization Levels</h2>
         <ul>
-          <li><strong>none</strong>: No optimizations (battery > medium threshold)</li>
-          <li><strong>minimal</strong>: Light optimizations (battery between medium and low)</li>
-          <li><strong>moderate</strong>: Standard optimizations (battery between low and critical)</li>
-          <li><strong>aggressive</strong>: Maximum optimizations (battery < critical threshold)</li>
+          <li>
+            <strong>none</strong>: No optimizations (battery &gt; medium
+            threshold)
+          </li>
+          <li>
+            <strong>minimal</strong>: Light optimizations (battery between
+            medium and low)
+          </li>
+          <li>
+            <strong>moderate</strong>: Standard optimizations (battery between
+            low and critical)
+          </li>
+          <li>
+            <strong>aggressive</strong>: Maximum optimizations (battery &lt;
+            critical threshold)
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Best Practices</h2>
         <ul>
-          <li>Enable <code>autoOptimize</code> for automatic battery-aware adjustments</li>
-          <li>Set <code>batterySaverThreshold</code> based on your app's needs (typically 15-20%)</li>
-          <li>Use <code>recommendations</code> to conditionally enable/disable features</li>
-          <li>Respect <code>isBatterySaverActive</code> to show battery saver indicators</li>
-          <li>Handle unsupported browsers gracefully (hook provides fallback)</li>
+          <li>
+            Enable <code>autoOptimize</code> for automatic battery-aware
+            adjustments
+          </li>
+          <li>
+            Set <code>batterySaverThreshold</code> based on your app's needs
+            (typically 15-20%)
+          </li>
+          <li>
+            Use <code>recommendations</code> to conditionally enable/disable
+            features
+          </li>
+          <li>
+            Respect <code>isBatterySaverActive</code> to show battery saver
+            indicators
+          </li>
+          <li>
+            Handle unsupported browsers gracefully (hook provides fallback)
+          </li>
         </ul>
       </section>
 
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/battery-indicator">BatteryIndicator</a> - Battery status display</li>
-          <li><a href="/guides/mobile-optimization">Mobile Optimization Guide</a> - Mobile best practices</li>
+          <li>
+            <a href="/reference/components/battery-indicator">
+              BatteryIndicator
+            </a>{' '}
+            - Battery status display
+          </li>
+          <li>
+            <a href="/guides/mobile-optimization">Mobile Optimization Guide</a>{' '}
+            - Mobile best practices
+          </li>
         </ul>
       </section>
     </div>

@@ -1,6 +1,6 @@
 /**
  * Advanced Chat Features Example
- * 
+ *
  * Demonstrates all modern AI chat features:
  * - Message operations (edit, regenerate, delete)
  * - Undo/Redo
@@ -45,7 +45,8 @@ function AdvancedChatApp() {
         id: '1',
         chatId: 'advanced-chat',
         role: 'assistant',
-        content: 'Welcome! I\'m an advanced AI assistant with full message operations support.\n\nTry:\n- Editing your messages\n- Regenerating my responses\n- Deleting messages\n- Using undo/redo\n- Branching conversations',
+        content:
+          "Welcome! I'm an advanced AI assistant with full message operations support.\n\nTry:\n- Editing your messages\n- Regenerating my responses\n- Deleting messages\n- Using undo/redo\n- Branching conversations",
         timestamp: Date.now() - 5000,
       },
     ],
@@ -64,7 +65,7 @@ function AdvancedChatApp() {
   })
 
   // Convert to Message format
-  const messages: Message[] = operationMessages.map(msg => ({
+  const messages: Message[] = operationMessages.map((msg) => ({
     id: msg.id,
     chatId: 'advanced-chat',
     role: msg.role,
@@ -75,15 +76,10 @@ function AdvancedChatApp() {
   }))
 
   // Token tracking
-  const {
-    totalTokens,
-    addInputTokens,
-    addOutputTokens,
-    estimatedCost,
-    reset,
-  } = useTokenTracker({
-    modelName: 'gpt-4-turbo',
-  })
+  const { totalTokens, addInputTokens, addOutputTokens, estimatedCost, reset } =
+    useTokenTracker({
+      modelName: 'gpt-4-turbo',
+    })
 
   // Auto-scroll
   const { scrollRef } = useAutoScroll({
@@ -95,139 +91,182 @@ function AdvancedChatApp() {
   const branches = getBranches()
 
   // Handle edit
-  const handleEdit = useCallback((messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message) return
+  const handleEdit = useCallback(
+    (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (!message) return
 
-    const newContent = prompt('Edit message:', message.content) || message.content
-    if (newContent !== message.content) {
-      editMessage(messageId, newContent)
-      // Optionally re-send from this point
-    }
-  }, [messages, editMessage])
+      const newContent =
+        prompt('Edit message:', message.content) || message.content
+      if (newContent !== message.content) {
+        editMessage(messageId, newContent)
+        // Optionally re-send from this point
+      }
+    },
+    [messages, editMessage]
+  )
 
   // Handle regenerate
-  const handleRegenerate = useCallback(async (messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message || message.role !== 'assistant') return
+  const handleRegenerate = useCallback(
+    async (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (!message || message.role !== 'assistant') return
 
-    setIsLoading(true)
-    try {
-      const index = messages.findIndex(m => m.id === messageId)
-      const userMessage = messages[index - 1]
+      setIsLoading(true)
+      try {
+        const index = messages.findIndex((m) => m.id === messageId)
+        const userMessage = messages[index - 1]
 
-      if (userMessage && userMessage.role === 'user') {
+        if (userMessage && userMessage.role === 'user') {
+          deleteMessage(messageId)
+          await new Promise((resolve) => setTimeout(resolve, 300))
+
+          const responseContent = `[Regenerated] You said: "${userMessage.content}". This is a regenerated response with different wording.`
+
+          addMessage({
+            chatId: 'advanced-chat',
+            role: 'assistant',
+            content: responseContent,
+          })
+
+          const tokens = Math.ceil(responseContent.length / 4)
+          addOutputTokens(tokens)
+
+          await new Promise((resolve) => setTimeout(resolve, 800))
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [messages, deleteMessage, addMessage, addOutputTokens]
+  )
+
+  // Handle delete
+  const handleDelete = useCallback(
+    (messageId: string) => {
+      if (confirm('Delete this message?')) {
         deleteMessage(messageId)
-        await new Promise(resolve => setTimeout(resolve, 300))
+      }
+    },
+    [deleteMessage]
+  )
 
-        const responseContent = `[Regenerated] You said: "${userMessage.content}". This is a regenerated response with different wording.`
-        
+  // Handle send
+  const handleSend = useCallback(
+    async (content: string) => {
+      addMessage({
+        chatId: 'advanced-chat',
+        role: 'user',
+        content,
+      })
+
+      const userTokens = Math.ceil(content.length / 4)
+      addInputTokens(userTokens)
+
+      setIsLoading(true)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        const responseContent = `You said: "${content}". This is a demo response showcasing advanced features.`
+
         addMessage({
           chatId: 'advanced-chat',
           role: 'assistant',
           content: responseContent,
         })
 
-        const tokens = Math.ceil(responseContent.length / 4)
-        addOutputTokens(tokens)
-
-        await new Promise(resolve => setTimeout(resolve, 800))
+        const aiTokens = Math.ceil(responseContent.length / 4)
+        addOutputTokens(aiTokens)
+      } finally {
+        setIsLoading(false)
       }
-    } finally {
-      setIsLoading(false)
-    }
-  }, [messages, deleteMessage, addMessage, addOutputTokens])
-
-  // Handle delete
-  const handleDelete = useCallback((messageId: string) => {
-    if (confirm('Delete this message?')) {
-      deleteMessage(messageId)
-    }
-  }, [deleteMessage])
-
-  // Handle send
-  const handleSend = useCallback(async (content: string) => {
-    addMessage({
-      chatId: 'advanced-chat',
-      role: 'user',
-      content,
-    })
-
-    const userTokens = Math.ceil(content.length / 4)
-    addInputTokens(userTokens)
-
-    setIsLoading(true)
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      const responseContent = `You said: "${content}". This is a demo response showcasing advanced features.`
-      
-      addMessage({
-        chatId: 'advanced-chat',
-        role: 'assistant',
-        content: responseContent,
-      })
-
-      const aiTokens = Math.ceil(responseContent.length / 4)
-      addOutputTokens(aiTokens)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [addMessage, addInputTokens, addOutputTokens])
+    },
+    [addMessage, addInputTokens, addOutputTokens]
+  )
 
   // Handle export
-  const handleExport = useCallback(async (options: any) => {
-    const format = options.format || 'markdown'
-    let content = ''
+  const handleExport = useCallback(
+    async (options: any) => {
+      const format = options.format || 'markdown'
+      let content = ''
 
-    if (format === 'markdown') {
-      content = messages.map(m => `## ${m.role === 'user' ? 'User' : 'Assistant'}\n\n${m.content}`).join('\n\n---\n\n')
-    } else if (format === 'json') {
-      content = JSON.stringify(messages, null, 2)
-    } else {
-      content = messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n\n')
-    }
+      if (format === 'markdown') {
+        content = messages
+          .map(
+            (m) =>
+              `## ${m.role === 'user' ? 'User' : 'Assistant'}\n\n${m.content}`
+          )
+          .join('\n\n---\n\n')
+      } else if (format === 'json') {
+        content = JSON.stringify(messages, null, 2)
+      } else {
+        content = messages
+          .map(
+            (m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`
+          )
+          .join('\n\n')
+      }
 
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `conversation-${Date.now()}.${format}`
-    a.click()
-    URL.revokeObjectURL(url)
+      const blob = new Blob([content], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `conversation-${Date.now()}.${format}`
+      a.click()
+      URL.revokeObjectURL(url)
 
-    setShowExport(false)
-  }, [messages])
+      setShowExport(false)
+    },
+    [messages]
+  )
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      maxWidth: '1200px',
-      margin: '0 auto',
-      background: 'white',
-    }}>
-      {/* Header */}
-      <div style={{
-        padding: '1rem',
-        borderBottom: '1px solid #e5e7eb',
+    <div
+      style={{
         display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '1rem',
-      }}>
+        flexDirection: 'column',
+        height: '100vh',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        background: 'white',
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          padding: '1rem',
+          borderBottom: '1px solid #e5e7eb',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
           <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>
             Advanced Chat Features Demo
           </h1>
-          <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#6b7280' }}>
-            Edit, regenerate, delete, branch, undo/redo, and export conversations
+          <p
+            style={{
+              margin: '0.25rem 0 0',
+              fontSize: '0.875rem',
+              color: '#6b7280',
+            }}
+          >
+            Edit, regenerate, delete, branch, undo/redo, and export
+            conversations
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
           {/* Branch selector */}
           {branches.size > 1 && (
             <select
@@ -240,7 +279,7 @@ function AdvancedChatApp() {
                 fontSize: '0.875rem',
               }}
             >
-              {Array.from(branches.keys()).map(branchId => (
+              {Array.from(branches.keys()).map((branchId: string) => (
                 <option key={branchId} value={branchId}>
                   Branch {branchId.slice(0, 8)}
                 </option>
@@ -302,10 +341,7 @@ function AdvancedChatApp() {
           </button>
 
           {/* Token counter */}
-          <TokenCounter
-            tokens={totalTokens}
-            cost={estimatedCost}
-          />
+          <TokenCounter tokens={totalTokens} cost={estimatedCost} />
         </div>
       </div>
 
@@ -339,13 +375,21 @@ export default function App() {
   return (
     <ErrorBoundary
       fallback={(error) => (
-        <div style={{
-          padding: '2rem',
-          textAlign: 'center',
-          maxWidth: '600px',
-          margin: '0 auto',
-        }}>
-          <h1 style={{ color: '#dc2626', fontSize: '1.5rem', marginBottom: '1rem' }}>
+        <div
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            maxWidth: '600px',
+            margin: '0 auto',
+          }}
+        >
+          <h1
+            style={{
+              color: '#dc2626',
+              fontSize: '1.5rem',
+              marginBottom: '1rem',
+            }}
+          >
             Something went wrong
           </h1>
           <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>

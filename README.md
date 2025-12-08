@@ -99,7 +99,9 @@
 
 ## 🚀 Why Clarity Chat?
 
-Building an AI chat interface from scratch is **hard**. You need streaming, error handling, token management, accessibility, performance optimization, and so much more. Clarity Chat gives you **everything** you need in one beautifully designed package.
+Building an AI chat interface from scratch is **hard**. You need streaming, error handling, token
+management, accessibility, performance optimization, and so much more. Clarity Chat gives you
+**everything** you need in one beautifully designed package.
 
 **Stop building. Start shipping.** 🎯
 
@@ -107,7 +109,8 @@ Building an AI chat interface from scratch is **hard**. You need streaming, erro
 
 ## 🎉 2025 Enhancements - NEW!
 
-Three major enhancements have been added to make Clarity Chat the **most advanced AI chat library** available:
+Three major enhancements have been added to make Clarity Chat the **most advanced AI chat library**
+available:
 
 ### 1. 💰 Token Optimization Suite (60-80% Cost Reduction)
 
@@ -149,15 +152,16 @@ import { useSecureChat } from '@clarity-chat/react'
 
 const { messages, sendMessage } = useSecureChat({
   config: {
-    promptInjection: { enabled: true },    // 90%+ detection
-    pii: { enabled: true },                // Auto-redaction
+    promptInjection: { enabled: true }, // 90%+ detection
+    pii: { enabled: true }, // Auto-redaction
     jailbreakPrevention: { enabled: true }, // 99% prevention
   },
 })
 // Your chat is now protected against OWASP LLM Top 10 threats
 ```
 
-📖 **[Security Guide](./SECURITY_GUIDE.md)** • 🎮 **[Try Security Playground](apps/docs/app/playground/security/)**
+📖 **[Security Guide](./SECURITY_GUIDE.md)** • 🎮
+**[Try Security Playground](apps/docs/app/playground/security/)**
 
 ### 3. 🔐 Enhanced Enterprise Features
 
@@ -217,7 +221,7 @@ Four **high-impact, low-effort** enhancements ready to use immediately:
 ```tsx
 import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
-<PromptSuggestionsEnhanced
+;<PromptSuggestionsEnhanced
   messages={messages}
   onSelect={(s) => sendMessage(s.text)}
   config={{
@@ -247,7 +251,7 @@ import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 ```tsx
 import { ConversationSummarizer } from '@clarity-chat/react'
 
-<ConversationSummarizer
+;<ConversationSummarizer
   messages={messages}
   config={{
     trigger: 'interval',
@@ -306,7 +310,7 @@ function Chat() {
 ```tsx
 import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
-<PerformanceAnalyticsDashboard
+;<PerformanceAnalyticsDashboard
   updateInterval={1000}
   showWebVitals
   showComponentMetrics
@@ -321,16 +325,17 @@ import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
 
 ### 📊 Quick Wins Impact
 
-| Feature | Bundle Size | Improvement | Implementation Time |
-|---------|-------------|-------------|---------------------|
-| Enhanced Suggestions | ~3 KB gzipped | **+150% CTR** | < 30 minutes |
-| Conversation Summarizer | ~3.5 KB gzipped | **-70% review time** | < 30 minutes |
-| Battery-Aware Features | ~2 KB gzipped | **+50% battery life** | < 15 minutes |
-| Performance Dashboard | ~4 KB gzipped | **-99% detection time** | < 15 minutes |
+| Feature                 | Bundle Size     | Improvement             | Implementation Time |
+| ----------------------- | --------------- | ----------------------- | ------------------- |
+| Enhanced Suggestions    | ~3 KB gzipped   | **+150% CTR**           | < 30 minutes        |
+| Conversation Summarizer | ~3.5 KB gzipped | **-70% review time**    | < 30 minutes        |
+| Battery-Aware Features  | ~2 KB gzipped   | **+50% battery life**   | < 15 minutes        |
+| Performance Dashboard   | ~4 KB gzipped   | **-99% detection time** | < 15 minutes        |
 
 **Total:** ~13.5 KB gzipped • **All features tree-shakeable**
 
-📖 **[Quick Wins Documentation](./ADVANCED_FEATURES_QUICK_WINS.md)** • 💡 **[Examples](./examples/advanced-features/)**
+📖 **[Quick Wins Documentation](./ADVANCED_FEATURES_QUICK_WINS.md)** • 💡
+**[Examples](./examples/advanced-features/)**
 
 ---
 
@@ -350,12 +355,14 @@ bun add @clarity-chat/react
 
 ## ⚡ Quick Start
 
-> 📖 **Architecture**: Clarity Chat follows a **layered architecture** with **7 core domains**. 
+> 📖 **Architecture**: Clarity Chat follows a **layered architecture** with **7 core domains**.
+>
 > - **Top-Level APIs**: Drop-in ready (`ClarityChat`, `useClarityChat`)
 > - **Mid-Level APIs**: Composable (`ChatWindow`, `useChatEnhanced`)
 > - **Low-Level Primitives**: Utilities (`normalizeMessages`, `createStreamReader`)
-> 
-> See [DESIGN.md](./DESIGN.md) for architecture details and [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) for patterns.
+>
+> See [DESIGN.md](./DESIGN.md) for architecture details and
+> [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) for patterns.
 
 Get a production-ready AI chat interface in **3 lines of code**:
 
@@ -412,12 +419,7 @@ function SimpleChat() {
 
 // Chat with memory
 function MemoryChat() {
-  return (
-    <ClarityChatPresets.WithMemory 
-      api="/api/chat"
-      memoryStrategy="sliding-window"
-    />
-  )
+  return <ClarityChatPresets.WithMemory api="/api/chat" memoryStrategy="sliding-window" />
 }
 
 // Enterprise chat with all features
@@ -427,6 +429,7 @@ function EnterpriseChat() {
 ```
 
 **What's New:**
+
 - ✅ **No more conversion** - `ChatWindow` accepts `CoreMessage[]` directly
 - ✅ **One-line setup** - `ClarityChat` component handles everything
 - ✅ **Same powerful features** - streaming, memory, error handling, all included
@@ -438,7 +441,8 @@ function EnterpriseChat() {
 - ♿ WCAG AAA accessibility
 - 🔒 Production-ready security
 
-**[📖 View Full Quick Start Guide](./apps/docs-site/app/learn/quick-start)** • **[📚 Browse Examples](./apps/examples/README.md)**
+**[📖 View Full Quick Start Guide](./apps/docs-site/app/learn/quick-start)** •
+**[📚 Browse Examples](./apps/examples/README.md)**
 
 ---
 
@@ -457,7 +461,9 @@ function EnterpriseChat() {
 
 ## 🎯 What Makes This Library Special?
 
-Imagine building a ChatGPT-like interface. Now imagine having **every single component, hook, and utility** you need, perfectly polished, accessible, and ready to drop into your app. That's Clarity Chat.
+Imagine building a ChatGPT-like interface. Now imagine having **every single component, hook, and
+utility** you need, perfectly polished, accessible, and ready to drop into your app. That's Clarity
+Chat.
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -473,7 +479,8 @@ Imagine building a ChatGPT-like interface. Now imagine having **every single com
 
 ### The Only Library with 100% Blueprint Coverage
 
-We analyzed every major AI chat platform (ChatGPT, Claude, Gemini) and built **every essential feature**:
+We analyzed every major AI chat platform (ChatGPT, Claude, Gemini) and built **every essential
+feature**:
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -541,8 +548,8 @@ We analyzed every major AI chat platform (ChatGPT, Claude, Gemini) and built **e
 - **Node.js** - 18+ for server-side features
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)<br>Edge |
-| --- | --- | --- | --- |
-| ✅ Last 2 versions | ✅ Last 2 versions | ✅ Last 2 versions | ✅ Last 2 versions |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ✅ Last 2 versions                                                                                                                                                                                            | ✅ Last 2 versions                                                                                                                                                                                                | ✅ Last 2 versions                                                                                                                                                                                            | ✅ Last 2 versions                                                                                                                                                                                    |
 
 ---
 
@@ -701,14 +708,14 @@ function OptimizedChat() {
   const handleSend = async (content: string) => {
     // 1. Compress prompt (20-35% savings)
     const { compressed } = compression.compress(content)
-    
+
     // 2. Check semantic cache (40-60% savings)
     const cached = await cache.get(compressed)
     if (cached) return cached
-    
+
     // 3. Route to optimal model (40-60% cost savings)
     const { model } = router.route(compressed)
-    
+
     // 4. Query with optimizations
     const response = await queryAPI(compressed, { model: model.id })
     await cache.set(compressed, response)
@@ -732,6 +739,7 @@ function OptimizedChat() {
 ```
 
 **Optimization Features:**
+
 - 🗜️ **Prompt Compression**: 20-35% input token reduction
 - 💾 **Smart Caching**: 40-60% savings with semantic similarity
 - 🎯 **Model Routing**: 40-60% cost reduction via intelligent routing
@@ -768,6 +776,7 @@ import { ThemeProvider, themes } from '@clarity-chat/react'
 ```
 
 **Design System Features:**
+
 - 🎭 **6-Level Shadow System**: xs, sm, md, lg, xl, 2xl for perfect depth
 - ⚡ **150+ Animations**: Professional cubic-bezier easing
 - 📐 **4px Grid System**: Precise alignment throughout
@@ -803,18 +812,14 @@ function StreamingChat() {
   return (
     <ChatWindow
       onSendMessage={handleSend}
-      renderMessage={(msg) => (
-        <StreamingMessage
-          message={msg}
-          showTypingIndicator={isStreaming}
-        />
-      )}
+      renderMessage={(msg) => <StreamingMessage message={msg} showTypingIndicator={isStreaming} />}
     />
   )
 }
 ```
 
 **Streaming Features:**
+
 - 📡 **SSE Support**: Server-Sent Events with auto-reconnect
 - 🔌 **WebSocket Support**: Bidirectional real-time communication
 - 🔄 **Auto-Reconnection**: Exponential backoff on failures
@@ -828,11 +833,7 @@ function StreamingChat() {
 **Complete RAG pipeline, agents, and vector stores**:
 
 ```tsx
-import {
-  useVectorStore,
-  useRAGPipeline,
-  useAgentOrchestration,
-} from '@clarity-chat/react'
+import { useVectorStore, useRAGPipeline, useAgentOrchestration } from '@clarity-chat/react'
 
 function EnterpriseChat() {
   const vectorStore = useVectorStore('pinecone', { apiKey: '...' })
@@ -849,16 +850,16 @@ function EnterpriseChat() {
   const handleQuery = async (query: string) => {
     // 1. Retrieve relevant documents
     const docs = await ragPipeline.retrieve(query)
-    
+
     // 2. Rerank for relevance
     const ranked = await ragPipeline.rerank(query, docs)
-    
+
     // 3. Generate response with agent
     const response = await agent.run({
       query,
       context: ranked,
     })
-    
+
     return response
   }
 
@@ -867,6 +868,7 @@ function EnterpriseChat() {
 ```
 
 **Enterprise Features:**
+
 - 🗄️ **4 Vector Stores**: Pinecone, Qdrant, Weaviate, Chroma
 - 🔗 **RAG Pipeline**: Document loaders, splitting, hybrid search, reranking
 - 🤖 **Agent Orchestration**: ReAct pattern with tool calling
@@ -884,14 +886,8 @@ function EnterpriseChat() {
 import { useMessageOperations, MessageList } from '@clarity-chat/react'
 
 function AdvancedChat() {
-  const {
-    messages,
-    editMessage,
-    regenerateMessage,
-    branchConversation,
-    undo,
-    redo,
-  } = useMessageOperations()
+  const { messages, editMessage, regenerateMessage, branchConversation, undo, redo } =
+    useMessageOperations()
 
   return (
     <>
@@ -911,6 +907,7 @@ function AdvancedChat() {
 ```
 
 **Message Features:**
+
 - ✏️ **Edit Messages**: Version history and undo/redo
 - 🔄 **Regenerate**: Get new AI responses
 - 🌳 **Branch Conversations**: Create alternative paths
@@ -954,6 +951,7 @@ function MultiModalChat() {
 ```
 
 **Multi-Modal Features:**
+
 - 🎤 **Voice Input**: Speech-to-text with waveform animation
 - 📎 **File Upload**: Drag & drop with preview
 - 🖼️ **Image Support**: Display and preview images
@@ -974,7 +972,7 @@ function PowerUserChat() {
     'cmd+k': () => openCommandPalette(),
     'cmd+/': () => showShortcuts(),
     'cmd+b': () => branchConversation(),
-    'esc': () => closeAll(),
+    esc: () => closeAll(),
   })
 
   return (
@@ -994,6 +992,7 @@ function PowerUserChat() {
 ```
 
 **Power Features:**
+
 - ⌨️ **Keyboard Shortcuts**: Fully customizable (Shift+? for help)
 - 🔍 **Command Palette**: Fuzzy search with cmd+k
 - 📋 **Context Menus**: Right-click actions with animations
@@ -1032,6 +1031,7 @@ function AnalyticsChat() {
 ```
 
 **Analytics Features:**
+
 - 📈 **7 Providers**: GA4, Mixpanel, PostHog, Amplitude, and more
 - 📊 **35+ Events**: Pre-defined event tracking
 - 🧪 **A/B Testing**: Built-in support
@@ -1095,110 +1095,136 @@ function AnalyticsChat() {
 
 #### Complete Component Reference
 
-**📨 Messaging Components (20+):** `ChatWindow`, `MessageList`, `VirtualizedMessageList`, `Message`, `MessageOptimized`, `StreamingMessage`, `MessageBubble`, `MessageMetadata`, `MessageSearch`, `AdvancedMessageSearch`, `ConversationTimeline`, `ConversationList`, `ConversationBranchVisualizer`, `MemoryInspector`, `StreamBlock`, `StreamingTextRenderer`, `ThinkingIndicator`, `CopyButton`, `StreamCancellation`, `EmptyState`
+**📨 Messaging Components (20+):** `ChatWindow`, `MessageList`, `VirtualizedMessageList`, `Message`,
+`MessageOptimized`, `StreamingMessage`, `MessageBubble`, `MessageMetadata`, `MessageSearch`,
+`AdvancedMessageSearch`, `ConversationTimeline`, `ConversationList`, `ConversationBranchVisualizer`,
+`MemoryInspector`, `StreamBlock`, `StreamingTextRenderer`, `ThinkingIndicator`, `CopyButton`,
+`StreamCancellation`, `EmptyState`
 
-**⌨️ Input & Interaction (15+):** `ChatInput`, `AdvancedChatInput`, `VoiceInput`, `FileUpload`, `CommandPalette`, `ContextMenu`, `Draggable`, `FollowUpSuggestions`, `PromptSuggestions`, `KeyboardHint`, `ModelSelector`, `PersonaPanel`
+**⌨️ Input & Interaction (15+):** `ChatInput`, `AdvancedChatInput`, `VoiceInput`, `FileUpload`,
+`CommandPalette`, `ContextMenu`, `Draggable`, `FollowUpSuggestions`, `PromptSuggestions`,
+`KeyboardHint`, `ModelSelector`, `PersonaPanel`
 
-**🎨 UI Primitives & Layout (25+):** `Button`, `Input`, `Card`, `InteractiveCard`, `Badge`, `Dialog`, `Tooltip`, `Dropdown`, `Tabs`, `Switch`, `Checkbox`, `Skeleton`, `AnimatedList`, `Toast`, `Progress`, `FeedbackAnimation`, `Icons`, `ThemeSelector`, `ThemeSwitcher`, `ThemePreview`, `ProjectSidebar`, `SettingsPanel`, `LinkPreview`, `ContextCard`, `ContextManager`, `ContextVisualizer`
+**🎨 UI Primitives & Layout (25+):** `Button`, `Input`, `Card`, `InteractiveCard`, `Badge`,
+`Dialog`, `Tooltip`, `Dropdown`, `Tabs`, `Switch`, `Checkbox`, `Skeleton`, `AnimatedList`, `Toast`,
+`Progress`, `FeedbackAnimation`, `Icons`, `ThemeSelector`, `ThemeSwitcher`, `ThemePreview`,
+`ProjectSidebar`, `SettingsPanel`, `LinkPreview`, `ContextCard`, `ContextManager`,
+`ContextVisualizer`
 
-**📊 Data Display & Analytics (15+):** `TokenCounter`, `TokenOptimizationPanel`, `TokenOptimizationBadge`, `TokenOptimizationDashboard`, `AnalyticsDashboard`, `UsageDashboard`, `PerformanceDashboard`, `ResponseQualityMeter`, `SessionSummaryCard`, `PerformanceMetrics`, `NetworkStatus`, `ErrorBoundary`, `ErrorBoundaryEnhanced`, `RetryButton`
+**📊 Data Display & Analytics (15+):** `TokenCounter`, `TokenOptimizationPanel`,
+`TokenOptimizationBadge`, `TokenOptimizationDashboard`, `AnalyticsDashboard`, `UsageDashboard`,
+`PerformanceDashboard`, `ResponseQualityMeter`, `SessionSummaryCard`, `PerformanceMetrics`,
+`NetworkStatus`, `ErrorBoundary`, `ErrorBoundaryEnhanced`, `RetryButton`
 
-**🤖 Enterprise AI (15+):** `VectorStoreViewer`, `AgentRunFeed`, `RAGPipeline`, `SafetyStatusCard`, `DocumentViewer`, `MultiModalPreview`, `AuditLogViewer`, `WorkflowSuggestionList`, `KnowledgeBaseViewer`, `CitationCard`, `ToolInvocationCard`, `AIOps`, `Enterprise`
+**🤖 Enterprise AI (15+):** `VectorStoreViewer`, `AgentRunFeed`, `RAGPipeline`, `SafetyStatusCard`,
+`DocumentViewer`, `MultiModalPreview`, `AuditLogViewer`, `WorkflowSuggestionList`,
+`KnowledgeBaseViewer`, `CitationCard`, `ToolInvocationCard`, `AIOps`, `Enterprise`
 
 **📤 Export & Management (5+):** `ExportDialog`, `BatchExportDialog`, `PromptLibrary`
 
-**🎨 Enhanced Rendering (5+):** `EnhancedMarkdownRenderer`, `MarkdownRendererEnhanced`, `EnhancedCodeBlock`
+**🎨 Enhanced Rendering (5+):** `EnhancedMarkdownRenderer`, `MarkdownRendererEnhanced`,
+`EnhancedCodeBlock`
 
 ### Custom Hooks (35+)
 
 #### Streaming Hooks
+
 ```tsx
-useStreamingSSE()          // Server-Sent Events with auto-reconnect
-useStreamingWebSocket()    // WebSocket connections with heartbeat
-useStreaming()             // Unified streaming interface
-useStreamableUI()          // Streamable UI components
-useAssistant()             // Assistant API integration
+useStreamingSSE() // Server-Sent Events with auto-reconnect
+useStreamingWebSocket() // WebSocket connections with heartbeat
+useStreaming() // Unified streaming interface
+useStreamableUI() // Streamable UI components
+useAssistant() // Assistant API integration
 ```
 
 #### Error Handling Hooks
+
 ```tsx
-useErrorRecovery()         // Retry with exponential backoff
-useRetry()                 // Manual retry logic
+useErrorRecovery() // Retry with exponential backoff
+useRetry() // Manual retry logic
 ```
 
 #### Token Management Hooks
+
 ```tsx
-useTokenTracker()          // Track usage and costs
-useTokenOptimization()     // Comprehensive optimization suite
-useSmartCache()            // Semantic caching for token savings
-useModelRouter()           // Intelligent model routing
-useSmartThrottle()         // Smart request throttling
+useTokenTracker() // Track usage and costs
+useTokenOptimization() // Comprehensive optimization suite
+useSmartCache() // Semantic caching for token savings
+useModelRouter() // Intelligent model routing
+useSmartThrottle() // Smart request throttling
 ```
 
 #### Message Operations Hooks
+
 ```tsx
-useMessageOperations()     // Edit, regenerate, branch, undo/redo
-useMessageHistory()        // Message history management
-useBranching()             // Conversation branching
-useOptimisticMessage()     // Optimistic UI updates
-useClarityChat()           // 🚀 Flagship hook - Recommended for all new projects
-useChat()                  // Core chat functionality (legacy)
-useChatEnhanced()          // Enhanced chat with advanced features
-useCompletion()             // Text completion
+useMessageOperations() // Edit, regenerate, branch, undo/redo
+useMessageHistory() // Message history management
+useBranching() // Conversation branching
+useOptimisticMessage() // Optimistic UI updates
+useClarityChat() // 🚀 Flagship hook - Recommended for all new projects
+useChat() // Core chat functionality (legacy)
+useChatEnhanced() // Enhanced chat with advanced features
+useCompletion() // Text completion
 ```
 
 #### UX Enhancement Hooks
+
 ```tsx
-useRealisticTyping()       // Realistic typing indicators
-useTypingIndicator()       // Multi-stage typing indicators
-useAutoScroll()            // Smart auto-scrolling
+useRealisticTyping() // Realistic typing indicators
+useTypingIndicator() // Multi-stage typing indicators
+useAutoScroll() // Smart auto-scrolling
 useCommandPaletteCommands() // Command palette integration
-useDeferredSearch()        // Deferred search for performance
+useDeferredSearch() // Deferred search for performance
 ```
 
 #### Voice & Mobile Hooks
+
 ```tsx
-useVoiceInput()            // Voice input with waveform
-useMobileKeyboard()        // Mobile keyboard handling
+useVoiceInput() // Voice input with waveform
+useMobileKeyboard() // Mobile keyboard handling
 ```
 
 #### Utility Hooks
+
 ```tsx
-useKeyboardShortcuts()     // Keyboard bindings
-useDebounce()              // Debounced values
-useThrottle()              // Throttled callbacks
-useClipboard()             // Clipboard operations
-useLocalStorage()          // LocalStorage persistence
-useIndexedDB()             // IndexedDB persistence
-useMediaQuery()            // Responsive breakpoints
-useEventListener()          // Event listener management
-useIntersectionObserver()  // Intersection observer
-useMounted()               // Component mount state
-usePrevious()              // Previous value tracking
-useToggle()                // Boolean toggle state
-useWindowSize()            // Window size tracking
+useKeyboardShortcuts() // Keyboard bindings
+useDebounce() // Debounced values
+useThrottle() // Throttled callbacks
+useClipboard() // Clipboard operations
+useLocalStorage() // LocalStorage persistence
+useIndexedDB() // IndexedDB persistence
+useMediaQuery() // Responsive breakpoints
+useEventListener() // Event listener management
+useIntersectionObserver() // Intersection observer
+useMounted() // Component mount state
+usePrevious() // Previous value tracking
+useToggle() // Boolean toggle state
+useWindowSize() // Window size tracking
 ```
 
 #### Performance Hooks
+
 ```tsx
-usePerformance()           // Performance monitoring
+usePerformance() // Performance monitoring
 ```
 
 #### Enterprise AI Hooks
+
 ```tsx
-useVectorStore()          // Vector database operations
-useRAGPipeline()          // RAG workflow management
-useAgentOrchestration()   // Agent management and orchestration
-useObservability()        // Tracing and metrics
+useVectorStore() // Vector database operations
+useRAGPipeline() // RAG workflow management
+useAgentOrchestration() // Agent management and orchestration
+useObservability() // Tracing and metrics
 ```
 
 #### Memory Management Hooks
+
 ```tsx
-useSlidingContextManager()  // Sliding window with RAG retrieval
-useTokenOptimizedContext()  // Context compression and optimization
-useVectorStoreAdapter()     // Vector store integration for memory
-useMemoryRetrieval()        // Semantic memory search
-useMemoryStorage()          // Store and manage conversation memories
+useSlidingContextManager() // Sliding window with RAG retrieval
+useTokenOptimizedContext() // Context compression and optimization
+useVectorStoreAdapter() // Vector store integration for memory
+useMemoryRetrieval() // Semantic memory search
+useMemoryStorage() // Store and manage conversation memories
 ```
 
 ---
@@ -1206,47 +1232,55 @@ useMemoryStorage()          // Store and manage conversation memories
 ## 🏢 Enterprise AI Infrastructure
 
 ### Vector Stores
+
 - **Pinecone** - High-performance vector database
 - **Qdrant** - Open-source vector search engine
 - **Weaviate** - Cloud-native vector database
 - **Chroma** - Embedding database
 
 ### Embeddings
+
 - **OpenAI Embeddings** - text-embedding-ada-002, text-embedding-3-small/large
 - **Cohere Embeddings** - embed-english-v3.0, embed-multilingual-v3.0
 - **Caching** - Semantic similarity caching for cost reduction
 
 ### Agent Orchestration
+
 - **ReAct Pattern** - Reasoning and Acting agent framework
 - **Tool Calling** - Function/tool invocation support
 - **Multi-Agent Systems** - Coordinate multiple agents
 - **Agent Run Feed** - Real-time agent execution visualization
 
 ### RAG Pipeline
+
 - **Document Loaders** - PDF, Markdown, HTML, CSV, JSON, and more
 - **Text Splitting** - Intelligent chunking strategies
 - **Hybrid Search** - Keyword + semantic search
 - **Reranking** - Cohere, Jina, Voyage reranking support
 
 ### AI Safety
+
 - **PII Detection** - Detect personally identifiable information
 - **Content Filtering** - Moderation and content safety
 - **Guardrails** - Prompt injection protection
 - **Safety Status Card** - Real-time safety monitoring
 
 ### Observability
+
 - **Tracing** - Request tracing and debugging
 - **Metrics** - Performance and usage metrics
 - **Evaluation** - Response quality evaluation
 - **LangSmith Integration** - Compatible with LangSmith
 
 ### Multi-Tenancy & RBAC
+
 - **Tenant Isolation** - Secure multi-tenant support
 - **Role-Based Access Control** - Fine-grained permissions
 - **Audit Logging** - Complete audit trail
 - **Usage Quotas** - Per-tenant quota management
 
 ### Webhooks & Plugins
+
 - **Webhook System** - Event-driven webhooks
 - **Plugin Architecture** - Extensible plugin system
 - **Custom Integrations** - Build custom integrations
@@ -1256,6 +1290,7 @@ useMemoryStorage()          // Store and manage conversation memories
 ## 🛠️ Utilities & Helpers
 
 ### Model Adapters
+
 - **OpenAI** - GPT-3.5, GPT-4, GPT-4 Turbo, GPT-4o
 - **Anthropic** - Claude 3 Opus/Sonnet/Haiku, Claude 3.5 Sonnet
 - **Google** - Gemini Pro, Gemini Ultra
@@ -1263,31 +1298,37 @@ useMemoryStorage()          // Store and manage conversation memories
 - **Custom Providers** - Extensible adapter pattern
 
 ### Streaming Utilities
+
 - **StreamableValue** - React Server Components streaming
 - **Streaming Parser** - Parse streaming responses
 - **Chat Helpers** - Message formatting and processing
 
 ### Performance Utilities
+
 - **Performance Optimization** - React optimization helpers
 - **Virtual Scrolling** - Efficient list rendering
 - **Memoization** - Smart memoization utilities
 
 ### Export Utilities
+
 - **Markdown Export** - Export conversations as Markdown
 - **JSON Export** - Export as structured JSON
 - **Batch Export** - Export multiple conversations
 
 ### Context Management
+
 - **Context Window** - Manage conversation context
 - **Sliding Window** - Dynamic context window
 - **Token-Optimized Context** - Compress context intelligently
 
 ### Rate Limiting
+
 - **Token-Based Rate Limiting** - Per-user rate limits
 - **Request Rate Limiting** - API rate limiting
 - **Smart Throttling** - Intelligent request throttling
 
 ### Hybrid Search
+
 - **Keyword Search** - Traditional keyword matching
 - **Semantic Search** - Vector similarity search
 - **Hybrid Scoring** - Combine both approaches
@@ -1297,7 +1338,9 @@ useMemoryStorage()          // Store and manage conversation memories
 ## 📚 Templates & Pre-built Solutions
 
 ### Application Templates
+
 Pre-built templates for common use cases:
+
 - **AI Assistant** - General-purpose AI assistant
 - **Code Assistant** - AI coding companion
 - **Customer Support** - Support chatbot template
@@ -1308,7 +1351,9 @@ Pre-built templates for common use cases:
 - **AI Tutor** - Adaptive learning system
 
 ### Prompt Templates
+
 Pre-built prompt templates for common tasks:
+
 - **System Prompts** - Role-based system prompts
 - **Instruction Templates** - Task-specific instructions
 - **Few-Shot Examples** - Example-based prompts
@@ -1320,6 +1365,7 @@ Pre-built prompt templates for common tasks:
 ## 📊 Analytics System
 
 ### Analytics Providers
+
 - **Google Analytics 4** - GA4 integration
 - **Mixpanel** - Product analytics
 - **PostHog** - Open-source analytics
@@ -1328,12 +1374,14 @@ Pre-built prompt templates for common tasks:
 - **Custom Providers** - Extensible analytics
 
 ### Event Tracking
+
 - **35+ Pre-defined Events** - Message sent, response received, errors, etc.
 - **Custom Events** - Track custom events
 - **A/B Testing** - Built-in A/B testing support
 - **Performance Monitoring** - Real-time performance metrics
 
 ### Error Tracking
+
 - **Sentry** - Error tracking and monitoring
 - **Rollbar** - Real-time error tracking
 - **Bugsnag** - Application stability monitoring
@@ -1356,6 +1404,7 @@ Pre-built prompt templates for common tasks:
 ## 🎨 Theme System
 
 ### Built-in Themes (11)
+
 - **default** - Clean, professional
 - **dark** - Dark mode
 - **ocean** - Blue ocean vibes 🌊
@@ -1369,6 +1418,7 @@ Pre-built prompt templates for common tasks:
 - **cool** - Cool blue/gray ❄️
 
 ### Theme Features
+
 - **Live Theme Editor** - Edit themes in real-time
 - **Custom Themes** - Create your own themes
 - **Theme Preview** - Preview themes before applying
@@ -1393,16 +1443,17 @@ Pre-built prompt templates for common tasks:
 
 ## 📦 Packages
 
-| Package | Description | Size |
-|---------|-------------|------|
-| [`@clarity-chat/react`](./packages/react) | Main library + AI infrastructure ⭐ | ~120KB |
-| [`@clarity-chat/types`](./packages/types) | TypeScript definitions | ~8KB |
-| [`@clarity-chat/primitives`](./packages/primitives) | Base UI components | ~25KB |
-| [`@clarity-chat/error-handling`](./packages/error-handling) | Error recovery system | ~45KB |
-| [`@clarity-chat/cli`](./packages/cli) | Developer CLI tool 🛠️ | ~15KB |
-| [`@clarity-chat/mcp-server`](./mcp-server) | MCP server for AI agents 🤖 | ~20KB |
+| Package                                                     | Description                         | Size   |
+| ----------------------------------------------------------- | ----------------------------------- | ------ |
+| [`@clarity-chat/react`](./packages/react)                   | Main library + AI infrastructure ⭐ | ~120KB |
+| [`@clarity-chat/types`](./packages/types)                   | TypeScript definitions              | ~8KB   |
+| [`@clarity-chat/primitives`](./packages/primitives)         | Base UI components                  | ~25KB  |
+| [`@clarity-chat/error-handling`](./packages/error-handling) | Error recovery system               | ~45KB  |
+| [`@clarity-chat/cli`](./packages/cli)                       | Developer CLI tool 🛠️               | ~15KB  |
+| [`@clarity-chat/mcp-server`](./mcp-server)                  | MCP server for AI agents 🤖         | ~20KB  |
 
 **New in v2.0**:
+
 - Vector stores, embeddings, agents, RAG pipeline
 - AI safety, observability, webhooks, plugins
 - Multi-tenancy, RBAC, audit logging, quotas
@@ -1416,16 +1467,20 @@ Pre-built prompt templates for common tasks:
 ## 📚 Documentation
 
 ### Quick Start & Migration
-- **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** ⭐ - Quick start guide
+
+- **[Getting Started with Clarity Chat](./docs/getting-started-clarity-chat.md)** ⭐ - Quick start
+  guide
 - **[Clarity vs Vercel AI SDK UI](./docs/clarity-vs-vercel-ai-sdk-ui.md)** - Feature comparison
 - **[Migrating from Vercel](./docs/migrating-from-vercel.md)** - Migration guide
 
 ### Getting Started
+
 - [Quick Start Guide](./apps/docs/guide/quick-start.md) - Get started in 5 minutes
 - [Installation Guide](./apps/docs/guide/installation.md)
 - [First Component Tutorial](./apps/docs/guide/getting-started.md)
 
 ### Guides
+
 - [Theming System](./apps/docs/guide/theming.md)
 - [Token Optimization](./apps/docs/guide/token-optimization.md) 🆕
 - [Streaming Messages](./apps/docs/guide/streaming.md)
@@ -1434,6 +1489,7 @@ Pre-built prompt templates for common tasks:
 - [Performance Guide](./PERFORMANCE_GUIDE.md)
 
 ### API Reference
+
 - [Components (70+)](./apps/docs/api/components.md)
 - [Hooks (35+)](./apps/docs/api/hooks.md)
 - [Utilities](./apps/docs/api/utilities.md)
@@ -1560,6 +1616,7 @@ clarity-chat docs
 ```
 
 **CLI Features:**
+
 - 🎨 **12 Commands**: Complete developer toolkit
 - 🖥️ **9+ TUI Components**: Gorgeous terminal UI with animations
 - 🔍 **Component Search**: Find what you need instantly
@@ -1580,6 +1637,7 @@ npx @clarity-chat/mcp-server
 ```
 
 **Configure Claude Desktop** (`claude_desktop_config.json`):
+
 ```json
 {
   "mcpServers": {
@@ -1592,13 +1650,18 @@ npx @clarity-chat/mcp-server
 ```
 
 **MCP Server Features:**
-- 🛠️ **7 Tools**: Initialize projects, list examples, validate config, get model info, calculate costs, analyze projects
-- 📚 **6 Resources**: Documentation, architecture, API reference, examples, model pricing, capabilities
-- 💬 **5 Prompts**: Implement features, debug issues, optimize performance, review code, convert examples
+
+- 🛠️ **7 Tools**: Initialize projects, list examples, validate config, get model info, calculate
+  costs, analyze projects
+- 📚 **6 Resources**: Documentation, architecture, API reference, examples, model pricing,
+  capabilities
+- 💬 **5 Prompts**: Implement features, debug issues, optimize performance, review code, convert
+  examples
 - 🔒 **Secure**: Input validation, path sanitization, structured error handling
 - ⚡ **Fast**: Resource caching, optimized queries, efficient data structures
 
 **Example Usage:**
+
 ```
 "Can you initialize a new Clarity Chat project with OpenAI in /path/to/my-app?"
 "What are the capabilities and pricing of GPT-4 Turbo?"
@@ -1633,23 +1696,20 @@ function MemoryEnabledChat() {
   const handleSend = async (message: string) => {
     // 1. Retrieve relevant memories
     const memories = await memoryManager.retrieveRelevant(message)
-    
+
     // 2. Optimize context window
-    const context = optimizedContext.optimize([
-      ...memories,
-      ...recentMessages,
-    ])
-    
+    const context = optimizedContext.optimize([...memories, ...recentMessages])
+
     // 3. Send with optimized context
     const response = await sendMessage(message, { context })
-    
+
     // 4. Store important memories
     await memoryManager.storeMemory({
       type: 'episodic',
       content: { message, response },
       importanceScore: 0.8,
     })
-    
+
     return response
   }
 
@@ -1658,6 +1718,7 @@ function MemoryEnabledChat() {
 ```
 
 **Memory Features:**
+
 - 🧠 **Sliding Context Window**: Fixed-size buffer with semantic retrieval
 - 🔍 **RAG Integration**: Vector-based memory search across conversation history
 - 💾 **Multi-Layer Memory**: Episodic, semantic, preference, and behavioral memory
@@ -1667,6 +1728,7 @@ function MemoryEnabledChat() {
 - 🔄 **Auto-Archival**: Automatic memory importance scoring and archival
 
 **Memory Infrastructure:**
+
 ```bash
 # Start memory services (Qdrant, Redis, PostgreSQL)
 docker-compose -f docker-compose.memory.yml up -d
@@ -1686,6 +1748,7 @@ docker-compose -f docker-compose.memory.yml up -d
 ### Interactive Playground
 
 Monaco-based REPL for testing components in real-time:
+
 - 🎮 **Live Preview**: See components render as you code
 - 📝 **Code Templates**: Pre-built examples for common patterns
 - 🔄 **Hot Reload**: Instant updates as you type
@@ -1724,6 +1787,7 @@ npm run test:e2e
 ```
 
 **Quality Metrics:**
+
 - ✅ **80%+ Test Coverage** (target: 85%)
 - ✅ **WCAG 2.1 AAA** accessibility compliant
 - ✅ **100% TypeScript** with strict mode
@@ -1756,8 +1820,10 @@ npm run storybook
 ## 💬 Community & Support
 
 - 💬 [Discord Community](https://discord.gg/clarity-chat) - Join our friendly community
-- 🐛 [Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues) - Found a bug?
-- 💡 [Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions) - Have an idea?
+- 🐛 [Report Issues](https://github.com/christireid/Clarity-ai-chat-components/issues) - Found a
+  bug?
+- 💡 [Feature Requests](https://github.com/christireid/Clarity-ai-chat-components/discussions) -
+  Have an idea?
 - 📧 [Email Support](mailto:support@codeclarity.ai) - Need help?
 
 ---

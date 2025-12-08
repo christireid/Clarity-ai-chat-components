@@ -1,0 +1,42 @@
+{
+  "recommendations": [
+    // === ESSENTIAL ===
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+
+    // === TYPESCRIPT ===
+    "ms-vscode.vscode-typescript-next",
+
+    // === TESTING ===
+    "vitest.explorer",
+    "ms-playwright.playwright",
+
+    // === REACT ===
+    "dsznajder.es7-react-js-snippets",
+    "styled-components.vscode-styled-components",
+
+    // === DX ENHANCEMENTS ===
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
+    "gruntfuggly.todo-tree",
+    "eamodio.gitlens",
+    "christian-kohler.path-intellisense",
+    "formulahendry.auto-rename-tag",
+
+    // === MONOREPO ===
+    "folke.vscode-monorepo-workspace",
+
+    // === JSON/YAML ===
+    "redhat.vscode-yaml",
+    "ZainChen.json",
+
+    // === MARKDOWN ===
+    "yzhang.markdown-all-in-one",
+    "bierner.markdown-mermaid",
+
+    // === GIT ===
+    "mhutchie.git-graph"
+  ],
+  "unwantedRecommendations": []
+}

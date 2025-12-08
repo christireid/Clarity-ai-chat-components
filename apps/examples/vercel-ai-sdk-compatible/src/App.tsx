@@ -1,29 +1,36 @@
 /**
  * Vercel AI SDK Compatible Example
- * 
+ *
  * Demonstrates the useChat, useCompletion, and useAssistant hooks
  * with full Vercel AI SDK API compatibility.
  */
 
 import * as React from 'react'
-import { useChat, useCompletion, useAssistant, useClarityChat } from '@clarity-chat/react'
-import { ChatWindow } from '@clarity-chat/react'
-import { MemoryProvider } from '@clarity-chat/react/memory'
-import { ThemeProvider, themes } from '@clarity-chat/react'
-import { convertCoreMessagesToMessages } from '@clarity-chat/react'
+import {
+  useChat,
+  useCompletion,
+  useAssistant,
+  useClarityChat,
+  ChatWindow,
+  MemoryProvider,
+  ThemeProvider,
+  themes,
+  convertCoreMessagesToMessages,
+} from '@clarity-chat/react'
 import AdvancedExamples from './AdvancedExample'
 
 function ChatExample() {
-  const { messages, append, isLoading, handleSubmit, input, setInput, error } = useChat({
-    api: '/api/chat',
-    initialMessages: [],
-    onFinish: (message) => {
-      console.log('Message finished:', message)
-    },
-    onError: (error) => {
-      console.error('Chat error:', error)
-    },
-  })
+  const { messages, append, isLoading, handleSubmit, input, setInput, error } =
+    useChat({
+      api: '/api/chat',
+      initialMessages: [],
+      onFinish: (message) => {
+        console.log('Message finished:', message)
+      },
+      onError: (error) => {
+        console.error('Chat error:', error)
+      },
+    })
 
   return (
     <div className="flex flex-col h-screen">
@@ -31,8 +38,16 @@ function ChatExample() {
         messages={messages.map((msg) => ({
           id: msg.id || '',
           chatId: 'default',
-          role: msg.role === 'user' ? 'user' : msg.role === 'assistant' ? 'assistant' : 'system',
-          content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content),
+          role:
+            msg.role === 'user'
+              ? 'user'
+              : msg.role === 'assistant'
+                ? 'assistant'
+                : 'system',
+          content:
+            typeof msg.content === 'string'
+              ? msg.content
+              : JSON.stringify(msg.content),
           status: isLoading && msg.role === 'assistant' ? 'streaming' : 'sent',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -158,11 +173,15 @@ function AssistantExample() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-4 flex items-center gap-4">
         <h2 className="text-2xl font-bold">AI Assistant</h2>
-        <span className={`px-3 py-1 rounded-full text-sm ${
-          status === 'idle' ? 'bg-green-100 text-green-800' :
-          status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-          'bg-yellow-100 text-yellow-800'
-        }`}>
+        <span
+          className={`px-3 py-1 rounded-full text-sm ${
+            status === 'idle'
+              ? 'bg-green-100 text-green-800'
+              : status === 'in_progress'
+                ? 'bg-blue-100 text-blue-800'
+                : 'bg-yellow-100 text-yellow-800'
+          }`}
+        >
           {status}
         </span>
       </div>
@@ -176,7 +195,11 @@ function AssistantExample() {
             }`}
           >
             <div className="text-sm font-semibold mb-1">{msg.role}</div>
-            <div>{typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}</div>
+            <div>
+              {typeof msg.content === 'string'
+                ? msg.content
+                : JSON.stringify(msg.content)}
+            </div>
           </div>
         ))}
       </div>
@@ -240,13 +263,18 @@ function ClarityChatExample() {
   return (
     <div className="flex flex-col h-screen">
       <div className="p-4 bg-blue-50 border-b">
-        <h2 className="text-xl font-bold mb-2">useClarityChat (Flagship Hook)</h2>
+        <h2 className="text-xl font-bold mb-2">
+          useClarityChat (Flagship Hook)
+        </h2>
         <p className="text-sm text-gray-600 mb-2">
-          Clarity's enhanced chat hook with memory integration and transport selection.
+          Clarity's enhanced chat hook with memory integration and transport
+          selection.
         </p>
         {memoryEnabled && (
           <div className="text-xs text-green-700">
-            ✓ Memory Enabled {contextSummary && `- Context: ${contextSummary.substring(0, 50)}...`}
+            ✓ Memory Enabled{' '}
+            {contextSummary &&
+              `- Context: ${contextSummary.substring(0, 50)}...`}
           </div>
         )}
       </div>
@@ -273,78 +301,94 @@ function ClarityChatExample() {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = React.useState<'chat' | 'completion' | 'assistant' | 'clarity' | 'advanced' | 'performance'>('chat')
+  const [activeTab, setActiveTab] = React.useState<
+    'chat' | 'completion' | 'assistant' | 'clarity' | 'advanced' | 'performance'
+  >('chat')
 
   return (
     <MemoryProvider config={{ maxTokens: 10000 }}>
       <ThemeProvider theme={themes.ocean}>
         <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <h1 className="text-3xl font-bold mb-4">Vercel AI SDK Compatible Examples</h1>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setActiveTab('chat')}
-                className={`px-4 py-2 rounded-lg ${
-                  activeTab === 'chat' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                }`}
-              >
-                useChat
-              </button>
-              <button
-                onClick={() => setActiveTab('completion')}
-                className={`px-4 py-2 rounded-lg ${
-                  activeTab === 'completion' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                }`}
-              >
-                useCompletion
-              </button>
-              <button
-                onClick={() => setActiveTab('assistant')}
-                className={`px-4 py-2 rounded-lg ${
-                  activeTab === 'assistant' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                }`}
-              >
-                useAssistant
-              </button>
-              <button
-                onClick={() => setActiveTab('clarity')}
-                className={`px-4 py-2 rounded-lg ${
-                  activeTab === 'clarity' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                }`}
-              >
-                useClarityChat ⭐
-              </button>
-              <button
-                onClick={() => setActiveTab('advanced')}
-                className={`px-4 py-2 rounded-lg ${
-                  activeTab === 'advanced' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                }`}
-              >
-                Advanced
-              </button>
-              <button
-                onClick={() => setActiveTab('performance')}
-                className={`px-4 py-2 rounded-lg ${
-                  activeTab === 'performance' ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                }`}
-              >
-                Performance
-              </button>
+          <div className="bg-white border-b shadow-sm">
+            <div className="max-w-7xl mx-auto px-4 py-4">
+              <h1 className="text-3xl font-bold mb-4">
+                Vercel AI SDK Compatible Examples
+              </h1>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActiveTab('chat')}
+                  className={`px-4 py-2 rounded-lg ${
+                    activeTab === 'chat'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200'
+                  }`}
+                >
+                  useChat
+                </button>
+                <button
+                  onClick={() => setActiveTab('completion')}
+                  className={`px-4 py-2 rounded-lg ${
+                    activeTab === 'completion'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200'
+                  }`}
+                >
+                  useCompletion
+                </button>
+                <button
+                  onClick={() => setActiveTab('assistant')}
+                  className={`px-4 py-2 rounded-lg ${
+                    activeTab === 'assistant'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200'
+                  }`}
+                >
+                  useAssistant
+                </button>
+                <button
+                  onClick={() => setActiveTab('clarity')}
+                  className={`px-4 py-2 rounded-lg ${
+                    activeTab === 'clarity'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200'
+                  }`}
+                >
+                  useClarityChat ⭐
+                </button>
+                <button
+                  onClick={() => setActiveTab('advanced')}
+                  className={`px-4 py-2 rounded-lg ${
+                    activeTab === 'advanced'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200'
+                  }`}
+                >
+                  Advanced
+                </button>
+                <button
+                  onClick={() => setActiveTab('performance')}
+                  className={`px-4 py-2 rounded-lg ${
+                    activeTab === 'performance'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200'
+                  }`}
+                >
+                  Performance
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="max-w-7xl mx-auto py-6">
-          {activeTab === 'chat' && <ChatExample />}
-          {activeTab === 'completion' && <CompletionExample />}
-          {activeTab === 'assistant' && <AssistantExample />}
-          {activeTab === 'clarity' && <ClarityChatExample />}
-          {activeTab === 'advanced' && <AdvancedExamples />}
-          {activeTab === 'performance' && <PerformanceExample />}
+          <div className="max-w-7xl mx-auto py-6">
+            {activeTab === 'chat' && <ChatExample />}
+            {activeTab === 'completion' && <CompletionExample />}
+            {activeTab === 'assistant' && <AssistantExample />}
+            {activeTab === 'clarity' && <ClarityChatExample />}
+            {activeTab === 'advanced' && <AdvancedExamples />}
+            {activeTab === 'performance' && <PerformanceExample />}
+          </div>
         </div>
-      </div>
-    </ThemeProvider>
+      </ThemeProvider>
     </MemoryProvider>
   )
 }

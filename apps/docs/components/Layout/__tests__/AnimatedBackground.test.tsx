@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import { ThemeProvider } from 'next-themes'
@@ -6,7 +7,7 @@ import { AnimatedBackground } from '../AnimatedBackground'
 
 // Mock cn utility
 vi.mock('@/lib/utils', () => ({
-  cn: vi.fn((...classes: (string | undefined)[]) => 
+  cn: vi.fn((...classes: (string | undefined)[]) =>
     classes.filter(Boolean).join(' ')
   ),
 }))
@@ -62,7 +63,7 @@ const mockUseParticlesEngine = vi.mocked(useParticlesEngine)
 beforeEach(() => {
   // Reset all mocks
   vi.clearAllMocks()
-  
+
   // Set default hook return values
   mockUseReducedMotion.mockReturnValue(false)
   mockUseThemeMode.mockReturnValue(false)
@@ -73,7 +74,13 @@ beforeEach(() => {
   })
 })
 
-const TestWrapper = ({ children, theme = 'system' }: { children: React.ReactNode; theme?: string }) => (
+const TestWrapper = ({
+  children,
+  theme = 'system',
+}: {
+  children: React.ReactNode
+  theme?: string
+}) => (
   <ThemeProvider attribute="class" defaultTheme={theme} enableSystem>
     {children}
   </ThemeProvider>
@@ -93,7 +100,7 @@ describe('AnimatedBackground', () => {
           <AnimatedBackground />
         </TestWrapper>
       )
-      
+
       expect(screen.queryByTestId('particles')).not.toBeInTheDocument()
     })
 
@@ -110,9 +117,12 @@ describe('AnimatedBackground', () => {
         </TestWrapper>
       )
 
-      await waitFor(() => {
-        expect(screen.getByTestId('particles')).toBeInTheDocument()
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('particles')).toBeInTheDocument()
+        },
+        { timeout: 2000 }
+      )
     })
 
     it('should apply custom className', async () => {
@@ -122,10 +132,13 @@ describe('AnimatedBackground', () => {
         </TestWrapper>
       )
 
-      await waitFor(() => {
-        const container = screen.getByTestId('particles').parentElement
-        expect(container).toHaveClass('custom-class')
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          const container = screen.getByTestId('particles').parentElement
+          expect(container).toHaveClass('custom-class')
+        },
+        { timeout: 2000 }
+      )
     })
   })
 
@@ -139,10 +152,13 @@ describe('AnimatedBackground', () => {
         </TestWrapper>
       )
 
-      await waitFor(() => {
-        const particles = screen.getByTestId('particles')
-        expect(particles).toBeInTheDocument()
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          const particles = screen.getByTestId('particles')
+          expect(particles).toBeInTheDocument()
+        },
+        { timeout: 2000 }
+      )
     })
 
     it('should use light config when theme is light', async () => {
@@ -154,10 +170,13 @@ describe('AnimatedBackground', () => {
         </TestWrapper>
       )
 
-      await waitFor(() => {
-        const particles = screen.getByTestId('particles')
-        expect(particles).toBeInTheDocument()
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          const particles = screen.getByTestId('particles')
+          expect(particles).toBeInTheDocument()
+        },
+        { timeout: 2000 }
+      )
     })
   })
 
@@ -184,9 +203,12 @@ describe('AnimatedBackground', () => {
         </TestWrapper>
       )
 
-      await waitFor(() => {
-        expect(screen.getByTestId('particles')).toBeInTheDocument()
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('particles')).toBeInTheDocument()
+        },
+        { timeout: 2000 }
+      )
     })
   })
 
@@ -223,9 +245,12 @@ describe('AnimatedBackground', () => {
         </TestWrapper>
       )
 
-      await waitFor(() => {
-        expect(screen.getByTestId('particles')).toBeInTheDocument()
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('particles')).toBeInTheDocument()
+        },
+        { timeout: 2000 }
+      )
     })
   })
 
@@ -237,12 +262,15 @@ describe('AnimatedBackground', () => {
         </TestWrapper>
       )
 
-      await waitFor(() => {
-        const container = screen.getByTestId('particles').parentElement
-        expect(container).toHaveAttribute('aria-hidden', 'true')
-        expect(container).toHaveAttribute('role', 'presentation')
-        expect(container).toHaveClass('pointer-events-none')
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          const container = screen.getByTestId('particles').parentElement
+          expect(container).toHaveAttribute('aria-hidden', 'true')
+          expect(container).toHaveAttribute('role', 'presentation')
+          expect(container).toHaveClass('pointer-events-none')
+        },
+        { timeout: 2000 }
+      )
     })
   })
 
@@ -254,10 +282,13 @@ describe('AnimatedBackground', () => {
         </TestWrapper>
       )
 
-      await waitFor(() => {
-        const container = screen.getByTestId('particles').parentElement
-        expect(container).toHaveClass('custom-class')
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          const container = screen.getByTestId('particles').parentElement
+          expect(container).toHaveClass('custom-class')
+        },
+        { timeout: 2000 }
+      )
     })
   })
 })
