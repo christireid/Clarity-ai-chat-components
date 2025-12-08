@@ -4,7 +4,7 @@
 // These are the default components. They provide:
 // - Accessibility (WCAG 2.1 AA compliant)
 // - Keyboard navigation
-// - Focus management  
+// - Focus management
 // - Browser compatibility
 // - Screen reader support
 //
@@ -23,10 +23,13 @@
 
 // Button (Enhanced with loading state)
 export { Button, buttonVariants } from './components/ui/button-enhanced'
-export type { ButtonProps } from './components/ui/button-enhanced'
+export type { ButtonProps, ButtonState } from './components/ui/button-enhanced'
 
 // Also export pure shadcn Button for those who want it
-export { Button as ShadcnButton, buttonVariants as shadcnButtonVariants } from './components/ui/button'
+export {
+  Button as ShadcnButton,
+  buttonVariants as shadcnButtonVariants,
+} from './components/ui/button'
 export type { ButtonProps as ShadcnButtonProps } from './components/ui/button'
 
 // Dialog
@@ -38,6 +41,7 @@ export {
   DialogClose,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogFooter,
   DialogTitle,
   DialogDescription,
@@ -169,7 +173,14 @@ export type { AvatarProps } from './components/avatar'
 export { Badge } from './components/badge'
 export type { BadgeProps } from './components/badge'
 
-export { Card } from './components/card'
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from './components/card'
 export type { CardProps } from './components/card'
 
 export { ErrorMessage } from './components/error-message'

@@ -1,13 +1,13 @@
 /**
  * Animation Utilities
- * 
+ *
  * Helper functions for creating consistent animations across components.
  */
 
 import { Variants, Transition } from 'framer-motion'
-import { 
-  ANIMATION_DURATION, 
-  ANIMATION_EASING, 
+import {
+  ANIMATION_DURATION,
+  ANIMATION_EASING,
   STAGGER_TIMING,
   AnimationDuration,
   AnimationEasing,
@@ -23,14 +23,14 @@ export function createFadeVariant(
 ): Variants {
   return {
     initial: { opacity: 0 },
-    animate: { 
+    animate: {
       opacity: 1,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
         ease: ANIMATION_EASING[easing],
       },
     },
-    exit: { 
+    exit: {
       opacity: 0,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
@@ -50,23 +50,24 @@ export function createSlideVariant(
   easing: AnimationEasing = 'out'
 ): Variants {
   const axis = direction === 'up' || direction === 'down' ? 'y' : 'x'
-  const value = direction === 'down' || direction === 'right' ? distance : -distance
-  
+  const value =
+    direction === 'down' || direction === 'right' ? distance : -distance
+
   return {
-    initial: { 
-      opacity: 0, 
+    initial: {
+      opacity: 0,
       [axis]: value,
     } as any,
-    animate: { 
-      opacity: 1, 
+    animate: {
+      opacity: 1,
       [axis]: 0,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
         ease: ANIMATION_EASING[easing],
       },
     } as any,
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       [axis]: -value,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
@@ -85,20 +86,20 @@ export function createScaleVariant(
   easing: AnimationEasing = 'spring'
 ): Variants {
   return {
-    initial: { 
-      opacity: 0, 
+    initial: {
+      opacity: 0,
       scale: initialScale,
     },
-    animate: { 
-      opacity: 1, 
+    animate: {
+      opacity: 1,
       scale: 1,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
         ease: ANIMATION_EASING[easing],
       },
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       scale: initialScale,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
@@ -143,42 +144,42 @@ export function createStaggerChildVariant(
     case 'fade':
       return {
         initial: { opacity: 0 },
-        animate: { 
+        animate: {
           opacity: 1,
           transition: { duration: ANIMATION_DURATION[duration] / 1000 },
         },
-        exit: { 
+        exit: {
           opacity: 0,
           transition: { duration: ANIMATION_DURATION[duration] / 1000 },
         },
       }
-    
+
     case 'scale':
       return {
         initial: { opacity: 0, scale: 0.8 },
-        animate: { 
-          opacity: 1, 
+        animate: {
+          opacity: 1,
           scale: 1,
           transition: { duration: ANIMATION_DURATION[duration] / 1000 },
         },
-        exit: { 
-          opacity: 0, 
+        exit: {
+          opacity: 0,
           scale: 0.8,
           transition: { duration: ANIMATION_DURATION[duration] / 1000 },
         },
       }
-    
+
     case 'slide':
     default:
       return {
         initial: { opacity: 0, y: 10 },
-        animate: { 
-          opacity: 1, 
+        animate: {
+          opacity: 1,
           y: 0,
           transition: { duration: ANIMATION_DURATION[duration] / 1000 },
         },
-        exit: { 
-          opacity: 0, 
+        exit: {
+          opacity: 0,
           y: -10,
           transition: { duration: ANIMATION_DURATION[duration] / 1000 },
         },
@@ -315,8 +316,8 @@ export function createShakeAnimation(
 export function createSuccessAnimation(): Variants {
   return {
     initial: { scale: 0, rotate: -45 },
-    animate: { 
-      scale: 1, 
+    animate: {
+      scale: 1,
       rotate: 0,
       transition: {
         duration: ANIMATION_DURATION.normal / 1000,
@@ -343,8 +344,13 @@ export function createErrorAnimation(): Variants {
 /**
  * Merge multiple transitions
  */
-export function mergeTransitions(...transitions: Partial<Transition>[]): Transition {
-  return transitions.reduce((acc, transition) => ({ ...acc, ...transition }), {}) as Transition
+export function mergeTransitions(
+  ...transitions: Partial<Transition>[]
+): Transition {
+  return transitions.reduce(
+    (acc, transition) => ({ ...acc, ...transition }),
+    {}
+  ) as Transition
 }
 
 /**
@@ -361,19 +367,7 @@ export function getDurationInMs(duration: AnimationDuration): number {
   return ANIMATION_DURATION[duration]
 }
 
-/**
- * Create custom spring transition
- */
-export function createSpringTransition(
-  stiffness: number = 300,
-  damping: number = 20
-): Transition {
-  return {
-    type: 'spring',
-    stiffness,
-    damping,
-  }
-}
+// Note: createSpringTransition is exported from spring-presets.ts
 
 /**
  * Create custom tween transition

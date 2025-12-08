@@ -1,32 +1,31 @@
 /**
  * Theme Selector Component
- * 
+ *
  * UI component for selecting and switching between theme presets
  */
 
 'use client'
 
 import * as React from 'react'
-import { useTheme } from '../theme/ThemeProvider'
+import { useTheme, type ThemePresetName } from '../theme/ThemeProvider'
 import { getAllThemes } from '../theme/theme-builder'
-import type { ThemePresetName } from '../theme/presets'
 
 export interface ThemeSelectorProps {
   /**
    * Show theme preview colors
    */
   showPreview?: boolean
-  
+
   /**
    * Layout orientation
    */
   orientation?: 'horizontal' | 'vertical'
-  
+
   /**
    * Custom className
    */
   className?: string
-  
+
   /**
    * Callback when theme changes
    */
@@ -35,17 +34,17 @@ export interface ThemeSelectorProps {
 
 /**
  * Theme Selector - Choose from built-in theme presets
- * 
+ *
  * Features:
  * - Visual theme preview
  * - Horizontal or vertical layout
  * - Keyboard navigation
  * - Active theme indication
- * 
+ *
  * @example
  * ```tsx
- * <ThemeSelector 
- *   showPreview 
+ * <ThemeSelector
+ *   showPreview
  *   orientation="vertical"
  *   onThemeChange={(theme) => console.log('Theme changed:', theme)}
  * />
@@ -59,7 +58,7 @@ export function ThemeSelector({
 }: ThemeSelectorProps) {
   const { theme, setPreset } = useTheme()
   const allThemes = React.useMemo(() => getAllThemes(), [])
-  
+
   const handleThemeSelect = React.useCallback(
     (themeName: ThemePresetName) => {
       setPreset(themeName)
@@ -67,9 +66,9 @@ export function ThemeSelector({
     },
     [setPreset, onThemeChange]
   )
-  
+
   const isHorizontal = orientation === 'horizontal'
-  
+
   return (
     <div
       className={`theme-selector ${isHorizontal ? 'flex flex-row gap-2 overflow-x-auto' : 'flex flex-col gap-1'} ${className || ''}`}
@@ -78,7 +77,7 @@ export function ThemeSelector({
     >
       {allThemes.map(({ name, metadata, config: _config }) => {
         const isActive = theme.preset === name
-        
+
         return (
           <button
             key={name}
@@ -105,30 +104,34 @@ export function ThemeSelector({
                   <>
                     <div
                       className="w-6 h-6 rounded-full border border-white shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
-                      style={{ backgroundColor: metadata.preview.secondaryColor }}
+                      style={{
+                        backgroundColor: metadata.preview.secondaryColor,
+                      }}
                       aria-hidden="true"
                     />
                     <div
                       className="w-6 h-6 rounded-full border border-white shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
-                      style={{ backgroundColor: metadata.preview.backgroundColor }}
+                      style={{
+                        backgroundColor: metadata.preview.backgroundColor,
+                      }}
                       aria-hidden="true"
                     />
                   </>
                 )}
               </div>
             )}
-            
-            <div className={`theme-info ${isHorizontal ? 'text-center' : 'flex-1'}`}>
-              <div className="font-medium text-sm">
-                {metadata.displayName}
-              </div>
+
+            <div
+              className={`theme-info ${isHorizontal ? 'text-center' : 'flex-1'}`}
+            >
+              <div className="font-medium text-sm">{metadata.displayName}</div>
               {!isHorizontal && (
                 <div className="text-xs text-muted-foreground">
                   {metadata.description}
                 </div>
               )}
             </div>
-            
+
             {isActive && (
               <svg
                 className="w-5 h-5 text-primary"
@@ -166,7 +169,7 @@ export function ThemeSelectorDropdown({
   const { theme, setPreset } = useTheme()
   const [isOpen, setIsOpen] = React.useState(false)
   const allThemes = React.useMemo(() => getAllThemes(), [])
-  
+
   const handleThemeSelect = React.useCallback(
     (themeName: ThemePresetName) => {
       setPreset(themeName)
@@ -175,9 +178,9 @@ export function ThemeSelectorDropdown({
     },
     [setPreset, onThemeChange]
   )
-  
-  const currentTheme = allThemes.find(t => t.name === theme.preset)
-  
+
+  const currentTheme = allThemes.find((t) => t.name === theme.preset)
+
   return (
     <div className={`theme-selector-dropdown relative ${className || ''}`}>
       <button
@@ -210,7 +213,7 @@ export function ThemeSelectorDropdown({
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </button>
-      
+
       {isOpen && (
         <>
           {/* Backdrop */}
@@ -219,7 +222,7 @@ export function ThemeSelectorDropdown({
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
-          
+
           {/* Dropdown menu */}
           <div
             className="
@@ -231,7 +234,7 @@ export function ThemeSelectorDropdown({
           >
             {allThemes.map(({ name, metadata }) => {
               const isActive = theme.preset === name
-              
+
               return (
                 <button
                   key={name}
@@ -249,7 +252,9 @@ export function ThemeSelectorDropdown({
                     {metadata.preview && (
                       <div
                         className="w-6 h-6 rounded-full border-2 border-white shadow-[0_1px_2px_rgba(15,23,42,0.08)] flex-shrink-0"
-                        style={{ backgroundColor: metadata.preview.primaryColor }}
+                        style={{
+                          backgroundColor: metadata.preview.primaryColor,
+                        }}
                         aria-hidden="true"
                       />
                     )}
@@ -262,7 +267,7 @@ export function ThemeSelectorDropdown({
                       </div>
                     </div>
                   </div>
-                  
+
                   {isActive && (
                     <svg
                       className="w-5 h-5 text-primary flex-shrink-0"

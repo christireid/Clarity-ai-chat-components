@@ -9,7 +9,7 @@ import { ChatWindow } from '../components/chat-window'
 import { ContextManager } from '../components/context-manager'
 import { ModelSelector } from '../components/model-selector'
 import { ThemeProvider } from '../theme/ThemeProvider'
-import { oceanTheme } from '../theme/presets'
+import { aiAssistantTheme } from '../theme/modern-presets'
 import { openAIAdapter } from '../adapters/openai'
 import { anthropicAdapter } from '../adapters/anthropic'
 import { googleAdapter } from '../adapters/google'
@@ -88,7 +88,7 @@ export function AIAssistantTemplate({
   })
 
   // Convert operation messages to Message format
-  const messages: Message[] = operationMessages.map(msg => ({
+  const messages: Message[] = operationMessages.map((msg) => ({
     id: msg.id,
     chatId: 'ai-assistant-chat',
     role: msg.role,
@@ -124,18 +124,18 @@ export function AIAssistantTemplate({
             quality: 'best' as const,
             contextWindow: 128000,
           },
-          { 
-            id: 'gpt-4', 
-            name: 'GPT-4', 
+          {
+            id: 'gpt-4',
+            name: 'GPT-4',
             provider: 'openai' as const,
             speed: 'medium' as const,
             cost: 'high' as const,
             quality: 'excellent' as const,
             contextWindow: 8192,
           },
-          { 
-            id: 'gpt-3.5-turbo', 
-            name: 'GPT-3.5 Turbo', 
+          {
+            id: 'gpt-3.5-turbo',
+            name: 'GPT-3.5 Turbo',
             provider: 'openai' as const,
             speed: 'fast' as const,
             cost: 'low' as const,
@@ -146,9 +146,9 @@ export function AIAssistantTemplate({
       : []),
     ...(adapters.anthropic
       ? [
-          { 
-            id: 'claude-3-opus', 
-            name: 'Claude 3 Opus', 
+          {
+            id: 'claude-3-opus',
+            name: 'Claude 3 Opus',
             provider: 'anthropic' as const,
             speed: 'medium' as const,
             cost: 'high' as const,
@@ -167,226 +167,266 @@ export function AIAssistantTemplate({
         ]
       : []),
     ...(adapters.google
-      ? [{ 
-          id: 'gemini-pro', 
-          name: 'Gemini Pro', 
-          provider: 'google' as const,
-          speed: 'fast' as const,
-          cost: 'low' as const,
-          quality: 'excellent' as const,
-          contextWindow: 32768,
-        }]
+      ? [
+          {
+            id: 'gemini-pro',
+            name: 'Gemini Pro',
+            provider: 'google' as const,
+            speed: 'fast' as const,
+            cost: 'low' as const,
+            quality: 'excellent' as const,
+            contextWindow: 32768,
+          },
+        ]
       : []),
   ]
 
   // Handle message edit
-  const handleEdit = useCallback((messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message) return
+  const handleEdit = useCallback(
+    (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (!message) return
 
-    const newContent = prompt('Edit message:', message.content) || message.content
-    if (newContent !== message.content) {
-      editMessage(messageId, newContent)
-      // Optionally re-send from this point
-    }
-  }, [messages, editMessage])
+      const newContent =
+        prompt('Edit message:', message.content) || message.content
+      if (newContent !== message.content) {
+        editMessage(messageId, newContent)
+        // Optionally re-send from this point
+      }
+    },
+    [messages, editMessage]
+  )
 
   // Handle message regenerate - defined after handleSendMessage
-  const handleRegenerate = useCallback(async (messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message || message.role !== 'assistant') return
+  const handleRegenerate = useCallback(
+    async (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (!message || message.role !== 'assistant') return
 
-    setIsLoading(true)
-    try {
-      const index = messages.findIndex(m => m.id === messageId)
-      const userMessage = messages[index - 1]
+      setIsLoading(true)
+      try {
+        const index = messages.findIndex((m) => m.id === messageId)
+        const userMessage = messages[index - 1]
 
-      if (userMessage && userMessage.role === 'user') {
-        deleteMessage(messageId)
-        // Re-send the user message to regenerate response
-        // We'll call handleSendMessage directly, but need to ensure it's defined
-        const now = new Date()
-        const chatId = 'ai-assistant-chat'
-        
-        // Determine which adapter to use
-        const model = availableModels.find((m) => m.id === selectedModel)
-        const adapter = model
-          ? adapters[model.provider as keyof typeof adapters]
-          : null
+        if (userMessage && userMessage.role === 'user') {
+          deleteMessage(messageId)
+          // Re-send the user message to regenerate response
+          // We'll call handleSendMessage directly, but need to ensure it's defined
+          const now = new Date()
+          const chatId = 'ai-assistant-chat'
 
-        if (!adapter || !model) {
-          addOperationMessage({
-            chatId,
-            role: 'assistant',
-            content: 'No AI model available. Please configure API keys.',
-            timestamp: Date.now(),
-          })
-          setIsLoading(false)
-          return
+          // Determine which adapter to use
+          const model = availableModels.find((m) => m.id === selectedModel)
+          const adapter = model
+            ? adapters[model.provider as keyof typeof adapters]
+            : null
+
+          if (!adapter || !model) {
+            addOperationMessage({
+              chatId,
+              role: 'assistant',
+              content: 'No AI model available. Please configure API keys.',
+              timestamp: Date.now(),
+            })
+            setIsLoading(false)
+            return
+          }
+
+          try {
+            const response = await adapter.chat(
+              [
+                { role: 'system', content: systemPrompt },
+                ...(context.length > 0
+                  ? [
+                      {
+                        role: 'system' as const,
+                        content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
+                      },
+                    ]
+                  : []),
+                ...messages.slice(0, index - 1).map((m) => ({
+                  role: m.role,
+                  content: m.content,
+                })),
+                { role: 'user' as const, content: userMessage.content },
+              ],
+              {
+                provider: model.provider,
+                model: selectedModel,
+                maxTokens,
+                temperature: 0.7,
+              }
+            )
+
+            const responseContent =
+              typeof response.content === 'string'
+                ? response.content
+                : response.content
+                    .map((p) => (p.type === 'text' ? p.text : ''))
+                    .join('')
+
+            addOperationMessage({
+              chatId,
+              role: 'assistant',
+              content: responseContent,
+              timestamp: new Date().getTime(),
+            })
+          } catch (error) {
+            console.error('AI Assistant error:', error)
+            addOperationMessage({
+              chatId,
+              role: 'assistant',
+              content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              timestamp: new Date().getTime(),
+            })
+          }
         }
-
-        try {
-          const response = await adapter.chat(
-            [
-              { role: 'system', content: systemPrompt },
-              ...(context.length > 0
-                ? [
-                    {
-                      role: 'system' as const,
-                      content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
-                    },
-                  ]
-                : []),
-              ...messages.slice(0, index - 1).map((m) => ({
-                role: m.role,
-                content: m.content,
-              })),
-              { role: 'user' as const, content: userMessage.content },
-            ],
-            {
-              provider: model.provider,
-              model: selectedModel,
-              maxTokens,
-              temperature: 0.7,
-            }
-          )
-
-          const responseContent = typeof response.content === 'string' 
-            ? response.content 
-            : response.content.map(p => p.type === 'text' ? p.text : '').join('')
-
-          addOperationMessage({
-            chatId,
-            role: 'assistant',
-            content: responseContent,
-            timestamp: new Date().getTime(),
-          })
-        } catch (error) {
-          console.error('AI Assistant error:', error)
-          addOperationMessage({
-            chatId,
-            role: 'assistant',
-            content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            timestamp: new Date().getTime(),
-          })
-        }
+      } finally {
+        setIsLoading(false)
       }
-    } finally {
-      setIsLoading(false)
-    }
-  }, [messages, deleteMessage, addOperationMessage, selectedModel, availableModels, adapters, systemPrompt, context, maxTokens])
+    },
+    [
+      messages,
+      deleteMessage,
+      addOperationMessage,
+      selectedModel,
+      availableModels,
+      adapters,
+      systemPrompt,
+      context,
+      maxTokens,
+    ]
+  )
 
   // Handle message delete
-  const handleDelete = useCallback((messageId: string) => {
-    if (confirm('Delete this message?')) {
-      deleteMessage(messageId)
-    }
-  }, [deleteMessage])
-
-  const handleSendMessage = useCallback(async (content: string, isRegenerate = false) => {
-    const now = new Date()
-    const chatId = 'ai-assistant-chat'
-
-    // Add user message (unless regenerating)
-    if (!isRegenerate) {
-      addOperationMessage({
-        chatId,
-        role: 'user',
-        content,
-        timestamp: now.getTime(),
-      })
-    }
-
-    setIsLoading(true)
-
-    // Determine which adapter to use
-    const model = availableModels.find((m) => m.id === selectedModel)
-    const adapter = model
-      ? adapters[model.provider as keyof typeof adapters]
-      : null
-
-    if (!adapter || !model) {
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        chatId,
-        role: 'assistant',
-        content: 'No AI model available. Please configure API keys.',
-        status: 'error',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        metadata: { error: true },
+  const handleDelete = useCallback(
+    (messageId: string) => {
+      if (confirm('Delete this message?')) {
+        deleteMessage(messageId)
       }
-      addOperationMessage(errorMessage)
-      setIsLoading(false)
-      return
-    }
+    },
+    [deleteMessage]
+  )
 
-    try {
-      // Create assistant message for streaming
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        chatId,
-        role: 'assistant',
-        content: '',
-        status: 'streaming',
-        createdAt: new Date(),
-        updatedAt: new Date(),
+  const handleSendMessage = useCallback(
+    async (content: string, isRegenerate = false) => {
+      const now = new Date()
+      const chatId = 'ai-assistant-chat'
+
+      // Add user message (unless regenerating)
+      if (!isRegenerate) {
+        addOperationMessage({
+          chatId,
+          role: 'user',
+          content,
+          timestamp: now.getTime(),
+        })
       }
 
-      addOperationMessage(assistantMessage)
+      setIsLoading(true)
 
-      // Note: streamChat is not part of ModelAdapter interface
-      // This template demonstrates concept but needs proper adapter implementation
-      // For now, use the chat method for non-streaming responses
-      const response = await adapter.chat(
-        [
-          { role: 'system', content: systemPrompt },
-          ...(context.length > 0
-            ? [
-                {
-                  role: 'system' as const,
-                  content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
-                },
-              ]
-            : []),
-          ...messages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-          { role: 'user' as const, content },
-        ],
-        {
-          provider: model.provider,
-          model: selectedModel,
-          maxTokens,
-          temperature: 0.7,
+      // Determine which adapter to use
+      const model = availableModels.find((m) => m.id === selectedModel)
+      const adapter = model
+        ? adapters[model.provider as keyof typeof adapters]
+        : null
+
+      if (!adapter || !model) {
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          chatId,
+          role: 'assistant',
+          content: 'No AI model available. Please configure API keys.',
+          status: 'error',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: { error: true },
         }
-      )
+        addOperationMessage(errorMessage)
+        setIsLoading(false)
+        return
+      }
 
-      // Update message with response
-      const responseContent = typeof response.content === 'string' 
-        ? response.content 
-        : response.content.map(p => p.type === 'text' ? p.text : '').join('')
+      try {
+        // Create assistant message for streaming
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          chatId,
+          role: 'assistant',
+          content: '',
+          status: 'streaming',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
 
-      // Add assistant message using operations hook
-      addOperationMessage({
-        chatId,
-        role: 'assistant',
-        content: responseContent,
-        timestamp: new Date().getTime(),
-      })
-    } catch (error) {
-      console.error('AI Assistant error:', error)
-      addOperationMessage({
-        chatId,
-        role: 'assistant',
-        content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        timestamp: new Date().getTime(),
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }, [messages, addOperationMessage, selectedModel, availableModels, adapters, systemPrompt, context, maxTokens])
+        addOperationMessage(assistantMessage)
+
+        // Note: streamChat is not part of ModelAdapter interface
+        // This template demonstrates concept but needs proper adapter implementation
+        // For now, use the chat method for non-streaming responses
+        const response = await adapter.chat(
+          [
+            { role: 'system', content: systemPrompt },
+            ...(context.length > 0
+              ? [
+                  {
+                    role: 'system' as const,
+                    content: `Context:\n${context.map((c) => `- ${c.name}: ${c.content}`).join('\n')}`,
+                  },
+                ]
+              : []),
+            ...messages.map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+            { role: 'user' as const, content },
+          ],
+          {
+            provider: model.provider,
+            model: selectedModel,
+            maxTokens,
+            temperature: 0.7,
+          }
+        )
+
+        // Update message with response
+        const responseContent =
+          typeof response.content === 'string'
+            ? response.content
+            : response.content
+                .map((p) => (p.type === 'text' ? p.text : ''))
+                .join('')
+
+        // Add assistant message using operations hook
+        addOperationMessage({
+          chatId,
+          role: 'assistant',
+          content: responseContent,
+          timestamp: new Date().getTime(),
+        })
+      } catch (error) {
+        console.error('AI Assistant error:', error)
+        addOperationMessage({
+          chatId,
+          role: 'assistant',
+          content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          timestamp: new Date().getTime(),
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [
+      messages,
+      addOperationMessage,
+      selectedModel,
+      availableModels,
+      adapters,
+      systemPrompt,
+      context,
+      maxTokens,
+    ]
+  )
 
   const handleContextAdd = (newContexts: Context[]) => {
     setContext((prev) => [...prev, ...newContexts])
@@ -403,7 +443,9 @@ export function AIAssistantTemplate({
   }
 
   const handleExport = () => {
-    const text = messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n\n')
+    const text = messages
+      .map((m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
+      .join('\n\n')
     const blob = new Blob([text], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -416,12 +458,12 @@ export function AIAssistantTemplate({
   const handleClear = () => {
     if (confirm('Clear all messages? This cannot be undone.')) {
       // Clear all messages using operations hook
-      operationMessages.forEach(msg => deleteMessage(msg.id))
+      operationMessages.forEach((msg) => deleteMessage(msg.id))
     }
   }
 
   return (
-    <ThemeProvider defaultTheme={oceanTheme}>
+    <ThemeProvider defaultTheme={aiAssistantTheme}>
       <div className="ai-assistant-template flex h-full w-full bg-background">
         {/* Context Sidebar */}
         {enableContextManagement && (
@@ -441,8 +483,18 @@ export function AIAssistantTemplate({
           <div className="flex items-center justify-between gap-4 border-b bg-card/80 backdrop-blur-sm px-4 py-3 sm:px-6">
             <div className="flex items-center gap-3 flex-1">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary shadow-[0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-primary/20">
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
               </div>
               <ModelSelector
@@ -483,7 +535,7 @@ export function AIAssistantTemplate({
               onDeleteMessage={handleDelete}
               showHeader
               sessionTitle="AI Assistant"
-              sessionSubtitle={`Using ${availableModels.find(m => m.id === selectedModel)?.name || 'AI Model'}`}
+              sessionSubtitle={`Using ${availableModels.find((m) => m.id === selectedModel)?.name || 'AI Model'}`}
               showMessageCount
               onExport={handleExport}
               onClear={handleClear}

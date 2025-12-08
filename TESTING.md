@@ -1,10 +1,9 @@
 # Testing Infrastructure
 
-This document provides comprehensive documentation for the testing infrastructure in the Clarity Chat monorepo.
+This document provides comprehensive documentation for the testing infrastructure in the Clarity
+Chat monorepo.
 
-**Last Updated**: 2025-12-08
-**Test Framework**: Vitest 4.x
-**Build Tool**: Vite 7.x
+**Last Updated**: 2025-12-08 **Test Framework**: Vitest 4.x **Build Tool**: Vite 7.x
 
 ---
 
@@ -64,13 +63,13 @@ pnpm --filter @clarity-chat/react test -- --grep "ChatMessage"
 
 ### Test Framework Stack
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| Vitest | 4.x | Test runner and assertion library |
-| Vite | 7.x | Build tool and dev server |
-| @testing-library/react | 16.x | React component testing utilities |
-| happy-dom | Latest | DOM environment for React tests |
-| @testing-library/user-event | Latest | User interaction simulation |
+| Tool                        | Version | Purpose                           |
+| --------------------------- | ------- | --------------------------------- |
+| Vitest                      | 4.x     | Test runner and assertion library |
+| Vite                        | 7.x     | Build tool and dev server         |
+| @testing-library/react      | 16.x    | React component testing utilities |
+| happy-dom                   | Latest  | DOM environment for React tests   |
+| @testing-library/user-event | Latest  | User interaction simulation       |
 
 ### Directory Structure
 
@@ -109,11 +108,14 @@ A shared Vitest configuration is available at `packages/testing-utils/vitest.sha
 import { sharedConfig } from '@clarity-chat/testing-utils/vitest.shared'
 import { defineConfig, mergeConfig } from 'vitest/config'
 
-export default mergeConfig(sharedConfig, defineConfig({
-  test: {
-    // package-specific overrides
-  }
-}))
+export default mergeConfig(
+  sharedConfig,
+  defineConfig({
+    test: {
+      // package-specific overrides
+    },
+  })
+)
 ```
 
 ---
@@ -122,8 +124,8 @@ export default mergeConfig(sharedConfig, defineConfig({
 
 ### @clarity-chat/react
 
-**Environment**: `happy-dom` (optimized for React)
-**Pool**: `vmThreads` with `singleThread: true` (memory-optimized)
+**Environment**: `happy-dom` (optimized for React) **Pool**: `vmThreads` with `singleThread: true`
+(memory-optimized)
 
 ```typescript
 // vitest.config.mts
@@ -147,14 +149,14 @@ export default mergeConfig(sharedConfig, defineConfig({
 ```
 
 **Key Features**:
+
 - Memory-optimized for large test suites
 - Uses `vmThreads` pool with single thread to prevent OOM crashes
 - Extended timeout (20s) for complex component tests
 
 ### @clarity-chat/primitives
 
-**Environment**: `happy-dom`
-**Pool**: `threads` with limited parallelism
+**Environment**: `happy-dom` **Pool**: `threads` with limited parallelism
 
 ```typescript
 // vitest.config.mts
@@ -176,8 +178,7 @@ export default mergeConfig(sharedConfig, defineConfig({
 
 ### @clarity-chat/memory
 
-**Environment**: `node`
-**Pool**: `threads`
+**Environment**: `node` **Pool**: `threads`
 
 ```typescript
 // vitest.config.ts
@@ -207,8 +208,7 @@ export default mergeConfig(sharedConfig, defineConfig({
 
 ### @clarity-chat/errors
 
-**Environment**: `node`
-**Pool**: `threads`
+**Environment**: `node` **Pool**: `threads`
 
 Standard Node.js test configuration for error handling utilities.
 
@@ -218,12 +218,12 @@ Standard Node.js test configuration for error handling utilities.
 
 ### File Naming
 
-| Pattern | Description |
-|---------|-------------|
-| `*.test.ts` | Unit tests |
-| `*.test.tsx` | React component tests |
-| `*.spec.ts` | Integration/specification tests |
-| `*.e2e.ts` | End-to-end tests (Playwright) |
+| Pattern      | Description                     |
+| ------------ | ------------------------------- |
+| `*.test.ts`  | Unit tests                      |
+| `*.test.tsx` | React component tests           |
+| `*.spec.ts`  | Integration/specification tests |
+| `*.e2e.ts`   | End-to-end tests (Playwright)   |
 
 ### Test Structure
 
@@ -281,18 +281,21 @@ describe('MyComponent', () => {
 ### Testing Best Practices
 
 1. **Use `userEvent` over `fireEvent`**: More realistic user interactions
+
    ```typescript
    const user = userEvent.setup()
    await user.click(button)
    ```
 
 2. **Query by role/label first**: Better accessibility testing
+
    ```typescript
    screen.getByRole('button', { name: 'Submit' })
    screen.getByLabelText('Email')
    ```
 
 3. **Test behavior, not implementation**: Focus on what users see
+
    ```typescript
    // Good
    expect(screen.getByText('Success')).toBeInTheDocument()
@@ -408,6 +411,7 @@ vi.mock('@radix-ui/react-dialog', async () => {
 **Symptoms**: Tests crash with `ERR_WORKER_OUT_OF_MEMORY`
 
 **Solutions**:
+
 1. Use `vmThreads` pool with `singleThread: true`
 2. Reduce `maxConcurrency`
 3. Add `memoryLimit` to pool options
@@ -434,6 +438,7 @@ vi.mock('@radix-ui/react-dialog', async () => {
 **Symptoms**: Tests fail with timeout errors
 
 **Solutions**:
+
 1. Increase `testTimeout` in config
 2. Check for unresolved promises
 3. Ensure async operations are properly awaited
@@ -452,6 +457,7 @@ vi.mock('@radix-ui/react-dialog', async () => {
 **Symptoms**: `Cannot find module` errors
 
 **Solutions**:
+
 1. Check path aliases in `resolve.alias`
 2. Ensure dependencies are installed
 3. Verify import paths
@@ -471,6 +477,7 @@ vi.mock('@radix-ui/react-dialog', async () => {
 **Symptoms**: Components not rendering in portal, animations not completing
 
 **Solutions**:
+
 1. Use `open` prop for controlled components in tests
 2. Wait for async operations with `waitFor`
 3. Mock animation frames if needed
@@ -489,6 +496,7 @@ render(
 **Symptoms**: Coverage reports empty or missing
 
 **Solutions**:
+
 1. Run with `--coverage` flag
 2. Check `coverage.exclude` patterns
 3. Ensure source maps are enabled
@@ -503,18 +511,19 @@ pnpm --filter @clarity-chat/react test -- --coverage
 
 ### Vitest Global Options
 
-| Option | Description | Recommended |
-|--------|-------------|-------------|
-| `globals` | Enable global test functions | `true` |
-| `environment` | Test environment | `happy-dom` for React, `node` otherwise |
-| `setupFiles` | Files to run before tests | `['./vitest.setup.ts']` |
-| `pool` | Worker pool type | `vmThreads` for memory-heavy, `threads` otherwise |
-| `isolate` | Isolate tests in separate contexts | `true` for stability, `false` for speed |
-| `testTimeout` | Test timeout in ms | `15000` - `20000` |
+| Option        | Description                        | Recommended                                       |
+| ------------- | ---------------------------------- | ------------------------------------------------- |
+| `globals`     | Enable global test functions       | `true`                                            |
+| `environment` | Test environment                   | `happy-dom` for React, `node` otherwise           |
+| `setupFiles`  | Files to run before tests          | `['./vitest.setup.ts']`                           |
+| `pool`        | Worker pool type                   | `vmThreads` for memory-heavy, `threads` otherwise |
+| `isolate`     | Isolate tests in separate contexts | `true` for stability, `false` for speed           |
+| `testTimeout` | Test timeout in ms                 | `15000` - `20000`                                 |
 
 ### Pool Options
 
 #### threads (default)
+
 ```typescript
 poolOptions: {
   threads: {
@@ -526,6 +535,7 @@ poolOptions: {
 ```
 
 #### vmThreads (memory-optimized)
+
 ```typescript
 poolOptions: {
   vmThreads: {
@@ -568,4 +578,5 @@ coverage: {
 
 ---
 
-**Need help?** Check the [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup or open an issue on GitHub.
+**Need help?** Check the [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup or open an issue
+on GitHub.

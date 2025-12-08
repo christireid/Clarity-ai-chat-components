@@ -1,6 +1,6 @@
 /**
  * Theme Builder Utilities
- * 
+ *
  * Utilities for creating, customizing, and exporting themes
  */
 
@@ -11,22 +11,40 @@ import type {
   ExportableTheme,
   ThemeMetadata,
 } from './theme-config'
-import { themes, themeMetadata, type ThemePresetName } from './presets'
+import {
+  modernThemes,
+  modernThemeMetadata,
+  type ModernThemePresetName,
+} from './modern-presets'
+
+// Re-export for backwards compatibility
+export type ThemePresetName = ModernThemePresetName
+
+// Use modern themes as the themes registry
+const themes = modernThemes
+const themeMetadata = modernThemeMetadata
 
 /**
  * Deep merge two objects
  */
-function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
+function deepMerge<T extends Record<string, any>>(
+  target: T,
+  source: Partial<T>
+): T {
   const result = { ...target }
-  
+
   for (const key in source) {
-    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+    if (
+      source[key] &&
+      typeof source[key] === 'object' &&
+      !Array.isArray(source[key])
+    ) {
       result[key] = deepMerge(result[key] || ({} as any), source[key]!)
     } else if (source[key] !== undefined) {
       result[key] = source[key]!
     }
   }
-  
+
   return result
 }
 
@@ -38,11 +56,11 @@ export function createTheme(
   customizations?: PartialThemeConfig
 ): CompleteThemeConfig {
   const base = typeof baseTheme === 'string' ? themes[baseTheme] : baseTheme
-  
+
   if (!customizations) {
     return base
   }
-  
+
   return deepMerge(base, customizations as Partial<CompleteThemeConfig>)
 }
 
@@ -50,7 +68,7 @@ export function createTheme(
  * Convert HSL string to RGB object
  */
 function hslToRgb(hsl: string): { r: number; g: number; b: number } {
-  const [hVal, sVal, lVal] = hsl.split(' ').map(v => parseFloat(v))
+  const [hVal, sVal, lVal] = hsl.split(' ').map((v) => parseFloat(v))
   const h = hVal ?? 0
   const s = sVal ?? 0
   const l = lVal ?? 0
@@ -61,22 +79,36 @@ function hslToRgb(hsl: string): { r: number; g: number; b: number } {
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
   const m = lNorm - c / 2
 
-  let r = 0, g = 0, b = 0
+  let r = 0,
+    g = 0,
+    b = 0
 
   if (h >= 0 && h < 60) {
-    r = c; g = x; b = 0
+    r = c
+    g = x
+    b = 0
   } else if (h >= 60 && h < 120) {
-    r = x; g = c; b = 0
+    r = x
+    g = c
+    b = 0
   } else if (h >= 120 && h < 180) {
-    r = 0; g = c; b = x
+    r = 0
+    g = c
+    b = x
   } else if (h >= 180 && h < 240) {
-    r = 0; g = x; b = c
+    r = 0
+    g = x
+    b = c
   } else if (h >= 240 && h < 300) {
-    r = x; g = 0; b = c
+    r = x
+    g = 0
+    b = c
   } else if (h >= 300 && h < 360) {
-    r = c; g = 0; b = x
+    r = c
+    g = 0
+    b = x
   }
-  
+
   return {
     r: Math.round((r + m) * 255),
     g: Math.round((g + m) * 255),
@@ -91,27 +123,34 @@ function rgbToHsl(r: number, g: number, b: number): string {
   r /= 255
   g /= 255
   b /= 255
-  
+
   const max = Math.max(r, g, b)
   const min = Math.min(r, g, b)
-  let h = 0, s = 0
+  let h = 0,
+    s = 0
   const l = (max + min) / 2
-  
+
   if (max !== min) {
     const d = max - min
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
-    
+
     switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break
-      case g: h = ((b - r) / d + 2) / 6; break
-      case b: h = ((r - g) / d + 4) / 6; break
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6
+        break
+      case g:
+        h = ((b - r) / d + 2) / 6
+        break
+      case b:
+        h = ((r - g) / d + 4) / 6
+        break
     }
   }
-  
+
   h = Math.round(h * 360)
   s = Math.round(s * 100)
   const lRounded = Math.round(l * 100)
-  
+
   return `${h} ${s}% ${lRounded}%`
 }
 
@@ -121,11 +160,11 @@ function rgbToHsl(r: number, g: number, b: number): string {
 export function hexToHsl(hex: string): string {
   // Remove # if present
   hex = hex.replace('#', '')
-  
+
   const r = parseInt(hex.substring(0, 2), 16)
   const g = parseInt(hex.substring(2, 4), 16)
   const b = parseInt(hex.substring(4, 6), 16)
-  
+
   return rgbToHsl(r, g, b)
 }
 
@@ -134,17 +173,22 @@ export function hexToHsl(hex: string): string {
  */
 export function hslToHex(hsl: string): string {
   const { r, g, b } = hslToRgb(hsl)
-  return '#' + [r, g, b].map(x => {
-    const hex = x.toString(16)
-    return hex.length === 1 ? '0' + hex : hex
-  }).join('')
+  return (
+    '#' +
+    [r, g, b]
+      .map((x) => {
+        const hex = x.toString(16)
+        return hex.length === 1 ? '0' + hex : hex
+      })
+      .join('')
+  )
 }
 
 /**
  * Lighten or darken an HSL color
  */
 export function adjustLightness(hsl: string, amount: number): string {
-  const [h, s, l] = hsl.split(' ').map(v => parseFloat(v))
+  const [h, s, l] = hsl.split(' ').map((v) => parseFloat(v))
   const newL = Math.max(0, Math.min(100, (l ?? 0) + amount))
   return `${h ?? 0} ${s ?? 0}% ${newL}%`
 }
@@ -155,20 +199,20 @@ export function adjustLightness(hsl: string, amount: number): string {
 export function getContrastRatio(hsl1: string, hsl2: string): number {
   const rgb1 = hslToRgb(hsl1)
   const rgb2 = hslToRgb(hsl2)
-  
+
   const luminance = (rgb: { r: number; g: number; b: number }) => {
-    const [r, g, b] = [rgb.r, rgb.g, rgb.b].map(v => {
+    const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((v) => {
       v /= 255
       return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
     })
     return 0.2126 * (r ?? 0) + 0.7152 * (g ?? 0) + 0.0722 * (b ?? 0)
   }
-  
+
   const l1 = luminance(rgb1)
   const l2 = luminance(rgb2)
   const lighter = Math.max(l1, l2)
   const darker = Math.min(l1, l2)
-  
+
   return (lighter + 0.05) / (darker + 0.05)
 }
 
@@ -182,14 +226,14 @@ export function checkContrast(
   isLargeText: boolean = false
 ): { passes: boolean; ratio: number; required: number } {
   const ratio = getContrastRatio(foreground, background)
-  
+
   let required: number
   if (level === 'AAA') {
     required = isLargeText ? 4.5 : 7
   } else {
     required = isLargeText ? 3 : 4.5
   }
-  
+
   return {
     passes: ratio >= required,
     ratio,
@@ -209,13 +253,13 @@ export function generateForegroundColor(
   if (whiteContrast >= targetRatio) {
     return '0 0% 100%'
   }
-  
+
   // Try black
   const blackContrast = getContrastRatio('0 0% 0%', background)
   if (blackContrast >= targetRatio) {
     return '0 0% 0%'
   }
-  
+
   // Return whichever has better contrast
   return whiteContrast > blackContrast ? '0 0% 100%' : '0 0% 0%'
 }
@@ -224,15 +268,18 @@ export function generateForegroundColor(
  * Generate a complete color palette from a primary color
  */
 export function generatePalette(primaryColor: string): Partial<ColorConfig> {
-  const primaryHsl = typeof primaryColor === 'string' && primaryColor.startsWith('#') 
-    ? hexToHsl(primaryColor) 
-    : primaryColor
-  
+  const primaryHsl =
+    typeof primaryColor === 'string' && primaryColor.startsWith('#')
+      ? hexToHsl(primaryColor)
+      : primaryColor
+
   return {
     primary: primaryHsl,
     primaryForeground: generateForegroundColor(primaryHsl),
     secondary: adjustLightness(primaryHsl, 30),
-    secondaryForeground: generateForegroundColor(adjustLightness(primaryHsl, 30)),
+    secondaryForeground: generateForegroundColor(
+      adjustLightness(primaryHsl, 30)
+    ),
     accent: adjustLightness(primaryHsl, 20),
     accentForeground: generateForegroundColor(adjustLightness(primaryHsl, 20)),
   }
@@ -243,29 +290,29 @@ export function generatePalette(primaryColor: string): Partial<ColorConfig> {
  */
 export function applyThemeToDocument(theme: CompleteThemeConfig): void {
   const root = document.documentElement
-  
+
   // Remove old mode classes
   root.classList.remove('light', 'dark')
-  
+
   // Add new mode class
   root.classList.add(theme.mode)
-  
+
   // Apply color CSS variables
   Object.entries(theme.colors).forEach(([key, value]) => {
     const cssVarName = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`
     root.style.setProperty(cssVarName, value)
   })
-  
+
   // Apply border radius
   if (theme.borders.radius.lg) {
     root.style.setProperty('--radius', theme.borders.radius.lg)
   }
-  
+
   // Apply font family
   if (theme.typography.fontFamily.sans) {
     root.style.setProperty('--font-sans', theme.typography.fontFamily.sans)
   }
-  
+
   if (theme.typography.fontFamily.mono) {
     root.style.setProperty('--font-mono', theme.typography.fontFamily.mono)
   }
@@ -289,7 +336,7 @@ export function exportTheme(
       backgroundColor: hslToHex(theme.colors.background),
     },
   }
-  
+
   return {
     metadata: { ...defaultMetadata, ...metadata },
     config: theme,
@@ -332,7 +379,7 @@ export function getAllThemes(): Array<{
   metadata: ThemeMetadata
   config: CompleteThemeConfig
 }> {
-  return getThemeNames().map(name => ({
+  return getThemeNames().map((name) => ({
     name,
     metadata: getThemeMetadata(name),
     config: getTheme(name),
@@ -342,9 +389,7 @@ export function getAllThemes(): Array<{
 /**
  * Create theme variants (light/dark) from a base theme
  */
-export function createThemeVariants(
-  baseTheme: CompleteThemeConfig
-): {
+export function createThemeVariants(baseTheme: CompleteThemeConfig): {
   light: CompleteThemeConfig
   dark: CompleteThemeConfig
 } {
@@ -354,7 +399,7 @@ export function createThemeVariants(
     name: `${baseTheme.name}-light`,
     mode: 'light',
   }
-  
+
   // For dark variant, invert lightness values
   const dark: CompleteThemeConfig = {
     ...baseTheme,
@@ -367,14 +412,17 @@ export function createThemeVariants(
       card: adjustLightness(baseTheme.colors.card, -90),
       cardForeground: adjustLightness(baseTheme.colors.cardForeground, 85),
       popover: adjustLightness(baseTheme.colors.popover, -90),
-      popoverForeground: adjustLightness(baseTheme.colors.popoverForeground, 85),
+      popoverForeground: adjustLightness(
+        baseTheme.colors.popoverForeground,
+        85
+      ),
       muted: adjustLightness(baseTheme.colors.muted, -75),
       mutedForeground: adjustLightness(baseTheme.colors.mutedForeground, 20),
       border: adjustLightness(baseTheme.colors.border, -70),
       input: adjustLightness(baseTheme.colors.input, -70),
     },
   }
-  
+
   return { light, dark }
 }
 
@@ -388,21 +436,37 @@ export function validateTheme(theme: CompleteThemeConfig): {
 } {
   const errors: string[] = []
   const warnings: string[] = []
-  
+
   // Check required fields
   if (!theme.name) errors.push('Theme name is required')
   if (!theme.mode) errors.push('Theme mode is required')
   if (!theme.colors) errors.push('Colors configuration is required')
-  
+
   // Check contrast ratios (WCAG AA minimum)
   if (theme.colors) {
     const contrastChecks = [
-      { fg: theme.colors.foreground, bg: theme.colors.background, name: 'foreground/background' },
-      { fg: theme.colors.primaryForeground, bg: theme.colors.primary, name: 'primary' },
-      { fg: theme.colors.secondaryForeground, bg: theme.colors.secondary, name: 'secondary' },
-      { fg: theme.colors.destructiveForeground, bg: theme.colors.destructive, name: 'destructive' },
+      {
+        fg: theme.colors.foreground,
+        bg: theme.colors.background,
+        name: 'foreground/background',
+      },
+      {
+        fg: theme.colors.primaryForeground,
+        bg: theme.colors.primary,
+        name: 'primary',
+      },
+      {
+        fg: theme.colors.secondaryForeground,
+        bg: theme.colors.secondary,
+        name: 'secondary',
+      },
+      {
+        fg: theme.colors.destructiveForeground,
+        bg: theme.colors.destructive,
+        name: 'destructive',
+      },
     ]
-    
+
     contrastChecks.forEach(({ fg, bg, name }) => {
       const result = checkContrast(fg, bg, 'AA')
       if (!result.passes) {
@@ -412,7 +476,7 @@ export function validateTheme(theme: CompleteThemeConfig): {
       }
     })
   }
-  
+
   return {
     valid: errors.length === 0,
     errors,
