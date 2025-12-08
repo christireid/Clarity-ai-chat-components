@@ -1,0 +1,767 @@
+# Clarity Chat - Complete Documentation
+
+> Enterprise-grade React component library for building beautiful, accessible AI chat interfaces. Features 70+ production-ready components, 35+ custom hooks, 11+ themes, and comprehensive token optimization. Built with TypeScript, React 19, and Tailwind CSS.
+
+This document contains the complete documentation for Clarity Chat in a single file optimized for AI consumption.
+
+---
+
+## Installation
+
+Install Clarity Chat using your preferred package manager:
+
+```bash
+# npm
+npm install @clarity-chat/react
+
+# pnpm
+pnpm add @clarity-chat/react
+
+# yarn
+yarn add @clarity-chat/react
+```
+
+### Peer Dependencies
+
+Clarity Chat requires the following peer dependencies:
+
+- React 19+
+- React DOM 19+
+
+### Basic Setup
+
+```tsx
+import { ClarityChat } from '@clarity-chat/react';
+import '@clarity-chat/react/dist/styles/index.css';
+
+function App() {
+  return <ClarityChat />;
+}
+```
+
+---
+
+## Core Components
+
+### ClarityChat
+
+All-in-one chat component with built-in state management, streaming support, and token optimization.
+
+```tsx
+import { ClarityChat } from '@clarity-chat/react';
+
+function Chat() {
+  const handleSend = async (message: string) => {
+    // Send message to your API
+  };
+
+  return (
+    <ClarityChat
+      messages={messages}
+      onSend={handleSend}
+      isLoading={isLoading}
+      theme="default"
+      enableStreaming
+      enableVoice
+      enableFileUpload
+    />
+  );
+}
+```
+
+**Props:**
+- `messages` (Message[], required): Array of chat messages
+- `onSend` ((message: string) => void, required): Send message callback
+- `isLoading` (boolean): Shows loading/thinking indicator
+- `theme` (Theme): Visual theme
+- `enableStreaming` (boolean): Enable real-time streaming
+- `enableVoice` (boolean): Enable voice input
+- `enableFileUpload` (boolean): Enable file attachments
+
+### ChatWindow
+
+Container component for chat interfaces with responsive design.
+
+```tsx
+import { ChatWindow, MessageList, ChatInput } from '@clarity-chat/react';
+
+function CustomChat() {
+  return (
+    <ChatWindow height="600px" showHeader>
+      <MessageList messages={messages} />
+      <ChatInput onSend={handleSend} />
+    </ChatWindow>
+  );
+}
+```
+
+### MessageList
+
+Display chat messages with virtualization support for large conversations.
+
+```tsx
+import { MessageList } from '@clarity-chat/react';
+
+<MessageList
+  messages={messages}
+  virtualize={messages.length > 100}
+  groupByDate
+  showTimestamps
+  onMessageAction={(action, message) => {
+    // Handle copy, edit, delete
+  }}
+/>
+```
+
+### ChatInput
+
+User input with text, voice, attachments, and keyboard shortcuts.
+
+```tsx
+import { ChatInput } from '@clarity-chat/react';
+
+<ChatInput
+  onSend={handleSend}
+  placeholder="Ask me anything..."
+  enableVoice
+  enableAttachments
+  maxLength={4000}
+/>
+```
+
+### StreamingMessage
+
+Real-time streaming response display with typing animation.
+
+```tsx
+import { StreamingMessage } from '@clarity-chat/react';
+
+<StreamingMessage
+  content={streamingContent}
+  isStreaming={isLoading}
+  typingSpeed={50}
+  showCursor
+/>
+```
+
+### ThinkingIndicator
+
+Animated loading indicator for AI processing states.
+
+```tsx
+import { ThinkingIndicator } from '@clarity-chat/react';
+
+{isLoading && <ThinkingIndicator variant="dots" />}
+```
+
+**Variants:** 'dots' | 'pulse' | 'wave' | 'spinner'
+
+### TokenCounter
+
+Real-time token usage display with cost estimation.
+
+```tsx
+import { TokenCounter } from '@clarity-chat/react';
+
+<TokenCounter
+  tokens={currentTokens}
+  limit={128000}
+  showCost
+  model="gpt-4"
+  variant="detailed"
+/>
+```
+
+---
+
+## Core Hooks
+
+### useChat
+
+Primary hook for managing chat state, messages, and operations.
+
+```tsx
+import { useChat } from '@clarity-chat/react';
+
+function ChatComponent() {
+  const {
+    messages,
+    input,
+    setInput,
+    handleSubmit,
+    isLoading,
+    error,
+    append,
+    reload,
+    stop,
+  } = useChat({
+    api: '/api/chat',
+    initialMessages: [],
+    onError: (error) => console.error(error),
+  });
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <MessageList messages={messages} />
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Type a message..."
+      />
+      <button disabled={isLoading}>Send</button>
+    </form>
+  );
+}
+```
+
+**Returns:**
+- `messages`: Array of chat messages
+- `input`: Current input value
+- `setInput`: Set input value
+- `handleSubmit`: Form submit handler
+- `isLoading`: Loading state
+- `error`: Current error
+- `append`: Append a message
+- `reload`: Regenerate last response
+- `stop`: Stop streaming
+
+### useStreaming
+
+Handle streaming responses with SSE or WebSocket.
+
+```tsx
+import { useStreaming } from '@clarity-chat/react';
+
+function StreamingChat() {
+  const { data, isStreaming, start, stop, error } = useStreaming({
+    url: '/api/chat/stream',
+    protocol: 'sse',
+    onChunk: (chunk) => console.log('Received:', chunk),
+    onComplete: (fullText) => console.log('Complete:', fullText),
+  });
+
+  return (
+    <div>
+      <p>{data}</p>
+      <button onClick={() => start({ message: 'Hello' })}>Start</button>
+      {isStreaming && <button onClick={stop}>Stop</button>}
+    </div>
+  );
+}
+```
+
+### useTokenTracker
+
+Track token usage and estimate API costs.
+
+```tsx
+import { useTokenTracker } from '@clarity-chat/react';
+
+function TokenDisplay({ messages }) {
+  const {
+    totalTokens,
+    inputTokens,
+    outputTokens,
+    estimatedCost,
+    percentUsed,
+    isOverLimit,
+    countTokens,
+  } = useTokenTracker({
+    model: 'gpt-4',
+    messages,
+    limit: 128000,
+  });
+
+  return (
+    <div>
+      <span>{totalTokens} tokens ({percentUsed}%)</span>
+      <span>Est. cost: ${estimatedCost.toFixed(4)}</span>
+      {isOverLimit && <span>Warning: Over limit!</span>}
+    </div>
+  );
+}
+```
+
+### useTokenOptimization
+
+Optimize token usage through compression and pruning.
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/react';
+
+function OptimizedChat({ messages }) {
+  const {
+    optimizedMessages,
+    originalTokens,
+    optimizedTokens,
+    savings,
+    optimize,
+  } = useTokenOptimization({
+    messages,
+    targetTokens: 4000,
+    strategy: 'compress', // 'prune' | 'compress' | 'summarize'
+  });
+
+  return (
+    <div>
+      <span>Saved {savings}% tokens</span>
+      <MessageList messages={optimizedMessages} />
+    </div>
+  );
+}
+```
+
+### useAutoScroll
+
+Auto-scroll to new messages with user pause detection.
+
+```tsx
+import { useAutoScroll } from '@clarity-chat/react';
+
+function ChatMessages({ messages }) {
+  const containerRef = useRef(null);
+  const { isAtBottom, scrollToBottom, isPaused } = useAutoScroll({
+    ref: containerRef,
+    dependency: [messages],
+    behavior: 'smooth',
+  });
+
+  return (
+    <div ref={containerRef}>
+      {messages.map((m) => <Message key={m.id} {...m} />)}
+      {!isAtBottom && (
+        <button onClick={scrollToBottom}>New messages</button>
+      )}
+    </div>
+  );
+}
+```
+
+### useClipboard
+
+Copy text to clipboard with success feedback.
+
+```tsx
+import { useClipboard } from '@clarity-chat/react';
+
+function CopyButton({ text }) {
+  const { copy, copied, error } = useClipboard({ timeout: 2000 });
+
+  return (
+    <button onClick={() => copy(text)}>
+      {copied ? 'Copied!' : 'Copy'}
+    </button>
+  );
+}
+```
+
+### useKeyboardShortcuts
+
+Register and manage keyboard shortcuts.
+
+```tsx
+import { useKeyboardShortcuts } from '@clarity-chat/react';
+
+function Chat() {
+  useKeyboardShortcuts([
+    { key: 'Enter', modifiers: ['cmd'], action: handleSubmit },
+    { key: 'Escape', action: clearInput },
+    { key: 'k', modifiers: ['cmd'], action: openSearch },
+  ]);
+
+  return <ChatComponent />;
+}
+```
+
+### useVoiceInput
+
+Speech recognition for voice-to-text input.
+
+```tsx
+import { useVoiceInput } from '@clarity-chat/react';
+
+function VoiceChat() {
+  const {
+    isListening,
+    transcript,
+    startListening,
+    stopListening,
+    isSupported,
+  } = useVoiceInput({
+    language: 'en-US',
+    continuous: false,
+  });
+
+  if (!isSupported) return <p>Voice not supported</p>;
+
+  return (
+    <div>
+      <button onClick={isListening ? stopListening : startListening}>
+        {isListening ? 'Stop' : 'Start'} Recording
+      </button>
+      <p>{transcript}</p>
+    </div>
+  );
+}
+```
+
+### useErrorRecovery
+
+Automatic error recovery with retry and backoff.
+
+```tsx
+import { useErrorRecovery } from '@clarity-chat/react';
+
+function ReliableChat() {
+  const {
+    error,
+    retryCount,
+    isRetrying,
+    retry,
+    reset,
+    execute,
+  } = useErrorRecovery({
+    maxRetries: 3,
+    backoffMs: 1000,
+  });
+
+  const sendMessage = async (text) => {
+    await execute(() => api.sendMessage(text));
+  };
+
+  return (
+    <div>
+      {error && (
+        <div>
+          <p>Error: {error.message}</p>
+          <button onClick={retry}>Retry</button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+## Utility Hooks
+
+### useDebounce
+
+```tsx
+const debouncedValue = useDebounce(value, 300);
+```
+
+### useLocalStorage
+
+```tsx
+const [value, setValue] = useLocalStorage('key', defaultValue);
+```
+
+### useMediaQuery
+
+```tsx
+const isMobile = useMediaQuery('(max-width: 768px)');
+```
+
+---
+
+## Theming
+
+Clarity Chat includes 11+ pre-built themes:
+
+- default
+- dark
+- light
+- ocean
+- forest
+- sunset
+- midnight
+- rose
+- lavender
+- mint
+- slate
+
+```tsx
+import { ClarityChat, ThemeSelector } from '@clarity-chat/react';
+
+function ThemedChat() {
+  const [theme, setTheme] = useState('default');
+
+  return (
+    <div>
+      <ThemeSelector value={theme} onChange={setTheme} />
+      <ClarityChat theme={theme} />
+    </div>
+  );
+}
+```
+
+### Custom Themes
+
+```tsx
+import { createTheme } from '@clarity-chat/react';
+
+const customTheme = createTheme({
+  colors: {
+    primary: '#6366f1',
+    secondary: '#8b5cf6',
+    background: '#ffffff',
+    foreground: '#1f2937',
+  },
+  fonts: {
+    sans: 'Inter, sans-serif',
+    mono: 'JetBrains Mono, monospace',
+  },
+  borderRadius: '0.5rem',
+});
+```
+
+---
+
+## Token Optimization
+
+Reduce API costs by up to 70% with Clarity Chat's token optimization features.
+
+### Context Compression
+
+```tsx
+import { useTokenOptimization } from '@clarity-chat/react';
+
+const { optimizedMessages, savings } = useTokenOptimization({
+  messages,
+  strategy: 'compress',
+  targetTokens: 4000,
+});
+```
+
+### Smart Caching
+
+```tsx
+import { useSmartCache } from '@clarity-chat/react';
+
+const { getCachedResponse, cacheResponse } = useSmartCache({
+  maxSize: 100,
+  ttl: 3600000, // 1 hour
+});
+```
+
+### Token Budget Monitor
+
+```tsx
+import { TokenOptimizationDashboard } from '@clarity-chat/react';
+
+<TokenOptimizationDashboard
+  currentTokens={tokens}
+  limit={128000}
+  onOptimize={handleOptimize}
+/>
+```
+
+---
+
+## Streaming Integration
+
+### Server-Sent Events (SSE)
+
+```tsx
+import { useStreamingSSE } from '@clarity-chat/react';
+
+const { data, isStreaming, start } = useStreamingSSE({
+  url: '/api/chat/stream',
+});
+```
+
+### WebSocket
+
+```tsx
+import { useStreamingWebSocket } from '@clarity-chat/react';
+
+const { data, isConnected, send } = useStreamingWebSocket({
+  url: 'wss://api.example.com/chat',
+});
+```
+
+---
+
+## Accessibility
+
+Clarity Chat is WCAG 2.1 AAA compliant with:
+
+- Full keyboard navigation
+- Screen reader optimized
+- High contrast support
+- Reduced motion support
+- Focus management
+- ARIA labels and roles
+
+```tsx
+import { useKeyboardShortcuts, useReducedMotion } from '@clarity-chat/react';
+
+function AccessibleChat() {
+  const prefersReducedMotion = useReducedMotion();
+
+  return (
+    <ClarityChat
+      animationDuration={prefersReducedMotion ? 0 : 300}
+    />
+  );
+}
+```
+
+---
+
+## Enterprise Features
+
+### Single Sign-On (SSO)
+
+```tsx
+import { SSOConfigWizard } from '@clarity-chat/react';
+
+<SSOConfigWizard
+  providers={['okta', 'azure-ad', 'auth0']}
+  onComplete={handleSSOSetup}
+/>
+```
+
+### Multi-Tenancy
+
+```tsx
+import { AuthTenantDashboard } from '@clarity-chat/react';
+
+<AuthTenantDashboard
+  tenants={tenants}
+  onTenantSelect={setCurrentTenant}
+/>
+```
+
+### API Token Management
+
+```tsx
+import { ApiTokenManager } from '@clarity-chat/react';
+
+<ApiTokenManager
+  tokens={apiTokens}
+  onCreateToken={createToken}
+  onRevokeToken={revokeToken}
+/>
+```
+
+---
+
+## Common Patterns
+
+### Basic Chat with OpenAI
+
+```tsx
+import { ClarityChat, useChat } from '@clarity-chat/react';
+
+function OpenAIChat() {
+  const { messages, input, setInput, handleSubmit, isLoading } = useChat({
+    api: '/api/chat',
+  });
+
+  return (
+    <ClarityChat
+      messages={messages}
+      input={input}
+      onInputChange={setInput}
+      onSubmit={handleSubmit}
+      isLoading={isLoading}
+    />
+  );
+}
+
+// API Route (Next.js)
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages,
+    stream: true,
+  });
+
+  return new Response(response.body);
+}
+```
+
+### RAG Document Chat
+
+```tsx
+import { ClarityChat, useChat, useRAGPipeline } from '@clarity-chat/react';
+
+function RAGChat() {
+  const { search, results } = useRAGPipeline({
+    vectorStore: pinecone,
+    embeddings: openai,
+  });
+
+  const { messages, handleSubmit } = useChat({
+    onSend: async (message) => {
+      const context = await search(message);
+      // Include context in API call
+    },
+  });
+
+  return <ClarityChat messages={messages} onSubmit={handleSubmit} />;
+}
+```
+
+### Agent with Tools
+
+```tsx
+import { ClarityChat, useAgent } from '@clarity-chat/react';
+
+function AgentChat() {
+  const { messages, executeTask } = useAgent({
+    tools: [
+      { name: 'search', fn: searchWeb },
+      { name: 'calculate', fn: calculator },
+      { name: 'weather', fn: getWeather },
+    ],
+  });
+
+  return <ClarityChat messages={messages} />;
+}
+```
+
+---
+
+## API Reference
+
+Full API documentation available at: https://clarity-chat.dev/reference
+
+- Components: https://clarity-chat.dev/reference/components
+- Hooks: https://clarity-chat.dev/reference/hooks
+- Utilities: https://clarity-chat.dev/reference/utilities
+- Types: https://clarity-chat.dev/reference/api/types
+
+---
+
+## Migration from Vercel AI SDK
+
+```tsx
+// Before (Vercel AI SDK)
+import { useChat } from 'ai/react';
+
+// After (Clarity Chat)
+import { useChat } from '@clarity-chat/react';
+
+// API is largely compatible
+const { messages, input, handleSubmit } = useChat();
+```
+
+See full migration guide: https://clarity-chat.dev/learn/migration/from-vercel-ai-sdk
+
+---
+
+## Support
+
+- Documentation: https://clarity-chat.dev
+- GitHub: https://github.com/christireid/Clarity-ai-chat-components
+- Discord: https://discord.gg/clarity-chat
+
+---
+
+*Last updated: December 2025 | Version: 0.1.0*

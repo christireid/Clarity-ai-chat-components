@@ -6,7 +6,7 @@ export const alt =
   'Clarity Chat - Production-ready React components for AI chat interfaces'
 export const size = {
   width: 1200,
-  height: 630,
+  height: 600, // Twitter prefers slightly shorter
 }
 export const contentType = 'image/png'
 
@@ -43,7 +43,7 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '40px 80px',
+          padding: '32px 60px',
           position: 'relative',
         }}
       >
@@ -53,17 +53,17 @@ export default async function Image() {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            padding: '8px 20px',
+            padding: '6px 16px',
             borderRadius: '9999px',
             backgroundColor: 'rgba(99, 102, 241, 0.2)',
             border: '1px solid rgba(99, 102, 241, 0.3)',
-            marginBottom: '32px',
+            marginBottom: '24px',
           }}
         >
           <span
             style={{
               color: '#a5b4fc',
-              fontSize: '18px',
+              fontSize: '16px',
               fontWeight: 500,
             }}
           >
@@ -74,28 +74,28 @@ export default async function Image() {
         {/* Title */}
         <h1
           style={{
-            fontSize: '72px',
+            fontSize: '60px',
             fontWeight: 800,
             background: 'linear-gradient(to right, #ffffff, #e2e8f0)',
             backgroundClip: 'text',
             color: 'transparent',
             textAlign: 'center',
             lineHeight: 1.1,
-            marginBottom: '16px',
+            marginBottom: '12px',
           }}
         >
           Chat UIs That Work,
         </h1>
         <h1
           style={{
-            fontSize: '72px',
+            fontSize: '60px',
             fontWeight: 800,
             background: 'linear-gradient(to right, #6366f1, #8b5cf6)',
             backgroundClip: 'text',
             color: 'transparent',
             textAlign: 'center',
             lineHeight: 1.1,
-            marginBottom: '32px',
+            marginBottom: '24px',
           }}
         >
           Out of the Box
@@ -104,16 +104,15 @@ export default async function Image() {
         {/* Description */}
         <p
           style={{
-            fontSize: '24px',
+            fontSize: '20px',
             color: '#94a3b8',
             textAlign: 'center',
-            maxWidth: '800px',
-            lineHeight: 1.5,
-            marginBottom: '48px',
+            maxWidth: '700px',
+            lineHeight: 1.4,
+            marginBottom: '32px',
           }}
         >
-          Production-ready React components for building AI chat interfaces.
-          Streaming, accessibility, and theming built-in.
+          Production-ready React components for AI chat interfaces.
         </p>
 
         {/* Install command */}
@@ -121,18 +120,18 @@ export default async function Image() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '12px',
-            padding: '16px 24px',
-            borderRadius: '12px',
+            gap: '10px',
+            padding: '12px 20px',
+            borderRadius: '10px',
             backgroundColor: 'rgba(30, 41, 59, 0.8)',
             border: '1px solid rgba(99, 102, 241, 0.3)',
           }}
         >
-          <span style={{ color: '#6366f1', fontSize: '20px' }}>$</span>
+          <span style={{ color: '#6366f1', fontSize: '18px' }}>$</span>
           <span
             style={{
               color: '#e2e8f0',
-              fontSize: '20px',
+              fontSize: '18px',
               fontFamily: 'monospace',
             }}
           >
@@ -145,23 +144,23 @@ export default async function Image() {
       <div
         style={{
           position: 'absolute',
-          bottom: '40px',
+          bottom: '32px',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px',
+          gap: '10px',
         }}
       >
         <span
           style={{
-            fontSize: '24px',
+            fontSize: '20px',
             fontWeight: 700,
             color: '#ffffff',
           }}
         >
           Clarity Chat
         </span>
-        <span style={{ color: '#475569', fontSize: '24px' }}>|</span>
-        <span style={{ color: '#64748b', fontSize: '20px' }}>
+        <span style={{ color: '#475569', fontSize: '20px' }}>|</span>
+        <span style={{ color: '#64748b', fontSize: '18px' }}>
           clarity-chat.dev
         </span>
       </div>
