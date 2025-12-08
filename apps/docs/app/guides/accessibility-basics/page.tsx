@@ -8,7 +8,8 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Accessibility Basics - Clarity Chat Components',
-  description: 'Learn accessibility best practices for chat applications including ARIA patterns, keyboard navigation, and screen reader support.',
+  description:
+    'Learn accessibility best practices for chat applications including ARIA patterns, keyboard navigation, and screen reader support.',
 }
 
 export default function AccessibilityBasicsPage() {
@@ -18,7 +19,9 @@ export default function AccessibilityBasicsPage() {
         <span className="docs-badge">Guide</span>
         <h1>Accessibility Basics</h1>
         <p className="docs-lead">
-          Learn accessibility best practices for chat applications including ARIA patterns, keyboard navigation, screen reader support, and WCAG compliance.
+          Learn accessibility best practices for chat applications including
+          ARIA patterns, keyboard navigation, screen reader support, and WCAG
+          compliance.
         </p>
       </div>
 
@@ -34,9 +37,7 @@ export default function AccessibilityBasicsPage() {
 
       <section className="docs-section">
         <h2>ARIA Patterns</h2>
-        <p>
-          Use proper ARIA attributes:
-        </p>
+        <p>Use proper ARIA attributes:</p>
         <CodePlayground
           initialCode={`import { ChatWindow } from '@clarity-chat/react'
 
@@ -67,9 +68,7 @@ function AccessibleChat() {
 
       <section className="docs-section">
         <h2>Keyboard Navigation</h2>
-        <p>
-          Ensure keyboard accessibility:
-        </p>
+        <p>Ensure keyboard accessibility:</p>
         <CodePlayground
           initialCode={`import { ChatWindow, ChatInput } from '@clarity-chat/react'
 import { useKeyboardShortcuts } from '@clarity-chat/react'
@@ -105,9 +104,7 @@ function KeyboardAccessibleChat() {
 
       <section className="docs-section">
         <h2>Screen Reader Support</h2>
-        <p>
-          Optimize for screen readers:
-        </p>
+        <p>Optimize for screen readers:</p>
         <CodePlayground
           initialCode={`import { ChatWindow } from '@clarity-chat/react'
 
@@ -143,9 +140,7 @@ function announceToScreenReader(text: string) {
 
       <section className="docs-section">
         <h2>Focus Management</h2>
-        <p>
-          Manage focus properly:
-        </p>
+        <p>Manage focus properly:</p>
         <CodePlayground
           initialCode={`import { ChatWindow, ChatInput } from '@clarity-chat/react'
 import { useEffect, useRef } from 'react'
@@ -186,9 +181,7 @@ function FocusManagedChat() {
 
       <section className="docs-section">
         <h2>WCAG Compliance</h2>
-        <p>
-          Ensure WCAG 2.1 AA compliance:
-        </p>
+        <p>Ensure WCAG 2.1 AA compliance:</p>
         <CodePlayground
           initialCode={`import { ChatWindow } from '@clarity-chat/react'
 
@@ -209,12 +202,12 @@ function WCAGCompliantChat() {
       />
       
       {/* Focus indicators */}
-      <style>{`
+      <style>{\`
         *:focus-visible {
           outline: 2px solid #3b82f6;
           outline-offset: 2px;
         }
-      `}</style>
+      \`}</style>
     </div>
   )
 }`}
@@ -237,9 +230,20 @@ function WCAGCompliantChat() {
       <section className="docs-section">
         <h2>Related</h2>
         <ul>
-          <li><a href="/reference/components/chat-window">ChatWindow</a> - Main chat component</li>
-          <li><a href="/reference/components/chat-input">ChatInput</a> - Chat input component</li>
-          <li><a href="/reference/hooks/use-keyboard-shortcuts">useKeyboardShortcuts</a> - Keyboard shortcuts hook</li>
+          <li>
+            <a href="/reference/components/chat-window">ChatWindow</a> - Main
+            chat component
+          </li>
+          <li>
+            <a href="/reference/components/chat-input">ChatInput</a> - Chat
+            input component
+          </li>
+          <li>
+            <a href="/reference/hooks/use-keyboard-shortcuts">
+              useKeyboardShortcuts
+            </a>{' '}
+            - Keyboard shortcuts hook
+          </li>
         </ul>
       </section>
     </div>

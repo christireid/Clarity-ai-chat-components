@@ -1,12 +1,11 @@
 /**
  * Theme Builder
- * 
+ *
  * Interactive tool for customizing the design system theme
  */
 
 import { useState } from 'react'
 import { Button, Card, Input } from '@clarity-chat/primitives'
-import { HexColorPicker } from 'react-colorful'
 
 interface ThemeConfig {
   colors: {
@@ -80,10 +79,12 @@ const presets = {
 
 export default function App() {
   const [theme, setTheme] = useState<ThemeConfig>(defaultTheme)
-  const [activeColorPicker, setActiveColorPicker] = useState<string | null>(null)
+  const [activeColorPicker, setActiveColorPicker] = useState<string | null>(
+    null
+  )
 
   const updateColor = (key: keyof ThemeConfig['colors'], value: string) => {
-    setTheme(prev => ({
+    setTheme((prev) => ({
       ...prev,
       colors: {
         ...prev.colors,
@@ -111,7 +112,7 @@ export default function App() {
   --border: ${theme.colors.border};
   --radius: ${theme.radius};
 }`
-    
+
     navigator.clipboard.writeText(css)
     alert('Theme CSS copied to clipboard!')
   }
@@ -168,11 +169,20 @@ export default function App() {
                       <div className="flex gap-2">
                         <Input
                           value={value}
-                          onChange={(e) => updateColor(key as keyof ThemeConfig['colors'], e.target.value)}
+                          onChange={(e) =>
+                            updateColor(
+                              key as keyof ThemeConfig['colors'],
+                              e.target.value
+                            )
+                          }
                           className="font-mono text-xs"
                         />
                         <button
-                          onClick={() => setActiveColorPicker(activeColorPicker === key ? null : key)}
+                          onClick={() =>
+                            setActiveColorPicker(
+                              activeColorPicker === key ? null : key
+                            )
+                          }
                           className="w-10 h-10 rounded-md ring-1 ring-border/50 shadow-xs"
                           style={{ backgroundColor: `hsl(${value})` }}
                         />
@@ -187,7 +197,9 @@ export default function App() {
                 <h3 className="font-semibold mb-4">Border Radius</h3>
                 <Input
                   value={theme.radius}
-                  onChange={(e) => setTheme(prev => ({ ...prev, radius: e.target.value }))}
+                  onChange={(e) =>
+                    setTheme((prev) => ({ ...prev, radius: e.target.value }))
+                  }
                   placeholder="0.5rem"
                 />
               </Card>
@@ -197,7 +209,11 @@ export default function App() {
                 <Button onClick={applyTheme} className="flex-1">
                   Apply Theme
                 </Button>
-                <Button onClick={exportTheme} variant="outline" className="flex-1">
+                <Button
+                  onClick={exportTheme}
+                  variant="outline"
+                  className="flex-1"
+                >
                   Export
                 </Button>
               </div>
@@ -208,7 +224,9 @@ export default function App() {
           <main className="col-span-12 lg:col-span-8">
             <div className="space-y-8">
               <div>
-                <h2 className="text-xl font-semibold mb-4">Component Preview</h2>
+                <h2 className="text-xl font-semibold mb-4">
+                  Component Preview
+                </h2>
                 <p className="text-sm text-muted-foreground mb-6">
                   See how your theme looks across different components
                 </p>
@@ -236,7 +254,10 @@ export default function App() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Focused Input</label>
-                    <Input placeholder="Focused state" className="ring-[3px] ring-ring/50" />
+                    <Input
+                      placeholder="Focused state"
+                      className="ring-[3px] ring-ring/50"
+                    />
                   </div>
                 </div>
               </Card>
@@ -275,7 +296,9 @@ export default function App() {
                   <h3 className="text-2xl font-bold">Heading 3</h3>
                   <h4 className="text-xl font-semibold">Heading 4</h4>
                   <p className="text-base">Body text - Regular paragraph</p>
-                  <p className="text-sm text-muted-foreground">Small text - Muted foreground</p>
+                  <p className="text-sm text-muted-foreground">
+                    Small text - Muted foreground
+                  </p>
                 </div>
               </Card>
 

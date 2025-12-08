@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { 
-  ModelSelector, 
-  StreamingMessage,
-} from '@clarity-chat/react'
-import { useStreamingChat, type ChatMessage, type ModelMetadata } from '@/hooks/useStreamingChat'
+import { ModelSelector, StreamingMessage } from '@clarity-chat/react'
+import {
+  useStreamingChat,
+  type ChatMessage,
+  type ModelMetadata,
+} from '@/hooks/useStreamingChat'
 
 // Stub for missing exports
 const allModels: ModelMetadata[] = []
@@ -25,17 +26,13 @@ export default function Home() {
   const [leftError, setLeftError] = useState<string | null>(null)
   const [rightError, setRightError] = useState<string | null>(null)
 
-  if (typeof window === 'undefined') {
-    return null
-  }
-
   const getModelMetadata = (modelId: string): ModelMetadata | undefined => {
-    return allModels.find(m => m.id === modelId)
+    return allModels.find((m) => m.id === modelId)
   }
 
   // Create streaming hooks for both models
   const leftStream = useStreamingChat({
-    onToken: (token) => setLeftResponse(prev => prev + token),
+    onToken: (token) => setLeftResponse((prev) => prev + token),
     onComplete: (data) => {
       setLeftCost(data.cost)
       setLeftTime(data.duration)
@@ -46,11 +43,11 @@ export default function Home() {
       console.error('Left model error:', error)
       setLeftError(error)
       setIsLeftStreaming(false)
-    }
+    },
   })
 
   const rightStream = useStreamingChat({
-    onToken: (token) => setRightResponse(prev => prev + token),
+    onToken: (token) => setRightResponse((prev) => prev + token),
     onComplete: (data) => {
       setRightCost(data.cost)
       setRightTime(data.duration)
@@ -61,7 +58,7 @@ export default function Home() {
       console.error('Right model error:', error)
       setRightError(error)
       setIsRightStreaming(false)
-    }
+    },
   })
 
   const handleCompare = async () => {
@@ -82,8 +79,8 @@ export default function Home() {
     const messages: ChatMessage[] = [
       {
         role: 'user',
-        content: prompt
-      }
+        content: prompt,
+      },
     ]
 
     // Get model metadata
@@ -104,14 +101,14 @@ export default function Home() {
           provider: leftModelData.provider as any,
           model: leftModel,
           temperature: 0.7,
-          maxTokens: 1000
+          maxTokens: 1000,
         }),
         rightStream.stream(messages, {
           provider: rightModelData.provider as any,
           model: rightModel,
           temperature: 0.7,
-          maxTokens: 1000
-        })
+          maxTokens: 1000,
+        }),
       ])
     } catch (error) {
       console.error('Comparison error:', error)
@@ -165,7 +162,10 @@ export default function Home() {
       <main className="container mx-auto px-4 py-8">
         {/* Prompt Input */}
         <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <label htmlFor="prompt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="prompt"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Enter your prompt
           </label>
           <textarea
@@ -186,7 +186,9 @@ export default function Home() {
               disabled={!prompt.trim() || isLeftStreaming || isRightStreaming}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
             >
-              {isLeftStreaming || isRightStreaming ? 'Comparing...' : 'Compare Models'}
+              {isLeftStreaming || isRightStreaming
+                ? 'Comparing...'
+                : 'Compare Models'}
             </button>
           </div>
         </div>
@@ -221,11 +223,15 @@ export default function Home() {
                     <div className="flex items-center gap-4">
                       <div>
                         <span className="font-medium">Time:</span>{' '}
-                        <span className="text-gray-900 dark:text-white">{(leftTime / 1000).toFixed(2)}s</span>
+                        <span className="text-gray-900 dark:text-white">
+                          {(leftTime / 1000).toFixed(2)}s
+                        </span>
                       </div>
                       <div>
                         <span className="font-medium">Cost:</span>{' '}
-                        <span className="text-gray-900 dark:text-white">${leftCost.toFixed(4)}</span>
+                        <span className="text-gray-900 dark:text-white">
+                          ${leftCost.toFixed(4)}
+                        </span>
                       </div>
                     </div>
                     <div className="text-xs text-gray-500">
@@ -239,12 +245,26 @@ export default function Home() {
             {leftError && (
               <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                 <div className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <div>
-                    <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Error</h4>
-                    <p className="text-sm text-red-700 dark:text-red-400">{leftError}</p>
+                    <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">
+                      Error
+                    </h4>
+                    <p className="text-sm text-red-700 dark:text-red-400">
+                      {leftError}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -285,11 +305,15 @@ export default function Home() {
                     <div className="flex items-center gap-4">
                       <div>
                         <span className="font-medium">Time:</span>{' '}
-                        <span className="text-gray-900 dark:text-white">{(rightTime / 1000).toFixed(2)}s</span>
+                        <span className="text-gray-900 dark:text-white">
+                          {(rightTime / 1000).toFixed(2)}s
+                        </span>
                       </div>
                       <div>
                         <span className="font-medium">Cost:</span>{' '}
-                        <span className="text-gray-900 dark:text-white">${rightCost.toFixed(4)}</span>
+                        <span className="text-gray-900 dark:text-white">
+                          ${rightCost.toFixed(4)}
+                        </span>
                       </div>
                     </div>
                     <div className="text-xs text-gray-500">
@@ -303,12 +327,26 @@ export default function Home() {
             {rightError && (
               <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                 <div className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <div>
-                    <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Error</h4>
-                    <p className="text-sm text-red-700 dark:text-red-400">{rightError}</p>
+                    <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">
+                      Error
+                    </h4>
+                    <p className="text-sm text-red-700 dark:text-red-400">
+                      {rightError}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -323,42 +361,61 @@ export default function Home() {
         </div>
 
         {/* Comparison Summary */}
-        {leftResponse && rightResponse && !isLeftStreaming && !isRightStreaming && (
-          <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Comparison Summary
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Faster Model</div>
-                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                  {leftTime < rightTime ? getModelMetadata(leftModel)?.name : getModelMetadata(rightModel)?.name}
+        {leftResponse &&
+          rightResponse &&
+          !isLeftStreaming &&
+          !isRightStreaming && (
+            <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Comparison Summary
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                    Faster Model
+                  </div>
+                  <div className="text-xl font-bold text-gray-900 dark:text-white">
+                    {leftTime < rightTime
+                      ? getModelMetadata(leftModel)?.name
+                      : getModelMetadata(rightModel)?.name}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {Math.abs(leftTime - rightTime).toFixed(0)}ms difference
+                  </div>
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {Math.abs(leftTime - rightTime).toFixed(0)}ms difference
+                <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                    Lower Cost
+                  </div>
+                  <div className="text-xl font-bold text-gray-900 dark:text-white">
+                    {leftCost < rightCost
+                      ? getModelMetadata(leftModel)?.name
+                      : getModelMetadata(rightModel)?.name}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    ${Math.abs(leftCost - rightCost).toFixed(4)} saved
+                  </div>
                 </div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Lower Cost</div>
-                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                  {leftCost < rightCost ? getModelMetadata(leftModel)?.name : getModelMetadata(rightModel)?.name}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  ${Math.abs(leftCost - rightCost).toFixed(4)} saved
-                </div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Cost Difference</div>
-                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                  {Math.abs((leftCost - rightCost) / Math.max(leftCost, rightCost) * 100).toFixed(1)}%
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {leftCost < rightCost ? 'Model A cheaper' : 'Model B cheaper'}
+                <div className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                    Cost Difference
+                  </div>
+                  <div className="text-xl font-bold text-gray-900 dark:text-white">
+                    {Math.abs(
+                      ((leftCost - rightCost) / Math.max(leftCost, rightCost)) *
+                        100
+                    ).toFixed(1)}
+                    %
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {leftCost < rightCost
+                      ? 'Model A cheaper'
+                      : 'Model B cheaper'}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Feature Showcase */}
         <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-8">
@@ -371,7 +428,8 @@ export default function Home() {
                 Model-Agnostic
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Switch between OpenAI, Anthropic, and Google AI with just 3 lines of code
+                Switch between OpenAI, Anthropic, and Google AI with just 3
+                lines of code
               </p>
             </div>
             <div>
@@ -399,16 +457,26 @@ export default function Home() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
             <p>
-              Built with <span className="text-red-500">♥</span> using Clarity Chat
+              Built with <span className="text-red-500">♥</span> using Clarity
+              Chat
             </p>
             <div className="flex items-center gap-4">
-              <a href="/docs" className="hover:text-gray-900 dark:hover:text-white">
+              <a
+                href="/docs"
+                className="hover:text-gray-900 dark:hover:text-white"
+              >
                 Documentation
               </a>
-              <a href="/storybook" className="hover:text-gray-900 dark:hover:text-white">
+              <a
+                href="/storybook"
+                className="hover:text-gray-900 dark:hover:text-white"
+              >
                 Storybook
               </a>
-              <a href="https://github.com/yourusername/clarity-chat" className="hover:text-gray-900 dark:hover:text-white">
+              <a
+                href="https://github.com/yourusername/clarity-chat"
+                className="hover:text-gray-900 dark:hover:text-white"
+              >
                 GitHub
               </a>
             </div>

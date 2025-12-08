@@ -23,15 +23,20 @@ import { ResearchAgent } from '@/components/ResearchAgent'
 import { KnowledgeGraph } from '@/components/KnowledgeGraph'
 import { ResearchDashboard } from '@/components/ResearchDashboard'
 import { motion } from 'framer-motion'
-import { BookOpen, Brain, Database, Zap, BarChart3, Network } from 'lucide-react'
+import {
+  BookOpen,
+  Brain,
+  Database,
+  Zap,
+  BarChart3,
+  Network,
+} from 'lucide-react'
 
 export default function ResearchPlatform() {
-  const [activeView, setActiveView] = useState<'chat' | 'dashboard' | 'knowledge'>('chat')
+  const [activeView, setActiveView] = useState<
+    'chat' | 'dashboard' | 'knowledge'
+  >('chat')
   const [researchTopic, setResearchTopic] = useState('')
-  
-  if (typeof window === 'undefined') {
-    return null
-  }
 
   const {
     messages,
@@ -57,29 +62,32 @@ export default function ResearchPlatform() {
     },
   })
 
-  const handleResearch = useCallback(async (query: string) => {
-    setResearchTopic(query)
-    
-    // Add user message
-    addMessage({
-      id: `user-${Date.now()}`,
-      role: 'user',
-      content: query,
-      timestamp: new Date(),
-    })
+  const handleResearch = useCallback(
+    async (query: string) => {
+      setResearchTopic(query)
 
-    // Stream research response
-    await streamMessage({
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query,
-        agents: ['researcher', 'analyst', 'writer'],
-        enableRAG: true,
-        includeCitations: true,
-      }),
-    })
-  }, [addMessage, streamMessage])
+      // Add user message
+      addMessage({
+        id: `user-${Date.now()}`,
+        role: 'user',
+        content: query,
+        timestamp: new Date(),
+      })
+
+      // Stream research response
+      await streamMessage({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query,
+          agents: ['researcher', 'analyst', 'writer'],
+          enableRAG: true,
+          includeCitations: true,
+        }),
+      })
+    },
+    [addMessage, streamMessage]
+  )
 
   return (
     <ThemeProvider theme={themes.ocean}>
@@ -101,7 +109,7 @@ export default function ResearchPlatform() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setActiveView('chat')}
@@ -173,8 +181,16 @@ export default function ResearchPlatform() {
                       <Zap className="w-4 h-4 mr-2 text-purple-600" />
                       Active Agents
                     </h3>
-                    <ResearchAgent name="Researcher" status="active" progress={65} />
-                    <ResearchAgent name="Analyst" status="thinking" progress={40} />
+                    <ResearchAgent
+                      name="Researcher"
+                      status="active"
+                      progress={65}
+                    />
+                    <ResearchAgent
+                      name="Analyst"
+                      status="thinking"
+                      progress={40}
+                    />
                     <ResearchAgent name="Writer" status="idle" progress={0} />
                   </motion.div>
 
@@ -286,8 +302,16 @@ export default function ResearchPlatform() {
                   <div className="mt-6">
                     <MemoryInspector
                       memories={[
-                        { type: 'fact', content: 'Quantum supremacy achieved in 2019', confidence: 0.95 },
-                        { type: 'concept', content: 'RAG improves accuracy by 40%', confidence: 0.88 },
+                        {
+                          type: 'fact',
+                          content: 'Quantum supremacy achieved in 2019',
+                          confidence: 0.95,
+                        },
+                        {
+                          type: 'concept',
+                          content: 'RAG improves accuracy by 40%',
+                          confidence: 0.88,
+                        },
                       ]}
                     />
                   </div>
@@ -308,26 +332,30 @@ export default function ResearchPlatform() {
           )}
 
           {activeView === 'knowledge' && (
-              <div className="h-full p-6">
-                <KnowledgeGraph
-                  nodes={[
-                    { id: '1', label: 'Quantum Computing', type: 'concept' },
-                    { id: '2', label: 'Superposition', type: 'concept' },
-                    { id: '3', label: 'Entanglement', type: 'concept' },
-                  ]}
-                  edges={[
-                    { source: '1', target: '2', strength: 0.9 },
-                    { source: '3', target: '2', strength: 0.8 },
-                  ]}
-                />
-              </div>
+            <div className="h-full p-6">
+              <KnowledgeGraph
+                nodes={[
+                  { id: '1', label: 'Quantum Computing', type: 'concept' },
+                  { id: '2', label: 'Superposition', type: 'concept' },
+                  { id: '3', label: 'Entanglement', type: 'concept' },
+                ]}
+                edges={[
+                  { source: '1', target: '2', strength: 0.9 },
+                  { source: '3', target: '2', strength: 0.8 },
+                ]}
+              />
+            </div>
           )}
         </div>
 
         {/* Command Palette */}
         <CommandPalette
           commands={[
-            { id: 'new-research', label: 'New Research Topic', action: () => {} },
+            {
+              id: 'new-research',
+              label: 'New Research Topic',
+              action: () => {},
+            },
             { id: 'export', label: 'Export Findings', action: () => {} },
             { id: 'settings', label: 'Settings', action: () => {} },
           ]}

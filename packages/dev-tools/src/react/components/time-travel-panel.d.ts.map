@@ -1,1 +1,0 @@
-{"version":3,"file":"time-travel-panel.d.ts","sourceRoot":"","sources":["time-travel-panel.tsx"],"names":[],"mappings":"AAAA;;;GAGG;AAMH,OAAO,EAAE,kBAAkB,EAAE,MAAM,yBAAyB,CAAA;AAE5D,MAAM,WAAW,oBAAoB;IACnC,SAAS,CAAC,EAAE,MAAM,CAAA;IAClB,kBAAkB,CAAC,EAAE,kBAAkB,CAAA;CACxC;AAED;;;GAGG;AACH,wBAAgB,eAAe,CAAC,EAAE,SAAS,EAAE,kBAAkB,EAAE,EAAE,oBAAoB,2CA2FtF"}

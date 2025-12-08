@@ -1,6 +1,6 @@
 /**
  * useClarityChat Showcase Example
- * 
+ *
  * Comprehensive example demonstrating all features of useClarityChat:
  * - Basic chat functionality
  * - Memory integration with different strategies
@@ -10,11 +10,13 @@
  */
 
 import * as React from 'react'
-import { useClarityChat } from '@clarity-chat/react'
-import { ChatWindow } from '@clarity-chat/react'
-import { MemoryProvider } from '@clarity-chat/react/memory'
-import { convertCoreMessagesToMessages } from '@clarity-chat/react'
-import { Button, Card, Badge, Select } from '@clarity-chat/primitives'
+import {
+  useClarityChat,
+  ChatWindow,
+  MemoryProvider,
+  convertCoreMessagesToMessages,
+} from '@clarity-chat/react'
+import { Button, Card, Badge } from '@clarity-chat/primitives'
 
 const memoryConfig = {
   maxTokens: 10000,
@@ -93,31 +95,31 @@ function ChatShowcase() {
             <>
               <div className="flex items-center gap-2">
                 <label className="text-sm font-medium">Strategy:</label>
-                <Select
+                <select
                   value={memoryStrategy}
-                  onValueChange={(value: any) =>
-                    setMemoryStrategy(value as typeof memoryStrategy)
+                  onChange={(e) =>
+                    setMemoryStrategy(e.target.value as typeof memoryStrategy)
                   }
+                  className="rounded border px-2 py-1 text-sm"
                 >
                   <option value="sliding-window">Sliding Window</option>
                   <option value="semantic-chunks">Semantic Chunks</option>
                   <option value="vector-store">Vector Store</option>
-                </Select>
+                </select>
               </div>
             </>
           )}
 
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium">Transport:</label>
-            <Select
+            <select
               value={transport}
-              onValueChange={(value: any) =>
-                setTransport(value as typeof transport)
-              }
+              onChange={(e) => setTransport(e.target.value as typeof transport)}
+              className="rounded border px-2 py-1 text-sm"
             >
               <option value="sse">SSE</option>
               <option value="websocket">WebSocket</option>
-            </Select>
+            </select>
           </div>
 
           {hookMemoryEnabled && (

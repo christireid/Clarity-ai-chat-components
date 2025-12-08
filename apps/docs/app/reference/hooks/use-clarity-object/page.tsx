@@ -31,7 +31,11 @@ function ProductDemo() {
           onClick={() => run({ query: 'gaming laptops' })}
           disabled={isLoading}
           aria-busy={isLoading}
-          aria-label={isLoading ? 'Generating products...' : 'Generate gaming laptop products'}
+          aria-label={
+            isLoading
+              ? 'Generating products...'
+              : 'Generate gaming laptop products'
+          }
           className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
         >
           {isLoading ? 'Generating...' : 'Generate Products'}
@@ -40,7 +44,11 @@ function ProductDemo() {
           onClick={() => run({ query: 'smartphones' })}
           disabled={isLoading}
           aria-busy={isLoading}
-          aria-label={isLoading ? 'Generating products...' : 'Generate smartphone products'}
+          aria-label={
+            isLoading
+              ? 'Generating products...'
+              : 'Generate smartphone products'
+          }
           className="px-4 py-2 bg-secondary text-secondary-foreground rounded disabled:opacity-50"
         >
           Generate Smartphones
@@ -57,9 +65,14 @@ function ProductDemo() {
         <div className="space-y-4">
           <h3 className="font-semibold">Generated Products:</h3>
           {object.map((product) => (
-            <div key={`${product.name}-${product.price}`} className="p-4 border rounded-lg">
+            <div
+              key={`${product.name}-${product.price}`}
+              className="p-4 border rounded-lg"
+            >
               <h4 className="font-semibold">{product.name}</h4>
-              <p className="text-sm text-muted-foreground">{product.category}</p>
+              <p className="text-sm text-muted-foreground">
+                {product.category}
+              </p>
               <p className="mt-2">{product.description}</p>
               <p className="mt-2 font-semibold">${product.price}</p>
             </div>
@@ -180,8 +193,8 @@ export default function UseClarityObjectPage() {
         <h1>useClarityObject</h1>
 
         <p className="lead">
-          Hook for generating structured objects from AI models with full type safety. Supports
-          both streaming and non-streaming object generation.
+          Hook for generating structured objects from AI models with full type
+          safety. Supports both streaming and non-streaming object generation.
         </p>
 
         <Callout type="info">
@@ -191,8 +204,11 @@ export default function UseClarityObjectPage() {
             <strong>Domain:</strong> Tools & Agents
             <br />
             <br />
-            This is the recommended way to generate type-safe structured data from AI. For tool
-            calling, use <code>useClarityChatWithTools</code> instead.
+            This is the recommended way to generate type-safe structured data
+            from AI. For tool calling, use <code>
+              useClarityChatWithTools
+            </code>{' '}
+            instead.
           </p>
         </Callout>
 
@@ -201,7 +217,8 @@ export default function UseClarityObjectPage() {
         <section className="my-12">
           <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Experiment with the useClarityObject hook! Generate structured objects with type safety.
+            Experiment with the useClarityObject hook! Generate structured
+            objects with type safety.
           </p>
           <CodePlayground
             initialCode={`interface Product {
@@ -224,9 +241,9 @@ function Example() {
       {object && (
         <div>
           {object.map((product) => (
-            <div key={`${product.name}-${product.price}`}>
+            <div key={\`\${product.name}-\${product.price}\`}>
               <h3>{product.name}</h3>
-              <p>${product.price}</p>
+              <p>\${product.price}</p>
             </div>
           ))}
         </div>
@@ -249,7 +266,8 @@ render(<Example />)`}
         <h2 id="basic-usage">Basic Usage</h2>
 
         <p>
-          Define your object type and use the hook to generate structured data from AI:
+          Define your object type and use the hook to generate structured data
+          from AI:
         </p>
 
         <ComponentPreview
@@ -293,18 +311,19 @@ function ProductRecommendations() {
 
         <Callout type="warning">
           <p>
-            <strong>Note:</strong> The demo above uses a placeholder API endpoint. In a real
-            application, you'll need to implement the <code>/api/generate-products</code> route.
-            See the <a href="#examples">Next.js API Route Example</a> below for a complete
-            implementation.
+            <strong>Note:</strong> The demo above uses a placeholder API
+            endpoint. In a real application, you'll need to implement the{' '}
+            <code>/api/generate-products</code> route. See the{' '}
+            <a href="#examples">Next.js API Route Example</a> below for a
+            complete implementation.
           </p>
         </Callout>
 
         <h2 id="type-safety">Type Safety</h2>
 
         <p>
-          The hook is fully type-safe. TypeScript will enforce the structure of your generated
-          objects:
+          The hook is fully type-safe. TypeScript will enforce the structure of
+          your generated objects:
         </p>
 
         <EnhancedCodeBlock
@@ -359,7 +378,9 @@ function UserGenerator() {
 
         <h2 id="with-input">Dynamic Input</h2>
 
-        <p>Update input dynamically and run generation with different values:</p>
+        <p>
+          Update input dynamically and run generation with different values:
+        </p>
 
         <EnhancedCodeBlock
           code={`function DynamicGenerator() {
@@ -426,11 +447,17 @@ function UserGenerator() {
 
         <h2 id="options">Options</h2>
 
-        <PropsTable props={useClarityObjectOptionsProps} title="useClarityObject Options" />
+        <PropsTable
+          props={useClarityObjectOptionsProps}
+          title="useClarityObject Options"
+        />
 
         <h2 id="return-values">Return Values</h2>
 
-        <PropsTable props={useClarityObjectReturnProps} title="useClarityObject Return" />
+        <PropsTable
+          props={useClarityObjectReturnProps}
+          title="useClarityObject Return"
+        />
 
         <h2 id="examples">Examples</h2>
 
@@ -569,10 +596,14 @@ export async function POST(req: Request) {
 
         <Callout type="success">
           <p>
-            <strong>Great job!</strong> You now know how to use the useClarityObject hook for
-            type-safe structured output generation. Check out{' '}
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> for conversational AI,
-            or explore <a href="/reference/hooks/use-clarity-chat-with-tools">useClarityChatWithTools</a>{' '}
+            <strong>Great job!</strong> You now know how to use the
+            useClarityObject hook for type-safe structured output generation.
+            Check out{' '}
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> for
+            conversational AI, or explore{' '}
+            <a href="/reference/hooks/use-clarity-chat-with-tools">
+              useClarityChatWithTools
+            </a>{' '}
             for tool calling.
           </p>
         </Callout>
@@ -581,24 +612,24 @@ export async function POST(req: Request) {
 
         <ul>
           <li>
-            <strong>Define clear interfaces:</strong> Use TypeScript interfaces to define your
-            object structure clearly.
+            <strong>Define clear interfaces:</strong> Use TypeScript interfaces
+            to define your object structure clearly.
           </li>
           <li>
-            <strong>Handle errors:</strong> Always provide error handling with the <code>error</code>{' '}
-            state and <code>onError</code> callback.
+            <strong>Handle errors:</strong> Always provide error handling with
+            the <code>error</code> state and <code>onError</code> callback.
           </li>
           <li>
-            <strong>Use streaming for long operations:</strong> Enable streaming for better UX when
-            generation takes time.
+            <strong>Use streaming for long operations:</strong> Enable streaming
+            for better UX when generation takes time.
           </li>
           <li>
-            <strong>Validate responses:</strong> Consider adding runtime validation (e.g., with
-            Zod) for extra safety.
+            <strong>Validate responses:</strong> Consider adding runtime
+            validation (e.g., with Zod) for extra safety.
           </li>
           <li>
-            <strong>Reset state when needed:</strong> Use the <code>reset</code> function to clear
-            state between generations.
+            <strong>Reset state when needed:</strong> Use the <code>reset</code>{' '}
+            function to clear state between generations.
           </li>
         </ul>
 
@@ -606,13 +637,18 @@ export async function POST(req: Request) {
 
         <ul>
           <li>
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Conversational AI hook
+            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> -
+            Conversational AI hook
           </li>
           <li>
-            <a href="/reference/hooks/use-clarity-chat-with-tools">useClarityChatWithTools</a> - Tool calling hook
+            <a href="/reference/hooks/use-clarity-chat-with-tools">
+              useClarityChatWithTools
+            </a>{' '}
+            - Tool calling hook
           </li>
           <li>
-            <a href="/learn/guides/typescript">TypeScript Guide</a> - Type safety patterns
+            <a href="/learn/guides/typescript">TypeScript Guide</a> - Type
+            safety patterns
           </li>
         </ul>
 

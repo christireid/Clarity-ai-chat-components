@@ -1,6 +1,6 @@
 /**
  * Comprehensive Chat Demo
- * 
+ *
  * Demonstrates all modern AI chat features working together:
  * - Message operations (edit, regenerate, delete)
  * - Undo/Redo
@@ -29,7 +29,17 @@ import {
   useCommandPaletteCommands,
 } from '@clarity-chat/react'
 import '@clarity-chat/react/dist/styles/index.css'
-import type { Message, Citation } from '@clarity-chat/types'
+import type { Message } from '@clarity-chat/types'
+
+// Local Citation type since it's not exported from @clarity-chat/types
+interface Citation {
+  id: string
+  url: string
+  title: string
+  chunkText: string
+  metadata?: Record<string, unknown>
+  confidence?: number
+}
 import type { Conversation, Folder } from '@clarity-chat/react'
 
 function ComprehensiveChatApp() {
@@ -48,7 +58,9 @@ function ComprehensiveChatApp() {
       conversationCount: 0,
     },
   ])
-  const [activeFolderId, setActiveFolderId] = useState<string | null | undefined>(undefined)
+  const [activeFolderId, setActiveFolderId] = useState<
+    string | null | undefined
+  >(undefined)
 
   // Conversation management
   const [conversations, setConversations] = useState<Conversation[]>([
@@ -96,7 +108,8 @@ function ComprehensiveChatApp() {
         id: '1',
         chatId: activeConversationId,
         role: 'assistant',
-        content: 'Hello! I\'m your comprehensive AI assistant. Try:\n- Editing messages\n- Using Ctrl+K for commands\n- Searching messages\n- Exporting conversations',
+        content:
+          "Hello! I'm your comprehensive AI assistant. Try:\n- Editing messages\n- Using Ctrl+K for commands\n- Searching messages\n- Exporting conversations",
         timestamp: Date.now() - 5000,
       },
     ],
@@ -115,7 +128,7 @@ function ComprehensiveChatApp() {
   })
 
   // Convert to Message format
-  const messages: Message[] = operationMessages.map(msg => ({
+  const messages: Message[] = operationMessages.map((msg) => ({
     id: msg.id,
     chatId: activeConversationId,
     role: msg.role,
@@ -126,15 +139,10 @@ function ComprehensiveChatApp() {
   }))
 
   // Token tracking
-  const {
-    totalTokens,
-    addInputTokens,
-    addOutputTokens,
-    estimatedCost,
-    reset,
-  } = useTokenTracker({
-    modelName: 'gpt-4-turbo',
-  })
+  const { totalTokens, addInputTokens, addOutputTokens, estimatedCost, reset } =
+    useTokenTracker({
+      modelName: 'gpt-4-turbo',
+    })
 
   // Auto-scroll
   const { scrollRef } = useAutoScroll({
@@ -143,15 +151,105 @@ function ComprehensiveChatApp() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [showSidebar, setShowSidebar] = useState(true)
-  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
+    null
+  )
   const branches = getBranches()
 
   // Get selected message details
   const selectedMessage = selectedMessageId
-    ? messages.find(m => m.id === selectedMessageId)
+    ? messages.find((m) => m.id === selectedMessageId)
     : null
 
-  // Generate message operation commands
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Command palette (Ctrl+K or Cmd+K)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setShowCommandPalette(true)
+      }
+      // Undo (Ctrl+Z)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        if (canUndo) undo()
+      }
+      // Redo (Ctrl+Y or Ctrl+Shift+Z)
+      if (
+        ((e.ctrlKey || e.metaKey) && e.key === 'y') ||
+        ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey)
+      ) {
+        e.preventDefault()
+        if (canRedo) redo()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [canUndo, canRedo, undo, redo])
+
+  // Handle edit
+  const handleEdit = useCallback(
+    (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (!message) return
+
+      const newContent =
+        prompt('Edit message:', message.content) || message.content
+      if (newContent !== message.content) {
+        editMessage(messageId, newContent)
+      }
+      setSelectedMessageId(null)
+    },
+    [messages, editMessage]
+  )
+
+  // Handle regenerate
+  const handleRegenerate = useCallback(
+    async (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (!message || message.role !== 'assistant') return
+
+      setIsLoading(true)
+      try {
+        const index = messages.findIndex((m) => m.id === messageId)
+        const userMessage = messages[index - 1]
+
+        if (userMessage && userMessage.role === 'user') {
+          deleteMessage(messageId)
+          await new Promise((resolve) => setTimeout(resolve, 300))
+
+          const responseContent = `[Regenerated] You said: "${userMessage.content}". This is a regenerated response.`
+
+          addMessage({
+            chatId: activeConversationId,
+            role: 'assistant',
+            content: responseContent,
+          })
+
+          const tokens = Math.ceil(responseContent.length / 4)
+          addOutputTokens(tokens)
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [messages, deleteMessage, addMessage, activeConversationId, addOutputTokens]
+  )
+
+  // Handle delete
+  const handleDelete = useCallback(
+    (messageId: string) => {
+      if (confirm('Delete this message?')) {
+        deleteMessage(messageId)
+        if (selectedMessageId === messageId) {
+          setSelectedMessageId(null)
+        }
+      }
+    },
+    [deleteMessage, selectedMessageId]
+  )
+
+  // Generate message operation commands (after handlers are defined)
   const messageOperationCommands = useCommandPaletteCommands({
     selectedMessageId,
     isUserMessage: selectedMessage?.role === 'user',
@@ -165,7 +263,7 @@ function ComprehensiveChatApp() {
     canRedo,
   })
 
-  // Command palette commands
+  // Command palette commands (must be after messageOperationCommands)
   const commands = [
     {
       id: 'new-chat',
@@ -175,7 +273,7 @@ function ComprehensiveChatApp() {
       category: 'Conversation',
       onSelect: () => {
         const newId = Date.now().toString()
-        setConversations(prev => [
+        setConversations((prev) => [
           {
             id: newId,
             title: 'New Chat',
@@ -207,7 +305,6 @@ function ComprehensiveChatApp() {
       shortcut: ['Ctrl', 'K'],
       category: 'Navigation',
       onSelect: () => {
-        // Focus search input
         setShowCommandPalette(false)
       },
     },
@@ -240,154 +337,94 @@ function ComprehensiveChatApp() {
       shortcut: ['Ctrl', 'B'],
       category: 'View',
       onSelect: () => {
-        setShowSidebar(prev => !prev)
+        setShowSidebar((prev) => !prev)
         setShowCommandPalette(false)
       },
     },
-    // Add message operation commands
     ...messageOperationCommands,
   ]
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Command palette (Ctrl+K or Cmd+K)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault()
-        setShowCommandPalette(true)
-      }
-      // Undo (Ctrl+Z)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
-        e.preventDefault()
-        if (canUndo) undo()
-      }
-      // Redo (Ctrl+Y or Ctrl+Shift+Z)
-      if (
-        ((e.ctrlKey || e.metaKey) && e.key === 'y') ||
-        ((e.ctrlKey || e.metaKey) && e.key === 'z' && e.shiftKey)
-      ) {
-        e.preventDefault()
-        if (canRedo) redo()
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [canUndo, canRedo, undo, redo])
+  // Handle send
+  const handleSend = useCallback(
+    async (content: string) => {
+      addMessage({
+        chatId: activeConversationId,
+        role: 'user',
+        content,
+      })
 
-  // Handle edit
-  const handleEdit = useCallback((messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message) return
+      const userTokens = Math.ceil(content.length / 4)
+      addInputTokens(userTokens)
 
-    const newContent = prompt('Edit message:', message.content) || message.content
-    if (newContent !== message.content) {
-      editMessage(messageId, newContent)
-    }
-    setSelectedMessageId(null)
-  }, [messages, editMessage])
+      // Update conversation preview
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === activeConversationId
+            ? {
+                ...c,
+                preview: content.slice(0, 50),
+                messageCount: c.messageCount + 1,
+              }
+            : c
+        )
+      )
 
-  // Handle regenerate
-  const handleRegenerate = useCallback(async (messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message || message.role !== 'assistant') return
+      setIsLoading(true)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    setIsLoading(true)
-    try {
-      const index = messages.findIndex(m => m.id === messageId)
-      const userMessage = messages[index - 1]
+        const responseContent = `You said: "${content}". This is a comprehensive demo response.`
 
-      if (userMessage && userMessage.role === 'user') {
-        deleteMessage(messageId)
-        await new Promise(resolve => setTimeout(resolve, 300))
-
-        const responseContent = `[Regenerated] You said: "${userMessage.content}". This is a regenerated response.`
-        
         addMessage({
           chatId: activeConversationId,
           role: 'assistant',
           content: responseContent,
         })
 
-        const tokens = Math.ceil(responseContent.length / 4)
-        addOutputTokens(tokens)
+        const aiTokens = Math.ceil(responseContent.length / 4)
+        addOutputTokens(aiTokens)
+      } finally {
+        setIsLoading(false)
       }
-    } finally {
-      setIsLoading(false)
-    }
-  }, [messages, deleteMessage, addMessage, activeConversationId, addOutputTokens])
-
-  // Handle delete
-  const handleDelete = useCallback((messageId: string) => {
-    if (confirm('Delete this message?')) {
-      deleteMessage(messageId)
-      if (selectedMessageId === messageId) {
-        setSelectedMessageId(null)
-      }
-    }
-  }, [deleteMessage, selectedMessageId])
-
-  // Handle send
-  const handleSend = useCallback(async (content: string) => {
-    addMessage({
-      chatId: activeConversationId,
-      role: 'user',
-      content,
-    })
-
-    const userTokens = Math.ceil(content.length / 4)
-    addInputTokens(userTokens)
-
-    // Update conversation preview
-    setConversations(prev =>
-      prev.map(c =>
-        c.id === activeConversationId
-          ? { ...c, preview: content.slice(0, 50), messageCount: c.messageCount + 1 }
-          : c
-      )
-    )
-
-    setIsLoading(true)
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      const responseContent = `You said: "${content}". This is a comprehensive demo response.`
-      
-      addMessage({
-        chatId: activeConversationId,
-        role: 'assistant',
-        content: responseContent,
-      })
-
-      const aiTokens = Math.ceil(responseContent.length / 4)
-      addOutputTokens(aiTokens)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [addMessage, activeConversationId, addInputTokens, addOutputTokens])
+    },
+    [addMessage, activeConversationId, addInputTokens, addOutputTokens]
+  )
 
   // Handle export
-  const handleExport = useCallback(async (options: any) => {
-    const format = options.format || 'markdown'
-    let content = ''
+  const handleExport = useCallback(
+    async (options: any) => {
+      const format = options.format || 'markdown'
+      let content = ''
 
-    if (format === 'markdown') {
-      content = messages.map(m => `## ${m.role === 'user' ? 'User' : 'Assistant'}\n\n${m.content}`).join('\n\n---\n\n')
-    } else if (format === 'json') {
-      content = JSON.stringify(messages, null, 2)
-    } else {
-      content = messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n\n')
-    }
+      if (format === 'markdown') {
+        content = messages
+          .map(
+            (m) =>
+              `## ${m.role === 'user' ? 'User' : 'Assistant'}\n\n${m.content}`
+          )
+          .join('\n\n---\n\n')
+      } else if (format === 'json') {
+        content = JSON.stringify(messages, null, 2)
+      } else {
+        content = messages
+          .map(
+            (m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`
+          )
+          .join('\n\n')
+      }
 
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `conversation-${Date.now()}.${format}`
-    a.click()
-    URL.revokeObjectURL(url)
+      const blob = new Blob([content], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `conversation-${Date.now()}.${format}`
+      a.click()
+      URL.revokeObjectURL(url)
 
-    setShowExport(false)
-  }, [messages])
+      setShowExport(false)
+    },
+    [messages]
+  )
 
   // Sample citations (for demo)
   const sampleCitations: Citation[] = [
@@ -395,26 +432,31 @@ function ComprehensiveChatApp() {
       id: '1',
       url: 'https://example.com/doc1',
       title: 'Documentation Example',
-      chunkText: 'This is a sample citation from a document. It provides context for the AI response.',
+      chunkText:
+        'This is a sample citation from a document. It provides context for the AI response.',
       metadata: { source: 'docs', page: 1 },
       confidence: 0.95,
     },
   ]
 
   return (
-    <div style={{
-      display: 'flex',
-      height: '100vh',
-      background: 'white',
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        height: '100vh',
+        background: 'white',
+      }}
+    >
       {/* Sidebar */}
       {showSidebar && (
-        <div style={{
-          width: '300px',
-          borderRight: '1px solid #e5e7eb',
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
+        <div
+          style={{
+            width: '300px',
+            borderRight: '1px solid #e5e7eb',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
             <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>
               Conversations
@@ -428,24 +470,31 @@ function ComprehensiveChatApp() {
             onSelect={setActiveConversationId}
             onFolderSelect={setActiveFolderId}
             onDelete={(id) => {
-              setConversations(prev => prev.filter(c => c.id !== id))
+              setConversations((prev) => prev.filter((c) => c.id !== id))
               if (id === activeConversationId && conversations.length > 1) {
-                setActiveConversationId(conversations.find(c => c.id !== id)?.id || conversations[0].id)
+                setActiveConversationId(
+                  conversations.find((c) => c.id !== id)?.id ||
+                    conversations[0].id
+                )
               }
             }}
             onDeleteFolder={(folderId) => {
-              setFolders(prev => prev.filter(f => f.id !== folderId))
-              setConversations(prev =>
-                prev.map(c => c.folderId === folderId ? { ...c, folderId: undefined } : c)
+              setFolders((prev) => prev.filter((f) => f.id !== folderId))
+              setConversations((prev) =>
+                prev.map((c) =>
+                  c.folderId === folderId ? { ...c, folderId: undefined } : c
+                )
               )
               if (activeFolderId === folderId) {
                 setActiveFolderId(undefined)
               }
             }}
             onMoveToFolder={(conversationId, folderId) => {
-              setConversations(prev =>
-                prev.map(c =>
-                  c.id === conversationId ? { ...c, folderId: folderId || undefined } : c
+              setConversations((prev) =>
+                prev.map((c) =>
+                  c.id === conversationId
+                    ? { ...c, folderId: folderId || undefined }
+                    : c
                 )
               )
             }}
@@ -456,11 +505,11 @@ function ComprehensiveChatApp() {
                 createdAt: Date.now(),
                 conversationCount: 0,
               }
-              setFolders(prev => [...prev, newFolder])
+              setFolders((prev) => [...prev, newFolder])
             }}
             onTogglePin={(id) => {
-              setConversations(prev =>
-                prev.map(c =>
+              setConversations((prev) =>
+                prev.map((c) =>
                   c.id === id ? { ...c, isPinned: !c.isPinned } : c
                 )
               )
@@ -476,25 +525,40 @@ function ComprehensiveChatApp() {
       {/* Main Content */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
-        <div style={{
-          padding: '1rem',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}>
+        <div
+          style={{
+            padding: '1rem',
+            borderBottom: '1px solid #e5e7eb',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
           <div>
             <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>
               Comprehensive Chat Demo
             </h1>
-            <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: '#6b7280' }}>
+            <p
+              style={{
+                margin: '0.25rem 0 0',
+                fontSize: '0.875rem',
+                color: '#6b7280',
+              }}
+            >
               All features working together
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '1rem',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
             {/* Branch selector */}
             {branches.size > 1 && (
               <select
@@ -507,7 +571,7 @@ function ComprehensiveChatApp() {
                   fontSize: '0.875rem',
                 }}
               >
-                {Array.from(branches.keys()).map(branchId => (
+                {Array.from(branches.keys()).map((branchId: string) => (
                   <option key={branchId} value={branchId}>
                     Branch {branchId.slice(0, 8)}
                   </option>
@@ -569,10 +633,7 @@ function ComprehensiveChatApp() {
             </button>
 
             {/* Token counter */}
-            <TokenCounter
-              tokens={totalTokens}
-              cost={estimatedCost}
-            />
+            <TokenCounter tokens={totalTokens} cost={estimatedCost} />
 
             {/* Sidebar toggle */}
             <button
@@ -613,23 +674,36 @@ function ComprehensiveChatApp() {
           />
 
           {/* Citations (demo) */}
-          {messages.length > 0 && messages[messages.length - 1].role === 'assistant' && (
-            <div style={{ padding: '1rem', borderTop: '1px solid #e5e7eb' }}>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-                Sources:
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {sampleCitations.map(citation => (
-                  <CitationCard
-                    key={citation.id}
-                    citation={citation}
-                    showConfidence
-                    onSourceClick={(url) => window.open(url, '_blank')}
-                  />
-                ))}
+          {messages.length > 0 &&
+            messages[messages.length - 1].role === 'assistant' && (
+              <div style={{ padding: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                <h3
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    marginBottom: '0.5rem',
+                  }}
+                >
+                  Sources:
+                </h3>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                  }}
+                >
+                  {sampleCitations.map((citation) => (
+                    <CitationCard
+                      key={citation.id}
+                      citation={citation}
+                      showConfidence
+                      onSourceClick={(url) => window.open(url, '_blank')}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
 
@@ -658,13 +732,21 @@ export default function App() {
   return (
     <ErrorBoundary
       fallback={(error) => (
-        <div style={{
-          padding: '2rem',
-          textAlign: 'center',
-          maxWidth: '600px',
-          margin: '0 auto',
-        }}>
-          <h1 style={{ color: '#dc2626', fontSize: '1.5rem', marginBottom: '1rem' }}>
+        <div
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            maxWidth: '600px',
+            margin: '0 auto',
+          }}
+        >
+          <h1
+            style={{
+              color: '#dc2626',
+              fontSize: '1.5rem',
+              marginBottom: '1rem',
+            }}
+          >
             Something went wrong
           </h1>
           <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>

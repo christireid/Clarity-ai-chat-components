@@ -1,9 +1,0 @@
-'use client';
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { X, Trash2 } from 'lucide-react';
-import { useCart } from '@/lib/store';
-export function Cart({ onClose }) {
-    const cart = useCart();
-    return (_jsx("div", { className: "fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end", children: _jsxs("div", { className: "bg-white w-full max-w-md h-full flex flex-col", children: [_jsxs("div", { className: "p-4 border-b flex items-center justify-between", children: [_jsx("h2", { className: "text-xl font-semibold", children: "Shopping Cart" }), _jsx("button", { onClick: onClose, className: "p-2 hover:bg-gray-100 rounded-lg transition-colors", children: _jsx(X, { className: "w-5 h-5" }) })] }), _jsx("div", { className: "flex-1 overflow-y-auto p-4", children: cart.items.length === 0 ? (_jsx("div", { className: "text-center text-gray-500 mt-8", children: "Your cart is empty" })) : (_jsx("div", { className: "space-y-4", children: cart.items.map((item) => (_jsxs("div", { className: "flex items-center gap-3 p-3 border rounded-lg", children: [_jsxs("div", { className: "flex-1", children: [_jsx("h3", { className: "font-medium", children: item.name }), _jsxs("p", { className: "text-gray-600", children: ["$", item.price] })] }), _jsx("button", { onClick: () => cart.removeItem(item.id), className: "p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors", children: _jsx(Trash2, { className: "w-4 h-4" }) })] }, item.id))) })) }), _jsxs("div", { className: "p-4 border-t space-y-4", children: [_jsxs("div", { className: "flex items-center justify-between text-lg font-semibold", children: [_jsx("span", { children: "Total" }), _jsxs("span", { className: "text-purple-600", children: ["$", cart.total.toFixed(2)] })] }), _jsx("button", { className: "w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold", children: "Checkout" })] })] }) }));
-}
-//# sourceMappingURL=Cart.js.map
