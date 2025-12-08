@@ -96,8 +96,14 @@ export function ThinkingIndicator({
     : { opacity: [0.3, 1, 0.3], scale: [0.85, 1, 0.85] }
 
   // Build descriptive aria-label for screen readers
-  const ariaLabel = status?.topic
-    ? `AI is ${stageLabel.toLowerCase()}: ${status.topic}${estimatedSeconds !== null ? `, approximately ${estimatedSeconds} seconds remaining` : ''}`
+  // Truncate topic for aria-label to prevent overly long announcements
+  const truncatedTopic = status?.topic
+    ? status.topic.length > 100
+      ? `${status.topic.slice(0, 100)}...`
+      : status.topic
+    : null
+  const ariaLabel = truncatedTopic
+    ? `AI is ${stageLabel.toLowerCase()}: ${truncatedTopic}${estimatedSeconds !== null ? `, approximately ${estimatedSeconds} seconds remaining` : ''}`
     : `AI is ${stageLabel.toLowerCase()}${estimatedSeconds !== null ? `, approximately ${estimatedSeconds} seconds remaining` : ''}`
 
   return (

@@ -304,12 +304,15 @@ export function Message({
         : ''
   const ariaLabel = `${messageAuthor}${messageTime ? `, ${messageTime}` : ''}${messageStatus}`
 
+  // Generate stable content ID for aria-describedby (fallback if message.id is missing)
+  const contentId = message.id ? `message-content-${message.id}` : undefined
+
   return (
     <motion.div
       ref={ref}
       role="article"
       aria-label={ariaLabel}
-      aria-describedby={`message-content-${message.id}`}
+      aria-describedby={contentId}
       initial={{
         opacity: 0,
         x: isUser ? 20 : -20, // Slide from appropriate side
@@ -399,7 +402,7 @@ export function Message({
 
         {/* Content */}
         <div
-          id={`message-content-${message.id}`}
+          id={contentId}
           className={cn(
             // Base streaming stability classes for assistant messages
             !isUser && 'clarity-streaming-container',
