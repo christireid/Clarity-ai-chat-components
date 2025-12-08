@@ -1,0 +1,95 @@
+# Clarity Chat Documentation - AI & Search Crawler Directives
+# https://clarity-chat.dev
+# Updated: December 2025
+
+# Default: Allow all crawlers
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Google Search
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bing Search
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+# OpenAI GPTBot - Full documentation access
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Crawl-delay: 1
+
+# Anthropic Claude - Full documentation access
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Crawl-delay: 1
+
+User-agent: Claude-Web
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Crawl-delay: 1
+
+# Google AI (Gemini) - Full documentation access
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Crawl-delay: 1
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Crawl-delay: 1
+
+# Apple AI
+User-agent: Applebot-Extended
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Meta-ExternalAgent
+Allow: /
+Crawl-delay: 1
+
+# Cohere AI
+User-agent: cohere-ai
+Allow: /
+Crawl-delay: 1
+
+# Amazon/AWS AI
+User-agent: Amazonbot
+Allow: /
+Crawl-delay: 1
+
+# Common Crawl (training data)
+User-agent: CCBot
+Allow: /
+Crawl-delay: 2
+
+# Sitemap locations
+Sitemap: https://clarity-chat.dev/sitemap.xml
+
+# AI-Optimized Documentation Files
+# These files are specifically formatted for LLM consumption:
+# - /llms.txt - Structured overview with navigation links
+# - /llms-full.txt - Complete documentation in single file
+# - /api/ai/components.json - Component catalog (JSON)
+# - /api/ai/hooks.json - Hooks reference (JSON)
+# - /api/ai/search.json - Searchable index (JSON)

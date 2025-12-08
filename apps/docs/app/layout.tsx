@@ -6,7 +6,7 @@ import '@/styles/syntax-highlighting.css'
 import { Providers } from './providers'
 import { Navigation } from '@/components/Navigation/Navigation'
 import { Footer } from '@/components/Layout/Footer'
-import { StructuredData, OrganizationStructuredData } from '@/components/SEO/StructuredData'
+import { StructuredData, OrganizationStructuredData, SoftwareLibraryStructuredData, DocumentationSiteStructuredData } from '@/components/SEO/StructuredData'
 
 // Lazy load the AI assistant to reduce initial bundle size
 const DocsAssistant = dynamic(
@@ -84,6 +84,10 @@ export default function RootLayout({
       <head>
         <StructuredData type="software" />
         <OrganizationStructuredData />
+        <SoftwareLibraryStructuredData />
+        <DocumentationSiteStructuredData />
+        {/* AI-specific metadata for llms.txt discovery */}
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-optimized documentation" />
       </head>
       <body className={inter.className}>
         <Providers>
