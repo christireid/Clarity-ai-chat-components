@@ -63,9 +63,9 @@ jobs:
 
       - name: Run Storybook accessibility tests
         run: |
-          npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
-            "npx http-server apps/storybook/storybook-static --port 6006 --silent" \
-            "npx wait-on http://127.0.0.1:6006 && npx test-storybook --url http://127.0.0.1:6006"
+          npx concurrently@8 -k -s first -n "SB,TEST" -c "magenta,blue" \
+            "npx http-server@14 apps/storybook/storybook-static --port 6006 --silent" \
+            "npx wait-on@7 http://127.0.0.1:6006 && npx @storybook/test-runner@0 --url http://127.0.0.1:6006"
 
       - name: Upload accessibility report
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3

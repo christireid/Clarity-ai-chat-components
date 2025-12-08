@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'packages/**'
+      - 'packages/**/src/**'
+      - 'packages/**/package.json'
       - '.changeset/**'
       - 'pnpm-lock.yaml'
   workflow_dispatch:

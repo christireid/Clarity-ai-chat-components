@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "pnpm docs:build && npx serve apps/docs-site/out -l 3000",
+      "startServerCommand": "npx serve@14 apps/docs-site/out -l 3000",
       "startServerReadyPattern": "Accepting connections",
       "startServerReadyTimeout": 60000,
       "url": [
