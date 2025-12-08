@@ -6,7 +6,7 @@
 
 import { AIAssistantTemplate } from './ai-assistant'
 import { ThemeProvider } from '../theme/ThemeProvider'
-import { neutralDarkTheme } from '../theme/modern-presets'
+import { codeEditorTheme } from '../theme/modern-presets'
 
 export interface CodeHelperTemplateProps {
   apiKeys?: {
@@ -52,7 +52,7 @@ Always provide code examples with proper syntax highlighting using markdown code
 Explain your reasoning and suggest improvements when relevant.`
 
   return (
-    <ThemeProvider defaultTheme={{ customTheme: neutralDarkTheme }}>
+    <ThemeProvider defaultTheme={codeEditorTheme}>
       <AIAssistantTemplate
         apiKeys={apiKeys}
         systemPrompt={systemPrompt}

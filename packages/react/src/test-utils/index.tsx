@@ -83,9 +83,7 @@ export const renderWithTheme = (
   options?: Omit<RenderOptions, 'wrapper'>
 ) => {
   const Wrapper = ({ children }: { children: ReactNode }) => (
-    <ThemeProvider defaultTheme={{ customTheme: themes[themeName] }}>
-      {children}
-    </ThemeProvider>
+    <ThemeProvider defaultTheme={themes[themeName]}>{children}</ThemeProvider>
   )
 
   return render(ui, { wrapper: Wrapper, ...options })

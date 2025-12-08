@@ -4,14 +4,14 @@
  * @clarity-chat/react - Main Entry Point
  *
  * This package provides a layered architecture for building AI chat applications:
- * 
+ *
  * - Top-Level APIs: Drop-in ready components and hooks (ClarityChat, useClarityChat)
  * - Mid-Level APIs: Composable building blocks (ChatWindow, useChatEnhanced)
  * - Low-Level Primitives: Utilities and internal APIs (normalizeMessages, etc.)
- * 
+ *
  * @see DESIGN.md for architecture documentation
  * @see packages/react/src/exports.ts for structured exports by domain
- * 
+ *
  * Quick Start:
  * ```tsx
  * import { ClarityChat } from '@clarity-chat/react'
@@ -48,7 +48,10 @@ export {
 } from './hooks/use-clarity-object'
 
 // Memory Provider (Top-level)
-export { MemoryProvider, type MemoryProviderProps } from './memory/memory-provider'
+export {
+  MemoryProvider,
+  type MemoryProviderProps,
+} from './memory/memory-provider'
 
 // ============================================================================
 // MID-LEVEL APIs (Composable Building Blocks)
@@ -62,7 +65,10 @@ export { default as MessageList } from './components/virtualized-message-list'
 export { default as VirtualizedMessageList } from './components/virtualized-message-list'
 export { StreamingMessage } from './components/streaming-message'
 export { ThinkingIndicator } from './components/thinking-indicator'
-export { TypingIndicator, type TypingIndicatorVariant } from './components/typing-indicator'
+export {
+  TypingIndicator,
+  type TypingIndicatorVariant,
+} from './components/typing-indicator'
 
 // Chat State Hooks
 export {
@@ -71,7 +77,11 @@ export {
   type UseChatReturn as UseChatEnhancedReturn,
   type CoreMessage,
 } from './hooks/use-chat-enhanced'
-export { useChatHandlers, type UseChatHandlersOptions, type ChatHandlers } from './hooks/use-chat-handlers'
+export {
+  useChatHandlers,
+  type UseChatHandlersOptions,
+  type ChatHandlers,
+} from './hooks/use-chat-handlers'
 export {
   useClarityChatWithTools,
   type UseClarityChatWithToolsOptions,
@@ -80,7 +90,10 @@ export {
 } from './hooks/use-clarity-chat-with-tools'
 
 // Memory Hooks
-export { useMemoryContext, type UseMemoryContextReturn } from './memory/memory-provider'
+export {
+  useMemoryContext,
+  type UseMemoryContextReturn,
+} from './memory/memory-provider'
 
 // Streaming Hooks
 export * from './hooks/use-streaming-sse'
@@ -90,7 +103,12 @@ export * from './hooks/use-streamable-ui'
 
 // Tools & Agents
 export * from './agents/tool-ui-registry'
-export { createAgent, type Agent, type Tool, type AgentExecution } from './agents'
+export {
+  createAgent,
+  type Agent,
+  type Tool,
+  type AgentExecution,
+} from './agents'
 
 // ============================================================================
 // LOW-LEVEL PRIMITIVES (Utilities & Internal APIs)
@@ -108,12 +126,12 @@ export {
 /**
  * @deprecated Use `useChatEnhanced` or `useClarityChat` instead.
  * This hook is maintained for backward compatibility only.
- * 
+ *
  * Migration:
  * ```tsx
  * // Old
  * const chat = useChat({ api: '/api/chat' })
- * 
+ *
  * // New (recommended)
  * const chat = useClarityChat({ api: '/api/chat' })
  * // or
@@ -406,18 +424,27 @@ export { ProjectSidebar } from './components/project-sidebar'
 export { SettingsPanel } from './components/settings-panel'
 export { UsageDashboard } from './components/usage-dashboard'
 export { LinkPreview, InlineLink } from './components/link-preview'
-export { KeyboardHint, type KeyboardHintShortcut } from './components/keyboard-hint'
+export {
+  KeyboardHint,
+  type KeyboardHintShortcut,
+} from './components/keyboard-hint'
 export { ThemeSwitcher, type Theme } from './components/theme-switcher'
 export { KnowledgeBaseViewer } from './components/knowledge-base-viewer'
 export { ExportDialog } from './components/export-dialog'
 export { BatchExportDialog } from './components/batch-export-dialog'
 export { StreamCancellation } from './components/stream-cancellation'
-export { MessageSearch, MessageSearchWithSuspense } from './components/message-search'
+export {
+  MessageSearch,
+  MessageSearchWithSuspense,
+} from './components/message-search'
 export { AdvancedMessageSearch } from './components/advanced-message-search'
 export { FollowUpSuggestions } from './components/follow-up-suggestions'
 export { PromptSuggestions } from './components/prompt-suggestions'
 export { PromptLibrary } from './components/prompt-library'
-export { PromptSuggestionsEnhanced, usePromptSuggestionsEnhanced } from './components/prompt-suggestions-enhanced'
+export {
+  PromptSuggestionsEnhanced,
+  usePromptSuggestionsEnhanced,
+} from './components/prompt-suggestions-enhanced'
 export { ConversationSummarizer } from './components/conversation-summarizer'
 export { BatteryIndicator } from './components/battery-indicator'
 export { PerformanceAnalyticsDashboard } from './components/performance-analytics-dashboard'
@@ -425,8 +452,16 @@ export { PerformanceDashboard } from './components/performance-dashboard'
 export { SemanticMessageSearch } from './components/advanced-message-search-semantic'
 export { ConversationAnalyticsDashboard } from './components/conversation-analytics-dashboard'
 export { MessageThreadView, ThreadList } from './components/message-thread-view'
-export { MentionInput, MentionList, useMentions } from './components/mention-system'
-export { ConversationSharing, ShareAnalyticsDashboard, useConversationSharing } from './components/conversation-sharing'
+export {
+  MentionInput,
+  MentionList,
+  useMentions,
+} from './components/mention-system'
+export {
+  ConversationSharing,
+  ShareAnalyticsDashboard,
+  useConversationSharing,
+} from './components/conversation-sharing'
 export {
   CollaborativeEditor,
   CollaborativeMessageList,
@@ -471,8 +506,14 @@ export {
   type EmailParticipant,
   type EmailAttachment,
 } from './components/email-integration'
-export { UserInteractionAnalytics, useInteractionTracking } from './components/user-interaction-analytics'
-export { ABTestingDashboard, useABTesting } from './components/ab-testing-dashboard'
+export {
+  UserInteractionAnalytics,
+  useInteractionTracking,
+} from './components/user-interaction-analytics'
+export {
+  ABTestingDashboard,
+  useABTesting,
+} from './components/ab-testing-dashboard'
 export {
   MobileOptimizedMessage,
   MobileChatWindow,
@@ -507,7 +548,11 @@ export * from './components/enterprise'
 export { ErrorBoundary } from './components/error-boundary'
 export * from './components/error-boundary-enhanced'
 export { RetryButton, type RetryErrorType } from './components/retry-button'
-export { ErrorMessage, type ErrorDetails, type ErrorSeverity } from './components/error-message'
+export {
+  ErrorMessage,
+  type ErrorDetails,
+  type ErrorSeverity,
+} from './components/error-message'
 export { NetworkStatus } from './components/network-status'
 
 // Error Reporting System
@@ -583,7 +628,14 @@ export {
 
 // Theme Components
 export { ThemePreview } from './components/theme-preview'
-export { ThemeSelector, ThemeSelectorDropdown } from './components/theme-selector'
+export {
+  ThemeSelector,
+  ThemeSelectorDropdown,
+} from './components/theme-selector'
+export {
+  ThemeContrastChecker,
+  type ThemeContrastCheckerProps,
+} from './components/theme-contrast-checker'
 
 // ============================================================================
 // ADDITIONAL HOOKS (Utility & Feature Hooks)

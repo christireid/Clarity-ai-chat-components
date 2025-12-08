@@ -128,6 +128,15 @@ export {
   vibrantDarkTheme,
   highContrastLightTheme,
   highContrastDarkTheme,
+  // Template-specific semantic themes
+  codeEditorTheme,
+  supportChatTheme,
+  aiAssistantTheme,
+  devToolsTheme,
+  enterpriseTheme,
+  creativeTheme,
+  accessibleTheme,
+  nightModeTheme,
 } from './modern-presets'
 
 // ============================================================================

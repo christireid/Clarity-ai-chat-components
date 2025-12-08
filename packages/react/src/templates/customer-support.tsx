@@ -7,7 +7,7 @@
 import { useState, useCallback } from 'react'
 import { ChatWindow } from '../components/chat-window'
 import { ThemeProvider } from '../theme/ThemeProvider'
-import { defaultLightTheme } from '../theme/modern-presets'
+import { supportChatTheme } from '../theme/modern-presets'
 import { useMessageOperations } from '../hooks/use-message-operations'
 import type { Message } from '@clarity-chat/types'
 
@@ -211,7 +211,7 @@ export function CustomerSupportTemplate({
   }
 
   return (
-    <ThemeProvider defaultTheme={{ customTheme: defaultLightTheme }}>
+    <ThemeProvider defaultTheme={supportChatTheme}>
       <div
         className="customer-support-template"
         style={{ height: '100%', width: '100%' }}

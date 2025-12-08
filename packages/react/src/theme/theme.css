@@ -195,6 +195,23 @@
     transition: none !important;
   }
 
+  /* Respect user preference for reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .theme-transitioning,
+    .theme-transitioning * {
+      transition: none !important;
+    }
+  }
+
+  /* Box shadow transition for cards and elevated elements */
+  .theme-transitioning .shadow,
+  .theme-transitioning [class*='shadow-'] {
+    transition:
+      box-shadow var(--theme-transition-duration) ease-in-out,
+      background-color var(--theme-transition-duration) ease-in-out,
+      border-color var(--theme-transition-duration) ease-in-out !important;
+  }
+
   /* ========================================
      Dark Mode
      ======================================== */

@@ -224,3 +224,89 @@ export function getModernLightVariant(
   const lightName = name.replace('-dark', '') as ModernThemePresetName
   return lightName in modernThemes ? lightName : null
 }
+
+// ============================================================================
+// Template-Specific Theme Aliases
+// ============================================================================
+// These semantic aliases make it clear which themes are designed for which
+// use cases, improving template readability and intentionality.
+
+/**
+ * Code Editor Theme
+ *
+ * Optimized for code editing and programming assistance:
+ * - Dark background reduces eye strain during long coding sessions
+ * - High contrast for code readability
+ * - Neutral palette doesn't distract from syntax highlighting
+ */
+export const codeEditorTheme = neutralDarkTheme
+
+/**
+ * Customer Support Theme
+ *
+ * Designed for customer-facing support interfaces:
+ * - Professional, trustworthy appearance
+ * - Light background feels welcoming and approachable
+ * - Clean design builds confidence
+ */
+export const supportChatTheme = defaultLightTheme
+
+/**
+ * AI Assistant Theme
+ *
+ * For general-purpose AI assistant interfaces:
+ * - Modern, sophisticated look
+ * - Balanced light theme works in most contexts
+ * - Professional without being cold
+ */
+export const aiAssistantTheme = defaultLightTheme
+
+/**
+ * Developer Tools Theme
+ *
+ * For developer-focused applications and tools:
+ * - True dark mode preferred by developers
+ * - Minimal distractions
+ * - Terminal-like aesthetic
+ */
+export const devToolsTheme = neutralDarkTheme
+
+/**
+ * Corporate/Enterprise Theme
+ *
+ * For enterprise and business applications:
+ * - Conservative, professional appearance
+ * - Neutral colors project reliability
+ * - Accessible and inclusive
+ */
+export const enterpriseTheme = neutralLightTheme
+
+/**
+ * Creative/Marketing Theme
+ *
+ * For creative and marketing applications:
+ * - Bold, attention-grabbing colors
+ * - Modern, trendy aesthetic
+ * - Memorable and distinctive
+ */
+export const creativeTheme = vibrantLightTheme
+
+/**
+ * Accessibility-First Theme
+ *
+ * For applications requiring maximum accessibility:
+ * - WCAG AAA compliant contrast ratios
+ * - Clear, legible text
+ * - High visibility UI elements
+ */
+export const accessibleTheme = highContrastLightTheme
+
+/**
+ * Night Mode Theme
+ *
+ * For low-light environments:
+ * - True dark with high contrast
+ * - Easy on the eyes in dark rooms
+ * - Reduced blue light appearance
+ */
+export const nightModeTheme = highContrastDarkTheme

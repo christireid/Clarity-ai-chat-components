@@ -54,9 +54,63 @@ const ThemeContext = React.createContext<ThemeContextValue | undefined>(
   undefined
 )
 
+/**
+ * Check if a value is a CompleteThemeConfig (has colors, typography, etc.)
+ * vs a ThemeConfig (has mode, preset, customTheme, etc.)
+ */
+function isCompleteThemeConfig(value: unknown): value is CompleteThemeConfig {
+  if (!value || typeof value !== 'object') return false
+  const obj = value as Record<string, unknown>
+  // CompleteThemeConfig has 'colors' and 'typography' as required fields
+  return (
+    'colors' in obj && 'typography' in obj && typeof obj.colors === 'object'
+  )
+}
+
+/**
+ * Normalize theme input to ThemeConfig format
+ * Allows users to pass either:
+ * - Partial<ThemeConfig> (e.g., { preset: 'default' })
+ * - CompleteThemeConfig (e.g., defaultLightTheme directly)
+ */
+function normalizeThemeInput(
+  input: Partial<ThemeConfig> | CompleteThemeConfig | undefined
+): Partial<ThemeConfig> {
+  if (!input) return { mode: 'system' }
+
+  // If it's a complete theme config, wrap it
+  if (isCompleteThemeConfig(input)) {
+    return {
+      mode: input.mode || 'light',
+      customTheme: input,
+    }
+  }
+
+  return input as Partial<ThemeConfig>
+}
+
 export interface ThemeProviderProps {
   children: React.ReactNode
-  defaultTheme?: Partial<ThemeConfig>
+  /**
+   * Default theme configuration.
+   *
+   * Accepts either:
+   * - Theme config object: `{ preset: 'default' }` or `{ customTheme: myTheme }`
+   * - Complete theme directly: `myTheme` (will be wrapped automatically)
+   *
+   * @example
+   * // Using preset
+   * <ThemeProvider defaultTheme={{ preset: 'neutral-dark' }}>
+   *
+   * @example
+   * // Using custom theme (wrapped)
+   * <ThemeProvider defaultTheme={{ customTheme: myTheme }}>
+   *
+   * @example
+   * // Using custom theme (direct - simplified API)
+   * <ThemeProvider defaultTheme={myTheme}>
+   */
+  defaultTheme?: Partial<ThemeConfig> | CompleteThemeConfig
   storageKey?: string
 }
 
@@ -79,23 +133,51 @@ export interface ThemeProviderProps {
  */
 export function ThemeProvider({
   children,
-  defaultTheme = { mode: 'system' },
+  defaultTheme: defaultThemeInput,
   storageKey = 'clarity-chat-theme',
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = React.useState<ThemeConfig>(() => {
-    // Try to load from localStorage
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem(storageKey)
-        if (stored) {
-          return { ...defaultTheme, ...JSON.parse(stored) }
+  // Normalize the input to handle both ThemeConfig and CompleteThemeConfig
+  const normalizedDefault = React.useMemo(
+    () => normalizeThemeInput(defaultThemeInput),
+    [defaultThemeInput]
+  )
+
+  // Initialize with defaults (SSR-safe)
+  const [theme, setThemeState] = React.useState<ThemeConfig>(() => ({
+    mode: 'system',
+    ...normalizedDefault,
+  }))
+
+  // Track if we've hydrated from localStorage
+  const [isHydrated, setIsHydrated] = React.useState(false)
+
+  // Hydrate from localStorage after mount (SSR-safe)
+  React.useEffect(() => {
+    if (isHydrated) return
+
+    try {
+      const stored = localStorage.getItem(storageKey)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        // Only restore persistable preferences (mode, preset)
+        // Don't restore customTheme as it may be stale
+        const persistedPreferences: Partial<ThemeConfig> = {}
+        if (parsed.mode) persistedPreferences.mode = parsed.mode
+        if (parsed.preset) persistedPreferences.preset = parsed.preset
+        if (parsed.enableTransitions !== undefined) {
+          persistedPreferences.enableTransitions = parsed.enableTransitions
         }
-      } catch (error) {
-        console.warn('Failed to load theme from localStorage:', error)
+
+        if (Object.keys(persistedPreferences).length > 0) {
+          setThemeState((prev) => ({ ...prev, ...persistedPreferences }))
+        }
       }
+    } catch (error) {
+      console.warn('Failed to load theme from localStorage:', error)
     }
-    return { mode: 'system', ...defaultTheme }
-  })
+
+    setIsHydrated(true)
+  }, [storageKey, isHydrated])
 
   // Resolve actual mode (light/dark) from system preference if needed
   const [resolvedMode, setResolvedMode] = React.useState<'light' | 'dark'>(
@@ -172,13 +254,21 @@ export function ThemeProvider({
     setResolvedTheme(complete)
   }, [theme, resolvedMode, getThemeByPreset])
 
+  // Check for reduced motion preference
+  const prefersReducedMotion = useReducedMotion()
+
   // Apply theme to document
   React.useEffect(() => {
     if (!resolvedTheme) return
 
     const root = document.documentElement
-    const enableTransitions = theme.enableTransitions !== false
-    const transitionDuration = theme.transitionDuration || 200
+    // Disable transitions if user prefers reduced motion or explicitly disabled
+    const enableTransitions =
+      theme.enableTransitions !== false && !prefersReducedMotion
+    const transitionDuration = getMotionSafeDuration(
+      theme.transitionDuration || 200,
+      prefersReducedMotion
+    )
 
     // Add transition class for smooth color changes
     if (enableTransitions) {
@@ -200,18 +290,41 @@ export function ThemeProvider({
 
       return () => clearTimeout(timeout)
     }
-  }, [resolvedTheme, theme.enableTransitions, theme.transitionDuration])
+  }, [
+    resolvedTheme,
+    theme.enableTransitions,
+    theme.transitionDuration,
+    prefersReducedMotion,
+  ])
 
-  // Save to localStorage
+  // Save to localStorage (only persist user preferences, not full theme config)
   React.useEffect(() => {
+    // Don't persist until hydrated to avoid overwriting with defaults
+    if (!isHydrated) return
+
     if (typeof window !== 'undefined') {
       try {
-        localStorage.setItem(storageKey, JSON.stringify(theme))
+        // Only persist user-changeable preferences
+        const toStore: Partial<ThemeConfig> = {
+          mode: theme.mode,
+        }
+        if (theme.preset) toStore.preset = theme.preset
+        if (theme.enableTransitions !== undefined) {
+          toStore.enableTransitions = theme.enableTransitions
+        }
+
+        localStorage.setItem(storageKey, JSON.stringify(toStore))
       } catch (error) {
         console.warn('Failed to save theme to localStorage:', error)
       }
     }
-  }, [theme, storageKey])
+  }, [
+    theme.mode,
+    theme.preset,
+    theme.enableTransitions,
+    storageKey,
+    isHydrated,
+  ])
 
   // Memoize theme manipulation callbacks (already using useCallback - good!)
   const setTheme = React.useCallback((newTheme: Partial<ThemeConfig>) => {

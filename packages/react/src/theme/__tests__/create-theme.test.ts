@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   createTheme,
   mergeTheme,
@@ -133,6 +133,81 @@ describe('create-theme', () => {
       const theme = createTheme({})
       const css = getThemeCSS(theme, '.my-theme')
       expect(css).toContain('.my-theme')
+    })
+  })
+
+  describe('invalid preset warnings', () => {
+    const originalEnv = process.env.NODE_ENV
+    let consoleWarnSpy: ReturnType<typeof vi.spyOn>
+
+    beforeEach(() => {
+      consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      // Set to development to enable warnings
+      process.env.NODE_ENV = 'development'
+    })
+
+    afterEach(() => {
+      consoleWarnSpy.mockRestore()
+      process.env.NODE_ENV = originalEnv
+    })
+
+    it('should warn when createTheme uses an invalid preset name', () => {
+      // Use an invalid preset name that doesn't exist
+      const theme = createTheme({ extends: 'ocean' as any })
+
+      // Should still return a valid theme (fallback to default)
+      expect(theme).toHaveProperty('colors')
+      expect(theme).toHaveProperty('typography')
+
+      // Should have warned about the invalid preset
+      expect(consoleWarnSpy).toHaveBeenCalled()
+      expect(consoleWarnSpy.mock.calls[0][0]).toContain('ocean')
+      expect(consoleWarnSpy.mock.calls[0][0]).toContain('Unknown theme preset')
+    })
+
+    it('should warn with list of available presets', () => {
+      createTheme({ extends: 'sunset' as any })
+
+      expect(consoleWarnSpy).toHaveBeenCalled()
+      const warningMessage = consoleWarnSpy.mock.calls[0][0]
+      expect(warningMessage).toContain('default')
+      expect(warningMessage).toContain('default-dark')
+      expect(warningMessage).toContain('neutral')
+      expect(warningMessage).toContain('vibrant')
+      expect(warningMessage).toContain('high-contrast')
+    })
+
+    it('should not warn for valid preset names', () => {
+      createTheme({ extends: 'default' })
+      createTheme({ extends: 'neutral-dark' })
+      createTheme({ extends: 'vibrant' })
+
+      expect(consoleWarnSpy).not.toHaveBeenCalled()
+    })
+
+    it('should not warn in production mode', () => {
+      process.env.NODE_ENV = 'production'
+
+      createTheme({ extends: 'invalid-preset' as any })
+
+      expect(consoleWarnSpy).not.toHaveBeenCalled()
+    })
+
+    it('should warn for legacy preset names', () => {
+      const legacyPresets = [
+        'ocean',
+        'sunset',
+        'forest',
+        'corporate',
+        'minimal',
+        'playful',
+      ]
+
+      legacyPresets.forEach((preset) => {
+        consoleWarnSpy.mockClear()
+        createTheme({ extends: preset as any })
+        expect(consoleWarnSpy).toHaveBeenCalled()
+      })
     })
   })
 })
