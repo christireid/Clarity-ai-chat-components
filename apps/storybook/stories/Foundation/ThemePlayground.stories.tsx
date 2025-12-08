@@ -55,13 +55,13 @@ function ColorInput({
         type="color"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-10 h-10 rounded cursor-pointer border-2 border-gray-300"
+        className="w-10 h-10 rounded cursor-pointer border-2 border-border"
       />
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="flex-1 px-3 py-1.5 text-sm font-mono border rounded"
+        className="flex-1 px-3 py-1.5 text-sm font-mono border border-input rounded bg-background text-foreground"
         placeholder="#000000"
       />
     </div>
@@ -228,10 +228,23 @@ function ThemePreviewUI() {
 }
 
 /**
- * Code export panel
+ * Theme export/import panel
  */
-function CodeExport({ theme }: { theme: CompleteThemeConfig }) {
-  const [copied, setCopied] = useState(false)
+function ThemeExportImport({
+  theme,
+  onImport,
+}: {
+  theme: CompleteThemeConfig
+  onImport: (config: {
+    brandColor: string
+    radius: string
+    preset: ModernThemePresetName
+  }) => void
+}) {
+  const [copied, setCopied] = useState<'code' | 'json' | null>(null)
+  const [showImport, setShowImport] = useState(false)
+  const [importValue, setImportValue] = useState('')
+  const [importError, setImportError] = useState<string | null>(null)
 
   const code = `import { createTheme } from '@clarity-chat/react'
 
@@ -246,26 +259,129 @@ const customTheme = createTheme({
   <YourApp />
 </ThemeProvider>`
 
-  const handleCopy = () => {
+  // Create exportable JSON config
+  const exportConfig = {
+    brandColor: theme.colors?.primary
+      ? `hsl(${theme.colors.primary})`
+      : '#6366f1',
+    radius: 'md',
+    preset: theme.mode === 'dark' ? 'default-dark' : 'default',
+    name: theme.name,
+    exportedAt: new Date().toISOString(),
+  }
+
+  const handleCopyCode = () => {
     navigator.clipboard.writeText(code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setCopied('code')
+    setTimeout(() => setCopied(null), 2000)
+  }
+
+  const handleCopyJSON = () => {
+    navigator.clipboard.writeText(JSON.stringify(exportConfig, null, 2))
+    setCopied('json')
+    setTimeout(() => setCopied(null), 2000)
+  }
+
+  const handleDownloadJSON = () => {
+    const blob = new Blob([JSON.stringify(exportConfig, null, 2)], {
+      type: 'application/json',
+    })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `theme-${theme.name || 'custom'}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImport = () => {
+    try {
+      const config = JSON.parse(importValue)
+      if (config.brandColor && config.preset) {
+        onImport({
+          brandColor: config.brandColor.replace('hsl(', '').replace(')', ''),
+          radius: config.radius || 'md',
+          preset: config.preset as ModernThemePresetName,
+        })
+        setShowImport(false)
+        setImportValue('')
+        setImportError(null)
+      } else {
+        setImportError('Invalid theme config: missing brandColor or preset')
+      }
+    } catch {
+      setImportError('Invalid JSON format')
+    }
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium">Export Code</p>
-        <button
-          onClick={handleCopy}
-          className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:opacity-90"
-        >
-          {copied ? '✓ Copied!' : 'Copy'}
-        </button>
+    <div className="space-y-4">
+      {/* Export Section */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium">Export Theme</p>
+          <div className="flex gap-2">
+            <button
+              onClick={handleCopyCode}
+              className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:opacity-90"
+            >
+              {copied === 'code' ? '✓ Copied!' : 'Copy Code'}
+            </button>
+            <button
+              onClick={handleCopyJSON}
+              className="px-3 py-1 text-sm border border-border bg-background text-foreground rounded hover:bg-muted"
+            >
+              {copied === 'json' ? '✓ Copied!' : 'Copy JSON'}
+            </button>
+            <button
+              onClick={handleDownloadJSON}
+              className="px-3 py-1 text-sm border border-border bg-background text-foreground rounded hover:bg-muted"
+            >
+              Download
+            </button>
+          </div>
+        </div>
+        <pre className="p-4 bg-muted rounded-lg overflow-x-auto text-xs text-foreground">
+          <code>{code}</code>
+        </pre>
       </div>
-      <pre className="p-4 bg-muted rounded-lg overflow-x-auto text-xs">
-        <code>{code}</code>
-      </pre>
+
+      {/* Import Section */}
+      <div className="space-y-2 pt-4 border-t border-border">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium">Import Theme</p>
+          <button
+            onClick={() => setShowImport(!showImport)}
+            className="text-sm text-primary hover:underline"
+          >
+            {showImport ? 'Cancel' : 'Import JSON'}
+          </button>
+        </div>
+
+        {showImport && (
+          <div className="space-y-2">
+            <textarea
+              value={importValue}
+              onChange={(e) => {
+                setImportValue(e.target.value)
+                setImportError(null)
+              }}
+              placeholder='Paste theme JSON here...\n{"brandColor": "#6366f1", "preset": "default", "radius": "md"}'
+              className="w-full h-24 p-3 text-xs font-mono border border-input rounded-lg bg-background text-foreground placeholder:text-muted-foreground"
+            />
+            {importError && (
+              <p className="text-xs text-destructive">{importError}</p>
+            )}
+            <button
+              onClick={handleImport}
+              disabled={!importValue.trim()}
+              className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded hover:opacity-90 disabled:opacity-50"
+            >
+              Apply Imported Theme
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -281,6 +397,21 @@ function ThemePlaygroundInner() {
   const [basePreset, setBasePreset] = useState<ModernThemePresetName>('default')
   const [showAccessibility, setShowAccessibility] = useState(false)
 
+  // Handle theme import
+  const handleImport = (config: {
+    brandColor: string
+    radius: string
+    preset: ModernThemePresetName
+  }) => {
+    // Handle both hex and hsl formats
+    const color = config.brandColor.startsWith('hsl')
+      ? config.brandColor
+      : config.brandColor
+    setBrandColor(color.startsWith('#') ? color : `#${color}`)
+    setRadius(config.radius as 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full')
+    setBasePreset(config.preset)
+  }
+
   // Create custom theme
   const customTheme = React.useMemo(() => {
     return createTheme({
@@ -292,16 +423,18 @@ function ThemePlaygroundInner() {
   }, [brandColor, radius, basePreset])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-muted/30">
       <div className="max-w-7xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-2">Theme Playground</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
+        <h1 className="text-3xl font-bold mb-2 text-foreground">
+          Theme Playground
+        </h1>
+        <p className="text-muted-foreground mb-8">
           Customize and preview your theme in real-time
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Controls */}
-          <div className="space-y-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border">
+          <div className="space-y-6 p-6 bg-card text-card-foreground rounded-xl shadow-sm border border-border">
             <h2 className="text-lg font-semibold">Theme Settings</h2>
 
             <PresetSelector value={basePreset} onChange={setBasePreset} />
@@ -312,7 +445,7 @@ function ThemePlaygroundInner() {
             />
             <RadiusSelector value={radius} onChange={setRadius} />
 
-            <div className="pt-4 border-t">
+            <div className="pt-4 border-t border-border">
               <button
                 onClick={() => setShowAccessibility(!showAccessibility)}
                 className="text-sm text-primary hover:underline"
@@ -328,13 +461,16 @@ function ThemePlaygroundInner() {
               <ThemePreviewUI />
 
               {showAccessibility && (
-                <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border">
+                <div className="p-4 bg-card text-card-foreground rounded-xl shadow-sm border border-border">
                   <ThemeContrastChecker showDetails showOnlyFailing={false} />
                 </div>
               )}
 
-              <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border">
-                <CodeExport theme={customTheme} />
+              <div className="p-4 bg-card text-card-foreground rounded-xl shadow-sm border border-border">
+                <ThemeExportImport
+                  theme={customTheme}
+                  onImport={handleImport}
+                />
               </div>
             </ThemeProvider>
           </div>

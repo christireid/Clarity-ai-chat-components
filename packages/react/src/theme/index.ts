@@ -43,10 +43,12 @@ export {
   ThemeProvider,
   useTheme,
   ThemeToggle,
+  ThemeModeSelector,
   type ThemeMode,
   type ThemeConfig,
   type ThemeProviderProps,
   type ThemeToggleProps,
+  type ThemeModeSelectorProps,
   type ThemePresetName,
 } from './ThemeProvider'
 
@@ -229,3 +231,12 @@ export {
   generateForegroundColor,
   generatePalette,
 } from './theme-builder'
+
+// Theme validation utilities
+export {
+  validateThemeConfig,
+  assertValidTheme,
+  validateThemeWithWarnings,
+  type ValidationResult,
+  type ValidationIssue,
+} from './theme-validator'
