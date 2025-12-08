@@ -101,7 +101,7 @@ export default [
       'no-redeclare': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
@@ -201,11 +201,13 @@ export default [
         afterAll: 'readonly',
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslint,
+    plugins: sharedPlugins,
+    settings: {
+      react: { version: '19.0' },
     },
     rules: {
       ...tseslint.configs.recommended.rules,
+      ...sharedRules,
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
