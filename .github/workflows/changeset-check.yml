@@ -54,15 +54,18 @@ jobs:
           if echo "$changed_files" | grep -qE '^packages/.*/src/'; then
             echo "Code changes detected in packages"
 
-            # Check if changeset exists
-            if ! ls .changeset/*.md >/dev/null 2>&1 || [ $(ls .changeset/*.md 2>/dev/null | wc -l) -eq 0 ]; then
-              echo "::error::No changeset found. Please run 'npx changeset' to create one."
+            # Count actual changesets (exclude README.md and config.json)
+            changeset_count=$(find .changeset -maxdepth 1 -name "*.md" ! -name "README.md" 2>/dev/null | wc -l)
+
+            if [ "$changeset_count" -eq 0 ]; then
+              echo "::error::No changeset found. Please run 'pnpm changeset' to create one."
+              echo "::error::Changesets are required for package source code changes."
               exit 1
             fi
 
-            echo "✅ Changeset found"
+            echo "✅ Found $changeset_count changeset(s)"
           else
-            echo "No package source changes detected, skipping changeset check"
+            echo "ℹ️ No package source changes detected, skipping changeset check"
           fi
 
       - name: Validate Changeset

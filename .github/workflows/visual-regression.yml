@@ -57,8 +57,9 @@ jobs:
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-visual-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-visual-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('packages/**/src/**', 'apps/storybook/**') }}
           restore-keys: |
+            ${{ runner.os }}-turbo-visual-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-turbo-visual-
 
       - name: Build packages

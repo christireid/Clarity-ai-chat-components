@@ -125,8 +125,9 @@ jobs:
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-test-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-test-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('packages/**/src/**') }}
           restore-keys: |
+            ${{ runner.os }}-turbo-test-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-turbo-test-
 
       - name: Run tests with coverage
@@ -178,8 +179,9 @@ jobs:
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-build-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-build-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('packages/**/src/**') }}
           restore-keys: |
+            ${{ runner.os }}-turbo-build-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-turbo-build-
 
       - name: Build all packages
@@ -254,16 +256,31 @@ jobs:
     steps:
       - name: Check all job statuses
         run: |
-          echo "Lint: ${{ needs.lint.result }}"
-          echo "Type Check: ${{ needs.typecheck.result }}"
-          echo "Test: ${{ needs.test.result }}"
-          echo "Build: ${{ needs.build.result }}"
+          echo "Job Results:"
+          echo "  Lint: ${{ needs.lint.result }}"
+          echo "  Type Check: ${{ needs.typecheck.result }}"
+          echo "  Test: ${{ needs.test.result }}"
+          echo "  Build: ${{ needs.build.result }}"
 
-          if [[ "${{ needs.lint.result }}" != "success" ]] || \
-             [[ "${{ needs.typecheck.result }}" != "success" ]] || \
-             [[ "${{ needs.test.result }}" != "success" ]] || \
-             [[ "${{ needs.build.result }}" != "success" ]]; then
-            echo "❌ One or more required checks failed"
+          # Check for any failures or cancellations
+          failed_jobs=""
+          for job in "lint:${{ needs.lint.result }}" \
+                     "typecheck:${{ needs.typecheck.result }}" \
+                     "test:${{ needs.test.result }}" \
+                     "build:${{ needs.build.result }}"; do
+            job_name="${job%%:*}"
+            job_result="${job##*:}"
+            if [[ "$job_result" == "failure" ]]; then
+              failed_jobs="$failed_jobs $job_name(failed)"
+            elif [[ "$job_result" == "cancelled" ]]; then
+              failed_jobs="$failed_jobs $job_name(cancelled)"
+            elif [[ "$job_result" != "success" && "$job_result" != "skipped" ]]; then
+              failed_jobs="$failed_jobs $job_name($job_result)"
+            fi
+          done
+
+          if [[ -n "$failed_jobs" ]]; then
+            echo "❌ Failed jobs:$failed_jobs"
             exit 1
           fi
 

@@ -16,9 +16,8 @@ pnpm-lock.yaml @christireid
 turbo.json @christireid
 tsconfig*.json @christireid
 
-# Core packages
-packages/react/ @christireid
-packages/core/ @christireid
+# All packages
+packages/ @christireid
 
 # Security-sensitive files
 .env* @christireid

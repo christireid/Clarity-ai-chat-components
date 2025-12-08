@@ -54,8 +54,9 @@ jobs:
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-a11y-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-a11y-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('packages/**/src/**', 'apps/storybook/**') }}
           restore-keys: |
+            ${{ runner.os }}-turbo-a11y-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-turbo-a11y-
 
       - name: Build Storybook
@@ -101,8 +102,9 @@ jobs:
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-lighthouse-${{ github.sha }}
+          key: ${{ runner.os }}-turbo-lighthouse-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/docs/**', 'packages/**/src/**') }}
           restore-keys: |
+            ${{ runner.os }}-turbo-lighthouse-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-turbo-lighthouse-
 
       - name: Build docs site
