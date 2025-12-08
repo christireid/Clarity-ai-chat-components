@@ -293,7 +293,7 @@ describe('validateThemeConfig', () => {
           ...modernThemes['default'].borders,
           radius: {
             ...modernThemes['default'].borders.radius,
-            base: 123 as unknown as string, // Invalid type
+            md: 123 as unknown as string, // Invalid type
           },
         },
       }
@@ -302,7 +302,7 @@ describe('validateThemeConfig', () => {
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           code: 'INVALID_RADIUS',
-          path: 'borders.radius.base',
+          path: 'borders.radius.md',
         })
       )
     })

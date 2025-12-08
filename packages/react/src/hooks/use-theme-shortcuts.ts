@@ -9,6 +9,9 @@ import { useTheme } from '../theme/ThemeProvider'
  * **Default Shortcuts:**
  * - `Ctrl/Cmd + Shift + L` - Toggle between light and dark mode
  * - `Ctrl/Cmd + Shift + T` - Cycle through all theme modes (light → dark → system)
+ * - `Ctrl/Cmd + Shift + 1` - Set light mode directly
+ * - `Ctrl/Cmd + Shift + 2` - Set dark mode directly
+ * - `Ctrl/Cmd + Shift + 3` - Set system mode directly
  *
  * **Features:**
  * - Platform-aware (Cmd on Mac, Ctrl on Windows/Linux)
@@ -35,6 +38,15 @@ import { useTheme } from '../theme/ThemeProvider'
  *   requireShift: false
  * })
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Get all available shortcuts for display
+ * const { shortcuts } = useThemeShortcuts()
+ * // shortcuts.light = "Ctrl/Cmd + Shift + 1"
+ * // shortcuts.dark = "Ctrl/Cmd + Shift + 2"
+ * // shortcuts.system = "Ctrl/Cmd + Shift + 3"
+ * ```
  */
 export interface UseThemeShortcutsOptions {
   /**
@@ -50,6 +62,12 @@ export interface UseThemeShortcutsOptions {
   enableCycle?: boolean
 
   /**
+   * Enable direct mode shortcuts (default: true)
+   * Allows setting light (1), dark (2), or system (3) mode directly
+   */
+  enableDirectMode?: boolean
+
+  /**
    * Key for toggle shortcut (default: 'l')
    * Used with Ctrl/Cmd + Shift
    */
@@ -60,6 +78,24 @@ export interface UseThemeShortcutsOptions {
    * Used with Ctrl/Cmd + Shift
    */
   cycleKey?: string
+
+  /**
+   * Key for light mode shortcut (default: '1')
+   * Used with Ctrl/Cmd + Shift
+   */
+  lightKey?: string
+
+  /**
+   * Key for dark mode shortcut (default: '2')
+   * Used with Ctrl/Cmd + Shift
+   */
+  darkKey?: string
+
+  /**
+   * Key for system mode shortcut (default: '3')
+   * Used with Ctrl/Cmd + Shift
+   */
+  systemKey?: string
 
   /**
    * Require Ctrl/Cmd key (default: true)
@@ -74,15 +110,22 @@ export interface UseThemeShortcutsOptions {
   /**
    * Callback when shortcut is triggered
    */
-  onShortcut?: (action: 'toggle' | 'cycle', newMode: 'light' | 'dark' | 'system') => void
+  onShortcut?: (
+    action: 'toggle' | 'cycle' | 'direct',
+    newMode: 'light' | 'dark' | 'system'
+  ) => void
 }
 
 export function useThemeShortcuts(options: UseThemeShortcutsOptions = {}) {
   const {
     enableToggle = true,
     enableCycle = true,
+    enableDirectMode = true,
     toggleKey = 'l',
     cycleKey = 't',
+    lightKey = '1',
+    darkKey = '2',
+    systemKey = '3',
     requireMeta = true,
     requireShift = true,
     onShortcut,
@@ -118,14 +161,45 @@ export function useThemeShortcuts(options: UseThemeShortcutsOptions = {}) {
       if (enableCycle && key === cycleKey.toLowerCase()) {
         e.preventDefault()
 
-        const modes: ('light' | 'dark' | 'system')[] = ['light', 'dark', 'system']
+        const modes: ('light' | 'dark' | 'system')[] = [
+          'light',
+          'dark',
+          'system',
+        ]
         const currentIndex = modes.indexOf(theme.mode)
-        const nextMode = modes[(currentIndex + 1) % modes.length] as 'light' | 'dark' | 'system'
+        const nextMode = modes[(currentIndex + 1) % modes.length] as
+          | 'light'
+          | 'dark'
+          | 'system'
 
         setTheme({ mode: nextMode })
         onShortcut?.('cycle', nextMode)
 
         return
+      }
+
+      // Handle direct mode shortcuts
+      if (enableDirectMode) {
+        if (key === lightKey.toLowerCase()) {
+          e.preventDefault()
+          setTheme({ mode: 'light' })
+          onShortcut?.('direct', 'light')
+          return
+        }
+
+        if (key === darkKey.toLowerCase()) {
+          e.preventDefault()
+          setTheme({ mode: 'dark' })
+          onShortcut?.('direct', 'dark')
+          return
+        }
+
+        if (key === systemKey.toLowerCase()) {
+          e.preventDefault()
+          setTheme({ mode: 'system' })
+          onShortcut?.('direct', 'system')
+          return
+        }
       }
     }
 
@@ -142,32 +216,39 @@ export function useThemeShortcuts(options: UseThemeShortcutsOptions = {}) {
     setTheme,
     enableToggle,
     enableCycle,
+    enableDirectMode,
     toggleKey,
     cycleKey,
+    lightKey,
+    darkKey,
+    systemKey,
     requireMeta,
     requireShift,
     onShortcut,
   ])
+
+  // Helper to format shortcut string
+  const formatShortcut = (key: string) => {
+    if (requireMeta && requireShift) {
+      return `Ctrl/Cmd + Shift + ${key.toUpperCase()}`
+    } else if (requireMeta) {
+      return `Ctrl/Cmd + ${key.toUpperCase()}`
+    } else if (requireShift) {
+      return `Shift + ${key.toUpperCase()}`
+    }
+    return key.toUpperCase()
+  }
 
   // Return current theme info for convenience
   return {
     currentMode: mode,
     themeConfig: theme,
     shortcuts: {
-      toggle: requireMeta && requireShift
-        ? `Ctrl/Cmd + Shift + ${toggleKey.toUpperCase()}`
-        : requireMeta
-          ? `Ctrl/Cmd + ${toggleKey.toUpperCase()}`
-          : requireShift
-            ? `Shift + ${toggleKey.toUpperCase()}`
-            : toggleKey.toUpperCase(),
-      cycle: requireMeta && requireShift
-        ? `Ctrl/Cmd + Shift + ${cycleKey.toUpperCase()}`
-        : requireMeta
-          ? `Ctrl/Cmd + ${cycleKey.toUpperCase()}`
-          : requireShift
-            ? `Shift + ${cycleKey.toUpperCase()}`
-            : cycleKey.toUpperCase(),
+      toggle: formatShortcut(toggleKey),
+      cycle: formatShortcut(cycleKey),
+      light: formatShortcut(lightKey),
+      dark: formatShortcut(darkKey),
+      system: formatShortcut(systemKey),
     },
   }
 }

@@ -89,6 +89,21 @@ function normalizeThemeInput(
   return input as Partial<ThemeConfig>
 }
 
+/**
+ * Animation speed options for theme transitions
+ */
+export type ThemeAnimationSpeed = 'none' | 'fast' | 'normal' | 'slow'
+
+/**
+ * Animation speed durations in milliseconds
+ */
+const animationSpeedMap: Record<ThemeAnimationSpeed, number> = {
+  none: 0,
+  fast: 100,
+  normal: 200,
+  slow: 400,
+}
+
 export interface ThemeProviderProps {
   children: React.ReactNode
   /**
@@ -111,7 +126,63 @@ export interface ThemeProviderProps {
    * <ThemeProvider defaultTheme={myTheme}>
    */
   defaultTheme?: Partial<ThemeConfig> | CompleteThemeConfig
+  /**
+   * Key used for localStorage persistence
+   * @default 'clarity-chat-theme'
+   */
   storageKey?: string
+  /**
+   * Enable cross-tab theme synchronization via BroadcastChannel API.
+   *
+   * When enabled, theme changes in one tab are automatically reflected in all
+   * other tabs of the same origin. This provides a seamless user experience
+   * across multiple browser tabs.
+   *
+   * **Browser Support:**
+   * - Chrome 54+, Firefox 38+, Safari 15.4+, Edge 79+
+   * - Not supported in older browsers (gracefully degrades to localStorage-only)
+   * - Not available in Web Workers or Service Workers
+   *
+   * **Fallback Behavior:**
+   * If BroadcastChannel is not supported, the provider will:
+   * 1. Log a warning to the console (in development)
+   * 2. Continue to work with localStorage persistence only
+   * 3. Theme changes will sync on page reload but not in real-time
+   *
+   * @default true
+   *
+   * @example
+   * // Enable cross-tab sync (default)
+   * <ThemeProvider enableCrossTabSync>
+   *
+   * @example
+   * // Disable for embedded/iframe contexts where sync isn't needed
+   * <ThemeProvider enableCrossTabSync={false}>
+   */
+  enableCrossTabSync?: boolean
+  /**
+   * Debounce delay for cross-tab sync messages in milliseconds.
+   * Prevents flooding with messages during rapid theme changes.
+   *
+   * Set to 0 to disable debouncing (immediate sync).
+   *
+   * @default 100
+   */
+  crossTabSyncDebounce?: number
+  /**
+   * Animation speed for theme transitions.
+   * Controls how fast color changes animate when switching themes.
+   *
+   * - 'none': No animation (instant switch)
+   * - 'fast': 100ms transition
+   * - 'normal': 200ms transition (default)
+   * - 'slow': 400ms transition
+   *
+   * Note: This is automatically set to 'none' if user prefers reduced motion.
+   *
+   * @default 'normal'
+   */
+  animationSpeed?: ThemeAnimationSpeed
 }
 
 /**
@@ -135,6 +206,9 @@ export function ThemeProvider({
   children,
   defaultTheme: defaultThemeInput,
   storageKey = 'clarity-chat-theme',
+  enableCrossTabSync = true,
+  crossTabSyncDebounce = 100,
+  animationSpeed = 'normal',
 }: ThemeProviderProps) {
   // Normalize the input to handle both ThemeConfig and CompleteThemeConfig
   const normalizedDefault = React.useMemo(
@@ -262,12 +336,18 @@ export function ThemeProvider({
     if (!resolvedTheme) return
 
     const root = document.documentElement
-    // Disable transitions if user prefers reduced motion or explicitly disabled
+    // Disable transitions if user prefers reduced motion, explicitly disabled, or animation is 'none'
     const enableTransitions =
-      theme.enableTransitions !== false && !prefersReducedMotion
+      theme.enableTransitions !== false &&
+      !prefersReducedMotion &&
+      animationSpeed !== 'none'
+
+    // Use animationSpeed prop, but allow theme.transitionDuration to override if set
+    const baseTransitionDuration =
+      theme.transitionDuration || animationSpeedMap[animationSpeed]
     const transitionDuration = getMotionSafeDuration(
-      theme.transitionDuration || 200,
-      prefersReducedMotion
+      prefersReducedMotion,
+      baseTransitionDuration
     )
 
     // Add transition class for smooth color changes
@@ -295,6 +375,7 @@ export function ThemeProvider({
     theme.enableTransitions,
     theme.transitionDuration,
     prefersReducedMotion,
+    animationSpeed,
   ])
 
   // Save to localStorage (only persist user preferences, not full theme config)
@@ -325,6 +406,118 @@ export function ThemeProvider({
     storageKey,
     isHydrated,
   ])
+
+  // Cross-tab theme synchronization using BroadcastChannel
+  React.useEffect(() => {
+    if (!enableCrossTabSync || typeof window === 'undefined') return
+    if (typeof BroadcastChannel === 'undefined') return // Not supported in older browsers
+
+    const channelName = `${storageKey}-sync`
+    let channel: BroadcastChannel | null = null
+
+    try {
+      channel = new BroadcastChannel(channelName)
+
+      // Listen for theme changes from other tabs
+      channel.onmessage = (event) => {
+        if (event.data?.type === 'theme-change') {
+          const newTheme = event.data.theme as Partial<ThemeConfig>
+          setThemeState((prev) => ({ ...prev, ...newTheme }))
+        }
+      }
+    } catch (error) {
+      // BroadcastChannel may not be available in some environments
+      console.warn('Cross-tab theme sync not available:', error)
+    }
+
+    return () => {
+      channel?.close()
+    }
+  }, [storageKey, enableCrossTabSync])
+
+  // Broadcast theme changes to other tabs with debouncing
+  const broadcastRef = React.useRef<BroadcastChannel | null>(null)
+  const broadcastTimeoutRef = React.useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null)
+
+  React.useEffect(() => {
+    if (!enableCrossTabSync || typeof window === 'undefined') return
+    if (typeof BroadcastChannel === 'undefined') {
+      // Log warning in development only
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          '[Clarity Chat] BroadcastChannel API not available. ' +
+            'Cross-tab theme sync will fall back to localStorage-only persistence. ' +
+            'Theme changes will sync on page reload but not in real-time.'
+        )
+      }
+      return
+    }
+    if (!isHydrated) return // Don't broadcast until hydrated
+
+    const channelName = `${storageKey}-sync`
+
+    // Debounced broadcast function
+    const broadcastTheme = () => {
+      try {
+        if (!broadcastRef.current) {
+          broadcastRef.current = new BroadcastChannel(channelName)
+        }
+
+        // Broadcast the theme change
+        broadcastRef.current.postMessage({
+          type: 'theme-change',
+          theme: {
+            mode: theme.mode,
+            preset: theme.preset,
+            enableTransitions: theme.enableTransitions,
+          },
+        })
+      } catch {
+        // Silently fail if broadcast not available
+      }
+    }
+
+    // Clear any pending broadcast
+    if (broadcastTimeoutRef.current) {
+      clearTimeout(broadcastTimeoutRef.current)
+    }
+
+    // Apply debouncing if configured
+    if (crossTabSyncDebounce > 0) {
+      broadcastTimeoutRef.current = setTimeout(
+        broadcastTheme,
+        crossTabSyncDebounce
+      )
+    } else {
+      broadcastTheme()
+    }
+
+    return () => {
+      // Don't close channel here - we want to keep broadcasting on changes
+      // Clean up timeout on unmount
+      if (broadcastTimeoutRef.current) {
+        clearTimeout(broadcastTimeoutRef.current)
+      }
+    }
+  }, [
+    theme.mode,
+    theme.preset,
+    theme.enableTransitions,
+    storageKey,
+    enableCrossTabSync,
+    crossTabSyncDebounce,
+    isHydrated,
+  ])
+
+  // Cleanup broadcast channel on unmount
+  React.useEffect(() => {
+    return () => {
+      broadcastRef.current?.close()
+      broadcastRef.current = null
+    }
+  }, [])
 
   // Memoize theme manipulation callbacks (already using useCallback - good!)
   const setTheme = React.useCallback((newTheme: Partial<ThemeConfig>) => {
@@ -562,6 +755,7 @@ export function ThemeModeSelector({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -737,6 +931,7 @@ export function ThemeToggle({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <circle cx="12" cy="12" r="5" />
               <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
@@ -752,6 +947,7 @@ export function ThemeToggle({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
             </svg>

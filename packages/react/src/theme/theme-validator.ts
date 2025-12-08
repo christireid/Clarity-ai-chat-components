@@ -317,12 +317,12 @@ export function validateThemeConfig(
 
   // Validate borders
   if (theme.borders?.radius) {
-    const { base, lg } = theme.borders.radius
-    if (base && typeof base !== 'string') {
+    const { md, lg } = theme.borders.radius
+    if (md && typeof md !== 'string') {
       errors.push({
         code: 'INVALID_RADIUS',
         message: 'Border radius must be a string (e.g., "0.5rem")',
-        path: 'borders.radius.base',
+        path: 'borders.radius.md',
       })
     }
     if (lg && typeof lg !== 'string') {

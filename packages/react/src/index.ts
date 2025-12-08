@@ -636,6 +636,12 @@ export {
   ThemeContrastChecker,
   type ThemeContrastCheckerProps,
 } from './components/theme-contrast-checker'
+export {
+  ThemePreviewThumbnail,
+  ThemePreviewGrid,
+  type ThemePreviewThumbnailProps,
+  type ThemePreviewGridProps,
+} from './components/theme-preview-thumbnail'
 
 // ============================================================================
 // ADDITIONAL HOOKS (Utility & Feature Hooks)
