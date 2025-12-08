@@ -58,6 +58,12 @@ packages/*/src/**/*.d.ts
 !packages/*/src/**/*.d.cts
 !packages/*/src/**/*.d.mts
 
+# Compiled files in tests directory
+tests/**/*.js
+tests/**/*.d.ts
+tests/**/*.js.map
+tests/**/*.d.ts.map
+
 # Backup files
 *.backup
 *.bak
