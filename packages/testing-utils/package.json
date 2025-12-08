@@ -20,7 +20,7 @@
     "build": "tsup src/index.ts --format esm,cjs",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
     "test": "vitest run --passWithNoTests",
-    "lint": "eslint src",
+    "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\"",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [

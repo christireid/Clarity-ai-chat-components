@@ -124,6 +124,16 @@ export default [
     },
   },
 
+  // Testing utilities package - exports functions that use expect
+  {
+    files: ['packages/testing-utils/src/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        expect: 'readonly',
+      },
+    },
+  },
+
   // Package-specific overrides for zero-error linting
   {
     files: ['packages/react/**/*.{ts,tsx,js,jsx}'],
