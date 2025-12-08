@@ -1,9 +1,18 @@
 'use client'
 
-import { Check, X, Copy } from 'lucide-react'
+import Link from 'next/link'
+import { Check, Copy, ChevronDown, ExternalLink } from 'lucide-react'
 import { useState, useCallback } from 'react'
 import clsx from 'clsx'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useClipboard } from '@clarity-chat/react'
+import {
+  getTypeLink,
+  getTypeDefinition,
+} from '@/lib/type-registry'
+
+/** Minimum number of props before showing the filter input */
+const FILTER_THRESHOLD = 5
 
 export interface Prop {
   name: string
@@ -13,6 +22,10 @@ export interface Prop {
   description?: string
   deprecated?: boolean
   deprecatedMessage?: string
+  /** Override the auto-detected type link */
+  typeLink?: string
+  /** Override the auto-detected type definition */
+  typeDefinition?: string
 }
 
 interface PropsTableProps {
@@ -47,17 +60,31 @@ const rowVariants = {
 }
 
 export function PropsTable({ props, title = 'Props', className }: PropsTableProps) {
-  const [copiedProp, setCopiedProp] = useState<string | null>(null)
+  const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set())
+  const [filterText, setFilterText] = useState('')
+  const { copy, copied, value: copiedValue } = useClipboard({ timeout: 2000 })
 
-  const copyToClipboard = useCallback(async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopiedProp(text)
-      setTimeout(() => setCopiedProp(null), 2000)
-    } catch (error) {
-      console.error('Failed to copy:', error)
-    }
+  const toggleTypeExpansion = useCallback((propName: string) => {
+    setExpandedTypes(prev => {
+      const next = new Set(prev)
+      if (next.has(propName)) {
+        next.delete(propName)
+      } else {
+        next.add(propName)
+      }
+      return next
+    })
   }, [])
+
+  // Filter props based on search
+  const filteredProps = filterText
+    ? props.filter(
+        prop =>
+          prop.name.toLowerCase().includes(filterText.toLowerCase()) ||
+          prop.type.toLowerCase().includes(filterText.toLowerCase()) ||
+          prop.description?.toLowerCase().includes(filterText.toLowerCase())
+      )
+    : props
 
   if (props.length === 0) {
     return null
@@ -71,17 +98,37 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
       variants={tableVariants}
       className={clsx('my-8', className)}
     >
-      {title && (
-        <motion.h3
-          initial={{ opacity: 0, y: -10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.3 }}
-          className="text-2xl font-bold mb-4 text-text-primary"
-        >
-          {title}
-        </motion.h3>
-      )}
+      <div className="flex items-center justify-between mb-4">
+        {title && (
+          <motion.h3
+            initial={{ opacity: 0, y: -10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3 }}
+            className="text-2xl font-bold text-text-primary"
+          >
+            {title}
+          </motion.h3>
+        )}
+
+        {/* Search/Filter */}
+        {props.length > FILTER_THRESHOLD && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.3 }}
+          >
+            <input
+              type="text"
+              placeholder="Filter props..."
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              className="px-3 py-1.5 text-sm border border-border rounded-lg bg-bg-primary text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+            />
+          </motion.div>
+        )}
+      </div>
 
       <motion.div
         variants={rowVariants}
@@ -97,7 +144,7 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
             </tr>
           </thead>
           <tbody>
-            {props.map((prop, index) => (
+            {filteredProps.map((prop, index) => (
               <motion.tr
                 key={prop.name}
                 variants={rowVariants}
@@ -144,14 +191,14 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                       </motion.span>
                     )}
                     <motion.button
-                      onClick={() => copyToClipboard(prop.name)}
+                      onClick={() => copy(prop.name)}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className="ml-auto p-1 rounded hover:bg-bg-tertiary transition-colors opacity-0 group-hover:opacity-100"
-                      aria-label={`Copy ${prop.name}`}
+                      aria-label={`Copy ${prop.name} to clipboard`}
                     >
                       <AnimatePresence mode="wait">
-                        {copiedProp === prop.name ? (
+                        {copied && copiedValue === prop.name ? (
                           <motion.div
                             key="check"
                             initial={{ scale: 0, rotate: -180 }}
@@ -177,9 +224,78 @@ export function PropsTable({ props, title = 'Props', className }: PropsTableProp
                   </div>
                 </td>
                 <td className="p-4">
-                  <code className="text-sm font-mono text-brand-500 dark:text-brand-400">
-                    {prop.type}
-                  </code>
+                  {(() => {
+                    const typeLink = prop.typeLink || getTypeLink(prop.type)
+                    const typeDef = prop.typeDefinition || getTypeDefinition(prop.type)
+                    const isExpanded = expandedTypes.has(prop.name)
+                    const isExternal = typeLink?.startsWith('http')
+
+                    return (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          {typeLink ? (
+                            isExternal ? (
+                              <a
+                                href={typeLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-mono text-brand-500 dark:text-brand-400 hover:underline inline-flex items-center gap-1"
+                              >
+                                {prop.type}
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            ) : (
+                              <Link
+                                href={typeLink}
+                                className="text-sm font-mono text-brand-500 dark:text-brand-400 hover:underline"
+                              >
+                                {prop.type}
+                              </Link>
+                            )
+                          ) : (
+                            <code className="text-sm font-mono text-brand-500 dark:text-brand-400">
+                              {prop.type}
+                            </code>
+                          )}
+
+                          {typeDef && (
+                            <motion.button
+                              onClick={() => toggleTypeExpansion(prop.name)}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              className="p-1 rounded hover:bg-bg-tertiary transition-colors"
+                              aria-label={isExpanded ? 'Collapse type definition' : 'Expand type definition'}
+                              aria-expanded={isExpanded}
+                            >
+                              <motion.div
+                                animate={{ rotate: isExpanded ? 180 : 0 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                <ChevronDown className="w-4 h-4 text-text-tertiary" />
+                              </motion.div>
+                            </motion.button>
+                          )}
+                        </div>
+
+                        {/* Expandable type definition */}
+                        <AnimatePresence>
+                          {isExpanded && typeDef && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
+                              <pre className="text-xs font-mono bg-bg-tertiary p-3 rounded-lg overflow-x-auto border border-border">
+                                <code className="text-text-secondary">{typeDef}</code>
+                              </pre>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    )
+                  })()}
                 </td>
                 <td className="p-4">
                   {prop.default ? (

@@ -93,90 +93,80 @@ export const learnNavigation: NavItem[] = [
 
 export const referenceNavigation: NavItem[] = [
   {
-    title: 'Components',
+    title: 'Core Components',
     items: [
-      {
-        title: 'Core',
-        items: [
-          { title: 'ClarityChat', href: '/reference/components/clarity-chat' },
-          { title: 'ChatWindow', href: '/reference/components/chat-window' },
-          { title: 'Message', href: '/reference/components/message' },
-          { title: 'MessageList', href: '/reference/components/message-list' },
-          { title: 'MessageInput', href: '/reference/components/message-input' },
-          { title: 'TypingIndicator', href: '/reference/components/typing-indicator' },
-        ],
-      },
-      {
-        title: 'Interactive',
-        items: [
-          { title: 'CommandPalette', href: '/reference/components/command-palette' },
-          { title: 'ContextMenu', href: '/reference/components/context-menu' },
-          { title: 'Draggable', href: '/reference/components/draggable' },
-          { title: 'KeyboardHint', href: '/reference/components/keyboard-hint' },
-          { title: 'AdvancedMessageSearch', href: '/reference/components/advanced-message-search' },
-          { title: 'RetryButton', href: '/reference/components/retry-button' },
-          { title: 'VoiceInput', href: '/reference/components/voice-input' },
-          { title: 'FileUpload', href: '/reference/components/file-upload' },
-          { title: 'StructuredInputBuilder', href: '/reference/components/structured-input-builder' },
-        ],
-      },
-      {
-        title: 'Streaming',
-        items: [
-          { title: 'StreamingMessage', href: '/reference/components/streaming-message' },
-          { title: 'VirtualizedMessageList', href: '/reference/components/virtualized-message-list' },
-        ],
-      },
-      {
-        title: 'UI Elements',
-        items: [
-          { title: 'Avatar', href: '/reference/components/avatar' },
-          { title: 'Button', href: '/reference/components/button' },
-          { title: 'Badge', href: '/reference/components/badge' },
-          { title: 'Tooltip', href: '/reference/components/tooltip' },
-          { title: 'Modal', href: '/reference/components/modal' },
-          { title: 'NetworkStatus', href: '/reference/components/network-status' },
-          { title: 'PromptLibrary', href: '/reference/components/prompt-library' },
-          { title: 'PromptSuggestions', href: '/reference/components/prompt-suggestions' },
-          { title: 'StreamingTextRenderer', href: '/reference/components/streaming-text-renderer' },
-          { title: 'StreamBlock', href: '/reference/components/stream-block' },
-          { title: 'StreamCancellation', href: '/reference/components/stream-cancellation' },
-          { title: 'ToolInvocationCard', href: '/reference/components/tool-invocation-card' },
-        ],
-      },
-      {
-        title: 'Optimization',
-        items: [
-          { title: 'TokenOptimizationBadge', href: '/reference/components/token-optimization-badge' },
-          { title: 'TokenOptimizationPanel', href: '/reference/components/token-optimization-panel' },
-          { title: 'TokenOptimizationDashboard', href: '/reference/components/token-optimization-dashboard' },
-        ],
-      },
-      {
-        title: 'Operations',
-        items: [
-          { title: 'UsageDashboard', href: '/reference/components/usage-dashboard' },
-          { title: 'PerformanceDashboard', href: '/reference/components/performance-dashboard' },
-          { title: 'ProjectSidebar', href: '/reference/components/project-sidebar' },
-        ],
-      },
-      {
-        title: 'Analytics',
-        items: [
-          { title: 'PerformanceAnalyticsDashboard', href: '/reference/components/performance-analytics-dashboard' },
-          { title: 'ConversationAnalyticsDashboard', href: '/reference/components/conversation-analytics-dashboard' },
-          { title: 'ABTestingDashboard', href: '/reference/components/ab-testing-dashboard' },
-        ],
-      },
-      {
-        title: 'Enterprise',
-        items: [
-          { title: 'AuthTenantDashboard', href: '/reference/components/auth-tenant-dashboard' },
-          { title: 'ApiTokenManager', href: '/reference/components/api-token-manager' },
-          { title: 'SeatInviteDialog', href: '/reference/components/seat-invite-dialog' },
-          { title: 'SSOConfigWizard', href: '/reference/components/sso-config-wizard' },
-        ],
-      },
+      { title: 'ClarityChat', href: '/reference/components/clarity-chat' },
+      { title: 'ChatWindow', href: '/reference/components/chat-window' },
+      { title: 'Message', href: '/reference/components/message' },
+      { title: 'MessageList', href: '/reference/components/message-list' },
+      { title: 'MessageInput', href: '/reference/components/message-input' },
+      { title: 'TypingIndicator', href: '/reference/components/typing-indicator' },
+    ],
+  },
+  {
+    title: 'Interactive Components',
+    items: [
+      { title: 'CommandPalette', href: '/reference/components/command-palette' },
+      { title: 'ContextMenu', href: '/reference/components/context-menu' },
+      { title: 'Draggable', href: '/reference/components/draggable' },
+      { title: 'KeyboardHint', href: '/reference/components/keyboard-hint' },
+      { title: 'AdvancedMessageSearch', href: '/reference/components/advanced-message-search' },
+      { title: 'RetryButton', href: '/reference/components/retry-button' },
+      { title: 'VoiceInput', href: '/reference/components/voice-input' },
+      { title: 'FileUpload', href: '/reference/components/file-upload' },
+      { title: 'StructuredInputBuilder', href: '/reference/components/structured-input-builder' },
+    ],
+  },
+  {
+    title: 'Streaming Components',
+    items: [
+      { title: 'StreamingMessage', href: '/reference/components/streaming-message' },
+      { title: 'VirtualizedMessageList', href: '/reference/components/virtualized-message-list' },
+      { title: 'StreamingTextRenderer', href: '/reference/components/streaming-text-renderer' },
+      { title: 'StreamBlock', href: '/reference/components/stream-block' },
+      { title: 'StreamCancellation', href: '/reference/components/stream-cancellation' },
+    ],
+  },
+  {
+    title: 'UI Elements',
+    items: [
+      { title: 'Avatar', href: '/reference/components/avatar' },
+      { title: 'Button', href: '/reference/components/button' },
+      { title: 'Badge', href: '/reference/components/badge' },
+      { title: 'Tooltip', href: '/reference/components/tooltip' },
+      { title: 'Modal', href: '/reference/components/modal' },
+      { title: 'NetworkStatus', href: '/reference/components/network-status' },
+      { title: 'PromptLibrary', href: '/reference/components/prompt-library' },
+      { title: 'PromptSuggestions', href: '/reference/components/prompt-suggestions' },
+      { title: 'ToolInvocationCard', href: '/reference/components/tool-invocation-card' },
+    ],
+  },
+  {
+    title: 'Token Optimization',
+    items: [
+      { title: 'TokenOptimizationBadge', href: '/reference/components/token-optimization-badge' },
+      { title: 'TokenOptimizationPanel', href: '/reference/components/token-optimization-panel' },
+      { title: 'TokenOptimizationDashboard', href: '/reference/components/token-optimization-dashboard' },
+    ],
+  },
+  {
+    title: 'Dashboards & Analytics',
+    items: [
+      { title: 'UsageDashboard', href: '/reference/components/usage-dashboard' },
+      { title: 'PerformanceDashboard', href: '/reference/components/performance-dashboard' },
+      { title: 'PerformanceAnalyticsDashboard', href: '/reference/components/performance-analytics-dashboard' },
+      { title: 'ConversationAnalyticsDashboard', href: '/reference/components/conversation-analytics-dashboard' },
+      { title: 'ABTestingDashboard', href: '/reference/components/ab-testing-dashboard' },
+      { title: 'ProjectSidebar', href: '/reference/components/project-sidebar' },
+    ],
+  },
+  {
+    title: 'Enterprise Components',
+    items: [
+      { title: 'AuthTenantDashboard', href: '/reference/components/auth-tenant-dashboard' },
+      { title: 'ApiTokenManager', href: '/reference/components/api-token-manager' },
+      { title: 'SeatInviteDialog', href: '/reference/components/seat-invite-dialog' },
+      { title: 'SSOConfigWizard', href: '/reference/components/sso-config-wizard' },
     ],
   },
   {

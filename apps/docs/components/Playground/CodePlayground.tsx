@@ -1,15 +1,18 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { LiveProvider, LivePreview, LiveError } from 'react-live'
-import { Maximize2, Minimize2 } from 'lucide-react'
+import { Maximize2, Minimize2, ExternalLink, Copy, Check, RotateCcw } from 'lucide-react'
+import { useClipboard } from '@clarity-chat/react'
+import { openInCodeSandbox } from '@/lib/sandbox-export'
 
 // Dynamic import for code editor to avoid SSR issues
 const CodeEditor = dynamic(() => import('./CodeEditor'), { ssr: false })
 
 interface CodePlaygroundProps {
   initialCode: string
+  title?: string
   dependencies?: Record<string, string>
   onCodeChange?: (code: string) => void
   className?: string
@@ -17,6 +20,7 @@ interface CodePlaygroundProps {
 
 export function CodePlayground({
   initialCode,
+  title = 'Clarity Chat Example',
   dependencies = {},
   onCodeChange,
   className
@@ -25,6 +29,7 @@ export function CodePlayground({
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal')
   const [editorSize, setEditorSize] = useState(50)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const { copy, copied } = useClipboard({ timeout: 2000 })
 
   useEffect(() => {
     setCode(initialCode)
@@ -49,18 +54,41 @@ export function CodePlayground({
     }
   }, [isFullscreen])
 
-  const handleCodeChange = (newCode: string) => {
+  const handleCodeChange = useCallback((newCode: string) => {
     setCode(newCode)
     onCodeChange?.(newCode)
+  }, [onCodeChange])
+
+  const handleCopyCode = useCallback(() => {
+    copy(code)
+  }, [copy, code])
+
+  const handleResetCode = useCallback(() => {
+    setCode(initialCode)
+    onCodeChange?.(initialCode)
+  }, [initialCode, onCodeChange])
+
+  const handleOpenInSandbox = () => {
+    openInCodeSandbox({
+      code,
+      title,
+      dependencies,
+    })
   }
 
   // Load ClarityChat components dynamically on client only
   const [clarityComponents, setClarityComponents] = useState<Record<string, unknown> | null>(null)
 
   useEffect(() => {
+    let mounted = true
     import('@clarity-chat/react').then((mod) => {
-      setClarityComponents(mod)
+      if (mounted) {
+        setClarityComponents(mod)
+      }
     })
+    return () => {
+      mounted = false
+    }
   }, [])
 
   const scope = useMemo(() => ({
@@ -137,7 +165,50 @@ export function CodePlayground({
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Copy Button */}
+          <button
+            onClick={handleCopyCode}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            aria-label="Copy code"
+          >
+            {copied ? (
+              <>
+                <Check className="w-4 h-4 text-green-500" />
+                <span className="hidden sm:inline text-green-500">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" />
+                <span className="hidden sm:inline">Copy</span>
+              </>
+            )}
+          </button>
+
+          {/* Reset Button */}
+          <button
+            onClick={handleResetCode}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            aria-label="Reset code"
+            disabled={code === initialCode}
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span className="hidden sm:inline">Reset</span>
+          </button>
+
+          {/* Open in CodeSandbox */}
+          <button
+            onClick={handleOpenInSandbox}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+            aria-label="Open in CodeSandbox"
+          >
+            <ExternalLink className="w-4 h-4" />
+            <span className="hidden sm:inline">CodeSandbox</span>
+          </button>
+
+          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1 hidden sm:block" />
+
+          {/* Fullscreen Button */}
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
@@ -146,7 +217,7 @@ export function CodePlayground({
             {isFullscreen ? (
               <>
                 <Minimize2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Exit Fullscreen</span>
+                <span className="hidden sm:inline">Exit</span>
               </>
             ) : (
               <>
@@ -155,9 +226,6 @@ export function CodePlayground({
               </>
             )}
           </button>
-          <span className="text-xs text-gray-500 dark:text-gray-400 hidden md:inline">
-            Press Ctrl+Enter to run • ESC to exit fullscreen
-          </span>
         </div>
       </div>
 
