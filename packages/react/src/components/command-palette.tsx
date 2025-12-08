@@ -1,10 +1,15 @@
 'use client'
 
 import { forwardRef, useState, useRef, useMemo, useEffect, useId } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, Kbd, useBodyScrollLock } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
+import {
+  useFocusTrap,
+  useFocusRestoration,
+} from '../accessibility/focus-management'
 
 export interface CommandItem {
   id: string
@@ -43,11 +48,41 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
   ) => {
     const [search, setSearch] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(0)
+    const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
+      null
+    )
     const inputRef = useRef<HTMLInputElement>(null)
     const selectedItemRef = useRef<HTMLButtonElement>(null)
     const listboxId = useId()
     const inputId = useId()
     const prefersReducedMotion = useReducedMotion()
+
+    // Use existing focus management utilities
+    const focusTrapRef = useFocusTrap<HTMLDivElement>(open)
+    const { saveFocus, restoreFocus } = useFocusRestoration()
+    const { lock } = useBodyScrollLock()
+
+    // Setup portal container
+    useEffect(() => {
+      setPortalContainer(document.body)
+    }, [])
+
+    // Body scroll lock when open
+    useEffect(() => {
+      if (open) {
+        const unlock = lock()
+        return unlock
+      }
+    }, [open, lock])
+
+    // Save/restore focus on open/close
+    useEffect(() => {
+      if (open) {
+        saveFocus()
+      } else {
+        restoreFocus()
+      }
+    }, [open, saveFocus, restoreFocus])
 
     // Filter items based on search
     const filteredItems = useMemo(() => {
@@ -167,11 +202,26 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
           exit: { opacity: 0, scale: 0.95, y: -20 },
         }
 
-    return (
+    // Screen reader live region for announcements
+    const liveRegionContent = useMemo(() => {
+      if (filteredItems.length === 0) {
+        return 'No commands found'
+      }
+      return `${filteredItems.length} ${filteredItems.length === 1 ? 'command' : 'commands'} available`
+    }, [filteredItems.length])
+
+    if (!portalContainer) return null
+
+    const content = (
       <MotionConfig reducedMotion={prefersReducedMotion ? 'always' : 'never'}>
         <AnimatePresence>
           {open && (
             <>
+              {/* Screen reader announcements */}
+              <div aria-live="polite" aria-atomic="true" className="sr-only">
+                {liveRegionContent}
+              </div>
+
               {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -187,9 +237,9 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
                 aria-hidden="true"
               />
 
-              {/* Command Palette */}
+              {/* Command Palette - with focus trap */}
               <motion.div
-                ref={ref}
+                ref={focusTrapRef}
                 {...motionProps}
                 transition={{
                   duration: prefersReducedMotion
@@ -435,24 +485,25 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
                                       )}
                                     </div>
 
-                                    {/* Keyboard Shortcut */}
+                                    {/* Keyboard Shortcut - using Kbd component */}
                                     {item.shortcut && (
                                       <div
                                         className="flex gap-1 flex-shrink-0"
                                         aria-hidden="true"
                                       >
                                         {item.shortcut.map((key, i) => (
-                                          <kbd
+                                          <Kbd
                                             key={i}
+                                            shortcut={key}
+                                            size="sm"
+                                            variant={
+                                              isSelected ? 'ghost' : 'default'
+                                            }
                                             className={cn(
-                                              'px-2 py-1 text-xs font-mono rounded border',
-                                              isSelected
-                                                ? 'bg-primary-foreground/20 border-primary-foreground/30'
-                                                : 'bg-muted border-border'
+                                              isSelected &&
+                                                'bg-primary-foreground/20 border-primary-foreground/30 text-primary-foreground'
                                             )}
-                                          >
-                                            {key}
-                                          </kbd>
+                                          />
                                         ))}
                                       </div>
                                     )}
@@ -467,7 +518,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
                   )}
                 </div>
 
-                {/* Footer Hint */}
+                {/* Footer Hint - using Kbd component */}
                 <motion.div
                   initial={prefersReducedMotion ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -476,25 +527,20 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
                 >
                   <div className="flex gap-3 sm:gap-4" aria-hidden="true">
                     <span className="flex items-center gap-1.5">
-                      <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
-                        ↑↓
-                      </kbd>
+                      <Kbd shortcut="up" size="sm" />
+                      <Kbd shortcut="down" size="sm" />
                       <span className="hidden sm:inline">Navigate</span>
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
-                        ↵
-                      </kbd>
+                      <Kbd shortcut="enter" size="sm" />
                       <span className="hidden sm:inline">Select</span>
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <kbd className="px-2 py-1 bg-background border border-border/60 rounded-md text-xs font-mono shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
-                        Esc
-                      </kbd>
+                      <Kbd shortcut="escape" size="sm" />
                       <span className="hidden sm:inline">Close</span>
                     </span>
                   </div>
-                  <div className="font-medium" aria-live="polite">
+                  <div className="font-medium">
                     {filteredItems.length}{' '}
                     {filteredItems.length === 1 ? 'command' : 'commands'}
                   </div>
@@ -505,6 +551,9 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
         </AnimatePresence>
       </MotionConfig>
     )
+
+    // Render through portal to avoid z-index issues
+    return createPortal(content, portalContainer)
   }
 )
 

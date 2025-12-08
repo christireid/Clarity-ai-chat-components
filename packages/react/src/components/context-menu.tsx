@@ -1,10 +1,15 @@
 'use client'
 
 import * as React from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
-import { cn } from '@clarity-chat/primitives'
+import { cn, Kbd } from '@clarity-chat/primitives'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
+import {
+  useFocusTrap,
+  useFocusRestoration,
+} from '../accessibility/focus-management'
 
 export interface ContextMenuItem {
   id: string
@@ -36,10 +41,20 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
     const [submenuOpen, setSubmenuOpen] = React.useState<string | null>(null)
     const [focusedIndex, setFocusedIndex] = React.useState(-1)
     const [typeahead, setTypeahead] = React.useState('')
+    const [portalContainer, setPortalContainer] =
+      React.useState<HTMLElement | null>(null)
     const typeaheadTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
-    const menuRef = React.useRef<HTMLDivElement>(null)
     const menuId = React.useId()
     const prefersReducedMotion = useReducedMotion()
+
+    // Use existing focus management utilities
+    const focusTrapRef = useFocusTrap<HTMLDivElement>(isOpen)
+    const { saveFocus, restoreFocus } = useFocusRestoration()
+
+    // Setup portal container
+    React.useEffect(() => {
+      setPortalContainer(document.body)
+    }, [])
 
     // Filter out separators for navigation
     const navigableItems = React.useMemo(
@@ -49,6 +64,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
 
     const handleContextMenu = (e: React.MouseEvent) => {
       e.preventDefault()
+      saveFocus() // Save focus before opening
       setPosition({ x: e.clientX, y: e.clientY })
       setIsOpen(true)
       setSubmenuOpen(null)
@@ -60,23 +76,30 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
       setSubmenuOpen(null)
       setFocusedIndex(-1)
       setTypeahead('')
-    }, [])
+      restoreFocus() // Restore focus on close
+    }, [restoreFocus])
 
-    const handleItemClick = (item: ContextMenuItem) => {
-      if (item.disabled) return
+    const handleItemClick = React.useCallback(
+      (item: ContextMenuItem) => {
+        if (item.disabled) return
 
-      if (item.submenu) {
-        setSubmenuOpen(submenuOpen === item.id ? null : item.id)
-      } else {
-        item.onSelect?.()
-        handleClose()
-      }
-    }
+        if (item.submenu) {
+          setSubmenuOpen((prev) => (prev === item.id ? null : item.id))
+        } else {
+          item.onSelect?.()
+          handleClose()
+        }
+      },
+      [handleClose]
+    )
 
     // Close on click outside
     React.useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
-        if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        if (
+          focusTrapRef.current &&
+          !focusTrapRef.current.contains(e.target as Node)
+        ) {
           handleClose()
         }
       }
@@ -86,7 +109,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
         return () =>
           document.removeEventListener('mousedown', handleClickOutside)
       }
-    }, [isOpen, handleClose])
+    }, [isOpen, handleClose, focusTrapRef])
 
     // Keyboard navigation
     React.useEffect(() => {
@@ -217,12 +240,13 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
       navigableItems,
       typeahead,
       handleClose,
+      handleItemClick,
     ])
 
     // Adjust position to keep menu on screen
     React.useEffect(() => {
-      if (isOpen && menuRef.current) {
-        const menu = menuRef.current
+      if (isOpen && focusTrapRef.current) {
+        const menu = focusTrapRef.current
         const rect = menu.getBoundingClientRect()
         const viewportWidth = window.innerWidth
         const viewportHeight = window.innerHeight
@@ -243,7 +267,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
           setPosition({ x, y })
         }
       }
-    }, [isOpen, position])
+    }, [isOpen, position, focusTrapRef])
 
     const renderMenuItems = (
       menuItems: ContextMenuItem[],
@@ -341,12 +365,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
 
               {/* Shortcut or Submenu Arrow */}
               {item.shortcut && !hasSubmenu && (
-                <kbd
-                  className="px-1.5 py-0.5 text-xs text-muted-foreground font-mono bg-muted border border-border/60 rounded shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
-                  aria-hidden="true"
-                >
-                  {item.shortcut}
-                </kbd>
+                <Kbd shortcut={item.shortcut} size="sm" aria-hidden="true" />
               )}
 
               {hasSubmenu && (
@@ -402,10 +421,11 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                     damping: 26,
                     stiffness: 290,
                   }}
+                  style={{ zIndex: 'var(--z-popover)' }}
                   className={cn(
                     'absolute left-full top-0 ml-2',
                     'min-w-[180px] bg-card border border-border/60 shadow-[0_24px_48px_rgba(15,23,42,0.32)] rounded-lg',
-                    'p-2 z-10'
+                    'p-2'
                   )}
                 >
                   {renderMenuItems(item.submenu!, level + 1, itemId)}
@@ -417,57 +437,62 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
       })
     }
 
+    const menuContent =
+      isOpen && portalContainer ? (
+        <AnimatePresence>
+          {isOpen && (
+            <>
+              {/* Invisible backdrop for detecting outside clicks */}
+              <div
+                className="fixed inset-0"
+                style={{ zIndex: 'var(--z-popover)' }}
+                aria-hidden="true"
+              />
+
+              {/* Context Menu */}
+              <motion.div
+                ref={focusTrapRef}
+                id={menuId}
+                role="menu"
+                aria-label={ariaLabel}
+                initial={
+                  prefersReducedMotion
+                    ? false
+                    : { opacity: 0, scale: 0.9, y: -10 }
+                }
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={
+                  prefersReducedMotion
+                    ? { opacity: 0 }
+                    : { opacity: 0, scale: 0.9, y: -10 }
+                }
+                transition={{
+                  duration: prefersReducedMotion
+                    ? 0.1
+                    : ANIMATION_DURATION.fast / 1000,
+                  ease: ANIMATION_EASING.out,
+                }}
+                style={{
+                  position: 'fixed',
+                  left: position.x,
+                  top: position.y,
+                  zIndex: 'var(--z-popover)',
+                }}
+                className="min-w-[200px] bg-card border border-border/50 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] rounded-lg p-2 backdrop-blur-sm focus:outline-none"
+                tabIndex={-1}
+              >
+                {renderMenuItems(items)}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      ) : null
+
     return (
       <MotionConfig reducedMotion={prefersReducedMotion ? 'always' : 'never'}>
         <div ref={ref} onContextMenu={handleContextMenu} className={className}>
           {children}
-
-          <AnimatePresence>
-            {isOpen && (
-              <>
-                {/* Invisible backdrop for detecting outside clicks */}
-                <div
-                  className="fixed inset-0 z-[var(--z-popover)]"
-                  aria-hidden="true"
-                />
-
-                {/* Context Menu */}
-                <motion.div
-                  ref={menuRef}
-                  id={menuId}
-                  role="menu"
-                  aria-label={ariaLabel}
-                  initial={
-                    prefersReducedMotion
-                      ? false
-                      : { opacity: 0, scale: 0.9, y: -10 }
-                  }
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={
-                    prefersReducedMotion
-                      ? { opacity: 0 }
-                      : { opacity: 0, scale: 0.9, y: -10 }
-                  }
-                  transition={{
-                    duration: prefersReducedMotion
-                      ? 0.1
-                      : ANIMATION_DURATION.fast / 1000,
-                    ease: ANIMATION_EASING.out,
-                  }}
-                  style={{
-                    position: 'fixed',
-                    left: position.x,
-                    top: position.y,
-                    zIndex: 'var(--z-popover)',
-                  }}
-                  className="min-w-[200px] bg-card border border-border/50 shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1),0_2px_4px_-2px_rgb(0_0_0_/_0.1)] rounded-lg p-2 backdrop-blur-sm focus:outline-none"
-                  tabIndex={-1}
-                >
-                  {renderMenuItems(items)}
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
+          {menuContent && createPortal(menuContent, portalContainer!)}
         </div>
       </MotionConfig>
     )
