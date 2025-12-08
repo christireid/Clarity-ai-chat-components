@@ -298,34 +298,13 @@ root.render(<App />);
     },
   }
 
-  // Encode for URL using a safer method
+  // Encode for URL - convert UTF-8 to base64 safely
   const filesJson = JSON.stringify({ files })
-  const encoded = btoa(unescape(encodeURIComponent(filesJson)))
+  const encoder = new TextEncoder()
+  const bytes = encoder.encode(filesJson)
+  const encoded = btoa(String.fromCharCode(...bytes))
 
   return `https://codesandbox.io/api/v1/sandboxes/define?parameters=${encoded}`
-}
-
-/**
- * Generate StackBlitz URL for React code
- */
-function generateStackBlitzUrl(code: string): string {
-  const hasImport = /import.*from/.test(code)
-
-  let fullCode = code
-  if (!hasImport) {
-    fullCode = `import React from 'react';\nimport { useState } from 'react';\n\n${code}`
-  }
-
-  // Use StackBlitz's simpler URL format
-  const params = new URLSearchParams({
-    file: 'App.tsx',
-    terminalHeight: '0',
-    view: 'preview',
-  })
-
-  // Encode the code for URL
-  const encoded = encodeURIComponent(fullCode)
-  return `https://stackblitz.com/edit/vitejs-vite-react-ts?${params.toString()}&code=${encoded}`
 }
 
 /**
@@ -587,6 +566,26 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     }
   }, [])
 
+  // Load branch state from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedBranches = localStorage.getItem(BRANCHES_KEY)
+      if (savedBranches) {
+        const parsed = JSON.parse(savedBranches) as BranchState
+        if (parsed.branches && parsed.branches.length > 0) {
+          // Restore Date objects
+          parsed.branches = parsed.branches.map(b => ({
+            ...b,
+            createdAt: new Date(b.createdAt),
+          }))
+          setBranchState(parsed)
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load branch state:', e)
+    }
+  }, [])
+
   // Save message queue to localStorage when it changes
   useEffect(() => {
     try {
@@ -599,6 +598,20 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       console.error('Failed to save message queue:', e)
     }
   }, [messageQueue])
+
+  // Save branch state to localStorage when it changes
+  useEffect(() => {
+    try {
+      // Only persist if we have more than just the main branch
+      if (branchState.branches.length > 1 || branchState.currentBranchId !== 'main') {
+        localStorage.setItem(BRANCHES_KEY, JSON.stringify(branchState))
+      } else {
+        localStorage.removeItem(BRANCHES_KEY)
+      }
+    } catch (e) {
+      console.error('Failed to save branch state:', e)
+    }
+  }, [branchState])
 
   // Handle network status changes
   const handleNetworkStatusChange = useCallback((status: 'online' | 'offline' | 'slow' | 'unstable') => {
@@ -781,14 +794,23 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     toast.success('Opening code in playground...')
   }, [messages, toast])
 
+  // Check if a message has playground-compatible code (memoized for performance)
+  const messagesWithPlaygroundCode = useMemo(() => {
+    const result = new Set<string>()
+    for (const message of messages) {
+      if (message.role !== 'assistant') continue
+      const codeBlocks = extractCodeBlocks(message.content)
+      if (codeBlocks.some(block => isPlaygroundCompatible(block.language, block.code))) {
+        result.add(message.id)
+      }
+    }
+    return result
+  }, [messages])
+
   // Check if a message has playground-compatible code
   const messageHasPlaygroundCode = useCallback((messageId: string): boolean => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message || message.role !== 'assistant') return false
-
-    const codeBlocks = extractCodeBlocks(message.content)
-    return codeBlocks.some(block => isPlaygroundCompatible(block.language, block.code))
-  }, [messages])
+    return messagesWithPlaygroundCode.has(messageId)
+  }, [messagesWithPlaygroundCode])
 
   // Throttled message update for streaming using library hook
   const updateStreamingMessage = useThrottledCallback(
@@ -958,8 +980,11 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
                 )
                 setAiStatus(undefined)
               }
-            } catch {
-              // Ignore parse errors for incomplete JSON
+            } catch (parseError) {
+              // Log parse errors for debugging incomplete JSON chunks
+              if (process.env.NODE_ENV === 'development') {
+                console.debug('[DocsAssistant] JSON parse error (may be incomplete chunk):', parseError)
+              }
             }
           }
         }
@@ -1324,22 +1349,28 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             {(branchState.branches.length > 1 || branchState.currentBranchId !== 'main') && (
               <div className="absolute top-2 left-4 z-10 flex items-center gap-2">
                 {/* Branch icon */}
-                <svg className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 {branchState.branches.length > 1 ? (
-                  <select
-                    value={branchState.currentBranchId}
-                    onChange={(e) => switchBranch(e.target.value)}
-                    className="px-2 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                    title="Switch conversation branch"
-                  >
-                    {branchState.branches.map((branch) => (
-                      <option key={branch.id} value={branch.id}>
-                        {branch.name}
-                      </option>
-                    ))}
-                  </select>
+                  <>
+                    <label htmlFor="branch-selector" className="sr-only">
+                      Select conversation branch
+                    </label>
+                    <select
+                      id="branch-selector"
+                      value={branchState.currentBranchId}
+                      onChange={(e) => switchBranch(e.target.value)}
+                      className="px-2 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                      aria-label="Switch conversation branch"
+                    >
+                      {branchState.branches.map((branch) => (
+                        <option key={branch.id} value={branch.id}>
+                          {branch.name}
+                        </option>
+                      ))}
+                    </select>
+                  </>
                 ) : (
                   <span className="px-2 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md">
                     {currentBranch.name}
@@ -1419,21 +1450,22 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
               onClear={messages.length > 0 ? handleClear : undefined}
               headerActions={
                 // Playground button - show when there are messages with code
-                messages.some(m => m.role === 'assistant' && messageHasPlaygroundCode(m.id)) ? (
+                messagesWithPlaygroundCode.size > 0 ? (
                   <button
                     onClick={() => {
                       // Find the last assistant message with playground code
                       const lastWithCode = [...messages]
                         .reverse()
-                        .find(m => m.role === 'assistant' && messageHasPlaygroundCode(m.id))
+                        .find(m => m.role === 'assistant' && messagesWithPlaygroundCode.has(m.id))
                       if (lastWithCode) {
                         handleOpenInPlayground(lastWithCode.id)
                       }
                     }}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
                     title="Open code in playground"
+                    aria-label="Open code in CodeSandbox playground"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                     </svg>
                     Try Code

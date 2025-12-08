@@ -294,7 +294,6 @@ export function classifyQueryComplexity(
   query: string,
   conversationLength: number = 0
 ): QueryClassification {
-  const lowerQuery = query.toLowerCase()
   const wordCount = query.split(/\s+/).length
   const hasCode = /```|`[^`]+`|function\s+\w+|const\s+\w+|class\s+\w+/.test(query)
 
