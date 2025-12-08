@@ -127,17 +127,31 @@ export interface ThemeContrastCheckerProps {
 
 /**
  * Badge component for displaying WCAG level
+ * Uses semantic colors that work with any theme
  */
 function LevelBadge({ level }: { level: WCAGLevel }) {
-  const colors = {
-    AAA: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
-    AA: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
-    Fail: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+  // Use inline styles to avoid hardcoded Tailwind colors that may not exist in custom themes
+  const styles: Record<WCAGLevel, React.CSSProperties> = {
+    AAA: {
+      backgroundColor: 'hsl(var(--clarity-success, 142 76% 36%) / 0.15)',
+      color: 'hsl(var(--clarity-success, 142 76% 36%))',
+    },
+    AA: {
+      backgroundColor: 'hsl(var(--clarity-warning, 38 92% 50%) / 0.15)',
+      color: 'hsl(var(--clarity-warning, 38 92% 50%))',
+    },
+    Fail: {
+      backgroundColor: 'hsl(var(--clarity-destructive, 0 84% 60%) / 0.15)',
+      color: 'hsl(var(--clarity-destructive, 0 84% 60%))',
+    },
   }
 
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${colors[level]}`}
+      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+      style={styles[level]}
+      role="status"
+      aria-label={`WCAG compliance: ${level === 'Fail' ? 'Failed' : `Passes ${level}`}`}
     >
       {level === 'Fail' ? '✗ Fail' : `✓ ${level}`}
     </span>
@@ -151,11 +165,14 @@ function ColorSwatch({ color, label }: { color: string; label: string }) {
   return (
     <div className="flex items-center gap-2">
       <div
-        className="w-6 h-6 rounded border border-gray-300 dark:border-gray-600"
+        className="w-6 h-6 rounded border border-border"
         style={{ backgroundColor: color }}
         title={color}
+        aria-hidden="true"
       />
-      <span className="text-xs font-mono">{label}</span>
+      <span className="text-xs font-mono" aria-label={`Color: ${label}`}>
+        {label}
+      </span>
     </div>
   )
 }
@@ -260,19 +277,28 @@ export function ThemeContrastChecker({
             <div className="text-muted-foreground">Color Pairs</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-green-600">
+            <div
+              className="text-2xl font-bold"
+              style={{ color: 'hsl(var(--clarity-success, 142 76% 36%))' }}
+            >
               {summary.passing}
             </div>
             <div className="text-muted-foreground">Pass AA</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-green-700">
+            <div
+              className="text-2xl font-bold"
+              style={{ color: 'hsl(var(--clarity-success, 142 76% 30%))' }}
+            >
               {summary.passingAAA}
             </div>
             <div className="text-muted-foreground">Pass AAA</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-red-600">
+            <div
+              className="text-2xl font-bold"
+              style={{ color: 'hsl(var(--clarity-destructive, 0 84% 60%))' }}
+            >
               {summary.failing}
             </div>
             <div className="text-muted-foreground">Failing</div>
@@ -282,11 +308,17 @@ export function ThemeContrastChecker({
         {/* Overall status */}
         <div className="mt-3 pt-3 border-t">
           {summary.failing === 0 ? (
-            <p className="text-green-600 font-medium">
+            <p
+              className="font-medium"
+              style={{ color: 'hsl(var(--clarity-success, 142 76% 36%))' }}
+            >
               ✓ All color pairs meet WCAG AA requirements
             </p>
           ) : (
-            <p className="text-red-600 font-medium">
+            <p
+              className="font-medium"
+              style={{ color: 'hsl(var(--clarity-destructive, 0 84% 60%))' }}
+            >
               ⚠ {summary.failing} color pair{summary.failing > 1 ? 's' : ''}{' '}
               need attention
             </p>
@@ -300,11 +332,17 @@ export function ThemeContrastChecker({
           {filteredAnalysis.map((pair) => (
             <div
               key={pair.name}
-              className={`p-3 rounded-lg border ${
+              className="p-3 rounded-lg border"
+              style={
                 pair.level === 'Fail'
-                  ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950'
-                  : 'border-border bg-card'
-              }`}
+                  ? {
+                      borderColor:
+                        'hsl(var(--clarity-destructive, 0 84% 60%) / 0.3)',
+                      backgroundColor:
+                        'hsl(var(--clarity-destructive, 0 84% 60%) / 0.05)',
+                    }
+                  : undefined
+              }
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium">{pair.name}</span>
@@ -341,7 +379,12 @@ export function ThemeContrastChecker({
 
               {/* Suggestions for failing pairs */}
               {pair.level === 'Fail' && (
-                <div className="mt-2 text-xs text-red-600 dark:text-red-400">
+                <div
+                  className="mt-2 text-xs"
+                  style={{
+                    color: 'hsl(var(--clarity-destructive, 0 84% 60%))',
+                  }}
+                >
                   💡 Tip: Increase contrast by darkening the foreground or
                   lightening the background
                 </div>

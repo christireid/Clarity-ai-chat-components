@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import {
   ThemeProvider,
   createTheme,
-  useTheme,
   ThemeContrastChecker,
-  getThemeCSS,
   type CompleteThemeConfig,
+  type ModernThemePresetName,
 } from '@clarity-chat/react'
 
 const meta: Meta = {
@@ -109,10 +108,10 @@ function PresetSelector({
   value,
   onChange,
 }: {
-  value: string
-  onChange: (value: string) => void
+  value: ModernThemePresetName
+  onChange: (value: ModernThemePresetName) => void
 }) {
-  const presets = [
+  const presets: ModernThemePresetName[] = [
     'default',
     'default-dark',
     'neutral',
@@ -124,11 +123,14 @@ function PresetSelector({
   ]
   return (
     <div className="flex items-center gap-3">
-      <label className="text-sm font-medium w-32">Base Preset</label>
+      <label className="text-sm font-medium w-32" id="preset-label">
+        Base Preset
+      </label>
       <select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value as ModernThemePresetName)}
         className="flex-1 px-3 py-2 border rounded bg-background"
+        aria-labelledby="preset-label"
       >
         {presets.map((preset) => (
           <option key={preset} value={preset}>
@@ -272,20 +274,17 @@ const customTheme = createTheme({
  * Main playground component
  */
 function ThemePlaygroundInner() {
-  const { resolvedTheme } = useTheme()
   const [brandColor, setBrandColor] = useState('#6366f1')
-  const [accentColor, setAccentColor] = useState('#ec4899')
-  const [bgColor, setBgColor] = useState('#ffffff')
   const [radius, setRadius] = useState<
     'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full'
   >('md')
-  const [basePreset, setBasePreset] = useState('default')
+  const [basePreset, setBasePreset] = useState<ModernThemePresetName>('default')
   const [showAccessibility, setShowAccessibility] = useState(false)
 
   // Create custom theme
   const customTheme = React.useMemo(() => {
     return createTheme({
-      extends: basePreset as any,
+      extends: basePreset,
       brandColor,
       radius,
       name: 'playground-theme',
@@ -310,11 +309,6 @@ function ThemePlaygroundInner() {
               label="Brand Color"
               value={brandColor}
               onChange={setBrandColor}
-            />
-            <ColorInput
-              label="Accent Color"
-              value={accentColor}
-              onChange={setAccentColor}
             />
             <RadiusSelector value={radius} onChange={setRadius} />
 

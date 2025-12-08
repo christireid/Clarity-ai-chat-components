@@ -40,7 +40,7 @@ export default defineConfig({
       'src/safety/__tests__/**/*.test.ts',
       'src/hooks/__tests__/**/*.test.ts',
       'src/utils/__tests__/**/*.test.ts',
-      'src/theme/__tests__/**/*.test.ts',
+      'src/theme/__tests__/**/*.test.{ts,tsx}',
       'src/components/__tests__/**/*.test.tsx',
     ],
     // Exclude heavy tests that cause memory issues
@@ -66,6 +66,8 @@ export default defineConfig({
     alias: {
       '@clarity-chat/types': path.resolve(__dirname, '../types/src'),
       '@clarity-chat/primitives': path.resolve(__dirname, '../primitives/src'),
+      '@/lib/utils': path.resolve(__dirname, '../primitives/src/lib/utils'),
+      '@': path.resolve(__dirname, '../primitives/src'),
     },
   },
 })
