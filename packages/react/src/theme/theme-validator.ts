@@ -43,6 +43,8 @@ const REQUIRED_COLORS: (keyof ColorConfig)[] = [
   'accentForeground',
   'card',
   'cardForeground',
+  'popover',
+  'popoverForeground',
   'border',
   'input',
   'ring',
@@ -84,6 +86,12 @@ const CONTRAST_PAIRS: Array<{
     minRatio: 4.5,
   },
   { fg: 'cardForeground', bg: 'card', name: 'Card Text', minRatio: 4.5 },
+  {
+    fg: 'popoverForeground',
+    bg: 'popover',
+    name: 'Popover Text',
+    minRatio: 4.5,
+  },
   { fg: 'mutedForeground', bg: 'muted', name: 'Muted Text', minRatio: 4.5 },
   { fg: 'accentForeground', bg: 'accent', name: 'Accent Text', minRatio: 4.5 },
 ]

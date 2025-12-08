@@ -270,16 +270,26 @@ const customTheme = createTheme({
     exportedAt: new Date().toISOString(),
   }
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(code)
-    setCopied('code')
-    setTimeout(() => setCopied(null), 2000)
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied('code')
+      setTimeout(() => setCopied(null), 2000)
+    } catch {
+      // Fallback for older browsers or insecure contexts
+      console.warn('Clipboard API not available')
+    }
   }
 
-  const handleCopyJSON = () => {
-    navigator.clipboard.writeText(JSON.stringify(exportConfig, null, 2))
-    setCopied('json')
-    setTimeout(() => setCopied(null), 2000)
+  const handleCopyJSON = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(exportConfig, null, 2))
+      setCopied('json')
+      setTimeout(() => setCopied(null), 2000)
+    } catch {
+      // Fallback for older browsers or insecure contexts
+      console.warn('Clipboard API not available')
+    }
   }
 
   const handleDownloadJSON = () => {
@@ -403,10 +413,12 @@ function ThemePlaygroundInner() {
     radius: string
     preset: ModernThemePresetName
   }) => {
-    // Handle both hex and hsl formats
-    const color = config.brandColor.startsWith('hsl')
-      ? config.brandColor
-      : config.brandColor
+    // Normalize brand color - accept hex colors only for the color picker
+    let color = config.brandColor
+    // If it's an HSL value (from a previous export), default to the hex
+    if (color.includes('%') || color.includes(' ')) {
+      color = '#6366f1' // Default indigo when HSL can't be used in color picker
+    }
     setBrandColor(color.startsWith('#') ? color : `#${color}`)
     setRadius(config.radius as 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full')
     setBasePreset(config.preset)

@@ -38,7 +38,7 @@ export default defineConfig({
       'src/prompts/__tests__/**/*.test.ts',
       'src/plugins/__tests__/**/*.test.ts',
       'src/safety/__tests__/**/*.test.ts',
-      'src/hooks/__tests__/**/*.test.ts',
+      'src/hooks/__tests__/**/*.test.{ts,tsx}',
       'src/utils/__tests__/**/*.test.ts',
       'src/theme/__tests__/**/*.test.{ts,tsx}',
       'src/components/__tests__/**/*.test.tsx',
