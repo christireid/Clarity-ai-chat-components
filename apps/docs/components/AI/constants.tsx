@@ -104,5 +104,9 @@ export const DOCS_STARTER_PROMPTS: PromptSuggestion[] = [
 // Session ID Generation
 // ============================================================================
 
-export const generateSessionId = () =>
-  `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+/**
+ * Generate a unique session ID
+ * Uses substring() instead of deprecated substr()
+ */
+export const generateSessionId = (): string =>
+  `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`

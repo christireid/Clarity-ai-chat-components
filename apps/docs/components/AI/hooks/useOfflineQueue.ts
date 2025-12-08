@@ -3,13 +3,15 @@
  *
  * Manages offline message queuing with localStorage persistence.
  * Messages are queued when offline and automatically sent when back online.
+ *
+ * SSR-Safe: Uses lazy initialization to avoid hydration mismatches.
+ * Listens to native browser online/offline events for automatic detection.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Message } from '@clarity-chat/types'
 
 const MESSAGE_QUEUE_KEY = 'clarity-docs-assistant-queue'
-const QUEUE_PROCESS_DELAY_MS = 1000
 
 export interface QueuedMessage {
   id: string
@@ -32,30 +34,83 @@ export interface UseOfflineQueueReturn {
   handleNetworkStatusChange: (status: 'online' | 'offline' | 'slow' | 'unstable') => void
 }
 
+/**
+ * Safely check if we're in a browser environment
+ */
+const isBrowser = typeof window !== 'undefined'
+
+/**
+ * Safely get initial online status (SSR-safe)
+ */
+function getInitialOnlineStatus(): boolean {
+  if (!isBrowser) return true // Assume online during SSR
+  return navigator.onLine ?? true
+}
+
+/**
+ * Safely load queue from localStorage (SSR-safe)
+ */
+function loadQueueFromStorage(): QueuedMessage[] {
+  if (!isBrowser) return []
+  try {
+    const savedQueue = localStorage.getItem(MESSAGE_QUEUE_KEY)
+    if (savedQueue) {
+      const parsed = JSON.parse(savedQueue) as QueuedMessage[]
+      if (Array.isArray(parsed)) {
+        return parsed
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load message queue:', e)
+  }
+  return []
+}
+
 export function useOfflineQueue(options: UseOfflineQueueOptions = {}): UseOfflineQueueReturn {
   const { onQueueMessage, onProcessQueue, onStatusChange } = options
 
+  // Use lazy initialization to avoid hydration mismatch
+  // Initial state matches server (true for online, [] for queue)
   const [isOnline, setIsOnline] = useState(true)
   const [messageQueue, setMessageQueue] = useState<QueuedMessage[]>([])
+  const [isHydrated, setIsHydrated] = useState(false)
   const isProcessingQueueRef = useRef<boolean>(false)
 
-  // Load queue from localStorage on mount
+  // Hydrate state from localStorage after mount (SSR-safe)
   useEffect(() => {
-    try {
-      const savedQueue = localStorage.getItem(MESSAGE_QUEUE_KEY)
-      if (savedQueue) {
-        const parsed = JSON.parse(savedQueue) as QueuedMessage[]
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setMessageQueue(parsed)
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load message queue:', e)
-    }
+    setIsOnline(getInitialOnlineStatus())
+    setMessageQueue(loadQueueFromStorage())
+    setIsHydrated(true)
   }, [])
 
-  // Save queue to localStorage when it changes
+  // Listen to native browser online/offline events
   useEffect(() => {
+    if (!isBrowser) return
+
+    const handleOnline = () => {
+      setIsOnline(true)
+      onStatusChange?.(true)
+    }
+
+    const handleOffline = () => {
+      setIsOnline(false)
+      onStatusChange?.(false)
+    }
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [onStatusChange])
+
+  // Save queue to localStorage when it changes (SSR-safe)
+  useEffect(() => {
+    // Only persist after hydration to avoid SSR issues
+    if (!isBrowser || !isHydrated) return
+
     try {
       if (messageQueue.length > 0) {
         localStorage.setItem(MESSAGE_QUEUE_KEY, JSON.stringify(messageQueue))
@@ -65,7 +120,7 @@ export function useOfflineQueue(options: UseOfflineQueueOptions = {}): UseOfflin
     } catch (e) {
       console.error('Failed to save message queue:', e)
     }
-  }, [messageQueue])
+  }, [messageQueue, isHydrated])
 
   // Handle network status changes
   const handleNetworkStatusChange = useCallback((status: 'online' | 'offline' | 'slow' | 'unstable') => {
@@ -113,10 +168,12 @@ export function useOfflineQueue(options: UseOfflineQueueOptions = {}): UseOfflin
     }
   }, [isOnline, messageQueue])
 
-  // Clear the queue
+  // Clear the queue (SSR-safe)
   const clearQueue = useCallback(() => {
     setMessageQueue([])
-    localStorage.removeItem(MESSAGE_QUEUE_KEY)
+    if (isBrowser) {
+      localStorage.removeItem(MESSAGE_QUEUE_KEY)
+    }
   }, [])
 
   return {

@@ -320,8 +320,18 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
       current.code.length > largest.code.length ? current : largest
     )
 
-    openInPlayground(blockToOpen.code, blockToOpen.language)
-    toast.success('Opening code in playground...')
+    const result = openInPlayground(blockToOpen.code, blockToOpen.language)
+    if (result.success) {
+      toast.success('Opening code in playground...')
+    } else {
+      // Provide fallback with URL for manual opening
+      toast.error(result.error || 'Failed to open playground')
+      // Copy URL to clipboard as fallback
+      if (result.url) {
+        navigator.clipboard?.writeText(result.url)
+        toast.info('Playground URL copied to clipboard')
+      }
+    }
   }, [messages, toast])
 
   // Check if messages have playground-compatible code (memoized)
@@ -640,13 +650,17 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     includeImages?: boolean
   }) => {
     try {
-      const result = generateExportContent(
+      const exportResult = generateExportContent(
         messages,
         sessionId,
         { ...options, format: options.format as 'json' | 'html' | 'markdown' }
       )
-      downloadExport(result)
-      toast.success(`Conversation exported as ${result.extension.toUpperCase()}`)
+      const downloadResult = downloadExport(exportResult)
+      if (downloadResult.success) {
+        toast.success(`Conversation exported as ${exportResult.extension.toUpperCase()}`)
+      } else {
+        throw new Error(downloadResult.error || 'Download failed')
+      }
     } catch (error) {
       console.error('Failed to export conversation:', error)
       toast.error('Failed to export conversation')

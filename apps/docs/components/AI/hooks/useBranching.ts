@@ -3,6 +3,8 @@
  *
  * Manages conversation branching with localStorage persistence.
  * Allows users to create alternate conversation paths from any point.
+ *
+ * SSR-Safe: Uses lazy initialization to avoid hydration mismatches.
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
@@ -42,47 +44,81 @@ export interface UseBranchingReturn {
   hasBranches: boolean
 }
 
-const DEFAULT_BRANCH: ConversationBranch = {
-  id: 'main',
-  name: 'Main Conversation',
-  messages: [],
-  parentBranchId: null,
-  branchPointMessageId: null,
-  createdAt: new Date(),
+/**
+ * Safely check if we're in a browser environment
+ */
+const isBrowser = typeof window !== 'undefined'
+
+/**
+ * Create default branch with current timestamp (called lazily to avoid SSR issues)
+ */
+function createDefaultBranch(): ConversationBranch {
+  return {
+    id: 'main',
+    name: 'Main Conversation',
+    messages: [],
+    parentBranchId: null,
+    branchPointMessageId: null,
+    createdAt: new Date(),
+  }
 }
 
-const DEFAULT_STATE: BranchState = {
-  branches: [DEFAULT_BRANCH],
-  currentBranchId: 'main',
+/**
+ * Create default state (called lazily to avoid SSR issues)
+ */
+function createDefaultState(): BranchState {
+  return {
+    branches: [createDefaultBranch()],
+    currentBranchId: 'main',
+  }
+}
+
+/**
+ * Safely load branch state from localStorage (SSR-safe)
+ */
+function loadBranchStateFromStorage(): BranchState | null {
+  if (!isBrowser) return null
+  try {
+    const savedBranches = localStorage.getItem(BRANCHES_KEY)
+    if (savedBranches) {
+      const parsed = JSON.parse(savedBranches) as BranchState
+      if (parsed.branches && parsed.branches.length > 0) {
+        // Restore Date objects
+        parsed.branches = parsed.branches.map(b => ({
+          ...b,
+          createdAt: new Date(b.createdAt),
+        }))
+        return parsed
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load branch state:', e)
+  }
+  return null
 }
 
 export function useBranching(options: UseBranchingOptions = {}): UseBranchingReturn {
   const { onBranchSwitch, onBranchCreate } = options
 
-  const [branchState, setBranchState] = useState<BranchState>(DEFAULT_STATE)
+  // Use lazy initialization to avoid hydration mismatch
+  // Initial state is created fresh on both server and client
+  const [branchState, setBranchState] = useState<BranchState>(createDefaultState)
+  const [isHydrated, setIsHydrated] = useState(false)
 
-  // Load branch state from localStorage on mount
+  // Hydrate state from localStorage after mount (SSR-safe)
   useEffect(() => {
-    try {
-      const savedBranches = localStorage.getItem(BRANCHES_KEY)
-      if (savedBranches) {
-        const parsed = JSON.parse(savedBranches) as BranchState
-        if (parsed.branches && parsed.branches.length > 0) {
-          // Restore Date objects
-          parsed.branches = parsed.branches.map(b => ({
-            ...b,
-            createdAt: new Date(b.createdAt),
-          }))
-          setBranchState(parsed)
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load branch state:', e)
+    const savedState = loadBranchStateFromStorage()
+    if (savedState) {
+      setBranchState(savedState)
     }
+    setIsHydrated(true)
   }, [])
 
-  // Save branch state to localStorage when it changes
+  // Save branch state to localStorage when it changes (SSR-safe)
   useEffect(() => {
+    // Only persist after hydration to avoid SSR issues
+    if (!isBrowser || !isHydrated) return
+
     try {
       // Only persist if we have more than just the main branch
       if (branchState.branches.length > 1 || branchState.currentBranchId !== 'main') {
@@ -93,7 +129,7 @@ export function useBranching(options: UseBranchingOptions = {}): UseBranchingRet
     } catch (e) {
       console.error('Failed to save branch state:', e)
     }
-  }, [branchState])
+  }, [branchState, isHydrated])
 
   // Get current branch
   const currentBranch = useMemo(() => {

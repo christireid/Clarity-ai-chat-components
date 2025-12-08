@@ -114,9 +114,44 @@ root.render(<App />);
 }
 
 /**
- * Open code in playground (CodeSandbox by default)
+ * Result of opening playground
  */
-export function openInPlayground(code: string, language: string): void {
+export interface OpenPlaygroundResult {
+  success: boolean
+  url: string
+  error?: string
+}
+
+/**
+ * Open code in playground (CodeSandbox by default)
+ * Returns result object for handling popup blockers
+ */
+export function openInPlayground(code: string, language: string): OpenPlaygroundResult {
+  // SSR safety check
+  if (typeof window === 'undefined') {
+    return { success: false, url: '', error: 'Not in browser environment' }
+  }
+
   const url = generateCodeSandboxUrl(code, language)
-  window.open(url, '_blank', 'noopener,noreferrer')
+
+  try {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+      // Popup was blocked
+      return {
+        success: false,
+        url,
+        error: 'Popup was blocked. Please allow popups for this site.',
+      }
+    }
+
+    return { success: true, url }
+  } catch (e) {
+    return {
+      success: false,
+      url,
+      error: e instanceof Error ? e.message : 'Failed to open playground',
+    }
+  }
 }

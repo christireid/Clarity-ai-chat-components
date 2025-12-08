@@ -112,16 +112,37 @@ export function generateExportContent(
 }
 
 /**
- * Download exported content as a file
+ * Result of download attempt
  */
-export function downloadExport(result: ExportResult): void {
-  const blob = new Blob([result.content], { type: result.mimeType })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `clarity-chat-${Date.now()}.${result.extension}`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+export interface DownloadResult {
+  success: boolean
+  error?: string
+}
+
+/**
+ * Download exported content as a file (SSR-safe)
+ */
+export function downloadExport(result: ExportResult): DownloadResult {
+  // SSR safety check
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return { success: false, error: 'Not in browser environment' }
+  }
+
+  try {
+    const blob = new Blob([result.content], { type: result.mimeType })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `clarity-chat-${Date.now()}.${result.extension}`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    return { success: true }
+  } catch (e) {
+    return {
+      success: false,
+      error: e instanceof Error ? e.message : 'Failed to download export',
+    }
+  }
 }
