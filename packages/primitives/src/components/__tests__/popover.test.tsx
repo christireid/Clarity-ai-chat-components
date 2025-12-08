@@ -66,7 +66,7 @@ describe('Popover Component', () => {
       )
 
       const trigger = screen.getByText('Toggle')
-      
+
       // First click opens
       await user.click(trigger)
       expect(screen.getByText('Content')).toBeInTheDocument()

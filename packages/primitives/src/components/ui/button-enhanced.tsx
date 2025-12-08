@@ -1,6 +1,6 @@
 /**
  * Enhanced Button - shadcn/ui Button with loading state
- * 
+ *
  * This wraps the shadcn Button component and adds the loading state functionality
  * from our custom Button, providing the best of both worlds:
  * - shadcn's excellent accessibility and keyboard navigation
@@ -9,8 +9,17 @@
 
 import * as React from 'react'
 import { Loader2 } from 'lucide-react'
-import { Button as ShadcnButton, ButtonProps as ShadcnButtonProps } from './button'
+import {
+  Button as ShadcnButton,
+  ButtonProps as ShadcnButtonProps,
+} from './button'
 import { cn } from '../../lib/utils'
+
+/**
+ * @deprecated Use the `loading` prop instead of `state`.
+ * This type is provided for backward compatibility only.
+ */
+export type ButtonState = 'idle' | 'loading' | 'success' | 'error'
 
 export interface ButtonProps extends ShadcnButtonProps {
   /**
@@ -18,7 +27,7 @@ export interface ButtonProps extends ShadcnButtonProps {
    * When true, shows a spinner and disables the button
    */
   loading?: boolean
-  
+
   /**
    * @deprecated Ripple effect is not available in the shadcn Button.
    * This prop is accepted for backward compatibility but has no effect.
@@ -28,10 +37,13 @@ export interface ButtonProps extends ShadcnButtonProps {
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ children, loading, ripple: _ripple, disabled, className, ...props }, ref) => {
+  (
+    { children, loading, ripple: _ripple, disabled, className, ...props },
+    ref
+  ) => {
     // Note: ripple is accepted but not yet implemented
     // This maintains API compatibility with the legacy button
-    
+
     return (
       <ShadcnButton
         ref={ref}

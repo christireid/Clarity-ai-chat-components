@@ -79,7 +79,7 @@ export const renderWithProviders = (
  */
 export const renderWithTheme = (
   ui: ReactElement,
-  themeName: keyof typeof themes = 'ocean',
+  themeName: keyof typeof themes = 'default',
   options?: Omit<RenderOptions, 'wrapper'>
 ) => {
   const Wrapper = ({ children }: { children: ReactNode }) => (

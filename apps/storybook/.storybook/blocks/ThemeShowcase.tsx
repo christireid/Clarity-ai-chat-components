@@ -7,12 +7,18 @@ interface ThemeShowcaseProps {
   title?: string
 }
 
-const defaultThemes = ['clarity-light', 'clarity-dark', 'sunset', 'ocean', 'forest']
+const defaultThemes = [
+  'default',
+  'default-dark',
+  'neutral',
+  'vibrant',
+  'high-contrast',
+]
 
 export const ThemeShowcase: React.FC<ThemeShowcaseProps> = ({
   children,
   themes = defaultThemes,
-  title = 'Theme Variations'
+  title = 'Theme Variations',
 }) => {
   return (
     <div className="my-8 space-y-6">

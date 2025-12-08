@@ -60,6 +60,8 @@ export default defineConfig({
     alias: {
       '@clarity-chat/types': path.resolve(__dirname, '../types/src'),
       '@clarity-chat/primitives': path.resolve(__dirname, '../primitives/src'),
+      '@/lib/utils': path.resolve(__dirname, '../primitives/src/lib/utils'),
+      '@': path.resolve(__dirname, '../primitives/src'),
     },
   },
 })
