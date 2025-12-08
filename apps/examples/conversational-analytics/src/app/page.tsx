@@ -20,17 +20,22 @@ import { InsightCards } from '@/components/InsightCards'
 import { ChartGallery } from '@/components/ChartGallery'
 import { DataExplorer } from '@/components/DataExplorer'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BarChart3, Database, Sparkles, TrendingUp, Zap, Lightbulb } from 'lucide-react'
+import {
+  BarChart3,
+  Database,
+  Sparkles,
+  TrendingUp,
+  Zap,
+  Lightbulb,
+} from 'lucide-react'
 
 export default function ConversationalAnalytics() {
-  const [activeView, setActiveView] = useState<'chat' | 'dashboard' | 'explorer'>('chat')
+  const [activeView, setActiveView] = useState<
+    'chat' | 'dashboard' | 'explorer'
+  >('chat')
   const [currentQuery, setCurrentQuery] = useState('')
   const [generatedCharts, setGeneratedCharts] = useState<any[]>([])
   const [insights, setInsights] = useState<any[]>([])
-
-  if (typeof window === 'undefined') {
-    return null
-  }
 
   const messageOps = useMessageOperations() || {}
   const messages = messageOps.messages ?? []
@@ -43,63 +48,72 @@ export default function ConversationalAnalytics() {
     },
   })
 
-  const handleQuery = useCallback(async (query: string) => {
-    setCurrentQuery(query)
-    
-    addMessage({
-      id: `user-${Date.now()}`,
-      role: 'user',
-      content: query,
-      timestamp: new Date(),
-    })
+  const handleQuery = useCallback(
+    async (query: string) => {
+      setCurrentQuery(query)
 
-    // Simulate analytics query processing
-    const mockResponse = {
-      type: 'chart',
-      data: {
-        chartType: 'bar',
-        title: 'Sales by Region',
-        data: [
-          { region: 'North', sales: 45000 },
-          { region: 'South', sales: 52000 },
-          { region: 'East', sales: 38000 },
-          { region: 'West', sales: 61000 },
+      addMessage({
+        id: `user-${Date.now()}`,
+        role: 'user',
+        content: query,
+        timestamp: new Date(),
+      })
+
+      // Simulate analytics query processing
+      const mockResponse = {
+        type: 'chart',
+        data: {
+          chartType: 'bar',
+          title: 'Sales by Region',
+          data: [
+            { region: 'North', sales: 45000 },
+            { region: 'South', sales: 52000 },
+            { region: 'East', sales: 38000 },
+            { region: 'West', sales: 61000 },
+          ],
+        },
+        insights: [
+          'West region shows highest sales at $61k',
+          'Sales increased 12% month-over-month',
+          'Recommendation: Expand marketing in West region',
         ],
-      },
-      insights: [
-        'West region shows highest sales at $61k',
-        'Sales increased 12% month-over-month',
-        'Recommendation: Expand marketing in West region',
-      ],
-    }
+      }
 
-    // Add chart to gallery
-    setGeneratedCharts(prev => [...prev, mockResponse.data])
-    setInsights(prev => [...prev, ...mockResponse.insights.map((text, idx) => ({
-      id: `insight-${Date.now()}-${idx}`,
-      text,
-      timestamp: new Date(),
-    }))])
+      // Add chart to gallery
+      setGeneratedCharts((prev) => [...prev, mockResponse.data])
+      setInsights((prev) => [
+        ...prev,
+        ...mockResponse.insights.map((text, idx) => ({
+          id: `insight-${Date.now()}-${idx}`,
+          text,
+          timestamp: new Date(),
+        })),
+      ])
 
-    addMessage({
-      id: `assistant-${Date.now()}`,
-      role: 'assistant',
-      content: `I've analyzed your data and created a chart showing ${mockResponse.data.title}. Here are the key insights:\n\n${mockResponse.insights.map(i => `• ${i}`).join('\n')}`,
-      timestamp: new Date(),
-      metadata: {
-        chartType: mockResponse.data.chartType,
-        insights: mockResponse.insights,
-      },
-    })
-  }, [addMessage])
+      addMessage({
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: `I've analyzed your data and created a chart showing ${mockResponse.data.title}. Here are the key insights:\n\n${mockResponse.insights.map((i) => `• ${i}`).join('\n')}`,
+        timestamp: new Date(),
+        metadata: {
+          chartType: mockResponse.data.chartType,
+          insights: mockResponse.insights,
+        },
+      })
+    },
+    [addMessage]
+  )
 
-  const suggestedQueries = useMemo(() => [
-    'Show me sales trends for the last quarter',
-    'Compare revenue by product category',
-    'What are the top performing regions?',
-    'Analyze customer retention rates',
-    'Create a dashboard for marketing metrics',
-  ], [])
+  const suggestedQueries = useMemo(
+    () => [
+      'Show me sales trends for the last quarter',
+      'Compare revenue by product category',
+      'What are the top performing regions?',
+      'Analyze customer retention rates',
+      'Create a dashboard for marketing metrics',
+    ],
+    []
+  )
 
   return (
     <ThemeProvider theme={themes.minimal}>
@@ -121,7 +135,7 @@ export default function ConversationalAnalytics() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setActiveView('chat')}
@@ -179,7 +193,7 @@ export default function ConversationalAnalytics() {
                       onQuery={(query) => handleQuery(query)}
                       suggestedQueries={suggestedQueries}
                     />
-                    
+
                     {insights.length > 0 && (
                       <div className="mt-6">
                         <h3 className="font-semibold mb-3 flex items-center">
@@ -199,29 +213,40 @@ export default function ConversationalAnalytics() {
                       messages={messages}
                       onSendMessage={handleQuery}
                       renderMessage={(message) => {
-                        if (message.role === 'assistant' && message.metadata?.chartType) {
+                        if (
+                          message.role === 'assistant' &&
+                          message.metadata?.chartType
+                        ) {
                           return (
                             <div className="space-y-4">
                               <div className="prose dark:prose-invert max-w-none">
                                 {message.content}
                               </div>
-                                {Array.isArray(message.metadata?.insights) && (
-                                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
-                                    <h4 className="font-semibold mb-2 flex items-center">
-                                      <Sparkles className="w-4 h-4 mr-2 text-yellow-600 dark:text-yellow-400" />
-                                      AI Insights
-                                    </h4>
-                                    <ul className="space-y-1">
-                                      {message.metadata?.insights?.map((insight: string, idx: number) => (
-                                        <li key={idx} className="text-sm">{insight}</li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                )}
+                              {Array.isArray(message.metadata?.insights) && (
+                                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                                  <h4 className="font-semibold mb-2 flex items-center">
+                                    <Sparkles className="w-4 h-4 mr-2 text-yellow-600 dark:text-yellow-400" />
+                                    AI Insights
+                                  </h4>
+                                  <ul className="space-y-1">
+                                    {message.metadata?.insights?.map(
+                                      (insight: string, idx: number) => (
+                                        <li key={idx} className="text-sm">
+                                          {insight}
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                </div>
+                              )}
                             </div>
                           )
                         }
-                        return <div className="prose dark:prose-invert max-w-none">{message.content}</div>
+                        return (
+                          <div className="prose dark:prose-invert max-w-none">
+                            {message.content}
+                          </div>
+                        )
                       }}
                       showTypingIndicator={isStreaming}
                     />

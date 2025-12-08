@@ -17,11 +17,6 @@ export default function Home() {
   const { customer, setCustomer } = useStore()
   const [messages, setMessages] = useState<SupportMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
-
-  if (typeof window === 'undefined') {
-    return null
-  }
-
   const hasSupabase = Boolean(supabase)
 
   // Load conversation history
@@ -41,7 +36,7 @@ export default function Home() {
       .order('created_at', { ascending: true })
 
     if (data && !error) {
-        const formattedMessages: SupportMessage[] = data.map((msg) => ({
+      const formattedMessages: SupportMessage[] = data.map((msg) => ({
         id: msg.id,
         role: msg.role,
         content: msg.content,
@@ -51,7 +46,11 @@ export default function Home() {
     }
   }
 
-  const handleCustomerSubmit = async (data: { email: string; name: string; subject: string }) => {
+  const handleCustomerSubmit = async (data: {
+    email: string
+    name: string
+    subject: string
+  }) => {
     let conversationId: string | null = null
 
     if (supabase) {
@@ -158,56 +157,68 @@ export default function Home() {
 
   if (!customer) {
     return (
-      <main style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        padding: '2rem',
-      }}>
+      <main
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          padding: '2rem',
+        }}
+      >
         <CustomerForm onSubmit={handleCustomerSubmit} />
       </main>
     )
   }
 
   return (
-    <main style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      padding: '2rem',
-    }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '900px',
-        marginBottom: '1rem',
-      }}>
-        <h1 style={{
-          fontSize: '1.5rem',
-          fontWeight: 'bold',
-          marginBottom: '0.5rem',
-        }}>
+    <main
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        padding: '2rem',
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '900px',
+          marginBottom: '1rem',
+        }}
+      >
+        <h1
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            marginBottom: '0.5rem',
+          }}
+        >
           Customer Support Chat
         </h1>
-        <p style={{
-          color: 'var(--foreground)',
-          opacity: 0.7,
-          fontSize: '0.875rem',
-        }}>
+        <p
+          style={{
+            color: 'var(--foreground)',
+            opacity: 0.7,
+            fontSize: '0.875rem',
+          }}
+        >
           Conversation with {customer.name} ({customer.email})
         </p>
       </div>
 
-      <div style={{
-        width: '100%',
-        maxWidth: '900px',
-        height: '600px',
-        border: '1px solid rgba(128, 128, 128, 0.2)',
-        borderRadius: '8px',
-        overflow: 'hidden',
-      }}>
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '900px',
+          height: '600px',
+          border: '1px solid rgba(128, 128, 128, 0.2)',
+          borderRadius: '8px',
+          overflow: 'hidden',
+        }}
+      >
         <ChatWindow
           messages={messages}
           isLoading={isLoading}

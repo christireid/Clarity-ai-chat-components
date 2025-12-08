@@ -2,6 +2,7 @@
  * @vitest-environment happy-dom
  */
 
+import * as React from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import { ThemeProvider } from 'next-themes'
@@ -37,14 +38,14 @@ vi.mock('next/dynamic', () => ({
 }))
 
 vi.mock('@tsparticles/react', () => ({
-  default: ({ 
-    id, 
-    options, 
-    particlesLoaded 
-  }: { 
+  default: ({
+    id,
+    options,
+    particlesLoaded,
+  }: {
     id?: string
     options?: unknown
-    particlesLoaded?: (container: unknown) => Promise<void> 
+    particlesLoaded?: (container: unknown) => Promise<void>
   }) => {
     // Simulate particles loaded callback after a delay
     if (particlesLoaded) {
@@ -97,14 +98,14 @@ describe('AnimatedBackground', () => {
     initParticlesPromise = new Promise<void>((resolve) => {
       initParticlesResolve = resolve
     })
-    
+
     // Default hook implementations
     vi.mocked(useReducedMotionHook.useReducedMotion).mockReturnValue(false)
     vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
       isInitialized: false,
       error: null,
     })
-    
+
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn(() => mockMatchMedia(false)),
@@ -127,11 +128,11 @@ describe('AnimatedBackground', () => {
     vi.mocked(useReducedMotionHook.useReducedMotion).mockReturnValue(true)
 
     const { container } = renderWithTheme(<AnimatedBackground />)
-    
+
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
     })
-    
+
     // Should be null because reduced motion is enabled
     const particles = container.querySelector('[data-testid="particles"]')
     expect(particles).toBeNull()
@@ -145,19 +146,21 @@ describe('AnimatedBackground', () => {
     })
 
     const { container } = renderWithTheme(<AnimatedBackground />)
-    
+
     // Initially should be null (before init completes)
-    const initialParticles = container.querySelector('[data-testid="particles"]')
+    const initialParticles = container.querySelector(
+      '[data-testid="particles"]'
+    )
     expect(initialParticles).toBeNull()
-    
+
     // After init completes, it should render
     vi.mocked(useParticlesEngineHook.useParticlesEngine).mockReturnValue({
       isInitialized: true,
       error: null,
     })
-    
+
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
     })
   })
 
@@ -172,7 +175,7 @@ describe('AnimatedBackground', () => {
     )
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
     })
 
     await waitFor(() => {
@@ -190,7 +193,7 @@ describe('AnimatedBackground', () => {
     const { container } = renderWithTheme(<AnimatedBackground />)
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
     })
 
     await waitFor(() => {
@@ -206,12 +209,13 @@ describe('AnimatedBackground', () => {
     })
 
     const useWindowResizeMock = vi.fn()
-    vi.mocked(await import('./hooks/useWindowResize')).useWindowResize = useWindowResizeMock
+    vi.mocked(await import('./hooks/useWindowResize')).useWindowResize =
+      useWindowResizeMock
 
     renderWithTheme(<AnimatedBackground />)
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
     })
 
     // Verify the hook was called
@@ -225,12 +229,13 @@ describe('AnimatedBackground', () => {
     })
 
     const usePageVisibilityMock = vi.fn()
-    vi.mocked(await import('./hooks/usePageVisibility')).usePageVisibility = usePageVisibilityMock
+    vi.mocked(await import('./hooks/usePageVisibility')).usePageVisibility =
+      usePageVisibilityMock
 
     renderWithTheme(<AnimatedBackground />)
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
     })
 
     // Verify the hook was called
@@ -249,7 +254,7 @@ describe('AnimatedBackground', () => {
     const { container } = renderWithTheme(<AnimatedBackground />)
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
     })
 
     // Component should render normally
@@ -265,7 +270,7 @@ describe('AnimatedBackground', () => {
     const { unmount } = renderWithTheme(<AnimatedBackground />)
 
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
     })
 
     // Unmount should not throw

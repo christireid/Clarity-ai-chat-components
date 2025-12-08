@@ -1,0 +1,66 @@
+import { useState, useCallback, useEffect } from 'react'
+
+export interface Use{{pascalCase name}}Options {
+  /**
+   * Initial value for the hook
+   */
+  initialValue?: unknown
+}
+
+export interface Use{{pascalCase name}}Return {
+  /**
+   * Current state value
+   */
+  value: unknown
+  /**
+   * Update the value
+   */
+  setValue: (value: unknown) => void
+  /**
+   * Reset to initial value
+   */
+  reset: () => void
+}
+
+/**
+ * use{{pascalCase name}} - {{description}}
+ *
+ * @param options - Hook configuration options
+ * @returns Hook state and methods
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   const { value, setValue, reset } = use{{pascalCase name}}()
+ *
+ *   return (
+ *     <div>
+ *       <span>{value}</span>
+ *       <button onClick={() => setValue('new value')}>Update</button>
+ *       <button onClick={reset}>Reset</button>
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function use{{pascalCase name}}(
+  options: Use{{pascalCase name}}Options = {}
+): Use{{pascalCase name}}Return {
+  const { initialValue = null } = options
+
+  const [value, setValueState] = useState<unknown>(initialValue)
+
+  const setValue = useCallback((newValue: unknown) => {
+    setValueState(newValue)
+  }, [])
+
+  const reset = useCallback(() => {
+    setValueState(initialValue)
+  }, [initialValue])
+
+  return {
+    value,
+    setValue,
+    reset,
+  }
+}

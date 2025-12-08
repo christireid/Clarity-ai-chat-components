@@ -1,6 +1,6 @@
 /**
  * Testing Utilities for useClarityChat
- * 
+ *
  * Mock implementations and test helpers for testing components using useClarityChat
  */
 
@@ -15,34 +15,60 @@ import type { CoreMessage } from '../hooks/use-chat-enhanced'
 
 /**
  * Mock implementation of useClarityChat for testing
+ *
+ * Note: This creates a static mock object without React hooks.
+ * For tests that need reactive state, use the provided setters with jest/vitest mocks.
  */
 export function createMockUseClarityChat(
   overrides?: Partial<UseClarityChatReturn>
 ): UseClarityChatReturn {
-  const [messages, setMessages] = React.useState<CoreMessage[]>([])
-  const [input, setInput] = React.useState('')
-  const [isLoading, setIsLoading] = React.useState(false)
+  // Create mutable state containers for testing
+  let messages: CoreMessage[] = overrides?.messages || []
+  let input: string = overrides?.input || ''
+  let isLoading: boolean = overrides?.isLoading || false
+
+  const setMessages =
+    overrides?.setMessages ||
+    ((
+      newMessages: CoreMessage[] | ((prev: CoreMessage[]) => CoreMessage[])
+    ) => {
+      if (typeof newMessages === 'function') {
+        messages = newMessages(messages)
+      } else {
+        messages = newMessages
+      }
+    })
+
+  const setInput =
+    overrides?.setInput ||
+    ((newInput: string) => {
+      input = newInput
+    })
 
   return {
-    messages: overrides?.messages || messages,
-    setMessages: overrides?.setMessages || setMessages,
-    append: overrides?.append || (async () => {
-      setIsLoading(true)
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      setIsLoading(false)
-      return 'mock-message-id'
-    }),
-    reload: overrides?.reload || (async () => {
-      setIsLoading(true)
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      setIsLoading(false)
-      return 'mock-message-id'
-    }),
+    messages,
+    setMessages,
+    append:
+      overrides?.append ||
+      (async () => {
+        isLoading = true
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        isLoading = false
+        return 'mock-message-id'
+      }),
+    reload:
+      overrides?.reload ||
+      (async () => {
+        isLoading = true
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        isLoading = false
+        return 'mock-message-id'
+      }),
     stop: overrides?.stop || (() => {}),
     handleSubmit: overrides?.handleSubmit || (() => {}),
-    input: overrides?.input || input,
-    setInput: overrides?.setInput || setInput,
-    isLoading: overrides?.isLoading || isLoading,
+    input,
+    setInput,
+    isLoading,
     error: overrides?.error,
     data: overrides?.data,
     abort: overrides?.abort || (() => {}),
@@ -133,13 +159,13 @@ export async function simulateStreamingResponse(
   onChunk?: (chunk: string) => void
 ): Promise<string> {
   let fullContent = ''
-  
+
   for (const chunk of chunks) {
     await new Promise((resolve) => setTimeout(resolve, 50))
     fullContent += chunk
     onChunk?.(chunk)
   }
-  
+
   return fullContent
 }
 
@@ -152,11 +178,11 @@ export function createMockFetch(
   return async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input.toString()
     const response = responses[url]
-    
+
     if (!response) {
       throw new Error(`No mock response for ${url}`)
     }
-    
+
     return typeof response === 'function' ? response() : response
   }
 }
@@ -173,7 +199,9 @@ export function createMockStreamingResponse(
     async start(controller) {
       for (let i = 0; i < content.length; i += chunkSize) {
         const chunk = content.slice(i, i + chunkSize)
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: chunk })}\n\n`))
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify({ content: chunk })}\n\n`)
+        )
         await new Promise((resolve) => setTimeout(resolve, 50))
       }
       controller.enqueue(encoder.encode('data: [DONE]\n\n'))
@@ -213,15 +241,15 @@ export function assertChatState(
   if (expected.messageCount !== undefined) {
     expect(chat.messages).toHaveLength(expected.messageCount)
   }
-  
+
   if (expected.isLoading !== undefined) {
     expect(chat.isLoading).toBe(expected.isLoading)
   }
-  
+
   if (expected.hasError !== undefined) {
     expect(!!chat.error).toBe(expected.hasError)
   }
-  
+
   if (expected.memoryEnabled !== undefined) {
     expect(chat.memoryInfo.enabled).toBe(expected.memoryEnabled)
   }

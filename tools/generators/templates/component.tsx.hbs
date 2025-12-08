@@ -1,0 +1,38 @@
+import { forwardRef } from 'react'
+import { cn } from '@/lib/utils'
+
+export interface {{pascalCase name}}Props {
+  /** Additional CSS classes */
+  className?: string
+  /** Component children */
+  children?: React.ReactNode
+}
+
+/**
+ * {{pascalCase name}} - {{description}}
+ *
+ * @example
+ * ```tsx
+ * <{{pascalCase name}}>
+ *   Content here
+ * </{{pascalCase name}}>
+ * ```
+ */
+export const {{pascalCase name}} = forwardRef<HTMLDivElement, {{pascalCase name}}Props>(
+  ({ className, children, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'clarity-{{kebabCase name}}',
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+)
+
+{{pascalCase name}}.displayName = '{{pascalCase name}}'

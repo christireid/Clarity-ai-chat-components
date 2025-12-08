@@ -6,10 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [
-    ['html'],
-    ['json', { outputFile: 'test-results.json' }],
-  ],
+  reporter: [['html'], ['json', { outputFile: 'test-results.json' }]],
   use: {
     baseURL: 'http://localhost:6006',
     trace: 'on-first-retry',
@@ -22,7 +19,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run storybook',
+    command: 'pnpm storybook',
     url: 'http://localhost:6006',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

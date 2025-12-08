@@ -4,23 +4,36 @@ Automated visual regression testing for Clarity Chat Components using Playwright
 
 ## Overview
 
-Visual regression tests capture screenshots of components and compare them against baseline images to detect unintended visual changes.
+Visual regression tests capture screenshots of components and compare them against baseline images
+to detect unintended visual changes.
 
 ## Setup
 
 ```bash
-# Install dependencies
-npm install
+# Install dependencies (from repo root)
+pnpm install
 
 # Install Playwright browsers
 npx playwright install chromium
 ```
 
+## Initial Setup: Creating Baseline Screenshots
+
+Before running visual tests for the first time, you need to create baseline screenshots:
+
+```bash
+# Generate baseline screenshots (from repo root)
+pnpm test:visual --update-snapshots
+```
+
+This creates reference images in `__screenshots__/` that future tests compare against. Commit these
+baseline images to the repository.
+
 ## Running Tests
 
 ```bash
-# Run all visual tests
-npm run test:visual
+# Run all visual tests (from repo root)
+pnpm test:visual
 
 # Run in UI mode (interactive)
 npx playwright test --ui
@@ -35,28 +48,33 @@ npx playwright test specs/components.spec.ts
 ## What's Tested
 
 ### Component States
+
 - Button variants (default, outline, ghost, etc.)
 - Button states (hover, focus, active, disabled)
 - Input states (normal, focus, error, success)
 - Card variants and interactions
 
 ### Design Patterns
+
 - Shadow hierarchy (xs, sm, md, lg, xl)
 - Border radius scale (sm, md, lg, full)
 - Ring-based borders
 - Focus states (3px ring with 50% opacity)
 
 ### Themes
+
 - Light mode
 - Dark mode
 - Custom themes
 
 ### Responsive
+
 - Mobile (375px)
 - Tablet (768px)
 - Desktop (1920px)
 
 ### Interactive States
+
 - Hover effects
 - Focus rings
 - Active states
@@ -65,10 +83,12 @@ npx playwright test specs/components.spec.ts
 ## CI/CD Integration
 
 Visual regression tests run automatically on:
+
 - Pull requests to `main`
 - Pushes to `main`
 
 If visual changes are detected:
+
 1. Tests fail
 2. Diff images are uploaded as artifacts
 3. PR is commented with failure notice
@@ -105,16 +125,19 @@ Visual regression settings in `playwright.config.ts`:
 ## Troubleshooting
 
 ### Tests fail in CI but pass locally
+
 - Ensure same OS (use Docker for consistency)
 - Check font rendering differences
 - Verify browser version matches
 
 ### Too many false positives
+
 - Increase `maxDiffPixels` threshold
 - Disable animations
 - Wait for network idle before screenshots
 
 ### Can't update baselines
+
 - Delete old screenshots in `__screenshots__` folder
 - Run with `--update-snapshots`
 - Commit new baseline images

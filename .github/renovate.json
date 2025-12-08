@@ -15,6 +15,13 @@
   "rangeStrategy": "bump",
   "packageRules": [
     {
+      "groupName": "GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "schedule": ["before 6am on monday"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
       "groupName": "React ecosystem",
       "matchPackagePatterns": ["^react", "^@types/react"],
       "schedule": ["before 6am on monday"]
@@ -61,4 +68,3 @@
     "assignees": ["@christireid"]
   }
 }
-
