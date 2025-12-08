@@ -67,6 +67,8 @@ export interface DialogCloseProps {
 interface DialogContextValue {
   open: boolean
   setOpen: (open: boolean) => void
+  titleId: string
+  descriptionId: string
 }
 
 const DialogContext = React.createContext<DialogContextValue | null>(null)
@@ -83,7 +85,10 @@ const useDialog = () => {
 // Focus Trap Hook
 // ============================================================================
 
-function useFocusTrap(ref: React.RefObject<HTMLElement | null>, enabled: boolean) {
+function useFocusTrap(
+  ref: React.RefObject<HTMLElement | null>,
+  enabled: boolean
+) {
   React.useEffect(() => {
     if (!enabled || !ref.current) return
 
@@ -154,6 +159,8 @@ export const Dialog: React.FC<DialogProps> = ({
 }) => {
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const titleId = React.useId()
+  const descriptionId = React.useId()
 
   const setOpen = React.useCallback(
     (newOpen: boolean) => {
@@ -165,8 +172,13 @@ export const Dialog: React.FC<DialogProps> = ({
     [controlledOpen, onOpenChange]
   )
 
+  const contextValue = React.useMemo(
+    () => ({ open, setOpen, titleId, descriptionId }),
+    [open, setOpen, titleId, descriptionId]
+  )
+
   return (
-    <DialogContext.Provider value={{ open, setOpen }}>
+    <DialogContext.Provider value={contextValue}>
       {children}
     </DialogContext.Provider>
   )
@@ -253,9 +265,10 @@ export const DialogContent: React.FC<DialogContentProps> = ({
   blurBackdrop = true,
   overlayClassName,
 }) => {
-  const { open, setOpen } = useDialog()
+  const { open, setOpen, titleId, descriptionId } = useDialog()
   const contentRef = React.useRef<HTMLDivElement>(null)
-  const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null)
+  const [portalContainer, setPortalContainer] =
+    React.useState<HTMLElement | null>(null)
   const { lock } = useBodyScrollLock()
 
   // Get or create portal container
@@ -340,6 +353,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
               )}
               role="dialog"
               aria-modal="true"
+              aria-labelledby={titleId}
+              aria-describedby={descriptionId}
             >
               {/* Close button */}
               {showCloseButton && (
@@ -396,7 +411,12 @@ export const DialogHeader: React.FC<DialogHeaderProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('flex flex-col space-y-2.5 px-6 py-5 border-b border-border/40', className)}>
+    <div
+      className={cn(
+        'flex flex-col space-y-2.5 px-6 py-5 border-b border-border/40',
+        className
+      )}
+    >
       {children}
     </div>
   )
@@ -406,8 +426,11 @@ export const DialogTitle: React.FC<DialogTitleProps> = ({
   children,
   className,
 }) => {
+  const { titleId } = useDialog()
+
   return (
     <h2
+      id={titleId}
       className={cn(
         'text-xl font-bold leading-none tracking-tight text-foreground',
         className
@@ -422,17 +445,25 @@ export const DialogDescription: React.FC<DialogDescriptionProps> = ({
   children,
   className,
 }) => {
+  const { descriptionId } = useDialog()
+
   return (
-    <p className={cn('text-sm text-muted-foreground/90 leading-relaxed', className)}>
+    <p
+      id={descriptionId}
+      className={cn(
+        'text-sm text-muted-foreground/90 leading-relaxed',
+        className
+      )}
+    >
       {children}
     </p>
   )
 }
 
-export const DialogBody: React.FC<{ children: React.ReactNode; className?: string }> = ({
-  children,
-  className,
-}) => {
+export const DialogBody: React.FC<{
+  children: React.ReactNode
+  className?: string
+}> = ({ children, className }) => {
   return <div className={cn('px-6 py-4', className)}>{children}</div>
 }
 
