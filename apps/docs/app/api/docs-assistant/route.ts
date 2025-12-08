@@ -6,7 +6,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { enhanceMessageWithRAG, formatCitations, shouldUseRAG } from '@/lib/ai/rag'
+import {
+  enhanceMessageWithRAG,
+  formatCitations,
+  shouldUseRAG,
+} from '@/lib/ai/rag'
 import {
   enhanceMessageWithOptimizedRAG,
   shouldUseEnhancedRAG,
@@ -95,7 +99,7 @@ export async function POST(request: NextRequest) {
         headers: {
           'Content-Type': 'text/event-stream',
           'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive',
+          Connection: 'keep-alive',
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
           'X-RateLimit-Reset': new Date(rateLimit.resetAt).toISOString(),
         },
@@ -145,18 +149,19 @@ export async function POST(request: NextRequest) {
     // Validate request
     const validation = validateRequest(messages)
     if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
 
     // Determine if we should use RAG (enhanced or legacy)
-    const useEnhancedRAG = USE_ENHANCED_RAG && shouldUseEnhancedRAG(body.message)
+    const useEnhancedRAG =
+      USE_ENHANCED_RAG && shouldUseEnhancedRAG(body.message)
     const useLegacyRAG = !USE_ENHANCED_RAG && shouldUseRAG(body.message)
 
     // Smart model routing - determine optimal model based on query complexity
-    let modelRouting: { model: string; classification: QueryClassification } | null = null
+    let modelRouting: {
+      model: string
+      classification: QueryClassification
+    } | null = null
     if (USE_SMART_ROUTING) {
       const { model, classification } = getStreamingFunctionWithRouting(
         body.message,
@@ -172,16 +177,33 @@ export async function POST(request: NextRequest) {
 
     // Create streaming response - use enhanced RAG when enabled
     const generator = useEnhancedRAG
-      ? streamWithEnhancedRAG(body.message, messages, body.currentPath, sessionId, modelRouting?.model)
+      ? streamWithEnhancedRAG(
+          body.message,
+          messages,
+          body.currentPath,
+          sessionId,
+          modelRouting?.model
+        )
       : useLegacyRAG
-        ? streamWithRAG(body.message, messages, body.currentPath, sessionId, modelRouting?.model)
-        : streamWithoutRAG(body.message, messages, sessionId, modelRouting?.model)
+        ? streamWithRAG(
+            body.message,
+            messages,
+            body.currentPath,
+            sessionId,
+            modelRouting?.model
+          )
+        : streamWithoutRAG(
+            body.message,
+            messages,
+            sessionId,
+            modelRouting?.model
+          )
 
     return new Response(createSSEStream(generator), {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
+        Connection: 'keep-alive',
         'X-RateLimit-Remaining': rateLimit.remaining.toString(),
         'X-RateLimit-Reset': new Date(rateLimit.resetAt).toISOString(),
         ...(modelRouting && {
@@ -239,7 +261,7 @@ async function* streamWithRAG(
         yield {
           type: 'sources',
           data: {
-            sources: cachedResponse.sources.map(s => ({
+            sources: cachedResponse.sources.map((s) => ({
               url: s.url,
               title: s.title,
               score: s.confidence,
@@ -251,7 +273,9 @@ async function* streamWithRAG(
 
       // Stream cached response (simulate streaming for UX consistency)
       // Split by sentences for natural chunking
-      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [cachedResponse.response]
+      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [
+        cachedResponse.response,
+      ]
 
       for (const sentence of sentences) {
         yield {
@@ -261,7 +285,7 @@ async function* streamWithRAG(
         assistantResponse += sentence
 
         // Small delay to simulate streaming (optional, can be removed)
-        await new Promise(resolve => setTimeout(resolve, 10))
+        await new Promise((resolve) => setTimeout(resolve, 10))
       }
 
       // Save to session
@@ -296,7 +320,7 @@ async function* streamWithRAG(
       yield {
         type: 'sources',
         data: {
-          sources: citations.map(c => ({
+          sources: citations.map((c) => ({
             url: c.url,
             title: c.source, // formatCitations returns 'source', but frontend expects 'title'
             score: c.confidence,
@@ -334,7 +358,7 @@ async function* streamWithRAG(
     if (assistantResponse) {
       try {
         await cache.set(userMessage, assistantResponse, {
-          sources: ragContext.sources.map(s => ({
+          sources: ragContext.sources.map((s) => ({
             url: s.url,
             title: s.title,
             confidence: s.score,
@@ -407,17 +431,17 @@ async function* streamWithEnhancedRAG(
     }
 
     // Enhance message with optimized RAG context
-    const { enhancedMessage, ragContext } = await enhanceMessageWithOptimizedRAG(
-      userMessage,
-      ragOptions
-    )
+    const { enhancedMessage, ragContext } =
+      await enhanceMessageWithOptimizedRAG(userMessage, ragOptions)
 
     // Generate context hash for cache key
-    const contextHash = generateContextHash(ragContext.sources.map(s => ({
-      url: s.url,
-      title: s.title,
-      score: s.finalScore,
-    })))
+    const contextHash = generateContextHash(
+      ragContext.sources.map((s) => ({
+        url: s.url,
+        title: s.title,
+        score: s.finalScore,
+      }))
+    )
 
     // Check cache first
     const cache = getResponseCache()
@@ -429,7 +453,7 @@ async function* streamWithEnhancedRAG(
         yield {
           type: 'sources',
           data: {
-            sources: cachedResponse.sources.map(s => ({
+            sources: cachedResponse.sources.map((s) => ({
               url: s.url,
               title: s.title,
               score: s.confidence,
@@ -440,19 +464,29 @@ async function* streamWithEnhancedRAG(
       }
 
       // Stream cached response
-      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [cachedResponse.response]
+      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [
+        cachedResponse.response,
+      ]
       for (const sentence of sentences) {
         yield { type: 'text', content: sentence }
         assistantResponse += sentence
-        await new Promise(resolve => setTimeout(resolve, 10))
+        await new Promise((resolve) => setTimeout(resolve, 10))
       }
 
       // Save to session
       if (sessionId && assistantResponse) {
         try {
           await updateSessionWithMessages(sessionId, [
-            { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
-            { role: 'assistant', content: assistantResponse, timestamp: new Date().toISOString() },
+            {
+              role: 'user',
+              content: userMessage,
+              timestamp: new Date().toISOString(),
+            },
+            {
+              role: 'assistant',
+              content: assistantResponse,
+              timestamp: new Date().toISOString(),
+            },
           ])
         } catch (error) {
           console.error('Failed to save session:', error)
@@ -472,7 +506,7 @@ async function* streamWithEnhancedRAG(
       yield {
         type: 'sources',
         data: {
-          sources: citations.map(c => ({
+          sources: citations.map((c) => ({
             id: c.id,
             url: c.url,
             title: c.source,
@@ -513,7 +547,7 @@ async function* streamWithEnhancedRAG(
     if (assistantResponse) {
       try {
         await cache.set(userMessage, assistantResponse, {
-          sources: ragContext.sources.map(s => ({
+          sources: ragContext.sources.map((s) => ({
             url: s.url,
             title: s.title,
             confidence: s.finalScore,
@@ -530,8 +564,16 @@ async function* streamWithEnhancedRAG(
     if (sessionId && assistantResponse) {
       try {
         await updateSessionWithMessages(sessionId, [
-          { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
-          { role: 'assistant', content: assistantResponse, timestamp: new Date().toISOString() },
+          {
+            role: 'user',
+            content: userMessage,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            role: 'assistant',
+            content: assistantResponse,
+            timestamp: new Date().toISOString(),
+          },
         ])
       } catch (error) {
         console.error('Failed to save session:', error)
@@ -561,7 +603,9 @@ async function* streamWithoutRAG(
 
     if (cachedResponse) {
       // Cache hit! Stream cached response
-      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [cachedResponse.response]
+      const sentences = cachedResponse.response.match(/[^.!?]+[.!?]+/g) || [
+        cachedResponse.response,
+      ]
 
       for (const sentence of sentences) {
         yield {
@@ -571,7 +615,7 @@ async function* streamWithoutRAG(
         assistantResponse += sentence
 
         // Small delay to simulate streaming
-        await new Promise(resolve => setTimeout(resolve, 10))
+        await new Promise((resolve) => setTimeout(resolve, 10))
       }
 
       // Save to session
@@ -680,12 +724,22 @@ export async function GET() {
     },
     models: {
       configured: process.env.AI_MODEL || 'gpt-4-turbo-preview',
-      available: ['gpt-4-turbo-preview', 'gpt-4', 'gpt-3.5-turbo', 'claude-3-5-sonnet-20241022', 'claude-3-haiku-20240307', 'gemini-1.5-pro', 'gemini-1.5-flash'],
-      routing: USE_SMART_ROUTING ? {
-        simple: 'gpt-3.5-turbo (fast/cheap)',
-        moderate: 'gpt-4-turbo-preview (balanced)',
-        complex: 'claude-3-5-sonnet (most capable)',
-      } : 'disabled',
+      available: [
+        'gpt-4-turbo-preview',
+        'gpt-4',
+        'gpt-3.5-turbo',
+        'claude-3-5-sonnet-20241022',
+        'claude-3-haiku-20240307',
+        'gemini-1.5-pro',
+        'gemini-1.5-flash',
+      ],
+      routing: USE_SMART_ROUTING
+        ? {
+            simple: 'gpt-3.5-turbo (fast/cheap)',
+            moderate: 'gpt-4-turbo-preview (balanced)',
+            complex: 'claude-3-5-sonnet (most capable)',
+          }
+        : 'disabled',
     },
     cache: cacheStats,
   })

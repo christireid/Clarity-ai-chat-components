@@ -45,18 +45,22 @@ export function generateExportContent(
   switch (format) {
     case 'json':
       return {
-        content: JSON.stringify({
-          exportedAt: timestamp,
-          sessionId,
-          messageCount: messages.length,
-          messages: messages.map((m) => ({
-            id: m.id,
-            role: m.role,
-            content: m.content,
-            createdAt: m.createdAt,
-            ...(includeMetadata && { status: m.status }),
-          })),
-        }, null, 2),
+        content: JSON.stringify(
+          {
+            exportedAt: timestamp,
+            sessionId,
+            messageCount: messages.length,
+            messages: messages.map((m) => ({
+              id: m.id,
+              role: m.role,
+              content: m.content,
+              createdAt: m.createdAt,
+              ...(includeMetadata && { status: m.status }),
+            })),
+          },
+          null,
+          2
+        ),
         mimeType: 'application/json',
         extension: 'json',
       }
@@ -82,11 +86,15 @@ export function generateExportContent(
   <h1>Clarity Chat Documentation Assistant</h1>
   <p>Exported: ${escapeHtml(timestamp)}</p>
   <hr>
-  ${messages.map((m) => `
+  ${messages
+    .map(
+      (m) => `
   <div class="message ${m.role}">
     ${includeMetadata ? `<div class="meta">${m.role === 'user' ? 'You' : 'Assistant'} • ${new Date(m.createdAt).toLocaleTimeString()}</div>` : ''}
     <div>${escapeHtml(m.content)}</div>
-  </div>`).join('')}
+  </div>`
+    )
+    .join('')}
 </body>
 </html>`,
         mimeType: 'text/html',

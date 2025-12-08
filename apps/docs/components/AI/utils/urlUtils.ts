@@ -9,17 +9,17 @@
  */
 const ROUTE_MAPPINGS: Record<string, string> = {
   'getting started': '/learn',
-  'quickstart': '/learn',
-  'introduction': '/learn',
-  'installation': '/guides/installation',
-  'theme': '/guides/theming',
-  'styling': '/guides/theming',
-  'error': '/guides/error-handling',
-  'memory': '/guides/memory',
-  'hook': '/reference/hooks',
-  'component': '/reference/components',
-  'streaming': '/reference/hooks/use-streaming-sse',
-  'voice': '/reference/components/voice-input',
+  quickstart: '/learn',
+  introduction: '/learn',
+  installation: '/guides/installation',
+  theme: '/guides/theming',
+  styling: '/guides/theming',
+  error: '/guides/error-handling',
+  memory: '/guides/memory',
+  hook: '/reference/hooks',
+  component: '/reference/components',
+  streaming: '/reference/hooks/use-streaming-sse',
+  voice: '/reference/components/voice-input',
 }
 
 /**
@@ -59,7 +59,12 @@ export function generateUrlFromTitle(title: string): string {
  * Normalize a source URL, falling back to title-based generation if invalid
  */
 export function normalizeSourceUrl(rawUrl: string, title: string): string {
-  if (!rawUrl || rawUrl === '#' || rawUrl === 'undefined' || rawUrl.trim() === '') {
+  if (
+    !rawUrl ||
+    rawUrl === '#' ||
+    rawUrl === 'undefined' ||
+    rawUrl.trim() === ''
+  ) {
     return generateUrlFromTitle(title)
   }
 
@@ -67,7 +72,7 @@ export function normalizeSourceUrl(rawUrl: string, title: string): string {
     return rawUrl
   }
 
-  if (VALID_PREFIXES.some(prefix => rawUrl.startsWith(prefix))) {
+  if (VALID_PREFIXES.some((prefix) => rawUrl.startsWith(prefix))) {
     return rawUrl
   }
 
@@ -81,7 +86,11 @@ export function normalizeLinksInContent(content: string): string {
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
 
   return content.replace(linkRegex, (match, text, url) => {
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('#')) {
+    if (
+      url.startsWith('http://') ||
+      url.startsWith('https://') ||
+      url.startsWith('#')
+    ) {
       return match
     }
     const normalizedUrl = normalizeSourceUrl(url, text)

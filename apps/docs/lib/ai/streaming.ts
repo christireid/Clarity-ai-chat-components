@@ -79,7 +79,8 @@ export async function* streamFromOpenAI(
   try {
     const stream = await openai.chat.completions.create({
       model,
-      messages: messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+      messages:
+        messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
       temperature,
       max_tokens: maxTokens,
       stream: true,
@@ -180,10 +181,7 @@ export async function* streamFromGemini(
     systemPrompt?: string
   } = {}
 ): AsyncGenerator<StreamChunk> {
-  const {
-    model = 'gemini-1.5-flash',
-    systemPrompt,
-  } = options
+  const { model = 'gemini-1.5-flash', systemPrompt } = options
 
   const apiKey = process.env.GEMINI_API_KEY
 
@@ -197,15 +195,21 @@ export async function* streamFromGemini(
   try {
     // Build history from messages (excluding the last user message)
     const history = messages.slice(0, -1).map((m) => ({
-      role: m.role === 'user' ? 'user' as const : 'model' as const,
+      role: m.role === 'user' ? ('user' as const) : ('model' as const),
       parts: [{ text: m.content }],
     }))
 
     // Add system prompt as initial exchange if provided
     if (systemPrompt) {
       history.unshift(
-        { role: 'user' as const, parts: [{ text: `System instructions: ${systemPrompt}` }] },
-        { role: 'model' as const, parts: [{ text: 'Understood. I will follow these instructions.' }] }
+        {
+          role: 'user' as const,
+          parts: [{ text: `System instructions: ${systemPrompt}` }],
+        },
+        {
+          role: 'model' as const,
+          parts: [{ text: 'Understood. I will follow these instructions.' }],
+        }
       )
     }
 
@@ -238,11 +242,15 @@ export async function* streamFromDemo(
 
   // Simulated responses based on common queries
   const responses: Record<string, string> = {
-    'getting started': 'To get started with Clarity Chat, first install it via npm:\n\n```bash\nnpm install @clarity-chat/react\n```\n\nThen import and use the components:\n\n```tsx\nimport { ChatWindow } from "@clarity-chat/react"\nimport "@clarity-chat/react/styles.css"\n```\n\nCheck out our [Quick Start Guide](/guides/quick-start) for a complete walkthrough!',
-    'streaming': 'Clarity Chat has built-in streaming support! Use the `useStreaming` hook to implement real-time message streaming:\n\n```tsx\nimport { useStreaming } from "@clarity-chat/react"\n\nconst { startStreaming, stopStreaming } = useStreaming()\n```\n\nSee our [Streaming Guide](/guides/streaming) for more details.',
-    'components': 'Clarity Chat provides many pre-built components:\n\n- **ChatWindow**: Main chat interface\n- **Message**: Individual message display\n- **ChatInput**: Message input field\n- **MessageList**: Scrollable message container\n- **ThinkingIndicator**: Loading state\n\nExplore all components in our [Component Reference](/reference/components).',
-    'theme': 'You can customize the theme using CSS variables or the ThemeProvider:\n\n```tsx\nimport { ThemeProvider } from "@clarity-chat/react"\n\n<ThemeProvider theme={customTheme}>\n  <ChatWindow />\n</ThemeProvider>\n```\n\nSee our [Theming Guide](/guides/theming) for more options.',
-    default: `I'm a demo assistant (no API key configured). I can help you navigate the Clarity Chat documentation!\n\nTry asking about:\n- Getting started with Clarity Chat\n- How to implement streaming\n- Available components\n- Customizing themes\n\nOr explore the documentation directly:\n- [Quick Start](/guides/quick-start)\n- [Component Reference](/reference/components)\n- [Examples](/examples)`
+    'getting started':
+      'To get started with Clarity Chat, first install it via npm:\n\n```bash\nnpm install @clarity-chat/react\n```\n\nThen import and use the components:\n\n```tsx\nimport { ChatWindow } from "@clarity-chat/react"\nimport "@clarity-chat/react/styles.css"\n```\n\nCheck out our [Quick Start Guide](/guides/quick-start) for a complete walkthrough!',
+    streaming:
+      'Clarity Chat has built-in streaming support! Use the `useStreaming` hook to implement real-time message streaming:\n\n```tsx\nimport { useStreaming } from "@clarity-chat/react"\n\nconst { startStreaming, stopStreaming } = useStreaming()\n```\n\nSee our [Streaming Guide](/guides/streaming) for more details.',
+    components:
+      'Clarity Chat provides many pre-built components:\n\n- **ChatWindow**: Main chat interface\n- **Message**: Individual message display\n- **ChatInput**: Message input field\n- **MessageList**: Scrollable message container\n- **ThinkingIndicator**: Loading state\n\nExplore all components in our [Component Reference](/reference/components).',
+    theme:
+      'You can customize the theme using CSS variables or the ThemeProvider:\n\n```tsx\nimport { ThemeProvider } from "@clarity-chat/react"\n\n<ThemeProvider theme={customTheme}>\n  <ChatWindow />\n</ThemeProvider>\n```\n\nSee our [Theming Guide](/guides/theming) for more options.',
+    default: `I'm a demo assistant (no API key configured). I can help you navigate the Clarity Chat documentation!\n\nTry asking about:\n- Getting started with Clarity Chat\n- How to implement streaming\n- Available components\n- Customizing themes\n\nOr explore the documentation directly:\n- [Quick Start](/guides/quick-start)\n- [Component Reference](/reference/components)\n- [Examples](/examples)`,
   }
 
   // Find matching response
@@ -270,7 +278,7 @@ export async function* streamFromDemo(
       buffer = ''
 
       // Small delay to simulate network latency
-      await new Promise(resolve => setTimeout(resolve, 30))
+      await new Promise((resolve) => setTimeout(resolve, 30))
     }
   }
 }
@@ -295,7 +303,9 @@ export function classifyQueryComplexity(
   conversationLength: number = 0
 ): QueryClassification {
   const wordCount = query.split(/\s+/).length
-  const hasCode = /```|`[^`]+`|function\s+\w+|const\s+\w+|class\s+\w+/.test(query)
+  const hasCode = /```|`[^`]+`|function\s+\w+|const\s+\w+|class\s+\w+/.test(
+    query
+  )
 
   // Patterns indicating complex queries
   const complexPatterns = [
@@ -395,7 +405,11 @@ export interface ModelRoutingConfig {
 /**
  * Get the appropriate streaming function based on configured model
  */
-export function getStreamingFunction(): typeof streamFromOpenAI | typeof streamFromClaude | typeof streamFromGemini | typeof streamFromDemo {
+export function getStreamingFunction():
+  | typeof streamFromOpenAI
+  | typeof streamFromClaude
+  | typeof streamFromGemini
+  | typeof streamFromDemo {
   // Check if any API key is configured
   const hasOpenAI = !!process.env.OPENAI_API_KEY
   const hasAnthropic = !!process.env.ANTHROPIC_API_KEY
@@ -434,7 +448,11 @@ export function getStreamingFunctionWithRouting(
   conversationLength: number = 0,
   config: ModelRoutingConfig = {}
 ): {
-  streamFn: typeof streamFromOpenAI | typeof streamFromClaude | typeof streamFromGemini | typeof streamFromDemo
+  streamFn:
+    | typeof streamFromOpenAI
+    | typeof streamFromClaude
+    | typeof streamFromGemini
+    | typeof streamFromDemo
   model: string
   classification: QueryClassification
 } {
@@ -457,13 +475,25 @@ export function getStreamingFunctionWithRouting(
   // If forced model, use it
   if (config.forceModel) {
     if (config.forceModel.startsWith('claude') && hasAnthropic) {
-      return { streamFn: streamFromClaude, model: config.forceModel, classification }
+      return {
+        streamFn: streamFromClaude,
+        model: config.forceModel,
+        classification,
+      }
     }
     if (config.forceModel.startsWith('gemini') && hasGemini) {
-      return { streamFn: streamFromGemini, model: config.forceModel, classification }
+      return {
+        streamFn: streamFromGemini,
+        model: config.forceModel,
+        classification,
+      }
     }
     if (hasOpenAI) {
-      return { streamFn: streamFromOpenAI, model: config.forceModel, classification }
+      return {
+        streamFn: streamFromOpenAI,
+        model: config.forceModel,
+        classification,
+      }
     }
   }
 
@@ -478,7 +508,11 @@ export function getStreamingFunctionWithRouting(
 
   // Smart routing based on complexity
   let selectedModel: string
-  let streamFn: typeof streamFromOpenAI | typeof streamFromClaude | typeof streamFromGemini | typeof streamFromDemo
+  let streamFn:
+    | typeof streamFromOpenAI
+    | typeof streamFromClaude
+    | typeof streamFromGemini
+    | typeof streamFromDemo
 
   switch (classification.complexity) {
     case 'simple':

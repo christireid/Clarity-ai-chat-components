@@ -34,7 +34,10 @@ export interface UseBranchingOptions {
 export interface UseBranchingReturn {
   branchState: BranchState
   currentBranch: ConversationBranch
-  switchBranch: (branchId: string, currentMessages: Message[]) => ConversationBranch | null
+  switchBranch: (
+    branchId: string,
+    currentMessages: Message[]
+  ) => ConversationBranch | null
   createBranch: (
     name: string,
     currentMessages: Message[],
@@ -84,7 +87,7 @@ function loadBranchStateFromStorage(): BranchState | null {
       const parsed = JSON.parse(savedBranches) as BranchState
       if (parsed.branches && parsed.branches.length > 0) {
         // Restore Date objects
-        parsed.branches = parsed.branches.map(b => ({
+        parsed.branches = parsed.branches.map((b) => ({
           ...b,
           createdAt: new Date(b.createdAt),
         }))
@@ -97,12 +100,15 @@ function loadBranchStateFromStorage(): BranchState | null {
   return null
 }
 
-export function useBranching(options: UseBranchingOptions = {}): UseBranchingReturn {
+export function useBranching(
+  options: UseBranchingOptions = {}
+): UseBranchingReturn {
   const { onBranchSwitch, onBranchCreate } = options
 
   // Use lazy initialization to avoid hydration mismatch
   // Initial state is created fresh on both server and client
-  const [branchState, setBranchState] = useState<BranchState>(createDefaultState)
+  const [branchState, setBranchState] =
+    useState<BranchState>(createDefaultState)
   const [isHydrated, setIsHydrated] = useState(false)
 
   // Hydrate state from localStorage after mount (SSR-safe)
@@ -121,7 +127,10 @@ export function useBranching(options: UseBranchingOptions = {}): UseBranchingRet
 
     try {
       // Only persist if we have more than just the main branch
-      if (branchState.branches.length > 1 || branchState.currentBranchId !== 'main') {
+      if (
+        branchState.branches.length > 1 ||
+        branchState.currentBranchId !== 'main'
+      ) {
         localStorage.setItem(BRANCHES_KEY, JSON.stringify(branchState))
       } else {
         localStorage.removeItem(BRANCHES_KEY)
@@ -133,71 +142,87 @@ export function useBranching(options: UseBranchingOptions = {}): UseBranchingRet
 
   // Get current branch
   const currentBranch = useMemo(() => {
-    return branchState.branches.find(b => b.id === branchState.currentBranchId) || branchState.branches[0]
+    return (
+      branchState.branches.find((b) => b.id === branchState.currentBranchId) ||
+      branchState.branches[0]
+    )
   }, [branchState])
 
   // Check if there are multiple branches
   const hasBranches = useMemo(() => {
-    return branchState.branches.length > 1 || branchState.currentBranchId !== 'main'
+    return (
+      branchState.branches.length > 1 || branchState.currentBranchId !== 'main'
+    )
   }, [branchState])
 
   // Switch to a different branch
-  const switchBranch = useCallback((branchId: string, currentMessages: Message[]): ConversationBranch | null => {
-    const targetBranch = branchState.branches.find(b => b.id === branchId)
-    if (!targetBranch) {
-      return null
-    }
+  const switchBranch = useCallback(
+    (
+      branchId: string,
+      currentMessages: Message[]
+    ): ConversationBranch | null => {
+      const targetBranch = branchState.branches.find((b) => b.id === branchId)
+      if (!targetBranch) {
+        return null
+      }
 
-    // Save current messages to current branch before switching
-    setBranchState(prev => ({
-      ...prev,
-      branches: prev.branches.map(b =>
-        b.id === prev.currentBranchId
-          ? { ...b, messages: currentMessages }
-          : b
-      ),
-      currentBranchId: branchId,
-    }))
+      // Save current messages to current branch before switching
+      setBranchState((prev) => ({
+        ...prev,
+        branches: prev.branches.map((b) =>
+          b.id === prev.currentBranchId
+            ? { ...b, messages: currentMessages }
+            : b
+        ),
+        currentBranchId: branchId,
+      }))
 
-    onBranchSwitch?.(targetBranch)
-    return targetBranch
-  }, [branchState.branches, onBranchSwitch])
+      onBranchSwitch?.(targetBranch)
+      return targetBranch
+    },
+    [branchState.branches, onBranchSwitch]
+  )
 
   // Create a new branch
-  const createBranch = useCallback((
-    name: string,
-    currentMessages: Message[],
-    branchPointMessageId?: string
-  ): ConversationBranch => {
-    const newBranch: ConversationBranch = {
-      id: `branch-${Date.now()}`,
-      name,
-      messages: branchPointMessageId
-        ? currentMessages.slice(0, currentMessages.findIndex(m => m.id === branchPointMessageId) + 1)
-        : [...currentMessages],
-      parentBranchId: branchState.currentBranchId,
-      branchPointMessageId: branchPointMessageId || null,
-      createdAt: new Date(),
-    }
+  const createBranch = useCallback(
+    (
+      name: string,
+      currentMessages: Message[],
+      branchPointMessageId?: string
+    ): ConversationBranch => {
+      const newBranch: ConversationBranch = {
+        id: `branch-${Date.now()}`,
+        name,
+        messages: branchPointMessageId
+          ? currentMessages.slice(
+              0,
+              currentMessages.findIndex((m) => m.id === branchPointMessageId) +
+                1
+            )
+          : [...currentMessages],
+        parentBranchId: branchState.currentBranchId,
+        branchPointMessageId: branchPointMessageId || null,
+        createdAt: new Date(),
+      }
 
-    setBranchState(prev => ({
-      ...prev,
-      branches: [...prev.branches, newBranch],
-      currentBranchId: newBranch.id,
-    }))
+      setBranchState((prev) => ({
+        ...prev,
+        branches: [...prev.branches, newBranch],
+        currentBranchId: newBranch.id,
+      }))
 
-    onBranchCreate?.(newBranch)
-    return newBranch
-  }, [branchState.currentBranchId, onBranchCreate])
+      onBranchCreate?.(newBranch)
+      return newBranch
+    },
+    [branchState.currentBranchId, onBranchCreate]
+  )
 
   // Update messages in the current branch
   const updateCurrentBranchMessages = useCallback((messages: Message[]) => {
-    setBranchState(prev => ({
+    setBranchState((prev) => ({
       ...prev,
-      branches: prev.branches.map(b =>
-        b.id === prev.currentBranchId
-          ? { ...b, messages }
-          : b
+      branches: prev.branches.map((b) =>
+        b.id === prev.currentBranchId ? { ...b, messages } : b
       ),
     }))
   }, [])

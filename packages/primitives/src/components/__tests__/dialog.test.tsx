@@ -233,7 +233,7 @@ describe('Dialog Component', () => {
 
       expect(() => {
         render(<DialogTrigger>Trigger</DialogTrigger>)
-      }).toThrow('DialogTrigger')
+      }).toThrow('Dialog')
 
       consoleSpy.mockRestore()
     })

@@ -11,10 +11,15 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./vitest.shared": {
+      "types": "./vitest.shared.ts",
+      "import": "./vitest.shared.ts"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "vitest.shared.ts"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs",

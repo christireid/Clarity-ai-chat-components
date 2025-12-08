@@ -16,7 +16,9 @@ import userEvent from '@testing-library/user-event'
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+    button: ({ children, ...props }: any) => (
+      <button {...props}>{children}</button>
+    ),
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }))
@@ -37,20 +39,25 @@ vi.mock('@clarity-chat/react', () => ({
     onMessageFeedback,
     onExport,
     onClear,
-    emptyState
+    emptyState,
   }: any) => (
     <div data-testid="chat-window">
       <div data-testid="messages-count">{messages?.length || 0}</div>
       <div data-testid="loading-state">{isLoading ? 'loading' : 'idle'}</div>
       {messages?.length === 0 && emptyState}
-      <button
-        data-testid="send-btn"
-        onClick={() => onSendMessage?.('Test')}
-      >
+      <button data-testid="send-btn" onClick={() => onSendMessage?.('Test')}>
         Send
       </button>
-      {onExport && <button data-testid="export-btn" onClick={onExport}>Export</button>}
-      {onClear && <button data-testid="clear-btn" onClick={onClear}>Clear</button>}
+      {onExport && (
+        <button data-testid="export-btn" onClick={onExport}>
+          Export
+        </button>
+      )}
+      {onClear && (
+        <button data-testid="clear-btn" onClick={onClear}>
+          Clear
+        </button>
+      )}
       {onMessageFeedback && (
         <button
           data-testid="feedback-btn"
@@ -80,21 +87,25 @@ vi.mock('@clarity-chat/react', () => ({
   ErrorBoundary: ({ children }: any) => (
     <div data-testid="error-boundary">{children}</div>
   ),
-  ExportDialog: ({ open, onOpenChange, onExport }: any) => (
+  ExportDialog: ({ open, onOpenChange, onExport }: any) =>
     open ? (
       <div data-testid="export-dialog">
-        <button data-testid="export-json" onClick={() => onExport?.({ format: 'json' })}>
+        <button
+          data-testid="export-json"
+          onClick={() => onExport?.({ format: 'json' })}
+        >
           JSON
         </button>
-        <button data-testid="close-dialog" onClick={() => onOpenChange?.(false)}>
+        <button
+          data-testid="close-dialog"
+          onClick={() => onOpenChange?.(false)}
+        >
           Close
         </button>
       </div>
-    ) : null
-  ),
-  MessageSearch: ({ isOpen }: any) => (
-    isOpen ? <div data-testid="message-search">Search</div> : null
-  ),
+    ) : null,
+  MessageSearch: ({ isOpen }: any) =>
+    isOpen ? <div data-testid="message-search">Search</div> : null,
   NetworkStatus: () => <div data-testid="network-status">Online</div>,
   TokenCounter: ({ tokens }: any) => (
     <div data-testid="token-counter">{tokens || 0}</div>
@@ -136,13 +147,12 @@ vi.mock('./ChatButton', () => ({
 }))
 
 vi.mock('./KeyboardShortcutsHelp', () => ({
-  KeyboardShortcutsHelp: ({ isOpen, onClose }: any) => (
+  KeyboardShortcutsHelp: ({ isOpen, onClose }: any) =>
     isOpen ? (
       <div data-testid="shortcuts-help">
         <button onClick={onClose}>Close</button>
       </div>
-    ) : null
-  ),
+    ) : null,
 }))
 
 vi.mock('@/lib/utils', () => ({
@@ -230,7 +240,9 @@ describe('DocsAssistant', () => {
       await userEvent.click(screen.getByTestId('chat-button'))
 
       await waitFor(() => {
-        expect(screen.getByTestId('suggestion-getting-started')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('suggestion-getting-started')
+        ).toBeInTheDocument()
       })
     })
   })

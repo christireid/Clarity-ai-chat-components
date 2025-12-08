@@ -72,7 +72,9 @@ describe('generateExportContent', () => {
 
   describe('JSON format', () => {
     it('generates valid JSON', () => {
-      const result = generateExportContent(mockMessages, 'session-123', { format: 'json' })
+      const result = generateExportContent(mockMessages, 'session-123', {
+        format: 'json',
+      })
 
       expect(result.mimeType).toBe('application/json')
       expect(result.extension).toBe('json')
@@ -84,7 +86,9 @@ describe('generateExportContent', () => {
     })
 
     it('includes metadata by default', () => {
-      const result = generateExportContent(mockMessages, 'session-123', { format: 'json' })
+      const result = generateExportContent(mockMessages, 'session-123', {
+        format: 'json',
+      })
       const parsed = JSON.parse(result.content)
 
       expect(parsed.messages[0].status).toBeDefined()
@@ -103,7 +107,9 @@ describe('generateExportContent', () => {
 
   describe('HTML format', () => {
     it('generates valid HTML structure', () => {
-      const result = generateExportContent(mockMessages, 'session-123', { format: 'html' })
+      const result = generateExportContent(mockMessages, 'session-123', {
+        format: 'html',
+      })
 
       expect(result.mimeType).toBe('text/html')
       expect(result.extension).toBe('html')
@@ -113,7 +119,9 @@ describe('generateExportContent', () => {
     })
 
     it('includes message content', () => {
-      const result = generateExportContent(mockMessages, 'session-123', { format: 'html' })
+      const result = generateExportContent(mockMessages, 'session-123', {
+        format: 'html',
+      })
 
       expect(result.content).toContain('Hello')
       expect(result.content).toContain('Hi there!')
@@ -127,14 +135,18 @@ describe('generateExportContent', () => {
         },
       ]
 
-      const result = generateExportContent(messagesWithHtml, 'session-123', { format: 'html' })
+      const result = generateExportContent(messagesWithHtml, 'session-123', {
+        format: 'html',
+      })
 
       expect(result.content).not.toContain('<script>alert')
       expect(result.content).toContain('&lt;script&gt;')
     })
 
     it('applies correct CSS classes', () => {
-      const result = generateExportContent(mockMessages, 'session-123', { format: 'html' })
+      const result = generateExportContent(mockMessages, 'session-123', {
+        format: 'html',
+      })
 
       expect(result.content).toContain('class="message user"')
       expect(result.content).toContain('class="message assistant"')
@@ -143,7 +155,9 @@ describe('generateExportContent', () => {
 
   describe('Markdown format', () => {
     it('generates markdown structure', () => {
-      const result = generateExportContent(mockMessages, 'session-123', { format: 'markdown' })
+      const result = generateExportContent(mockMessages, 'session-123', {
+        format: 'markdown',
+      })
 
       expect(result.mimeType).toBe('text/markdown')
       expect(result.extension).toBe('md')
@@ -151,7 +165,9 @@ describe('generateExportContent', () => {
     })
 
     it('includes message content with roles', () => {
-      const result = generateExportContent(mockMessages, 'session-123', { format: 'markdown' })
+      const result = generateExportContent(mockMessages, 'session-123', {
+        format: 'markdown',
+      })
 
       expect(result.content).toContain('## You')
       expect(result.content).toContain('## Assistant')
@@ -160,7 +176,9 @@ describe('generateExportContent', () => {
     })
 
     it('uses markdown as default format', () => {
-      const result = generateExportContent(mockMessages, 'session-123', { format: 'markdown' })
+      const result = generateExportContent(mockMessages, 'session-123', {
+        format: 'markdown',
+      })
       expect(result.extension).toBe('md')
     })
   })
@@ -174,8 +192,12 @@ describe('downloadExport', () => {
   let mockAnchor: HTMLAnchorElement
 
   beforeEach(() => {
-    createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-url')
-    revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+    createObjectURLSpy = vi
+      .spyOn(URL, 'createObjectURL')
+      .mockReturnValue('blob:test-url')
+    revokeObjectURLSpy = vi
+      .spyOn(URL, 'revokeObjectURL')
+      .mockImplementation(() => {})
 
     mockAnchor = {
       href: '',
@@ -184,8 +206,12 @@ describe('downloadExport', () => {
     } as unknown as HTMLAnchorElement
 
     vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor)
-    appendChildSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockAnchor)
-    removeChildSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockAnchor)
+    appendChildSpy = vi
+      .spyOn(document.body, 'appendChild')
+      .mockImplementation(() => mockAnchor)
+    removeChildSpy = vi
+      .spyOn(document.body, 'removeChild')
+      .mockImplementation(() => mockAnchor)
   })
 
   afterEach(() => {

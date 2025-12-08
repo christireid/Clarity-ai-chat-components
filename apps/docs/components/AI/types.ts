@@ -18,7 +18,12 @@ export interface DocsAssistantProps {
 // Streaming Types
 // ============================================================================
 
-export type StreamingStatus = 'idle' | 'connecting' | 'streaming' | 'error' | 'retrying'
+export type StreamingStatus =
+  | 'idle'
+  | 'connecting'
+  | 'streaming'
+  | 'error'
+  | 'retrying'
 
 // ============================================================================
 // Conversation Types

@@ -50,7 +50,12 @@ export const TOKEN_CRITICAL_THRESHOLD = 0.9 // Critical at 90% usage
 // Static animation variants using library utilities (outside component for performance)
 export const BACKDROP_VARIANTS = createFadeVariant('fast', 'out')
 export const DIALOG_VARIANTS_REDUCED = createFadeVariant('fast', 'out')
-export const DIALOG_VARIANTS_NORMAL = createSlideVariant('up', 20, 'fast', 'out')
+export const DIALOG_VARIANTS_NORMAL = createSlideVariant(
+  'up',
+  20,
+  'fast',
+  'out'
+)
 
 // ============================================================================
 // Starter Prompts

@@ -107,13 +107,21 @@ export async function hybridSearch(
   const opts = { ...DEFAULT_OPTIONS, ...options }
 
   // Perform keyword search
-  const keywordResults = await performKeywordSearch(query, opts.retrieveK, opts.currentPath)
+  const keywordResults = await performKeywordSearch(
+    query,
+    opts.retrieveK,
+    opts.currentPath
+  )
 
   // Perform semantic search
   const semanticResults = await performSemanticSearch(query, opts.retrieveK)
 
   // Combine results using Reciprocal Rank Fusion
-  const fusedResults = reciprocalRankFusion(keywordResults, semanticResults, opts.keywordWeight)
+  const fusedResults = reciprocalRankFusion(
+    keywordResults,
+    semanticResults,
+    opts.keywordWeight
+  )
 
   // Apply reranking if enabled
   let rankedResults = fusedResults
@@ -129,7 +137,7 @@ export async function hybridSearch(
 
   // Filter by minimum score and take top K
   return finalResults
-    .filter(r => r.finalScore >= opts.minScore)
+    .filter((r) => r.finalScore >= opts.minScore)
     .slice(0, opts.topK)
 }
 
@@ -222,15 +230,12 @@ function reciprocalRankFusion(
     const semanticEntry = semanticResults.get(id)
 
     // Calculate RRF scores
-    const keywordRRF = keywordEntry
-      ? 1 / (RRF_K + keywordEntry.rank)
-      : 0
-    const semanticRRF = semanticEntry
-      ? 1 / (RRF_K + semanticEntry.rank)
-      : 0
+    const keywordRRF = keywordEntry ? 1 / (RRF_K + keywordEntry.rank) : 0
+    const semanticRRF = semanticEntry ? 1 / (RRF_K + semanticEntry.rank) : 0
 
     // Weighted combination
-    const rrfScore = (keywordRRF * keywordWeight) + (semanticRRF * (1 - keywordWeight))
+    const rrfScore =
+      keywordRRF * keywordWeight + semanticRRF * (1 - keywordWeight)
 
     // Get the result object (prefer semantic for richer metadata)
     const result = semanticEntry?.result || keywordEntry?.result
@@ -265,45 +270,55 @@ async function rerank(
   query: string,
   results: HybridSearchResult[]
 ): Promise<HybridSearchResult[]> {
-  const queryTerms = query.toLowerCase().split(/\s+/).filter(t => t.length > 2)
+  const queryTerms = query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((t) => t.length > 2)
 
-  return results.map(result => {
-    let rerankScore = result.rrfScore
+  return results
+    .map((result) => {
+      let rerankScore = result.rrfScore
 
-    // Boost for exact query term matches in title
-    const titleLower = result.title.toLowerCase()
-    const titleMatches = queryTerms.filter(t => titleLower.includes(t)).length
-    rerankScore += (titleMatches / Math.max(queryTerms.length, 1)) * 0.2
+      // Boost for exact query term matches in title
+      const titleLower = result.title.toLowerCase()
+      const titleMatches = queryTerms.filter((t) =>
+        titleLower.includes(t)
+      ).length
+      rerankScore += (titleMatches / Math.max(queryTerms.length, 1)) * 0.2
 
-    // Boost for code examples in content
-    if (result.content.includes('```')) {
-      rerankScore += 0.05
-    }
+      // Boost for code examples in content
+      if (result.content.includes('```')) {
+        rerankScore += 0.05
+      }
 
-    // Boost for results matched by both methods
-    if (result.matchedBy.length === 2) {
-      rerankScore += 0.1
-    }
+      // Boost for results matched by both methods
+      if (result.matchedBy.length === 2) {
+        rerankScore += 0.1
+      }
 
-    // Boost for specific categories based on query
-    if (query.toLowerCase().includes('hook') && result.category === 'hook') {
-      rerankScore += 0.1
-    }
-    if (query.toLowerCase().includes('component') && result.category === 'component') {
-      rerankScore += 0.1
-    }
+      // Boost for specific categories based on query
+      if (query.toLowerCase().includes('hook') && result.category === 'hook') {
+        rerankScore += 0.1
+      }
+      if (
+        query.toLowerCase().includes('component') &&
+        result.category === 'component'
+      ) {
+        rerankScore += 0.1
+      }
 
-    // Penalize very short content
-    if (result.content.length < 100) {
-      rerankScore -= 0.1
-    }
+      // Penalize very short content
+      if (result.content.length < 100) {
+        rerankScore -= 0.1
+      }
 
-    return {
-      ...result,
-      rerankScore,
-      finalScore: rerankScore,
-    }
-  }).sort((a, b) => b.finalScore - a.finalScore)
+      return {
+        ...result,
+        rerankScore,
+        finalScore: rerankScore,
+      }
+    })
+    .sort((a, b) => b.finalScore - a.finalScore)
 }
 
 /**
@@ -333,12 +348,15 @@ function applyMMR(
       // Diversity score (max similarity to already selected docs)
       let maxSimilarity = 0
       for (const sel of selected) {
-        const similarity = calculateTextSimilarity(candidate.content, sel.content)
+        const similarity = calculateTextSimilarity(
+          candidate.content,
+          sel.content
+        )
         maxSimilarity = Math.max(maxSimilarity, similarity)
       }
 
       // MMR score
-      const mmrScore = (lambda * relevance) - ((1 - lambda) * maxSimilarity)
+      const mmrScore = lambda * relevance - (1 - lambda) * maxSimilarity
 
       if (mmrScore > bestScore) {
         bestScore = mmrScore
@@ -365,7 +383,7 @@ function calculateTextSimilarity(text1: string, text2: string): number {
   const words1 = new Set(text1.toLowerCase().split(/\s+/))
   const words2 = new Set(text2.toLowerCase().split(/\s+/))
 
-  const intersection = [...words1].filter(w => words2.has(w))
+  const intersection = [...words1].filter((w) => words2.has(w))
   const union = new Set([...words1, ...words2])
 
   return intersection.length / union.size // Jaccard similarity
@@ -391,11 +409,12 @@ export function buildEnhancedContext(
 
   for (const source of sources) {
     // Build section
-    const methodBadge = source.matchedBy.length === 2
-      ? '🎯 (Exact + Semantic Match)'
-      : source.matchedBy.includes('keyword')
-        ? '🔍 (Keyword Match)'
-        : '💡 (Semantic Match)'
+    const methodBadge =
+      source.matchedBy.length === 2
+        ? '🎯 (Exact + Semantic Match)'
+        : source.matchedBy.includes('keyword')
+          ? '🔍 (Keyword Match)'
+          : '💡 (Semantic Match)'
 
     const section = [
       `## ${source.title} ${methodBadge}`,
@@ -446,9 +465,11 @@ export async function generateEnhancedRAGContext(
 
   // Calculate stats
   const stats = {
-    keywordResults: sources.filter(s => s.matchedBy.includes('keyword')).length,
-    semanticResults: sources.filter(s => s.matchedBy.includes('semantic')).length,
-    hybridResults: sources.filter(s => s.matchedBy.length === 2).length,
+    keywordResults: sources.filter((s) => s.matchedBy.includes('keyword'))
+      .length,
+    semanticResults: sources.filter((s) => s.matchedBy.includes('semantic'))
+      .length,
+    hybridResults: sources.filter((s) => s.matchedBy.length === 2).length,
     rrfApplied: true,
     rerankingApplied: opts.enableReranking,
     mmrApplied: opts.enableMMR,
@@ -481,11 +502,15 @@ export async function enhanceMessageWithOptimizedRAG(
   if (ragContext.sources.length > 0) {
     enhancedMessage += `I found ${ragContext.sources.length} relevant documentation sections:\n\n`
     enhancedMessage += ragContext.context
-    enhancedMessage += '\n\nPlease provide a helpful answer based on the documentation above. '
-    enhancedMessage += 'Include code examples where appropriate and link to relevant pages.\n'
+    enhancedMessage +=
+      '\n\nPlease provide a helpful answer based on the documentation above. '
+    enhancedMessage +=
+      'Include code examples where appropriate and link to relevant pages.\n'
   } else {
-    enhancedMessage += 'I could not find specific documentation for this query. '
-    enhancedMessage += 'Please provide a general answer or suggest where the user might find this information.\n'
+    enhancedMessage +=
+      'I could not find specific documentation for this query. '
+    enhancedMessage +=
+      'Please provide a general answer or suggest where the user might find this information.\n'
   }
 
   return {
@@ -500,8 +525,8 @@ export async function enhanceMessageWithOptimizedRAG(
  */
 export function getEnhancedFollowUps(sources: HybridSearchResult[]): string[] {
   const suggestions: string[] = []
-  const categories = new Set(sources.map(s => s.category))
-  const titles = sources.map(s => s.title.toLowerCase())
+  const categories = new Set(sources.map((s) => s.category))
+  const titles = sources.map((s) => s.title.toLowerCase())
 
   // Category-based suggestions
   if (categories.has('component')) {
@@ -515,16 +540,16 @@ export function getEnhancedFollowUps(sources: HybridSearchResult[]): string[] {
   }
 
   // Title-based suggestions
-  if (titles.some(t => t.includes('streaming'))) {
+  if (titles.some((t) => t.includes('streaming'))) {
     suggestions.push('How do I handle streaming errors?')
   }
 
-  if (titles.some(t => t.includes('chat'))) {
+  if (titles.some((t) => t.includes('chat'))) {
     suggestions.push('How do I persist chat history?')
   }
 
   // Hybrid match suggestions
-  const hybridMatches = sources.filter(s => s.matchedBy.length === 2)
+  const hybridMatches = sources.filter((s) => s.matchedBy.length === 2)
   if (hybridMatches.length > 0) {
     suggestions.push(`Tell me more about ${hybridMatches[0].title}`)
   }
@@ -548,18 +573,34 @@ export function shouldUseEnhancedRAG(query: string): boolean {
     /^(clear|reset|help)$/i,
   ]
 
-  if (skipPatterns.some(p => p.test(query.trim()))) {
+  if (skipPatterns.some((p) => p.test(query.trim()))) {
     return false
   }
 
   // Use RAG for questions and technical queries
   const usePatterns = [
-    'how', 'what', 'where', 'when', 'why', 'can i', 'how to',
-    'explain', 'show me', 'example', 'component', 'hook', 'api',
-    'props', 'use', 'implement', 'integrate', 'error', 'debug',
+    'how',
+    'what',
+    'where',
+    'when',
+    'why',
+    'can i',
+    'how to',
+    'explain',
+    'show me',
+    'example',
+    'component',
+    'hook',
+    'api',
+    'props',
+    'use',
+    'implement',
+    'integrate',
+    'error',
+    'debug',
   ]
 
-  return usePatterns.some(p => lowerQuery.includes(p))
+  return usePatterns.some((p) => lowerQuery.includes(p))
 }
 
 /**
@@ -575,11 +616,14 @@ export interface EnhancedCitation {
   category: string
 }
 
-export function formatEnhancedCitations(sources: HybridSearchResult[]): EnhancedCitation[] {
+export function formatEnhancedCitations(
+  sources: HybridSearchResult[]
+): EnhancedCitation[] {
   return sources.map((source, index) => ({
     id: `citation-${index}`,
     source: source.title,
-    chunkText: source.content.slice(0, 200) + (source.content.length > 200 ? '...' : ''),
+    chunkText:
+      source.content.slice(0, 200) + (source.content.length > 200 ? '...' : ''),
     url: source.url,
     confidence: source.finalScore,
     matchedBy: source.matchedBy,
