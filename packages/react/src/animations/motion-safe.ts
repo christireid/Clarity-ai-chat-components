@@ -244,3 +244,224 @@ export function getMotionSafePreset(
     ? MOTION_SAFE_PRESETS[preset].reduced
     : MOTION_SAFE_PRESETS[preset].full
 }
+
+// =============================================================================
+// VARIANT FACTORY
+// =============================================================================
+
+/**
+ * Configuration for creating motion variants
+ */
+export interface CreateMotionVariantsConfig {
+  /** Initial state (before animation) */
+  initial: Variant
+  /** Animated/visible state */
+  animate: Variant
+  /** Exit state (for AnimatePresence) */
+  exit?: Variant
+  /** Hover state (for whileHover) */
+  hover?: Variant
+  /** Tap state (for whileTap) */
+  tap?: Variant
+  /** Focus state (for whileFocus) */
+  focus?: Variant
+  /** Reduced motion fallback - defaults to opacity-only */
+  reduced?: {
+    initial?: Variant
+    animate?: Variant
+    exit?: Variant
+    hover?: Variant
+    tap?: Variant
+    focus?: Variant
+  }
+  /** Transition configuration */
+  transition?: {
+    duration?: number
+    ease?: number[] | string
+    delay?: number
+  }
+}
+
+/**
+ * Return type for createMotionVariants
+ */
+export interface MotionVariantsResult {
+  /** Variants object for Framer Motion */
+  variants: {
+    initial: Variant
+    animate: Variant
+    exit: Variant
+  }
+  /** Interaction props for whileHover, whileTap, whileFocus */
+  interactions: {
+    whileHover?: Variant
+    whileTap?: Variant
+    whileFocus?: Variant
+  }
+  /** Transition configuration */
+  transition: {
+    duration: number
+    ease: number[] | string
+    delay: number
+  }
+  /** Initial animation state name */
+  initial: string
+  /** Animate state name */
+  animate: string
+  /** Exit state name */
+  exit: string
+}
+
+/**
+ * Create motion-safe animation variants with a clean factory API
+ *
+ * This factory automatically handles reduced motion preferences and provides
+ * consistent animation configurations across components.
+ *
+ * @param config - Variant configuration
+ * @param prefersReducedMotion - Whether user prefers reduced motion
+ * @returns Complete motion configuration object
+ *
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   const prefersReducedMotion = useReducedMotion()
+ *
+ *   const motion = createMotionVariants({
+ *     initial: { opacity: 0, y: 20 },
+ *     animate: { opacity: 1, y: 0 },
+ *     exit: { opacity: 0, y: -10 },
+ *     hover: { scale: 1.02 },
+ *     tap: { scale: 0.98 },
+ *     transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] }
+ *   }, prefersReducedMotion)
+ *
+ *   return (
+ *     <motion.div
+ *       variants={motion.variants}
+ *       initial="initial"
+ *       animate="animate"
+ *       exit="exit"
+ *       whileHover={motion.interactions.whileHover}
+ *       whileTap={motion.interactions.whileTap}
+ *       transition={motion.transition}
+ *     >
+ *       Content
+ *     </motion.div>
+ *   )
+ * }
+ * ```
+ */
+export function createMotionVariants(
+  config: CreateMotionVariantsConfig,
+  prefersReducedMotion: boolean
+): MotionVariantsResult {
+  const {
+    initial,
+    animate,
+    exit = initial,
+    hover,
+    tap,
+    focus,
+    reduced,
+    transition = {},
+  } = config
+
+  // Default reduced motion variants (opacity only)
+  const defaultReduced = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    hover: hover ? { opacity: 0.9 } : undefined,
+    tap: tap ? { opacity: 0.8 } : undefined,
+    focus: focus ? { opacity: 0.95 } : undefined,
+  }
+
+  // Merge custom reduced variants with defaults
+  const reducedVariants = {
+    ...defaultReduced,
+    ...reduced,
+  }
+
+  // Select appropriate variants based on motion preference
+  const variants = prefersReducedMotion
+    ? {
+        initial: reducedVariants.initial ?? { opacity: 0 },
+        animate: reducedVariants.animate ?? { opacity: 1 },
+        exit: reducedVariants.exit ?? { opacity: 0 },
+      }
+    : {
+        initial,
+        animate,
+        exit,
+      }
+
+  // Select appropriate interaction variants
+  const interactions = prefersReducedMotion
+    ? {
+        whileHover: reducedVariants.hover,
+        whileTap: reducedVariants.tap,
+        whileFocus: reducedVariants.focus,
+      }
+    : {
+        whileHover: hover,
+        whileTap: tap,
+        whileFocus: focus,
+      }
+
+  // Configure transition (instant for reduced motion)
+  const transitionConfig = prefersReducedMotion
+    ? { duration: 0, ease: 'linear', delay: 0 }
+    : {
+        duration: transition.duration ?? 0.2,
+        ease: transition.ease ?? [0.4, 0, 0.2, 1],
+        delay: transition.delay ?? 0,
+      }
+
+  return {
+    variants,
+    interactions,
+    transition: transitionConfig,
+    initial: 'initial',
+    animate: 'animate',
+    exit: 'exit',
+  }
+}
+
+/**
+ * Simplified variant factory for common use cases
+ *
+ * @param preset - Preset animation type
+ * @param prefersReducedMotion - Whether user prefers reduced motion
+ * @returns Motion configuration object
+ *
+ * @example
+ * ```tsx
+ * const motion = createPresetVariants('slideUp', prefersReducedMotion)
+ * return <motion.div {...motion.props}>Content</motion.div>
+ * ```
+ */
+export function createPresetVariants(
+  preset: keyof typeof MOTION_SAFE_PRESETS,
+  prefersReducedMotion: boolean
+): {
+  variants: { initial: Variant; animate: Variant; exit: Variant }
+  props: {
+    variants: { initial: Variant; animate: Variant; exit: Variant }
+    initial: string
+    animate: string
+    exit: string
+  }
+} {
+  const variants = getMotionSafePreset(prefersReducedMotion, preset)
+
+  return {
+    variants,
+    props: {
+      variants,
+      initial: 'initial',
+      animate: 'animate',
+      exit: 'exit',
+    },
+  }
+}

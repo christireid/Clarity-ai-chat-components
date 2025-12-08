@@ -179,6 +179,89 @@ export const STAGGER_TIMING = {
 } as const
 
 // =============================================================================
+// ANIMATION DELAY TOKENS
+// =============================================================================
+
+/**
+ * Animation delay values in milliseconds
+ *
+ * Usage guidelines:
+ * - none: No delay, immediate animation start
+ * - micro: Barely perceptible delay for micro-interactions
+ * - short: Quick delay for cascading effects
+ * - normal: Standard delay for sequential animations
+ * - medium: Noticeable delay for emphasis
+ * - long: Significant delay for dramatic effect
+ * - tooltip: Standard delay before tooltip appears
+ * - hover: Delay before hover state triggers
+ */
+export const ANIMATION_DELAY = {
+  /** 0ms - No delay */
+  none: 0,
+  /** 50ms - Barely perceptible */
+  micro: 50,
+  /** 100ms - Quick delay */
+  short: 100,
+  /** 150ms - Standard delay */
+  normal: 150,
+  /** 200ms - Noticeable delay */
+  medium: 200,
+  /** 300ms - Significant delay */
+  long: 300,
+  /** 500ms - Dramatic delay */
+  longer: 500,
+  /** 300ms - Tooltip standard delay */
+  tooltip: 300,
+  /** 150ms - Hover intent delay */
+  hover: 150,
+} as const
+
+/**
+ * Delay values as CSS strings for direct use in styles
+ */
+export const DELAY_CSS = {
+  none: '0ms',
+  micro: '50ms',
+  short: '100ms',
+  normal: '150ms',
+  medium: '200ms',
+  long: '300ms',
+  longer: '500ms',
+  tooltip: '300ms',
+  hover: '150ms',
+} as const
+
+/**
+ * Delay values in seconds for Framer Motion
+ */
+export const DELAY_SECONDS = {
+  none: 0,
+  micro: 0.05,
+  short: 0.1,
+  normal: 0.15,
+  medium: 0.2,
+  long: 0.3,
+  longer: 0.5,
+  tooltip: 0.3,
+  hover: 0.15,
+} as const
+
+/**
+ * Tailwind delay class mappings
+ */
+export const TAILWIND_DELAY = {
+  none: 'delay-0',
+  micro: 'delay-50',
+  short: 'delay-100',
+  normal: 'delay-150',
+  medium: 'delay-200',
+  long: 'delay-300',
+  longer: 'delay-500',
+  tooltip: 'delay-300',
+  hover: 'delay-150',
+} as const
+
+// =============================================================================
 // INTERACTION VARIANTS (Framer Motion)
 // =============================================================================
 
@@ -516,14 +599,16 @@ export function getInteractionVariant<
 export function getTransition(
   duration: keyof typeof DURATION_SECONDS = 'normal',
   easing: keyof typeof EASING_FRAMER = 'default',
-  prefersReducedMotion = false
-): { duration: number; ease: readonly number[] | string } {
+  prefersReducedMotion = false,
+  delay: keyof typeof DELAY_SECONDS = 'none'
+): { duration: number; ease: readonly number[] | string; delay: number } {
   if (prefersReducedMotion) {
-    return { duration: 0, ease: 'linear' }
+    return { duration: 0, ease: 'linear', delay: 0 }
   }
   return {
     duration: DURATION_SECONDS[duration],
     ease: EASING_FRAMER[easing],
+    delay: DELAY_SECONDS[delay],
   }
 }
 
@@ -544,6 +629,7 @@ export function getTailwindTransition(
 
 export type AnimationDuration = keyof typeof ANIMATION_DURATION
 export type AnimationEasing = keyof typeof ANIMATION_EASING
+export type AnimationDelay = keyof typeof ANIMATION_DELAY
 export type StaggerTiming = keyof typeof STAGGER_TIMING
 export type AnimationPreset = keyof typeof ANIMATION_PRESETS
 export type InteractionVariant = keyof typeof INTERACTION_VARIANTS

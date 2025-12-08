@@ -3,17 +3,24 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
+import { useReducedMotion } from '../hooks/use-reduced-motion'
+import { DURATION_SECONDS, EASING_FRAMER } from '../animations/constants'
 
 /**
  * Streaming Text Renderer Component
- * 
- * Features from blueprint:
+ *
+ * Displays streaming text with optional typing animation and cursor.
+ * Fully respects prefers-reduced-motion for accessibility (WCAG 2.1 SC 2.3.3).
+ *
+ * Features:
  * - Progressive character-by-character or chunk-based display
  * - Smooth animation with configurable typing speed
  * - Handling of incomplete markdown during streaming
  * - Buffer management for optimal performance
  * - Cursor/caret animation during active streaming
- * 
+ * - Reduced motion support: instant display when user prefers reduced motion
+ * - GPU-accelerated animations using transform/opacity only
+ *
  * @example
  * ```tsx
  * <StreamingTextRenderer
@@ -59,10 +66,14 @@ export function StreamingTextRenderer({
   onStreamingComplete,
   onCharacterDisplayed,
 }: StreamingTextRendererProps) {
+  const prefersReducedMotion = useReducedMotion()
   const [displayedText, setDisplayedText] = React.useState('')
   const [isAnimating, setIsAnimating] = React.useState(false)
   const animationRef = React.useRef<number | undefined>(undefined)
   const previousTextRef = React.useRef('')
+
+  // When reduced motion is preferred, use instant display mode
+  const effectiveDisplayMode = prefersReducedMotion ? 'instant' : displayMode
 
   // Handle streaming updates
   React.useEffect(() => {
@@ -82,14 +93,14 @@ export function StreamingTextRenderer({
 
     setIsAnimating(true)
 
-    if (displayMode === 'instant') {
-      // Instant display
+    if (effectiveDisplayMode === 'instant') {
+      // Instant display (also used for reduced motion)
       setDisplayedText(text)
       setIsAnimating(false)
       return
     }
 
-    if (displayMode === 'chunk') {
+    if (effectiveDisplayMode === 'chunk') {
       // Chunk-based display
       const chunks: string[] = []
       for (let i = 0; i < newContent.length; i += chunkSize) {
@@ -110,7 +121,10 @@ export function StreamingTextRenderer({
             return updated
           })
           chunkIndex++
-          animationRef.current = window.setTimeout(displayChunk, typingSpeed * chunkSize)
+          animationRef.current = window.setTimeout(
+            displayChunk,
+            typingSpeed * chunkSize
+          )
         } else {
           setIsAnimating(false)
         }
@@ -121,7 +135,10 @@ export function StreamingTextRenderer({
       // Character-by-character display
       let charIndex = 0
       const displayChar = () => {
-        if (charIndex < newContent.length && text.length > displayedText.length + charIndex) {
+        if (
+          charIndex < newContent.length &&
+          text.length > displayedText.length + charIndex
+        ) {
           const char = newContent[charIndex]
           if (!char) return
 
@@ -145,7 +162,17 @@ export function StreamingTextRenderer({
         clearTimeout(animationRef.current)
       }
     }
-  }, [text, isStreaming, displayMode, typingSpeed, chunkSize, displayedText, onCharacterDisplayed, onStreamingComplete])
+  }, [
+    text,
+    isStreaming,
+    effectiveDisplayMode,
+    typingSpeed,
+    chunkSize,
+    displayedText,
+    onCharacterDisplayed,
+    onStreamingComplete,
+    prefersReducedMotion,
+  ])
 
   // Reset when text changes completely (new message)
   React.useEffect(() => {
@@ -156,22 +183,38 @@ export function StreamingTextRenderer({
     previousTextRef.current = text
   }, [text])
 
+  // Cursor animation variants - static for reduced motion
+  const cursorAnimation = prefersReducedMotion
+    ? { opacity: 0.7 } // Static cursor, no animation
+    : { opacity: [1, 0.3, 1] }
+
+  const cursorTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : {
+        duration: DURATION_SECONDS.slower,
+        ease: EASING_FRAMER.smooth,
+        repeat: Infinity,
+      }
+
   return (
-    <span className={cn('inline-block', className)}>
+    <span
+      className={cn(
+        'inline-block',
+        // GPU acceleration hint for animated content
+        'will-change-contents',
+        className
+      )}
+    >
       {displayedText}
       {isStreaming && showCursor && (
         <motion.span
-          animate={{
-            opacity: [1, 0.3, 1],
-          }}
-          transition={{
-            // Framer Motion 12: Smooth cursor pulse with spring
-            type: 'spring',
-            damping: 12,
-            stiffness: 100,
-            repeat: Infinity,
-          }}
+          animate={cursorAnimation}
+          transition={cursorTransition}
           className="inline-block ml-0.5 text-current"
+          style={{
+            // GPU acceleration for cursor animation
+            willChange: prefersReducedMotion ? 'auto' : 'opacity',
+          }}
           aria-hidden="true"
         >
           {cursorChar}
@@ -197,7 +240,9 @@ export interface UseStreamingTextConfigOptions {
   defaultShowCursor?: boolean
 }
 
-export function useStreamingTextConfig(options: UseStreamingTextConfigOptions = {}) {
+export function useStreamingTextConfig(
+  options: UseStreamingTextConfigOptions = {}
+) {
   const {
     defaultTypingSpeed = 30,
     defaultDisplayMode = 'character',

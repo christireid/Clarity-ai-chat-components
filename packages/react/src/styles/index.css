@@ -604,3 +604,95 @@ body {
     transform: scale(1);
   }
 }
+
+/* ============================================================================
+   GPU Acceleration & Performance Hints
+   ============================================================================ */
+
+/*
+ * will-change hints for animated elements
+ *
+ * IMPORTANT: Use sparingly - only on elements that will animate.
+ * Applying will-change to too many elements can hurt performance.
+ *
+ * Best practices:
+ * 1. Only apply to elements that will animate
+ * 2. Remove after animation completes when possible
+ * 3. Prefer transform/opacity animations (compositor-only)
+ * 4. Avoid will-change: contents on large subtrees
+ */
+
+/* Transform animations (position, scale, rotate) */
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Opacity animations (fade in/out) */
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Combined transform + opacity (most common animation pattern) */
+.will-change-transform-opacity {
+  will-change: transform, opacity;
+}
+
+/* Scroll-linked animations */
+.will-change-scroll {
+  will-change: scroll-position;
+}
+
+/* Content changes (use carefully - can be expensive) */
+.will-change-contents {
+  will-change: contents;
+}
+
+/* Reset will-change after animation (for cleanup) */
+.will-change-auto {
+  will-change: auto;
+}
+
+/* GPU layer promotion for smooth scrolling containers */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Contain paint for isolated animation regions */
+.contain-paint {
+  contain: paint;
+}
+
+/* Contain layout for elements with independent layout */
+.contain-layout {
+  contain: layout;
+}
+
+/* Contain strict for fully isolated components */
+.contain-strict {
+  contain: strict;
+}
+
+/* Motion-aware will-change - disabled when reduced motion preferred */
+@media (prefers-reduced-motion: no-preference) {
+  .motion-safe\:will-change-transform {
+    will-change: transform;
+  }
+
+  .motion-safe\:will-change-opacity {
+    will-change: opacity;
+  }
+
+  .motion-safe\:will-change-transform-opacity {
+    will-change: transform, opacity;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Reset will-change when motion is reduced (no animations = no hints needed) */
+  .motion-safe\:will-change-transform,
+  .motion-safe\:will-change-opacity,
+  .motion-safe\:will-change-transform-opacity {
+    will-change: auto;
+  }
+}
