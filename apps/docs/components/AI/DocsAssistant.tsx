@@ -704,38 +704,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     }
   }, [isOnline, messageQueue.length, isLoading, processMessageQueue])
 
-  // Create a new conversation branch from a specific message
-  const createBranch = useCallback((fromMessageId: string, branchName?: string) => {
-    const currentBranch = branchState.branches.find(b => b.id === branchState.currentBranchId)
-    if (!currentBranch) return
-
-    // Find the index of the message to branch from
-    const messageIndex = messages.findIndex(m => m.id === fromMessageId)
-    if (messageIndex === -1) return
-
-    // Create new branch with messages up to and including the branch point
-    const branchMessages = messages.slice(0, messageIndex + 1)
-    const newBranchId = `branch-${Date.now()}`
-    const newBranch: ConversationBranch = {
-      id: newBranchId,
-      name: branchName || `Branch ${branchState.branches.length}`,
-      messages: branchMessages,
-      parentBranchId: branchState.currentBranchId,
-      branchPointMessageId: fromMessageId,
-      createdAt: new Date(),
-    }
-
-    setBranchState(prev => ({
-      branches: [...prev.branches, newBranch],
-      currentBranchId: newBranchId,
-    }))
-
-    // Update messages to show the branched conversation
-    setMessages(branchMessages)
-
-    toast.success(`Created branch: ${newBranch.name}`)
-  }, [branchState, messages, toast])
-
   // Switch to a different branch
   const switchBranch = useCallback((branchId: string) => {
     const targetBranch = branchState.branches.find(b => b.id === branchId)
@@ -760,28 +728,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
     toast.info(`Switched to: ${targetBranch.name}`)
   }, [branchState, messages, toast])
-
-  // Delete a branch (cannot delete main or current branch)
-  const deleteBranch = useCallback((branchId: string) => {
-    if (branchId === 'main') {
-      toast.error('Cannot delete main conversation')
-      return
-    }
-    if (branchId === branchState.currentBranchId) {
-      toast.error('Cannot delete current branch. Switch to another branch first.')
-      return
-    }
-
-    const branchToDelete = branchState.branches.find(b => b.id === branchId)
-    if (!branchToDelete) return
-
-    setBranchState(prev => ({
-      ...prev,
-      branches: prev.branches.filter(b => b.id !== branchId),
-    }))
-
-    toast.success(`Deleted branch: ${branchToDelete.name}`)
-  }, [branchState, toast])
 
   // Get current branch info
   const currentBranch = useMemo(() => {
@@ -1152,6 +1098,16 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     includeMetadata?: boolean
     includeImages?: boolean
   }) => {
+    // Escape HTML to prevent XSS in HTML export
+    const escapeHtml = (text: string) =>
+      text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/\n/g, '<br>')
+
     try {
       const { format, includeMetadata = true } = options
       const timestamp = new Date().toLocaleString()
@@ -1178,16 +1134,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
           break
 
         case 'html':
-          // Escape HTML to prevent XSS
-          const escapeHtml = (text: string) =>
-            text
-              .replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#039;')
-              .replace(/\n/g, '<br>')
-
           content = `<!DOCTYPE html>
 <html lang="en">
 <head>
