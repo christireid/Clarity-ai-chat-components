@@ -1,9 +1,9 @@
 /**
  * Virtualized Message List
- * 
+ *
  * Efficient rendering for large conversations (1000+ messages) using
  * react-window for virtual scrolling.
- * 
+ *
  * @blueprint Feature 6.1 - Virtual Scrolling
  * @priority HIGH
  * @status NEW - Implementation based on blueprint analysis
@@ -11,14 +11,22 @@
 
 'use client'
 
-import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import { VariableSizeList as List, ListChildComponentProps } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { Message } from '@clarity-chat/types'
 
 // Type assertions for react-window v1.8.11 with React 19
 // AutoSizer component type assertion for compatibility
-const AutoSizerComponent = AutoSizer as React.ComponentType<React.ComponentProps<typeof AutoSizer>>
+const AutoSizerComponent = AutoSizer as React.ComponentType<
+  React.ComponentProps<typeof AutoSizer>
+>
 // MessageListData type for react-window itemData prop
 type MessageListData = {
   messages: Message[]
@@ -37,33 +45,36 @@ const ListComponent = List as any
 export interface VirtualizedMessageListProps {
   /** Messages to render */
   messages: Message[]
-  
+
   /** Render function for each message */
   renderMessage: (message: Message, index: number) => React.ReactNode
-  
+
   /** Estimated height of each message in pixels */
   estimatedItemSize?: number
-  
+
   /** Number of items to render outside of the visible area */
   overscanCount?: number
-  
+
   /** Auto-scroll to bottom when new messages arrive */
   autoScrollToBottom?: boolean
-  
+
   /** Callback when scroll position changes */
   onScroll?: (scrollOffset: number) => void
-  
+
   /** Custom CSS class */
   className?: string
-  
+
   /** Threshold for enabling virtualization (message count) */
   threshold?: number
-  
+
   /** Custom item key getter */
   itemKey?: (index: number, data: Message[]) => string
 }
 
-export interface MessageListProps extends Omit<VirtualizedMessageListProps, 'threshold'> {
+export interface MessageListProps extends Omit<
+  VirtualizedMessageListProps,
+  'threshold'
+> {
   /** Enable virtualization automatically at this threshold */
   virtualizationThreshold?: number
 }
@@ -115,7 +126,10 @@ function MessageItem({ index, style, data }: MessageItemProps) {
       const height = itemRef.current.offsetHeight
       const messageKey = message.id || `msg-${index}`
 
-      if (!heightCache.hasHeight(messageKey) || heightCache.getHeight(messageKey) !== height) {
+      if (
+        !heightCache.hasHeight(messageKey) ||
+        heightCache.getHeight(messageKey) !== height
+      ) {
         heightCache.setHeight(messageKey, height)
         setItemHeight(index, height)
       }
@@ -128,9 +142,7 @@ function MessageItem({ index, style, data }: MessageItemProps) {
 
   return (
     <div style={style}>
-      <div ref={itemRef}>
-        {renderMessage(message, index)}
-      </div>
+      <div ref={itemRef}>{renderMessage(message, index)}</div>
     </div>
   )
 }
@@ -141,7 +153,7 @@ function MessageItem({ index, style, data }: MessageItemProps) {
 
 /**
  * VirtualizedMessageList - Enhanced with React 19 features
- * 
+ *
  * React 19 Enhancements:
  * - Keeps performance-critical useCallback (for react-window integration)
  * - Compiler optimizes the rest automatically
@@ -166,20 +178,34 @@ export function VirtualizedMessageList({
 
   // Track if user is near bottom
   // React 19: Keep useCallback for stable ref (required by react-window)
-  const handleScroll = React.useCallback(({ scrollOffset, scrollUpdateWasRequested }: { scrollOffset: number; scrollUpdateWasRequested: boolean }) => {
-    if (!scrollUpdateWasRequested && listRef.current) {
-      const list = listRef.current
-      const scrollHeight = messages.reduce((sum, msg, i) => 
-        sum + heightCacheRef.current.getHeight(msg.id || `msg-${i}`), 0
-      )
-      const clientHeight = (list as { _outerRef?: { clientHeight?: number } })._outerRef?.clientHeight || 600
-      const threshold = 100 // px from bottom
-      
-      isNearBottomRef.current = scrollHeight - (scrollOffset + clientHeight) < threshold
-    }
-    
-    onScroll?.(scrollOffset)
-  }, [messages, onScroll])
+  const handleScroll = React.useCallback(
+    ({
+      scrollOffset,
+      scrollUpdateWasRequested,
+    }: {
+      scrollOffset: number
+      scrollUpdateWasRequested: boolean
+    }) => {
+      if (!scrollUpdateWasRequested && listRef.current) {
+        const list = listRef.current
+        const scrollHeight = messages.reduce(
+          (sum, msg, i) =>
+            sum + heightCacheRef.current.getHeight(msg.id || `msg-${i}`),
+          0
+        )
+        const clientHeight =
+          (list as { _outerRef?: { clientHeight?: number } })._outerRef
+            ?.clientHeight || 600
+        const threshold = 100 // px from bottom
+
+        isNearBottomRef.current =
+          scrollHeight - (scrollOffset + clientHeight) < threshold
+      }
+
+      onScroll?.(scrollOffset)
+    },
+    [messages, onScroll]
+  )
 
   // Auto-scroll to bottom on new messages
   React.useEffect(() => {
@@ -196,11 +222,14 @@ export function VirtualizedMessageList({
 
   // Get item height from cache
   // React 19: Keep useCallback - passed to react-window, needs stable ref
-  const getItemSize = React.useCallback((index: number) => {
-    const message = messages[index]
-    const key = message?.id || `msg-${index}`
-    return heightCacheRef.current.getHeight(key)
-  }, [messages])
+  const getItemSize = React.useCallback(
+    (index: number) => {
+      const message = messages[index]
+      const key = message?.id || `msg-${index}`
+      return heightCacheRef.current.getHeight(key)
+    },
+    [messages]
+  )
 
   // Update item height and trigger re-render
   // React 19: Keep useCallback - passed to child components, needs stable ref
@@ -213,9 +242,16 @@ export function VirtualizedMessageList({
 
   // Get item key
   // React 19: Keep useCallback - passed to react-window, needs stable ref
-  const getItemKey = React.useCallback((index: number, data: MessageListData) => {
-    return itemKey?.(index, data.messages) || data.messages[index]?.id || `msg-${index}`
-  }, [itemKey])
+  const getItemKey = React.useCallback(
+    (index: number, data: MessageListData) => {
+      return (
+        itemKey?.(index, data.messages) ||
+        data.messages[index]?.id ||
+        `msg-${index}`
+      )
+    },
+    [itemKey]
+  )
 
   // Clear cache when messages change dramatically
   React.useEffect(() => {
@@ -224,8 +260,23 @@ export function VirtualizedMessageList({
     }
   }, [messages.length])
 
+  // Check if any message is currently streaming (for aria-busy)
+  // React 19 compiler auto-memoizes; useMemo added for React 18 compatibility
+  const isStreaming = React.useMemo(
+    () => messages.some((m) => m.status === 'streaming'),
+    [messages]
+  )
+
   return (
-    <div className={className} style={{ height: '100%', width: '100%' }}>
+    <div
+      className={className}
+      style={{ height: '100%', width: '100%' }}
+      role="log"
+      aria-label="Chat messages"
+      aria-live="polite"
+      aria-relevant="additions"
+      aria-busy={isStreaming}
+    >
       <AutoSizerComponent>
         {({ height: _height, width }: { height: number; width: number }) => (
           <ListComponent
@@ -275,8 +326,22 @@ export function AutoVirtualizedMessageList({
   }
 
   // Standard rendering for small lists
+  // Check if any message is currently streaming (for aria-busy)
+  // React 19 compiler auto-memoizes; useMemo added for React 18 compatibility
+  const isStreaming = React.useMemo(
+    () => messages.some((m) => m.status === 'streaming'),
+    [messages]
+  )
+
   return (
-    <div className={props.className}>
+    <div
+      className={props.className}
+      role="log"
+      aria-label="Chat messages"
+      aria-live="polite"
+      aria-relevant="additions"
+      aria-busy={isStreaming}
+    >
       {messages.map((message, index) => (
         <div key={message.id || `msg-${index}`}>
           {renderMessage(message, index)}
@@ -304,11 +369,14 @@ export function useMessageListScroll(
   const [isNearBottom, setIsNearBottom] = useState(true)
   const [userHasScrolledUp, setUserHasScrolledUp] = useState(false)
 
-  const handleScroll = useCallback((_scrollOffset: number) => {
-    // This would need the total height to work properly
-    // Implementation depends on the container
-    setUserHasScrolledUp(!isNearBottom)
-  }, [isNearBottom])
+  const handleScroll = useCallback(
+    (_scrollOffset: number) => {
+      // This would need the total height to work properly
+      // Implementation depends on the container
+      setUserHasScrolledUp(!isNearBottom)
+    },
+    [isNearBottom]
+  )
 
   const scrollToBottom = useCallback(() => {
     // Implementation depends on ref to list component
@@ -368,7 +436,7 @@ export function useMessageListPerformance(messages: Message[]) {
 
   useEffect(() => {
     const startTime = performance.now()
-    
+
     // Measure after render
     requestIdleCallback(() => {
       const endTime = performance.now()

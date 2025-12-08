@@ -50,20 +50,20 @@ export interface MessageListProps {
 
 /**
  * MessageList - Mid-Level Composable Component
- * 
+ *
  * **Architecture Layer**: Mid-Level (Composable Building Blocks)
  * **Domain**: Chat UI
- * 
+ *
  * A composable message list component with auto-scrolling, animations, and
  * message interaction handlers.
- * 
+ *
  * For drop-in usage, use top-level `ClarityChat` component instead.
  * For custom message rendering, use low-level `Message` component.
- * 
+ *
  * React 19 Enhancements:
  * - Removed memo() wrapper - compiler handles optimization
  * - Removed simple useMemo - compiler optimizes static values
- * 
+ *
  * @param props - MessageList configuration
  * @param props.messages - Array of messages to display (required)
  * @param props.onMessageCopy - Callback when message is copied
@@ -72,7 +72,7 @@ export interface MessageListProps {
  * @param props.isLoading - Show loading skeleton (default: false)
  * @param props.emptyState - Custom empty state content
  * @returns Message list component
- * 
+ *
  * @example
  * ```tsx
  * <MessageList
@@ -102,9 +102,9 @@ export function MessageList({
   if (!Array.isArray(messages)) {
     throw new Error(
       'MessageList: "messages" prop must be an array.\n\n' +
-      'Example:\n' +
-      '  <MessageList messages={[]} />\n\n' +
-      'For more help, see: https://clarity-chat.dev/docs/components'
+        'Example:\n' +
+        '  <MessageList messages={[]} />\n\n' +
+        'For more help, see: https://clarity-chat.dev/docs/components'
     )
   }
   // Use auto-scroll hook with smooth scrolling
@@ -118,7 +118,8 @@ export function MessageList({
   const prefersReducedMotion = useReducedMotion()
 
   // Track message count when user scrolls away
-  const [messageCountWhenScrolledAway, setMessageCountWhenScrolledAway] = React.useState<number | null>(null)
+  const [messageCountWhenScrolledAway, setMessageCountWhenScrolledAway] =
+    React.useState<number | null>(null)
   const [showPulse, setShowPulse] = React.useState(false)
 
   // Track when user scrolls away from bottom
@@ -133,7 +134,11 @@ export function MessageList({
 
   // Show pulse animation when new messages arrive while scrolled away
   React.useEffect(() => {
-    if (!isNearBottom && messageCountWhenScrolledAway !== null && messages.length > messageCountWhenScrolledAway) {
+    if (
+      !isNearBottom &&
+      messageCountWhenScrolledAway !== null &&
+      messages.length > messageCountWhenScrolledAway
+    ) {
       setShowPulse(true)
       const timeout = setTimeout(() => setShowPulse(false), 2000)
       return () => clearTimeout(timeout)
@@ -153,9 +158,10 @@ export function MessageList({
   }, [isNearBottom, scrollToBottom])
 
   // Calculate new message count
-  const newMessageCount = messageCountWhenScrolledAway !== null
-    ? Math.max(0, messages.length - messageCountWhenScrolledAway)
-    : 0
+  const newMessageCount =
+    messageCountWhenScrolledAway !== null
+      ? Math.max(0, messages.length - messageCountWhenScrolledAway)
+      : 0
 
   // React 19: Static function calls - compiler optimizes, no useMemo needed
   const containerVariants = createStaggerContainerVariant('normal', 0)
@@ -164,8 +170,22 @@ export function MessageList({
   // React 19: Simple boolean derivation - compiler optimizes
   const showEmptyState = messages.length === 0 && !isLoading && emptyState
 
+  // Check if any message is currently streaming (for aria-busy)
+  // React 19 compiler auto-memoizes; useMemo added for React 18 compatibility
+  const isStreaming = React.useMemo(
+    () => messages.some((m) => m.status === 'streaming'),
+    [messages]
+  )
+
   return (
-    <div className={cn("flex flex-col flex-1 min-h-0 overflow-hidden", className)}>
+    <div
+      className={cn('flex flex-col flex-1 min-h-0 overflow-hidden', className)}
+      role="log"
+      aria-label="Chat messages"
+      aria-live="polite"
+      aria-relevant="additions"
+      aria-busy={isStreaming}
+    >
       <ScrollArea
         ref={scrollRef as React.LegacyRef<HTMLDivElement>}
         className="flex-1 min-h-0 bg-transparent px-2 py-4 sm:px-4"
@@ -244,7 +264,9 @@ export function MessageList({
                     {/* Time separator */}
                     {showSeparator && message.createdAt && (
                       <TimeSeparator>
-                        {getTimeSeparator(new Date(message.createdAt).toISOString())}
+                        {getTimeSeparator(
+                          new Date(message.createdAt).toISOString()
+                        )}
                       </TimeSeparator>
                     )}
 
@@ -252,7 +274,9 @@ export function MessageList({
                     <motion.div variants={itemVariants}>
                       <Message
                         message={message}
-                        onCopy={(content) => onMessageCopy?.(message.id, content)}
+                        onCopy={(content) =>
+                          onMessageCopy?.(message.id, content)
+                        }
                         onFeedback={(type) =>
                           onMessageFeedback?.(message.id, type)
                         }
@@ -274,7 +298,11 @@ export function MessageList({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <SkeletonMessage role="assistant" lines={3} variant="shimmer" />
+                  <SkeletonMessage
+                    role="assistant"
+                    lines={3}
+                    variant="shimmer"
+                  />
                 </motion.div>
               )}
             </motion.div>
@@ -308,7 +336,9 @@ export function MessageList({
               whileHover={{
                 scale: getMotionSafeScale(prefersReducedMotion, 1.05),
               }}
-              whileTap={{ scale: getMotionSafeScale(prefersReducedMotion, 0.95) }}
+              whileTap={{
+                scale: getMotionSafeScale(prefersReducedMotion, 0.95),
+              }}
               animate={
                 showPulse && !prefersReducedMotion
                   ? {
@@ -336,7 +366,10 @@ export function MessageList({
                       opacity: 0,
                     }}
                     transition={{
-                      duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
+                      duration: getMotionSafeDuration(
+                        prefersReducedMotion,
+                        0.2
+                      ),
                       ease: prefersReducedMotion ? 'linear' : 'backOut',
                     }}
                     className="absolute -top-2 -right-2 z-20"

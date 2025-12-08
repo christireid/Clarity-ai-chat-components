@@ -81,7 +81,11 @@ export function ThinkingIndicator({
   // Animation variants that respect reduced motion
   const containerVariants = prefersReducedMotion
     ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } }
-    : { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -10 } }
+    : {
+        initial: { opacity: 0, y: 10 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -10 },
+      }
 
   const iconAnimation = prefersReducedMotion
     ? {} // No animation for reduced motion
@@ -91,8 +95,22 @@ export function ThinkingIndicator({
     ? { opacity: [0.5, 0.8, 0.5] } // Subtle opacity only
     : { opacity: [0.3, 1, 0.3], scale: [0.85, 1, 0.85] }
 
+  // Build descriptive aria-label for screen readers
+  // Truncate topic for aria-label to prevent overly long announcements
+  const truncatedTopic = status?.topic
+    ? status.topic.length > 100
+      ? `${status.topic.slice(0, 100)}...`
+      : status.topic
+    : null
+  const ariaLabel = truncatedTopic
+    ? `AI is ${stageLabel.toLowerCase()}: ${truncatedTopic}${estimatedSeconds !== null ? `, approximately ${estimatedSeconds} seconds remaining` : ''}`
+    : `AI is ${stageLabel.toLowerCase()}${estimatedSeconds !== null ? `, approximately ${estimatedSeconds} seconds remaining` : ''}`
+
   return (
     <motion.div
+      role="status"
+      aria-live="polite"
+      aria-label={ariaLabel}
       initial={containerVariants.initial}
       animate={containerVariants.animate}
       exit={containerVariants.exit}
@@ -108,11 +126,15 @@ export function ThinkingIndicator({
       {/* Animated Icon - Fixed size container for stability */}
       <motion.div
         animate={iconAnimation}
-        transition={prefersReducedMotion ? { duration: 0 } : {
-          duration: 2,
-          repeat: Infinity,
-          ease: ANIMATION_EASING.inOut,
-        }}
+        transition={
+          prefersReducedMotion
+            ? { duration: 0 }
+            : {
+                duration: 2,
+                repeat: Infinity,
+                ease: ANIMATION_EASING.inOut,
+              }
+        }
         className="flex-shrink-0 flex items-center justify-center w-[18px] h-[18px] text-primary"
       >
         {stageIcon}
@@ -147,10 +169,16 @@ export function ThinkingIndicator({
         {/* Topic/Detail */}
         {status?.topic && (
           <motion.p
-            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 3 }}
-            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            initial={
+              prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 3 }
+            }
+            animate={
+              prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
+            }
             transition={{
-              duration: prefersReducedMotion ? 0.1 : ANIMATION_DURATION.fast / 1000,
+              duration: prefersReducedMotion
+                ? 0.1
+                : ANIMATION_DURATION.fast / 1000,
               ease: ANIMATION_EASING.out,
             }}
             className="text-xs text-muted-foreground/90 mt-1 truncate"
@@ -166,7 +194,9 @@ export function ThinkingIndicator({
               initial={{ width: 0 }}
               animate={{ width: `${status.progress}%` }}
               transition={{
-                duration: prefersReducedMotion ? 0.1 : ANIMATION_DURATION.slow / 1000,
+                duration: prefersReducedMotion
+                  ? 0.1
+                  : ANIMATION_DURATION.slow / 1000,
                 ease: ANIMATION_EASING.out,
               }}
               className="h-full bg-primary rounded-full"
@@ -178,8 +208,12 @@ export function ThinkingIndicator({
       {/* Estimated Time */}
       {estimatedSeconds !== null && (
         <motion.span
-          initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
-          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+          initial={
+            prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9 }
+          }
+          animate={
+            prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
+          }
           transition={{ duration: prefersReducedMotion ? 0.1 : 0.2 }}
           className="flex-shrink-0 text-xs font-medium text-muted-foreground/90 tabular-nums"
         >
