@@ -15,18 +15,13 @@ import {
   type ModernThemePresetName,
   isValidModernThemeName,
 } from './modern-presets'
-// Import legacy themes for backwards compatibility
-import {
-  themes as legacyThemes,
-  type ThemePresetName as LegacyThemeName,
-} from './presets'
 import { toHSLString, generatePaletteFromBrandColor } from './color-utils'
 import { CSS_VAR_PREFIX } from './tokens/colors'
 
 /**
- * Combined theme name type (modern + legacy)
+ * Theme preset name type
  */
-export type AnyThemePresetName = ModernThemePresetName | LegacyThemeName
+export type ThemePresetName = ModernThemePresetName
 
 /**
  * Simplified theme configuration
@@ -35,10 +30,9 @@ export type AnyThemePresetName = ModernThemePresetName | LegacyThemeName
 export interface SimpleThemeConfig {
   /**
    * Base theme to extend from
-   * Can be a modern theme name or a legacy theme name
    * @default 'default'
    */
-  extends?: AnyThemePresetName
+  extends?: ThemePresetName
 
   /**
    * Single brand color to generate a palette from
@@ -145,26 +139,14 @@ function getRadiusValue(
 }
 
 /**
- * Get a theme by name from either modern or legacy themes
+ * Get a theme by name
  */
 function getThemeByName(name: string): CompleteThemeConfig {
-  // First try modern themes
   if (isValidModernThemeName(name)) {
     return modernThemes[name]
   }
-  // Fall back to legacy themes
-  if (name in legacyThemes) {
-    return legacyThemes[name as LegacyThemeName]
-  }
   // Default fallback
   return modernThemes['default']
-}
-
-/**
- * Check if a name is a valid theme name (modern or legacy)
- */
-function isValidAnyThemeName(name: string): boolean {
-  return isValidModernThemeName(name) || name in legacyThemes
 }
 
 /**
@@ -248,7 +230,7 @@ export function createTheme(config: SimpleThemeConfig): CompleteThemeConfig {
  * Lower-level API for advanced customization
  */
 export function mergeTheme(
-  base: AnyThemePresetName | CompleteThemeConfig,
+  base: ThemePresetName | CompleteThemeConfig,
   overrides: PartialThemeConfig
 ): CompleteThemeConfig {
   const baseTheme = typeof base === 'string' ? getThemeByName(base) : base

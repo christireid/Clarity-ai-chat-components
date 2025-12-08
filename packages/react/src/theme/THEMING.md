@@ -278,9 +278,11 @@ Styles are organized in CSS layers for proper cascade:
 
 If upgrading from an older version:
 
-1. **Variable names**: Old variables (`--primary`) continue to work
-2. **Theme presets**: Old preset names are still supported
-3. **New features**: `createTheme()` and modern presets are additions, not replacements
+1. **Variable names**: Old variables (`--primary`) continue to work via backwards compatibility
+   mappings
+2. **Theme presets**: Use the modern preset names listed above (`default`, `neutral`, `vibrant`,
+   `high-contrast`)
+3. **API**: `createTheme()` provides a simple API for custom themes
 
 ---
 

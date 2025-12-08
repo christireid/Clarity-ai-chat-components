@@ -9,7 +9,6 @@
  * - CSS custom properties for runtime customization
  * - Full TypeScript support
  * - WCAG accessibility compliance
- * - Backwards compatible with existing themes
  *
  * @example
  * // Zero config - just works
@@ -48,6 +47,7 @@ export {
   type ThemeConfig,
   type ThemeProviderProps,
   type ThemeToggleProps,
+  type ThemePresetName,
 } from './ThemeProvider'
 
 // Theme Configuration Types
@@ -102,30 +102,33 @@ export {
 // Theme Presets
 // ============================================================================
 
-// Modern theme presets (new architecture)
+// Theme presets
 export {
+  modernThemes as themes,
   modernThemes,
+  modernThemeMetadata as themeMetadata,
   modernThemeMetadata,
+  getModernThemeNames as getThemeNames,
   getModernThemeNames,
+  getAllModernThemes as getAllThemes,
   getAllModernThemes,
+  isValidModernThemeName as isValidThemeName,
   isValidModernThemeName,
+  getModernDarkVariant as getDarkVariant,
   getModernDarkVariant,
+  getModernLightVariant as getLightVariant,
   getModernLightVariant,
   type ModernThemePresetName,
   // Individual theme exports
-  defaultLightTheme as modernDefaultLight,
-  defaultDarkTheme as modernDefaultDark,
+  defaultLightTheme,
+  defaultDarkTheme,
   neutralLightTheme,
   neutralDarkTheme,
-  vibrantLightTheme as modernVibrantLight,
-  vibrantDarkTheme as modernVibrantDark,
+  vibrantLightTheme,
+  vibrantDarkTheme,
   highContrastLightTheme,
   highContrastDarkTheme,
 } from './modern-presets'
-
-// Legacy presets (backwards compatibility)
-// Re-export everything from the existing presets.ts file
-export * from './presets'
 
 // ============================================================================
 // Design Tokens
@@ -196,28 +199,23 @@ export {
 } from './tokens/animations'
 
 // ============================================================================
-// Legacy Exports (Backwards Compatibility)
+// Additional Exports
 // ============================================================================
 
-// Legacy design tokens object
+// Design tokens object
 export { designTokens, type DesignTokens } from './design-tokens'
 
-// Legacy theme builder functions
+// Theme builder utilities
 export {
-  createTheme as createThemeLegacy,
   applyThemeToDocument,
   exportTheme,
   importTheme,
   getTheme,
-  getThemeNames as getThemeNamesLegacy,
   getThemeMetadata,
-  getAllThemes as getAllThemesLegacy,
   createThemeVariants,
   validateTheme,
   hexToHsl,
   hslToHex,
-  adjustLightness as adjustLightnessLegacy,
-  getContrastRatio as getContrastRatioLegacy,
   checkContrast,
   generateForegroundColor,
   generatePalette,

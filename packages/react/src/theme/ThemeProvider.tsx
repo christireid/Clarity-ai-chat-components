@@ -1,17 +1,12 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-// Legacy theme support
-import { themes, type ThemePresetName } from './presets'
 import {
   applyThemeToDocument,
   createTheme as createThemeLegacy,
 } from './theme-builder'
-// Modern theme support
 import {
   modernThemes,
   isValidModernThemeName,
-  getModernDarkVariant,
-  getModernLightVariant,
   type ModernThemePresetName,
 } from './modern-presets'
 import {
@@ -29,21 +24,17 @@ import { cn } from '@clarity-chat/primitives'
 export type ThemeMode = 'light' | 'dark' | 'system'
 
 /**
- * Combined preset name supporting both legacy and modern themes
+ * Theme preset name (modern themes only)
  */
-export type AnyPresetName = ThemePresetName | ModernThemePresetName
+export type ThemePresetName = ModernThemePresetName
 
 export interface ThemeConfig {
   mode: ThemeMode
-  preset?: AnyPresetName
+  preset?: ThemePresetName
   customTheme?: CompleteThemeConfig
   customizations?: PartialThemeConfig
   // Simple theme config (modern API)
   simpleConfig?: SimpleThemeConfig
-  // Legacy support
-  primaryColor?: string
-  radius?: number
-  fontFamily?: string
   // Transition settings
   enableTransitions?: boolean
   transitionDuration?: number
@@ -55,12 +46,8 @@ interface ThemeContextValue {
   mode: 'light' | 'dark'
   toggleMode: () => void
   resolvedTheme: CompleteThemeConfig | null
-  setPreset: (preset: AnyPresetName) => void
-  availablePresets: AnyPresetName[]
-  /** Modern presets only */
-  modernPresets: ModernThemePresetName[]
-  /** Legacy presets only */
-  legacyPresets: ThemePresetName[]
+  setPreset: (preset: ThemePresetName) => void
+  availablePresets: ThemePresetName[]
 }
 
 const ThemeContext = React.createContext<ThemeContextValue | undefined>(
@@ -138,16 +125,11 @@ export function ThemeProvider({
     return () => mediaQuery.removeEventListener('change', updateMode)
   }, [theme.mode])
 
-  // Helper to get theme by preset name (modern or legacy)
+  // Helper to get theme by preset name
   const getThemeByPreset = React.useCallback(
-    (preset: AnyPresetName): CompleteThemeConfig => {
-      // Check modern themes first
+    (preset: ThemePresetName): CompleteThemeConfig => {
       if (isValidModernThemeName(preset)) {
         return modernThemes[preset]
-      }
-      // Fall back to legacy themes
-      if (preset in themes) {
-        return themes[preset as ThemePresetName]
       }
       // Default fallback
       return modernThemes['default']
@@ -167,7 +149,7 @@ export function ThemeProvider({
     else if (theme.simpleConfig) {
       complete = createThemeModern(theme.simpleConfig)
     }
-    // If preset specified, load it (supports both modern and legacy)
+    // If preset specified, load it
     else if (theme.preset) {
       const baseTheme = getThemeByPreset(theme.preset)
       complete = theme.customizations
@@ -176,18 +158,8 @@ export function ThemeProvider({
     }
     // Otherwise, use default based on resolved mode
     else {
-      // Prefer modern 'default' / 'default-dark' presets
       const defaultPreset = resolvedMode === 'dark' ? 'default-dark' : 'default'
       complete = modernThemes[defaultPreset]
-
-      // Apply legacy customizations
-      if (theme.primaryColor || theme.radius || theme.fontFamily) {
-        const customizations: PartialThemeConfig = {}
-        if (theme.primaryColor) {
-          customizations.colors = { primary: theme.primaryColor }
-        }
-        complete = createThemeLegacy(complete, customizations)
-      }
     }
 
     setResolvedTheme(complete)
@@ -246,27 +218,15 @@ export function ThemeProvider({
     }))
   }, [])
 
-  const setPreset = React.useCallback((preset: AnyPresetName) => {
+  const setPreset = React.useCallback((preset: ThemePresetName) => {
     setThemeState((prev) => ({ ...prev, preset }))
   }, [])
 
-  // Modern presets
-  const modernPresets = React.useMemo(
-    () => Object.keys(modernThemes) as ModernThemePresetName[],
+  // Available presets
+  const availablePresets = React.useMemo(
+    () => Object.keys(modernThemes) as ThemePresetName[],
     []
   )
-
-  // Legacy presets
-  const legacyPresets = React.useMemo(
-    () => Object.keys(themes) as ThemePresetName[],
-    []
-  )
-
-  // All available presets (modern + legacy, deduplicated)
-  const availablePresets = React.useMemo(() => {
-    const all = new Set<AnyPresetName>([...modernPresets, ...legacyPresets])
-    return Array.from(all)
-  }, [modernPresets, legacyPresets])
 
   const value = React.useMemo<ThemeContextValue>(
     () => ({
@@ -277,8 +237,6 @@ export function ThemeProvider({
       resolvedTheme,
       setPreset,
       availablePresets,
-      modernPresets,
-      legacyPresets,
     }),
     [
       theme,
@@ -288,8 +246,6 @@ export function ThemeProvider({
       resolvedTheme,
       setPreset,
       availablePresets,
-      modernPresets,
-      legacyPresets,
     ]
   )
 
@@ -301,16 +257,16 @@ export function ThemeProvider({
  *
  * @example
  * ```tsx
- * const { mode, toggleMode, theme, setTheme } = useTheme()
+ * const { mode, toggleMode, setPreset } = useTheme()
  *
  * // Toggle dark mode
  * <button onClick={toggleMode}>
- *   {mode === 'dark' ? '☀️' : '🌙'}
+ *   {mode === 'dark' ? 'Light' : 'Dark'}
  * </button>
  *
- * // Customize theme
- * <button onClick={() => setTheme({ primaryColor: '#3b82f6' })}>
- *   Set Blue Theme
+ * // Change preset
+ * <button onClick={() => setPreset('vibrant')}>
+ *   Vibrant Theme
  * </button>
  * ```
  */
