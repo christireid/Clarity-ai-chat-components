@@ -299,10 +299,19 @@ root.render(<App />);
   }
 
   // Encode for URL - convert UTF-8 to base64 safely
+  // Use chunked approach to avoid "Maximum call stack size exceeded" with large payloads
   const filesJson = JSON.stringify({ files })
   const encoder = new TextEncoder()
   const bytes = encoder.encode(filesJson)
-  const encoded = btoa(String.fromCharCode(...bytes))
+
+  // Convert bytes to base64 in chunks to avoid stack overflow
+  let binary = ''
+  const chunkSize = 8192
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize)
+    binary += String.fromCharCode(...chunk)
+  }
+  const encoded = btoa(binary)
 
   return `https://codesandbox.io/api/v1/sandboxes/define?parameters=${encoded}`
 }
@@ -416,7 +425,7 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
   const partialContentRef = useRef<string>('') // Track partial response for recovery
-  const lastUserMessageRef = useRef<string>('') // Track last user message for retry
+  const isProcessingQueueRef = useRef<boolean>(false) // Prevent concurrent queue processing
 
   // Library hooks
   const toast = useToast()
@@ -657,24 +666,33 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 
   // Process the message queue when back online
   const processMessageQueue = useCallback(async () => {
+    // Prevent concurrent processing using ref (survives re-renders)
+    if (isProcessingQueueRef.current) return
     if (!isOnline || messageQueue.length === 0 || isLoading) return
 
+    isProcessingQueueRef.current = true
     const queue = [...messageQueue]
     setMessageQueue([]) // Clear queue first to prevent duplicate processing
 
     toast.info(`Sending ${queue.length} queued message${queue.length > 1 ? 's' : ''}...`)
 
-    for (const queuedMsg of queue) {
-      // Remove the pending message from UI
-      setMessages(prev => prev.filter(m => m.id !== queuedMsg.id))
+    try {
+      for (const queuedMsg of queue) {
+        // Remove the pending message from UI
+        setMessages(prev => prev.filter(m => m.id !== queuedMsg.id))
 
-      // Send the actual message (this will add it back as a real message)
-      await handleSendMessageInternal(queuedMsg.content, 0)
+        // Send the actual message (this will add it back as a real message)
+        await handleSendMessageInternal(queuedMsg.content, 0)
 
-      // Small delay between messages to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 500))
+        // Small delay between messages to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+    } finally {
+      isProcessingQueueRef.current = false
     }
-  }, [isOnline, messageQueue, isLoading])
+  // Note: handleSendMessageInternal intentionally omitted to avoid circular dependency
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOnline, messageQueue, isLoading, toast])
 
   // Process queue when coming back online
   useEffect(() => {
@@ -877,7 +895,6 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
     setRetryCount(currentRetry)
     setCurrentCitations([]) // Clear previous citations when starting new request
     partialContentRef.current = '' // Reset partial content
-    lastUserMessageRef.current = content // Store for recovery
     setAiStatus({
       stage: 'researching',
       topic: currentRetry > 0 ? `Retrying (${currentRetry}/${MAX_RETRY_ATTEMPTS})...` : 'Searching documentation',
@@ -988,6 +1005,20 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             }
           }
         }
+      }
+
+      // Finalize any streaming message that didn't receive a 'done' event
+      // This handles cases where the stream ends abruptly
+      if (accumulatedContent && accumulatedContent.length > 0) {
+        const finalContent = normalizeLinksInContent(accumulatedContent)
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMessage.id && m.status === 'streaming'
+              ? { ...m, content: finalContent, status: 'sent' as const }
+              : m
+          )
+        )
+        trackMessage({ role: 'assistant', content: finalContent })
       }
 
       // Success - reset retry count and status
@@ -1147,6 +1178,16 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
           break
 
         case 'html':
+          // Escape HTML to prevent XSS
+          const escapeHtml = (text: string) =>
+            text
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#039;')
+              .replace(/\n/g, '<br>')
+
           content = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1164,12 +1205,12 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
 </head>
 <body>
   <h1>Clarity Chat Documentation Assistant</h1>
-  <p>Exported: ${timestamp}</p>
+  <p>Exported: ${escapeHtml(timestamp)}</p>
   <hr>
   ${messages.map((m) => `
   <div class="message ${m.role}">
     ${includeMetadata ? `<div class="meta">${m.role === 'user' ? 'You' : 'Assistant'} • ${new Date(m.createdAt).toLocaleTimeString()}</div>` : ''}
-    <div>${m.content.replace(/\n/g, '<br>')}</div>
+    <div>${escapeHtml(m.content)}</div>
   </div>`).join('')}
 </body>
 </html>`
@@ -1310,6 +1351,10 @@ function DocsAssistantInner({ className }: DocsAssistantProps) {
             aria-labelledby="docs-assistant-title"
             aria-describedby="docs-assistant-description"
           >
+            {/* Screen reader title (hidden visually) */}
+            <h2 id="docs-assistant-title" className="sr-only">
+              Documentation Assistant
+            </h2>
             {/* Screen reader description (hidden visually) */}
             <span id="docs-assistant-description" className="sr-only">
               Chat with the Clarity Chat documentation assistant. Ask questions about components, hooks, and features.
