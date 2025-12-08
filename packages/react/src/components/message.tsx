@@ -10,10 +10,7 @@ import {
   cn,
   formatRelativeTime,
 } from '@clarity-chat/primitives'
-import {
-  ANIMATION_DURATION,
-  ANIMATION_EASING,
-} from '../animations/constants'
+import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -51,11 +48,11 @@ export interface MessageProps {
 
 /**
  * Message - Individual message component for chat interfaces
- * 
+ *
  * A low-level building block for rendering individual chat messages. Provides
  * message display, markdown rendering, actions (copy, feedback, retry, edit, delete),
  * and animations.
- * 
+ *
  * **Features:**
  * - Markdown rendering with syntax highlighting
  * - Message actions (copy, feedback, retry, edit, regenerate, delete)
@@ -64,16 +61,16 @@ export interface MessageProps {
  * - Streaming indicator
  * - Feedback animations (confetti on positive feedback)
  * - Hover states
- * 
+ *
  * **When to use:**
  * - Building custom message lists
  * - Need fine-grained control over message rendering
  * - Want to customize message appearance
- * 
+ *
  * **When NOT to use:**
  * - For simplest setup, use `ClarityChat` component (includes messages)
  * - For standard message lists, use `MessageList` component
- * 
+ *
  * @param props - Message configuration
  * @param props.message - Message data to display
  * @param props.onCopy - Optional callback when message is copied
@@ -86,7 +83,7 @@ export interface MessageProps {
  * @param props.showTimestamp - Show timestamp (default: true)
  * @param props.className - Optional CSS class name
  * @param props.ref - Optional ref for the message container
- * 
+ *
  * @example Basic usage
  * ```tsx
  * <Message
@@ -95,7 +92,7 @@ export interface MessageProps {
  *   onFeedback={(type) => trackFeedback(message.id, type)}
  * />
  * ```
- * 
+ *
  * @example With all actions
  * ```tsx
  * <Message
@@ -108,7 +105,7 @@ export interface MessageProps {
  *   onDelete={handleDelete}
  * />
  * ```
- * 
+ *
  * @example Without avatar or timestamp
  * ```tsx
  * <Message
@@ -165,278 +162,326 @@ export function Message({
     const CodeWrapper: Components['code'] = (props) => {
       return <MarkdownCodeBlock {...props} />
     }
-    
+
     return {
       code: CodeWrapper,
-    // Custom pre handler - wrap code blocks with styling and copy button
-    pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement> & { node?: unknown }) => {
-      // Extract code string from the code element for copy button
-      let codeString = ''
-      React.Children.forEach(children, (child) => {
-        if (React.isValidElement(child) && child.props) {
-          // Get from data attribute or extract text content
-          const props = child.props as Record<string, unknown>
-          codeString = (props['data-code-string'] as string) || ''
-          if (!codeString && props.children) {
-            // Fallback: extract text from children
-            const extractText = (node: React.ReactNode): string => {
-              if (typeof node === 'string') return node
-              if (Array.isArray(node)) return node.map(extractText).join('')
-              if (React.isValidElement(node)) {
-                const nodeProps = node.props as { children?: React.ReactNode }
-                if (nodeProps?.children) {
-                  return extractText(nodeProps.children)
+      // Custom pre handler - wrap code blocks with styling and copy button
+      pre: ({
+        children,
+        ...props
+      }: React.HTMLAttributes<HTMLPreElement> & { node?: unknown }) => {
+        // Extract code string from the code element for copy button
+        let codeString = ''
+        React.Children.forEach(children, (child) => {
+          if (React.isValidElement(child) && child.props) {
+            // Get from data attribute or extract text content
+            const props = child.props as Record<string, unknown>
+            codeString = (props['data-code-string'] as string) || ''
+            if (!codeString && props.children) {
+              // Fallback: extract text from children
+              const extractText = (node: React.ReactNode): string => {
+                if (typeof node === 'string') return node
+                if (Array.isArray(node)) return node.map(extractText).join('')
+                if (React.isValidElement(node)) {
+                  const nodeProps = node.props as { children?: React.ReactNode }
+                  if (nodeProps?.children) {
+                    return extractText(nodeProps.children)
+                  }
                 }
+                return ''
               }
-              return ''
+              codeString = extractText(props.children as React.ReactNode)
             }
-            codeString = extractText(props.children as React.ReactNode)
           }
-        }
-      })
+        })
 
-      return (
-        <div className="relative group/code my-4">
-          <pre
-            className="relative overflow-x-auto bg-muted/50 border border-border rounded-lg p-4"
+        return (
+          <div className="relative group/code my-4">
+            <pre
+              className="relative overflow-x-auto bg-muted/50 border border-border rounded-lg p-4"
+              {...props}
+            >
+              {children}
+            </pre>
+            {codeString && (
+              <CopyButton
+                text={codeString}
+                className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
+              />
+            )}
+          </div>
+        )
+      },
+      // Always use div for paragraphs to prevent hydration mismatches
+      // The <p> element cannot contain block elements, and detecting them
+      // reliably across server/client is problematic. Using div is safe.
+      p: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+        <div className="mb-4 leading-relaxed" {...props}>
+          {children}
+        </div>
+      ),
+      // Table styling
+      table: ({
+        children,
+        ...props
+      }: React.HTMLAttributes<HTMLTableElement>) => (
+        <div className="overflow-x-auto my-4 w-full">
+          <table
+            className="min-w-full table-auto border-collapse divide-y divide-border"
             {...props}
           >
             {children}
-          </pre>
-          {codeString && (
-            <CopyButton
-              text={codeString}
-              className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
-            />
-          )}
+          </table>
         </div>
-      )
-    },
-    // Always use div for paragraphs to prevent hydration mismatches
-    // The <p> element cannot contain block elements, and detecting them
-    // reliably across server/client is problematic. Using div is safe.
-    p: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-      <div className="mb-4 leading-relaxed" {...props}>{children}</div>
-    ),
-    // Table styling
-    table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
-      <div className="overflow-x-auto my-4 w-full">
-        <table className="min-w-full table-auto border-collapse divide-y divide-border" {...props}>
+      ),
+      thead: ({
+        children,
+        ...props
+      }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+        <thead className="bg-muted" {...props}>
           {children}
-        </table>
-      </div>
-    ),
-    thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-      <thead className="bg-muted" {...props}>
-        {children}
-      </thead>
-    ),
-    tbody: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-      <tbody className="bg-background divide-y divide-border" {...props}>
-        {children}
-      </tbody>
-    ),
-    th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-      <th
-        className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
-        {...props}
-      >
-        {children}
-      </th>
-    ),
-    td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-      <td className="px-6 py-4 text-sm border border-border" {...props}>
-        {children}
-      </td>
-    ),
-    tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
-      <tr className="hover:bg-muted/50 transition-colors" {...props}>
-        {children}
-      </tr>
-    ),
+        </thead>
+      ),
+      tbody: ({
+        children,
+        ...props
+      }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+        <tbody className="bg-background divide-y divide-border" {...props}>
+          {children}
+        </tbody>
+      ),
+      th: ({
+        children,
+        ...props
+      }: React.HTMLAttributes<HTMLTableCellElement>) => (
+        <th
+          className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border border-border"
+          {...props}
+        >
+          {children}
+        </th>
+      ),
+      td: ({
+        children,
+        ...props
+      }: React.HTMLAttributes<HTMLTableCellElement>) => (
+        <td className="px-6 py-4 text-sm border border-border" {...props}>
+          {children}
+        </td>
+      ),
+      tr: ({
+        children,
+        ...props
+      }: React.HTMLAttributes<HTMLTableRowElement>) => (
+        <tr className="hover:bg-muted/50 transition-colors" {...props}>
+          {children}
+        </tr>
+      ),
     }
   }, [])
 
   // Memoize plugin arrays to avoid recreation on every render
   const remarkPlugins = React.useMemo(() => [remarkGfm], [])
-  const rehypePlugins = React.useMemo(() => [
-    // Type incompatibility between vfile versions - using type assertion as last resort
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    rehypeHighlight as any,
-  ], [])
+  const rehypePlugins = React.useMemo(
+    () => [
+      // Type incompatibility between vfile versions - using type assertion as last resort
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      rehypeHighlight as any,
+    ],
+    []
+  )
 
-    return (
-      <motion.div
-        ref={ref}
-        initial={{
-          opacity: 0,
-          x: isUser ? 20 : -20, // Slide from appropriate side
-          y: 10,
-        }}
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{
-          duration: ANIMATION_DURATION.normal / 1000,
-          ease: ANIMATION_EASING.out,
-        }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+  // Build descriptive ARIA label for screen readers
+  const messageAuthor = isUser ? 'You' : 'AI Assistant'
+  const messageTime = message.createdAt
+    ? formatRelativeTime(message.createdAt)
+    : ''
+  const messageStatus =
+    message.status === 'streaming'
+      ? ', currently streaming'
+      : message.status === 'error'
+        ? ', has error'
+        : ''
+  const ariaLabel = `${messageAuthor}${messageTime ? `, ${messageTime}` : ''}${messageStatus}`
+
+  return (
+    <motion.div
+      ref={ref}
+      role="article"
+      aria-label={ariaLabel}
+      aria-describedby={`message-content-${message.id}`}
+      initial={{
+        opacity: 0,
+        x: isUser ? 20 : -20, // Slide from appropriate side
+        y: 10,
+      }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{
+        duration: ANIMATION_DURATION.normal / 1000,
+        ease: ANIMATION_EASING.out,
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={cn(
+        'group flex gap-3 rounded-xl transition-all duration-200 ease-out',
+        // Reduced padding for grouped messages
+        isGrouped && !isGroupStart && !isGroupEnd ? 'px-4 py-1.5' : 'p-4',
+        isUser && 'flex-row-reverse',
+        isHovered && 'bg-muted/40',
+        className
+      )}
+    >
+      {/* Avatar - only show on group start */}
+      {showAvatar && isGroupStart ? (
+        <motion.div
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{
+            type: 'spring',
+            stiffness: 500,
+            damping: 25,
+            delay: 0.1,
+          }}
+        >
+          <Avatar
+            alt={isUser ? 'User' : 'AI Assistant'}
+            fallback={isUser ? 'U' : 'AI'}
+            className="flex-shrink-0"
+          />
+        </motion.div>
+      ) : showAvatar && isGrouped ? (
+        // Spacer to maintain alignment in grouped messages
+        <div className="w-10 flex-shrink-0" aria-hidden="true" />
+      ) : null}
+
+      {/* Message Content */}
+      <div
         className={cn(
-          'group flex gap-3 rounded-xl transition-all duration-200 ease-out',
-          // Reduced padding for grouped messages
-          isGrouped && !isGroupStart && !isGroupEnd ? 'px-4 py-1.5' : 'p-4',
-          isUser && 'flex-row-reverse',
-          isHovered && 'bg-muted/40',
-          className
+          'flex-1 space-y-2.5',
+          isUser && 'flex flex-col items-end'
         )}
       >
-        {/* Avatar - only show on group start */}
-        {showAvatar && isGroupStart ? (
-          <motion.div
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            transition={{
-              type: 'spring',
-              stiffness: 500,
-              damping: 25,
-              delay: 0.1,
-            }}
-          >
-            <Avatar
-              alt={isUser ? 'User' : 'AI Assistant'}
-              fallback={isUser ? 'U' : 'AI'}
-              className="flex-shrink-0"
-            />
-          </motion.div>
-        ) : showAvatar && isGrouped ? (
-          // Spacer to maintain alignment in grouped messages
-          <div className="w-10 flex-shrink-0" aria-hidden="true" />
-        ) : null}
-
-        {/* Message Content */}
-        <div
-          className={cn(
-            'flex-1 space-y-2.5',
-            isUser && 'flex flex-col items-end'
-          )}
-        >
-          {/* Header - only show on group start */}
-          {isGroupStart && (
-            <div
-              className={cn(
-                'flex items-center',
-                isUser ? 'gap-2 flex-row-reverse' : 'gap-2'
-              )}
-            >
-              <span className="font-semibold text-sm whitespace-nowrap">
-                {isUser ? 'You' : 'AI Assistant'}
-              </span>
-              {showTimestamp && (
-                <>
-                  <span className="text-muted-foreground/50">·</span>
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isHovered ? 1 : 0.7 }}
-                    transition={{ duration: 0.2 }}
-                    className="text-xs text-muted-foreground/90 whitespace-nowrap"
-                  >
-                    {formatRelativeTime(message.createdAt)}
-                  </motion.span>
-                </>
-              )}
-              {message.status === 'sending' && (
-                <Badge variant="secondary" dot>
-                  Sending
-                </Badge>
-              )}
-              {message.status === 'error' && (
-                <Badge variant="destructive">Error</Badge>
-              )}
-            </div>
-          )}
-
-          {/* Content */}
+        {/* Header - only show on group start */}
+        {isGroupStart && (
           <div
             className={cn(
-              // Base streaming stability classes for assistant messages
-              !isUser && 'clarity-streaming-container',
-              !isUser && 'prose prose-sm dark:prose-invert max-w-none',
-              // Apply streaming-specific optimizations
-              !isUser && isStreaming && 'clarity-streaming-markdown',
-              isUser &&
-                'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm ring-1 ring-primary/30'
+              'flex items-center',
+              isUser ? 'gap-2 flex-row-reverse' : 'gap-2'
             )}
           >
-            {isUser ? (
-              <p className="m-0 whitespace-pre-wrap text-primary-foreground">{message.content}</p>
-            ) : (
-              <div className={cn(isStreaming && 'clarity-streaming-text')}>
-                <ReactMarkdown
-                  remarkPlugins={remarkPlugins}
-                  rehypePlugins={rehypePlugins}
-                  components={markdownComponents as any}
+            <span className="font-semibold text-sm whitespace-nowrap">
+              {isUser ? 'You' : 'AI Assistant'}
+            </span>
+            {showTimestamp && (
+              <>
+                <span className="text-muted-foreground/50">·</span>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: isHovered ? 1 : 0.7 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-xs text-muted-foreground/90 whitespace-nowrap"
                 >
-                  {message.content}
-                </ReactMarkdown>
-                {/* Cursor inside the streaming wrapper for proper inline positioning */}
-                {isStreaming && (
-                  <span
-                    role="status"
-                    aria-live="polite"
-                    aria-label="Streaming response"
-                    className="clarity-streaming-cursor"
-                  />
-                )}
-              </div>
+                  {formatRelativeTime(message.createdAt)}
+                </motion.span>
+              </>
+            )}
+            {message.status === 'sending' && (
+              <Badge variant="secondary" dot>
+                Sending
+              </Badge>
+            )}
+            {message.status === 'error' && (
+              <Badge variant="destructive">Error</Badge>
             )}
           </div>
+        )}
 
-          {/* Error Message */}
-          {message.status === 'error' && errorDetails && (
-            <div role="alert" aria-live="assertive">
-              <ErrorMessage
-                error={errorDetails}
-                onRetry={onRetry}
-                compact={isGrouped}
-                maxRetryAttempts={3}
-              />
+        {/* Content */}
+        <div
+          id={`message-content-${message.id}`}
+          className={cn(
+            // Base streaming stability classes for assistant messages
+            !isUser && 'clarity-streaming-container',
+            !isUser && 'prose prose-sm dark:prose-invert max-w-none',
+            // Apply streaming-specific optimizations
+            !isUser && isStreaming && 'clarity-streaming-markdown',
+            isUser &&
+              'bg-primary text-primary-foreground px-4 py-3 rounded-xl inline-block shadow-sm ring-1 ring-primary/30'
+          )}
+        >
+          {isUser ? (
+            <p className="m-0 whitespace-pre-wrap text-primary-foreground">
+              {message.content}
+            </p>
+          ) : (
+            <div className={cn(isStreaming && 'clarity-streaming-text')}>
+              <ReactMarkdown
+                remarkPlugins={remarkPlugins}
+                rehypePlugins={rehypePlugins}
+                components={markdownComponents as any}
+              >
+                {message.content}
+              </ReactMarkdown>
+              {/* Cursor inside the streaming wrapper for proper inline positioning */}
+              {isStreaming && (
+                <span
+                  role="status"
+                  aria-live="polite"
+                  aria-label="Streaming response"
+                  className="clarity-streaming-cursor"
+                />
+              )}
             </div>
           )}
-
-          {/* Attachments */}
-          {message.attachments && message.attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {message.attachments.map((attachment) => (
-                <Badge key={attachment.id} variant="outline">
-                  {attachment.name}
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {/* Actions - Show for both user and assistant messages */}
-          {(isUser || isAssistant) && (
-            <MessageActions
-              messageContent={message.content}
-              messageId={message.id}
-              role={message.role}
-              feedbackGiven={feedbackGiven}
-              showConfetti={showConfetti}
-              hasError={message.status === 'error'}
-              onFeedback={handleFeedback}
-              onRetry={onRetry}
-              onEdit={onEdit}
-              onRegenerate={onRegenerate}
-              onDelete={onDelete}
-              show={isHovered || !!feedbackGiven}
-            />
-          )}
-
-          {/* Metadata */}
-          <MessageMetadata metadata={message.metadata} />
         </div>
-      </motion.div>
-    )
+
+        {/* Error Message */}
+        {message.status === 'error' && errorDetails && (
+          <div role="alert" aria-live="assertive">
+            <ErrorMessage
+              error={errorDetails}
+              onRetry={onRetry}
+              compact={isGrouped}
+              maxRetryAttempts={3}
+            />
+          </div>
+        )}
+
+        {/* Attachments */}
+        {message.attachments && message.attachments.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {message.attachments.map((attachment) => (
+              <Badge key={attachment.id} variant="outline">
+                {attachment.name}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        {/* Actions - Show for both user and assistant messages */}
+        {(isUser || isAssistant) && (
+          <MessageActions
+            messageContent={message.content}
+            messageId={message.id}
+            role={message.role}
+            feedbackGiven={feedbackGiven}
+            showConfetti={showConfetti}
+            hasError={message.status === 'error'}
+            onFeedback={handleFeedback}
+            onRetry={onRetry}
+            onEdit={onEdit}
+            onRegenerate={onRegenerate}
+            onDelete={onDelete}
+            show={isHovered || !!feedbackGiven}
+          />
+        )}
+
+        {/* Metadata */}
+        <MessageMetadata metadata={message.metadata} />
+      </div>
+    </motion.div>
+  )
 }
 
 Message.displayName = 'Message'
