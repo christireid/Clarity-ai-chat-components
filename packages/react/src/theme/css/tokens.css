@@ -1,0 +1,265 @@
+/**
+ * Clarity Chat - CSS Design Tokens
+ *
+ * CSS custom properties for theming Clarity Chat components.
+ * All variables are prefixed with --clarity- for namespace safety.
+ *
+ * Usage:
+ * 1. Import this file in your app
+ * 2. Override variables in :root or use ThemeProvider
+ *
+ * @example
+ * :root {
+ *   --clarity-primary: 239 84% 67%;
+ *   --clarity-radius: 0.5rem;
+ * }
+ */
+
+@layer clarity-tokens {
+  :root {
+    /* ========================================
+       Color Tokens - Light Mode (Default)
+       ======================================== */
+
+    /* Base colors */
+    --clarity-background: 0 0% 100%;
+    --clarity-foreground: 222 47% 11%;
+
+    /* Surface colors */
+    --clarity-card: 0 0% 100%;
+    --clarity-card-foreground: 222 47% 11%;
+    --clarity-popover: 0 0% 100%;
+    --clarity-popover-foreground: 222 47% 11%;
+
+    /* Brand colors */
+    --clarity-primary: 239 84% 67%;
+    --clarity-primary-foreground: 0 0% 100%;
+    --clarity-secondary: 240 5% 96%;
+    --clarity-secondary-foreground: 222 47% 11%;
+    --clarity-accent: 240 5% 96%;
+    --clarity-accent-foreground: 222 47% 11%;
+
+    /* State colors */
+    --clarity-destructive: 0 84% 60%;
+    --clarity-destructive-foreground: 0 0% 100%;
+    --clarity-success: 142 71% 45%;
+    --clarity-success-foreground: 0 0% 100%;
+    --clarity-warning: 38 92% 50%;
+    --clarity-warning-foreground: 22 92% 20%;
+    --clarity-info: 199 89% 48%;
+    --clarity-info-foreground: 0 0% 100%;
+
+    /* UI colors */
+    --clarity-muted: 240 5% 96%;
+    --clarity-muted-foreground: 240 4% 46%;
+    --clarity-border: 240 6% 90%;
+    --clarity-input: 240 6% 90%;
+    --clarity-ring: 239 84% 67%;
+
+    /* Extended surfaces */
+    --clarity-surface-muted: 240 5% 96%;
+    --clarity-surface-elevated: 0 0% 100%;
+    --clarity-surface-overlay: 0 0% 100%;
+
+    /* ========================================
+       Spacing Tokens
+       ======================================== */
+    --clarity-spacing-xs: 0.25rem;
+    --clarity-spacing-sm: 0.5rem;
+    --clarity-spacing-md: 1rem;
+    --clarity-spacing-lg: 1.5rem;
+    --clarity-spacing-xl: 2rem;
+    --clarity-spacing-2xl: 3rem;
+
+    /* ========================================
+       Border Radius Tokens
+       ======================================== */
+    --clarity-radius: 0.5rem;
+    --clarity-radius-sm: calc(var(--clarity-radius) - 4px);
+    --clarity-radius-md: calc(var(--clarity-radius) - 2px);
+    --clarity-radius-lg: var(--clarity-radius);
+    --clarity-radius-xl: calc(var(--clarity-radius) + 4px);
+    --clarity-radius-2xl: calc(var(--clarity-radius) + 8px);
+    --clarity-radius-full: 9999px;
+
+    /* ========================================
+       Typography Tokens
+       ======================================== */
+    --clarity-font-sans:
+      system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --clarity-font-mono:
+      'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas,
+      'Liberation Mono', 'Courier New', monospace;
+
+    /* ========================================
+       Shadow Tokens
+       ======================================== */
+    --clarity-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --clarity-shadow-sm:
+      0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --clarity-shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --clarity-shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --clarity-shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --clarity-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    --clarity-shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+
+    /* Colored shadows */
+    --clarity-shadow-primary: 0 4px 14px -3px hsl(var(--clarity-primary) / 0.35);
+    --clarity-shadow-success: 0 4px 14px -3px hsl(var(--clarity-success) / 0.35);
+    --clarity-shadow-warning: 0 4px 14px -3px hsl(var(--clarity-warning) / 0.35);
+    --clarity-shadow-destructive: 0 4px 14px -3px
+      hsl(var(--clarity-destructive) / 0.35);
+
+    /* ========================================
+       Animation Tokens
+       ======================================== */
+    --clarity-duration-fast: 150ms;
+    --clarity-duration-normal: 200ms;
+    --clarity-duration-slow: 300ms;
+    --clarity-duration-slower: 500ms;
+
+    --clarity-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+    --clarity-ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --clarity-ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --clarity-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --clarity-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Theme transition */
+    --clarity-theme-transition: 200ms;
+
+    /* ========================================
+       Z-Index Tokens
+       ======================================== */
+    --clarity-z-base: 0;
+    --clarity-z-dropdown: 1000;
+    --clarity-z-sticky: 1020;
+    --clarity-z-fixed: 1030;
+    --clarity-z-modal-backdrop: 1040;
+    --clarity-z-modal: 1050;
+    --clarity-z-popover: 1060;
+    --clarity-z-tooltip: 1070;
+    --clarity-z-toast: 1080;
+
+    /* ========================================
+       Backwards Compatibility Layer
+       Maps old variable names to new ones
+       ======================================== */
+    --background: var(--clarity-background);
+    --foreground: var(--clarity-foreground);
+    --card: var(--clarity-card);
+    --card-foreground: var(--clarity-card-foreground);
+    --popover: var(--clarity-popover);
+    --popover-foreground: var(--clarity-popover-foreground);
+    --primary: var(--clarity-primary);
+    --primary-foreground: var(--clarity-primary-foreground);
+    --secondary: var(--clarity-secondary);
+    --secondary-foreground: var(--clarity-secondary-foreground);
+    --muted: var(--clarity-muted);
+    --muted-foreground: var(--clarity-muted-foreground);
+    --accent: var(--clarity-accent);
+    --accent-foreground: var(--clarity-accent-foreground);
+    --destructive: var(--clarity-destructive);
+    --destructive-foreground: var(--clarity-destructive-foreground);
+    --success: var(--clarity-success);
+    --success-foreground: var(--clarity-success-foreground);
+    --warning: var(--clarity-warning);
+    --warning-foreground: var(--clarity-warning-foreground);
+    --info: var(--clarity-info);
+    --info-foreground: var(--clarity-info-foreground);
+    --border: var(--clarity-border);
+    --input: var(--clarity-input);
+    --ring: var(--clarity-ring);
+    --radius: var(--clarity-radius);
+    --font-sans: var(--clarity-font-sans);
+    --font-mono: var(--clarity-font-mono);
+  }
+
+  /* ========================================
+     Dark Mode
+     ======================================== */
+  .dark,
+  [data-theme='dark'] {
+    --clarity-background: 222 47% 11%;
+    --clarity-foreground: 210 40% 98%;
+
+    --clarity-card: 222 47% 11%;
+    --clarity-card-foreground: 210 40% 98%;
+    --clarity-popover: 222 47% 11%;
+    --clarity-popover-foreground: 210 40% 98%;
+
+    --clarity-primary: 239 84% 67%;
+    --clarity-primary-foreground: 0 0% 100%;
+    --clarity-secondary: 217 33% 17%;
+    --clarity-secondary-foreground: 210 40% 98%;
+    --clarity-accent: 217 33% 17%;
+    --clarity-accent-foreground: 210 40% 98%;
+
+    --clarity-destructive: 0 63% 31%;
+    --clarity-destructive-foreground: 210 40% 98%;
+    --clarity-success: 142 71% 45%;
+    --clarity-success-foreground: 0 0% 100%;
+    --clarity-warning: 38 92% 50%;
+    --clarity-warning-foreground: 22 92% 20%;
+    --clarity-info: 199 89% 48%;
+    --clarity-info-foreground: 0 0% 100%;
+
+    --clarity-muted: 217 33% 17%;
+    --clarity-muted-foreground: 215 20% 65%;
+    --clarity-border: 217 33% 17%;
+    --clarity-input: 217 33% 17%;
+    --clarity-ring: 239 84% 67%;
+
+    --clarity-surface-muted: 217 33% 17%;
+    --clarity-surface-elevated: 222 47% 13%;
+    --clarity-surface-overlay: 222 47% 9%;
+
+    /* Dark mode shadows */
+    --clarity-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --clarity-shadow-sm:
+      0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+    --clarity-shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --clarity-shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --clarity-shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+    --clarity-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.6);
+    --clarity-shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.3);
+
+    /* Colored shadows - more visible in dark mode */
+    --clarity-shadow-primary: 0 4px 14px -3px hsl(var(--clarity-primary) / 0.45);
+    --clarity-shadow-success: 0 4px 14px -3px hsl(var(--clarity-success) / 0.45);
+    --clarity-shadow-warning: 0 4px 14px -3px hsl(var(--clarity-warning) / 0.45);
+    --clarity-shadow-destructive: 0 4px 14px -3px
+      hsl(var(--clarity-destructive) / 0.45);
+  }
+}
+
+/* ========================================
+   Theme Transition Utility
+   ======================================== */
+@layer clarity-utilities {
+  .clarity-theme-transitioning,
+  .clarity-theme-transitioning * {
+    transition:
+      background-color var(--clarity-theme-transition)
+        var(--clarity-ease-default),
+      border-color var(--clarity-theme-transition) var(--clarity-ease-default),
+      color var(--clarity-theme-transition) var(--clarity-ease-default),
+      fill var(--clarity-theme-transition) var(--clarity-ease-default),
+      stroke var(--clarity-theme-transition) var(--clarity-ease-default) !important;
+  }
+
+  /* Disable transition for media elements */
+  .clarity-theme-transitioning img,
+  .clarity-theme-transitioning video,
+  .clarity-theme-transitioning iframe,
+  .clarity-theme-transitioning [data-no-theme-transition] {
+    transition: none !important;
+  }
+}
