@@ -12,6 +12,7 @@ This document describes all GitHub Actions workflows in the Clarity Chat reposit
 | Dependency Review | PR (deps changes) | Security audit | ~2 min |
 | Accessibility | PR, Push (component changes) | A11y testing | ~10-15 min |
 | Visual Regression | PR, Push (component changes) | Screenshot tests | ~10-15 min |
+| Workflow Lint | PR, Push (workflow changes) | Validate workflow syntax | ~1 min |
 
 ## Workflows
 
@@ -148,6 +149,60 @@ This document describes all GitHub Actions workflows in the Clarity Chat reposit
 - `tests/visual/**`
 
 **Artifacts**: On failure, uploads screenshot diffs for review.
+
+---
+
+### workflow-lint.yml - Workflow Validation
+
+**Purpose**: Validates GitHub Actions workflow syntax using actionlint.
+
+**Triggers**:
+- Pull requests modifying `.github/workflows/**` or `.github/actions/**`
+- Pushes to `main` with workflow changes
+
+**Jobs**:
+
+| Job | Purpose |
+|-----|---------|
+| actionlint | Validates workflow YAML syntax and best practices |
+
+---
+
+## Composite Actions
+
+Reusable composite actions in `.github/actions/`:
+
+### setup-node-pnpm
+
+Sets up Node.js, pnpm, and installs dependencies with caching.
+
+**Inputs**:
+- `node-version` (default: `20`): Node.js version
+- `pnpm-version` (default: `10`): pnpm version
+- `install-dependencies` (default: `true`): Whether to run pnpm install
+- `frozen-lockfile` (default: `true`): Use frozen lockfile
+
+**Usage**:
+```yaml
+- uses: ./.github/actions/setup-node-pnpm
+  with:
+    node-version: '20'
+```
+
+### turbo-cache
+
+Configures Turbo local caching for GitHub Actions.
+
+**Inputs**:
+- `task` (required): Task name for cache key segmentation
+- `extra-hash-files`: Additional files to include in hash
+
+**Usage**:
+```yaml
+- uses: ./.github/actions/turbo-cache
+  with:
+    task: 'build'
+```
 
 ---
 
