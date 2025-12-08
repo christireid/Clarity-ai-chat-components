@@ -1,6 +1,13 @@
 'use client'
 
-import { useMemo, useState, useCallback, useEffect, useRef } from 'react'
+import {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useDeferredValue,
+} from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Hash,
@@ -13,9 +20,11 @@ import {
   Link2,
   Search,
   X,
+  Loader2,
 } from 'lucide-react'
 import { searchData, type SearchItem } from '@/lib/search-data'
 import { fuzzySearch } from '@/lib/fuzzy-search'
+import { trackSearchQuery, trackSearchClick } from '@/lib/search-analytics'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
@@ -31,6 +40,10 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
+  // Debounce search query for performance
+  const deferredQuery = useDeferredValue(query)
+  const isSearching = query !== deferredQuery
+
   // Focus input when opened
   useEffect(() => {
     if (open) {
@@ -40,9 +53,9 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
     }
   }, [open])
 
-  // Fuzzy search with scoring
+  // Fuzzy search with scoring (uses deferred query for debouncing)
   const searchResults = useMemo(() => {
-    if (!query.trim()) {
+    if (!deferredQuery.trim()) {
       // Show popular items when no query
       const popular = [
         'ChatWindow',
@@ -62,13 +75,20 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
       }))
     }
 
-    return fuzzySearch(query, searchData, (item: SearchItem) => [
+    return fuzzySearch(deferredQuery, searchData, (item: SearchItem) => [
       { field: 'title', value: item.title, weight: 3 },
       { field: 'description', value: item.description || '', weight: 1 },
       { field: 'category', value: item.category || '', weight: 0.5 },
       { field: 'type', value: item.type, weight: 0.5 },
     ]).slice(0, 12)
-  }, [query])
+  }, [deferredQuery])
+
+  // Track search queries (debounced)
+  useEffect(() => {
+    if (deferredQuery.trim().length >= 2) {
+      trackSearchQuery(deferredQuery, searchResults.length)
+    }
+  }, [deferredQuery, searchResults.length])
 
   // Group results by category
   const groupedResults = useMemo(() => {
@@ -85,15 +105,24 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
     return groups
   }, [searchResults])
 
-  // Flat list for keyboard navigation
+  // Flat list for keyboard navigation with stable index mapping
   const flatResults = useMemo(() => {
     return Object.values(groupedResults).flat()
   }, [groupedResults])
 
+  // Create stable index lookup for items
+  const itemIndexMap = useMemo(() => {
+    const map = new Map<string, number>()
+    flatResults.forEach((item, index) => {
+      map.set(item.href, index)
+    })
+    return map
+  }, [flatResults])
+
   // Reset selection when results change
   useEffect(() => {
     setSelectedIndex(0)
-  }, [query])
+  }, [deferredQuery])
 
   // Scroll selected item into view
   useEffect(() => {
@@ -118,7 +147,9 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
         case 'Enter':
           e.preventDefault()
           if (flatResults[selectedIndex]) {
-            router.push(flatResults[selectedIndex].href)
+            const item = flatResults[selectedIndex]
+            trackSearchClick(query, item.href, item.title)
+            router.push(item.href)
             onClose()
             setQuery('')
           }
@@ -130,20 +161,27 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
           break
       }
     },
-    [flatResults, selectedIndex, router, onClose]
+    [flatResults, selectedIndex, router, onClose, query]
   )
 
   // Handle item selection
   const handleSelect = useCallback(
-    (href: string) => {
-      router.push(href)
+    (item: SearchItem & { _score: number }) => {
+      trackSearchClick(query, item.href, item.title)
+      router.push(item.href)
       onClose()
       setQuery('')
     },
-    [router, onClose]
+    [router, onClose, query]
   )
 
-  let currentIndex = 0
+  // Announce results to screen readers
+  const resultsAnnouncement = useMemo(() => {
+    if (isSearching) return 'Searching...'
+    if (!deferredQuery.trim()) return 'Showing popular items'
+    if (flatResults.length === 0) return 'No results found'
+    return `${flatResults.length} result${flatResults.length !== 1 ? 's' : ''} found`
+  }, [flatResults.length, deferredQuery, isSearching])
 
   return (
     <AnimatePresence>
@@ -157,10 +195,14 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
             transition={{ duration: 0.15 }}
             onClick={onClose}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            aria-hidden="true"
           />
 
           {/* Search Dialog */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search documentation"
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
@@ -171,7 +213,11 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
             <div className="bg-bg-primary border border-border rounded-xl shadow-2xl overflow-hidden">
               {/* Search Input */}
               <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-                <Search className="w-5 h-5 text-text-secondary flex-shrink-0" />
+                {isSearching ? (
+                  <Loader2 className="w-5 h-5 text-brand-500 flex-shrink-0 animate-spin" />
+                ) : (
+                  <Search className="w-5 h-5 text-text-secondary flex-shrink-0" />
+                )}
                 <input
                   ref={inputRef}
                   type="text"
@@ -179,11 +225,20 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search documentation..."
                   className="flex-1 bg-transparent border-none outline-none text-base placeholder:text-text-tertiary"
+                  aria-label="Search"
+                  aria-autocomplete="list"
+                  aria-controls="search-results"
+                  aria-activedescendant={
+                    flatResults[selectedIndex]
+                      ? `search-result-${flatResults[selectedIndex].href}`
+                      : undefined
+                  }
                 />
                 {query && (
                   <button
                     onClick={() => setQuery('')}
                     className="p-1 rounded hover:bg-bg-secondary transition-colors"
+                    aria-label="Clear search"
                   >
                     <X className="w-4 h-4 text-text-secondary" />
                   </button>
@@ -193,8 +248,24 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                 </kbd>
               </div>
 
+              {/* Screen reader announcements */}
+              <div
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                className="sr-only"
+              >
+                {resultsAnnouncement}
+              </div>
+
               {/* Results */}
-              <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2">
+              <div
+                ref={listRef}
+                id="search-results"
+                role="listbox"
+                aria-label="Search results"
+                className="max-h-[60vh] overflow-y-auto p-2"
+              >
                 {flatResults.length === 0 ? (
                   <div className="py-12 text-center">
                     <Search className="w-12 h-12 mx-auto text-text-tertiary mb-3 opacity-40" />
@@ -208,20 +279,23 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                 ) : (
                   <div className="space-y-4">
                     {Object.entries(groupedResults).map(([category, items]) => (
-                      <div key={category}>
+                      <div key={category} role="group" aria-label={category}>
                         <div className="px-3 py-1.5 text-xs font-semibold text-text-tertiary uppercase tracking-wider">
                           {category}
                         </div>
                         <div className="space-y-0.5">
                           {items.map((item) => {
-                            const index = currentIndex++
+                            const index = itemIndexMap.get(item.href) ?? 0
                             const isSelected = index === selectedIndex
 
                             return (
                               <button
                                 key={item.href}
+                                id={`search-result-${item.href}`}
+                                role="option"
+                                aria-selected={isSelected}
                                 data-selected={isSelected}
-                                onClick={() => handleSelect(item.href)}
+                                onClick={() => handleSelect(item)}
                                 onMouseEnter={() => setSelectedIndex(index)}
                                 className={cn(
                                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all',
@@ -294,8 +368,14 @@ export function SearchDialog({ open, onClose }: SearchDialogProps) {
                   </span>
                 </div>
                 <span className="font-medium">
-                  {flatResults.length} result
-                  {flatResults.length !== 1 ? 's' : ''}
+                  {isSearching ? (
+                    'Searching...'
+                  ) : (
+                    <>
+                      {flatResults.length} result
+                      {flatResults.length !== 1 ? 's' : ''}
+                    </>
+                  )}
                 </span>
               </div>
             </div>

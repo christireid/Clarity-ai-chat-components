@@ -17,11 +17,19 @@ import {
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
 import { PerformanceComparison } from '@/components/Diagrams/PerformanceComparison'
+import { ShareButton } from '@/components/Share/ShareButton'
 
 export default function ComparePage() {
   return (
     <>
       <Breadcrumbs />
+
+      {/* Floating Share Button */}
+      <ShareButton
+        variant="floating"
+        text="Clarity Chat vs alternatives - see why 70+ components, enterprise features, and WCAG AAA accessibility set it apart 🚀"
+        url="https://clarity-chat.dev/compare"
+      />
 
       <div className="mb-12">
         <motion.h1

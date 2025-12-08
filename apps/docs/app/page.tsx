@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { HeroSection } from '@/components/Layout/HeroSection'
+import { QuickStartTutorial } from '@/components/Layout/QuickStartTutorial'
 import { FeaturesGrid } from '@/components/Layout/FeaturesGrid'
 import { LiveChatDemo } from '@/components/Layout/LiveChatDemo'
 import { CodeExample } from '@/components/Demo/CodeExample'
@@ -52,6 +53,9 @@ export default function HomePage() {
           href: '#demo',
         }}
       />
+
+      {/* Quick Start Tutorial */}
+      <QuickStartTutorial />
 
       {/* Live Demo Section */}
       <section id="demo" className="container-docs py-24 scroll-mt-20">
