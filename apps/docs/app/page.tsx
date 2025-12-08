@@ -10,18 +10,19 @@ import { FeatureMatrix } from '@/components/Diagrams/FeatureMatrix'
 // Lazy load the animated background to reduce initial bundle size
 // This component is decorative and can load after initial render
 const AnimatedBackground = dynamic(
-  () => import('@/components/Layout/AnimatedBackground').then((mod) => mod.AnimatedBackground),
+  () =>
+    import('@/components/Layout/AnimatedBackground').then(
+      (mod) => mod.AnimatedBackground
+    ),
   {
     ssr: false, // Particle animations require browser APIs
   }
 )
 import {
-  Sparkles,
   Zap,
   Palette,
   Accessibility,
   Code,
-  Rocket,
   Heart,
   Layers,
   Smartphone,
@@ -35,18 +36,19 @@ export default function HomePage() {
       <HeroSection
         title={
           <>
-            Beautiful AI Chat UIs
+            Chat UIs That Work,
             <br />
-            <span className="text-brand-500">Built for React</span>
+            <span className="text-brand-500">Out of the Box</span>
           </>
         }
-        description="Production-ready React components for building stunning chat interfaces. Type-safe, accessible, and ridiculously customizable."
+        description="Stop rebuilding chat from scratch. 70+ production-ready React components with streaming, accessibility, and theming built-in."
+        installCommand="npm install @clarity-chat/react"
         primaryCta={{
-          text: 'Get Started',
+          text: 'Get Started in 60s',
           href: '/learn/quick-start',
         }}
         secondaryCta={{
-          text: 'Live Demo',
+          text: 'See It Live',
           href: '#demo',
         }}
       />
@@ -56,7 +58,8 @@ export default function HomePage() {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">See It In Action</h2>
           <p className="text-xl text-text-secondary">
-            Experience the power of Clarity Chat. Try the interactive demo below.
+            Experience the power of Clarity Chat. Try the interactive demo
+            below.
           </p>
         </div>
 
@@ -67,7 +70,9 @@ export default function HomePage() {
       <section className="bg-bg-secondary py-24">
         <div className="container-docs">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Start Building in Seconds</h2>
+            <h2 className="text-4xl font-bold mb-4">
+              Start Building in Seconds
+            </h2>
             <p className="text-xl text-text-secondary">
               Copy, paste, and customize. It's that simple.
             </p>
@@ -189,7 +194,9 @@ function App() {
             <Heart className="w-12 h-12 mx-auto mb-4 fill-current" />
             <h2 className="text-4xl font-bold mb-4">Ready to Get Started?</h2>
             <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-              Install Clarity Chat and build your first chat interface in minutes. Join thousands of developers building beautiful experiences.
+              Install Clarity Chat and build your first chat interface in
+              minutes. Join thousands of developers building beautiful
+              experiences.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link
@@ -221,7 +228,9 @@ function App() {
                   className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
                   <span>Quick Start</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </Link>
               </li>
               <li>
@@ -230,7 +239,9 @@ function App() {
                   className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
                   <span>Tutorial</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </Link>
               </li>
               <li>
@@ -239,7 +250,9 @@ function App() {
                   className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
                   <span>Core Concepts</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </Link>
               </li>
             </ul>
@@ -253,7 +266,9 @@ function App() {
                   className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
                   <span>Components</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </Link>
               </li>
               <li>
@@ -262,7 +277,9 @@ function App() {
                   className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
                   <span>Hooks</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </Link>
               </li>
               <li>
@@ -271,7 +288,9 @@ function App() {
                   className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
                   <span>API Reference</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </Link>
               </li>
             </ul>
@@ -285,7 +304,9 @@ function App() {
                   className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
                   <span>GitHub</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </Link>
               </li>
               <li>
@@ -294,7 +315,9 @@ function App() {
                   className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
                   <span>Cookbook</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </Link>
               </li>
               <li>
@@ -303,7 +326,9 @@ function App() {
                   className="text-brand-500 hover:text-brand-600 transition-colors inline-flex items-center gap-2 group"
                 >
                   <span>Examples</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <span className="transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
                 </Link>
               </li>
             </ul>
