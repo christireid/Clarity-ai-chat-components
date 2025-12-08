@@ -23,9 +23,11 @@ This document provides guidelines and instructions for contributing to the proje
 
 ## Code of Conduct
 
-We are committed to providing a welcoming and inspiring community for all. Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
+We are committed to providing a welcoming and inspiring community for all. Please read and follow
+our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 **In short:**
+
 - Be respectful and inclusive
 - Welcome newcomers
 - Be patient and helpful
@@ -40,8 +42,8 @@ We are committed to providing a welcoming and inspiring community for all. Pleas
 
 Before you begin, ensure you have:
 
-- **Node.js** >= 18.0.0
-- **npm** >= 9.0.0
+- **Node.js** >= 20.0.0
+- **pnpm** >= 10.0.0
 - **Git** >= 2.0.0
 - **A GitHub account**
 
@@ -73,7 +75,7 @@ cd Clarity-ai-chat-components
 ### 2. Install Dependencies
 
 ```bash
-npm install
+pnpm install
 ```
 
 This installs dependencies for all packages in the monorepo.
@@ -81,33 +83,33 @@ This installs dependencies for all packages in the monorepo.
 ### 3. Build Packages
 
 ```bash
-npm run build
+pnpm build
 ```
 
 ### 4. Start Development Environment
 
 ```bash
 # Start Storybook (component development)
-npm run storybook
+pnpm storybook
 
 # Or start the docs site
-npm run docs
+pnpm docs
 
 # Or work on a specific package
-npm run dev --workspace=packages/react
+pnpm --filter @clarity-chat/react dev
 ```
 
 ### 5. Run Tests
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Watch mode
-npm run test:watch
+pnpm test:watch
 
 # Coverage report
-npm run test:coverage
+pnpm test:coverage
 ```
 
 ---
@@ -138,7 +140,7 @@ clarity-chat/
 - `package.json` - Root package configuration
 - `turbo.json` - Monorepo build configuration
 - `tsconfig.json` - TypeScript configuration
-- `.eslintrc.js` - Linting rules
+- `eslint.config.js` - Linting rules (ESLint flat config)
 - `.prettierrc` - Code formatting rules
 
 ---
@@ -156,6 +158,7 @@ git checkout -b fix/bug-description
 ```
 
 **Branch naming conventions:**
+
 - `feature/` - New features
 - `fix/` - Bug fixes
 - `docs/` - Documentation updates
@@ -175,16 +178,16 @@ git checkout -b fix/bug-description
 
 ```bash
 # Type checking
-npm run typecheck
+pnpm typecheck
 
 # Linting
-npm run lint
+pnpm lint
 
 # Tests
-npm test
+pnpm test
 
 # Build
-npm run build
+pnpm build
 ```
 
 ### 4. Commit Your Changes
@@ -217,6 +220,7 @@ Then create a Pull Request on GitHub.
 - **Descriptive names** for types
 
 **Good:**
+
 ```typescript
 interface MessageProps {
   message: Message
@@ -229,6 +233,7 @@ function MessageComponent({ message, onCopy }: MessageProps): JSX.Element {
 ```
 
 **Bad:**
+
 ```typescript
 function MessageComponent(props: any) {
   // ...
@@ -244,6 +249,7 @@ function MessageComponent(props: any) {
 - **Memoization when appropriate**
 
 **Good:**
+
 ```typescript
 import { memo } from 'react'
 
@@ -275,6 +281,7 @@ export const Button = memo(function Button({
 - **Accessibility** (color contrast, focus states)
 
 **Example:**
+
 ```tsx
 <div className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:ring-2">
   Click me
@@ -304,6 +311,7 @@ component-name/
 - **Use descriptive test names**
 
 **Example:**
+
 ```typescript
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Button } from './button'
@@ -317,9 +325,9 @@ describe('Button', () => {
   it('calls onClick when clicked', () => {
     const onClick = vi.fn()
     render(<Button label="Click" onClick={onClick} />)
-    
+
     fireEvent.click(screen.getByText('Click'))
-    
+
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
@@ -420,7 +428,7 @@ BREAKING CHANGE: ChatInput now requires onSendMessage prop
 - No period at the end
 - Separate subject from body with blank line
 - Wrap body at 72 characters
-- Use body to explain *what* and *why*, not *how*
+- Use body to explain _what_ and _why_, not _how_
 
 ---
 
@@ -428,10 +436,10 @@ BREAKING CHANGE: ChatInput now requires onSendMessage prop
 
 ### Before Submitting
 
-1. ✅ **Tests pass** - `npm test`
-2. ✅ **Linting passes** - `npm run lint`
-3. ✅ **Type checking passes** - `npm run typecheck`
-4. ✅ **Build succeeds** - `npm run build`
+1. ✅ **Tests pass** - `pnpm test`
+2. ✅ **Linting passes** - `pnpm lint`
+3. ✅ **Type checking passes** - `pnpm typecheck`
+4. ✅ **Build succeeds** - `pnpm build`
 5. ✅ **Documentation updated**
 6. ✅ **Examples updated** (if applicable)
 7. ✅ **Changeset created** (for package changes)
@@ -439,10 +447,11 @@ BREAKING CHANGE: ChatInput now requires onSendMessage prop
 ### Creating a Changeset
 
 ```bash
-npm run changeset
+pnpm changeset
 ```
 
 Follow the prompts to describe your changes. This will:
+
 - Update CHANGELOG.md
 - Determine version bump (major/minor/patch)
 - Group changes for release
@@ -451,15 +460,18 @@ Follow the prompts to describe your changes. This will:
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Checklist
+
 - [ ] Tests added/updated
 - [ ] Documentation updated
 - [ ] Changeset created
@@ -468,9 +480,11 @@ Brief description of changes
 - [ ] Browser tested
 
 ## Screenshots (if applicable)
+
 Attach screenshots or GIFs
 
 ## Related Issues
+
 Closes #123
 ```
 
@@ -512,10 +526,10 @@ We follow [Semantic Versioning](https://semver.org/):
 
 ```bash
 # Update versions
-npm run version-packages
+pnpm version-packages
 
 # Build and publish
-npm run release
+pnpm release
 ```
 
 ---
@@ -526,10 +540,10 @@ npm run release
 
 ```bash
 # Watch mode for package development
-npm run dev --workspace=packages/react
+pnpm --filter @clarity-chat/react dev
 
 # Storybook hot reload
-npm run storybook
+pnpm storybook
 ```
 
 ### Debugging
@@ -548,24 +562,27 @@ console.log('Debug:', value)
 **Problem:** Module not found after adding dependency
 
 **Solution:**
+
 ```bash
-npm install
-npm run build
+pnpm install
+pnpm build
 ```
 
 **Problem:** Type errors after changes
 
 **Solution:**
+
 ```bash
-npm run typecheck
+pnpm typecheck
 # Review errors and fix
 ```
 
 **Problem:** Tests failing
 
 **Solution:**
+
 ```bash
-npm run test -- --verbose
+pnpm test -- --verbose
 # Check error messages
 ```
 
@@ -577,12 +594,15 @@ npm run test -- --verbose
 
 - **[Documentation](https://docs.clarity-chat.dev)** - Full docs
 - **[Discord](https://discord.gg/clarity-chat)** - Community chat
-- **[GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)** - Q&A
-- **[GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** - Bug reports
+- **[GitHub Discussions](https://github.com/christireid/Clarity-ai-chat-components/discussions)** -
+  Q&A
+- **[GitHub Issues](https://github.com/christireid/Clarity-ai-chat-components/issues)** - Bug
+  reports
 
 ### Asking Questions
 
 When asking for help:
+
 1. Search existing issues/discussions first
 2. Provide context and examples
 3. Include error messages
@@ -594,6 +614,7 @@ When asking for help:
 ## Recognition
 
 Contributors are recognized in:
+
 - **CHANGELOG.md** - Listed in release notes
 - **README.md** - Contributors section
 - **All Contributors** - Visual recognition
@@ -608,8 +629,10 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ## Thank You! 🙏
 
-Every contribution, no matter how small, makes a difference. We appreciate your time and effort in helping make Clarity Chat better!
+Every contribution, no matter how small, makes a difference. We appreciate your time and effort in
+helping make Clarity Chat better!
 
 ---
 
-**Questions?** Join us on [Discord](https://discord.gg/clarity-chat) or start a [Discussion](https://github.com/christireid/Clarity-ai-chat-components/discussions)!
+**Questions?** Join us on [Discord](https://discord.gg/clarity-chat) or start a
+[Discussion](https://github.com/christireid/Clarity-ai-chat-components/discussions)!
