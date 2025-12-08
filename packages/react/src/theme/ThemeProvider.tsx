@@ -131,7 +131,14 @@ export function ThemeProvider({
       if (isValidModernThemeName(preset)) {
         return modernThemes[preset]
       }
-      // Default fallback
+      // Warn about invalid preset and fallback to default
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          `[Clarity Chat] Unknown theme preset "${preset}". ` +
+            `Available presets: ${Object.keys(modernThemes).join(', ')}. ` +
+            `Falling back to "default".`
+        )
+      }
       return modernThemes['default']
     },
     []
