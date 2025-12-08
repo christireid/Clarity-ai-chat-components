@@ -260,6 +260,9 @@ export function VirtualizedMessageList({
     }
   }, [messages.length])
 
+  // Check if any message is currently streaming (for aria-busy)
+  const isStreaming = messages.some((m) => m.status === 'streaming')
+
   return (
     <div
       className={className}
@@ -268,6 +271,7 @@ export function VirtualizedMessageList({
       aria-label="Chat messages"
       aria-live="polite"
       aria-relevant="additions"
+      aria-busy={isStreaming}
     >
       <AutoSizerComponent>
         {({ height: _height, width }: { height: number; width: number }) => (
@@ -318,6 +322,9 @@ export function AutoVirtualizedMessageList({
   }
 
   // Standard rendering for small lists
+  // Check if any message is currently streaming (for aria-busy)
+  const isStreaming = messages.some((m) => m.status === 'streaming')
+
   return (
     <div
       className={props.className}
@@ -325,6 +332,7 @@ export function AutoVirtualizedMessageList({
       aria-label="Chat messages"
       aria-live="polite"
       aria-relevant="additions"
+      aria-busy={isStreaming}
     >
       {messages.map((message, index) => (
         <div key={message.id || `msg-${index}`}>

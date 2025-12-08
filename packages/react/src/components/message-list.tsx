@@ -170,6 +170,9 @@ export function MessageList({
   // React 19: Simple boolean derivation - compiler optimizes
   const showEmptyState = messages.length === 0 && !isLoading && emptyState
 
+  // Check if any message is currently streaming (for aria-busy)
+  const isStreaming = messages.some((m) => m.status === 'streaming')
+
   return (
     <div
       className={cn('flex flex-col flex-1 min-h-0 overflow-hidden', className)}
@@ -177,6 +180,7 @@ export function MessageList({
       aria-label="Chat messages"
       aria-live="polite"
       aria-relevant="additions"
+      aria-busy={isStreaming}
     >
       <ScrollArea
         ref={scrollRef as React.LegacyRef<HTMLDivElement>}

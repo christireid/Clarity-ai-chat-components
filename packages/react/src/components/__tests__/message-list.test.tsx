@@ -85,9 +85,18 @@ describe('MessageList Component', () => {
       // Simulate scroll position
       const scrollContainer = container.querySelector('[data-autoscroll]')
       if (scrollContainer) {
-        Object.defineProperty(scrollContainer, 'scrollTop', { value: 0, writable: true })
-        Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000, writable: false })
-        Object.defineProperty(scrollContainer, 'clientHeight', { value: 500, writable: false })
+        Object.defineProperty(scrollContainer, 'scrollTop', {
+          value: 0,
+          writable: true,
+        })
+        Object.defineProperty(scrollContainer, 'scrollHeight', {
+          value: 1000,
+          writable: false,
+        })
+        Object.defineProperty(scrollContainer, 'clientHeight', {
+          value: 500,
+          writable: false,
+        })
       }
 
       expect(container).toBeInTheDocument()
@@ -125,11 +134,58 @@ describe('MessageList Component', () => {
   })
 
   describe('Accessibility', () => {
-    it('should have accessible structure', () => {
+    it('should have role="log" for screen readers', () => {
       const { container } = render(<MessageList messages={mockMessages} />)
 
       const list = container.querySelector('[role="log"]')
-      expect(list || container).toBeInTheDocument()
+      expect(list).toBeInTheDocument()
+    })
+
+    it('should have aria-live="polite" for live updates', () => {
+      const { container } = render(<MessageList messages={mockMessages} />)
+
+      const list = container.querySelector('[role="log"]')
+      expect(list).toHaveAttribute('aria-live', 'polite')
+    })
+
+    it('should have aria-label for context', () => {
+      const { container } = render(<MessageList messages={mockMessages} />)
+
+      const list = container.querySelector('[role="log"]')
+      expect(list).toHaveAttribute('aria-label', 'Chat messages')
+    })
+
+    it('should have aria-relevant for additions', () => {
+      const { container } = render(<MessageList messages={mockMessages} />)
+
+      const list = container.querySelector('[role="log"]')
+      expect(list).toHaveAttribute('aria-relevant', 'additions')
+    })
+
+    it('should indicate busy state when streaming', () => {
+      const streamingMessages = [
+        ...mockMessages,
+        {
+          id: '4',
+          chatId: 'chat-1',
+          role: 'assistant' as const,
+          content: 'Streaming...',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          status: 'streaming' as const,
+        },
+      ]
+      const { container } = render(<MessageList messages={streamingMessages} />)
+
+      const list = container.querySelector('[role="log"]')
+      expect(list).toHaveAttribute('aria-busy', 'true')
+    })
+
+    it('should not indicate busy state when not streaming', () => {
+      const { container } = render(<MessageList messages={mockMessages} />)
+
+      const list = container.querySelector('[role="log"]')
+      expect(list).toHaveAttribute('aria-busy', 'false')
     })
 
     it('should support keyboard navigation', () => {
@@ -141,7 +197,9 @@ describe('MessageList Component', () => {
 
   describe('Custom className', () => {
     it('should apply custom className', () => {
-      const { container } = render(<MessageList messages={mockMessages} className="custom-list" />)
+      const { container } = render(
+        <MessageList messages={mockMessages} className="custom-list" />
+      )
 
       const customElement = container.querySelector('.custom-list')
       expect(customElement).toBeInTheDocument()
@@ -184,7 +242,9 @@ describe('MessageList Component', () => {
         },
       ]
 
-      expect(() => render(<MessageList messages={minimalMessages} />)).not.toThrow()
+      expect(() =>
+        render(<MessageList messages={minimalMessages} />)
+      ).not.toThrow()
     })
   })
 })
