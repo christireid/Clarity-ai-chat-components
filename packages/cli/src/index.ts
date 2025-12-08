@@ -18,6 +18,7 @@ import { upgradeCommand } from './commands/upgrade.js'
 import { analyzeCommand } from './commands/analyze.js'
 import { benchmarkCommand } from './commands/benchmark.js'
 import { browseCommand, searchComponents } from './commands/browse.js'
+import { migrateThemeCommand } from './commands/migrate-theme.js'
 import { generateCompletion } from './utils/completion.js'
 import { initOutputMode } from './utils/output.js'
 import { handleError, withErrorHandling } from './utils/errors.js'
@@ -30,14 +31,16 @@ const program = new Command()
 // Beautiful gradient banner - create synchronously for main entry
 import gradient from 'gradient-string'
 
-const banner = gradient.pastel.multiline([
-  '  ____  _               _ _         ____  _           _   ',
-  ' / ___|| | __ _ _ __(_) |_ _   _/ ___|| |__   __ _| |_ ',
-  '| |    | |/ _` | \'__| | __| | | | |    | \'_ \\ / _` | __|',
-  '| |___ | | (_| | |  | | |_| |_| | |___ | | | | (_| | |_ ',
-  ' \\____|_|\\__,_|_|  |_|\\__|\\__, |\\____|_| |_|\\__,_|\\__|',
-  '                           |___/                          ',
-].join('\n'))
+const banner = gradient.pastel.multiline(
+  [
+    '  ____  _               _ _         ____  _           _   ',
+    ' / ___|| | __ _ _ __(_) |_ _   _/ ___|| |__   __ _| |_ ',
+    "| |    | |/ _` | '__| | __| | | | |    | '_ \\ / _` | __|",
+    '| |___ | | (_| | |  | | |_| |_| | |___ | | | | (_| | |_ ',
+    ' \\____|_|\\__,_|_|  |_|\\__|\\__, |\\____|_| |_|\\__,_|\\__|',
+    '                           |___/                          ',
+  ].join('\n')
+)
 
 // Only show banner if not in JSON mode
 if (!process.argv.includes('--json')) {
@@ -60,7 +63,7 @@ program
       quiet: globalOpts.quiet || false,
       verbose: globalOpts.verbose || false,
     })
-    
+
     // Set log level
     if (globalOpts.debug || process.env.DEBUG) {
       setGlobalLogLevel(LogLevel.DEBUG)
@@ -82,7 +85,10 @@ program
 program
   .command('init')
   .description('🚀 Initialize a new Clarity Chat project')
-  .option('-t, --template <template>', 'Project template (basic, chat, rag, analytics)')
+  .option(
+    '-t, --template <template>',
+    'Project template (basic, chat, rag, analytics)'
+  )
   .option('-f, --framework <framework>', 'Framework (nextjs, remix, vite)')
   .option('--no-install', 'Skip dependency installation')
   .option('--no-git', 'Skip git initialization')
@@ -99,7 +105,10 @@ program
 program
   .command('keys')
   .description('🔑 Manage API keys')
-  .option('add <provider>', 'Add API key for provider (openai, anthropic, google)')
+  .option(
+    'add <provider>',
+    'Add API key for provider (openai, anthropic, google)'
+  )
   .option('list', 'List configured providers')
   .option('remove <provider>', 'Remove API key')
   .option('validate', 'Validate all API keys')
@@ -167,6 +176,15 @@ program
   .description('🔍 Search for components')
   .action(searchComponents)
 
+program
+  .command('migrate-theme')
+  .description('🎨 Migrate from legacy to modern theme system')
+  .option('-p, --path <path>', 'Project path to migrate', '.')
+  .option('--dry-run', 'Show changes without applying them')
+  .option('-i, --interactive', 'Interactive mode for selecting changes')
+  .option('-y, --yes', 'Skip confirmation prompts')
+  .action(migrateThemeCommand)
+
 // Completion command
 program
   .command('completion <shell>')
@@ -175,40 +193,57 @@ program
   .action(async (shell: string, options: { install?: boolean }) => {
     const validShells = ['bash', 'zsh', 'fish']
     if (!validShells.includes(shell)) {
-      handleError(new Error(`Invalid shell: ${shell}. Supported: ${validShells.join(', ')}`))
+      handleError(
+        new Error(
+          `Invalid shell: ${shell}. Supported: ${validShells.join(', ')}`
+        )
+      )
       return
     }
-    
+
     const script = generateCompletion(program, shell as 'bash' | 'zsh' | 'fish')
-    
+
     if (options.install) {
       // Beautiful installation instructions
       const { createBanner } = await import('./ui/banner.js')
-      const { infoMessage, tipMessage, commandExample } = await import('./ui/messages.js')
-      
-      console.log(createBanner('🔧 Shell Completion', {
-        gradient: 'pastel',
-      }))
+      const { infoMessage, tipMessage, commandExample } =
+        await import('./ui/messages.js')
+
+      console.log(
+        createBanner('🔧 Shell Completion', {
+          gradient: 'pastel',
+        })
+      )
       console.log()
-      
+
       switch (shell) {
         case 'bash':
           infoMessage('Add this line to your ~/.bashrc or ~/.bash_profile:')
-          console.log(commandExample(`eval "$(clarity-chat completion ${shell})"`))
+          console.log(
+            commandExample(`eval "$(clarity-chat completion ${shell})"`)
+          )
           console.log()
           tipMessage('Then reload your shell: source ~/.bashrc')
           break
         case 'zsh':
           infoMessage('Add this line to your ~/.zshrc:')
-          console.log(commandExample(`eval "$(clarity-chat completion ${shell})"`))
+          console.log(
+            commandExample(`eval "$(clarity-chat completion ${shell})"`)
+          )
           console.log()
           tipMessage('Then reload your shell: source ~/.zshrc')
           break
         case 'fish':
           infoMessage('Save the completion script to:')
-          console.log(commandExample(`clarity-chat completion ${shell} > ~/.config/fish/completions/clarity-chat.fish`))
+          console.log(
+            commandExample(
+              `clarity-chat completion ${shell} > ~/.config/fish/completions/clarity-chat.fish`
+            )
+          )
           console.log()
-          tipMessage('Fish will automatically load completions from this directory')
+          tipMessage(
+            'Fish will automatically load completions from this directory'
+          )
           break
       }
       console.log()

@@ -111,7 +111,17 @@ export interface ThemeProviderProps {
    * <ThemeProvider defaultTheme={myTheme}>
    */
   defaultTheme?: Partial<ThemeConfig> | CompleteThemeConfig
+  /**
+   * Key used for localStorage persistence
+   * @default 'clarity-chat-theme'
+   */
   storageKey?: string
+  /**
+   * Enable cross-tab theme synchronization via BroadcastChannel
+   * When enabled, theme changes in one tab are reflected in all other tabs
+   * @default true
+   */
+  enableCrossTabSync?: boolean
 }
 
 /**
@@ -135,6 +145,7 @@ export function ThemeProvider({
   children,
   defaultTheme: defaultThemeInput,
   storageKey = 'clarity-chat-theme',
+  enableCrossTabSync = true,
 }: ThemeProviderProps) {
   // Normalize the input to handle both ThemeConfig and CompleteThemeConfig
   const normalizedDefault = React.useMemo(
@@ -325,6 +336,83 @@ export function ThemeProvider({
     storageKey,
     isHydrated,
   ])
+
+  // Cross-tab theme synchronization using BroadcastChannel
+  React.useEffect(() => {
+    if (!enableCrossTabSync || typeof window === 'undefined') return
+    if (typeof BroadcastChannel === 'undefined') return // Not supported in older browsers
+
+    const channelName = `${storageKey}-sync`
+    let channel: BroadcastChannel | null = null
+
+    try {
+      channel = new BroadcastChannel(channelName)
+
+      // Listen for theme changes from other tabs
+      channel.onmessage = (event) => {
+        if (event.data?.type === 'theme-change') {
+          const newTheme = event.data.theme as Partial<ThemeConfig>
+          setThemeState((prev) => ({ ...prev, ...newTheme }))
+        }
+      }
+    } catch (error) {
+      // BroadcastChannel may not be available in some environments
+      console.warn('Cross-tab theme sync not available:', error)
+    }
+
+    return () => {
+      channel?.close()
+    }
+  }, [storageKey, enableCrossTabSync])
+
+  // Broadcast theme changes to other tabs
+  const broadcastRef = React.useRef<BroadcastChannel | null>(null)
+
+  React.useEffect(() => {
+    if (!enableCrossTabSync || typeof window === 'undefined') return
+    if (typeof BroadcastChannel === 'undefined') return
+    if (!isHydrated) return // Don't broadcast until hydrated
+
+    const channelName = `${storageKey}-sync`
+
+    try {
+      if (!broadcastRef.current) {
+        broadcastRef.current = new BroadcastChannel(channelName)
+      }
+
+      // Broadcast the theme change
+      broadcastRef.current.postMessage({
+        type: 'theme-change',
+        theme: {
+          mode: theme.mode,
+          preset: theme.preset,
+          enableTransitions: theme.enableTransitions,
+        },
+      })
+    } catch {
+      // Silently fail if broadcast not available
+    }
+
+    return () => {
+      // Don't close here - we want to keep broadcasting on changes
+      // Close in the cleanup effect above
+    }
+  }, [
+    theme.mode,
+    theme.preset,
+    theme.enableTransitions,
+    storageKey,
+    enableCrossTabSync,
+    isHydrated,
+  ])
+
+  // Cleanup broadcast channel on unmount
+  React.useEffect(() => {
+    return () => {
+      broadcastRef.current?.close()
+      broadcastRef.current = null
+    }
+  }, [])
 
   // Memoize theme manipulation callbacks (already using useCallback - good!)
   const setTheme = React.useCallback((newTheme: Partial<ThemeConfig>) => {
@@ -562,6 +650,7 @@ export function ThemeModeSelector({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -737,6 +826,7 @@ export function ThemeToggle({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <circle cx="12" cy="12" r="5" />
               <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
@@ -752,6 +842,7 @@ export function ThemeToggle({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
             </svg>

@@ -41,9 +41,9 @@ export const defaultThemeMetadata = {
   light: {
     name: 'default',
     displayName: 'Default',
-    description: 'Clean, professional theme with indigo accents',
+    description: 'Clean, professional theme with indigo accents (WCAG AA)',
     preview: {
-      primaryColor: '#6366f1',
+      primaryColor: '#4f46e5', // 239 84% 56%
       secondaryColor: '#f4f4f5',
       backgroundColor: '#ffffff',
     },
@@ -51,9 +51,9 @@ export const defaultThemeMetadata = {
   dark: {
     name: 'default-dark',
     displayName: 'Default Dark',
-    description: 'Sleek dark theme with indigo accents',
+    description: 'Sleek dark theme with indigo accents (WCAG AA)',
     preview: {
-      primaryColor: '#818cf8',
+      primaryColor: '#818cf8', // 239 84% 70%
       secondaryColor: '#27272a',
       backgroundColor: '#18181b',
     },
