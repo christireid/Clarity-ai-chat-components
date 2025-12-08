@@ -38,12 +38,18 @@ pids/
 *.pid.lock
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
+
+# VS Code - Allow workspace settings but ignore personal configs
+!.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
 
 # PM2
 .pm2/
