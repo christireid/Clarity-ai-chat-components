@@ -1,0 +1,33 @@
+{
+  "name": "@clarity-chat/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Clarity Chat documentation",
+  "type": "module",
+  "main": "index.ts",
+  "bin": {
+    "clarity-chat-mcp": "./index.ts"
+  },
+  "scripts": {
+    "start": "npx tsx index.ts",
+    "build": "tsc",
+    "dev": "npx tsx --watch index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "clarity-chat",
+    "ai",
+    "documentation",
+    "claude"
+  ],
+  "license": "MIT"
+}

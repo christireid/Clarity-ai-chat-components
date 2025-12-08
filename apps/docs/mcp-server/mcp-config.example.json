@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/model-context-protocol/main/schema.json",
+  "mcpServers": {
+    "clarity-chat": {
+      "command": "npx",
+      "args": ["tsx", "apps/docs/mcp-server/index.ts"],
+      "cwd": "/path/to/Clarity-ai-chat-components",
+      "env": {}
+    }
+  }
+}
