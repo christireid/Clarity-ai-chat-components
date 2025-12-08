@@ -108,12 +108,11 @@ export default [
     },
   },
 
-  // Storybook files
+  // Storybook files - disable hooks rules for story render functions
   {
     files: ['**/*.stories.{ts,tsx,js,jsx}'],
     rules: {
       'react-hooks/rules-of-hooks': 'off',
-      'storybook/no-renderer-packages': 'off',
     },
   },
 
