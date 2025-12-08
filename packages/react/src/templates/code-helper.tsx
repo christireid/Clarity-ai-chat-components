@@ -1,12 +1,12 @@
 /**
  * Code Helper Template
- * 
+ *
  * AI assistant specialized for programming help
  */
 
 import { AIAssistantTemplate } from './ai-assistant'
-import { minimalDarkTheme } from '../theme/presets'
 import { ThemeProvider } from '../theme/ThemeProvider'
+import { neutralDarkTheme } from '../theme/modern-presets'
 
 export interface CodeHelperTemplateProps {
   apiKeys?: {
@@ -19,14 +19,14 @@ export interface CodeHelperTemplateProps {
 
 /**
  * Code Helper Template
- * 
+ *
  * Features:
  * - Syntax highlighting
  * - Code execution examples
  * - Language-specific help
  * - Dark theme optimized for code
  * - File upload for code review
- * 
+ *
  * @example
  * ```tsx
  * <CodeHelperTemplate
@@ -52,7 +52,7 @@ Always provide code examples with proper syntax highlighting using markdown code
 Explain your reasoning and suggest improvements when relevant.`
 
   return (
-    <ThemeProvider defaultTheme={minimalDarkTheme}>
+    <ThemeProvider defaultTheme={{ customTheme: neutralDarkTheme }}>
       <AIAssistantTemplate
         apiKeys={apiKeys}
         systemPrompt={systemPrompt}

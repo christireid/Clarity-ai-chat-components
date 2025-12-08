@@ -1,34 +1,32 @@
 /**
  * Theme Preview Component
- * 
+ *
  * Interactive theme preview and live editor
  */
 
 'use client'
 
 import * as React from 'react'
-import { useTheme } from '../theme/ThemeProvider'
-import { 
-  getAllThemes, 
-  hexToHsl, 
+import { useTheme, type ThemePresetName } from '../theme/ThemeProvider'
+import {
+  getAllThemes,
+  hexToHsl,
   hslToHex,
-  // createTheme, // Reserved for future use
-  validateTheme 
+  validateTheme,
 } from '../theme/theme-builder'
 import type { CompleteThemeConfig } from '../theme/theme-config'
-import type { ThemePresetName } from '../theme/presets'
 
 export interface ThemePreviewProps {
   /**
    * Show editor controls
    */
   showEditor?: boolean
-  
+
   /**
    * Callback when theme changes
    */
   onThemeChange?: (theme: CompleteThemeConfig) => void
-  
+
   /**
    * Custom className
    */
@@ -37,12 +35,12 @@ export interface ThemePreviewProps {
 
 /**
  * Theme Preview Component
- * 
+ *
  * Shows live preview of theme with editable colors
- * 
+ *
  * @example
  * ```tsx
- * <ThemePreview 
+ * <ThemePreview
  *   showEditor
  *   onThemeChange={theme => console.log('Theme changed:', theme)}
  * />
@@ -54,33 +52,37 @@ export function ThemePreview({
   className,
 }: ThemePreviewProps) {
   const { resolvedTheme } = useTheme()
-  const [localTheme, setLocalTheme] = React.useState<CompleteThemeConfig | null>(resolvedTheme)
+  const [localTheme, setLocalTheme] =
+    React.useState<CompleteThemeConfig | null>(resolvedTheme)
   const [editMode, setEditMode] = React.useState(false)
-  
+
   React.useEffect(() => {
     if (resolvedTheme) {
       setLocalTheme(resolvedTheme)
     }
   }, [resolvedTheme])
-  
-  const handleColorChange = React.useCallback((colorKey: string, hexValue: string) => {
-    if (!localTheme) return
-    
-    const hslValue = hexToHsl(hexValue)
-    const updatedTheme = {
-      ...localTheme,
-      colors: {
-        ...localTheme.colors,
-        [colorKey]: hslValue,
-      },
-    }
-    
-    setLocalTheme(updatedTheme)
-    onThemeChange?.(updatedTheme)
-  }, [localTheme, onThemeChange])
-  
+
+  const handleColorChange = React.useCallback(
+    (colorKey: string, hexValue: string) => {
+      if (!localTheme) return
+
+      const hslValue = hexToHsl(hexValue)
+      const updatedTheme = {
+        ...localTheme,
+        colors: {
+          ...localTheme.colors,
+          [colorKey]: hslValue,
+        },
+      }
+
+      setLocalTheme(updatedTheme)
+      onThemeChange?.(updatedTheme)
+    },
+    [localTheme, onThemeChange]
+  )
+
   if (!localTheme) return null
-  
+
   return (
     <div className={`theme-preview ${className || ''}`}>
       {/* Preview Panel */}
@@ -96,7 +98,7 @@ export function ThemePreview({
             </button>
           )}
         </div>
-        
+
         {/* Sample UI Components */}
         <div className="space-y-4">
           {/* Buttons */}
@@ -111,7 +113,7 @@ export function ThemePreview({
               Destructive Button
             </button>
           </div>
-          
+
           {/* Cards */}
           <div className="p-4 bg-card text-card-foreground rounded-lg border border-border">
             <h4 className="font-medium mb-2">Card Component</h4>
@@ -119,14 +121,14 @@ export function ThemePreview({
               This is a sample card with muted text
             </p>
           </div>
-          
+
           {/* Input */}
           <input
             type="text"
             placeholder="Sample input field"
             className="w-full px-3 py-2 bg-background border border-input rounded-md focus:ring-2 focus:ring-ring"
           />
-          
+
           {/* Status Messages */}
           <div className="space-y-2">
             <div className="p-3 bg-success/10 text-success rounded-md border border-success/20">
@@ -141,16 +143,16 @@ export function ThemePreview({
           </div>
         </div>
       </div>
-      
+
       {/* Editor Panel */}
       {showEditor && editMode && (
         <div className="editor-panel mt-6 p-6 rounded-lg border-2 border-border bg-card">
           <h3 className="text-lg font-semibold mb-4">Color Editor</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.entries(localTheme.colors).map(([key, value]) => {
               const hexValue = hslToHex(value)
-              
+
               return (
                 <div key={key} className="flex items-center gap-3">
                   <input
@@ -174,7 +176,7 @@ export function ThemePreview({
               )
             })}
           </div>
-          
+
           <div className="mt-6 flex gap-2">
             <button
               onClick={() => {
@@ -212,7 +214,7 @@ export function ThemePreview({
 
 /**
  * Theme Comparison Component
- * 
+ *
  * Compare two themes side by side
  */
 export interface ThemeComparisonProps {
@@ -221,21 +223,31 @@ export interface ThemeComparisonProps {
   className?: string
 }
 
-export function ThemeComparison({ theme1, theme2, className }: ThemeComparisonProps) {
+export function ThemeComparison({
+  theme1,
+  theme2,
+  className,
+}: ThemeComparisonProps) {
   const allThemes = React.useMemo(() => getAllThemes(), [])
-  const themeConfig1 = allThemes.find(t => t.name === theme1)
-  const themeConfig2 = allThemes.find(t => t.name === theme2)
-  
+  const themeConfig1 = allThemes.find((t) => t.name === theme1)
+  const themeConfig2 = allThemes.find((t) => t.name === theme2)
+
   if (!themeConfig1 || !themeConfig2) return null
-  
+
   return (
-    <div className={`theme-comparison grid grid-cols-2 gap-4 ${className || ''}`}>
+    <div
+      className={`theme-comparison grid grid-cols-2 gap-4 ${className || ''}`}
+    >
       <div>
-        <h3 className="text-lg font-semibold mb-2">{themeConfig1.metadata.displayName}</h3>
+        <h3 className="text-lg font-semibold mb-2">
+          {themeConfig1.metadata.displayName}
+        </h3>
         <ThemePreview />
       </div>
       <div>
-        <h3 className="text-lg font-semibold mb-2">{themeConfig2.metadata.displayName}</h3>
+        <h3 className="text-lg font-semibold mb-2">
+          {themeConfig2.metadata.displayName}
+        </h3>
         <ThemePreview />
       </div>
     </div>

@@ -1,13 +1,13 @@
 /**
  * Customer Support Chat Template
- * 
+ *
  * Pre-configured chat interface for customer support scenarios
  */
 
 import { useState, useCallback } from 'react'
 import { ChatWindow } from '../components/chat-window'
 import { ThemeProvider } from '../theme/ThemeProvider'
-import { corporateTheme } from '../theme/presets'
+import { defaultLightTheme } from '../theme/modern-presets'
 import { useMessageOperations } from '../hooks/use-message-operations'
 import type { Message } from '@clarity-chat/types'
 
@@ -21,14 +21,14 @@ export interface CustomerSupportTemplateProps {
 
 /**
  * Customer Support Chat Template
- * 
+ *
  * Features:
  * - Professional corporate theme
  * - FAQ quick responses
  * - Escalation to human agent
  * - Ticket creation
  * - Order lookup capabilities
- * 
+ *
  * @example
  * ```tsx
  * <CustomerSupportTemplate
@@ -47,7 +47,7 @@ export function CustomerSupportTemplate({
 }: CustomerSupportTemplateProps) {
   const chatId = 'customer-support-chat'
   const now = new Date()
-  
+
   // Use message operations hook
   const {
     messages: operationMessages,
@@ -64,7 +64,7 @@ export function CustomerSupportTemplate({
         id: '1',
         chatId,
         role: 'assistant',
-        content: `Welcome to ${companyName} Support! How can I help you today?\n\nYou can ask me about:\n${supportCategories.map(cat => `• ${cat}`).join('\n')}`,
+        content: `Welcome to ${companyName} Support! How can I help you today?\n\nYou can ask me about:\n${supportCategories.map((cat) => `• ${cat}`).join('\n')}`,
         timestamp: now.getTime(),
       },
     ],
@@ -77,7 +77,7 @@ export function CustomerSupportTemplate({
   })
 
   // Convert to Message format
-  const messages: Message[] = operationMessages.map(msg => ({
+  const messages: Message[] = operationMessages.map((msg) => ({
     id: msg.id,
     chatId,
     role: msg.role,
@@ -86,25 +86,32 @@ export function CustomerSupportTemplate({
     updatedAt: new Date(msg.timestamp),
     status: 'sent' as const,
   }))
-  
+
   const [isLoading, setIsLoading] = useState(false)
 
   // Handle message operations
-  const handleEdit = useCallback((messageId: string) => {
-    const message = messages.find(m => m.id === messageId)
-    if (!message) return
+  const handleEdit = useCallback(
+    (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId)
+      if (!message) return
 
-    const newContent = prompt('Edit message:', message.content) || message.content
-    if (newContent !== message.content) {
-      editMessage(messageId, newContent)
-    }
-  }, [messages, editMessage])
+      const newContent =
+        prompt('Edit message:', message.content) || message.content
+      if (newContent !== message.content) {
+        editMessage(messageId, newContent)
+      }
+    },
+    [messages, editMessage]
+  )
 
-  const handleDelete = useCallback((messageId: string) => {
-    if (confirm('Delete this message?')) {
-      deleteMessage(messageId)
-    }
-  }, [deleteMessage])
+  const handleDelete = useCallback(
+    (messageId: string) => {
+      if (confirm('Delete this message?')) {
+        deleteMessage(messageId)
+      }
+    },
+    [deleteMessage]
+  )
 
   const handleSendMessage = async (content: string) => {
     // Add user message using operations hook
@@ -114,12 +121,12 @@ export function CustomerSupportTemplate({
       content,
       timestamp: Date.now(),
     })
-    
+
     setIsLoading(true)
 
     // Check for escalation keywords
     const escalationKeywords = ['human', 'agent', 'representative', 'manager']
-    const needsEscalation = escalationKeywords.some(keyword => 
+    const needsEscalation = escalationKeywords.some((keyword) =>
       content.toLowerCase().includes(keyword)
     )
 
@@ -127,7 +134,8 @@ export function CustomerSupportTemplate({
       addMessage({
         chatId,
         role: 'assistant',
-        content: 'I\'ll connect you with a human agent right away. Please wait a moment...',
+        content:
+          "I'll connect you with a human agent right away. Please wait a moment...",
         timestamp: Date.now(),
       })
       onEscalate(messages)
@@ -136,7 +144,7 @@ export function CustomerSupportTemplate({
     }
 
     // Check FAQs
-    const matchedFaq = faqs.find(faq => 
+    const matchedFaq = faqs.find((faq) =>
       content.toLowerCase().includes(faq.question.toLowerCase())
     )
 
@@ -166,11 +174,13 @@ export function CustomerSupportTemplate({
       if (!response.ok) throw new Error('Support API error')
 
       const data = await response.json()
-      
+
       addMessage({
         chatId,
         role: 'assistant',
-        content: data.response || 'I understand your concern. Let me help you with that.',
+        content:
+          data.response ||
+          'I understand your concern. Let me help you with that.',
         timestamp: Date.now(),
       })
     } catch (_error) {
@@ -178,7 +188,8 @@ export function CustomerSupportTemplate({
       addMessage({
         chatId,
         role: 'assistant',
-        content: 'I appreciate your patience. Let me look into that for you. Meanwhile, you can always request to speak with a human agent.',
+        content:
+          'I appreciate your patience. Let me look into that for you. Meanwhile, you can always request to speak with a human agent.',
         timestamp: Date.now(),
       })
     } finally {
@@ -187,7 +198,9 @@ export function CustomerSupportTemplate({
   }
 
   const handleExport = () => {
-    const text = messages.map(m => `${m.role === 'user' ? 'Customer' : 'Support'}: ${m.content}`).join('\n\n')
+    const text = messages
+      .map((m) => `${m.role === 'user' ? 'Customer' : 'Support'}: ${m.content}`)
+      .join('\n\n')
     const blob = new Blob([text], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -198,8 +211,11 @@ export function CustomerSupportTemplate({
   }
 
   return (
-    <ThemeProvider defaultTheme={corporateTheme}>
-      <div className="customer-support-template" style={{ height: '100%', width: '100%' }}>
+    <ThemeProvider defaultTheme={{ customTheme: defaultLightTheme }}>
+      <div
+        className="customer-support-template"
+        style={{ height: '100%', width: '100%' }}
+      >
         <ChatWindow
           messages={messages}
           isLoading={isLoading}
@@ -211,10 +227,12 @@ export function CustomerSupportTemplate({
             <div className="text-center space-y-4">
               <h3 className="text-xl font-semibold">How can we help?</h3>
               <div className="grid gap-2 max-w-md mx-auto">
-                {supportCategories.map(category => (
+                {supportCategories.map((category) => (
                   <button
                     key={category}
-                    onClick={() => handleSendMessage(`I need help with ${category}`)}
+                    onClick={() =>
+                      handleSendMessage(`I need help with ${category}`)
+                    }
                     className="p-3 text-left rounded-lg border hover:bg-accent transition-colors"
                   >
                     {category}
@@ -231,13 +249,13 @@ export function CustomerSupportTemplate({
 
 function detectCategory(message: string, categories: string[]): string {
   const lowerMessage = message.toLowerCase()
-  
+
   for (const category of categories) {
     if (lowerMessage.includes(category.toLowerCase())) {
       return category
     }
   }
-  
+
   // Category-specific keywords
   if (lowerMessage.includes('order') || lowerMessage.includes('shipping')) {
     return 'Orders'
@@ -251,6 +269,6 @@ function detectCategory(message: string, categories: string[]): string {
   if (lowerMessage.includes('broken') || lowerMessage.includes('not working')) {
     return 'Technical'
   }
-  
+
   return 'General'
 }
