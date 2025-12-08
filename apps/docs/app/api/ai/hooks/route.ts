@@ -10,6 +10,7 @@ import {
   createErrorResponse,
   getStableTimestamp,
 } from '@/lib/ai/types'
+import { mergeHookData, getDataSourceInfo } from '@/lib/ai/merge-component-data'
 
 /**
  * AI-Optimized Hooks API
@@ -21,7 +22,8 @@ import {
  * @route OPTIONS /api/ai/hooks (CORS preflight)
  */
 
-const hooks: HookInfo[] = [
+// Curated hook data with detailed documentation
+const curatedHooks: HookInfo[] = [
   // Core Chat Hooks
   {
     name: 'useChat',
@@ -857,25 +859,35 @@ export async function OPTIONS() {
  */
 export async function GET() {
   try {
+    // Merge curated hooks with auto-generated data from source
+    const allHooks = mergeHookData(curatedHooks)
+
     // Extract unique categories with proper typing
     const categories = [
-      ...new Set(hooks.map((h) => h.category)),
+      ...new Set(allHooks.map((h) => h.category)),
     ] as HookCategory[]
 
-    const response: HooksAPIResponse = {
+    const dataSourceInfo = getDataSourceInfo()
+
+    const response: HooksAPIResponse & { dataSource?: unknown } = {
       name: 'Clarity Chat Hooks',
       version: PACKAGE_VERSION,
       apiVersion: AI_API_VERSION,
       description: 'React hooks for building AI chat interfaces',
-      totalHooks: hooks.length,
+      totalHooks: allHooks.length,
       categories,
       lastUpdated: getStableTimestamp(),
-      hooks,
+      hooks: allHooks,
       usage: {
         installation: 'npm install @clarity-chat/react',
         basicImport:
           'import { useChat, useStreaming, useTokenTracker } from "@clarity-chat/react"',
         documentation: `${BASE_URL}/reference/hooks`,
+      },
+      dataSource: {
+        curated: curatedHooks.length,
+        generated: allHooks.length - curatedHooks.length,
+        ...dataSourceInfo,
       },
     }
 

@@ -73,6 +73,7 @@ export type ComponentCategory =
   | 'analytics'
   | 'enterprise'
   | 'layout'
+  | 'general'
 
 export interface ComponentsAPIResponse {
   name: string
@@ -124,6 +125,7 @@ export interface HookInfo {
   examples: string[]
   relatedHooks: string[]
   version: string
+  deprecated?: boolean
 }
 
 export type HookCategory =
@@ -135,6 +137,11 @@ export type HookCategory =
   | 'input'
   | 'analytics'
   | 'error-handling'
+  | 'chat'
+  | 'streaming'
+  | 'optimization'
+  | 'persistence'
+  | 'general'
 
 export interface HooksAPIResponse {
   name: string
@@ -165,6 +172,17 @@ export type SearchItemType =
   | 'concept'
   | 'deployment'
   | 'integration'
+
+export const VALID_SEARCH_TYPES: SearchItemType[] = [
+  'component',
+  'hook',
+  'guide',
+  'example',
+  'cookbook',
+  'concept',
+  'deployment',
+  'integration',
+]
 
 export interface EnhancedSearchItem {
   title: string

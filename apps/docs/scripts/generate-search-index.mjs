@@ -79,16 +79,43 @@ function extractMetadata(content) {
 }
 
 /**
+ * Decode HTML entities in text
+ */
+function decodeHtmlEntities(text) {
+  return text
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+}
+
+/**
+ * Check if a path is a dynamic route (contains brackets)
+ */
+function isDynamicRoute(filePath) {
+  return filePath.includes('[') || filePath.includes(']')
+}
+
+/**
+ * Check if a title contains template variables
+ */
+function hasTemplateVariables(title) {
+  return /\{[^}]+\}/.test(title)
+}
+
+/**
  * Convert file path to URL href
  */
 function pathToHref(filePath, appDir) {
   const relativePath = path.relative(appDir, filePath)
-  const href = '/' + relativePath
+  const href = relativePath
     .replace(/\\/g, '/')
     .replace(/\/page\.(tsx|mdx)$/, '')
-    .replace(/^\//, '')
+    .replace(/^\/+/, '') // Remove leading slashes
 
-  return href === '/' ? '/' : `/${href}`
+  return href === '' ? '/' : `/${href}`
 }
 
 /**
@@ -116,12 +143,24 @@ async function generateSearchIndex() {
 
   for (const filePath of files) {
     try {
+      // Skip dynamic routes (containing brackets)
+      if (isDynamicRoute(filePath)) {
+        skipped.push({ path: filePath, reason: 'dynamic route' })
+        continue
+      }
+
       const content = fs.readFileSync(filePath, 'utf-8')
       const metadata = extractMetadata(content)
 
       // Skip if no title found
       if (!metadata.title) {
-        skipped.push(filePath)
+        skipped.push({ path: filePath, reason: 'no title' })
+        continue
+      }
+
+      // Skip if title contains template variables like {post.title}
+      if (hasTemplateVariables(metadata.title)) {
+        skipped.push({ path: filePath, reason: 'template variable in title' })
         continue
       }
 
@@ -129,11 +168,17 @@ async function generateSearchIndex() {
       const href = pathToHref(filePath, appDir)
       const category = getCategoryFromPath(filePath)
 
+      // Decode HTML entities in title and description
+      const cleanTitle = decodeHtmlEntities(metadata.title)
+      const cleanDescription = metadata.description
+        ? decodeHtmlEntities(metadata.description)
+        : ''
+
       searchItems.push({
-        title: metadata.title,
+        title: cleanTitle,
         type,
         href,
-        description: metadata.description || '',
+        description: cleanDescription,
         ...(category && { category }),
       })
     } catch (error) {
@@ -192,7 +237,14 @@ export const searchData: SearchItem[] = ${JSON.stringify(searchItems, null, 2)}
   console.log(`   Concepts: ${searchItems.filter(i => i.type === 'concept').length}`)
   console.log(`   Deployment: ${searchItems.filter(i => i.type === 'deployment').length}`)
   console.log(`   Integrations: ${searchItems.filter(i => i.type === 'integration').length}`)
-  console.log(`   Skipped (no title): ${skipped.length}`)
+  console.log(`\n🚫 Skipped: ${skipped.length}`)
+  const skippedByReason = skipped.reduce((acc, item) => {
+    acc[item.reason] = (acc[item.reason] || 0) + 1
+    return acc
+  }, {})
+  Object.entries(skippedByReason).forEach(([reason, count]) => {
+    console.log(`   - ${reason}: ${count}`)
+  })
   console.log(`\n📁 Output: ${outputPath}`)
 }
 

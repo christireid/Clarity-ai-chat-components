@@ -10,6 +10,10 @@ import {
   createErrorResponse,
   getStableTimestamp,
 } from '@/lib/ai/types'
+import {
+  mergeComponentData,
+  getDataSourceInfo,
+} from '@/lib/ai/merge-component-data'
 
 /**
  * AI-Optimized Components API
@@ -21,7 +25,8 @@ import {
  * @route OPTIONS /api/ai/components (CORS preflight)
  */
 
-const components: ComponentInfo[] = [
+// Curated component data with detailed documentation
+const curatedComponents: ComponentInfo[] = [
   // Core Chat Components
   {
     name: 'ClarityChat',
@@ -681,26 +686,36 @@ export async function OPTIONS() {
  */
 export async function GET() {
   try {
+    // Merge curated components with auto-generated data from source
+    const allComponents = mergeComponentData(curatedComponents)
+
     // Extract unique categories with proper typing
     const categories = [
-      ...new Set(components.map((c) => c.category)),
+      ...new Set(allComponents.map((c) => c.category)),
     ] as ComponentCategory[]
 
-    const response: ComponentsAPIResponse = {
+    const dataSourceInfo = getDataSourceInfo()
+
+    const response: ComponentsAPIResponse & { dataSource?: unknown } = {
       name: 'Clarity Chat Components',
       version: PACKAGE_VERSION,
       apiVersion: AI_API_VERSION,
       description:
         'Enterprise-grade React component library for AI chat interfaces',
-      totalComponents: components.length,
+      totalComponents: allComponents.length,
       categories,
       lastUpdated: getStableTimestamp(),
-      components,
+      components: allComponents,
       usage: {
         installation: 'npm install @clarity-chat/react',
         basicImport:
           'import { ClarityChat, useChat } from "@clarity-chat/react"',
         documentation: BASE_URL,
+      },
+      dataSource: {
+        curated: curatedComponents.length,
+        generated: allComponents.length - curatedComponents.length,
+        ...dataSourceInfo,
       },
     }
 

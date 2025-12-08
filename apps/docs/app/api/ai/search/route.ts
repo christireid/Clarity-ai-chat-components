@@ -269,8 +269,8 @@ export async function OPTIONS() {
 /**
  * GET /api/ai/search
  *
- * Returns searchable documentation index with filtering support.
- * Supports query, type, and category filters.
+ * Returns searchable documentation index with filtering and pagination.
+ * Supports query, type, category, page, and limit parameters.
  */
 export async function GET(request: Request) {
   try {
@@ -294,6 +294,13 @@ export async function GET(request: Request) {
     const query = searchParams.get('q')?.toLowerCase()
     const type = searchParams.get('type') as SearchItemType | null
     const category = searchParams.get('category')
+
+    // Pagination parameters with defaults
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(searchParams.get('limit') || '20', 10))
+    )
 
     let results = enhanceSearchData()
 
@@ -326,6 +333,13 @@ export async function GET(request: Request) {
       })
     }
 
+    // Calculate pagination
+    const totalResults = results.length
+    const totalPages = Math.ceil(totalResults / limit)
+    const startIndex = (page - 1) * limit
+    const endIndex = startIndex + limit
+    const paginatedResults = results.slice(startIndex, endIndex)
+
     const availableTypes: SearchItemType[] = [
       'component',
       'hook',
@@ -337,7 +351,7 @@ export async function GET(request: Request) {
       'integration',
     ]
 
-    const response: SearchAPIResponse = {
+    const response = {
       name: 'Clarity Chat Documentation Search',
       version: PACKAGE_VERSION,
       apiVersion: AI_API_VERSION,
@@ -346,8 +360,16 @@ export async function GET(request: Request) {
         type: type || null,
         category: category || null,
       },
-      totalResults: results.length,
-      results,
+      pagination: {
+        page,
+        limit,
+        totalResults,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+      totalResults,
+      results: paginatedResults,
       availableTypes,
       availableCategories: [...new Set(results.map((r) => r.category))].sort(),
       usage: {
@@ -355,6 +377,7 @@ export async function GET(request: Request) {
         filterByType: '/api/ai/search?type=component',
         filterByCategory: '/api/ai/search?category=reference',
         combineFilters: '/api/ai/search?q=token&type=hook',
+        pagination: '/api/ai/search?page=2&limit=10',
       },
     }
 
