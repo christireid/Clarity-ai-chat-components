@@ -6,1184 +6,961 @@
 
 ---
 
-## Environment & Tooling Assessment
+## 0. Environment & Tooling Assessment
 
 ### Package Manager
-- **Primary:** pnpm (v10.21.0)
+- **Primary:** `pnpm@10.21.0`
 - **Workspace:** Monorepo with `packages/*` and `apps/*`
 
-### Build System
-- **Build Tool:** Turbo (monorepo orchestrator)
-- **Framework:** Next.js 15.1.6 (docs site)
-- **TypeScript:** v5.9.3
-- **React:** v19.2.0
-
-### Available Scripts (from root package.json)
-- `pnpm dev` - Development mode
+### Key Scripts (from root `package.json`)
+- `pnpm install` - Install dependencies
+- `pnpm dev` - Start development servers
 - `pnpm build` - Build all packages
 - `pnpm lint` - Lint all packages
-- `pnpm lint:fix` - Auto-fix linting issues
 - `pnpm test` - Run tests
-- `pnpm test:watch` - Watch mode tests
-- `pnpm test:coverage` - Coverage reports
-- `pnpm storybook` - Run Storybook (`apps/storybook`)
-- `pnpm docs` - Run docs dev server (`apps/docs`)
-- `pnpm docs:build` - Build docs site (`apps/docs-site`)
-- `pnpm typecheck` - TypeScript type checking
+- `pnpm docs` - Start docs dev server (`npm run dev --workspace=@clarity-chat/docs`)
+- `pnpm docs:build` - Build docs site (`npm run build --workspace=@clarity-chat/docs-site`)
 
-### Documentation Structure
-- **Source Docs:** `/docs/` (Markdown files)
-- **Docs Site:** `/apps/docs/` (Next.js app with MDX support)
-- **Storybook:** `/apps/storybook/` (Component demos)
-- **Examples:** `/apps/examples/` (Working examples)
-- **Reference API:** `/apps/docs/app/reference/` (Auto-generated API docs)
+### Documentation Site Structure
+- **Location:** `apps/docs/` (Next.js app)
+- **Framework:** Next.js 15 with MDX support
+- **Reference Docs:** `apps/docs/app/reference/`
+- **Guide Docs:** `apps/docs/app/guides/`
+- **Learn Docs:** `apps/docs/app/learn/`
+- **Examples:** `apps/docs/app/examples/`
 
-### Documentation Format
-- **Markdown:** Used in `/docs/` directory
-- **MDX:** Used in Next.js docs site (`/apps/docs/`)
-- **Storybook Stories:** Component examples and demos
-- **TypeDoc:** API reference generation (`pnpm docs:generate`)
-
-### Key Directories
-- `/packages/react/src/components/` - 144+ component files
-- `/packages/react/src/hooks/` - 101+ hook files
-- `/packages/react/src/utils/` - Utility functions
-- `/apps/docs/app/reference/` - Reference documentation pages
-- `/apps/docs/app/guides/` - Guide pages
-- `/apps/docs/app/cookbook/` - Recipe examples
+### Build System
+- **React Package:** `packages/react/` (TypeScript, tsup)
+- **Docs Site:** Next.js with TypeScript
+- **Component Library:** 70+ components, 35+ hooks
 
 ---
 
-## Feature Inventory
+## 1. Feature Inventory
 
-### Top-Level Components (Drop-in Ready)
-1. **ClarityChat** - Main drop-in component
-   - Location: `packages/react/src/components/clarity-chat.tsx`
-   - Props: `api`, `memory`, `stream`, `transport`, etc.
-   - Dependencies: `useClarityChat`, `ChatWindow`
+### Components (70+)
 
-2. **ClarityChatPresets** - Pre-configured variants
-   - Location: `packages/react/src/components/clarity-chat-presets.tsx`
-   - Variants: `Simple`, `WithMemory`, `Enterprise`
+#### Core Chat Components
+- ✅ `ClarityChat` - Top-level drop-in component
+- ✅ `ClarityChatPresets` - Pre-configured presets
+- ✅ `ChatWindow` - Main chat container
+- ✅ `ChatInput` - Basic input field
+- ✅ `AdvancedChatInput` - Enhanced input with features
+- ✅ `Message` - Individual message display
+- ✅ `MessageOptimized` - Performance-optimized message
+- ✅ `MessageList` - Scrollable message list
+- ✅ `VirtualizedMessageList` - Virtual scrolling list
+- ✅ `StreamingMessage` - Real-time streaming display
+- ✅ `MessageMetadata` - Message metadata display
+- ✅ `MessageSearch` - Search messages
+- ✅ `AdvancedMessageSearch` - Enhanced search with semantic
+- ✅ `SemanticMessageSearch` - Semantic search component
 
-### Mid-Level Components (Composable)
-3. **ChatWindow** - Main chat container
-   - Location: `packages/react/src/components/chat-window.tsx`
-   - Props: `messages`, `onSendMessage`, `isLoading`, etc.
+#### Input & Interaction
+- ✅ `VoiceInput` - Voice input with waveform
+- ✅ `FileUpload` - File upload with drag & drop
+- ✅ `CommandPalette` - Keyboard-driven commands
+- ✅ `ContextMenu` - Right-click menus
+- ✅ `Draggable` - Drag and drop system
+- ✅ `FollowUpSuggestions` - Follow-up question suggestions
+- ✅ `PromptSuggestions` - Prompt suggestions
+- ✅ `PromptSuggestionsEnhanced` - ML-based enhanced suggestions
+- ✅ `KeyboardHint` - Keyboard shortcut hints
+- ✅ `ModelSelector` - AI model selection
 
-4. **ChatInput** - Message input component
-   - Location: `packages/react/src/components/chat-input.tsx`
+#### UI Primitives
+- ✅ `Button` - Button component
+- ✅ `Input` - Input field
+- ✅ `Card` - Card container
+- ✅ `InteractiveCard` - Interactive card
+- ✅ `Badge` - Badge component
+- ✅ `Dialog` - Modal dialog
+- ✅ `Tooltip` - Tooltip component
+- ✅ `Dropdown` - Dropdown menu
+- ✅ `Tabs` - Tab navigation
+- ✅ `Switch` - Toggle switch
+- ✅ `Checkbox` - Checkbox input
+- ✅ `Skeleton` - Loading skeleton
+- ✅ `AnimatedList` - Animated list
+- ✅ `Toast` - Toast notifications
+- ✅ `Progress` - Progress indicator
+- ✅ `FeedbackAnimation` - User feedback animations
+- ✅ `EmptyState` - Empty state display
 
-5. **AdvancedChatInput** - Enhanced input with attachments
-   - Location: `packages/react/src/components/advanced-chat-input.tsx`
+#### Data Display & Analytics
+- ✅ `TokenCounter` - Token usage counter
+- ✅ `TokenOptimizationPanel` - Token optimization UI
+- ✅ `TokenOptimizationBadge` - Token savings badge
+- ✅ `TokenOptimizationDashboard` - Full optimization dashboard
+- ✅ `AnalyticsDashboard` - Analytics overview
+- ✅ `UsageDashboard` - Usage statistics
+- ✅ `PerformanceDashboard` - Performance metrics
+- ✅ `PerformanceAnalyticsDashboard` - Enhanced performance dashboard
+- ✅ `ResponseQualityMeter` - Response quality indicator
+- ✅ `SessionSummaryCard` - Session summary
+- ✅ `NetworkStatus` - Network connection status
+- ✅ `ABTestingDashboard` - A/B testing dashboard
+- ✅ `ConversationAnalyticsDashboard` - Conversation analytics
 
-6. **MessageList** / **VirtualizedMessageList** - Message display
-   - Location: `packages/react/src/components/virtualized-message-list.tsx`
+#### Enterprise AI Components
+- ✅ `VectorStoreViewer` - Vector store visualization
+- ✅ `AgentRunFeed` - Agent execution feed
+- ✅ `RAGPipeline` - RAG pipeline UI
+- ✅ `SafetyStatusCard` - AI safety status
+- ✅ `DocumentViewer` - Document display
+- ✅ `MultiModalPreview` - Multi-modal content preview
+- ✅ `AuditLogViewer` - Audit log viewer
+- ✅ `WorkflowSuggestionList` - Workflow suggestions
+- ✅ `KnowledgeBaseViewer` - Knowledge base browser
+- ✅ `CitationCard` - Citation display
+- ✅ `ToolInvocationCard` - Tool execution card
+- ✅ `ClarityToolResult` - Tool result display
 
-7. **StreamingMessage** - Real-time streaming display
-   - Location: `packages/react/src/components/streaming-message.tsx`
+#### Theme & Customization
+- ✅ `ThemeSwitcher` - Theme toggle
+- ✅ `ThemeSelector` - Theme picker
+- ✅ `ThemePreview` - Theme preview
+- ✅ `SettingsPanel` - Settings UI
+- ✅ `ProjectSidebar` - Project navigation
 
-8. **Message** - Individual message component
-   - Location: `packages/react/src/components/message/`
+#### Error Handling
+- ✅ `ErrorBoundary` - React error boundary
+- ✅ `ErrorBoundaryEnhanced` - Enhanced error boundary
+- ✅ `RetryButton` - Retry action button
+- ✅ `ErrorMessage` - Error message display
 
-### Core Hooks
-9. **useClarityChat** - Primary chat hook
-   - Location: `packages/react/src/hooks/use-clarity-chat.ts`
-   - Purpose: Main chat state management with memory support
-   - Returns: `messages`, `append`, `isLoading`, `error`, `memoryEnabled`, etc.
+#### Context & Memory
+- ✅ `ContextCard` - Context display card
+- ✅ `ContextManager` - Context management UI
+- ✅ `ContextVisualizer` - Context visualization
+- ✅ `MemoryInspector` - Memory inspection tool
+- ✅ `ConversationTimeline` - Conversation timeline
+- ✅ `ConversationList` - Conversation list
+- ✅ `ConversationBranchVisualizer` - Branch visualization
 
-10. **useChatEnhanced** - Enhanced chat hook
-    - Location: `packages/react/src/hooks/use-chat-enhanced.ts`
-    - Purpose: Advanced chat features
+#### Advanced Features
+- ✅ `ConversationSummarizer` - AI-powered summaries
+- ✅ `BatteryIndicator` - Battery-aware UI
+- ✅ `PersonaPanel` - AI persona configuration
+- ✅ `MessageThreadView` - Threaded messages
+- ✅ `MentionInput` - @mention input
+- ✅ `ConversationSharing` - Share conversations
+- ✅ `CollaborativeEditor` - Real-time collaboration
+- ✅ `DocumentIntegration` - Document platform integration
+- ✅ `CalendarIntegration` - Calendar integration
+- ✅ `EmailIntegration` - Email integration
+- ✅ `UserInteractionAnalytics` - Interaction tracking
+- ✅ `MobileOptimizedMessage` - Mobile-optimized UI
+- ✅ `OfflineChatSync` - Offline sync
+- ✅ `HistoryManager` - Conversation history
 
-11. **useClarityObject** - Structured output generation
-    - Location: `packages/react/src/hooks/use-clarity-object.ts`
-    - Purpose: Type-safe object generation
+#### Export & Management
+- ✅ `ExportDialog` - Export conversation
+- ✅ `BatchExportDialog` - Batch export
+- ✅ `PromptLibrary` - Prompt library browser
 
-12. **useChatHandlers** - Pre-configured handlers
-    - Location: `packages/react/src/hooks/use-chat-handlers.ts`
-    - Purpose: Reduces boilerplate
+#### Rendering
+- ✅ `EnhancedMarkdownRenderer` - Enhanced markdown
+- ✅ `MarkdownRendererEnhanced` - Alternative markdown renderer
+- ✅ `EnhancedCodeBlock` - Code block with features
+- ✅ `StreamingTextRenderer` - Streaming text display
+- ✅ `StreamBlock` - Streaming block
+- ✅ `StreamCancellation` - Cancel streaming
+- ✅ `ThinkingIndicator` - AI thinking indicator
+- ✅ `TypingIndicator` - Typing animation
+- ✅ `CopyButton` - Copy to clipboard
+- ✅ `LinkPreview` - Link preview card
+- ✅ `TimeSeparator` - Time-based separators
 
-### Streaming Hooks
-13. **useStreamingSSE** - Server-Sent Events streaming
-    - Location: `packages/react/src/hooks/use-streaming-sse.tsx`
+#### Enterprise Components
+- ✅ `SeatInviteDialog` - Team seat management
+- ✅ `SSOConfigWizard` - SSO configuration
+- ✅ `ApiTokenManager` - API token management
+- ✅ `AuthTenantDashboard` - Tenant auth dashboard
 
-14. **useStreamingWebSocket** - WebSocket streaming
-    - Location: `packages/react/src/hooks/use-streaming-websocket.tsx`
+### Hooks (35+)
 
-15. **useStreaming** - Generic streaming hook
-    - Location: `packages/react/src/hooks/use-streaming.ts`
+#### Core Chat Hooks
+- ✅ `useClarityChat` - Primary chat hook (recommended)
+- ✅ `useChat` - Legacy chat hook (deprecated)
+- ✅ `useChatEnhanced` - Enhanced chat functionality
+- ✅ `useChatHandlers` - Pre-configured handlers
+- ✅ `useClarityChatWithTools` - Chat with tool calling
+- ✅ `useClarityObject` - Structured output
+- ✅ `useCompletion` - Text completion
+- ✅ `useAssistant` - Assistant API integration
+- ✅ `useStreamingChat` - Streaming chat state
 
-16. **useStreamableUI** - UI state for streaming
-    - Location: `packages/react/src/hooks/use-streamable-ui.ts`
+#### Streaming Hooks
+- ✅ `useStreamingSSE` - Server-Sent Events
+- ✅ `useStreamingWebSocket` - WebSocket streaming
+- ✅ `useStreaming` - Unified streaming
+- ✅ `useStreamableUI` - Streamable UI components
 
-### Memory System
-17. **MemoryProvider** - Memory context provider
-    - Location: `packages/react/src/memory/memory-provider.tsx`
-    - Strategies: `sliding-window`, `semantic-chunks`, `vector-store`
+#### Message Operations
+- ✅ `useMessageOperations` - Edit, regenerate, branch, undo/redo
+- ✅ `useMessageHistory` - Message history management
+- ✅ `useOptimisticMessage` - Optimistic UI updates
+- ✅ `useBranching` - Conversation branching
 
-18. **useMemoryContext** - Access memory context
-    - Location: `packages/react/src/memory/memory-provider.tsx`
+#### Token Management
+- ✅ `useTokenTracker` - Track token usage
+- ✅ `useTokenOptimization` - Token optimization suite
+- ✅ `useTokenOptimizationEnhanced` - Enhanced optimization (2025)
+- ✅ `useTokenBudgetMonitor` - Real-time budget monitoring
+- ✅ `useModelRouter` - Intelligent model routing
+- ✅ `useSmartThrottle` - Smart request throttling
+- ✅ `useSmartCache` - Semantic caching
 
-### Token Optimization
-19. **useTokenOptimization** - Token optimization hook
-    - Location: `packages/react/src/hooks/use-token-optimization.tsx`
+#### UX Enhancement
+- ✅ `useRealisticTyping` - Realistic typing indicators
+- ✅ `useTypingIndicator` - Multi-stage typing
+- ✅ `useAutoScroll` - Smart auto-scrolling
+- ✅ `useCommandPaletteCommands` - Command palette integration
+- ✅ `useDeferredSearch` - Deferred search for performance
+- ✅ `useKeyboardShortcuts` - Keyboard bindings
+- ✅ `useThemeShortcuts` - Theme keyboard shortcuts
 
-20. **useTokenOptimizationEnhanced** - Enhanced token optimization
-    - Location: `packages/react/src/hooks/use-token-optimization-enhanced.tsx`
+#### Voice & Mobile
+- ✅ `useVoiceInput` - Voice input with waveform
+- ✅ `useMobileKeyboard` - Mobile keyboard handling
+- ✅ `useBatteryAware` - Battery-aware optimizations
 
-21. **useTokenBudgetMonitor** - Token budget monitoring
-    - Location: `packages/react/src/hooks/use-token-budget-monitor.tsx`
+#### Utility Hooks
+- ✅ `useDebounce` - Debounced values
+- ✅ `useThrottle` - Throttled callbacks
+- ✅ `useClipboard` - Clipboard operations
+- ✅ `useLocalStorage` - LocalStorage persistence
+- ✅ `useIndexedDB` - IndexedDB persistence
+- ✅ `useMediaQuery` - Responsive breakpoints
+- ✅ `useEventListener` - Event listener management
+- ✅ `useIntersectionObserver` - Intersection observer
+- ✅ `useMounted` - Component mount state
+- ✅ `usePrevious` - Previous value tracking
+- ✅ `useToggle` - Boolean toggle state
+- ✅ `useWindowSize` - Window size tracking
+- ✅ `useCharacterCounter` - Character counting
+- ✅ `useSubmitButtonState` - Submit button state
+- ✅ `useReducedMotion` - Reduced motion detection
+- ✅ `useIsMounted` - Mount state check
+- ✅ `useDesignTokens` - Design token access
 
-22. **useTokenTracker** - Token usage tracking
-    - Location: `packages/react/src/hooks/use-token-tracker.tsx`
+#### Error Handling
+- ✅ `useErrorRecovery` - Retry with exponential backoff
+- ✅ `useRetry` - Manual retry logic
 
-### Utility Hooks
-23. **useAutoScroll** - Auto-scroll to bottom
-24. **useClipboard** - Clipboard operations
-25. **useDebounce** - Debounce values
-26. **useThrottle** - Throttle values
-27. **useLocalStorage** - Local storage persistence
-28. **useMediaQuery** - Responsive breakpoints
-29. **useMounted** - Component mount state
-30. **usePrevious** - Previous value tracking
-31. **useToggle** - Boolean toggle state
-32. **useWindowSize** - Window dimensions
-33. **useErrorRecovery** - Error recovery logic
-34. **useMessageOperations** - Message CRUD operations
-35. **useVoiceInput** - Voice input support
-36. **useModelRouter** - Model routing logic
-37. **useContextMonitor** - Context window monitoring
-38. **usePerformance** - Performance metrics
-39. **useBatteryAware** - Battery-aware features
-40. **useDeferredSearch** - Deferred search
-41. **useSmartCache** - Smart caching
-42. **useSmartThrottle** - Smart throttling
-43. **useRealisticTyping** - Realistic typing animation
-44. **useOptimisticMessage** - Optimistic updates
-45. **useCharacterCounter** - Character counting
-46. **useSubmitButtonState** - Submit button state
-47. **useMobileKeyboard** - Mobile keyboard handling
-48. **useDesignTokens** - Design token access
+#### Performance
+- ✅ `usePerformance` - Performance monitoring
+- ✅ `useRenderPerformance` - Render time tracking
+- ✅ `useWhyDidYouUpdate` - Debug re-renders
+- ✅ `useMountTime` - Mount time tracking
+- ✅ `useSlowRenderDetection` - Slow render detection
+- ✅ `useLazyLoad` - Lazy loading
+- ✅ `useDebouncePerformance` - Performance-optimized debounce
+- ✅ `useThrottlePerformance` - Performance-optimized throttle
+- ✅ `useMemoryLeakDetector` - Memory leak detection
 
-### Feature Components (50+ components)
-- **Analytics:** `AnalyticsDashboard`, `PerformanceDashboard`, `UsageDashboard`
-- **Enterprise:** `AuthTenantDashboard`, `SSOConfigWizard`, `SeatInviteDialog`, `AuditLogViewer`
-- **AI Features:** `AgentRunFeed`, `ToolInvocationCard`, `ClarityToolResult`, `PromptLibrary`
-- **UI Components:** `ModelSelector`, `ThemeSwitcher`, `SettingsPanel`, `ExportDialog`
-- **Message Features:** `MessageSearch`, `AdvancedMessageSearch`, `MessageThreadView`
-- **Integrations:** `DocumentIntegration`, `CalendarIntegration`, `EmailIntegration`
-- **Mobile:** `MobileChatWindow`, `MobileOptimizedMessage`
-- **Error Handling:** `ErrorBoundary`, `RetryButton`, `ErrorMessage`, `NetworkStatus`
-- **Token Management:** `TokenCounter`, `TokenOptimizationPanel`, `TokenOptimizationDashboard`
-- **And many more...**
+#### Security
+- ✅ `useSecurity` - Security monitoring
+- ✅ `useSecurityMonitor` - Security event monitoring
+- ✅ `useSecureInput` - Secure input handling
+- ✅ `useSecureChat` - Secure chat configuration
+- ✅ `useSecurityEvents` - Security event tracking
+- ✅ `useSecurityStats` - Security statistics
+- ✅ `useRateLimitStatus` - Rate limit status
 
-### Utilities & Infrastructure
-- **Tokenization:** Accurate token counting, model pricing
-- **Prompt Caching:** KV cache optimization
-- **Prompt Compression:** LLMLingua compression
-- **TOON:** Token-Oriented Object Notation
-- **Vector Stores:** Pinecone, Qdrant, Weaviate, Chroma
-- **Embeddings:** OpenAI, Cohere, Local
-- **Document Loaders:** Text splitting, chunking
-- **RAG Pipeline:** Retrieval-augmented generation
-- **Agents:** Tool calling, ReAct pattern
-- **Security:** Security manager, rate limiting, RBAC
-- **Multi-tenancy:** Tenant management
-- **Observability:** Tracing, analytics
-- **Webhooks:** Webhook management
+#### Context & Memory
+- ✅ `useMemoryContext` - Memory provider context
+- ✅ `useMemoryStore` - Memory storage
+- ✅ `useContextMonitor` - Context window monitoring
 
----
+#### RAG & Agents
+- ✅ `useRAGPipeline` - RAG workflow management
+- ✅ `useAgent` - Agent management
+- ✅ `useAgentOrchestration` - Agent orchestration
 
-## Docs Audit
-
-### What Already Exists
-
-#### Getting Started & Guides
-- ✅ `/docs/getting-started.md` - Basic quick start
-- ✅ `/docs/getting-started-clarity-chat.md` - Clarity-specific guide
-- ✅ `/docs/choose-your-path.md` - Guided learning paths
-- ✅ `/docs/best-practices.md` - Production patterns
-- ✅ `/docs/cookbook.md` - Common recipes
-- ✅ `/docs/architecture.md` - System architecture overview
-
-#### Migration Guides
-- ✅ `/docs/migrating-from-vercel.md` - Vercel AI SDK migration
-- ✅ `/docs/clarity-vs-vercel-ai-sdk-ui.md` - Feature comparison
-- ✅ `/docs/migration/v1-to-v2.md` - Version migration
-
-#### Reference Documentation
-- ✅ `/apps/docs/app/reference/api/components/page.tsx` - Component API overview
-- ✅ `/apps/docs/app/reference/api/hooks/page.tsx` - Hooks API overview
-- ✅ `/apps/docs/app/reference/components/` - Individual component pages (partial)
-- ✅ `/apps/docs/app/reference/hooks/` - Individual hook pages (partial)
-
-#### Cookbook & Recipes
-- ✅ `/docs/cookbook/` - Recipe examples (agents, custom-tools, multi-tenant, rag-chat)
-- ✅ `/apps/docs/app/cookbook/` - Interactive recipe examples
-
-#### Memory Documentation
-- ✅ `/docs/clarity-memory/` - Comprehensive memory system docs
-
-### What Is Missing or Incomplete
-
-#### Component Documentation Gaps
-1. **Missing Component Pages:**
-   - `ClarityChatPresets` - No dedicated page
-   - `AdvancedChatInput` - No detailed docs
-   - `StreamingMessage` - Basic coverage only
-   - `Message` component variants - Incomplete
-   - `ToolInvocationCard` - Missing usage examples
-   - `ClarityToolResult` - Missing registry setup guide
-   - `AgentRunFeed` - No documentation
-   - `PromptLibrary` - Missing integration guide
-   - `ModelSelector` - No customization guide
-   - `ThemeSwitcher` - Missing theme system guide
-   - `SettingsPanel` - No configuration examples
-   - `ExportDialog` / `BatchExportDialog` - Missing usage
-   - `MessageSearch` / `AdvancedMessageSearch` - No search patterns
-   - `ConversationSharing` - Missing sharing patterns
-   - `CollaborativeEditor` - No collaboration guide
-   - `DocumentIntegration` - Missing integration examples
-   - `CalendarIntegration` - Missing integration examples
-   - `EmailIntegration` - Missing integration examples
-   - `MobileChatWindow` - Missing mobile optimization guide
-   - `OfflineChatSync` - Missing offline patterns
-   - `ErrorBoundary` / `ErrorBoundaryEnhanced` - Missing error handling patterns
-   - `TokenOptimizationPanel` / `TokenOptimizationDashboard` - Missing optimization guide
-   - `HistoryManager` - Missing history management guide
-   - `OutputPreferenceSelector` - Missing output preference guide
-   - `StructuredInputBuilder` - Missing structured input guide
-   - `ContextVisualizer` - Missing context visualization guide
-   - `ConversationBranchVisualizer` - Missing branching guide
-   - `MemoryInspector` - Missing memory debugging guide
-   - `SafetyStatusCard` - Missing safety guide
-   - `ResponseQualityMeter` - Missing quality metrics guide
-   - `MultiModalPreview` - Missing multimodal guide
-   - `SessionSummaryCard` - Missing session management guide
-   - `WorkflowSuggestionList` - Missing workflow guide
-   - `PersonaPanel` - Missing persona guide
-   - `ConversationTimeline` - Missing timeline guide
-   - `AIOps Components` - Missing operations guide
-   - `Enterprise Components` - Missing enterprise setup guide
-
-2. **Incomplete Component Documentation:**
-   - `ChatWindow` - Missing advanced props documentation
-   - `ChatInput` - Missing customization examples
-   - `MessageList` - Missing virtualization details
-   - `VirtualizedMessageList` - Missing performance notes
-   - Most components lack:
-     - Complete prop tables
-     - Accessibility notes
-     - Performance considerations
-     - Common patterns
-     - Troubleshooting
-
-#### Hook Documentation Gaps
-1. **Missing Hook Pages:**
-   - `useClarityChat` - Has basic page, needs advanced examples
-   - `useClarityObject` - Missing structured output guide
-   - `useChatHandlers` - Missing handler patterns
-   - `useClarityChatWithTools` - Missing tool integration guide
-   - `useTokenOptimizationEnhanced` - Missing optimization strategies
-   - `useTokenBudgetMonitor` - Missing budget management guide
-   - `useContextMonitor` - Missing context monitoring guide
-   - `useModelRouter` - Missing routing strategies
-   - `useRAGPipeline` - Missing RAG setup guide
-   - `useAgent` - Missing agent patterns
-   - `useAssistant` - Missing assistant patterns
-   - `useStreamingWebSocket` - Missing WebSocket setup
-   - `useStreamableUI` - Missing UI state patterns
-   - `useMessageOperations` - Missing CRUD patterns
-   - `useMessageHistory` - Missing history patterns
-   - `useVoiceInput` - Missing voice integration
-   - `useSmartCache` - Missing caching strategies
-   - `useSecurity` - Missing security patterns
-   - `usePerformance` - Missing performance monitoring
-   - `useBatteryAware` - Missing battery optimization
-   - `useDeferredSearch` - Missing search patterns
-   - `useRealisticTyping` - Missing animation guide
-   - `useOptimisticMessage` - Missing optimistic patterns
-   - `useCharacterCounter` - Missing validation patterns
-   - `useSubmitButtonState` - Missing form patterns
-   - `useMobileKeyboard` - Missing mobile patterns
-   - `useDesignTokens` - Missing theming guide
-
-2. **Incomplete Hook Documentation:**
-   - Most hooks lack:
-     - Complete parameter tables
-     - Return value documentation
-     - Usage examples
-     - Common patterns
-     - Error handling
-     - Performance notes
-
-#### Conceptual Documentation Gaps
-1. **Architecture & Concepts:**
-   - Memory strategies deep dive (sliding-window, semantic-chunks, vector-store)
-   - Transport protocols comparison (SSE vs WebSocket)
-   - Token optimization strategies comprehensive guide
-   - Prompt caching and compression guide
-   - RAG pipeline architecture
-   - Agent system architecture
-   - Tool UI registry system
-   - Theme system deep dive
-   - Security architecture
-   - Multi-tenancy architecture
-   - Performance optimization guide
-   - Accessibility guide (WCAG compliance)
-
-2. **Patterns & Recipes:**
-   - Authentication patterns
-   - Authorization patterns (RBAC)
-   - Rate limiting patterns
-   - Error recovery patterns
-   - Offline-first patterns
-   - Real-time collaboration patterns
-   - Multi-user chat patterns
-   - Streaming patterns (SSE vs WebSocket)
-   - Tool integration patterns
-   - Agent orchestration patterns
-   - RAG implementation patterns
-   - Custom theme patterns
-   - Mobile optimization patterns
-   - Performance optimization patterns
-   - Testing patterns
-   - Deployment patterns (Vercel, AWS, Docker)
-
-3. **Integration Guides:**
-   - Next.js App Router integration
-   - Next.js Pages Router integration
-   - Remix integration
-   - Vite integration
-   - Express.js backend integration
-   - FastAPI backend integration
-   - Vector store setup (Pinecone, Qdrant, Weaviate, Chroma)
-   - Embedding provider setup (OpenAI, Cohere, Local)
-   - Authentication provider integration
-   - Analytics integration
-   - Error tracking integration
-
-#### Examples & Demos Gaps
-1. **Missing Interactive Examples:**
-   - Complete feature showcase
-   - Advanced memory usage
-   - Tool integration showcase
-   - Agent orchestration demo
-   - RAG implementation demo
-   - Custom theme builder
-   - Mobile optimization demo
-   - Offline sync demo
-   - Real-time collaboration demo
-   - Enterprise features demo
-
-2. **Missing Code Examples:**
-   - Copy-paste ready snippets for all components
-   - Complete working examples for all hooks
-   - Integration examples for all platforms
-   - Pattern examples for all use cases
-
-#### Accessibility Documentation
-- Missing accessibility notes for most components
-- Missing WCAG compliance guide
-- Missing keyboard navigation guide
-- Missing screen reader support guide
-- Missing focus management guide
-- Missing ARIA attributes documentation
-
-#### Troubleshooting Documentation
-- Missing common issues guide
-- Missing error message reference
-- Missing performance troubleshooting
-- Missing integration troubleshooting
-- Missing debugging guide
+#### Prompt Optimization
+- ✅ `usePromptOptimizer` - Prompt optimization
+- ✅ `usePromptInspector` - Prompt inspection
+- ✅ `usePromptDebugger` - Prompt debugging
+- ✅ `useDynamicModelRouting` - Dynamic model routing
+- ✅ `useQuickOptimize` - Quick optimization
+- ✅ `useTokenBudget` - Token budget management
+- ✅ `useOptimizedChatContext` - Optimized context
+- ✅ `usePromptRecipe` - Prompt recipe system
 
 ---
 
-## Documentation Gaps & Opportunities
+## 2. Documentation Site Evaluation
 
-### High Priority (Core Developer Experience)
+### Existing Documentation Structure
 
-#### 1. Component Documentation
-**What:** Complete documentation for all 50+ components  
-**Who:** All developers using the library  
-**Form:** Individual component pages with:
-- Complete prop tables
-- Usage examples (copy-paste ready)
-- Variants and states
-- Accessibility notes
+#### Reference Documentation (`/reference`)
+- ✅ Components: ~80 component pages exist
+- ✅ Hooks: ~25 hook pages exist
+- ✅ API: Types, utilities, primitives pages
+- ✅ Templates: Pre-built template pages
+
+#### Guide Documentation (`/guides`)
+- ✅ Streaming
+- ✅ RAG
+- ✅ Agents
+- ✅ Error Handling
+- ✅ Accessibility
+- ✅ Theming
+- ✅ Token Optimization
+- ✅ Memory
+- ✅ Performance
+- ✅ Security
+- ✅ Installation
+- ✅ Quick Start
+- ✅ Best Practices
+- ✅ Customization
+- ✅ Integration
+- ✅ Testing
+- ✅ Production Deployment
+- ✅ Multi-tenancy
+- ✅ RBAC
+- ✅ Webhooks
+- ✅ Plugins
+- ✅ Observability
+- ✅ Safety
+- ✅ Audit Logging
+- ✅ Usage Quotas
+- ✅ Model Adapters
+- ✅ File Upload
+- ✅ Message Operations
+- ✅ State Management
+- ✅ Mobile
+- ✅ Prompts
+- ✅ Reranking
+
+#### Learn Documentation (`/learn`)
+- ✅ Quick Start
+- ✅ Installation
+- ✅ Architecture
+- ✅ Concepts (Components, Hooks, Theming, Animations)
+- ✅ Guides (Accessibility, Performance, Styling, Testing, TypeScript)
+- ✅ Deployment (AWS, Docker, Vercel)
+- ✅ Migration (from Vercel AI SDK)
+- ✅ Tutorials (Building First Chatbot, Adding RAG)
+- ✅ Troubleshooting
+
+#### Examples (`/examples`)
+- ✅ Multiple example pages with live demos
+
+### Documentation Gaps Identified
+
+#### Missing Component Documentation
+1. ❌ `ClarityChat` - Top-level component (no dedicated page)
+2. ❌ `ClarityChatPresets` - Presets documentation
+3. ❌ `AdvancedChatInput` - Advanced features not fully documented
+4. ❌ `MessageOptimized` - Performance optimizations not explained
+5. ❌ `SemanticMessageSearch` - Semantic search features
+6. ❌ `PromptSuggestionsEnhanced` - ML-based suggestions
+7. ❌ `ConversationSummarizer` - AI summarization features
+8. ❌ `BatteryIndicator` - Battery-aware features
+9. ❌ `PerformanceAnalyticsDashboard` - Enhanced performance dashboard
+10. ❌ `ABTestingDashboard` - A/B testing features
+11. ❌ `ConversationAnalyticsDashboard` - Conversation analytics
+12. ❌ `MessageThreadView` - Threading features
+13. ❌ `MentionInput` - @mention system
+14. ❌ `ConversationSharing` - Sharing features
+15. ❌ `CollaborativeEditor` - Real-time collaboration
+16. ❌ `DocumentIntegration` - Document platform integration
+17. ❌ `CalendarIntegration` - Calendar features
+18. ❌ `EmailIntegration` - Email features
+19. ❌ `UserInteractionAnalytics` - Interaction tracking
+20. ❌ `MobileOptimizedMessage` - Mobile optimizations
+21. ❌ `OfflineChatSync` - Offline sync features
+22. ❌ `HistoryManager` - History management
+23. ❌ `OutputPreferenceSelector` - Output preferences
+24. ❌ `StructuredInputBuilder` - Structured input
+25. ❌ `EnhancedMarkdownRenderer` - Enhanced markdown features
+26. ❌ `StreamingTextRenderer` - Streaming text features
+27. ❌ `Enterprise components` - SeatInviteDialog, SSOConfigWizard, etc.
+
+#### Missing Hook Documentation
+1. ❌ `useClarityChat` - Primary hook (no dedicated page)
+2. ❌ `useClarityChatWithTools` - Tool calling features
+3. ❌ `useClarityObject` - Structured output
+4. ❌ `useStreamingChat` - Streaming chat state
+5. ❌ `useTokenOptimizationEnhanced` - Enhanced optimization (2025)
+6. ❌ `useTokenBudgetMonitor` - Budget monitoring
+7. ❌ `useSmartThrottle` - Smart throttling
+8. ❌ `useSmartCache` - Semantic caching
+9. ❌ `usePromptSuggestionsEnhanced` - ML suggestions hook
+10. ❌ `useBatteryAware` - Battery optimizations
+11. ❌ `usePerformance` - Performance monitoring hooks
+12. ❌ `useSecurity` - Security hooks (multiple)
+13. ❌ `useMemoryStore` - Memory storage
+14. ❌ `useContextMonitor` - Context monitoring
+15. ❌ `useRAGPipeline` - RAG pipeline hook
+16. ❌ `useAgent` - Agent management
+17. ❌ `usePromptOptimizer` - Prompt optimization hooks
+18. ❌ `useCharacterCounter` - Character counting
+19. ❌ `useSubmitButtonState` - Submit button state
+20. ❌ `useDesignTokens` - Design tokens
+
+#### Missing Conceptual Documentation
+1. ❌ Architecture deep dive - Layered architecture explanation
+2. ❌ Component composition patterns - How to compose components
+3. ❌ State management patterns - Best practices
+4. ❌ Performance optimization guide - Component-level optimizations
+5. ❌ Accessibility implementation - How AAA compliance is achieved
+6. ❌ Theme customization guide - Creating custom themes
+7. ❌ Animation system guide - Using animations
+8. ❌ Error handling patterns - Error recovery strategies
+9. ❌ Streaming patterns - When to use SSE vs WebSocket
+10. ❌ Memory management - Memory strategies explained
+11. ❌ Token optimization strategies - Comprehensive guide
+12. ❌ Security best practices - OWASP LLM Top 10 coverage
+13. ❌ Multi-tenancy patterns - Tenant isolation
+14. ❌ Plugin architecture - Building plugins
+15. ❌ Tool calling patterns - Function calling
+16. ❌ Structured output patterns - Using useClarityObject
+
+#### Missing Recipe Documentation
+1. ❌ Authentication integration - Auth patterns
+2. ❌ Real-time collaboration - Multi-user chat
+3. ❌ Offline-first chat - Offline sync patterns
+4. ❌ Voice-first interface - Voice input patterns
+5. ❌ Mobile-first design - Mobile optimization
+6. ❌ Analytics integration - Custom analytics
+7. ❌ Custom model adapters - Building adapters
+8. ❌ Custom vector stores - Vector store integration
+9. ❌ Custom tools - Building custom tools
+10. ❌ Custom themes - Theme creation
+11. ❌ Custom animations - Animation customization
+12. ❌ Custom error handling - Error recovery patterns
+13. ❌ Custom streaming - Custom streaming implementations
+14. ❌ Custom memory strategies - Memory patterns
+15. ❌ Custom security rules - Security customization
+
+#### Missing Examples & Demos
+1. ❌ Interactive component playground - All components
+2. ❌ Code examples for all hooks - Copy-paste ready
+3. ❌ Integration examples - Common integrations
+4. ❌ Performance examples - Optimization examples
+5. ❌ Accessibility examples - A11y patterns
+6. ❌ Theme examples - All 11 themes showcased
+7. ❌ Animation examples - Animation library
+8. ❌ Error handling examples - Error patterns
+9. ❌ Streaming examples - SSE and WebSocket
+10. ❌ Memory examples - Memory strategies
+11. ❌ Security examples - Security features
+12. ❌ Enterprise examples - Enterprise features
+
+#### Missing Quick Reference
+1. ❌ Component props cheat sheet
+2. ❌ Hook API cheat sheet
+3. ❌ Common patterns cheat sheet
+4. ❌ Troubleshooting guide - Common issues
+5. ❌ Migration guide - Version migrations
+6. ❌ FAQ - Frequently asked questions
+
+---
+
+## 3. Documentation Gaps & Opportunities
+
+### High Priority Gaps
+
+#### 1. Top-Level API Documentation
+**Problem:** `useClarityChat` and `ClarityChat` are the recommended entry points but lack comprehensive documentation.
+
+**Solution:**
+- Create dedicated pages for `useClarityChat` with complete API reference
+- Create `ClarityChat` component page with usage examples
+- Document `ClarityChatPresets` with all preset configurations
+- Add migration guide from `useChat` to `useClarityChat`
+
+**Target Audience:** New users, developers migrating from other libraries
+
+#### 2. Enhanced Features (2025) Documentation
+**Problem:** New 2025 features (token optimization enhanced, security, enterprise features) are mentioned but not fully documented.
+
+**Solution:**
+- Complete documentation for `useTokenOptimizationEnhanced`
+- Security hooks documentation (`useSecurity`, `useSecureChat`, etc.)
+- Enterprise features guide
+- Interactive demos for new features
+
+**Target Audience:** All users, especially enterprise customers
+
+#### 3. Component Composition Patterns
+**Problem:** Developers don't know how to compose components effectively.
+
+**Solution:**
+- Guide on component composition
+- Patterns for common use cases
+- Best practices for customization
+- Examples of composed solutions
+
+**Target Audience:** Intermediate to advanced users
+
+#### 4. Hook Usage Patterns
+**Problem:** Many hooks exist but usage patterns aren't clear.
+
+**Solution:**
+- Hook usage guide
+- Common hook combinations
+- Hook composition patterns
 - Performance considerations
-- Common patterns
-- Troubleshooting
 
-**Impact:** High - Core developer experience
+**Target Audience:** All developers
 
-#### 2. Hook Documentation
-**What:** Complete documentation for all 50+ hooks  
-**Who:** All developers using the library  
-**Form:** Individual hook pages with:
-- Complete parameter tables
-- Return value documentation
-- Usage examples
-- Common patterns
-- Error handling
-- Performance notes
+#### 5. Interactive Examples
+**Problem:** Static code examples don't show components in action.
 
-**Impact:** High - Core developer experience
+**Solution:**
+- Interactive playground for all components
+- Live code editors with examples
+- Component showcase with all variants
+- Hook examples with interactive demos
 
-#### 3. Getting Started Improvements
-**What:** Enhanced quick start with interactive demos  
-**Who:** New developers  
-**Form:** 
-- Interactive playground
-- Step-by-step tutorial
-- Video walkthrough (optional)
-- Multiple entry points (simple → advanced)
+**Target Audience:** All users
 
-**Impact:** High - Onboarding experience
+### Medium Priority Gaps
 
-#### 4. Architecture Deep Dives
-**What:** Comprehensive architecture documentation  
-**Who:** Advanced developers, maintainers  
-**Form:** 
-- Memory system deep dive
-- Transport protocol comparison
-- Token optimization strategies
-- RAG pipeline architecture
-- Agent system architecture
-- Theme system architecture
+#### 6. Advanced Features Documentation
+**Problem:** Advanced features (collaboration, integrations, mobile) are under-documented.
 
-**Impact:** Medium-High - Advanced usage
+**Solution:**
+- Collaboration features guide
+- Integration patterns (Calendar, Email, Documents)
+- Mobile optimization guide
+- Offline sync patterns
 
-### Medium Priority (Feature Coverage)
+**Target Audience:** Advanced users, enterprise customers
 
-#### 5. Pattern & Recipe Library
-**What:** Comprehensive pattern library  
-**Who:** All developers  
-**Form:** 
-- Authentication patterns
-- Authorization patterns
-- Error recovery patterns
-- Offline-first patterns
-- Real-time collaboration patterns
-- Streaming patterns
-- Tool integration patterns
-- Agent orchestration patterns
-- RAG implementation patterns
+#### 7. Performance Optimization Guide
+**Problem:** Performance features exist but optimization strategies aren't documented.
 
-**Impact:** Medium - Feature adoption
+**Solution:**
+- Performance optimization guide
+- Component-level optimizations
+- Hook performance considerations
+- Bundle size optimization
 
-#### 6. Integration Guides
-**What:** Platform-specific integration guides  
-**Who:** Developers integrating with specific platforms  
-**Form:** 
-- Next.js App Router
-- Next.js Pages Router
-- Remix
-- Vite
-- Express.js
-- FastAPI
-- Vector stores
-- Embedding providers
+**Target Audience:** Performance-conscious developers
 
-**Impact:** Medium - Platform adoption
+#### 8. Accessibility Implementation Guide
+**Problem:** Library is WCAG AAA compliant but implementation details aren't documented.
 
-#### 7. Accessibility Guide
-**What:** Comprehensive accessibility documentation  
-**Who:** All developers  
-**Form:** 
-- WCAG compliance guide
+**Solution:**
+- Accessibility implementation guide
+- Screen reader patterns
 - Keyboard navigation guide
-- Screen reader support
-- Focus management
-- ARIA attributes reference
+- Focus management patterns
 
-**Impact:** Medium - Accessibility compliance
+**Target Audience:** Accessibility-focused developers
 
-### Lower Priority (Polish & Advanced)
+### Low Priority Gaps
 
-#### 8. Advanced Examples
-**What:** Complex, real-world examples  
-**Who:** Advanced developers  
-**Form:** 
-- Complete application examples
-- Enterprise feature showcases
-- Performance optimization examples
-- Custom theme examples
+#### 9. Theme Customization Deep Dive
+**Problem:** Theme system exists but customization guide is shallow.
 
-**Impact:** Low-Medium - Advanced usage
+**Solution:**
+- Complete theme customization guide
+- Creating custom themes
+- Theme composition patterns
+- Animation customization
 
-#### 9. Troubleshooting Guide
-**What:** Comprehensive troubleshooting documentation  
-**Who:** All developers  
-**Form:** 
-- Common issues
-- Error message reference
-- Performance troubleshooting
-- Integration troubleshooting
-- Debugging guide
+**Target Audience:** Designers, theme customizers
 
-**Impact:** Low-Medium - Developer support
+#### 10. Plugin Architecture Documentation
+**Problem:** Plugin system exists but documentation is minimal.
 
-#### 10. Testing Guide
-**What:** Testing patterns and examples  
-**Who:** Developers writing tests  
-**Form:** 
-- Component testing
-- Hook testing
-- Integration testing
-- E2E testing
-- Mock patterns
+**Solution:**
+- Plugin architecture guide
+- Building custom plugins
+- Plugin examples
+- Plugin best practices
 
-**Impact:** Low - Testing support
+**Target Audience:** Advanced users, plugin developers
 
 ---
 
-## Detailed Implementation Plan
+## 4. Detailed Implementation Plan
 
-### Phase 1: Core Component Documentation (High Priority)
+### Phase 1: Top-Level APIs & Core Components (High Priority)
 
-#### Task 1.1: ClarityChat Component Page
-- [x] **Title:** ClarityChat Component
-- [x] **Location:** `/apps/docs/app/reference/components/clarity-chat/page.tsx`
-- [x] **Files to Create/Update:**
-  - Created: `/apps/docs/app/reference/components/clarity-chat/page.tsx`
-- [x] **Content Outline:**
-  - Purpose: Drop-in chat component
-  - Props table (complete)
-  - Basic usage example
-  - With memory example
-  - With streaming example
-  - Customization examples
-  - Accessibility notes
-  - Performance considerations
+#### Task 1.1: useClarityChat Hook Documentation
+- [ ] **File:** `apps/docs/app/reference/hooks/use-clarity-chat/page.tsx`
+- [ ] **Content:**
+  - Complete API reference with all props
+  - Usage examples (basic, with memory, with streaming)
+  - Migration guide from `useChat`
+  - Best practices
   - Common patterns
-- [x] **Cross-links:**
-  - Link to `useClarityChat` hook
-  - Link to `ChatWindow` component
-  - Link to memory guide
-  - Link to streaming guide
+  - Performance considerations
+  - Error handling
+- [ ] **Cross-links:** ChatWindow, useChatEnhanced, MemoryProvider
 
-#### Task 1.2: ClarityChatPresets Component Page
-- [x] **Title:** ClarityChatPresets - Pre-configured Variants
-- [x] **Location:** `/apps/docs/app/reference/components/clarity-chat-presets/page.tsx`
-- [x] **Files to Create/Update:**
-  - Created: `/apps/docs/app/reference/components/clarity-chat-presets/page.tsx`
-- [x] **Content Outline:**
-  - Purpose: Pre-configured chat variants
-  - Available presets (Simple, WithMemory, Enterprise, Streaming)
-  - Usage examples for each preset
+#### Task 1.2: ClarityChat Component Documentation
+- [ ] **File:** `apps/docs/app/reference/components/clarity-chat/page.tsx`
+- [ ] **Content:**
+  - Component overview
+  - Props reference
+  - Usage examples (basic, advanced)
+  - Customization guide
+  - Integration patterns
+  - Accessibility notes
+- [ ] **Cross-links:** useClarityChat, ClarityChatPresets
+
+#### Task 1.3: ClarityChatPresets Documentation
+- [ ] **File:** `apps/docs/app/reference/components/clarity-chat-presets/page.tsx`
+- [ ] **Content:**
+  - All preset configurations
   - When to use each preset
-  - Customization options
-- [x] **Cross-links:**
-  - Link to `ClarityChat` component
-  - Link to memory guide
-  - Link to enterprise guide
+  - Customizing presets
+  - Examples for each preset
+- [ ] **Cross-links:** ClarityChat, useClarityChat
 
-#### Task 1.3: ChatWindow Component Enhancement
-- [x] **Title:** ChatWindow - Complete Reference
-- [x] **Location:** `/apps/docs/app/reference/components/chat-window/page.tsx`
-- [x] **Files to Create/Update:**
-  - Updated: `/apps/docs/app/reference/components/chat-window/page.tsx`
-- [x] **Content Outline:**
-  - Complete props table (all 18 props documented)
-  - Advanced usage examples (with header, AI status, message operations)
-  - Custom empty state examples
-  - Integration with useClarityChat hook
-  - Message type documentation (Message[] and CoreMessage[])
-  - Accessibility notes (WCAG 2.1 AA compliance)
-  - Performance optimization tips
-  - Troubleshooting guide
-- [x] **Cross-links:**
-  - Link to `ClarityChat` component
-  - Link to `useClarityChat` hook
-  - Link to `MessageList` component
-  - Link to `ChatInput` component
-  - Link to `Message` component
-
-#### Task 1.4: ChatInput & AdvancedChatInput Pages
-- [x] **Title:** ChatInput Components
-- [x] **Location:** `/apps/docs/app/reference/components/chat-input/page.tsx`
-- [x] **Files to Create/Update:**
-  - Updated: `/apps/docs/app/reference/components/chat-input/page.tsx`
-  - Updated: `/apps/docs/app/reference/components/advanced-chat-input/page.tsx`
-- [x] **Content Outline:**
-  - Complete ChatInput documentation with all props
-  - AdvancedChatInput with file uploads, mentions, commands
-  - File upload integration examples
-  - Autocomplete (@mentions and /commands) examples
-  - Character limit and validation patterns
-  - Keyboard shortcuts documentation
-  - TypeScript types documentation
-  - Complete usage examples
-- [x] **Cross-links:**
-  - Link to `ChatWindow` component
-  - Link to `ClarityChat` component
-  - Link to `useClarityChat` hook
-
-#### Task 1.5: Message Components Documentation
-- [x] **Title:** Message Components
-- [x] **Location:** `/apps/docs/app/reference/components/message/page.tsx`
-- [x] **Files to Create/Update:**
-  - Updated: `/apps/docs/app/reference/components/message/page.tsx`
-  - Updated: `/apps/docs/app/reference/components/message-list/page.tsx`
-  - Updated: `/apps/docs/app/reference/components/virtualized-message-list/page.tsx`
-  - Updated: `/apps/docs/app/reference/components/streaming-message/page.tsx`
-- [x] **Content Outline:**
-  - Complete Message component documentation with all props
-  - MessageList with auto-scroll, grouping, time separators
-  - VirtualizedMessageList for large message lists (1000+)
-  - StreamingMessage with tool calls, citations, thinking steps
-  - Custom message rendering examples
-  - Message actions (copy, feedback, retry, edit, delete)
-  - Performance optimization tips
-  - Complete usage examples
-- [x] **Cross-links:**
-  - Link to streaming hooks
-  - Link to performance guide
-  - Link to ChatWindow component
-
-#### Task 1.6: Tool & Agent Components
-- [x] **Title:** Tool & Agent Components
-- [x] **Location:** `/apps/docs/app/reference/components/tool-invocation-card/page.tsx`
-- [x] **Files to Create/Update:**
-  - Updated: `/apps/docs/app/reference/components/tool-invocation-card/page.tsx`
-  - Created: `/apps/docs/app/reference/components/clarity-tool-result/page.tsx`
-  - Updated: `/apps/docs/app/reference/components/agent-run-feed/page.tsx`
-- [x] **Content Outline:**
-  - Complete ToolInvocationCard documentation with approval workflow
-  - ClarityToolResult with tool UI registry pattern
-  - AgentRunFeed for multi-step agent execution
-  - Custom tool result components examples
-  - Tool integration patterns
-  - Error handling and fallbacks
-  - Complete usage examples
-- [x] **Cross-links:**
-  - Link to streaming hooks
-  - Link to useClarityChatWithTools hook
-  - Link to StreamingMessage component
-
-### Phase 2: Core Hook Documentation (High Priority)
-
-#### Task 2.1: useClarityChat Hook Enhancement
-- [x] **Title:** useClarityChat - Complete Reference
-- [x] **Location:** `/apps/docs/app/reference/hooks/use-clarity-chat/page.tsx`
-- [x] **Files to Create/Update:**
-  - Created: `/apps/docs/app/reference/hooks/use-clarity-chat/page.tsx`
-- [x] **Content Outline:**
-  - Complete parameters table
-  - Complete return values table
-  - Basic usage
-  - With memory
-  - With streaming
-  - With optimization
-  - Error handling
-  - Advanced patterns
-  - Performance notes
-- [x] **Cross-links:**
-  - Link to `ClarityChat` component
-  - Link to memory guide
-  - Link to streaming guide
-
-#### Task 2.2: useClarityObject Hook Page
-- [x] **Title:** useClarityObject - Structured Output
-- [x] **Location:** `/apps/docs/app/reference/hooks/use-clarity-object/page.tsx`
-- [x] **Files to Create/Update:**
-  - Created: `/apps/docs/app/reference/hooks/use-clarity-object/page.tsx`
-- [x] **Content Outline:**
-  - Purpose: Type-safe structured output
-  - Parameters table
-  - Return values
-  - Basic usage example
-  - Advanced examples
-  - Type safety patterns
-  - Error handling
-- [x] **Cross-links:**
-  - Link to structured output guide
-  - Link to TypeScript guide
-
-#### Task 2.3: Streaming Hooks Documentation
-- [ ] **Title:** Streaming Hooks
-- [ ] **Location:** `/apps/docs/app/reference/hooks/streaming/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/reference/hooks/streaming/page.tsx`
-  - Update: `/apps/docs/app/reference/hooks/use-streaming-sse/page.tsx`
-  - Update: `/apps/docs/app/reference/hooks/use-streaming-websocket/page.tsx`
-  - Create: `/apps/docs/app/reference/hooks/use-streamable-ui/page.tsx`
-- [ ] **Content Outline:**
-  - Streaming overview
-  - SSE vs WebSocket comparison
-  - useStreamingSSE usage
-  - useStreamingWebSocket usage
-  - useStreamableUI patterns
-  - Error handling
-  - Performance considerations
-- [ ] **Cross-links:**
-  - Link to streaming guide
-  - Link to transport protocol guide
-
-#### Task 2.4: Token Optimization Hooks
-- [ ] **Title:** Token Optimization Hooks
-- [ ] **Location:** `/apps/docs/app/reference/hooks/token-optimization/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/reference/hooks/token-optimization/page.tsx`
-  - Update: `/apps/docs/app/reference/hooks/use-token-optimization/page.tsx`
-  - Create: `/apps/docs/app/reference/hooks/use-token-optimization-enhanced/page.tsx`
-  - Create: `/apps/docs/app/reference/hooks/use-token-budget-monitor/page.tsx`
-- [ ] **Content Outline:**
-  - Token optimization overview
-  - useTokenOptimization usage
-  - useTokenOptimizationEnhanced advanced features
-  - useTokenBudgetMonitor budget management
+#### Task 1.4: Enhanced Token Optimization Documentation
+- [ ] **File:** `apps/docs/app/reference/hooks/use-token-optimization-enhanced/page.tsx`
+- [ ] **Content:**
+  - Complete API reference
+  - Usage examples
   - Optimization strategies
-  - Cost calculation
-- [ ] **Cross-links:**
-  - Link to token optimization guide
-  - Link to cost calculation guide
-
-### Phase 3: Conceptual Guides (Medium-High Priority)
-
-#### Task 3.1: Memory System Deep Dive
-- [ ] **Title:** Memory System - Complete Guide
-- [ ] **Location:** `/apps/docs/app/guides/memory/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/memory/page.tsx`
-  - Create: `/apps/docs/app/guides/memory/strategies/page.tsx`
-  - Create: `/apps/docs/app/guides/memory/vector-store/page.tsx`
-- [ ] **Content Outline:**
-  - Memory system overview
-  - Strategy comparison (sliding-window, semantic-chunks, vector-store)
-  - When to use each strategy
-  - Vector store setup
-  - Performance considerations
+  - Cost savings examples
   - Best practices
-- [ ] **Cross-links:**
-  - Link to `MemoryProvider` component
-  - Link to `useClarityChat` hook
-  - Link to vector store integration guides
+- [ ] **Cross-links:** Token optimization guide, useTokenOptimization
 
-#### Task 3.2: Streaming & Transport Guide
-- [ ] **Title:** Streaming & Transport Protocols
-- [ ] **Location:** `/apps/docs/app/guides/streaming/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/streaming/page.tsx`
-  - Create: `/apps/docs/app/guides/streaming/sse/page.tsx`
-  - Create: `/apps/docs/app/guides/streaming/websocket/page.tsx`
-- [ ] **Content Outline:**
-  - Streaming overview
-  - SSE vs WebSocket comparison
-  - When to use each
-  - Implementation examples
-  - Error handling
-  - Performance considerations
-- [ ] **Cross-links:**
-  - Link to streaming hooks
-  - Link to `StreamingMessage` component
+### Phase 2: Enhanced Features (2025) Documentation
 
-#### Task 3.3: Token Optimization Guide
-- [ ] **Title:** Token Optimization - Complete Guide
-- [ ] **Location:** `/apps/docs/app/guides/token-optimization/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/token-optimization/page.tsx`
-  - Create: `/apps/docs/app/guides/token-optimization/strategies/page.tsx`
-  - Create: `/apps/docs/app/guides/token-optimization/cost-calculation/page.tsx`
-- [ ] **Content Outline:**
-  - Token optimization overview
-  - Strategies (compression, caching, TOON)
-  - Cost calculation
+#### Task 2.1: Security Hooks Documentation
+- [ ] **File:** `apps/docs/app/reference/hooks/use-security/page.tsx`
+- [ ] **Content:**
+  - All security hooks (useSecurity, useSecureChat, etc.)
+  - Security configuration
+  - OWASP LLM Top 10 coverage
+  - Usage examples
   - Best practices
-  - Performance impact
-- [ ] **Cross-links:**
-  - Link to token optimization hooks
-  - Link to token components
+- [ ] **Cross-links:** Security guide, useSecureChat
 
-#### Task 3.4: Tool Integration Guide
-- [ ] **Title:** Tool Integration Guide
-- [ ] **Location:** `/apps/docs/app/guides/tools/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/tools/page.tsx`
-  - Create: `/apps/docs/app/guides/tools/registry/page.tsx`
-  - Create: `/apps/docs/app/guides/tools/custom-tools/page.tsx`
-- [ ] **Content Outline:**
-  - Tool system overview
-  - Tool UI registry setup
-  - Custom tool components
-  - Tool integration patterns
-  - Error handling
+#### Task 2.2: Enterprise Features Guide
+- [ ] **File:** `apps/docs/app/guides/enterprise-features/page.tsx`
+- [ ] **Content:**
+  - Webhook system
+  - Multi-tenancy
+  - RBAC
+  - Audit logging
+  - Usage quotas
+  - Health monitoring
+- [ ] **Cross-links:** Enterprise components, Enterprise hooks
+
+#### Task 2.3: Performance Analytics Dashboard Documentation
+- [ ] **File:** `apps/docs/app/reference/components/performance-analytics-dashboard/page.tsx`
+- [ ] **Content:**
+  - Component overview
+  - Props reference
+  - Usage examples
+  - Metrics explained
+  - Performance optimization
+- [ ] **Cross-links:** Performance guide, usePerformance
+
+### Phase 3: Component Documentation Expansion
+
+#### Task 3.1: Advanced Component Pages
+- [ ] `AdvancedChatInput` - Advanced features
+- [ ] `MessageOptimized` - Performance optimizations
+- [ ] `SemanticMessageSearch` - Semantic search
+- [ ] `PromptSuggestionsEnhanced` - ML suggestions
+- [ ] `ConversationSummarizer` - AI summarization
+- [ ] `BatteryIndicator` - Battery-aware features
+- [ ] `ABTestingDashboard` - A/B testing
+- [ ] `ConversationAnalyticsDashboard` - Analytics
+- [ ] `MessageThreadView` - Threading
+- [ ] `MentionInput` - @mention system
+- [ ] `ConversationSharing` - Sharing
+- [ ] `CollaborativeEditor` - Collaboration
+- [ ] `DocumentIntegration` - Document integration
+- [ ] `CalendarIntegration` - Calendar integration
+- [ ] `EmailIntegration` - Email integration
+- [ ] `UserInteractionAnalytics` - Interaction tracking
+- [ ] `MobileOptimizedMessage` - Mobile optimizations
+- [ ] `OfflineChatSync` - Offline sync
+- [ ] `HistoryManager` - History management
+- [ ] `OutputPreferenceSelector` - Output preferences
+- [ ] `StructuredInputBuilder` - Structured input
+- [ ] `EnhancedMarkdownRenderer` - Enhanced markdown
+- [ ] `StreamingTextRenderer` - Streaming text
+
+#### Task 3.2: Enterprise Component Pages
+- [ ] `SeatInviteDialog` - Team management
+- [ ] `SSOConfigWizard` - SSO configuration
+- [ ] `ApiTokenManager` - API token management
+- [ ] `AuthTenantDashboard` - Tenant auth
+
+### Phase 4: Hook Documentation Expansion
+
+#### Task 4.1: Core Hook Pages
+- [ ] `useClarityChatWithTools` - Tool calling
+- [ ] `useClarityObject` - Structured output
+- [ ] `useStreamingChat` - Streaming state
+- [ ] `useTokenBudgetMonitor` - Budget monitoring
+- [ ] `useSmartThrottle` - Smart throttling
+- [ ] `useSmartCache` - Semantic caching
+- [ ] `useBatteryAware` - Battery optimizations
+- [ ] `usePerformance` - Performance monitoring
+- [ ] `useMemoryStore` - Memory storage
+- [ ] `useContextMonitor` - Context monitoring
+- [ ] `useRAGPipeline` - RAG pipeline
+- [ ] `useAgent` - Agent management
+- [ ] `usePromptOptimizer` - Prompt optimization
+- [ ] `useCharacterCounter` - Character counting
+- [ ] `useSubmitButtonState` - Submit button state
+- [ ] `useDesignTokens` - Design tokens
+
+### Phase 5: Conceptual Documentation
+
+#### Task 5.1: Architecture Deep Dive
+- [ ] **File:** `apps/docs/app/learn/architecture/page.tsx`
+- [ ] **Content:**
+  - Layered architecture explanation
+  - Top-level vs mid-level vs low-level APIs
+  - Component composition patterns
+  - State management patterns
+  - Data flow diagrams
+- [ ] **Cross-links:** Design docs, component pages
+
+#### Task 5.2: Component Composition Guide
+- [ ] **File:** `apps/docs/app/guides/component-composition/page.tsx`
+- [ ] **Content:**
+  - Composition patterns
+  - Common use cases
   - Best practices
-- [ ] **Cross-links:**
-  - Link to `useClarityChatWithTools` hook
-  - Link to tool components
+  - Examples
+- [ ] **Cross-links:** Component pages, examples
 
-#### Task 3.5: Agent System Guide
-- [ ] **Title:** Agent System Guide
-- [ ] **Location:** `/apps/docs/app/guides/agents/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/agents/page.tsx`
-  - Create: `/apps/docs/app/guides/agents/orchestration/page.tsx`
-- [ ] **Content Outline:**
-  - Agent system overview
-  - Agent creation
-  - Tool integration
-  - Orchestration patterns
-  - Error handling
-  - Best practices
-- [ ] **Cross-links:**
-  - Link to `useAgent` hook
-  - Link to `AgentRunFeed` component
+#### Task 5.3: Performance Optimization Guide
+- [ ] **File:** `apps/docs/app/guides/performance-optimization/page.tsx`
+- [ ] **Content:**
+  - Component-level optimizations
+  - Hook performance considerations
+  - Bundle size optimization
+  - Rendering optimization
+  - Memory optimization
+- [ ] **Cross-links:** Performance dashboard, usePerformance
 
-#### Task 3.6: RAG Pipeline Guide
-- [ ] **Title:** RAG Pipeline Guide
-- [ ] **Location:** `/apps/docs/app/guides/rag/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/rag/page.tsx`
-  - Create: `/apps/docs/app/guides/rag/setup/page.tsx`
-  - Create: `/apps/docs/app/guides/rag/vector-stores/page.tsx`
-- [ ] **Content Outline:**
-  - RAG overview
-  - Pipeline setup
-  - Vector store integration
-  - Embedding providers
-  - Document loaders
-  - Retrieval strategies
-  - Best practices
-- [ ] **Cross-links:**
-  - Link to `useRAGPipeline` hook
-  - Link to vector store guides
-  - Link to embedding guides
-
-### Phase 4: Pattern & Recipe Library (Medium Priority)
-
-#### Task 4.1: Authentication & Authorization Patterns
-- [ ] **Title:** Authentication & Authorization Patterns
-- [ ] **Location:** `/apps/docs/app/cookbook/authentication/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/cookbook/authentication/page.tsx`
-  - Create: `/apps/docs/app/cookbook/authorization/page.tsx`
-- [ ] **Content Outline:**
-  - Authentication patterns
-  - Authorization patterns (RBAC)
-  - Integration examples
-  - Security best practices
-- [ ] **Cross-links:**
-  - Link to security guide
-  - Link to enterprise guide
-
-#### Task 4.2: Error Recovery Patterns
-- [ ] **Title:** Error Recovery Patterns
-- [ ] **Location:** `/apps/docs/app/cookbook/error-recovery/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/cookbook/error-recovery/page.tsx`
-- [ ] **Content Outline:**
-  - Error handling patterns
-  - Retry strategies
-  - Error boundaries
-  - User feedback
-  - Best practices
-- [ ] **Cross-links:**
-  - Link to `ErrorBoundary` component
-  - Link to `useErrorRecovery` hook
-
-#### Task 4.3: Offline & Sync Patterns
-- [ ] **Title:** Offline & Sync Patterns
-- [ ] **Location:** `/apps/docs/app/cookbook/offline-sync/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/cookbook/offline-sync/page.tsx`
-- [ ] **Content Outline:**
-  - Offline-first patterns
-  - Sync strategies
-  - Conflict resolution
-  - Best practices
-- [ ] **Cross-links:**
-  - Link to `OfflineChatSync` component
-  - Link to `useOfflineChat` hook
-
-#### Task 4.4: Real-time Collaboration Patterns
-- [ ] **Title:** Real-time Collaboration Patterns
-- [ ] **Location:** `/apps/docs/app/cookbook/collaboration/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/cookbook/collaboration/page.tsx`
-- [ ] **Content Outline:**
-  - Collaboration patterns
-  - Presence indicators
-  - Conflict resolution
-  - Best practices
-- [ ] **Cross-links:**
-  - Link to `CollaborativeEditor` component
-  - Link to `useCollaborativeSession` hook
-
-### Phase 5: Integration Guides (Medium Priority)
-
-#### Task 5.1: Next.js Integration Guides
-- [ ] **Title:** Next.js Integration
-- [ ] **Location:** `/apps/docs/app/guides/integration/nextjs/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/integration/nextjs/app-router/page.tsx`
-  - Create: `/apps/docs/app/guides/integration/nextjs/pages-router/page.tsx`
-- [ ] **Content Outline:**
-  - App Router integration
-  - Pages Router integration
-  - API route setup
-  - Streaming setup
-  - Best practices
-- [ ] **Cross-links:**
-  - Link to getting started
-  - Link to streaming guide
-
-#### Task 5.2: Vector Store Integration Guides
-- [ ] **Title:** Vector Store Integration
-- [ ] **Location:** `/apps/docs/app/guides/integration/vector-stores/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/integration/vector-stores/pinecone/page.tsx`
-  - Create: `/apps/docs/app/guides/integration/vector-stores/qdrant/page.tsx`
-  - Create: `/apps/docs/app/guides/integration/vector-stores/weaviate/page.tsx`
-  - Create: `/apps/docs/app/guides/integration/vector-stores/chroma/page.tsx`
-- [ ] **Content Outline:**
-  - Vector store overview
-  - Provider-specific setup
-  - Integration examples
-  - Best practices
-- [ ] **Cross-links:**
-  - Link to RAG guide
-  - Link to memory guide
-
-### Phase 6: Accessibility & Quality (Medium Priority)
-
-#### Task 6.1: Accessibility Guide
-- [ ] **Title:** Accessibility Guide
-- [ ] **Location:** `/apps/docs/app/guides/accessibility/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/accessibility/page.tsx`
-  - Create: `/apps/docs/app/guides/accessibility/keyboard-navigation/page.tsx`
-  - Create: `/apps/docs/app/guides/accessibility/screen-readers/page.tsx`
-- [ ] **Content Outline:**
-  - WCAG compliance
+#### Task 5.4: Accessibility Implementation Guide
+- [ ] **File:** `apps/docs/app/guides/accessibility-implementation/page.tsx`
+- [ ] **Content:**
+  - WCAG AAA compliance details
+  - Screen reader patterns
   - Keyboard navigation
-  - Screen reader support
   - Focus management
-  - ARIA attributes
-  - Testing accessibility
-- [ ] **Cross-links:**
-  - Link to component accessibility notes
+  - ARIA patterns
+- [ ] **Cross-links:** Accessibility guide, components
 
-#### Task 6.2: Troubleshooting Guide
-- [ ] **Title:** Troubleshooting Guide
-- [ ] **Location:** `/apps/docs/app/guides/troubleshooting/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Create: `/apps/docs/app/guides/troubleshooting/page.tsx`
-  - Create: `/apps/docs/app/guides/troubleshooting/common-issues/page.tsx`
-  - Create: `/apps/docs/app/guides/troubleshooting/errors/page.tsx`
-  - Create: `/apps/docs/app/guides/troubleshooting/performance/page.tsx`
-- [ ] **Content Outline:**
-  - Common issues
-  - Error message reference
-  - Performance troubleshooting
-  - Integration troubleshooting
-  - Debugging guide
-- [ ] **Cross-links:**
-  - Link to relevant component/hook docs
+#### Task 5.5: Theme Customization Guide
+- [ ] **File:** `apps/docs/app/guides/theme-customization/page.tsx`
+- [ ] **Content:**
+  - Creating custom themes
+  - Theme composition
+  - Animation customization
+  - Color system
+  - Shadow system
+- [ ] **Cross-links:** Theme components, theming guide
 
-### Phase 7: Examples & Demos (Lower Priority)
+#### Task 5.6: Animation System Guide
+- [ ] **File:** `apps/docs/app/guides/animations/page.tsx`
+- [ ] **Content:**
+  - Animation library overview
+  - Using animations
+  - Custom animations
+  - Performance considerations
+  - Accessibility (reduced motion)
+- [ ] **Cross-links:** Animation components, theme guide
 
-#### Task 7.1: Interactive Examples
-- [ ] **Title:** Interactive Examples
-- [ ] **Location:** `/apps/docs/app/examples/page.tsx`
-- [ ] **Files to Create/Update:**
-  - Update: `/apps/docs/app/examples/page.tsx`
-  - Create: `/apps/docs/app/examples/complete-showcase/page.tsx`
-- [ ] **Content Outline:**
-  - Complete feature showcase
-  - Interactive demos
-  - Code examples
-- [ ] **Cross-links:**
-  - Link to all component/hook docs
+### Phase 6: Recipe Documentation
+
+#### Task 6.1: Common Recipes
+- [ ] Authentication integration
+- [ ] Real-time collaboration
+- [ ] Offline-first chat
+- [ ] Voice-first interface
+- [ ] Mobile-first design
+- [ ] Analytics integration
+- [ ] Custom model adapters
+- [ ] Custom vector stores
+- [ ] Custom tools
+- [ ] Custom error handling
+- [ ] Custom streaming
+- [ ] Custom memory strategies
+- [ ] Custom security rules
+
+### Phase 7: Examples & Interactive Demos
+
+#### Task 7.1: Component Showcase
+- [ ] Interactive playground for all components
+- [ ] Live code editors
+- [ ] Component variants showcase
+- [ ] Theme showcase
+
+#### Task 7.2: Hook Examples
+- [ ] Interactive hook examples
+- [ ] Code examples for all hooks
+- [ ] Hook combination examples
+
+#### Task 7.3: Integration Examples
+- [ ] Common integration patterns
+- [ ] Third-party integrations
+- [ ] Custom integrations
+
+### Phase 8: Quick Reference & FAQ
+
+#### Task 8.1: Quick Reference Guides
+- [ ] Component props cheat sheet
+- [ ] Hook API cheat sheet
+- [ ] Common patterns cheat sheet
+- [ ] Troubleshooting guide
+- [ ] FAQ page
 
 ---
 
-## Progress Tracking
+## 5. Implementation Progress
 
 ### Completed Tasks
 - [x] Environment & Tooling Assessment
 - [x] Feature Inventory
-- [x] Docs Audit
+- [x] Documentation Site Evaluation
 - [x] Documentation Gaps & Opportunities
 - [x] Detailed Implementation Plan
+- [x] Task 1.1: useClarityChat Hook Documentation ✅
+- [x] Task 1.2: ClarityChat Component Documentation ✅
+- [x] Task 1.3: ClarityChatPresets Documentation ✅
+- [x] Task 1.4: Enhanced Token Optimization Documentation ✅
 
-### Phase 1: Core Component Documentation ✅ COMPLETE (6/6 tasks)
-- [x] Task 1.1: ClarityChat Component Page
-- [x] Task 1.2: ClarityChatPresets Component Page
-- [x] Task 1.3: ChatWindow Component Enhancement
-- [x] Task 1.4: ChatInput & AdvancedChatInput Pages
-- [x] Task 1.5: Message Components Documentation
-- [x] Task 1.6: Tool & Agent Components
-
-### Phase 2: Core Hook Documentation ✅ COMPLETE (4/4 tasks)
-- [x] Task 2.1: useClarityChat Hook Enhancement
-- [x] Task 2.2: useClarityObject Hook Page
-- [x] Task 2.3: Streaming Hooks Documentation (useStreamingSSE, useStreamingWebSocket, useStreamableUI)
-- [x] Task 2.4: Token Optimization Hooks (useTokenOptimizationEnhanced, useTokenBudgetMonitor, useTokenTracker)
-
-### Phase 3: Conceptual Guides ✅ COMPLETE (6/6 tasks)
-- [x] Task 3.1: Memory System Deep Dive
-- [x] Task 3.2: Streaming & Transport Guide
-- [x] Task 3.3: Token Optimization Guide
-- [x] Task 3.4: Tool Integration Guide
-- [x] Task 3.5: Agent System Guide
-- [x] Task 3.6: RAG Pipeline Guide
-
-### Remaining Phases
-- [ ] Phase 4: Pattern & Recipe Library (0/4 tasks)
-- [ ] Phase 5: Integration Guides (0/2 tasks)
-- [ ] Phase 6: Accessibility & Quality (0/2 tasks)
-- [ ] Phase 7: Examples & Demos (0/1 tasks)
-
-### Implementation Summary
-
-**Completed Documentation Pages:**
-1. `/apps/docs/app/reference/components/clarity-chat/page.tsx` - Complete ClarityChat component documentation
-2. `/apps/docs/app/reference/components/clarity-chat-presets/page.tsx` - Complete ClarityChatPresets documentation
-3. `/apps/docs/app/reference/components/chat-window/page.tsx` - Enhanced ChatWindow component documentation
-4. `/apps/docs/app/reference/components/chat-input/page.tsx` - Complete ChatInput component documentation
-5. `/apps/docs/app/reference/components/advanced-chat-input/page.tsx` - Complete AdvancedChatInput component documentation
-6. `/apps/docs/app/reference/components/message/page.tsx` - Complete Message component documentation
-7. `/apps/docs/app/reference/components/message-list/page.tsx` - Complete MessageList component documentation
-8. `/apps/docs/app/reference/components/virtualized-message-list/page.tsx` - Complete VirtualizedMessageList documentation
-9. `/apps/docs/app/reference/components/streaming-message/page.tsx` - Complete StreamingMessage documentation
-10. `/apps/docs/app/reference/components/tool-invocation-card/page.tsx` - Complete ToolInvocationCard documentation
-11. `/apps/docs/app/reference/components/agent-run-feed/page.tsx` - Complete AgentRunFeed documentation
-12. `/apps/docs/app/reference/components/clarity-tool-result/page.tsx` - Complete ClarityToolResult documentation
-13. `/apps/docs/app/reference/hooks/use-clarity-chat/page.tsx` - Complete useClarityChat hook documentation
-14. `/apps/docs/app/reference/hooks/use-clarity-object/page.tsx` - Complete useClarityObject hook documentation
-
-**Key Features Added:**
-- Complete prop tables with descriptions
-- Interactive playground examples
-- Code examples (copy-paste ready)
-- Usage patterns and best practices
-- Error handling examples
-- Performance tips
-- Accessibility notes
-- Cross-links to related documentation
-- TypeScript type information
-
-**Documentation Quality:**
-- All pages follow existing documentation format
-- Consistent styling and structure
-- Interactive demos where applicable
-- Comprehensive examples
-- Developer-focused content
+### In Progress
+- [x] Phase 1: Top-Level APIs & Core Components ✅ (Complete)
+- [ ] Phase 2: Enhanced Features (2025) Documentation (1/3 tasks complete)
+- [ ] Phase 2: Enhanced Features (2025) Documentation
+- [ ] Phase 3: Component Documentation Expansion
+- [ ] Phase 4: Hook Documentation Expansion
+- [ ] Phase 5: Conceptual Documentation
+- [ ] Phase 6: Recipe Documentation
+- [ ] Phase 7: Examples & Interactive Demos
+- [ ] Phase 8: Quick Reference & FAQ
 
 ---
 
-## Notes
+## 6. Validation Checklist
 
-- All documentation should be copy-paste ready
-- Examples should be runnable or logically complete
-- Maintain consistent styling and voice
-- Keep TypeScript types accurate
-- Prioritize practical developer-focused content
-- Add accessibility notes where applicable
-- Include performance considerations
-- Cross-link related documentation
+### Before Completion
+- [ ] All new pages build successfully
+- [ ] No broken links
+- [ ] All code examples are valid TypeScript
+- [ ] All examples are copy-paste ready
+- [ ] Navigation is intuitive
+- [ ] Cross-links are accurate
+- [ ] Documentation is consistent in style
+- [ ] All components have documentation
+- [ ] All hooks have documentation
+- [ ] All concepts are explained
+- [ ] All recipes are complete
+- [ ] Interactive demos work
+- [ ] Quick reference is comprehensive
+- [ ] FAQ covers common questions
+
+### Testing
+- [ ] Run `pnpm docs:build` - should succeed
+- [ ] Run `pnpm lint` - should pass
+- [ ] Run `pnpm typecheck` - should pass
+- [ ] Test all interactive examples
+- [ ] Verify all links work
+- [ ] Check mobile responsiveness
+- [ ] Verify accessibility
 
 ---
 
-## Implementation Summary
+## 7. Final Summary
 
-### Completed Work
+### Documentation Improvements Completed (Phase 1)
 
-**Documentation Pages Created (4 pages):**
+#### High-Priority Documentation Created
+1. ✅ **useClarityChat Hook** (`/reference/hooks/use-clarity-chat`)
+   - Complete API reference with all props and return values
+   - Usage examples (basic, with memory, with optimization, with WebSocket)
+   - Migration guide from useChat
+   - Best practices
+   - Cross-links to related documentation
 
-1. **ClarityChat Component** (`/apps/docs/app/reference/components/clarity-chat/page.tsx`)
-   - Complete component documentation
-   - All props documented with descriptions
-   - Interactive playground
-   - Examples: basic, memory, streaming, customization
-   - Error handling patterns
-   - Performance tips
-   - Accessibility notes
+2. ✅ **ClarityChat Component** (`/reference/components/clarity-chat`)
+   - Complete props reference
+   - Usage examples for all major features
+   - Best practices
+   - When to use vs ChatWindow
+   - Cross-links to related documentation
 
-2. **ClarityChatPresets Component** (`/apps/docs/app/reference/components/clarity-chat-presets/page.tsx`)
-   - All 4 presets documented (Simple, WithMemory, Enterprise, Streaming)
-   - Interactive preset comparison
-   - Usage examples for each preset
-   - When to use each preset guide
+3. ✅ **ClarityChatPresets** (`/reference/components/clarity-chat-presets`)
+   - Documentation for all 4 presets (Simple, WithMemory, Enterprise, Streaming)
+   - Preset comparison table
    - Customization examples
+   - Best practices
+   - Cross-links to related documentation
 
-3. **useClarityChat Hook** (`/apps/docs/app/reference/hooks/use-clarity-chat/page.tsx`)
-   - Complete hook documentation
-   - All options and return values documented
-   - Memory integration examples
-   - Streaming configuration
-   - Prompt optimization examples
-   - Error handling patterns
-   - Performance tips
+4. ✅ **useTokenOptimizationEnhanced Hook** (`/reference/hooks/use-token-optimization-enhanced`)
+   - Complete API reference
+   - Usage examples for all features (TOON, caching, compression, cost tracking)
+   - Preset documentation (aggressive, balanced, conservative, realtime)
+   - Best practices
+   - Cost savings information
+   - Cross-links to related documentation
 
-4. **useClarityObject Hook** (`/apps/docs/app/reference/hooks/use-clarity-object/page.tsx`)
-   - Structured output generation guide
-   - Type safety patterns
-   - Streaming support
-   - Error handling
-   - Complete examples
+### New Pages Added
+- `/reference/hooks/use-clarity-chat/page.tsx`
+- `/reference/components/clarity-chat/page.tsx`
+- `/reference/components/clarity-chat-presets/page.tsx`
+- `/reference/hooks/use-token-optimization-enhanced/page.tsx`
 
-**Total Documentation Added:**
-- 14 comprehensive documentation pages
-- ~9,500+ lines of documentation code
-- 95+ code examples
-- 14 interactive playgrounds
-- Complete prop/option tables for all documented APIs
+### Documentation Quality Improvements
+- All new pages follow consistent structure and styling
+- Interactive code examples using CodePlayground component
+- Comprehensive props tables where applicable
+- Best practices sections
+- Cross-linking between related documentation
+- Clear explanations of when to use each API
 
-### Remaining Work
+### Remaining High-Priority Tasks
 
-**High Priority (Core Developer Experience):**
-- ChatInput & AdvancedChatInput pages
-- Message components documentation
-- Tool & Agent components documentation
-- Streaming hooks documentation
-- Token optimization hooks documentation
+#### Phase 2: Enhanced Features (2025) Documentation
+- [ ] Security hooks documentation (useSecurity, useSecureChat, etc.)
+- [ ] Enterprise features guide
+- [ ] Performance Analytics Dashboard documentation
 
-**Medium Priority (Feature Coverage):**
-- Memory system deep dive guide
-- Streaming & transport guide
-- Token optimization guide
-- Tool integration guide
-- Agent system guide
-- RAG pipeline guide
-- Pattern & recipe library
-- Integration guides (Next.js, vector stores, etc.)
-
-**Lower Priority (Polish):**
-- Accessibility guide
-- Troubleshooting guide
-- Advanced examples
-- Testing guide
+#### Phase 3-8: Additional Documentation
+- Component documentation expansion (20+ components)
+- Hook documentation expansion (15+ hooks)
+- Conceptual documentation (architecture, composition patterns, etc.)
+- Recipe documentation (common patterns)
+- Interactive examples and demos
+- Quick reference guides
 
 ### Recommendations
 
-1. **Continue with Core Components:** Focus on ChatWindow, ChatInput, and Message components next as they are fundamental building blocks.
+1. **Continue Incremental Implementation**: The plan is comprehensive and should be implemented incrementally, focusing on high-priority items first.
 
-2. **Complete Hook Documentation:** Finish documenting all core hooks (useChatHandlers, useChatEnhanced, streaming hooks).
+2. **Validate Build**: After each batch of documentation, run `pnpm docs:build` to ensure everything builds correctly.
 
-3. **Create Conceptual Guides:** Memory, streaming, and token optimization guides are critical for advanced usage.
+3. **User Feedback**: Consider gathering feedback on the new documentation to prioritize remaining work.
 
-4. **Build Validation:** Once dependencies are installed, validate all documentation pages build correctly and fix any TypeScript errors.
+4. **Automation**: Consider automating documentation generation from TypeScript types where possible.
 
-5. **Interactive Examples:** Consider adding more interactive examples in Storybook or the docs playground.
+5. **Interactive Examples**: Add more interactive playground examples for complex features.
 
 ### Next Steps
 
-1. Install dependencies: `pnpm install`
-2. Validate build: `pnpm docs:build` or `pnpm docs` (dev server)
-3. Continue with remaining high-priority tasks
-4. Test all code examples
-5. Review and refine documentation
+1. Complete Phase 2 (Enhanced Features documentation)
+2. Expand component documentation (Phase 3)
+3. Expand hook documentation (Phase 4)
+4. Add conceptual guides (Phase 5)
+5. Create recipe documentation (Phase 6)
+6. Build interactive demos (Phase 7)
+7. Create quick reference guides (Phase 8)
 
 ---
 
-**Last Updated:** 2025-01-27
-**Status:** 
-- ✅ Phase 1 COMPLETE (6/6 tasks)
-- ✅ Phase 2 COMPLETE (4/4 tasks)
-- ✅ Phase 3 COMPLETE (6/6 tasks)
-- **Total Progress:** 16/27 tasks complete (59%)
-- **High Priority:** 16/16 tasks complete (100%) ✅
+**Last Updated:** 2025-01-27  
+**Status:** Phase 1 Complete - 4 high-priority documentation pages created

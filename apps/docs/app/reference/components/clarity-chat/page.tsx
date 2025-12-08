@@ -1,40 +1,17 @@
 'use client'
 
-import { ToastProvider, ClarityChat, MemoryProvider } from '@clarity-chat/react'
-import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
+import type { Metadata } from 'next'
+import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-import { Pagination } from '@/components/Navigation/Pagination'
-import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
-import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
-import { ComponentPreview } from '@/components/Demo/ComponentPreview'
-import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { Callout } from '@/components/MDX/Callout'
 
-// Basic demo component
-function BasicChatDemo() {
-  return (
-    <div className="w-full max-w-2xl" style={{ height: '400px' }}>
-      <ClarityChat
-        api="/api/chat"
-        className="border border-border rounded-lg"
-      />
-    </div>
-  )
-}
+export const dynamic = 'force-dynamic'
 
-// With memory demo
-function MemoryChatDemo() {
-  return (
-    <MemoryProvider config={{ maxTokens: 10000 }}>
-      <div className="w-full max-w-2xl" style={{ height: '400px' }}>
-        <ClarityChat
-          api="/api/chat"
-          memory={{ enabled: true, strategy: 'sliding-window', maxTokens: 4000 }}
-          className="border border-border rounded-lg"
-        />
-      </div>
-    </MemoryProvider>
-  )
+export const metadata: Metadata = {
+  title: 'ClarityChat Component | Clarity Chat',
+  description:
+    'Top-level drop-in component for AI chat. The simplest way to add chat to your app - just provide an API endpoint.',
 }
 
 const clarityChatProps: Prop[] = [
@@ -52,7 +29,7 @@ const clarityChatProps: Prop[] = [
   {
     name: 'className',
     type: 'string',
-    description: 'Additional CSS classes to apply to the chat container.',
+    description: 'Optional CSS class name for the chat container.',
   },
   {
     name: 'emptyState',
@@ -73,7 +50,7 @@ const clarityChatProps: Prop[] = [
   {
     name: 'sessionSubtitle',
     type: 'string',
-    description: 'Subtitle displayed in the header when showHeader is true.',
+    description: 'Subtitle or description displayed in the header.',
   },
   {
     name: 'headerActions',
@@ -84,17 +61,17 @@ const clarityChatProps: Prop[] = [
     name: 'showMessageCount',
     type: 'boolean',
     default: 'false',
-    description: 'Show message count badge in the header.',
+    description: 'Show badge with message count in the header.',
   },
   {
     name: 'onExport',
     type: '() => void',
-    description: 'Callback function triggered when user exports the conversation.',
+    description: 'Callback function for exporting the conversation.',
   },
   {
     name: 'onClear',
     type: '() => void',
-    description: 'Callback function triggered when user clears the chat.',
+    description: 'Callback function for clearing the chat.',
   },
   {
     name: 'autoScroll',
@@ -115,7 +92,7 @@ const clarityChatProps: Prop[] = [
   {
     name: 'theme',
     type: 'string',
-    description: 'Theme for the chat interface. Can be "light", "dark", or "auto".',
+    description: 'Theme name to apply to the chat interface.',
   },
   {
     name: 'showTokenCounter',
@@ -138,7 +115,7 @@ const clarityChatProps: Prop[] = [
   {
     name: 'memoryStrategy',
     type: '"sliding-window" | "semantic-chunks" | "vector-store"',
-    description: 'Memory strategy for conversation context. Requires MemoryProvider.',
+    description: 'Memory strategy for conversation context management.',
   },
   {
     name: 'onError',
@@ -148,456 +125,307 @@ const clarityChatProps: Prop[] = [
   {
     name: 'memory',
     type: 'ClarityMemoryOptions',
-    description: 'Memory configuration object. See useClarityChat hook for details.',
-  },
-  {
-    name: 'stream',
-    type: 'boolean',
-    default: 'true',
-    description: 'Enable streaming responses for real-time updates.',
+    description: 'Memory integration configuration. See useClarityChat documentation.',
   },
   {
     name: 'transport',
     type: '"sse" | "websocket"',
     default: '"sse"',
-    description: 'Transport protocol for streaming. SSE is default, WebSocket for bidirectional.',
+    description: 'Transport protocol for streaming. Default is Server-Sent Events.',
+  },
+  {
+    name: 'websocket',
+    type: 'ClarityWebSocketOptions',
+    description: 'WebSocket-specific options (only used when transport is "websocket").',
   },
   {
     name: 'promptOptimization',
     type: 'ClarityPromptOptimizationOptions',
-    description: 'Prompt optimization configuration. See useClarityChat hook for details.',
+    description: 'Prompt optimization configuration for token budget management.',
   },
 ]
 
-export const dynamic = 'force-dynamic'
-
 export default function ClarityChatPage() {
   return (
-    <ToastProvider>
-      <>
-        <Breadcrumbs />
-
-        <h1>ClarityChat</h1>
-
-        <p className="lead">
-          The simplest way to add AI chat to your React application. Just provide an API endpoint
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 rounded-full text-sm font-medium mb-4">
+          <span>⭐</span>
+          <span>Recommended entry point for most use cases</span>
+        </div>
+        <h1 className="text-4xl font-bold mb-4">ClarityChat</h1>
+        <p className="text-xl text-muted-foreground mb-4">
+          The simplest way to add AI chat to your app. Just provide an API endpoint
           and you're done. All the complexity is handled internally.
         </p>
-
-        <Callout type="info">
-          <p>
-            <strong>Recommended Entry Point:</strong> This is the recommended way to use Clarity
-            Chat for most use cases. It combines the hook and component into a single, easy-to-use
-            interface with automatic message format conversion, built-in loading states, error
-            handling, and more.
-          </p>
-        </Callout>
-
-        <Callout type="tip">
-          <p>
-            For more control, use mid-level APIs like <code>ChatWindow</code> +{' '}
-            <code>useClarityChat</code> + <code>useChatHandlers</code>. See the{' '}
-            <a href="/reference/components/chat-window">ChatWindow documentation</a> for details.
-          </p>
-        </Callout>
-
-        <ViewInStorybook component="ClarityChat" />
-
-        <section className="my-12">
-          <h2 className="text-2xl font-bold mb-4">Interactive Playground</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Experiment with the ClarityChat component! Try different configurations including
-            memory, streaming, and customization options.
-          </p>
-          <CodePlayground
-            initialCode={`function Example() {
-  return (
-    <ClarityChat api="/api/chat" />
-  )
-}
-
-render(<Example />)`}
-          />
-        </section>
-
-        <h2 id="import">Import</h2>
-
-        <EnhancedCodeBlock
-          code={`import { ClarityChat } from '@clarity-chat/react'
-import '@clarity-chat/react/styles.css'`}
-          language="tsx"
-        />
-
-        <h2 id="basic-usage">Basic Usage</h2>
-
-        <p>
-          The simplest way to use ClarityChat is to just provide an API endpoint. Everything else
-          is handled automatically:
+        <p className="text-muted-foreground">
+          <strong>Architecture Layer:</strong> Top-Level (Drop-in Ready) •{' '}
+          <strong>Domain:</strong> Chat UI
         </p>
+      </div>
 
-        <ComponentPreview
-          title="Simple Chat Interface"
-          description="A minimal chat interface with zero configuration"
+      <Callout type="info" title="When to Use ClarityChat">
+        <p className="mb-2">
+          <strong>Use ClarityChat when:</strong>
+        </p>
+        <ul className="list-disc list-inside space-y-1 mb-2">
+          <li>You want the simplest possible integration</li>
+          <li>You're building a new feature and want to get started quickly</li>
+          <li>You don't need fine-grained control over the chat state</li>
+        </ul>
+        <p className="mb-2">
+          <strong>Use ChatWindow + useClarityChat when:</strong>
+        </p>
+        <ul className="list-disc list-inside space-y-1">
+          <li>You need more control over the chat state</li>
+          <li>You want to customize the UI extensively</li>
+          <li>You need to integrate with complex state management</li>
+        </ul>
+      </Callout>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
+        <CodePlayground
           code={`import { ClarityChat } from '@clarity-chat/react'
 import '@clarity-chat/react/styles.css'
 
 function App() {
   return <ClarityChat api="/api/chat" />
 }`}
-        >
-          <BasicChatDemo />
-        </ComponentPreview>
-
-        <Callout type="warning">
-          <p>
-            <strong>Note:</strong> The demo above uses a placeholder API endpoint. In a real
-            application, you'll need to implement the <code>/api/chat</code> route. See the{' '}
-            <a href="#examples">Next.js API Route Example</a> below for a complete implementation.
-          </p>
-        </Callout>
-
-        <h2 id="with-memory">With Memory</h2>
-
-        <p>
-          Enable conversation memory for context-aware responses. You'll need to wrap your app with
-          a <code>MemoryProvider</code>:
+        />
+        <p className="mt-4 text-sm text-muted-foreground">
+          That's it! You now have a fully functional AI chat interface with streaming,
+          error handling, and all production-ready features.
         </p>
+      </section>
 
-        <EnhancedCodeBlock
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">With Memory Integration</h2>
+        <CodePlayground
           code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
 
+function ChatWithMemory() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      memory={{
+        enabled: true,
+        strategy: 'vector-store', // or 'sliding-window', 'semantic-chunks'
+        maxTokens: 8000,
+      }}
+    />
+  )
+}
+
+// Wrap with MemoryProvider for vector-store strategy
 function App() {
   return (
     <MemoryProvider config={{ maxTokens: 10000 }}>
-      <ClarityChat
-        api="/api/chat"
-        memory={{
-          enabled: true,
-          strategy: 'sliding-window',
-          maxTokens: 4000,
-        }}
-      />
+      <ChatWithMemory />
     </MemoryProvider>
   )
 }`}
-          language="tsx"
-          showLineNumbers
         />
+      </section>
 
-        <ComponentPreview
-          title="Chat with Memory"
-          description="Context-aware conversations with memory enabled"
-          code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">With Custom Header</h2>
+        <CodePlayground
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-function App() {
-  return (
-    <MemoryProvider config={{ maxTokens: 10000 }}>
-      <ClarityChat
-        api="/api/chat"
-        memory={{
-          enabled: true,
-          strategy: 'sliding-window',
-          maxTokens: 4000,
-        }}
-      />
-    </MemoryProvider>
-  )
-}`}
-        >
-          <MemoryChatDemo />
-        </ComponentPreview>
-
-        <Callout type="info">
-          <p>
-            Learn more about memory strategies in the{' '}
-            <a href="/guides/memory">Memory System Guide</a>.
-          </p>
-        </Callout>
-
-        <h2 id="with-streaming">With Streaming</h2>
-
-        <p>
-          Streaming is enabled by default. You can configure the transport protocol (SSE or
-          WebSocket):
-        </p>
-
-        <EnhancedCodeBlock
-          code={`// SSE (default) - Server-Sent Events
-<ClarityChat api="/api/chat" transport="sse" />
-
-// WebSocket - Bidirectional real-time communication
-<ClarityChat api="/api/chat" transport="websocket" />`}
-          language="tsx"
-        />
-
-        <Callout type="tip">
-          <p>
-            SSE is the default and works with most backends. WebSocket is better for
-            bidirectional communication or when you need lower latency.
-          </p>
-        </Callout>
-
-        <h2 id="with-header">With Header</h2>
-
-        <p>Add a header with session information and custom actions:</p>
-
-        <EnhancedCodeBlock
-          code={`function ChatWithHeader() {
-  const handleExport = () => {
-    // Export conversation logic
-    console.log('Exporting conversation...')
-  }
-
+function CustomHeaderChat() {
   return (
     <ClarityChat
       api="/api/chat"
       showHeader
       sessionTitle="AI Assistant"
-      sessionSubtitle="Always here to help"
+      sessionSubtitle="Ask me anything!"
       showMessageCount
       headerActions={
-        <button onClick={handleExport}>Export</button>
+        <button onClick={() => console.log('Settings')}>
+          Settings
+        </button>
       }
     />
   )
 }`}
-          language="tsx"
-          showLineNumbers
         />
+      </section>
 
-        <h2 id="with-customization">Customization</h2>
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">With Prompt Optimization</h2>
+        <CodePlayground
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-        <p>Customize the chat appearance and behavior:</p>
-
-        <EnhancedCodeBlock
-          code={`<ClarityChat
-  api="/api/chat"
-  className="h-screen max-w-4xl mx-auto"
-  theme="dark"
-  showTokenCounter
-  showNetworkStatus
-  enableMessageOperations
-  onMessageCopy={(id, content) => {
-    navigator.clipboard.writeText(content)
-    console.log('Message copied:', id)
-  }}
-  onMessageFeedback={(messageId, type) => {
-    console.log('Feedback:', messageId, type)
-  }}
-/>`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="error-handling">Error Handling</h2>
-
-        <p>Handle errors with a custom error handler:</p>
-
-        <EnhancedCodeBlock
-          code={`<ClarityChat
-  api="/api/chat"
-  onError={(error, errorInfo) => {
-    console.error('Chat error:', error)
-    console.error('Error info:', errorInfo)
-    // Send to error tracking service
-    errorTrackingService.captureException(error, {
-      extra: errorInfo,
-    })
-  }}
-/>`}
-          language="tsx"
-          showLineNumbers
-        />
-
-        <h2 id="props">Props</h2>
-
-        <PropsTable props={clarityChatProps} />
-
-        <h2 id="memory-options">Memory Options</h2>
-
-        <p>
-          When using memory, you can configure it with the <code>memory</code> prop:
-        </p>
-
-        <EnhancedCodeBlock
-          code={`interface ClarityMemoryOptions {
-  /** Enable memory integration */
-  enabled?: boolean
-  /** Memory strategy: sliding-window, semantic-chunks, or vector-store */
-  strategy?: 'sliding-window' | 'semantic-chunks' | 'vector-store'
-  /** Maximum tokens for memory context */
-  maxTokens?: number
-  /** Retry failed memory operations (default: true) */
-  retryOnError?: boolean
-  /** Maximum retry attempts for memory operations (default: 2) */
-  maxRetryAttempts?: number
-  /** Callback when memory operation fails */
-  onMemoryError?: (error: Error, operation: 'query' | 'store') => void
-}`}
-          language="tsx"
-        />
-
-        <h2 id="examples">Examples</h2>
-
-        <h3>Complete Example with All Features</h3>
-
-        <EnhancedCodeBlock
-          code={`import { ClarityChat, MemoryProvider } from '@clarity-chat/react'
-import '@clarity-chat/react/styles.css'
-
-function App() {
+function OptimizedChat() {
   return (
-    <MemoryProvider config={{ maxTokens: 10000 }}>
-      <ClarityChat
-        api="/api/chat"
-        chatId="my-chat-session"
-        showHeader
-        sessionTitle="AI Assistant"
-        sessionSubtitle="Powered by Clarity Chat"
-        showMessageCount
-        showTokenCounter
-        showNetworkStatus
-        enableMessageOperations
-        memory={{
-          enabled: true,
-          strategy: 'vector-store',
-          maxTokens: 8000,
-        }}
-        transport="sse"
-        onMessageCopy={(id, content) => {
-          navigator.clipboard.writeText(content)
-        }}
-        onMessageFeedback={(messageId, type) => {
-          // Track feedback
-          analytics.track('message_feedback', { messageId, type })
-        }}
-        onError={(error) => {
-          console.error('Chat error:', error)
-        }}
-      />
-    </MemoryProvider>
+    <ClarityChat
+      api="/api/chat"
+      promptOptimization={{
+        enabled: true,
+        targetTokens: 8000,
+        strategy: 'hybrid',
+        model: 'gpt-4',
+      }}
+      showTokenCounter
+    />
   )
 }`}
-          language="tsx"
-          showLineNumbers
         />
+      </section>
 
-        <h3>Next.js API Route Example</h3>
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">With WebSocket Transport</h2>
+        <CodePlayground
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-        <p>Here's how to set up the API route for Next.js App Router:</p>
-
-        <EnhancedCodeBlock
-          code={`// app/api/chat/route.ts
-import { NextResponse } from 'next/server'
-
-export async function POST(req: Request) {
-  try {
-    const { messages } = await req.json()
-    
-    // Call your AI API (OpenAI, Anthropic, etc.)
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages,
-        stream: true, // Enable streaming
-      }),
-    })
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: 'Failed to get response from AI API' },
-        { status: response.status }
-      )
-    }
-
-    // Return streaming response
-    return new Response(response.body, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-      },
-    })
-  } catch (error) {
-    console.error('Chat API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
+function WebSocketChat() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      transport="websocket"
+      websocket={{
+        autoReconnect: true,
+        maxReconnectAttempts: 5,
+        enableHeartbeat: true,
+      }}
+    />
+  )
 }`}
-          language="tsx"
-          showLineNumbers
         />
+      </section>
 
-        <Callout type="success">
-          <p>
-            <strong>Great job!</strong> You now know how to use the ClarityChat component. Check out
-            the <a href="/reference/components/clarity-chat-presets">ClarityChatPresets</a> for
-            pre-configured variants, or explore{' '}
-            <a href="/reference/components/chat-window">ChatWindow</a> for more control.
-          </p>
-        </Callout>
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">With Message Operations</h2>
+        <CodePlayground
+          code={`import { ClarityChat } from '@clarity-chat/react'
 
-        <h2 id="accessibility">Accessibility</h2>
-
-        <p>ClarityChat is built with accessibility in mind:</p>
-
-        <ul>
-          <li>✅ Full keyboard navigation support</li>
-          <li>✅ ARIA labels and roles for screen readers</li>
-          <li>✅ Focus management for input and buttons</li>
-          <li>✅ High contrast mode compatible</li>
-          <li>✅ Reduced motion support</li>
-        </ul>
-
-        <h2 id="performance">Performance Tips</h2>
-
-        <Callout type="tip">
-          <p>For optimal performance:</p>
-          <ul>
-            <li>Use memory strategies to limit context size</li>
-            <li>Enable prompt optimization for large conversations</li>
-            <li>Use virtualized message lists for 1000+ messages</li>
-            <li>Debounce typing indicators</li>
-            <li>Lazy load message attachments</li>
-          </ul>
-        </Callout>
-
-        <h2 id="related">Related</h2>
-
-        <ul>
-          <li>
-            <a href="/reference/components/clarity-chat-presets">ClarityChatPresets</a> - Pre-configured variants
-          </li>
-          <li>
-            <a href="/reference/components/chat-window">ChatWindow</a> - Composable chat component
-          </li>
-          <li>
-            <a href="/reference/hooks/use-clarity-chat">useClarityChat</a> - Chat state hook
-          </li>
-          <li>
-            <a href="/guides/memory">Memory System Guide</a> - Memory strategies and setup
-          </li>
-          <li>
-            <a href="/guides/streaming">Streaming Guide</a> - SSE vs WebSocket comparison
-          </li>
-        </ul>
-
-        <Pagination
-          previous={{
-            title: 'Components Overview',
-            href: '/reference/components',
-          }}
-          next={{
-            title: 'ClarityChatPresets',
-            href: '/reference/components/clarity-chat-presets',
-          }}
+function AdvancedChat() {
+  return (
+    <ClarityChat
+      api="/api/chat"
+      enableMessageOperations
+      onMessageCopy={(id, content) => {
+        console.log('Message copied:', id)
+      }}
+      onMessageFeedback={(messageId, feedbackType) => {
+        console.log('Feedback:', messageId, feedbackType)
+      }}
+    />
+  )
+}`}
         />
-      </>
-    </ToastProvider>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Props Reference</h2>
+        <PropsTable props={clarityChatProps} />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Features</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="border rounded-lg p-4">
+            <h3 className="font-semibold mb-2">✨ Core Features</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+              <li>Automatic message format conversion</li>
+              <li>Built-in loading states</li>
+              <li>Error handling and recovery</li>
+              <li>Streaming support (SSE/WebSocket)</li>
+              <li>Multi-model support</li>
+            </ul>
+          </div>
+          <div className="border rounded-lg p-4">
+            <h3 className="font-semibold mb-2">🚀 Enhanced Features</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+              <li>Memory integration</li>
+              <li>Prompt optimization</li>
+              <li>Token counter</li>
+              <li>Network status indicator</li>
+              <li>Message operations (edit, delete, branch)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Best Practices</h2>
+        <div className="space-y-4">
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">Always Import Styles</h3>
+            <p className="text-sm text-muted-foreground">
+              Don't forget to import the CSS file:{' '}
+              <code className="bg-muted px-1 rounded">import '@clarity-chat/react/styles.css'</code>
+            </p>
+          </div>
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">Use Presets for Common Cases</h3>
+            <p className="text-sm text-muted-foreground">
+              For common use cases, consider using{' '}
+              <Link href="/reference/components/clarity-chat-presets" className="text-brand-600 hover:underline">
+                ClarityChatPresets
+              </Link>{' '}
+              for even simpler integration.
+            </p>
+          </div>
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">Handle Errors</h3>
+            <p className="text-sm text-muted-foreground">
+              Always provide an <code className="bg-muted px-1 rounded">onError</code> callback to handle
+              errors gracefully in production.
+            </p>
+          </div>
+          <div className="border-l-4 border-brand-500 pl-4">
+            <h3 className="font-semibold mb-2">Enable Memory for Long Conversations</h3>
+            <p className="text-sm text-muted-foreground">
+              For conversations that need context beyond the token limit, enable memory with
+              the <code className="bg-muted px-1 rounded">vector-store</code> strategy.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">Related Documentation</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          <Link
+            href="/reference/components/clarity-chat-presets"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">ClarityChatPresets</h3>
+            <p className="text-sm text-muted-foreground">
+              Pre-configured presets for common use cases.
+            </p>
+          </Link>
+          <Link
+            href="/reference/hooks/use-clarity-chat"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">useClarityChat Hook</h3>
+            <p className="text-sm text-muted-foreground">
+              The hook that powers ClarityChat. Use this for more control.
+            </p>
+          </Link>
+          <Link
+            href="/reference/components/chat-window"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">ChatWindow Component</h3>
+            <p className="text-sm text-muted-foreground">
+              The underlying component used by ClarityChat.
+            </p>
+          </Link>
+          <Link
+            href="/learn/quick-start"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">Quick Start Guide</h3>
+            <p className="text-sm text-muted-foreground">
+              Get started with Clarity Chat in 5 minutes.
+            </p>
+          </Link>
+        </div>
+      </section>
+    </div>
   )
 }

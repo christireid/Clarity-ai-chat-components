@@ -11,6 +11,8 @@ const componentCategories = [
     title: 'Chat Components',
     description: 'Core components for building chat interfaces',
     components: [
+      { name: 'ClarityChat', href: '/reference/components/clarity-chat', description: 'Drop-in ready chat component (recommended)' },
+      { name: 'ClarityChatPresets', href: '/reference/components/clarity-chat-presets', description: 'Pre-configured presets for common use cases' },
       { name: 'ChatWindow', href: '/reference/components/chat-window', description: 'Complete chat interface container' },
       { name: 'ChatInput', href: '/reference/components/chat-input', description: 'Message input field' },
       { name: 'AdvancedChatInput', href: '/reference/components/advanced-chat-input', description: 'Input with rich features' },

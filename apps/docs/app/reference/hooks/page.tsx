@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { Breadcrumbs } from '@/components/Navigation/Breadcrumbs'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
 import { EnhancedCodeBlock } from '@/components/Enhanced/EnhancedCodeBlock'
@@ -92,6 +93,40 @@ export default function HooksPage() {
         <h2 className="text-3xl font-bold mb-6">Core Hooks</h2>
 
         <div className="space-y-12">
+          {/* useClarityChat */}
+          <div>
+            <h3 className="text-2xl font-semibold mb-4">useClarityChat</h3>
+            <p className="text-text-secondary mb-6">
+              Primary hook for chat functionality with memory integration, streaming, and AI interactions. 
+              <strong className="text-brand-500"> Recommended for all new projects.</strong>
+            </p>
+            <div className="mt-4">
+              <Link
+                href="/reference/hooks/use-clarity-chat"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-colors"
+              >
+                View Documentation →
+              </Link>
+            </div>
+          </div>
+
+          {/* useTokenOptimizationEnhanced */}
+          <div>
+            <h3 className="text-2xl font-semibold mb-4">useTokenOptimizationEnhanced</h3>
+            <p className="text-text-secondary mb-6">
+              Comprehensive token optimization with TOON, prompt caching, semantic caching, and real-time cost tracking. 
+              Save 50-90% on AI costs.
+            </p>
+            <div className="mt-4">
+              <Link
+                href="/reference/hooks/use-token-optimization-enhanced"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition-colors"
+              >
+                View Documentation →
+              </Link>
+            </div>
+          </div>
+
           {/* useMessageOperations */}
           <div>
             <h3 className="text-2xl font-semibold mb-4">useMessageOperations</h3>
