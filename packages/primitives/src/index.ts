@@ -202,6 +202,14 @@ export {
   ErrorIcon,
 } from './components/button-state-icons'
 
+export { Kbd, useFormattedShortcut } from './components/kbd'
+export type {
+  KbdProps,
+  KbdPlatform,
+  KbdSize,
+  KbdVariant,
+} from './components/kbd'
+
 // ============================================================================
 // Hooks
 // ============================================================================
