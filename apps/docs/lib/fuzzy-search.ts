@@ -40,7 +40,11 @@ export function fuzzyScore(query: string, text: string): number {
     return 80 + (queryLower.length / textLower.length) * 10
 
   // Word boundary match (camelCase, spaces, hyphens)
-  const words = textLower.split(/[\s\-_]+|(?=[A-Z])/g).filter(Boolean)
+  // Split on original text to preserve camelCase boundaries, then lowercase
+  const words = text
+    .split(/[\s\-_]+|(?=[A-Z])/g)
+    .map((w) => w.toLowerCase())
+    .filter(Boolean)
   for (const word of words) {
     if (word.startsWith(queryLower)) {
       return 60 + (queryLower.length / word.length) * 10

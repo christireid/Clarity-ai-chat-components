@@ -49,8 +49,8 @@ describe('fuzzyScore', () => {
     it('matches word boundaries in camelCase', () => {
       // "Window" starts with "window" (case-insensitive) after camelCase split
       const score = fuzzyScore('window', 'ChatWindow')
-      // This scores as a contains match (40+) since "window" is found as substring
-      expect(score).toBeGreaterThan(40)
+      // Word boundary match scores 60+
+      expect(score).toBeGreaterThan(60)
     })
 
     it('matches word boundaries with hyphens', () => {
@@ -71,7 +71,8 @@ describe('fuzzyScore', () => {
 
   describe('contains matches', () => {
     it('returns moderate score for substring match', () => {
-      const score = fuzzyScore('win', 'ChatWindow')
+      // "dow" is contained in "Window" but doesn't start a word
+      const score = fuzzyScore('dow', 'ChatWindow')
       expect(score).toBeGreaterThan(40)
       expect(score).toBeLessThan(60)
     })
