@@ -1,20 +1,45 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-// import { designTokens } from './design-tokens' // Reserved for future use
+// Legacy theme support
 import { themes, type ThemePresetName } from './presets'
-import { applyThemeToDocument, createTheme } from './theme-builder'
+import {
+  applyThemeToDocument,
+  createTheme as createThemeLegacy,
+} from './theme-builder'
+// Modern theme support
+import {
+  modernThemes,
+  isValidModernThemeName,
+  getModernDarkVariant,
+  getModernLightVariant,
+  type ModernThemePresetName,
+} from './modern-presets'
+import {
+  createTheme as createThemeModern,
+  type SimpleThemeConfig,
+} from './create-theme'
 import type { CompleteThemeConfig, PartialThemeConfig } from './theme-config'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
+import {
+  getMotionSafeDuration,
+  getMotionSafeValue,
+} from '../animations/motion-safe'
 import { cn } from '@clarity-chat/primitives'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
+/**
+ * Combined preset name supporting both legacy and modern themes
+ */
+export type AnyPresetName = ThemePresetName | ModernThemePresetName
+
 export interface ThemeConfig {
   mode: ThemeMode
-  preset?: ThemePresetName
+  preset?: AnyPresetName
   customTheme?: CompleteThemeConfig
   customizations?: PartialThemeConfig
+  // Simple theme config (modern API)
+  simpleConfig?: SimpleThemeConfig
   // Legacy support
   primaryColor?: string
   radius?: number
@@ -30,11 +55,17 @@ interface ThemeContextValue {
   mode: 'light' | 'dark'
   toggleMode: () => void
   resolvedTheme: CompleteThemeConfig | null
-  setPreset: (preset: ThemePresetName) => void
-  availablePresets: ThemePresetName[]
+  setPreset: (preset: AnyPresetName) => void
+  availablePresets: AnyPresetName[]
+  /** Modern presets only */
+  modernPresets: ModernThemePresetName[]
+  /** Legacy presets only */
+  legacyPresets: ThemePresetName[]
 }
 
-const ThemeContext = React.createContext<ThemeContextValue | undefined>(undefined)
+const ThemeContext = React.createContext<ThemeContextValue | undefined>(
+  undefined
+)
 
 export interface ThemeProviderProps {
   children: React.ReactNode
@@ -44,14 +75,14 @@ export interface ThemeProviderProps {
 
 /**
  * ThemeProvider - Provides theme context to all Clarity Chat components
- * 
+ *
  * Features:
  * - Light/Dark mode support
  * - System preference detection
  * - LocalStorage persistence
  * - CSS variable injection
  * - Real-time theme switching
- * 
+ *
  * @example
  * ```tsx
  * <ThemeProvider defaultTheme={{ mode: 'dark', radius: 8 }}>
@@ -80,15 +111,18 @@ export function ThemeProvider({
   })
 
   // Resolve actual mode (light/dark) from system preference if needed
-  const [resolvedMode, setResolvedMode] = React.useState<'light' | 'dark'>('light')
-  
+  const [resolvedMode, setResolvedMode] = React.useState<'light' | 'dark'>(
+    'light'
+  )
+
   // Resolved theme configuration
-  const [resolvedTheme, setResolvedTheme] = React.useState<CompleteThemeConfig | null>(null)
+  const [resolvedTheme, setResolvedTheme] =
+    React.useState<CompleteThemeConfig | null>(null)
 
   // Listen to system preference changes
   React.useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    
+
     const updateMode = () => {
       if (theme.mode === 'system') {
         setResolvedMode(mediaQuery.matches ? 'dark' : 'light')
@@ -104,62 +138,87 @@ export function ThemeProvider({
     return () => mediaQuery.removeEventListener('change', updateMode)
   }, [theme.mode])
 
+  // Helper to get theme by preset name (modern or legacy)
+  const getThemeByPreset = React.useCallback(
+    (preset: AnyPresetName): CompleteThemeConfig => {
+      // Check modern themes first
+      if (isValidModernThemeName(preset)) {
+        return modernThemes[preset]
+      }
+      // Fall back to legacy themes
+      if (preset in themes) {
+        return themes[preset as ThemePresetName]
+      }
+      // Default fallback
+      return modernThemes['default']
+    },
+    []
+  )
+
   // Build complete theme configuration
   React.useEffect(() => {
     let complete: CompleteThemeConfig
-    
+
     // If custom theme provided, use it
     if (theme.customTheme) {
       complete = theme.customTheme
     }
-    // If preset specified, load it
+    // If simple config provided (modern API), use it
+    else if (theme.simpleConfig) {
+      complete = createThemeModern(theme.simpleConfig)
+    }
+    // If preset specified, load it (supports both modern and legacy)
     else if (theme.preset) {
-      const baseTheme = themes[theme.preset]
-      complete = theme.customizations 
-        ? createTheme(baseTheme, theme.customizations)
+      const baseTheme = getThemeByPreset(theme.preset)
+      complete = theme.customizations
+        ? createThemeLegacy(baseTheme, theme.customizations)
         : baseTheme
     }
     // Otherwise, use default based on resolved mode
     else {
-      const defaultPreset = resolvedMode === 'dark' ? 'default-dark' : 'default-light'
-      complete = themes[defaultPreset]
-      
+      // Prefer modern 'default' / 'default-dark' presets
+      const defaultPreset = resolvedMode === 'dark' ? 'default-dark' : 'default'
+      complete = modernThemes[defaultPreset]
+
       // Apply legacy customizations
       if (theme.primaryColor || theme.radius || theme.fontFamily) {
         const customizations: PartialThemeConfig = {}
         if (theme.primaryColor) {
           customizations.colors = { primary: theme.primaryColor }
         }
-        complete = createTheme(complete, customizations)
+        complete = createThemeLegacy(complete, customizations)
       }
     }
-    
+
     setResolvedTheme(complete)
-  }, [theme, resolvedMode])
-  
+  }, [theme, resolvedMode, getThemeByPreset])
+
   // Apply theme to document
   React.useEffect(() => {
     if (!resolvedTheme) return
-    
+
     const root = document.documentElement
     const enableTransitions = theme.enableTransitions !== false
     const transitionDuration = theme.transitionDuration || 200
-    
+
     // Add transition class for smooth color changes
     if (enableTransitions) {
-      root.style.setProperty('--theme-transition-duration', `${transitionDuration}ms`)
+      root.style.setProperty(
+        '--theme-transition-duration',
+        `${transitionDuration}ms`
+      )
       root.classList.add('theme-transitioning')
     }
-    
+
     // Apply theme
     applyThemeToDocument(resolvedTheme)
-    
+
     // Remove transition class after animation completes
     if (enableTransitions) {
       const timeout = setTimeout(() => {
         root.classList.remove('theme-transitioning')
       }, transitionDuration)
-      
+
       return () => clearTimeout(timeout)
     }
   }, [resolvedTheme, theme.enableTransitions, theme.transitionDuration])
@@ -187,15 +246,28 @@ export function ThemeProvider({
     }))
   }, [])
 
-  const setPreset = React.useCallback((preset: ThemePresetName) => {
+  const setPreset = React.useCallback((preset: AnyPresetName) => {
     setThemeState((prev) => ({ ...prev, preset }))
   }, [])
-  
-  const availablePresets = React.useMemo(
+
+  // Modern presets
+  const modernPresets = React.useMemo(
+    () => Object.keys(modernThemes) as ModernThemePresetName[],
+    []
+  )
+
+  // Legacy presets
+  const legacyPresets = React.useMemo(
     () => Object.keys(themes) as ThemePresetName[],
     []
   )
-  
+
+  // All available presets (modern + legacy, deduplicated)
+  const availablePresets = React.useMemo(() => {
+    const all = new Set<AnyPresetName>([...modernPresets, ...legacyPresets])
+    return Array.from(all)
+  }, [modernPresets, legacyPresets])
+
   const value = React.useMemo<ThemeContextValue>(
     () => ({
       theme,
@@ -205,29 +277,37 @@ export function ThemeProvider({
       resolvedTheme,
       setPreset,
       availablePresets,
+      modernPresets,
+      legacyPresets,
     }),
-    [theme, setTheme, resolvedMode, toggleMode, resolvedTheme, setPreset, availablePresets]
+    [
+      theme,
+      setTheme,
+      resolvedMode,
+      toggleMode,
+      resolvedTheme,
+      setPreset,
+      availablePresets,
+      modernPresets,
+      legacyPresets,
+    ]
   )
 
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  )
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 
 /**
  * useTheme hook - Access theme context
- * 
+ *
  * @example
  * ```tsx
  * const { mode, toggleMode, theme, setTheme } = useTheme()
- * 
+ *
  * // Toggle dark mode
  * <button onClick={toggleMode}>
  *   {mode === 'dark' ? '☀️' : '🌙'}
  * </button>
- * 
+ *
  * // Customize theme
  * <button onClick={() => setTheme({ primaryColor: '#3b82f6' })}>
  *   Set Blue Theme
@@ -236,11 +316,11 @@ export function ThemeProvider({
  */
 export function useTheme() {
   const context = React.useContext(ThemeContext)
-  
+
   if (!context) {
     throw new Error('useTheme must be used within a ThemeProvider')
   }
-  
+
   return context
 }
 
@@ -299,7 +379,8 @@ export function ThemeToggle({
 
   const variantClasses = {
     default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-    outline: 'border border-border/40 hover:bg-accent/50 hover:border-primary/50',
+    outline:
+      'border border-border/40 hover:bg-accent/50 hover:border-primary/50',
     ghost: 'hover:bg-accent/50',
   }
 
@@ -308,10 +389,10 @@ export function ThemeToggle({
       onClick={handleToggle}
       disabled={isTransitioning}
       whileHover={{
-        scale: getMotionSafeValue(prefersReducedMotion, 1.05, 1)
+        scale: getMotionSafeValue(prefersReducedMotion, 1.05, 1),
       }}
       whileTap={{
-        scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1)
+        scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
       }}
       className={cn(
         'relative inline-flex items-center justify-center gap-2.5 rounded-lg',
@@ -332,21 +413,21 @@ export function ThemeToggle({
           initial={{
             rotate: getMotionSafeValue(prefersReducedMotion, -90, 0),
             opacity: 0,
-            scale: getMotionSafeValue(prefersReducedMotion, 0.5, 1)
+            scale: getMotionSafeValue(prefersReducedMotion, 0.5, 1),
           }}
           animate={{
             rotate: 0,
             opacity: 1,
-            scale: 1
+            scale: 1,
           }}
           exit={{
             rotate: getMotionSafeValue(prefersReducedMotion, 90, 0),
             opacity: 0,
-            scale: getMotionSafeValue(prefersReducedMotion, 0.5, 1)
+            scale: getMotionSafeValue(prefersReducedMotion, 0.5, 1),
           }}
           transition={{
             duration: getMotionSafeDuration(prefersReducedMotion, 0.2),
-            ease: 'easeOut'
+            ease: 'easeOut',
           }}
           className="flex items-center gap-2.5"
         >
@@ -398,12 +479,12 @@ export function ThemeToggle({
         >
           <motion.div
             animate={{
-              rotate: prefersReducedMotion ? 0 : 360
+              rotate: prefersReducedMotion ? 0 : 360,
             }}
             transition={{
               duration: 1,
               repeat: Infinity,
-              ease: 'linear'
+              ease: 'linear',
             }}
             className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full"
           />

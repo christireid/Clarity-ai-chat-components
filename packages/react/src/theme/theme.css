@@ -1,109 +1,169 @@
 /**
  * Clarity Chat Theme Variables
- * 
- * Define CSS custom properties for easy theming.
- * Components use these variables for consistent styling.
+ *
+ * CSS custom properties for theming Clarity Chat components.
+ * All variables are namespaced with --clarity- prefix for safety.
+ * Legacy unprefixed names are provided for backwards compatibility.
+ *
+ * @see THEMING.md for documentation
  */
 
-@layer base {
+@layer clarity-tokens, base;
+
+@layer clarity-tokens {
   :root {
-    /* Colors - Light Mode */
-    --background: 210 20% 98%;
-    --foreground: 217 33% 18%;
+    /* ========================================
+       Color Tokens - Light Mode (Default)
+       All colors use HSL values without hsl() wrapper
+       ======================================== */
 
-    --card: 0 0% 100%;
-    --card-foreground: 217 33% 18%;
+    /* Base colors */
+    --clarity-background: 0 0% 100%;
+    --clarity-foreground: 222 47% 11%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 217 33% 18%;
+    /* Surface colors */
+    --clarity-card: 0 0% 100%;
+    --clarity-card-foreground: 222 47% 11%;
+    --clarity-popover: 0 0% 100%;
+    --clarity-popover-foreground: 222 47% 11%;
 
-    --primary: 214 90% 55%;
-    --primary-foreground: 0 0% 100%;
+    /* Brand colors */
+    --clarity-primary: 239 84% 67%;
+    --clarity-primary-foreground: 0 0% 100%;
+    --clarity-secondary: 240 5% 96%;
+    --clarity-secondary-foreground: 222 47% 11%;
+    --clarity-accent: 240 5% 96%;
+    --clarity-accent-foreground: 222 47% 11%;
 
-    --secondary: 221 16% 94%;
-    --secondary-foreground: 220 26% 24%;
+    /* State colors */
+    --clarity-destructive: 0 84% 60%;
+    --clarity-destructive-foreground: 0 0% 100%;
+    --clarity-success: 142 71% 45%;
+    --clarity-success-foreground: 0 0% 100%;
+    --clarity-warning: 38 92% 50%;
+    --clarity-warning-foreground: 22 92% 20%;
+    --clarity-info: 199 89% 48%;
+    --clarity-info-foreground: 0 0% 100%;
 
-    --muted: 220 14% 93%;
-    --muted-foreground: 218 15% 45%;
+    /* UI colors */
+    --clarity-muted: 240 5% 96%;
+    --clarity-muted-foreground: 240 4% 46%;
+    --clarity-border: 240 6% 90%;
+    --clarity-input: 240 6% 90%;
+    --clarity-ring: 239 84% 67%;
 
-    --accent: 214 70% 62%;
-    --accent-foreground: 0 0% 100%;
+    /* Extended surfaces */
+    --clarity-surface-muted: 240 5% 96%;
+    --clarity-surface-elevated: 0 0% 100%;
+    --clarity-surface-overlay: 0 0% 100%;
 
-    --destructive: 358 80% 60%;
-    --destructive-foreground: 0 0% 100%;
+    /* ========================================
+       Border Radius Tokens
+       ======================================== */
+    --clarity-radius: 0.5rem;
+    --clarity-radius-sm: calc(var(--clarity-radius) - 4px);
+    --clarity-radius-md: calc(var(--clarity-radius) - 2px);
+    --clarity-radius-lg: var(--clarity-radius);
+    --clarity-radius-xl: calc(var(--clarity-radius) + 4px);
+    --clarity-radius-2xl: calc(var(--clarity-radius) + 8px);
+    --clarity-radius-full: 9999px;
 
-    --success: 151 63% 44%;
-    --success-foreground: 0 0% 100%;
+    /* ========================================
+       Typography Tokens
+       ======================================== */
+    --clarity-font-sans:
+      system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      'Helvetica Neue', Arial, sans-serif;
+    --clarity-font-mono:
+      'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
 
-    --warning: 38 92% 56%;
-    --warning-foreground: 28 96% 18%;
-
-    --info: 207 90% 55%;
-    --info-foreground: 0 0% 100%;
-
-    --border: 216 22% 86%;
-    --input: 220 18% 96%;
-    --ring: 214 90% 55%;
-
-    /* Layered surfaces */
-    --surface-muted: 220 16% 96%;
-    --surface-elevated: 0 0% 100%;
-    --surface-overlay: 210 20% 98%;
-    
-    /* Radius */
-    --radius: 0.75rem;
-    
-    /* Fonts */
-    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-    
     /* Theme transition duration */
-    --theme-transition-duration: 240ms;
+    --clarity-theme-transition: 200ms;
+    --theme-transition-duration: var(--clarity-theme-transition);
+
+    /* ========================================
+       Backwards Compatibility Layer
+       Maps legacy variable names to new ones
+       ======================================== */
+    --background: var(--clarity-background);
+    --foreground: var(--clarity-foreground);
+    --card: var(--clarity-card);
+    --card-foreground: var(--clarity-card-foreground);
+    --popover: var(--clarity-popover);
+    --popover-foreground: var(--clarity-popover-foreground);
+    --primary: var(--clarity-primary);
+    --primary-foreground: var(--clarity-primary-foreground);
+    --secondary: var(--clarity-secondary);
+    --secondary-foreground: var(--clarity-secondary-foreground);
+    --muted: var(--clarity-muted);
+    --muted-foreground: var(--clarity-muted-foreground);
+    --accent: var(--clarity-accent);
+    --accent-foreground: var(--clarity-accent-foreground);
+    --destructive: var(--clarity-destructive);
+    --destructive-foreground: var(--clarity-destructive-foreground);
+    --success: var(--clarity-success);
+    --success-foreground: var(--clarity-success-foreground);
+    --warning: var(--clarity-warning);
+    --warning-foreground: var(--clarity-warning-foreground);
+    --info: var(--clarity-info);
+    --info-foreground: var(--clarity-info-foreground);
+    --border: var(--clarity-border);
+    --input: var(--clarity-input);
+    --ring: var(--clarity-ring);
+    --radius: var(--clarity-radius);
+    --font-sans: var(--clarity-font-sans);
+    --font-mono: var(--clarity-font-mono);
+    --surface-muted: var(--clarity-surface-muted);
+    --surface-elevated: var(--clarity-surface-elevated);
+    --surface-overlay: var(--clarity-surface-overlay);
 
     /* Shadows - Elevation System */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-md:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-    
+
     /* Legacy shadow names (deprecated, use above) */
     --shadow-soft: 0 6px 20px rgba(30, 41, 59, 0.08);
     --shadow-medium: 0 12px 32px rgba(15, 23, 42, 0.12);
     --shadow-strong: 0 18px 48px rgba(15, 23, 42, 0.16);
-    
+
     /* Colored Shadows for Emphasis */
     --shadow-primary: 0 8px 16px -4px hsl(var(--primary) / 0.3);
     --shadow-success: 0 8px 16px -4px hsl(var(--success) / 0.3);
     --shadow-warning: 0 8px 16px -4px hsl(var(--warning) / 0.3);
     --shadow-error: 0 8px 16px -4px hsl(var(--destructive) / 0.3);
-    
+
     /* Animation Timing */
     --duration-instant: 100ms;
     --duration-fast: 150ms;
     --duration-normal: 200ms;
     --duration-slow: 300ms;
     --duration-slower: 500ms;
-    
+
     /* Easing Functions */
     --ease-in: cubic-bezier(0.4, 0, 1, 1);
     --ease-out: cubic-bezier(0, 0, 0.2, 1);
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    
+
     /* Spacing Scale */
-    --space-1: 0.25rem;  /* 4px */
-    --space-2: 0.5rem;   /* 8px */
-    --space-3: 0.75rem;  /* 12px */
-    --space-4: 1rem;     /* 16px */
-    --space-5: 1.25rem;  /* 20px */
-    --space-6: 1.5rem;   /* 24px */
-    --space-8: 2rem;     /* 32px */
-    --space-10: 2.5rem;  /* 40px */
-    --space-12: 3rem;    /* 48px */
-    --space-16: 4rem;    /* 64px */
-    
+    --space-1: 0.25rem; /* 4px */
+    --space-2: 0.5rem; /* 8px */
+    --space-3: 0.75rem; /* 12px */
+    --space-4: 1rem; /* 16px */
+    --space-5: 1.25rem; /* 20px */
+    --space-6: 1.5rem; /* 24px */
+    --space-8: 2rem; /* 32px */
+    --space-10: 2.5rem; /* 40px */
+    --space-12: 3rem; /* 48px */
+    --space-16: 4rem; /* 64px */
+
     /* Z-index Scale */
     --z-base: 0;
     --z-dropdown: 1000;
@@ -115,18 +175,18 @@
     --z-tooltip: 1600;
     --z-toast: 1700;
   }
-  
+
   /* Smooth theme transitions */
   .theme-transitioning,
   .theme-transitioning * {
-    transition: 
+    transition:
       background-color var(--theme-transition-duration) ease-in-out,
       border-color var(--theme-transition-duration) ease-in-out,
       color var(--theme-transition-duration) ease-in-out,
       fill var(--theme-transition-duration) ease-in-out,
       stroke var(--theme-transition-duration) ease-in-out !important;
   }
-  
+
   /* Prevent transition on elements that should change immediately */
   .theme-transitioning img,
   .theme-transitioning video,
@@ -135,67 +195,67 @@
     transition: none !important;
   }
 
-  .dark {
-    /* Colors - Dark Mode */
-    --background: 222 47% 11%;
-    --foreground: 210 40% 96%;
+  /* ========================================
+     Dark Mode
+     ======================================== */
+  .dark,
+  [data-theme='dark'] {
+    /* Base colors */
+    --clarity-background: 222 47% 11%;
+    --clarity-foreground: 210 40% 98%;
 
-    --card: 222 36% 16%;
-    --card-foreground: 210 40% 96%;
+    /* Surface colors */
+    --clarity-card: 222 47% 11%;
+    --clarity-card-foreground: 210 40% 98%;
+    --clarity-popover: 222 47% 11%;
+    --clarity-popover-foreground: 210 40% 98%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 96%;
+    /* Brand colors */
+    --clarity-primary: 239 84% 67%;
+    --clarity-primary-foreground: 0 0% 100%;
+    --clarity-secondary: 217 33% 17%;
+    --clarity-secondary-foreground: 210 40% 98%;
+    --clarity-accent: 217 33% 17%;
+    --clarity-accent-foreground: 210 40% 98%;
 
-    --primary: 214 88% 72%;
-    --primary-foreground: 222 47% 11%;
+    /* State colors */
+    --clarity-destructive: 0 63% 31%;
+    --clarity-destructive-foreground: 210 40% 98%;
+    --clarity-success: 142 71% 45%;
+    --clarity-success-foreground: 0 0% 100%;
+    --clarity-warning: 38 92% 50%;
+    --clarity-warning-foreground: 22 92% 20%;
+    --clarity-info: 199 89% 48%;
+    --clarity-info-foreground: 0 0% 100%;
 
-    --secondary: 219 20% 22%;
-    --secondary-foreground: 210 40% 96%;
+    /* UI colors */
+    --clarity-muted: 217 33% 17%;
+    --clarity-muted-foreground: 215 20% 65%;
+    --clarity-border: 217 33% 17%;
+    --clarity-input: 217 33% 17%;
+    --clarity-ring: 239 84% 67%;
 
-    --muted: 219 18% 26%;
-    --muted-foreground: 216 16% 70%;
+    /* Extended surfaces */
+    --clarity-surface-muted: 217 33% 17%;
+    --clarity-surface-elevated: 222 47% 13%;
+    --clarity-surface-overlay: 222 47% 9%;
 
-    --accent: 214 69% 66%;
-    --accent-foreground: 221 47% 12%;
+    /* Dark mode shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.6);
+    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.3);
 
-    --destructive: 358 82% 62%;
-    --destructive-foreground: 210 40% 96%;
-
-    --success: 152 64% 48%;
-    --success-foreground: 221 47% 12%;
-
-    --warning: 40 94% 60%;
-    --warning-foreground: 221 47% 12%;
-
-    --info: 207 90% 68%;
-    --info-foreground: 221 47% 12%;
-
-    --border: 220 16% 28%;
-    --input: 220 22% 18%;
-    --ring: 214 88% 72%;
-
-    --surface-muted: 220 21% 18%;
-    --surface-elevated: 222 36% 16%;
-    --surface-overlay: 222 43% 12%;
-
-    /* Shadows - Elevation System (Dark Mode) */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
-    
-    /* Legacy shadow names (deprecated, use above) */
-    --shadow-soft: 0 12px 32px rgba(6, 11, 21, 0.55);
-    --shadow-medium: 0 18px 48px rgba(6, 11, 21, 0.6);
-    --shadow-strong: 0 28px 60px rgba(6, 11, 21, 0.65);
-    
-    /* Colored Shadows for Emphasis (Dark Mode) */
-    --shadow-primary: 0 8px 16px -4px hsl(var(--primary) / 0.4);
-    --shadow-success: 0 8px 16px -4px hsl(var(--success) / 0.4);
-    --shadow-warning: 0 8px 16px -4px hsl(var(--warning) / 0.4);
-    --shadow-error: 0 8px 16px -4px hsl(var(--destructive) / 0.4);
+    /* Colored shadows - more visible in dark mode */
+    --shadow-primary: 0 4px 14px -3px hsl(var(--clarity-primary) / 0.45);
+    --shadow-success: 0 4px 14px -3px hsl(var(--clarity-success) / 0.45);
+    --shadow-warning: 0 4px 14px -3px hsl(var(--clarity-warning) / 0.45);
+    --shadow-error: 0 4px 14px -3px hsl(var(--clarity-destructive) / 0.45);
   }
 }
 
@@ -203,10 +263,12 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 }
 
@@ -215,27 +277,27 @@
   .animate-in {
     animation: enter 0.2s ease-out;
   }
-  
+
   .animate-out {
     animation: exit 0.15s ease-in forwards;
   }
-  
+
   .fade-in {
     animation: fadeIn 0.3s ease-out;
   }
-  
+
   .fade-out {
     animation: fadeOut 0.2s ease-in forwards;
   }
-  
+
   .slide-in-from-top {
     animation: slideInFromTop 0.3s ease-out;
   }
-  
+
   .slide-in-from-bottom {
     animation: slideInFromBottom 0.3s ease-out;
   }
-  
+
   .scale-in {
     animation: scaleIn 0.2s ease-out;
   }
@@ -316,7 +378,8 @@
 
 /* Micro-interaction Animations */
 @keyframes pulse-soft {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -325,7 +388,8 @@
 }
 
 @keyframes bounce-subtle {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -334,19 +398,28 @@
 }
 
 @keyframes shake-x {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-4px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(4px);
   }
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
   }
   50% {
@@ -364,7 +437,8 @@
 }
 
 @keyframes ping {
-  75%, 100% {
+  75%,
+  100% {
     transform: scale(2);
     opacity: 0;
   }
@@ -481,7 +555,9 @@
 
 /* Typing Indicator Dots */
 @keyframes typing-dot {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: translateY(0);
     opacity: 0.4;
   }

@@ -87,17 +87,25 @@ Generate a full palette from a single color:
 ```tsx
 import { createTheme, ThemeProvider } from '@clarity-chat/react'
 
-const theme = createTheme({
+const myTheme = createTheme({
   brandColor: '#6366f1', // Your brand's primary color
 })
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider defaultTheme={{ customTheme: myTheme }}>
       <ClarityChat api="/api/chat" />
     </ThemeProvider>
   )
 }
+```
+
+Alternatively, use `simpleConfig` for inline configuration:
+
+```tsx
+<ThemeProvider defaultTheme={{ simpleConfig: { brandColor: '#6366f1' } }}>
+  <ClarityChat api="/api/chat" />
+</ThemeProvider>
 ```
 
 ### 3. Custom Theme Object
@@ -199,7 +207,7 @@ import {
   spacingTokens,
   radiusTokens,
   fontFamilyTokens,
-  shadowTokens,
+  lightShadows,
 } from '@clarity-chat/react'
 
 // Use in your components
@@ -209,6 +217,7 @@ const MyComponent = () => (
       padding: spacingTokens[4], // 1rem
       borderRadius: radiusTokens.lg, // 0.5rem
       fontFamily: fontFamilyTokens.sans,
+      boxShadow: lightShadows.md,
     }}
   >
     Content

@@ -40,6 +40,7 @@ export default defineConfig({
       'src/safety/__tests__/**/*.test.ts',
       'src/hooks/__tests__/**/*.test.ts',
       'src/utils/__tests__/**/*.test.ts',
+      'src/theme/__tests__/**/*.test.ts',
       'src/components/__tests__/**/*.test.tsx',
     ],
     // Exclude heavy tests that cause memory issues
