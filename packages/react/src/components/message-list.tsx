@@ -171,7 +171,11 @@ export function MessageList({
   const showEmptyState = messages.length === 0 && !isLoading && emptyState
 
   // Check if any message is currently streaming (for aria-busy)
-  const isStreaming = messages.some((m) => m.status === 'streaming')
+  // React 19 compiler auto-memoizes; useMemo added for React 18 compatibility
+  const isStreaming = React.useMemo(
+    () => messages.some((m) => m.status === 'streaming'),
+    [messages]
+  )
 
   return (
     <div

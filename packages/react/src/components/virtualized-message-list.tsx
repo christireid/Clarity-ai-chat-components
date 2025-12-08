@@ -261,7 +261,11 @@ export function VirtualizedMessageList({
   }, [messages.length])
 
   // Check if any message is currently streaming (for aria-busy)
-  const isStreaming = messages.some((m) => m.status === 'streaming')
+  // React 19 compiler auto-memoizes; useMemo added for React 18 compatibility
+  const isStreaming = React.useMemo(
+    () => messages.some((m) => m.status === 'streaming'),
+    [messages]
+  )
 
   return (
     <div
@@ -323,7 +327,11 @@ export function AutoVirtualizedMessageList({
 
   // Standard rendering for small lists
   // Check if any message is currently streaming (for aria-busy)
-  const isStreaming = messages.some((m) => m.status === 'streaming')
+  // React 19 compiler auto-memoizes; useMemo added for React 18 compatibility
+  const isStreaming = React.useMemo(
+    () => messages.some((m) => m.status === 'streaming'),
+    [messages]
+  )
 
   return (
     <div
