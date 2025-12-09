@@ -16,6 +16,12 @@ The generation system produces:
 # Generate llms.txt files
 cd apps/docs
 pnpm run generate:llms
+
+# Preview without writing files (dry-run)
+pnpm run generate:llms:preview
+
+# Watch mode for development
+pnpm run generate:llms:watch
 ```
 
 ## File Structure
@@ -38,8 +44,59 @@ scripts/
 1. **Discovery**: Scans `app/` directory for all `page.tsx` files
 2. **Validation**: Checks navigation config against discovered pages
 3. **Extraction**: Extracts content from JSX using regex patterns
-4. **Generation**: Creates `llms.txt` and `llms-full.txt` files
-5. **Output**: Writes files to `public/` directory
+4. **Token Counting**: Uses GPT tokenizer for accurate token counts
+5. **Generation**: Creates `llms.txt`, `llms-full.txt`, and `llms-metrics.json`
+6. **Output**: Writes files to `public/` directory with metrics dashboard
+
+## Features
+
+### Metrics Dashboard
+
+The generation script outputs a visual metrics dashboard showing:
+
+- File sizes in human-readable format
+- Token distribution by category
+- Page statistics (processed, skipped, truncated)
+- Warning summary
+
+### Metrics Comparison
+
+When running generation, the script compares with the previous run (if `llms-metrics.json` exists)
+and shows deltas:
+
+```
+📈 COMPARISON WITH PREVIOUS RUN
+──────────────────────────────────────────────────
+   Previous: 12/9/2025, 1:19:14 PM
+
+   Pages:    360 (↑ +5)
+   Tokens:   326,539 (↑ +1,234)
+   Warnings: 8 (↓ -2)
+──────────────────────────────────────────────────
+```
+
+### Content Quality Validation
+
+The generator validates extracted content and warns about:
+
+- Empty or very short content
+- Pages that are mostly code blocks
+- Potential JSX leakage (raw JSX in output)
+
+### Semantic Organization
+
+The `llms-full.txt` file organizes content by category with section headers, making it easier for AI
+systems to navigate:
+
+```markdown
+## Learn
+
+<doc url="/learn/quick-start" title="Quick Start">...</doc>
+
+## Reference
+
+<doc url="/reference/components/button" title="Button">...</doc>
+```
 
 ## Updating Navigation Config
 

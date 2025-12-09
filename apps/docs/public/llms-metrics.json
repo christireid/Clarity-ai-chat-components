@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2025-12-09T12:55:17.254Z",
+  "generatedAt": "2025-12-09T13:24:33.697Z",
   "totalPages": 360,
   "totalTokens": 326539,
   "llmsTxtTokens": 2188,
   "fileSizes": {
     "llmsTxtBytes": 9647,
-    "llmsFullTxtBytes": 1534638,
+    "llmsFullTxtBytes": 1535178,
     "llmsTxtHuman": "9.42 KB",
     "llmsFullTxtHuman": "1.46 MB"
   },
@@ -121,5 +121,5 @@
   ],
   "skippedCount": 0,
   "truncatedCount": 0,
-  "warningCount": 0
+  "warningCount": 8
 }

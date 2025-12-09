@@ -11,9 +11,10 @@
  *   tsx scripts/generate-llms.ts
  */
 
-import { readFile, writeFile, mkdir, access } from 'fs/promises'
+import { readFile, writeFile, mkdir, access, stat } from 'fs/promises'
 import { join, relative, dirname } from 'path'
 import { glob } from 'glob'
+import { watch } from 'chokidar'
 import {
   navigationConfig,
   projectDescription,
@@ -46,6 +47,71 @@ const MAX_PAGE_TOKENS = 50000
 const args = process.argv.slice(2)
 const DRY_RUN = args.includes('--dry-run') || args.includes('--preview')
 const VERBOSE = args.includes('--verbose') || args.includes('-v')
+const WATCH_MODE = args.includes('--watch') || args.includes('-w')
+
+/**
+ * Previous metrics from last generation
+ */
+interface PreviousMetrics {
+  generatedAt: string
+  totalPages: number
+  totalTokens: number
+  llmsTxtTokens?: number
+  warningCount: number
+}
+
+/**
+ * Load previous metrics from llms-metrics.json if it exists
+ */
+async function loadPreviousMetrics(): Promise<PreviousMetrics | null> {
+  const metricsPath = join(OUTPUT_DIR, 'llms-metrics.json')
+  try {
+    const content = await readFile(metricsPath, 'utf-8')
+    return JSON.parse(content) as PreviousMetrics
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Format a delta with arrow and color indicator
+ */
+function formatDelta(current: number, previous: number, unit = ''): string {
+  const delta = current - previous
+  if (delta === 0) return `${current.toLocaleString()}${unit} (no change)`
+  const arrow = delta > 0 ? '↑' : '↓'
+  const sign = delta > 0 ? '+' : ''
+  return `${current.toLocaleString()}${unit} (${arrow} ${sign}${delta.toLocaleString()})`
+}
+
+/**
+ * Print metrics comparison with previous run
+ */
+function printMetricsComparison(
+  stats: GenerationStats,
+  previous: PreviousMetrics
+): void {
+  console.log('')
+  console.log('📈 COMPARISON WITH PREVIOUS RUN')
+  console.log('─'.repeat(50))
+  console.log(`   Previous: ${new Date(previous.generatedAt).toLocaleString()}`)
+  console.log('')
+  console.log(
+    `   Pages:    ${formatDelta(stats.totalPages, previous.totalPages)}`
+  )
+  console.log(
+    `   Tokens:   ${formatDelta(stats.totalTokens, previous.totalTokens)}`
+  )
+  if (stats.llmsTxtTokens && previous.llmsTxtTokens) {
+    console.log(
+      `   Nav:      ${formatDelta(stats.llmsTxtTokens, previous.llmsTxtTokens)}`
+    )
+  }
+  console.log(
+    `   Warnings: ${formatDelta(stats.warnings.length, previous.warningCount)}`
+  )
+  console.log('─'.repeat(50))
+}
 
 /**
  * Format bytes to human-readable string
@@ -399,6 +465,66 @@ function validateNavigationCoverage(
 }
 
 /**
+ * Validate content quality for a page
+ */
+interface ContentQualityResult {
+  urlPath: string
+  issue: string
+  severity: 'warning' | 'error'
+}
+
+function validateContentQuality(
+  urlPath: string,
+  title: string,
+  content: string,
+  codeBlockCount: number
+): ContentQualityResult | null {
+  const MIN_CONTENT_LENGTH = 50
+  const MIN_PROSE_RATIO = 0.1 // At least 10% should be prose (not code)
+
+  // Check for empty or very short content
+  if (!content || content.trim().length === 0) {
+    return {
+      urlPath,
+      issue: `Empty content extracted from "${title}"`,
+      severity: 'error',
+    }
+  }
+
+  if (content.trim().length < MIN_CONTENT_LENGTH) {
+    return {
+      urlPath,
+      issue: `Very short content (${content.trim().length} chars) in "${title}"`,
+      severity: 'warning',
+    }
+  }
+
+  // Check if content is mostly code blocks (poor extraction)
+  const codeBlockMarkers = (content.match(/```/g) || []).length / 2
+  const totalLength = content.length
+  const codeBlockLength = codeBlockCount * 200 // Rough estimate
+
+  if (totalLength > 0 && codeBlockLength / totalLength > 0.9) {
+    return {
+      urlPath,
+      issue: `Content is almost entirely code blocks in "${title}"`,
+      severity: 'warning',
+    }
+  }
+
+  // Check for likely extraction failure patterns
+  if (content.includes('className="') && !content.includes('```')) {
+    return {
+      urlPath,
+      issue: `Raw JSX may have leaked into "${title}"`,
+      severity: 'warning',
+    }
+  }
+
+  return null
+}
+
+/**
  * Validate navigation item descriptions for quality
  */
 function validateDescriptions(
@@ -514,6 +640,18 @@ async function generateLlmsFullTxt(
       const markdown = contentToMarkdown(extracted)
       const pageTokens = estimateTokens(markdown)
 
+      // Validate content quality
+      const qualityIssue = validateContentQuality(
+        urlPath,
+        extracted.title,
+        markdown,
+        extracted.codeBlocks.length
+      )
+      if (qualityIssue) {
+        const prefix = qualityIssue.severity === 'error' ? '❌' : '⚠️'
+        stats.warnings.push(`${prefix} ${qualityIssue.issue}`)
+      }
+
       // Check if we'd exceed the limit
       if (totalTokens + pageTokens > MAX_TOKENS) {
         stats.warnings.push(`Reached token limit at ${urlPath}`)
@@ -567,23 +705,67 @@ async function generateLlmsFullTxt(
     })
   )
 
-  // Build TOC
-  let tocIndex = 1
+  // Group pages by category for semantic organization
+  const pagesByCategory = new Map<string, typeof pageContents>()
   for (const page of pageContents) {
-    const anchor = page.urlPath.replace(/\//g, '-').replace(/^-/, '')
-    lines.push(`${tocIndex}. [${page.title}](#${anchor})`)
-    tocIndex++
+    const existing = pagesByCategory.get(page.category) || []
+    existing.push(page)
+    pagesByCategory.set(page.category, existing)
+  }
+
+  // Define category order for logical presentation
+  const categoryOrder = [
+    'Learn',
+    'Guides',
+    'Reference',
+    'Cookbook',
+    'Examples',
+    'Playground',
+    'Tools',
+    'Enterprise',
+    'Integrations',
+    'Blog',
+    'Home',
+  ]
+
+  // Sort categories: known categories first in order, then alphabetically
+  const sortedCategories = Array.from(pagesByCategory.keys()).sort((a, b) => {
+    const aIndex = categoryOrder.indexOf(a)
+    const bIndex = categoryOrder.indexOf(b)
+    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex
+    if (aIndex !== -1) return -1
+    if (bIndex !== -1) return 1
+    return a.localeCompare(b)
+  })
+
+  // Build TOC with section headers
+  let tocIndex = 1
+  for (const category of sortedCategories) {
+    const categoryPages = pagesByCategory.get(category) || []
+    const categoryAnchor = category.toLowerCase().replace(/\s+/g, '-')
+    lines.push(`\n### ${category}`)
+    for (const page of categoryPages) {
+      const anchor = page.urlPath.replace(/\//g, '-').replace(/^-/, '')
+      lines.push(`${tocIndex}. [${page.title}](#${anchor})`)
+      tocIndex++
+    }
   }
   lines.push('')
   lines.push('---')
   lines.push('')
 
-  // Add page contents with XML-style delimiters (Claude-optimized)
-  for (const page of pageContents) {
-    lines.push(`<doc url="${page.urlPath}" title="${page.title}">`)
-    lines.push(page.content)
-    lines.push('</doc>')
+  // Add page contents organized by section with XML-style delimiters
+  for (const category of sortedCategories) {
+    const categoryPages = pagesByCategory.get(category) || []
+    lines.push(`## ${category}`)
     lines.push('')
+
+    for (const page of categoryPages) {
+      lines.push(`<doc url="${page.urlPath}" title="${page.title}">`)
+      lines.push(page.content)
+      lines.push('</doc>')
+      lines.push('')
+    }
   }
 
   stats.totalTokens = totalTokens
@@ -601,6 +783,9 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
   console.log(`📁 Docs directory: ${DOCS_DIR}`)
   console.log(`📂 Output directory: ${OUTPUT_DIR}`)
   console.log('')
+
+  // Load previous metrics for comparison
+  const previousMetrics = await loadPreviousMetrics()
 
   // Validate directories exist
   await validateDirectories()
@@ -675,6 +860,11 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
   // Print metrics dashboard
   printMetricsDashboard(stats)
 
+  // Print comparison with previous run if available
+  if (previousMetrics) {
+    printMetricsComparison(stats, previousMetrics)
+  }
+
   // Print warnings if any
   if (stats.warnings.length > 0) {
     console.log('')
@@ -702,16 +892,84 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
   }
 }
 
+/**
+ * Start watch mode for continuous regeneration
+ */
+async function startWatchMode(): Promise<void> {
+  console.log('👀 Starting watch mode...')
+  console.log(`   Watching: ${DOCS_DIR}`)
+  console.log('   Press Ctrl+C to stop\n')
+
+  // Initial generation
+  await generateLlmsDocs()
+
+  // Debounce timer
+  let debounceTimer: NodeJS.Timeout | null = null
+  const DEBOUNCE_MS = 500
+
+  // Watch for changes
+  const watcher = watch(join(DOCS_DIR, '**/*.tsx'), {
+    ignored: /node_modules/,
+    persistent: true,
+    ignoreInitial: true,
+  })
+
+  const regenerate = () => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer)
+    }
+    debounceTimer = setTimeout(async () => {
+      console.log('\n🔄 Change detected, regenerating...\n')
+      try {
+        await generateLlmsDocs()
+      } catch (error) {
+        console.error('❌ Regeneration failed:', error)
+      }
+    }, DEBOUNCE_MS)
+  }
+
+  watcher
+    .on('change', (path) => {
+      console.log(`   📝 Changed: ${relative(DOCS_DIR, path)}`)
+      regenerate()
+    })
+    .on('add', (path) => {
+      console.log(`   ➕ Added: ${relative(DOCS_DIR, path)}`)
+      regenerate()
+    })
+    .on('unlink', (path) => {
+      console.log(`   ➖ Removed: ${relative(DOCS_DIR, path)}`)
+      regenerate()
+    })
+    .on('error', (error) => {
+      console.error('Watch error:', error)
+    })
+
+  // Keep process alive
+  process.on('SIGINT', () => {
+    console.log('\n\n👋 Watch mode stopped.')
+    watcher.close()
+    process.exit(0)
+  })
+}
+
 // Run if executed directly
 if (process.argv[1]?.includes('generate-llms')) {
-  generateLlmsDocs()
-    .then((result) => {
-      process.exit(0)
-    })
-    .catch((error) => {
-      console.error('❌ Generation failed:', error)
+  if (WATCH_MODE) {
+    startWatchMode().catch((error) => {
+      console.error('❌ Watch mode failed:', error)
       process.exit(1)
     })
+  } else {
+    generateLlmsDocs()
+      .then(() => {
+        process.exit(0)
+      })
+      .catch((error) => {
+        console.error('❌ Generation failed:', error)
+        process.exit(1)
+      })
+  }
 }
 
 export { generateLlmsDocs }
