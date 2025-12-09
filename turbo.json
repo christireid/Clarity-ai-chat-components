@@ -37,7 +37,15 @@
     "test": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "vitest.config.*", "vitest.setup.*"],
+      "outputs": [],
+      "cache": true,
+      "env": ["CI"]
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "vitest.config.*", "vitest.setup.*"],
       "outputs": ["coverage/**"],
+      "cache": false,
       "env": ["CI"]
     },
     "clean": {

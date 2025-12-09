@@ -56,6 +56,19 @@ interface LicenseValidationAPIResponse {
 }
 
 /**
+ * Type guard to validate API response shape at runtime
+ */
+function isValidAPIResponse(
+  data: unknown
+): data is LicenseValidationAPIResponse {
+  if (typeof data !== 'object' || data === null) {
+    return false
+  }
+  const obj = data as Record<string, unknown>
+  return typeof obj['valid'] === 'boolean'
+}
+
+/**
  * Validate with API endpoint
  */
 async function validateWithAPI(
@@ -79,7 +92,15 @@ async function validateWithAPI(
       }
     }
 
-    const data = (await response.json()) as LicenseValidationAPIResponse
+    const data: unknown = await response.json()
+    if (!isValidAPIResponse(data)) {
+      return {
+        valid: false,
+        error: 'Invalid response from license server',
+        validatedAt: new Date(),
+      }
+    }
+
     return {
       valid: data.valid,
       license: data.license,
