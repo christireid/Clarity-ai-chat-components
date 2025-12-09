@@ -1,19 +1,19 @@
 /**
  * useChat - Unified chat hook with sensible defaults
- * 
+ *
  * This is a simplified wrapper around useClarityChat that provides:
  * - Automatic message conversion
  * - Better defaults
  * - Common patterns built-in
- * 
+ *
  * For maximum simplicity, use the ClarityChat component instead.
  * For maximum control, use useClarityChat directly.
- * 
+ *
  * @example
  * ```tsx
  * // Simple usage
  * const { messages, sendMessage, isLoading } = useChat({ api: '/api/chat' })
- * 
+ *
  * // With options
  * const chat = useChat({
  *   api: '/api/chat',
@@ -29,7 +29,10 @@ import * as React from 'react'
 import { useClarityChat, type UseClarityChatOptions } from './use-clarity-chat'
 import { convertCoreMessagesToMessages } from '../utils/message-conversion'
 import type { Message } from '@clarity-chat/types'
-import { validateApiEndpoint, validateStorageKey } from '../utils/runtime-validation'
+import {
+  validateApiEndpoint,
+  validateStorageKey,
+} from '../utils/runtime-validation'
 
 export interface UseChatOptions extends UseClarityChatOptions {
   /** Enable automatic message persistence to localStorage (default: false) */
@@ -63,19 +66,21 @@ export interface UseChatReturn {
 
 /**
  * useChat - Simplified chat hook with sensible defaults
- * 
+ *
  * This hook provides a simpler API than useClarityChat while maintaining
  * access to all advanced features through the `chat` property.
- * 
+ *
  * @param options - Configuration options
  * @returns Simplified chat interface + full chat object
  */
 export function useChat(options: UseChatOptions = {}): UseChatReturn {
   // Runtime validation with developer-friendly errors
-  validateApiEndpoint(options.api, 'useChat')
+  if (options.api) {
+    validateApiEndpoint(options.api, 'useChat')
+  }
 
   // Validate storageKey if persistence is enabled
-  if (options.persistMessages) {
+  if (options.persistMessages && options.storageKey) {
     validateStorageKey(options.storageKey, 'useChat')
   }
 

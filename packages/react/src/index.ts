@@ -849,7 +849,12 @@ export * from './templates'
 // UTILITIES & TYPES
 // ============================================================================
 
-export * from './utils'
+// Selective utils exports to avoid conflicts with adapters (ModelConfig)
+export { cn } from './utils/cn'
+// compressPrompt is already exported above
+export * from './utils/mobile'
+export * from './utils/rate-limiting'
+export * from './utils/hybrid-search'
 export * from './types/chat-types'
 export type {
   MessageContent,

@@ -1,16 +1,16 @@
 /**
  * ClarityToolResult Component
- * 
+ *
  * Renders tool execution results using registered UI components.
  * Falls back to default rendering if no component is registered for the tool.
- * 
+ *
  * @example
  * ```tsx
  * const registry = createToolUIRegistry({
  *   weather: WeatherResult,
  *   search: SearchResults,
  * })
- * 
+ *
  * <ClarityToolResult
  *   registry={registry}
  *   toolCall={toolCall}
@@ -22,17 +22,24 @@
 
 import * as React from 'react'
 import type { CoreMessage } from '../hooks/use-chat-enhanced'
-import type { ToolComponentRegistry, ToolComponentProps } from '../agents/tool-ui-registry'
+import type {
+  ToolComponentRegistry,
+  ToolComponentProps,
+} from '../agents/tool-ui-registry'
 import { Card, CardContent, CardHeader } from '@clarity-chat/primitives'
 import { ErrorBoundary } from './error-boundary'
 
-export interface ToolCall {
+/**
+ * Tool call interface for ClarityToolResult
+ * (Renamed to avoid conflict with adapter ToolCall)
+ */
+export interface ClarityToolCall {
   /** Tool name */
   name: string
-  
+
   /** Tool arguments */
   args?: Record<string, unknown>
-  
+
   /** Tool call ID */
   id?: string
 }
@@ -40,39 +47,48 @@ export interface ToolCall {
 export interface ClarityToolResultProps {
   /** Registry of tool components */
   registry: ToolComponentRegistry
-  
+
   /** Tool call information */
-  toolCall: ToolCall
-  
+  toolCall: ClarityToolCall
+
   /** Tool execution result */
   result: unknown
-  
+
   /** All messages in conversation */
   messages: CoreMessage[]
-  
+
   /** Fallback component if no registry match */
-  fallback?: React.ComponentType<{ toolCall: ToolCall; result: unknown }>
-  
+  fallback?: React.ComponentType<{ toolCall: ClarityToolCall; result: unknown }>
+
   /** Additional props to pass to tool component */
   componentProps?: Record<string, unknown>
-  
+
   /** Show tool name header */
   showHeader?: boolean
-  
+
   /** Custom className */
   className?: string
-  
+
   /** Enable error boundary for tool components (default: true) */
   enableErrorBoundary?: boolean
-  
+
   /** Custom error fallback component */
-  errorFallback?: React.ComponentType<{ error: Error; toolCall: ToolCall }>
+  errorFallback?: React.ComponentType<{
+    error: Error
+    toolCall: ClarityToolCall
+  }>
 }
 
 /**
  * Default fallback component for unregistered tools
  */
-function DefaultToolResult({ toolCall, result }: { toolCall: ToolCall; result: unknown }) {
+function DefaultToolResult({
+  toolCall,
+  result,
+}: {
+  toolCall: ClarityToolCall
+  result: unknown
+}) {
   return (
     <Card className="mt-2">
       <CardHeader>
@@ -133,21 +149,23 @@ export function ClarityToolResult({
 
   // Wrap in error boundary if enabled (default: true)
   if (enableErrorBoundary !== false) {
-    const ErrorFallback = errorFallback || (({ error, toolCall }: { error: Error; toolCall: ToolCall }) => (
-      <Card className="mt-2 border-destructive/20 bg-destructive/5">
-        <CardHeader>
-          <div className="text-sm font-semibold text-destructive">
-            Error rendering tool: {toolCall.name}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-xs text-muted-foreground">{error.message}</p>
-          <pre className="text-xs overflow-auto max-h-32 bg-muted p-2 rounded mt-2">
-            {JSON.stringify(result, null, 2)}
-          </pre>
-        </CardContent>
-      </Card>
-    ))
+    const ErrorFallback =
+      errorFallback ||
+      (({ error, toolCall }: { error: Error; toolCall: ClarityToolCall }) => (
+        <Card className="mt-2 border-destructive/20 bg-destructive/5">
+          <CardHeader>
+            <div className="text-sm font-semibold text-destructive">
+              Error rendering tool: {toolCall.name}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">{error.message}</p>
+            <pre className="text-xs overflow-auto max-h-32 bg-muted p-2 rounded mt-2">
+              {JSON.stringify(result, null, 2)}
+            </pre>
+          </CardContent>
+        </Card>
+      ))
 
     return (
       <div className={className}>

@@ -43,30 +43,86 @@ export function validateTools(tools: Tool[]): void {
 
 /**
  * Validate an API endpoint URL
+ * @param endpoint - The endpoint to validate
+ * @param componentName - Optional component name for better error messages
  * @throws Error if endpoint is invalid
  */
-export function validateApiEndpoint(endpoint: string): void {
+export function validateApiEndpoint(
+  endpoint: string,
+  componentName?: string
+): void {
+  const prefix = componentName ? `[${componentName}] ` : ''
+
   if (!endpoint || typeof endpoint !== 'string') {
-    throw new Error('API endpoint must be a non-empty string')
+    throw new Error(`${prefix}API endpoint must be a non-empty string`)
   }
 
   // Basic URL validation
   if (!endpoint.startsWith('/') && !endpoint.startsWith('http')) {
-    throw new Error('API endpoint must be a valid URL or path starting with /')
+    throw new Error(
+      `${prefix}API endpoint must be a valid URL or path starting with /`
+    )
   }
 }
 
 /**
+ * Validate that a value is one of the allowed enum values
+ * @param value - The value to validate
+ * @param paramName - The parameter name for error messages
+ * @param componentName - The component name for error messages
+ * @param allowedValues - Array of allowed values
+ * @param defaultValue - Default value to return if validation fails (if undefined, throws error)
+ * @returns The validated value or default
+ */
+export function validateEnum<T extends string>(
+  value: T | undefined,
+  paramName: string,
+  componentName: string,
+  allowedValues: readonly T[],
+  defaultValue?: T
+): T {
+  if (value === undefined) {
+    if (defaultValue !== undefined) {
+      return defaultValue
+    }
+    throw new Error(`[${componentName}] ${paramName} is required`)
+  }
+
+  if (!allowedValues.includes(value)) {
+    if (defaultValue !== undefined) {
+      console.warn(
+        `[${componentName}] Invalid ${paramName}: "${value}". ` +
+          `Must be one of: ${allowedValues.join(', ')}. Using default: "${defaultValue}"`
+      )
+      return defaultValue
+    }
+    throw new Error(
+      `[${componentName}] Invalid ${paramName}: "${value}". ` +
+        `Must be one of: ${allowedValues.join(', ')}`
+    )
+  }
+
+  return value
+}
+
+/**
  * Validate a storage key
+ * @param key - The storage key to validate
+ * @param componentName - Optional component name for better error messages
  * @throws Error if storage key is invalid
  */
-export function validateStorageKey(key: string): void {
+export function validateStorageKey(
+  key: string | undefined,
+  componentName?: string
+): void {
+  const prefix = componentName ? `[${componentName}] ` : ''
+
   if (!key || typeof key !== 'string') {
-    throw new Error('Storage key must be a non-empty string')
+    throw new Error(`${prefix}Storage key must be a non-empty string`)
   }
 
   if (key.trim().length === 0) {
-    throw new Error('Storage key cannot be empty')
+    throw new Error(`${prefix}Storage key cannot be empty`)
   }
 }
 

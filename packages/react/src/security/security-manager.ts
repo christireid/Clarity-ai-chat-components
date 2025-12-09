@@ -13,7 +13,11 @@
  */
 
 import type { EnhancedPromptInjectionConfig } from '../safety/prompt-injection-enhanced'
-import type { JailbreakPreventionConfig, Message, OutputValidationResult } from '../safety/jailbreak-prevention'
+import type {
+  JailbreakPreventionConfig,
+  SafetyMessage,
+  OutputValidationResult,
+} from '../safety/jailbreak-prevention'
 
 // These config types are defined inline since they're not exported from their modules
 type PIIDetectionConfig = Record<string, unknown>
@@ -282,7 +286,10 @@ export class SecurityManager {
   /**
    * Validate user input through all security layers
    */
-  async validateInput(input: string, context?: SecurityContext): Promise<SecurityResult> {
+  async validateInput(
+    input: string,
+    context?: SecurityContext
+  ): Promise<SecurityResult> {
     const results: SecurityCheckResult[] = []
     let sanitizedInput = input
 
@@ -403,7 +410,7 @@ export class SecurityManager {
   /**
    * Prepare messages with jailbreak prevention
    */
-  prepareMessages(messages: Message[]): Message[] {
+  prepareMessages(messages: SafetyMessage[]): SafetyMessage[] {
     if (!this.config.jailbreakPrevention?.enabled) {
       return messages
     }
@@ -422,7 +429,10 @@ export class SecurityManager {
   /**
    * Validate LLM output
    */
-  async validateOutput(output: string, context?: SecurityContext): Promise<OutputValidationResult> {
+  async validateOutput(
+    output: string,
+    context?: SecurityContext
+  ): Promise<OutputValidationResult> {
     if (!this.config.jailbreakPrevention?.enabled) {
       return { safe: true, risks: {}, action: 'allow', output }
     }
@@ -456,7 +466,9 @@ export class SecurityManager {
   private async detectPromptInjection(input: string): Promise<any> {
     if (!this.promptInjectionGuard) {
       // Lazy load
-      const { EnhancedPromptInjectionGuardrail } = require('../safety/prompt-injection-enhanced')
+      const {
+        EnhancedPromptInjectionGuardrail,
+      } = require('../safety/prompt-injection-enhanced')
       this.promptInjectionGuard = new EnhancedPromptInjectionGuardrail(
         this.config.promptInjection?.config || {}
       )
@@ -485,7 +497,9 @@ export class SecurityManager {
     if (!this.contentFilter) {
       // Lazy load
       const { ContentFilter } = require('../safety/content-filter')
-      this.contentFilter = new ContentFilter(this.config.contentModeration?.config || {})
+      this.contentFilter = new ContentFilter(
+        this.config.contentModeration?.config || {}
+      )
     }
 
     return await this.contentFilter.filter(input)
@@ -494,7 +508,10 @@ export class SecurityManager {
   /**
    * Check rate limit
    */
-  private checkRateLimit(userId: string): { allowed: boolean; remaining: number } {
+  private checkRateLimit(userId: string): {
+    allowed: boolean
+    remaining: number
+  } {
     if (!this.config.rateLimiting?.enabled) {
       return { allowed: true, remaining: -1 }
     }
@@ -577,7 +594,8 @@ export class SecurityManager {
 
     for (const event of filteredEvents) {
       eventsByType[event.type] = (eventsByType[event.type] || 0) + 1
-      eventsBySeverity[event.severity] = (eventsBySeverity[event.severity] || 0) + 1
+      eventsBySeverity[event.severity] =
+        (eventsBySeverity[event.severity] || 0) + 1
 
       if (event.userId) {
         userEventCounts[event.userId] = (userEventCounts[event.userId] || 0) + 1
@@ -594,11 +612,14 @@ export class SecurityManager {
       eventsByType: eventsByType as any,
       eventsBySeverity: eventsBySeverity as any,
       promptInjectionRate:
-        (eventsByType['prompt_injection_detected'] || 0) / Math.max(filteredEvents.length, 1),
+        (eventsByType['prompt_injection_detected'] || 0) /
+        Math.max(filteredEvents.length, 1),
       piiDetectionRate:
-        (eventsByType['pii_detected'] || 0) / Math.max(filteredEvents.length, 1),
+        (eventsByType['pii_detected'] || 0) /
+        Math.max(filteredEvents.length, 1),
       contentModerationRate:
-        (eventsByType['content_moderation_triggered'] || 0) / Math.max(filteredEvents.length, 1),
+        (eventsByType['content_moderation_triggered'] || 0) /
+        Math.max(filteredEvents.length, 1),
       averageDetectionTime: 0, // TODO: Implement timing
       topOffendingUsers,
     }
@@ -691,7 +712,12 @@ export class WebhookAlertHandler implements AlertHandler {
  */
 export class ConsoleAlertHandler implements AlertHandler {
   handle(event: SecurityEvent): void {
-    const emoji = event.severity === 'critical' ? '🚨' : event.severity === 'warning' ? '⚠️' : 'ℹ️'
+    const emoji =
+      event.severity === 'critical'
+        ? '🚨'
+        : event.severity === 'warning'
+          ? '⚠️'
+          : 'ℹ️'
     console.warn(
       `${emoji} Security Alert [${event.severity.toUpperCase()}]: ${event.type}`,
       event.details

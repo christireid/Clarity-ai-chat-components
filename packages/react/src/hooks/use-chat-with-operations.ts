@@ -96,10 +96,9 @@ export function useChatWithOperations(
     }))
   }, [messages])
 
-  // Use message operations hook
+  // Use message operations hook (only pass initial messages if operations are enabled)
   const operations = useMessageOperations({
-    initialMessages: messagesWithTimestamp,
-    enabled: enableOperations,
+    initialMessages: enableOperations ? messagesWithTimestamp : [],
   })
 
   // Sync operations with chat messages
