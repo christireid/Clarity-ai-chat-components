@@ -1,6 +1,6 @@
 /**
  * Model Adapter Types
- * 
+ *
  * Unified interface for AI model providers (OpenAI, Anthropic, Google, etc.)
  * Enables model-agnostic configuration and easy provider switching.
  */
@@ -26,6 +26,10 @@ export interface ModelConfig {
   presencePenalty?: number
   /** Stop sequences */
   stop?: string[]
+  /** Request timeout in milliseconds (default: 30000 for chat, 60000 for stream) */
+  timeout?: number
+  /** AbortSignal for request cancellation */
+  signal?: AbortSignal
   /** Streaming options */
   streamOptions?: {
     /** Callback for each token */
@@ -125,15 +129,12 @@ export interface TokenUsage {
 export interface ModelAdapter {
   /** Adapter name */
   name: string
-  
+
   /**
    * Send a chat completion request (non-streaming)
    */
-  chat(
-    messages: ChatMessage[],
-    config: ModelConfig
-  ): Promise<ChatMessage>
-  
+  chat(messages: ChatMessage[], config: ModelConfig): Promise<ChatMessage>
+
   /**
    * Stream a chat completion response
    */
@@ -141,7 +142,7 @@ export interface ModelAdapter {
     messages: ChatMessage[],
     config: ModelConfig
   ): AsyncGenerator<StreamChunk, void, unknown>
-  
+
   /**
    * Estimate cost for token usage
    */
