@@ -27,6 +27,13 @@ const ScrollProgress = dynamic(() =>
   }))
 )
 
+// Lazy load toast manager for better initial bundle
+const ToastManager = dynamic(() =>
+  import('@/components/UI/ToastManager').then((mod) => ({
+    default: mod.ToastManager,
+  }))
+)
+
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-geist-sans',
@@ -126,6 +133,7 @@ export default function RootLayout({
             <Footer />
             <DocsAssistant />
           </div>
+          <ToastManager />
         </Providers>
       </body>
     </html>
