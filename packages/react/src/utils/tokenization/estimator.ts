@@ -20,6 +20,8 @@ const MODEL_CHAR_RATIOS: Record<string, number> = {
   'gpt-4o': 4,
   'gpt-4o-mini': 4,
   'gpt-4.1': 4,
+  'gpt-4.1-mini': 4,
+  'gpt-4.1-nano': 4,
   'gpt-3.5-turbo': 4,
   o1: 4,
   'o1-mini': 4,

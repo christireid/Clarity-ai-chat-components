@@ -669,7 +669,7 @@ export function createModelBudgetMonitor(
     'gpt-4o': { maxInputTokens: 128000, reservedForOutput: 16384 },
     'gpt-4o-mini': { maxInputTokens: 128000, reservedForOutput: 16384 },
 
-    // OpenAI GPT-4.1 Family
+    // OpenAI GPT-4.1 Family (1M context per OpenAI docs, verify if specs change)
     'gpt-4.1': { maxInputTokens: 1000000, reservedForOutput: 32768 },
     'gpt-4.1-mini': { maxInputTokens: 1000000, reservedForOutput: 32768 },
     'gpt-4.1-nano': { maxInputTokens: 1000000, reservedForOutput: 32768 },
