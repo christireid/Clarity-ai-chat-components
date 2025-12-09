@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { MessageSquare, Palette, Users, FileText, Zap, Command } from 'lucide-react'
+import { ScrollReveal, ScrollRevealItem } from '@/components/UI/ScrollReveal'
 
 export const metadata: Metadata = {
   title: 'Examples',
@@ -182,29 +183,30 @@ export default function ExamplesPage() {
                   <h2 className="text-3xl font-bold">{category.title}</h2>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <ScrollReveal stagger staggerDelay={0.1} className="grid md:grid-cols-2 gap-4">
                   {category.examples.map((example) => (
-                    <Link
-                      key={example.href}
-                      href={example.href}
-                      className="group p-6 border border-border rounded-xl hover:border-brand-500 hover:shadow-lg transition-all"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <h3 className="text-xl font-semibold text-brand-600 dark:text-brand-400 group-hover:text-brand-700 dark:group-hover:text-brand-300">
-                          {example.title}
-                        </h3>
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${
-                            difficultyColor[example.difficulty as keyof typeof difficultyColor]
-                          }`}
-                        >
-                          {example.difficulty}
-                        </span>
-                      </div>
-                      <p className="text-text-secondary">{example.description}</p>
-                    </Link>
+                    <ScrollRevealItem key={example.href}>
+                      <Link
+                        href={example.href}
+                        className="group p-6 border border-border rounded-xl hover:border-brand-500 hover:shadow-lg transition-all block h-full"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <h3 className="text-xl font-semibold text-brand-600 dark:text-brand-400 group-hover:text-brand-700 dark:group-hover:text-brand-300">
+                            {example.title}
+                          </h3>
+                          <span
+                            className={`px-2 py-1 rounded text-xs font-medium ${
+                              difficultyColor[example.difficulty as keyof typeof difficultyColor]
+                            }`}
+                          >
+                            {example.difficulty}
+                          </span>
+                        </div>
+                        <p className="text-text-secondary">{example.description}</p>
+                      </Link>
+                    </ScrollRevealItem>
                   ))}
-                </div>
+                </ScrollReveal>
               </div>
             )
           })}
