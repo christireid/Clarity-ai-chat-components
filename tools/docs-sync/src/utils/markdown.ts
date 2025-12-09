@@ -21,9 +21,9 @@ export function escapeType(type: string): string {
 /** Convert a name to a URL slug */
 export function toSlug(name: string): string {
   return name
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
     .toLowerCase()
-    .replace(/([A-Z])/g, '-$1')
-    .replace(/^-/, '')
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')

@@ -4,7 +4,7 @@
  * Analyzes git diffs to identify documentation-relevant changes
  */
 
-import { minimatch } from 'glob'
+import { minimatch } from 'minimatch'
 import type {
   ChangeClassification,
   ChangeDetectionOptions,

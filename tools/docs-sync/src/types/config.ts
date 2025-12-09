@@ -94,6 +94,10 @@ export interface CLIOptions {
   version?: string
   /** Since commit/tag for changelog */
   since?: string
+  /** Check for broken internal links (verify command) */
+  checkLinks?: boolean
+  /** Check API documentation coverage (verify command) */
+  checkCoverage?: boolean
 }
 
 /** Default configuration values */

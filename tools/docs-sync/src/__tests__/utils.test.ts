@@ -116,7 +116,8 @@ describe('Markdown Utilities', () => {
       expect(table).toContain(
         '| Prop | Type | Required | Default | Description |'
       )
-      expect(table).toContain('`value`')
+      // Backticks are escaped in table cells
+      expect(table).toContain('\\`value\\`')
       expect(table).toContain('Yes')
       expect(table).toContain('No')
     })
@@ -136,7 +137,8 @@ describe('Markdown Utilities', () => {
       const table = createParametersTable(params)
 
       expect(table).toContain('| Parameter | Type | Required | Description |')
-      expect(table).toContain('`options`')
+      // Backticks are escaped in table cells
+      expect(table).toContain('\\`options\\`')
     })
   })
 

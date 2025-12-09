@@ -2,6 +2,8 @@
  * TypeScript compiler API utilities
  */
 
+import { existsSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import ts from 'typescript'
 
 /** Default compiler options for API extraction */
@@ -15,6 +17,20 @@ export const DEFAULT_COMPILER_OPTIONS: ts.CompilerOptions = {
   strict: true,
   skipLibCheck: true,
   noEmit: true,
+  types: ['node'],
+}
+
+/** Find tsconfig.json starting from a directory */
+function findTsConfig(startDir: string): string | undefined {
+  let dir = startDir
+  while (dir !== dirname(dir)) {
+    const configPath = join(dir, 'tsconfig.json')
+    if (existsSync(configPath)) {
+      return configPath
+    }
+    dir = dirname(dir)
+  }
+  return undefined
 }
 
 /** Create a TypeScript program */
@@ -22,7 +38,30 @@ export function createProgram(
   entryPoints: string[],
   options?: ts.CompilerOptions
 ): ts.Program {
-  const compilerOptions = { ...DEFAULT_COMPILER_OPTIONS, ...options }
+  // Try to find and use tsconfig.json
+  const entryDir = entryPoints[0] ? dirname(entryPoints[0]) : process.cwd()
+  const configPath = findTsConfig(entryDir)
+
+  let compilerOptions = { ...DEFAULT_COMPILER_OPTIONS, ...options }
+
+  if (configPath) {
+    const configFile = ts.readConfigFile(configPath, ts.sys.readFile)
+    if (!configFile.error) {
+      const parsed = ts.parseJsonConfigFileContent(
+        configFile.config,
+        ts.sys,
+        dirname(configPath)
+      )
+      // Merge with defaults, but keep our defaults for certain options
+      compilerOptions = {
+        ...parsed.options,
+        ...compilerOptions,
+        skipLibCheck: true,
+        noEmit: true,
+      }
+    }
+  }
+
   return ts.createProgram(entryPoints, compilerOptions)
 }
 
