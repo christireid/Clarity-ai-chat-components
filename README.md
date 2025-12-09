@@ -1447,7 +1447,7 @@ Pre-built prompt templates for common tasks:
 | [`@clarity-chat/primitives`](./packages/primitives)         | Base UI components                  | ~25KB  |
 | [`@clarity-chat/error-handling`](./packages/error-handling) | Error recovery system               | ~45KB  |
 | [`@clarity-chat/cli`](./packages/cli)                       | Developer CLI tool 🛠️               | ~15KB  |
-| [`@clarity-chat/mcp-server`](./mcp-server)                  | MCP server for AI agents 🤖         | ~20KB  |
+| [`@clarity-chat/mcp-server`](./tools/mcp-server)            | MCP server for AI agents 🤖         | ~20KB  |
 
 **New in v2.0**:
 
@@ -1664,7 +1664,7 @@ pnpm install && pnpm --filter @clarity-chat/mcp-server build
 "How much would it cost to process 1000 input tokens with Claude 3 Opus?"
 ```
 
-**[→ MCP Server Documentation](./mcp-server/README.md)**
+**[→ MCP Server Documentation](./tools/mcp-server/README.md)**
 
 ### Memory Management Tools
 

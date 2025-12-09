@@ -170,6 +170,19 @@ published to npm
 
 ---
 
+### ✅ Fixed #8: Broken README Links (Was MEDIUM)
+
+**Original Issue**: README links to MCP server used `./mcp-server` but actual path is
+`./tools/mcp-server`
+
+**Fix Applied**:
+
+- Fixed package table link: `./mcp-server` → `./tools/mcp-server`
+- Fixed documentation link: `./mcp-server/README.md` → `./tools/mcp-server/README.md`
+- Added pnpm installation note for users unfamiliar with pnpm
+
+---
+
 ## Automation Implemented
 
 ### Created: `scripts/verify-docs-exports.sh`
@@ -267,5 +280,5 @@ claims. The documentation was conservative, not inflated.
 
 ---
 
-_Report Generated: December 9, 2025_ _Audit Status: ✅ ALL ISSUES RESOLVED_ _Remaining Items: 0 (all
-actionable items fixed)_
+_Report Generated: December 9, 2025_ _Audit Status: ✅ DOCUMENTATION REMEDIATION COMPLETE_
+_Actionable Items: 0 remaining_ _Non-Blocking Items: 2 (WCAG verification, performance benchmarks)_

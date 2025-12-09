@@ -50,12 +50,15 @@ Pre-built prompt templates for common tasks:
 
 The MCP server is part of the Clarity Chat monorepo. To use it:
 
+> **Note**: This project uses [pnpm](https://pnpm.io/) for package management. Install it with
+> `npm install -g pnpm` if you don't have it.
+
 ```bash
 # Clone the repository
 git clone https://github.com/christireid/Clarity-ai-chat-components.git
 cd Clarity-ai-chat-components
 
-# Install dependencies
+# Install dependencies (requires pnpm)
 pnpm install
 
 # Build the MCP server
