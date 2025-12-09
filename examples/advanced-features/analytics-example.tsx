@@ -170,61 +170,67 @@ export function ABTestingExample() {
 
   const [userId] = React.useState(`user-${Math.random().toString(36).substr(2, 9)}`)
 
+  // Track if demo data has been initialized (intentionally runs once)
+  const hasInitialized = React.useRef(false)
+
+  // 🎯 Intentionally runs once on mount to seed demo data
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
-    // Create sample experiments if none exist
-    if (experiments.length === 0) {
-      // Experiment 1: Button color test
-      const exp1 = createExperiment(
-        'Button Color Test',
-        [
-          {
-            id: 'control',
-            name: 'Blue Button',
-            isControl: true,
-            config: { color: 'blue' },
-          },
-          {
-            id: 'variant-green',
-            name: 'Green Button',
-            isControl: false,
-            config: { color: 'green' },
-          },
-          {
-            id: 'variant-red',
-            name: 'Red Button',
-            isControl: false,
-            config: { color: 'red' },
-          },
-        ],
-        'Testing button color impact on click-through rate'
-      )
-      startExperiment(exp1.experimentId)
+    // Only initialize once
+    if (hasInitialized.current || experiments.length > 0) return
+    hasInitialized.current = true
 
-      // Experiment 2: Message layout test
-      const exp2 = createExperiment(
-        'Message Layout Test',
-        [
-          {
-            id: 'control',
-            name: 'Compact Layout',
-            isControl: true,
-            config: { layout: 'compact' },
-          },
-          {
-            id: 'variant-spacious',
-            name: 'Spacious Layout',
-            isControl: false,
-            config: { layout: 'spacious' },
-          },
-        ],
-        'Testing message layout impact on engagement'
-      )
-      startExperiment(exp2.experimentId)
+    // Experiment 1: Button color test
+    const exp1 = createExperiment(
+      'Button Color Test',
+      [
+        {
+          id: 'control',
+          name: 'Blue Button',
+          isControl: true,
+          config: { color: 'blue' },
+        },
+        {
+          id: 'variant-green',
+          name: 'Green Button',
+          isControl: false,
+          config: { color: 'green' },
+        },
+        {
+          id: 'variant-red',
+          name: 'Red Button',
+          isControl: false,
+          config: { color: 'red' },
+        },
+      ],
+      'Testing button color impact on click-through rate'
+    )
+    startExperiment(exp1.experimentId)
 
-      // Simulate some metrics
-      simulateMetrics(exp1.experimentId, exp1.variants)
-      simulateMetrics(exp2.experimentId, exp2.variants)
-    }
+    // Experiment 2: Message layout test
+    const exp2 = createExperiment(
+      'Message Layout Test',
+      [
+        {
+          id: 'control',
+          name: 'Compact Layout',
+          isControl: true,
+          config: { layout: 'compact' },
+        },
+        {
+          id: 'variant-spacious',
+          name: 'Spacious Layout',
+          isControl: false,
+          config: { layout: 'spacious' },
+        },
+      ],
+      'Testing message layout impact on engagement'
+    )
+    startExperiment(exp2.experimentId)
+
+    // Simulate some metrics
+    simulateMetrics(exp1.experimentId, exp1.variants)
+    simulateMetrics(exp2.experimentId, exp2.variants)
   }, [])
 
   const simulateMetrics = (expId: string, variants: ExperimentVariant[]) => {
@@ -283,36 +289,42 @@ export function ChatWithABTestExample() {
   const [userId] = React.useState(`user-${Date.now()}`)
   const [variant, setVariant] = React.useState<ExperimentVariant | null>(null)
 
+  // Track if demo data has been initialized (intentionally runs once)
+  const hasInitialized = React.useRef(false)
+
+  // 🎯 Intentionally runs once on mount to seed demo data
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
-    // Create experiment if doesn't exist
-    if (experiments.length === 0) {
-      const exp = createExperiment(
-        'Chat Theme Test',
-        [
-          { id: 'control', name: 'Default Theme', isControl: true, config: { theme: 'default' } },
-          { id: 'variant-dark', name: 'Dark Theme', isControl: false, config: { theme: 'dark' } },
-          { id: 'variant-minimal', name: 'Minimal Theme', isControl: false, config: { theme: 'minimal' } },
-        ],
-        'Testing chat theme impact on engagement'
-      )
-      startExperiment(exp.experimentId)
+    // Only initialize once
+    if (hasInitialized.current || experiments.length > 0) return
+    hasInitialized.current = true
 
-      // Get variant for this user
-      const v = getVariant(exp.experimentId, userId)
-      setVariant(v)
+    const exp = createExperiment(
+      'Chat Theme Test',
+      [
+        { id: 'control', name: 'Default Theme', isControl: true, config: { theme: 'default' } },
+        { id: 'variant-dark', name: 'Dark Theme', isControl: false, config: { theme: 'dark' } },
+        { id: 'variant-minimal', name: 'Minimal Theme', isControl: false, config: { theme: 'minimal' } },
+      ],
+      'Testing chat theme impact on engagement'
+    )
+    startExperiment(exp.experimentId)
 
-      // Record impression
-      if (v) {
-        recordMetric(exp.experimentId, v.id, {
-          variantId: v.id,
-          impressions: 1,
-          conversions: 0,
-          conversionRate: 0,
-          avgEngagementTime: 0,
-          bounceRate: 0,
-          users: 1,
-        })
-      }
+    // Get variant for this user
+    const v = getVariant(exp.experimentId, userId)
+    setVariant(v)
+
+    // Record impression
+    if (v) {
+      recordMetric(exp.experimentId, v.id, {
+        variantId: v.id,
+        impressions: 1,
+        conversions: 0,
+        conversionRate: 0,
+        avgEngagementTime: 0,
+        bounceRate: 0,
+        users: 1,
+      })
     }
   }, [])
 
