@@ -215,7 +215,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'openai',
     encoding: 'o200k_base',
     charsPerToken: 4,
-    contextWindow: 1048576, // 1M tokens
+    contextWindow: 1000000, // 1M tokens
     maxOutputTokens: 32768,
     recommendedOutputReserve: 32768,
     inputCostPer1M: 2.0,
@@ -235,7 +235,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'openai',
     encoding: 'o200k_base',
     charsPerToken: 4,
-    contextWindow: 1048576, // 1M tokens
+    contextWindow: 1000000, // 1M tokens
     maxOutputTokens: 32768,
     recommendedOutputReserve: 32768,
     inputCostPer1M: 0.4,
@@ -255,7 +255,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'openai',
     encoding: 'o200k_base',
     charsPerToken: 4,
-    contextWindow: 1048576, // 1M tokens
+    contextWindow: 1000000, // 1M tokens
     maxOutputTokens: 32768,
     recommendedOutputReserve: 32768,
     inputCostPer1M: 0.1,
@@ -543,7 +543,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'google',
     encoding: 'gemini',
     charsPerToken: 4,
-    contextWindow: 2097152, // 2M tokens
+    contextWindow: 2000000, // 2M tokens
     maxOutputTokens: 8192,
     recommendedOutputReserve: 8192,
     inputCostPer1M: 1.25,
@@ -562,7 +562,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'google',
     encoding: 'gemini',
     charsPerToken: 4,
-    contextWindow: 1048576, // 1M tokens
+    contextWindow: 1000000, // 1M tokens
     maxOutputTokens: 8192,
     recommendedOutputReserve: 8192,
     inputCostPer1M: 0.075,
@@ -581,7 +581,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'google',
     encoding: 'gemini',
     charsPerToken: 4,
-    contextWindow: 1048576, // 1M tokens
+    contextWindow: 1000000, // 1M tokens
     maxOutputTokens: 8192,
     recommendedOutputReserve: 8192,
     inputCostPer1M: 0.1,
@@ -601,7 +601,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'google',
     encoding: 'gemini',
     charsPerToken: 4,
-    contextWindow: 2097152, // 2M tokens
+    contextWindow: 2000000, // 2M tokens
     maxOutputTokens: 8192,
     recommendedOutputReserve: 8192,
     inputCostPer1M: 1.25,
@@ -706,7 +706,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'meta',
     encoding: 'llama3',
     charsPerToken: 4,
-    contextWindow: 131072, // 128K
+    contextWindow: 128000, // 128K
     maxOutputTokens: 4096,
     recommendedOutputReserve: 4096,
     inputCostPer1M: 0.25,
@@ -724,7 +724,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'meta',
     encoding: 'llama3',
     charsPerToken: 4,
-    contextWindow: 131072, // 128K
+    contextWindow: 128000, // 128K
     maxOutputTokens: 4096,
     recommendedOutputReserve: 4096,
     inputCostPer1M: 0.2,
@@ -742,7 +742,7 @@ export const MODEL_REGISTRY: Record<ModelId, ModelConfig> = {
     provider: 'meta',
     encoding: 'llama3',
     charsPerToken: 4,
-    contextWindow: 131072, // 128K
+    contextWindow: 128000, // 128K
     maxOutputTokens: 8192,
     recommendedOutputReserve: 8192,
     inputCostPer1M: 0.4,

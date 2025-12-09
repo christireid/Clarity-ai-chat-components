@@ -36,6 +36,10 @@ export interface TokenBudgetBarProps {
   model?: BudgetMonitorModel
   /** Show estimated cost (requires model prop) */
   showCost?: boolean
+  /** Accessible label for the progress bar (defaults to "Token Budget") */
+  ariaLabel?: string
+  /** ID for the component (used for aria relationships) */
+  id?: string
 }
 
 /**
@@ -122,8 +126,13 @@ export function TokenBudgetBar({
   animated = true,
   model,
   showCost = false,
+  ariaLabel = 'Token Budget',
+  id,
 }: TokenBudgetBarProps) {
   const [showDetails, setShowDetails] = React.useState(false)
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const tooltipId = id ? `${id}-tooltip` : React.useId()
+  const statusId = id ? `${id}-status` : React.useId()
 
   const colors = statusColorMap[usage.status]
   const sizeStyles = sizeConfig[size]
@@ -140,8 +149,72 @@ export function TokenBudgetBar({
   // Determine if we should show the exceeded overflow indicator
   const showExceeded = usage.exceededPercent > 0
 
+  // Generate accessible status description
+  const statusDescription = React.useMemo(() => {
+    const percentage = usage.utilizationPercent.toFixed(0)
+    const currentFormatted = usage.current.toLocaleString()
+    const maxFormatted = usage.effectiveMax.toLocaleString()
+    const availableFormatted = usage.available.toLocaleString()
+
+    let statusText = ''
+    switch (usage.status) {
+      case 'exceeded':
+        statusText = `Budget exceeded by ${usage.exceededPercent.toFixed(1)}%. `
+        break
+      case 'critical':
+        statusText = 'Critical: approaching token limit. '
+        break
+      case 'warning':
+        statusText = 'Warning: token usage is high. '
+        break
+      default:
+        statusText = ''
+    }
+
+    return `${statusText}${percentage}% used. ${currentFormatted} of ${maxFormatted} tokens. ${availableFormatted} available.`
+  }, [usage])
+
+  // Keyboard handler for interactive elements
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent) => {
+      if (onClick && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault()
+        onClick()
+      }
+      if (showTooltip && event.key === 'Escape' && showDetails) {
+        setShowDetails(false)
+      }
+    },
+    [onClick, showTooltip, showDetails]
+  )
+
+  // Focus/blur handlers for tooltip
+  const handleFocus = React.useCallback(() => {
+    if (showTooltip) setShowDetails(true)
+  }, [showTooltip])
+
+  const handleBlur = React.useCallback(
+    (event: React.FocusEvent) => {
+      // Only close if focus leaves the container entirely
+      if (
+        showTooltip &&
+        containerRef.current &&
+        !containerRef.current.contains(event.relatedTarget)
+      ) {
+        setShowDetails(false)
+      }
+    },
+    [showTooltip]
+  )
+
   const BarContent = (
     <div
+      role="progressbar"
+      aria-valuenow={usage.current}
+      aria-valuemin={0}
+      aria-valuemax={usage.effectiveMax}
+      aria-label={ariaLabel}
+      aria-describedby={statusId}
       className={cn(
         'relative w-full rounded-full bg-muted overflow-hidden',
         sizeStyles.height
@@ -158,6 +231,7 @@ export function TokenBudgetBar({
           initial={{ width: 0 }}
           animate={{ width: `${barWidthPercent}%` }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
+          aria-hidden="true"
         />
       ) : (
         <div
@@ -167,6 +241,7 @@ export function TokenBudgetBar({
             showExceeded && 'animate-pulse'
           )}
           style={{ width: `${barWidthPercent}%` }}
+          aria-hidden="true"
         />
       )}
 
@@ -176,6 +251,7 @@ export function TokenBudgetBar({
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
           animate={{ x: ['-100%', '100%'] }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          aria-hidden="true"
         />
       )}
     </div>
@@ -184,23 +260,45 @@ export function TokenBudgetBar({
   // Compact mode - just the bar
   if (compact) {
     return (
-      <div className={cn('w-full', className)} onClick={onClick}>
+      <div
+        className={cn('w-full', className)}
+        onClick={onClick}
+        onKeyDown={onClick ? handleKeyDown : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        role={onClick ? 'button' : undefined}
+        aria-label={
+          onClick ? `${ariaLabel}. Click to manage budget.` : undefined
+        }
+      >
         {BarContent}
+        {/* Screen reader only status description */}
+        <span id={statusId} className="sr-only">
+          {statusDescription}
+        </span>
       </div>
     )
   }
 
   const content = (
     <div
+      ref={containerRef}
       className={cn(
         'flex flex-col w-full',
         sizeStyles.gap,
-        onClick && 'cursor-pointer',
+        onClick &&
+          'cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md',
         className
       )}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
       onMouseEnter={() => showTooltip && setShowDetails(true)}
       onMouseLeave={() => showTooltip && setShowDetails(false)}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      tabIndex={onClick || showTooltip ? 0 : undefined}
+      role={onClick ? 'button' : undefined}
+      aria-expanded={showTooltip ? showDetails : undefined}
+      aria-describedby={showDetails ? tooltipId : statusId}
     >
       {/* Header row with labels */}
       {showLabel && (
@@ -269,6 +367,8 @@ export function TokenBudgetBar({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
+          role="alert"
+          aria-live="assertive"
         >
           <span
             className={cn(
@@ -283,6 +383,11 @@ export function TokenBudgetBar({
           </span>
         </motion.div>
       )}
+
+      {/* Screen reader only status description */}
+      <span id={statusId} className="sr-only">
+        {statusDescription}
+      </span>
     </div>
   )
 
@@ -298,6 +403,8 @@ export function TokenBudgetBar({
       <AnimatePresence>
         {showDetails && (
           <motion.div
+            id={tooltipId}
+            role="tooltip"
             initial={{ opacity: 0, y: 4, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
@@ -305,7 +412,9 @@ export function TokenBudgetBar({
             className="absolute left-0 right-0 z-50 mt-2 rounded-lg border bg-popover p-3 shadow-lg"
           >
             <div className="space-y-2 text-sm">
-              <div className="font-semibold">Token Budget Details</div>
+              <div className="font-semibold" id={`${tooltipId}-title`}>
+                Token Budget Details
+              </div>
 
               <div className="grid grid-cols-2 gap-2 text-muted-foreground">
                 <span>Current:</span>
@@ -383,20 +492,42 @@ export function TokenBudgetBar({
 
 TokenBudgetBar.displayName = 'TokenBudgetBar'
 
+export interface TokenBudgetIndicatorProps {
+  /** Current token usage from useTokenBudgetMonitor */
+  usage: TokenUsage
+  /** Additional class names */
+  className?: string
+  /** Accessible label (defaults to "Token usage") */
+  ariaLabel?: string
+}
+
 /**
  * Compact inline token indicator for space-constrained UIs
  */
 export function TokenBudgetIndicator({
   usage,
   className,
-}: {
-  usage: TokenUsage
-  className?: string
-}) {
+  ariaLabel = 'Token usage',
+}: TokenBudgetIndicatorProps) {
   const colors = statusColorMap[usage.status]
+  const percentage = usage.utilizationPercent.toFixed(0)
+
+  // Generate status-aware accessible description
+  const statusText =
+    usage.status === 'exceeded'
+      ? 'exceeded'
+      : usage.status === 'critical'
+        ? 'critical'
+        : usage.status === 'warning'
+          ? 'high'
+          : 'normal'
 
   return (
-    <div className={cn('inline-flex items-center gap-1.5', className)}>
+    <div
+      className={cn('inline-flex items-center gap-1.5', className)}
+      role="status"
+      aria-label={`${ariaLabel}: ${percentage}% used, ${statusText}`}
+    >
       <div
         className={cn('h-2 w-2 rounded-full', colors.bg)}
         aria-hidden="true"

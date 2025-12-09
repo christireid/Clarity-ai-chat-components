@@ -105,7 +105,46 @@ const config = createModelBudgetMonitor('claude-sonnet-4', {
 })
 ```
 
-### 4. Cost Estimation
+### 4. TokenBudgetProvider (Context)
+
+Share budget state across components without prop drilling:
+
+```typescript
+import { TokenBudgetProvider, useTokenBudget } from '@clarity-chat/react'
+
+// Wrap your app with the provider
+function App() {
+  return (
+    <TokenBudgetProvider model="gpt-4o" configOverrides={{ autoTrim: true }}>
+      <ChatInterface />
+    </TokenBudgetProvider>
+  )
+}
+
+// Access budget state anywhere in the tree
+function TokenDisplay() {
+  const { usage, isWarning, model, setModel } = useTokenBudget()
+
+  return (
+    <div>
+      <TokenBudgetBar usage={usage} />
+      <select value={model} onChange={(e) => setModel(e.target.value)}>
+        <option value="gpt-4o">GPT-4o</option>
+        <option value="claude-sonnet-4">Claude Sonnet 4</option>
+      </select>
+    </div>
+  )
+}
+
+// Optional hook that doesn't throw outside provider
+function OptionalDisplay() {
+  const budget = useTokenBudgetOptional()
+  if (!budget) return null
+  return <TokenBudgetIndicator usage={budget.usage} />
+}
+```
+
+### 5. Cost Estimation
 
 ```typescript
 import { calculateCost, estimateTokenCost } from '@clarity-chat/react'
@@ -123,12 +162,12 @@ const estimate = estimateTokenCost(usage, 'gpt-4o')
 // { formattedCost: "$0.0450", inputCost: 0.025, ... }
 ```
 
-### 5. Visual Components
+### 6. Visual Components
 
 ```typescript
 import { TokenBudgetBar, TokenBudgetIndicator } from '@clarity-chat/react'
 
-// Full progress bar with labels
+// Full progress bar with labels and accessibility features
 <TokenBudgetBar
   usage={usage}
   isCalculating={isCalculating}
@@ -136,11 +175,22 @@ import { TokenBudgetBar, TokenBudgetIndicator } from '@clarity-chat/react'
   showCost
   showTooltip
   size="md"
+  ariaLabel="Chat Token Budget" // Custom accessible label
+  onClick={() => handleTrim()}  // Keyboard accessible (Enter/Space)
 />
 
-// Compact inline indicator
-<TokenBudgetIndicator usage={usage} />
+// Compact inline indicator with accessibility
+<TokenBudgetIndicator usage={usage} ariaLabel="Token usage" />
 ```
+
+#### Accessibility Features
+
+- **ARIA attributes**: Progress bar has `role="progressbar"` with `aria-valuenow`, `aria-valuemin`,
+  `aria-valuemax`
+- **Screen reader support**: Status descriptions are announced via `aria-live` regions
+- **Keyboard navigation**: Focusable with Tab, activatable with Enter/Space, dismissible with Escape
+- **Focus indicators**: Visible focus rings for keyboard users
+- **Status alerts**: Exceeded status announced with `role="alert"` for immediate notification
 
 ## Model Registry
 
@@ -187,15 +237,18 @@ if (isValidModelId(userInput)) {
 tokenization/
 ├── accurate-counter.ts    # Tiktoken-based accurate counting with LRU cache
 ├── estimator.ts           # Fast estimation without dependencies
-├── model-pricing.ts       # Cost calculation and pricing data
+├── model-pricing.ts       # Cost calculation (derives from MODEL_REGISTRY)
 ├── model-registry.ts      # Single source of truth for model configs
 └── index.ts              # Public exports
 
 hooks/
 └── use-token-budget-monitor.tsx  # React hook for budget tracking
 
+context/
+└── token-budget-context.tsx  # React Context provider for shared budget state
+
 components/
-└── token-budget-bar.tsx   # Visual components
+└── token-budget-bar.tsx   # Visual components with accessibility
 ```
 
 ## Performance

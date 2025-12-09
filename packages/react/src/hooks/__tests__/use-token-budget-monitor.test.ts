@@ -650,7 +650,8 @@ describe('createModelBudgetMonitor', () => {
   it('should create config for Gemini 1.5 Pro', () => {
     const config = createModelBudgetMonitor('gemini-1.5-pro')
 
-    expect(config.maxInputTokens).toBe(1000000)
+    // Gemini 1.5 Pro has 2M context window
+    expect(config.maxInputTokens).toBe(2000000)
     expect(config.reservedForOutput).toBe(8192)
   })
 
@@ -664,7 +665,8 @@ describe('createModelBudgetMonitor', () => {
   it('should create config for DeepSeek Chat', () => {
     const config = createModelBudgetMonitor('deepseek-chat')
 
-    expect(config.maxInputTokens).toBe(64000)
+    // DeepSeek Chat has 64K context window (65536 tokens)
+    expect(config.maxInputTokens).toBe(65536)
     expect(config.reservedForOutput).toBe(8192)
   })
 

@@ -7,6 +7,11 @@ import {
   type ModelName,
 } from '../utils/tokenization'
 import { estimateTokens } from '../utils/tokenization/estimator'
+import { MODEL_PRICING } from '../utils/tokenization/model-pricing'
+import {
+  MODEL_REGISTRY,
+  type ModelId,
+} from '../utils/tokenization/model-registry'
 
 /**
  * Token usage status levels
@@ -812,51 +817,17 @@ export function createModelBudgetMonitor(
     )
   }
 
-  const modelConfigs: Record<BudgetMonitorModel, Partial<TokenBudgetConfig>> = {
-    // OpenAI GPT-4 Family
-    'gpt-4': { maxInputTokens: 8192, reservedForOutput: 2048 },
-    'gpt-4-turbo': { maxInputTokens: 128000, reservedForOutput: 4096 },
-    'gpt-4o': { maxInputTokens: 128000, reservedForOutput: 16384 },
-    'gpt-4o-mini': { maxInputTokens: 128000, reservedForOutput: 16384 },
-
-    // OpenAI GPT-4.1 Family (1M context per OpenAI docs, verify if specs change)
-    'gpt-4.1': { maxInputTokens: 1000000, reservedForOutput: 32768 },
-    'gpt-4.1-mini': { maxInputTokens: 1000000, reservedForOutput: 32768 },
-    'gpt-4.1-nano': { maxInputTokens: 1000000, reservedForOutput: 32768 },
-
-    // OpenAI O1/O3 Reasoning Models
-    o1: { maxInputTokens: 200000, reservedForOutput: 100000 },
-    'o1-mini': { maxInputTokens: 128000, reservedForOutput: 65536 },
-    'o3-mini': { maxInputTokens: 200000, reservedForOutput: 100000 },
-
-    // Anthropic Claude 3 Family
-    'claude-3-opus': { maxInputTokens: 200000, reservedForOutput: 4096 },
-    'claude-3-sonnet': { maxInputTokens: 200000, reservedForOutput: 4096 },
-    'claude-3-haiku': { maxInputTokens: 200000, reservedForOutput: 4096 },
-    'claude-3-5-sonnet': { maxInputTokens: 200000, reservedForOutput: 8192 },
-    'claude-3-5-haiku': { maxInputTokens: 200000, reservedForOutput: 8192 },
-
-    // Anthropic Claude 4 Family (upgraded to 1M context window as of late 2024)
-    'claude-sonnet-4': { maxInputTokens: 1000000, reservedForOutput: 16384 },
-    'claude-opus-4': { maxInputTokens: 1000000, reservedForOutput: 32768 },
-
-    // Google Gemini Family
-    'gemini-1.5-pro': { maxInputTokens: 1000000, reservedForOutput: 8192 },
-    'gemini-1.5-flash': { maxInputTokens: 1000000, reservedForOutput: 8192 },
-    'gemini-2.0-flash': { maxInputTokens: 1000000, reservedForOutput: 8192 },
-    'gemini-2.0-pro': { maxInputTokens: 2000000, reservedForOutput: 8192 },
-
-    // DeepSeek Models
-    'deepseek-chat': { maxInputTokens: 64000, reservedForOutput: 8192 },
-    'deepseek-r1': { maxInputTokens: 128000, reservedForOutput: 32768 },
-
-    // Mistral Models
-    'mistral-large': { maxInputTokens: 128000, reservedForOutput: 8192 },
-    'mistral-small': { maxInputTokens: 32000, reservedForOutput: 8192 },
+  // Derive configuration from MODEL_REGISTRY (single source of truth)
+  const registryConfig = MODEL_REGISTRY[model as ModelId]
+  if (!registryConfig) {
+    throw new Error(
+      `[createModelBudgetMonitor] Model "${model}" not found in registry`
+    )
   }
 
   return {
-    ...modelConfigs[model],
+    maxInputTokens: registryConfig.contextWindow,
+    reservedForOutput: registryConfig.recommendedOutputReserve,
     model: toModelName(model),
     ...overrides,
   } as TokenBudgetConfig
@@ -898,15 +869,6 @@ export function estimateTokenCost(
   usage: TokenUsage,
   model: BudgetMonitorModel
 ): TokenCostEstimate | null {
-  // Lazy import to avoid circular dependencies and bundle bloat
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { MODEL_PRICING } = require('../utils/tokenization/model-pricing') as {
-    MODEL_PRICING: Record<
-      string,
-      { inputCostPer1M: number; outputCostPer1M: number }
-    >
-  }
-
   const pricing = MODEL_PRICING[model]
   if (!pricing) {
     return null
