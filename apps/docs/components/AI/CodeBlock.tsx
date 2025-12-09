@@ -11,7 +11,6 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { useToast } from '@clarity-chat/react'
 import Prism from 'prismjs'
 import {
   fadeInUp,
@@ -20,6 +19,7 @@ import {
   confettiParticles,
   durations,
 } from '@/lib/animations'
+import { toast, toastMessages } from '@/lib/toast'
 
 // Import language support
 import 'prismjs/components/prism-typescript'
@@ -54,7 +54,6 @@ export function CodeBlock({
   const [isExpanded, setIsExpanded] = useState(false)
   const codeRef = useRef<HTMLElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const toast = useToast()
 
   // Highlight code with Prism
   useEffect(() => {
@@ -72,13 +71,18 @@ export function CodeBlock({
     try {
       await navigator.clipboard.writeText(code)
       setCopied(true)
-      toast.success('Code copied to clipboard')
+      toast.success(toastMessages.copied)
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
       console.error('Failed to copy code:', error)
-      toast.error('Failed to copy code')
+      toast.error(toastMessages.copyFailed, {
+        action: {
+          label: 'Try again',
+          onClick: () => handleCopy(),
+        },
+      })
     }
-  }, [code, toast])
+  }, [code])
 
   const handleDownload = useCallback(() => {
     try {
@@ -91,12 +95,17 @@ export function CodeBlock({
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
-      toast.success('Code downloaded')
+      toast.success(`Downloaded ${filename || `code.${language}`}`)
     } catch (error) {
       console.error('Failed to download code:', error)
-      toast.error('Failed to download code')
+      toast.error('Failed to download code', {
+        action: {
+          label: 'Retry',
+          onClick: () => handleDownload(),
+        },
+      })
     }
-  }, [code, filename, language, toast])
+  }, [code, filename, language])
 
   const toggleExpanded = useCallback(() => {
     setIsExpanded((prev) => !prev)
