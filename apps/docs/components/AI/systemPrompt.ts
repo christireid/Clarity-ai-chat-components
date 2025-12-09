@@ -14,53 +14,34 @@
 // ============================================================================
 
 /**
- * Documentation site structure for reference
+ * Actual documentation site structure (apps/docs/app/)
  *
- * docs/
- * ├── getting-started/
- * │   ├── installation.mdx
- * │   ├── quick-start.mdx
- * │   ├── project-structure.mdx
- * │   └── typescript-setup.mdx
- * ├── core-concepts/
- * │   ├── architecture.mdx
- * │   ├── message-types.mdx
- * │   ├── streaming.mdx
- * │   ├── providers.mdx
- * │   └── token-optimization.mdx
- * ├── components/
- * │   ├── clarity-chat.mdx
- * │   ├── chat-window.mdx
- * │   ├── chat-input.mdx
- * │   ├── message-list.mdx
- * │   └── [component-name].mdx
- * ├── hooks/
- * │   ├── use-clarity-chat.mdx
- * │   ├── use-streaming-sse.mdx
- * │   ├── use-memory-context.mdx
- * │   └── [hook-name].mdx
- * ├── guides/
- * │   ├── memory-management.mdx
- * │   ├── multi-provider-setup.mdx
- * │   ├── custom-styling.mdx
- * │   ├── accessibility.mdx
- * │   ├── performance-optimization.mdx
- * │   └── testing.mdx
- * ├── api-reference/
+ * app/
+ * ├── guides/           - Implementation guides
+ * │   ├── installation/
+ * │   ├── quick-start/
+ * │   ├── getting-started/
+ * │   ├── streaming/
+ * │   ├── memory/
+ * │   ├── accessibility/
+ * │   ├── testing/
+ * │   ├── migration/
+ * │   ├── token-optimization/
+ * │   ├── customization/
+ * │   ├── theming/
+ * │   ├── performance/
+ * │   └── ... (60+ guides)
+ * ├── reference/        - API reference
  * │   ├── components/
  * │   ├── hooks/
- * │   ├── types/
  * │   └── utilities/
- * ├── examples/
- * │   ├── basic-chat.mdx
- * │   ├── streaming-responses.mdx
- * │   ├── with-memory.mdx
- * │   ├── multi-provider.mdx
- * │   └── enterprise-patterns.mdx
- * └── troubleshooting/
- *     ├── common-issues.mdx
- *     ├── migration-guides.mdx
- *     └── faq.mdx
+ * ├── examples/         - Code examples
+ * │   └── ... (various examples)
+ * ├── learn/            - Learning resources
+ * │   └── ... (tutorials)
+ * ├── cookbook/         - Recipes and patterns
+ * │   └── ... (recipes)
+ * └── playground/       - Interactive playground
  */
 
 // ============================================================================
@@ -365,60 +346,102 @@ export const COMPARISON_TEMPLATE = `
 
 /**
  * Common documentation page links
+ *
+ * These paths match the actual Next.js app router structure in apps/docs/app/
  */
 export const DOC_LINKS = {
   // Getting Started
   installation: '/guides/installation',
   quickStart: '/guides/quick-start',
-  typescript: '/guides/typescript-setup',
+  gettingStarted: '/guides/getting-started',
 
-  // Core Concepts
-  architecture: '/core-concepts/architecture',
-  messageTypes: '/core-concepts/message-types',
+  // Core Guides
   streaming: '/guides/streaming',
-  providers: '/core-concepts/providers',
   tokenOptimization: '/guides/token-optimization',
+  memory: '/guides/memory',
+  stateManagement: '/guides/state-management',
+  dataFlow: '/guides/data-flow',
 
-  // Components
-  clarityChat: '/components/clarity-chat',
-  chatWindow: '/components/chat-window',
-  chatInput: '/components/chat-input',
-  messageList: '/components/message-list',
+  // Reference (API docs)
+  components: '/reference/components',
+  hooks: '/reference/hooks',
+  utilities: '/reference/utilities',
 
-  // Hooks
-  useClarityChat: '/hooks/use-clarity-chat',
-  useStreamingSSE: '/hooks/use-streaming-sse',
-  useMemoryContext: '/hooks/use-memory-context',
+  // Customization & Theming
+  customization: '/guides/customization',
+  theming: '/guides/theming',
 
-  // Guides
-  memoryManagement: '/guides/memory',
-  multiProvider: '/guides/multi-provider-setup',
-  customStyling: '/guides/custom-styling',
+  // Best Practices
   accessibility: '/guides/accessibility',
-  performance: '/guides/performance-optimization',
+  performance: '/guides/performance',
   testing: '/guides/testing',
+  bestPractices: '/guides/best-practices',
+  security: '/guides/security',
 
-  // Troubleshooting
-  commonIssues: '/troubleshooting/common-issues',
+  // Migration & Integration
   migration: '/guides/migration',
-  faq: '/troubleshooting/faq',
+  integration: '/guides/integration',
+
+  // Interactive
+  playground: '/playground',
+  examples: '/examples',
+  cookbook: '/cookbook',
 } as const
 
 /**
+ * Type for valid DOC_LINKS keys
+ */
+export type DocLinkKey = keyof typeof DOC_LINKS
+
+/**
+ * Escape markdown special characters in link labels
+ */
+function escapeMarkdownLabel(text: string): string {
+  return text.replace(/[[\]()]/g, '\\$&')
+}
+
+/**
  * Format a documentation link for display
+ *
+ * @param path - The URL path (must be non-empty)
+ * @param label - Optional display label (defaults to path)
+ * @returns Formatted markdown link, or empty string if path is invalid
  */
 export function formatDocLink(
   path: string,
   label?: string
 ): string {
-  return `[${label || path}](${path})`
+  if (!path || typeof path !== 'string') {
+    return ''
+  }
+  const displayLabel = label && typeof label === 'string'
+    ? escapeMarkdownLabel(label)
+    : path
+  return `[${displayLabel}](${path})`
 }
 
 /**
  * Format multiple documentation links
+ *
+ * @param links - Array of path/label pairs
+ * @returns Pipe-separated markdown links, or empty string if no valid links
  */
 export function formatDocLinks(
   links: Array<{ path: string; label: string }>
 ): string {
-  return links.map((l) => formatDocLink(l.path, l.label)).join(' | ')
+  if (!Array.isArray(links) || links.length === 0) {
+    return ''
+  }
+  const validLinks = links
+    .filter((l) => l && typeof l.path === 'string' && l.path)
+    .map((l) => formatDocLink(l.path, l.label))
+    .filter(Boolean)
+  return validLinks.join(' | ')
+}
+
+/**
+ * Get a documentation link by key (type-safe)
+ */
+export function getDocLink(key: DocLinkKey, label?: string): string {
+  return formatDocLink(DOC_LINKS[key], label)
 }
