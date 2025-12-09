@@ -563,6 +563,27 @@ export { TokenCounter } from './components/token-counter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token-optimization-badge'
 export { TokenOptimizationDashboard } from './components/token-optimization-dashboard'
+
+// Dashboard Utilities
+export {
+  DashboardErrorBoundary,
+  useDashboardErrorHandler,
+  type DashboardErrorBoundaryProps,
+} from './components/dashboard-error-boundary'
+export {
+  AnalyticsDashboardSkeleton,
+  UsageDashboardSkeleton,
+  TokenOptimizationDashboardSkeleton,
+  PerformanceDashboardSkeleton,
+  DashboardEmptyState,
+  MetricCardSkeleton,
+  ProgressWidgetSkeleton,
+  ListItemSkeleton,
+  ChartSkeleton,
+  type DashboardSkeletonProps,
+  type DashboardEmptyStateProps,
+} from './components/dashboard-skeleton'
+
 export {
   HistoryManager,
   HistoryMessageRow,

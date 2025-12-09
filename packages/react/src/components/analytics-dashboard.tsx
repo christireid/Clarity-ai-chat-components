@@ -85,6 +85,30 @@ export interface AnalyticsDashboardProps {
   subtitle?: string
 }
 
+/**
+ * Analytics Dashboard Component
+ *
+ * Displays comprehensive analytics including metrics, leaderboards,
+ * activity feeds, and AI-generated insights.
+ *
+ * @example
+ * ```tsx
+ * <AnalyticsDashboard
+ *   metrics={{
+ *     totalRevenue: 125000,
+ *     conversionRate: 12.5,
+ *     averageDealSize: 2500,
+ *     averageSalesCycle: 30,
+ *   }}
+ *   previousMetrics={{
+ *     totalRevenue: 100000,
+ *     conversionRate: 10.0,
+ *   }}
+ *   leaderboard={topPerformers}
+ *   insights={aiInsights}
+ * />
+ * ```
+ */
 export function AnalyticsDashboard({
   metrics,
   previousMetrics,
@@ -101,15 +125,26 @@ export function AnalyticsDashboard({
         'space-y-6 rounded-lg border border-border/50 bg-card/70 p-6 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] backdrop-blur-sm',
         className
       )}
+      role="region"
+      aria-label={title}
     >
       <header className="space-y-1">
-        <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
+        <h2
+          className="text-2xl font-semibold text-foreground"
+          id="analytics-dashboard-title"
+        >
+          {title}
+        </h2>
         {subtitle ? (
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         ) : null}
       </header>
 
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section
+        className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
+        aria-label="Key metrics"
+        role="group"
+      >
         {metricDefinitions.map(({ key, label, icon, format }) => {
           const value = metrics[key]
           const previous = previousMetrics?.[key]
@@ -158,6 +193,9 @@ export function AnalyticsDashboard({
   )
 }
 
+/**
+ * Individual metric card displaying a single KPI with optional change indicator.
+ */
 function MetricCard({
   icon,
   label,
@@ -176,22 +214,42 @@ function MetricCard({
         ? 'text-red-600 dark:text-red-400'
         : 'text-muted-foreground'
 
+  const changeDescription =
+    change.direction === 'up'
+      ? `increased by ${change.percent}%`
+      : change.direction === 'down'
+        ? `decreased by ${change.percent}%`
+        : 'no change'
+
   return (
-    <div className="rounded-lg border border-border/50 bg-gradient-to-br from-background/70 via-background/40 to-accent/10 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] backdrop-blur-sm">
+    <article
+      className="rounded-lg border border-border/50 bg-gradient-to-br from-background/70 via-background/40 to-accent/10 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] backdrop-blur-sm"
+      aria-label={`${label}: ${value}, ${changeDescription}`}
+    >
       <div className="flex items-center justify-between">
-        <span className="text-lg">{icon}</span>
+        <span className="text-lg" aria-hidden="true">
+          {icon}
+        </span>
         {change.direction !== 'none' ? (
-          <span className={cn('text-xs font-medium', changeClass)}>
+          <span
+            className={cn('text-xs font-medium', changeClass)}
+            aria-label={changeDescription}
+          >
             {change.direction === 'up' ? '▲' : '▼'} {change.percent}%
           </span>
         ) : null}
       </div>
       <p className="mt-4 text-sm text-muted-foreground">{label}</p>
       <p className="mt-1 text-2xl font-semibold text-foreground">{value}</p>
-    </div>
+    </article>
   )
 }
 
+MetricCard.displayName = 'MetricCard'
+
+/**
+ * Pipeline summary widget showing total pipeline value with progress toward target.
+ */
 function PipelineSummary({
   value,
   previous,
@@ -200,9 +258,13 @@ function PipelineSummary({
   previous?: number
 }) {
   const change = calculateChange(value, previous)
+  const progressPercent = Math.min((value / 1_000_000) * 100, 100)
 
   return (
-    <div className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
+    <article
+      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      aria-label={`Pipeline value: ${formatCurrency(value)}`}
+    >
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">
           Pipeline Value
@@ -213,6 +275,7 @@ function PipelineSummary({
               'text-xs font-medium',
               change.direction === 'up' ? 'text-emerald-600' : 'text-red-600'
             )}
+            aria-label={`${change.direction === 'up' ? 'increased' : 'decreased'} by ${change.percent}%`}
           >
             {change.direction === 'up' ? '+' : '-'}
             {change.percent}%
@@ -222,19 +285,31 @@ function PipelineSummary({
       <p className="mt-2 text-2xl font-semibold text-foreground">
         {formatCurrency(value)}
       </p>
-      <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-muted">
+      <div
+        className="mt-4 h-2 w-full overflow-hidden rounded-full bg-muted"
+        role="progressbar"
+        aria-label="Pipeline progress toward $1M target"
+        aria-valuenow={Math.round(progressPercent)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
         <div
           className="h-full rounded-full bg-primary transition-all"
-          style={{ width: `${Math.min((value / 1_000_000) * 100, 100)}%` }}
+          style={{ width: `${progressPercent}%` }}
         />
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
         Showing active deals in pipeline. Target: $1M
       </p>
-    </div>
+    </article>
   )
 }
 
+PipelineSummary.displayName = 'PipelineSummary'
+
+/**
+ * Win rate summary widget showing conversion metrics.
+ */
 function WinRateSummary({
   value,
   previous,
@@ -243,8 +318,14 @@ function WinRateSummary({
   previous?: number
 }) {
   const change = calculateChange(value, previous)
+  const wonDeals = Math.round(value * 1.2)
+  const lostDeals = Math.round((100 - value) * 0.8)
+
   return (
-    <div className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
+    <article
+      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      aria-label={`Win rate: ${value.toFixed(1)}%`}
+    >
       <h3 className="text-sm font-medium text-muted-foreground">Win Rate</h3>
       <div className="mt-2 flex items-baseline gap-2">
         <span className="text-2xl font-semibold text-foreground">
@@ -256,6 +337,7 @@ function WinRateSummary({
               'text-xs font-medium',
               change.direction === 'up' ? 'text-emerald-600' : 'text-red-600'
             )}
+            aria-label={`${change.direction === 'up' ? 'increased' : 'decreased'} by ${change.percent}%`}
           >
             {change.direction === 'up' ? '+' : '-'}
             {change.percent}%
@@ -265,36 +347,47 @@ function WinRateSummary({
       <p className="mt-2 text-xs text-muted-foreground">
         Close rate for qualified opportunities.
       </p>
-      <div className="mt-4 space-y-2">
+      <dl className="mt-4 space-y-2">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Won deals</span>
-          <span>{Math.round(value * 1.2)}</span>
+          <dt>Won deals</dt>
+          <dd>{wonDeals}</dd>
         </div>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Lost deals</span>
-          <span>{Math.round((100 - value) * 0.8)}</span>
+          <dt>Lost deals</dt>
+          <dd>{lostDeals}</dd>
         </div>
-      </div>
-    </div>
+      </dl>
+    </article>
   )
 }
 
+WinRateSummary.displayName = 'WinRateSummary'
+
+/**
+ * Leaderboard widget displaying top performers.
+ */
 function Leaderboard({ entries }: { entries?: AnalyticsLeaderboardEntry[] }) {
   if (!entries?.length) {
     return null
   }
 
   return (
-    <div className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
+    <section
+      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      aria-label="Top performers leaderboard"
+    >
       <h3 className="text-sm font-semibold text-foreground">Top Performers</h3>
-      <ul className="mt-4 space-y-3">
+      <ol className="mt-4 space-y-3" aria-label="Ranked list of top performers">
         {entries.map((entry, index) => (
           <li
             key={entry.label}
             className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-background/60 px-3 py-2"
           >
             <div className="flex items-center gap-3">
-              <span className="font-medium text-muted-foreground">
+              <span
+                className="font-medium text-muted-foreground"
+                aria-hidden="true"
+              >
                 {index + 1}.
               </span>
               <span className="font-medium text-foreground">{entry.label}</span>
@@ -309,6 +402,7 @@ function Leaderboard({ entries }: { entries?: AnalyticsLeaderboardEntry[] }) {
                     'text-xs font-medium',
                     entry.trend === 'down' ? 'text-red-600' : 'text-emerald-600'
                   )}
+                  aria-label={`${entry.trend === 'down' ? 'down' : 'up'} ${entry.change}%`}
                 >
                   {entry.trend === 'down' ? '▼' : '▲'} {entry.change}%
                 </span>
@@ -316,27 +410,39 @@ function Leaderboard({ entries }: { entries?: AnalyticsLeaderboardEntry[] }) {
             </div>
           </li>
         ))}
-      </ul>
-    </div>
+      </ol>
+    </section>
   )
 }
 
+Leaderboard.displayName = 'Leaderboard'
+
+/**
+ * Activity feed widget showing recent events and actions.
+ */
 function ActivityList({ activities }: { activities?: AnalyticsActivity[] }) {
   if (!activities?.length) {
     return null
   }
 
   return (
-    <div className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
+    <section
+      className="rounded-lg border border-border/50 bg-card/80 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      aria-label="Recent activity feed"
+    >
       <h3 className="text-sm font-semibold text-foreground">Recent Activity</h3>
-      <ul className="mt-4 space-y-3">
+      <ul className="mt-4 space-y-3" role="feed" aria-label="Activity timeline">
         {activities.map((activity) => (
           <li
             key={activity.id}
             className="rounded-lg border border-border/60 bg-background/60 px-3 py-2"
+            role="article"
+            aria-label={`${activity.description} on ${formatTimestamp(activity.timestamp)}`}
           >
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{formatTimestamp(activity.timestamp)}</span>
+              <time dateTime={new Date(activity.timestamp).toISOString()}>
+                {formatTimestamp(activity.timestamp)}
+              </time>
               {activity.owner ? (
                 <span className="font-medium text-foreground/80">
                   {activity.owner}
@@ -358,10 +464,15 @@ function ActivityList({ activities }: { activities?: AnalyticsActivity[] }) {
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   )
 }
 
+ActivityList.displayName = 'ActivityList'
+
+/**
+ * AI-generated insights panel showing analysis and recommendations.
+ */
 function InsightsPanel({
   insights,
 }: {
@@ -372,11 +483,14 @@ function InsightsPanel({
   }
 
   return (
-    <div className="rounded-lg border border-primary/20 bg-primary/5 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]">
+    <section
+      className="rounded-lg border border-primary/20 bg-primary/5 p-5 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)]"
+      aria-label="AI-generated insights"
+    >
       <h3 className="text-sm font-semibold text-primary">
         AI-Generated Insights
       </h3>
-      <ul className="mt-3 space-y-3">
+      <ul className="mt-3 space-y-3" aria-label="List of insights">
         {insights.map((insight, index) => {
           if (typeof insight === 'string') {
             return (
@@ -384,7 +498,9 @@ function InsightsPanel({
                 key={index}
                 className="flex items-start gap-2 text-sm text-primary-foreground/90"
               >
-                <span className="mt-1 text-primary">•</span>
+                <span className="mt-1 text-primary" aria-hidden="true">
+                  •
+                </span>
                 <span>{insight}</span>
               </li>
             )
@@ -411,9 +527,13 @@ function InsightsPanel({
           )
         })}
       </ul>
-    </div>
+    </section>
   )
 }
+
+InsightsPanel.displayName = 'InsightsPanel'
+
+AnalyticsDashboard.displayName = 'AnalyticsDashboard'
 
 function calculateChange(current?: number, previous?: number) {
   if (
