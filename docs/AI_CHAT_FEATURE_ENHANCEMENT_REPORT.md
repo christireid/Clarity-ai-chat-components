@@ -15,7 +15,7 @@ This report provides an analysis of the Clarity Chat codebase's advanced AI chat
 ### Key Strengths Identified
 - **Comprehensive streaming infrastructure** with SSE and WebSocket support
 - **Full agent/tool system** with ReAct pattern, tool UI registry, and validation
-- **Production-ready memory service** with vector store integration and token optimization
+- **Complete memory service** with vector store integration and token optimization
 - **Advanced KV-cache aligned prompt builder** for cost optimization
 - **Clean provider abstraction** supporting OpenAI, Anthropic, and Google
 
@@ -45,36 +45,38 @@ This report provides an analysis of the Clarity Chat codebase's advanced AI chat
 
 ### Data Flow Architecture
 
+```mermaid
+flowchart TB
+    subgraph Input["User Input"]
+        UserMessage["User Message"]
+    end
+
+    subgraph ClarityChat["useClarityChat"]
+        Memory["Memory Query"]
+        Prompt["Prompt Optimization"]
+        Budget["Token Budget"]
+        Memory --> Prompt --> Budget
+    end
+
+    subgraph Transport["Transport Layer"]
+        SSE["SSE (default)"]
+        WS["WebSocket (optional)"]
+        Adapters["Adapters (OAI/ANT/GGL)"]
+    end
+
+    subgraph Response["Response Processing"]
+        Parser["Streaming Parser"]
+        Tools["Tool Execution"]
+        Storage["Memory Storage"]
+        Parser --> Tools --> Storage
+    end
+
+    Input --> ClarityChat
+    ClarityChat --> Transport
+    Transport --> Response
 ```
-User Input
-    │
-    ▼
-┌─────────────────────────────────────────────────────────┐
-│                    useClarityChat                        │
-│  ┌─────────────┐  ┌──────────────┐  ┌────────────────┐  │
-│  │   Memory    │  │    Prompt    │  │    Token       │  │
-│  │   Query     │──│  Optimization│──│    Budget      │  │
-│  └─────────────┘  └──────────────┘  └────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─────────────────────────────────────────────────────────┐
-│                  Transport Layer                         │
-│  ┌─────────────┐  ┌──────────────┐  ┌────────────────┐  │
-│  │     SSE     │  │   WebSocket  │  │    Adapters    │  │
-│  │  (default)  │  │  (optional)  │  │ (OAI/ANT/GGL)  │  │
-│  └─────────────┘  └──────────────┘  └────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─────────────────────────────────────────────────────────┐
-│                    Response Processing                   │
-│  ┌─────────────┐  ┌──────────────┐  ┌────────────────┐  │
-│  │  Streaming  │  │     Tool     │  │    Memory      │  │
-│  │   Parser    │──│   Execution  │──│    Storage     │  │
-│  └─────────────┘  └──────────────┘  └────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-```
+
+> **Note**: If Mermaid doesn't render, view this diagram in a Mermaid-compatible viewer or GitHub.
 
 ### Key Integration Points
 
@@ -180,13 +182,13 @@ Best practices:
 
 ### Quick Wins (Do First) - High Impact, Relatively Low Effort
 
-| # | Enhancement | Category | Impact | Effort | Entry Point | Confidence |
-|---|-------------|----------|--------|--------|-------------|------------|
-| 1 | Token budget progress bar | Token Optimization | 4 | 1-2 | New component | High |
-| 2 | Warning threshold alerts | Token Optimization | 4 | 1-2 | `use-token-budget.ts:70` | High |
-| 3 | Tool execution progress states | Agents & Tools | 4 | 2-3 | `tool-ui-registry.ts` | Medium |
-| 4 | Stream cancel button | Streaming | 4 | 1 | Consumer component | High |
-| 5 | Default tool error component | Agents & Tools | 3 | 2 | New component | High |
+| # | Enhancement | Category | Impact | Effort | Entry Point | Status |
+|---|-------------|----------|--------|--------|-------------|--------|
+| 1 | Token budget progress bar | Token Optimization | 4 | 0 | `token-counter.tsx` | ✅ EXISTS |
+| 2 | Warning threshold alerts | Token Optimization | 4 | 0 | `token-counter.tsx` | ✅ EXISTS |
+| 3 | Tool execution progress states | Agents & Tools | 4 | 2-3 | `tool-ui-registry.ts` | Pending |
+| 4 | Stream cancel button | Streaming | 4 | 1 | Consumer component | Pending |
+| 5 | Default tool error component | Agents & Tools | 3 | 2 | New component | Pending |
 
 ### Major Improvements (Plan) - High Impact, Higher Effort
 
@@ -213,73 +215,62 @@ Best practices:
 ### Enhancement 1: Token Budget Progress Component
 
 **Category**: Token Optimization
-**Impact**: 4/5 | **Effort**: 1/5
+**Impact**: 4/5 | **Effort**: 1/5 (Already Implemented)
 **Provider Support**: OpenAI | Anthropic | Google
+**Status**: ✅ **ALREADY EXISTS** as `TokenCounter` component
 
-**Current State**:
+> **Discovery**: The `TokenCounter` component at `packages/react/src/components/token-counter.tsx` already implements this functionality with all required features.
+
+**Existing Implementation**:
 ```typescript
-// useTokenBudget returns numeric values
-const { currentTokens, remainingBudget, utilization, isExceeded } = useTokenBudget({
-  messages,
-  modelMetadata: 'gpt-4',
-  targetBudget: 8000,
-})
-```
+// TokenCounter already provides visual budget display
+import { TokenCounter } from '@clarity-chat/react'
 
-**Target State**:
-```typescript
-// New visual component
-import { TokenBudgetBar } from '@clarity-chat/react'
-
-<TokenBudgetBar
+<TokenCounter
   currentTokens={currentTokens}
   maxTokens={8000}
-  warningThreshold={0.8}
-  criticalThreshold={0.95}
-  showCost={true}
-  costPer1K={0.03}
+  warningThreshold={0.8}      // Default: 0.8 (80%)
+  criticalThreshold={0.95}    // Default: 0.95 (95%)
+  showCost={true}             // Default: true
+  costPerToken={0.000002}     // Per-token cost (not per-1K)
+  showBar={true}              // Default: true
+  showWarning={true}          // Default: true
+  suggestPruning={true}       // Suggests pruning when critical
+  onWarning={() => console.log('Approaching limit')}
+  onCritical={() => console.log('Critical!')}
+  onPruneSuggested={() => pruneMessages()}
+  size="md"                   // 'sm' | 'md' | 'lg'
   className="my-4"
 />
 ```
 
-**Implementation Approach**:
-1. Create `TokenBudgetBar` component in `packages/react/src/components/token-budget/`
-2. Accept `useTokenBudget` return values as props
-3. Implement visual progress bar with color transitions (green -> yellow -> red)
-4. Add accessible ARIA attributes for screen readers
-5. Export from main package index
+**Existing Features (Verified)**:
+- [x] Visual bar shows 0-100% utilization
+- [x] Color changes at warning (yellow) and critical (red) thresholds
+- [x] Cost display with smart formatting ($X.XX or cents)
+- [x] Accessible with `role="status"`, `role="progressbar"`, and ARIA labels
+- [x] Works with all three providers (client-side, provider-agnostic)
+- [x] Warning/critical callbacks
+- [x] Smart pruning suggestions
+- [x] Three size variants (sm, md, lg)
 
-**Acceptance Criteria**:
-- [ ] Visual bar shows 0-100% utilization
-- [ ] Color changes at 80% (warning) and 95% (critical)
-- [ ] Cost display shows estimated price
-- [ ] Accessible with `role="progressbar"` and ARIA labels
-- [ ] Works with all three providers' token counts
-
-**Test Cases**:
+**Integration with useTokenBudget**:
 ```typescript
-// Uses vitest + @testing-library/react (project's actual test stack)
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
-
-describe('TokenBudgetBar', () => {
-  it('should render progress bar with correct utilization', () => {
-    render(<TokenBudgetBar currentTokens={4000} maxTokens={8000} />)
-    const bar = screen.getByRole('progressbar')
-    expect(bar).toHaveAttribute('aria-valuenow', '50')
-  })
-
-  it('should apply warning class at threshold', () => {
-    render(<TokenBudgetBar currentTokens={6400} maxTokens={8000} warningThreshold={0.8} />)
-    expect(screen.getByRole('progressbar')).toHaveClass('warning')
-  })
-
-  it('should display formatted cost estimate', () => {
-    render(<TokenBudgetBar currentTokens={1000} maxTokens={8000} showCost costPer1K={0.03} />)
-    expect(screen.getByText(/\$0\.03/)).toBeInTheDocument()
-  })
+const { currentTokens, utilization, isExceeded } = useTokenBudget({
+  messages,
+  modelMetadata: 'gpt-4',
+  targetBudget: 8000,
 })
+
+// Pass values to existing TokenCounter
+<TokenCounter
+  currentTokens={currentTokens}
+  maxTokens={8000}
+  costPerToken={0.00003 / 1000}  // Convert per-1K to per-token
+/>
 ```
+
+**Remaining Enhancement Opportunity**: Create a thin wrapper `TokenBudgetBar` that accepts `useTokenBudget` return values directly for simpler integration
 
 ---
 
@@ -454,8 +445,8 @@ const processChunk = React.useCallback((chunk: string) => {
 > **Note**: Ordered by priority (impact/effort ratio), not by timeline. Scheduling is left to the implementing team.
 
 ### Priority 1: Quick Wins (High ROI)
-- [ ] Token budget progress bar component
-- [ ] Warning threshold alerts
+- [x] Token budget progress bar component *(exists: `TokenCounter`)*
+- [x] Warning threshold alerts *(exists: `TokenCounter` with `onWarning`/`onCritical`)*
 - [ ] Stream cancel button integration
 
 ### Priority 2: Tool UX Improvements
@@ -470,6 +461,102 @@ const processChunk = React.useCallback((chunk: string) => {
 ### Priority 4: Memory Features
 - [ ] Memory visualization component
 - [ ] Memory privacy controls
+
+---
+
+## Deprecation Watch
+
+> **Purpose**: Track API changes and deprecations in provider SDKs that may affect this codebase. Check quarterly or when updating provider dependencies.
+
+### OpenAI API
+
+| Item | Status | Action Required | Last Checked |
+|------|--------|-----------------|--------------|
+| `gpt-3.5-turbo` pricing model | Active | Monitor for pricing changes | Dec 2025 |
+| `gpt-4` vs `gpt-4-turbo` | Active | Consider migration path | Dec 2025 |
+| Legacy completions API | Deprecated | Using chat completions (correct) | Dec 2025 |
+
+**Watch**: https://platform.openai.com/docs/deprecations
+
+### Anthropic API
+
+| Item | Status | Action Required | Last Checked |
+|------|--------|-----------------|--------------|
+| `claude-2` models | Sunset planned | Use `claude-3` family | Dec 2025 |
+| `cache_control` beta | Beta | Monitor for GA release | Dec 2025 |
+| Message format changes | Active | Current format supported | Dec 2025 |
+
+**Watch**: https://docs.anthropic.com/en/docs/resources/versioning
+
+### Google AI API
+
+| Item | Status | Action Required | Last Checked |
+|------|--------|-----------------|--------------|
+| `gemini-1.0-pro` | Active | Monitor for successor | Dec 2025 |
+| Streaming response format | Active | Current format supported | Dec 2025 |
+| Tool calling in streams | Limited | Not fully supported in current adapter | Dec 2025 |
+
+**Watch**: https://ai.google.dev/gemini-api/docs/changelog
+
+### Internal Dependencies
+
+| Dependency | Current | Latest | Action |
+|------------|---------|--------|--------|
+| `tiktoken` | Check package.json | - | Token counting accuracy |
+| `@anthropic-ai/sdk` | Check package.json | - | API compatibility |
+| `openai` | Check package.json | - | Streaming format |
+
+---
+
+## Integration Test Verification
+
+> **Purpose**: Verify provider compatibility claims through actual API testing. Run these tests before major releases or when updating provider SDKs.
+
+### Test Commands
+
+```bash
+# Run all adapter integration tests
+pnpm test:integration --filter="*adapter*"
+
+# Test specific provider streaming
+pnpm test packages/react/src/adapters/__tests__/openai.integration.test.ts
+pnpm test packages/react/src/adapters/__tests__/anthropic.integration.test.ts
+pnpm test packages/react/src/adapters/__tests__/google.integration.test.ts
+```
+
+### Provider Verification Checklist
+
+Run these manual tests with valid API keys (use test accounts with spending limits):
+
+**OpenAI**:
+- [ ] Basic chat completion works
+- [ ] Streaming response works
+- [ ] Tool calls work in streaming mode
+- [ ] Token usage reported correctly
+
+**Anthropic**:
+- [ ] Basic chat completion works
+- [ ] Streaming response works
+- [ ] cache_control honored (monitor response headers)
+- [ ] Tool use content blocks work
+
+**Google**:
+- [ ] Basic content generation works
+- [ ] Streaming response works
+- [ ] ⚠️ Tool calls in streaming (known limitation - verify current status)
+- [ ] Usage metadata returned
+
+### Environment Setup for Integration Tests
+
+```bash
+# Create .env.test.local (never commit)
+OPENAI_API_KEY=sk-test-...
+ANTHROPIC_API_KEY=sk-ant-test-...
+GOOGLE_API_KEY=AIza...
+
+# Run with test environment
+NODE_ENV=test pnpm test:integration
+```
 
 ---
 
@@ -502,5 +589,12 @@ const processChunk = React.useCallback((chunk: string) => {
 
 ---
 
-*Report Version: 1.0.0 | Generated: December 2025*
+*Report Version: 1.1.0 | Generated: December 2025 | Last Updated: December 2025*
 *Template: Advanced AI Chat Features - Work Enhancement Review Prompt v1.0.0*
+
+**v1.1.0 Changes**:
+- Discovered existing `TokenCounter` component (Quick Wins #1, #2 already implemented)
+- Added Mermaid architecture diagram
+- Added Deprecation Watch section
+- Added Integration Test Verification section
+- Corrected methodology claims and terminology
