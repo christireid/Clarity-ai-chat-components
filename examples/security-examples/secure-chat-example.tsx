@@ -27,6 +27,40 @@ import {
   ConsoleAlertHandler,
 } from '@clarity-chat/react'
 
+// =============================================================================
+// 💡 Type Definitions for Security Examples
+// =============================================================================
+
+/**
+ * Represents a chat message in the security examples.
+ * @description Used for both user input and assistant responses.
+ */
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
+/**
+ * Result of security validation on user input.
+ * @description Returned by SecurityManager.validateInput()
+ */
+interface ValidationResult {
+  /** Whether the input passed security checks */
+  allowed: boolean
+  /** Reason for blocking if not allowed */
+  reason?: string
+  /** Confidence score of the security check (0-1) */
+  confidence?: number
+  /** Sanitized version of the input (PII redacted, etc.) */
+  sanitizedInput?: string
+  /** Additional details about the validation */
+  details?: Record<string, unknown>
+}
+
+// =============================================================================
+// Example Components
+// =============================================================================
+
 /**
  * Example 1: Simple Secure Chat with React Hook
  */
@@ -297,12 +331,6 @@ export function CustomSecurityChat() {
       })
   )
 
-  // 💡 Proper type for chat messages
-  interface ChatMessage {
-    role: 'user' | 'assistant' | 'system'
-    content: string
-  }
-
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
@@ -422,16 +450,6 @@ export function SecurityTestBench() {
   )
 
   const [testInput, setTestInput] = useState('')
-
-  // 💡 Type for security validation results
-  interface ValidationResult {
-    allowed: boolean
-    reason?: string
-    confidence?: number
-    sanitizedInput?: string
-    details?: Record<string, unknown>
-  }
-
   const [result, setResult] = useState<ValidationResult | null>(null)
 
   const attackExamples = [
