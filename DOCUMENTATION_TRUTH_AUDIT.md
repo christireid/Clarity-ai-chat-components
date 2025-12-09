@@ -6,19 +6,40 @@
 **Auditor**: Claude (Automated Audit)
 **Scope**: All technical documentation (README, package docs, guides, API references)
 
+### Audit Limitations
+
+> **Important**: This audit used static analysis only. The following could NOT be verified:
+> - Bundle sizes (requires build)
+> - Test counts (requires test run)
+> - WCAG AAA compliance (requires accessibility testing)
+> - Performance claims (requires benchmarking)
+> - Actual API behavior (requires runtime testing)
+>
+> Claims marked "Verified" mean the export/file exists, NOT that it works as documented.
+
 ### Key Findings
 
 | Severity | Count | Est. Fix Time |
 |----------|-------|---------------|
 | 🔴 Critical | 0 | 0 hours |
-| 🟠 Major | 3 | 2 hours |
+| 🟠 Major | 2 | 1.5 hours |
 | 🟡 Moderate | 5 | 3 hours |
-| 🟢 Minor | 4 | 1 hour |
+| 🟢 Minor | 5 | 1.5 hours |
 | ⚪ Info | 2 | 0.5 hours |
 | **Total** | **14** | **6.5 hours** |
 
+### Severity Criteria Used
+
+| Severity | Definition | Example |
+|----------|------------|---------|
+| 🔴 Critical | Feature documented but doesn't exist; blocks basic usage | "useXYZ hook" exported but no such export |
+| 🟠 Major | Causes runtime errors or installation failures | Node.js version mismatch |
+| 🟡 Moderate | Causes confusion but workarounds exist | Outdated getting-started guide |
+| 🟢 Minor | Cosmetic inaccuracies | Badge shows wrong version |
+| ⚪ Info | Not wrong, but could be improved | Feature marked as available but not published |
+
 ### Risk Assessment
-**Medium** - While there are no critical false claims about missing features, several version number discrepancies and count inaccuracies could confuse developers and erode trust in documentation accuracy.
+**Medium** - While there are no critical false claims about missing features, the Node.js version conflict (Major) could cause installation failures. Other issues are cosmetic or cause developer confusion.
 
 ### Recommended Immediate Actions
 1. Fix Node.js version discrepancy (package.json requires >=20.0.0 but docs say 18+)
@@ -52,7 +73,7 @@
 
 ### Discrepancy #1: TypeScript Version Inconsistency
 
-**Severity**: 🟠 MAJOR
+**Severity**: 🟢 MINOR (cosmetic - doesn't affect functionality)
 **Category**: Version
 **Source**: `README.md:18`
 
@@ -458,24 +479,37 @@ Feature may be planned but not yet implemented.
 
 ---
 
-## Verified Claims (No Issues)
+## Verified Claims (File Existence Only)
 
-The following documented features were verified to exist:
+The following documented features were verified to have corresponding source files.
 
-| Claim | Location | Status |
-|-------|----------|--------|
-| ClarityChat component | `packages/react/src/components/clarity-chat.tsx` | ✅ Verified |
-| useClarityChat hook | `packages/react/src/hooks/use-clarity-chat.ts` | ✅ Verified |
-| useStreamableUI hook | `packages/react/src/hooks/use-streamable-ui.ts` | ✅ Verified |
-| useSecureChat hook | `packages/react/src/hooks/use-security.ts` | ✅ Verified |
-| EnhancedWebhookManager | `packages/react/src/webhooks/webhook-manager-enhanced.ts` | ✅ Verified |
-| useVectorStore hook | `packages/react/src/vector-stores/react.tsx` | ✅ Verified |
-| useRAGPipeline hook | `packages/react/src/hooks/use-rag-pipeline.ts` | ✅ Verified |
-| Memory Provider | `packages/react/src/memory/memory-provider.tsx` | ✅ Verified |
-| Token Optimization | Multiple files in `packages/react/src/utils/` | ✅ Verified |
-| ChatWindow accepts CoreMessage[] | `packages/react/src/components/chat-window.tsx:16` | ✅ Verified |
-| 70+ Components (claim) | 130 component files found | ✅ Exceeds claim |
-| 35+ Hooks (claim) | 104 hook files found | ✅ Exceeds claim |
+**⚠️ Note**: "File exists" ≠ "Works as documented". Runtime verification was not performed.
+
+| Claim | Location | Verification Level |
+|-------|----------|-------------------|
+| ClarityChat component | `packages/react/src/components/clarity-chat.tsx` | 📁 File exists |
+| useClarityChat hook | `packages/react/src/hooks/use-clarity-chat.ts` | 📁 File exists |
+| useStreamableUI hook | `packages/react/src/hooks/use-streamable-ui.ts` | 📁 File exists |
+| useSecureChat hook | `packages/react/src/hooks/use-security.ts` | 📁 File exists |
+| EnhancedWebhookManager | `packages/react/src/webhooks/webhook-manager-enhanced.ts` | 📁 File exists |
+| useVectorStore hook | `packages/react/src/vector-stores/react.tsx` | 📁 File exists |
+| useRAGPipeline hook | `packages/react/src/hooks/use-rag-pipeline.ts` | 📁 File exists |
+| Memory Provider | `packages/react/src/memory/memory-provider.tsx` | 📁 File exists |
+| Token Optimization | Multiple files in `packages/react/src/utils/` | 📁 Files exist |
+| ChatWindow accepts CoreMessage[] | `packages/react/src/components/chat-window.tsx:16` | ✅ Code verified |
+
+### Component/Hook Count Analysis
+
+| Claim | Methodology | Finding | Confidence |
+|-------|-------------|---------|------------|
+| "70+ Components" | Counted .tsx files in components/ (excluding tests/stories) | 130 files | ⚠️ LOW - Files ≠ exports |
+| "35+ Hooks" | Counted files in hooks/ directory | 104 files | ⚠️ LOW - Files ≠ exports |
+
+**To properly verify counts**, run:
+```bash
+# Count actual exports from index.ts
+grep -c "^export" packages/react/src/index.ts
+```
 
 ---
 
@@ -488,9 +522,11 @@ The following documented features were verified to exist:
 | # | Discrepancy | Fix Type | Effort | Files |
 |---|-------------|----------|--------|-------|
 | 2 | Node.js version conflict | docs | 1 hour | 15+ files |
-| 1 | TypeScript version badge | docs | 10 min | README.md, project-overview.md |
+| 3 | Theme count mismatch | docs | 30 min | README.md |
 
-**Verification**: Search for "Node.js 18" after fix to ensure all updated.
+**Verification**:
+- Search for "Node.js 18" after fix to ensure all updated
+- Confirm theme count matches `Object.keys(modernThemes).length`
 
 ---
 
@@ -543,13 +579,49 @@ The following documented features were verified to exist:
 
 ### Automation Recommendations
 
-```yaml
-# Add to CI pipeline
-- name: Verify documented exports
-  run: npx ts-node scripts/verify-exports.ts
+**1. Add export verification script** (`scripts/verify-docs-exports.sh`):
+```bash
+#!/bin/bash
+# Verify that documented exports actually exist in index.ts
 
-- name: Check version consistency
-  run: npx ts-node scripts/check-versions.ts
+EXPORTS=(
+  "ClarityChat"
+  "useClarityChat"
+  "ChatWindow"
+  "useSecureChat"
+  "MemoryProvider"
+)
+
+INDEX_FILE="packages/react/src/index.ts"
+FAILED=0
+
+for exp in "${EXPORTS[@]}"; do
+  if ! grep -q "export.*${exp}" "$INDEX_FILE"; then
+    echo "❌ Missing export: $exp"
+    FAILED=1
+  fi
+done
+
+exit $FAILED
+```
+
+**2. Add version consistency check** (`.github/workflows/docs-check.yml`):
+```yaml
+name: Documentation Check
+on: [push, pull_request]
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Node.js version consistency
+        run: |
+          PKG_NODE=$(jq -r '.engines.node' package.json)
+          DOCS_CLAIMS=$(grep -r "Node.js 18" docs/ README.md || true)
+          if [ -n "$DOCS_CLAIMS" ] && [[ "$PKG_NODE" == ">=20"* ]]; then
+            echo "❌ Docs claim Node 18 but package.json requires $PKG_NODE"
+            exit 1
+          fi
 ```
 
 ### Quality Gates
