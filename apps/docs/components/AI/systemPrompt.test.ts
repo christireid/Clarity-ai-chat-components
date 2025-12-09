@@ -17,6 +17,8 @@ import {
   buildLearnMoreSection,
   buildComparisonTable,
   buildQuickChecks,
+  extractXmlTags,
+  validateXmlTagBalance,
 } from './systemPrompt'
 
 // ============================================================================
@@ -66,10 +68,42 @@ describe('DOCS_ASSISTANT_SYSTEM_PROMPT', () => {
   })
 
   it('uses positive instructions over negative ones', () => {
-    // Should have "Required behaviors" instead of "Never Do"
+    // Should have "Required behaviors" section for positive framing
     expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('Required behaviors')
-    // Should not have explicit "Never Do" section
-    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).not.toContain('### Never Do:')
+
+    // Positive instruction patterns should outnumber negative patterns
+    const positivePatterns = [
+      'Lead with',
+      'Include',
+      'Link to',
+      'Offer',
+      'Mirror',
+      'Acknowledge',
+      'Use',
+      'Give',
+      'Explain',
+      'Follow',
+    ]
+    const negativePatterns = ["Don't", 'Never', 'Avoid', "Do not"]
+
+    const positiveCount = positivePatterns.filter((p) =>
+      DOCS_ASSISTANT_SYSTEM_PROMPT.includes(p)
+    ).length
+    const negativeCount = negativePatterns.filter((p) =>
+      DOCS_ASSISTANT_SYSTEM_PROMPT.includes(p)
+    ).length
+
+    // Positive patterns should significantly outnumber negative ones
+    expect(positiveCount).toBeGreaterThan(negativeCount * 2)
+  })
+
+  it('has balanced XML tags', () => {
+    const validation = validateXmlTagBalance(DOCS_ASSISTANT_SYSTEM_PROMPT)
+    expect(
+      validation.isBalanced,
+      `Unbalanced XML tags: ${validation.issues.join(', ')}`
+    ).toBe(true)
+    expect(validation.tagCount).toBeGreaterThan(0)
   })
 })
 
@@ -620,5 +654,100 @@ describe('Edge Cases', () => {
         expect(result).toMatch(/^\[\/[a-z/-]+\]\(\/[a-z/-]+\)$/)
       }
     })
+  })
+})
+
+// ============================================================================
+// XML Tag Validation Tests
+// ============================================================================
+
+describe('extractXmlTags', () => {
+  it('extracts opening and closing tags', () => {
+    const result = extractXmlTags('<foo>content</foo>')
+    expect(result.openingTags).toContain('foo')
+    expect(result.closingTags).toContain('foo')
+    expect(result.unmatched).toHaveLength(0)
+  })
+
+  it('handles multiple tags', () => {
+    const result = extractXmlTags('<a><b>text</b></a>')
+    expect(result.openingTags).toEqual(['a', 'b'])
+    expect(result.closingTags).toEqual(['b', 'a'])
+    expect(result.unmatched).toHaveLength(0)
+  })
+
+  it('detects missing closing tag', () => {
+    const result = extractXmlTags('<foo>content')
+    expect(result.openingTags).toContain('foo')
+    expect(result.closingTags).toHaveLength(0)
+    expect(result.unmatched.length).toBeGreaterThan(0)
+    expect(result.unmatched[0]).toContain('foo')
+  })
+
+  it('detects missing opening tag', () => {
+    const result = extractXmlTags('content</bar>')
+    expect(result.openingTags).toHaveLength(0)
+    expect(result.closingTags).toContain('bar')
+    expect(result.unmatched.length).toBeGreaterThan(0)
+    expect(result.unmatched[0]).toContain('bar')
+  })
+
+  it('handles snake_case tag names', () => {
+    const result = extractXmlTags('<my_tag>text</my_tag>')
+    expect(result.openingTags).toContain('my_tag')
+    expect(result.closingTags).toContain('my_tag')
+    expect(result.unmatched).toHaveLength(0)
+  })
+
+  it('is case insensitive for tag matching', () => {
+    const result = extractXmlTags('<FOO>text</foo>')
+    expect(result.unmatched).toHaveLength(0)
+  })
+
+  it('handles empty string', () => {
+    const result = extractXmlTags('')
+    expect(result.openingTags).toHaveLength(0)
+    expect(result.closingTags).toHaveLength(0)
+    expect(result.unmatched).toHaveLength(0)
+  })
+
+  it('ignores non-XML content like code blocks', () => {
+    // Generic angle brackets in code shouldn't be counted
+    const result = extractXmlTags('if (x < 10 && y > 5) {}')
+    // This shouldn't match since < is followed by space or not a valid tag
+    expect(result.openingTags).toHaveLength(0)
+  })
+})
+
+describe('validateXmlTagBalance', () => {
+  it('validates balanced tags', () => {
+    const result = validateXmlTagBalance('<a><b></b></a>')
+    expect(result.isBalanced).toBe(true)
+    expect(result.issues).toHaveLength(0)
+    expect(result.tagCount).toBe(2)
+  })
+
+  it('detects unbalanced tags', () => {
+    const result = validateXmlTagBalance('<a><b></a>')
+    expect(result.isBalanced).toBe(false)
+    expect(result.issues.length).toBeGreaterThan(0)
+  })
+
+  it('returns tag count', () => {
+    const result = validateXmlTagBalance('<a><b><c></c></b></a>')
+    expect(result.tagCount).toBe(3)
+  })
+
+  it('handles text without XML tags', () => {
+    const result = validateXmlTagBalance('Just plain text')
+    expect(result.isBalanced).toBe(true)
+    expect(result.tagCount).toBe(0)
+  })
+
+  it('provides helpful issue messages', () => {
+    const result = validateXmlTagBalance('<orphan>')
+    expect(result.issues[0]).toContain('orphan')
+    expect(result.issues[0]).toContain('missing')
+    expect(result.issues[0]).toContain('closing')
   })
 })

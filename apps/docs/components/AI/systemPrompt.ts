@@ -455,3 +455,84 @@ export function buildQuickChecks(checks: string[]): string {
   const numbered = validChecks.map((c, i) => `${i + 1}. ${c}`).join('\n')
   return `**Quick checks first:**\n${numbered}`
 }
+
+// ============================================================================
+// Prompt Validation Utilities
+// ============================================================================
+
+/**
+ * Extract all XML-style tags from a prompt string
+ *
+ * @param prompt - The prompt string to analyze
+ * @returns Object with opening tags, closing tags, and any unmatched tags
+ */
+export function extractXmlTags(prompt: string): {
+  openingTags: string[]
+  closingTags: string[]
+  unmatched: string[]
+} {
+  const openingTagRegex = /<([a-z_][a-z0-9_]*)>/gi
+  const closingTagRegex = /<\/([a-z_][a-z0-9_]*)>/gi
+
+  const openingTags: string[] = []
+  const closingTags: string[] = []
+
+  let match: RegExpExecArray | null
+
+  while ((match = openingTagRegex.exec(prompt)) !== null) {
+    openingTags.push(match[1].toLowerCase())
+  }
+
+  while ((match = closingTagRegex.exec(prompt)) !== null) {
+    closingTags.push(match[1].toLowerCase())
+  }
+
+  // Find unmatched tags
+  const openingCounts = new Map<string, number>()
+  const closingCounts = new Map<string, number>()
+
+  for (const tag of openingTags) {
+    openingCounts.set(tag, (openingCounts.get(tag) || 0) + 1)
+  }
+  for (const tag of closingTags) {
+    closingCounts.set(tag, (closingCounts.get(tag) || 0) + 1)
+  }
+
+  const unmatched: string[] = []
+
+  for (const [tag, count] of openingCounts) {
+    const closeCount = closingCounts.get(tag) || 0
+    if (count > closeCount) {
+      unmatched.push(`<${tag}> (missing ${count - closeCount} closing tag(s))`)
+    }
+  }
+
+  for (const [tag, count] of closingCounts) {
+    const openCount = openingCounts.get(tag) || 0
+    if (count > openCount) {
+      unmatched.push(`</${tag}> (missing ${count - openCount} opening tag(s))`)
+    }
+  }
+
+  return { openingTags, closingTags, unmatched }
+}
+
+/**
+ * Validate that all XML-style tags in a prompt are properly balanced
+ *
+ * @param prompt - The prompt string to validate
+ * @returns Object indicating if tags are balanced, with details on any issues
+ */
+export function validateXmlTagBalance(prompt: string): {
+  isBalanced: boolean
+  issues: string[]
+  tagCount: number
+} {
+  const { openingTags, closingTags, unmatched } = extractXmlTags(prompt)
+
+  return {
+    isBalanced: unmatched.length === 0,
+    issues: unmatched,
+    tagCount: openingTags.length,
+  }
+}
