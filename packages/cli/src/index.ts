@@ -93,6 +93,7 @@ program
   .option('-f, --framework <framework>', 'Framework (nextjs, remix, vite)')
   .option('--no-install', 'Skip dependency installation')
   .option('--no-git', 'Skip git initialization')
+  .option('--dry-run', 'Show what would be created without making changes')
   .action(initCommand)
 
 program
@@ -101,6 +102,7 @@ program
   .option('-p, --path <path>', 'Installation path', './src/components')
   .option('--no-deps', 'Skip dependency installation')
   .option('--batch <components>', 'Add multiple components (comma-separated)')
+  .option('--dry-run', 'Show what would be added without making changes')
   .action(addCommand)
 
 program
@@ -128,6 +130,7 @@ program
   .description('⚡ Generate code (component, hook, adapter, test)')
   .option('-n, --name <name>', 'Component/hook name')
   .option('-o, --output <path>', 'Output directory')
+  .option('--dry-run', 'Show what would be generated without creating files')
   .action(generateCommand)
 
 program
@@ -140,6 +143,7 @@ program
   .command('doctor')
   .description('🩺 Check project health and configuration')
   .option('--fix', 'Auto-fix common issues')
+  .option('--dry-run', 'Show what --fix would change without applying')
   .action(doctorCommand)
 
 program
@@ -150,6 +154,7 @@ program
   .option('--major', 'Only show major updates')
   .option('--minor', 'Only show minor updates')
   .option('--patch', 'Only show patch updates')
+  .option('--dry-run', 'Show what would be upgraded without making changes')
   .action(upgradeCommand)
 
 program

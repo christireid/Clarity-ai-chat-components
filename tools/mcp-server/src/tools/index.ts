@@ -11,6 +11,7 @@ import { logger } from '../utils/logger.js'
 import { NotFoundError, ValidationError } from '../utils/errors.js'
 import { validateRequired, validateEnum, validateString, validateNumber } from '../utils/validation.js'
 import { validateProjectPath } from '../utils/security.js'
+import { projectCache, modelCache, exampleCache, CacheKeys } from '../utils/cache.js'
 
 type Provider = 'openai' | 'anthropic' | 'google' | 'all'
 type Framework = 'nextjs' | 'express' | 'hono' | 'standalone'
@@ -705,52 +706,66 @@ async function validateConfig(projectPath: string) {
 }
 
 /**
- * Get model information
+ * Model information database (static data)
+ */
+const MODEL_INFO: Record<string, {
+  provider: string
+  contextWindow: number
+  pricing: { input: number; output: number }
+  capabilities: string[]
+  bestFor: string[]
+}> = {
+  'gpt-4-turbo': {
+    provider: 'OpenAI',
+    contextWindow: 128000,
+    pricing: { input: 0.01, output: 0.03 },
+    capabilities: ['text', 'code', 'functions', 'json'],
+    bestFor: ['complex reasoning', 'long-form content']
+  },
+  'gpt-4': {
+    provider: 'OpenAI',
+    contextWindow: 8192,
+    pricing: { input: 0.03, output: 0.06 },
+    capabilities: ['text', 'code', 'functions'],
+    bestFor: ['complex tasks', 'creative writing']
+  },
+  'claude-3-opus-20240229': {
+    provider: 'Anthropic',
+    contextWindow: 200000,
+    pricing: { input: 0.015, output: 0.075 },
+    capabilities: ['text', 'code', 'analysis', 'vision'],
+    bestFor: ['complex analysis', 'research', 'long documents']
+  },
+  'gemini-pro': {
+    provider: 'Google',
+    contextWindow: 32768,
+    pricing: { input: 0.00025, output: 0.0005 },
+    capabilities: ['text', 'code', 'analysis'],
+    bestFor: ['general tasks', 'cost efficiency']
+  }
+}
+
+/**
+ * Get model information (cached)
  */
 async function getModelInfo(modelName: string) {
-  logger.debug('Getting model info', { modelName })
-  
-  const modelInfo: Record<string, {
-    provider: string
-    contextWindow: number
-    pricing: { input: number; output: number }
-    capabilities: string[]
-    bestFor: string[]
-  }> = {
-    'gpt-4-turbo': {
-      provider: 'OpenAI',
-      contextWindow: 128000,
-      pricing: { input: 0.01, output: 0.03 },
-      capabilities: ['text', 'code', 'functions', 'json'],
-      bestFor: ['complex reasoning', 'long-form content']
-    },
-    'gpt-4': {
-      provider: 'OpenAI',
-      contextWindow: 8192,
-      pricing: { input: 0.03, output: 0.06 },
-      capabilities: ['text', 'code', 'functions'],
-      bestFor: ['complex tasks', 'creative writing']
-    },
-    'claude-3-opus-20240229': {
-      provider: 'Anthropic',
-      contextWindow: 200000,
-      pricing: { input: 0.015, output: 0.075 },
-      capabilities: ['text', 'code', 'analysis', 'vision'],
-      bestFor: ['complex analysis', 'research', 'long documents']
-    },
-    'gemini-pro': {
-      provider: 'Google',
-      contextWindow: 32768,
-      pricing: { input: 0.00025, output: 0.0005 },
-      capabilities: ['text', 'code', 'analysis'],
-      bestFor: ['general tasks', 'cost efficiency']
-    }
+  const cacheKey = CacheKeys.modelInfo(modelName)
+
+  // Check cache first
+  const cached = modelCache.get(cacheKey)
+  if (cached) {
+    return cached
   }
 
-  const info = modelInfo[modelName]
+  logger.debug('Getting model info', { modelName })
+
+  const info = MODEL_INFO[modelName]
   if (!info) {
     throw new NotFoundError('Model', modelName)
   }
+
+  // Cache the result (static data, long TTL)
+  modelCache.set(cacheKey, info)
 
   return info
 }
