@@ -38,6 +38,10 @@ export interface TokenOptimizationDashboardProps {
   className?: string
   /** Callback when dashboard is clicked */
   onClick?: () => void
+  /** Whether the dashboard is in a loading state */
+  isLoading?: boolean
+  /** Error to display (renders error state when provided) */
+  error?: Error | string | null
 }
 
 /**
@@ -75,6 +79,8 @@ export function TokenOptimizationDashboard({
   costPerToken: _costPerToken = 0.000002,
   className = '',
   onClick,
+  isLoading = false,
+  error = null,
 }: TokenOptimizationDashboardProps) {
   const [displayMetrics, setDisplayMetrics] = React.useState(metrics)
 
@@ -98,10 +104,79 @@ export function TokenOptimizationDashboard({
     return `$${cost.toFixed(2)}`
   }
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div
+        className={`p-6 bg-card rounded-lg border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
+        role="status"
+        aria-label="Loading Token Optimization Dashboard"
+        aria-busy="true"
+      >
+        <div className="animate-pulse space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="h-5 w-36 bg-muted rounded" />
+              <div className="h-4 w-48 bg-muted/60 rounded" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="p-4 bg-muted/20 rounded-lg">
+                <div className="h-8 w-20 bg-muted rounded mb-2" />
+                <div className="h-4 w-16 bg-muted/60 rounded" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <span className="sr-only">Loading token optimization data...</span>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return (
+      <div
+        className={`p-6 bg-card rounded-lg border border-destructive/30 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
+        role="alert"
+        aria-live="assertive"
+      >
+        <div className="flex flex-col items-center justify-center gap-3 text-center py-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+            <svg
+              className="h-5 w-5 text-destructive"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-foreground">
+              Failed to load optimization data
+            </p>
+            <p className="text-xs text-muted-foreground">{errorMessage}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div
       className={`p-6 bg-card rounded-lg border border-border/50 shadow-[0_1px_2px_0_rgb(0_0_0_/_0.05)] ${className}`}
       onClick={onClick}
+      role="region"
+      aria-label="Token Optimization Dashboard"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -114,8 +189,16 @@ export function TokenOptimizationDashboard({
           </p>
         </div>
         {realTime && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <div
+            className="flex items-center gap-2 text-xs text-muted-foreground"
+            role="status"
+            aria-live="polite"
+            aria-label="Real-time updates active"
+          >
+            <div
+              className="w-2 h-2 rounded-full bg-green-500 animate-pulse"
+              aria-hidden="true"
+            />
             Live
           </div>
         )}
@@ -298,7 +381,15 @@ function OptimizationItem({
         <div className="text-xs text-muted-foreground">{description}</div>
         {percent > 0 && (
           <div className="mt-2">
-            <div className="h-1.5 bg-muted-foreground/20 rounded-full overflow-hidden">
+            <div
+              className="h-1.5 bg-muted-foreground/20 rounded-full overflow-hidden"
+              role="progressbar"
+              aria-label={`${label} savings progress`}
+              aria-valuenow={Math.round(Math.min(percent, 100))}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuetext={`${Math.min(percent, 100).toFixed(1)}% savings`}
+            >
               <div
                 className="h-full bg-success transition-all duration-500"
                 style={{ width: `${Math.min(percent, 100)}%` }}
@@ -327,6 +418,8 @@ function TokenOptimizationCompactBadge({
   return (
     <div
       className={`inline-flex items-center gap-2 px-3 py-1.5 bg-success/10 border border-success/20 rounded-full ${className}`}
+      role="status"
+      aria-label={`${tokensSaved.toLocaleString()} tokens saved, ${savingsPercent.toFixed(1)}% savings`}
     >
       <svg
         className="w-4 h-4 text-success"
@@ -342,8 +435,13 @@ function TokenOptimizationCompactBadge({
         />
       </svg>
       <span className="text-sm font-medium text-success">
-        {tokensSaved.toLocaleString()} tokens saved ({savingsPercent.toFixed(1)}%)
+        {tokensSaved.toLocaleString()} tokens saved ({savingsPercent.toFixed(1)}
+        %)
       </span>
     </div>
   )
 }
+
+TokenOptimizationDashboard.displayName = 'TokenOptimizationDashboard'
+OptimizationItem.displayName = 'OptimizationItem'
+TokenOptimizationCompactBadge.displayName = 'TokenOptimizationCompactBadge'

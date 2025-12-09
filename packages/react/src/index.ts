@@ -514,6 +514,22 @@ export {
   ABTestingDashboard,
   useABTesting,
 } from './components/ab-testing-dashboard'
+
+// A/B Testing Sub-Components (modular building blocks)
+export {
+  ExperimentCard,
+  ExperimentList,
+  VariantCard,
+  WinnerBanner,
+  useStatisticalSignificance,
+  normalCDF,
+  type ExperimentCardProps,
+  type ExperimentListProps,
+  type VariantCardProps,
+  type WinnerBannerProps,
+  type SignificanceResult,
+} from './components/ab-testing'
+
 export {
   MobileOptimizedMessage,
   MobileChatWindow,
@@ -563,6 +579,100 @@ export { TokenCounter } from './components/token-counter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token-optimization-badge'
 export { TokenOptimizationDashboard } from './components/token-optimization-dashboard'
+
+// Dashboard Utilities
+export {
+  DashboardErrorBoundary,
+  useDashboardErrorHandler,
+  type DashboardErrorBoundaryProps,
+} from './components/dashboard-error-boundary'
+export {
+  DashboardProgress,
+  CircularProgress,
+  type DashboardProgressProps,
+  type CircularProgressProps,
+} from './components/dashboard-progress'
+export {
+  AnalyticsDashboardSkeleton,
+  UsageDashboardSkeleton,
+  TokenOptimizationDashboardSkeleton,
+  PerformanceDashboardSkeleton,
+  DashboardEmptyState,
+  MetricCardSkeleton,
+  ProgressWidgetSkeleton,
+  ListItemSkeleton,
+  ChartSkeleton,
+  DashboardStateTransition,
+  useLoadingAnnouncement,
+  LoadingAnnouncer,
+  type DashboardSkeletonProps,
+  type DashboardEmptyStateProps,
+  type DashboardStateTransitionProps,
+  type LoadingAnnouncerProps,
+} from './components/dashboard-skeleton'
+
+// Dashboard Data Fetching
+export {
+  useDashboardData,
+  useSimpleDashboardData,
+  type DashboardDataState,
+  type DashboardDataActions,
+  type UseDashboardDataOptions,
+} from './hooks/use-dashboard-data'
+
+// Dashboard Composer (Multi-source Data)
+export {
+  useDashboardComposer,
+  createDataSource,
+  type DataSourceConfig,
+  type DataSourceState,
+  type DashboardComposerState,
+  type DashboardComposerActions,
+  type UseDashboardComposerOptions,
+} from './hooks/use-dashboard-composer'
+
+// Dashboard Performance Monitoring
+export {
+  useDashboardPerformance,
+  DashboardPerformanceProvider,
+  usePerformanceContext,
+  type DashboardPerformanceMetrics,
+  type UseDashboardPerformanceOptions,
+  type UseDashboardPerformanceReturn,
+  type PerformanceContextValue,
+} from './hooks/use-dashboard-performance.js'
+
+// Keyboard Shortcuts
+export {
+  useKeyboardShortcuts,
+  useShortcutDisplay,
+  useScopedKeyboardShortcuts,
+  useFocusedKeyboardShortcuts,
+  KeyboardShortcutsHelp,
+  type KeyboardShortcut,
+  type KeyboardShortcutsHelpProps,
+  type ScopedKeyboardShortcutsOptions,
+} from './hooks/use-keyboard-shortcuts'
+export {
+  KeyboardShortcutHint,
+  useKeyboardShortcutHint,
+  InlineShortcutHint,
+  type KeyboardShortcutHintProps,
+  type InlineShortcutHintProps,
+} from './components/keyboard-shortcut-hint'
+
+// Animated Values (Real-time Update Animations)
+export {
+  useAnimatedValue,
+  AnimatedNumber,
+  useValueChange,
+  FlashingValue,
+  type UseAnimatedValueOptions,
+  type AnimatedValueResult,
+  type AnimatedNumberProps,
+  type FlashingValueProps,
+} from './hooks/use-animated-value'
+
 export {
   HistoryManager,
   HistoryMessageRow,

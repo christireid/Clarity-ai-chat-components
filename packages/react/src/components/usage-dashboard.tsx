@@ -26,6 +26,28 @@ export interface UsageDashboardProps {
   className?: string
 }
 
+/**
+ * Usage Dashboard Component
+ *
+ * Displays comprehensive usage statistics including credit balance,
+ * usage metrics, cost breakdowns, and limit warnings.
+ *
+ * @example
+ * ```tsx
+ * <UsageDashboard
+ *   balance={{ total: 10000, used: 3000, available: 7000 }}
+ *   stats={{
+ *     period: 'month',
+ *     startDate: new Date(),
+ *     endDate: new Date(),
+ *     metrics: { messagesCount: 150, tokensUsed: 25000 },
+ *     costs: { total: 15.50, breakdown: [] }
+ *   }}
+ *   limits={[{ metric: 'tokensUsed', current: 25000, limit: 100000 }]}
+ *   onPurchaseCredits={() => navigate('/billing')}
+ * />
+ * ```
+ */
 export function UsageDashboard({
   balance,
   stats,
@@ -33,7 +55,8 @@ export function UsageDashboard({
   onPurchaseCredits,
   className,
 }: UsageDashboardProps) {
-  const usagePercentage = (balance.used / balance.total) * 100
+  const usagePercentage =
+    balance.total > 0 ? (balance.used / balance.total) * 100 : 0
   const isLowBalance = usagePercentage > 80
 
   const formatNumber = (num: number) => {
@@ -68,7 +91,11 @@ export function UsageDashboard({
   }
 
   return (
-    <Card className={cn('h-full flex flex-col', className)}>
+    <Card
+      className={cn('h-full flex flex-col', className)}
+      role="region"
+      aria-label="Usage Dashboard"
+    >
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
@@ -110,11 +137,19 @@ export function UsageDashboard({
               </div>
 
               {/* Progress Bar */}
-              <div className="relative h-3 bg-muted/30 rounded-full overflow-hidden shadow-inner">
+              <div
+                className="relative h-3 bg-muted/30 rounded-full overflow-hidden shadow-inner"
+                role="progressbar"
+                aria-label="Credit usage"
+                aria-valuenow={Math.round(usagePercentage)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuetext={`${formatNumber(balance.used)} of ${formatNumber(balance.total)} credits used (${usagePercentage.toFixed(1)}%)`}
+              >
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${usagePercentage}%` }}
-                  transition={{ 
+                  transition={{
                     // Framer Motion 12: Spring progress fill
                     type: 'spring',
                     damping: 28,
@@ -122,7 +157,9 @@ export function UsageDashboard({
                   }}
                   className={cn(
                     'h-full rounded-full',
-                    isLowBalance ? 'bg-gradient-to-r from-red-500 to-destructive' : 'bg-gradient-to-r from-primary/80 to-primary'
+                    isLowBalance
+                      ? 'bg-gradient-to-r from-red-500 to-destructive'
+                      : 'bg-gradient-to-r from-primary/80 to-primary'
                   )}
                 />
               </div>
@@ -176,7 +213,14 @@ export function UsageDashboard({
                             className="text-2xl"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ delay: Object.keys(stats.metrics).indexOf(key) * 0.05 + 0.1, type: 'spring', stiffness: 500, damping: 30 }}
+                            transition={{
+                              delay:
+                                Object.keys(stats.metrics).indexOf(key) * 0.05 +
+                                0.1,
+                              type: 'spring',
+                              stiffness: 500,
+                              damping: 30,
+                            }}
                           >
                             {metricIcons[key]}
                           </motion.span>
@@ -194,13 +238,18 @@ export function UsageDashboard({
                             <div className="h-1.5 bg-muted/30 rounded-full overflow-hidden">
                               <motion.div
                                 initial={{ width: 0 }}
-                                animate={{ width: `${Math.min(percentage, 100)}%` }}
-                                transition={{ 
+                                animate={{
+                                  width: `${Math.min(percentage, 100)}%`,
+                                }}
+                                transition={{
                                   // Framer Motion 12: Staggered metric bars
                                   type: 'spring',
                                   damping: 30,
                                   stiffness: 220,
-                                  delay: Object.keys(stats.metrics).indexOf(key) * 0.05 + 0.2,
+                                  delay:
+                                    Object.keys(stats.metrics).indexOf(key) *
+                                      0.05 +
+                                    0.2,
                                 }}
                                 className={cn(
                                   'h-full rounded-full',
@@ -233,11 +282,17 @@ export function UsageDashboard({
                     key={index}
                     initial={{ opacity: 0, x: -20, scale: 0.95 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
-                    transition={{ delay: index * 0.05, duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                    transition={{
+                      delay: index * 0.05,
+                      duration: 0.25,
+                      ease: [0.25, 0.1, 0.25, 1],
+                    }}
                     className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-border/40 hover:bg-muted/50 transition-colors duration-200"
                   >
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-foreground">{item.category}</p>
+                      <p className="text-sm font-semibold text-foreground">
+                        {item.category}
+                      </p>
                       <p className="text-xs text-muted-foreground/80">
                         {formatNumber(item.quantity)} ×{' '}
                         {formatCurrency(item.unitPrice)}
@@ -281,9 +336,11 @@ export function UsageDashboard({
                       </li>
                     ))}
                 </ul>
-                <p className="text-xs mt-2 text-muted-foreground/80">
-                  Resets on {limits[0]?.resetDate.toLocaleDateString()}
-                </p>
+                {limits[0]?.resetDate && (
+                  <p className="text-xs mt-2 text-muted-foreground/80">
+                    Resets on {limits[0].resetDate.toLocaleDateString()}
+                  </p>
+                )}
               </motion.div>
             )}
 

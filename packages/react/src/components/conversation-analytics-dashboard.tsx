@@ -109,29 +109,83 @@ export interface ConversationAnalyticsDashboardProps {
   /** Show detailed breakdown */
   detailed?: boolean
   className?: string
+  /** Whether the dashboard is in a loading state (external control) */
+  isLoading?: boolean
+  /** Error to display (renders error state when provided, external control) */
+  externalError?: Error | string | null
 }
 
 /**
  * Extract topics using simple keyword clustering
  */
 function extractTopics(messages: Message[]): TopicCluster[] {
-  const allContent = messages.map(m => m.content.toLowerCase()).join(' ')
+  const allContent = messages.map((m) => m.content.toLowerCase()).join(' ')
 
   // Common stopwords to ignore
   const stopwords = new Set([
-    'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-    'of', 'with', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
-    'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
-    'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those',
-    'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who',
-    'when', 'where', 'why', 'how', 'all', 'each', 'every', 'both', 'few',
+    'the',
+    'a',
+    'an',
+    'and',
+    'or',
+    'but',
+    'in',
+    'on',
+    'at',
+    'to',
+    'for',
+    'of',
+    'with',
+    'is',
+    'are',
+    'was',
+    'were',
+    'be',
+    'been',
+    'being',
+    'have',
+    'has',
+    'had',
+    'do',
+    'does',
+    'did',
+    'will',
+    'would',
+    'could',
+    'should',
+    'may',
+    'might',
+    'can',
+    'this',
+    'that',
+    'these',
+    'those',
+    'i',
+    'you',
+    'he',
+    'she',
+    'it',
+    'we',
+    'they',
+    'what',
+    'which',
+    'who',
+    'when',
+    'where',
+    'why',
+    'how',
+    'all',
+    'each',
+    'every',
+    'both',
+    'few',
   ])
 
   // Extract words and count frequency
   const wordFreq = new Map<string, number>()
   const words = allContent.match(/\b\w{4,}\b/g) || []
 
-  words.forEach(word => {
+  words.forEach((word) => {
     if (!stopwords.has(word)) {
       wordFreq.set(word, (wordFreq.get(word) || 0) + 1)
     }
@@ -148,26 +202,44 @@ function extractTopics(messages: Message[]): TopicCluster[] {
 
   // Predefined topic patterns (in production, use LLM or ML clustering)
   const topicPatterns = [
-    { name: 'Programming', keywords: ['code', 'function', 'program', 'debug', 'error', 'bug'] },
-    { name: 'Design', keywords: ['design', 'interface', 'user', 'experience', 'layout'] },
-    { name: 'Data', keywords: ['data', 'database', 'query', 'analysis', 'chart'] },
-    { name: 'Help/Support', keywords: ['help', 'question', 'issue', 'problem', 'solve'] },
-    { name: 'Planning', keywords: ['plan', 'schedule', 'timeline', 'task', 'project'] },
+    {
+      name: 'Programming',
+      keywords: ['code', 'function', 'program', 'debug', 'error', 'bug'],
+    },
+    {
+      name: 'Design',
+      keywords: ['design', 'interface', 'user', 'experience', 'layout'],
+    },
+    {
+      name: 'Data',
+      keywords: ['data', 'database', 'query', 'analysis', 'chart'],
+    },
+    {
+      name: 'Help/Support',
+      keywords: ['help', 'question', 'issue', 'problem', 'solve'],
+    },
+    {
+      name: 'Planning',
+      keywords: ['plan', 'schedule', 'timeline', 'task', 'project'],
+    },
   ]
 
-  topicPatterns.forEach(pattern => {
-    const matchingKeywords = topKeywords.filter(kw =>
-      pattern.keywords.some(pk => kw.includes(pk) || pk.includes(kw))
+  topicPatterns.forEach((pattern) => {
+    const matchingKeywords = topKeywords.filter((kw) =>
+      pattern.keywords.some((pk) => kw.includes(pk) || pk.includes(kw))
     )
 
     if (matchingKeywords.length > 0) {
-      const messageCount = messages.filter(m =>
-        matchingKeywords.some(kw => m.content.toLowerCase().includes(kw))
+      const messageCount = messages.filter((m) =>
+        matchingKeywords.some((kw) => m.content.toLowerCase().includes(kw))
       ).length
 
       topics.push({
         name: pattern.name,
-        confidence: Math.min(matchingKeywords.length / pattern.keywords.length, 1),
+        confidence: Math.min(
+          matchingKeywords.length / pattern.keywords.length,
+          1
+        ),
         messageCount,
         keywords: matchingKeywords.slice(0, 5),
       })
@@ -180,20 +252,51 @@ function extractTopics(messages: Message[]): TopicCluster[] {
 /**
  * Analyze sentiment over time
  */
-function analyzeSentiment(messages: Message[]): ConversationAnalytics['sentiment'] {
+function analyzeSentiment(
+  messages: Message[]
+): ConversationAnalytics['sentiment'] {
   const timeline: SentimentPoint[] = []
 
   // Simple sentiment lexicon
   const positiveWords = new Set([
-    'good', 'great', 'excellent', 'perfect', 'amazing', 'wonderful', 'fantastic',
-    'helpful', 'thanks', 'thank', 'appreciate', 'love', 'best', 'awesome',
-    'brilliant', 'impressive', 'outstanding',
+    'good',
+    'great',
+    'excellent',
+    'perfect',
+    'amazing',
+    'wonderful',
+    'fantastic',
+    'helpful',
+    'thanks',
+    'thank',
+    'appreciate',
+    'love',
+    'best',
+    'awesome',
+    'brilliant',
+    'impressive',
+    'outstanding',
   ])
 
   const negativeWords = new Set([
-    'bad', 'terrible', 'awful', 'horrible', 'wrong', 'error', 'issue', 'problem',
-    'fail', 'broken', 'bug', 'difficult', 'hard', 'confusing', 'frustrated',
-    'disappointed', 'poor', 'worst',
+    'bad',
+    'terrible',
+    'awful',
+    'horrible',
+    'wrong',
+    'error',
+    'issue',
+    'problem',
+    'fail',
+    'broken',
+    'bug',
+    'difficult',
+    'hard',
+    'confusing',
+    'frustrated',
+    'disappointed',
+    'poor',
+    'worst',
   ])
 
   messages.forEach((message, index) => {
@@ -203,7 +306,7 @@ function analyzeSentiment(messages: Message[]): ConversationAnalytics['sentiment
     let positiveCount = 0
     let negativeCount = 0
 
-    words.forEach(word => {
+    words.forEach((word) => {
       if (positiveWords.has(word)) positiveCount++
       if (negativeWords.has(word)) negativeCount++
     })
@@ -222,8 +325,11 @@ function analyzeSentiment(messages: Message[]): ConversationAnalytics['sentiment
     })
   })
 
-  // Calculate overall sentiment
-  const avgScore = timeline.reduce((sum, point) => sum + point.score, 0) / timeline.length
+  // Calculate overall sentiment - guard against empty timeline
+  const avgScore =
+    timeline.length > 0
+      ? timeline.reduce((sum, point) => sum + point.score, 0) / timeline.length
+      : 0
   const overall: 'positive' | 'neutral' | 'negative' =
     avgScore > 0.2 ? 'positive' : avgScore < -0.2 ? 'negative' : 'neutral'
 
@@ -246,14 +352,15 @@ function calculateQuality(messages: Message[]): QualityMetrics {
   }
 
   // Engagement: based on message frequency and length
-  const avgMessageLength = messages.reduce((sum, m) => sum + m.content.length, 0) / messages.length
+  const avgMessageLength =
+    messages.reduce((sum, m) => sum + m.content.length, 0) / messages.length
   const engagement = Math.min((avgMessageLength / 100) * 100, 100)
 
   // Coherence: based on keyword continuity
   const coherence = messages.length > 1 ? 75 : 50 // Simplified
 
   // Depth: based on message length and question count
-  const questionCount = messages.filter(m => m.content.includes('?')).length
+  const questionCount = messages.filter((m) => m.content.includes('?')).length
   const depth = Math.min((questionCount / messages.length) * 200 + 30, 100)
 
   // Efficiency: based on conversation flow
@@ -290,7 +397,9 @@ function detectKeyMoments(messages: Message[]): KeyMoment[] {
     // Detect breakthroughs (positive language + length)
     if (
       message.content.length > 200 &&
-      (content.includes('understand') || content.includes('got it') || content.includes('makes sense'))
+      (content.includes('understand') ||
+        content.includes('got it') ||
+        content.includes('makes sense'))
     ) {
       moments.push({
         timestamp: Date.now() - (messages.length - index) * 60000,
@@ -302,7 +411,11 @@ function detectKeyMoments(messages: Message[]): KeyMoment[] {
     }
 
     // Detect decisions
-    if (content.includes('decided') || content.includes('will do') || content.includes('going to')) {
+    if (
+      content.includes('decided') ||
+      content.includes('will do') ||
+      content.includes('going to')
+    ) {
       moments.push({
         timestamp: Date.now() - (messages.length - index) * 60000,
         messageId: message.id,
@@ -324,13 +437,13 @@ function generateSummary(messages: Message[]): ConversationSummary {
   const nextSteps: string[] = []
   const openQuestions: string[] = []
 
-  messages.forEach(message => {
+  messages.forEach((message) => {
     const content = message.content
 
     // Extract questions
     if (content.includes('?')) {
-      const questions = content.split('?').filter(q => q.trim())
-      openQuestions.push(...questions.map(q => q.trim() + '?'))
+      const questions = content.split('?').filter((q) => q.trim())
+      openQuestions.push(...questions.map((q) => q.trim() + '?'))
     }
 
     // Extract action items
@@ -339,7 +452,7 @@ function generateSummary(messages: Message[]): ConversationSummary {
       /(?:TODO:|Action:)\s+([^.!?\n]+)/gi,
     ]
 
-    actionPatterns.forEach(pattern => {
+    actionPatterns.forEach((pattern) => {
       const matches = content.matchAll(pattern)
       for (const match of matches) {
         if (match[1]) nextSteps.push(match[1].trim())
@@ -353,8 +466,8 @@ function generateSummary(messages: Message[]): ConversationSummary {
       content.includes('main') ||
       content.includes('critical')
     ) {
-      const sentences = content.split(/[.!]/).filter(s => s.trim())
-      keyPoints.push(...sentences.slice(0, 2).map(s => s.trim()))
+      const sentences = content.split(/[.!]/).filter((s) => s.trim())
+      keyPoints.push(...sentences.slice(0, 2).map((s) => s.trim()))
     }
   })
 
@@ -404,12 +517,22 @@ export function ConversationAnalyticsDashboard({
   onAnalyticsGenerated,
   detailed = false,
   className,
+  isLoading: externalLoading = false,
+  externalError = null,
 }: ConversationAnalyticsDashboardProps) {
-  const [analytics, setAnalytics] = React.useState<ConversationAnalytics | null>(
-    externalAnalytics || null
-  )
+  const [analytics, setAnalytics] =
+    React.useState<ConversationAnalytics | null>(externalAnalytics || null)
   const [isGenerating, setIsGenerating] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
+
+  // Combined loading state (external or internal)
+  const isLoading = externalLoading || isGenerating
+  // Combined error state (external takes precedence)
+  const displayError = externalError
+    ? externalError instanceof Error
+      ? externalError.message
+      : String(externalError)
+    : error
 
   /**
    * Generate analytics using fallback logic
@@ -425,9 +548,10 @@ export function ConversationAnalyticsDashboard({
         metadata: {
           totalMessages: msgs.length,
           duration: msgs.length * 60000, // Mock duration
-          participantCount: new Set(msgs.map(m => m.role)).size,
+          participantCount: new Set(msgs.map((m) => m.role)).size,
           averageMessageLength:
-            msgs.reduce((sum, m) => sum + m.content.length, 0) / msgs.length || 0,
+            msgs.reduce((sum, m) => sum + m.content.length, 0) / msgs.length ||
+            0,
         },
       }
     },
@@ -456,11 +580,18 @@ export function ConversationAnalyticsDashboard({
       onAnalyticsGenerated?.(result)
     } catch (err) {
       console.error('Analytics generation error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to generate analytics')
+      setError(
+        err instanceof Error ? err.message : 'Failed to generate analytics'
+      )
     } finally {
       setIsGenerating(false)
     }
-  }, [messages, onGenerateAnalytics, generateAnalyticsFallback, onAnalyticsGenerated])
+  }, [
+    messages,
+    onGenerateAnalytics,
+    generateAnalyticsFallback,
+    onAnalyticsGenerated,
+  ])
 
   // Auto-generate on interval
   React.useEffect(() => {
@@ -483,14 +614,23 @@ export function ConversationAnalyticsDashboard({
   }
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div
+      className={cn('space-y-4', className)}
+      role="region"
+      aria-label="Conversation Analytics Dashboard"
+    >
       {/* Header */}
       <Card className="shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -500,7 +640,9 @@ export function ConversationAnalyticsDashboard({
                 </svg>
               </div>
               <div>
-                <CardTitle className="text-base">Conversation Analytics</CardTitle>
+                <CardTitle className="text-base">
+                  Conversation Analytics
+                </CardTitle>
                 <CardDescription className="text-xs">
                   AI-powered insights from {messages.length} messages
                 </CardDescription>
@@ -518,15 +660,15 @@ export function ConversationAnalyticsDashboard({
         </CardHeader>
       </Card>
 
-      {error && (
+      {displayError && (
         <Card className="shadow-sm border-destructive">
           <CardContent className="p-4 text-sm text-destructive">
-            {error}
+            {displayError}
           </CardContent>
         </Card>
       )}
 
-      {isGenerating && !analytics ? (
+      {isLoading && !analytics ? (
         <Card className="shadow-sm">
           <CardContent className="p-8 text-center">
             <motion.div
@@ -554,11 +696,19 @@ export function ConversationAnalyticsDashboard({
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-4">
-                  <div className="text-4xl font-bold">
+                  <div className="text-4xl font-bold" aria-hidden="true">
                     {Math.round(analytics.quality.score)}
                   </div>
                   <div className="flex-1">
-                    <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-2 w-full rounded-full bg-muted overflow-hidden"
+                      role="progressbar"
+                      aria-label="Conversation quality score"
+                      aria-valuenow={Math.round(analytics.quality.score)}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuetext={`Quality score: ${Math.round(analytics.quality.score)} out of 100`}
+                    >
                       <motion.div
                         className="h-full bg-primary"
                         initial={{ width: 0 }}
@@ -567,12 +717,18 @@ export function ConversationAnalyticsDashboard({
                       />
                     </div>
                     <div className="grid grid-cols-4 gap-2 mt-3 text-xs">
-                      {Object.entries(analytics.quality.factors).map(([key, value]) => (
-                        <div key={key}>
-                          <div className="text-muted-foreground capitalize">{key}</div>
-                          <div className="font-semibold">{Math.round(value)}</div>
-                        </div>
-                      ))}
+                      {Object.entries(analytics.quality.factors).map(
+                        ([key, value]) => (
+                          <div key={key}>
+                            <div className="text-muted-foreground capitalize">
+                              {key}
+                            </div>
+                            <div className="font-semibold">
+                              {Math.round(value)}
+                            </div>
+                          </div>
+                        )
+                      )}
                     </div>
                   </div>
                 </div>
@@ -596,14 +752,20 @@ export function ConversationAnalyticsDashboard({
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm">{topic.name}</span>
+                          <span className="font-medium text-sm">
+                            {topic.name}
+                          </span>
                           <Badge variant="secondary" className="text-xs">
                             {topic.messageCount} messages
                           </Badge>
                         </div>
                         <div className="flex flex-wrap gap-1">
-                          {topic.keywords.map(kw => (
-                            <Badge key={kw} variant="outline" className="text-xs">
+                          {topic.keywords.map((kw) => (
+                            <Badge
+                              key={kw}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {kw}
                             </Badge>
                           ))}
@@ -638,12 +800,17 @@ export function ConversationAnalyticsDashboard({
                     {analytics.sentiment.overall}
                   </Badge>
                   <div className="text-sm text-muted-foreground">
-                    {Math.round(analytics.sentiment.confidence * 100)}% confidence
+                    {Math.round(analytics.sentiment.confidence * 100)}%
+                    confidence
                   </div>
                 </div>
 
                 {detailed && (
-                  <div className="h-20 flex items-end gap-1">
+                  <div
+                    className="h-20 flex items-end gap-1"
+                    role="img"
+                    aria-label={`Sentiment timeline showing ${analytics.sentiment.timeline.length} data points with overall ${analytics.sentiment.overall} sentiment`}
+                  >
                     {analytics.sentiment.timeline.map((point, index) => (
                       <div
                         key={index}
@@ -657,6 +824,8 @@ export function ConversationAnalyticsDashboard({
                           height: `${((point.score + 1) / 2) * 100}%`,
                         }}
                         title={`${point.label}: ${point.score.toFixed(2)}`}
+                        role="presentation"
+                        aria-hidden="true"
                       />
                     ))}
                   </div>
@@ -672,7 +841,10 @@ export function ConversationAnalyticsDashboard({
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {analytics.keyMoments.map((moment, index) => (
-                    <div key={index} className="flex items-start gap-3 p-2 rounded-lg border">
+                    <div
+                      key={index}
+                      className="flex items-start gap-3 p-2 rounded-lg border"
+                    >
                       <Badge
                         variant={
                           moment.type === 'breakthrough'
@@ -731,7 +903,9 @@ export function ConversationAnalyticsDashboard({
 
                 {analytics.summary.openQuestions.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold mb-2">Open Questions</h4>
+                    <h4 className="text-sm font-semibold mb-2">
+                      Open Questions
+                    </h4>
                     <ul className="space-y-1 text-sm">
                       {analytics.summary.openQuestions.map((question, i) => (
                         <li key={i} className="flex items-start gap-2">
