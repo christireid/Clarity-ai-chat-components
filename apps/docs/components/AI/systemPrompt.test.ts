@@ -38,6 +38,39 @@ describe('DOCS_ASSISTANT_SYSTEM_PROMPT', () => {
     expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('Pattern 1')
     expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('Troubleshooting')
   })
+
+  // XML structure tests (v2.0.0 optimization)
+  it('uses XML tags for structure (Anthropic best practice)', () => {
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('<assistant_identity>')
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('</assistant_identity>')
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('<technical_context>')
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('</technical_context>')
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('<response_guidelines>')
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('</response_guidelines>')
+  })
+
+  it('has KV-cache optimized structure (static content first)', () => {
+    const identityIndex = DOCS_ASSISTANT_SYSTEM_PROMPT.indexOf(
+      '<assistant_identity>'
+    )
+    const guidelinesIndex = DOCS_ASSISTANT_SYSTEM_PROMPT.indexOf(
+      '<response_guidelines>'
+    )
+    // Static identity should come before dynamic guidelines
+    expect(identityIndex).toBeLessThan(guidelinesIndex)
+  })
+
+  it('contains example response for few-shot guidance', () => {
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('<example_response>')
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('</example_response>')
+  })
+
+  it('uses positive instructions over negative ones', () => {
+    // Should have "Required behaviors" instead of "Never Do"
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).toContain('Required behaviors')
+    // Should not have explicit "Never Do" section
+    expect(DOCS_ASSISTANT_SYSTEM_PROMPT).not.toContain('### Never Do:')
+  })
 })
 
 describe('DOC_LINKS', () => {

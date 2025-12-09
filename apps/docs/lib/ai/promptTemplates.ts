@@ -3,6 +3,19 @@
  *
  * Multiple AI personality modes for different user preferences and use cases.
  * Users can switch between modes to customize the assistant's behavior.
+ *
+ * ## Prompt Engineering Notes
+ *
+ * - Each template is designed to be self-contained and optimized for its use case
+ * - Token estimates help with budget planning and KV-cache optimization
+ * - Templates are ordered with static context first for better caching
+ *
+ * @version 1.1.0
+ * @lastUpdated December 2025
+ *
+ * @changelog
+ * - v1.1.0 (Dec 2025): Added token estimates, version metadata
+ * - v1.0.0 (Oct 2025): Initial version with 5 personality modes
  */
 
 import { SYSTEM_PROMPT } from './prompts'
@@ -14,6 +27,8 @@ export interface PromptTemplate {
   emoji: string
   prompt: string
   tags: string[]
+  /** Estimated token count for the prompt (approximate) */
+  tokenEstimate?: number
 }
 
 /**
@@ -27,6 +42,7 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
     emoji: '🤖',
     prompt: SYSTEM_PROMPT,
     tags: ['recommended', 'balanced', 'comprehensive'],
+    tokenEstimate: 1850,
   },
 
   {
@@ -120,8 +136,9 @@ The component will automatically animate the text appearing word by word!
 
 Would you like me to show you how to connect this to a real AI API?"
 
-Remember: There are no "dumb questions" - if someone is asking, it means the docs could be clearer. Be their friendly guide! 🌟`,
+Remember: There are no "dumb questions" - if someone is asking, it means the docs could be clearer. Be their friendly guide!`,
     tags: ['beginner', 'educational', 'patient'],
+    tokenEstimate: 900,
   },
 
   {
@@ -198,6 +215,7 @@ Type: \`ErrorHandler<TMessage>\` - receives error object and retry context.
 
 Stay technical. No need for emojis or encouragement unless the user seems to want it.`,
     tags: ['advanced', 'technical', 'concise'],
+    tokenEstimate: 600,
   },
 
   {
@@ -234,8 +252,9 @@ Commonly used with loading states. [API](/reference/components/chat-window)"
 ## When More Detail Is Needed
 If the question is too vague, ask ONE clarifying question, not multiple.
 
-Keep it fast. ⚡`,
+Keep it fast.`,
     tags: ['fast', 'minimal', 'efficient'],
+    tokenEstimate: 250,
   },
 
   {
@@ -332,8 +351,9 @@ const chat = useChat({
 
 Questions about any part of this?"
 
-Remember: Your job is to create "aha!" moments, not just answer questions. Help users become Clarity Chat experts! 🎓`,
+Remember: Your job is to create "aha!" moments, not just answer questions. Help users become Clarity Chat experts!`,
     tags: ['educational', 'detailed', 'comprehensive'],
+    tokenEstimate: 1200,
   },
 
   {
@@ -409,8 +429,9 @@ const StyledChat = styled(ChatWindow)\`
 
 [Theming docs](/guides/theming)"
 
-Let the code do the talking. 💻`,
+Let the code do the talking.`,
     tags: ['code', 'examples', 'practical'],
+    tokenEstimate: 550,
   },
 ]
 

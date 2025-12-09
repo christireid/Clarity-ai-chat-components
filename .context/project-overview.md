@@ -9,11 +9,14 @@ Clarity Chat is a comprehensive AI chat framework providing production-ready tem
 ```
 clarity-chat/
 ├── packages/
-│   ├── cli/                 # Beautiful CLI tool with 7 commands
-│   ├── core/                # Core chat functionality
-│   ├── stream/              # Streaming responses
-│   ├── analytics/           # Usage tracking & cost calculation
-│   └── rag/                 # RAG document processing
+│   ├── react/               # Main React component library (@clarity-chat/react)
+│   ├── cli/                 # Beautiful CLI tool (@clarity-chat/cli)
+│   ├── memory/              # Memory & context management (@clarity-chat/memory)
+│   ├── types/               # Shared TypeScript types
+│   └── ...
+├── apps/
+│   ├── docs/                # Documentation site (Next.js)
+│   └── examples/            # Example applications
 ├── examples/
 │   ├── model-comparison-demo/    # Compare AI models side-by-side
 │   ├── rag-workbench-demo/       # Document processing with RAG
@@ -207,6 +210,10 @@ Get keys from:
 
 ---
 
-**Version**: 1.0 (Phase 2 Complete)  
-**Last Updated**: 2025-10-27  
+**Version**: 1.1.0
+**Last Updated**: 2025-12-09
 **Status**: Production Ready
+
+**Changelog**:
+- v1.1.0 (Dec 2025): Updated project structure to reflect monorepo with @clarity-chat/react
+- v1.0.0 (Oct 2025): Initial version
