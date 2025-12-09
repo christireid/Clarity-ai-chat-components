@@ -471,8 +471,9 @@ export function extractXmlTags(prompt: string): {
   closingTags: string[]
   unmatched: string[]
 } {
-  const openingTagRegex = /<([a-z_][a-z0-9_]*)>/gi
-  const closingTagRegex = /<\/([a-z_][a-z0-9_]*)>/gi
+  // Only match lowercase tags (prompt XML tags) - excludes TypeScript generics like <TMessage>
+  const openingTagRegex = /<([a-z][a-z0-9_]*)>/g
+  const closingTagRegex = /<\/([a-z][a-z0-9_]*)>/g
 
   const openingTags: string[] = []
   const closingTags: string[] = []
@@ -480,11 +481,11 @@ export function extractXmlTags(prompt: string): {
   let match: RegExpExecArray | null
 
   while ((match = openingTagRegex.exec(prompt)) !== null) {
-    openingTags.push(match[1].toLowerCase())
+    openingTags.push(match[1])
   }
 
   while ((match = closingTagRegex.exec(prompt)) !== null) {
-    closingTags.push(match[1].toLowerCase())
+    closingTags.push(match[1])
   }
 
   // Find unmatched tags
@@ -534,5 +535,92 @@ export function validateXmlTagBalance(prompt: string): {
     isBalanced: unmatched.length === 0,
     issues: unmatched,
     tagCount: openingTags.length,
+  }
+}
+
+/**
+ * Validate proper XML nesting order using a stack-based approach.
+ *
+ * This catches improper nesting like <a><b></a></b> which the basic
+ * balance check would miss.
+ *
+ * @param prompt - The prompt string to validate
+ * @returns Object indicating if nesting is valid, with details on issues
+ */
+export function validateXmlNesting(prompt: string): {
+  isValid: boolean
+  issues: string[]
+  structure: string[]
+} {
+  // Match all lowercase tags - excludes TypeScript generics like <TMessage>
+  const tagRegex = /<(\/?)([a-z][a-z0-9_]*)>/g
+  const issues: string[] = []
+  const stack: Array<{ tag: string; position: number }> = []
+  const structure: string[] = []
+
+  let match: RegExpExecArray | null
+  while ((match = tagRegex.exec(prompt)) !== null) {
+    const isClosing = match[1] === '/'
+    const tagName = match[2].toLowerCase()
+    const position = match.index
+
+    if (isClosing) {
+      if (stack.length === 0) {
+        issues.push(
+          `Unexpected closing tag </${tagName}> at position ${position} with no matching opening tag`
+        )
+      } else {
+        const last = stack[stack.length - 1]
+        if (last.tag !== tagName) {
+          issues.push(
+            `Improper nesting: expected </${last.tag}> but found </${tagName}> at position ${position}`
+          )
+        } else {
+          stack.pop()
+          structure.push(`</${tagName}>`)
+        }
+      }
+    } else {
+      stack.push({ tag: tagName, position })
+      structure.push(`<${tagName}>`)
+    }
+  }
+
+  // Check for unclosed tags
+  for (const unclosed of stack) {
+    issues.push(
+      `Unclosed tag <${unclosed.tag}> opened at position ${unclosed.position}`
+    )
+  }
+
+  return {
+    isValid: issues.length === 0,
+    issues,
+    structure,
+  }
+}
+
+/**
+ * Comprehensive prompt validation that checks both balance and nesting.
+ *
+ * @param prompt - The prompt string to validate
+ * @returns Combined validation result with all issues
+ */
+export function validatePromptXml(prompt: string): {
+  isValid: boolean
+  balanceIssues: string[]
+  nestingIssues: string[]
+  tagCount: number
+  structure: string[]
+} {
+  const balance = validateXmlTagBalance(prompt)
+  const nesting = validateXmlNesting(prompt)
+
+  return {
+    isValid: balance.isBalanced && nesting.isValid,
+    balanceIssues: balance.issues,
+    nestingIssues: nesting.issues,
+    tagCount: balance.tagCount,
+    structure: nesting.structure,
   }
 }

@@ -25,8 +25,12 @@ export const SYSTEM_PROMPT = DOCS_ASSISTANT_SYSTEM_PROMPT
 
 /**
  * Prompt version for tracking and A/B testing
+ * @changelog
+ * - 2.1.0 (Dec 2025): Added token counting utilities, required tokenEstimate
+ * - 2.0.0 (Dec 2025): Added XML structure, KV-cache optimization
+ * - 1.0.0 (Oct 2025): Initial version
  */
-export const PROMPT_VERSION = '2.0.0'
+export const PROMPT_VERSION = '2.1.0'
 
 /**
  * Legacy prompt preserved for rollback if needed

@@ -74,15 +74,12 @@ describe('PromptTemplate structure', () => {
     expect(matches.length).toBe(1)
   })
 
-  it.each(PROMPT_TEMPLATES)(
-    '$id template tags are all strings',
-    (template) => {
-      for (const tag of template.tags) {
-        expect(typeof tag).toBe('string')
-        expect(tag.length).toBeGreaterThan(0)
-      }
+  it.each(PROMPT_TEMPLATES)('$id template tags are all strings', (template) => {
+    for (const tag of template.tags) {
+      expect(typeof tag).toBe('string')
+      expect(tag.length).toBeGreaterThan(0)
     }
-  )
+  })
 })
 
 // ============================================================================
@@ -111,7 +108,7 @@ describe('tokenEstimate field', () => {
     (template) => {
       // Rough heuristic: ~4 characters per token for English text
       const roughEstimate = Math.ceil(template.prompt.length / 4)
-      const tokenEstimate = template.tokenEstimate!
+      const tokenEstimate = template.tokenEstimate
 
       // Allow 50% variance for prompt complexity differences
       expect(tokenEstimate).toBeGreaterThan(roughEstimate * 0.3)
@@ -130,16 +127,17 @@ describe('tokenEstimate field', () => {
     const defaultTemplate = PROMPT_TEMPLATES.find((t) => t.id === 'default')
 
     expect(quickTemplate!.tokenEstimate).toBeLessThan(
-      defaultTemplate!.tokenEstimate!
+      defaultTemplate!.tokenEstimate
     )
   })
 
-  it('all templates have tokenEstimate (not optional in practice)', () => {
+  it('all templates have valid tokenEstimate values', () => {
     for (const template of PROMPT_TEMPLATES) {
+      // tokenEstimate is required by the interface, but verify values are sensible
       expect(
         template.tokenEstimate,
-        `Template "${template.id}" missing tokenEstimate`
-      ).toBeDefined()
+        `Template "${template.id}" has invalid tokenEstimate`
+      ).toBeGreaterThan(0)
     }
   })
 })

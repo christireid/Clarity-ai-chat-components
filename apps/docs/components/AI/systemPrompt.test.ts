@@ -19,6 +19,8 @@ import {
   buildQuickChecks,
   extractXmlTags,
   validateXmlTagBalance,
+  validateXmlNesting,
+  validatePromptXml,
 } from './systemPrompt'
 
 // ============================================================================
@@ -84,7 +86,7 @@ describe('DOCS_ASSISTANT_SYSTEM_PROMPT', () => {
       'Explain',
       'Follow',
     ]
-    const negativePatterns = ["Don't", 'Never', 'Avoid', "Do not"]
+    const negativePatterns = ["Don't", 'Never', 'Avoid', 'Do not']
 
     const positiveCount = positivePatterns.filter((p) =>
       DOCS_ASSISTANT_SYSTEM_PROMPT.includes(p)
@@ -699,8 +701,19 @@ describe('extractXmlTags', () => {
     expect(result.unmatched).toHaveLength(0)
   })
 
-  it('is case insensitive for tag matching', () => {
+  it('ignores uppercase tags (TypeScript generics like <TMessage>)', () => {
+    // Uppercase tags are ignored to prevent false positives from TypeScript generics
     const result = extractXmlTags('<FOO>text</foo>')
+    // Only lowercase </foo> is detected, <FOO> is ignored
+    expect(result.openingTags).toHaveLength(0)
+    expect(result.closingTags).toContain('foo')
+    expect(result.unmatched.length).toBeGreaterThan(0) // Unmatched closing tag
+  })
+
+  it('correctly matches lowercase tags', () => {
+    const result = extractXmlTags('<section>content</section>')
+    expect(result.openingTags).toContain('section')
+    expect(result.closingTags).toContain('section')
     expect(result.unmatched).toHaveLength(0)
   })
 
@@ -749,5 +762,108 @@ describe('validateXmlTagBalance', () => {
     expect(result.issues[0]).toContain('orphan')
     expect(result.issues[0]).toContain('missing')
     expect(result.issues[0]).toContain('closing')
+  })
+})
+
+// ============================================================================
+// XML Nesting Validation Tests
+// ============================================================================
+
+describe('validateXmlNesting', () => {
+  it('validates properly nested tags', () => {
+    const result = validateXmlNesting('<a><b></b></a>')
+    expect(result.isValid).toBe(true)
+    expect(result.issues).toHaveLength(0)
+  })
+
+  it('detects improper nesting order', () => {
+    const result = validateXmlNesting('<a><b></a></b>')
+    expect(result.isValid).toBe(false)
+    expect(result.issues.length).toBeGreaterThan(0)
+    expect(result.issues[0]).toContain('Improper nesting')
+  })
+
+  it('detects unexpected closing tags', () => {
+    const result = validateXmlNesting('</orphan>')
+    expect(result.isValid).toBe(false)
+    expect(result.issues[0]).toContain('Unexpected closing tag')
+  })
+
+  it('detects unclosed tags', () => {
+    const result = validateXmlNesting('<unclosed>')
+    expect(result.isValid).toBe(false)
+    expect(result.issues[0]).toContain('Unclosed tag')
+  })
+
+  it('handles deeply nested structures', () => {
+    const result = validateXmlNesting('<a><b><c><d></d></c></b></a>')
+    expect(result.isValid).toBe(true)
+    expect(result.structure).toEqual([
+      '<a>',
+      '<b>',
+      '<c>',
+      '<d>',
+      '</d>',
+      '</c>',
+      '</b>',
+      '</a>',
+    ])
+  })
+
+  it('handles empty string', () => {
+    const result = validateXmlNesting('')
+    expect(result.isValid).toBe(true)
+    expect(result.issues).toHaveLength(0)
+    expect(result.structure).toHaveLength(0)
+  })
+
+  it('handles text without tags', () => {
+    const result = validateXmlNesting('Just plain text here')
+    expect(result.isValid).toBe(true)
+    expect(result.structure).toHaveLength(0)
+  })
+
+  it('reports position of errors', () => {
+    const result = validateXmlNesting('<a></b>')
+    expect(result.issues[0]).toContain('position')
+  })
+
+  it('validates DOCS_ASSISTANT_SYSTEM_PROMPT has proper nesting', () => {
+    const result = validateXmlNesting(DOCS_ASSISTANT_SYSTEM_PROMPT)
+    expect(result.isValid, `Nesting issues: ${result.issues.join(', ')}`).toBe(
+      true
+    )
+  })
+})
+
+describe('validatePromptXml', () => {
+  it('returns combined validation result', () => {
+    const result = validatePromptXml('<a><b></b></a>')
+    expect(result.isValid).toBe(true)
+    expect(result.balanceIssues).toHaveLength(0)
+    expect(result.nestingIssues).toHaveLength(0)
+    expect(result.tagCount).toBe(2)
+  })
+
+  it('detects both balance and nesting issues', () => {
+    const result = validatePromptXml('<a><b></a>')
+    expect(result.isValid).toBe(false)
+    // Should have issues from nesting check
+    expect(result.nestingIssues.length).toBeGreaterThan(0)
+  })
+
+  it('provides structure for valid prompts', () => {
+    const result = validatePromptXml('<section><content></content></section>')
+    expect(result.structure).toContain('<section>')
+    expect(result.structure).toContain('</section>')
+  })
+
+  it('validates DOCS_ASSISTANT_SYSTEM_PROMPT completely', () => {
+    const result = validatePromptXml(DOCS_ASSISTANT_SYSTEM_PROMPT)
+    expect(
+      result.isValid,
+      `Issues: ${[...result.balanceIssues, ...result.nestingIssues].join(', ')}`
+    ).toBe(true)
+    expect(result.tagCount).toBeGreaterThan(0)
   })
 })

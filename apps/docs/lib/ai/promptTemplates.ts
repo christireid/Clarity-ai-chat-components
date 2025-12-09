@@ -27,8 +27,8 @@ export interface PromptTemplate {
   emoji: string
   prompt: string
   tags: string[]
-  /** Estimated token count for the prompt (approximate) */
-  tokenEstimate?: number
+  /** Estimated token count for the prompt (required for budget planning) */
+  tokenEstimate: number
 }
 
 /**
@@ -38,7 +38,8 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
   {
     id: 'default',
     name: 'Balanced Assistant',
-    description: 'Balanced responses with code examples, explanations, and links',
+    description:
+      'Balanced responses with code examples, explanations, and links',
     emoji: '🤖',
     prompt: SYSTEM_PROMPT,
     tags: ['recommended', 'balanced', 'comprehensive'],
@@ -48,7 +49,8 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
   {
     id: 'beginner',
     name: 'Beginner-Friendly',
-    description: 'Patient explanations with step-by-step guidance for newcomers',
+    description:
+      'Patient explanations with step-by-step guidance for newcomers',
     emoji: '🌱',
     prompt: `You are the Clarity Chat Documentation Assistant in **Beginner-Friendly Mode**.
 
@@ -260,7 +262,8 @@ Keep it fast.`,
   {
     id: 'tutorial',
     name: 'Tutorial Mode',
-    description: 'Teaching-focused with detailed explanations and learning paths',
+    description:
+      'Teaching-focused with detailed explanations and learning paths',
     emoji: '📚',
     prompt: `You are the Clarity Chat Documentation Assistant in **Tutorial Mode**.
 
@@ -439,7 +442,7 @@ Let the code do the talking.`,
  * Get prompt template by ID
  */
 export function getPromptTemplate(id: string): PromptTemplate | undefined {
-  return PROMPT_TEMPLATES.find(t => t.id === id)
+  return PROMPT_TEMPLATES.find((t) => t.id === id)
 }
 
 /**
@@ -461,7 +464,7 @@ export function getPromptById(id: string): string {
  * Search prompt templates by tags
  */
 export function searchPromptTemplates(tags: string[]): PromptTemplate[] {
-  return PROMPT_TEMPLATES.filter(template =>
-    tags.some(tag => template.tags.includes(tag))
+  return PROMPT_TEMPLATES.filter((template) =>
+    tags.some((tag) => template.tags.includes(tag))
   )
 }
