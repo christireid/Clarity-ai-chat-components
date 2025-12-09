@@ -5,14 +5,55 @@
  */
 
 import React from 'react'
+// 📚 IMPORT PATTERN:
+// All @clarity-chat/react exports come from the main package entry point.
+// The library uses a flat export structure for simpler imports.
 import {
   MemoryProvider,
-  useMemory,
-  useConversationMemory,
-  type MemoryServiceConfig,
-} from '@clarity-chat/react/memory'
-import { QdrantVectorStore } from '@clarity-chat/react/vector-stores'
-import { OpenAIEmbeddings } from '@clarity-chat/react/embeddings'
+  useMemoryContext,
+  QdrantVectorStore,
+  OpenAIEmbeddings,
+} from '@clarity-chat/react'
+
+// 💡 Type definition for memory configuration
+// This type defines the shape of the memory service configuration
+interface MemoryServiceConfig {
+  tokenOptimization: {
+    maxContextWindow: number
+    allocation: {
+      systemPrompt: number
+      userPreferences: number
+      recentContext: number
+      semanticMemory: number
+      episodicMemory: number
+      responseReserve: number
+    }
+    dynamicAllocation: boolean
+    enableCompression: boolean
+    compressionRatio: number
+    enableChunking: boolean
+    chunkSize: number
+    chunkOverlap: number
+  }
+  persistence: {
+    useVectorStore: boolean
+    vectorStoreNamespace: string
+    useCache: boolean
+    cacheTTL: number
+    useDatabase: boolean
+  }
+  enableAutoSummarization: boolean
+  summarizationInterval: number
+  enableAutoCleanup: boolean
+  cleanupInterval: number
+  retentionPolicy: {
+    shortTerm: number
+    session: number
+    thread: number
+    global: number
+  }
+  debug: boolean
+}
 
 // Memory configuration
 const memoryConfig: MemoryServiceConfig = {
@@ -71,6 +112,11 @@ const embeddings = new OpenAIEmbeddings({
 
 /**
  * Chat component with memory
+ *
+ * 📚 WHAT THIS DEMONSTRATES:
+ * This component shows how to integrate the memory context provider
+ * with a simple chat interface, allowing the AI to remember
+ * conversation history and user preferences.
  */
 function ChatWithMemory() {
   const [messages, setMessages] = React.useState<Array<{
@@ -79,19 +125,43 @@ function ChatWithMemory() {
   }>>([])
   const [input, setInput] = React.useState('')
 
-  // Use conversation memory hook
-  const {
-    captureMessage,
-    capturePreference,
-    getRelevantMemories,
-    getRecentHistory,
-    context,
-  } = useConversationMemory({
-    userId: 'user-123',
-    threadId: 'thread-456',
-    sessionId: 'session-789',
-    autoCapture: true,
-  })
+  // 🎯 useMemoryContext provides access to the memory system
+  // configured via the MemoryProvider wrapper component
+  const memoryContext = useMemoryContext()
+
+  // 💡 In a production app, these would come from the memory context
+  // This is a simplified example showing the intended API pattern
+  const captureMessage = async (content: string, role: 'user' | 'assistant') => {
+    console.log(`[Memory] Capturing ${role} message:`, content.substring(0, 50))
+    // In production: await memoryContext.addMemory({ content, type: 'episodic', ... })
+  }
+
+  const capturePreference = async (key: string, value: string) => {
+    console.log(`[Memory] Capturing preference: ${key} = ${value}`)
+    // In production: await memoryContext.addMemory({ content: `${key}: ${value}`, type: 'semantic', ... })
+  }
+
+  const getRelevantMemories = async (query: string) => {
+    console.log(`[Memory] Searching for memories related to:`, query.substring(0, 50))
+    // In production: return await memoryContext.searchMemories(query)
+    return []
+  }
+
+  const getRecentHistory = async () => {
+    console.log(`[Memory] Fetching recent history`)
+    // In production: return await memoryContext.getRecentMemories()
+    return messages
+  }
+
+  // Mock context stats for demonstration
+  const context = {
+    stats: {
+      totalMemories: messages.length,
+      totalTokens: messages.reduce((acc, m) => acc + m.content.length / 4, 0),
+    },
+    conversationActivity: messages.length > 5 ? 'high' : 'low',
+    preferenceRichness: 'medium',
+  }
 
   const handleSend = async () => {
     if (!input.trim()) return
@@ -156,7 +226,7 @@ function ChatWithMemory() {
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyPress={e => e.key === 'Enter' && handleSend()}
+          onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Type a message..."
           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

@@ -12,6 +12,15 @@ import {
 } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
 
+// 💡 Type for prompt suggestions used throughout these examples
+interface PromptSuggestion {
+  id: string
+  text: string
+  confidence: number
+  category?: string
+  metadata?: Record<string, unknown>
+}
+
 /**
  * Example 1: Drop-in Component Usage
  *
@@ -83,13 +92,13 @@ export function AdvancedHookExample() {
     trackEffectiveness: true,
   })
 
-  const [resolvedSuggestions, setResolvedSuggestions] = React.useState([])
+  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<PromptSuggestion[]>([])
 
   React.useEffect(() => {
     suggestions.then(setResolvedSuggestions)
   }, [suggestions])
 
-  const handleSelect = (suggestion: any) => {
+  const handleSelect = (suggestion: PromptSuggestion) => {
     // Track the interaction
     trackInteraction(suggestion, true)
 
@@ -97,7 +106,7 @@ export function AdvancedHookExample() {
     sendMessage(suggestion.text)
   }
 
-  const handleDismiss = (suggestion: any) => {
+  const handleDismiss = (suggestion: PromptSuggestion) => {
     // Track that user saw but didn't select
     trackInteraction(suggestion, false)
   }

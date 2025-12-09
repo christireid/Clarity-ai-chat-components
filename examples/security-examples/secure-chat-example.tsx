@@ -87,7 +87,7 @@ export function SimpleSecureChat() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Type a message..."
           disabled={isProcessing}
         />
@@ -213,7 +213,7 @@ export function AdvancedSecureChat() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
             placeholder="Type a message..."
             disabled={isProcessing}
           />
@@ -297,7 +297,13 @@ export function CustomSecurityChat() {
       })
   )
 
-  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
+  // 💡 Proper type for chat messages
+  interface ChatMessage {
+    role: 'user' | 'assistant' | 'system'
+    content: string
+  }
+
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -327,7 +333,8 @@ export function CustomSecurityChat() {
 
       // Step 3: Prepare messages with security
       const systemMessage = { role: 'system', content: 'You are a helpful assistant.' }
-      const secureMessages = security.prepareMessages([systemMessage, ...newMessages] as any)
+      // 🎯 Type assertion for security prepareMessages API
+      const secureMessages = security.prepareMessages([systemMessage, ...newMessages] as ChatMessage[])
 
       // Step 4: Call LLM
       const response = await fetch('/api/chat', {
@@ -383,7 +390,7 @@ export function CustomSecurityChat() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Type a message..."
           disabled={isProcessing}
         />
@@ -415,7 +422,17 @@ export function SecurityTestBench() {
   )
 
   const [testInput, setTestInput] = useState('')
-  const [result, setResult] = useState<any>(null)
+
+  // 💡 Type for security validation results
+  interface ValidationResult {
+    allowed: boolean
+    reason?: string
+    confidence?: number
+    sanitizedInput?: string
+    details?: Record<string, unknown>
+  }
+
+  const [result, setResult] = useState<ValidationResult | null>(null)
 
   const attackExamples = [
     {
