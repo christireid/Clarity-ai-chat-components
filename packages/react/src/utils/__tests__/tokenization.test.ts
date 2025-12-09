@@ -133,10 +133,18 @@ describe('Accurate Counter', () => {
 
     it('adds extra tokens for named messages', async () => {
       const messagesWithoutName = [{ role: 'user', content: 'Hello' }]
-      const messagesWithName = [{ role: 'user', content: 'Hello', name: 'Alice' }]
+      const messagesWithName = [
+        { role: 'user', content: 'Hello', name: 'Alice' },
+      ]
 
-      const resultWithoutName = await countConversationTokens(messagesWithoutName, { model: 'gpt-4' })
-      const resultWithName = await countConversationTokens(messagesWithName as any, { model: 'gpt-4' })
+      const resultWithoutName = await countConversationTokens(
+        messagesWithoutName,
+        { model: 'gpt-4' }
+      )
+      const resultWithName = await countConversationTokens(
+        messagesWithName as any,
+        { model: 'gpt-4' }
+      )
 
       expect(resultWithName.total).toBe(resultWithoutName.total + 1)
     })
@@ -209,7 +217,9 @@ describe('Accurate Counter', () => {
       })
 
       // With overlap, we should have more chunks due to repeated content
-      expect(chunksWithOverlap.length).toBeGreaterThanOrEqual(chunksWithoutOverlap.length)
+      expect(chunksWithOverlap.length).toBeGreaterThanOrEqual(
+        chunksWithoutOverlap.length
+      )
     })
   })
 
@@ -222,13 +232,34 @@ describe('Accurate Counter', () => {
       expect(stats.cacheMaxSize).toBe(1000)
     })
 
-    it('clears cache', async () => {
+    it('reports cache hits and misses', async () => {
+      clearTokenCache()
+
+      // First call - cache miss
+      await countTokens('test-text', { model: 'gpt-4', cache: true })
+
+      // Second call - cache hit
+      await countTokens('test-text', { model: 'gpt-4', cache: true })
+
+      // Third call different text - cache miss
+      await countTokens('different-text', { model: 'gpt-4', cache: true })
+
+      const stats = getTokenizerStats()
+      expect(stats.cacheHits).toBe(1)
+      expect(stats.cacheMisses).toBe(2)
+      expect(stats.hitRatePercent).toBeCloseTo(33.3, 0)
+    })
+
+    it('clears cache and resets statistics', async () => {
+      await countTokens('test', { model: 'gpt-4', cache: true })
       await countTokens('test', { model: 'gpt-4', cache: true })
 
       clearTokenCache()
 
       const stats = getTokenizerStats()
       expect(stats.cacheSize).toBe(0)
+      expect(stats.cacheHits).toBe(0)
+      expect(stats.cacheMisses).toBe(0)
     })
 
     it('evicts oldest entries when cache is full', async () => {
@@ -317,7 +348,14 @@ describe('Token Estimator', () => {
 
     it('handles all provider types', () => {
       const text = 'Test text'
-      const providers = ['openai', 'anthropic', 'google', 'deepseek', 'meta', 'mistral'] as const
+      const providers = [
+        'openai',
+        'anthropic',
+        'google',
+        'deepseek',
+        'meta',
+        'mistral',
+      ] as const
 
       for (const provider of providers) {
         const tokens = estimateTokensByProvider(text, provider)
@@ -352,7 +390,8 @@ describe('Token Estimator', () => {
       const tokens = estimateMessagesTokens(messages)
 
       // Content tokens + 4 tokens per message overhead
-      const contentTokens = estimateTokens('Hello') + estimateTokens('Hi there!')
+      const contentTokens =
+        estimateTokens('Hello') + estimateTokens('Hi there!')
       const overhead = 4 * 2 // 4 tokens per message
 
       expect(tokens).toBe(contentTokens + overhead)
@@ -412,6 +451,8 @@ describe('Token Estimator', () => {
       expect(result.tokens).toBeGreaterThan(0)
       expect(result.charsPerToken).toBe(4)
       expect(result.textLength).toBe(text.length)
+      expect(result.effectiveLength).toBe(text.length) // No CJK, same as textLength
+      expect(result.hasCJK).toBe(false)
       expect(result.model).toBe('gpt-4')
       expect(result.method).toBe('model-specific')
     })
@@ -427,6 +468,26 @@ describe('Token Estimator', () => {
 
       expect(result.method).toBe('default')
       expect(result.model).toBeUndefined()
+    })
+
+    it('handles CJK text with increased effective length', () => {
+      const chineseText = '你好世界' // 4 Chinese characters
+      const result = estimateTokensDebug(chineseText, 'gpt-4')
+
+      expect(result.hasCJK).toBe(true)
+      expect(result.textLength).toBe(4) // Actual character count
+      expect(result.effectiveLength).toBe(12) // CJK chars count as 3 each
+      expect(result.tokens).toBe(3) // 12 / 4 chars per token = 3 tokens
+    })
+
+    it('handles mixed CJK and Latin text', () => {
+      const mixedText = 'Hello 你好' // 5 Latin + 1 space + 2 CJK = 8 chars
+      const result = estimateTokensDebug(mixedText, 'gpt-4')
+
+      expect(result.hasCJK).toBe(true)
+      expect(result.textLength).toBe(8)
+      // 6 Latin/space chars + (2 CJK chars * 3) = 6 + 6 = 12 effective length
+      expect(result.effectiveLength).toBe(12)
     })
   })
 })
@@ -618,7 +679,7 @@ describe('Model Pricing', () => {
       })
 
       // Most expensive should have 0 savings
-      const mostExpensive = result.find(r => r.savingsPercent === 0)
+      const mostExpensive = result.find((r) => r.savingsPercent === 0)
       expect(mostExpensive).toBeDefined()
 
       // Cheapest should have positive savings
@@ -691,7 +752,10 @@ describe('Model Pricing', () => {
 
       // Should only recommend models with >= 100K context
       const recommendedPricing = MODEL_PRICING[result.recommended]
-      if (recommendedPricing && result.reasoning !== 'No models match requirements. Using fallback.') {
+      if (
+        recommendedPricing &&
+        result.reasoning !== 'No models match requirements. Using fallback.'
+      ) {
         expect(recommendedPricing.contextWindow).toBeGreaterThanOrEqual(100000)
       }
     })

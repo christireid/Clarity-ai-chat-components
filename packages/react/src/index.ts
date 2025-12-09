@@ -200,6 +200,7 @@ export {
   type TokenUsageStatus,
   type TrimResult,
   type BudgetMessage,
+  type BudgetMonitorModel,
 } from './hooks/use-token-budget-monitor'
 
 // KV Cache-Aligned Prompt Builder - Optimizes prompt structure for cache reuse

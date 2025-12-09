@@ -20,11 +20,16 @@ vi.mock('../../utils/tokenization', () => ({
     model: 'gpt-4',
     method: 'estimated',
   })),
-  countConversationTokens: vi.fn(async (messages: Array<{ content: string }>) => ({
-    total: messages.reduce((sum, m) => sum + Math.ceil(m.content.length / 4), 0),
-    model: 'gpt-4',
-    method: 'estimated',
-  })),
+  countConversationTokens: vi.fn(
+    async (messages: Array<{ content: string }>) => ({
+      total: messages.reduce(
+        (sum, m) => sum + Math.ceil(m.content.length / 4),
+        0
+      ),
+      model: 'gpt-4',
+      method: 'estimated',
+    })
+  ),
 }))
 
 vi.mock('../../utils/tokenization/estimator', () => ({
@@ -243,7 +248,9 @@ describe('useTokenBudgetMonitor', () => {
 
       // First update to warning
       act(() => {
-        result.current.updateMessages([{ role: 'user', content: 'x', tokens: 600 }])
+        result.current.updateMessages([
+          { role: 'user', content: 'x', tokens: 600 },
+        ])
       })
 
       await act(async () => {
@@ -252,7 +259,9 @@ describe('useTokenBudgetMonitor', () => {
 
       // Second update still in warning
       act(() => {
-        result.current.updateMessages([{ role: 'user', content: 'x', tokens: 650 }])
+        result.current.updateMessages([
+          { role: 'user', content: 'x', tokens: 650 },
+        ])
       })
 
       await act(async () => {
@@ -277,7 +286,9 @@ describe('useTokenBudgetMonitor', () => {
 
       // Set current usage to 800
       act(() => {
-        result.current.updateMessages([{ role: 'user', content: 'x', tokens: 800 }])
+        result.current.updateMessages([
+          { role: 'user', content: 'x', tokens: 800 },
+        ])
       })
 
       await act(async () => {
@@ -326,12 +337,22 @@ describe('useTokenBudgetMonitor', () => {
 
       // Add messages that exceed critical threshold
       const messages: BudgetMessage[] = [
-        { role: 'system', content: 'System prompt', tokens: 100, trimmable: false },
+        {
+          role: 'system',
+          content: 'System prompt',
+          tokens: 100,
+          trimmable: false,
+        },
         { role: 'user', content: 'Old message 1', tokens: 200 },
         { role: 'assistant', content: 'Old response 1', tokens: 200 },
         { role: 'user', content: 'Old message 2', tokens: 200 },
         { role: 'assistant', content: 'Old response 2', tokens: 200 },
-        { role: 'user', content: 'Current message', tokens: 100, trimmable: false },
+        {
+          role: 'user',
+          content: 'Current message',
+          tokens: 100,
+          trimmable: false,
+        },
       ]
 
       act(() => {
@@ -345,7 +366,9 @@ describe('useTokenBudgetMonitor', () => {
       await waitFor(() => {
         expect(onAutoTrim).toHaveBeenCalled()
         expect(result.current.lastTrimResult).not.toBeNull()
-        expect(result.current.lastTrimResult?.removedItems.length).toBeGreaterThan(0)
+        expect(
+          result.current.lastTrimResult?.removedItems.length
+        ).toBeGreaterThan(0)
       })
     })
 
@@ -379,9 +402,11 @@ describe('useTokenBudgetMonitor', () => {
       await waitFor(() => {
         if (result.current.lastTrimResult) {
           // System message should not be in removed items
-          const removedRoles = result.current.lastTrimResult.removedItems.map((item) => {
-            return messages[item.index]?.role
-          })
+          const removedRoles = result.current.lastTrimResult.removedItems.map(
+            (item) => {
+              return messages[item.index]?.role
+            }
+          )
           expect(removedRoles).not.toContain('system')
         }
       })
@@ -438,7 +463,9 @@ describe('useTokenBudgetMonitor', () => {
 
       // Add some usage
       act(() => {
-        result.current.updateMessages([{ role: 'user', content: 'x', tokens: 500 }])
+        result.current.updateMessages([
+          { role: 'user', content: 'x', tokens: 500 },
+        ])
       })
 
       await act(async () => {
@@ -471,9 +498,15 @@ describe('useTokenBudgetMonitor', () => {
 
       // Rapid fire updates
       act(() => {
-        result.current.updateMessages([{ role: 'user', content: 'a', tokens: 10 }])
-        result.current.updateMessages([{ role: 'user', content: 'ab', tokens: 20 }])
-        result.current.updateMessages([{ role: 'user', content: 'abc', tokens: 30 }])
+        result.current.updateMessages([
+          { role: 'user', content: 'a', tokens: 10 },
+        ])
+        result.current.updateMessages([
+          { role: 'user', content: 'ab', tokens: 20 },
+        ])
+        result.current.updateMessages([
+          { role: 'user', content: 'abc', tokens: 30 },
+        ])
       })
 
       // Before debounce completes
@@ -542,6 +575,63 @@ describe('createModelBudgetMonitor', () => {
 
     expect(config.maxInputTokens).toBe(200000)
     expect(config.reservedForOutput).toBe(8192)
+  })
+
+  it('should create config for Claude Sonnet 4', () => {
+    const config = createModelBudgetMonitor('claude-sonnet-4')
+
+    expect(config.maxInputTokens).toBe(200000)
+    expect(config.reservedForOutput).toBe(16384)
+    expect(config.model).toBe('claude-sonnet-4')
+  })
+
+  it('should create config for Claude Opus 4', () => {
+    const config = createModelBudgetMonitor('claude-opus-4')
+
+    expect(config.maxInputTokens).toBe(200000)
+    expect(config.reservedForOutput).toBe(32768)
+  })
+
+  it('should create config for Gemini 1.5 Pro', () => {
+    const config = createModelBudgetMonitor('gemini-1.5-pro')
+
+    expect(config.maxInputTokens).toBe(1000000)
+    expect(config.reservedForOutput).toBe(8192)
+  })
+
+  it('should create config for Gemini 2.0 Pro', () => {
+    const config = createModelBudgetMonitor('gemini-2.0-pro')
+
+    expect(config.maxInputTokens).toBe(2000000)
+    expect(config.reservedForOutput).toBe(8192)
+  })
+
+  it('should create config for DeepSeek Chat', () => {
+    const config = createModelBudgetMonitor('deepseek-chat')
+
+    expect(config.maxInputTokens).toBe(64000)
+    expect(config.reservedForOutput).toBe(8192)
+  })
+
+  it('should create config for DeepSeek R1', () => {
+    const config = createModelBudgetMonitor('deepseek-r1')
+
+    expect(config.maxInputTokens).toBe(128000)
+    expect(config.reservedForOutput).toBe(32768)
+  })
+
+  it('should create config for Mistral Large', () => {
+    const config = createModelBudgetMonitor('mistral-large')
+
+    expect(config.maxInputTokens).toBe(128000)
+    expect(config.reservedForOutput).toBe(8192)
+  })
+
+  it('should create config for O1 reasoning model', () => {
+    const config = createModelBudgetMonitor('o1')
+
+    expect(config.maxInputTokens).toBe(200000)
+    expect(config.reservedForOutput).toBe(100000)
   })
 
   it('should allow overrides', () => {
