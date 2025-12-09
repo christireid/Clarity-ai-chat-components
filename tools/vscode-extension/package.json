@@ -5,25 +5,59 @@
   "version": "0.1.0",
   "publisher": "clarity-chat",
   "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#0F172A",
+    "theme": "dark"
+  },
+  "badges": [
+    {
+      "url": "https://img.shields.io/badge/OpenAI-Supported-brightgreen",
+      "href": "https://platform.openai.com/docs",
+      "description": "OpenAI GPT-4 Support"
+    },
+    {
+      "url": "https://img.shields.io/badge/Anthropic-Supported-brightgreen",
+      "href": "https://docs.anthropic.com",
+      "description": "Anthropic Claude Support"
+    },
+    {
+      "url": "https://img.shields.io/badge/Google%20AI-Supported-brightgreen",
+      "href": "https://ai.google.dev",
+      "description": "Google AI Gemini Support"
+    }
+  ],
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
     "Programming Languages",
     "Snippets",
+    "Machine Learning",
     "Other"
   ],
   "keywords": [
     "clarity-chat",
     "ai",
     "openai",
+    "gpt-4",
     "anthropic",
+    "claude",
     "google-ai",
+    "gemini",
     "chat",
-    "completion"
+    "completion",
+    "llm",
+    "chatgpt",
+    "copilot"
   ],
   "activationEvents": [
-    "workspaceContains:**/package.json"
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:typescriptreact",
+    "onLanguage:javascriptreact",
+    "workspaceContains:**/clarity-chat.config.js",
+    "workspaceContains:**/clarity-chat.config.ts",
+    "workspaceContains:.env.local"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -145,13 +179,20 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "test:unit": "npm run compile && node ./out/test/runTest.js",
     "package": "vsce package",
     "publish": "vsce publish"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^20.10.0",
     "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.3.8",
     "@vscode/vsce": "^2.22.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
     "typescript": "^5.7.2"
   },
   "repository": {
