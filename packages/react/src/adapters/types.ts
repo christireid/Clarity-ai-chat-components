@@ -5,6 +5,8 @@
  * Enables model-agnostic configuration and easy provider switching.
  */
 
+import type { RateLimitInfo } from '../utils/rate-limit-headers'
+
 export interface ModelConfig {
   /** Provider name */
   provider: 'openai' | 'anthropic' | 'google' | 'custom'
@@ -113,7 +115,12 @@ export interface StreamChunk {
   usage?: TokenUsage
   /** Error message */
   error?: string
+  /** Rate limit info (on error) */
+  rateLimitInfo?: RateLimitInfo
 }
+
+// Re-export RateLimitInfo for consumers
+export type { RateLimitInfo }
 
 export interface TokenUsage {
   /** Tokens in prompt */
