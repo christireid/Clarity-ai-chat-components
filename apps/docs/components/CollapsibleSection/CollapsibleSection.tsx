@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, ReactNode } from 'react'
+import { useState, ReactNode } from 'react'
 
 interface CollapsibleSectionProps {
   title: string
@@ -18,24 +18,6 @@ export function CollapsibleSection({
   badge,
 }: CollapsibleSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const [height, setHeight] = useState<number | undefined>(defaultOpen ? undefined : 0)
-
-  useEffect(() => {
-    if (isOpen) {
-      const contentHeight = contentRef.current?.scrollHeight
-      setHeight(contentHeight)
-      // After animation, set to auto for responsive resizing
-      const timer = setTimeout(() => setHeight(undefined), 300)
-      return () => clearTimeout(timer)
-    } else {
-      // First set the current height, then animate to 0
-      setHeight(contentRef.current?.scrollHeight)
-      requestAnimationFrame(() => {
-        setHeight(0)
-      })
-    }
-  }, [isOpen])
 
   return (
     <div className={`border rounded-lg overflow-hidden ${className}`}>
@@ -53,23 +35,29 @@ export function CollapsibleSection({
           )}
         </div>
         <svg
-          className={`w-5 h-5 text-muted-foreground transition-transform duration-200 ${
+          className={`w-5 h-5 text-muted-foreground transition-transform duration-200 motion-reduce:transition-none ${
             isOpen ? 'rotate-180' : ''
           }`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
+
+      {/* CSS Grid animation technique for smooth height transition */}
       <div
-        ref={contentRef}
-        style={{ height: height }}
-        className="transition-all duration-300 ease-in-out overflow-hidden"
+        className="grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none"
+        style={{
+          gridTemplateRows: isOpen ? '1fr' : '0fr',
+        }}
       >
-        <div className="p-4 pt-0 border-t">
-          {children}
+        <div className="overflow-hidden">
+          <div className="p-4 pt-0 border-t">
+            {children}
+          </div>
         </div>
       </div>
     </div>

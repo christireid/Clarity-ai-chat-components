@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 import {
   hookMetadata,
   categoryConfig,
   type HookMetadata,
   type HookCategory,
 } from '@/lib/hook-metadata'
+import { FeedbackWidget } from '@/components/FeedbackWidget'
 
 type CompareField = 'description' | 'signature' | 'category' | 'useCases' | 'relatedHooks' | 'tags'
 
@@ -19,6 +21,41 @@ const compareFields: { key: CompareField; label: string }[] = [
   { key: 'relatedHooks', label: 'Related Hooks' },
   { key: 'tags', label: 'Tags' },
 ]
+
+// Toast notification component
+function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000)
+    return () => clearTimeout(timer)
+  }, [onClose])
+
+  return (
+    <div
+      className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 ${
+        type === 'success'
+          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+          : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+      }`}
+      role="alert"
+    >
+      {type === 'success' ? (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      )}
+      <span className="text-sm font-medium">{message}</span>
+      <button onClick={onClose} className="ml-2 hover:opacity-70">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  )
+}
 
 function HookSelector({
   selectedHooks,
@@ -69,6 +106,7 @@ function HookSelector({
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="w-full px-3 py-2 border rounded-lg mb-4 bg-background focus:outline-none focus:ring-2 focus:ring-brand-500"
+        aria-label="Search hooks"
       />
 
       <div className="max-h-96 overflow-y-auto space-y-2">
@@ -83,6 +121,7 @@ function HookSelector({
               <button
                 onClick={() => toggleCategory(category)}
                 className={`w-full text-left px-2 py-1 rounded text-sm font-medium ${config.colorClass} hover:bg-muted flex items-center gap-2`}
+                aria-expanded={isExpanded}
               >
                 <svg
                   className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
@@ -146,6 +185,158 @@ function HookSelector({
   )
 }
 
+function ExportMenu({
+  hooks,
+  onCopy,
+}: {
+  hooks: HookMetadata[]
+  onCopy: (success: boolean, message: string) => void
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const copyToClipboard = async (text: string, successMessage: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      onCopy(true, successMessage)
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-999999px'
+      document.body.appendChild(textArea)
+      textArea.select()
+      try {
+        document.execCommand('copy')
+        onCopy(true, successMessage)
+      } catch {
+        onCopy(false, 'Failed to copy to clipboard')
+      }
+      document.body.removeChild(textArea)
+    }
+    setIsOpen(false)
+  }
+
+  const generateMarkdown = () => {
+    if (hooks.length === 0) return ''
+
+    let md = '# Hook Comparison\n\n'
+    md += '| Property | ' + hooks.map((h) => h.name).join(' | ') + ' |\n'
+    md += '|----------|' + hooks.map(() => '----------').join('|') + '|\n'
+
+    compareFields.forEach((field) => {
+      md += `| ${field.label} | `
+      md += hooks
+        .map((hook) => {
+          const value = hook[field.key]
+          if (Array.isArray(value)) {
+            return value.join(', ') || '—'
+          }
+          return String(value || '—')
+        })
+        .join(' | ')
+      md += ' |\n'
+    })
+
+    md += '\n## Import Statements\n\n```typescript\n'
+    md += hooks.map((h) => h.importStatement).join('\n')
+    md += '\n```\n'
+
+    return md
+  }
+
+  const generateJSON = () => {
+    return JSON.stringify(
+      hooks.map((h) => ({
+        name: h.name,
+        description: h.description,
+        signature: h.signature,
+        category: h.category,
+        tags: h.tags,
+        useCases: h.useCases,
+        relatedHooks: h.relatedHooks,
+        importStatement: h.importStatement,
+      })),
+      null,
+      2
+    )
+  }
+
+  const generateImports = () => {
+    const allImports = hooks.map((h) => h.name)
+    return `import { ${allImports.join(', ')} } from '@clarity-chat/react'`
+  }
+
+  if (hooks.length === 0) return null
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-muted transition-colors"
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        Export
+        <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="absolute right-0 mt-2 w-56 bg-background border rounded-lg shadow-lg z-50 py-1">
+            <button
+              onClick={() => copyToClipboard(generateImports(), 'Imports copied!')}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Copy All Imports
+            </button>
+            <button
+              onClick={() => copyToClipboard(generateMarkdown(), 'Markdown copied!')}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Copy as Markdown
+            </button>
+            <button
+              onClick={() => copyToClipboard(generateJSON(), 'JSON copied!')}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+              Copy as JSON
+            </button>
+            <hr className="my-1" />
+            <button
+              onClick={() => {
+                const url = window.location.href
+                copyToClipboard(url, 'Link copied!')
+              }}
+              className="w-full px-4 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              Copy Share Link
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 function ComparisonTable({
   hooks,
   onRemove,
@@ -156,7 +347,11 @@ function ComparisonTable({
   if (hooks.length === 0) {
     return (
       <div className="border rounded-lg p-8 text-center text-muted-foreground">
-        <p>Select hooks from the sidebar to compare them side by side.</p>
+        <svg className="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        <p className="font-medium mb-2">No hooks selected</p>
+        <p className="text-sm">Select hooks from the sidebar to compare them side by side.</p>
       </div>
     )
   }
@@ -296,24 +491,56 @@ const suggestedComparisons = [
 ]
 
 export default function CompareHooksPage() {
-  const [selectedHooks, setSelectedHooks] = useState<string[]>([])
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
-  const toggleHook = (hookName: string) => {
+  // Initialize from URL params
+  const [selectedHooks, setSelectedHooks] = useState<string[]>(() => {
+    const hooksParam = searchParams.get('hooks')
+    if (hooksParam) {
+      const hooks = hooksParam.split(',').filter((h) => hookMetadata.some((m) => m.name === h))
+      return hooks
+    }
+    return []
+  })
+
+  // Update URL when selection changes
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (selectedHooks.length > 0) {
+      params.set('hooks', selectedHooks.join(','))
+    }
+    const newUrl = selectedHooks.length > 0
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname
+    router.replace(newUrl, { scroll: false })
+  }, [selectedHooks, router])
+
+  const toggleHook = useCallback((hookName: string) => {
     setSelectedHooks((prev) =>
       prev.includes(hookName)
         ? prev.filter((h) => h !== hookName)
         : [...prev, hookName]
     )
-  }
+  }, [])
 
   const selectedHookData = useMemo(
     () => hookMetadata.filter((h) => selectedHooks.includes(h.name)),
     [selectedHooks]
   )
 
-  const loadSuggestion = (hooks: string[]) => {
+  const loadSuggestion = useCallback((hooks: string[]) => {
     setSelectedHooks(hooks)
-  }
+  }, [])
+
+  const handleCopy = useCallback((success: boolean, message: string) => {
+    setToast({ message, type: success ? 'success' : 'error' })
+  }, [])
+
+  const clearAll = useCallback(() => {
+    setSelectedHooks([])
+  }, [])
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -322,21 +549,38 @@ export default function CompareHooksPage() {
         <p className="text-xl text-muted-foreground">
           Select multiple hooks to compare their features, signatures, and use cases side by side.
         </p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Tip: Share your comparison by copying the URL or using the Export button.
+        </p>
       </div>
 
-      {/* Suggested Comparisons */}
-      <div className="mb-6">
-        <p className="text-sm text-muted-foreground mb-2">Quick comparisons:</p>
-        <div className="flex flex-wrap gap-2">
-          {suggestedComparisons.map((suggestion) => (
+      {/* Toolbar */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-sm text-muted-foreground mb-2">Quick comparisons:</p>
+          <div className="flex flex-wrap gap-2">
+            {suggestedComparisons.map((suggestion) => (
+              <button
+                key={suggestion.label}
+                onClick={() => loadSuggestion(suggestion.hooks)}
+                className="px-3 py-1 text-sm border rounded-lg hover:bg-muted transition-colors"
+              >
+                {suggestion.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {selectedHooks.length > 0 && (
             <button
-              key={suggestion.label}
-              onClick={() => loadSuggestion(suggestion.hooks)}
-              className="px-3 py-1 text-sm border rounded-lg hover:bg-muted transition-colors"
+              onClick={clearAll}
+              className="px-3 py-2 text-sm border rounded-lg hover:bg-muted transition-colors text-muted-foreground"
             >
-              {suggestion.label}
+              Clear All
             </button>
-          ))}
+          )}
+          <ExportMenu hooks={selectedHookData} onCopy={handleCopy} />
         </div>
       </div>
 
@@ -364,6 +608,18 @@ export default function CompareHooksPage() {
           Quick Reference →
         </Link>
       </div>
+
+      {/* Feedback Widget */}
+      <FeedbackWidget pageId="compare-hooks" className="mt-12" />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   )
 }

@@ -181,6 +181,7 @@ export const referenceNavigation: NavItem[] = [
     items: [
       { title: '🧭 Hook Selector', href: '/reference/hooks/selector' },
       { title: '⚖️ Compare Hooks', href: '/reference/hooks/compare' },
+      { title: '🔗 Hook Graph', href: '/reference/hooks/graph' },
       { title: 'useClarityChat', href: '/reference/hooks/use-clarity-chat' },
       { title: 'useClarityChatWithTools', href: '/reference/hooks/use-clarity-chat-with-tools' },
       { title: 'useChatHandlers', href: '/reference/hooks/use-chat-handlers' },
