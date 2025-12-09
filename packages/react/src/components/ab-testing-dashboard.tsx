@@ -175,6 +175,21 @@ export function ABTestingDashboard({
     'conversionRate' | 'impressions' | 'engagement'
   >('conversionRate')
 
+  // Sync selectedExperiment when experiments prop changes
+  React.useEffect(() => {
+    // If selected experiment no longer exists in experiments, reset to first
+    if (selectedExperiment) {
+      const stillExists = experiments.some(
+        (exp) => exp.experimentId === selectedExperiment.experimentId
+      )
+      if (!stillExists) {
+        setSelectedExperiment(experiments[0] || null)
+      }
+    } else if (experiments.length > 0) {
+      setSelectedExperiment(experiments[0])
+    }
+  }, [experiments, selectedExperiment])
+
   // Calculate statistical significance
   const calculateSignificance = React.useCallback(
     (

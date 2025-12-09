@@ -195,10 +195,8 @@ export const EmptyStateWithAction: Story = {
       <DashboardEmptyState
         title="No usage data"
         description="Your usage statistics will appear here once you start using the API."
-        action={{
-          label: 'View Documentation',
-          onClick: () => alert('Opening documentation...'),
-        }}
+        actionLabel="View Documentation"
+        onAction={() => alert('Opening documentation...')}
       />
     </div>
   ),
@@ -226,10 +224,8 @@ export const EmptyStateWithIcon: Story = {
             />
           </svg>
         }
-        action={{
-          label: 'Create Experiment',
-          onClick: () => alert('Creating experiment...'),
-        }}
+        actionLabel="Create Experiment"
+        onAction={() => alert('Creating experiment...')}
       />
     </div>
   ),
