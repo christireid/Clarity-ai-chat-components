@@ -303,6 +303,10 @@ export { NetworkStatus } from './components/network-status'
 export { TokenCounter } from './components/token-counter'
 export { TokenOptimizationPanel } from './components/token-optimization-panel'
 export { TokenOptimizationBadge } from './components/token-optimization-badge'
+export {
+  TokenBudgetBar,
+  TokenBudgetIndicator,
+} from './components/token-budget-bar'
 
 // Context & Conversation Management
 export { ContextVisualizer } from './components/context-visualizer'

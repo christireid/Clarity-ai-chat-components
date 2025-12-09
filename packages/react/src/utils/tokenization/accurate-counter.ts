@@ -72,31 +72,74 @@ export interface TokenizerOptions {
 }
 
 /**
- * Token counter cache for performance
+ * Token counter cache with LRU eviction and hit/miss tracking
+ *
+ * Uses Map's insertion order for O(1) LRU implementation:
+ * - On get: delete and re-insert to move to end (most recently used)
+ * - On evict: delete first item (least recently used)
  */
 class TokenCountCache {
   private cache = new Map<string, number>()
   private maxSize = 1000
+  private hits = 0
+  private misses = 0
 
+  /**
+   * Get value from cache, moving it to most recently used position
+   */
   get(key: string): number | undefined {
-    return this.cache.get(key)
+    const value = this.cache.get(key)
+    if (value !== undefined) {
+      this.hits++
+      // Move to end (most recently used) by delete + re-insert
+      this.cache.delete(key)
+      this.cache.set(key, value)
+    }
+    return value
   }
 
+  /**
+   * Record a cache miss (called when value not found and computed)
+   */
+  recordMiss(): void {
+    this.misses++
+  }
+
+  /**
+   * Set value in cache, evicting LRU entry if at capacity
+   */
   set(key: string, count: number): void {
-    if (this.cache.size >= this.maxSize) {
-      // Remove oldest entry (first item)
-      const firstKey = this.cache.keys().next().value
-      if (firstKey) this.cache.delete(firstKey)
+    // If key exists, delete it first (will be re-added at end)
+    if (this.cache.has(key)) {
+      this.cache.delete(key)
+    } else if (this.cache.size >= this.maxSize) {
+      // Evict least recently used (first item in Map)
+      const lruKey = this.cache.keys().next().value
+      if (lruKey) this.cache.delete(lruKey)
     }
     this.cache.set(key, count)
   }
 
   clear(): void {
     this.cache.clear()
+    this.hits = 0
+    this.misses = 0
   }
 
   size(): number {
     return this.cache.size
+  }
+
+  /**
+   * Get cache statistics
+   */
+  getStats(): { hits: number; misses: number; hitRate: number } {
+    const total = this.hits + this.misses
+    return {
+      hits: this.hits,
+      misses: this.misses,
+      hitRate: total > 0 ? (this.hits / total) * 100 : 0,
+    }
   }
 }
 
@@ -110,47 +153,133 @@ const MODEL_CONFIGS: Record<
   {
     encoding: string
     charsPerToken: number
-    provider: 'openai' | 'anthropic' | 'google' | 'deepseek' | 'meta' | 'mistral'
+    provider:
+      | 'openai'
+      | 'anthropic'
+      | 'google'
+      | 'deepseek'
+      | 'meta'
+      | 'mistral'
   }
 > = {
   // OpenAI GPT-4 Family
   'gpt-4': { encoding: 'cl100k_base', charsPerToken: 4, provider: 'openai' },
-  'gpt-4-turbo': { encoding: 'cl100k_base', charsPerToken: 4, provider: 'openai' },
+  'gpt-4-turbo': {
+    encoding: 'cl100k_base',
+    charsPerToken: 4,
+    provider: 'openai',
+  },
   'gpt-4o': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
-  'gpt-4o-mini': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  'gpt-4o-mini': {
+    encoding: 'o200k_base',
+    charsPerToken: 4,
+    provider: 'openai',
+  },
   'gpt-4.1': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
-  'gpt-4.1-mini': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
-  'gpt-4.1-nano': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
-  'gpt-3.5-turbo': { encoding: 'cl100k_base', charsPerToken: 4, provider: 'openai' },
+  'gpt-4.1-mini': {
+    encoding: 'o200k_base',
+    charsPerToken: 4,
+    provider: 'openai',
+  },
+  'gpt-4.1-nano': {
+    encoding: 'o200k_base',
+    charsPerToken: 4,
+    provider: 'openai',
+  },
+  'gpt-3.5-turbo': {
+    encoding: 'cl100k_base',
+    charsPerToken: 4,
+    provider: 'openai',
+  },
 
   // OpenAI O1/O3 Reasoning Models
-  'o1': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  o1: { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
   'o1-mini': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
-  'o1-preview': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
+  'o1-preview': {
+    encoding: 'o200k_base',
+    charsPerToken: 4,
+    provider: 'openai',
+  },
   'o3-mini': { encoding: 'o200k_base', charsPerToken: 4, provider: 'openai' },
 
   // Anthropic Claude 3 Family
-  'claude-3-opus': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
-  'claude-3-sonnet': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
-  'claude-3-haiku': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
-  'claude-3-5-sonnet': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
-  'claude-3-5-haiku': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
+  'claude-3-opus': {
+    encoding: 'claude',
+    charsPerToken: 3.8,
+    provider: 'anthropic',
+  },
+  'claude-3-sonnet': {
+    encoding: 'claude',
+    charsPerToken: 3.8,
+    provider: 'anthropic',
+  },
+  'claude-3-haiku': {
+    encoding: 'claude',
+    charsPerToken: 3.8,
+    provider: 'anthropic',
+  },
+  'claude-3-5-sonnet': {
+    encoding: 'claude',
+    charsPerToken: 3.8,
+    provider: 'anthropic',
+  },
+  'claude-3-5-haiku': {
+    encoding: 'claude',
+    charsPerToken: 3.8,
+    provider: 'anthropic',
+  },
 
   // Anthropic Claude 4 Family
-  'claude-sonnet-4': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
-  'claude-opus-4': { encoding: 'claude', charsPerToken: 3.8, provider: 'anthropic' },
+  'claude-sonnet-4': {
+    encoding: 'claude',
+    charsPerToken: 3.8,
+    provider: 'anthropic',
+  },
+  'claude-opus-4': {
+    encoding: 'claude',
+    charsPerToken: 3.8,
+    provider: 'anthropic',
+  },
 
   // Google Gemini Family
   'gemini-pro': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
-  'gemini-1.5-pro': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
-  'gemini-1.5-flash': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
-  'gemini-2.0-flash': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
-  'gemini-2.0-pro': { encoding: 'gemini', charsPerToken: 4, provider: 'google' },
+  'gemini-1.5-pro': {
+    encoding: 'gemini',
+    charsPerToken: 4,
+    provider: 'google',
+  },
+  'gemini-1.5-flash': {
+    encoding: 'gemini',
+    charsPerToken: 4,
+    provider: 'google',
+  },
+  'gemini-2.0-flash': {
+    encoding: 'gemini',
+    charsPerToken: 4,
+    provider: 'google',
+  },
+  'gemini-2.0-pro': {
+    encoding: 'gemini',
+    charsPerToken: 4,
+    provider: 'google',
+  },
 
   // DeepSeek Models
-  'deepseek-chat': { encoding: 'deepseek', charsPerToken: 4, provider: 'deepseek' },
-  'deepseek-coder': { encoding: 'deepseek', charsPerToken: 4, provider: 'deepseek' },
-  'deepseek-r1': { encoding: 'deepseek', charsPerToken: 4, provider: 'deepseek' },
+  'deepseek-chat': {
+    encoding: 'deepseek',
+    charsPerToken: 4,
+    provider: 'deepseek',
+  },
+  'deepseek-coder': {
+    encoding: 'deepseek',
+    charsPerToken: 4,
+    provider: 'deepseek',
+  },
+  'deepseek-r1': {
+    encoding: 'deepseek',
+    charsPerToken: 4,
+    provider: 'deepseek',
+  },
 
   // Llama Models
   'llama-3': { encoding: 'llama3', charsPerToken: 4, provider: 'meta' },
@@ -159,9 +288,21 @@ const MODEL_CONFIGS: Record<
   'llama-3.3': { encoding: 'llama3', charsPerToken: 4, provider: 'meta' },
 
   // Mistral Models
-  'mistral-large': { encoding: 'mistral', charsPerToken: 4, provider: 'mistral' },
-  'mistral-medium': { encoding: 'mistral', charsPerToken: 4, provider: 'mistral' },
-  'mistral-small': { encoding: 'mistral', charsPerToken: 4, provider: 'mistral' },
+  'mistral-large': {
+    encoding: 'mistral',
+    charsPerToken: 4,
+    provider: 'mistral',
+  },
+  'mistral-medium': {
+    encoding: 'mistral',
+    charsPerToken: 4,
+    provider: 'mistral',
+  },
+  'mistral-small': {
+    encoding: 'mistral',
+    charsPerToken: 4,
+    provider: 'mistral',
+  },
 }
 
 /**
@@ -191,6 +332,8 @@ export async function countTokens(
         method: 'accurate',
       }
     }
+    // Record cache miss for statistics
+    tokenCache.recordMiss()
   }
 
   const config = MODEL_CONFIGS[model]
@@ -231,7 +374,10 @@ export async function countTokens(
  * Count tokens accurately using tiktoken
  * Note: This requires js-tiktoken to be installed
  */
-async function countTokensAccurate(text: string, encoding: string): Promise<number> {
+async function countTokensAccurate(
+  text: string,
+  encoding: string
+): Promise<number> {
   try {
     // Dynamic import to avoid errors if package not installed
     // @ts-expect-error - js-tiktoken is an optional peer dependency
@@ -250,7 +396,9 @@ async function countTokensAccurate(text: string, encoding: string): Promise<numb
 
     return tokens.length
   } catch (error) {
-    throw new Error(`js-tiktoken not available or encoding not found: ${encoding}`)
+    throw new Error(
+      `js-tiktoken not available or encoding not found: ${encoding}`
+    )
   }
 }
 
@@ -370,7 +518,11 @@ export async function chunkByTokens(
 
   let remaining = text
   while (remaining.length > 0) {
-    const result = await truncateToTokenBudget(remaining, maxTokensPerChunk, options)
+    const result = await truncateToTokenBudget(
+      remaining,
+      maxTokensPerChunk,
+      options
+    )
     chunks.push(result.truncated)
 
     if (!result.wasTruncated) {
@@ -386,17 +538,33 @@ export async function chunkByTokens(
 }
 
 /**
- * Get token count statistics for debugging
+ * Get token count statistics for debugging and monitoring
+ *
+ * @returns Cache statistics including size and hit rate
+ *
+ * @example
+ * ```typescript
+ * const stats = getTokenizerStats()
+ * console.log(`Cache hit rate: ${stats.cacheHitRate}`)
+ * console.log(`Cache size: ${stats.cacheSize}/${stats.cacheMaxSize}`)
+ * ```
  */
 export function getTokenizerStats(): {
   cacheSize: number
   cacheMaxSize: number
   cacheHitRate: string
+  cacheHits: number
+  cacheMisses: number
+  hitRatePercent: number
 } {
+  const stats = tokenCache.getStats()
   return {
     cacheSize: tokenCache.size(),
     cacheMaxSize: 1000,
-    cacheHitRate: 'N/A', // Would need hit/miss tracking
+    cacheHitRate: `${stats.hitRate.toFixed(1)}%`,
+    cacheHits: stats.hits,
+    cacheMisses: stats.misses,
+    hitRatePercent: stats.hitRate,
   }
 }
 

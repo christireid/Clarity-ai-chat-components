@@ -20,8 +20,10 @@ const MODEL_CHAR_RATIOS: Record<string, number> = {
   'gpt-4o': 4,
   'gpt-4o-mini': 4,
   'gpt-4.1': 4,
+  'gpt-4.1-mini': 4,
+  'gpt-4.1-nano': 4,
   'gpt-3.5-turbo': 4,
-  'o1': 4,
+  o1: 4,
   'o1-mini': 4,
   'o1-preview': 4,
   'o3-mini': 4,
@@ -129,11 +131,14 @@ function getEffectiveCharCount(text: string): number {
  * const anthropicTokens = estimateTokensByProvider(text, 'anthropic')
  * ```
  */
-export function estimateTokens(text: string, model?: ModelName | string): number {
+export function estimateTokens(
+  text: string,
+  model?: ModelName | string
+): number {
   if (!text) return 0
 
   const charsPerToken = model
-    ? MODEL_CHAR_RATIOS[model] ?? inferRatioFromModelName(model)
+    ? (MODEL_CHAR_RATIOS[model] ?? inferRatioFromModelName(model))
     : DEFAULT_CHARS_PER_TOKEN
 
   // Use effective char count for CJK-aware estimation
@@ -157,8 +162,15 @@ export function estimateTokensByProvider(
 ): number {
   if (!text) return 0
 
-  const charsPerToken = PROVIDER_CHAR_RATIOS[provider] ?? DEFAULT_CHARS_PER_TOKEN
-  return Math.ceil(text.length / charsPerToken)
+  const charsPerToken =
+    PROVIDER_CHAR_RATIOS[provider] ?? DEFAULT_CHARS_PER_TOKEN
+
+  // Use CJK-aware character counting for consistency with estimateTokens()
+  const effectiveLength = containsCJK(text)
+    ? getEffectiveCharCount(text)
+    : text.length
+
+  return Math.ceil(effectiveLength / charsPerToken)
 }
 
 /**
@@ -235,9 +247,20 @@ export function validateEstimation(
 /**
  * Estimate tokens with debugging info
  *
+ * Provides detailed information about the estimation process,
+ * including CJK-aware character counts and the method used.
+ *
  * @param text - The text to estimate
- * @param model - Optional model
- * @returns Estimation result with metadata
+ * @param model - Optional model for model-specific estimation
+ * @returns Estimation result with detailed metadata
+ *
+ * @example
+ * ```typescript
+ * const debug = estimateTokensDebug("Hello 你好", 'gpt-4')
+ * console.log(debug.tokens) // Accounts for CJK characters
+ * console.log(debug.method) // 'model-specific'
+ * console.log(debug.hasCJK) // true
+ * ```
  */
 export function estimateTokensDebug(
   text: string,
@@ -246,11 +269,13 @@ export function estimateTokensDebug(
   tokens: number
   charsPerToken: number
   textLength: number
+  effectiveLength: number
+  hasCJK: boolean
   model: string | undefined
   method: 'model-specific' | 'inferred' | 'default'
 } {
   const charsPerToken = model
-    ? MODEL_CHAR_RATIOS[model] ?? inferRatioFromModelName(model)
+    ? (MODEL_CHAR_RATIOS[model] ?? inferRatioFromModelName(model))
     : DEFAULT_CHARS_PER_TOKEN
 
   const method: 'model-specific' | 'inferred' | 'default' = model
@@ -259,10 +284,16 @@ export function estimateTokensDebug(
       : 'inferred'
     : 'default'
 
+  // Use CJK-aware estimation for accuracy
+  const hasCJK = containsCJK(text)
+  const effectiveLength = hasCJK ? getEffectiveCharCount(text) : text.length
+
   return {
-    tokens: Math.ceil(text.length / charsPerToken),
+    tokens: Math.ceil(effectiveLength / charsPerToken),
     charsPerToken,
     textLength: text.length,
+    effectiveLength,
+    hasCJK,
     model,
     method,
   }

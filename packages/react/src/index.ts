@@ -200,7 +200,17 @@ export {
   type TokenUsageStatus,
   type TrimResult,
   type BudgetMessage,
+  type BudgetMonitorModel,
 } from './hooks/use-token-budget-monitor'
+
+// Token Budget Provider - Context for sharing budget state across components
+export {
+  TokenBudgetProvider,
+  useTokenBudget,
+  useTokenBudgetOptional,
+  type TokenBudgetContextValue,
+  type TokenBudgetProviderProps,
+} from './context/token-budget-context'
 
 // KV Cache-Aligned Prompt Builder - Optimizes prompt structure for cache reuse
 export {
