@@ -109,13 +109,6 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 - [Utilities](https://clarity-chat.dev/reference/api/utilities): Helper functions and utilities
 - [Type Definitions](https://clarity-chat.dev/reference/api/types): TypeScript type reference
 
-## AI-Optimized APIs
-
-- [Components API](https://clarity-chat.dev/api/ai/components): JSON endpoint with all component documentation
-- [Hooks API](https://clarity-chat.dev/api/ai/hooks): JSON endpoint with all hook documentation
-- [Search API](https://clarity-chat.dev/api/ai/search): Full-text search across all documentation
-- [OpenAPI Spec](https://clarity-chat.dev/openapi.json): Full OpenAPI 3.0 specification
-
 ## Optional
 
 - [Enterprise Features](https://clarity-chat.dev/enterprise): SSO, RBAC, multi-tenancy, audit logs

@@ -421,31 +421,6 @@ export const navigationConfig: NavigationSection[] = [
     ],
   },
   {
-    title: 'AI-Optimized APIs',
-    items: [
-      {
-        title: 'Components API',
-        href: '/api/ai/components',
-        description: 'JSON endpoint with all component documentation',
-      },
-      {
-        title: 'Hooks API',
-        href: '/api/ai/hooks',
-        description: 'JSON endpoint with all hook documentation',
-      },
-      {
-        title: 'Search API',
-        href: '/api/ai/search',
-        description: 'Full-text search across all documentation',
-      },
-      {
-        title: 'OpenAPI Spec',
-        href: '/openapi.json',
-        description: 'Full OpenAPI 3.0 specification',
-      },
-    ],
-  },
-  {
     title: 'Optional',
     isOptional: true,
     items: [

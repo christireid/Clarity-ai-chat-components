@@ -11,8 +11,8 @@
  *   tsx scripts/generate-llms.ts
  */
 
-import { readFile, writeFile, readdir, stat } from 'fs/promises'
-import { join, relative } from 'path'
+import { readFile, writeFile, mkdir, access } from 'fs/promises'
+import { join, relative, dirname } from 'path'
 import { glob } from 'glob'
 import {
   navigationConfig,
@@ -39,6 +39,36 @@ const DOCS_DIR = join(process.cwd(), 'app')
 const OUTPUT_DIR = join(process.cwd(), 'public')
 const MAX_TOKENS = 500000
 const MAX_PAGE_TOKENS = 50000
+
+/**
+ * Check if a directory exists
+ */
+async function directoryExists(path: string): Promise<boolean> {
+  try {
+    await access(path)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Validate that required directories exist
+ */
+async function validateDirectories(): Promise<void> {
+  if (!(await directoryExists(DOCS_DIR))) {
+    throw new Error(
+      `Documentation directory not found: ${DOCS_DIR}\n` +
+        `Make sure to run this script from apps/docs directory.`
+    )
+  }
+
+  // Create output directory if it doesn't exist
+  if (!(await directoryExists(OUTPUT_DIR))) {
+    await mkdir(OUTPUT_DIR, { recursive: true })
+    console.log(`📁 Created output directory: ${OUTPUT_DIR}`)
+  }
+}
 
 /**
  * Generate the llms.txt navigation file
@@ -262,6 +292,9 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
   console.log(`📁 Docs directory: ${DOCS_DIR}`)
   console.log(`📂 Output directory: ${OUTPUT_DIR}`)
   console.log('')
+
+  // Validate directories exist
+  await validateDirectories()
 
   const stats: GenerationStats = {
     totalPages: 0,
