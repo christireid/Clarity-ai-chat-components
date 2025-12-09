@@ -16,10 +16,45 @@
       "import": "./dist/core.mjs",
       "require": "./dist/core.js"
     },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.mjs",
+      "require": "./dist/hooks/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.mjs",
+      "require": "./dist/components/index.js"
+    },
+    "./animations": {
+      "types": "./dist/animations/index.d.ts",
+      "import": "./dist/animations/index.mjs",
+      "require": "./dist/animations/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.js"
+    },
     "./prompt": {
       "types": "./dist/prompt/index.d.ts",
       "import": "./dist/prompt/index.mjs",
       "require": "./dist/prompt/index.js"
+    },
+    "./analytics": {
+      "types": "./dist/analytics/index.d.ts",
+      "import": "./dist/analytics/index.mjs",
+      "require": "./dist/analytics/index.js"
+    },
+    "./memory": {
+      "types": "./dist/memory/index.d.ts",
+      "import": "./dist/memory/index.mjs",
+      "require": "./dist/memory/index.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters/index.d.ts",
+      "import": "./dist/adapters/index.mjs",
+      "require": "./dist/adapters/index.js"
     },
     "./styles.css": "./dist/styles/index.css",
     "./dist/styles/index.css": "./dist/styles/index.css",
