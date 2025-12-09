@@ -16,8 +16,7 @@ import {
 import { cn } from '../../lib/utils'
 
 /**
- * @deprecated Use the `loading` prop instead of `state`.
- * This type is provided for backward compatibility only.
+ * Button state for visual feedback
  */
 export type ButtonState = 'idle' | 'loading' | 'success' | 'error'
 
@@ -29,6 +28,13 @@ export interface ButtonProps extends ShadcnButtonProps {
   loading?: boolean
 
   /**
+   * Button state for visual feedback
+   * When 'loading', shows a spinner
+   * @deprecated Use `loading` prop instead
+   */
+  state?: ButtonState
+
+  /**
    * @deprecated Ripple effect is not available in the shadcn Button.
    * This prop is accepted for backward compatibility but has no effect.
    * Remove this prop from your code - it does nothing.
@@ -38,20 +44,28 @@ export interface ButtonProps extends ShadcnButtonProps {
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { children, loading, ripple: _ripple, disabled, className, ...props },
+    {
+      children,
+      loading,
+      state,
+      ripple: _ripple,
+      disabled,
+      className,
+      ...props
+    },
     ref
   ) => {
-    // Note: ripple is accepted but not yet implemented
-    // This maintains API compatibility with the legacy button
+    // Support both loading prop and state prop for backward compatibility
+    const isLoading = loading || state === 'loading'
 
     return (
       <ShadcnButton
         ref={ref}
-        disabled={disabled || loading}
+        disabled={disabled || isLoading}
         className={cn(className)}
         {...props}
       >
-        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {children}
       </ShadcnButton>
     )

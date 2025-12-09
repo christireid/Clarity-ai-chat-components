@@ -4,7 +4,7 @@ import { forwardRef, useState, useRef, useMemo, useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { cn, Kbd, useBodyScrollLock } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import {
   useFocusTrap,
@@ -245,7 +245,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(
                   duration: prefersReducedMotion
                     ? 0
                     : ANIMATION_DURATION.normal / 1000,
-                  ease: ANIMATION_EASING.out,
+                  ease: EASING_FRAMER.out,
                 }}
                 role="dialog"
                 aria-modal="true"

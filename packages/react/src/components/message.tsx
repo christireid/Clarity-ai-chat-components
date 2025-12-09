@@ -10,7 +10,7 @@ import {
   cn,
   formatRelativeTime,
 } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -322,7 +322,7 @@ export function Message({
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{
         duration: ANIMATION_DURATION.normal / 1000,
-        ease: ANIMATION_EASING.out,
+        ease: EASING_FRAMER.out,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

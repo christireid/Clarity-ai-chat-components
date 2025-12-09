@@ -2,10 +2,16 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, cn } from '@clarity-chat/primitives'
 import { CopyButton } from '../copy-button'
-import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon, EditIcon, TrashIcon } from '../icons'
+import {
+  ThumbsUpIcon,
+  ThumbsDownIcon,
+  RefreshIcon,
+  EditIcon,
+  TrashIcon,
+} from '../icons'
 import {
   ANIMATION_DURATION,
-  ANIMATION_EASING,
+  EASING_FRAMER,
   INTERACTION_VARIANTS,
 } from '../../animations/constants'
 import { ConfettiAnimation } from './confetti-animation'
@@ -79,7 +85,7 @@ export const MessageActions = React.memo<MessageActionsProps>(
           exit={{ opacity: 0, y: 10, height: 0 }}
           transition={{
             duration: ANIMATION_DURATION.fast / 1000,
-            ease: ANIMATION_EASING.out,
+            ease: EASING_FRAMER.out,
           }}
           className="flex items-center gap-1.5 overflow-hidden mt-3"
         >
@@ -127,7 +133,8 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 className={cn(
                   'h-7 w-7 rounded-lg transition-all text-gray-400 hover:text-gray-600',
                   'hover:bg-accent/50',
-                  feedbackGiven === 'up' && 'text-success bg-success/10 hover:bg-success/15'
+                  feedbackGiven === 'up' &&
+                    'text-success bg-success/10 hover:bg-success/15'
                 )}
                 aria-label="Good response"
               >
@@ -261,10 +268,14 @@ export const MessageActions = React.memo<MessageActionsProps>(
                 aria-label="Delete message"
               >
                 <motion.div
-                  animate={isDeleting ? {
-                    rotate: [0, 10, -10, 10, 0],
-                    scale: [1, 0.9, 0.9, 0.9, 0.8],
-                  } : {}}
+                  animate={
+                    isDeleting
+                      ? {
+                          rotate: [0, 10, -10, 10, 0],
+                          scale: [1, 0.9, 0.9, 0.9, 0.8],
+                        }
+                      : {}
+                  }
                   transition={{ duration: 0.3 }}
                 >
                   <TrashIcon size={14} />
