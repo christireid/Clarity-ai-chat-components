@@ -132,6 +132,7 @@ export function Message({
   ref,
 }: MessageProps) {
   const [isHovered, setIsHovered] = React.useState(false)
+  const [isFocusWithin, setIsFocusWithin] = React.useState(false)
   const [feedbackGiven, setFeedbackGiven] = React.useState<
     'up' | 'down' | null
   >(message.feedback?.type || null)
@@ -326,6 +327,14 @@ export function Message({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsFocusWithin(true)}
+      onBlur={(e) => {
+        // Only set false if focus moved outside this component
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          setIsFocusWithin(false)
+        }
+      }}
+      tabIndex={0}
       className={cn(
         'group flex gap-3 rounded-xl transition-all duration-200 ease-out',
         // Reduced padding for grouped messages
@@ -472,7 +481,7 @@ export function Message({
             onEdit={onEdit}
             onRegenerate={onRegenerate}
             onDelete={onDelete}
-            show={isHovered || !!feedbackGiven}
+            show={isHovered || isFocusWithin || !!feedbackGiven}
           />
         )}
 
