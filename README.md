@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="License" />
   </a>
   <a href="https://www.typescriptlang.org/">
-    <img src="https://img.shields.io/badge/TypeScript-5.3-blue?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/TypeScript-5.9-blue?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="TypeScript" />
   </a>
   <a href="https://codecov.io/gh/christireid/Clarity-ai-chat-components">
     <img src="https://img.shields.io/codecov/c/github/christireid/Clarity-ai-chat-components?style=for-the-badge&colorA=18181B&colorB=4A90E2" alt="Test Coverage" />
@@ -31,7 +31,7 @@
 <p align="center">
   <strong>70+ Production-Ready Components</strong> • 
   <strong>35+ Custom Hooks</strong> • 
-  <strong>11 Beautiful Themes</strong> • 
+  <strong>8 Theme Presets</strong> • 
   <strong>Enterprise AI Infrastructure</strong>
 </p>
 
@@ -220,7 +220,6 @@ Four **high-impact, low-effort** enhancements ready to use immediately:
 
 ```tsx
 import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
-
 ;<PromptSuggestionsEnhanced
   messages={messages}
   onSelect={(s) => sendMessage(s.text)}
@@ -250,7 +249,6 @@ import { PromptSuggestionsEnhanced } from '@clarity-chat/react'
 
 ```tsx
 import { ConversationSummarizer } from '@clarity-chat/react'
-
 ;<ConversationSummarizer
   messages={messages}
   config={{
@@ -309,7 +307,6 @@ function Chat() {
 
 ```tsx
 import { PerformanceAnalyticsDashboard } from '@clarity-chat/react'
-
 ;<PerformanceAnalyticsDashboard
   updateInterval={1000}
   showWebVitals
@@ -471,7 +468,7 @@ Chat.
 ║     🎨  Beautiful Design System      🚀  Lightning Fast         ║
 ║     ♿  WCAG AAA Accessible          🧩  70+ Components         ║
 ║     💰  Token Optimization          🤖  Enterprise AI Ready     ║
-║     📊  Built-in Analytics          🎭  11 Stunning Themes      ║
+║     📊  Built-in Analytics          🎭  8 Theme Presets      ║
 ║     🔒  Production Security         ⚡  Streaming Support       ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -753,7 +750,7 @@ function OptimizedChat() {
 
 ### 2. Beautiful Design System 🎨
 
-**11 Stunning Themes** with a 6-level shadow system and 150+ animations:
+**8 Theme Presets** with a 6-level shadow system and 150+ animations:
 
 ```tsx
 import { ThemeProvider, themes } from '@clarity-chat/react'
@@ -1738,7 +1735,7 @@ docker-compose -f docker-compose.memory.yml up -d
 
 ### VSCode Extension
 
-- 📝 **60+ Code Snippets**: Type `cc-` for component templates
+- 📝 **28 Code Snippets**: Type `cc-` for component templates
 - 💡 **IntelliSense**: Full TypeScript support with hover docs
 - 🔍 **Real-time Diagnostics**: Catch errors as you type
 - 👁️ **Component Preview**: See components in action

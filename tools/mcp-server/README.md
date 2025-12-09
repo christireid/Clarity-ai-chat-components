@@ -1,10 +1,13 @@
 # @clarity-chat/mcp-server
 
-Model Context Protocol (MCP) server for Clarity Chat - enables AI agents like Claude Desktop to interact with Clarity Chat projects through standardized tools, resources, and prompts.
+Model Context Protocol (MCP) server for Clarity Chat - enables AI agents like Claude Desktop to
+interact with Clarity Chat projects through standardized tools, resources, and prompts.
 
 ## What is MCP?
 
-Model Context Protocol is an open protocol developed by Anthropic that standardizes how AI agents interact with external tools and data sources. This MCP server exposes Clarity Chat's functionality to any MCP-compatible AI agent.
+Model Context Protocol is an open protocol developed by Anthropic that standardizes how AI agents
+interact with external tools and data sources. This MCP server exposes Clarity Chat's functionality
+to any MCP-compatible AI agent.
 
 ## Features
 
@@ -61,8 +64,8 @@ npm install @clarity-chat/mcp-server
 
 Add to your Claude Desktop configuration file:
 
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json` **Windows**:
+`%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -106,11 +109,13 @@ npx @clarity-chat/mcp-server
 Once configured, you can ask Claude Desktop to use Clarity Chat tools:
 
 **Example 1: Initialize a Project**
+
 ```
 "Can you initialize a new Clarity Chat project with OpenAI in /path/to/my-app?"
 ```
 
 Claude will use the `init_project` tool with:
+
 ```json
 {
   "provider": "openai",
@@ -120,11 +125,13 @@ Claude will use the `init_project` tool with:
 ```
 
 **Example 2: Get Model Information**
+
 ```
 "What are the capabilities and pricing of GPT-4 Turbo?"
 ```
 
 Claude will use the `get_model_info` tool:
+
 ```json
 {
   "modelName": "gpt-4-turbo"
@@ -132,11 +139,13 @@ Claude will use the `get_model_info` tool:
 ```
 
 **Example 3: Calculate Costs**
+
 ```
 "How much would it cost to process 1000 input tokens and 500 output tokens with Claude 3 Opus?"
 ```
 
 Claude will use the `calculate_cost` tool:
+
 ```json
 {
   "modelName": "claude-3-opus-20240229",
@@ -184,11 +193,13 @@ Claude will use the `review-code` prompt with focus on security.
 Initialize a new Clarity Chat project.
 
 **Parameters:**
+
 - `provider` (required): `"openai"` | `"anthropic"` | `"google"` | `"all"`
 - `framework` (required): `"nextjs"` | `"express"` | `"hono"` | `"standalone"`
 - `projectPath` (required): Path where project should be created
 
 **Returns:**
+
 ```json
 {
   "success": true,
@@ -205,6 +216,7 @@ List all available code examples.
 **Parameters:** None
 
 **Returns:**
+
 ```json
 {
   "examples": [
@@ -221,9 +233,11 @@ List all available code examples.
 Get code for a specific example.
 
 **Parameters:**
+
 - `exampleName` (required): Name of the example
 
 **Returns:**
+
 ```json
 {
   "name": "basic-chat",
@@ -236,9 +250,11 @@ Get code for a specific example.
 Validate project configuration.
 
 **Parameters:**
+
 - `projectPath` (required): Path to project directory
 
 **Returns:**
+
 ```json
 {
   "valid": true,
@@ -252,9 +268,11 @@ Validate project configuration.
 Get detailed information about an AI model.
 
 **Parameters:**
+
 - `modelName` (required): Name of the model (e.g., "gpt-4-turbo")
 
 **Returns:**
+
 ```json
 {
   "provider": "OpenAI",
@@ -270,11 +288,13 @@ Get detailed information about an AI model.
 Calculate cost for token usage.
 
 **Parameters:**
+
 - `modelName` (required): Model name
 - `promptTokens` (required): Number of input tokens
 - `completionTokens` (required): Number of output tokens
 
 **Returns:**
+
 ```json
 {
   "modelName": "gpt-4-turbo",
@@ -293,9 +313,11 @@ Calculate cost for token usage.
 Analyze a Clarity Chat project.
 
 **Parameters:**
+
 - `projectPath` (required): Path to project directory
 
 **Returns:**
+
 ```json
 {
   "path": "/path/to/project",
@@ -326,6 +348,7 @@ All resources return markdown or JSON content:
 Generate implementation plan for a new feature.
 
 **Arguments:**
+
 - `feature` (required): Description of feature to implement
 - `provider` (optional): AI provider to use
 
@@ -336,6 +359,7 @@ Generate implementation plan for a new feature.
 Analyze and suggest fixes for an issue.
 
 **Arguments:**
+
 - `issue` (required): Description of the issue
 - `code` (optional): Relevant code snippet
 
@@ -346,6 +370,7 @@ Analyze and suggest fixes for an issue.
 Suggest performance optimizations.
 
 **Arguments:**
+
 - `context` (required): Context about current implementation
 
 **Output:** Optimization suggestions with code examples
@@ -355,6 +380,7 @@ Suggest performance optimizations.
 Perform code review.
 
 **Arguments:**
+
 - `code` (required): Code to review
 - `focus` (optional): Aspect to focus on (security, performance, readability)
 
@@ -365,6 +391,7 @@ Perform code review.
 Convert code to different provider/framework.
 
 **Arguments:**
+
 - `code` (required): Original code
 - `from` (required): Source provider/framework
 - `to` (required): Target provider/framework
@@ -424,12 +451,13 @@ The MCP server is organized into modular components:
 - ✅ **Testing** - Comprehensive test suite with high coverage
 
 Each module exports:
+
 - List of available items
 - Handler function for requests with proper error handling
 
 ## Requirements
 
-- Node.js 18.0.0 or higher
+- Node.js 20.0.0 or higher
 - MCP-compatible client (e.g., Claude Desktop 0.5.0+)
 
 ## License

@@ -1,0 +1,53 @@
+name: Documentation Check
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'packages/*/README.md'
+      - 'packages/react/src/index.ts'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - 'packages/*/README.md'
+      - 'packages/react/src/index.ts'
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Node.js version consistency
+        run: |
+          PKG_NODE=$(jq -r '.engines.node' package.json)
+          echo "Package.json requires: $PKG_NODE"
+
+          # Check for outdated Node.js 18 references
+          if grep -rq "Node\.js 18" docs/ README.md packages/*/README.md 2>/dev/null; then
+            echo "❌ Found 'Node.js 18' references but package.json requires $PKG_NODE"
+            grep -rn "Node\.js 18" docs/ README.md packages/*/README.md 2>/dev/null || true
+            exit 1
+          fi
+          echo "✅ Node.js version references are consistent"
+
+      - name: Check TypeScript version consistency
+        run: |
+          TS_VERSION=$(jq -r '.devDependencies.typescript' package.json | sed 's/\^//')
+          echo "Package.json TypeScript: $TS_VERSION"
+
+          # Check for outdated TypeScript version in badges
+          if grep -q "TypeScript-5\.3" README.md 2>/dev/null; then
+            echo "❌ README badge shows TypeScript 5.3 but package.json has $TS_VERSION"
+            exit 1
+          fi
+          echo "✅ TypeScript version references are consistent"
+
+      - name: Verify documented exports exist
+        run: |
+          chmod +x scripts/verify-docs-exports.sh
+          ./scripts/verify-docs-exports.sh

@@ -16,6 +16,7 @@ This demo showcases enterprise-grade AI operations capabilities, providing compl
 ## ✨ Key Features
 
 ### Observability Dashboard
+
 - **Real-Time Metrics** - Live monitoring of all system metrics
 - **Request Analytics** - Volume, patterns, and trends
 - **Latency Tracking** - P50, P95, P99 percentiles
@@ -23,6 +24,7 @@ This demo showcases enterprise-grade AI operations capabilities, providing compl
 - **User Activity** - Active users and usage patterns
 
 ### Safety Console
+
 - **PII Detection** - Automatic detection and redaction
 - **Content Filtering** - Multi-category content screening
 - **Prompt Injection Protection** - Defense against adversarial prompts
@@ -30,6 +32,7 @@ This demo showcases enterprise-grade AI operations capabilities, providing compl
 - **Compliance Reporting** - Audit trails and reports
 
 ### Evaluation Dashboard
+
 - **Quality Scoring** - Multi-dimensional quality metrics
 - **A/B Testing** - Compare model versions
 - **Benchmarking** - Track improvements over time
@@ -37,6 +40,7 @@ This demo showcases enterprise-grade AI operations capabilities, providing compl
 - **Automated Reports** - Scheduled evaluation reports
 
 ### Prompt Test Harness
+
 - **Test Case Management** - Organize and version test cases
 - **Automated Testing** - Run tests on schedule or trigger
 - **Behavior Validation** - Verify expected behaviors
@@ -44,6 +48,7 @@ This demo showcases enterprise-grade AI operations capabilities, providing compl
 - **Performance Testing** - Measure prompt performance
 
 ### Token Optimization
+
 - **Cost Tracking** - Real-time cost monitoring
 - **Savings Analysis** - Breakdown by optimization technique
 - **Usage Forecasting** - Predict future costs
@@ -51,6 +56,7 @@ This demo showcases enterprise-grade AI operations capabilities, providing compl
 - **ROI Calculator** - Measure optimization impact
 
 ### Performance Dashboard
+
 - **Latency Analysis** - Response time breakdowns
 - **Throughput Metrics** - Requests per second
 - **Error Analysis** - Error type and frequency
@@ -61,7 +67,7 @@ This demo showcases enterprise-grade AI operations capabilities, providing compl
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - npm or yarn
 
 ### Installation
@@ -82,6 +88,7 @@ Visit [http://localhost:3003](http://localhost:3003)
 ## 🏗️ Architecture
 
 ### Frontend
+
 - **Next.js 15** with App Router
 - **React 19** with Server Components
 - **TypeScript** with strict mode
@@ -96,18 +103,18 @@ import {
   EvaluationDashboard,
   SafetyReviewConsole,
   PromptTestHarness,
-  
+
   // Token Optimization
   TokenOptimizationDashboard,
   useTokenOptimization,
-  
+
   // Performance
   PerformanceDashboard,
-  
+
   // Safety
   SafetyStatusCard,
   ResponseQualityMeter,
-  
+
   // Theme
   ThemeProvider,
   themes,
@@ -117,36 +124,42 @@ import {
 ## 📊 Dashboard Sections
 
 ### Overview Tab
+
 - System health metrics
 - Real-time monitoring charts
 - Active alerts and notifications
 - Quick action buttons
 
 ### Safety Tab
+
 - Safety violation console
 - PII detection status
 - Content filtering logs
 - Compliance reports
 
 ### Evaluation Tab
+
 - Quality score trends
 - Evaluation results
 - Benchmark comparisons
 - Custom metric dashboards
 
 ### Testing Tab
+
 - Test case library
 - Test execution history
 - Behavior validation results
 - Regression test reports
 
 ### Token Ops Tab
+
 - Cost breakdown
 - Optimization savings
 - Usage trends
 - Budget management
 
 ### Performance Tab
+
 - Latency distribution
 - Throughput metrics
 - Error analysis
@@ -155,6 +168,7 @@ import {
 ## 🎯 Use Cases
 
 ### 1. Safety Monitoring
+
 ```
 Scenario: Detect and prevent PII exposure
 
@@ -166,6 +180,7 @@ System:
 ```
 
 ### 2. Quality Assurance
+
 ```
 Scenario: Evaluate model responses
 
@@ -177,6 +192,7 @@ System:
 ```
 
 ### 3. Cost Optimization
+
 ```
 Scenario: Reduce AI API costs
 
@@ -188,6 +204,7 @@ System:
 ```
 
 ### 4. Performance Tuning
+
 ```
 Scenario: Improve response times
 
@@ -240,17 +257,21 @@ const evaluationCriteria = {
 ## 📈 Metrics Explained
 
 ### Success Rate
+
 Percentage of successful requests out of total requests.
 
 ### Latency Percentiles
+
 - **P50**: Median response time
 - **P95**: 95% of requests faster than this
 - **P99**: 99% of requests faster than this
 
 ### Quality Score
+
 Weighted average of accuracy, relevance, coherence, and helpfulness.
 
 ### Token Savings
+
 Total tokens saved through optimization techniques.
 
 ## 🚧 Backend Integration

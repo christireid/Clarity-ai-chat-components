@@ -4,7 +4,7 @@ This guide helps you get started implementing Clarity Memory immediately.
 
 ## 🚀 Prerequisites
 
-- Node.js 18+ and npm/pnpm/yarn
+- Node.js 20+ and npm/pnpm/yarn
 - TypeScript knowledge
 - Basic understanding of embeddings and vector search
 
@@ -58,7 +58,7 @@ export class InMemoryStore implements MemoryStore {
     // Simple text search for now (will be enhanced with embeddings later)
     const results: SearchResult[] = []
     const queryLower = query.toLowerCase()
-    
+
     for (const memory of this.memories.values()) {
       if (memory.content.toLowerCase().includes(queryLower)) {
         results.push({
@@ -75,10 +75,10 @@ export class InMemoryStore implements MemoryStore {
         })
       }
     }
-    
+
     // Sort by score
     results.sort((a, b) => b.score - a.score)
-    
+
     // Apply limit
     const limit = options?.limit || 10
     return results.slice(0, limit)
@@ -109,15 +109,18 @@ export class InMemoryStore implements MemoryStore {
     return {
       totalMemories: memories.length,
       totalTokens: memories.reduce((sum, m) => sum + (m.tokens || 0), 0),
-      oldestMemory: memories.length > 0 
-        ? memories.reduce((oldest, m) => m.timestamp < oldest.timestamp ? m : oldest).timestamp
-        : undefined,
-      newestMemory: memories.length > 0
-        ? memories.reduce((newest, m) => m.timestamp > newest.timestamp ? m : newest).timestamp
-        : undefined,
-      averageImportance: memories.length > 0
-        ? memories.reduce((sum, m) => sum + m.importance, 0) / memories.length
-        : 0,
+      oldestMemory:
+        memories.length > 0
+          ? memories.reduce((oldest, m) => (m.timestamp < oldest.timestamp ? m : oldest)).timestamp
+          : undefined,
+      newestMemory:
+        memories.length > 0
+          ? memories.reduce((newest, m) => (m.timestamp > newest.timestamp ? m : newest)).timestamp
+          : undefined,
+      averageImportance:
+        memories.length > 0
+          ? memories.reduce((sum, m) => sum + m.importance, 0) / memories.length
+          : 0,
     }
   }
 
@@ -133,19 +136,27 @@ Update `packages/memory/src/core/memory.ts` to use the store:
 
 ```typescript
 import { InMemoryStore } from '../stores/in-memory'
-import type { MemoryItem, MemoryConfig, SearchResult, ContextBundle, CompressionResult, SummarizationResult, StoreStats } from '../types'
+import type {
+  MemoryItem,
+  MemoryConfig,
+  SearchResult,
+  ContextBundle,
+  CompressionResult,
+  SummarizationResult,
+  StoreStats,
+} from '../types'
 import { MemoryError, MemoryErrorCodes } from '../types'
 import { v4 as uuidv4 } from 'uuid'
 
 export class Memory {
   private config: MemoryConfig
   private store: InMemoryStore
-  
+
   constructor(config: MemoryConfig = {}) {
     this.config = this.normalizeConfig(config)
     this.store = new InMemoryStore()
   }
-  
+
   private normalizeConfig(config: MemoryConfig): MemoryConfig {
     return {
       context: config.context || 'default',
@@ -162,19 +173,16 @@ export class Memory {
       // ... rest of defaults
     }
   }
-  
+
   async init(): Promise<void> {
     await this.store.init()
   }
-  
-  async add(
-    content: string,
-    metadata?: Record<string, unknown>
-  ): Promise<MemoryItem> {
+
+  async add(content: string, metadata?: Record<string, unknown>): Promise<MemoryItem> {
     if (!content || typeof content !== 'string') {
       throw new MemoryError('Content must be a non-empty string', MemoryErrorCodes.INVALID_CONFIG)
     }
-    
+
     const item: MemoryItem = {
       id: uuidv4(),
       content,
@@ -184,11 +192,11 @@ export class Memory {
       importance: 0.5, // Default importance
       metadata,
     }
-    
+
     await this.store.add(item)
     return item
   }
-  
+
   async recall(
     query: string,
     options?: {
@@ -204,14 +212,14 @@ export class Memory {
     if (!query || typeof query !== 'string') {
       throw new MemoryError('Query must be a non-empty string', MemoryErrorCodes.INVALID_CONFIG)
     }
-    
+
     const results = await this.store.search(query, {
       limit: options?.limit || 10,
       minScore: options?.minScore,
     })
-    
-    const memories = results.map(r => r.memory)
-    
+
+    const memories = results.map((r) => r.memory)
+
     // Update access counts
     for (const memory of memories) {
       await this.store.update(memory.id, {
@@ -219,16 +227,16 @@ export class Memory {
         accessCount: memory.accessCount + 1,
       })
     }
-    
+
     // Simple token estimation (rough: 1 token ≈ 4 characters)
     const tokens = memories.reduce((sum, m) => sum + Math.ceil(m.content.length / 4), 0)
-    
+
     return {
       memories,
       tokens,
     }
   }
-  
+
   // ... rest of methods
 }
 ```
@@ -266,7 +274,7 @@ describe('Memory', () => {
   it('should recall memories', async () => {
     await memory.add('User likes pizza')
     await memory.add('User works as a software engineer')
-    
+
     const result = await memory.recall('pizza')
     expect(result.memories.length).toBeGreaterThan(0)
     expect(result.memories[0].content).toContain('pizza')
@@ -275,10 +283,10 @@ describe('Memory', () => {
   it('should update access count on recall', async () => {
     const item = await memory.add('Test memory')
     const initialCount = item.accessCount
-    
+
     await memory.recall('test')
     const updated = await memory.recall('test')
-    
+
     // Access count should have increased
     expect(updated.memories[0].accessCount).toBeGreaterThan(initialCount)
   })
@@ -316,12 +324,15 @@ See [IMPLEMENTATION_ROADMAP.md](./IMPLEMENTATION_ROADMAP.md) for the full plan.
 ## 🐛 Common Issues
 
 ### Issue: TypeScript errors
+
 **Solution**: Make sure `tsconfig.json` is properly configured and all types are imported correctly.
 
 ### Issue: Tests not running
+
 **Solution**: Ensure `vitest` is installed and `package.json` has the test script configured.
 
 ### Issue: UUID not found
+
 **Solution**: Run `npm install uuid @types/uuid`.
 
 ## 📚 Resources

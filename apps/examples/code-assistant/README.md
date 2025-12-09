@@ -19,7 +19,7 @@ review.
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - OpenAI API key (GPT-4 recommended for best results)
 
 ### Installation

@@ -4,7 +4,8 @@
 
 ## 🌟 Overview
 
-This demo showcases how Clarity Chat can transform data analytics through conversational interfaces. Users can:
+This demo showcases how Clarity Chat can transform data analytics through conversational interfaces.
+Users can:
 
 - **Ask Questions in Natural Language** - "Show me sales by region" instead of writing SQL
 - **Get Instant Visualizations** - Charts and graphs generated automatically
@@ -15,6 +16,7 @@ This demo showcases how Clarity Chat can transform data analytics through conver
 ## ✨ Key Features
 
 ### Natural Language Queries
+
 - **Intelligent Parsing** - Understands business questions
 - **SQL Generation** - Converts queries to database queries
 - **Multi-Data Source** - Works with various databases
@@ -22,6 +24,7 @@ This demo showcases how Clarity Chat can transform data analytics through conver
 - **Query History** - Saves and reuses queries
 
 ### Automatic Visualization
+
 - **Chart Generation** - Creates appropriate chart types
 - **Chart Gallery** - Collection of generated visualizations
 - **Interactive Charts** - Click, zoom, filter
@@ -29,6 +32,7 @@ This demo showcases how Clarity Chat can transform data analytics through conver
 - **Responsive Design** - Works on all screen sizes
 
 ### AI-Powered Insights
+
 - **Key Findings** - Automatically extracts important insights
 - **Trends Detection** - Identifies patterns and anomalies
 - **Recommendations** - Suggests actions based on data
@@ -36,6 +40,7 @@ This demo showcases how Clarity Chat can transform data analytics through conver
 - **Insight Cards** - Beautiful, shareable insight cards
 
 ### Dashboard Builder
+
 - **Drag & Drop** - Build dashboards visually
 - **Real-Time Updates** - Dashboards update automatically
 - **Custom Layouts** - Arrange charts your way
@@ -43,6 +48,7 @@ This demo showcases how Clarity Chat can transform data analytics through conver
 - **Templates** - Pre-built dashboard templates
 
 ### Data Explorer
+
 - **Schema Browser** - Explore database schemas
 - **Table Preview** - See table structures
 - **Column Details** - Understand data types
@@ -53,7 +59,7 @@ This demo showcases how Clarity Chat can transform data analytics through conver
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - npm or yarn
 - Database connection (optional for demo)
 
@@ -75,6 +81,7 @@ Visit [http://localhost:3004](http://localhost:3004)
 ## 🏗️ Architecture
 
 ### Frontend
+
 - **Next.js 15** with App Router
 - **React 19** with Server Components
 - **TypeScript** with strict mode
@@ -90,12 +97,12 @@ import {
   ChatWindow,
   AdvancedChatInput,
   ThemeProvider,
-  
+
   // Advanced Features
   CommandPalette,
   FollowUpSuggestions,
   InteractiveCard,
-  
+
   // Hooks
   useMessageOperations,
   useStreamingSSE,
@@ -105,6 +112,7 @@ import {
 ## 📊 Example Queries
 
 ### Sales Analytics
+
 ```
 "Show me sales trends for the last quarter"
 "Compare revenue by product category"
@@ -113,6 +121,7 @@ import {
 ```
 
 ### User Analytics
+
 ```
 "How many active users do we have?"
 "Show me user retention rates"
@@ -121,6 +130,7 @@ import {
 ```
 
 ### Financial Analytics
+
 ```
 "What's our total revenue this month?"
 "Show me expenses by category"
@@ -131,6 +141,7 @@ import {
 ## 🎯 Use Cases
 
 ### 1. Business Intelligence
+
 ```
 Scenario: Executive wants quick insights
 
@@ -144,6 +155,7 @@ System:
 ```
 
 ### 2. Marketing Analytics
+
 ```
 Scenario: Marketer analyzing campaign performance
 
@@ -156,6 +168,7 @@ System:
 ```
 
 ### 3. Operational Analytics
+
 ```
 Scenario: Operations team monitoring metrics
 
@@ -207,24 +220,28 @@ const insightPrompts = [
 ## 📈 Features in Detail
 
 ### Natural Language Processing
+
 - Uses GPT-4 or Claude for query understanding
 - Converts to structured queries
 - Handles ambiguity and context
 - Suggests improvements
 
 ### Query Execution
+
 - Generates optimized SQL
 - Handles joins and aggregations
 - Supports complex queries
 - Error handling and validation
 
 ### Visualization Engine
+
 - Auto-selects chart type
 - Handles different data formats
 - Responsive and interactive
 - Export capabilities
 
 ### Insight Generation
+
 - Extracts key findings
 - Identifies patterns
 - Provides context

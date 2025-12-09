@@ -2,11 +2,13 @@
 
 > **Developer Tools** - Debugging, testing, validation, and performance profiling
 
-Comprehensive developer tools for debugging, testing, validation, and performance profiling of AI chat applications.
+Comprehensive developer tools for debugging, testing, validation, and performance profiling of AI
+chat applications.
 
 **Now with React 19 components and hooks!** 🎉
 
-This package now includes React 19 components and hooks that leverage new React 19 features like `useOptimistic` for optimistic UI updates and client-side form state management.
+This package now includes React 19 components and hooks that leverage new React 19 features like
+`useOptimistic` for optimistic UI updates and client-side form state management.
 
 ## ✨ Features
 
@@ -29,7 +31,9 @@ yarn add @clarity-chat/dev-tools
 
 ## 🚀 Quick Start
 
-> 📖 **New to Clarity?** Check the [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
+> 📖 **New to Clarity?** Check the
+> [Getting Started Guide](../../docs/getting-started-clarity-chat.md) or browse the
+> [Cookbook](../../docs/cookbook/) for copy-paste ready patterns.
 
 ### TypeScript Utilities
 
@@ -39,7 +43,7 @@ import {
   createLogger,
   createMockProviders,
   validateEnv,
-  getProfiler
+  getProfiler,
 } from '@clarity-chat/dev-tools'
 
 // Inspect API calls
@@ -55,7 +59,7 @@ logger.info('Application started', { version: '1.0.0' })
 const { openai } = createMockProviders()
 const response = await openai.chat.completions.create({
   model: 'gpt-4-turbo',
-  messages: [{ role: 'user', content: 'Hello!' }]
+  messages: [{ role: 'user', content: 'Hello!' }],
 })
 
 // Validate configuration
@@ -92,7 +96,7 @@ const callId = inspector.startCall({
   endpoint: 'https://api.openai.com/v1/chat/completions',
   method: 'POST',
   headers: { 'content-type': 'application/json' },
-  body: { messages: [{ role: 'user', content: 'Hello!' }] }
+  body: { messages: [{ role: 'user', content: 'Hello!' }] },
 })
 
 // Record first byte (for streaming)
@@ -107,7 +111,7 @@ inspector.completeCall(callId, {
   status: 200,
   statusText: 'OK',
   headers: {},
-  body: { usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 } }
+  body: { usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 } },
 })
 
 // Get metrics
@@ -140,7 +144,7 @@ const logger = createLogger({
   prefix: '[MyApp]',
   colors: true,
   timestamps: true,
-  context: { app: 'clarity-chat', version: '1.0.0' }
+  context: { app: 'clarity-chat', version: '1.0.0' },
 })
 
 logger.trace('Detailed debug info')
@@ -192,7 +196,7 @@ const { openai, anthropic, google } = createMockProviders(mockScenarios.success)
 // Use like real providers
 const response = await openai.chat.completions.create({
   model: 'gpt-4-turbo',
-  messages: [{ role: 'user', content: 'Hello!' }]
+  messages: [{ role: 'user', content: 'Hello!' }],
 })
 
 console.log(response.choices[0].message.content) // "This is a successful mock response"
@@ -201,7 +205,7 @@ console.log(response.choices[0].message.content) // "This is a successful mock r
 const stream = await openai.chat.completions.create({
   model: 'gpt-4-turbo',
   messages: [{ role: 'user', content: 'Hello!' }],
-  stream: true
+  stream: true,
 })
 
 for await (const chunk of stream) {
@@ -247,15 +251,15 @@ const providers = createMockProviders({
     {
       content: 'Custom response 1',
       model: 'gpt-4-turbo',
-      usage: { promptTokens: 5, completionTokens: 10, totalTokens: 15 }
+      usage: { promptTokens: 5, completionTokens: 10, totalTokens: 15 },
     },
     {
       content: 'Custom response 2',
       model: 'gpt-4-turbo',
-      usage: { promptTokens: 8, completionTokens: 15, totalTokens: 23 }
-    }
+      usage: { promptTokens: 8, completionTokens: 15, totalTokens: 23 },
+    },
   ],
-  delay: 100 // Simulate 100ms delay
+  delay: 100, // Simulate 100ms delay
 })
 ```
 
@@ -272,7 +276,7 @@ import {
   assertDeepEqual,
   assertThrows,
   assertMatches,
-  assertIncludes
+  assertIncludes,
 } from '@clarity-chat/dev-tools'
 
 assert(true, 'Value should be truthy')
@@ -280,7 +284,9 @@ assertEqual(result, 'expected', 'Values should match')
 assertDeepEqual(obj1, obj2, 'Objects should be equal')
 
 await assertThrows(
-  async () => { throw new Error('Test error') },
+  async () => {
+    throw new Error('Test error')
+  },
   Error,
   'Should throw error'
 )
@@ -294,7 +300,9 @@ assertIncludes([1, 2, 3], 2, 'Array should include 2')
 ```typescript
 import { validateChatResponse, validateStreamChunk } from '@clarity-chat/dev-tools'
 
-const response = await openai.chat.completions.create({ /* ... */ })
+const response = await openai.chat.completions.create({
+  /* ... */
+})
 const validation = validateChatResponse(response)
 
 if (!validation.valid) {
@@ -310,12 +318,12 @@ import { collectStream } from '@clarity-chat/dev-tools'
 const stream = await openai.chat.completions.create({
   model: 'gpt-4-turbo',
   messages: [{ role: 'user', content: 'Hello!' }],
-  stream: true
+  stream: true,
 })
 
 const { content, chunks, duration } = await collectStream(
   stream,
-  chunk => chunk.choices[0]?.delta?.content || null
+  (chunk) => chunk.choices[0]?.delta?.content || null
 )
 
 console.log(`Received ${chunks.length} chunks in ${duration}ms`)
@@ -339,18 +347,18 @@ suite
   .test('should complete chat', async () => {
     const response = await openai.chat.completions.create({
       model: 'gpt-4-turbo',
-      messages: [{ role: 'user', content: 'Hello!' }]
+      messages: [{ role: 'user', content: 'Hello!' }],
     })
-    
+
     assert(response.choices[0].message.content)
   })
   .test('should handle streaming', async () => {
     const stream = await openai.chat.completions.create({
       model: 'gpt-4-turbo',
       messages: [{ role: 'user', content: 'Hello!' }],
-      stream: true
+      stream: true,
     })
-    
+
     const { chunks } = await collectStream(stream)
     assert(chunks.length > 0)
   })
@@ -403,7 +411,7 @@ const validation = validateChatConfig({
   provider: 'openai',
   model: 'gpt-4-turbo',
   temperature: 0.7,
-  maxTokens: 1000
+  maxTokens: 1000,
 })
 
 if (!validation.valid) {
@@ -418,7 +426,7 @@ import { validateMessages } from '@clarity-chat/dev-tools'
 
 const validation = validateMessages([
   { role: 'system', content: 'You are a helpful assistant' },
-  { role: 'user', content: 'Hello!' }
+  { role: 'user', content: 'Hello!' },
 ])
 
 if (!validation.valid) {
@@ -439,17 +447,21 @@ const profiler = getProfiler()
 
 // Manual profiling
 profiler.start('chat-completion', { trackMemory: true })
-const response = await openai.chat.completions.create({ /* ... */ })
+const response = await openai.chat.completions.create({
+  /* ... */
+})
 profiler.end('chat-completion', {
   tokens: response.usage.total_tokens,
-  cost: calculateCost(response.usage)
+  cost: calculateCost(response.usage),
 })
 
 // Automatic profiling
 const { result, metrics } = await profiler.profile(
   'chat-completion',
   async () => {
-    return await openai.chat.completions.create({ /* ... */ })
+    return await openai.chat.completions.create({
+      /* ... */
+    })
   },
   { trackMemory: true }
 )
@@ -467,11 +479,11 @@ const profiler = getProfiler()
 const stream = await openai.chat.completions.create({
   model: 'gpt-4-turbo',
   messages: [{ role: 'user', content: 'Hello!' }],
-  stream: true
+  stream: true,
 })
 
 const { chunks, metrics } = await profiler.profileStream(stream, {
-  extractSize: chunk => chunk.choices[0]?.delta?.content?.length || 0
+  extractSize: (chunk) => chunk.choices[0]?.delta?.content?.length || 0,
 })
 
 profiler.printStreamingMetrics(metrics)
@@ -533,13 +545,12 @@ import { calculateTokenThroughput, formatDuration } from '@clarity-chat/dev-tool
 
 const profiler = getProfiler()
 const { result, metrics } = await profiler.profile('chat', async () => {
-  return await openai.chat.completions.create({ /* ... */ })
+  return await openai.chat.completions.create({
+    /* ... */
+  })
 })
 
-const throughput = calculateTokenThroughput(
-  result.usage.total_tokens,
-  metrics.duration
-)
+const throughput = calculateTokenThroughput(result.usage.total_tokens, metrics.duration)
 
 console.log(`Throughput: ${throughput.tokensPerSecond.toFixed(2)} tokens/sec`)
 console.log(`Duration: ${formatDuration(metrics.duration)}`)
@@ -557,7 +568,7 @@ import {
   validateEnv,
   getProfiler,
   createTestSuite,
-  collectStream
+  collectStream,
 } from '@clarity-chat/dev-tools'
 
 // 1. Validate environment
@@ -570,7 +581,7 @@ if (!validation.valid) {
 // 2. Set up logger
 const logger = createLogger({
   level: 'debug',
-  prefix: '[ChatApp]'
+  prefix: '[ChatApp]',
 })
 
 // 3. Enable API inspector
@@ -587,14 +598,14 @@ const suite = createTestSuite('Chat API Tests')
 suite
   .test('should complete chat with real provider', async () => {
     logger.info('Testing chat completion')
-    
+
     const callId = inspector.startCall({
       provider: 'openai',
       model: 'gpt-4-turbo',
       endpoint: 'https://api.openai.com/v1/chat/completions',
       method: 'POST',
       headers: {},
-      body: {}
+      body: {},
     })
 
     const { result, metrics } = await profiler.profile('chat', async () => {
@@ -606,32 +617,32 @@ suite
       status: 200,
       statusText: 'OK',
       headers: {},
-      body: { usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 } }
+      body: { usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 } },
     })
 
     logger.info('Chat completed', {
       duration: metrics.duration,
-      tokens: result.usage.total_tokens
+      tokens: result.usage.total_tokens,
     })
   })
   .test('should handle streaming', async () => {
     const { openai } = createMockProviders()
-    
+
     const stream = await openai.chat.completions.create({
       model: 'gpt-4-turbo',
       messages: [{ role: 'user', content: 'Hello!' }],
-      stream: true
+      stream: true,
     })
 
     const { content, chunks, duration } = await collectStream(
       stream,
-      chunk => chunk.choices[0]?.delta?.content || null
+      (chunk) => chunk.choices[0]?.delta?.content || null
     )
 
     logger.info('Streaming completed', {
       chunks: chunks.length,
       duration,
-      content
+      content,
     })
   })
 
@@ -705,8 +716,10 @@ const { addResponse, compare, getComparison, stats } = useModelComparison()
 
 ### React 19 Features Used
 
-- **useOptimistic**: For optimistic UI updates in API inspector, profiler, time-travel, and model comparison
-- **Client-Side Form State**: For form submission state in validation forms (useFormStatus requires Server Actions)
+- **useOptimistic**: For optimistic UI updates in API inspector, profiler, time-travel, and model
+  comparison
+- **Client-Side Form State**: For form submission state in validation forms (useFormStatus requires
+  Server Actions)
 - **Real-time updates**: Components automatically update as data changes
 - **Optimistic updates**: Instant UI feedback with automatic error handling
 
@@ -737,7 +750,7 @@ import type {
   MockProviderOptions,
   ValidationResult,
   PerformanceMetrics,
-  StreamingMetrics
+  StreamingMetrics,
 } from '@clarity-chat/dev-tools'
 ```
 
@@ -754,7 +767,7 @@ import type {
 
 ## 🔧 Requirements
 
-- Node.js 18.0.0 or higher
+- Node.js 20.0.0 or higher
 - For React components: React 19.0.0 or higher, React DOM 19.0.0 or higher
 
 ## 📄 License

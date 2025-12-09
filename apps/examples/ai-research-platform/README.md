@@ -4,7 +4,8 @@
 
 ## 🌟 Overview
 
-This demo showcases the most advanced features of Clarity Chat in a sophisticated research platform that combines:
+This demo showcases the most advanced features of Clarity Chat in a sophisticated research platform
+that combines:
 
 - **Multi-Agent Collaboration** - Specialized agents (Researcher, Analyst, Writer) working together
 - **RAG Pipeline** - Document processing, chunking, semantic search, and context injection
@@ -16,11 +17,13 @@ This demo showcases the most advanced features of Clarity Chat in a sophisticate
 ## ✨ Key Features
 
 ### Multi-Agent System
+
 - **Researcher Agent**: Searches academic databases and extracts relevant information
 - **Analyst Agent**: Processes and synthesizes findings
 - **Writer Agent**: Creates structured research reports
 
 ### RAG Capabilities
+
 - Document upload and processing (PDF, DOCX, TXT, Markdown)
 - Intelligent chunking with overlap
 - Semantic similarity search
@@ -28,17 +31,20 @@ This demo showcases the most advanced features of Clarity Chat in a sophisticate
 - Knowledge base viewer
 
 ### Visualization
+
 - **Knowledge Graph**: Interactive network visualization of concepts and relationships
 - **Research Dashboard**: Analytics, metrics, and insights
 - **Agent Activity Feed**: Real-time agent operations tracking
 - **Context Visualizer**: Document and chunk visualization
 
 ### Token Optimization
+
 - Real-time savings tracking
 - Dashboard with breakdown by technique
 - Cost monitoring and alerts
 
 ### Advanced UI Components
+
 - Command Palette (Cmd+K)
 - Advanced chat input with voice and file upload
 - Conversation timeline
@@ -50,7 +56,7 @@ This demo showcases the most advanced features of Clarity Chat in a sophisticate
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - npm or yarn
 - API keys for AI providers (OpenAI, Anthropic)
 
@@ -81,6 +87,7 @@ Visit [http://localhost:3002](http://localhost:3002)
 ## 🏗️ Architecture
 
 ### Frontend
+
 - **Next.js 15** with App Router
 - **React 19** with Server Components
 - **TypeScript** with strict mode
@@ -96,25 +103,25 @@ import {
   ChatWindow,
   AdvancedChatInput,
   ThemeProvider,
-  
+
   // Agent System
   AgentRunFeed,
-  
+
   // RAG & Context
   ContextVisualizer,
   KnowledgeBaseViewer,
   CitationCard,
-  
+
   // Token Optimization
   TokenOptimizationDashboard,
   useTokenOptimization,
-  
+
   // Advanced Features
   CommandPalette,
   ConversationTimeline,
   MemoryInspector,
   SessionSummaryCard,
-  
+
   // Hooks
   useMessageOperations,
   useStreamingSSE,
@@ -163,24 +170,28 @@ System:
 ## 🎯 What This Demo Showcases
 
 ### 1. **Enterprise AI Infrastructure**
+
 - Multi-agent orchestration
 - RAG pipeline implementation
 - Vector store integration
 - Embedding management
 
 ### 2. **Advanced UI/UX**
+
 - Command palette navigation
 - Real-time agent activity feed
 - Knowledge graph visualization
 - Interactive dashboards
 
 ### 3. **Token Optimization**
+
 - Real-time cost tracking
 - Multiple optimization techniques
 - Savings visualization
 - Performance monitoring
 
 ### 4. **Production-Ready Features**
+
 - Error handling and recovery
 - Streaming responses
 - Context management
