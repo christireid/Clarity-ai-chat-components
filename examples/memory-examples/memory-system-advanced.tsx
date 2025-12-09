@@ -278,12 +278,21 @@ function MemoryQueryPanel() {
         {results.map(result => (
           <div
             key={result.memory.id}
-            className={`p-4 border rounded cursor-pointer transition-colors ${
+            role="button"
+            tabIndex={0}
+            aria-pressed={selectedMemory === result.memory.id}
+            className={`p-4 border rounded cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               selectedMemory === result.memory.id
                 ? 'border-blue-500 bg-blue-50'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
             onClick={() => setSelectedMemory(result.memory.id)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setSelectedMemory(result.memory.id)
+              }
+            }}
           >
             <div className="flex justify-between items-start mb-2">
               <div>

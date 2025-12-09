@@ -138,8 +138,16 @@ export function AdvancedHookExample() {
           {resolvedSuggestions.map((suggestion, index) => (
             <div
               key={suggestion.id}
-              className="relative p-4 border rounded-lg hover:bg-accent cursor-pointer transition-colors"
+              role="button"
+              tabIndex={0}
+              className="relative p-4 border rounded-lg hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
               onClick={() => handleSelect(suggestion)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleSelect(suggestion)
+                }
+              }}
             >
               {/* Confidence badge */}
               {suggestion.confidence !== undefined && (
@@ -173,7 +181,8 @@ export function AdvancedHookExample() {
 
               {/* Dismiss button */}
               <button
-                className="absolute bottom-2 right-2 text-xs text-muted-foreground hover:text-foreground"
+                aria-label="Dismiss suggestion"
+                className="absolute bottom-2 right-2 text-xs text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary rounded"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDismiss(suggestion)
@@ -294,7 +303,7 @@ export function ABTestingExample() {
     }
   }, [abVariant, stats])
 
-  const [resolvedSuggestions, setResolvedSuggestions] = React.useState([])
+  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<PromptSuggestion[]>([])
 
   React.useEffect(() => {
     suggestions.then(setResolvedSuggestions)
@@ -415,7 +424,7 @@ export function CustomMLProviderExample() {
   //   rankedSuggestions: PromptSuggestion[] // with updated confidence scores
   // }
 
-  const [resolvedSuggestions, setResolvedSuggestions] = React.useState([])
+  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<PromptSuggestion[]>([])
 
   React.useEffect(() => {
     suggestions.then(setResolvedSuggestions)

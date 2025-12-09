@@ -335,15 +335,31 @@ export function MobileAdvancedChat() {
 
       {/* Summary bottom sheet (mobile) */}
       {showSummary && (
-        <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setShowSummary(false)}>
+        <div
+          className="fixed inset-0 bg-black/50 z-50"
+          onClick={() => setShowSummary(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setShowSummary(false)
+            }
+          }}
+          role="presentation"
+        >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="summary-title"
             className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold">Summary</h2>
-                <button onClick={() => setShowSummary(false)} className="text-2xl">
+                <h2 id="summary-title" className="text-lg font-bold">Summary</h2>
+                <button
+                  onClick={() => setShowSummary(false)}
+                  aria-label="Close summary panel"
+                  className="text-2xl focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                >
                   ✕
                 </button>
               </div>
