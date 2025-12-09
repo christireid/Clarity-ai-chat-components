@@ -87,7 +87,7 @@ const chat = useClarityChat({
 
 By default, Clarity Chat uses \`fetch\` which waits for the complete response. Setting \`transport: 'sse'\` enables real-time streaming where text appears as it's generated.
 
-📖 **Learn more**: [Streaming Guide](/guides/streaming) | [useStreamingSSE Hook](/hooks/use-streaming-sse)
+📖 **Learn more**: [Streaming Guide](/guides/streaming) | [Hooks Reference](/reference/hooks)
 \`\`\`
 
 ### Pattern 2: Conceptual Questions
@@ -285,64 +285,16 @@ export function getSystemPromptWithPersonality(mode: PersonalityMode): string {
 }
 
 // ============================================================================
-// Response Templates
-// ============================================================================
-
-/**
- * Template for direct question responses
- */
-export const DIRECT_QUESTION_TEMPLATE = `
-**Answer**: [concise answer]
-
-\`\`\`tsx
-// Example code
-\`\`\`
-
-📖 **Learn more**: [Link 1] | [Link 2]
-`
-
-/**
- * Template for troubleshooting responses
- */
-export const TROUBLESHOOTING_TEMPLATE = `
-**Quick checks first:**
-1. [Check 1]
-2. [Check 2]
-3. [Check 3]
-
-**Most common causes:**
-| Symptom | Likely Cause | Fix |
-|---------|--------------|-----|
-| ... | ... | ... |
-
-**Diagnostic code:**
-\`\`\`tsx
-// Debug snippet
-\`\`\`
-`
-
-/**
- * Template for comparison responses
- */
-export const COMPARISON_TEMPLATE = `
-| Feature | Option A | Option B |
-|---------|----------|----------|
-| ... | ... | ... |
-
-**Use [Option A] when:**
-- [Condition 1]
-- [Condition 2]
-
-**Use [Option B] when:**
-- [Condition 1]
-- [Condition 2]
-
-📖 **API Reference**: [Link A] | [Link B]
-`
-
-// ============================================================================
 // Documentation Links
 // ============================================================================
+
+/**
+ * MAINTENANCE NOTE: The paths in DOC_LINKS must stay in sync with:
+ * 1. The actual route structure in apps/docs/app/
+ * 2. Any hardcoded paths in DOCS_ASSISTANT_SYSTEM_PROMPT above
+ *
+ * If routes change, update both DOC_LINKS and the system prompt examples.
+ */
 
 /**
  * Common documentation page links
@@ -407,16 +359,12 @@ function escapeMarkdownLabel(text: string): string {
  * @param label - Optional display label (defaults to path)
  * @returns Formatted markdown link, or empty string if path is invalid
  */
-export function formatDocLink(
-  path: string,
-  label?: string
-): string {
+export function formatDocLink(path: string, label?: string): string {
   if (!path || typeof path !== 'string') {
     return ''
   }
-  const displayLabel = label && typeof label === 'string'
-    ? escapeMarkdownLabel(label)
-    : path
+  const displayLabel =
+    label && typeof label === 'string' ? escapeMarkdownLabel(label) : path
   return `[${displayLabel}](${path})`
 }
 
@@ -444,4 +392,47 @@ export function formatDocLinks(
  */
 export function getDocLink(key: DocLinkKey, label?: string): string {
   return formatDocLink(DOC_LINKS[key], label)
+}
+
+// ============================================================================
+// Response Builders
+// ============================================================================
+
+/**
+ * Build a "Learn more" links section for responses
+ */
+export function buildLearnMoreSection(
+  links: Array<{ key: DocLinkKey; label: string }>
+): string {
+  if (links.length === 0) return ''
+  const formatted = links.map((l) => getDocLink(l.key, l.label)).join(' | ')
+  return `\n\n📖 **Learn more**: ${formatted}`
+}
+
+/**
+ * Build a comparison table for two options
+ */
+export function buildComparisonTable(
+  features: Array<{ name: string; optionA: string; optionB: string }>,
+  labelA: string,
+  labelB: string
+): string {
+  const header = `| Feature | ${labelA} | ${labelB} |`
+  const dash: string = '-'
+  const colA = dash.repeat(Math.max(labelA.length + 2, 3))
+  const colB = dash.repeat(Math.max(labelB.length + 2, 3))
+  const separator = `|---------|${colA}|${colB}|`
+  const rows = features.map(
+    (f) => `| ${f.name} | ${f.optionA} | ${f.optionB} |`
+  )
+  return [header, separator, ...rows].join('\n')
+}
+
+/**
+ * Build a quick checks list for troubleshooting
+ */
+export function buildQuickChecks(checks: string[]): string {
+  if (checks.length === 0) return ''
+  const numbered = checks.map((c, i) => `${i + 1}. ${c}`).join('\n')
+  return `**Quick checks first:**\n${numbered}`
 }
