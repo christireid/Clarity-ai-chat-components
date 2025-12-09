@@ -30,17 +30,35 @@ async function loadPrism(): Promise<typeof import('prismjs') | null> {
 
       // Load language support sequentially to ensure dependencies are met
       // typescript and javascript must load before jsx/tsx
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error prismjs language components may not have type declarations
       await import('prismjs/components/prism-javascript')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error prismjs language components may not have type declarations
       await import('prismjs/components/prism-typescript')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error prismjs language components may not have type declarations
       await import('prismjs/components/prism-jsx')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error prismjs language components may not have type declarations
       await import('prismjs/components/prism-tsx')
 
       // Load other languages in parallel
       await Promise.all([
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-json'),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-bash'),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-css'),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-markdown'),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error prismjs language components may not have type declarations
         import('prismjs/components/prism-python'),
       ])
 

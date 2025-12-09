@@ -1,17 +1,17 @@
 /**
  * useChatSimple - Simplified chat hook
- * 
+ *
  * A simplified version of useClarityChat that returns messages in the correct format
  * without needing manual conversion. Perfect for when you want more control than
  * ClarityChat component but don't need all the advanced features.
- * 
+ *
  * @example
  * ```tsx
  * import { useChatSimple, ChatWindow } from '@clarity-chat/react'
- * 
+ *
  * function App() {
  *   const { messages, sendMessage, isLoading } = useChatSimple({ api: '/api/chat' })
- * 
+ *
  *   return (
  *     <ChatWindow
  *       messages={messages}
@@ -68,18 +68,25 @@ export interface UseChatSimpleReturn {
 
 /**
  * useChatSimple - Simplified chat hook
- * 
+ *
  * Returns messages in the correct format without manual conversion.
  * Provides a simpler API than useClarityChat for common use cases.
  */
 export function useChatSimple(
   options: UseChatSimpleOptions
 ): UseChatSimpleReturn {
-  const { api, initialMessages = [], onMessageSent, onMessageReceived, onError, ...rest } = options
+  const {
+    api,
+    initialMessages = [],
+    onMessageSent,
+    onMessageReceived,
+    onError,
+    ...rest
+  } = options
 
   // Convert initial messages to CoreMessage format
   const initialCoreMessages = React.useMemo(() => {
-    return initialMessages.map(msg => ({
+    return initialMessages.map((msg) => ({
       id: msg.id,
       role: msg.role,
       content: msg.content,
@@ -106,35 +113,39 @@ export function useChatSimple(
   }, [chat.messages])
 
   // Simplified sendMessage function
-  const sendMessage = React.useCallback(async (content: string) => {
-    try {
-      // Create user message for callback
-      const userMessage: Message = {
-        id: `msg-${Date.now()}`,
-        chatId: 'default',
-        role: 'user',
-        content,
-        status: 'sending',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
+  const sendMessage = React.useCallback(
+    async (content: string) => {
+      try {
+        // Create user message for callback
+        const userMessage: Message = {
+          id: `msg-${Date.now()}`,
+          chatId: 'default',
+          role: 'user',
+          content,
+          status: 'sending',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
 
-      onMessageSent?.(userMessage)
+        onMessageSent?.(userMessage)
 
-      await chat.append({
-        role: 'user',
-        content,
-      })
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to send message')
-      onError?.(error)
-      // Log error for debugging
-      if (process.env['NODE_ENV'] === 'development') {
-        console.error('[useChatSimple] Send failed:', error)
+        await chat.append({
+          role: 'user',
+          content,
+        })
+      } catch (err) {
+        const error =
+          err instanceof Error ? err : new Error('Failed to send message')
+        onError?.(error)
+        // Log error for debugging
+        if (process.env['NODE_ENV'] === 'development') {
+          console.error('[useChatSimple] Send failed:', error)
+        }
+        throw error
       }
-      throw error
-    }
-  }, [chat.append, onMessageSent, onError])
+    },
+    [chat.append, onMessageSent, onError]
+  )
 
   // Clear all messages
   const clearMessages = React.useCallback(() => {
@@ -147,7 +158,7 @@ export function useChatSimple(
     messages,
     sendMessage,
     isLoading: chat.isLoading,
-    error: chat.error,
+    error: chat.error ?? null,
     clearMessages,
   }
 }

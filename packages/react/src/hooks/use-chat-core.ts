@@ -1,14 +1,14 @@
 /**
  * useChatCore - Mid-level hook for chat functionality
- * 
+ *
  * Building block hook that provides core chat functionality without
  * the high-level conveniences. Use this when you need more control
  * than useClarityChat but don't want to wire everything manually.
- * 
+ *
  * @example
  * ```tsx
  * const chat = useChatCore({ api: '/api/chat' })
- * 
+ *
  * return (
  *   <ChatWindow
  *     messages={chat.messages}
@@ -54,7 +54,7 @@ export interface UseChatCoreReturn {
 
 /**
  * useChatCore - Mid-level chat hook
- * 
+ *
  * Provides core chat functionality with automatic message conversion
  * but without the high-level conveniences of useClarityChat.
  */
@@ -86,7 +86,7 @@ export function useChatCore(
     coreMessages: chat.messages,
     sendMessage,
     isLoading: chat.isLoading,
-    error: chat.error,
+    error: chat.error ?? null,
     chat,
   }
 }
