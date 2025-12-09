@@ -30,26 +30,17 @@ async function loadPrism(): Promise<typeof import('prismjs') | null> {
 
       // Load language support sequentially to ensure dependencies are met
       // typescript and javascript must load before jsx/tsx
-      // @ts-expect-error - prismjs language components don't have type declarations
       await import('prismjs/components/prism-javascript')
-      // @ts-expect-error - prismjs language components don't have type declarations
       await import('prismjs/components/prism-typescript')
-      // @ts-expect-error - prismjs language components don't have type declarations
       await import('prismjs/components/prism-jsx')
-      // @ts-expect-error - prismjs language components don't have type declarations
       await import('prismjs/components/prism-tsx')
 
       // Load other languages in parallel
       await Promise.all([
-        // @ts-expect-error - prismjs language components don't have type declarations
         import('prismjs/components/prism-json'),
-        // @ts-expect-error - prismjs language components don't have type declarations
         import('prismjs/components/prism-bash'),
-        // @ts-expect-error - prismjs language components don't have type declarations
         import('prismjs/components/prism-css'),
-        // @ts-expect-error - prismjs language components don't have type declarations
         import('prismjs/components/prism-markdown'),
-        // @ts-expect-error - prismjs language components don't have type declarations
         import('prismjs/components/prism-python'),
       ])
 
@@ -109,7 +100,7 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
 
     // Extract language from className (format: language-xxx)
     const match = /language-(\w+)/.exec(className || '')
-    const language = match ? match[1] : 'typescript'
+    const language: string = match?.[1] ?? 'typescript'
 
     // Extract text content from React children
     const codeString = getTextContent(children).replace(/\n$/, '')
@@ -122,7 +113,11 @@ export const MarkdownCodeBlock = React.memo<MarkdownCodeBlockProps>(
             if (prism && prism.languages) {
               try {
                 const grammar =
-                  prism.languages[language] || prism.languages.typescript
+                  prism.languages[language] || prism.languages['typescript']
+                if (!grammar) {
+                  setHighlightedCode(codeString)
+                  return
+                }
                 const highlighted = prism.highlight(
                   codeString,
                   grammar,

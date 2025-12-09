@@ -147,8 +147,8 @@ export type FramerEasing =
 /**
  * Easing as Framer Motion compatible format
  */
-export const EASING_FRAMER: Record<string, FramerEasing> = {
-  linear: 'linear',
+export const EASING_FRAMER = {
+  linear: 'linear' as const,
   default: [0.4, 0, 0.2, 1] as const,
   in: [0.4, 0, 1, 1] as const,
   out: [0, 0, 0.2, 1] as const,
@@ -158,7 +158,7 @@ export const EASING_FRAMER: Record<string, FramerEasing> = {
   spring: [0.34, 1.56, 0.64, 1] as const,
   bounce: [0.68, -0.55, 0.265, 1.55] as const,
   snappy: [0.4, 0, 0.2, 1] as const,
-} as const
+} satisfies Record<string, FramerEasing>
 
 /**
  * Get a Framer Motion compatible easing value
@@ -169,7 +169,8 @@ export const EASING_FRAMER: Record<string, FramerEasing> = {
 export function getFramerEasing(
   key: keyof typeof ANIMATION_EASING
 ): FramerEasing {
-  return EASING_FRAMER[key] ?? EASING_FRAMER.default
+  const easing = EASING_FRAMER[key as keyof typeof EASING_FRAMER]
+  return easing ?? EASING_FRAMER.default
 }
 
 /**
