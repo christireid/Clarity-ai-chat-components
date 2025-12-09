@@ -55,7 +55,8 @@ export function UsageDashboard({
   onPurchaseCredits,
   className,
 }: UsageDashboardProps) {
-  const usagePercentage = (balance.used / balance.total) * 100
+  const usagePercentage =
+    balance.total > 0 ? (balance.used / balance.total) * 100 : 0
   const isLowBalance = usagePercentage > 80
 
   const formatNumber = (num: number) => {
@@ -335,9 +336,11 @@ export function UsageDashboard({
                       </li>
                     ))}
                 </ul>
-                <p className="text-xs mt-2 text-muted-foreground/80">
-                  Resets on {limits[0]?.resetDate.toLocaleDateString()}
-                </p>
+                {limits[0]?.resetDate && (
+                  <p className="text-xs mt-2 text-muted-foreground/80">
+                    Resets on {limits[0].resetDate.toLocaleDateString()}
+                  </p>
+                )}
               </motion.div>
             )}
 

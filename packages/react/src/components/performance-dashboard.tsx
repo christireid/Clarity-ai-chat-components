@@ -127,17 +127,32 @@ export function PerformanceDashboard({
         }
       }
 
-      // Page load metrics (if available)
-      if (performance.timing && detailed) {
-        const timing = performance.timing
-        const loadTime = timing.loadEventEnd - timing.navigationStart
+      // Page load metrics (if available) - use modern Navigation Timing API
+      if (detailed && typeof performance !== 'undefined') {
+        let loadTime = -1
 
-        newMetrics.push({
-          name: 'Page Load',
-          value: loadTime > 0 ? (loadTime / 1000).toFixed(2) : 'N/A',
-          unit: 's',
-          status: loadTime > 3000 ? 'warning' : 'good',
-        })
+        // Modern API: Performance Navigation Timing Level 2
+        const navigationEntries = performance.getEntriesByType(
+          'navigation'
+        ) as PerformanceNavigationTiming[]
+        if (navigationEntries.length > 0) {
+          const navEntry = navigationEntries[0]
+          loadTime = navEntry.loadEventEnd - navEntry.startTime
+        }
+        // Fallback: deprecated timing API (for older browsers)
+        else if (performance.timing) {
+          const timing = performance.timing
+          loadTime = timing.loadEventEnd - timing.navigationStart
+        }
+
+        if (loadTime >= 0) {
+          newMetrics.push({
+            name: 'Page Load',
+            value: loadTime > 0 ? (loadTime / 1000).toFixed(2) : 'N/A',
+            unit: 's',
+            status: loadTime > 3000 ? 'warning' : 'good',
+          })
+        }
       }
 
       setMetrics(newMetrics)

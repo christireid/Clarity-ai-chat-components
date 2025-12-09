@@ -325,9 +325,11 @@ function analyzeSentiment(
     })
   })
 
-  // Calculate overall sentiment
+  // Calculate overall sentiment - guard against empty timeline
   const avgScore =
-    timeline.reduce((sum, point) => sum + point.score, 0) / timeline.length
+    timeline.length > 0
+      ? timeline.reduce((sum, point) => sum + point.score, 0) / timeline.length
+      : 0
   const overall: 'positive' | 'neutral' | 'negative' =
     avgScore > 0.2 ? 'positive' : avgScore < -0.2 ? 'negative' : 'neutral'
 

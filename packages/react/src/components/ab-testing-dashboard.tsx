@@ -186,22 +186,37 @@ export function ABTestingDashboard({
       const p2 = variantMetrics.conversionRate
       const n1 = controlMetrics.impressions
       const n2 = variantMetrics.impressions
+      const totalSampleSize = n1 + n2
+
+      // Guard against insufficient data - return non-significant result
+      if (totalSampleSize === 0 || n1 === 0 || n2 === 0) {
+        return {
+          isSignificant: false,
+          pValue: 1,
+          confidenceLevel: config.confidenceLevel,
+          sampleSize: totalSampleSize,
+          effectSize: 0,
+        }
+      }
 
       // Pooled proportion
       const pPool =
-        (controlMetrics.conversions + variantMetrics.conversions) / (n1 + n2)
+        (controlMetrics.conversions + variantMetrics.conversions) /
+        totalSampleSize
 
-      // Standard error
-      const se = Math.sqrt(pPool * (1 - pPool) * (1 / n1 + 1 / n2))
+      // Standard error - guard against pPool being 0 or 1 (causes se=0)
+      const seSquared = pPool * (1 - pPool) * (1 / n1 + 1 / n2)
+      const se = seSquared > 0 ? Math.sqrt(seSquared) : 0
 
-      // Z-score
-      const z = (p2 - p1) / se
+      // Z-score - guard against se being 0
+      const z = se > 0 ? (p2 - p1) / se : 0
 
       // Two-tailed p-value (approximate)
-      const pValue = 2 * (1 - normalCDF(Math.abs(z)))
+      const pValue = se > 0 ? 2 * (1 - normalCDF(Math.abs(z))) : 1
 
-      // Effect size (relative improvement)
-      const effectSize = ((p2 - p1) / p1) * 100
+      // Effect size (relative improvement) - guard against p1 being 0
+      // When control rate is 0, use absolute difference instead
+      const effectSize = p1 > 0 ? ((p2 - p1) / p1) * 100 : p2 > 0 ? 100 : 0
 
       const isSignificant =
         pValue < 1 - config.confidenceLevel &&
@@ -211,7 +226,7 @@ export function ABTestingDashboard({
         isSignificant,
         pValue,
         confidenceLevel: config.confidenceLevel,
-        sampleSize: n1 + n2,
+        sampleSize: totalSampleSize,
         effectSize,
       }
     },
