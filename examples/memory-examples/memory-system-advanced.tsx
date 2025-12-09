@@ -66,16 +66,8 @@ interface MemoryServiceConfig {
   debug: boolean
 }
 
-interface MemoryItem {
-  id: string
-  content: string
-  type: 'semantic' | 'episodic' | 'procedural'
-  scope: 'shortTerm' | 'session' | 'thread' | 'user' | 'global'
-  tokens: number
-  confidence: number
-  tags?: string[]
-  createdAt?: number
-}
+// NOTE: MemoryItem type is available from useMemoryQuery return type.
+// No need to redefine it here - the hook provides properly typed results.
 
 // Advanced configuration with compression
 const memoryConfig: MemoryServiceConfig = {

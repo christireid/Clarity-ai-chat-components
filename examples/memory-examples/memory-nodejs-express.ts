@@ -11,6 +11,13 @@
 import express, { type Request, type Response } from 'express'
 import { MemoryService, type MemoryServiceConfig } from '../../packages/memory/src/index'
 
+// 💡 Type for memory query options (used in GET /api/memories/:userId)
+interface MemoryQueryOptions {
+  metadata?: Record<string, string>
+  limit?: number
+  types?: string[]
+}
+
 // Initialize memory service with complete configuration
 const memoryConfig: MemoryServiceConfig = {
   tokenOptimization: {
@@ -185,13 +192,6 @@ app.get('/api/stats', async (_req: Request, res: Response) => {
  * GET /api/memories/:userId
  * Get all memories for a user
  */
-// 💡 Type for memory query options
-interface MemoryQueryOptions {
-  metadata?: Record<string, string>
-  limit?: number
-  types?: string[]
-}
-
 app.get('/api/memories/:userId', async (req: Request, res: Response) => {
   try {
     const { userId } = req.params
