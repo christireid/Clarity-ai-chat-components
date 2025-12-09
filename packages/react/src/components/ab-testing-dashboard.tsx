@@ -18,10 +18,15 @@ import {
  */
 const Progress = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { value?: number }
->(({ className, value = 0, ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & {
+    value?: number
+    'aria-label'?: string
+  }
+>(({ className, value = 0, 'aria-label': ariaLabel, ...props }, ref) => {
   // Guard against NaN/Infinity - clamp to valid percentage range
-  const safeValue = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0
+  const safeValue = Number.isFinite(value)
+    ? Math.min(100, Math.max(0, value))
+    : 0
 
   return (
     <div
@@ -30,6 +35,11 @@ const Progress = React.forwardRef<
         'relative h-4 w-full overflow-hidden rounded-full bg-gray-200',
         className
       )}
+      role="progressbar"
+      aria-valuenow={Math.round(safeValue)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label={ariaLabel || 'Progress'}
       {...props}
     >
       <div
@@ -124,6 +134,10 @@ export interface ABTestingDashboardProps {
   showStatistics?: boolean
   /** Custom className */
   className?: string
+  /** Whether the dashboard is in a loading state */
+  isLoading?: boolean
+  /** Error to display (renders error state when provided) */
+  error?: Error | string | null
 }
 
 const defaultConfig: ExperimentConfig = {
@@ -150,103 +164,124 @@ export function ABTestingDashboard({
   onDeclareWinner,
   showStatistics = true,
   className,
+  isLoading = false,
+  error = null,
 }: ABTestingDashboardProps) {
   const config = { ...defaultConfig, ...userConfig }
 
-  const [selectedExperiment, setSelectedExperiment] = React.useState<ExperimentResult | null>(
-    experiments[0] || null
-  )
-  const [sortBy, setSortBy] = React.useState<'conversionRate' | 'impressions' | 'engagement'>('conversionRate')
+  const [selectedExperiment, setSelectedExperiment] =
+    React.useState<ExperimentResult | null>(experiments[0] || null)
+  const [sortBy, setSortBy] = React.useState<
+    'conversionRate' | 'impressions' | 'engagement'
+  >('conversionRate')
 
   // Calculate statistical significance
-  const calculateSignificance = React.useCallback((
-    controlMetrics: VariantMetrics,
-    variantMetrics: VariantMetrics
-  ): SignificanceTest => {
-    // Simple z-test for proportions
-    const p1 = controlMetrics.conversionRate
-    const p2 = variantMetrics.conversionRate
-    const n1 = controlMetrics.impressions
-    const n2 = variantMetrics.impressions
+  const calculateSignificance = React.useCallback(
+    (
+      controlMetrics: VariantMetrics,
+      variantMetrics: VariantMetrics
+    ): SignificanceTest => {
+      // Simple z-test for proportions
+      const p1 = controlMetrics.conversionRate
+      const p2 = variantMetrics.conversionRate
+      const n1 = controlMetrics.impressions
+      const n2 = variantMetrics.impressions
 
-    // Pooled proportion
-    const pPool = (controlMetrics.conversions + variantMetrics.conversions) / (n1 + n2)
+      // Pooled proportion
+      const pPool =
+        (controlMetrics.conversions + variantMetrics.conversions) / (n1 + n2)
 
-    // Standard error
-    const se = Math.sqrt(pPool * (1 - pPool) * (1/n1 + 1/n2))
+      // Standard error
+      const se = Math.sqrt(pPool * (1 - pPool) * (1 / n1 + 1 / n2))
 
-    // Z-score
-    const z = (p2 - p1) / se
+      // Z-score
+      const z = (p2 - p1) / se
 
-    // Two-tailed p-value (approximate)
-    const pValue = 2 * (1 - normalCDF(Math.abs(z)))
+      // Two-tailed p-value (approximate)
+      const pValue = 2 * (1 - normalCDF(Math.abs(z)))
 
-    // Effect size (relative improvement)
-    const effectSize = ((p2 - p1) / p1) * 100
+      // Effect size (relative improvement)
+      const effectSize = ((p2 - p1) / p1) * 100
 
-    const isSignificant = pValue < (1 - config.confidenceLevel) && Math.abs(effectSize) >= config.minEffect
+      const isSignificant =
+        pValue < 1 - config.confidenceLevel &&
+        Math.abs(effectSize) >= config.minEffect
 
-    return {
-      isSignificant,
-      pValue,
-      confidenceLevel: config.confidenceLevel,
-      sampleSize: n1 + n2,
-      effectSize,
-    }
-  }, [config])
+      return {
+        isSignificant,
+        pValue,
+        confidenceLevel: config.confidenceLevel,
+        sampleSize: n1 + n2,
+        effectSize,
+      }
+    },
+    [config]
+  )
 
   // Normal CDF approximation
   const normalCDF = (x: number): number => {
     const t = 1 / (1 + 0.2316419 * Math.abs(x))
-    const d = 0.3989423 * Math.exp(-x * x / 2)
-    const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))))
+    const d = 0.3989423 * Math.exp((-x * x) / 2)
+    const p =
+      d *
+      t *
+      (0.3193815 +
+        t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))))
     return x > 0 ? 1 - p : p
   }
 
   // Get sorted variants for selected experiment
-  const getSortedVariants = React.useCallback((experiment: ExperimentResult) => {
-    const variants = experiment.variants.map(variant => {
-      const metrics = experiment.metrics.get(variant.id)
-      return { variant, metrics }
-    }).filter(v => v.metrics)
+  const getSortedVariants = React.useCallback(
+    (experiment: ExperimentResult) => {
+      const variants = experiment.variants
+        .map((variant) => {
+          const metrics = experiment.metrics.get(variant.id)
+          return { variant, metrics }
+        })
+        .filter((v) => v.metrics)
 
-    return variants.sort((a, b) => {
-      if (sortBy === 'conversionRate') {
-        return b.metrics!.conversionRate - a.metrics!.conversionRate
-      } else if (sortBy === 'impressions') {
-        return b.metrics!.impressions - a.metrics!.impressions
-      } else {
-        return b.metrics!.avgEngagementTime - a.metrics!.avgEngagementTime
-      }
-    })
-  }, [sortBy])
+      return variants.sort((a, b) => {
+        if (sortBy === 'conversionRate') {
+          return b.metrics!.conversionRate - a.metrics!.conversionRate
+        } else if (sortBy === 'impressions') {
+          return b.metrics!.impressions - a.metrics!.impressions
+        } else {
+          return b.metrics!.avgEngagementTime - a.metrics!.avgEngagementTime
+        }
+      })
+    },
+    [sortBy]
+  )
 
   // Determine winner
-  const determineWinner = React.useCallback((experiment: ExperimentResult) => {
-    const sorted = getSortedVariants(experiment)
-    if (sorted.length < 2) return null
+  const determineWinner = React.useCallback(
+    (experiment: ExperimentResult) => {
+      const sorted = getSortedVariants(experiment)
+      if (sorted.length < 2) return null
 
-    const control = sorted.find(v => v.variant.isControl)
-    const best = sorted[0]
+      const control = sorted.find((v) => v.variant.isControl)
+      const best = sorted[0]
 
-    if (!control || !best.metrics) return null
+      if (!control || !best.metrics) return null
 
-    // Check if best is significantly better than control
-    const significance = calculateSignificance(
-      control.metrics!,
-      best.metrics
-    )
+      // Check if best is significantly better than control
+      const significance = calculateSignificance(control.metrics!, best.metrics)
 
-    if (significance.isSignificant && best.metrics.impressions >= config.minSampleSize) {
-      return {
-        variant: best.variant,
-        metrics: best.metrics,
-        significance,
+      if (
+        significance.isSignificant &&
+        best.metrics.impressions >= config.minSampleSize
+      ) {
+        return {
+          variant: best.variant,
+          metrics: best.metrics,
+          significance,
+        }
       }
-    }
 
-    return null
-  }, [getSortedVariants, calculateSignificance, config])
+      return null
+    },
+    [getSortedVariants, calculateSignificance, config]
+  )
 
   // Handle experiment selection
   const handleSelectExperiment = (experiment: ExperimentResult) => {
@@ -272,8 +307,9 @@ export function ABTestingDashboard({
   // Render experiment list
   const renderExperimentList = () => (
     <div className="space-y-2">
-      {experiments.map(experiment => {
-        const isSelected = selectedExperiment?.experimentId === experiment.experimentId
+      {experiments.map((experiment) => {
+        const isSelected =
+          selectedExperiment?.experimentId === experiment.experimentId
         const winner = determineWinner(experiment)
 
         return (
@@ -305,7 +341,9 @@ export function ABTestingDashboard({
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-base">{experiment.experimentName}</CardTitle>
+                    <CardTitle className="text-base">
+                      {experiment.experimentName}
+                    </CardTitle>
                     {experiment.description && (
                       <CardDescription className="text-xs mt-1">
                         {experiment.description}
@@ -318,8 +356,8 @@ export function ABTestingDashboard({
                       experiment.status === 'running'
                         ? 'default'
                         : experiment.status === 'completed'
-                        ? 'secondary'
-                        : 'outline'
+                          ? 'secondary'
+                          : 'outline'
                     }
                   >
                     {experiment.status}
@@ -358,7 +396,7 @@ export function ABTestingDashboard({
     if (!selectedExperiment) return null
 
     const sorted = getSortedVariants(selectedExperiment)
-    const control = sorted.find(v => v.variant.isControl)
+    const control = sorted.find((v) => v.variant.isControl)
     const winner = determineWinner(selectedExperiment)
 
     return (
@@ -402,23 +440,27 @@ export function ABTestingDashboard({
               </CardHeader>
               <CardContent>
                 <p className="text-sm mb-2">
-                  <strong>{winner.variant.name}</strong> is performing significantly better
-                  with {formatPercent(winner.metrics.conversionRate)} conversion rate
+                  <strong>{winner.variant.name}</strong> is performing
+                  significantly better with{' '}
+                  {formatPercent(winner.metrics.conversionRate)} conversion rate
                   ({winner.significance.effectSize.toFixed(1)}% improvement)
                 </p>
                 <p className="text-xs text-muted-foreground">
                   p-value: {winner.significance.pValue.toFixed(4)} (
-                  {formatPercent(winner.significance.confidenceLevel)} confidence)
+                  {formatPercent(winner.significance.confidenceLevel)}{' '}
+                  confidence)
                 </p>
 
                 {!selectedExperiment.winner && (
                   <Button
                     size="sm"
                     className="mt-3"
-                    onClick={() => handleDeclareWinner(
-                      selectedExperiment.experimentId,
-                      winner.variant.id
-                    )}
+                    onClick={() =>
+                      handleDeclareWinner(
+                        selectedExperiment.experimentId,
+                        winner.variant.id
+                      )
+                    }
                   >
                     Declare Winner
                   </Button>
@@ -434,9 +476,10 @@ export function ABTestingDashboard({
             if (!metrics) return null
 
             const isWinner = winner?.variant.id === variant.id
-            const significance = control && !variant.isControl
-              ? calculateSignificance(control.metrics!, metrics)
-              : null
+            const significance =
+              control && !variant.isControl
+                ? calculateSignificance(control.metrics!, metrics)
+                : null
 
             return (
               <motion.div
@@ -511,20 +554,27 @@ export function ABTestingDashboard({
                           </span>
                         </div>
                         <Progress
-                          value={(metrics.impressions / config.minSampleSize) * 100}
+                          value={
+                            (metrics.impressions / config.minSampleSize) * 100
+                          }
                           className="h-2"
+                          aria-label={`Sample size progress: ${metrics.impressions} of ${config.minSampleSize} required`}
                         />
                       </div>
 
                       {/* Additional metrics */}
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Bounce Rate</span>
+                          <span className="text-muted-foreground">
+                            Bounce Rate
+                          </span>
                           <span>{formatPercent(metrics.bounceRate)}</span>
                         </div>
                         {metrics.revenue !== undefined && (
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">Revenue</span>
+                            <span className="text-muted-foreground">
+                              Revenue
+                            </span>
                             <span>${metrics.revenue.toFixed(2)}</span>
                           </div>
                         )}
@@ -535,26 +585,43 @@ export function ABTestingDashboard({
                         <div className="pt-2 border-t">
                           <div className="text-xs space-y-1">
                             <div className="flex justify-between">
-                              <span className="text-muted-foreground">vs Control</span>
+                              <span className="text-muted-foreground">
+                                vs Control
+                              </span>
                               <Badge
-                                variant={significance.isSignificant ? 'success' : 'secondary'}
+                                variant={
+                                  significance.isSignificant
+                                    ? 'success'
+                                    : 'secondary'
+                                }
                                 className="text-xs"
                               >
-                                {significance.isSignificant ? 'Significant' : 'Not Significant'}
+                                {significance.isSignificant
+                                  ? 'Significant'
+                                  : 'Not Significant'}
                               </Badge>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-muted-foreground">Effect Size</span>
-                              <span className={cn(
-                                'font-medium',
-                                significance.effectSize > 0 ? 'text-green-600' : 'text-red-600'
-                              )}>
+                              <span className="text-muted-foreground">
+                                Effect Size
+                              </span>
+                              <span
+                                className={cn(
+                                  'font-medium',
+                                  significance.effectSize > 0
+                                    ? 'text-green-700 dark:text-green-400'
+                                    : 'text-red-700 dark:text-red-400'
+                                )}
+                                aria-label={`Effect size: ${significance.effectSize > 0 ? 'positive' : 'negative'} ${Math.abs(significance.effectSize).toFixed(1)} percent`}
+                              >
                                 {significance.effectSize > 0 ? '+' : ''}
                                 {significance.effectSize.toFixed(1)}%
                               </span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-muted-foreground">p-value</span>
+                              <span className="text-muted-foreground">
+                                p-value
+                              </span>
                               <span>{significance.pValue.toFixed(4)}</span>
                             </div>
                           </div>
@@ -571,8 +638,94 @@ export function ABTestingDashboard({
     )
   }
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div
+        className={cn('space-y-4', className)}
+        role="status"
+        aria-label="Loading A/B Testing Dashboard"
+        aria-busy="true"
+      >
+        <Card>
+          <CardHeader>
+            <div className="animate-pulse">
+              <div className="h-6 w-48 bg-muted rounded mb-2" />
+              <div className="h-4 w-64 bg-muted/60 rounded" />
+            </div>
+          </CardHeader>
+        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <div className="h-5 w-24 bg-muted rounded animate-pulse" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 animate-pulse">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-20 bg-muted/30 rounded-lg" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardContent className="flex items-center justify-center h-64">
+              <div className="h-4 w-48 bg-muted rounded animate-pulse" />
+            </CardContent>
+          </Card>
+        </div>
+        <span className="sr-only">Loading A/B testing data...</span>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    return (
+      <div
+        className={cn('space-y-4', className)}
+        role="alert"
+        aria-live="assertive"
+      >
+        <Card className="border-destructive/30">
+          <CardContent className="p-8">
+            <div className="flex flex-col items-center justify-center gap-3 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                <svg
+                  className="h-6 w-6 text-destructive"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <div className="space-y-1">
+                <p className="text-base font-medium text-foreground">
+                  Failed to load A/B testing data
+                </p>
+                <p className="text-sm text-muted-foreground">{errorMessage}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
-    <div className={cn('space-y-4', className)}>
+    <div
+      className={cn('space-y-4', className)}
+      role="region"
+      aria-label="A/B Testing Dashboard"
+    >
       <Card>
         <CardHeader>
           <CardTitle>A/B Testing Dashboard</CardTitle>
@@ -589,9 +742,7 @@ export function ABTestingDashboard({
             <CardHeader>
               <CardTitle className="text-base">Experiments</CardTitle>
             </CardHeader>
-            <CardContent>
-              {renderExperimentList()}
-            </CardContent>
+            <CardContent>{renderExperimentList()}</CardContent>
           </Card>
         </div>
 
@@ -600,17 +751,24 @@ export function ABTestingDashboard({
           {selectedExperiment ? (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{selectedExperiment.experimentName}</CardTitle>
+                <CardTitle className="text-base">
+                  {selectedExperiment.experimentName}
+                </CardTitle>
                 <CardDescription>
-                  Started {new Date(selectedExperiment.startDate).toLocaleDateString()}
+                  Started{' '}
+                  {new Date(selectedExperiment.startDate).toLocaleDateString()}
                   {selectedExperiment.endDate && (
-                    <> · Ended {new Date(selectedExperiment.endDate).toLocaleDateString()}</>
+                    <>
+                      {' '}
+                      · Ended{' '}
+                      {new Date(
+                        selectedExperiment.endDate
+                      ).toLocaleDateString()}
+                    </>
                   )}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                {renderVariantComparison()}
-              </CardContent>
+              <CardContent>{renderVariantComparison()}</CardContent>
             </Card>
           ) : (
             <Card>
@@ -632,78 +790,97 @@ export function ABTestingDashboard({
  */
 export function useABTesting() {
   const [experiments, setExperiments] = React.useState<ExperimentResult[]>([])
-  const [currentVariants, setCurrentVariants] = React.useState<Map<string, string>>(new Map())
+  const [currentVariants, setCurrentVariants] = React.useState<
+    Map<string, string>
+  >(new Map())
 
-  const createExperiment = React.useCallback((
-    name: string,
-    variants: ExperimentVariant[],
-    description?: string
-  ) => {
-    const experiment: ExperimentResult = {
-      experimentId: `exp-${Date.now()}`,
-      experimentName: name,
-      description,
-      status: 'draft',
-      startDate: Date.now(),
-      variants,
-      metrics: new Map(),
-    }
-
-    setExperiments(prev => [...prev, experiment])
-    return experiment
-  }, [])
-
-  const startExperiment = React.useCallback((experimentId: string) => {
-    setExperiments(prev => prev.map(exp =>
-      exp.experimentId === experimentId
-        ? { ...exp, status: 'running' as const }
-        : exp
-    ))
-  }, [])
-
-  const getVariant = React.useCallback((experimentId: string, userId: string) => {
-    const experiment = experiments.find(e => e.experimentId === experimentId)
-    if (!experiment || experiment.status !== 'running') return null
-
-    // Check if user already has a variant
-    const key = `${experimentId}-${userId}`
-    if (currentVariants.has(key)) {
-      return experiment.variants.find(v => v.id === currentVariants.get(key))
-    }
-
-    // Assign random variant
-    const variant = experiment.variants[Math.floor(Math.random() * experiment.variants.length)]
-    setCurrentVariants(prev => new Map(prev).set(key, variant.id))
-    return variant
-  }, [experiments, currentVariants])
-
-  const recordMetric = React.useCallback((
-    experimentId: string,
-    variantId: string,
-    metric: Partial<VariantMetrics>
-  ) => {
-    setExperiments(prev => prev.map(exp => {
-      if (exp.experimentId !== experimentId) return exp
-
-      const existing = exp.metrics.get(variantId) || {
-        variantId,
-        impressions: 0,
-        conversions: 0,
-        conversionRate: 0,
-        avgEngagementTime: 0,
-        bounceRate: 0,
-        users: 0,
+  const createExperiment = React.useCallback(
+    (name: string, variants: ExperimentVariant[], description?: string) => {
+      const experiment: ExperimentResult = {
+        experimentId: `exp-${Date.now()}`,
+        experimentName: name,
+        description,
+        status: 'draft',
+        startDate: Date.now(),
+        variants,
+        metrics: new Map(),
       }
 
-      const updated = { ...existing, ...metric }
-      updated.conversionRate = updated.conversions / (updated.impressions || 1)
+      setExperiments((prev) => [...prev, experiment])
+      return experiment
+    },
+    []
+  )
 
-      const newMetrics = new Map(exp.metrics)
-      newMetrics.set(variantId, updated)
-
-      return { ...exp, metrics: newMetrics }
-    }))
+  const startExperiment = React.useCallback((experimentId: string) => {
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.experimentId === experimentId
+          ? { ...exp, status: 'running' as const }
+          : exp
+      )
+    )
   }, [])
+
+  const getVariant = React.useCallback(
+    (experimentId: string, userId: string) => {
+      const experiment = experiments.find(
+        (e) => e.experimentId === experimentId
+      )
+      if (!experiment || experiment.status !== 'running') return null
+
+      // Check if user already has a variant
+      const key = `${experimentId}-${userId}`
+      if (currentVariants.has(key)) {
+        return experiment.variants.find(
+          (v) => v.id === currentVariants.get(key)
+        )
+      }
+
+      // Assign random variant
+      const variant =
+        experiment.variants[
+          Math.floor(Math.random() * experiment.variants.length)
+        ]
+      setCurrentVariants((prev) => new Map(prev).set(key, variant.id))
+      return variant
+    },
+    [experiments, currentVariants]
+  )
+
+  const recordMetric = React.useCallback(
+    (
+      experimentId: string,
+      variantId: string,
+      metric: Partial<VariantMetrics>
+    ) => {
+      setExperiments((prev) =>
+        prev.map((exp) => {
+          if (exp.experimentId !== experimentId) return exp
+
+          const existing = exp.metrics.get(variantId) || {
+            variantId,
+            impressions: 0,
+            conversions: 0,
+            conversionRate: 0,
+            avgEngagementTime: 0,
+            bounceRate: 0,
+            users: 0,
+          }
+
+          const updated = { ...existing, ...metric }
+          updated.conversionRate =
+            updated.conversions / (updated.impressions || 1)
+
+          const newMetrics = new Map(exp.metrics)
+          newMetrics.set(variantId, updated)
+
+          return { ...exp, metrics: newMetrics }
+        })
+      )
+    },
+    []
+  )
 
   return {
     experiments,
@@ -713,3 +890,5 @@ export function useABTesting() {
     recordMetric,
   }
 }
+
+ABTestingDashboard.displayName = 'ABTestingDashboard'

@@ -691,4 +691,250 @@ describe('PerformanceDashboard', () => {
 
     expect(container.firstChild).toHaveClass('custom-class')
   })
+
+  it('should render loading state', () => {
+    render(<PerformanceDashboard isLoading />)
+
+    expect(screen.getByRole('status')).toHaveAttribute(
+      'aria-label',
+      'Loading Performance Dashboard'
+    )
+    expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true')
+  })
+
+  it('should render error state', () => {
+    render(<PerformanceDashboard error="Connection failed" />)
+
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(screen.getByText('Connection failed')).toBeInTheDocument()
+  })
+})
+
+// ============================================================================
+// Keyboard Navigation and Focus Management Tests
+// ============================================================================
+
+describe('Keyboard Navigation and Focus Management', () => {
+  describe('DashboardErrorBoundary', () => {
+    it('should have focusable retry button', () => {
+      const ThrowingComponent = () => {
+        throw new Error('Test error')
+      }
+
+      render(
+        <DashboardErrorBoundary widgetName="Test">
+          <ThrowingComponent />
+        </DashboardErrorBoundary>
+      )
+
+      const retryButton = screen.getByRole('button', { name: /retry/i })
+      expect(retryButton).toBeInTheDocument()
+
+      retryButton.focus()
+      expect(document.activeElement).toBe(retryButton)
+    })
+
+    it('should handle keyboard interaction on retry button', () => {
+      const ThrowingComponent = () => {
+        throw new Error('Test error')
+      }
+
+      render(
+        <DashboardErrorBoundary widgetName="Test">
+          <ThrowingComponent />
+        </DashboardErrorBoundary>
+      )
+
+      const retryButton = screen.getByRole('button', { name: /retry/i })
+      retryButton.focus()
+
+      // Simulate Enter key
+      fireEvent.keyDown(retryButton, { key: 'Enter' })
+      expect(retryButton).toBeInTheDocument()
+
+      // Simulate Space key
+      fireEvent.keyDown(retryButton, { key: ' ' })
+      expect(retryButton).toBeInTheDocument()
+    })
+  })
+
+  describe('TokenOptimizationDashboard', () => {
+    it('should have focusable breakdown items', () => {
+      render(
+        <TokenOptimizationDashboard
+          metrics={mockOptimizationMetrics}
+          showBreakdown
+        />
+      )
+
+      // Breakdown items should be accessible
+      const breakdownItems = screen.getAllByText(/tokens|savings|calls/i)
+      expect(breakdownItems.length).toBeGreaterThan(0)
+    })
+
+    it('should render loading state with proper aria attributes', () => {
+      render(
+        <TokenOptimizationDashboard
+          metrics={mockOptimizationMetrics}
+          isLoading
+        />
+      )
+
+      const loadingContainer = screen.getByRole('status')
+      expect(loadingContainer).toHaveAttribute('aria-busy', 'true')
+      expect(loadingContainer).toHaveAttribute(
+        'aria-label',
+        'Loading Token Optimization Dashboard'
+      )
+    })
+
+    it('should render error state with alert role', () => {
+      render(
+        <TokenOptimizationDashboard
+          metrics={mockOptimizationMetrics}
+          error={new Error('API unavailable')}
+        />
+      )
+
+      expect(screen.getByRole('alert')).toBeInTheDocument()
+      expect(screen.getByText('API unavailable')).toBeInTheDocument()
+    })
+  })
+
+  describe('AnalyticsDashboard', () => {
+    it('should have accessible metric cards', () => {
+      render(
+        <AnalyticsDashboard
+          title="Sales Analytics"
+          metrics={mockAnalyticsMetrics}
+          previousMetrics={mockPreviousMetrics}
+        />
+      )
+
+      // Dashboard should have region role
+      expect(
+        screen.getByRole('region', { name: 'Sales Analytics' })
+      ).toBeInTheDocument()
+    })
+
+    it('should have accessible leaderboard items', () => {
+      render(
+        <AnalyticsDashboard
+          title="Sales Analytics"
+          metrics={mockAnalyticsMetrics}
+          leaderboard={mockLeaderboard}
+        />
+      )
+
+      // Leaderboard items should be accessible
+      expect(screen.getByText('Alice')).toBeInTheDocument()
+      expect(screen.getByText('Bob')).toBeInTheDocument()
+    })
+  })
+
+  describe('DashboardEmptyState', () => {
+    it('should have focusable action button', () => {
+      const handleAction = vi.fn()
+
+      render(
+        <DashboardEmptyState
+          title="No data"
+          description="Start tracking"
+          actionLabel="Get Started"
+          onAction={handleAction}
+        />
+      )
+
+      const actionButton = screen.getByRole('button', { name: /get started/i })
+      expect(actionButton).toBeInTheDocument()
+
+      actionButton.focus()
+      expect(document.activeElement).toBe(actionButton)
+    })
+
+    it('should handle keyboard interaction on action button', () => {
+      const handleAction = vi.fn()
+
+      render(
+        <DashboardEmptyState
+          title="No data"
+          description="Start tracking"
+          actionLabel="Get Started"
+          onAction={handleAction}
+        />
+      )
+
+      const actionButton = screen.getByRole('button', { name: /get started/i })
+      actionButton.focus()
+
+      // Simulate Enter key
+      fireEvent.keyDown(actionButton, { key: 'Enter' })
+      fireEvent.click(actionButton)
+
+      expect(handleAction).toHaveBeenCalled()
+    })
+  })
+})
+
+// ============================================================================
+// Accessibility Tests
+// ============================================================================
+
+describe('Dashboard Accessibility', () => {
+  describe('ARIA Landmarks', () => {
+    it('TokenOptimizationDashboard should have proper landmarks', () => {
+      render(<TokenOptimizationDashboard metrics={mockOptimizationMetrics} />)
+
+      expect(
+        screen.getByRole('region', { name: 'Token Optimization Dashboard' })
+      ).toBeInTheDocument()
+    })
+
+    it('PerformanceDashboard should have proper landmarks', () => {
+      render(<PerformanceDashboard />)
+
+      expect(
+        screen.getByRole('region', { name: 'Performance Metrics Dashboard' })
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('Progress Bars', () => {
+    it('TokenOptimizationDashboard progress bars should have ARIA attributes', () => {
+      render(
+        <TokenOptimizationDashboard
+          metrics={mockOptimizationMetrics}
+          showBreakdown
+        />
+      )
+
+      const progressBars = screen.getAllByRole('progressbar')
+      progressBars.forEach((bar) => {
+        expect(bar).toHaveAttribute('aria-valuemin', '0')
+        expect(bar).toHaveAttribute('aria-valuemax', '100')
+        expect(bar).toHaveAttribute('aria-valuenow')
+      })
+    })
+  })
+
+  describe('Screen Reader Text', () => {
+    it('Loading states should have sr-only text', () => {
+      render(
+        <TokenOptimizationDashboard
+          metrics={mockOptimizationMetrics}
+          isLoading
+        />
+      )
+
+      expect(
+        screen.getByText('Loading token optimization data...')
+      ).toHaveClass('sr-only')
+    })
+
+    it('Skeletons should have accessible loading announcements', () => {
+      render(<AnalyticsDashboardSkeleton />)
+
+      expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true')
+    })
+  })
 })
