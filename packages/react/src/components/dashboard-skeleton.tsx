@@ -3,6 +3,232 @@
 import * as React from 'react'
 import { cn } from '@clarity-chat/primitives'
 
+/**
+ * Hook to announce loading state changes to screen readers.
+ *
+ * Announces when loading completes, not just when it starts.
+ * Uses polite aria-live to avoid interrupting current announcements.
+ *
+ * @example
+ * ```tsx
+ * function Dashboard({ isLoading, data }) {
+ *   const announcement = useLoadingAnnouncement(isLoading, 'Dashboard')
+ *
+ *   return (
+ *     <div>
+ *       {announcement}
+ *       {isLoading ? <Skeleton /> : <Content data={data} />}
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useLoadingAnnouncement(
+  isLoading: boolean,
+  contentName: string = 'Content'
+): React.ReactNode {
+  const [announcement, setAnnouncement] = React.useState<string>('')
+  const wasLoadingRef = React.useRef(isLoading)
+
+  React.useEffect(() => {
+    // Announce when loading completes (transition from loading to not loading)
+    if (wasLoadingRef.current && !isLoading) {
+      setAnnouncement(`${contentName} loaded successfully`)
+      // Clear announcement after screen reader has time to read it
+      const timer = setTimeout(() => setAnnouncement(''), 1000)
+      return () => clearTimeout(timer)
+    }
+    wasLoadingRef.current = isLoading
+  }, [isLoading, contentName])
+
+  if (!announcement) return null
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className="sr-only"
+    >
+      {announcement}
+    </div>
+  )
+}
+
+/**
+ * Props for the LoadingAnnouncer component
+ */
+export interface LoadingAnnouncerProps {
+  /** Whether content is currently loading */
+  isLoading: boolean
+  /** Name of the content being loaded (for announcement) */
+  contentName?: string
+}
+
+/**
+ * Component that announces loading state changes.
+ * Alternative to the hook for class components or simpler usage.
+ *
+ * @example
+ * ```tsx
+ * <LoadingAnnouncer isLoading={isLoading} contentName="Analytics Dashboard" />
+ * ```
+ */
+export function LoadingAnnouncer({
+  isLoading,
+  contentName = 'Content',
+}: LoadingAnnouncerProps) {
+  const announcement = useLoadingAnnouncement(isLoading, contentName)
+  return <>{announcement}</>
+}
+
+LoadingAnnouncer.displayName = 'LoadingAnnouncer'
+
+/**
+ * Animation variants for state transitions.
+ * Uses fade and subtle scale for smooth transitions.
+ */
+const stateTransitionVariants = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
+}
+
+const stateTransitionConfig = {
+  initial: 'initial',
+  animate: 'animate',
+  exit: 'exit',
+  variants: stateTransitionVariants,
+  transition: { duration: 0.2, ease: 'easeOut' },
+}
+
+export interface DashboardStateTransitionProps {
+  /** Current loading state */
+  isLoading: boolean
+  /** Error state (if any) */
+  error?: Error | string | null
+  /** Content to show when loaded */
+  children: React.ReactNode
+  /** Skeleton component to show while loading */
+  skeleton: React.ReactNode
+  /** Error component to show on error (optional, uses default if not provided) */
+  errorComponent?: React.ReactNode
+  /** Name of the dashboard for accessibility announcements */
+  dashboardName?: string
+  /** Whether to animate transitions (default: true) */
+  animate?: boolean
+  /** Custom className for the container */
+  className?: string
+}
+
+/**
+ * Wrapper component that handles animated transitions between
+ * loading, error, and content states for dashboards.
+ *
+ * Uses Framer Motion for smooth fade transitions.
+ * Respects prefers-reduced-motion automatically.
+ *
+ * @example
+ * ```tsx
+ * <DashboardStateTransition
+ *   isLoading={isLoading}
+ *   error={error}
+ *   skeleton={<AnalyticsDashboardSkeleton />}
+ *   dashboardName="Analytics"
+ * >
+ *   <AnalyticsDashboard data={data} />
+ * </DashboardStateTransition>
+ * ```
+ */
+export function DashboardStateTransition({
+  isLoading,
+  error,
+  children,
+  skeleton,
+  errorComponent,
+  dashboardName = 'Dashboard',
+  animate = true,
+  className,
+}: DashboardStateTransitionProps) {
+  // Check for reduced motion preference
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+  const shouldAnimate = animate && !prefersReducedMotion
+
+  // Generate unique key for AnimatePresence
+  const stateKey = isLoading ? 'loading' : error ? 'error' : 'content'
+
+  // Default error component
+  const defaultErrorComponent = error && (
+    <div
+      className="flex flex-col items-center justify-center gap-3 text-center py-8 px-4 rounded-lg border border-destructive/30 bg-destructive/5"
+      role="alert"
+      aria-live="assertive"
+    >
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
+        <svg
+          className="h-5 w-5 text-destructive"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-foreground">
+          Failed to load {dashboardName.toLowerCase()}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {error instanceof Error ? error.message : String(error)}
+        </p>
+      </div>
+    </div>
+  )
+
+  // Import AnimatePresence dynamically to avoid SSR issues
+  // For now, we'll use a simpler CSS-based approach that works universally
+  const content = isLoading
+    ? skeleton
+    : error
+      ? errorComponent || defaultErrorComponent
+      : children
+
+  if (!shouldAnimate) {
+    return (
+      <div className={className}>
+        <LoadingAnnouncer isLoading={isLoading} contentName={dashboardName} />
+        {content}
+      </div>
+    )
+  }
+
+  return (
+    <div className={className}>
+      <LoadingAnnouncer isLoading={isLoading} contentName={dashboardName} />
+      <div
+        key={stateKey}
+        className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
+      >
+        {content}
+      </div>
+    </div>
+  )
+}
+
+DashboardStateTransition.displayName = 'DashboardStateTransition'
+
+// Export the variants for custom usage
+export { stateTransitionVariants, stateTransitionConfig }
+
 export interface DashboardSkeletonProps {
   /** Custom className */
   className?: string

@@ -302,3 +302,166 @@ export const WithoutRetry: Story = {
     )
   },
 }
+
+export const ExponentialBackoffRetry: Story = {
+  name: 'Exponential Backoff Retry',
+  render: () => {
+    const [shouldBreak, setShouldBreak] = React.useState(false)
+    const [key, setKey] = React.useState(0)
+
+    return (
+      <div className="flex flex-col gap-4 max-w-md">
+        <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm">
+          <p className="font-medium mb-2">Exponential Backoff Configuration:</p>
+          <ul className="text-xs text-muted-foreground space-y-1">
+            <li>• Initial backoff: 1000ms</li>
+            <li>• Max backoff: 10000ms</li>
+            <li>• Max retries: 3</li>
+            <li>• Formula: delay = initial × 2^attempt (+ jitter)</li>
+          </ul>
+        </div>
+
+        <DashboardErrorBoundary
+          key={key}
+          widgetName="API Widget"
+          maxRetries={3}
+          initialBackoffMs={1000}
+          maxBackoffMs={10000}
+          onMaxRetriesExceeded={(error, attempts) =>
+            console.log(
+              `[Storybook] Max retries (${attempts}) exceeded:`,
+              error.message
+            )
+          }
+        >
+          <BrokenWidget shouldBreak={shouldBreak} />
+        </DashboardErrorBoundary>
+
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="rounded-lg border border-destructive bg-destructive/10 px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/20"
+            onClick={() => setShouldBreak(true)}
+          >
+            Trigger Error
+          </button>
+          <button
+            type="button"
+            className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-accent"
+            onClick={() => {
+              setShouldBreak(false)
+              setKey((prev) => prev + 1)
+            }}
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    )
+  },
+}
+
+export const QuickRetryConfiguration: Story = {
+  name: 'Quick Retry (Short Backoff)',
+  render: () => {
+    const [shouldBreak, setShouldBreak] = React.useState(false)
+    const [key, setKey] = React.useState(0)
+
+    return (
+      <div className="flex flex-col gap-4 max-w-md">
+        <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm">
+          <p className="font-medium mb-2">Quick Retry Configuration:</p>
+          <ul className="text-xs text-muted-foreground space-y-1">
+            <li>• Initial backoff: 500ms</li>
+            <li>• Max backoff: 2000ms</li>
+            <li>• Max retries: 5</li>
+          </ul>
+        </div>
+
+        <DashboardErrorBoundary
+          key={key}
+          widgetName="Fast Retry Widget"
+          maxRetries={5}
+          initialBackoffMs={500}
+          maxBackoffMs={2000}
+        >
+          <BrokenWidget shouldBreak={shouldBreak} />
+        </DashboardErrorBoundary>
+
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="rounded-lg border border-destructive bg-destructive/10 px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/20"
+            onClick={() => setShouldBreak(true)}
+          >
+            Trigger Error
+          </button>
+          <button
+            type="button"
+            className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-accent"
+            onClick={() => {
+              setShouldBreak(false)
+              setKey((prev) => prev + 1)
+            }}
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    )
+  },
+}
+
+export const MaxRetriesExceeded: Story = {
+  name: 'Max Retries Exceeded State',
+  render: () => {
+    const [key, setKey] = React.useState(0)
+    const [retryAttempts, setRetryAttempts] = React.useState(0)
+
+    // This widget always breaks to demonstrate max retries
+    const AlwaysBrokenWidget = () => {
+      throw new Error('This widget always fails')
+    }
+
+    return (
+      <div className="flex flex-col gap-4 max-w-md">
+        <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm">
+          <p className="font-medium mb-2">Max Retries Test:</p>
+          <p className="text-xs text-muted-foreground">
+            This widget always fails. Click "Retry" multiple times to see the
+            max retries exceeded state after 2 attempts.
+          </p>
+          {retryAttempts > 0 && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Total retry attempts: {retryAttempts}
+            </p>
+          )}
+        </div>
+
+        <DashboardErrorBoundary
+          key={key}
+          widgetName="Unstable Service"
+          maxRetries={2}
+          initialBackoffMs={500}
+          onMaxRetriesExceeded={(error, attempts) => {
+            setRetryAttempts(attempts)
+            console.log(`[Storybook] Gave up after ${attempts} attempts`)
+          }}
+        >
+          <AlwaysBrokenWidget />
+        </DashboardErrorBoundary>
+
+        <button
+          type="button"
+          className="w-fit rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-accent"
+          onClick={() => {
+            setRetryAttempts(0)
+            setKey((prev) => prev + 1)
+          }}
+        >
+          Start Over (Reset Component)
+        </button>
+      </div>
+    )
+  },
+}

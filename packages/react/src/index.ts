@@ -514,6 +514,22 @@ export {
   ABTestingDashboard,
   useABTesting,
 } from './components/ab-testing-dashboard'
+
+// A/B Testing Sub-Components (modular building blocks)
+export {
+  ExperimentCard,
+  ExperimentList,
+  VariantCard,
+  WinnerBanner,
+  useStatisticalSignificance,
+  normalCDF,
+  type ExperimentCardProps,
+  type ExperimentListProps,
+  type VariantCardProps,
+  type WinnerBannerProps,
+  type SignificanceResult,
+} from './components/ab-testing'
+
 export {
   MobileOptimizedMessage,
   MobileChatWindow,
@@ -580,9 +596,44 @@ export {
   ProgressWidgetSkeleton,
   ListItemSkeleton,
   ChartSkeleton,
+  DashboardStateTransition,
+  useLoadingAnnouncement,
+  LoadingAnnouncer,
   type DashboardSkeletonProps,
   type DashboardEmptyStateProps,
+  type DashboardStateTransitionProps,
+  type LoadingAnnouncerProps,
 } from './components/dashboard-skeleton'
+
+// Dashboard Data Fetching
+export {
+  useDashboardData,
+  useSimpleDashboardData,
+  type DashboardDataState,
+  type DashboardDataActions,
+  type UseDashboardDataOptions,
+} from './hooks/use-dashboard-data'
+
+// Keyboard Shortcuts
+export {
+  useKeyboardShortcuts,
+  useShortcutDisplay,
+  KeyboardShortcutsHelp,
+  type KeyboardShortcut,
+  type KeyboardShortcutsHelpProps,
+} from './hooks/use-keyboard-shortcuts'
+
+// Animated Values (Real-time Update Animations)
+export {
+  useAnimatedValue,
+  AnimatedNumber,
+  useValueChange,
+  FlashingValue,
+  type UseAnimatedValueOptions,
+  type AnimatedValueResult,
+  type AnimatedNumberProps,
+  type FlashingValueProps,
+} from './hooks/use-animated-value'
 
 export {
   HistoryManager,

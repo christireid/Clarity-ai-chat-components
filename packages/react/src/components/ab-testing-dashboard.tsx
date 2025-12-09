@@ -12,6 +12,12 @@ import {
   Button,
   cn,
 } from '@clarity-chat/primitives'
+import {
+  useKeyboardShortcuts,
+  useShortcutDisplay,
+  KeyboardShortcutsHelp,
+  type KeyboardShortcut,
+} from '../hooks/use-keyboard-shortcuts'
 
 /**
  * Simple Progress component for internal use
@@ -138,6 +144,10 @@ export interface ABTestingDashboardProps {
   isLoading?: boolean
   /** Error to display (renders error state when provided) */
   error?: Error | string | null
+  /** Callback when refresh is requested (via 'r' shortcut or button) */
+  onRefresh?: () => void
+  /** Enable keyboard shortcuts for power users (default: true) */
+  enableKeyboardShortcuts?: boolean
 }
 
 const defaultConfig: ExperimentConfig = {
@@ -166,6 +176,8 @@ export function ABTestingDashboard({
   className,
   isLoading = false,
   error = null,
+  onRefresh,
+  enableKeyboardShortcuts = true,
 }: ABTestingDashboardProps) {
   const config = { ...defaultConfig, ...userConfig }
 
@@ -174,6 +186,124 @@ export function ABTestingDashboard({
   const [sortBy, setSortBy] = React.useState<
     'conversionRate' | 'impressions' | 'engagement'
   >('conversionRate')
+  const [showShortcutsHelp, setShowShortcutsHelp] = React.useState(false)
+  const getShortcut = useShortcutDisplay()
+
+  // Get current experiment index for navigation
+  const currentIndex = React.useMemo(() => {
+    if (!selectedExperiment) return -1
+    return experiments.findIndex(
+      (exp) => exp.experimentId === selectedExperiment.experimentId
+    )
+  }, [experiments, selectedExperiment])
+
+  // Navigate to next experiment
+  const navigateNext = React.useCallback(() => {
+    if (experiments.length === 0) return
+    const nextIndex =
+      currentIndex < experiments.length - 1 ? currentIndex + 1 : 0
+    const nextExp = experiments[nextIndex]
+    setSelectedExperiment(nextExp)
+    onSelectExperiment?.(nextExp)
+  }, [experiments, currentIndex, onSelectExperiment])
+
+  // Navigate to previous experiment
+  const navigatePrev = React.useCallback(() => {
+    if (experiments.length === 0) return
+    const prevIndex =
+      currentIndex > 0 ? currentIndex - 1 : experiments.length - 1
+    const prevExp = experiments[prevIndex]
+    setSelectedExperiment(prevExp)
+    onSelectExperiment?.(prevExp)
+  }, [experiments, currentIndex, onSelectExperiment])
+
+  // Keyboard shortcuts definition
+  const keyboardShortcuts: KeyboardShortcut[] = React.useMemo(
+    () => [
+      {
+        key: 'j',
+        callback: navigateNext,
+        description: 'Next experiment',
+        enabled: enableKeyboardShortcuts && !showShortcutsHelp,
+      },
+      {
+        key: 'arrowdown',
+        callback: navigateNext,
+        description: 'Next experiment',
+        enabled: enableKeyboardShortcuts && !showShortcutsHelp,
+      },
+      {
+        key: 'k',
+        callback: navigatePrev,
+        description: 'Previous experiment',
+        enabled: enableKeyboardShortcuts && !showShortcutsHelp,
+      },
+      {
+        key: 'arrowup',
+        callback: navigatePrev,
+        description: 'Previous experiment',
+        enabled: enableKeyboardShortcuts && !showShortcutsHelp,
+      },
+      {
+        key: 'r',
+        callback: () => onRefresh?.(),
+        description: 'Refresh data',
+        enabled: enableKeyboardShortcuts && !showShortcutsHelp && !!onRefresh,
+      },
+      {
+        key: 'shift+/',
+        callback: () => setShowShortcutsHelp(true),
+        description: 'Show keyboard shortcuts',
+        enabled: enableKeyboardShortcuts && !showShortcutsHelp,
+      },
+      {
+        key: '1',
+        callback: () => setSortBy('conversionRate'),
+        description: 'Sort by conversion rate',
+        enabled: enableKeyboardShortcuts && !showShortcutsHelp,
+      },
+      {
+        key: '2',
+        callback: () => setSortBy('impressions'),
+        description: 'Sort by impressions',
+        enabled: enableKeyboardShortcuts && !showShortcutsHelp,
+      },
+      {
+        key: '3',
+        callback: () => setSortBy('engagement'),
+        description: 'Sort by engagement',
+        enabled: enableKeyboardShortcuts && !showShortcutsHelp,
+      },
+    ],
+    [
+      enableKeyboardShortcuts,
+      showShortcutsHelp,
+      navigateNext,
+      navigatePrev,
+      onRefresh,
+    ]
+  )
+
+  // Display shortcuts for help panel (filtered, unique descriptions)
+  const displayShortcuts: KeyboardShortcut[] = React.useMemo(
+    () => [
+      { key: 'j', callback: () => {}, description: 'Next experiment' },
+      { key: 'k', callback: () => {}, description: 'Previous experiment' },
+      { key: 'r', callback: () => {}, description: 'Refresh data' },
+      { key: '1', callback: () => {}, description: 'Sort by conversion rate' },
+      { key: '2', callback: () => {}, description: 'Sort by impressions' },
+      { key: '3', callback: () => {}, description: 'Sort by engagement' },
+      {
+        key: 'shift+/',
+        callback: () => {},
+        description: 'Show keyboard shortcuts',
+      },
+    ],
+    []
+  )
+
+  // Register keyboard shortcuts
+  useKeyboardShortcuts(keyboardShortcuts)
 
   // Sync selectedExperiment when experiments prop changes
   React.useEffect(() => {
@@ -756,12 +886,67 @@ export function ABTestingDashboard({
       role="region"
       aria-label="A/B Testing Dashboard"
     >
+      {/* Keyboard shortcuts help overlay */}
+      {showShortcutsHelp && (
+        <KeyboardShortcutsHelp
+          shortcuts={displayShortcuts}
+          onClose={() => setShowShortcutsHelp(false)}
+          title="A/B Testing Keyboard Shortcuts"
+        />
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle>A/B Testing Dashboard</CardTitle>
-          <CardDescription>
-            Monitor experiment results and statistical significance
-          </CardDescription>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle>A/B Testing Dashboard</CardTitle>
+              <CardDescription>
+                Monitor experiment results and statistical significance
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              {onRefresh && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onRefresh}
+                  aria-label="Refresh data"
+                >
+                  <svg
+                    className="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Refresh</span>
+                  <kbd className="ml-2 hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground">
+                    R
+                  </kbd>
+                </Button>
+              )}
+              {enableKeyboardShortcuts && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowShortcutsHelp(true)}
+                  aria-label="Show keyboard shortcuts"
+                  className="text-muted-foreground"
+                >
+                  <kbd className="flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium">
+                    ?
+                  </kbd>
+                </Button>
+              )}
+            </div>
+          </div>
         </CardHeader>
       </Card>
 

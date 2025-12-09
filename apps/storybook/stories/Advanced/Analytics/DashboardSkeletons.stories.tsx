@@ -10,6 +10,9 @@ import {
   ProgressWidgetSkeleton,
   ListItemSkeleton,
   ChartSkeleton,
+  DashboardStateTransition,
+  useLoadingAnnouncement,
+  LoadingAnnouncer,
 } from '@clarity-chat/react'
 
 /**
@@ -309,4 +312,193 @@ export const ReducedMotion: Story = {
       </div>
     </div>
   ),
+}
+
+export const StateTransition: Story = {
+  name: 'Dashboard State Transition',
+  render: () => {
+    const [state, setState] = React.useState<'loading' | 'error' | 'content'>(
+      'loading'
+    )
+
+    // Simulate state changes
+    React.useEffect(() => {
+      if (state === 'loading') {
+        const timer = setTimeout(() => setState('content'), 2000)
+        return () => clearTimeout(timer)
+      }
+    }, [state])
+
+    return (
+      <div className="space-y-4 max-w-3xl">
+        <div className="flex gap-2 mb-4">
+          <button
+            type="button"
+            className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+              state === 'loading'
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-border bg-background hover:bg-accent'
+            }`}
+            onClick={() => setState('loading')}
+          >
+            Loading
+          </button>
+          <button
+            type="button"
+            className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+              state === 'error'
+                ? 'border-destructive bg-destructive/10 text-destructive'
+                : 'border-border bg-background hover:bg-accent'
+            }`}
+            onClick={() => setState('error')}
+          >
+            Error
+          </button>
+          <button
+            type="button"
+            className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+              state === 'content'
+                ? 'border-green-500 bg-green-500/10 text-green-700'
+                : 'border-border bg-background hover:bg-accent'
+            }`}
+            onClick={() => setState('content')}
+          >
+            Content
+          </button>
+        </div>
+
+        <DashboardStateTransition
+          isLoading={state === 'loading'}
+          error={
+            state === 'error' ? new Error('Failed to load dashboard') : null
+          }
+          skeleton={<AnalyticsDashboardSkeleton />}
+          dashboardName="Analytics"
+          animate
+        >
+          <div className="rounded-lg border border-border bg-card p-6">
+            <h3 className="text-lg font-semibold">Analytics Dashboard</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Content loaded successfully with animated transition.
+            </p>
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              {[
+                { label: 'Messages', value: '1,234' },
+                { label: 'Tokens', value: '52.3K' },
+                { label: 'Conversations', value: '89' },
+              ].map((metric) => (
+                <div key={metric.label} className="p-4 rounded-lg bg-muted/50">
+                  <p className="text-xs text-muted-foreground">
+                    {metric.label}
+                  </p>
+                  <p className="text-2xl font-bold">{metric.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DashboardStateTransition>
+      </div>
+    )
+  },
+}
+
+export const LoadingAnnouncementDemo: Story = {
+  name: 'Loading Announcements (Screen Reader)',
+  render: () => {
+    const [isLoading, setIsLoading] = React.useState(false)
+
+    const simulateLoad = () => {
+      setIsLoading(true)
+      setTimeout(() => setIsLoading(false), 2000)
+    }
+
+    // The hook returns a React node to render for screen readers
+    const LoaderWithAnnouncement = () => {
+      const announcement = useLoadingAnnouncement(isLoading, 'Dashboard data')
+      return (
+        <>
+          {announcement}
+          {isLoading ? (
+            <AnalyticsDashboardSkeleton />
+          ) : (
+            <div className="rounded-lg border border-border bg-card p-6">
+              <h3 className="text-lg font-semibold">Dashboard Loaded</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Screen reader users will hear "Dashboard data loaded" when
+                loading completes.
+              </p>
+            </div>
+          )}
+        </>
+      )
+    }
+
+    return (
+      <div className="space-y-4 max-w-3xl">
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
+          <p className="text-sm font-medium mb-2">Accessibility Feature</p>
+          <p className="text-xs text-muted-foreground">
+            The <code>useLoadingAnnouncement</code> hook announces loading state
+            changes to screen readers using aria-live regions.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-accent disabled:opacity-50"
+          onClick={simulateLoad}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Loading...' : 'Simulate Load'}
+        </button>
+
+        <LoaderWithAnnouncement />
+      </div>
+    )
+  },
+}
+
+export const LoadingAnnouncerComponent: Story = {
+  name: 'Loading Announcer Component',
+  render: () => {
+    const [isLoading, setIsLoading] = React.useState(false)
+
+    const simulateLoad = () => {
+      setIsLoading(true)
+      setTimeout(() => setIsLoading(false), 2000)
+    }
+
+    return (
+      <div className="space-y-4 max-w-3xl">
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
+          <p className="text-sm font-medium mb-2">LoadingAnnouncer Component</p>
+          <p className="text-xs text-muted-foreground">
+            A standalone component for announcing loading states to screen
+            readers. Place it anywhere in your component tree.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-accent disabled:opacity-50"
+          onClick={simulateLoad}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Loading...' : 'Simulate Load'}
+        </button>
+
+        {/* The LoadingAnnouncer handles screen reader announcements */}
+        <LoadingAnnouncer isLoading={isLoading} contentName="Metrics" />
+
+        {isLoading ? (
+          <MetricCardSkeleton />
+        ) : (
+          <div className="p-4 rounded-lg border border-border bg-card">
+            <p className="text-xs text-muted-foreground">Total Revenue</p>
+            <p className="text-2xl font-bold">$12,345</p>
+          </div>
+        )}
+      </div>
+    )
+  },
 }

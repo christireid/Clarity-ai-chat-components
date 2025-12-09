@@ -43,6 +43,27 @@ export interface PerformanceDashboardProps {
    * Error to display (renders error state when provided)
    */
   error?: Error | string | null
+
+  /**
+   * Whether to show the export button
+   */
+  showExport?: boolean
+
+  /**
+   * Callback when metrics are exported
+   */
+  onExport?: (data: ExportedMetrics) => void
+}
+
+export interface ExportedMetrics {
+  timestamp: string
+  metrics: Array<{
+    name: string
+    value: number | string
+    unit?: string
+    status?: 'good' | 'warning' | 'poor'
+  }>
+  sessionDuration: number
 }
 
 interface PerformanceMetric {
@@ -71,10 +92,74 @@ export function PerformanceDashboard({
   className,
   isLoading = false,
   error = null,
+  showExport = false,
+  onExport,
 }: PerformanceDashboardProps) {
   const performanceMetrics = useRenderPerformance('PerformanceDashboard')
   const memoryInfo = useMemoryUsage()
   const [metrics, setMetrics] = React.useState<PerformanceMetric[]>([])
+  const sessionStartRef = React.useRef(Date.now())
+
+  /**
+   * Export metrics as JSON file download
+   */
+  const handleExport = React.useCallback(
+    (format: 'json' | 'csv' = 'json') => {
+      const exportData: ExportedMetrics = {
+        timestamp: new Date().toISOString(),
+        metrics: metrics.map((m) => ({
+          name: m.name,
+          value: m.value,
+          unit: m.unit,
+          status: m.status,
+        })),
+        sessionDuration: Date.now() - sessionStartRef.current,
+      }
+
+      // Call onExport callback if provided
+      onExport?.(exportData)
+
+      // Generate and download file
+      let content: string
+      let mimeType: string
+      let extension: string
+
+      if (format === 'csv') {
+        const headers = ['Metric', 'Value', 'Unit', 'Status']
+        const rows = metrics.map((m) => [
+          m.name,
+          String(m.value),
+          m.unit || '',
+          m.status || '',
+        ])
+        content = [
+          `# Performance Metrics Export`,
+          `# Timestamp: ${exportData.timestamp}`,
+          `# Session Duration: ${Math.round(exportData.sessionDuration / 1000)}s`,
+          '',
+          headers.join(','),
+          ...rows.map((r) => r.join(',')),
+        ].join('\n')
+        mimeType = 'text/csv'
+        extension = 'csv'
+      } else {
+        content = JSON.stringify(exportData, null, 2)
+        mimeType = 'application/json'
+        extension = 'json'
+      }
+
+      const blob = new Blob([content], { type: mimeType })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `performance-metrics-${new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-')}.${extension}`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    },
+    [metrics, onExport]
+  )
 
   React.useEffect(() => {
     const updateMetrics = () => {
@@ -246,32 +331,68 @@ export function PerformanceDashboard({
         <h3 className="text-lg font-semibold text-foreground">
           Performance Metrics
         </h3>
-        <div
-          className="flex gap-2 text-xs text-muted-foreground"
-          role="legend"
-          aria-label="Status indicator legend"
-        >
-          <span className="flex items-center gap-1">
-            <span
-              className="w-2 h-2 rounded-full bg-[hsl(var(--success))]"
-              aria-hidden="true"
-            ></span>
-            Good
-          </span>
-          <span className="flex items-center gap-1">
-            <span
-              className="w-2 h-2 rounded-full bg-[hsl(var(--warning))]"
-              aria-hidden="true"
-            ></span>
-            Warning
-          </span>
-          <span className="flex items-center gap-1">
-            <span
-              className="w-2 h-2 rounded-full bg-destructive"
-              aria-hidden="true"
-            ></span>
-            Poor
-          </span>
+        <div className="flex items-center gap-4">
+          {showExport && (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => handleExport('json')}
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring/50"
+                aria-label="Export metrics as JSON"
+              >
+                <svg
+                  className="h-3.5 w-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                JSON
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExport('csv')}
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring/50"
+                aria-label="Export metrics as CSV"
+              >
+                CSV
+              </button>
+            </div>
+          )}
+          <div
+            className="flex gap-2 text-xs text-muted-foreground"
+            role="legend"
+            aria-label="Status indicator legend"
+          >
+            <span className="flex items-center gap-1">
+              <span
+                className="w-2 h-2 rounded-full bg-[hsl(var(--success))]"
+                aria-hidden="true"
+              ></span>
+              Good
+            </span>
+            <span className="flex items-center gap-1">
+              <span
+                className="w-2 h-2 rounded-full bg-[hsl(var(--warning))]"
+                aria-hidden="true"
+              ></span>
+              Warning
+            </span>
+            <span className="flex items-center gap-1">
+              <span
+                className="w-2 h-2 rounded-full bg-destructive"
+                aria-hidden="true"
+              ></span>
+              Poor
+            </span>
+          </div>
         </div>
       </div>
 
