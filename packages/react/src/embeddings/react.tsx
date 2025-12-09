@@ -3,23 +3,8 @@
  */
 
 import * as React from 'react'
-import type { EmbeddingProvider, EmbeddingConfig } from './types'
-import { OpenAIEmbeddingProvider } from './openai'
-import { CohereEmbeddingProvider } from './cohere'
-
-/**
- * Create an embedding provider (local to avoid circular import)
- */
-function createProvider(config: EmbeddingConfig): EmbeddingProvider {
-  switch (config.provider) {
-    case 'openai':
-      return new OpenAIEmbeddingProvider(config)
-    case 'cohere':
-      return new CohereEmbeddingProvider(config)
-    default:
-      throw new Error(`Unsupported embedding provider: ${config.provider}`)
-  }
-}
+import type { EmbeddingProvider } from './types'
+import { createEmbeddingProvider } from './factory'
 
 /**
  * Options for useEmbeddings
@@ -53,7 +38,7 @@ export function useEmbeddings(
 
   const embeddingProvider = React.useMemo(() => {
     if (!apiKey) return null
-    return createProvider({
+    return createEmbeddingProvider({
       provider,
       apiKey,
       model,

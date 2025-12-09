@@ -6,28 +6,7 @@ import type {
   VectorMatch,
   VectorUpsertOptions,
 } from './types'
-import { PineconeVectorStore } from './pinecone'
-import { QdrantVectorStore } from './qdrant'
-import { WeaviateVectorStore } from './weaviate'
-import { ChromaVectorStore } from './chroma'
-
-/**
- * Create a vector store instance (local factory to avoid circular import)
- */
-function createVectorStoreInstance(config: VectorStoreConfig): VectorStore {
-  switch (config.provider) {
-    case 'pinecone':
-      return new PineconeVectorStore(config as any)
-    case 'qdrant':
-      return new QdrantVectorStore(config as any)
-    case 'weaviate':
-      return new WeaviateVectorStore(config as any)
-    case 'chroma':
-      return new ChromaVectorStore(config as any)
-    default:
-      throw new Error(`Unsupported vector store provider: ${config.provider}`)
-  }
-}
+import { createVectorStore } from './factory'
 
 export interface UseVectorStoreOptions {
   provider: VectorStoreConfig['provider']
@@ -100,9 +79,9 @@ export function useVectorStore({
     React.useState<UseVectorStoreReturn['status']>('idle')
   const [error, setError] = React.useState<Error | null>(null)
 
-  const createStore = React.useCallback(() => {
+  const createStoreInstance = React.useCallback(() => {
     try {
-      const instance = createVectorStoreInstance({
+      const instance = createVectorStore({
         provider,
         ...(config as Record<string, any>),
       } as VectorStoreConfig)
@@ -118,18 +97,18 @@ export function useVectorStore({
   }, [configKey])
 
   React.useEffect(() => {
-    createStore()
-  }, [createStore])
+    createStoreInstance()
+  }, [createStoreInstance])
 
   const ensureStore = React.useCallback(() => {
     if (!storeRef.current) {
-      createStore()
+      createStoreInstance()
     }
     if (!storeRef.current) {
       throw new Error('Vector store not initialized')
     }
     return storeRef.current
-  }, [createStore])
+  }, [createStoreInstance])
 
   const initialize = React.useCallback(async () => {
     const store = ensureStore()
@@ -207,8 +186,8 @@ export function useVectorStore({
     storeRef.current = null
     setStatus('idle')
     setError(null)
-    createStore()
-  }, [createStore])
+    createStoreInstance()
+  }, [createStoreInstance])
 
   return {
     store: storeRef.current,
