@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import type { Metadata } from 'next'
 
 type Question = {
   id: string
@@ -121,60 +120,181 @@ export default function HookSelectorPage() {
   const [currentQuestion, setCurrentQuestion] = useState<string>('start')
   const [results, setResults] = useState<HookRecommendation[] | null>(null)
   const [history, setHistory] = useState<string[]>([])
+  const [focusedIndex, setFocusedIndex] = useState<number>(0)
+  const [announcement, setAnnouncement] = useState<string>('')
+
+  const optionsRef = useRef<(HTMLButtonElement | null)[]>([])
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const question = questions.find((q) => q.id === currentQuestion)
 
-  const handleSelect = (option: (typeof questions)[0]['options'][0]) => {
+  // Focus first option when question changes
+  useEffect(() => {
+    setFocusedIndex(0)
+    if (optionsRef.current[0]) {
+      optionsRef.current[0].focus()
+    }
+  }, [currentQuestion])
+
+  // Announce question changes to screen readers
+  useEffect(() => {
+    if (question && !results) {
+      setAnnouncement(`Question ${history.length + 1}: ${question.question}. ${question.options.length} options available. Use arrow keys to navigate, Enter to select.`)
+    } else if (results) {
+      setAnnouncement(`Found ${results.length} recommended hooks. ${results[0]?.hook} is the best match.`)
+    }
+  }, [question, results, history.length])
+
+  const handleSelect = useCallback((option: (typeof questions)[0]['options'][0]) => {
     if (option.result) {
       setResults(option.result)
+      setAnnouncement(`Selected ${option.label}. Showing ${option.result.length} recommended hooks.`)
     } else if (option.next) {
       setHistory([...history, currentQuestion])
       setCurrentQuestion(option.next)
     }
-  }
+  }, [history, currentQuestion])
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (history.length > 0) {
       const prev = history[history.length - 1]
       setHistory(history.slice(0, -1))
       setCurrentQuestion(prev)
       setResults(null)
+      setAnnouncement('Went back to previous question.')
     }
-  }
+  }, [history])
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setCurrentQuestion('start')
     setResults(null)
     setHistory([])
-  }
+    setFocusedIndex(0)
+    setAnnouncement('Wizard reset. Starting from the beginning.')
+  }, [])
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!question || results) return
+
+    const optionsCount = question.options.length
+
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'ArrowRight':
+        e.preventDefault()
+        const nextIndex = (focusedIndex + 1) % optionsCount
+        setFocusedIndex(nextIndex)
+        optionsRef.current[nextIndex]?.focus()
+        break
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        e.preventDefault()
+        const prevIndex = (focusedIndex - 1 + optionsCount) % optionsCount
+        setFocusedIndex(prevIndex)
+        optionsRef.current[prevIndex]?.focus()
+        break
+      case 'Enter':
+      case ' ':
+        e.preventDefault()
+        handleSelect(question.options[focusedIndex])
+        break
+      case 'Escape':
+        e.preventDefault()
+        handleBack()
+        break
+      case 'Home':
+        e.preventDefault()
+        setFocusedIndex(0)
+        optionsRef.current[0]?.focus()
+        break
+      case 'End':
+        e.preventDefault()
+        const lastIndex = optionsCount - 1
+        setFocusedIndex(lastIndex)
+        optionsRef.current[lastIndex]?.focus()
+        break
+    }
+  }, [question, results, focusedIndex, handleSelect, handleBack])
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      {/* Screen reader announcements */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {announcement}
+      </div>
+
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">Which Hook Should I Use?</h1>
         <p className="text-xl text-muted-foreground">
           Answer a few questions to find the right hook for your use case.
         </p>
+        <p className="text-sm text-muted-foreground mt-2">
+          Use arrow keys to navigate, Enter to select, Escape to go back.
+        </p>
       </div>
 
       {!results ? (
-        <div className="border rounded-xl p-8">
+        <div
+          ref={containerRef}
+          className="border rounded-xl p-8"
+          role="form"
+          aria-label="Hook selector wizard"
+          onKeyDown={handleKeyDown}
+        >
           {/* Progress indicator */}
-          <div className="flex items-center gap-2 mb-6">
+          <div
+            className="flex items-center gap-2 mb-6"
+            role="progressbar"
+            aria-valuenow={history.length + 1}
+            aria-valuemin={1}
+            aria-valuemax={5}
+            aria-label={`Step ${history.length + 1}`}
+          >
             {history.map((_, i) => (
-              <div key={i} className="w-3 h-3 rounded-full bg-brand-500" />
+              <div
+                key={i}
+                className="w-3 h-3 rounded-full bg-brand-500"
+                aria-hidden="true"
+              />
             ))}
-            <div className="w-3 h-3 rounded-full bg-brand-500 ring-4 ring-brand-100 dark:ring-brand-900" />
+            <div
+              className="w-3 h-3 rounded-full bg-brand-500 ring-4 ring-brand-100 dark:ring-brand-900"
+              aria-hidden="true"
+            />
           </div>
 
-          <h2 className="text-2xl font-semibold mb-6">{question?.question}</h2>
+          <h2
+            id="question-heading"
+            className="text-2xl font-semibold mb-6"
+          >
+            {question?.question}
+          </h2>
 
-          <div className="space-y-3">
-            {question?.options.map((option) => (
+          <div
+            className="space-y-3"
+            role="listbox"
+            aria-labelledby="question-heading"
+            aria-activedescendant={`option-${focusedIndex}`}
+          >
+            {question?.options.map((option, index) => (
               <button
                 key={option.value}
+                id={`option-${index}`}
+                ref={(el) => { optionsRef.current[index] = el }}
                 onClick={() => handleSelect(option)}
-                className="w-full text-left px-4 py-3 border rounded-lg hover:bg-muted hover:border-brand-300 dark:hover:border-brand-700 transition-colors"
+                onFocus={() => setFocusedIndex(index)}
+                role="option"
+                aria-selected={focusedIndex === index}
+                className={`w-full text-left px-4 py-3 border rounded-lg transition-colors outline-none ${
+                  focusedIndex === index
+                    ? 'bg-muted border-brand-500 ring-2 ring-brand-500 ring-offset-2'
+                    : 'hover:bg-muted hover:border-brand-300 dark:hover:border-brand-700'
+                }`}
               >
                 {option.label}
               </button>
@@ -184,17 +304,21 @@ export default function HookSelectorPage() {
           {history.length > 0 && (
             <button
               onClick={handleBack}
-              className="mt-6 text-sm text-muted-foreground hover:text-foreground"
+              className="mt-6 text-sm text-muted-foreground hover:text-foreground focus:outline-none focus:underline"
+              aria-label="Go back to previous question"
             >
               ← Back to previous question
             </button>
           )}
         </div>
       ) : (
-        <div>
-          <div className="mb-6 p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+        <div role="region" aria-label="Recommended hooks">
+          <div
+            className="mb-6 p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg"
+            role="alert"
+          >
             <div className="flex items-center gap-2 text-green-700 dark:text-green-300 font-semibold mb-1">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               Recommended Hooks
@@ -204,46 +328,47 @@ export default function HookSelectorPage() {
             </p>
           </div>
 
-          <div className="space-y-4">
+          <ul className="space-y-4" role="list" aria-label="Hook recommendations">
             {results.map((result, i) => (
-              <Link
-                key={result.hook}
-                href={result.href}
-                className="block border rounded-lg p-5 hover:bg-muted hover:border-brand-300 dark:hover:border-brand-700 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      {i === 0 && (
-                        <span className="px-2 py-0.5 bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 rounded text-xs font-medium">
-                          Best Match
-                        </span>
-                      )}
-                      <h3 className="text-lg font-mono font-semibold">{result.hook}</h3>
+              <li key={result.hook}>
+                <Link
+                  href={result.href}
+                  className="block border rounded-lg p-5 hover:bg-muted hover:border-brand-300 dark:hover:border-brand-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        {i === 0 && (
+                          <span className="px-2 py-0.5 bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 rounded text-xs font-medium">
+                            Best Match
+                          </span>
+                        )}
+                        <h3 className="text-lg font-mono font-semibold">{result.hook}</h3>
+                      </div>
+                      <p className="text-muted-foreground mb-2">{result.description}</p>
+                      <p className="text-sm">
+                        <span className="font-medium">Why:</span> {result.why}
+                      </p>
                     </div>
-                    <p className="text-muted-foreground mb-2">{result.description}</p>
-                    <p className="text-sm">
-                      <span className="font-medium">Why:</span> {result.why}
-                    </p>
+                    <svg className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                   </div>
-                  <svg className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </Link>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
 
           <div className="mt-8 flex gap-4">
             <button
               onClick={handleReset}
-              className="px-4 py-2 border rounded-lg hover:bg-muted transition-colors"
+              className="px-4 py-2 border rounded-lg hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             >
               Start Over
             </button>
             <Link
               href="/reference/hooks"
-              className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:underline"
             >
               Browse All Hooks →
             </Link>

@@ -1,64 +1,52 @@
+'use client'
+
+import { useState } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import {
+  hookMetadata,
+  componentMetadata,
+  getHooksByCategory,
+  getComponentsByCategory,
+  categoryConfig,
+  componentCategoryConfig,
+  type HookCategory,
+  type ComponentCategory,
+} from '@/lib/hook-metadata'
 
-export const dynamic = 'force-dynamic'
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
 
-export const metadata: Metadata = {
-  title: 'API Quick Reference | Clarity Chat',
-  description: 'Quick reference card for all Clarity Chat hooks and components with signatures and key props.',
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    await navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="p-1 rounded hover:bg-muted-foreground/10 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500"
+      title="Copy import statement"
+      aria-label={copied ? 'Copied!' : 'Copy import statement'}
+    >
+      {copied ? (
+        <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      )}
+    </button>
+  )
 }
 
-const topLevelHooks = [
-  { name: 'useClarityChat', signature: '(options: UseClarityChatOptions) => UseClarityChatReturn', href: '/reference/hooks/use-clarity-chat', description: 'Primary chat hook' },
-  { name: 'useClarityObject', signature: '<T>(options: UseClarityObjectOptions<T>) => UseClarityObjectReturn<T>', href: '/reference/hooks/use-clarity-object', description: 'Structured output' },
-]
-
-const chatHooks = [
-  { name: 'useClarityChatWithTools', signature: '(options) => { ...chat, toolResults }', href: '/reference/hooks/use-clarity-chat-with-tools', description: 'Chat + tool UI' },
-  { name: 'useChatEnhanced', signature: '(options) => UseChatEnhancedReturn', href: '/reference/hooks/use-chat-enhanced', description: 'Enhanced useChat' },
-  { name: 'useChatHandlers', signature: '(options) => ChatHandlers', href: '/reference/hooks/use-chat-handlers', description: 'Message handlers' },
-  { name: 'useAssistant', signature: '(options) => AssistantReturn', href: '/reference/hooks/use-assistant', description: 'OpenAI Assistants' },
-  { name: 'useCompletion', signature: '(options) => CompletionReturn', href: '/reference/hooks/use-completion', description: 'Text completion' },
-]
-
-const memoryHooks = [
-  { name: 'useMemoryContext', signature: '() => MemoryContextValue | null', href: '/reference/hooks/use-memory-context', description: 'Memory operations' },
-  { name: 'useIndexedDB', signature: '<T>(options) => IndexedDBReturn<T>', href: '/reference/hooks/use-indexed-db', description: 'IndexedDB storage' },
-  { name: 'useEmbeddings', signature: '(options) => { embed, embedBatch }', href: '/reference/hooks/use-embeddings', description: 'Text embeddings' },
-  { name: 'useVectorStore', signature: '(options) => VectorStoreReturn', href: '/reference/hooks/use-vector-store', description: 'Vector operations' },
-]
-
-const streamingHooks = [
-  { name: 'useStreamingSSE', signature: '(options) => SSEReturn', href: '/reference/hooks/use-streaming-sse', description: 'SSE streaming' },
-  { name: 'useStreamingWebSocket', signature: '(options) => WebSocketReturn', href: '/reference/hooks/use-streaming-websocket', description: 'WebSocket streaming' },
-  { name: 'useStreamableUI', signature: '() => StreamableUIReturn', href: '/reference/hooks/use-streamable-ui', description: 'Streaming UI state' },
-]
-
-const uiHooks = [
-  { name: 'useKeyboardShortcuts', signature: '(shortcuts) => void', href: '/reference/hooks/use-keyboard-shortcuts', description: 'Keyboard handling' },
-  { name: 'useCommandPalette', signature: '(options) => { isOpen, toggle }', href: '/reference/hooks/use-command-palette', description: 'Cmd+K palette' },
-  { name: 'useDesignTokens', signature: '() => DesignTokens', href: '/reference/hooks/use-design-tokens', description: 'Design tokens' },
-  { name: 'useTheme', signature: '() => { theme, setTheme }', href: '/reference/hooks/use-theme', description: 'Theme switching' },
-]
-
-const utilityHooks = [
-  { name: 'useDebounce', signature: '<T>(value: T, delay: number) => T', href: '/reference/hooks/use-debounce', description: 'Debounce values' },
-  { name: 'useLocalStorage', signature: '<T>(key, initial) => [T, setter]', href: '/reference/hooks/use-local-storage', description: 'localStorage' },
-  { name: 'useTokenTracker', signature: '(messages) => TokenStats', href: '/reference/hooks/use-token-tracker', description: 'Token counting' },
-  { name: 'useDashboardData', signature: '<T>(options) => { data, refresh }', href: '/reference/hooks/use-dashboard-data', description: 'Dashboard data' },
-]
-
-const coreComponents = [
-  { name: 'ClarityChat', props: 'api, memory?, theme?, appearance?', href: '/reference/components/clarity-chat', description: 'Drop-in chat' },
-  { name: 'ChatWindow', props: 'messages, onSend, isLoading?', href: '/reference/components/chat-window', description: 'Chat container' },
-  { name: 'Message', props: 'role, content, timestamp?', href: '/reference/components/message', description: 'Message display' },
-  { name: 'MessageList', props: 'messages, virtualized?', href: '/reference/components/message-list', description: 'Message list' },
-  { name: 'ChatInput', props: 'onSubmit, placeholder?', href: '/reference/components/chat-input', description: 'Input field' },
-]
-
-const providers = [
-  { name: 'MemoryProvider', props: 'config: { maxTokens }', href: '/reference/components/memory-provider', description: 'Memory context' },
-]
+const hookCategories: HookCategory[] = ['top-level', 'chat', 'memory', 'streaming', 'ui', 'utility']
+const componentCategories: ComponentCategory[] = ['core', 'provider']
 
 export default function QuickReferencePage() {
   return (
@@ -69,7 +57,7 @@ export default function QuickReferencePage() {
           Scannable reference for all Clarity Chat hooks and components.
         </p>
         <p className="text-sm text-muted-foreground mt-2">
-          Click any item to view full documentation.
+          Click any item to view full documentation. Use the copy button to copy import statements.
         </p>
       </div>
 
@@ -77,182 +65,93 @@ export default function QuickReferencePage() {
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-6 pb-2 border-b">Hooks</h2>
 
-        {/* Top-Level */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-brand-600 dark:text-brand-400 mb-3">
-            Top-Level (Drop-in Ready)
-          </h3>
-          <div className="border rounded-lg divide-y">
-            {topLevelHooks.map((hook) => (
-              <Link
-                key={hook.name}
-                href={hook.href}
-                className="flex items-start gap-4 p-3 hover:bg-muted transition-colors"
-              >
-                <code className="font-mono font-semibold text-sm whitespace-nowrap">{hook.name}</code>
-                <code className="text-xs text-muted-foreground flex-1 font-mono">{hook.signature}</code>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{hook.description}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
+        {hookCategories.map((category) => {
+          const hooks = getHooksByCategory(category)
+          if (hooks.length === 0) return null
+          const config = categoryConfig[category]
 
-        {/* Chat Hooks */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-amber-600 dark:text-amber-400 mb-3">
-            Chat State
-          </h3>
-          <div className="border rounded-lg divide-y">
-            {chatHooks.map((hook) => (
-              <Link
-                key={hook.name}
-                href={hook.href}
-                className="flex items-start gap-4 p-3 hover:bg-muted transition-colors"
-              >
-                <code className="font-mono font-semibold text-sm whitespace-nowrap">{hook.name}</code>
-                <code className="text-xs text-muted-foreground flex-1 font-mono">{hook.signature}</code>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{hook.description}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Memory Hooks */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-green-600 dark:text-green-400 mb-3">
-            Memory &amp; Context
-          </h3>
-          <div className="border rounded-lg divide-y">
-            {memoryHooks.map((hook) => (
-              <Link
-                key={hook.name}
-                href={hook.href}
-                className="flex items-start gap-4 p-3 hover:bg-muted transition-colors"
-              >
-                <code className="font-mono font-semibold text-sm whitespace-nowrap">{hook.name}</code>
-                <code className="text-xs text-muted-foreground flex-1 font-mono">{hook.signature}</code>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{hook.description}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Streaming Hooks */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-3">
-            Streaming
-          </h3>
-          <div className="border rounded-lg divide-y">
-            {streamingHooks.map((hook) => (
-              <Link
-                key={hook.name}
-                href={hook.href}
-                className="flex items-start gap-4 p-3 hover:bg-muted transition-colors"
-              >
-                <code className="font-mono font-semibold text-sm whitespace-nowrap">{hook.name}</code>
-                <code className="text-xs text-muted-foreground flex-1 font-mono">{hook.signature}</code>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{hook.description}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* UI Hooks */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-purple-600 dark:text-purple-400 mb-3">
-            UI &amp; Theming
-          </h3>
-          <div className="border rounded-lg divide-y">
-            {uiHooks.map((hook) => (
-              <Link
-                key={hook.name}
-                href={hook.href}
-                className="flex items-start gap-4 p-3 hover:bg-muted transition-colors"
-              >
-                <code className="font-mono font-semibold text-sm whitespace-nowrap">{hook.name}</code>
-                <code className="text-xs text-muted-foreground flex-1 font-mono">{hook.signature}</code>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{hook.description}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Utility Hooks */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400 mb-3">
-            Utilities
-          </h3>
-          <div className="border rounded-lg divide-y">
-            {utilityHooks.map((hook) => (
-              <Link
-                key={hook.name}
-                href={hook.href}
-                className="flex items-start gap-4 p-3 hover:bg-muted transition-colors"
-              >
-                <code className="font-mono font-semibold text-sm whitespace-nowrap">{hook.name}</code>
-                <code className="text-xs text-muted-foreground flex-1 font-mono">{hook.signature}</code>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{hook.description}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
+          return (
+            <div key={category} className="mb-8">
+              <h3 className={`text-lg font-semibold ${config.colorClass} mb-3`}>
+                {config.label}
+              </h3>
+              <div className="border rounded-lg divide-y">
+                {hooks.map((hook) => (
+                  <div key={hook.name} className="flex items-center">
+                    <Link
+                      href={hook.href}
+                      className="flex items-start gap-4 p-3 hover:bg-muted transition-colors flex-1"
+                    >
+                      <code className="font-mono font-semibold text-sm whitespace-nowrap">{hook.name}</code>
+                      <code className="text-xs text-muted-foreground flex-1 font-mono">{hook.signature}</code>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">{hook.description}</span>
+                    </Link>
+                    <div className="pr-3">
+                      <CopyButton text={hook.importStatement} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })}
       </section>
 
       {/* Components Section */}
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-6 pb-2 border-b">Components</h2>
 
-        {/* Core Components */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-brand-600 dark:text-brand-400 mb-3">
-            Core
-          </h3>
-          <div className="border rounded-lg divide-y">
-            {coreComponents.map((comp) => (
-              <Link
-                key={comp.name}
-                href={comp.href}
-                className="flex items-start gap-4 p-3 hover:bg-muted transition-colors"
-              >
-                <code className="font-mono font-semibold text-sm whitespace-nowrap">&lt;{comp.name}&gt;</code>
-                <code className="text-xs text-muted-foreground flex-1 font-mono">{comp.props}</code>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{comp.description}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
+        {componentCategories.map((category) => {
+          const components = getComponentsByCategory(category)
+          if (components.length === 0) return null
+          const config = componentCategoryConfig[category]
 
-        {/* Providers */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-green-600 dark:text-green-400 mb-3">
-            Providers
-          </h3>
-          <div className="border rounded-lg divide-y">
-            {providers.map((comp) => (
-              <Link
-                key={comp.name}
-                href={comp.href}
-                className="flex items-start gap-4 p-3 hover:bg-muted transition-colors"
-              >
-                <code className="font-mono font-semibold text-sm whitespace-nowrap">&lt;{comp.name}&gt;</code>
-                <code className="text-xs text-muted-foreground flex-1 font-mono">{comp.props}</code>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{comp.description}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
+          return (
+            <div key={category} className="mb-8">
+              <h3 className={`text-lg font-semibold ${config.colorClass} mb-3`}>
+                {config.label}
+              </h3>
+              <div className="border rounded-lg divide-y">
+                {components.map((comp) => (
+                  <div key={comp.name} className="flex items-center">
+                    <Link
+                      href={comp.href}
+                      className="flex items-start gap-4 p-3 hover:bg-muted transition-colors flex-1"
+                    >
+                      <code className="font-mono font-semibold text-sm whitespace-nowrap">&lt;{comp.name}&gt;</code>
+                      <code className="text-xs text-muted-foreground flex-1 font-mono">{comp.props}</code>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">{comp.description}</span>
+                    </Link>
+                    <div className="pr-3">
+                      <CopyButton text={comp.importStatement} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })}
       </section>
 
       {/* Quick Start */}
       <section className="mb-12 p-6 bg-muted rounded-xl">
         <h2 className="text-xl font-bold mb-4">Minimal Setup</h2>
-        <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm">
-          <code>{`import { ClarityChat } from '@clarity-chat/react'
+        <div className="relative">
+          <pre className="bg-background p-4 rounded-lg overflow-x-auto text-sm">
+            <code>{`import { ClarityChat } from '@clarity-chat/react'
 
 function App() {
   return <ClarityChat api="/api/chat" />
 }`}</code>
-        </pre>
+          </pre>
+          <div className="absolute top-2 right-2">
+            <CopyButton text={`import { ClarityChat } from '@clarity-chat/react'
+
+function App() {
+  return <ClarityChat api="/api/chat" />
+}`} />
+          </div>
+        </div>
       </section>
 
       {/* Footer Links */}

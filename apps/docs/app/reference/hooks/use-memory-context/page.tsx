@@ -1,14 +1,9 @@
-import type { Metadata } from 'next'
+'use client'
+
 import Link from 'next/link'
 import { CodePlayground } from '@/components/Playground/CodePlayground'
-
-export const dynamic = 'force-dynamic'
-
-export const metadata: Metadata = {
-  title: 'useMemoryContext Hook | Clarity Chat',
-  description:
-    'Access the memory context for AI memory operations including add, query, and manage memories.',
-}
+import { FeedbackWidget } from '@/components/FeedbackWidget'
+import { CollapsibleSection } from '@/components/CollapsibleSection'
 
 export default function UseMemoryContextPage() {
   return (
@@ -94,9 +89,8 @@ function App() {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">API Reference</h2>
 
-        <div className="space-y-8">
-          <div>
-            <h3 className="text-2xl font-semibold mb-3">Return Value (MemoryContextValue)</h3>
+        <div className="space-y-4">
+          <CollapsibleSection title="Return Value (MemoryContextValue)" defaultOpen={true}>
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-muted">
@@ -142,6 +136,22 @@ function App() {
                       Delete a memory by ID.
                     </td>
                   </tr>
+                </tbody>
+              </table>
+            </div>
+          </CollapsibleSection>
+
+          <CollapsibleSection title="Additional Methods" badge="Advanced">
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 font-semibold">Property</th>
+                    <th className="text-left p-3 font-semibold">Type</th>
+                    <th className="text-left p-3 font-semibold">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
                   <tr>
                     <td className="p-3 font-mono text-sm">promoteMemory</td>
                     <td className="p-3 font-mono text-sm">(id, targetScope) =&gt; Promise&lt;MemoryItem | null&gt;</td>
@@ -180,20 +190,63 @@ function App() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </CollapsibleSection>
         </div>
       </section>
 
       <section className="mb-12">
-        <h2 className="text-3xl font-semibold mb-4">Memory Types</h2>
-        <div className="border rounded-lg p-4">
+        <CollapsibleSection title="Memory Types" defaultOpen={true}>
           <ul className="space-y-2 text-sm">
             <li><code className="bg-muted px-2 py-1 rounded">preference</code> - User preferences</li>
             <li><code className="bg-muted px-2 py-1 rounded">fact</code> - Factual information</li>
             <li><code className="bg-muted px-2 py-1 rounded">context</code> - Contextual information</li>
             <li><code className="bg-muted px-2 py-1 rounded">task</code> - Task-related memories</li>
           </ul>
-        </div>
+        </CollapsibleSection>
+      </section>
+
+      <section className="mb-12">
+        <CollapsibleSection title="Advanced Examples" badge="Pro">
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-semibold mb-2">Subscribing to Memory Events</h4>
+              <CodePlayground
+                code={`const memory = useMemoryContext()
+
+useEffect(() => {
+  if (!memory) return
+
+  const unsubscribe = memory.subscribe('memory:added', (event) => {
+    console.log('New memory added:', event.memory)
+  })
+
+  return () => unsubscribe()
+}, [memory])`}
+              />
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-2">Memory Compression</h4>
+              <CodePlayground
+                code={`// Compress old memories to save token budget
+const compressOldMemories = async () => {
+  const stats = memory?.getStats()
+
+  if (stats && stats.tokenUsage > 8000) {
+    const oldMemories = await memory?.query({
+      limit: 10,
+      sortBy: 'oldest'
+    })
+
+    for (const mem of oldMemories || []) {
+      await memory?.compressMemory(mem.id, 0.5) // 50% compression
+    }
+  }
+}`}
+              />
+            </div>
+          </div>
+        </CollapsibleSection>
       </section>
 
       <section className="mb-12">
@@ -217,8 +270,29 @@ function App() {
               Complete guide to using memory in chat applications.
             </p>
           </Link>
+          <Link
+            href="/reference/hooks/use-indexed-db"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">useIndexedDB</h3>
+            <p className="text-sm text-muted-foreground">
+              Client-side storage for large data.
+            </p>
+          </Link>
+          <Link
+            href="/reference/hooks/compare"
+            className="border rounded-lg p-4 hover:bg-muted transition-colors"
+          >
+            <h3 className="font-semibold mb-2">Compare Hooks</h3>
+            <p className="text-sm text-muted-foreground">
+              Compare this hook with other memory hooks.
+            </p>
+          </Link>
         </div>
       </section>
+
+      {/* Feedback Widget */}
+      <FeedbackWidget pageId="use-memory-context" className="mt-12" />
     </div>
   )
 }

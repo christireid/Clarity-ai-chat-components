@@ -180,6 +180,7 @@ export const referenceNavigation: NavItem[] = [
     title: 'Hooks',
     items: [
       { title: '🧭 Hook Selector', href: '/reference/hooks/selector' },
+      { title: '⚖️ Compare Hooks', href: '/reference/hooks/compare' },
       { title: 'useClarityChat', href: '/reference/hooks/use-clarity-chat' },
       { title: 'useClarityChatWithTools', href: '/reference/hooks/use-clarity-chat-with-tools' },
       { title: 'useChatHandlers', href: '/reference/hooks/use-chat-handlers' },
@@ -227,6 +228,7 @@ export const referenceNavigation: NavItem[] = [
     title: 'API',
     items: [
       { title: '📋 Quick Reference', href: '/reference/quick-reference' },
+      { title: '🖨️ Printable Cheat Sheet', href: '/reference/cheat-sheet' },
       { title: 'Types', href: '/reference/api/types' },
       { title: 'Utilities', href: '/reference/utilities' },
       { title: 'Configuration', href: '/reference/api/configuration' },
