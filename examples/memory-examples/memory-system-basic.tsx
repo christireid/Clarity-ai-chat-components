@@ -16,7 +16,9 @@ import {
 } from '@clarity-chat/react'
 
 // 💡 Type definition for memory configuration
-// This type defines the shape of the memory service configuration
+// ⚠️ NOTE: This interface is defined locally for demonstration purposes.
+// In production, check if @clarity-chat/react exports a MemoryServiceConfig type.
+// If not, this serves as documentation for the expected configuration shape.
 interface MemoryServiceConfig {
   tokenOptimization: {
     maxContextWindow: number
@@ -126,34 +128,65 @@ function ChatWithMemory() {
   const [input, setInput] = React.useState('')
 
   // 🎯 useMemoryContext provides access to the memory system
-  // configured via the MemoryProvider wrapper component
+  // configured via the MemoryProvider wrapper component.
+  // In production, you would destructure the methods you need:
+  // const { addMemory, searchMemories, getRecentMemories } = useMemoryContext()
   const memoryContext = useMemoryContext()
 
-  // 💡 In a production app, these would come from the memory context
-  // This is a simplified example showing the intended API pattern
+  // Suppress unused variable warning - memoryContext is shown for educational purposes
+  // In production, you would use it directly instead of the mock functions below
+  void memoryContext
+
+  // ============================================================================
+  // 🔧 DEMO IMPLEMENTATION - Replace These in Production
+  // ============================================================================
+  // The functions below are PLACEHOLDERS showing the intended API pattern.
+  // They use console.log for demonstration. In a real application:
+  // 1. Remove the console.log statements
+  // 2. Replace with actual memoryContext method calls
+  // 3. See @clarity-chat/react docs for the real implementation
+  // ============================================================================
+
+  // DEMO ONLY: Remove console.log in production
   const captureMessage = async (content: string, role: 'user' | 'assistant') => {
+    // DEMO: Logs to console for demonstration purposes
     console.log(`[Memory] Capturing ${role} message:`, content.substring(0, 50))
-    // In production: await memoryContext.addMemory({ content, type: 'episodic', ... })
+    // PRODUCTION: Uncomment and use the real API:
+    // await memoryContext.addMemory({ content, type: 'episodic', metadata: { role } })
   }
 
+  // DEMO ONLY: Remove console.log in production
   const capturePreference = async (key: string, value: string) => {
+    // DEMO: Logs to console for demonstration purposes
     console.log(`[Memory] Capturing preference: ${key} = ${value}`)
-    // In production: await memoryContext.addMemory({ content: `${key}: ${value}`, type: 'semantic', ... })
+    // PRODUCTION: Uncomment and use the real API:
+    // await memoryContext.addMemory({ content: `${key}: ${value}`, type: 'semantic' })
   }
 
+  // DEMO ONLY: Remove console.log in production
   const getRelevantMemories = async (query: string) => {
+    // DEMO: Logs to console for demonstration purposes
     console.log(`[Memory] Searching for memories related to:`, query.substring(0, 50))
-    // In production: return await memoryContext.searchMemories(query)
+    // PRODUCTION: Uncomment and use the real API:
+    // return await memoryContext.searchMemories(query)
     return []
   }
 
+  // DEMO ONLY: Remove console.log in production
   const getRecentHistory = async () => {
+    // DEMO: Logs to console for demonstration purposes
     console.log(`[Memory] Fetching recent history`)
-    // In production: return await memoryContext.getRecentMemories()
+    // PRODUCTION: Uncomment and use the real API:
+    // return await memoryContext.getRecentMemories()
     return messages
   }
 
+  // ============================================================================
+  // End of Demo Implementation
+  // ============================================================================
+
   // Mock context stats for demonstration
+  // PRODUCTION: Use real stats from memoryContext.getStats()
   const context = {
     stats: {
       totalMemories: messages.length,

@@ -25,6 +25,14 @@ import type {
   ExperimentVariant,
 } from '@clarity-chat/react'
 
+// 💡 Type definitions for this example
+interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: number
+}
+
 // =============================================================================
 // Example 1: Basic User Interaction Tracking
 // =============================================================================
@@ -271,9 +279,9 @@ export function ABTestingExample() {
  */
 export function ChatWithABTestExample() {
   const { getVariant, recordMetric, experiments, createExperiment, startExperiment } = useABTesting()
-  const [messages, setMessages] = React.useState<any[]>([])
+  const [messages, setMessages] = React.useState<ChatMessage[]>([])
   const [userId] = React.useState(`user-${Date.now()}`)
-  const [variant, setVariant] = React.useState<any>(null)
+  const [variant, setVariant] = React.useState<ExperimentVariant | null>(null)
 
   React.useEffect(() => {
     // Create experiment if doesn't exist

@@ -71,6 +71,12 @@ type OptimizationResult =
   | FullOptimizationResult
 
 // 💡 Type for chat messages used in the hook
+// ⚠️ NOTE: These types are simplified versions of the internal CoreMessage type.
+// The prepareMessages function accepts CoreMessage[], but our ChatMessage interface
+// is structurally compatible. In production code, you can either:
+// 1. Import CoreMessage from @clarity-chat/react if exported
+// 2. Use these simplified types with type assertions (as shown below)
+// The type assertion is safe because the shapes are compatible.
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant'
   content: string

@@ -19,6 +19,28 @@ import {
   ChatWindow,
 } from '@clarity-chat/react'
 
+// 💡 Type definitions for this example
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  id?: string
+}
+
+interface PerformanceData {
+  webVitals?: Array<{ name: string; value: number }>
+  memoryUsage?: { used: number; limit: number }
+  fps?: number
+  renderCount?: number
+  updateLatency?: number
+}
+
+interface SuggestionStats {
+  totalSuggestions: number
+  acceptedSuggestions: number
+  acceptanceRate: number
+  averageRelevance: number
+}
+
 /**
  * Complete Advanced Chat Application
  *
@@ -58,7 +80,7 @@ export function AdvancedChatApplication() {
 
   // Custom summarization with your LLM API
   const handleGenerateSummary = React.useCallback(
-    async (messages: any[], level: 'brief' | 'detailed' | 'comprehensive') => {
+    async (messages: ChatMessage[], level: 'brief' | 'detailed' | 'comprehensive') => {
       const response = await fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,7 +97,7 @@ export function AdvancedChatApplication() {
   )
 
   // Performance tracking
-  const handlePerformanceUpdate = React.useCallback((data: any) => {
+  const handlePerformanceUpdate = React.useCallback((data: PerformanceData) => {
     // Send to your analytics service
     if (data.webVitals?.length > 0) {
       console.log('Web Vitals:', data.webVitals)
@@ -371,8 +393,8 @@ export function DeveloperDashboard() {
     api: '/api/chat',
   })
 
-  const [performanceData, setPerformanceData] = React.useState<any>(null)
-  const [suggestionStats, setSuggestionStats] = React.useState<any>(null)
+  const [performanceData, setPerformanceData] = React.useState<PerformanceData | null>(null)
+  const [suggestionStats, setSuggestionStats] = React.useState<SuggestionStats | null>(null)
 
   return (
     <div className="flex h-screen">
