@@ -32,7 +32,8 @@ scripts/
 ├── navigation-config.ts   # Documentation structure & descriptions
 ├── types.ts              # TypeScript type definitions
 ├── lib/
-│   └── content-extractor.ts  # JSX/TSX content extraction utilities
+│   ├── content-extractor.ts  # JSX/TSX content extraction utilities
+│   └── utils.ts              # Shared utilities (formatBytes, formatDelta)
 ├── __tests__/
 │   ├── content-extractor.test.ts
 │   └── navigation-config.test.ts
@@ -230,3 +231,18 @@ pnpm test scripts/__tests__/content-extractor.test.ts
 1. Run tests before committing: `pnpm test scripts/__tests__`
 2. Regenerate files: `pnpm run generate:llms`
 3. Verify no broken link warnings in output
+
+## Technical Debt
+
+### `formatBytes` Duplication
+
+The `formatBytes` utility function is duplicated 9+ times across the codebase. This scripts
+directory uses a local copy in `lib/utils.ts`. When a shared `@clarity-chat/utils` package is
+created, this should be imported from there instead.
+
+Existing implementations to consolidate:
+
+- `packages/memory/src/utils/core.ts`
+- `packages/dev-tools/src/performance/profiler.ts`
+- `packages/react/src/components/performance-dashboard.tsx`
+- `tools/scripts/analyze-bundle.js`

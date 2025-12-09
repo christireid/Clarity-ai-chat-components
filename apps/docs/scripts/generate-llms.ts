@@ -11,7 +11,7 @@
  *   tsx scripts/generate-llms.ts
  */
 
-import { readFile, writeFile, mkdir, access, stat } from 'fs/promises'
+import { readFile, writeFile, mkdir } from 'fs/promises'
 import { join, relative, dirname } from 'path'
 import { glob } from 'glob'
 import { watch } from 'chokidar'
@@ -27,6 +27,7 @@ import {
   contentToMarkdown,
   estimateTokens,
 } from './lib/content-extractor'
+import { formatBytes, formatDelta, directoryExists } from './lib/utils'
 import type {
   GenerationResult,
   GenerationStats,
@@ -74,17 +75,6 @@ async function loadPreviousMetrics(): Promise<PreviousMetrics | null> {
 }
 
 /**
- * Format a delta with arrow and color indicator
- */
-function formatDelta(current: number, previous: number, unit = ''): string {
-  const delta = current - previous
-  if (delta === 0) return `${current.toLocaleString()}${unit} (no change)`
-  const arrow = delta > 0 ? '↑' : '↓'
-  const sign = delta > 0 ? '+' : ''
-  return `${current.toLocaleString()}${unit} (${arrow} ${sign}${delta.toLocaleString()})`
-}
-
-/**
  * Print metrics comparison with previous run
  */
 function printMetricsComparison(
@@ -111,17 +101,6 @@ function printMetricsComparison(
     `   Warnings: ${formatDelta(stats.warnings.length, previous.warningCount)}`
   )
   console.log('─'.repeat(50))
-}
-
-/**
- * Format bytes to human-readable string
- */
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
 /**
@@ -232,18 +211,6 @@ function printMetricsDashboard(stats: GenerationStats): void {
   console.log(
     '╚══════════════════════════════════════════════════════════════╝'
   )
-}
-
-/**
- * Check if a directory exists
- */
-async function directoryExists(path: string): Promise<boolean> {
-  try {
-    await access(path)
-    return true
-  } catch {
-    return false
-  }
 }
 
 /**
