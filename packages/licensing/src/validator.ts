@@ -1,4 +1,10 @@
-import type { LicenseKey, LicenseValidationResult, LicenseConfig, LicenseTier, LicenseType } from './types'
+import type {
+  LicenseKey,
+  LicenseValidationResult,
+  LicenseConfig,
+  LicenseTier,
+  LicenseType,
+} from './types'
 import { parseLicenseKey } from './generator'
 
 /**
@@ -40,6 +46,16 @@ export async function validateLicense(
 }
 
 /**
+ * API response type for license validation
+ */
+interface LicenseValidationAPIResponse {
+  valid: boolean
+  license?: LicenseKey
+  error?: string
+  daysUntilExpiration?: number
+}
+
+/**
  * Validate with API endpoint
  */
 async function validateWithAPI(
@@ -63,7 +79,7 @@ async function validateWithAPI(
       }
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as LicenseValidationAPIResponse
     return {
       valid: data.valid,
       license: data.license,
@@ -196,8 +212,6 @@ export async function verifyLicenseSignature(
   // 1. Parse public key
   // 2. Verify signature against license key
   // 3. Return verification result
-  
+
   return false
 }
-
-
