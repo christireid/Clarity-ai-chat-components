@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import {
   useTokenBudgetMonitor,
   getStatusColor,
@@ -97,12 +97,10 @@ describe('useTokenBudgetMonitor', () => {
 
       // Advance timers for debounce
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        expect(result.current.usage.current).toBeGreaterThan(0)
-      })
+      expect(result.current.usage.current).toBeGreaterThan(0)
     })
 
     it('should use pre-computed token counts when available', async () => {
@@ -124,13 +122,11 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        // Should use pre-computed: 100 + 50 + (4 * 2 overhead) + 2 priming = 160
-        expect(result.current.usage.current).toBe(160)
-      })
+      // Should use pre-computed: 100 + 50 + (4 * 2 overhead) + 2 priming = 160
+      expect(result.current.usage.current).toBe(160)
     })
   })
 
@@ -158,14 +154,12 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        expect(result.current.isWarning).toBe(true)
-        expect(result.current.usage.status).toBe('warning')
-        expect(onWarning).toHaveBeenCalledTimes(1)
-      })
+      expect(result.current.isWarning).toBe(true)
+      expect(result.current.usage.status).toBe('warning')
+      expect(onWarning).toHaveBeenCalledTimes(1)
     })
 
     it('should detect critical threshold', async () => {
@@ -191,14 +185,12 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        expect(result.current.isCritical).toBe(true)
-        expect(result.current.usage.status).toBe('critical')
-        expect(onCritical).toHaveBeenCalledTimes(1)
-      })
+      expect(result.current.isCritical).toBe(true)
+      expect(result.current.usage.status).toBe('critical')
+      expect(onCritical).toHaveBeenCalledTimes(1)
     })
 
     it('should detect exceeded state', async () => {
@@ -223,14 +215,12 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        expect(result.current.isExceeded).toBe(true)
-        expect(result.current.usage.status).toBe('exceeded')
-        expect(onExceeded).toHaveBeenCalledTimes(1)
-      })
+      expect(result.current.isExceeded).toBe(true)
+      expect(result.current.usage.status).toBe('exceeded')
+      expect(onExceeded).toHaveBeenCalledTimes(1)
     })
 
     it('should only fire callbacks once per threshold crossing', async () => {
@@ -254,7 +244,7 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
       // Second update still in warning
@@ -265,12 +255,10 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        expect(onWarning).toHaveBeenCalledTimes(1) // Only once
-      })
+      expect(onWarning).toHaveBeenCalledTimes(1) // Only once
     })
   })
 
@@ -292,13 +280,11 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        expect(result.current.wouldExceed(100)).toBe(false) // 800 + 100 = 900 < 1000
-        expect(result.current.wouldExceed(300)).toBe(true) // 800 + 300 = 1100 > 1000
-      })
+      expect(result.current.wouldExceed(100)).toBe(false) // 800 + 100 = 900 < 1000
+      expect(result.current.wouldExceed(300)).toBe(true) // 800 + 300 = 1100 > 1000
     })
   })
 
@@ -360,16 +346,14 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        expect(onAutoTrim).toHaveBeenCalled()
-        expect(result.current.lastTrimResult).not.toBeNull()
-        expect(
-          result.current.lastTrimResult?.removedItems.length
-        ).toBeGreaterThan(0)
-      })
+      expect(onAutoTrim).toHaveBeenCalled()
+      expect(result.current.lastTrimResult).not.toBeNull()
+      expect(
+        result.current.lastTrimResult?.removedItems.length
+      ).toBeGreaterThan(0)
     })
 
     it('should not trim system messages', async () => {
@@ -396,20 +380,18 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        if (result.current.lastTrimResult) {
-          // System message should not be in removed items
-          const removedRoles = result.current.lastTrimResult.removedItems.map(
-            (item) => {
-              return messages[item.index]?.role
-            }
-          )
-          expect(removedRoles).not.toContain('system')
-        }
-      })
+      if (result.current.lastTrimResult) {
+        // System message should not be in removed items
+        const removedRoles = result.current.lastTrimResult.removedItems.map(
+          (item) => {
+            return messages[item.index]?.role
+          }
+        )
+        expect(removedRoles).not.toContain('system')
+      }
     })
   })
 
@@ -435,7 +417,7 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
       // Manually trim
@@ -469,12 +451,10 @@ describe('useTokenBudgetMonitor', () => {
       })
 
       await act(async () => {
-        vi.advanceTimersByTime(100)
+        await vi.advanceTimersByTimeAsync(100)
       })
 
-      await waitFor(() => {
-        expect(result.current.usage.current).toBe(506) // 500 + 4 overhead + 2 priming
-      })
+      expect(result.current.usage.current).toBe(506) // 500 + 4 overhead + 2 priming
 
       // Reset
       act(() => {
@@ -514,13 +494,11 @@ describe('useTokenBudgetMonitor', () => {
 
       // After debounce
       await act(async () => {
-        vi.advanceTimersByTime(400)
+        await vi.advanceTimersByTimeAsync(400)
       })
 
-      await waitFor(() => {
-        // Should only reflect last update
-        expect(result.current.usage.current).toBe(36) // 30 + 4 overhead + 2 priming
-      })
+      // Should only reflect last update
+      expect(result.current.usage.current).toBe(36) // 30 + 4 overhead + 2 priming
     })
   })
 })
@@ -632,6 +610,28 @@ describe('createModelBudgetMonitor', () => {
 
     expect(config.maxInputTokens).toBe(200000)
     expect(config.reservedForOutput).toBe(100000)
+  })
+
+  it('should create config for GPT-4.1', () => {
+    const config = createModelBudgetMonitor('gpt-4.1')
+
+    expect(config.maxInputTokens).toBe(1000000)
+    expect(config.reservedForOutput).toBe(32768)
+    expect(config.model).toBe('gpt-4.1')
+  })
+
+  it('should create config for GPT-4.1 Mini', () => {
+    const config = createModelBudgetMonitor('gpt-4.1-mini')
+
+    expect(config.maxInputTokens).toBe(1000000)
+    expect(config.reservedForOutput).toBe(32768)
+  })
+
+  it('should create config for GPT-4.1 Nano', () => {
+    const config = createModelBudgetMonitor('gpt-4.1-nano')
+
+    expect(config.maxInputTokens).toBe(1000000)
+    expect(config.reservedForOutput).toBe(32768)
   })
 
   it('should allow overrides', () => {

@@ -607,6 +607,10 @@ export type BudgetMonitorModel =
   | 'gpt-4-turbo'
   | 'gpt-4o'
   | 'gpt-4o-mini'
+  // OpenAI GPT-4.1 Family
+  | 'gpt-4.1'
+  | 'gpt-4.1-mini'
+  | 'gpt-4.1-nano'
   // OpenAI O1/O3 Models
   | 'o1'
   | 'o1-mini'
@@ -664,6 +668,11 @@ export function createModelBudgetMonitor(
     'gpt-4-turbo': { maxInputTokens: 128000, reservedForOutput: 4096 },
     'gpt-4o': { maxInputTokens: 128000, reservedForOutput: 16384 },
     'gpt-4o-mini': { maxInputTokens: 128000, reservedForOutput: 16384 },
+
+    // OpenAI GPT-4.1 Family
+    'gpt-4.1': { maxInputTokens: 1000000, reservedForOutput: 32768 },
+    'gpt-4.1-mini': { maxInputTokens: 1000000, reservedForOutput: 32768 },
+    'gpt-4.1-nano': { maxInputTokens: 1000000, reservedForOutput: 32768 },
 
     // OpenAI O1/O3 Reasoning Models
     o1: { maxInputTokens: 200000, reservedForOutput: 100000 },
