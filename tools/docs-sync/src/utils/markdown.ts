@@ -49,12 +49,30 @@ export function parseFrontmatter(content: string): {
   }
 }
 
+/** Remove undefined values from an object (deep) */
+function removeUndefined<T extends Record<string, unknown>>(obj: T): T {
+  const result = {} as T
+  for (const [key, value] of Object.entries(obj)) {
+    if (value === undefined) continue
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      result[key as keyof T] = removeUndefined(
+        value as Record<string, unknown>
+      ) as T[keyof T]
+    } else {
+      result[key as keyof T] = value as T[keyof T]
+    }
+  }
+  return result
+}
+
 /** Stringify frontmatter with content */
 export function stringifyFrontmatter(
   data: DocFrontmatter,
   content: string
 ): string {
-  return matter.stringify(content, data)
+  // Remove undefined values to prevent YAML serialization errors
+  const cleanData = removeUndefined(data)
+  return matter.stringify(content, cleanData)
 }
 
 /** Create a markdown table */
@@ -129,7 +147,11 @@ export function createPropertiesTable(
 }
 
 /** Format code block with language */
-export function codeBlock(code: string, language = 'typescript'): string {
+export function codeBlock(
+  code: string | undefined | null,
+  language = 'typescript'
+): string {
+  if (!code) return `\`\`\`${language}\n// No code available\n\`\`\``
   return `\`\`\`${language}\n${code}\n\`\`\``
 }
 

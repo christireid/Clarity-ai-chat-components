@@ -10,6 +10,7 @@ import { program } from 'commander'
 import type {
   CLIOptions,
   DocsSyncConfig,
+  ExtractedAPI,
   PackageConfig,
 } from './types/index.js'
 import {
@@ -32,6 +33,12 @@ import {
   getChangelogSinceRef,
   formatChangelogResult,
 } from './changelog-generator.js'
+import {
+  diffAPIs,
+  formatDiffAsText,
+  formatDiffAsJSON,
+  formatDiffForChangelog,
+} from './api-differ.js'
 import { loadCache, saveCache, createEmptyCache } from './utils/cache.js'
 import {
   configureGitUser,
@@ -330,6 +337,12 @@ program
     'Comma-separated list of package names to process'
   )
   .option('--full', 'Force full extraction (ignore cache)')
+  .option('--parallel', 'Extract packages in parallel')
+  .option(
+    '--concurrency <number>',
+    'Max parallel extractions (default: 3)',
+    '3'
+  )
   .option('--output <format>', 'Output format (json, text)', 'text')
   .option('--config <path>', 'Path to config file')
   .option('-v, --verbose', 'Enable verbose output')
@@ -362,9 +375,7 @@ program
       const progress = new ProgressTracker(packages.length, 'Extracting APIs')
       progress.start()
 
-      for (const pkg of packages) {
-        progress.increment(pkg.name)
-
+      const extractPackage = async (pkg: PackageConfig) => {
         const extractionConfig = getDefaultConfig(
           join(config.rootDir, pkg.path),
           pkg.name
@@ -377,10 +388,29 @@ program
         )
 
         results[pkg.name] = result
+        progress.increment(pkg.name)
 
         debug(`  ${pkg.name}: ${result.apis.length} APIs`)
         if (result.errors.length > 0) {
           warn(`  ${pkg.name}: ${result.errors.length} extraction errors`)
+        }
+
+        return result
+      }
+
+      if (options.parallel) {
+        const concurrency = parseInt(options.concurrency ?? '3', 10)
+        info(`Running parallel extraction with concurrency ${concurrency}...`)
+        await Promise.all(
+          packages.map(async (pkg, i) => {
+            // Stagger starts to avoid TypeScript race conditions
+            await new Promise((resolve) => setTimeout(resolve, i * 100))
+            return extractPackage(pkg)
+          })
+        )
+      } else {
+        for (const pkg of packages) {
+          await extractPackage(pkg)
         }
       }
 
@@ -962,6 +992,94 @@ program
       }
     } catch (err) {
       failSpinner('Verification failed')
+      error((err as Error).message)
+      process.exit(1)
+    }
+  })
+
+// Diff APIs command
+program
+  .command('diff')
+  .description('Compare current APIs with a baseline to detect changes')
+  .option('--baseline <path>', 'Path to baseline API data JSON file')
+  .option('--output <format>', 'Output format (text, json, changelog)', 'text')
+  .option('--config <path>', 'Path to config file')
+  .option('-v, --verbose', 'Enable verbose output')
+  .action(async (options: CLIOptions & { baseline?: string }) => {
+    try {
+      if (options.verbose) {
+        configureLogger({ verbose: true })
+      }
+
+      const config = loadConfig(options.config)
+      ensureDirectories(config)
+
+      // Load current API data
+      const apiDataPath = join(config.apiDataDir, 'extracted-apis.json')
+      if (!existsSync(apiDataPath)) {
+        error('No extracted API data found. Run extract-apis first.')
+        process.exit(1)
+      }
+
+      startSpinner('Loading API data...')
+      const currentData = JSON.parse(
+        readFileSync(apiDataPath, 'utf-8')
+      ) as Record<string, { apis: ExtractedAPI[] }>
+
+      // Collect all current APIs
+      const currentAPIs: ExtractedAPI[] = []
+      for (const data of Object.values(currentData)) {
+        currentAPIs.push(...data.apis)
+      }
+
+      // Load baseline data
+      let baselineAPIs: ExtractedAPI[] = []
+      const baselinePath =
+        options.baseline ?? join(config.cacheDir, 'api-baseline.json')
+
+      if (existsSync(baselinePath)) {
+        const baselineData = JSON.parse(
+          readFileSync(baselinePath, 'utf-8')
+        ) as Record<string, { apis: ExtractedAPI[] }>
+        for (const data of Object.values(baselineData)) {
+          baselineAPIs.push(...data.apis)
+        }
+        succeedSpinner(
+          `Loaded ${currentAPIs.length} current and ${baselineAPIs.length} baseline APIs`
+        )
+      } else {
+        succeedSpinner('No baseline found - treating all APIs as new')
+      }
+
+      // Perform diff
+      startSpinner('Analyzing changes...')
+      const diffResult = diffAPIs(baselineAPIs, currentAPIs)
+      succeedSpinner('Analysis complete')
+
+      // Output based on format
+      switch (options.output) {
+        case 'json':
+          console.log(formatDiffAsJSON(diffResult))
+          break
+        case 'changelog':
+          console.log(formatDiffForChangelog(diffResult))
+          break
+        default:
+          console.log(formatDiffAsText(diffResult))
+      }
+
+      // Save current as new baseline if no baseline existed
+      if (!existsSync(baselinePath)) {
+        writeFileSync(baselinePath, JSON.stringify(currentData, null, 2))
+        info(`Saved current API data as baseline: ${baselinePath}`)
+      }
+
+      if (diffResult.summary.hasBreakingChanges) {
+        warn('Breaking changes detected!')
+        process.exit(1)
+      }
+    } catch (err) {
+      failSpinner('Diff failed')
       error((err as Error).message)
       process.exit(1)
     }

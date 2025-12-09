@@ -82,8 +82,8 @@ export interface CLIOptions {
   full?: boolean
   /** Dry run mode */
   dryRun?: boolean
-  /** Output format (json, github, text) */
-  output?: 'json' | 'github' | 'text'
+  /** Output format (json, github, text, changelog) */
+  output?: 'json' | 'github' | 'text' | 'changelog'
   /** Verbose logging */
   verbose?: boolean
   /** Silent mode (no output) */
@@ -98,6 +98,10 @@ export interface CLIOptions {
   checkLinks?: boolean
   /** Check API documentation coverage (verify command) */
   checkCoverage?: boolean
+  /** Run package extraction in parallel */
+  parallel?: boolean
+  /** Concurrency limit for parallel extraction */
+  concurrency?: string
 }
 
 /** Default configuration values */

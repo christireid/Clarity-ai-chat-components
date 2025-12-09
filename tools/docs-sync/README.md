@@ -50,6 +50,12 @@ pnpm docs-sync extract-apis --packages=react,types
 
 # Force full extraction (ignore cache)
 pnpm docs-sync extract-apis --full
+
+# Parallel extraction (faster for multiple packages)
+pnpm docs-sync extract-apis --parallel --concurrency=3
+
+# Verbose output for debugging
+pnpm docs-sync extract-apis --verbose
 ```
 
 ### Generate Documentation
@@ -105,7 +111,53 @@ pnpm docs-sync sync --base=HEAD~1 --dry-run
 Check if documentation is up to date:
 
 ```bash
+# Basic verification
 pnpm docs-sync verify
+
+# Check for broken internal links
+pnpm docs-sync verify --check-links
+
+# Check API documentation coverage
+pnpm docs-sync verify --check-coverage
+```
+
+### API Diff
+
+Compare current APIs with a baseline to detect changes:
+
+```bash
+# Compare with saved baseline
+pnpm docs-sync diff
+
+# Use a specific baseline file
+pnpm docs-sync diff --baseline=path/to/baseline.json
+
+# Output as JSON for CI integration
+pnpm docs-sync diff --output=json
+
+# Output as changelog markdown
+pnpm docs-sync diff --output=changelog
+```
+
+This is useful for detecting breaking changes in PRs:
+
+```yaml
+# In your GitHub Actions workflow
+- name: Check for breaking changes
+  run: pnpm docs-sync diff --output=json
+  continue-on-error: true
+```
+
+### Initialize Config
+
+Create a default configuration file:
+
+```bash
+# Create .docs-sync.json with defaults
+pnpm docs-sync init
+
+# Overwrite existing config
+pnpm docs-sync init --force
 ```
 
 ## Configuration
