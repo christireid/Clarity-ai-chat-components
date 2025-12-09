@@ -3,9 +3,12 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
+import {
+  getMotionSafeDuration,
+  getMotionSafeValue,
+} from '../animations/motion-safe'
 
 export type Theme = 'light' | 'dark' | 'system'
 
@@ -156,18 +159,24 @@ export const ThemeSwitcher = React.forwardRef<
                 onMouseLeave={() => setHoveredTheme(null)}
                 initial={{
                   opacity: 0,
-                  y: getMotionSafeValue(prefersReducedMotion, 20, 0)
+                  y: getMotionSafeValue(prefersReducedMotion, 20, 0),
                 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  delay: getMotionSafeDuration(prefersReducedMotion, index * 0.05),
-                  duration: getMotionSafeDuration(prefersReducedMotion, ANIMATION_DURATION.normal / 1000),
+                  delay: getMotionSafeDuration(
+                    prefersReducedMotion,
+                    index * 0.05
+                  ),
+                  duration: getMotionSafeDuration(
+                    prefersReducedMotion,
+                    ANIMATION_DURATION.normal / 1000
+                  ),
                 }}
                 whileHover={{
-                  scale: getMotionSafeValue(prefersReducedMotion, 1.05, 1)
+                  scale: getMotionSafeValue(prefersReducedMotion, 1.05, 1),
                 }}
                 whileTap={{
-                  scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1)
+                  scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
                 }}
                 className={cn(
                   'relative flex items-center gap-3.5 px-4 py-3.5 rounded-lg shadow-sm',
@@ -189,7 +198,7 @@ export const ThemeSwitcher = React.forwardRef<
                         }
                       : {}
                   }
-                  transition={{ 
+                  transition={{
                     // Framer Motion 12: Spring celebration animation
                     type: 'spring',
                     damping: 12,
@@ -238,17 +247,20 @@ export const ThemeSwitcher = React.forwardRef<
               initial={{
                 opacity: 0,
                 scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
-                y: getMotionSafeValue(prefersReducedMotion, 10, 0)
+                y: getMotionSafeValue(prefersReducedMotion, 10, 0),
               }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{
                 opacity: 0,
                 scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
-                y: getMotionSafeValue(prefersReducedMotion, -10, 0)
+                y: getMotionSafeValue(prefersReducedMotion, -10, 0),
               }}
               transition={{
-                duration: getMotionSafeDuration(prefersReducedMotion, ANIMATION_DURATION.fast / 1000),
-                ease: ANIMATION_EASING.out,
+                duration: getMotionSafeDuration(
+                  prefersReducedMotion,
+                  ANIMATION_DURATION.fast / 1000
+                ),
+                ease: EASING_FRAMER.out,
               }}
               className="mt-4 p-4 rounded-lg border border-border/40 shadow-sm overflow-hidden"
             >
@@ -264,15 +276,26 @@ export const ThemeSwitcher = React.forwardRef<
                           <motion.div
                             key={name}
                             initial={{
-                              scale: getMotionSafeValue(prefersReducedMotion, 0, 1),
-                              rotate: getMotionSafeValue(prefersReducedMotion, -180, 0)
+                              scale: getMotionSafeValue(
+                                prefersReducedMotion,
+                                0,
+                                1
+                              ),
+                              rotate: getMotionSafeValue(
+                                prefersReducedMotion,
+                                -180,
+                                0
+                              ),
                             }}
                             animate={{ scale: 1, rotate: 0 }}
                             transition={{
                               type: prefersReducedMotion ? 'tween' : 'spring',
                               stiffness: 200,
                               damping: 15,
-                              duration: getMotionSafeDuration(prefersReducedMotion, 0),
+                              duration: getMotionSafeDuration(
+                                prefersReducedMotion,
+                                0
+                              ),
                             }}
                             className="flex flex-col items-center gap-1.5"
                           >
@@ -291,7 +314,12 @@ export const ThemeSwitcher = React.forwardRef<
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: getMotionSafeDuration(prefersReducedMotion, 0.2) }}
+                        transition={{
+                          delay: getMotionSafeDuration(
+                            prefersReducedMotion,
+                            0.2
+                          ),
+                        }}
                         className="mt-4 p-3 rounded border border-border/40 shadow-sm"
                         style={{
                           backgroundColor: theme.colors.background,

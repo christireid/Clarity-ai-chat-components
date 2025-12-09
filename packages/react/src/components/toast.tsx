@@ -5,14 +5,23 @@
  *
  * Provides toast notifications for success, error, info, and warning messages.
  * Supports auto-dismiss, queue management, and custom durations.
- * 
+ *
  * @enhanced Framer Motion 12: Upgraded to use new spring physics
  * - Smoother entrance/exit animations with spring damping
  * - More natural motion for toast notifications
  * - Improved layout animation performance
  */
 
-import React, { useState, useCallback, useRef, useEffect, memo, createContext, useContext, useMemo } from 'react'
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  memo,
+  createContext,
+  useContext,
+  useMemo,
+} from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@clarity-chat/primitives'
 import {
@@ -24,11 +33,14 @@ import {
 } from './icons'
 import {
   ANIMATION_DURATION,
-  ANIMATION_EASING,
+  EASING_FRAMER,
   // createSlideVariant, // Reserved for future use
 } from '../animations'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
-import { getMotionSafeDuration, getMotionSafeValue } from '../animations/motion-safe'
+import {
+  getMotionSafeDuration,
+  getMotionSafeValue,
+} from '../animations/motion-safe'
 import type { ReactNode } from 'react'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
@@ -100,26 +112,34 @@ export function ToastItem({
         error: XCircleIcon,
         info: InfoIcon,
         warning: AlertCircleIcon,
-      }[type]),
+      })[type],
     [type]
   )
 
   // Memoize color classes
-  const colorClasses = React.useMemo(() => ({
-    success: 'bg-success/10 border-success/30 text-success-foreground',
-    error:
-      'bg-destructive/10 border-destructive/30 text-destructive-foreground',
-    info: 'bg-info/10 border-info/30 text-info-foreground',
-    warning: 'bg-warning/10 border-warning/30 text-warning-foreground',
-  }[type]), [type])
+  const colorClasses = React.useMemo(
+    () =>
+      ({
+        success: 'bg-success/10 border-success/30 text-success-foreground',
+        error:
+          'bg-destructive/10 border-destructive/30 text-destructive-foreground',
+        info: 'bg-info/10 border-info/30 text-info-foreground',
+        warning: 'bg-warning/10 border-warning/30 text-warning-foreground',
+      })[type],
+    [type]
+  )
 
   // Memoize icon color classes
-  const iconColorClasses = React.useMemo(() => ({
-    success: 'text-success',
-    error: 'text-destructive',
-    info: 'text-info',
-    warning: 'text-warning',
-  }[type]), [type])
+  const iconColorClasses = React.useMemo(
+    () =>
+      ({
+        success: 'text-success',
+        error: 'text-destructive',
+        info: 'text-info',
+        warning: 'text-warning',
+      })[type],
+    [type]
+  )
 
   // Memoize close handler
   const handleClose = React.useCallback(() => onClose(id), [onClose, id])
@@ -130,20 +150,23 @@ export function ToastItem({
       initial={{
         opacity: 0,
         y: getMotionSafeValue(prefersReducedMotion, -20, 0),
-        scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1)
+        scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
       }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{
         opacity: 0,
         x: getMotionSafeValue(prefersReducedMotion, 100, 0),
-        scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1)
+        scale: getMotionSafeValue(prefersReducedMotion, 0.95, 1),
       }}
       transition={{
         // Framer Motion 12: Enhanced spring physics for toast entrance/exit
         type: 'spring',
         damping: 25,
         stiffness: 300,
-        duration: getMotionSafeDuration(prefersReducedMotion, ANIMATION_DURATION.normal / 1000),
+        duration: getMotionSafeDuration(
+          prefersReducedMotion,
+          ANIMATION_DURATION.normal / 1000
+        ),
       }}
       className={cn(
         'relative flex gap-3.5 px-4 py-3.5 rounded-xl border border-border/40 shadow-lg backdrop-blur-xl',
@@ -346,15 +369,18 @@ export function ToastProvider({
     [addToast]
   )
 
-  const value: ToastContextValue = useMemo(() => ({
-    toasts,
-    addToast,
-    removeToast,
-    success,
-    error,
-    info,
-    warning,
-  }), [toasts, addToast, removeToast, success, error, info, warning])
+  const value: ToastContextValue = useMemo(
+    () => ({
+      toasts,
+      addToast,
+      removeToast,
+      success,
+      error,
+      info,
+      warning,
+    }),
+    [toasts, addToast, removeToast, success, error, info, warning]
+  )
 
   return (
     <ToastContext.Provider value={value}>

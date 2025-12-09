@@ -1,6 +1,6 @@
 /**
  * Optimized Message Component
- * 
+ *
  * Performance-optimized version of the Message component with:
  * - React.memo to prevent unnecessary re-renders
  * - useMemo for expensive markdown parsing
@@ -13,10 +13,20 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Message as MessageType } from '@clarity-chat/types'
-import { Avatar, Button, Badge, cn, formatRelativeTime } from '@clarity-chat/primitives'
+import {
+  Avatar,
+  Button,
+  Badge,
+  cn,
+  formatRelativeTime,
+} from '@clarity-chat/primitives'
 import { CopyButton } from './copy-button'
 import { ThumbsUpIcon, ThumbsDownIcon, RefreshIcon } from './icons'
-import { ANIMATION_DURATION, ANIMATION_EASING, INTERACTION_VARIANTS } from '../animations/constants'
+import {
+  ANIMATION_DURATION,
+  EASING_FRAMER,
+  INTERACTION_VARIANTS,
+} from '../animations/constants'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
@@ -60,7 +70,10 @@ const markdownComponents: Components = {
     const { children, ...rest } = props
     return (
       <div className="overflow-x-auto my-4 w-full">
-        <table className="min-w-full table-auto border-collapse divide-y divide-border" {...rest}>
+        <table
+          className="min-w-full table-auto border-collapse divide-y divide-border"
+          {...rest}
+        >
           {children}
         </table>
       </div>
@@ -128,9 +141,9 @@ export const MessageOptimized = React.memo(
       ref
     ) => {
       const [isHovered, setIsHovered] = React.useState(false)
-      const [feedbackGiven, setFeedbackGiven] = React.useState<'up' | 'down' | null>(
-        message.feedback?.type || null
-      )
+      const [feedbackGiven, setFeedbackGiven] = React.useState<
+        'up' | 'down' | null
+      >(message.feedback?.type || null)
 
       const isUser = message.role === 'user'
       const isAssistant = message.role === 'assistant'
@@ -143,12 +156,12 @@ export const MessageOptimized = React.memo(
         return (
           <>
             <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight as any]}
-            components={markdownComponents}
-          >
-            {message.content}
-          </ReactMarkdown>
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeHighlight as any]}
+              components={markdownComponents}
+            >
+              {message.content}
+            </ReactMarkdown>
           </>
         )
       }, [message.content, isUser])
@@ -186,7 +199,7 @@ export const MessageOptimized = React.memo(
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{
             duration: ANIMATION_DURATION.normal / 1000,
-            ease: ANIMATION_EASING.out,
+            ease: EASING_FRAMER.out,
           }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -207,9 +220,19 @@ export const MessageOptimized = React.memo(
           )}
 
           {/* Message Content */}
-          <div className={cn('flex-1 space-y-2', isUser && 'flex flex-col items-end')}>
+          <div
+            className={cn(
+              'flex-1 space-y-2',
+              isUser && 'flex flex-col items-end'
+            )}
+          >
             {/* Header */}
-            <div className={cn('flex items-center gap-2', isUser && 'flex-row-reverse')}>
+            <div
+              className={cn(
+                'flex items-center gap-2',
+                isUser && 'flex-row-reverse'
+              )}
+            >
               <span className="font-semibold text-sm">
                 {isUser ? 'You' : 'AI Assistant'}
               </span>
@@ -223,7 +246,9 @@ export const MessageOptimized = React.memo(
                   Sending
                 </Badge>
               )}
-              {message.status === 'error' && <Badge variant="destructive">Error</Badge>}
+              {message.status === 'error' && (
+                <Badge variant="destructive">Error</Badge>
+              )}
             </div>
 
             {/* Content */}
@@ -235,7 +260,9 @@ export const MessageOptimized = React.memo(
               )}
             >
               {isUser ? (
-                <p className="m-0 whitespace-pre-wrap text-primary-foreground">{message.content}</p>
+                <p className="m-0 whitespace-pre-wrap text-primary-foreground">
+                  {message.content}
+                </p>
               ) : (
                 markdownContent
               )}
@@ -270,7 +297,7 @@ export const MessageOptimized = React.memo(
                   exit={{ opacity: 0, y: -10 }}
                   transition={{
                     duration: ANIMATION_DURATION.fast / 1000,
-                    ease: ANIMATION_EASING.out,
+                    ease: EASING_FRAMER.out,
                   }}
                   className="flex items-center gap-2"
                 >
@@ -306,7 +333,8 @@ export const MessageOptimized = React.memo(
                       onClick={() => handleFeedback('down')}
                       className={cn(
                         'transition-colors',
-                        feedbackGiven === 'down' && 'text-destructive bg-destructive/10'
+                        feedbackGiven === 'down' &&
+                          'text-destructive bg-destructive/10'
                       )}
                       aria-label="Poor response"
                     >
@@ -338,11 +366,15 @@ export const MessageOptimized = React.memo(
             {/* Metadata */}
             {message.metadata && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                {message.metadata.tokens && <span>{message.metadata.tokens} tokens</span>}
+                {message.metadata.tokens && (
+                  <span>{message.metadata.tokens} tokens</span>
+                )}
                 {message.metadata.processingTime && (
                   <span>• {message.metadata.processingTime}ms</span>
                 )}
-                {message.metadata.model && <span>• {message.metadata.model}</span>}
+                {message.metadata.model && (
+                  <span>• {message.metadata.model}</span>
+                )}
               </div>
             )}
           </div>

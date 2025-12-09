@@ -1,9 +1,16 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useErrorHandler } from '../../src/hooks/useErrorHandler'
 import { ClarityChatError, ConfigurationError } from '../../src/errors'
 
 describe('useErrorHandler', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
   it('should handle error and log to console in development', () => {
     const consoleErrorSpy = vi.spyOn(console, 'error')
     const { result } = renderHook(() => useErrorHandler({ logErrors: true }))
@@ -70,7 +77,10 @@ describe('useErrorHandler', () => {
   })
 
   it('should respect logErrors option', () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error')
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+    consoleErrorSpy.mockClear() // Clear any previous calls
     const { result } = renderHook(() => useErrorHandler({ logErrors: false }))
 
     act(() => {
@@ -79,6 +89,7 @@ describe('useErrorHandler', () => {
 
     // Should not log when logErrors is false
     expect(consoleErrorSpy).not.toHaveBeenCalled()
+    consoleErrorSpy.mockRestore()
   })
 
   it('should handle showToast option', () => {

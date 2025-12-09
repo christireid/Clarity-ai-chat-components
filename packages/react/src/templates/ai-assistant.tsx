@@ -226,7 +226,6 @@ export function AIAssistantTemplate({
               chatId,
               role: 'assistant',
               content: 'No AI model available. Please configure API keys.',
-              timestamp: Date.now(),
             })
             setIsLoading(false)
             return
@@ -269,7 +268,6 @@ export function AIAssistantTemplate({
               chatId,
               role: 'assistant',
               content: responseContent,
-              timestamp: new Date().getTime(),
             })
           } catch (error) {
             console.error('AI Assistant error:', error)
@@ -277,7 +275,6 @@ export function AIAssistantTemplate({
               chatId,
               role: 'assistant',
               content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-              timestamp: new Date().getTime(),
             })
           }
         }
@@ -319,7 +316,6 @@ export function AIAssistantTemplate({
           chatId,
           role: 'user',
           content,
-          timestamp: now.getTime(),
         })
       }
 
@@ -402,7 +398,6 @@ export function AIAssistantTemplate({
           chatId,
           role: 'assistant',
           content: responseContent,
-          timestamp: new Date().getTime(),
         })
       } catch (error) {
         console.error('AI Assistant error:', error)
@@ -410,7 +405,6 @@ export function AIAssistantTemplate({
           chatId,
           role: 'assistant',
           content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          timestamp: new Date().getTime(),
         })
       } finally {
         setIsLoading(false)

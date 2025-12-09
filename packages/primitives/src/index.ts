@@ -113,20 +113,20 @@ export {
   PopoverContent as ShadcnPopoverContent,
 } from './components/ui/popover'
 
-// Tooltip
-export {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from './components/ui/tooltip'
+// Tooltip - Wrapper with simpler API (content prop)
+export { Tooltip, SimpleTooltip } from './components/tooltip'
+export type { TooltipProps } from './components/tooltip'
 
-// Also export with Shadcn prefix for backward compatibility
+// Also export raw shadcn/Radix Tooltip components for advanced use
 export {
   Tooltip as ShadcnTooltip,
   TooltipTrigger as ShadcnTooltipTrigger,
   TooltipContent as ShadcnTooltipContent,
   TooltipProvider as ShadcnTooltipProvider,
+  Tooltip as RadixTooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
 } from './components/ui/tooltip'
 
 // Checkbox
