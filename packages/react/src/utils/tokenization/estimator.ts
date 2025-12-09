@@ -164,7 +164,13 @@ export function estimateTokensByProvider(
 
   const charsPerToken =
     PROVIDER_CHAR_RATIOS[provider] ?? DEFAULT_CHARS_PER_TOKEN
-  return Math.ceil(text.length / charsPerToken)
+
+  // Use CJK-aware character counting for consistency with estimateTokens()
+  const effectiveLength = containsCJK(text)
+    ? getEffectiveCharCount(text)
+    : text.length
+
+  return Math.ceil(effectiveLength / charsPerToken)
 }
 
 /**

@@ -23,8 +23,13 @@ export interface TokenUsage {
   max: number
   /** Available tokens remaining */
   available: number
-  /** Utilization as percentage (0-100) */
+  /** Utilization as percentage (0-100, capped for display) */
   utilizationPercent: number
+  /**
+   * Percentage by which budget is exceeded (0 if not exceeded)
+   * E.g., if effectiveMax is 100 and current is 150, exceededPercent is 50
+   */
+  exceededPercent: number
   /** Current status based on thresholds */
   status: TokenUsageStatus
   /** Tokens reserved for output */
@@ -172,6 +177,7 @@ function createInitialUsage(config: TokenBudgetConfig): TokenUsage {
     max: config.maxInputTokens,
     available: effectiveMax,
     utilizationPercent: 0,
+    exceededPercent: 0,
     status: 'safe',
     reservedForOutput:
       config.reservedForOutput ?? DEFAULT_CONFIG.reservedForOutput,
@@ -319,28 +325,30 @@ export function useTokenBudgetMonitor(
 
   /**
    * Calculate total tokens for messages
+   * Uses parallel token counting for improved performance
    */
   const calculateTotalTokens = React.useCallback(
     async (messages: BudgetMessage[]): Promise<number> => {
       if (messages.length === 0) return 0
 
-      // Use pre-computed tokens where available
-      let total = 0
       const TOKENS_PER_MESSAGE = 4 // Overhead per message
 
-      for (const msg of messages) {
+      // Calculate tokens in parallel for messages without pre-computed counts
+      const tokenPromises = messages.map(async (msg) => {
         if (msg.tokens !== undefined) {
-          total += msg.tokens
-        } else {
-          total += await calculateTokens(msg.content)
+          return msg.tokens
         }
-        total += TOKENS_PER_MESSAGE
-      }
+        return calculateTokens(msg.content)
+      })
 
-      // Add priming tokens
-      total += 2
+      const tokenCounts = await Promise.all(tokenPromises)
 
-      return total
+      // Sum all tokens plus overhead
+      const contentTokens = tokenCounts.reduce((sum, tokens) => sum + tokens, 0)
+      const overheadTokens = messages.length * TOKENS_PER_MESSAGE
+      const primingTokens = 2
+
+      return contentTokens + overheadTokens + primingTokens
     },
     [calculateTokens]
   )
@@ -423,11 +431,16 @@ export function useTokenBudgetMonitor(
       )
       const available = Math.max(0, effectiveMax - currentTokens)
 
+      // Calculate exceeded percentage for UX (how much over budget)
+      const exceededPercent =
+        utilizationPercent > 100 ? utilizationPercent - 100 : 0
+
       const newUsage: TokenUsage = {
         current: currentTokens,
         max: resolvedConfig.maxInputTokens,
         available,
         utilizationPercent: Math.min(utilizationPercent, 100),
+        exceededPercent,
         status,
         reservedForOutput: resolvedConfig.reservedForOutput,
         effectiveMax,
@@ -637,6 +650,81 @@ export type BudgetMonitorModel =
   | 'mistral-small'
 
 /**
+ * Set of valid budget monitor models for runtime validation
+ */
+const VALID_BUDGET_MONITOR_MODELS = new Set<string>([
+  'gpt-4',
+  'gpt-4-turbo',
+  'gpt-4o',
+  'gpt-4o-mini',
+  'gpt-4.1',
+  'gpt-4.1-mini',
+  'gpt-4.1-nano',
+  'o1',
+  'o1-mini',
+  'o3-mini',
+  'claude-3-opus',
+  'claude-3-sonnet',
+  'claude-3-haiku',
+  'claude-3-5-sonnet',
+  'claude-3-5-haiku',
+  'claude-sonnet-4',
+  'claude-opus-4',
+  'gemini-1.5-pro',
+  'gemini-1.5-flash',
+  'gemini-2.0-flash',
+  'gemini-2.0-pro',
+  'deepseek-chat',
+  'deepseek-r1',
+  'mistral-large',
+  'mistral-small',
+])
+
+/**
+ * Check if a model string is a valid BudgetMonitorModel
+ */
+function isValidBudgetMonitorModel(model: string): model is BudgetMonitorModel {
+  return VALID_BUDGET_MONITOR_MODELS.has(model)
+}
+
+/**
+ * Map BudgetMonitorModel to ModelName for tokenization
+ * Returns undefined for models not supported by the accurate tokenizer
+ */
+function toModelName(model: BudgetMonitorModel): ModelName | undefined {
+  // All BudgetMonitorModel values are currently valid ModelName values
+  // This explicit mapping ensures type safety at runtime
+  const modelNameMapping: Record<BudgetMonitorModel, ModelName> = {
+    'gpt-4': 'gpt-4',
+    'gpt-4-turbo': 'gpt-4-turbo',
+    'gpt-4o': 'gpt-4o',
+    'gpt-4o-mini': 'gpt-4o-mini',
+    'gpt-4.1': 'gpt-4.1',
+    'gpt-4.1-mini': 'gpt-4.1-mini',
+    'gpt-4.1-nano': 'gpt-4.1-nano',
+    o1: 'o1',
+    'o1-mini': 'o1-mini',
+    'o3-mini': 'o3-mini',
+    'claude-3-opus': 'claude-3-opus',
+    'claude-3-sonnet': 'claude-3-sonnet',
+    'claude-3-haiku': 'claude-3-haiku',
+    'claude-3-5-sonnet': 'claude-3-5-sonnet',
+    'claude-3-5-haiku': 'claude-3-5-haiku',
+    'claude-sonnet-4': 'claude-sonnet-4',
+    'claude-opus-4': 'claude-opus-4',
+    'gemini-1.5-pro': 'gemini-1.5-pro',
+    'gemini-1.5-flash': 'gemini-1.5-flash',
+    'gemini-2.0-flash': 'gemini-2.0-flash',
+    'gemini-2.0-pro': 'gemini-2.0-pro',
+    'deepseek-chat': 'deepseek-chat',
+    'deepseek-r1': 'deepseek-r1',
+    'mistral-large': 'mistral-large',
+    'mistral-small': 'mistral-small',
+  }
+  return modelNameMapping[model]
+}
+
+/**
  * Create a pre-configured monitor for common models
  *
  * Provides model-specific token limits and recommended output reservations
@@ -686,9 +774,9 @@ export function createModelBudgetMonitor(
     'claude-3-5-sonnet': { maxInputTokens: 200000, reservedForOutput: 8192 },
     'claude-3-5-haiku': { maxInputTokens: 200000, reservedForOutput: 8192 },
 
-    // Anthropic Claude 4 Family
-    'claude-sonnet-4': { maxInputTokens: 200000, reservedForOutput: 16384 },
-    'claude-opus-4': { maxInputTokens: 200000, reservedForOutput: 32768 },
+    // Anthropic Claude 4 Family (upgraded to 1M context window as of late 2024)
+    'claude-sonnet-4': { maxInputTokens: 1000000, reservedForOutput: 16384 },
+    'claude-opus-4': { maxInputTokens: 1000000, reservedForOutput: 32768 },
 
     // Google Gemini Family
     'gemini-1.5-pro': { maxInputTokens: 1000000, reservedForOutput: 8192 },
@@ -707,7 +795,7 @@ export function createModelBudgetMonitor(
 
   return {
     ...modelConfigs[model],
-    model: model as ModelName,
+    model: toModelName(model),
     ...overrides,
   } as TokenBudgetConfig
 }

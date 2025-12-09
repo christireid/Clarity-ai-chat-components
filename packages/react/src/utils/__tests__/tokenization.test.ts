@@ -362,6 +362,20 @@ describe('Token Estimator', () => {
         expect(tokens).toBeGreaterThan(0)
       }
     })
+
+    it('handles CJK text correctly for consistency with estimateTokens', () => {
+      const chineseText = '你好世界' // "Hello world" in Chinese
+      const latinText = 'Hello' // Similar length Latin text
+
+      const chineseTokensOpenAI = estimateTokensByProvider(
+        chineseText,
+        'openai'
+      )
+      const latinTokensOpenAI = estimateTokensByProvider(latinText, 'openai')
+
+      // CJK chars count as 3 effective chars each, so more tokens
+      expect(chineseTokensOpenAI).toBeGreaterThan(latinTokensOpenAI)
+    })
   })
 
   describe('getCharsPerToken', () => {

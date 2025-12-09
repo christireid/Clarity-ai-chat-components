@@ -223,6 +223,58 @@ describe('useTokenBudgetMonitor', () => {
       expect(onExceeded).toHaveBeenCalledTimes(1)
     })
 
+    it('should report exceededPercent when over budget', async () => {
+      const { result } = renderHook(() =>
+        useTokenBudgetMonitor({
+          maxInputTokens: 1000,
+          reservedForOutput: 0,
+          debounceMs: 0,
+        })
+      )
+
+      // Add messages that exceed by 50% (1500 tokens when max is 1000)
+      const messages: BudgetMessage[] = [
+        { role: 'user', content: 'x', tokens: 1494 }, // +6 overhead = 1500 total
+      ]
+
+      act(() => {
+        result.current.updateMessages(messages)
+      })
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(100)
+      })
+
+      expect(result.current.usage.status).toBe('exceeded')
+      expect(result.current.usage.utilizationPercent).toBe(100) // Capped at 100
+      expect(result.current.usage.exceededPercent).toBe(50) // 50% over budget
+    })
+
+    it('should report exceededPercent as 0 when under budget', async () => {
+      const { result } = renderHook(() =>
+        useTokenBudgetMonitor({
+          maxInputTokens: 1000,
+          reservedForOutput: 0,
+          debounceMs: 0,
+        })
+      )
+
+      // Add messages under budget
+      const messages: BudgetMessage[] = [
+        { role: 'user', content: 'x', tokens: 500 },
+      ]
+
+      act(() => {
+        result.current.updateMessages(messages)
+      })
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(100)
+      })
+
+      expect(result.current.usage.exceededPercent).toBe(0)
+    })
+
     it('should only fire callbacks once per threshold crossing', async () => {
       const onWarning = vi.fn()
 
@@ -519,6 +571,7 @@ describe('formatTokenUsage', () => {
       max: 10000,
       available: 4000,
       utilizationPercent: 55.56,
+      exceededPercent: 0,
       status: 'warning',
       reservedForOutput: 1000,
       effectiveMax: 9000,
@@ -555,18 +608,20 @@ describe('createModelBudgetMonitor', () => {
     expect(config.reservedForOutput).toBe(8192)
   })
 
-  it('should create config for Claude Sonnet 4', () => {
+  it('should create config for Claude Sonnet 4 with 1M context', () => {
     const config = createModelBudgetMonitor('claude-sonnet-4')
 
-    expect(config.maxInputTokens).toBe(200000)
+    // Claude 4 models have 1M context window as of late 2024
+    expect(config.maxInputTokens).toBe(1000000)
     expect(config.reservedForOutput).toBe(16384)
     expect(config.model).toBe('claude-sonnet-4')
   })
 
-  it('should create config for Claude Opus 4', () => {
+  it('should create config for Claude Opus 4 with 1M context', () => {
     const config = createModelBudgetMonitor('claude-opus-4')
 
-    expect(config.maxInputTokens).toBe(200000)
+    // Claude 4 models have 1M context window as of late 2024
+    expect(config.maxInputTokens).toBe(1000000)
     expect(config.reservedForOutput).toBe(32768)
   })
 
