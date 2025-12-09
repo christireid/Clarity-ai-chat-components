@@ -1,0 +1,48 @@
+# Source files (use compiled output instead)
+src/**
+**/*.ts
+!out/**/*.js
+
+# Development files
+.vscode/**
+.vscode-test/**
+node_modules/**
+
+# Test files
+**/*.test.js
+**/test/**
+coverage/**
+
+# Build artifacts
+*.map
+
+# Git
+.git/**
+.gitignore
+
+# Documentation source
+docs/**
+
+# Package manager files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# TypeScript config
+tsconfig.json
+
+# Editor configs
+.editorconfig
+.prettierrc
+.eslintrc*
+eslint.config.*
+
+# Development scripts
+scripts/**
+
+# Misc
+*.md
+!README.md
+!CHANGELOG.md
+.DS_Store
+Thumbs.db

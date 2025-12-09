@@ -4,6 +4,9 @@
   "description": "Developer tools for debugging, testing, and validation in Clarity Chat",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "clarity-dev": "./dist/cli/index.js"
+  },
   "publishConfig": {
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"
@@ -16,6 +19,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "cli": "node dist/cli/index.js",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest --watch"
   },
@@ -24,14 +28,16 @@
     "developer-tools",
     "debugging",
     "testing",
-    "validation"
+    "validation",
+    "cli"
   ],
   "author": "Clarity Chat",
   "license": "MIT",
   "dependencies": {
     "@clarity-chat/errors": "workspace:*",
     "chalk": "^5.6.2",
-    "boxen": "^8.0.1"
+    "boxen": "^8.0.1",
+    "commander": "^12.1.0"
   },
   "peerDependencies": {
     "react": ">=19.0.0",
