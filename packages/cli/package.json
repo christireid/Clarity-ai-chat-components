@@ -20,7 +20,7 @@
     "build": "tsup src/index.ts --format esm --dts --clean",
     "prepublishOnly": "npm run build",
     "test": "vitest run --passWithNoTests",
-    "type-check": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "clarity-chat",
@@ -71,6 +71,7 @@
     "dist",
     "templates"
   ],
+  "sideEffects": false,
   "engines": {
     "node": ">=20.0.0"
   }

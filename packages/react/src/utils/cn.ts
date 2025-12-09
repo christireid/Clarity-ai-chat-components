@@ -1,11 +1,7 @@
 /**
- * Utility for combining class names with Tailwind CSS
- * Uses clsx for conditional classes and tailwind-merge to resolve conflicts
+ * Re-export cn utility from @clarity-chat/primitives
+ *
+ * This ensures consistency across the library. The canonical implementation
+ * is in @clarity-chat/primitives/lib/utils.
  */
-
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+export { cn } from '@clarity-chat/primitives'
