@@ -174,33 +174,37 @@ Best practices:
 
 ## Phase 3: Prioritized Enhancement Tables
 
-### Quick Wins (Do First) - High Impact, Low Effort
+> **Effort Scale Disclaimer**: Effort scores are rough estimates based on code structure review, not actual implementation experience. Real effort varies based on team familiarity, testing requirements, and integration complexity. Use these as relative comparisons, not absolute time estimates.
+>
+> **Scale**: 1 = trivial, 2 = small, 3 = medium, 4 = large, 5 = very large
 
-| # | Enhancement | Category | Impact | Effort | Files to Modify |
-|---|-------------|----------|--------|--------|-----------------|
-| 1 | Token budget progress bar | Token Optimization | 4 | 1 | New component |
-| 2 | Warning threshold alerts | Token Optimization | 4 | 1 | `use-token-budget.ts` |
-| 3 | Tool execution progress states | Agents & Tools | 4 | 2 | `tool-ui-registry.ts` |
-| 4 | Stream cancel button | Streaming | 4 | 1 | Consumer component |
-| 5 | Default tool error component | Agents & Tools | 3 | 2 | New component |
+### Quick Wins (Do First) - High Impact, Relatively Low Effort
+
+| # | Enhancement | Category | Impact | Effort | Entry Point | Confidence |
+|---|-------------|----------|--------|--------|-------------|------------|
+| 1 | Token budget progress bar | Token Optimization | 4 | 1-2 | New component | High |
+| 2 | Warning threshold alerts | Token Optimization | 4 | 1-2 | `use-token-budget.ts:70` | High |
+| 3 | Tool execution progress states | Agents & Tools | 4 | 2-3 | `tool-ui-registry.ts` | Medium |
+| 4 | Stream cancel button | Streaming | 4 | 1 | Consumer component | High |
+| 5 | Default tool error component | Agents & Tools | 3 | 2 | New component | High |
 
 ### Major Improvements (Plan) - High Impact, Higher Effort
 
-| # | Enhancement | Category | Impact | Effort | Dependencies |
-|---|-------------|----------|--------|--------|--------------|
-| 1 | Token boundary buffering | Streaming | 4 | 3 | `use-streaming.ts` |
-| 2 | Memory visualization component | Memory | 4 | 3 | `MemoryService`, new component |
-| 3 | Parallel tool execution | Agents & Tools | 4 | 3 | `react-agent.ts` |
-| 4 | Confirmation dialog for dangerous tools | Agents & Tools | 4 | 3 | `tool-ui-registry.ts` |
+| # | Enhancement | Category | Impact | Effort | Entry Point | Confidence |
+|---|-------------|----------|--------|--------|-------------|------------|
+| 1 | Token boundary buffering | Streaming | 4 | 2-4 | `use-streaming.ts:45` | Medium |
+| 2 | Memory visualization component | Memory | 4 | 3-4 | `memory-provider.tsx`, new UI | Medium |
+| 3 | Parallel tool execution | Agents & Tools | 4 | 3-5 | `react-agent.ts` | Low |
+| 4 | Confirmation dialog for dangerous tools | Agents & Tools | 4 | 2-3 | `tool-ui-registry.ts` | Medium |
 
 ### Polish Items (Batch) - Lower Impact
 
-| # | Enhancement | Category | Impact | Effort |
-|---|-------------|----------|--------|--------|
-| 1 | Typing animation option | Streaming | 2 | 2 |
-| 2 | Compression savings display | Token Optimization | 2 | 2 |
-| 3 | Cache efficiency badge | Token Optimization | 2 | 2 |
-| 4 | Tool execution history | Agents & Tools | 2 | 3 |
+| # | Enhancement | Category | Impact | Effort | Confidence |
+|---|-------------|----------|--------|--------|------------|
+| 1 | Typing animation option | Streaming | 2 | 2 | Medium |
+| 2 | Compression savings display | Token Optimization | 2 | 2 | High |
+| 3 | Cache efficiency badge | Token Optimization | 2 | 2 | High |
+| 4 | Tool execution history | Agents & Tools | 2 | 3-4 | Low |
 
 ---
 
@@ -254,20 +258,25 @@ import { TokenBudgetBar } from '@clarity-chat/react'
 
 **Test Cases**:
 ```typescript
+// Uses vitest + @testing-library/react (project's actual test stack)
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+
 describe('TokenBudgetBar', () => {
-  it('should show green at 50% utilization', () => {
+  it('should render progress bar with correct utilization', () => {
     render(<TokenBudgetBar currentTokens={4000} maxTokens={8000} />)
-    expect(screen.getByRole('progressbar')).toHaveStyle({ backgroundColor: 'green' })
+    const bar = screen.getByRole('progressbar')
+    expect(bar).toHaveAttribute('aria-valuenow', '50')
   })
 
-  it('should show warning at 80% utilization', () => {
+  it('should apply warning class at threshold', () => {
     render(<TokenBudgetBar currentTokens={6400} maxTokens={8000} warningThreshold={0.8} />)
     expect(screen.getByRole('progressbar')).toHaveClass('warning')
   })
 
-  it('should display cost estimate', () => {
+  it('should display formatted cost estimate', () => {
     render(<TokenBudgetBar currentTokens={1000} maxTokens={8000} showCost costPer1K={0.03} />)
-    expect(screen.getByText('$0.03')).toBeInTheDocument()
+    expect(screen.getByText(/\$0\.03/)).toBeInTheDocument()
   })
 })
 ```
@@ -393,15 +402,35 @@ const processChunk = React.useCallback((chunk: string) => {
 
 ## Provider Compatibility Matrix
 
-| Enhancement | OpenAI | Anthropic | Google | Notes |
-|-------------|--------|-----------|--------|-------|
-| Token budget bar | All | All | All | Client-side, provider-agnostic |
-| Tool progress states | All | All | All | Depends on streaming tool calls |
-| Token boundary buffering | All | All | All | Client-side buffering |
-| Memory visualization | All | All | All | Framework feature |
-| Parallel tool execution | All | All | All | ReAct pattern |
-| Cost estimation | Full support | Full support | Limited | Google pricing varies |
-| KV-cache metrics | Via API | Native caching | Limited | Provider-specific caching |
+> **Verification Note**: Based on code review of `packages/react/src/adapters/`. Actual behavior should be verified with integration tests.
+
+| Enhancement | OpenAI | Anthropic | Google | Code-Verified Notes |
+|-------------|--------|-----------|--------|---------------------|
+| Token budget bar | ✅ | ✅ | ✅ | Client-side, provider-agnostic |
+| Tool progress states | ✅ | ✅ | ⚠️ | Google adapter lacks streaming tool_calls handling |
+| Token boundary buffering | ✅ | ✅ | ✅ | Client-side buffering, no provider dependency |
+| Memory visualization | ✅ | ✅ | ✅ | Framework feature, provider-agnostic |
+| Parallel tool execution | ✅ | ✅ | ⚠️ | Google adapter doesn't process tool responses in stream |
+| Cost estimation | ✅ | ✅ | ✅ | Google uses per-1M pricing (vs per-1K) |
+| KV-cache metrics | ⚠️ | ✅ | ❌ | Only Anthropic has native cache_control; OpenAI via separate API |
+
+### Provider-Specific Implementation Notes
+
+**OpenAI** (`adapters/openai.ts`):
+- Full streaming with `tool_calls` delta support
+- Cost pricing per 1K tokens
+- Vision via `image_url` in content array
+
+**Anthropic** (`adapters/anthropic.ts`):
+- Native `cache_control` for KV-cache optimization
+- Different message format (human/assistant roles)
+- Tool use via dedicated `tool_use` content blocks
+
+**Google/Gemini** (`adapters/google.ts`):
+- Uses `contents/parts` structure (not `messages/content`)
+- Role mapping: `user` → `user`, others → `model`
+- **Limitation**: Streaming does not currently process tool function calls
+- Cost pricing per 1M tokens (1000x different scale)
 
 ---
 
@@ -447,11 +476,21 @@ const processChunk = React.useCallback((chunk: string) => {
 ## References
 
 ### Research Sources
-- [SSE vs WebSocket for AI Chat](https://www.sniki.dev/posts/sse-vs-websockets-for-ai-chat/)
-- [KV-Cache Optimization](https://bentoml.com/llm/inference-optimization/prefix-caching)
-- [vLLM Prefix Caching](https://docs.vllm.ai/en/stable/design/prefix_caching.html)
-- [ReAct Pattern](https://www.analyticsvidhya.com/blog/2024/10/langgraph-react-function-calling/)
-- [Streaming Best Practices](https://upstash.com/blog/sse-streaming-llm-responses)
+
+> **Disclaimer**: These sources were retrieved via web search and summarized. Content has not been independently verified for accuracy or currency. Provider APIs and best practices evolve rapidly; always consult official documentation for production implementations.
+
+| Source | Topic | Access Date | Caveat |
+|--------|-------|-------------|--------|
+| [sniki.dev](https://www.sniki.dev/posts/sse-vs-websockets-for-ai-chat/) | SSE vs WebSocket | Dec 2025 | Blog post, verify with official specs |
+| [bentoml.com](https://bentoml.com/llm/inference-optimization/prefix-caching) | KV-Cache Optimization | Dec 2025 | Framework-specific patterns |
+| [vLLM docs](https://docs.vllm.ai/en/stable/design/prefix_caching.html) | Prefix Caching | Dec 2025 | vLLM-specific, may differ from cloud APIs |
+| [Analytics Vidhya](https://www.analyticsvidhya.com/blog/2024/10/langgraph-react-function-calling/) | ReAct Pattern | Dec 2025 | LangGraph-focused implementation |
+| [Upstash Blog](https://upstash.com/blog/sse-streaming-llm-responses) | Streaming Best Practices | Dec 2025 | Next.js-specific examples |
+
+**Recommended Official Documentation**:
+- OpenAI: https://platform.openai.com/docs/guides/streaming
+- Anthropic: https://docs.anthropic.com/en/docs/build-with-claude/streaming
+- Google: https://ai.google.dev/gemini-api/docs/text-generation#streaming
 
 ### Related Clarity Chat Files
 - `packages/react/src/hooks/use-streaming.ts`

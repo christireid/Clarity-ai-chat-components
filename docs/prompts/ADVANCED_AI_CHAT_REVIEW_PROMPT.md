@@ -402,18 +402,21 @@ describe('[Feature]', () => {
 
 ## Validation Checklist
 
-Before finalizing, verify each suggestion against AI chat concerns:
+Before finalizing, verify each suggestion against AI chat concerns. **Do not pre-check items** - only mark as checked after actual verification (code review, testing, or documented analysis).
 
-- [ ] Does this work with streaming responses?
-- [ ] Is it compatible with all three providers (OpenAI, Anthropic, Google)?
-- [ ] Does it handle partial/incomplete AI responses?
-- [ ] Is it resilient to API errors and rate limits?
-- [ ] Does it maintain conversation context correctly?
-- [ ] Is it accessible for users with assistive technology?
-- [ ] Does it respect token limits and budgets?
-- [ ] Is the UX appropriate for potentially slow AI responses?
+- [ ] Does this work with streaming responses? *(verify with code trace or test)*
+- [ ] Is it compatible with all three providers (OpenAI, Anthropic, Google)? *(check adapter implementations)*
+- [ ] Does it handle partial/incomplete AI responses? *(test interruption scenarios)*
+- [ ] Is it resilient to API errors and rate limits? *(verify error handling paths)*
+- [ ] Does it maintain conversation context correctly? *(trace state management)*
+- [ ] Is it accessible for users with assistive technology? *(audit ARIA, keyboard nav)*
+- [ ] Does it respect token limits and budgets? *(verify budget integration)*
+- [ ] Is the UX appropriate for potentially slow AI responses? *(consider loading states)*
 
-If ANY answer is "No" without justification -> Flag for discussion.
+**Handling Uncertain Items**:
+- If verification is not possible: Note "(unverified - requires testing)"
+- If answer is "No": Document the gap and flag for discussion
+- If answer is "Partial": Specify which providers or scenarios are affected
 
 ---
 
@@ -490,19 +493,27 @@ ToolUIRegistry.register('get_weather', WeatherToolUI)
 
 ```typescript
 // Key patterns for memory enhancements
+// Actual exports from packages/react/src/memory/memory-provider.tsx
 import {
-  MemoryProvider,
-  useMemoryContext,
-  MemoryService,
+  MemoryProvider,       // Context provider component
+  useMemory,            // Primary hook for memory operations
+  useMemoryContext,     // Access memory context (nullable)
+  useMemoryQuery,       // Query memories with filters
+  useMemoryStats,       // Get memory statistics
+  useMemoryEvents,      // Subscribe to memory events
+  useMemoryOptimization // Optimize memory usage
 } from '@clarity-chat/react'
 
-// Memory configuration
-const memoryConfig: ClarityMemoryOptions = {
-  enabled: true,
-  strategy: 'hybrid',           // sliding-window | summarization | hybrid
-  maxTokens: 2000,
-  summarizationThreshold: 10,   // messages before summarizing
-}
+// MemoryService is imported separately for direct instantiation
+import { MemoryService } from '@clarity-chat/react/memory'
+
+// Memory provider usage
+<MemoryProvider config={memoryConfig}>
+  <YourChatComponent />
+</MemoryProvider>
+
+// Hook usage
+const { addMemory, queryMemories, stats } = useMemory()
 ```
 
 ### Token Optimization Quick Reference
