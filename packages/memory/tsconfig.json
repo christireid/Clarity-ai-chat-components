@@ -1,29 +1,15 @@
 {
+  "extends": "../typescript-config/react-library.json",
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ESNext",
     "lib": ["ES2020", "DOM"],
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "checkJs": false,
-    "jsx": "react-jsx",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "removeComments": false,
-    "strict": true,
+    "checkJs": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": true,
+    "removeComments": false,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
     "incremental": true,
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "paths": {
@@ -31,5 +17,11 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts", "**/__tests__/**"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**"
+  ]
 }

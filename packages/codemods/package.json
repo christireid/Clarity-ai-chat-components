@@ -47,6 +47,7 @@
     "dist",
     "transforms"
   ],
+  "sideEffects": false,
   "engines": {
     "node": ">=20.0.0"
   }

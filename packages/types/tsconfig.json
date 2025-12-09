@@ -1,22 +1,12 @@
 {
+  "extends": "../typescript-config/node-library.json",
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ESNext",
     "lib": ["ES2020"],
-    "declaration": true,
-    "declarationMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noUnusedParameters": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

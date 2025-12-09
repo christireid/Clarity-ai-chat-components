@@ -18,6 +18,7 @@
     "docs",
     "README.md"
   ],
+  "sideEffects": false,
   "publishConfig": {
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"

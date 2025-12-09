@@ -1,30 +1,20 @@
 {
+  "extends": "../typescript-config/react-library.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",
-    "declaration": true,
-    "declarationMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
-    // TODO: Re-enable after fixing ~300 index access errors across codebase
-    // "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    // TODO: Re-enable after fixing 12 index signature access errors
-    // "noPropertyAccessFromIndexSignature": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": false,
+    "noPropertyAccessFromIndexSignature": false,
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/utils/memory/examples/**", "src/**/*.example.tsx", "src/**/*.example.ts", "src/prompt/**/*"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/__tests__/**",
+    "src/utils/memory/examples/**",
+    "src/**/*.example.tsx",
+    "src/**/*.example.ts",
+    "src/prompt/**/*"
+  ]
 }
