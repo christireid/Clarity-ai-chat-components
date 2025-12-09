@@ -1626,11 +1626,10 @@ clarity-chat docs
 **Enable AI agents like Claude Desktop to interact with Clarity Chat projects**:
 
 ```bash
-# Install globally
-npm install -g @clarity-chat/mcp-server
-
-# Or use via npx
-npx @clarity-chat/mcp-server
+# Clone and build from monorepo (npm publication coming soon)
+git clone https://github.com/christireid/Clarity-ai-chat-components.git
+cd Clarity-ai-chat-components
+pnpm install && pnpm --filter @clarity-chat/mcp-server build
 ```
 
 **Configure Claude Desktop** (`claude_desktop_config.json`):
@@ -1639,8 +1638,8 @@ npx @clarity-chat/mcp-server
 {
   "mcpServers": {
     "clarity-chat": {
-      "command": "npx",
-      "args": ["@clarity-chat/mcp-server"]
+      "command": "node",
+      "args": ["/path/to/Clarity-ai-chat-components/tools/mcp-server/dist/index.js"]
     }
   }
 }

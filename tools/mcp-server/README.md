@@ -46,16 +46,28 @@ Pre-built prompt templates for common tasks:
 
 ## Installation
 
-### Global Installation
+### From Monorepo (Current Method)
+
+The MCP server is part of the Clarity Chat monorepo. To use it:
+
+```bash
+# Clone the repository
+git clone https://github.com/christireid/Clarity-ai-chat-components.git
+cd Clarity-ai-chat-components
+
+# Install dependencies
+pnpm install
+
+# Build the MCP server
+pnpm --filter @clarity-chat/mcp-server build
+```
+
+### Future: npm Installation (Coming Soon)
+
+Once published to npm, you'll be able to install globally:
 
 ```bash
 npm install -g @clarity-chat/mcp-server
-```
-
-### Local Installation
-
-```bash
-npm install @clarity-chat/mcp-server
 ```
 
 ## Usage
@@ -66,6 +78,23 @@ Add to your Claude Desktop configuration file:
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json` **Windows**:
 `%APPDATA%\Claude\claude_desktop_config.json`
+
+**Current method (from monorepo):**
+
+```json
+{
+  "mcpServers": {
+    "clarity-chat": {
+      "command": "node",
+      "args": ["/path/to/Clarity-ai-chat-components/tools/mcp-server/dist/index.js"]
+    }
+  }
+}
+```
+
+Replace `/path/to/Clarity-ai-chat-components` with the actual path to your cloned repository.
+
+**Future method (once published to npm):**
 
 ```json
 {
@@ -78,28 +107,14 @@ Add to your Claude Desktop configuration file:
 }
 ```
 
-Or if installed globally:
-
-```json
-{
-  "mcpServers": {
-    "clarity-chat": {
-      "command": "clarity-mcp"
-    }
-  }
-}
-```
-
 ### With Other MCP Clients
 
 The server uses stdio transport and can be integrated with any MCP-compatible client:
 
 ```bash
-# Run directly
-clarity-mcp
-
-# Or via npx
-npx @clarity-chat/mcp-server
+# Run from the monorepo (after building)
+cd tools/mcp-server
+node dist/index.js
 ```
 
 ## Examples
@@ -428,7 +443,8 @@ npm run test:coverage
 ### Testing with MCP Inspector
 
 ```bash
-npx @modelcontextprotocol/inspector npx @clarity-chat/mcp-server
+# From the tools/mcp-server directory (after building)
+npx @modelcontextprotocol/inspector node dist/index.js
 ```
 
 ## Architecture
