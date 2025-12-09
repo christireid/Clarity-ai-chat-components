@@ -6,11 +6,25 @@ import '@/styles/syntax-highlighting.css'
 import { Providers } from './providers'
 import { Navigation } from '@/components/Navigation/Navigation'
 import { Footer } from '@/components/Layout/Footer'
-import { StructuredData, OrganizationStructuredData, SoftwareLibraryStructuredData, DocumentationSiteStructuredData } from '@/components/SEO/StructuredData'
+import {
+  StructuredData,
+  OrganizationStructuredData,
+  SoftwareLibraryStructuredData,
+  DocumentationSiteStructuredData,
+} from '@/components/SEO/StructuredData'
 
 // Lazy load the AI assistant to reduce initial bundle size
-const DocsAssistant = dynamic(
-  () => import('@/components/AI/DocsAssistant').then((mod) => ({ default: mod.DocsAssistant }))
+const DocsAssistant = dynamic(() =>
+  import('@/components/AI/DocsAssistant').then((mod) => ({
+    default: mod.DocsAssistant,
+  }))
+)
+
+// Lazy load scroll progress for better initial bundle
+const ScrollProgress = dynamic(() =>
+  import('@/components/UI/ScrollProgress').then((mod) => ({
+    ScrollProgress: mod.ScrollProgress,
+  }))
 )
 
 const inter = Inter({
@@ -80,20 +94,30 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
+    >
       <head>
         <StructuredData type="software" />
         <OrganizationStructuredData />
         <SoftwareLibraryStructuredData />
         <DocumentationSiteStructuredData />
         {/* AI-specific metadata for llms.txt discovery */}
-        <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-optimized documentation" />
+        <link
+          rel="alternate"
+          type="text/plain"
+          href="/llms.txt"
+          title="LLM-optimized documentation"
+        />
       </head>
       <body className={inter.className}>
         <Providers>
           <a href="#main-content" className="skip-to-content">
             Skip to content
           </a>
+          <ScrollProgress variant="gradient" showScrollTop />
           <div className="min-h-screen flex flex-col">
             <Navigation />
             <main id="main-content" className="flex-1">
