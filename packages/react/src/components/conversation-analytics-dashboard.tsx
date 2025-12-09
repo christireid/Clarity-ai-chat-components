@@ -601,6 +601,7 @@ export function ConversationAnalyticsDashboard({
       const interval = setInterval(generateAnalytics, updateInterval)
       return () => clearInterval(interval)
     }
+    return undefined
   }, [autoGenerate, messages.length, updateInterval, generateAnalytics])
 
   if (messages.length === 0) {

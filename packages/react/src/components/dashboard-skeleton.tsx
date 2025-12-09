@@ -36,9 +36,11 @@ export function useLoadingAnnouncement(
       setAnnouncement(`${contentName} loaded successfully`)
       // Clear announcement after screen reader has time to read it
       const timer = setTimeout(() => setAnnouncement(''), 1000)
+      wasLoadingRef.current = isLoading
       return () => clearTimeout(timer)
     }
     wasLoadingRef.current = isLoading
+    return undefined
   }, [isLoading, contentName])
 
   if (!announcement) return null

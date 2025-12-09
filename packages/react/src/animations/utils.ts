@@ -4,14 +4,14 @@
  * Helper functions for creating consistent animations across components.
  */
 
-import { Variants, Transition } from 'framer-motion'
+import type { Variants, Transition } from 'framer-motion'
 import {
   ANIMATION_DURATION,
-  ANIMATION_EASING,
+  EASING_FRAMER,
   STAGGER_TIMING,
-  AnimationDuration,
-  AnimationEasing,
-  StaggerTiming,
+  type AnimationDuration,
+  type AnimationEasing,
+  type StaggerTiming,
 } from './constants'
 
 /**
@@ -27,14 +27,14 @@ export function createFadeVariant(
       opacity: 1,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
-        ease: ANIMATION_EASING[easing],
+        ease: EASING_FRAMER[easing],
       },
     },
     exit: {
       opacity: 0,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
-        ease: ANIMATION_EASING[easing],
+        ease: EASING_FRAMER[easing],
       },
     },
   }
@@ -63,7 +63,7 @@ export function createSlideVariant(
       [axis]: 0,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
-        ease: ANIMATION_EASING[easing],
+        ease: EASING_FRAMER[easing],
       },
     } as any,
     exit: {
@@ -71,7 +71,7 @@ export function createSlideVariant(
       [axis]: -value,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
-        ease: ANIMATION_EASING[easing],
+        ease: EASING_FRAMER[easing],
       },
     } as any,
   }
@@ -95,7 +95,7 @@ export function createScaleVariant(
       scale: 1,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
-        ease: ANIMATION_EASING[easing],
+        ease: EASING_FRAMER[easing],
       },
     },
     exit: {
@@ -103,7 +103,7 @@ export function createScaleVariant(
       scale: initialScale,
       transition: {
         duration: ANIMATION_DURATION[duration] / 1000,
-        ease: ANIMATION_EASING[easing],
+        ease: EASING_FRAMER[easing],
       },
     },
   }
@@ -216,7 +216,7 @@ export function createPulseAnimation(
       transition: {
         duration,
         repeat: Infinity,
-        ease: ANIMATION_EASING.inOut,
+        ease: EASING_FRAMER.inOut,
       },
     },
   }
@@ -287,7 +287,7 @@ export function createBounceAnimation(
       transition: {
         duration,
         repeat: Infinity,
-        ease: ANIMATION_EASING.out,
+        ease: EASING_FRAMER.out,
       },
     },
   }
@@ -321,7 +321,7 @@ export function createSuccessAnimation(): Variants {
       rotate: 0,
       transition: {
         duration: ANIMATION_DURATION.normal / 1000,
-        ease: ANIMATION_EASING.spring,
+        ease: EASING_FRAMER.spring,
       },
     },
   }
@@ -380,7 +380,7 @@ export function createTweenTransition(
   return {
     type: 'tween',
     duration: getDurationInSeconds(duration),
-    ease: ANIMATION_EASING[easing],
+    ease: EASING_FRAMER[easing],
     delay,
   }
 }

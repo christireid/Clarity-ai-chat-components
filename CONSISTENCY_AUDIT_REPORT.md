@@ -39,11 +39,15 @@
   consolidation pending
 - 🔄 generateId() consolidation
 
+### ✅ Completed (Automation & Tooling)
+
+- ✅ Created automated consistency check script (scripts/check-consistency.ts)
+- ✅ Added check:consistency script to root package.json
+
 ### ⏳ Remaining Items (For Future Work)
 
 - ⏳ Enable DTS generation in react package (requires fixing ~40+ pre-existing TypeScript errors)
 - ⏳ Pattern standardization documentation (hook return types, forwardRef usage)
-- ⏳ Create automated consistency check script
 - ⏳ ESLint rules for consistency enforcement
 
 ---

@@ -4,7 +4,7 @@ import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { cn, Kbd } from '@clarity-chat/primitives'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '../animations/constants'
+import { ANIMATION_DURATION, EASING_FRAMER } from '../animations/constants'
 import { useReducedMotion } from '../hooks/use-reduced-motion'
 import {
   useFocusTrap,
@@ -109,6 +109,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
         return () =>
           document.removeEventListener('mousedown', handleClickOutside)
       }
+      return undefined
     }, [isOpen, handleClose, focusTrapRef])
 
     // Keyboard navigation
@@ -233,6 +234,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
         document.addEventListener('keydown', handleKeyDown)
         return () => document.removeEventListener('keydown', handleKeyDown)
       }
+      return undefined
     }, [
       isOpen,
       focusedIndex,
@@ -314,7 +316,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
               animate={{ opacity: 1, x: 0 }}
               transition={{
                 delay: prefersReducedMotion ? 0 : index * 0.03,
-                ease: ANIMATION_EASING.out,
+                ease: EASING_FRAMER.out,
               }}
               onClick={() => handleItemClick(item)}
               onMouseEnter={() => {
@@ -470,7 +472,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
                   duration: prefersReducedMotion
                     ? 0.1
                     : ANIMATION_DURATION.fast / 1000,
-                  ease: ANIMATION_EASING.out,
+                  ease: EASING_FRAMER.out,
                 }}
                 style={{
                   position: 'fixed',

@@ -8,7 +8,7 @@
  */
 
 import * as React from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Check, X } from 'lucide-react'
 import {
   Button as ShadcnButton,
   type ButtonProps as ShadcnButtonProps,
@@ -16,8 +16,7 @@ import {
 import { cn } from '../../lib/utils'
 
 /**
- * @deprecated Use the `loading` prop instead of `state`.
- * This type is provided for backward compatibility only.
+ * Button state for loading/success/error indicators
  */
 export type ButtonState = 'idle' | 'loading' | 'success' | 'error'
 
@@ -29,6 +28,15 @@ export interface ButtonProps extends ShadcnButtonProps {
   loading?: boolean
 
   /**
+   * Button state for more fine-grained control
+   * - 'idle': Normal button state
+   * - 'loading': Shows spinner and disables button
+   * - 'success': Shows checkmark icon
+   * - 'error': Shows X icon
+   */
+  state?: ButtonState
+
+  /**
    * @deprecated Ripple effect is not available in the shadcn Button.
    * This prop is accepted for backward compatibility but has no effect.
    * Remove this prop from your code - it does nothing.
@@ -38,20 +46,32 @@ export interface ButtonProps extends ShadcnButtonProps {
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { children, loading, ripple: _ripple, disabled, className, ...props },
+    {
+      children,
+      loading,
+      state,
+      ripple: _ripple,
+      disabled,
+      className,
+      ...props
+    },
     ref
   ) => {
-    // Note: ripple is accepted but not yet implemented
-    // This maintains API compatibility with the legacy button
+    // Determine if button should show loading state (from either loading prop or state prop)
+    const isLoading = loading || state === 'loading'
+    const isSuccess = state === 'success'
+    const isError = state === 'error'
 
     return (
       <ShadcnButton
         ref={ref}
-        disabled={disabled || loading}
+        disabled={disabled || isLoading}
         className={cn(className)}
         {...props}
       >
-        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isSuccess && <Check className="mr-2 h-4 w-4" />}
+        {isError && <X className="mr-2 h-4 w-4" />}
         {children}
       </ShadcnButton>
     )
