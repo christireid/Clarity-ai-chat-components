@@ -315,6 +315,7 @@ The following improvements were made to example files on December 8, 2025:
 
 **Files Updated:**
 - `memory-examples/memory-system-basic.tsx` - Fixed imports for MemoryProvider, vector stores, embeddings
+- `memory-examples/memory-system-advanced.tsx` - Fixed imports, added MemoryServiceConfig and MemoryItem types
 - `token-optimization/enhanced-optimization-example.tsx` - Fixed useTokenOptimizationEnhanced import
 
 #### 2. Type Safety Improvements
@@ -327,6 +328,8 @@ The following improvements were made to example files on December 8, 2025:
 - `token-optimization/enhanced-optimization-example.tsx` - Added OptimizationResult, ChatMessage, PreparedMessage types
 - `security-examples/secure-chat-example.tsx` - Added ChatMessage, ValidationResult types
 - `advanced-features/enhanced-suggestions-example.tsx` - Added PromptSuggestion type
+- `advanced-features/mentions-example.tsx` - Added ChatMessageWithMentions type
+- `memory-examples/memory-nodejs-express.ts` - Added MemoryQueryOptions type
 
 #### 3. Deprecated API Fixes
 

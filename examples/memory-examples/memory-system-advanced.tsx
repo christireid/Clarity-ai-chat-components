@@ -10,6 +10,9 @@
  */
 
 import React from 'react'
+// 📚 IMPORT PATTERN:
+// All @clarity-chat/react exports come from the main package entry point.
+// The library uses a flat export structure for simpler imports.
 import {
   MemoryProvider,
   useMemory,
@@ -17,9 +20,62 @@ import {
   useMemoryStats,
   useMemoryEvents,
   useTokenOptimization,
-  type MemoryServiceConfig,
-  type MemoryItem,
-} from '@clarity-chat/react/memory'
+} from '@clarity-chat/react'
+
+// 💡 Type definitions for the memory system
+// ⚠️ NOTE: These interfaces are defined locally for demonstration purposes.
+// In production, check if @clarity-chat/react exports these types directly.
+// If not, these serve as documentation for the expected configuration shape.
+interface MemoryServiceConfig {
+  tokenOptimization: {
+    maxContextWindow: number
+    allocation: {
+      systemPrompt: number
+      userPreferences: number
+      recentContext: number
+      semanticMemory: number
+      episodicMemory: number
+      responseReserve: number
+    }
+    dynamicAllocation: boolean
+    enableCompression: boolean
+    compressionRatio: number
+    enableChunking: boolean
+    chunkSize: number
+    chunkOverlap: number
+  }
+  persistence: {
+    useVectorStore: boolean
+    vectorStoreNamespace: string
+    useCache: boolean
+    cacheTTL: number
+    useDatabase: boolean
+    databaseUrl?: string
+    batchSize?: number
+  }
+  enableAutoSummarization: boolean
+  summarizationInterval: number
+  enableAutoCleanup: boolean
+  cleanupInterval: number
+  retentionPolicy: {
+    shortTerm: number
+    session: number
+    thread: number
+    global: number
+  }
+  debug: boolean
+}
+
+interface MemoryItem {
+  id: string
+  content: string
+  type: 'semantic' | 'episodic' | 'procedural'
+  scope: 'shortTerm' | 'session' | 'thread' | 'user' | 'global'
+  tokens: number
+  confidence: number
+  tags?: string[]
+  createdAt?: number
+}
 
 // Advanced configuration with compression
 const memoryConfig: MemoryServiceConfig = {

@@ -185,12 +185,19 @@ app.get('/api/stats', async (_req: Request, res: Response) => {
  * GET /api/memories/:userId
  * Get all memories for a user
  */
+// 💡 Type for memory query options
+interface MemoryQueryOptions {
+  metadata?: Record<string, string>
+  limit?: number
+  types?: string[]
+}
+
 app.get('/api/memories/:userId', async (req: Request, res: Response) => {
   try {
     const { userId } = req.params
     const { type, limit = '50' } = req.query
 
-    const query: any = {
+    const query: MemoryQueryOptions = {
       metadata: { userId },
       limit: Number(limit)
     }

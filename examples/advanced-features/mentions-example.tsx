@@ -310,11 +310,20 @@ export function FuzzySearchExample() {
 // Example 4: Complete Chat with Mentions
 // =============================================================================
 
+// 💡 Type for chat messages with mentions
+interface ChatMessageWithMentions {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: number
+  mentions?: Mention[]
+}
+
 /**
  * Production-ready chat with mention system
  */
 export function CompleteMentionChatExample() {
-  const [messages, setMessages] = React.useState<any[]>([])
+  const [messages, setMessages] = React.useState<ChatMessageWithMentions[]>([])
   const [inputValue, setInputValue] = React.useState('')
 
   const {
