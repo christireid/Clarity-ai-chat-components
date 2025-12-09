@@ -46,30 +46,33 @@ export default function CookbookPage() {
           recipe to see the complete implementation with copy-paste ready code.
         </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <a href="/cookbook/openai-streaming-chat" className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">💬</span>
-            <div className="flex-1">
-              <h3 className="font-semibold text-text-primary mb-2 group-hover:text-brand-500 transition-colors">
-                OpenAI Streaming Chat
-              </h3>
-              <p className="text-sm text-text-secondary mb-4">
-                Build a complete chat with OpenAI streaming responses
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="text-xs bg-brand-500/10 text-brand-600 dark:text-brand-400 px-2 py-1 rounded font-medium">
-                  OpenAI
-                </span>
-                <span className="text-xs bg-bg-tertiary text-text-secondary px-2 py-1 rounded">
-                  Streaming
-                </span>
+      <ScrollReveal stagger staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ScrollRevealItem>
+          <a href="/cookbook/openai-streaming-chat" className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all block h-full">
+            <div className="flex items-start gap-3">
+              <span className="text-3xl">💬</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-text-primary mb-2 group-hover:text-brand-500 transition-colors">
+                  OpenAI Streaming Chat
+                </h3>
+                <p className="text-sm text-text-secondary mb-4">
+                  Build a complete chat with OpenAI streaming responses
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs bg-brand-500/10 text-brand-600 dark:text-brand-400 px-2 py-1 rounded font-medium">
+                    OpenAI
+                  </span>
+                  <span className="text-xs bg-bg-tertiary text-text-secondary px-2 py-1 rounded">
+                    Streaming
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        </a>
+          </a>
+        </ScrollRevealItem>
 
-          <a href="/cookbook/conversation-branching" className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all">
+        <ScrollRevealItem>
+          <a href="/cookbook/conversation-branching" className="group p-6 rounded-xl bg-bg-secondary border border-border hover:border-brand-500/40 hover:shadow-lg transition-all block h-full">
             <div className="flex items-start gap-3">
               <span className="text-2xl">🌿</span>
               <div>
