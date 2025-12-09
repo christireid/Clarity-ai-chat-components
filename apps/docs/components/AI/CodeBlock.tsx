@@ -52,8 +52,36 @@ export function CodeBlock({
   const [copied, setCopied] = useState(false)
   const [highlightedCode, setHighlightedCode] = useState('')
   const [isExpanded, setIsExpanded] = useState(false)
+  const [selectedLines, setSelectedLines] = useState<Set<number>>(new Set())
   const codeRef = useRef<HTMLElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // Parse URL hash for line highlighting (#L10-L15)
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash.startsWith('#L')) {
+      const match = hash.match(/#L(\d+)(?:-L(\d+))?/)
+      if (match) {
+        const start = parseInt(match[1])
+        const end = match[2] ? parseInt(match[2]) : start
+        const lines = Array.from(
+          { length: end - start + 1 },
+          (_, i) => start + i
+        )
+        setSelectedLines(new Set(lines))
+        
+        // Scroll to first selected line after a short delay
+        setTimeout(() => {
+          const lineElement = containerRef.current?.querySelector(
+            `[data-line-number="${start}"]`
+          )
+          if (lineElement) {
+            lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+        }, 100)
+      }
+    }
+  }, [])
 
   // Highlight code with Prism
   useEffect(() => {
@@ -69,9 +97,28 @@ export function CodeBlock({
 
   const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(code)
+      let textToCopy = code
+      
+      // If lines are selected, copy only selected lines
+      if (selectedLines.size > 0) {
+        const lines = code.split('\n')
+        const sortedLines = Array.from(selectedLines).sort((a, b) => a - b)
+        textToCopy = sortedLines
+          .map((lineNum) => lines[lineNum - 1])
+          .join('\n')
+      }
+      
+      await navigator.clipboard.writeText(textToCopy)
       setCopied(true)
-      toast.success(toastMessages.copied)
+      
+      if (selectedLines.size > 0) {
+        toast.success(`Copied ${selectedLines.size} line${selectedLines.size > 1 ? 's' : ''}`, {
+          description: 'Selected lines copied to clipboard',
+        })
+      } else {
+        toast.success(toastMessages.copied)
+      }
+      
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
       console.error('Failed to copy code:', error)
@@ -82,7 +129,7 @@ export function CodeBlock({
         },
       })
     }
-  }, [code])
+  }, [code, selectedLines])
 
   const handleDownload = useCallback(() => {
     try {
@@ -111,13 +158,102 @@ export function CodeBlock({
     setIsExpanded((prev) => !prev)
   }, [])
 
+  // Handle line selection
+  const handleLineClick = useCallback(
+    (lineNumber: number, event: React.MouseEvent) => {
+      event.preventDefault()
+      
+      setSelectedLines((prev) => {
+        const newSelection = new Set(prev)
+        
+        if (event.shiftKey && newSelection.size > 0) {
+          // Range selection
+          const lines = Array.from(newSelection)
+          const min = Math.min(...lines, lineNumber)
+          const max = Math.max(...lines, lineNumber)
+          
+          // Clear and add range
+          newSelection.clear()
+          for (let i = min; i <= max; i++) {
+            newSelection.add(i)
+          }
+        } else if (event.metaKey || event.ctrlKey) {
+          // Toggle individual line
+          if (newSelection.has(lineNumber)) {
+            newSelection.delete(lineNumber)
+          } else {
+            newSelection.add(lineNumber)
+          }
+        } else {
+          // Single selection (replace)
+          newSelection.clear()
+          newSelection.add(lineNumber)
+        }
+        
+        // Update URL hash
+        updateUrlHash(newSelection)
+        
+        return newSelection
+      })
+    },
+    []
+  )
+
+  // Update URL hash based on selection
+  const updateUrlHash = useCallback((lines: Set<number>) => {
+    if (lines.size === 0) {
+      // Clear hash if no selection
+      if (window.location.hash.startsWith('#L')) {
+        history.replaceState(null, '', window.location.pathname + window.location.search)
+      }
+      return
+    }
+    
+    const sortedLines = Array.from(lines).sort((a, b) => a - b)
+    
+    // Check if it's a continuous range
+    let isRange = true
+    for (let i = 1; i < sortedLines.length; i++) {
+      if (sortedLines[i] !== sortedLines[i - 1] + 1) {
+        isRange = false
+        break
+      }
+    }
+    
+    // Create hash
+    let hash
+    if (isRange && sortedLines.length > 1) {
+      hash = `#L${sortedLines[0]}-L${sortedLines[sortedLines.length - 1]}`
+    } else if (sortedLines.length === 1) {
+      hash = `#L${sortedLines[0]}`
+    } else {
+      // Multiple non-continuous lines - just use first and last
+      hash = `#L${sortedLines[0]}-L${sortedLines[sortedLines.length - 1]}`
+    }
+    
+    history.replaceState(null, '', window.location.pathname + window.location.search + hash)
+  }, [])
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!containerRef.current?.contains(document.activeElement)) return
 
-      // Cmd/Ctrl+Shift+C to copy
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'c') {
+      // Cmd/Ctrl+A to select all lines
+      if ((e.metaKey || e.ctrlKey) && e.key === 'a' && showLineNumbers) {
+        e.preventDefault()
+        const allLines = new Set(Array.from({ length: lines.length }, (_, i) => i + 1))
+        setSelectedLines(allLines)
+        updateUrlHash(allLines)
+      }
+      // Escape to clear selection
+      else if (e.key === 'Escape' && selectedLines.size > 0) {
+        e.preventDefault()
+        setSelectedLines(new Set())
+        updateUrlHash(new Set())
+      }
+      // Cmd/Ctrl+Shift+C to copy (or Cmd/Ctrl+C for selected lines)
+      else if ((e.metaKey || e.ctrlKey) && e.key === 'c' && (e.shiftKey || selectedLines.size > 0)) {
         e.preventDefault()
         handleCopy()
       }
@@ -135,7 +271,7 @@ export function CodeBlock({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleCopy, handleDownload, toggleExpanded])
+  }, [handleCopy, handleDownload, toggleExpanded, selectedLines, showLineNumbers, lines.length, updateUrlHash])
 
   const lines = code.split('\n')
   const highlightedLines = highlightedCode.split('\n')
@@ -282,6 +418,8 @@ export function CodeBlock({
                   const isHighlighted = highlightLines.includes(lineNumber)
                   const highlightedLine = highlightedLines[index] || line
 
+                  const isSelected = selectedLines.has(lineNumber)
+                  
                   return (
                     <motion.div
                       key={index}
@@ -289,27 +427,37 @@ export function CodeBlock({
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.005, duration: 0.2 }}
                       className={cn(
-                        'contents',
-                        isHighlighted && 'bg-primary/5'
+                        'contents group/line',
+                        (isHighlighted || isSelected) && 'bg-primary/5'
                       )}
+                      data-line-number={lineNumber}
                     >
-                      {/* Line number */}
+                      {/* Line number - clickable */}
                       <span
+                        onClick={(e) => handleLineClick(lineNumber, e)}
                         className={cn(
                           'select-none pr-4 text-muted-foreground/50',
-                          'text-right tabular-nums',
-                          isHighlighted && 'text-primary/70 font-semibold'
+                          'text-right tabular-nums cursor-pointer',
+                          'hover:text-primary transition-colors',
+                          'group-hover/line:bg-accent/30',
+                          isHighlighted && 'text-primary/70 font-semibold',
+                          isSelected && 'text-primary font-bold bg-primary/10'
                         )}
+                        title=\"Click to select line. Cmd/Ctrl+Click for multi-select. Shift+Click for range.\"
                       >
                         {lineNumber}
                       </span>
 
                       {/* Code line with syntax highlighting */}
                       <span
+                        onClick={(e) => handleLineClick(lineNumber, e)}
                         className={cn(
-                          'transition-colors duration-150 hover:bg-white/5 dark:hover:bg-black/10',
+                          'transition-colors duration-150 cursor-pointer',
+                          'hover:bg-accent/20 group-hover/line:bg-accent/10',
                           isHighlighted &&
-                            'bg-primary/5 border-l-2 border-primary pl-2 -ml-2'
+                            'bg-primary/5 border-l-2 border-primary pl-2 -ml-2',
+                          isSelected &&
+                            'bg-brand-500/10 border-l-4 border-brand-500 pl-3 -ml-3 font-medium'
                         )}
                         dangerouslySetInnerHTML={{
                           __html: highlightedLine || '\n',
