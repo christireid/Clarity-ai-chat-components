@@ -11,7 +11,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "perf:lighthouse": "lhci autorun",
+    "perf:bundle": "size-limit",
+    "perf:analyze": "cross-env ANALYZE=true next build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
