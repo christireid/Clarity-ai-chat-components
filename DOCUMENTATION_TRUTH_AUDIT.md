@@ -183,6 +183,14 @@ published to npm
 
 ---
 
+### ✅ Fixed #9: Missed Node.js 18 Reference (Was MEDIUM)
+
+**Original Issue**: README.md line 545 still said "Node.js - 18+" in the Browser Support section
+
+**Fix Applied**: Updated to "Node.js - 20+" to match package.json requirement
+
+---
+
 ## Automation Implemented
 
 ### Created: `scripts/verify-docs-exports.sh`
