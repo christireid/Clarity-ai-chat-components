@@ -1,7 +1,15 @@
 /**
- * Clarity Memory - Core Type Definitions
- * 
- * This file contains all core type definitions for Clarity Memory.
+ * Clarity Memory - Alternative Type Definitions
+ *
+ * @deprecated This file is deprecated and will be removed in a future version.
+ * Use the main types from the package root instead:
+ *
+ * ```typescript
+ * import type { MemoryItem, MemoryConfig, MemoryStore } from '@clarity-chat/memory'
+ * ```
+ *
+ * The canonical type definitions are in `../types.ts` (exported from package root).
+ * This file is maintained only for backward compatibility.
  */
 
 // ============================================================================

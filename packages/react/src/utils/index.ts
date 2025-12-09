@@ -164,3 +164,6 @@ export * from './tool-result-extractor'
 
 // Message grouping utilities
 export * from './message-grouping'
+
+// Performance utilities (debounce, throttle, Batcher, etc.)
+export * from './performance'

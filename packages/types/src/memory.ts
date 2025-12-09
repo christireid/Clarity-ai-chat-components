@@ -1,8 +1,15 @@
 /**
  * Advanced Memory & Context Type Definitions
- * 
- * Implements hybrid memory architecture with episodic, semantic, short-term, and long-term memory layers
- * Based on production-ready patterns for AI chat applications
+ *
+ * NOTE: This file contains simplified type definitions for basic use cases.
+ * For full memory system types with all features, use @clarity-chat/memory:
+ *
+ * ```typescript
+ * import type { MemoryItem, MemoryConfig, MemoryService } from '@clarity-chat/memory'
+ * ```
+ *
+ * The types in this file are maintained for backward compatibility and provide
+ * a minimal interface for consumers who don't need the full memory package.
  */
 
 /**
