@@ -4,7 +4,7 @@
  */
 
 import chalk from 'chalk'
-import ora, { Ora } from 'ora'
+import ora, { type Ora } from 'ora'
 
 export interface ProgressBarOptions {
   total: number
@@ -69,7 +69,9 @@ export class ProgressBar {
     const filled = Math.floor((this.width * this.current) / this.total)
     const empty = this.width - filled
 
-    const bar = this.color(this.completeChar.repeat(filled)) + chalk.dim(this.incompleteChar.repeat(empty))
+    const bar =
+      this.color(this.completeChar.repeat(filled)) +
+      chalk.dim(this.incompleteChar.repeat(empty))
 
     const parts: string[] = [bar]
 
@@ -104,12 +106,15 @@ export function createSpinner(text: string): Ora {
  * Create a multi-step progress indicator
  */
 export class StepProgress {
-  private steps: Array<{ name: string; status: 'pending' | 'active' | 'complete' | 'error' }>
+  private steps: Array<{
+    name: string
+    status: 'pending' | 'active' | 'complete' | 'error'
+  }>
   private currentStep: number = 0
   private spinner: Ora | null = null
 
   constructor(steps: string[]) {
-    this.steps = steps.map(name => ({ name, status: 'pending' as const }))
+    this.steps = steps.map((name) => ({ name, status: 'pending' as const }))
   }
 
   start(stepIndex: number) {
@@ -117,7 +122,7 @@ export class StepProgress {
 
     this.currentStep = stepIndex
     this.steps[stepIndex].status = 'active'
-    
+
     if (this.spinner) {
       this.spinner.stop()
     }
@@ -130,7 +135,7 @@ export class StepProgress {
     if (stepIndex < 0 || stepIndex >= this.steps.length) return
 
     this.steps[stepIndex].status = 'complete'
-    
+
     if (this.spinner) {
       this.spinner.succeed(text || this.steps[stepIndex].name)
       this.spinner = null
@@ -141,7 +146,7 @@ export class StepProgress {
     if (stepIndex < 0 || stepIndex >= this.steps.length) return
 
     this.steps[stepIndex].status = 'error'
-    
+
     if (this.spinner) {
       this.spinner.fail(text || this.steps[stepIndex].name)
       this.spinner = null
@@ -151,25 +156,25 @@ export class StepProgress {
   renderSummary() {
     console.log()
     console.log(chalk.bold('Summary:'))
-    
+
     this.steps.forEach((step, index) => {
       const icon =
         step.status === 'complete'
           ? chalk.green('✓')
           : step.status === 'error'
-          ? chalk.red('✗')
-          : step.status === 'active'
-          ? chalk.cyan('→')
-          : chalk.dim('○')
+            ? chalk.red('✗')
+            : step.status === 'active'
+              ? chalk.cyan('→')
+              : chalk.dim('○')
 
       const status =
         step.status === 'complete'
           ? chalk.green('Complete')
           : step.status === 'error'
-          ? chalk.red('Failed')
-          : step.status === 'active'
-          ? chalk.cyan('Active')
-          : chalk.dim('Pending')
+            ? chalk.red('Failed')
+            : step.status === 'active'
+              ? chalk.cyan('Active')
+              : chalk.dim('Pending')
 
       console.log(`  ${icon} ${step.name} ${chalk.dim('—')} ${status}`)
     })
@@ -179,7 +184,11 @@ export class StepProgress {
 /**
  * Create a percentage progress indicator
  */
-export function percentageProgress(current: number, total: number, label?: string): string {
+export function percentageProgress(
+  current: number,
+  total: number,
+  label?: string
+): string {
   const percent = Math.floor((current / total) * 100)
   const barWidth = 20
   const filled = Math.floor((barWidth * current) / total)

@@ -106,8 +106,9 @@ function useFocusTrap(
 
     // Focus first element
     const focusableElements = getFocusableElements()
-    if (focusableElements.length > 0) {
-      focusableElements[0].focus()
+    const firstFocusable = focusableElements[0]
+    if (firstFocusable) {
+      firstFocusable.focus()
     }
 
     // Handle tab key
@@ -121,13 +122,13 @@ function useFocusTrap(
       if (e.key === 'Tab') {
         if (e.shiftKey) {
           // Shift + Tab
-          if (document.activeElement === firstElement) {
+          if (document.activeElement === firstElement && lastElement) {
             e.preventDefault()
             lastElement.focus()
           }
         } else {
           // Tab
-          if (document.activeElement === lastElement) {
+          if (document.activeElement === lastElement && firstElement) {
             e.preventDefault()
             firstElement.focus()
           }
@@ -310,6 +311,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
       const unlockFn = lock()
       return unlockFn
     }
+    return undefined
   }, [open, lock])
 
   // Memoize animation props

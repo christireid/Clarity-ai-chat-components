@@ -7,7 +7,7 @@ import chalk from 'chalk'
 import open from 'open'
 import { getLogger } from '../utils/logger.js'
 import { sectionHeader } from '../ui/banner.js'
-import { table, TableColumn } from '../ui/table.js'
+import { table, type TableColumn } from '../ui/table.js'
 import { infoBox, warningBox } from '../ui/box.js'
 
 const logger = getLogger('docs')
@@ -20,9 +20,9 @@ const DOCS_URLS = {
   main: 'https://clarity-chat.dev',
   'chat-interface': 'https://clarity-chat.dev/components/chat-interface',
   'model-selector': 'https://clarity-chat.dev/components/model-selector',
-  'streaming': 'https://clarity-chat.dev/guides/streaming',
+  streaming: 'https://clarity-chat.dev/guides/streaming',
   'api-keys': 'https://clarity-chat.dev/guides/api-keys',
-  'examples': 'https://clarity-chat.dev/examples',
+  examples: 'https://clarity-chat.dev/examples',
 }
 
 export async function docsCommand(query?: string, options?: DocsOptions) {
@@ -31,10 +31,12 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
   console.log()
 
   if (options?.offline) {
-    console.log(warningBox(
-      'Offline documentation not yet available\n\nVisit: https://clarity-chat.dev',
-      '⚠ Offline Mode'
-    ))
+    console.log(
+      warningBox(
+        'Offline documentation not yet available\n\nVisit: https://clarity-chat.dev',
+        '⚠ Offline Mode'
+      )
+    )
     console.log()
     return
   }
@@ -45,13 +47,16 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
   if (query) {
     // Try to find specific doc page
     const lowerQuery = query.toLowerCase()
-    const matchedKey = Object.keys(DOCS_URLS).find(key => 
-      key.toLowerCase().includes(lowerQuery) || lowerQuery.includes(key)
+    const matchedKey = Object.keys(DOCS_URLS).find(
+      (key) =>
+        key.toLowerCase().includes(lowerQuery) || lowerQuery.includes(key)
     )
 
     if (matchedKey) {
       url = DOCS_URLS[matchedKey as keyof typeof DOCS_URLS]
-      docTitle = matchedKey.charAt(0).toUpperCase() + matchedKey.slice(1).replace(/-/g, ' ')
+      docTitle =
+        matchedKey.charAt(0).toUpperCase() +
+        matchedKey.slice(1).replace(/-/g, ' ')
     } else {
       // Use search
       url = `${DOCS_URLS.main}/search?q=${encodeURIComponent(query)}`
@@ -67,18 +72,19 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
     ]
 
     const docsData = Object.entries(DOCS_URLS).map(([key, value]) => {
-      const description = key === 'main' 
-        ? 'Main documentation homepage'
-        : key === 'chat-interface'
-        ? 'Chat interface component docs'
-        : key === 'model-selector'
-        ? 'Model selector component docs'
-        : key === 'streaming'
-        ? 'Streaming guide'
-        : key === 'api-keys'
-        ? 'API keys setup guide'
-        : 'Example applications'
-      
+      const description =
+        key === 'main'
+          ? 'Main documentation homepage'
+          : key === 'chat-interface'
+            ? 'Chat interface component docs'
+            : key === 'model-selector'
+              ? 'Model selector component docs'
+              : key === 'streaming'
+                ? 'Streaming guide'
+                : key === 'api-keys'
+                  ? 'API keys setup guide'
+                  : 'Example applications'
+
       return [key, description]
     })
 
@@ -103,10 +109,12 @@ export async function docsCommand(query?: string, options?: DocsOptions) {
   } catch (error) {
     logger.error('Failed to open browser')
     console.log()
-    console.log(warningBox(
-      `Failed to open browser automatically.\n\nManually visit: ${chalk.cyan(url)}`,
-      '⚠ Browser Error'
-    ))
+    console.log(
+      warningBox(
+        `Failed to open browser automatically.\n\nManually visit: ${chalk.cyan(url)}`,
+        '⚠ Browser Error'
+      )
+    )
     console.log()
   }
 }

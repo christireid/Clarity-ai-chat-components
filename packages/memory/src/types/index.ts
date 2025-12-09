@@ -22,31 +22,31 @@
 export interface MemoryItem {
   /** Unique identifier for this memory */
   id: string
-  
+
   /** The actual content/text of the memory */
   content: string
-  
+
   /** When this memory was created */
   timestamp: Date
-  
+
   /** When this memory was last accessed */
   lastAccessed?: Date
-  
+
   /** How many times this memory has been accessed */
   accessCount: number
-  
+
   /** Importance score (0-1) */
   importance: number
-  
+
   /** User-defined metadata */
   metadata?: Record<string, unknown>
-  
+
   /** Embedding vector (if available) */
   embedding?: number[]
-  
+
   /** Topic/cluster this memory belongs to */
   topic?: string
-  
+
   /** TTL in milliseconds (optional) */
   ttl?: number
 }
@@ -57,19 +57,19 @@ export interface MemoryItem {
 export interface MemoryChunk {
   /** Unique identifier */
   id: string
-  
+
   /** Parent memory ID */
   memoryId: string
-  
+
   /** Chunk index */
   index: number
-  
+
   /** Chunk content */
   content: string
-  
+
   /** Embedding vector */
   embedding: number[]
-  
+
   /** Metadata */
   metadata?: Record<string, unknown>
 }
@@ -80,13 +80,13 @@ export interface MemoryChunk {
 export interface Embedding {
   /** The embedding vector */
   vector: number[]
-  
+
   /** Model used to generate this embedding */
   model: string
-  
+
   /** Dimensions of the vector */
   dimensions: number
-  
+
   /** When this embedding was created */
   timestamp: Date
 }
@@ -97,19 +97,19 @@ export interface Embedding {
 export interface MemoryScore {
   /** Overall score (0-1) */
   score: number
-  
+
   /** Recency score component */
   recency: number
-  
+
   /** Frequency score component */
   frequency: number
-  
+
   /** Relevance score component */
   relevance: number
-  
+
   /** Importance score component */
   importance: number
-  
+
   /** When this score was calculated */
   timestamp: Date
 }
@@ -120,13 +120,13 @@ export interface MemoryScore {
 export interface SearchResult {
   /** The memory item */
   memory: MemoryItem
-  
+
   /** Relevance score (0-1) */
   score: number
-  
+
   /** Score breakdown */
   scoreBreakdown: MemoryScore
-  
+
   /** Why this result was selected */
   reason?: string
 }
@@ -140,16 +140,16 @@ export interface ContextBundle {
     role: 'system' | 'user' | 'assistant'
     content: string
   }>
-  
+
   /** Actual token count */
   tokens: number
-  
+
   /** Summary of older/compressed memories */
   summary?: string
-  
+
   /** Memories included in this bundle */
   memories: MemoryItem[]
-  
+
   /** Format used (openai, anthropic, etc.) */
   format: string
 }
@@ -160,13 +160,13 @@ export interface ContextBundle {
 export interface SummarizationResult {
   /** The summary text */
   summary: string
-  
+
   /** Memories that were summarized */
   sourceMemories: MemoryItem[]
-  
+
   /** Token count of summary */
   tokens: number
-  
+
   /** When this summary was created */
   timestamp: Date
 }
@@ -177,16 +177,16 @@ export interface SummarizationResult {
 export interface CompressionResult {
   /** Number of memories before compression */
   before: number
-  
+
   /** Number of memories after compression */
   after: number
-  
+
   /** Compression ratio */
   ratio: number
-  
+
   /** Strategy used */
   strategy: string
-  
+
   /** Summary created (if applicable) */
   summary?: SummarizationResult
 }
@@ -201,19 +201,19 @@ export interface CompressionResult {
 export interface EmbeddingConfig {
   /** Provider name */
   provider: 'openai' | 'anthropic' | 'local'
-  
+
   /** Model name */
   model?: string
-  
+
   /** API key (if required) */
   apiKey?: string
-  
+
   /** Additional provider-specific config */
   config?: Record<string, unknown>
-  
+
   /** Cache embeddings */
   cache?: boolean
-  
+
   /** Cache TTL in milliseconds */
   cacheTTL?: number
 }
@@ -223,14 +223,24 @@ export interface EmbeddingConfig {
  */
 export interface StoreConfig {
   /** Store type */
-  type: 'in-memory' | 'file' | 'indexeddb' | 'redis' | 'postgres' | 'sqlite' | 'chroma' | 'qdrant' | 'pinecone' | 'lancedb'
-  
+  type:
+    | 'in-memory'
+    | 'file'
+    | 'indexeddb'
+    | 'redis'
+    | 'postgres'
+    | 'sqlite'
+    | 'chroma'
+    | 'qdrant'
+    | 'pinecone'
+    | 'lancedb'
+
   /** Store-specific configuration */
   config?: Record<string, unknown>
-  
+
   /** Path (for file-based stores) */
   path?: string
-  
+
   /** Connection string (for database stores) */
   connectionString?: string
 }
@@ -241,13 +251,13 @@ export interface StoreConfig {
 export interface ShortTermConfig {
   /** Maximum number of messages */
   maxMessages?: number
-  
+
   /** Maximum tokens */
   maxTokens?: number
-  
+
   /** Maximum message length in characters */
   maxMessageLength?: number
-  
+
   /** Auto-summarize when evicting */
   autoSummarize?: boolean
 }
@@ -258,10 +268,10 @@ export interface ShortTermConfig {
 export interface LongTermConfig {
   /** Enable long-term memory */
   enabled: boolean
-  
+
   /** Storage configuration */
   store: StoreConfig
-  
+
   /** Minimum importance score to store long-term */
   minImportance?: number
 }
@@ -272,20 +282,20 @@ export interface LongTermConfig {
 export interface ScoringConfig {
   /** Weight for recency (0-1) */
   recencyWeight?: number
-  
+
   /** Weight for frequency (0-1) */
   frequencyWeight?: number
-  
+
   /** Weight for relevance (0-1) */
   relevanceWeight?: number
-  
+
   /** Weight for importance (0-1) */
   importanceWeight?: number
-  
+
   /** Time decay configuration */
   timeDecay?: {
     enabled: boolean
-    halfLife: number  // milliseconds
+    halfLife: number // milliseconds
   }
 }
 
@@ -295,16 +305,16 @@ export interface ScoringConfig {
 export interface SummarizationConfig {
   /** Provider */
   provider?: 'openai' | 'anthropic' | 'local'
-  
+
   /** Model */
   model?: string
-  
+
   /** API key */
   apiKey?: string
-  
+
   /** Auto-summarize */
   auto?: boolean
-  
+
   /** Summarization prompt template */
   promptTemplate?: string
 }
@@ -315,10 +325,10 @@ export interface SummarizationConfig {
 export interface TokenBudgetConfig {
   /** Maximum tokens */
   maxTokens: number
-  
+
   /** Reserve tokens for system prompts */
   reserveTokens?: number
-  
+
   /** Selection strategy */
   strategy?: 'priority' | 'recent' | 'balanced'
 }
@@ -329,31 +339,31 @@ export interface TokenBudgetConfig {
 export interface MemoryConfig {
   /** Context identifier (user, session, etc.) */
   context?: string
-  
+
   /** Embedding configuration */
   embedding?: EmbeddingConfig
-  
+
   /** Storage configuration */
   store?: StoreConfig
-  
+
   /** Short-term memory configuration */
   shortTerm?: ShortTermConfig
-  
+
   /** Long-term memory configuration */
   longTerm?: LongTermConfig
-  
+
   /** Scoring configuration */
   scoring?: ScoringConfig
-  
+
   /** Summarization configuration */
   summarizer?: SummarizationConfig
-  
+
   /** Token budget configuration */
   tokenBudget?: TokenBudgetConfig
-  
+
   /** Target model for optimization */
   targetModel?: string
-  
+
   /** Context format */
   contextFormat?: 'openai' | 'anthropic' | 'claude'
 }
@@ -368,13 +378,13 @@ export interface MemoryConfig {
 export interface SearchOptions {
   /** Maximum number of results */
   limit?: number
-  
+
   /** Minimum score threshold */
   minScore?: number
-  
+
   /** Filters */
   filters?: Record<string, unknown>
-  
+
   /** Sort by */
   sortBy?: 'relevance' | 'recency' | 'importance'
 }
@@ -385,16 +395,16 @@ export interface SearchOptions {
 export interface StoreStats {
   /** Total number of memories */
   totalMemories: number
-  
+
   /** Total tokens */
   totalTokens: number
-  
+
   /** Oldest memory timestamp */
   oldestMemory?: Date
-  
+
   /** Newest memory timestamp */
   newestMemory?: Date
-  
+
   /** Average importance score */
   averageImportance: number
 }
@@ -405,31 +415,31 @@ export interface StoreStats {
 export interface MemoryStore {
   /** Initialize the store */
   init(): Promise<void>
-  
+
   /** Add a memory item */
   add(item: MemoryItem): Promise<void>
-  
+
   /** Get a memory item by ID */
   get(id: string): Promise<MemoryItem | null>
-  
+
   /** Search memories */
   search(query: string, options?: SearchOptions): Promise<SearchResult[]>
-  
+
   /** Update a memory item */
   update(id: string, updates: Partial<MemoryItem>): Promise<void>
-  
+
   /** Delete a memory item */
   delete(id: string): Promise<void>
-  
+
   /** Get all memories */
   getAll(): Promise<MemoryItem[]>
-  
+
   /** Clear all memories */
   clear(): Promise<void>
-  
+
   /** Get statistics */
   stats(): Promise<StoreStats>
-  
+
   /** Close the store */
   close(): Promise<void>
 }
@@ -444,10 +454,10 @@ export interface MemoryStore {
 export interface Embedder {
   /** Embed a single text */
   embed(text: string): Promise<number[]>
-  
+
   /** Embed multiple texts */
   embedBatch(texts: string[]): Promise<number[][]>
-  
+
   /** Get embedding dimensions */
   getDimensions(): number
 }
@@ -462,7 +472,7 @@ export interface Embedder {
 export interface Scorer {
   /** Score a memory item */
   score(memory: MemoryItem, query?: string): Promise<number>
-  
+
   /** Score multiple memory items */
   scoreBatch(memories: MemoryItem[], query?: string): Promise<number[]>
 }
@@ -478,7 +488,7 @@ export class MemoryError extends Error {
   constructor(
     message: string,
     public code: string,
-    public cause?: Error
+    public override cause?: Error
   ) {
     super(message)
     this.name = 'MemoryError'
@@ -496,4 +506,5 @@ export const MemoryErrorCodes = {
   MEMORY_NOT_FOUND: 'MEMORY_NOT_FOUND',
 } as const
 
-export type MemoryErrorCode = typeof MemoryErrorCodes[keyof typeof MemoryErrorCodes]
+export type MemoryErrorCode =
+  (typeof MemoryErrorCodes)[keyof typeof MemoryErrorCodes]

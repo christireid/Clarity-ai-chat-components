@@ -14,12 +14,20 @@ import { detectFramework, detectPackageManager } from '../utils/detect.js'
 import { installDependencies } from '../utils/install.js'
 import { getLogger } from '../utils/logger.js'
 import { ValidationError, ConfigError, handleError } from '../utils/errors.js'
-import { FrameworkSchema, TemplateSchema, validate } from '../utils/validation.js'
+import {
+  FrameworkSchema,
+  TemplateSchema,
+  validate,
+} from '../utils/validation.js'
 import { validatePath, ensureEnvInGitignore } from '../utils/security.js'
 import { saveConfig } from '../utils/config.js'
 import { success, info, warn } from '../utils/output.js'
 import { createBanner, createDivider } from '../ui/banner.js'
-import { successMessage, nextStepsMessage, infoMessage } from '../ui/messages.js'
+import {
+  successMessage,
+  nextStepsMessage,
+  infoMessage,
+} from '../ui/messages.js'
 import { createSpinner } from '../ui/progress.js'
 
 const logger = getLogger('init')
@@ -40,10 +48,12 @@ export async function initCommand(options: InitOptions) {
         gradient: 'atlas',
       })
       console.log(initBanner)
-      console.log(infoMessage('Setting up your AI-powered application...', {
-        title: '🚀 Getting Started',
-        borderColor: 'cyan',
-      }))
+      console.log(
+        infoMessage('Setting up your AI-powered application...', {
+          title: '🚀 Getting Started',
+          borderColor: 'cyan',
+        })
+      )
       console.log()
     }
 
@@ -58,25 +68,35 @@ export async function initCommand(options: InitOptions) {
     // Validate options if provided
     let validatedFramework: string | undefined
     let validatedTemplate: string | undefined
-    
+
     if (options.framework) {
-      validatedFramework = validate(FrameworkSchema, options.framework, 'Invalid framework')
+      validatedFramework = validate(
+        FrameworkSchema,
+        options.framework,
+        'Invalid framework'
+      )
     }
-    
+
     if (options.template) {
-      validatedTemplate = validate(TemplateSchema, options.template, 'Invalid template')
+      validatedTemplate = validate(
+        TemplateSchema,
+        options.template,
+        'Invalid template'
+      )
     }
 
     // Interactive setup wizard if no options provided
     let config: any
     if (!validatedTemplate && !validatedFramework) {
-      const { waitUntilExit } = render(React.createElement(InitWizard, {
-        detectedFramework,
-        packageManager,
-        onComplete: (result: any) => {
-          config = result
-        }
-      }))
+      const { waitUntilExit } = render(
+        React.createElement(InitWizard, {
+          detectedFramework: detectedFramework ?? undefined,
+          packageManager,
+          onComplete: (result: any) => {
+            config = result
+          },
+        })
+      )
       await waitUntilExit()
     } else {
       // Use CLI options
@@ -86,72 +106,85 @@ export async function initCommand(options: InitOptions) {
         components: ['chat-interface', 'model-selector'],
         apiKeys: {},
         installDeps: options.install !== false,
-        initGit: options.git !== false
+        initGit: options.git !== false,
       }
     }
 
     if (!config) {
-      throw new ValidationError('Setup cancelled', ['Run the command again to retry'])
+      throw new ValidationError('Setup cancelled', [
+        'Run the command again to retry',
+      ])
     }
 
     // Create project structure
     const spinner = createSpinner('Creating project structure...')
     spinner.start()
-    
+
     await fs.ensureDir(path.join(cwd, 'src', 'components', 'clarity-chat'))
     await fs.ensureDir(path.join(cwd, 'src', 'lib'))
-    
+
     spinner.succeed('Project structure created')
 
     // Copy template files
     spinner.text = chalk.cyan('Installing components...')
-    
-    const templatePath = path.join(__dirname, '..', '..', 'templates', config.template)
+
+    const templatePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'templates',
+      config.template
+    )
     if (await fs.pathExists(templatePath)) {
       await fs.copy(templatePath, cwd, {
-        filter: (src) => !src.includes('node_modules')
+        filter: (src) => !src.includes('node_modules'),
       })
     }
 
     // Generate configuration files
     await generateConfigFiles(cwd, config)
-    
+
     // Save config file
     try {
-      await saveConfig({
-        framework: config.framework,
-        components: config.components,
-        apiKeys: config.apiKeys,
-      }, cwd)
+      await saveConfig(
+        {
+          framework: config.framework,
+          components: config.components,
+          apiKeys: config.apiKeys,
+        },
+        cwd
+      )
       logger.debug('Config file saved')
-      } catch (error) {
-        logger.warn('Failed to save config file', error instanceof Error ? error : String(error))
+    } catch (error) {
+      logger.warn(
+        'Failed to save config file',
+        error instanceof Error ? error : String(error)
+      )
     }
-    
+
     spinner.succeed('Components installed')
 
     // Install dependencies
     if (config.installDeps) {
-      spinner.text = chalk.cyan(`Installing dependencies with ${packageManager}...`)
-      
+      spinner.text = chalk.cyan(
+        `Installing dependencies with ${packageManager}...`
+      )
+
       try {
         await installDependencies(cwd, packageManager, [
           '@clarity-chat/react',
           '@clarity-chat/primitives',
-          '@clarity-chat/types'
+          '@clarity-chat/types',
         ])
         spinner.succeed('Dependencies installed')
       } catch (error) {
         spinner.fail('Failed to install dependencies')
         logger.error(error instanceof Error ? error : new Error(String(error)))
-        throw new ConfigError(
-          'Failed to install dependencies',
-          [
-            'Check your internet connection',
-            'Verify package manager is installed',
-            'Run with --no-install to skip dependency installation',
-          ]
-        )
+        throw new ConfigError('Failed to install dependencies', [
+          'Check your internet connection',
+          'Verify package manager is installed',
+          'Run with --no-install to skip dependency installation',
+        ])
       }
     }
 
@@ -161,7 +194,11 @@ export async function initCommand(options: InitOptions) {
       try {
         await execa('git', ['init'], { cwd })
         await execa('git', ['add', '.'], { cwd })
-        await execa('git', ['commit', '-m', 'Initial commit with Clarity Chat'], { cwd })
+        await execa(
+          'git',
+          ['commit', '-m', 'Initial commit with Clarity Chat'],
+          { cwd }
+        )
         spinner.succeed('Git repository initialized')
       } catch (error) {
         spinner.warn('Git initialization skipped')
@@ -170,14 +207,18 @@ export async function initCommand(options: InitOptions) {
 
     // Create .env.local with placeholder keys
     const envPath = path.join(cwd, '.env.local')
-    if (!await fs.pathExists(envPath)) {
-      await fs.writeFile(envPath, `# Clarity Chat API Keys
+    if (!(await fs.pathExists(envPath))) {
+      await fs.writeFile(
+        envPath,
+        `# Clarity Chat API Keys
 # Add your API keys here (never commit this file!)
 
 OPENAI_API_KEY=your_openai_key_here
 ANTHROPIC_API_KEY=your_anthropic_key_here
 GOOGLE_API_KEY=your_google_key_here
-`, 'utf-8')
+`,
+        'utf-8'
+      )
       logger.info('Created .env.local with placeholder keys')
     }
 
@@ -187,22 +228,27 @@ GOOGLE_API_KEY=your_google_key_here
     // Success message
     if (!process.argv.includes('--json') && !process.argv.includes('--quiet')) {
       console.log('\n')
-      console.log(successMessage('Project initialized successfully!', {
-        title: '✨ All Set!',
-        borderColor: 'green',
-      }))
+      console.log(
+        successMessage('Project initialized successfully!', {
+          title: '✨ All Set!',
+          borderColor: 'green',
+        })
+      )
       console.log()
-      console.log(nextStepsMessage([
-        'Add your API keys to .env.local',
-        `Run ${chalk.bold('npm run dev')} to start development`,
-        `Open ${chalk.bold('http://localhost:3000')} in your browser`,
-      ]))
+      console.log(
+        nextStepsMessage([
+          'Add your API keys to .env.local',
+          `Run ${chalk.bold('npm run dev')} to start development`,
+          `Open ${chalk.bold('http://localhost:3000')} in your browser`,
+        ])
+      )
       console.log()
-      console.log(chalk.gray('💡 Need help? Run: ') + chalk.bold.cyan('clarity-chat docs'))
+      console.log(
+        chalk.gray('💡 Need help? Run: ') + chalk.bold.cyan('clarity-chat docs')
+      )
     } else {
       success('Project initialized successfully')
     }
-
   } catch (error) {
     handleError(error)
   }
@@ -211,8 +257,10 @@ GOOGLE_API_KEY=your_google_key_here
 async function generateConfigFiles(cwd: string, config: any) {
   // Generate tailwind.config.js if needed
   const tailwindConfig = path.join(cwd, 'tailwind.config.js')
-  if (!await fs.pathExists(tailwindConfig)) {
-    await fs.writeFile(tailwindConfig, `/** @type {import('tailwindcss').Config} */
+  if (!(await fs.pathExists(tailwindConfig))) {
+    await fs.writeFile(
+      tailwindConfig,
+      `/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
     './src/**/*.{js,ts,jsx,tsx,mdx}',
@@ -231,12 +279,16 @@ module.exports = {
   },
   plugins: [],
 }
-`, 'utf-8')
+`,
+      'utf-8'
+    )
   }
 
   // Generate clarity-chat.config.js
   const clarityChatConfig = path.join(cwd, 'clarity-chat.config.js')
-  await fs.writeFile(clarityChatConfig, `/** @type {import('@clarity-chat/cli').Config} */
+  await fs.writeFile(
+    clarityChatConfig,
+    `/** @type {import('@clarity-chat/cli').Config} */
 module.exports = {
   framework: '${config.framework}',
   components: ${JSON.stringify(config.components, null, 2)},
@@ -251,5 +303,7 @@ module.exports = {
     streaming: true,
   }
 }
-`, 'utf-8')
+`,
+    'utf-8'
+  )
 }
