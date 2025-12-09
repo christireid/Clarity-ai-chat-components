@@ -3,9 +3,36 @@
  *
  * These prompts define the personality, behavior, and capabilities
  * of the Clarity Chat Documentation Assistant.
+ *
+ * This module integrates the comprehensive system prompt from the
+ * systemPrompt module with contextual enhancements and personality modes.
  */
 
-export const SYSTEM_PROMPT = `You are the Clarity Chat Documentation Assistant, a helpful AI that assists developers using the Clarity Chat component library.
+import {
+  DOCS_ASSISTANT_SYSTEM_PROMPT,
+  getSystemPromptWithPersonality,
+  DOC_LINKS,
+  type PersonalityMode,
+} from '@/components/AI/systemPrompt'
+
+// Re-export types for consumers
+export type { PersonalityMode }
+
+/**
+ * Default system prompt - uses the comprehensive DocsAssistant prompt
+ */
+export const SYSTEM_PROMPT = DOCS_ASSISTANT_SYSTEM_PROMPT
+
+/**
+ * Prompt version for tracking and A/B testing
+ */
+export const PROMPT_VERSION = '2.0.0'
+
+/**
+ * Legacy prompt preserved for rollback if needed
+ * @deprecated Use SYSTEM_PROMPT instead
+ */
+export const LEGACY_SYSTEM_PROMPT = `You are the Clarity Chat Documentation Assistant, a helpful AI that assists developers using the Clarity Chat component library.
 
 ## Your Role
 You help developers understand and implement Clarity Chat components in their projects. You have access to the complete Clarity Chat documentation including:
@@ -39,136 +66,6 @@ function Example() {
   return <ComponentName prop="value" />
 }
 \`\`\`
-
-### When Providing Examples:
-- ✅ Use real component names, props, and patterns from Clarity Chat
-- ✅ Show complete, runnable examples
-- ✅ Include necessary imports
-- ✅ Add helpful inline comments
-- ❌ Never invent APIs or props that don't exist
-- ❌ Never provide incomplete or pseudo-code examples
-
-### Consider Context:
-- **User's skill level**: Adjust complexity based on their questions
-- **Previous messages**: Reference earlier parts of the conversation
-- **Related features**: Suggest complementary components or patterns
-- **Common pitfalls**: Warn about known issues or edge cases
-
-### When User Asks About:
-
-**Installation/Setup:**
-- Provide npm/pnpm/yarn commands
-- Link to Getting Started guide
-- Mention peer dependencies if relevant
-
-**Components:**
-- Show basic usage first
-- List key props and their types
-- Link to full API reference
-- Suggest related components
-
-**Hooks:**
-- Explain what the hook does
-- Show common use cases
-- Mention React version requirements (React 19)
-- Link to hook documentation
-
-**Styling/Theming:**
-- Explain CSS variable system
-- Show example theme customization
-- Link to theming guide
-
-**Troubleshooting:**
-- Ask diagnostic questions
-- Provide step-by-step solutions
-- Link to relevant sections
-- Suggest checking console for errors
-
-**Best Practices:**
-- Reference cookbook recipes
-- Explain the "why" behind recommendations
-- Show both simple and advanced patterns
-
-## Response Structure
-
-For most questions, use this structure:
-
-1. **Brief direct answer** (1-2 sentences)
-2. **Code example** (if applicable)
-3. **Additional context** or related information
-4. **Links to docs** for deeper exploration
-5. **Follow-up suggestions** (optional)
-
-Example:
-"To implement streaming messages, use the \`StreamingMessage\` component with the \`useChat\` hook.
-
-[code example]
-
-The component automatically handles token-by-token rendering, thinking indicators, and error states. You can customize the streaming behavior through the hook's options.
-
-📚 Learn more:
-- [StreamingMessage API](/reference/components/streaming-message)
-- [Streaming Guide](/guides/streaming)
-
-Would you like to see how to add citations or tool call visualization?"
-
-## Important Rules
-
-1. **Never make up information**: If you don't know something from the docs, say so
-2. **Always cite sources**: Link to the relevant documentation page
-3. **Keep responses focused**: Don't overwhelm with too much information
-4. **Be encouraging**: Building chat UIs is complex; acknowledge good questions
-5. **Stay on topic**: Focus on Clarity Chat; redirect general React questions politely
-
-## Example Interactions
-
-**Good Response:**
-User: "How do I show a typing indicator?"
-You: "You can show a typing indicator using the \`TypingIndicator\` component!
-
-\`\`\`tsx
-import { TypingIndicator } from '@clarity-chat/react'
-
-<TypingIndicator
-  users={[{ name: 'AI Assistant', avatar: '/ai.png' }]}
-  variant="dots"
-/>
-\`\`\`
-
-The component supports multiple variants (dots, pulse, ellipsis) and can show multiple users typing at once. It's particularly useful with the \`isLoading\` state from \`useChat\`.
-
-📚 [TypingIndicator API](/reference/components/typing-indicator)
-
-Need help integrating this with your chat?"
-
-**Bad Response (Don't do this):**
-User: "How do I show a typing indicator?"
-You: "Use the typing indicator component. Here's how: <TypingIndicator /> Done!"
-
-## Conversation Memory
-
-You remember the context from earlier in the conversation. Reference previous messages when relevant:
-- "As I mentioned earlier..."
-- "Following up on your question about..."
-- "Based on your earlier example..."
-
-## Edge Cases
-
-**When docs are unclear or missing:**
-"I don't see that specific use case covered in the docs. However, based on the component's API, you could try [suggestion]. Would you like me to link you to the GitHub repo to check if there's an issue or example?"
-
-**When user asks something outside Clarity Chat:**
-"That's a great React question, but it's not specific to Clarity Chat. For general React help, I'd recommend the React docs. Is there anything Clarity Chat-specific I can help with?"
-
-**When user is stuck:**
-"Let's debug this together! Can you share:
-1. Which component/hook you're using
-2. Any error messages you're seeing
-3. Your current implementation (if possible)
-
-This will help me give you a more targeted solution."
-
----
 
 Remember: You're here to make developers successful with Clarity Chat. Be helpful, accurate, and encouraging! 🚀`
 
@@ -205,35 +102,142 @@ Please wait a few seconds and try again. In the meantime, you might find what yo
 Thank you for your patience!`
 
 /**
+ * Context additions for different page types
+ */
+const PAGE_CONTEXT_MAP: Record<string, string> = {
+  '/reference/components':
+    '\n\n**Current Context:** The user is viewing component documentation. Focus on practical usage examples, prop details, and API specifics. Suggest related components when relevant.',
+  '/reference/hooks':
+    '\n\n**Current Context:** The user is viewing hook documentation. Focus on hook usage patterns, return values, and integration examples. Mention React 19 compatibility.',
+  '/guides':
+    '\n\n**Current Context:** The user is viewing guides. Focus on step-by-step instructions, best practices, and complete implementations. Link to related guides.',
+  '/examples':
+    '\n\n**Current Context:** The user is viewing examples. Focus on explaining the implementation details and suggesting variations or extensions.',
+  '/cookbook':
+    '\n\n**Current Context:** The user is viewing cookbook recipes. Focus on complete, production-ready patterns and real-world use cases.',
+  '/learn':
+    '\n\n**Current Context:** The user is in the learning section. Provide beginner-friendly explanations with progressive complexity.',
+  '/playground':
+    '\n\n**Current Context:** The user is in the playground. Help them experiment with code and understand how changes affect the output.',
+}
+
+/**
+ * Suggested links based on current page context
+ */
+const CONTEXTUAL_LINKS: Record<
+  string,
+  Array<{ label: string; path: string }>
+> = {
+  '/reference/components': [
+    { label: 'Component Reference', path: DOC_LINKS.components },
+    { label: 'Hooks Reference', path: DOC_LINKS.hooks },
+    { label: 'Customization Guide', path: DOC_LINKS.customization },
+  ],
+  '/reference/hooks': [
+    { label: 'Hooks Reference', path: DOC_LINKS.hooks },
+    { label: 'State Management', path: DOC_LINKS.stateManagement },
+    { label: 'Performance Tips', path: DOC_LINKS.performance },
+  ],
+  '/guides': [
+    { label: 'All Guides', path: '/guides' },
+    { label: 'Best Practices', path: DOC_LINKS.bestPractices },
+    { label: 'Examples', path: DOC_LINKS.examples },
+  ],
+  '/examples': [
+    { label: 'Examples Gallery', path: DOC_LINKS.examples },
+    { label: 'Cookbook', path: DOC_LINKS.cookbook },
+    { label: 'Playground', path: DOC_LINKS.playground },
+  ],
+  '/cookbook': [
+    { label: 'Cookbook', path: DOC_LINKS.cookbook },
+    { label: 'Best Practices', path: DOC_LINKS.bestPractices },
+    { label: 'Examples', path: DOC_LINKS.examples },
+  ],
+}
+
+/**
+ * Get contextual links based on current page
+ */
+export function getContextualLinks(
+  currentPath: string
+): Array<{ label: string; path: string }> {
+  for (const [prefix, links] of Object.entries(CONTEXTUAL_LINKS)) {
+    if (currentPath.startsWith(prefix)) {
+      return links
+    }
+  }
+  // Default links
+  return [
+    { label: 'Quick Start', path: DOC_LINKS.quickStart },
+    { label: 'Components', path: DOC_LINKS.components },
+    { label: 'Examples', path: DOC_LINKS.examples },
+  ]
+}
+
+/**
  * Generate a contextual system prompt based on the current page
  */
 export function getContextualPrompt(currentPath: string): string {
   let contextAddition = ''
 
-  if (currentPath.startsWith('/reference/components')) {
-    contextAddition = '\n\nThe user is currently viewing component documentation. Focus on practical usage examples and API details.'
-  } else if (currentPath.startsWith('/reference/hooks')) {
-    contextAddition = '\n\nThe user is currently viewing hook documentation. Focus on hook usage patterns and integration examples.'
-  } else if (currentPath.startsWith('/guides')) {
-    contextAddition = '\n\nThe user is currently viewing guides. Focus on step-by-step instructions and best practices.'
-  } else if (currentPath.startsWith('/examples')) {
-    contextAddition = '\n\nThe user is currently viewing examples. Focus on explaining the implementation and suggesting variations.'
-  } else if (currentPath.startsWith('/cookbook')) {
-    contextAddition = '\n\nThe user is currently viewing cookbook recipes. Focus on complete, production-ready patterns.'
+  for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
+    if (currentPath.startsWith(prefix)) {
+      contextAddition = context
+      break
+    }
   }
 
   return SYSTEM_PROMPT + contextAddition
 }
 
 /**
+ * Generate a system prompt with both context and personality mode
+ *
+ * @param currentPath - Current page path for contextual hints
+ * @param personality - Personality mode (technical, friendly, concise)
+ */
+export function getPromptWithContextAndPersonality(
+  currentPath: string,
+  personality: PersonalityMode = 'friendly'
+): string {
+  let contextAddition = ''
+
+  for (const [prefix, context] of Object.entries(PAGE_CONTEXT_MAP)) {
+    if (currentPath.startsWith(prefix)) {
+      contextAddition = context
+      break
+    }
+  }
+
+  return getSystemPromptWithPersonality(personality) + contextAddition
+}
+
+/**
+ * Get prompt by version (for A/B testing or rollback)
+ */
+export function getPromptByVersion(version: string): string {
+  switch (version) {
+    case '2.0.0':
+      return SYSTEM_PROMPT
+    case '1.0.0':
+      return LEGACY_SYSTEM_PROMPT
+    default:
+      return SYSTEM_PROMPT
+  }
+}
+
+/**
  * Format sources/citations for RAG responses
  */
-export function formatSources(sources: Array<{ title: string; url: string; excerpt: string }>): string {
-  if (sources.length === 0) return ''
+export function formatSources(
+  sources: Array<{ title: string; url: string; excerpt: string }>
+): string {
+  if (!Array.isArray(sources) || sources.length === 0) return ''
 
   const formatted = sources
+    .filter((s) => s && s.title && s.url)
     .map((source, index) => `${index + 1}. [${source.title}](${source.url})`)
     .join('\n')
 
-  return `\n\n📚 **Sources:**\n${formatted}`
+  return formatted ? `\n\n📚 **Sources:**\n${formatted}` : ''
 }

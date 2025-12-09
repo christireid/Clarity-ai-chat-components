@@ -349,6 +349,84 @@ describe('buildQuickChecks', () => {
 })
 
 // ============================================================================
+// Route Validation Tests (Build-time verification)
+// ============================================================================
+
+describe('DOC_LINKS Route Validation', () => {
+  /**
+   * This test verifies that all DOC_LINKS paths are valid documentation routes.
+   * It helps catch when routes are renamed or removed without updating DOC_LINKS.
+   */
+
+  const VALID_ROUTE_PREFIXES = [
+    '/guides/',
+    '/reference/',
+    '/examples',
+    '/cookbook',
+    '/playground',
+    '/learn',
+  ]
+
+  it('all DOC_LINKS paths start with valid route prefixes', () => {
+    for (const [key, path] of Object.entries(DOC_LINKS)) {
+      const hasValidPrefix = VALID_ROUTE_PREFIXES.some(
+        (prefix) =>
+          path === prefix.replace(/\/$/, '') || path.startsWith(prefix)
+      )
+      expect(
+        hasValidPrefix,
+        `DOC_LINKS.${key} has invalid path "${path}". Must start with one of: ${VALID_ROUTE_PREFIXES.join(', ')}`
+      ).toBe(true)
+    }
+  })
+
+  it('all DOC_LINKS paths start with /', () => {
+    for (const [key, path] of Object.entries(DOC_LINKS)) {
+      expect(
+        path.startsWith('/'),
+        `DOC_LINKS.${key} path "${path}" must start with /`
+      ).toBe(true)
+    }
+  })
+
+  it('no DOC_LINKS paths end with /', () => {
+    for (const [key, path] of Object.entries(DOC_LINKS)) {
+      expect(
+        !path.endsWith('/'),
+        `DOC_LINKS.${key} path "${path}" should not end with /`
+      ).toBe(true)
+    }
+  })
+
+  it('no DOC_LINKS paths contain double slashes', () => {
+    for (const [key, path] of Object.entries(DOC_LINKS)) {
+      expect(
+        !path.includes('//'),
+        `DOC_LINKS.${key} path "${path}" contains double slashes`
+      ).toBe(true)
+    }
+  })
+
+  // Specific route existence checks
+  const EXPECTED_ROUTES: Array<{ key: keyof typeof DOC_LINKS; path: string }> =
+    [
+      { key: 'installation', path: '/guides/installation' },
+      { key: 'quickStart', path: '/guides/quick-start' },
+      { key: 'streaming', path: '/guides/streaming' },
+      { key: 'memory', path: '/guides/memory' },
+      { key: 'components', path: '/reference/components' },
+      { key: 'hooks', path: '/reference/hooks' },
+      { key: 'playground', path: '/playground' },
+      { key: 'examples', path: '/examples' },
+      { key: 'cookbook', path: '/cookbook' },
+    ]
+
+  it.each(EXPECTED_ROUTES)('DOC_LINKS.$key equals $path', ({ key, path }) => {
+    expect(DOC_LINKS[key]).toBe(path)
+  })
+})
+
+// ============================================================================
 // Edge Case Tests
 // ============================================================================
 
@@ -365,23 +443,56 @@ describe('Edge Cases', () => {
       expect(result).toContain('|---------|')
     })
 
-    it('handles labels with pipe characters', () => {
+    it('escapes pipe characters in labels', () => {
       const result = buildComparisonTable(
         [{ name: 'Test', optionA: 'A', optionB: 'B' }],
         'A|B',
         'C|D'
       )
-      // Note: This will produce invalid markdown, but function still works
-      expect(result).toContain('A|B')
+      // Pipes should be escaped for valid markdown
+      expect(result).toContain('A\\|B')
+      expect(result).toContain('C\\|D')
     })
 
-    it('handles features with special characters', () => {
+    it('escapes pipe characters in feature values', () => {
       const result = buildComparisonTable(
         [{ name: 'Test|Name', optionA: 'Val|A', optionB: 'Val|B' }],
         'ColA',
         'ColB'
       )
-      expect(result).toContain('Test|Name')
+      expect(result).toContain('Test\\|Name')
+      expect(result).toContain('Val\\|A')
+      expect(result).toContain('Val\\|B')
+    })
+
+    it('handles null/undefined features array', () => {
+      const result = buildComparisonTable(
+        null as unknown as Array<{
+          name: string
+          optionA: string
+          optionB: string
+        }>,
+        'A',
+        'B'
+      )
+      expect(result).toContain('| Feature |')
+      // Should just have header and separator, no data rows
+      expect(result.split('\n').length).toBe(2)
+    })
+
+    it('filters out invalid feature entries', () => {
+      const result = buildComparisonTable(
+        [
+          { name: 'Valid', optionA: 'A', optionB: 'B' },
+          null as unknown as { name: string; optionA: string; optionB: string },
+          { name: 'Also Valid', optionA: 'C', optionB: 'D' },
+        ],
+        'ColA',
+        'ColB'
+      )
+      expect(result).toContain('Valid')
+      expect(result).toContain('Also Valid')
+      expect(result.split('\n').length).toBe(4) // header + separator + 2 rows
     })
   })
 
@@ -390,6 +501,43 @@ describe('Edge Cases', () => {
       const result = buildQuickChecks(['Line1\nLine2', 'Check2'])
       expect(result).toContain('1. Line1\nLine2')
       expect(result).toContain('2. Check2')
+    })
+
+    it('returns empty string for non-array input', () => {
+      expect(buildQuickChecks(null as unknown as string[])).toBe('')
+      expect(buildQuickChecks(undefined as unknown as string[])).toBe('')
+    })
+
+    it('filters out null/undefined entries', () => {
+      const result = buildQuickChecks([
+        'Valid check',
+        null as unknown as string,
+        'Another valid',
+        undefined as unknown as string,
+      ])
+      expect(result).toContain('1. Valid check')
+      expect(result).toContain('2. Another valid')
+      expect(result).not.toContain('3.')
+    })
+  })
+
+  describe('buildLearnMoreSection edge cases', () => {
+    it('returns empty string for non-array input', () => {
+      expect(
+        buildLearnMoreSection(
+          null as unknown as Array<{ key: DocLinkKey; label: string }>
+        )
+      ).toBe('')
+    })
+
+    it('filters out invalid link entries', () => {
+      const result = buildLearnMoreSection([
+        { key: 'streaming', label: 'Streaming' },
+        null as unknown as { key: DocLinkKey; label: string },
+        { key: 'hooks', label: 'Hooks' },
+      ])
+      expect(result).toContain('Streaming')
+      expect(result).toContain('Hooks')
     })
   })
 

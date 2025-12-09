@@ -399,40 +399,89 @@ export function getDocLink(key: DocLinkKey, label?: string): string {
 // ============================================================================
 
 /**
+ * Escape pipe characters for markdown table cells
+ * Pipes must be escaped to prevent breaking table structure
+ */
+function escapeTableCell(text: string): string {
+  if (!text || typeof text !== 'string') return ''
+  return text.replace(/\|/g, '\\|')
+}
+
+/**
  * Build a "Learn more" links section for responses
+ *
+ * @param links - Array of doc link keys with labels
+ * @returns Formatted markdown section, or empty string if no links
  */
 export function buildLearnMoreSection(
   links: Array<{ key: DocLinkKey; label: string }>
 ): string {
-  if (links.length === 0) return ''
-  const formatted = links.map((l) => getDocLink(l.key, l.label)).join(' | ')
+  if (!Array.isArray(links) || links.length === 0) return ''
+
+  const validLinks = links.filter(
+    (l) => l && typeof l.key === 'string' && typeof l.label === 'string'
+  )
+  if (validLinks.length === 0) return ''
+
+  const formatted = validLinks
+    .map((l) => getDocLink(l.key, l.label))
+    .join(' | ')
   return `\n\n📖 **Learn more**: ${formatted}`
 }
 
 /**
  * Build a comparison table for two options
+ *
+ * Automatically escapes pipe characters in all values to prevent
+ * breaking the markdown table structure.
+ *
+ * @param features - Array of feature comparisons
+ * @param labelA - Label for first option column
+ * @param labelB - Label for second option column
+ * @returns Formatted markdown table
  */
 export function buildComparisonTable(
   features: Array<{ name: string; optionA: string; optionB: string }>,
   labelA: string,
   labelB: string
 ): string {
-  const header = `| Feature | ${labelA} | ${labelB} |`
+  // Sanitize inputs
+  if (!Array.isArray(features)) features = []
+  const safeA = escapeTableCell(labelA || '')
+  const safeB = escapeTableCell(labelB || '')
+
+  const header = `| Feature | ${safeA} | ${safeB} |`
   const dash: string = '-'
-  const colA = dash.repeat(Math.max(labelA.length + 2, 3))
-  const colB = dash.repeat(Math.max(labelB.length + 2, 3))
+  const colA = dash.repeat(Math.max((safeA || '').length + 2, 3))
+  const colB = dash.repeat(Math.max((safeB || '').length + 2, 3))
   const separator = `|---------|${colA}|${colB}|`
-  const rows = features.map(
-    (f) => `| ${f.name} | ${f.optionA} | ${f.optionB} |`
-  )
+
+  const rows = features
+    .filter((f) => f && typeof f === 'object')
+    .map((f) => {
+      const name = escapeTableCell(f.name || '')
+      const optA = escapeTableCell(f.optionA || '')
+      const optB = escapeTableCell(f.optionB || '')
+      return `| ${name} | ${optA} | ${optB} |`
+    })
+
   return [header, separator, ...rows].join('\n')
 }
 
 /**
  * Build a quick checks list for troubleshooting
+ *
+ * @param checks - Array of check items
+ * @returns Formatted numbered list, or empty string if no checks
  */
 export function buildQuickChecks(checks: string[]): string {
-  if (checks.length === 0) return ''
-  const numbered = checks.map((c, i) => `${i + 1}. ${c}`).join('\n')
+  if (!Array.isArray(checks) || checks.length === 0) return ''
+
+  const validChecks = checks.filter(
+    (c) => c !== null && c !== undefined && typeof c === 'string'
+  )
+  if (validChecks.length === 0) return ''
+
+  const numbered = validChecks.map((c, i) => `${i + 1}. ${c}`).join('\n')
   return `**Quick checks first:**\n${numbered}`
 }
