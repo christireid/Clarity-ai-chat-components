@@ -38,19 +38,35 @@
 // Core Theme System
 // ============================================================================
 
-// Theme Provider and Hook
+// Theme types
 export {
-  ThemeProvider,
-  useTheme,
-  ThemeToggle,
-  ThemeModeSelector,
   type ThemeMode,
   type ThemeConfig,
-  type ThemeProviderProps,
-  type ThemeToggleProps,
-  type ThemeModeSelectorProps,
+  type ThemeContextValue,
   type ThemePresetName,
-} from './ThemeProvider'
+  type ThemeAnimationSpeed,
+  animationSpeedMap,
+  isCompleteThemeConfig,
+  normalizeThemeInput,
+} from './theme-types'
+
+// Theme context
+export { ThemeContext } from './theme-context'
+
+// useTheme hook
+export { useTheme } from './use-theme'
+
+// Theme Provider
+export { ThemeProvider, type ThemeProviderProps } from './ThemeProvider'
+
+// Theme Toggle
+export { ThemeToggle, type ThemeToggleProps } from './ThemeToggle'
+
+// Theme Mode Selector
+export {
+  ThemeModeSelector,
+  type ThemeModeSelectorProps,
+} from './ThemeModeSelector'
 
 // Theme Configuration Types
 export type {
