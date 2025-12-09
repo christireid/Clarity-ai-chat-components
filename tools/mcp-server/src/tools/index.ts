@@ -21,23 +21,31 @@ type Framework = 'nextjs' | 'express' | 'hono' | 'standalone'
 export const tools: Tool[] = [
   {
     name: 'init_project',
-    description: 'Initialize a new Clarity Chat project with specified provider and framework',
+    description: `Initialize a new Clarity Chat AI chat application project.
+
+Use this tool when the user wants to:
+- Create a new AI chat application from scratch
+- Set up a project with a specific AI provider (OpenAI, Anthropic, Google, or all)
+- Scaffold a project using Next.js, Express, Hono, or standalone TypeScript
+
+This tool creates: project directory, .env.local with API key placeholders, package.json with dependencies, and example code.
+The user must add their API keys separately after project creation.`,
     inputSchema: {
       type: 'object',
       properties: {
         provider: {
           type: 'string',
           enum: ['openai', 'anthropic', 'google', 'all'],
-          description: 'AI provider to use'
+          description: 'AI provider to configure. Use "all" to set up all three providers.'
         },
         framework: {
           type: 'string',
           enum: ['nextjs', 'express', 'hono', 'standalone'],
-          description: 'Framework to use'
+          description: 'Framework to use. "nextjs" recommended for full-stack apps, "standalone" for scripts.'
         },
         projectPath: {
           type: 'string',
-          description: 'Path where project should be created'
+          description: 'Absolute or relative path where the project should be created.'
         }
       },
       required: ['provider', 'framework', 'projectPath']
@@ -45,7 +53,11 @@ export const tools: Tool[] = [
   },
   {
     name: 'list_examples',
-    description: 'List all available Clarity Chat examples',
+    description: `List all available Clarity Chat code examples and patterns.
+
+Use this tool when the user wants to see what example code is available, find patterns for specific use cases (streaming, RAG, function calling), or browse templates before getting code.
+
+Returns a list of example names with descriptions. Use get_example to retrieve the actual code.`,
     inputSchema: {
       type: 'object',
       properties: {},
@@ -54,13 +66,17 @@ export const tools: Tool[] = [
   },
   {
     name: 'get_example',
-    description: 'Get the code for a specific Clarity Chat example',
+    description: `Get complete, production-ready code for a specific Clarity Chat example.
+
+Use this tool when the user wants to see how to implement a specific feature (streaming, function calling), get starter code for a pattern, or learn Clarity Chat API usage through examples.
+
+Available examples: basic-chat, streaming, nextjs-api, react-hook, conversation, functions, cost-tracking, rag.`,
     inputSchema: {
       type: 'object',
       properties: {
         exampleName: {
           type: 'string',
-          description: 'Name of the example to retrieve'
+          description: 'Name of the example: basic-chat, streaming, nextjs-api, react-hook, conversation, functions, cost-tracking, rag'
         }
       },
       required: ['exampleName']
@@ -68,13 +84,17 @@ export const tools: Tool[] = [
   },
   {
     name: 'validate_config',
-    description: 'Validate Clarity Chat project configuration',
+    description: `Validate a Clarity Chat project configuration and check for common issues.
+
+Use this tool when the user reports issues with their setup, wants to verify their project is configured correctly, or needs to troubleshoot configuration problems.
+
+Checks for: package.json and AI SDK dependencies, .env.local file, tsconfig.json with strict mode, common misconfigurations.`,
     inputSchema: {
       type: 'object',
       properties: {
         projectPath: {
           type: 'string',
-          description: 'Path to the project directory'
+          description: 'Path to the Clarity Chat project directory to validate'
         }
       },
       required: ['projectPath']
@@ -82,13 +102,17 @@ export const tools: Tool[] = [
   },
   {
     name: 'get_model_info',
-    description: 'Get detailed information about an AI model including pricing and capabilities',
+    description: `Get detailed information about an AI model including pricing, capabilities, and best use cases.
+
+Use this tool when the user asks about model pricing (cost per 1K tokens), context window sizes, model capabilities, which model to use for specific tasks, or comparing models.
+
+Supported models: gpt-4-turbo, gpt-4, claude-3-opus-20240229, gemini-pro.`,
     inputSchema: {
       type: 'object',
       properties: {
         modelName: {
           type: 'string',
-          description: 'Name of the AI model'
+          description: 'Model identifier: gpt-4-turbo, gpt-4, claude-3-opus-20240229, gemini-pro'
         }
       },
       required: ['modelName']
@@ -96,21 +120,25 @@ export const tools: Tool[] = [
   },
   {
     name: 'calculate_cost',
-    description: 'Calculate the cost for a given number of tokens with a specific model',
+    description: `Calculate the exact cost for API usage with a specific model and token count.
+
+Use this tool when the user wants to estimate costs before making API calls, understand the cost breakdown (input vs output tokens), compare costs between models, or budget for AI API usage.
+
+Returns total cost in USD, broken down by input and output tokens.`,
     inputSchema: {
       type: 'object',
       properties: {
         modelName: {
           type: 'string',
-          description: 'Name of the AI model'
+          description: 'Model identifier: gpt-4-turbo, gpt-4, claude-3-opus-20240229, gemini-pro'
         },
         promptTokens: {
           type: 'number',
-          description: 'Number of input tokens'
+          description: 'Number of input/prompt tokens'
         },
         completionTokens: {
           type: 'number',
-          description: 'Number of output tokens'
+          description: 'Number of output/completion tokens'
         }
       },
       required: ['modelName', 'promptTokens', 'completionTokens']
@@ -118,13 +146,17 @@ export const tools: Tool[] = [
   },
   {
     name: 'analyze_project',
-    description: 'Analyze a Clarity Chat project and provide insights',
+    description: `Analyze an existing Clarity Chat project and provide detailed insights.
+
+Use this tool when the user wants an overview of their project structure, to see which AI providers are configured, check project health and setup completeness, or understand their project's architecture.
+
+Returns: file count, detected framework, configured providers, presence of key files (package.json, .env.local, tsconfig.json).`,
     inputSchema: {
       type: 'object',
       properties: {
         projectPath: {
           type: 'string',
-          description: 'Path to the project directory'
+          description: 'Path to the Clarity Chat project directory to analyze'
         }
       },
       required: ['projectPath']
@@ -254,7 +286,7 @@ async function listExamples() {
  */
 async function getExample(exampleName: string) {
   logger.debug('Getting example', { exampleName })
-  
+
   const examples: Record<string, string> = {
     'basic-chat': `import { OpenAI } from 'openai'
 
@@ -281,7 +313,338 @@ async function streamChat(message: string) {
   for await (const chunk of stream) {
     process.stdout.write(chunk.choices[0]?.delta?.content || '')
   }
-}`
+}`,
+    'nextjs-api': `// app/api/chat/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { OpenAI } from 'openai'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+export async function POST(req: NextRequest) {
+  const { messages } = await req.json()
+
+  const stream = await openai.chat.completions.create({
+    model: 'gpt-4-turbo',
+    messages,
+    stream: true
+  })
+
+  const encoder = new TextEncoder()
+  const readable = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of stream) {
+        const text = chunk.choices[0]?.delta?.content || ''
+        controller.enqueue(encoder.encode(text))
+      }
+      controller.close()
+    }
+  })
+
+  return new Response(readable, {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+  })
+}`,
+    'react-hook': `import { useState, useCallback } from 'react'
+
+interface Message {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export function useChat() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const sendMessage = useCallback(async (content: string) => {
+    const userMessage: Message = { role: 'user', content }
+    setMessages(prev => [...prev, userMessage])
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...messages, userMessage] })
+      })
+
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+      let assistantContent = ''
+
+      setMessages(prev => [...prev, { role: 'assistant', content: '' }])
+
+      while (reader) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        assistantContent += decoder.decode(value)
+        setMessages(prev => [
+          ...prev.slice(0, -1),
+          { role: 'assistant', content: assistantContent }
+        ])
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }, [messages])
+
+  return { messages, sendMessage, isLoading }
+}`,
+    'conversation': `import { OpenAI } from 'openai'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+interface Message {
+  role: 'system' | 'user' | 'assistant'
+  content: string
+}
+
+class Conversation {
+  private messages: Message[] = []
+
+  constructor(systemPrompt?: string) {
+    if (systemPrompt) {
+      this.messages.push({ role: 'system', content: systemPrompt })
+    }
+  }
+
+  async chat(userMessage: string): Promise<string> {
+    this.messages.push({ role: 'user', content: userMessage })
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4-turbo',
+      messages: this.messages
+    })
+
+    const assistantMessage = response.choices[0].message.content || ''
+    this.messages.push({ role: 'assistant', content: assistantMessage })
+
+    return assistantMessage
+  }
+
+  getHistory(): Message[] {
+    return [...this.messages]
+  }
+
+  clear(): void {
+    const systemMessage = this.messages.find(m => m.role === 'system')
+    this.messages = systemMessage ? [systemMessage] : []
+  }
+}
+
+// Usage:
+const chat = new Conversation('You are a helpful assistant.')
+await chat.chat('Hello!')  // "Hi! How can I help you today?"
+await chat.chat('What did I just say?')  // "You said 'Hello!'"`,
+    'functions': `import { OpenAI } from 'openai'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+// Define available tools
+const tools: OpenAI.Chat.ChatCompletionTool[] = [
+  {
+    type: 'function',
+    function: {
+      name: 'get_weather',
+      description: 'Get the current weather for a location',
+      parameters: {
+        type: 'object',
+        properties: {
+          location: { type: 'string', description: 'City name' },
+          unit: { type: 'string', enum: ['celsius', 'fahrenheit'] }
+        },
+        required: ['location']
+      }
+    }
+  }
+]
+
+// Implement the function
+function getWeather(location: string, unit = 'celsius') {
+  // Mock implementation
+  return { location, temperature: 22, unit, condition: 'sunny' }
+}
+
+async function chatWithFunctions(message: string) {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4-turbo',
+    messages: [{ role: 'user', content: message }],
+    tools,
+    tool_choice: 'auto'
+  })
+
+  const assistantMessage = response.choices[0].message
+
+  // Handle tool calls
+  if (assistantMessage.tool_calls) {
+    const toolResults = assistantMessage.tool_calls.map(call => {
+      if (call.function.name === 'get_weather') {
+        const args = JSON.parse(call.function.arguments)
+        return {
+          tool_call_id: call.id,
+          role: 'tool' as const,
+          content: JSON.stringify(getWeather(args.location, args.unit))
+        }
+      }
+      return { tool_call_id: call.id, role: 'tool' as const, content: 'Unknown function' }
+    })
+
+    // Get final response with tool results
+    const finalResponse = await openai.chat.completions.create({
+      model: 'gpt-4-turbo',
+      messages: [
+        { role: 'user', content: message },
+        assistantMessage,
+        ...toolResults
+      ]
+    })
+
+    return finalResponse.choices[0].message.content
+  }
+
+  return assistantMessage.content
+}`,
+    'cost-tracking': `import { OpenAI } from 'openai'
+import { encoding_for_model } from 'tiktoken'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+// Pricing per 1K tokens (as of 2024)
+const PRICING = {
+  'gpt-4-turbo': { input: 0.01, output: 0.03 },
+  'gpt-4': { input: 0.03, output: 0.06 },
+  'gpt-3.5-turbo': { input: 0.0005, output: 0.0015 }
+}
+
+interface CostTracker {
+  totalInputTokens: number
+  totalOutputTokens: number
+  totalCost: number
+  requests: number
+}
+
+const tracker: CostTracker = {
+  totalInputTokens: 0,
+  totalOutputTokens: 0,
+  totalCost: 0,
+  requests: 0
+}
+
+function countTokens(text: string, model: string): number {
+  const enc = encoding_for_model(model as any)
+  const tokens = enc.encode(text)
+  enc.free()
+  return tokens.length
+}
+
+async function chatWithTracking(message: string, model = 'gpt-4-turbo') {
+  const inputTokens = countTokens(message, model)
+
+  const response = await openai.chat.completions.create({
+    model,
+    messages: [{ role: 'user', content: message }]
+  })
+
+  const outputTokens = response.usage?.completion_tokens || 0
+  const pricing = PRICING[model as keyof typeof PRICING]
+  const cost = (inputTokens * pricing.input + outputTokens * pricing.output) / 1000
+
+  // Update tracker
+  tracker.totalInputTokens += inputTokens
+  tracker.totalOutputTokens += outputTokens
+  tracker.totalCost += cost
+  tracker.requests++
+
+  return {
+    content: response.choices[0].message.content,
+    usage: { inputTokens, outputTokens, cost: \`$\${cost.toFixed(6)}\` },
+    totals: {
+      tokens: tracker.totalInputTokens + tracker.totalOutputTokens,
+      cost: \`$\${tracker.totalCost.toFixed(4)}\`,
+      requests: tracker.requests
+    }
+  }
+}`,
+    'rag': `import { OpenAI } from 'openai'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+interface Document {
+  id: string
+  content: string
+  embedding?: number[]
+}
+
+// Simple in-memory vector store
+class VectorStore {
+  private documents: Document[] = []
+
+  async addDocument(content: string): Promise<string> {
+    const embedding = await this.getEmbedding(content)
+    const doc: Document = { id: crypto.randomUUID(), content, embedding }
+    this.documents.push(doc)
+    return doc.id
+  }
+
+  async search(query: string, topK = 3): Promise<Document[]> {
+    const queryEmbedding = await this.getEmbedding(query)
+
+    const scored = this.documents.map(doc => ({
+      doc,
+      score: this.cosineSimilarity(queryEmbedding, doc.embedding!)
+    }))
+
+    return scored
+      .sort((a, b) => b.score - a.score)
+      .slice(0, topK)
+      .map(s => s.doc)
+  }
+
+  private async getEmbedding(text: string): Promise<number[]> {
+    const response = await openai.embeddings.create({
+      model: 'text-embedding-3-small',
+      input: text
+    })
+    return response.data[0].embedding
+  }
+
+  private cosineSimilarity(a: number[], b: number[]): number {
+    const dot = a.reduce((sum, val, i) => sum + val * b[i], 0)
+    const magA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0))
+    const magB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0))
+    return dot / (magA * magB)
+  }
+}
+
+// RAG Pipeline
+async function ragQuery(query: string, vectorStore: VectorStore): Promise<string> {
+  // 1. Retrieve relevant documents
+  const relevantDocs = await vectorStore.search(query, 3)
+  const context = relevantDocs.map(d => d.content).join('\\n\\n')
+
+  // 2. Generate response with context
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4-turbo',
+    messages: [
+      {
+        role: 'system',
+        content: \`Answer questions based on the following context. If the answer isn't in the context, say so.
+
+Context:
+\${context}\`
+      },
+      { role: 'user', content: query }
+    ]
+  })
+
+  return response.choices[0].message.content || ''
+}
+
+// Usage:
+const store = new VectorStore()
+await store.addDocument('Clarity Chat is a React component library for AI chat interfaces.')
+await store.addDocument('It supports OpenAI, Anthropic, and Google AI providers.')
+const answer = await ragQuery('What providers does Clarity Chat support?', store)`
   }
 
   const code = examples[exampleName]
