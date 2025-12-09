@@ -10,6 +10,9 @@
  */
 
 import React from 'react'
+// 📚 IMPORT PATTERN:
+// All @clarity-chat/react exports come from the main package entry point.
+// The library uses a flat export structure for simpler imports.
 import {
   MemoryProvider,
   useMemory,
@@ -17,9 +20,55 @@ import {
   useMemoryStats,
   useMemoryEvents,
   useTokenOptimization,
-  type MemoryServiceConfig,
-  type MemoryItem,
-} from '@clarity-chat/react/memory'
+} from '@clarity-chat/react'
+import { accessibleClickHandler } from '../utils/accessibility'
+
+// 💡 Type definitions for the memory system
+// ⚠️ NOTE: These interfaces are defined locally for demonstration purposes.
+// In production, check if @clarity-chat/react exports these types directly.
+// If not, these serve as documentation for the expected configuration shape.
+interface MemoryServiceConfig {
+  tokenOptimization: {
+    maxContextWindow: number
+    allocation: {
+      systemPrompt: number
+      userPreferences: number
+      recentContext: number
+      semanticMemory: number
+      episodicMemory: number
+      responseReserve: number
+    }
+    dynamicAllocation: boolean
+    enableCompression: boolean
+    compressionRatio: number
+    enableChunking: boolean
+    chunkSize: number
+    chunkOverlap: number
+  }
+  persistence: {
+    useVectorStore: boolean
+    vectorStoreNamespace: string
+    useCache: boolean
+    cacheTTL: number
+    useDatabase: boolean
+    databaseUrl?: string
+    batchSize?: number
+  }
+  enableAutoSummarization: boolean
+  summarizationInterval: number
+  enableAutoCleanup: boolean
+  cleanupInterval: number
+  retentionPolicy: {
+    shortTerm: number
+    session: number
+    thread: number
+    global: number
+  }
+  debug: boolean
+}
+
+// NOTE: MemoryItem type is available from useMemoryQuery return type.
+// No need to redefine it here - the hook provides properly typed results.
 
 // Advanced configuration with compression
 const memoryConfig: MemoryServiceConfig = {
@@ -230,12 +279,13 @@ function MemoryQueryPanel() {
         {results.map(result => (
           <div
             key={result.memory.id}
-            className={`p-4 border rounded cursor-pointer transition-colors ${
+            {...accessibleClickHandler(() => setSelectedMemory(result.memory.id))}
+            aria-pressed={selectedMemory === result.memory.id}
+            className={`p-4 border rounded cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               selectedMemory === result.memory.id
                 ? 'border-blue-500 bg-blue-50'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
-            onClick={() => setSelectedMemory(result.memory.id)}
           >
             <div className="flex justify-between items-start mb-2">
               <div>

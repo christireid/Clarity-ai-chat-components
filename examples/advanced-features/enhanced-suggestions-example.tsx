@@ -11,6 +11,16 @@ import {
   useChatEnhanced,
 } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
+import { accessibleClickHandler } from '../utils/accessibility'
+
+// 💡 Type for prompt suggestions used throughout these examples
+interface PromptSuggestion {
+  id: string
+  text: string
+  confidence: number
+  category?: string
+  metadata?: Record<string, unknown>
+}
 
 /**
  * Example 1: Drop-in Component Usage
@@ -83,13 +93,13 @@ export function AdvancedHookExample() {
     trackEffectiveness: true,
   })
 
-  const [resolvedSuggestions, setResolvedSuggestions] = React.useState([])
+  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<PromptSuggestion[]>([])
 
   React.useEffect(() => {
     suggestions.then(setResolvedSuggestions)
   }, [suggestions])
 
-  const handleSelect = (suggestion: any) => {
+  const handleSelect = (suggestion: PromptSuggestion) => {
     // Track the interaction
     trackInteraction(suggestion, true)
 
@@ -97,7 +107,7 @@ export function AdvancedHookExample() {
     sendMessage(suggestion.text)
   }
 
-  const handleDismiss = (suggestion: any) => {
+  const handleDismiss = (suggestion: PromptSuggestion) => {
     // Track that user saw but didn't select
     trackInteraction(suggestion, false)
   }
@@ -129,8 +139,8 @@ export function AdvancedHookExample() {
           {resolvedSuggestions.map((suggestion, index) => (
             <div
               key={suggestion.id}
-              className="relative p-4 border rounded-lg hover:bg-accent cursor-pointer transition-colors"
-              onClick={() => handleSelect(suggestion)}
+              {...accessibleClickHandler(() => handleSelect(suggestion))}
+              className="relative p-4 border rounded-lg hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
             >
               {/* Confidence badge */}
               {suggestion.confidence !== undefined && (
@@ -164,7 +174,8 @@ export function AdvancedHookExample() {
 
               {/* Dismiss button */}
               <button
-                className="absolute bottom-2 right-2 text-xs text-muted-foreground hover:text-foreground"
+                aria-label="Dismiss suggestion"
+                className="absolute bottom-2 right-2 text-xs text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary rounded"
                 onClick={(e) => {
                   e.stopPropagation()
                   handleDismiss(suggestion)
@@ -285,7 +296,7 @@ export function ABTestingExample() {
     }
   }, [abVariant, stats])
 
-  const [resolvedSuggestions, setResolvedSuggestions] = React.useState([])
+  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<PromptSuggestion[]>([])
 
   React.useEffect(() => {
     suggestions.then(setResolvedSuggestions)
@@ -406,7 +417,7 @@ export function CustomMLProviderExample() {
   //   rankedSuggestions: PromptSuggestion[] // with updated confidence scores
   // }
 
-  const [resolvedSuggestions, setResolvedSuggestions] = React.useState([])
+  const [resolvedSuggestions, setResolvedSuggestions] = React.useState<PromptSuggestion[]>([])
 
   React.useEffect(() => {
     suggestions.then(setResolvedSuggestions)

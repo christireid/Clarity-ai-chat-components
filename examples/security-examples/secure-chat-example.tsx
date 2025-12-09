@@ -27,6 +27,40 @@ import {
   ConsoleAlertHandler,
 } from '@clarity-chat/react'
 
+// =============================================================================
+// 💡 Type Definitions for Security Examples
+// =============================================================================
+
+/**
+ * Represents a chat message in the security examples.
+ * @description Used for both user input and assistant responses.
+ */
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
+/**
+ * Result of security validation on user input.
+ * @description Returned by SecurityManager.validateInput()
+ */
+interface ValidationResult {
+  /** Whether the input passed security checks */
+  allowed: boolean
+  /** Reason for blocking if not allowed */
+  reason?: string
+  /** Confidence score of the security check (0-1) */
+  confidence?: number
+  /** Sanitized version of the input (PII redacted, etc.) */
+  sanitizedInput?: string
+  /** Additional details about the validation */
+  details?: Record<string, unknown>
+}
+
+// =============================================================================
+// Example Components
+// =============================================================================
+
 /**
  * Example 1: Simple Secure Chat with React Hook
  */
@@ -87,7 +121,7 @@ export function SimpleSecureChat() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Type a message..."
           disabled={isProcessing}
         />
@@ -213,7 +247,7 @@ export function AdvancedSecureChat() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
             placeholder="Type a message..."
             disabled={isProcessing}
           />
@@ -297,7 +331,7 @@ export function CustomSecurityChat() {
       })
   )
 
-  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -327,7 +361,8 @@ export function CustomSecurityChat() {
 
       // Step 3: Prepare messages with security
       const systemMessage = { role: 'system', content: 'You are a helpful assistant.' }
-      const secureMessages = security.prepareMessages([systemMessage, ...newMessages] as any)
+      // 🎯 Type assertion for security prepareMessages API
+      const secureMessages = security.prepareMessages([systemMessage, ...newMessages] as ChatMessage[])
 
       // Step 4: Call LLM
       const response = await fetch('/api/chat', {
@@ -383,7 +418,7 @@ export function CustomSecurityChat() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Type a message..."
           disabled={isProcessing}
         />
@@ -415,7 +450,7 @@ export function SecurityTestBench() {
   )
 
   const [testInput, setTestInput] = useState('')
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<ValidationResult | null>(null)
 
   const attackExamples = [
     {

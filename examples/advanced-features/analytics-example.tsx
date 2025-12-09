@@ -20,10 +20,18 @@ import {
   CardTitle,
 } from '@clarity-chat/react'
 import type {
-  InteractionEvent,
   ExperimentResult,
   ExperimentVariant,
 } from '@clarity-chat/react'
+import { ErrorBoundary, LoadingSpinner, ErrorState } from '../utils/error-boundary'
+
+// 💡 Type definitions for this example
+interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  timestamp: number
+}
 
 // =============================================================================
 // Example 1: Basic User Interaction Tracking
@@ -162,61 +170,67 @@ export function ABTestingExample() {
 
   const [userId] = React.useState(`user-${Math.random().toString(36).substr(2, 9)}`)
 
+  // Track if demo data has been initialized (intentionally runs once)
+  const hasInitialized = React.useRef(false)
+
+  // 🎯 Intentionally runs once on mount to seed demo data
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
-    // Create sample experiments if none exist
-    if (experiments.length === 0) {
-      // Experiment 1: Button color test
-      const exp1 = createExperiment(
-        'Button Color Test',
-        [
-          {
-            id: 'control',
-            name: 'Blue Button',
-            isControl: true,
-            config: { color: 'blue' },
-          },
-          {
-            id: 'variant-green',
-            name: 'Green Button',
-            isControl: false,
-            config: { color: 'green' },
-          },
-          {
-            id: 'variant-red',
-            name: 'Red Button',
-            isControl: false,
-            config: { color: 'red' },
-          },
-        ],
-        'Testing button color impact on click-through rate'
-      )
-      startExperiment(exp1.experimentId)
+    // Only initialize once
+    if (hasInitialized.current || experiments.length > 0) return
+    hasInitialized.current = true
 
-      // Experiment 2: Message layout test
-      const exp2 = createExperiment(
-        'Message Layout Test',
-        [
-          {
-            id: 'control',
-            name: 'Compact Layout',
-            isControl: true,
-            config: { layout: 'compact' },
-          },
-          {
-            id: 'variant-spacious',
-            name: 'Spacious Layout',
-            isControl: false,
-            config: { layout: 'spacious' },
-          },
-        ],
-        'Testing message layout impact on engagement'
-      )
-      startExperiment(exp2.experimentId)
+    // Experiment 1: Button color test
+    const exp1 = createExperiment(
+      'Button Color Test',
+      [
+        {
+          id: 'control',
+          name: 'Blue Button',
+          isControl: true,
+          config: { color: 'blue' },
+        },
+        {
+          id: 'variant-green',
+          name: 'Green Button',
+          isControl: false,
+          config: { color: 'green' },
+        },
+        {
+          id: 'variant-red',
+          name: 'Red Button',
+          isControl: false,
+          config: { color: 'red' },
+        },
+      ],
+      'Testing button color impact on click-through rate'
+    )
+    startExperiment(exp1.experimentId)
 
-      // Simulate some metrics
-      simulateMetrics(exp1.experimentId, exp1.variants)
-      simulateMetrics(exp2.experimentId, exp2.variants)
-    }
+    // Experiment 2: Message layout test
+    const exp2 = createExperiment(
+      'Message Layout Test',
+      [
+        {
+          id: 'control',
+          name: 'Compact Layout',
+          isControl: true,
+          config: { layout: 'compact' },
+        },
+        {
+          id: 'variant-spacious',
+          name: 'Spacious Layout',
+          isControl: false,
+          config: { layout: 'spacious' },
+        },
+      ],
+      'Testing message layout impact on engagement'
+    )
+    startExperiment(exp2.experimentId)
+
+    // Simulate some metrics
+    simulateMetrics(exp1.experimentId, exp1.variants)
+    simulateMetrics(exp2.experimentId, exp2.variants)
   }, [])
 
   const simulateMetrics = (expId: string, variants: ExperimentVariant[]) => {
@@ -271,40 +285,46 @@ export function ABTestingExample() {
  */
 export function ChatWithABTestExample() {
   const { getVariant, recordMetric, experiments, createExperiment, startExperiment } = useABTesting()
-  const [messages, setMessages] = React.useState<any[]>([])
+  const [messages, setMessages] = React.useState<ChatMessage[]>([])
   const [userId] = React.useState(`user-${Date.now()}`)
-  const [variant, setVariant] = React.useState<any>(null)
+  const [variant, setVariant] = React.useState<ExperimentVariant | null>(null)
 
+  // Track if demo data has been initialized (intentionally runs once)
+  const hasInitialized = React.useRef(false)
+
+  // 🎯 Intentionally runs once on mount to seed demo data
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
-    // Create experiment if doesn't exist
-    if (experiments.length === 0) {
-      const exp = createExperiment(
-        'Chat Theme Test',
-        [
-          { id: 'control', name: 'Default Theme', isControl: true, config: { theme: 'default' } },
-          { id: 'variant-dark', name: 'Dark Theme', isControl: false, config: { theme: 'dark' } },
-          { id: 'variant-minimal', name: 'Minimal Theme', isControl: false, config: { theme: 'minimal' } },
-        ],
-        'Testing chat theme impact on engagement'
-      )
-      startExperiment(exp.experimentId)
+    // Only initialize once
+    if (hasInitialized.current || experiments.length > 0) return
+    hasInitialized.current = true
 
-      // Get variant for this user
-      const v = getVariant(exp.experimentId, userId)
-      setVariant(v)
+    const exp = createExperiment(
+      'Chat Theme Test',
+      [
+        { id: 'control', name: 'Default Theme', isControl: true, config: { theme: 'default' } },
+        { id: 'variant-dark', name: 'Dark Theme', isControl: false, config: { theme: 'dark' } },
+        { id: 'variant-minimal', name: 'Minimal Theme', isControl: false, config: { theme: 'minimal' } },
+      ],
+      'Testing chat theme impact on engagement'
+    )
+    startExperiment(exp.experimentId)
 
-      // Record impression
-      if (v) {
-        recordMetric(exp.experimentId, v.id, {
-          variantId: v.id,
-          impressions: 1,
-          conversions: 0,
-          conversionRate: 0,
-          avgEngagementTime: 0,
-          bounceRate: 0,
-          users: 1,
-        })
-      }
+    // Get variant for this user
+    const v = getVariant(exp.experimentId, userId)
+    setVariant(v)
+
+    // Record impression
+    if (v) {
+      recordMetric(exp.experimentId, v.id, {
+        variantId: v.id,
+        impressions: 1,
+        conversions: 0,
+        conversionRate: 0,
+        avgEngagementTime: 0,
+        bounceRate: 0,
+        users: 1,
+      })
     }
   }, [])
 
@@ -386,17 +406,21 @@ export function ChatWithABTestExample() {
 export function ProductionAnalyticsExample() {
   const [experiments, setExperiments] = React.useState<ExperimentResult[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState<Error | null>(null)
 
   // Load experiments from backend
   React.useEffect(() => {
     const loadExperiments = async () => {
       setIsLoading(true)
+      setError(null)
       try {
         const response = await fetch('/api/experiments')
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const data = await response.json()
         setExperiments(data.experiments)
-      } catch (error) {
-        console.error('Failed to load experiments:', error)
+      } catch (err) {
+        console.error('Failed to load experiments:', err)
+        setError(err instanceof Error ? err : new Error('Failed to load experiments'))
       } finally {
         setIsLoading(false)
       }
@@ -419,59 +443,74 @@ export function ProductionAnalyticsExample() {
       const response = await fetch('/api/experiments')
       const data = await response.json()
       setExperiments(data.experiments)
-    } catch (error) {
-      console.error('Failed to declare winner:', error)
+    } catch (err) {
+      console.error('Failed to declare winner:', err)
       alert('Failed to declare winner')
     }
   }
 
   if (isLoading) {
-    return <div className="p-4">Loading experiments...</div>
+    return (
+      <div className="flex items-center justify-center p-8">
+        <LoadingSpinner size="lg" label="Loading experiments..." />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <ErrorState
+        message={error.message}
+        onRetry={() => window.location.reload()}
+      />
+    )
   }
 
   return (
-    <div className="space-y-4 p-4">
-      <h2 className="text-2xl font-bold">Production Analytics</h2>
+    <ErrorBoundary>
+      <div className="space-y-4 p-4">
+        <h2 className="text-2xl font-bold">Production Analytics</h2>
 
-      <UserInteractionAnalytics
-        config={{
-          trackClicks: true,
-          trackFeatureDiscovery: true,
-          samplingRate: 0.1, // 10% sampling in production
-        }}
-        realtime
-        onEventTracked={async (event) => {
-          // Send events to analytics service
-          try {
-            await fetch('/api/analytics/events', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(event),
-            })
-          } catch (error) {
-            console.error('Failed to send event:', error)
-          }
-        }}
-        onAnalyticsGenerated={async (metrics) => {
-          // Send aggregated metrics
-          try {
-            await fetch('/api/analytics/metrics', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(metrics),
-            })
-          } catch (error) {
-            console.error('Failed to send metrics:', error)
-          }
-        }}
-      />
+        <UserInteractionAnalytics
+          config={{
+            trackClicks: true,
+            trackFeatureDiscovery: true,
+            samplingRate: 0.1, // 10% sampling in production
+          }}
+          realtime
+          onEventTracked={async (event) => {
+            // Send events to analytics service
+            try {
+              await fetch('/api/analytics/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(event),
+              })
+            } catch (err) {
+              console.error('Failed to send event:', err)
+            }
+          }}
+          onAnalyticsGenerated={async (metrics) => {
+            // Send aggregated metrics
+            try {
+              await fetch('/api/analytics/metrics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(metrics),
+              })
+            } catch (err) {
+              console.error('Failed to send metrics:', err)
+            }
+          }}
+        />
 
-      <ABTestingDashboard
-        experiments={experiments}
-        showStatistics
-        onDeclareWinner={handleDeclareWinner}
-      />
-    </div>
+        <ABTestingDashboard
+          experiments={experiments}
+          showStatistics
+          onDeclareWinner={handleDeclareWinner}
+        />
+      </div>
+    </ErrorBoundary>
   )
 }
 

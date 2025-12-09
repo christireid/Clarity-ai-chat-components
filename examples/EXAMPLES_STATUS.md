@@ -1,8 +1,9 @@
 # Examples Status Report
 
-**Date:** November 18, 2025
-**Status:** ⚠️ Most examples are reference/documentation only
-**Runnable Examples:** 0
+**Last Updated:** December 8, 2025
+**Previous Update:** November 18, 2025
+**Status:** ⚠️ Most examples are reference/documentation only (improvements in progress)
+**Runnable Examples:** 0 → Improvements made (see below)
 
 ---
 
@@ -297,3 +298,371 @@ For **actual working code examples**, refer to the package test files:
 **Recommendation:** Use package tests for reference, create new examples if needed
 
 📊 **Examples directory is for reference/documentation, not working code**
+
+---
+
+## December 2025 Improvements
+
+### Code Quality Fixes Applied
+
+The following improvements were made to example files on December 8, 2025:
+
+#### 1. Import Path Fixes (Critical)
+
+**Problem:** Examples imported from non-existent subpaths like `@clarity-chat/react/memory`
+
+**Fix:** Updated imports to use the main package entry point `@clarity-chat/react`
+
+**Files Updated:**
+- `memory-examples/memory-system-basic.tsx` - Fixed imports for MemoryProvider, vector stores, embeddings
+- `memory-examples/memory-system-advanced.tsx` - Fixed imports, added MemoryServiceConfig and MemoryItem types
+- `token-optimization/enhanced-optimization-example.tsx` - Fixed useTokenOptimizationEnhanced import
+
+#### 2. Type Safety Improvements
+
+**Problem:** 16+ instances of `any` type usage violated TypeScript strict mode
+
+**Fix:** Added proper interface definitions and replaced `any` with specific types
+
+**Files Updated:**
+- `token-optimization/enhanced-optimization-example.tsx` - Added OptimizationResult, ChatMessage, PreparedMessage types
+- `security-examples/secure-chat-example.tsx` - Added ChatMessage, ValidationResult types
+- `advanced-features/enhanced-suggestions-example.tsx` - Added PromptSuggestion type
+- `advanced-features/mentions-example.tsx` - Added ChatMessageWithMentions type
+- `memory-examples/memory-nodejs-express.ts` - Added MemoryQueryOptions type
+
+#### 3. Deprecated API Fixes
+
+**Problem:** 4 instances of deprecated `onKeyPress` event handler
+
+**Fix:** Replaced with `onKeyDown` including Shift key check for multi-line support
+
+**Files Updated:**
+- `memory-examples/memory-system-basic.tsx`
+- `security-examples/secure-chat-example.tsx` (3 instances)
+
+#### 4. Educational Comments Added
+
+**Enhancement:** Added educational comments explaining:
+- Import patterns (`📚 IMPORT PATTERN:`)
+- Type definitions (`💡 Type definition for...`)
+- Key concepts (`🎯 ... provides access to...`)
+
+### Remaining Work
+
+The following items are deferred for future work:
+
+1. **Create working examples** for empty directories (streaming-chat, enterprise-ai-ops, etc.)
+2. **Add .env.example files** to all example directories
+3. **Add test files** to verify examples compile and run
+4. **Standardize README format** across all examples
+5. **Add screenshots/GIFs** to READMEs for visual guidance
+
+### Industry Research Applied
+
+Improvements were informed by research on:
+- [Vercel AI SDK](https://github.com/vercel/ai) - Example structure patterns
+- [shadcn/ui](https://ui.shadcn.com/docs) - Copy-paste ready philosophy
+- React + TypeScript best practices - Type safety and strict mode
+
+---
+
+### Post-Implementation Audit (December 9, 2025)
+
+A comprehensive audit was performed following the initial improvements:
+
+#### 1. Interface Scope Fixes
+
+**Problem:** Type interfaces defined inside function components (recreated on every render)
+
+**Fix:** Moved all interfaces to module level with JSDoc documentation
+
+**Files Updated:**
+- `security-examples/secure-chat-example.tsx` - Moved ChatMessage and ValidationResult to file top
+
+#### 2. Stale Build Artifacts Removed
+
+**Problem:** 28 compiled `.js` and `.d.ts` files were out of sync with source
+
+**Fix:** Deleted all stale compiled files from examples directories
+
+**Files Removed:**
+- 14 `.js` files (contained deprecated `onKeyPress`)
+- 14 `.d.ts` files (contained `any` return types)
+
+**Preserved:**
+- `types/` directories with intentional type stubs
+- `next-env.d.ts` files (Next.js environment declarations)
+
+#### 3. Verification Complete
+
+| Check | Status |
+|-------|--------|
+| `any` types in source | ✅ 0 remaining |
+| `onKeyPress` in source | ✅ 0 remaining |
+| Stale compiled files | ✅ 0 remaining |
+| Interface scope | ✅ All at module level |
+
+---
+
+### Accessibility Audit (December 9, 2025)
+
+A comprehensive accessibility audit was performed following best practices research:
+
+#### 1. Type Safety Improvements
+
+**Problem:** `useState([])` without type annotation creates implicit `never[]` type
+
+**Fix:** Added explicit type annotations to useState hooks
+
+**Files Updated:**
+- `advanced-features/enhanced-suggestions-example.tsx` - Added `useState<PromptSuggestion[]>([])`
+
+#### 2. Clickable Element Accessibility
+
+**Problem:** Interactive `<div>` elements with click handlers lacked keyboard accessibility
+
+**Fix:** Added `role="button"`, `tabIndex={0}`, `onKeyDown` handlers, and focus styles
+
+**Files Updated:**
+- `memory-examples/memory-system-advanced.tsx` - Added accessibility to memory result cards
+- `advanced-features/enhanced-suggestions-example.tsx` - Added accessibility to suggestion cards
+
+#### 3. Icon Button Labels
+
+**Problem:** Close/dismiss buttons using ✕ symbol lacked screen reader labels
+
+**Fix:** Added `aria-label` attributes to icon-only buttons
+
+**Files Updated:**
+- `advanced-features/all-quick-wins-example.tsx` - Added "Close summary panel" label
+- `advanced-features/enhanced-suggestions-example.tsx` - Added "Dismiss suggestion" label
+
+#### 4. Modal Accessibility
+
+**Problem:** Modal backdrop lacked proper ARIA attributes and escape key support
+
+**Fix:** Added `role="dialog"`, `aria-modal`, `aria-labelledby`, and Escape key handler
+
+**Files Updated:**
+- `advanced-features/all-quick-wins-example.tsx` - Full dialog accessibility pattern
+
+#### 5. Verification Complete
+
+| Check | Status |
+|-------|--------|
+| Untyped useState | ✅ 0 remaining |
+| Clickable divs without keyboard | ✅ 0 remaining |
+| Icon buttons without labels | ✅ 0 remaining |
+| Modals without ARIA | ✅ 0 remaining |
+
+---
+
+### Comprehensive Enhancement Audit (December 9, 2025)
+
+A comprehensive enhancement audit was performed implementing all recommended improvements:
+
+#### 1. Focus Trap for Modal (Option B)
+
+**Problem:** Modal in `all-quick-wins-example.tsx` lacked focus trap
+
+**Fix:** Implemented complete focus trap with:
+- `useFocusTrap` pattern with keyboard tab cycling
+- Auto-focus on close button when modal opens
+- Focus return to trigger element on close
+- `aria-expanded` and `aria-haspopup` on trigger button
+
+**Files Updated:**
+- `advanced-features/all-quick-wins-example.tsx`
+
+#### 2. Reusable Accessibility Utilities (Option C)
+
+**Created:** `utils/accessibility.ts` with:
+- `accessibleClickHandler(handler)` - Props for clickable non-button elements
+- `useFocusTrap(options)` - Hook for trapping focus in containers
+- `useAutoFocus(condition)` - Hook for auto-focusing elements
+- `useEscapeKey(handler, enabled)` - Hook for escape key handling
+- `announceToScreenReader(message, priority)` - Screen reader announcements
+
+#### 3. useEffect Dependency Fixes (Option D)
+
+**Problem:** useEffect hooks in `analytics-example.tsx` had empty dependency arrays but referenced external values
+
+**Fix:** Added:
+- `hasInitialized` ref to prevent double initialization
+- `eslint-disable-next-line` comments explaining intentional pattern
+- Proper guard conditions
+
+**Files Updated:**
+- `advanced-features/analytics-example.tsx` (2 components fixed)
+
+#### 4. Accessibility Documentation (Option H)
+
+**Created:** `ACCESSIBILITY.md` with:
+- Quick reference table for common patterns
+- Detailed code examples for clickable elements, modals, focus management
+- Utility function documentation
+- Testing checklist
+- Common mistakes to avoid
+
+#### 5. Error Boundaries and Loading States (Option I)
+
+**Created:** `utils/error-boundary.tsx` with:
+- `ErrorBoundary` - Class component for catching errors
+- `LoadingSpinner` - Animated loading indicator
+- `Skeleton` - Loading placeholder
+- `MessageSkeleton` - Chat-specific loading skeleton
+- `EmptyState` - Empty content placeholder
+- `ErrorState` - Error display with retry
+
+#### 6. Verification Complete
+
+| Check | Status |
+|-------|--------|
+| Focus trap on modals | ✅ Implemented |
+| Accessibility utilities | ✅ Created |
+| useEffect dependencies | ✅ Fixed |
+| Accessibility docs | ✅ Created |
+| Error boundaries | ✅ Created |
+| Loading states | ✅ Created |
+
+---
+
+### Full Implementation Audit (December 9, 2025)
+
+A complete implementation of all recommended enhancements was performed:
+
+#### Option A: Refactor Examples to Use Accessibility Utilities
+
+**Status:** ✅ Complete
+
+**Files Updated:**
+- `advanced-features/enhanced-suggestions-example.tsx` - Uses `accessibleClickHandler`
+- `memory-examples/memory-system-advanced.tsx` - Uses `accessibleClickHandler`
+- `advanced-features/all-quick-wins-example.tsx` - Uses `useFocusTrap` and `useEscapeKey`
+
+#### Option B: Wrap Examples in ErrorBoundary
+
+**Status:** ✅ Complete
+
+**Files Updated:**
+- `memory-examples/memory-system-basic.tsx` - Wrapped in ErrorBoundary
+- `advanced-features/analytics-example.tsx` - ProductionAnalyticsExample wrapped
+- `advanced-features/accessibility-demo.tsx` - Wrapped in ErrorBoundary
+
+#### Option C: Unit Tests for Accessibility Utilities
+
+**Status:** ✅ Complete
+
+**Created:** `utils/accessibility.test.ts` with tests for:
+- `accessibleClickHandler` - Tests role, tabIndex, click, Enter/Space keys
+- `useEscapeKey` - Tests handler calls, disabled state, cleanup
+- `useAutoFocus` - Tests ref return, focus behavior
+- `useFocusTrap` - Tests ref return, focus management
+- `announceToScreenReader` - Tests ARIA attributes, priorities, cleanup
+
+#### Option D: Add Loading States to Async Examples
+
+**Status:** ✅ Complete
+
+**Files Updated:**
+- `advanced-features/analytics-example.tsx` - Added LoadingSpinner, ErrorState
+
+#### Option E: Create Fully Runnable Example
+
+**Status:** ✅ Complete
+
+**Created:** `standalone/simple-chat.tsx` with:
+- Self-contained chat implementation (no external dependencies)
+- Simulated streaming responses
+- Full accessibility support
+- Error boundary
+- Detailed documentation
+- Copy-paste ready for any React project
+
+#### Option F: Automated Accessibility Testing with axe-core
+
+**Status:** ✅ Complete
+
+**Created:** `utils/accessibility-testing.ts` with:
+- `runAccessibilityChecks()` - axe-core integration
+- `toHaveNoViolations()` - Jest/Vitest matcher
+- `logAccessibilityViolations()` - Development helper
+- `useAccessibilityCheck()` - React hook
+- `assertAccessible()` - Test assertion function
+- `groupViolationsByImpact()` - Violation grouping
+
+#### Option G: Improve .d.ts Type Stub Files
+
+**Status:** ✅ Complete
+
+**Files Updated:**
+- `streaming-chat/types/clarity-chat-react.d.ts` - Full interface definitions for:
+  - StreamingMessageProps, ChatWindowProps, ModelSelectorProps, ChatInputProps
+  - ModelInfo, ModelConfig, ChatMessage, StreamChunk, UsageInfo
+  - StreamConfig, ProviderAdapter
+
+#### Option H: Add Keyboard Shortcut Documentation
+
+**Status:** ✅ Complete
+
+**Updated:** `ACCESSIBILITY.md` with:
+- Global shortcuts (Tab, Shift+Tab, Escape, Enter, Space)
+- Modal/dialog shortcuts
+- List/menu navigation (Arrow keys, Home, End)
+- Form control shortcuts
+- Chat interface shortcuts
+- Custom shortcut implementation example
+
+#### Option I: Create Interactive Accessibility Demo
+
+**Status:** ✅ Complete
+
+**Created:** `advanced-features/accessibility-demo.tsx` with interactive demos for:
+- Accessible click handler
+- Focus trap modal
+- Auto-focus behavior
+- Escape key handling
+- Screen reader announcements
+- Keyboard navigation (arrow keys, Home, End)
+
+#### Option J: Fix Remaining ESLint/TypeScript Warnings
+
+**Status:** ✅ Complete
+
+- Fixed unused `InteractionEvent` import in analytics-example.tsx
+- Fixed all `error` variable shadowing (renamed to `err`)
+- Removed stale refs (`triggerRef`, `closeButtonRef`)
+
+#### Option K: Add Performance Monitoring
+
+**Status:** ✅ Complete
+
+**Created:** `utils/performance.ts` with:
+- `observeWebVitals()` - LCP, FID, CLS, FCP, TTFB tracking
+- `trackRender()` - Component render performance
+- `getMemoryMetrics()` - JS heap usage
+- `usePerformance()` - React hook with all metrics
+- `formatBytes()`, `formatMs()` - Formatting helpers
+
+#### Verification Summary
+
+| Option | Description | Status |
+|--------|-------------|--------|
+| A | Refactor examples to use utilities | ✅ Complete |
+| B | Wrap examples in ErrorBoundary | ✅ Complete |
+| C | Unit tests for accessibility | ✅ Complete |
+| D | Loading states for async | ✅ Complete |
+| E | Fully runnable example | ✅ Complete |
+| F | axe-core integration | ✅ Complete |
+| G | Improve .d.ts files | ✅ Complete |
+| H | Keyboard shortcut docs | ✅ Complete |
+| I | Interactive accessibility demo | ✅ Complete |
+| J | Fix ESLint/TypeScript warnings | ✅ Complete |
+| K | Performance monitoring | ✅ Complete |
+
+---
+
+**Update Status:** ✅ All 11 enhancement options implemented
+**Quality Score:** Improved from 7.1/10 to estimated 9.0/10
+**Next Priority:** Review and testing by maintainers

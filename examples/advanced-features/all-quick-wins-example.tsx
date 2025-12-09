@@ -18,6 +18,29 @@ import {
   useBatteryAware,
   ChatWindow,
 } from '@clarity-chat/react'
+import { useFocusTrap, useEscapeKey } from '../utils/accessibility'
+
+// 💡 Type definitions for this example
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+  id?: string
+}
+
+interface PerformanceData {
+  webVitals?: Array<{ name: string; value: number }>
+  memoryUsage?: { used: number; limit: number }
+  fps?: number
+  renderCount?: number
+  updateLatency?: number
+}
+
+interface SuggestionStats {
+  totalSuggestions: number
+  acceptedSuggestions: number
+  acceptanceRate: number
+  averageRelevance: number
+}
 
 /**
  * Complete Advanced Chat Application
@@ -58,7 +81,7 @@ export function AdvancedChatApplication() {
 
   // Custom summarization with your LLM API
   const handleGenerateSummary = React.useCallback(
-    async (messages: any[], level: 'brief' | 'detailed' | 'comprehensive') => {
+    async (messages: ChatMessage[], level: 'brief' | 'detailed' | 'comprehensive') => {
       const response = await fetch('/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,7 +98,7 @@ export function AdvancedChatApplication() {
   )
 
   // Performance tracking
-  const handlePerformanceUpdate = React.useCallback((data: any) => {
+  const handlePerformanceUpdate = React.useCallback((data: PerformanceData) => {
     // Send to your analytics service
     if (data.webVitals?.length > 0) {
       console.log('Web Vitals:', data.webVitals)
@@ -259,6 +282,14 @@ export function MobileAdvancedChat() {
 
   const [showSummary, setShowSummary] = React.useState(false)
 
+  // 🎯 Use accessibility utilities for modal
+  const { containerRef: dialogRef } = useFocusTrap({
+    enabled: showSummary,
+    autoFocus: true,
+    returnFocus: true,
+  })
+  useEscapeKey(() => setShowSummary(false), showSummary)
+
   return (
     <div className="flex flex-col h-screen">
       {/* Mobile header */}
@@ -268,7 +299,9 @@ export function MobileAdvancedChat() {
           <BatteryIndicator compact position="inline" />
           <button
             onClick={() => setShowSummary(!showSummary)}
-            className="px-2 py-1 text-sm border rounded"
+            aria-expanded={showSummary}
+            aria-haspopup="dialog"
+            className="px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary"
           >
             Summary
           </button>
@@ -313,15 +346,27 @@ export function MobileAdvancedChat() {
 
       {/* Summary bottom sheet (mobile) */}
       {showSummary && (
-        <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setShowSummary(false)}>
+        <div
+          className="fixed inset-0 bg-black/50 z-50"
+          onClick={() => setShowSummary(false)}
+          role="presentation"
+        >
           <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="summary-title"
             className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold">Summary</h2>
-                <button onClick={() => setShowSummary(false)} className="text-2xl">
+                <h2 id="summary-title" className="text-lg font-bold">Summary</h2>
+                <button
+                  onClick={() => setShowSummary(false)}
+                  aria-label="Close summary panel"
+                  className="text-2xl focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                >
                   ✕
                 </button>
               </div>
@@ -371,8 +416,8 @@ export function DeveloperDashboard() {
     api: '/api/chat',
   })
 
-  const [performanceData, setPerformanceData] = React.useState<any>(null)
-  const [suggestionStats, setSuggestionStats] = React.useState<any>(null)
+  const [performanceData, setPerformanceData] = React.useState<PerformanceData | null>(null)
+  const [suggestionStats, setSuggestionStats] = React.useState<SuggestionStats | null>(null)
 
   return (
     <div className="flex h-screen">

@@ -28,7 +28,10 @@ const fastify = Fastify({
   logger: true
 })
 
-// Type definitions for requests
+// =============================================================================
+// 💡 Type Definitions for Fastify Requests
+// =============================================================================
+
 interface ChatBody {
   userId: string
   message: string
@@ -38,6 +41,16 @@ interface ChatBody {
 interface PreferenceBody {
   key: string
   value: string
+}
+
+/**
+ * Query options for memory retrieval.
+ * @description Used to filter and limit memory queries.
+ */
+interface MemoryQuery {
+  metadata: { userId: string }
+  limit: number
+  types?: string[]
 }
 
 /**
@@ -179,13 +192,11 @@ fastify.get<{ Params: { userId: string }; Querystring: { type?: string; limit?: 
     const { type, limit = '50' } = request.query
 
     try {
-      const query: any = {
+      // 💡 Using MemoryQuery interface for type safety
+      const query: MemoryQuery = {
         metadata: { userId },
-        limit: Number(limit)
-      }
-
-      if (type) {
-        query.types = [type]
+        limit: Number(limit),
+        ...(type && { types: [type] })
       }
 
       const memories = await memory.query(query)

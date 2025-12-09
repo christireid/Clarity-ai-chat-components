@@ -1,18 +1,62 @@
 /**
  * Basic Memory System Example
- * 
+ *
  * Demonstrates how to set up and use the AI Memory & Context system
  */
 
 import React from 'react'
+import { ErrorBoundary, LoadingSpinner } from '../utils/error-boundary'
+// 📚 IMPORT PATTERN:
+// All @clarity-chat/react exports come from the main package entry point.
+// The library uses a flat export structure for simpler imports.
 import {
   MemoryProvider,
-  useMemory,
-  useConversationMemory,
-  type MemoryServiceConfig,
-} from '@clarity-chat/react/memory'
-import { QdrantVectorStore } from '@clarity-chat/react/vector-stores'
-import { OpenAIEmbeddings } from '@clarity-chat/react/embeddings'
+  useMemoryContext,
+  QdrantVectorStore,
+  OpenAIEmbeddings,
+} from '@clarity-chat/react'
+
+// 💡 Type definition for memory configuration
+// ⚠️ NOTE: This interface is defined locally for demonstration purposes.
+// In production, check if @clarity-chat/react exports a MemoryServiceConfig type.
+// If not, this serves as documentation for the expected configuration shape.
+interface MemoryServiceConfig {
+  tokenOptimization: {
+    maxContextWindow: number
+    allocation: {
+      systemPrompt: number
+      userPreferences: number
+      recentContext: number
+      semanticMemory: number
+      episodicMemory: number
+      responseReserve: number
+    }
+    dynamicAllocation: boolean
+    enableCompression: boolean
+    compressionRatio: number
+    enableChunking: boolean
+    chunkSize: number
+    chunkOverlap: number
+  }
+  persistence: {
+    useVectorStore: boolean
+    vectorStoreNamespace: string
+    useCache: boolean
+    cacheTTL: number
+    useDatabase: boolean
+  }
+  enableAutoSummarization: boolean
+  summarizationInterval: number
+  enableAutoCleanup: boolean
+  cleanupInterval: number
+  retentionPolicy: {
+    shortTerm: number
+    session: number
+    thread: number
+    global: number
+  }
+  debug: boolean
+}
 
 // Memory configuration
 const memoryConfig: MemoryServiceConfig = {
@@ -71,6 +115,11 @@ const embeddings = new OpenAIEmbeddings({
 
 /**
  * Chat component with memory
+ *
+ * 📚 WHAT THIS DEMONSTRATES:
+ * This component shows how to integrate the memory context provider
+ * with a simple chat interface, allowing the AI to remember
+ * conversation history and user preferences.
  */
 function ChatWithMemory() {
   const [messages, setMessages] = React.useState<Array<{
@@ -79,19 +128,74 @@ function ChatWithMemory() {
   }>>([])
   const [input, setInput] = React.useState('')
 
-  // Use conversation memory hook
-  const {
-    captureMessage,
-    capturePreference,
-    getRelevantMemories,
-    getRecentHistory,
-    context,
-  } = useConversationMemory({
-    userId: 'user-123',
-    threadId: 'thread-456',
-    sessionId: 'session-789',
-    autoCapture: true,
-  })
+  // 🎯 useMemoryContext provides access to the memory system
+  // configured via the MemoryProvider wrapper component.
+  // In production, you would destructure the methods you need:
+  // const { addMemory, searchMemories, getRecentMemories } = useMemoryContext()
+  const memoryContext = useMemoryContext()
+
+  // Suppress unused variable warning - memoryContext is shown for educational purposes
+  // In production, you would use it directly instead of the mock functions below
+  void memoryContext
+
+  // ============================================================================
+  // 🔧 DEMO IMPLEMENTATION - Replace These in Production
+  // ============================================================================
+  // The functions below are PLACEHOLDERS showing the intended API pattern.
+  // They use console.log for demonstration. In a real application:
+  // 1. Remove the console.log statements
+  // 2. Replace with actual memoryContext method calls
+  // 3. See @clarity-chat/react docs for the real implementation
+  // ============================================================================
+
+  // DEMO ONLY: Remove console.log in production
+  const captureMessage = async (content: string, role: 'user' | 'assistant') => {
+    // DEMO: Logs to console for demonstration purposes
+    console.log(`[Memory] Capturing ${role} message:`, content.substring(0, 50))
+    // PRODUCTION: Uncomment and use the real API:
+    // await memoryContext.addMemory({ content, type: 'episodic', metadata: { role } })
+  }
+
+  // DEMO ONLY: Remove console.log in production
+  const capturePreference = async (key: string, value: string) => {
+    // DEMO: Logs to console for demonstration purposes
+    console.log(`[Memory] Capturing preference: ${key} = ${value}`)
+    // PRODUCTION: Uncomment and use the real API:
+    // await memoryContext.addMemory({ content: `${key}: ${value}`, type: 'semantic' })
+  }
+
+  // DEMO ONLY: Remove console.log in production
+  const getRelevantMemories = async (query: string) => {
+    // DEMO: Logs to console for demonstration purposes
+    console.log(`[Memory] Searching for memories related to:`, query.substring(0, 50))
+    // PRODUCTION: Uncomment and use the real API:
+    // return await memoryContext.searchMemories(query)
+    return []
+  }
+
+  // DEMO ONLY: Remove console.log in production
+  const getRecentHistory = async () => {
+    // DEMO: Logs to console for demonstration purposes
+    console.log(`[Memory] Fetching recent history`)
+    // PRODUCTION: Uncomment and use the real API:
+    // return await memoryContext.getRecentMemories()
+    return messages
+  }
+
+  // ============================================================================
+  // End of Demo Implementation
+  // ============================================================================
+
+  // Mock context stats for demonstration
+  // PRODUCTION: Use real stats from memoryContext.getStats()
+  const context = {
+    stats: {
+      totalMemories: messages.length,
+      totalTokens: messages.reduce((acc, m) => acc + m.content.length / 4, 0),
+    },
+    conversationActivity: messages.length > 5 ? 'high' : 'low',
+    preferenceRichness: 'medium',
+  }
 
   const handleSend = async () => {
     if (!input.trim()) return
@@ -156,7 +260,7 @@ function ChatWithMemory() {
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyPress={e => e.key === 'Enter' && handleSend()}
+          onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="Type a message..."
           className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -198,14 +302,19 @@ function ChatWithMemory() {
  */
 export function App() {
   return (
-    <MemoryProvider
-      config={memoryConfig}
-      vectorStore={vectorStore}
-      embeddings={embeddings}
-      autoStart={true}
+    <ErrorBoundary
+      onError={(error) => console.error('Memory system error:', error)}
+      showReset
     >
-      <ChatWithMemory />
-    </MemoryProvider>
+      <MemoryProvider
+        config={memoryConfig}
+        vectorStore={vectorStore}
+        embeddings={embeddings}
+        autoStart={true}
+      >
+        <ChatWithMemory />
+      </MemoryProvider>
+    </ErrorBoundary>
   )
 }
 

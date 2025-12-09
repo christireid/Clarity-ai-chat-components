@@ -17,6 +17,15 @@ import {
 import type { MentionableUser, Mention } from '@clarity-chat/react'
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@clarity-chat/primitives'
 
+// 💡 Type for chat messages with mentions (used in Example 4)
+interface ChatMessageWithMentions {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: number
+  mentions?: Mention[]
+}
+
 // =============================================================================
 // Example 1: Basic Mention Input with Autocomplete
 // =============================================================================
@@ -314,7 +323,7 @@ export function FuzzySearchExample() {
  * Production-ready chat with mention system
  */
 export function CompleteMentionChatExample() {
-  const [messages, setMessages] = React.useState<any[]>([])
+  const [messages, setMessages] = React.useState<ChatMessageWithMentions[]>([])
   const [inputValue, setInputValue] = React.useState('')
 
   const {

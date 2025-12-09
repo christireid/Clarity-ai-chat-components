@@ -10,7 +10,81 @@
  */
 
 import React from 'react'
-import { useTokenOptimizationEnhanced } from '@clarity-chat/react/hooks/use-token-optimization-enhanced'
+// 📚 IMPORT PATTERN:
+// All @clarity-chat/react exports come from the main package entry point.
+// The hook useTokenOptimizationEnhanced is exported directly from @clarity-chat/react
+import { useTokenOptimizationEnhanced } from '@clarity-chat/react'
+
+// 💡 Type definitions for the optimization results
+// These interfaces document the shape of different optimization result types
+
+interface TokenInfo {
+  total: number
+  input?: number
+  output?: number
+}
+
+interface BaseResult {
+  type: string
+}
+
+interface DataOptimizationResult extends BaseResult {
+  type: 'Data Optimization'
+  original: string
+  optimized: string
+  format: string
+  tokens: TokenInfo
+  savings: number
+}
+
+interface PromptCompressionResult extends BaseResult {
+  type: 'Prompt Compression'
+  original: string
+  optimized: string
+  tokens: TokenInfo
+  savings: number
+}
+
+interface MessagePreparationResult extends BaseResult {
+  type: 'Message Preparation'
+  original: string
+  optimized: string
+  hasCacheControl: boolean
+}
+
+interface FullOptimizationResult extends BaseResult {
+  type: 'Full Optimization'
+  messages: Array<{ role: string; content: string; cache_control?: unknown }>
+  totalTokens: number
+  cost: number
+  breakdown: {
+    systemPrompt: number
+    data: number
+    format: string
+  }
+}
+
+type OptimizationResult =
+  | DataOptimizationResult
+  | PromptCompressionResult
+  | MessagePreparationResult
+  | FullOptimizationResult
+
+// 💡 Type for chat messages used in the hook
+// ⚠️ NOTE: These types are simplified versions of the internal CoreMessage type.
+// The prepareMessages function accepts CoreMessage[], but our ChatMessage interface
+// is structurally compatible. In production code, you can either:
+// 1. Import CoreMessage from @clarity-chat/react if exported
+// 2. Use these simplified types with type assertions (as shown below)
+// The type assertion is safe because the shapes are compatible.
+interface ChatMessage {
+  role: 'system' | 'user' | 'assistant'
+  content: string
+}
+
+interface PreparedMessage extends ChatMessage {
+  cache_control?: { type: string }
+}
 
 export function EnhancedOptimizationExample() {
   const {
@@ -31,7 +105,7 @@ export function EnhancedOptimizationExample() {
     enableCostTracking: true,
   })
 
-  const [results, setResults] = React.useState<any[]>([])
+  const [results, setResults] = React.useState<OptimizationResult[]>([])
 
   // Example 1: Optimize structured data with TOON
   const handleOptimizeData = async () => {
@@ -95,7 +169,8 @@ export function EnhancedOptimizationExample() {
       },
     ]
 
-    const prepared = prepareMessages(messages as any)
+    // 🎯 Type assertion needed because prepareMessages expects the internal message format
+    const prepared = prepareMessages(messages as ChatMessage[]) as PreparedMessage[]
 
     setResults(prev => [
       ...prev,
@@ -103,7 +178,7 @@ export function EnhancedOptimizationExample() {
         type: 'Message Preparation',
         original: JSON.stringify(messages, null, 2),
         optimized: JSON.stringify(prepared, null, 2),
-        hasCacheControl: prepared.some((m: any) => m.cache_control),
+        hasCacheControl: prepared.some((m) => m.cache_control !== undefined),
       },
     ])
   }
@@ -126,11 +201,12 @@ export function EnhancedOptimizationExample() {
     const optimizedData = await optimizeData(contextData)
 
     // 3. Prepare messages with caching
-    const messages = prepareMessages([
+    const chatMessages: ChatMessage[] = [
       { role: 'system', content: systemPrompt.content },
       { role: 'user', content: `Here's the context: ${optimizedData.content}` },
       { role: 'user', content: 'Analyze this data and provide insights.' },
-    ] as any)
+    ]
+    const messages = prepareMessages(chatMessages) as PreparedMessage[]
 
     // 4. Calculate total savings
     const totalTokens =
