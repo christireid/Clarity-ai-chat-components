@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { createVectorStore } from './index'
 import type {
   VectorStore,
   VectorStoreConfig,
@@ -7,6 +6,28 @@ import type {
   VectorMatch,
   VectorUpsertOptions,
 } from './types'
+import { PineconeVectorStore } from './pinecone'
+import { QdrantVectorStore } from './qdrant'
+import { WeaviateVectorStore } from './weaviate'
+import { ChromaVectorStore } from './chroma'
+
+/**
+ * Create a vector store instance (local factory to avoid circular import)
+ */
+function createVectorStoreInstance(config: VectorStoreConfig): VectorStore {
+  switch (config.provider) {
+    case 'pinecone':
+      return new PineconeVectorStore(config as any)
+    case 'qdrant':
+      return new QdrantVectorStore(config as any)
+    case 'weaviate':
+      return new WeaviateVectorStore(config as any)
+    case 'chroma':
+      return new ChromaVectorStore(config as any)
+    default:
+      throw new Error(`Unsupported vector store provider: ${config.provider}`)
+  }
+}
 
 export interface UseVectorStoreOptions {
   provider: VectorStoreConfig['provider']
@@ -81,7 +102,7 @@ export function useVectorStore({
 
   const createStore = React.useCallback(() => {
     try {
-      const instance = createVectorStore({
+      const instance = createVectorStoreInstance({
         provider,
         ...(config as Record<string, any>),
       } as VectorStoreConfig)
@@ -134,30 +155,32 @@ export function useVectorStore({
     }
   }, [autoInitialize, initialize, configKey])
 
-  const search = React.useCallback<
-    UseVectorStoreReturn['search']
-  >(async (input, options) => {
-    const store = ensureStore()
-    const query = normalizeQuery(input, options)
-    return store.query(query)
-  }, [ensureStore])
+  const search = React.useCallback<UseVectorStoreReturn['search']>(
+    async (input, options) => {
+      const store = ensureStore()
+      const query = normalizeQuery(input, options)
+      return store.query(query)
+    },
+    [ensureStore]
+  )
 
-  const addDocuments = React.useCallback<
-    UseVectorStoreReturn['addDocuments']
-  >(async (documents, options) => {
-    const store = ensureStore()
-    await store.upsert(
-      documents.map((doc) => ({
-        id: doc.id,
-        values: doc.embedding,
-        metadata: {
-          content: doc.content,
-          ...doc.metadata,
-        },
-      })),
-      options
-    )
-  }, [ensureStore])
+  const addDocuments = React.useCallback<UseVectorStoreReturn['addDocuments']>(
+    async (documents, options) => {
+      const store = ensureStore()
+      await store.upsert(
+        documents.map((doc) => ({
+          id: doc.id,
+          values: doc.embedding,
+          metadata: {
+            content: doc.content,
+            ...doc.metadata,
+          },
+        })),
+        options
+      )
+    },
+    [ensureStore]
+  )
 
   const upsert: VectorStore['upsert'] = React.useCallback(
     async (vectors, options) => {
