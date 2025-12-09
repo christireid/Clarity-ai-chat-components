@@ -1,11 +1,25 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Check, Copy, Terminal, Download, Maximize2, Minimize2 } from 'lucide-react'
+import {
+  Check,
+  Copy,
+  Terminal,
+  Download,
+  Maximize2,
+  Minimize2,
+} from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { useToast } from '@clarity-chat/react'
 import Prism from 'prismjs'
+import {
+  fadeInUp,
+  buttonAnimation,
+  springs,
+  confettiParticles,
+  durations,
+} from '@/lib/animations'
 
 // Import language support
 import 'prismjs/components/prism-typescript'
@@ -121,9 +135,10 @@ export function CodeBlock({
   return (
     <motion.div
       ref={containerRef}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      variants={fadeInUp}
+      initial="initial"
+      animate="animate"
+      transition={springs.smooth}
       className={cn(
         'rounded-lg border border-border overflow-hidden',
         'bg-muted/50 shadow-sm hover:shadow-md transition-shadow duration-200',
@@ -137,7 +152,7 @@ export function CodeBlock({
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.1, type: 'spring', stiffness: 200, damping: 15 }}
+            transition={{ delay: 0.1, ...springs.bouncy }}
           >
             <Terminal className="w-4 h-4 text-muted-foreground" />
           </motion.div>
@@ -208,7 +223,9 @@ export function CodeBlock({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-accent-foreground"
-              aria-label={isExpanded ? 'Collapse code (⌘⇧E)' : 'Expand code (⌘⇧E)'}
+              aria-label={
+                isExpanded ? 'Collapse code (⌘⇧E)' : 'Expand code (⌘⇧E)'
+              }
             >
               <AnimatePresence mode="wait">
                 {isExpanded ? (
@@ -248,10 +265,7 @@ export function CodeBlock({
         )}
       >
         <pre className="p-4 text-sm leading-relaxed">
-          <code
-            ref={codeRef}
-            className={cn('block', `language-${language}`)}
-          >
+          <code ref={codeRef} className={cn('block', `language-${language}`)}>
             {showLineNumbers ? (
               <div className="grid" style={{ gridTemplateColumns: 'auto 1fr' }}>
                 {lines.map((line, index) => {
@@ -288,14 +302,18 @@ export function CodeBlock({
                           isHighlighted &&
                             'bg-primary/5 border-l-2 border-primary pl-2 -ml-2'
                         )}
-                        dangerouslySetInnerHTML={{ __html: highlightedLine || '\n' }}
+                        dangerouslySetInnerHTML={{
+                          __html: highlightedLine || '\n',
+                        }}
                       />
                     </motion.div>
                   )
                 })}
               </div>
             ) : (
-              <span dangerouslySetInnerHTML={{ __html: highlightedCode || code }} />
+              <span
+                dangerouslySetInnerHTML={{ __html: highlightedCode || code }}
+              />
             )}
           </code>
         </pre>
@@ -346,7 +364,11 @@ export function parseCodeBlocks(text: string): Array<{
   content: string
   language?: string
 }> {
-  const blocks: Array<{ type: 'code' | 'text'; content: string; language?: string }> = []
+  const blocks: Array<{
+    type: 'code' | 'text'
+    content: string
+    language?: string
+  }> = []
   const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
 
   let lastIndex = 0
