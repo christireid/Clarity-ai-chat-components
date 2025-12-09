@@ -29,6 +29,23 @@ export default function MemoryProviderPage() {
       </div>
 
       <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+          <li>Applications requiring AI memory that persists across sessions</li>
+          <li>Chat apps that need to remember user preferences and context</li>
+          <li>When multiple components need access to shared memory state</li>
+          <li>Building personalized AI experiences with long-term memory</li>
+        </ul>
+
+        <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>For simple chat without memory - use <code className="bg-muted px-2 py-1 rounded">ClarityChat</code> or <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> directly</li>
+          <li>For session-only context - use <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> with sliding-window memory</li>
+          <li>When memory is handled entirely on the server side</li>
+        </ul>
+      </section>
+
+      <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
           code={`import { MemoryProvider, useClarityChat, ChatWindow } from '@clarity-chat/react'

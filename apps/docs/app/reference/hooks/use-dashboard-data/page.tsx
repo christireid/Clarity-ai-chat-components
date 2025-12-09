@@ -29,6 +29,23 @@ export default function UseDashboardDataPage() {
       </div>
 
       <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+          <li>Building analytics dashboards that display chat metrics</li>
+          <li>Creating admin panels with auto-refreshing data</li>
+          <li>When you need polling with configurable intervals</li>
+          <li>Implementing dashboards with loading states and error handling</li>
+        </ul>
+
+        <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>For real-time data - use WebSocket with <code className="bg-muted px-2 py-1 rounded">useStreamingWebSocket</code></li>
+          <li>For simple one-time fetches - use React Query or SWR directly</li>
+          <li>For chat message fetching - use <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> instead</li>
+        </ul>
+      </section>
+
+      <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
           code={`import { useDashboardData } from '@clarity-chat/react'

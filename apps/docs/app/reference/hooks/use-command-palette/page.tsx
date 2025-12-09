@@ -29,6 +29,23 @@ export default function UseCommandPalettePage() {
       </div>
 
       <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+          <li>Adding a command palette (Cmd+K) for quick actions in your chat app</li>
+          <li>Implementing search functionality with keyboard shortcut activation</li>
+          <li>When you need to track open/close state with global keyboard shortcuts</li>
+          <li>Building power-user features with keyboard-driven navigation</li>
+        </ul>
+
+        <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>For simple modals - use <code className="bg-muted px-2 py-1 rounded">Modal</code> component instead</li>
+          <li>For general keyboard shortcuts - use <code className="bg-muted px-2 py-1 rounded">useKeyboardShortcuts</code></li>
+          <li>When you only need the visual component - use <code className="bg-muted px-2 py-1 rounded">CommandPalette</code> directly</li>
+        </ul>
+      </section>
+
+      <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
           code={`import { useCommandPalette, CommandPalette } from '@clarity-chat/react'

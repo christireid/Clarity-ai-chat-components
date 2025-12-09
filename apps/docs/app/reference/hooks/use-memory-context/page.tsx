@@ -29,6 +29,23 @@ export default function UseMemoryContextPage() {
       </div>
 
       <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+          <li>Building chat applications that need to remember user preferences across sessions</li>
+          <li>Implementing personalized AI responses based on conversation history</li>
+          <li>Creating context-aware features that retrieve relevant past information</li>
+          <li>Managing long-term facts and knowledge within your application</li>
+        </ul>
+
+        <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>For simple chat without memory needs - use <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> directly</li>
+          <li>For temporary session-only data - use React state or <code className="bg-muted px-2 py-1 rounded">useLocalStorage</code></li>
+          <li>Outside of a <code className="bg-muted px-2 py-1 rounded">MemoryProvider</code> - the hook will return null</li>
+        </ul>
+      </section>
+
+      <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
           code={`import { useMemoryContext, MemoryProvider } from '@clarity-chat/react'

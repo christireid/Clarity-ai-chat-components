@@ -29,6 +29,23 @@ export default function UseClarityChatWithToolsPage() {
       </div>
 
       <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+          <li>Building AI agents that call external APIs and display results visually</li>
+          <li>Chat applications with function calling (weather, search, calculations, etc.)</li>
+          <li>When you need custom React components to render tool outputs</li>
+          <li>Applications requiring seamless tool call extraction from AI responses</li>
+        </ul>
+
+        <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>Simple chat without tools - use <code className="bg-muted px-2 py-1 rounded">useClarityChat</code> instead</li>
+          <li>Backend-only tool execution - handle in your API routes</li>
+          <li>When tool results don&apos;t need custom UI rendering</li>
+        </ul>
+      </section>
+
+      <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
           code={`import {

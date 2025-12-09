@@ -28,6 +28,23 @@ export default function UseDesignTokensPage() {
       </div>
 
       <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+          <li>Building custom components that need consistent styling with Clarity Chat</li>
+          <li>Creating themed UI elements that respond to dark/light mode</li>
+          <li>When you need programmatic access to shadows, border-radius, or ring styles</li>
+          <li>Implementing animations with consistent timing and easing</li>
+        </ul>
+
+        <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>For simple styling - use Tailwind CSS classes directly</li>
+          <li>For theme switching - use <code className="bg-muted px-2 py-1 rounded">useTheme</code> instead</li>
+          <li>When tokens are already applied via component props</li>
+        </ul>
+      </section>
+
+      <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
           code={`import { useDesignTokens } from '@clarity-chat/react'

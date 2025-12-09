@@ -29,6 +29,23 @@ export default function UseEmbeddingsPage() {
       </div>
 
       <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+          <li>Implementing semantic search across documents or messages</li>
+          <li>Building RAG (Retrieval Augmented Generation) pipelines</li>
+          <li>Creating similarity-based features (related content, deduplication)</li>
+          <li>When you need client-side embedding generation with caching</li>
+        </ul>
+
+        <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>For complete RAG pipelines - use <code className="bg-muted px-2 py-1 rounded">useRAGPipeline</code> or <code className="bg-muted px-2 py-1 rounded">useVectorStore</code> instead</li>
+          <li>Server-side batch processing - generate embeddings in your API routes</li>
+          <li>When you don&apos;t need to expose embedding operations to the client</li>
+        </ul>
+      </section>
+
+      <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Basic Usage</h2>
         <CodePlayground
           code={`import { useEmbeddings } from '@clarity-chat/react'

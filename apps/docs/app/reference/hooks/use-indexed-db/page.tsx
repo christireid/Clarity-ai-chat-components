@@ -29,6 +29,23 @@ export default function UseIndexedDBPage() {
       </div>
 
       <section className="mb-12">
+        <h2 className="text-3xl font-semibold mb-4">When to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-6">
+          <li>Persisting large conversation histories that exceed localStorage limits (&gt;5MB)</li>
+          <li>Offline-first chat applications requiring reliable local storage</li>
+          <li>When you need indexed queries on stored data (e.g., search by date)</li>
+          <li>Applications storing media or large attachments locally</li>
+        </ul>
+
+        <h2 className="text-3xl font-semibold mb-4">When NOT to Use</h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>Small amounts of data (&lt;5MB) - use <code className="bg-muted px-2 py-1 rounded">useLocalStorage</code> instead</li>
+          <li>Server-side rendering - IndexedDB is browser-only</li>
+          <li>Data that needs to sync across devices - use a backend database</li>
+        </ul>
+      </section>
+
+      <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4">Features</h2>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="border rounded-lg p-4">
