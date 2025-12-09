@@ -4,49 +4,22 @@
 
 set -e
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Source shared utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/colors.sh"
 
 # Packages to verify
 PACKAGES=("react" "primitives" "types" "error-handling" "dev-tools")
 
 # Temp directory for smoke tests
 TEMP_DIR=$(mktemp -d)
-trap "rm -rf $TEMP_DIR" EXIT
+setup_cleanup_trap "$TEMP_DIR"
 
-echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}  Clarity Chat Release Verification${NC}"
-echo -e "${BLUE}========================================${NC}"
-echo ""
-
-# Function to print status
-print_status() {
-    if [ $1 -eq 0 ]; then
-        echo -e "${GREEN}✓${NC} $2"
-    else
-        echo -e "${RED}✗${NC} $2"
-        exit 1
-    fi
-}
-
-print_warning() {
-    echo -e "${YELLOW}⚠${NC} $1"
-}
-
-print_step() {
-    echo -e "\n${BLUE}→${NC} $1"
-}
+print_header "Clarity Chat Release Verification"
 
 # Step 1: Check we're in the right directory
 print_step "Verifying project root..."
-if [ ! -f "package.json" ] || [ ! -d "packages" ]; then
-    echo -e "${RED}Error: Must run from project root${NC}"
-    exit 1
-fi
+ensure_project_root
 print_status 0 "Project root verified"
 
 # Step 2: Clean and rebuild all packages
@@ -223,11 +196,12 @@ done
 print_status 0 "Dry-run completed"
 
 # Summary
-echo -e "\n${GREEN}========================================${NC}"
-echo -e "${GREEN}  Release Verification Complete!${NC}"
-echo -e "${GREEN}========================================${NC}"
 echo ""
-echo "All checks passed. The packages are ready for publishing."
+print_success "========================================="
+print_success "  Release Verification Complete!"
+print_success "========================================="
+echo ""
+print_success "All checks passed. The packages are ready for publishing."
 echo ""
 echo "To publish, run:"
 echo "  pnpm -r publish --access public"
