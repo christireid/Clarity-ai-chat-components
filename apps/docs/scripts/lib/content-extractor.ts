@@ -4,6 +4,7 @@
  */
 
 import { readFile } from 'fs/promises'
+import { encode } from 'gpt-tokenizer'
 import type { ExtractedPageContent, CodeBlock, PageMetadata } from '../types'
 
 /**
@@ -401,8 +402,15 @@ export function contentToMarkdown(extracted: ExtractedPageContent): string {
 }
 
 /**
- * Estimate token count for text (rough approximation: ~4 chars per token)
+ * Count tokens using GPT tokenizer for accurate token counting
+ * Uses cl100k_base encoding (used by GPT-4, GPT-3.5-turbo)
  */
 export function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4)
+  try {
+    const tokens = encode(text)
+    return tokens.length
+  } catch {
+    // Fallback to rough approximation if tokenizer fails
+    return Math.ceil(text.length / 4)
+  }
 }

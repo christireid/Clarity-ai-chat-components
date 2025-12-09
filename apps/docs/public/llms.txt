@@ -52,8 +52,7 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 
 - [VoiceInput](https://clarity-chat.dev/reference/components/voice-input): Speech-to-text integration
 - [FileUpload](https://clarity-chat.dev/reference/components/file-upload): Document and image uploads
-- [CodeBlock](https://clarity-chat.dev/reference/components/enhanced-code-block): Syntax-highlighted code display
-- [MarkdownRenderer](https://clarity-chat.dev/reference/components/markdown-renderer-enhanced): Rich markdown with math support
+- [MarkdownRenderer](https://clarity-chat.dev/reference/components/markdown-renderer-enhanced): Rich markdown with syntax-highlighted code blocks and math support
 - [CommandPalette](https://clarity-chat.dev/reference/components/command-palette): Keyboard-driven command menu
 - [ConversationTimeline](https://clarity-chat.dev/reference/components/conversation-timeline): Visual conversation history
 - [MemoryInspector](https://clarity-chat.dev/reference/components/memory-inspector): Debug context and memory
@@ -113,9 +112,9 @@ Clarity Chat is the most complete open-source solution for building AI chat inte
 
 - [Enterprise Features](https://clarity-chat.dev/enterprise): SSO, RBAC, multi-tenancy, audit logs
 - [Migration from Vercel AI SDK](https://clarity-chat.dev/learn/migration/from-vercel-ai-sdk): Step-by-step migration guide
-- [Deployment - Vercel](https://clarity-chat.dev/learn/deployment/vercel): Deploy to Vercel
-- [Deployment - AWS](https://clarity-chat.dev/learn/deployment/aws): Deploy to AWS
-- [Deployment - Docker](https://clarity-chat.dev/learn/deployment/docker): Deploy with Docker
+- [Deployment - Vercel](https://clarity-chat.dev/learn/deployment/vercel): Deploy to Vercel with zero configuration
+- [Deployment - AWS](https://clarity-chat.dev/learn/deployment/aws): Deploy to AWS with Lambda, ECS, or EC2
+- [Deployment - Docker](https://clarity-chat.dev/learn/deployment/docker): Deploy with Docker and docker-compose
 - [Troubleshooting](https://clarity-chat.dev/learn/troubleshooting): Common issues and solutions
 - [CLI Tools](https://clarity-chat.dev/tools/cli): Command-line utilities
 - [Testing Toolkit](https://clarity-chat.dev/tools/testing): Testing utilities and mocks

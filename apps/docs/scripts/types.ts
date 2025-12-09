@@ -88,6 +88,40 @@ export interface GenerationStats {
   truncatedPages: string[]
   /** Any warnings encountered */
   warnings: string[]
+  /** Token count for llms.txt */
+  llmsTxtTokens?: number
+  /** Detailed metrics by category */
+  categoryMetrics?: CategoryMetrics[]
+  /** File size metrics */
+  fileSizes?: FileSizeMetrics
+}
+
+/**
+ * Metrics for a specific category/section
+ */
+export interface CategoryMetrics {
+  /** Category name */
+  category: string
+  /** Number of pages in this category */
+  pageCount: number
+  /** Estimated tokens for this category */
+  tokenCount: number
+  /** Percentage of total tokens */
+  tokenPercentage: number
+}
+
+/**
+ * File size metrics for generated files
+ */
+export interface FileSizeMetrics {
+  /** Size of llms.txt in bytes */
+  llmsTxtBytes: number
+  /** Size of llms-full.txt in bytes */
+  llmsFullTxtBytes: number
+  /** Human-readable size of llms.txt */
+  llmsTxtHuman: string
+  /** Human-readable size of llms-full.txt */
+  llmsFullTxtHuman: string
 }
 
 /**

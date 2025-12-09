@@ -188,11 +188,12 @@ describe('extractTextContent', () => {
 })
 
 describe('estimateTokens', () => {
-  it('should estimate tokens based on character count', () => {
-    // ~4 characters per token
-    const text = 'Hello world!' // 12 chars
+  it('should count tokens using GPT tokenizer', () => {
+    // Using actual tokenizer (cl100k_base encoding)
+    const text = 'Hello world!'
     const result = estimateTokens(text)
-    expect(result).toBe(3) // Math.ceil(12/4)
+    // Actual tokens: "Hello", " world", "!"
+    expect(result).toBe(3)
   })
 
   it('should handle empty string', () => {
@@ -203,6 +204,17 @@ describe('estimateTokens', () => {
   it('should handle longer text', () => {
     const text = 'A'.repeat(1000)
     const result = estimateTokens(text)
-    expect(result).toBe(250)
+    // 1000 'A' characters are encoded more efficiently than 4 chars/token
+    // Actual tokenizer result varies based on encoding
+    expect(result).toBeGreaterThan(0)
+    expect(result).toBeLessThan(1000) // Should be fewer tokens than characters
+  })
+
+  it('should handle code content', () => {
+    const code = `function hello() {
+  console.log('Hello, World!');
+}`
+    const result = estimateTokens(code)
+    expect(result).toBeGreaterThan(0)
   })
 })

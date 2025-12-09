@@ -199,14 +199,10 @@ export const navigationConfig: NavigationSection[] = [
         description: 'Document and image uploads',
       },
       {
-        title: 'CodeBlock',
-        href: '/reference/components/enhanced-code-block',
-        description: 'Syntax-highlighted code display',
-      },
-      {
         title: 'MarkdownRenderer',
         href: '/reference/components/markdown-renderer-enhanced',
-        description: 'Rich markdown with math support',
+        description:
+          'Rich markdown with syntax-highlighted code blocks and math support',
       },
       {
         title: 'CommandPalette',
@@ -437,17 +433,17 @@ export const navigationConfig: NavigationSection[] = [
       {
         title: 'Deployment - Vercel',
         href: '/learn/deployment/vercel',
-        description: 'Deploy to Vercel',
+        description: 'Deploy to Vercel with zero configuration',
       },
       {
         title: 'Deployment - AWS',
         href: '/learn/deployment/aws',
-        description: 'Deploy to AWS',
+        description: 'Deploy to AWS with Lambda, ECS, or EC2',
       },
       {
         title: 'Deployment - Docker',
         href: '/learn/deployment/docker',
-        description: 'Deploy with Docker',
+        description: 'Deploy with Docker and docker-compose',
       },
       {
         title: 'Troubleshooting',

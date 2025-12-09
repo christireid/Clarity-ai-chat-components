@@ -32,6 +32,8 @@ import type {
   NavigationSection,
   NavigationItem,
   DocPage,
+  CategoryMetrics,
+  FileSizeMetrics,
 } from './types'
 
 // Configuration
@@ -39,6 +41,132 @@ const DOCS_DIR = join(process.cwd(), 'app')
 const OUTPUT_DIR = join(process.cwd(), 'public')
 const MAX_TOKENS = 500000
 const MAX_PAGE_TOKENS = 50000
+
+// Command line arguments
+const args = process.argv.slice(2)
+const DRY_RUN = args.includes('--dry-run') || args.includes('--preview')
+const VERBOSE = args.includes('--verbose') || args.includes('-v')
+
+/**
+ * Format bytes to human-readable string
+ */
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+/**
+ * Calculate file size metrics
+ */
+function calculateFileSizeMetrics(
+  llmsTxt: string,
+  llmsFullTxt: string
+): FileSizeMetrics {
+  const llmsTxtBytes = Buffer.byteLength(llmsTxt, 'utf-8')
+  const llmsFullTxtBytes = Buffer.byteLength(llmsFullTxt, 'utf-8')
+  return {
+    llmsTxtBytes,
+    llmsFullTxtBytes,
+    llmsTxtHuman: formatBytes(llmsTxtBytes),
+    llmsFullTxtHuman: formatBytes(llmsFullTxtBytes),
+  }
+}
+
+/**
+ * Print metrics dashboard to console
+ */
+function printMetricsDashboard(stats: GenerationStats): void {
+  console.log('')
+  console.log(
+    '╔══════════════════════════════════════════════════════════════╗'
+  )
+  console.log(
+    '║                    📊 METRICS DASHBOARD                      ║'
+  )
+  console.log(
+    '╠══════════════════════════════════════════════════════════════╣'
+  )
+
+  // File sizes
+  if (stats.fileSizes) {
+    console.log(
+      '║  📦 FILE SIZES                                               ║'
+    )
+    console.log(
+      `║     llms.txt:      ${stats.fileSizes.llmsTxtHuman.padEnd(12)} (${stats.llmsTxtTokens?.toLocaleString() || 'N/A'} tokens)`.padEnd(
+        65
+      ) + '║'
+    )
+    console.log(
+      `║     llms-full.txt: ${stats.fileSizes.llmsFullTxtHuman.padEnd(12)} (${stats.totalTokens.toLocaleString()} tokens)`.padEnd(
+        65
+      ) + '║'
+    )
+    console.log(
+      '╠──────────────────────────────────────────────────────────────╣'
+    )
+  }
+
+  // Page statistics
+  console.log(
+    '║  📄 PAGE STATISTICS                                          ║'
+  )
+  console.log(
+    `║     Total pages processed: ${stats.totalPages.toString().padEnd(6)}                          ║`
+  )
+  console.log(
+    `║     Skipped (drafts):      ${stats.skippedPages.length.toString().padEnd(6)}                          ║`
+  )
+  console.log(
+    `║     Truncated (too long):  ${stats.truncatedPages.length.toString().padEnd(6)}                          ║`
+  )
+
+  // Category breakdown
+  if (stats.categoryMetrics && stats.categoryMetrics.length > 0) {
+    console.log(
+      '╠──────────────────────────────────────────────────────────────╣'
+    )
+    console.log(
+      '║  📁 TOKEN DISTRIBUTION BY CATEGORY                          ║'
+    )
+    console.log(
+      '║                                                              ║'
+    )
+
+    // Sort by token count descending
+    const sorted = [...stats.categoryMetrics].sort(
+      (a, b) => b.tokenCount - a.tokenCount
+    )
+
+    for (const cat of sorted.slice(0, 10)) {
+      const bar = '█'.repeat(Math.round(cat.tokenPercentage / 5))
+      const barPadded = bar.padEnd(20)
+      const line = `║     ${cat.category.padEnd(12)} ${barPadded} ${cat.tokenPercentage.toFixed(1).padStart(5)}% (${cat.tokenCount.toLocaleString()} tokens)`
+      console.log(line.padEnd(65) + '║')
+    }
+
+    if (sorted.length > 10) {
+      console.log(
+        `║     ... and ${sorted.length - 10} more categories`.padEnd(65) + '║'
+      )
+    }
+  }
+
+  // Warnings summary
+  if (stats.warnings.length > 0) {
+    console.log(
+      '╠──────────────────────────────────────────────────────────────╣'
+    )
+    console.log(`║  ⚠️  ${stats.warnings.length} WARNING(S)`.padEnd(64) + '║')
+  }
+
+  console.log(
+    '╚══════════════════════════════════════════════════════════════╝'
+  )
+}
 
 /**
  * Check if a directory exists
@@ -271,6 +399,69 @@ function validateNavigationCoverage(
 }
 
 /**
+ * Validate navigation item descriptions for quality
+ */
+function validateDescriptions(
+  navigation: NavigationSection[],
+  stats: GenerationStats
+): void {
+  const issues: string[] = []
+
+  // Generic/unhelpful description patterns
+  const genericPatterns = [
+    /^documentation for/i,
+    /^the .+ component$/i,
+    /^a component that/i,
+    /^this (page|component|hook)/i,
+  ]
+
+  for (const section of navigation) {
+    for (const item of section.items) {
+      const desc = item.description || ''
+
+      // Check for missing descriptions
+      if (!desc || desc.trim() === '') {
+        issues.push(`Missing description: ${item.title}`)
+        continue
+      }
+
+      // Check for too-short descriptions (less than 15 chars)
+      if (desc.length < 15) {
+        issues.push(
+          `Description too short (${desc.length} chars): ${item.title}`
+        )
+      }
+
+      // Check for too-long descriptions (over 100 chars)
+      if (desc.length > 100) {
+        issues.push(
+          `Description too long (${desc.length} chars): ${item.title}`
+        )
+      }
+
+      // Check for generic descriptions
+      for (const pattern of genericPatterns) {
+        if (pattern.test(desc)) {
+          issues.push(`Generic description: "${desc}" for ${item.title}`)
+          break
+        }
+      }
+    }
+  }
+
+  if (issues.length > 0) {
+    stats.warnings.push(`${issues.length} description quality issues found`)
+    // Show first few issues
+    for (const issue of issues.slice(0, 5)) {
+      stats.warnings.push(`  - ${issue}`)
+    }
+    if (issues.length > 5) {
+      stats.warnings.push(`  ... and ${issues.length - 5} more`)
+    }
+  }
+}
+
+/**
  * Generate the llms-full.txt complete documentation file
  */
 async function generateLlmsFullTxt(
@@ -295,8 +486,16 @@ async function generateLlmsFullTxt(
   lines.push('## Table of Contents')
   lines.push('')
 
-  const pageContents: { urlPath: string; title: string; content: string }[] = []
+  const pageContents: {
+    urlPath: string
+    title: string
+    content: string
+    category: string
+    tokens: number
+  }[] = []
   let totalTokens = 0
+  const categoryTokens: Map<string, { count: number; tokens: number }> =
+    new Map()
 
   // Process each page
   for (const filePath of pages) {
@@ -323,21 +522,33 @@ async function generateLlmsFullTxt(
 
       // Truncate if single page is too large
       let finalContent = markdown
+      let finalTokens = pageTokens
       if (pageTokens > MAX_PAGE_TOKENS) {
         const truncatedLength = MAX_PAGE_TOKENS * 4
         finalContent =
           markdown.slice(0, truncatedLength) +
           '\n\n[Content truncated due to length]'
+        finalTokens = estimateTokens(finalContent)
         stats.truncatedPages.push(urlPath)
       }
 
+      const category = getCategoryFromPath(urlPath)
       pageContents.push({
         urlPath,
         title: extracted.title,
         content: finalContent,
+        category,
+        tokens: finalTokens,
       })
 
-      totalTokens += estimateTokens(finalContent)
+      // Track category metrics
+      const existing = categoryTokens.get(category) || { count: 0, tokens: 0 }
+      categoryTokens.set(category, {
+        count: existing.count + 1,
+        tokens: existing.tokens + finalTokens,
+      })
+
+      totalTokens += finalTokens
       stats.totalPages++
     } catch (error) {
       const errorMessage =
@@ -345,6 +556,16 @@ async function generateLlmsFullTxt(
       stats.warnings.push(`Failed to process ${urlPath}: ${errorMessage}`)
     }
   }
+
+  // Calculate category metrics with percentages
+  stats.categoryMetrics = Array.from(categoryTokens.entries()).map(
+    ([category, data]) => ({
+      category,
+      pageCount: data.count,
+      tokenCount: data.tokens,
+      tokenPercentage: totalTokens > 0 ? (data.tokens / totalTokens) * 100 : 0,
+    })
+  )
 
   // Build TOC
   let tocIndex = 1
@@ -374,6 +595,9 @@ async function generateLlmsFullTxt(
  */
 async function generateLlmsDocs(): Promise<GenerationResult> {
   console.log('🚀 Starting llms.txt generation...')
+  if (DRY_RUN) {
+    console.log('🔍 DRY RUN MODE - no files will be written')
+  }
   console.log(`📁 Docs directory: ${DOCS_DIR}`)
   console.log(`📂 Output directory: ${OUTPUT_DIR}`)
   console.log('')
@@ -398,11 +622,13 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
   // Validate navigation coverage
   console.log('🔗 Validating navigation config...')
   validateNavigationCoverage(pages, navigationConfig, stats)
+  validateDescriptions(navigationConfig, stats)
 
   // Generate llms.txt
   console.log('📝 Generating llms.txt...')
   const llmsTxt = generateLlmsTxt(navigationConfig)
-  console.log(`   Generated ${estimateTokens(llmsTxt)} estimated tokens`)
+  stats.llmsTxtTokens = estimateTokens(llmsTxt)
+  console.log(`   Generated ${stats.llmsTxtTokens} estimated tokens`)
 
   // Generate llms-full.txt
   console.log('📄 Generating llms-full.txt...')
@@ -410,21 +636,46 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
   console.log(`   Processed ${stats.totalPages} pages`)
   console.log(`   Generated ${stats.totalTokens} estimated tokens`)
 
-  // Write output files
-  console.log('💾 Writing output files...')
-  await writeFile(join(OUTPUT_DIR, 'llms.txt'), llmsTxt, 'utf-8')
-  await writeFile(join(OUTPUT_DIR, 'llms-full.txt'), llmsFullTxt, 'utf-8')
-  console.log('   ✅ llms.txt')
-  console.log('   ✅ llms-full.txt')
+  // Calculate file size metrics
+  stats.fileSizes = calculateFileSizeMetrics(llmsTxt, llmsFullTxt)
 
-  // Report stats
-  console.log('')
-  console.log('📊 Generation Statistics:')
-  console.log(`   Total pages: ${stats.totalPages}`)
-  console.log(`   Total tokens: ${stats.totalTokens}`)
-  console.log(`   Skipped pages: ${stats.skippedPages.length}`)
-  console.log(`   Truncated pages: ${stats.truncatedPages.length}`)
+  // Write output files (skip in dry-run mode)
+  if (DRY_RUN) {
+    console.log('💾 Would write output files (dry-run):')
+    console.log('   📄 llms.txt')
+    console.log('   📄 llms-full.txt')
+    console.log('   📄 llms-metrics.json')
+  } else {
+    console.log('💾 Writing output files...')
+    await writeFile(join(OUTPUT_DIR, 'llms.txt'), llmsTxt, 'utf-8')
+    await writeFile(join(OUTPUT_DIR, 'llms-full.txt'), llmsFullTxt, 'utf-8')
+    console.log('   ✅ llms.txt')
+    console.log('   ✅ llms-full.txt')
 
+    // Write metrics JSON for CI/CD tracking
+    const metricsJson = JSON.stringify(
+      {
+        generatedAt: stats.generatedAt,
+        totalPages: stats.totalPages,
+        totalTokens: stats.totalTokens,
+        llmsTxtTokens: stats.llmsTxtTokens,
+        fileSizes: stats.fileSizes,
+        categoryMetrics: stats.categoryMetrics,
+        skippedCount: stats.skippedPages.length,
+        truncatedCount: stats.truncatedPages.length,
+        warningCount: stats.warnings.length,
+      },
+      null,
+      2
+    )
+    await writeFile(join(OUTPUT_DIR, 'llms-metrics.json'), metricsJson, 'utf-8')
+    console.log('   ✅ llms-metrics.json')
+  }
+
+  // Print metrics dashboard
+  printMetricsDashboard(stats)
+
+  // Print warnings if any
   if (stats.warnings.length > 0) {
     console.log('')
     console.log('⚠️  Warnings:')
@@ -437,7 +688,11 @@ async function generateLlmsDocs(): Promise<GenerationResult> {
   }
 
   console.log('')
-  console.log('✨ Generation complete!')
+  if (DRY_RUN) {
+    console.log('✨ Dry run complete! No files were modified.')
+  } else {
+    console.log('✨ Generation complete!')
+  }
 
   return {
     llmsTxt,
