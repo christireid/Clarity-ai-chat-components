@@ -272,6 +272,31 @@ describe('Accurate Counter', () => {
       const stats = getTokenizerStats()
       expect(stats.cacheSize).toBeLessThanOrEqual(1000)
     })
+
+    it('uses LRU eviction - recently accessed entries are kept', async () => {
+      clearTokenCache()
+
+      // Fill cache near capacity
+      for (let i = 0; i < 999; i++) {
+        await countTokens(`item-${i}`, { model: 'gpt-4', cache: true })
+      }
+
+      // Access an early entry to make it "recently used"
+      await countTokens('item-0', { model: 'gpt-4', cache: true })
+
+      // Add more entries to trigger eviction
+      await countTokens('new-item-1', { model: 'gpt-4', cache: true })
+      await countTokens('new-item-2', { model: 'gpt-4', cache: true })
+
+      // item-0 should still get a cache hit since it was recently accessed
+      const statsBefore = getTokenizerStats()
+      const hitsBefore = statsBefore.cacheHits
+
+      await countTokens('item-0', { model: 'gpt-4', cache: true })
+
+      const statsAfter = getTokenizerStats()
+      expect(statsAfter.cacheHits).toBe(hitsBefore + 1)
+    })
   })
 })
 

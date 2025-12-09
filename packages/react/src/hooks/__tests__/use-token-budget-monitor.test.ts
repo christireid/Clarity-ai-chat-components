@@ -9,6 +9,8 @@ import {
   getStatusColor,
   formatTokenUsage,
   createModelBudgetMonitor,
+  isValidBudgetMonitorModel,
+  getSupportedBudgetModels,
   type BudgetMessage,
   type TokenUsage,
 } from '../use-token-budget-monitor'
@@ -583,6 +585,26 @@ describe('formatTokenUsage', () => {
     expect(formatted).toContain('9,000')
     expect(formatted).toContain('55.6%')
   })
+
+  it('should format exceeded usage with over percentage', () => {
+    const usage: TokenUsage = {
+      current: 15000,
+      max: 11000,
+      available: 0,
+      utilizationPercent: 100,
+      exceededPercent: 50,
+      status: 'exceeded',
+      reservedForOutput: 1000,
+      effectiveMax: 10000,
+    }
+
+    const formatted = formatTokenUsage(usage)
+
+    expect(formatted).toContain('15,000')
+    expect(formatted).toContain('10,000')
+    expect(formatted).toContain('100%')
+    expect(formatted).toContain('50.0% over')
+  })
 })
 
 describe('createModelBudgetMonitor', () => {
@@ -698,5 +720,48 @@ describe('createModelBudgetMonitor', () => {
     expect(config.maxInputTokens).toBe(8192) // From model
     expect(config.warningThreshold).toBe(0.7) // Override
     expect(config.autoTrim).toBe(true) // Override
+  })
+
+  it('should throw error for invalid model', () => {
+    expect(() => {
+      // @ts-expect-error - Testing runtime validation
+      createModelBudgetMonitor('invalid-model')
+    }).toThrow('[createModelBudgetMonitor] Unknown model: "invalid-model"')
+  })
+
+  it('should include supported models in error message', () => {
+    try {
+      // @ts-expect-error - Testing runtime validation
+      createModelBudgetMonitor('fake-model')
+    } catch (e) {
+      expect((e as Error).message).toContain('gpt-4')
+      expect((e as Error).message).toContain('claude-sonnet-4')
+    }
+  })
+})
+
+describe('isValidBudgetMonitorModel', () => {
+  it('should return true for valid models', () => {
+    expect(isValidBudgetMonitorModel('gpt-4')).toBe(true)
+    expect(isValidBudgetMonitorModel('claude-sonnet-4')).toBe(true)
+    expect(isValidBudgetMonitorModel('gemini-2.0-pro')).toBe(true)
+  })
+
+  it('should return false for invalid models', () => {
+    expect(isValidBudgetMonitorModel('invalid-model')).toBe(false)
+    expect(isValidBudgetMonitorModel('')).toBe(false)
+    expect(isValidBudgetMonitorModel('gpt-5')).toBe(false)
+  })
+})
+
+describe('getSupportedBudgetModels', () => {
+  it('should return array of all supported models', () => {
+    const models = getSupportedBudgetModels()
+
+    expect(Array.isArray(models)).toBe(true)
+    expect(models.length).toBeGreaterThan(20) // We have 26+ models
+    expect(models).toContain('gpt-4')
+    expect(models).toContain('claude-sonnet-4')
+    expect(models).toContain('gemini-2.0-pro')
   })
 })

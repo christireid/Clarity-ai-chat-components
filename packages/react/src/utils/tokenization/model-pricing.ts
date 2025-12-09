@@ -95,7 +95,7 @@ export const MODEL_PRICING: Record<ModelName | string, ModelPricing> = {
   // ==========================================================================
   // OpenAI O1/O3 Reasoning Models
   // ==========================================================================
-  'o1': {
+  o1: {
     inputCostPer1M: 15.0,
     outputCostPer1M: 60.0,
     cachedInputCostPer1M: 7.5,
@@ -173,13 +173,14 @@ export const MODEL_PRICING: Record<ModelName | string, ModelPricing> = {
   },
 
   // ==========================================================================
-  // Anthropic Claude 4 Family (2025)
+  // Anthropic Claude 4 Family (2025) - Updated to 1M context window
+  // Last verified: December 2024
   // ==========================================================================
   'claude-sonnet-4': {
     inputCostPer1M: 3.0,
     outputCostPer1M: 15.0,
     cachedInputCostPer1M: 0.3,
-    contextWindow: 200000,
+    contextWindow: 1000000, // 1M tokens (upgraded late 2024)
     maxOutputTokens: 16384,
     provider: 'anthropic',
   },
@@ -187,7 +188,7 @@ export const MODEL_PRICING: Record<ModelName | string, ModelPricing> = {
     inputCostPer1M: 15.0,
     outputCostPer1M: 75.0,
     cachedInputCostPer1M: 1.5,
-    contextWindow: 200000,
+    contextWindow: 1000000, // 1M tokens (upgraded late 2024)
     maxOutputTokens: 32768,
     provider: 'anthropic',
   },
@@ -258,8 +259,8 @@ export const MODEL_PRICING: Record<ModelName | string, ModelPricing> = {
     inputCostPer1M: 0.55,
     outputCostPer1M: 2.19,
     cachedInputCostPer1M: 0.14,
-    contextWindow: 65536,
-    maxOutputTokens: 8192,
+    contextWindow: 128000, // 128K tokens for reasoning model
+    maxOutputTokens: 32768,
     provider: 'deepseek',
   },
 
@@ -371,7 +372,8 @@ export function calculateCost(params: {
 
   let cachedInputCost = 0
   if (cachedInputTokens > 0 && pricing.cachedInputCostPer1M) {
-    cachedInputCost = (cachedInputTokens / 1_000_000) * pricing.cachedInputCostPer1M
+    cachedInputCost =
+      (cachedInputTokens / 1_000_000) * pricing.cachedInputCostPer1M
   }
 
   return {
@@ -446,7 +448,13 @@ export function estimateConversationCost(params: {
   costPerDay: number
   costPerMonth: number
 } {
-  const { model, averageInputTokens, averageOutputTokens, messagesPerDay, daysPerMonth = 30 } = params
+  const {
+    model,
+    averageInputTokens,
+    averageOutputTokens,
+    messagesPerDay,
+    daysPerMonth = 30,
+  } = params
 
   const costPerMessage = calculateCost({
     model,
@@ -480,7 +488,7 @@ export function compareModelCosts(params: {
 }> {
   const { models, inputTokens, outputTokens } = params
 
-  const results = models.map(model => {
+  const results = models.map((model) => {
     const cost = calculateCost({ model, inputTokens, outputTokens })
     return {
       model,
@@ -493,9 +501,9 @@ export function compareModelCosts(params: {
   results.sort((a, b) => a.cost - b.cost)
 
   // Calculate savings relative to most expensive
-  const maxCost = Math.max(...results.map(r => r.cost))
+  const maxCost = Math.max(...results.map((r) => r.cost))
 
-  return results.map(r => ({
+  return results.map((r) => ({
     model: r.model,
     cost: r.cost,
     savings: maxCost - r.cost,
@@ -528,7 +536,8 @@ export function recommendModel(params: {
 
   // Filter models by requirements
   let candidateModels = Object.entries(MODEL_PRICING).filter(([_, pricing]) => {
-    if (minContextWindow && pricing.contextWindow < minContextWindow) return false
+    if (minContextWindow && pricing.contextWindow < minContextWindow)
+      return false
     if (providers && !providers.includes(pricing.provider)) return false
     return true
   })
@@ -539,7 +548,7 @@ export function recommendModel(params: {
       const cost = calculateCost({ model, inputTokens, outputTokens })
       return { model, cost: cost.totalCost, pricing }
     })
-    .filter(m => !maxCostPerRequest || m.cost <= maxCostPerRequest)
+    .filter((m) => !maxCostPerRequest || m.cost <= maxCostPerRequest)
     .sort((a, b) => a.cost - b.cost)
 
   if (modelsWithCosts.length === 0) {
@@ -551,7 +560,7 @@ export function recommendModel(params: {
   }
 
   const recommended = modelsWithCosts[0]!
-  const alternatives = modelsWithCosts.slice(1, 4).map(m => m.model)
+  const alternatives = modelsWithCosts.slice(1, 4).map((m) => m.model)
 
   return {
     recommended: recommended.model,

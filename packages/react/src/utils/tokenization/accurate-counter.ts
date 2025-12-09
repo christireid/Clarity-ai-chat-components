@@ -72,7 +72,11 @@ export interface TokenizerOptions {
 }
 
 /**
- * Token counter cache for performance with hit/miss tracking
+ * Token counter cache with LRU eviction and hit/miss tracking
+ *
+ * Uses Map's insertion order for O(1) LRU implementation:
+ * - On get: delete and re-insert to move to end (most recently used)
+ * - On evict: delete first item (least recently used)
  */
 class TokenCountCache {
   private cache = new Map<string, number>()
@@ -80,10 +84,16 @@ class TokenCountCache {
   private hits = 0
   private misses = 0
 
+  /**
+   * Get value from cache, moving it to most recently used position
+   */
   get(key: string): number | undefined {
     const value = this.cache.get(key)
     if (value !== undefined) {
       this.hits++
+      // Move to end (most recently used) by delete + re-insert
+      this.cache.delete(key)
+      this.cache.set(key, value)
     }
     return value
   }
@@ -95,11 +105,17 @@ class TokenCountCache {
     this.misses++
   }
 
+  /**
+   * Set value in cache, evicting LRU entry if at capacity
+   */
   set(key: string, count: number): void {
-    if (this.cache.size >= this.maxSize) {
-      // Remove oldest entry (first item)
-      const firstKey = this.cache.keys().next().value
-      if (firstKey) this.cache.delete(firstKey)
+    // If key exists, delete it first (will be re-added at end)
+    if (this.cache.has(key)) {
+      this.cache.delete(key)
+    } else if (this.cache.size >= this.maxSize) {
+      // Evict least recently used (first item in Map)
+      const lruKey = this.cache.keys().next().value
+      if (lruKey) this.cache.delete(lruKey)
     }
     this.cache.set(key, count)
   }

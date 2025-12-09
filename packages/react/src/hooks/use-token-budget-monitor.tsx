@@ -285,6 +285,8 @@ export function useTokenBudgetMonitor(
   const debounceTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
   )
+  // AbortController for cancelling in-flight async operations
+  const abortControllerRef = React.useRef<AbortController | null>(null)
 
   // Update callback refs
   React.useEffect(() => {
@@ -481,12 +483,28 @@ export function useTokenBudgetMonitor(
         clearTimeout(debounceTimerRef.current)
       }
 
+      // Abort any in-flight calculation
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+
+      // Create new AbortController for this calculation
+      const controller = new AbortController()
+      abortControllerRef.current = controller
+
       // Debounce the calculation
       debounceTimerRef.current = setTimeout(async () => {
+        // Check if aborted before starting
+        if (controller.signal.aborted) return
+
         setIsCalculating(true)
 
         try {
           const totalTokens = await calculateTotalTokens(messages)
+
+          // Check if aborted after async operation
+          if (controller.signal.aborted) return
+
           const { newUsage, status } = updateUsageState(totalTokens)
 
           // Auto-trim if enabled and critical
@@ -510,7 +528,10 @@ export function useTokenBudgetMonitor(
             }
           }
         } finally {
-          setIsCalculating(false)
+          // Only update isCalculating if not aborted
+          if (!controller.signal.aborted) {
+            setIsCalculating(false)
+          }
         }
       }, resolvedConfig.debounceMs)
     },
@@ -554,11 +575,14 @@ export function useTokenBudgetMonitor(
     messagesRef.current = []
   }, [config])
 
-  // Cleanup debounce timer on unmount
+  // Cleanup debounce timer and abort in-flight operations on unmount
   React.useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current)
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
       }
     }
   }, [])
@@ -603,10 +627,20 @@ export function getStatusColor(
 
 /**
  * Format usage for display
+ *
+ * Shows exceeded percentage when over budget:
+ * - Normal: "5,000 / 10,000 tokens (50.0%)"
+ * - Exceeded: "15,000 / 10,000 tokens (100% + 50% over)"
  */
 export function formatTokenUsage(usage: TokenUsage): string {
   const current = usage.current.toLocaleString()
   const max = usage.effectiveMax.toLocaleString()
+
+  if (usage.exceededPercent > 0) {
+    const exceeded = usage.exceededPercent.toFixed(1)
+    return `${current} / ${max} tokens (100% + ${exceeded}% over)`
+  }
+
   const percent = usage.utilizationPercent.toFixed(1)
   return `${current} / ${max} tokens (${percent}%)`
 }
@@ -682,9 +716,28 @@ const VALID_BUDGET_MONITOR_MODELS = new Set<string>([
 
 /**
  * Check if a model string is a valid BudgetMonitorModel
+ *
+ * @param model - The model string to validate
+ * @returns True if the model is a supported BudgetMonitorModel
+ *
+ * @example
+ * ```typescript
+ * if (isValidBudgetMonitorModel(userInput)) {
+ *   const config = createModelBudgetMonitor(userInput)
+ * }
+ * ```
  */
-function isValidBudgetMonitorModel(model: string): model is BudgetMonitorModel {
+export function isValidBudgetMonitorModel(
+  model: string
+): model is BudgetMonitorModel {
   return VALID_BUDGET_MONITOR_MODELS.has(model)
+}
+
+/**
+ * Get list of all supported budget monitor models
+ */
+export function getSupportedBudgetModels(): BudgetMonitorModel[] {
+  return Array.from(VALID_BUDGET_MONITOR_MODELS) as BudgetMonitorModel[]
 }
 
 /**
@@ -750,6 +803,15 @@ export function createModelBudgetMonitor(
   model: BudgetMonitorModel,
   overrides?: Partial<TokenBudgetConfig>
 ): TokenBudgetConfig {
+  // Runtime validation for invalid models (helps catch typos and unsupported models)
+  if (!isValidBudgetMonitorModel(model)) {
+    const supported = getSupportedBudgetModels().join(', ')
+    throw new Error(
+      `[createModelBudgetMonitor] Unknown model: "${model}". ` +
+        `Supported models: ${supported}`
+    )
+  }
+
   const modelConfigs: Record<BudgetMonitorModel, Partial<TokenBudgetConfig>> = {
     // OpenAI GPT-4 Family
     'gpt-4': { maxInputTokens: 8192, reservedForOutput: 2048 },
@@ -798,4 +860,82 @@ export function createModelBudgetMonitor(
     model: toModelName(model),
     ...overrides,
   } as TokenBudgetConfig
+}
+
+/**
+ * Cost estimation for current token usage
+ */
+export interface TokenCostEstimate {
+  /** Input cost in dollars */
+  inputCost: number
+  /** Estimated output cost in dollars (based on reserved tokens) */
+  estimatedOutputCost: number
+  /** Total estimated cost in dollars */
+  totalCost: number
+  /** Cost formatted as string (e.g., "$0.0025") */
+  formattedCost: string
+  /** Model used for pricing */
+  model: string
+}
+
+/**
+ * Estimate the cost of current token usage
+ *
+ * Integrates with model-pricing module for accurate cost estimation.
+ *
+ * @param usage - Current token usage from useTokenBudgetMonitor
+ * @param model - Model for pricing lookup
+ * @returns Cost estimate or null if pricing not available
+ *
+ * @example
+ * ```typescript
+ * const { usage } = useTokenBudgetMonitor(config)
+ * const cost = estimateTokenCost(usage, 'gpt-4o')
+ * console.log(cost?.formattedCost) // "$0.0125"
+ * ```
+ */
+export function estimateTokenCost(
+  usage: TokenUsage,
+  model: BudgetMonitorModel
+): TokenCostEstimate | null {
+  // Lazy import to avoid circular dependencies and bundle bloat
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { MODEL_PRICING } = require('../utils/tokenization/model-pricing') as {
+    MODEL_PRICING: Record<
+      string,
+      { inputCostPer1M: number; outputCostPer1M: number }
+    >
+  }
+
+  const pricing = MODEL_PRICING[model]
+  if (!pricing) {
+    return null
+  }
+
+  const inputCost = (usage.current / 1_000_000) * pricing.inputCostPer1M
+  const estimatedOutputCost =
+    (usage.reservedForOutput / 1_000_000) * pricing.outputCostPer1M
+  const totalCost = inputCost + estimatedOutputCost
+
+  return {
+    inputCost,
+    estimatedOutputCost,
+    totalCost,
+    formattedCost: formatCost(totalCost),
+    model,
+  }
+}
+
+/**
+ * Format cost as currency string
+ */
+function formatCost(cost: number): string {
+  if (cost < 0.01) {
+    // Show more precision for small costs
+    return `$${cost.toFixed(4)}`
+  }
+  if (cost < 1) {
+    return `$${cost.toFixed(3)}`
+  }
+  return `$${cost.toFixed(2)}`
 }

@@ -7,3 +7,4 @@
 export * from './accurate-counter'
 export * from './model-pricing'
 export * from './estimator'
+export * from './model-registry'
