@@ -5,47 +5,62 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useTimeTravel } from '../hooks/use-time-travel'
 
-// Create a stable mock instance
+// Store mock instance for assertions
+let mockInstance: any = null
 let snapshotCounter = 0
-const createSnapshot = (messages: any[] = [], label?: string) => ({
-  id: `snapshot-${++snapshotCounter}`,
-  messages,
-  config: {},
-  metadata: {},
-  label: label || 'Test Snapshot',
-  timestamp: new Date(),
+
+// Mock the TimeTravelDebugger class - must be hoisted
+vi.mock('../../debug/time-travel', () => {
+  // Helper to create snapshots
+  const createSnapshot = (messages: any[] = [], label?: string) => ({
+    id: `snapshot-${++snapshotCounter}`,
+    messages,
+    config: {},
+    metadata: {},
+    label: label || 'Test Snapshot',
+    timestamp: new Date(),
+  })
+
+  // Create a proper mock class
+  class MockTimeTravelDebugger {
+    record = vi.fn(() => `snapshot-${snapshotCounter + 1}`)
+    getCurrent = vi.fn(() => createSnapshot())
+    jumpTo = vi.fn(() => createSnapshot())
+    goBack = vi.fn(() => createSnapshot())
+    goForward = vi.fn(() => createSnapshot())
+    clear = vi.fn()
+    getAll = vi.fn(() => [])
+    getTimeline = vi.fn(() => [])
+    getStats = vi.fn(() => ({
+      totalSnapshots: 0,
+      totalTransitions: 0,
+      timeSpan: 0,
+      averageMessageCount: 0,
+      actionCounts: {},
+    }))
+    currentIndex = -1
+
+    constructor() {
+      // Store reference to this instance for test assertions
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      mockInstance = this
+    }
+  }
+
+  return {
+    TimeTravelDebugger: MockTimeTravelDebugger,
+  }
 })
 
-const mockDebugger = {
-  record: vi.fn(() => `snapshot-${snapshotCounter + 1}`),
-  getCurrent: vi.fn(() => createSnapshot()),
-  jumpTo: vi.fn(() => createSnapshot()),
-  goBack: vi.fn(() => createSnapshot()),
-  goForward: vi.fn(() => createSnapshot()),
-  clear: vi.fn(),
-  getAll: vi.fn(() => []),
-  getTimeline: vi.fn(() => []),
-  getStats: vi.fn(() => ({
-    totalSnapshots: 0,
-    totalTransitions: 0,
-    timeSpan: 0,
-    averageMessageCount: 0,
-    actionCounts: {},
-  })),
-  currentIndex: -1,
-}
-
-// Mock the TimeTravelDebugger class
-vi.mock('../../debug/time-travel', () => ({
-  TimeTravelDebugger: vi.fn(() => mockDebugger),
-}))
+// Import after mock is set up
+import { useTimeTravel } from '../hooks/use-time-travel'
 
 describe('useTimeTravel', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     snapshotCounter = 0
+    mockInstance = null
   })
 
   it('should initialize with empty snapshots', () => {
@@ -63,8 +78,8 @@ describe('useTimeTravel', () => {
       result.current.record([], {}, {}, 'Test Label')
     })
 
-    expect(mockDebugger.record).toHaveBeenCalled()
-    expect(mockDebugger.getCurrent).toHaveBeenCalled()
+    expect(mockInstance.record).toHaveBeenCalled()
+    expect(mockInstance.getCurrent).toHaveBeenCalled()
   })
 
   it('should jump to a snapshot', () => {
@@ -74,7 +89,7 @@ describe('useTimeTravel', () => {
       result.current.jumpTo('snapshot-1')
     })
 
-    expect(mockDebugger.jumpTo).toHaveBeenCalledWith('snapshot-1')
+    expect(mockInstance.jumpTo).toHaveBeenCalledWith('snapshot-1')
   })
 
   it('should go back in history', () => {
@@ -84,7 +99,7 @@ describe('useTimeTravel', () => {
       result.current.goBack(1)
     })
 
-    expect(mockDebugger.goBack).toHaveBeenCalledWith(1)
+    expect(mockInstance.goBack).toHaveBeenCalledWith(1)
   })
 
   it('should go forward in history', () => {
@@ -94,7 +109,7 @@ describe('useTimeTravel', () => {
       result.current.goForward(1)
     })
 
-    expect(mockDebugger.goForward).toHaveBeenCalledWith(1)
+    expect(mockInstance.goForward).toHaveBeenCalledWith(1)
   })
 
   it('should clear all snapshots', () => {
@@ -104,7 +119,7 @@ describe('useTimeTravel', () => {
       result.current.clear()
     })
 
-    expect(mockDebugger.clear).toHaveBeenCalled()
+    expect(mockInstance.clear).toHaveBeenCalled()
     expect(result.current.snapshots.length).toBe(0)
     expect(result.current.currentIndex).toBe(-1)
   })
@@ -120,6 +135,6 @@ describe('useTimeTravel', () => {
       averageMessageCount: 0,
       actionCounts: {},
     })
-    expect(mockDebugger.getStats).toHaveBeenCalled()
+    expect(mockInstance.getStats).toHaveBeenCalled()
   })
 })

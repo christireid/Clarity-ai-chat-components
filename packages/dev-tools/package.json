@@ -1,6 +1,6 @@
 {
   "name": "@clarity-chat/dev-tools",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Developer tools for debugging, testing, and validation in Clarity Chat",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

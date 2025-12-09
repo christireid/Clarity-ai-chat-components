@@ -27,6 +27,18 @@
 export { ClarityChat } from './components/clarity-chat'
 export { ClarityChatPresets } from './components/clarity-chat-presets'
 
+// Chat Recipes - Pre-built combinations for common patterns
+export {
+  ChatComplete,
+  ChatWithMemory,
+  ChatWithAnalytics,
+  ChatWithPreset,
+  type ChatCompleteProps,
+  type ChatWithMemoryProps,
+  type ChatWithAnalyticsProps,
+  type ChatWithPresetProps,
+} from './components/chat-recipes'
+
 // Chat State - Primary hook
 export {
   useClarityChat,
