@@ -49,6 +49,7 @@
     "analyze": "node tools/scripts/analyze-bundle.js",
     "benchmark": "node tools/scripts/benchmark.js",
     "test:visual": "playwright test --config=tests/visual/playwright.config.ts",
+    "check:consistency": "tsx scripts/check-consistency.ts",
     "prepare": "husky"
   },
   "devDependencies": {
