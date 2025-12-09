@@ -372,3 +372,213 @@ export function KeyboardShortcutsHelp({
 }
 
 KeyboardShortcutsHelp.displayName = 'KeyboardShortcutsHelp'
+
+/**
+ * Options for scoped keyboard shortcuts
+ */
+export interface ScopedKeyboardShortcutsOptions {
+  /**
+   * Shortcuts to register
+   */
+  shortcuts: KeyboardShortcut[]
+  /**
+   * Whether this scope is currently active
+   * @default true
+   */
+  enabled?: boolean
+  /**
+   * Priority level (higher = handled first)
+   * @default 0
+   */
+  priority?: number
+}
+
+// Global registry for managing shortcut priorities
+const scopeRegistry = new Map<
+  symbol,
+  { shortcuts: KeyboardShortcut[]; priority: number; enabled: boolean }
+>()
+let globalListenerAttached = false
+
+function attachGlobalShortcutListener() {
+  if (globalListenerAttached) return
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    // Check if we're in an input element
+    const target = event.target as HTMLElement
+    const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
+    const isContentEditable = target.isContentEditable
+
+    // Sort scopes by priority (highest first)
+    const sortedScopes = Array.from(scopeRegistry.entries())
+      .filter(([, scope]) => scope.enabled)
+      .sort(([, a], [, b]) => b.priority - a.priority)
+
+    // Try to handle the shortcut with the highest priority scope first
+    for (const [, scope] of sortedScopes) {
+      for (const shortcut of scope.shortcuts) {
+        const {
+          key,
+          callback,
+          enabled = true,
+          preventDefault = true,
+          enableInInput = false,
+        } = shortcut
+
+        if (!enabled) continue
+        if ((isInput || isContentEditable) && !enableInInput) continue
+
+        if (matchesShortcut(event, key)) {
+          if (preventDefault) {
+            event.preventDefault()
+          }
+          callback(event)
+          return // Stop propagation to lower priority scopes
+        }
+      }
+    }
+  }
+
+  window.addEventListener('keydown', handleKeyDown)
+  globalListenerAttached = true
+}
+
+/**
+ * Scoped keyboard shortcuts with priority-based conflict resolution.
+ *
+ * Use this when multiple components may have conflicting shortcuts.
+ * Higher priority scopes handle shortcuts first.
+ *
+ * @example
+ * ```tsx
+ * function Dashboard() {
+ *   // This scope has higher priority, so its '?' shortcut wins
+ *   useScopedKeyboardShortcuts({
+ *     shortcuts: [
+ *       { key: '?', callback: showHelp, description: 'Show dashboard help' },
+ *     ],
+ *     priority: 10,
+ *   })
+ *
+ *   return <DashboardContent />
+ * }
+ *
+ * function AppShell() {
+ *   // Lower priority - only handles '?' if no higher priority component does
+ *   useScopedKeyboardShortcuts({
+ *     shortcuts: [
+ *       { key: '?', callback: showGlobalHelp, description: 'Show global help' },
+ *     ],
+ *     priority: 0,
+ *   })
+ *
+ *   return <Dashboard />
+ * }
+ * ```
+ */
+export function useScopedKeyboardShortcuts(
+  options: ScopedKeyboardShortcutsOptions
+): void {
+  const { shortcuts, enabled = true, priority = 0 } = options
+  const scopeIdRef = React.useRef<symbol | null>(null)
+
+  // Create scope ID once
+  React.useEffect(() => {
+    scopeIdRef.current = Symbol('keyboard-scope')
+    attachGlobalShortcutListener()
+
+    return () => {
+      if (scopeIdRef.current) {
+        scopeRegistry.delete(scopeIdRef.current)
+      }
+    }
+  }, [])
+
+  // Update registry when shortcuts/enabled/priority change
+  React.useEffect(() => {
+    if (scopeIdRef.current) {
+      scopeRegistry.set(scopeIdRef.current, {
+        shortcuts,
+        priority,
+        enabled,
+      })
+    }
+  }, [shortcuts, priority, enabled])
+}
+
+/**
+ * Keyboard shortcuts that only fire when a specific element contains focus.
+ *
+ * Use this for component-local shortcuts that shouldn't interfere with
+ * other components on the page.
+ *
+ * @example
+ * ```tsx
+ * function ABTestingDashboard() {
+ *   const containerRef = useRef<HTMLDivElement>(null)
+ *
+ *   useFocusedKeyboardShortcuts(containerRef, [
+ *     { key: 'r', callback: refresh, description: 'Refresh data' },
+ *     { key: 'e', callback: exportData, description: 'Export data' },
+ *   ])
+ *
+ *   return (
+ *     <div ref={containerRef} tabIndex={-1}>
+ *       <DashboardContent />
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useFocusedKeyboardShortcuts(
+  containerRef: React.RefObject<HTMLElement | null>,
+  shortcuts: KeyboardShortcut[]
+): void {
+  const shortcutsRef = React.useRef(shortcuts)
+
+  React.useLayoutEffect(() => {
+    shortcutsRef.current = shortcuts
+  }, [shortcuts])
+
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only handle if container contains the active element
+      const container = containerRef.current
+      if (!container) return
+
+      const activeElement = document.activeElement
+      if (!container.contains(activeElement) && container !== activeElement) {
+        return
+      }
+
+      // Check if we're in an input element
+      const target = event.target as HTMLElement
+      const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
+      const isContentEditable = target.isContentEditable
+
+      for (const shortcut of shortcutsRef.current) {
+        const {
+          key,
+          callback,
+          enabled = true,
+          preventDefault = true,
+          enableInInput = false,
+        } = shortcut
+
+        if (!enabled) continue
+        if ((isInput || isContentEditable) && !enableInInput) continue
+
+        if (matchesShortcut(event, key)) {
+          if (preventDefault) {
+            event.preventDefault()
+          }
+          callback(event)
+          break
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [containerRef])
+}

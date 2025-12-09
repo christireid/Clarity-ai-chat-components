@@ -25,13 +25,35 @@ export interface DashboardDataState<T> {
 /**
  * Actions returned by useDashboardData hook
  */
-export interface DashboardDataActions {
+export interface DashboardDataActions<T = unknown> {
   /** Manually trigger a refetch */
   refetch: () => Promise<void>
   /** Reset to initial state */
   reset: () => void
   /** Mark data as stale */
   invalidate: () => void
+  /**
+   * Optimistically update the data before a mutation completes.
+   * If the mutation fails, call rollback() to restore previous data.
+   *
+   * @example
+   * ```tsx
+   * const { data, setOptimistic } = useDashboardData({ fetcher })
+   *
+   * async function updateItem(newValue) {
+   *   const { rollback } = setOptimistic({ ...data, value: newValue })
+   *   try {
+   *     await api.update(newValue)
+   *   } catch (error) {
+   *     rollback()
+   *     throw error
+   *   }
+   * }
+   * ```
+   */
+  setOptimistic: (newData: T) => { rollback: () => void }
+  /** Directly set the data (for mutations) */
+  setData: (newData: T) => void
 }
 
 /**
@@ -73,6 +95,8 @@ type Action<T> =
   | { type: 'RESET' }
   | { type: 'INCREMENT_RETRY' }
   | { type: 'RESET_RETRY' }
+  | { type: 'SET_DATA'; payload: T }
+  | { type: 'OPTIMISTIC_UPDATE'; payload: T }
 
 function createReducer<T>(initialData?: T) {
   return function reducer(
@@ -135,6 +159,17 @@ function createReducer<T>(initialData?: T) {
           lastFetchedAt: null,
           retryCount: 0,
         }
+      case 'SET_DATA':
+        return {
+          ...state,
+          data: action.payload,
+        }
+      case 'OPTIMISTIC_UPDATE':
+        return {
+          ...state,
+          data: action.payload,
+          // Don't update lastFetchedAt since this isn't from the server
+        }
       default:
         return state
     }
@@ -170,7 +205,7 @@ function createReducer<T>(initialData?: T) {
  */
 export function useDashboardData<T>(
   options: UseDashboardDataOptions<T>
-): DashboardDataState<T> & DashboardDataActions {
+): DashboardDataState<T> & DashboardDataActions<T> {
   const {
     fetcher,
     initialData,
@@ -211,6 +246,12 @@ export function useDashboardData<T>(
   const staleTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
   )
+  // Track current request to avoid stale responses
+  const requestIdRef = React.useRef(0)
+  // Track if a fetch is in progress to avoid overlapping requests
+  const isFetchingRef = React.useRef(false)
+  // Track retry count in ref to avoid stale closure issues
+  const retryCountRef = React.useRef(0)
 
   const log = React.useCallback(
     (message: string, ...args: unknown[]) => {
@@ -249,17 +290,40 @@ export function useDashboardData<T>(
 
   const fetchData = React.useCallback(
     async (isRefetch = false) => {
-      log(isRefetch ? 'Refetching data...' : 'Fetching data...')
+      // Prevent overlapping requests during polling
+      if (isFetchingRef.current && isRefetch) {
+        log('Skipping fetch - request already in progress')
+        return
+      }
+
+      // Increment request ID to track this specific request
+      const currentRequestId = ++requestIdRef.current
+      isFetchingRef.current = true
+
+      log(isRefetch ? 'Refetching data...' : 'Fetching data...', {
+        requestId: currentRequestId,
+      })
 
       dispatch({ type: isRefetch ? 'REFETCH_START' : 'FETCH_START' })
 
       try {
         const data = await fetcher()
 
+        // Check if this request is still the current one (not stale)
+        if (requestIdRef.current !== currentRequestId) {
+          log('Discarding stale response', {
+            requestId: currentRequestId,
+            currentId: requestIdRef.current,
+          })
+          return
+        }
+
         if (!isMountedRef.current) return
 
         log('Fetch successful', data)
         dispatch({ type: 'FETCH_SUCCESS', payload: data })
+        // Reset retry count on success
+        retryCountRef.current = 0
         onSuccess?.(data)
 
         // Schedule stale check
@@ -268,6 +332,15 @@ export function useDashboardData<T>(
         }
         scheduleStaleCheck()
       } catch (err) {
+        // Check if this request is still the current one (not stale)
+        if (requestIdRef.current !== currentRequestId) {
+          log('Discarding stale error', {
+            requestId: currentRequestId,
+            currentId: requestIdRef.current,
+          })
+          return
+        }
+
         if (!isMountedRef.current) return
 
         const error = err instanceof Error ? err : new Error(String(err))
@@ -276,12 +349,14 @@ export function useDashboardData<T>(
         dispatch({ type: 'FETCH_ERROR', payload: error })
         onError?.(error)
 
-        // Retry logic
-        if (enableRetry && state.retryCount < maxRetries) {
+        // Retry logic using ref to avoid stale closure
+        if (enableRetry && retryCountRef.current < maxRetries) {
+          retryCountRef.current++
           dispatch({ type: 'INCREMENT_RETRY' })
-          const backoff = retryBackoffMs * Math.pow(2, state.retryCount)
+          const backoff =
+            retryBackoffMs * Math.pow(2, retryCountRef.current - 1)
           log(
-            `Scheduling retry in ${backoff}ms (attempt ${state.retryCount + 1}/${maxRetries})`
+            `Scheduling retry in ${backoff}ms (attempt ${retryCountRef.current}/${maxRetries})`
           )
 
           retryTimeoutRef.current = setTimeout(() => {
@@ -289,6 +364,11 @@ export function useDashboardData<T>(
               fetchData(true)
             }
           }, backoff)
+        }
+      } finally {
+        // Only clear fetching flag if this is still the current request
+        if (requestIdRef.current === currentRequestId) {
+          isFetchingRef.current = false
         }
       }
     },
@@ -299,25 +379,61 @@ export function useDashboardData<T>(
       enableRetry,
       maxRetries,
       retryBackoffMs,
-      state.retryCount,
       scheduleStaleCheck,
       log,
     ]
   )
 
   const refetch = React.useCallback(async () => {
+    // Reset retry count in both state and ref
+    retryCountRef.current = 0
     dispatch({ type: 'RESET_RETRY' })
     await fetchData(state.data !== null)
   }, [fetchData, state.data])
 
   const reset = React.useCallback(() => {
     clearTimers()
+    // Reset all refs to initial state
+    retryCountRef.current = 0
+    isFetchingRef.current = false
+    requestIdRef.current = 0
     dispatch({ type: 'RESET' })
   }, [clearTimers])
 
   const invalidate = React.useCallback(() => {
     dispatch({ type: 'SET_STALE' })
   }, [])
+
+  // Store previous data for rollback
+  const previousDataRef = React.useRef<T | null>(null)
+
+  const setData = React.useCallback(
+    (newData: T) => {
+      log('Setting data directly')
+      dispatch({ type: 'SET_DATA', payload: newData })
+    },
+    [log]
+  )
+
+  const setOptimistic = React.useCallback(
+    (newData: T): { rollback: () => void } => {
+      // Store current data for potential rollback
+      previousDataRef.current = state.data
+
+      log('Optimistically updating data', newData)
+      dispatch({ type: 'OPTIMISTIC_UPDATE', payload: newData })
+
+      return {
+        rollback: () => {
+          log('Rolling back optimistic update')
+          if (previousDataRef.current !== null) {
+            dispatch({ type: 'SET_DATA', payload: previousDataRef.current })
+          }
+        },
+      }
+    },
+    [state.data, log]
+  )
 
   // Initial fetch
   React.useEffect(() => {
@@ -367,6 +483,8 @@ export function useDashboardData<T>(
     refetch,
     reset,
     invalidate,
+    setOptimistic,
+    setData,
   }
 }
 

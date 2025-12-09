@@ -12,43 +12,7 @@ import {
   cn,
 } from '@clarity-chat/primitives'
 import { type SignificanceResult } from './use-statistical-significance'
-
-/**
- * Simple Progress component for internal use
- */
-const Progress = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    value?: number
-    'aria-label'?: string
-  }
->(({ className, value = 0, 'aria-label': ariaLabel, ...props }, ref) => {
-  const safeValue = Number.isFinite(value)
-    ? Math.min(100, Math.max(0, value))
-    : 0
-
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        'relative h-4 w-full overflow-hidden rounded-full bg-gray-200',
-        className
-      )}
-      role="progressbar"
-      aria-valuenow={Math.round(safeValue)}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-label={ariaLabel || 'Progress'}
-      {...props}
-    >
-      <div
-        className="h-full bg-blue-600 transition-all"
-        style={{ width: `${safeValue}%` }}
-      />
-    </div>
-  )
-})
-Progress.displayName = 'Progress'
+import { DashboardProgress } from '../dashboard-progress'
 
 /**
  * Variant metrics data
@@ -218,9 +182,9 @@ export function VariantCard({
                   {metrics.impressions} / {minSampleSize}
                 </span>
               </div>
-              <Progress
+              <DashboardProgress
                 value={(metrics.impressions / minSampleSize) * 100}
-                className="h-2"
+                size="sm"
                 aria-label={`Sample size progress: ${metrics.impressions} of ${minSampleSize} required`}
               />
             </div>

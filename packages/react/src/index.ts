@@ -587,6 +587,12 @@ export {
   type DashboardErrorBoundaryProps,
 } from './components/dashboard-error-boundary'
 export {
+  DashboardProgress,
+  CircularProgress,
+  type DashboardProgressProps,
+  type CircularProgressProps,
+} from './components/dashboard-progress'
+export {
   AnalyticsDashboardSkeleton,
   UsageDashboardSkeleton,
   TokenOptimizationDashboardSkeleton,
@@ -614,14 +620,46 @@ export {
   type UseDashboardDataOptions,
 } from './hooks/use-dashboard-data'
 
+// Dashboard Composer (Multi-source Data)
+export {
+  useDashboardComposer,
+  createDataSource,
+  type DataSourceConfig,
+  type DataSourceState,
+  type DashboardComposerState,
+  type DashboardComposerActions,
+  type UseDashboardComposerOptions,
+} from './hooks/use-dashboard-composer'
+
+// Dashboard Performance Monitoring
+export {
+  useDashboardPerformance,
+  DashboardPerformanceProvider,
+  usePerformanceContext,
+  type DashboardPerformanceMetrics,
+  type UseDashboardPerformanceOptions,
+  type UseDashboardPerformanceReturn,
+  type PerformanceContextValue,
+} from './hooks/use-dashboard-performance.js'
+
 // Keyboard Shortcuts
 export {
   useKeyboardShortcuts,
   useShortcutDisplay,
+  useScopedKeyboardShortcuts,
+  useFocusedKeyboardShortcuts,
   KeyboardShortcutsHelp,
   type KeyboardShortcut,
   type KeyboardShortcutsHelpProps,
+  type ScopedKeyboardShortcutsOptions,
 } from './hooks/use-keyboard-shortcuts'
+export {
+  KeyboardShortcutHint,
+  useKeyboardShortcutHint,
+  InlineShortcutHint,
+  type KeyboardShortcutHintProps,
+  type InlineShortcutHintProps,
+} from './components/keyboard-shortcut-hint'
 
 // Animated Values (Real-time Update Animations)
 export {
