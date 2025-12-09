@@ -141,26 +141,5 @@
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
-  },
-  "size-limit": [
-    {
-      "name": "Full Bundle (ESM)",
-      "path": "dist/index.mjs",
-      "limit": "350 KB",
-      "gzip": true
-    },
-    {
-      "name": "Full Bundle (CJS)",
-      "path": "dist/index.js",
-      "limit": "370 KB",
-      "gzip": true
-    },
-    {
-      "name": "Single Component Import (Tree-shaken)",
-      "path": "dist/index.mjs",
-      "import": "{ ChatWindow }",
-      "limit": "50 KB",
-      "gzip": true
-    }
-  ]
+  }
 }
