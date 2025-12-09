@@ -232,17 +232,15 @@ pnpm test scripts/__tests__/content-extractor.test.ts
 2. Regenerate files: `pnpm run generate:llms`
 3. Verify no broken link warnings in output
 
-## Technical Debt
+## Architecture Notes
 
-### `formatBytes` Duplication
+### Shared Utilities
 
-The `formatBytes` utility function is duplicated 9+ times across the codebase. This scripts
-directory uses a local copy in `lib/utils.ts`. When a shared `@clarity-chat/utils` package is
-created, this should be imported from there instead.
+This directory uses `@clarity-chat/utils` for common formatting functions:
 
-Existing implementations to consolidate:
+```typescript
+import { formatBytes, formatDelta, directoryExists } from '@clarity-chat/utils'
+```
 
-- `packages/memory/src/utils/core.ts`
-- `packages/dev-tools/src/performance/profiler.ts`
-- `packages/react/src/components/performance-dashboard.tsx`
-- `tools/scripts/analyze-bundle.js`
+The `lib/utils.ts` file re-exports these for convenience. This ensures consistency with other
+packages in the monorepo.

@@ -52,6 +52,7 @@
     "uuid": "^11.0.3"
   },
   "devDependencies": {
+    "@clarity-chat/utils": "workspace:*",
     "@svgr/webpack": "^8.1.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
