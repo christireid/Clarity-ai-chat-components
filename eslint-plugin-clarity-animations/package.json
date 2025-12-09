@@ -1,0 +1,19 @@
+{
+  "name": "eslint-plugin-clarity-animations",
+  "version": "1.0.0",
+  "description": "ESLint plugin to enforce Clarity Chat animation best practices",
+  "main": "index.js",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "animations",
+    "framer-motion",
+    "performance",
+    "accessibility"
+  ],
+  "author": "Clarity Chat",
+  "license": "MIT",
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
+  }
+}
