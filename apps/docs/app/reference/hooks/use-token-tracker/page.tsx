@@ -10,6 +10,7 @@ import { Callout } from '@/components/MDX/Callout'
 import { PropsTable, type Prop } from '@/components/Enhanced/PropsTable'
 import { ComponentPreview } from '@/components/Demo/ComponentPreview'
 import { ViewInStorybook } from '@/components/Links/StorybookLink'
+import { FeedbackWidget } from '@/components/FeedbackWidget'
 
 // Basic demo component
 function BasicTrackerDemo() {
@@ -722,6 +723,9 @@ function CompleteTrackerExample() {
             href: '/reference/hooks/use-token-optimization',
           }}
         />
+
+        {/* Feedback Widget */}
+        <FeedbackWidget pageId="use-token-tracker" className="mt-12" />
       </>
     </ToastProvider>
   )
