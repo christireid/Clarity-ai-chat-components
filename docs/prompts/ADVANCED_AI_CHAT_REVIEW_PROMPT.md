@@ -16,7 +16,11 @@ Before using, fill in:
 
 ## The Prompt
 
-```markdown
+> **Note**: Copy the content below. The prompt is presented in a collapsible section to preserve code block formatting.
+
+<details>
+<summary>Click to expand full prompt template</summary>
+
 # Mission: Advanced AI Chat Feature Enhancement Review
 
 You are a senior AI/ML engineer conducting a thorough review of advanced chat functionality in the Clarity Chat codebase. Your goal is to identify logical enhancements that push the feature toward production excellence while staying within scope.
@@ -420,7 +424,8 @@ If ANY answer is "No" without justification -> Flag for discussion.
 - **3 Detailed Prompts**: With provider compatibility and test cases
 - **Research Summary**: AI/ML insights that informed suggestions
 - **Provider Compatibility Matrix**: Clear support status per provider
-```
+
+</details>
 
 ---
 
@@ -505,23 +510,26 @@ const memoryConfig: ClarityMemoryOptions = {
 ```typescript
 // Key patterns for token optimization
 import {
-  useTokenBudgetMonitor,
+  useTokenBudget,
   buildKVCacheOptimizedPrompt,
   createSystemSegment,
   createHistorySegment,
   createUserSegment,
-  calculateDynamicOutputLimit,
 } from '@clarity-chat/react'
 
+// Note: Actual function signatures require 'id' as first parameter
 // KV-cache aligned prompt building
-const prompt = buildKVCacheOptimizedPrompt({
-  segments: [
-    createSystemSegment('You are a helpful assistant.', { cacheable: true }),
-    createHistorySegment(messages.slice(0, -1)),
-    createUserSegment(messages[messages.length - 1].content),
+const prompt = buildKVCacheOptimizedPrompt(
+  [
+    createSystemSegment('sys-1', 'You are a helpful assistant.', 'must-have'),
+    createHistorySegment('hist-1', 'Previous message', 'user', 'low'),
+    createUserSegment('user-1', 'Current question'),
   ],
-  maxTokens: 4000,
-})
+  {
+    maxInputTokens: 4000,
+    reservedForOutput: 1000,
+  }
+)
 ```
 
 ---
