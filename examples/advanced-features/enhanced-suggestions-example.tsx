@@ -11,6 +11,7 @@ import {
   useChatEnhanced,
 } from '@clarity-chat/react'
 import type { Message } from '@clarity-chat/types'
+import { accessibleClickHandler } from '../utils/accessibility'
 
 // 💡 Type for prompt suggestions used throughout these examples
 interface PromptSuggestion {
@@ -138,16 +139,8 @@ export function AdvancedHookExample() {
           {resolvedSuggestions.map((suggestion, index) => (
             <div
               key={suggestion.id}
-              role="button"
-              tabIndex={0}
+              {...accessibleClickHandler(() => handleSelect(suggestion))}
               className="relative p-4 border rounded-lg hover:bg-accent cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
-              onClick={() => handleSelect(suggestion)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  handleSelect(suggestion)
-                }
-              }}
             >
               {/* Confidence badge */}
               {suggestion.confidence !== undefined && (

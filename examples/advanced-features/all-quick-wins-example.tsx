@@ -18,6 +18,7 @@ import {
   useBatteryAware,
   ChatWindow,
 } from '@clarity-chat/react'
+import { useFocusTrap, useEscapeKey } from '../utils/accessibility'
 
 // 💡 Type definitions for this example
 interface ChatMessage {
@@ -281,57 +282,13 @@ export function MobileAdvancedChat() {
 
   const [showSummary, setShowSummary] = React.useState(false)
 
-  // 🎯 Focus trap refs for accessible modal
-  const dialogRef = React.useRef<HTMLDivElement>(null)
-  const closeButtonRef = React.useRef<HTMLButtonElement>(null)
-  const triggerRef = React.useRef<HTMLButtonElement>(null)
-
-  // 🎯 Focus trap implementation for modal accessibility
-  React.useEffect(() => {
-    if (!showSummary) return
-
-    // Auto-focus close button when modal opens
-    closeButtonRef.current?.focus()
-
-    // Store the element that triggered the modal
-    const previouslyFocused = document.activeElement as HTMLElement
-
-    // Focus trap handler
-    const handleFocusTrap = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return
-
-      const dialog = dialogRef.current
-      if (!dialog) return
-
-      const focusableElements = dialog.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      )
-      const firstElement = focusableElements[0]
-      const lastElement = focusableElements[focusableElements.length - 1]
-
-      if (e.shiftKey) {
-        // Shift+Tab: wrap to last element
-        if (document.activeElement === firstElement) {
-          e.preventDefault()
-          lastElement?.focus()
-        }
-      } else {
-        // Tab: wrap to first element
-        if (document.activeElement === lastElement) {
-          e.preventDefault()
-          firstElement?.focus()
-        }
-      }
-    }
-
-    document.addEventListener('keydown', handleFocusTrap)
-
-    return () => {
-      document.removeEventListener('keydown', handleFocusTrap)
-      // Return focus to trigger element when modal closes
-      previouslyFocused?.focus()
-    }
-  }, [showSummary])
+  // 🎯 Use accessibility utilities for modal
+  const { containerRef: dialogRef } = useFocusTrap({
+    enabled: showSummary,
+    autoFocus: true,
+    returnFocus: true,
+  })
+  useEscapeKey(() => setShowSummary(false), showSummary)
 
   return (
     <div className="flex flex-col h-screen">
@@ -341,7 +298,6 @@ export function MobileAdvancedChat() {
         <div className="flex items-center gap-2">
           <BatteryIndicator compact position="inline" />
           <button
-            ref={triggerRef}
             onClick={() => setShowSummary(!showSummary)}
             aria-expanded={showSummary}
             aria-haspopup="dialog"
@@ -393,11 +349,6 @@ export function MobileAdvancedChat() {
         <div
           className="fixed inset-0 bg-black/50 z-50"
           onClick={() => setShowSummary(false)}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              setShowSummary(false)
-            }
-          }}
           role="presentation"
         >
           <div
@@ -412,7 +363,6 @@ export function MobileAdvancedChat() {
               <div className="flex items-center justify-between mb-4">
                 <h2 id="summary-title" className="text-lg font-bold">Summary</h2>
                 <button
-                  ref={closeButtonRef}
                   onClick={() => setShowSummary(false)}
                   aria-label="Close summary panel"
                   className="text-2xl focus:outline-none focus:ring-2 focus:ring-primary rounded"

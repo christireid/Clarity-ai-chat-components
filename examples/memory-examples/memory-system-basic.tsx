@@ -1,10 +1,11 @@
 /**
  * Basic Memory System Example
- * 
+ *
  * Demonstrates how to set up and use the AI Memory & Context system
  */
 
 import React from 'react'
+import { ErrorBoundary, LoadingSpinner } from '../utils/error-boundary'
 // 📚 IMPORT PATTERN:
 // All @clarity-chat/react exports come from the main package entry point.
 // The library uses a flat export structure for simpler imports.
@@ -301,14 +302,19 @@ function ChatWithMemory() {
  */
 export function App() {
   return (
-    <MemoryProvider
-      config={memoryConfig}
-      vectorStore={vectorStore}
-      embeddings={embeddings}
-      autoStart={true}
+    <ErrorBoundary
+      onError={(error) => console.error('Memory system error:', error)}
+      showReset
     >
-      <ChatWithMemory />
-    </MemoryProvider>
+      <MemoryProvider
+        config={memoryConfig}
+        vectorStore={vectorStore}
+        embeddings={embeddings}
+        autoStart={true}
+      >
+        <ChatWithMemory />
+      </MemoryProvider>
+    </ErrorBoundary>
   )
 }
 

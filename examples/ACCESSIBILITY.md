@@ -327,6 +327,108 @@ Consider adding these tools:
 
 ---
 
+## Keyboard Shortcuts Reference
+
+### Global Shortcuts
+
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| `Tab` | Move focus to next element | All |
+| `Shift+Tab` | Move focus to previous element | All |
+| `Escape` | Close modal/dropdown/overlay | Modal, dropdown |
+| `Enter` | Activate button/link | Button, link |
+| `Space` | Activate button, toggle checkbox | Button, checkbox |
+
+### Modal/Dialog Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Escape` | Close modal and return focus to trigger |
+| `Tab` | Cycle through focusable elements (trapped) |
+| `Shift+Tab` | Cycle backwards through elements |
+
+### List/Menu Navigation
+
+| Shortcut | Action |
+|----------|--------|
+| `Arrow Down` | Move to next item |
+| `Arrow Up` | Move to previous item |
+| `Home` | Jump to first item |
+| `End` | Jump to last item |
+| `Enter` / `Space` | Select current item |
+
+### Form Controls
+
+| Shortcut | Action |
+|----------|--------|
+| `Enter` | Submit form (in text input) |
+| `Escape` | Clear input / Cancel edit |
+| `Tab` | Move to next field |
+
+### Chat Interface Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Enter` | Send message (multi-line mode) |
+| `Enter` | Send message (single-line mode) |
+| `Arrow Up` | Edit last message (when input empty) |
+| `Escape` | Cancel editing / Clear input |
+
+### Implementing Custom Shortcuts
+
+```tsx
+import { useEffect } from 'react'
+
+function useKeyboardShortcut(
+  key: string,
+  callback: () => void,
+  options: { ctrl?: boolean; shift?: boolean; alt?: boolean } = {}
+) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (
+        e.key === key &&
+        (!options.ctrl || e.ctrlKey || e.metaKey) &&
+        (!options.shift || e.shiftKey) &&
+        (!options.alt || e.altKey)
+      ) {
+        e.preventDefault()
+        callback()
+      }
+    }
+
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [key, callback, options.ctrl, options.shift, options.alt])
+}
+
+// Usage
+function ChatInput() {
+  useKeyboardShortcut('Enter', sendMessage, { ctrl: true })
+  // ...
+}
+```
+
+---
+
+## Interactive Demo
+
+For a hands-on demonstration of accessibility features, see the interactive demo:
+
+```tsx
+import { AccessibilityDemo } from './examples/advanced-features/accessibility-demo'
+```
+
+The demo includes:
+- Accessible click handlers for non-button elements
+- Focus trap implementation for modals
+- Auto-focus behavior
+- Escape key handling
+- Screen reader announcements
+- Keyboard navigation patterns
+
+---
+
 ## Resources
 
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)

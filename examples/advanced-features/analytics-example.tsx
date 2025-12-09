@@ -20,10 +20,10 @@ import {
   CardTitle,
 } from '@clarity-chat/react'
 import type {
-  InteractionEvent,
   ExperimentResult,
   ExperimentVariant,
 } from '@clarity-chat/react'
+import { ErrorBoundary, LoadingSpinner, ErrorState } from '../utils/error-boundary'
 
 // 💡 Type definitions for this example
 interface ChatMessage {
@@ -406,17 +406,21 @@ export function ChatWithABTestExample() {
 export function ProductionAnalyticsExample() {
   const [experiments, setExperiments] = React.useState<ExperimentResult[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState<Error | null>(null)
 
   // Load experiments from backend
   React.useEffect(() => {
     const loadExperiments = async () => {
       setIsLoading(true)
+      setError(null)
       try {
         const response = await fetch('/api/experiments')
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const data = await response.json()
         setExperiments(data.experiments)
-      } catch (error) {
-        console.error('Failed to load experiments:', error)
+      } catch (err) {
+        console.error('Failed to load experiments:', err)
+        setError(err instanceof Error ? err : new Error('Failed to load experiments'))
       } finally {
         setIsLoading(false)
       }
@@ -439,59 +443,74 @@ export function ProductionAnalyticsExample() {
       const response = await fetch('/api/experiments')
       const data = await response.json()
       setExperiments(data.experiments)
-    } catch (error) {
-      console.error('Failed to declare winner:', error)
+    } catch (err) {
+      console.error('Failed to declare winner:', err)
       alert('Failed to declare winner')
     }
   }
 
   if (isLoading) {
-    return <div className="p-4">Loading experiments...</div>
+    return (
+      <div className="flex items-center justify-center p-8">
+        <LoadingSpinner size="lg" label="Loading experiments..." />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <ErrorState
+        message={error.message}
+        onRetry={() => window.location.reload()}
+      />
+    )
   }
 
   return (
-    <div className="space-y-4 p-4">
-      <h2 className="text-2xl font-bold">Production Analytics</h2>
+    <ErrorBoundary>
+      <div className="space-y-4 p-4">
+        <h2 className="text-2xl font-bold">Production Analytics</h2>
 
-      <UserInteractionAnalytics
-        config={{
-          trackClicks: true,
-          trackFeatureDiscovery: true,
-          samplingRate: 0.1, // 10% sampling in production
-        }}
-        realtime
-        onEventTracked={async (event) => {
-          // Send events to analytics service
-          try {
-            await fetch('/api/analytics/events', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(event),
-            })
-          } catch (error) {
-            console.error('Failed to send event:', error)
-          }
-        }}
-        onAnalyticsGenerated={async (metrics) => {
-          // Send aggregated metrics
-          try {
-            await fetch('/api/analytics/metrics', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(metrics),
-            })
-          } catch (error) {
-            console.error('Failed to send metrics:', error)
-          }
-        }}
-      />
+        <UserInteractionAnalytics
+          config={{
+            trackClicks: true,
+            trackFeatureDiscovery: true,
+            samplingRate: 0.1, // 10% sampling in production
+          }}
+          realtime
+          onEventTracked={async (event) => {
+            // Send events to analytics service
+            try {
+              await fetch('/api/analytics/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(event),
+              })
+            } catch (err) {
+              console.error('Failed to send event:', err)
+            }
+          }}
+          onAnalyticsGenerated={async (metrics) => {
+            // Send aggregated metrics
+            try {
+              await fetch('/api/analytics/metrics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(metrics),
+              })
+            } catch (err) {
+              console.error('Failed to send metrics:', err)
+            }
+          }}
+        />
 
-      <ABTestingDashboard
-        experiments={experiments}
-        showStatistics
-        onDeclareWinner={handleDeclareWinner}
-      />
-    </div>
+        <ABTestingDashboard
+          experiments={experiments}
+          showStatistics
+          onDeclareWinner={handleDeclareWinner}
+        />
+      </div>
+    </ErrorBoundary>
   )
 }
 
