@@ -429,8 +429,6 @@ export { ModelSelector } from './components/model-selector'
 export { ContextCard } from './components/context-card'
 export { ContextManager } from './components/context-manager'
 export { ProjectSidebar } from './components/project-sidebar'
-// TODO: Re-enable once prompt system is implemented
-// export { PromptLibrary } from './components/prompt-library'
 export { SettingsPanel } from './components/settings-panel'
 export { UsageDashboard } from './components/usage-dashboard'
 export { LinkPreview, InlineLink } from './components/link-preview'
